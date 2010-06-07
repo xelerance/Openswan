@@ -5,18 +5,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatability version to use.
-export DH_COMPAT=3
-
 export DH_OPTIONS
-
-ifeq (,$(wildcard /usr/bin/po2debconf))
-	PO2DEBCONF := no
-	MINDEBCONFVER := 0.5
-else
-	PO2DEBCONF := yes
-	MINDEBCONFVER := 1.2.0
-endif
 
 configure: configure-stamp
 configure-stamp:
@@ -25,37 +14,33 @@ configure-stamp:
 
 	touch configure-stamp
 
-patch-stamp:
+patch:
 	dh_testdir
+	dpatch apply-all
 
-	touch patch-stamp
-
-unpatch: 
-	rm -f patch-stamp
+unpatch:
+	dpatch deapply-all
 
 build: build-stamp
-build-stamp: patch-stamp
+build-stamp: patch
 	# create a dummy ipsec.secrets file before building the package so
 	# that no RSA keys are created during the build process
 	# (a package should not include a RSA key, it should produce the key
 	# on demand, e.g. in the postinst script)
 	touch $(CURDIR)/debian/ipsec.secrets
 	$(MAKE) programs INC_USRLOCAL=/usr \
-        		 FINALBINDIR=/usr/lib/ipsec \
+			 FINALBINDIR=/usr/lib/ipsec \
 			 FINALLIBEXECDIR=/usr/lib/ipsec \
 			 PUBDIR=/usr/sbin \
 			 MANTREE=/usr/share/man \
-			 CONFDIR=$(CURDIR)/debian
+			 CONFDIR=$(CURDIR)/debian \
+			 USE_LDAP=true USE_LIBCURL=true HAVE_THREADS=true \
+			 USE_XAUTH=true USE_XAUTHPAM=true
 	# remove the temporary file, it will be created during install
 	rm -f $(CURDIR)/debian/ipsec.secrets
 
 	# here we re-generate the upstream HTML documentation
 	$(MAKE) -C doc/ index.html
-	
-	# also generate the fswcert tool
-	$(MAKE) -C programs/fswcert/
-	# ugly hack....
-	$(MAKE) -C programs/fswcert/ programs WERROR='-lcrypto'
 
 	touch build-stamp
 
@@ -64,81 +49,77 @@ clean: unpatch
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	-$(MAKE) clean
-	-$(MAKE) -C programs/fswcert/ clean
+	[ ! -f Makefile ] || $(MAKE) clean
+
 	# after a make clean, no binaries _should_ be left, but ....
 	-find $(CURDIR) -name "*.o" | xargs --no-run-if-empty rm
 	-find $(CURDIR)/lib/libcrypto -name "*.a" | xargs --no-run-if-empty rm
 
-	-$(MAKE) -f debian/rules unpatch
-	
 	rm -rf debian/openswan-modules-source-build/
+
+	# Really clean (#356716)
+	# This is a hack: should be better implemented
+	rm -f lib/libopenswan/libopenswan.a || true
+	rm -f lib/libopenswan/liboswlog.a || true
+	rm -rf OBJ.* || true
+	rm -rf doc/manpage.d/*.html || true
+	rm -f doc/index.html || true
 
 	# just in case something went wrong
 	rm -f $(CURDIR)/debian/ipsec.secrets
 
-	dh_clean
+	# and make sure that template are up-to-date
+	debconf-updatepo
 
-ifeq ($(PO2DEBCONF),yes)       
-	# Hack for woody compatibility. This makes sure that the       
-	# debian/templates file shipped in the source package doesn't 
-	# specify encodings, which woody's debconf can't handle. If building
-	# on a system with po-debconf installed (conveniently debhelper (>=
-	# 4.1.16) depends on it), the binary-arch target will generate a
-	# better version for sarge.       
-	echo 1 > debian/po/output
-	po2debconf debian/openswan.templates.master > debian/openswan.templates
-	rm -f debian/po/output
-endif
+	dh_clean
 
 install-openswan: DH_OPTIONS=-a
 install-openswan: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp.
 	$(MAKE) install INC_USRLOCAL=/usr \
-        		FINALBINDIR=/usr/lib/ipsec \
+			FINALBINDIR=/usr/lib/ipsec \
 			FINALLIBEXECDIR=/usr/lib/ipsec \
 			PUBDIR=$(CURDIR)/debian/openswan/usr/sbin \
 			MANTREE=$(CURDIR)/debian/openswan/usr/share/man \
-			DESTDIR=$(CURDIR)/debian/openswan \
-			USE_LDAP=true USE_LIBCURL=true HAVE_THREADS=true \
-			USE_XAUTHPAM=true
+			DESTDIR=$(CURDIR)/debian/openswan
 	rm -rf $(CURDIR)/debian/openswan/usr/local
 	install --mode=0600 $(CURDIR)/debian/ipsec.secrets.proto $(CURDIR)/debian/openswan/etc/ipsec.secrets
-
-	# use bash for init.d and _plutorun
-	patch $(CURDIR)/debian/openswan/etc/init.d/ipsec < debian/use-bash.diff
-	patch $(CURDIR)/debian/openswan/usr/lib/ipsec/_plutorun < debian/use-bash.diff
-
-	# install the fswcert tool
-	install $(CURDIR)/programs/fswcert/fswcert $(CURDIR)/debian/openswan/usr/bin
-	install $(CURDIR)/programs/fswcert/fswcert.8 $(CURDIR)/debian/openswan/usr/share/man/man8
 
 	rm -f $(CURDIR)/debian/openswan/etc/init.d/ipsec?*
 	rm -f $(CURDIR)/debian/openswan/usr/lib/ipsec/_plutorun?*
 
 	# this is handled by update-rc.d
 	rm -rf $(CURDIR)/debian/openswan/etc/rc?.d
-        
+
+	# delete var/lock/subsys and var/run to satisfy lintian
+	rm -rf $(CURDIR)/debian/openswan/var/lock
+	rm -rf $(CURDIR)/debian/openswan/var/run
+
+	# remove the already installed docs
+	rm -rf "$(CURDIR)/debian/openswan/usr/share/doc"
+
+	# fix some manpage issues
+	for oldname in `find $(CURDIR)/debian/openswan/usr/share/man -name "ipsec_ipsec*"`; \
+	do \
+	    newname=`echo "$$oldname" | sed 's/ipsec_ipsec_/ipsec_/'`; \
+	    if [ -f "$$newname" ]; then \
+		rm -f "$$oldname"; \
+	    else \
+		mv "$$oldname" "$$newname"; \
+	    fi; \
+	done
+
 	dh_installdocs -popenswan -n
-	# change the paths in the installed doc files (but only in regular 
-	# files, not in links to the outside of the build tree !)
-	( cd $(CURDIR)/debian/openswan/; \
-	  for f in `grep "/usr/local/" --recursive --files-with-match *`; \
-	  do \
-		if [ -f $$f -a ! -L $$f ]; then \
-		    cp $$f $$f.old; \
- 		    sed 's/\/usr\/local\//\/usr\//' $$f.old > $$f; \
-		    rm $$f.old; \
-		fi; \
-	  done )
-	# but remove the doc/src dir, which just duplicates the HTML files
-	rm -rf $(CURDIR)/debian/openswan/usr/share/doc/openswan/doc/src
-	  
+	dh_installchangelogs CHANGES
+
+	# openswan-dbg depends on openswan so no need to ship doc twice
+	rm -rf $(CURDIR)/debian/openswan-dbg/usr/share/doc/openswan-dbg
+
 	# the logcheck ignore files
 	install -D --mode=0600 $(CURDIR)/debian/logcheck.ignore.paranoid $(CURDIR)/debian/openswan/etc/logcheck/ignore.d.paranoid/openswan
 	install -D --mode=0600 $(CURDIR)/debian/logcheck.ignore.server $(CURDIR)/debian/openswan/etc/logcheck/ignore.d.server/openswan
@@ -155,12 +136,54 @@ install-openswan: build
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan -name "/.svn/" | xargs --no-run-if-empty rm -rf
+	find $(CURDIR)/debian/openswan -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
-install-openswan-modules-source: DH_OPTIONS=-i
+	# Empty directory
+	rmdir $(CURDIR)/debian/openswan/usr/bin
+
+install-openswan-doc: DH_OPTIONS=-popenswan-doc
+install-openswan-doc: build
+	dh_testdir
+	dh_testroot
+
+	dh_installdocs -popenswan-doc -n
+	dh_installchangelogs CHANGES
+
+	# fix some doc issues
+	for oldname in `find $(CURDIR)/debian/openswan-doc/usr/share/doc -name "ipsec_ipsec*"`; \
+	do \
+	    newname=`echo "$$oldname" | sed 's/ipsec_ipsec_/ipsec_/'`; \
+	    if [ -f "$$newname" ]; then \
+		rm -f "$$oldname"; \
+	    else \
+		mv "$$oldname" "$$newname"; \
+	    fi; \
+	done
+
+	# change the paths in the installed doc files (but only in regular
+	# files, not in links to the outside of the build tree !)
+	( cd $(CURDIR)/debian/openswan-doc/; \
+	  for f in `grep "/usr/local/" --recursive --files-with-match *`; \
+	  do \
+		if [ -f $$f -a ! -L $$f ]; then \
+		    cp $$f $$f.old; \
+		    sed 's/\/usr\/local\//\/usr\//' $$f.old > $$f; \
+		    rm $$f.old; \
+		fi; \
+	  done )
+	# but remove the doc/src dir, which just duplicates the HTML files
+	rm -rf $(CURDIR)/debian/openswan-doc/usr/share/doc/openswan-doc/doc/src
+
+	# more lintian cleanups
+	find $(CURDIR)/debian/openswan-doc -name ".cvsignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-doc -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-doc -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
+
+install-openswan-modules-source: DH_OPTIONS=-popenswan-modules-source
 install-openswan-modules-source: PKGDIR=$(CURDIR)/debian/openswan-modules-source
 install-openswan-modules-source: BUILDDIR=$(CURDIR)/debian/openswan-modules-source-build
-install-openswan-modules-source: patch-stamp
+install-openswan-modules-source: patch
 	dh_testdir
 	dh_testroot
 	dh_installdirs
@@ -168,133 +191,92 @@ install-openswan-modules-source: patch-stamp
 	mkdir -p "$(BUILDDIR)/modules/openswan/lib"
 	mkdir -p "$(BUILDDIR)/modules/openswan/debian"
 	mkdir -p "$(BUILDDIR)/modules/openswan/packaging"
-	cp -r Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
+	cp -r CHANGES CREDITS Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(BUILDDIR)/modules/openswan"
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
-	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults \
+	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
 		"$(BUILDDIR)/modules/openswan/packaging/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
 	install --mode=755 debian/openswan-modules-source.rules "$(BUILDDIR)/modules/openswan/debian/rules"
 	install --mode=644 debian/openswan-modules-source.control.in "$(BUILDDIR)/modules/openswan/debian/control.in"
+	install --mode=644 debian/openswan-modules-source.docs "$(BUILDDIR)/modules/openswan/debian/docs.in"
+	install --mode=644 debian/openswan-modules-source.lintian-overrides.in "$(BUILDDIR)/modules/openswan/debian/lintian-overrides.in"
+	install --mode=644 debian/compat "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/changelog "$(BUILDDIR)/modules/openswan/debian/"
+	install --mode=644 debian/copyright "$(BUILDDIR)/modules/openswan/debian/"
+	install --mode=644 debian/NEWS "$(BUILDDIR)/modules/openswan/debian/"
+	install --mode=644 debian/README.Debian "$(BUILDDIR)/modules/openswan/debian/"
 
-	# This creates the NAT-T patches that can be used on the kernel tree 
-	# even with openswan-modules-source.
-	make nattpatch2.4 > $(BUILDDIR)/modules/openswan/debian/nat-t-2.4.diff
-	make nattpatch2.6 > $(BUILDDIR)/modules/openswan/debian/nat-t-2.6.diff
-        
-	tar -C $(BUILDDIR) -c modules/ | gzip -9 > \
-        	"$(PKGDIR)/usr/src/openswan-modules.tar.gz"
-		
+	tar -C $(BUILDDIR) -c modules/ | bzip2 -9 > \
+		"$(PKGDIR)/usr/src/openswan-modules.tar.bz2"
+
 	dh_installdocs -popenswan-modules-source -n
-
-	# more lintian cleanups
-	find $(CURDIR)/debian/openswan-modules-source -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name "/.svn/" | xargs --no-run-if-empty rm -rf
-
-install-kernel-patch-openswan: DH_OPTIONS=-i
-install-kernel-patch-openswan: PKGDIR=$(CURDIR)/debian/kernel-patch-openswan
-install-kernel-patch-openswan: patch-stamp
-	dh_testdir
-	dh_testroot
-	dh_installdirs
-	# some of this has been taken from Tommi Virtanen's package
-	install --mode=0755 debian/kernel-patch-openswan.apply \
-		"$(PKGDIR)/usr/src/kernel-patches/all/apply/openswan"
-	install --mode=0755 debian/kernel-patch-openswan.unpatch \
-		"$(PKGDIR)/usr/src/kernel-patches/all/unpatch/openswan"
-	install --mode=0755 packaging/utils/patcher \
-		"$(PKGDIR)/usr/src/kernel-patches/all/openswan"
-	cp -r Makefile Makefile.inc Makefile.ver Makefile.top lib/ linux/ \
-		packaging/ nat-t/ \
-		"$(PKGDIR)/usr/src/kernel-patches/all/openswan"
-	# also don't generate the out.kpatch file under /usr/src/....
-	sed 's/>>out.kpatch//' \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile" \
-			> "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp"
-	mv "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp" \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile"
-	sed 's/>out.kpatch//' \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile" \
-			> "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp"
-	mv "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp" \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile"
-	sed 's/rm -f out.kpatch//' \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile" \
-			> "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp"
-	mv "$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile.tmp" \
-        	"$(PKGDIR)/usr/src/kernel-patches/all/openswan/Makefile"
-	chmod u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/openswan"
-	# remove extra junk not needed on linux / that lintian would complain about
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan" \
-		-name '*.o' -print0 | xargs --no-run-if-empty -0 rm -f
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan" \
-		-name '*.a' -print0 | xargs --no-run-if-empty -0 rm -f
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/libopenswan/"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/libdes/"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/liblwres/"
-	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/COPYING.LIB"
-	rm -f "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/README"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/linus"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/ipkg"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/makefiles"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/redhat"
-	rm -rf "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/suse"
-	rm -r "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/utils/disttools.pl"
-	rm -r "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/utils/kernel.patch.gen.sh"
-	rm -r "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/utils/sshenv"
-	rm -r "$(PKGDIR)/usr/src/kernel-patches/all/openswan/packaging/utils/setup"
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan/linux/net/ipsec/des/asm/" \
-		-name '*.pl' -print0 | xargs --no-run-if-empty -0 \
-		perl -pi -e 's{^#!/usr/local/bin/perl}{#!/usr/bin/perl}g'
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/libcrypto/" \
-		-name '*.pl' -print0 | xargs --no-run-if-empty -0 \
-		perl -pi -e 's{^#!/usr/local/bin/perl}{#!/usr/bin/perl}g'
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan/linux/net/ipsec/des/asm/" \
-		-name '*.pl' -print0 | xargs --no-run-if-empty -0 chmod a+x
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan/lib/libcrypto/" \
-		-name '*.pl' -print0 | xargs --no-run-if-empty -0 chmod a+x
-	find "$(PKGDIR)/usr/src/kernel-patches/all/openswan/linux/net/ipsec/alg/scripts/" \
-		-name '*.sh' -print0 | xargs --no-run-if-empty -0 chmod a+x
-	chmod -R u=rwX,go=rX "$(PKGDIR)/usr/src/kernel-patches/all/openswan"
-	
-	dh_installdocs -pkernel-patch-openswan -n
+	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
 	find $(PKGDIR) -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name "/.svn/" | xargs --no-run-if-empty rm -rf
+	find $(PKGDIR) -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(PKGDIR) -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
+
+install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
+install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d: -f2 | cut -d- -f1)
+install-openswan-modules-dkms: patch
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	mkdir -p "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/lib"
+	mkdir -p "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/debian"
+	mkdir -p "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/packaging"
+	cp -r Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
+		"$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)"
+	cp -r lib/libcrypto "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/lib"
+	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
+		"$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/packaging/"
+	find "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/lib" -name "*.o" | xargs --no-run-if-empty rm
+	install --mode=644 debian/openswan-modules-source.kernel-config "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/config-all.h"
+	sed -e "s/#VERSION#/$(VERSION)/g" debian/openswan-modules-dkms.dkms.conf.in > "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/dkms.conf"
+
+	dh_installdocs -popenswan-modules-dkms -n
+	dh_installchangelogs CHANGES
+
+	# more lintian cleanups
+	find $(CURDIR)/debian/openswan-modules-dkms -name ".cvsignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-modules-dkms -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-modules-dkms -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
+
+	# Ensure +x for scrips
+	find $(CURDIR)/debian/openswan-modules-dkms -type f -name "*.sh" -o -name "*.pl" | xargs --no-run-if-empty chmod 755
+
+	# remove empty dir
+	find $(CURDIR)/debian/openswan-modules-dkms -type d -name debian | xargs --no-run-if-empty rmdir
+
+	# These are not executable scripts, more like "shell source" files
+	find $(CURDIR)/debian/openswan-modules-dkms -name sshenv -o -name setup | xargs --no-run-if-empty chmod 644
 
 binary-common:
-	#dh_testversion 2
 	dh_testdir
 	dh_testroot
 	dh_installdebconf
-	dh_installchangelogs CHANGES
 	dh_link
-	dh_strip
+	dh_strip --dbg-package=openswan-dbg
 	dh_compress
-	dh_fixperms -X etc/ipsec.conf -X etc/ipsec.secrets -X etc/ipsec.d
+	dh_fixperms -X etc/ipsec.secrets -X etc/ipsec.d/private
 
-#	dh_makeshlibs
+	dh_lintian
 	dh_installdeb
-#	dh_perl
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
 # Build architecture-independent files here.
-binary-indep: install-openswan-modules-source install-kernel-patch-openswan
+binary-indep: install-openswan-doc install-openswan-modules-source install-openswan-modules-dkms
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture-dependent files here.
 binary-arch: install-openswan
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
-# Any other binary targets build just one binary package at a time.
-#binary-%: build install
-#	make -f debian/rules binary-common DH_OPTIONS=-p$*
-             
 binary: binary-indep binary-arch
 .PHONY: clean binary-indep binary-arch
