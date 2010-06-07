@@ -12,4 +12,4 @@
 /etc/logcheck/violations.ignore.d
 /usr/bin
 /usr/sbin
-/var/lock/subsys
+/var/lib/openswan

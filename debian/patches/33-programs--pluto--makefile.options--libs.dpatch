@@ -1,0 +1,25 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## /tmp/programs--pluto--Makefile.options--libs.patch.dpatch by  <jari.aalto@cante.net>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: b4a1d2ae1ed6f8
+## DP: Author: Jari Aalto <jari.aalto@cante.net>
+## DP: 
+## DP: 
+## DP: )
+
+@DPATCH@
+
+diff --git a/programs/pluto/Makefile.options b/programs/pluto/Makefile.options
+index 26b13ce..b0446f2 100644
+--- a/programs/pluto/Makefile.options
++++ b/programs/pluto/Makefile.options
+@@ -300,7 +300,7 @@ LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
+ LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} ${WHACKLIB} ${PLUTOLIB} ${BSDKAME_LIBS}
+ PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS} 
+ PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}
+-PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} -lgmp # -lefence
++PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} -lgmp -llber   # -lefence
+ 
+ 
+ # Use LIBNSS

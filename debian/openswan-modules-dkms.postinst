@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)-.*/\1/')
+ARCH=`dpkg --print-architecture`
+
+. /usr/share/debconf/confmodule
+
+case "$1" in
+    configure)
+	if [ -x /usr/lib/dkms/common.postinst ]; then
+	    /usr/lib/dkms/common.postinst openswan $VERSION /usr/share/openswan-modules-dkms $ARCH $2
+
+	    if [ "`ipsec setup --status | grep 'IPsec running'`" ]; then
+		db_get openswan/restart
+
+		if [ "$RET" = "true" ]; then
+		    invoke-rc.d ipsec stop || true
+		    rmmod ipsec
+		    modprobe ipsec 2>/dev/null || true
+		    invoke-rc.d ipsec start || true
+		fi
+	    else
+		if grep -q ipsec /proc/modules 2>/dev/null ; then
+		    rmmod ipsec
+		    modprobe ipsec 2>/dev/null || true
+		fi
+	    fi
+	fi
+	db_stop
+    ;;
+esac
+
+#DEBHELPER#
+

@@ -29,50 +29,25 @@ set -e
 #     installation fails and the `postinst' is called with `abort-upgrade',
 #     `abort-remove' or `abort-deconfigure'.
 
-insert_private_key() {
-       	cat <<EOF >> /etc/ipsec.secrets
-: RSA	{
-$1
-	}
-EOF
+SECRETS_INC_FILE=/var/lib/openswan/ipsec.secrets.inc
+
+Warn ()
+{
+    echo "$*" >&2
+}
+
+Error ()
+{
+    Warn "Error: $*"
 }
 
 insert_private_key_filename() {
-	if ! grep -q ": RSA $1" /etc/ipsec.secrets; then
-            echo ": RSA $1" >> /etc/ipsec.secrets
+	if ! ( [ -e $SECRETS_INC_FILE ] && egrep -q ": RSA $1" $SECRETS_INC_FILE ); then
+            echo ": RSA $1" >> $SECRETS_INC_FILE
         fi
 }
 
-IPSEC_SECRETS_PATTERN_1=': RSA	{'
-IPSEC_SECRETS_PATTERN_2='	# yyy'
-IPSEC_SECRETS_PATTERN_3='	}'
-IPSEC_SECRETS_PATTERN_4='# do not change the indenting of that "}"'
-
-# remove old, misguided attempts at a default ipsec.secrets files
-repair_legacy_secrets() {
-    if grep -A 2 "$IPSEC_SECRETS_PATTERN_1" /etc/ipsec.secrets |
-       tail --lines=2 |
-       grep -A 1 "$IPSEC_SECRETS_PATTERN_2" |
-       tail --lines=1 |
-       grep "$IPSEC_SECRETS_PATTERN_3" >/dev/null; then
-        echo "Old default config file detected, removing the old defaults now."
-        umask 077 ; (
-            # this is ugly, and someone maybe can formulate this in sed, but
-            # this was the quickest way for me
-            line=`grep -n "$IPSEC_SECRETS_PATTERN_2" /etc/ipsec.secrets | cut -d':' -f1`
-            until=`expr $line - 1`
-            head -n $until /etc/ipsec.secrets
-            sum=`wc -l /etc/ipsec.secrets | cut -d ' ' -f1`
-            from=`expr $sum - $line -1`
-            tail -n $from /etc/ipsec.secrets
-        ) > /etc/ipsec.secrets.tmp
-        mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
-        grep -v "$IPSEC_SECRETS_PATTERN_4" /etc/ipsec.secrets > /etc/ipsec.secrets.tmp
-        mv /etc/ipsec.secrets.tmp /etc/ipsec.secrets
-    fi
-}
-
-make-x509-cert() {
+make_x509_cert() {
     if [ $# -ne 12 ]; then
         echo "Error in creating X.509 certificate"
         exit 1
@@ -103,128 +78,123 @@ make-x509-cert() {
 
 case "$1" in
     configure)
-	db_get openswan/create_rsa_key
+	db_get openswan/install_x509_certificate
 	if [ "$RET" = "true" ]; then
-            repair_legacy_secrets
- 	    # OK, ipsec.secrets should now be correct
-	    db_get openswan/rsa_key_type
-	    if [ "$RET" = "plain" ]; then
-	        # a RSA keypair should be created - check if there is one already
-		if egrep -q ": RSA[:space:]*" /etc/ipsec.secrets; then
-                    echo "Warning: there is already a RSA key in /etc/ipsec.secrets."
-                    echo "Creating an additional one."
-                fi
-                # create a plain openswan keypair
-      	        db_get openswan/rsa_key_length
-                umask 077
-                keylength=$RET
-                privkey=`mktemp /tmp/ipsec-postinst.XXXXXX`
-                /usr/lib/ipsec/rsasigkey $keylength > $privkey
-		insert_private_key "`cat $privkey`"
-                rm $privkey
-		echo "Successfully created a plain openswan RSA keypair."
-	    else
+	    db_get openswan/how_to_get_x509_certificate
+	    if [ "$RET" = "create" ]; then
+                # extract the key from a (newly created) x509 certificate
 		host=`hostname`
 		newkeyfile="/etc/ipsec.d/private/${host}Key.pem"
-			newcertfile="/etc/ipsec.d/certs/${host}Cert.pem"
-		    # extract the key from a x509 certificate
-		    db_get openswan/existing_x509_certificate
-		    if [ "$RET" = "true" ]; then
-                        if [ -e $newcertfile -o -e $newkeyfile ]; then
-                            echo "Error: $newcertfile or $newkeyfile already exists."
-                            echo "Please remove them first an re-run dpkg-reconfigure to create a new keypair."
-                        else
-				# existing certificate - use it
-				db_get openswan/existing_x509_certificate_filename
-				certfile=$RET
-				db_get openswan/existing_x509_key_filename
-				keyfile=$RET
-				if [ ! -r $certfile ] || [ ! -r $keyfile ]; then
-				    echo "Either the certificate or the key file could not be read !"
-				else
-                                        cp "$certfile" /etc/ipsec.d/certs
-					umask 077
-					cp "$keyfile" "/etc/ipsec.d/private"
-                                        newkeyfile="/etc/ipsec.d/private/`basename $keyfile`"
-					chmod 0600 "$newkeyfile"
-					insert_private_key_filename "$newkeyfile"
-					echo "Successfully extracted RSA key from existing x509 certificate."
-				fi
-			fi
+       		newcertfile="/etc/ipsec.d/certs/${host}Cert.pem"
+                if [ -e $newcertfile -o -e $newkeyfile ]; then
+                    Error "$newcertfile or $newkeyfile already exists."
+                    Error "Please remove them first an then re-run dpkg-reconfigure to create a new keypair."
+                else
+     			# create a new certificate
+       			db_get openswan/rsa_key_length
+       			keylength=$RET
+       			db_get openswan/x509_self_signed
+       			selfsigned=$RET
+       			db_get openswan/x509_country_code
+       			countrycode=$RET
+       			if [ -z "$countrycode" ]; then countrycode="."; fi
+       			db_get openswan/x509_state_name
+       			statename=$RET
+       			if [ -z "$statename" ]; then statename="."; fi
+       			db_get openswan/x509_locality_name
+       			localityname=$RET
+       			if [ -z "$localityname" ]; then localityname="."; fi
+       			db_get openswan/x509_organization_name
+       			orgname=$RET
+       			if [ -z "$orgname" ]; then orgname="."; fi
+       			db_get openswan/x509_organizational_unit
+       			orgunit=$RET
+       			if [ -z "$orgunit" ]; then orgunit="."; fi
+       			db_get openswan/x509_common_name
+       			commonname=$RET
+       			if [ -z "$commonname" ]; then commonname="."; fi
+       			db_get openswan/x509_email_address
+       			email=$RET
+       			if [ -z "$email" ]; then email="."; fi
+       			make_x509_cert $keylength 1500 "$newkeyfile" "$newcertfile" "$selfsigned" "$countrycode" "$statename" "$localityname" "$orgname" "$orgunit" "$commonname" "$email"
+       			chmod 0600 "$newkeyfile"
+       			umask 077
+       			insert_private_key_filename "$newkeyfile"
+       			echo "Successfully created x509 certificate."
+       		fi
+       	    elif [ "$RET" = "import" ]; then
+		# existing certificate - use it
+		db_get openswan/existing_x509_certificate_filename
+		certfile=$RET
+		db_get openswan/existing_x509_key_filename
+		keyfile=$RET
+		db_get openswan/existing_x509_rootca_filename
+		cafile=$RET
+
+		if [ ! "$certfile" ] || [ ! "$keyfile" ]; then
+		    Error "Either the certificate or the key filename is not specified."
+		elif ! ( ( [ -f "$certfile" ] || [ -L "$certfile" ] ) && ( [ -f "$keyfile" ] || [ -L "$keyfile" ] ) && ( [ "$cafile" = "" ] || ( [ -f "$cafile" ] || [ -L "$cafile" ] ) ) ); then
+		    Error "Either the certificate or the key"${cafile:+ or the rootca}" file is not a regular file or symbolic link."
+		elif [ ! "`grep 'BEGIN CERTIFICATE' $certfile`" ] || [ ! "`grep 'BEGIN RSA PRIVATE KEY' $keyfile`" ] || ( [ "$cafile" != "" ] && [ ! "`grep 'BEGIN CERTIFICATE' $cafile`" ] ); then
+		    Error "Either the certificate or the key"${cafile:+ or the rootca}" file is not a valid PEM type file."
+		elif [ "$cafile" ] && ( [ "$certfile" = "$cafile" ] || [ "$keyfile" = "$cafile" ]); then
+		    Error "The certificate or the key file contains the rootca - unable to import automatically."
+		elif [ "`grep 'BEGIN CERTIFICATE' $certfile | wc -l`" -gt 1 ]; then
+		    Error "The certificate file contains more than one certificate - unable to import automatically."
+		elif [ "`grep 'ENCRYPTED' $keyfile`" ]; then
+		    Error "The key file contains an encrypted key - unable to import automatically."
+		else
+		    newcertfile="/etc/ipsec.d/certs/$(basename "$certfile")"
+		    newkeyfile="/etc/ipsec.d/private/$(basename "$keyfile")"
+		    if [ "$cafile" ]; then
+			newcafile="/etc/ipsec.d/private/$(basename "$cafile")"
 		    else
-                        if [ -e $newcertfile -o -e $newkeyfile ]; then
-                            echo "Error: $newcertfile or $newkeyfile already exists."
-                            echo "Please remove them first an re-run dpkg-reconfigure to create a new keypair."
-                        else
-				# create a new certificate
-				db_get openswan/rsa_key_length
-				keylength=$RET
-				db_get openswan/x509_self_signed
-				selfsigned=$RET
-				db_get openswan/x509_country_code
-				countrycode=$RET
-				if [ -z "$countrycode" ]; then countrycode="."; fi
-				db_get openswan/x509_state_name
-				statename=$RET
-				if [ -z "$statename" ]; then statename="."; fi
-				db_get openswan/x509_locality_name
-				localityname=$RET
-				if [ -z "$localityname" ]; then localityname="."; fi
-				db_get openswan/x509_organization_name
-				orgname=$RET
-				if [ -z "$orgname" ]; then orgname="."; fi
-				db_get openswan/x509_organizational_unit
-				orgunit=$RET
-				if [ -z "$orgunit" ]; then orgunit="."; fi
-				db_get openswan/x509_common_name
-				commonname=$RET
-				if [ -z "$commonname" ]; then commonname="."; fi
-				db_get openswan/x509_email_address
-				email=$RET
-				if [ -z "$email" ]; then email="."; fi
-				make-x509-cert $keylength 1500 "$newkeyfile" "$newcertfile" "$selfsigned" "$countrycode" "$statename" "$localityname" "$orgname" "$orgunit" "$commonname" "$email"
-				chmod 0600 "$newkeyfile"
-				umask 077
-				insert_private_key_filename "$newkeyfile"
-				echo "Successfully created x509 certificate."
-			fi
+			newcafile=""
+		    fi
+
+		    if [ -e "$newcertfile" ] || [ -e "$newkeyfile" ] || ( [ "$newcafile" != "" ] && [ -e "$newcafile" ] ); then
+			Error "$newcertfile or $newkeyfile"${newcafile:+ or $newcafile}" already exists."
+			Error "Please remove them first and then re-run dpkg-reconfigure to extract an existing keypair"${newcafile:+ and a rootca}"."
+		    else
+			openssl x509 -in $certfile -out $newcertfile 2>/dev/null
+			umask 077
+			openssl rsa -passin pass:"" -in $keyfile -out $newkeyfile 2>/dev/null
+			chmod 0600 "$newkeyfile"
+			insert_private_key_filename "$newkeyfile"
+			cp "$cafile" /etc/ipsec.d/cacerts
+			echo "Successfully integrated existing x509 certificate."
 		    fi
 		fi
+            fi
+	    db_set openswan/install_x509_certificate false
 	fi
 
-        # figure out the correct start time
-        db_get openswan/start_level
-	if [ "$RET" = "earliest" ]; then
-	    LEVELS="start 41 S . stop 34 0 6 ."
-	elif [ "$RET" = "after NFS" ]; then
-	    LEVELS="start 15 2 3 4 5 . stop 30 0 1 6 ."
-	else
-	    LEVELS="start 21 2 3 4 5 . stop 19 0 1 6 ."
-	fi
-	update-rc.d ipsec $LEVELS > /dev/null
+	# scheduled for removal 2012-02
+	if egrep -q "^include /etc/ipsec.d/examples/no_oe.conf$" /etc/ipsec.conf; then
+	    db_fset openswan/no-oe_include_file seen false
+	    db_input high openswan/no-oe_include_file || true
+	    db_go
 
-        db_get openswan/enable-oe
-        if [ "$RET" != "true" ]; then
-            echo -n "Disabling opportunistic encryption (OE) in config file ... "
-            if egrep -q "^include /etc/ipsec.d/examples/no_oe.conf$" /etc/ipsec.conf; then
-                echo "already disabled"
-            else
-                cat <<EOF >> /etc/ipsec.conf
-#Disable Opportunistic Encryption
-include /etc/ipsec.d/examples/no_oe.conf
-EOF
-              echo "done"
-            fi
-	else
-            echo -n "Enabling opportunistic encryption (OE) in config file ... "
-            if egrep -q "^include /etc/ipsec.d/examples/no_oe.conf$" /etc/ipsec.conf; then
-            	sed 's/include \/etc\/ipsec.d\/examples\/no_oe.conf/#include \/etc\/ipsec.d\/examples\/no_oe.conf/' < /etc/ipsec.conf > /etc/ipsec.conf.tmp
-                mv /etc/ipsec.conf.tmp /etc/ipsec.conf
-                echo "done"
-            else
-                echo "already enabled"
-            fi
-        fi
+	    cat /etc/ipsec.conf | grep -v "^#Disable Opportunistic Encryption$" | grep -v "^include /etc/ipsec.d/examples/no_oe.conf$" > /etc/ipsec.conf.tmp
+	    mv /etc/ipsec.conf.tmp /etc/ipsec.conf
+	fi
+
+	# scheduled for removal 2011-03
+	runlevels=`find /etc/rc*.d -type l -a -name "*ipsec" -a -lname "../init.d/ipsec" -print0 | sed 's/\/etc\/rc//g' | sed 's/\.d\///g' | sed 's/ipsec//g'`
+
+	# lets see if we are already using dependency based booting or the correct runlevel parameters
+	if ! ( [ "`find /etc/init.d/ -name '.depend.*'`" ] || [ "$runlevels" = "0K841K842S163S164S165S166K84" ] ); then
+	    db_fset openswan/runlevel_changes seen false
+	    db_input high openswan/runlevel_changes || true
+	    db_go
+
+	    # if the admin did not change the runlevels which got installed by older packages we can modify them
+	    if [ "$runlevels" = "0K346K34SS41" ] || [ "$runlevels" = "0K301K302S153S154S155S156K30" ] || [ "$runlevels" = "0K191K192S213S214S215S216K19" ]; then
+		update-rc.d -f ipsec remove
+	    fi
+
+	    update-rc.d ipsec defaults 16 84 > /dev/null
+	fi
 
 	if [ -z "$2" ]; then
 	    # no old configured version - start openswan now

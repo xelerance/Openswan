@@ -1,0 +1,18 @@
+#!/bin/sh
+set -e
+
+#DEBHELPER#
+
+VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)-.*/\1/')
+
+case "$1" in
+    remove|upgrade)
+	if [ -x /usr/sbin/dkms ]; then
+	    echo "Removing all DKMS Modules"
+	    dkms remove -m openswan -v $VERSION --all > /dev/null
+	    echo "Done."
+	fi
+    ;;
+esac
+
+

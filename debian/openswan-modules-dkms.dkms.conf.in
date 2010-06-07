@@ -1,0 +1,10 @@
+PACKAGE_NAME="openswan"
+PACKAGE_VERSION="#VERSION#"
+
+BUILT_MODULE_NAME[0]="ipsec"
+BUILT_MODULE_LOCATION[0]="modobj26"
+DEST_MODULE_LOCATION[0]="/kernel/net/ipsec"
+AUTOINSTALL=yes
+
+MAKE[0]="make KERNELSRC=$kernel_source_dir -C ${dkms_tree}/openswan/#VERSION#/build module26"
+CLEAN="make -C ${dkms_tree}/openswan/#VERSION#/build mod26clean; rm -rf ${dkms_tree}/openswan/#VERSION#/build/{Module.*,modules.order,OBJ.*}"

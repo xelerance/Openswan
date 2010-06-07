@@ -5,9 +5,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatability version to use.
-export DH_COMPAT=4
-
 VERS = $(shell sed -ne '1s/.*(\(.*\)).*/\1/p' debian/changelog)
 
 # KSRC is the location of the kernel source. This is the default value,
@@ -25,15 +22,25 @@ KDREV_EPOCH = $(shell echo $(KDREV) | sed -ne '1s/\([^:]*:\)\?\(.*\)/\1/p')
 KDREV_REV   = $(shell echo $(KDREV) | sed -ne '1s/\([^:]*:\)\?\(.*\)/\2/p')
 
 # Now we need to get the kernel-version somehow
-KVERS=`sed -n -e '/UTS_RELEASE/s/^[^"]*"\([^"]*\)".*$$/\1/p' $(KSRC)/include/linux/version.h`
+if test -d $(KSRC); then \
+	KVERS=`sed -n -e '/UTS_RELEASE/s/^[^"]*"\([^"]*\)".*$$/\1/p' $(KSRC)/include/linux/version.h`; \
+fi
+
+# KMAINT and KEMAIL should be set but in case they are not we specify
+# sane default values
+
+ifeq ($(KMAINT),)
+KMAINT = Rene Mayrhofer
+endif
+ifeq ($(KEMAIL),)
+KEMAIL = rmayr@debian.org
+endif
 
 SED_SCRIPT=s!\$$KVERS!$(KVERS)!g; \
-       s!\$$KSRC!$(KSRC)!; \
        s!\$$KEMAIL!$(KEMAIL)!; \
        s!\$$KMAINT!$(KMAINT)!; \
-       s!\$$KDREV!$(KDREV)!; \
-       s!\$$DEBDATE!$(shell date +"%a, %d %b %Y %H:%M:%S %z")!
-       
+       s!\$$KDREV!$(KDREV)!
+
 ifeq ($(DEB_DEST),)
 DEB_DEST=$(KSRC)/..
 endif
@@ -43,15 +50,26 @@ ifeq ($(shell id -u),0)
 ROOT_CMD=
 endif
 
+# export these variables as they are necessary for building
+export KERNELSRC=${KSRC}
+export OPENSWANSRCDIR=$(CURDIR)
+
 # this primarily sets ARCH, we may be able to do that in another way
 # but it also defines IPSECVERSION, which is needed below
 include Makefile.inc
-       
+
 debian/control: debian/control.in
-	sed -e "$(SED_SCRIPT)" debian/control.in > $@
+	if ! test -f $@; then \
+		sed -e "$(SED_SCRIPT)" debian/control.in > $@; \
+	fi
 
 .PHONY: debian/control
 
+debian/docs:
+	cp debian/docs.in debian/openswan-modules-$(KVERS).docs
+
+debian/lintian-overrides:
+	sed -e "$(SED_SCRIPT)" debian/lintian-overrides.in > debian/openswan-modules-$(KVERS).lintian-overrides
 
 configure: configure-stamp
 configure-stamp:
@@ -60,11 +78,11 @@ configure-stamp:
 
 	touch configure-stamp
 
-build: debian/control configure-stamp build-stamp
+build: debian/control debian/docs debian/lintian-overrides configure-stamp build-stamp
 build-stamp:
 	dh_testdir
 
-	$(MAKE) module OPENSWANSRCDIR=$(CURDIR) KERNELSRC=${KSRC}
+	$(MAKE) module26
 
 	touch build-stamp
 
@@ -73,11 +91,14 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	$(MAKE) modclean OPENSWANSRCDIR=$(CURDIR) KERNELSRC=${KSRC}
+	$(MAKE) module26clean
+	rm -rf OBJ.* || true
 
 	dh_clean
 
-	rm -f debian/control
+	rm -f debian/control || true
+	rm -f debian/openswan-modules-*.docs || true
+	rm -f debian/openswan-modules-*.lintian-overrides || true
 
 MODDESTDIR=$(CURDIR)/debian/openswan-modules-$(KVERS)/lib/modules/$(KVERS)/kernel/net/ipsec
 install:
@@ -88,12 +109,7 @@ install: build
 	dh_installdirs
 
 	mkdir -p $(MODDESTDIR)
-	if [ -d modobj ]; then \
-		cp modobj/ipsec.o $(MODDESTDIR); \
-		cp modobj/ipsec_alg_*.o $(MODDESTDIR); \
-	else \
-		cp modobj26/ipsec.ko $(MODDESTDIR); \
-	fi
+	cp modobj26/ipsec.ko $(MODDESTDIR)
 
 
 # Build architecture-independent files here.
@@ -104,29 +120,13 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-#	dh_installdebconf
 	dh_installdocs
-	dh_installexamples
-	dh_installmenu
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_installinit
 	dh_installmodules
-	dh_installcron
-	dh_installman
-	dh_installinfo
-#	dh_undocumented
-	dh_installchangelogs
-	dh_link
-	dh_strip
+	dh_installchangelogs CHANGES
 	dh_compress
 	dh_fixperms
-#	dh_makeshlibs
+	dh_lintian
 	dh_installdeb
-#	dh_perl
-	dh_shlibdeps
 	dh_gencontrol -- -v$(KDREV_EPOCH)$(VERS)+$(KDREV_REV)
 	dh_md5sums
 	dh_builddeb --destdir=$(DEB_DEST)
@@ -147,4 +147,3 @@ kdist_configure: configure-stamp
 
 
 .PHONY: binary-modules kdist_image
-

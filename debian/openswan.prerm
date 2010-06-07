@@ -19,7 +19,7 @@ case "$1" in
     upgrade)
         ;;
     remove|deconfigure)
-        /etc/init.d/ipsec stop || true
+        invoke-rc.d ipsec stop || true
 #       install-info --quiet --remove /usr/info/openswan.info.gz
         ;;
     failed-upgrade)

@@ -2,70 +2,93 @@ Source: openswan
 Section: net
 Priority: optional
 Maintainer: Rene Mayrhofer <rmayr@debian.org>
-Standards-Version: 3.6.1.0
-Build-Depends:  debhelper (>= 4.1.16), libgmp3-dev, libssl-dev, htmldoc, man2html, libcurl4-dev | libcurl3-dev | libcurl2-dev, libopensc2-dev | libopensc1-dev | libopensc0-dev, libldap2-dev, libpam0g-dev, bison, flex, lynx
+Uploaders: Harald Jenny <harald@a-little-linux-box.at>
+Standards-Version: 3.8.4
+Vcs-Browser: http://svn.debian.org/viewsvn/pkg-openswan
+Vcs-Svn: svn://svn.debian.org/svn/pkg-openswan
+Build-Depends: debhelper (>= 7.1), libgmp3-dev, libssl-dev (>= 0.9.8), htmldoc, man2html, libcurl4-openssl-dev, libopensc2-dev, libldap2-dev, libpam0g-dev, libkrb5-dev, bison, flex, dpatch, bzip2, po-debconf
+Homepage: http://www.openswan.org/
 
 Package: openswan
 Architecture: any
-Pre-Depends: debconf
-Depends: ${shlibs:Depends}, bsdmainutils, makedev | devfsd, debianutils (>=1.7), ipsec-tools, openssl, host, iproute
-Suggests: openswan-modules-source | kernel-patch-openswan, curl
+Pre-Depends: debconf | debconf-2.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, bsdmainutils, openssl, host, iproute, iproute (>=20041019-0.1) | ipsec-tools
+Suggests: openswan-modules-source | openswan-modules-dkms, curl
 Provides: ike-server
-Conflicts: freeswan (<< 2.04-12)
-Description: IPSEC utilities for Openswan
- IPSEC is Internet Protocol SECurity. It uses strong cryptography to provide
- both authentication and encryption services. Authentication ensures that
- packets are from the right sender and have not been altered in transit.
- Encryption prevents unauthorised reading of packet contents.
+Conflicts: ike-server
+Description: Internet Key Exchange daemon
+ Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
+ native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
+ protocols are supported.
  .
- This version of Openswan supports Opportunistic Encryption (OE) out of the
- box. OE enables you to set up IPsec tunnels to a site without
- co-ordinating with the site administrator, and without hand
- configuring each tunnel. If enough sites support OE, a "FAX effect"
- occurs, and many of us can communicate without eavesdroppers. 
+ The Openswan IKE daemon is named pluto. It was inherited from the FreeS/WAN
+ project, but provides improved X.509 certificate support and other features.
  .
- In addition to OE, you may manually configure secure tunnels through
- untrusted networks. Everything passing through the untrusted net is
- encrypted by the IPSEC gateway machine and decrypted by the gateway
- at the other end. The result is Virtual Private Network or VPN. This
- is a network which is effectively private even though it includes
- machines at several different sites connected by the insecure Internet.
+ In order to use the KLIPS IPsec code instead of the native version, you will
+ need to either install openswan-modules-source and build the appropriate
+ module for your kernel or use openswan-modules-dkms which automates this
+ task.
+
+Package: openswan-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends: ${misc:Depends}, openswan
+Description: Internet Key Exchange daemon - debugging symbols
+ Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
+ native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
+ protocols are supported.
  .
- Please note that you will need a recent kernel (>=2.4.24 or 2.6.x)
- for using this package. The standard Debian kernel includes both IPSEC
- and crypto support, patching the kernel is no longer necessary!
+ This package provides the symbols needed for debugging of openswan
+ binaries.
+
+Package: openswan-doc
+Architecture: all
+Section: doc
+Suggests: openswan
+Description: Internet Key Exchange daemon - documentation
+ Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
+ native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
+ protocols are supported.
  .
- If you want to use the KLIPS IPSec code for kernel modules instead of the
- native ones, you will need to install either openswan-modules-source or
- kernel-patch-openswan and build the respective modules for your kernel.
- 
+ This package provides the free parts of the documentation for Openswan.
+
 Package: openswan-modules-source
 Architecture: all
-Depends: coreutils | fileutils, debhelper
-Recommends: kernel-package (>= 7.04), kernel-source
+Section: kernel
+Depends: ${misc:Depends}, debhelper, bzip2
+Recommends: module-assistant | kernel-package, linux-headers | linux-source
 Suggests: openswan
-Description: IPSEC kernel modules source for Openswan
- This package contains the source for the Openswan modules to get the necessary
- kernel support to use Openswan.
+Description: Internet Key Exchange daemon - kernel module source
+ Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
+ native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
+ protocols are supported.
  .
- It includes the NAT Traversal patches, which will need to be applied to the
- kernel tree if NAT Traversal is needed.
+ For support of the old-style KLIPS ipsecX network interfaces a custom
+ kernel module is needed.
  .
- It currently works only for 2.4 series kernels!
+ This package contains source code for the Openswan IPsec kernel module,
+ which can be used with tools like module-assistant or kernel-package
+ for manual building of local kernel images.
+ .
+ Kernel versions >= 2.6.23 no longer need to be patched to provide NAT
+ Traversal support for KLIPS.
 
-Package: kernel-patch-openswan
+Package: openswan-modules-dkms
 Architecture: all
-Depends: coreutils | fileutils
-Recommends: kernel-package (>= 7.04)
-Suggests: openswan
-Description: IPSEC kernel support for Openswan
- This package contains the patches for the Linux kernel to get the necessary
- kernel support to use Openswan. If you want to build a kernel module for
- IPSec, it is much easier to use the openswan-modules-source package instead.
- This kernel-patch package should probably only be used when building a
- non-modular kernel or when compiling IPSec non-modular.
+Section: kernel
+Depends: ${misc:Depends}, dkms, openswan
+Description: Internet Key Exchange daemon - DKMS source
+ Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
+ native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
+ protocols are supported.
  .
- It includes the NAT Traversal patches and applies them automatically to the
- kernel after inserting KLIPS.
+ For support of the old-style KLIPS ipsecX network interfaces a custom
+ kernel module is needed.
  .
- It will only work for 2.4 series kernels!
+ This package contains source code for the Openswan IPsec kernel module,
+ which can be used with DKMS so that local kernel images are automatically
+ built and installed every time relevant kernel packages are upgraded.
+ .
+ Kernel versions >= 2.6.23 no longer need to be patched to provide NAT
+ Traversal support for KLIPS.

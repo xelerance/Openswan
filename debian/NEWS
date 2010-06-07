@@ -1,0 +1,48 @@
+openswan (1:2.6.24+dfsg-2) unstable; urgency=low
+
+  Plain RSA key creation has been removed from debconf as they do not really
+  provide interoperability with other IPsec implementations and nowadays X.509
+  certificates are the de-facto standard. If there is still the need to
+  create such a key please take a look at README.Debian on how to manually
+  build and include it in the configuration.
+
+ -- Harald Jenny <harald@a-little-linux-box.at>  Tue,  4 May 2010 01:10:40 +0200  
+
+openswan (1:2.6.24+dfsg-1) unstable; urgency=medium
+
+  Support for choosing between different Start/Stop-Levels for Openswan was
+  finally removed since it is really obsolete. The system startup nowadays
+  has the three different points at which the init script could be called
+  streamlined as a set of sequently running scripts in system runlevel S.
+  Furthermore the syslog-service on which Openswan depends is only started
+  in normal runlevels 2-5, so starting IPsec earlier would make little sense
+  anyway.
+
+  Please note that existing starting configurations which have been modified
+  are not changed by an upgrade, this must be done manually done by the system 
+  administrator issuing the commands "update-rc.d -f ipsec remove" and
+  "update-rc.d -f ipsec defaults 16 84".
+
+  Additionally, the way in which plain RSA key creation is managed was
+  changed. As debconf should not modify files marked as configs now when such
+  a key gets created it is saved under /var/lib/openswan/ipsec.secrets.inc.
+  This file in turn is included per default in /etc/ipsec.secrets. Also note
+  that from now on X.509 certificates which get created or are imported via
+  debconf will be registered too in the new include file.
+
+ -- Harald Jenny <harald@a-little-linux-box.at>  Mon,  8 Mar 2010 11:47:26 +0100
+
+openswan (1:2.6.22+dfsg-1) unstable; urgency=HIGH
+
+  NAT-Traversal for kernels >= 2.6.23 is now included in the ipsec.ko module,
+  eliminating the need for patching. There are no configuration changes
+  necessary to activate it, pluto will automatically try to use it.
+
+  Please note that this does not apply to kernels < 2.6.23, here you will
+  still need apply a custom NAT-T patch.
+
+ -- Harald Jenny <harald@a-little-linux-box.at>  Tue, 23 Jun 2009 21:55:32 +0200
+
+Local variables:
+mode: debian-changelog
+End:
