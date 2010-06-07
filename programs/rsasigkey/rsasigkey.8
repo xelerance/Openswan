@@ -100,7 +100,7 @@ option specifies that rather than generate a new key,
 \fIrsasigkey\fR
 should read an old key from the
 file
-(the name \'\-\' means \'standard input\') and use that to generate its output\&. Input lines which do not look like
+(the name '\-' means "standard input") and use that to generate its output\&. Input lines which do not look like
 \fIrsasigkey\fR
 output are silently ignored\&. This permits updating old keys to the current format\&.
 .PP
@@ -214,9 +214,9 @@ Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org\
 There is an internal limit on
 \fInbits\fR, currently 20000\&.
 .PP
-\fIrsasigkey\fR\'s run time is difficult to predict, since
+\fIrsasigkey\fR's run time is difficult to predict, since
 /dev/random
-outputcan be arbitrarily delayed if the system\(^as entropy pool is low on randomness, and the time taken by the search for primes is also somewhat unpredictable\&. A reasonably typical time for a 1024\-bit key on a quiet 00MHz Pentium MMX with plenty of randomness available is 20 seconds, almost all of it in the prime searches\&. Generating a 2192\-bit key on the same system usually takes several minutes\&. A 4096\-bit key took an hour and a half of CPU time\&.
+output can be arbitrarily delayed if the system's entropy pool is low on randomness, and the time taken by the search for primes is also somewhat unpredictable\&. A reasonably typical time for a 1024\-bit key on a quiet 100MHz Pentium MMX with plenty of randomness available is 20 seconds, almost all of it in the prime searches\&. Generating a 2192\-bit key on the same system usually takes several minutes\&. A 4096\-bit key took an hour and a half of CPU time\&.
 .PP
 The
 \fB\-\-oldkey\fR

@@ -198,11 +198,11 @@ by Henry Spencer.</para>
 <emphasis remap='I'>nbits</emphasis>,
 currently 20000.</para>
 <para><emphasis remap='I'>rsasigkey</emphasis>'s run time is difficult
-to predict, since <filename>/dev/random</filename> outputcan
+to predict, since <filename>/dev/random</filename> output can
 be arbitrarily delayed if the system's entropy pool is low on
 randomness, and  the time taken by the search for primes is also somewhat
 unpredictable.  A reasonably typical time for a 1024-bit key on a quiet
-00MHz  Pentium  MMX with plenty of randomness available is 20 seconds,
+100MHz  Pentium  MMX with plenty of randomness available is 20 seconds,
 almost all of it in the prime searches.  Generating a 2192-bit  key  on
 the  same system usually takes several minutes.  A 4096-bit key took an
 hour and a half of CPU time.
