@@ -1,533 +1,741 @@
-# translation of fr.po to French
-# Christian Perrier <bubulle@debian.org>, 2004.
+# Translation of openswan debconf templates to French
+# Copyright (C) 2004-2008 Christian Perrier <bubulle@debian.org>
+# This file is distributed under the same license as the openswan package.
 #
-#
-#
-#
+# Christian Perrier <bubulle@debian.org>, 2004, 2006, 2008, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: freeswan 1.99-6\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-01-13 11:49+0100\n"
-"PO-Revision-Date: 2005-01-17 08:08+0100\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"POT-Creation-Date: 2010-06-01 00:35+0200\n"
+"PO-Revision-Date: 2010-04-26 20:26+0200\n"
 "Last-Translator: Christian Perrier <bubulle@debian.org>\n"
-"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"Language-Team: fr <debian-l10n-french@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.9.1\n"
+"Language: \n"
+"X-Generator: Lokalize 1.0\n"
 "Plural-Forms: Plural-Forms: nplurals=2; plural=n>1;\n"
 
-#. Type: select
-#. Choices
-#: ../openswan.templates.master:3
-msgid "earliest, \"after NFS\", \"after PCMCIA\""
-msgstr "Le plus t�t possible, Apr�s NFS, Apr�s PCMCIA"
-
-#. Type: select
+#. Type: note
 #. Description
-#: ../openswan.templates.master:5
-msgid "At which level do you wish to start Openswan ?"
-msgstr "�tape de lancement d'Openswan�:"
+#: ../openswan.templates:1001
+msgid "Old runlevel management superseded"
+msgstr "Abandon de l'ancien système de lancement d'Openswan"
 
-#. Type: select
+#. Type: note
 #. Description
-#: ../openswan.templates.master:5
+#: ../openswan.templates:1001
 msgid ""
-"With the current Debian startup levels (nearly everything starting in level "
-"20), it is impossible for Openswan to always start at the correct time. "
-"There are three possibilities when Openswan can start: before or after the "
-"NFS services and after the PCMCIA services. The correct answer depends on "
-"your specific setup."
+"Previous versions of the Openswan package gave a choice between three "
+"different Start/Stop-Levels. Due to changes in the standard system startup "
+"procedure, this is no longer necessary or useful. For all new installations "
+"as well as old ones running in any of the predefined modes, sane default "
+"levels will now be set. If you are upgrading from a previous version and "
+"changed your Openswan startup parameters, then please take a look at NEWS."
+"Debian for instructions on how to modify your setup accordingly."
 msgstr ""
-"Avec les niveaux de d�marrage actuellement utilis�s par Debian (presque tout "
-"d�marre au niveau 20), il est impossible de faire en sorte qu'Openswan "
-"d�marre toujours au moment appropri�. Il existe trois moments o� il est "
-"opportun de le d�marrer�: avant ou apr�s les services NFS ou apr�s les "
-"services PCMCIA. La r�ponse appropri�e d�pend de vos r�glages sp�cifiques."
-
-#. Type: select
-#. Description
-#: ../openswan.templates.master:5
-msgid ""
-"If you do not have your /usr tree mounted via NFS (either you only mount "
-"other, less vital trees via NFS or don't use NFS mounted trees at all) and "
-"don't use a PCMCIA network card, then it is the best to start Openswan at "
-"the earliest possible time, thus allowing the NFS mounts  to be secured by "
-"IPSec. In this case (or if you don't understand or care  about this issue), "
-"answer \"earliest\" to this question (the default)."
-msgstr ""
-"Si votre arborescence /usr n'est pas un montage NFS (soit parce que vos "
-"montages NFS sont � d'autres endroits, moins critiques, soit parce que vous "
-"n'utilisez pas du tout de montage NFS) et si vous n'utilisez pas de carte "
-"r�seau PCMCIA, il est pr�f�rable de d�marrer Openswan le plus t�t possible, "
-"ce qui permettra de s�curiser les montages NFS avec IPSec. Dans ce cas (ou "
-"bien si vous ne comprenez pas l'objet de la question ou qu'elle ne vous "
-"concerne pas), choisissez ��le plus t�t possible��, qui est le choix par "
-"d�faut."
-
-#. Type: select
-#. Description
-#: ../openswan.templates.master:5
-msgid ""
-"If you have your /usr tree mounted via NFS and don't use a PCMCIA network "
-"card, then you will need to start Openswan after NFS so that all necessary "
-"files are available. In this case, answer \"after NFS\" to this question. "
-"Please note that the NFS mount of /usr can  not be secured by IPSec in this "
-"case."
-msgstr ""
-"Si /usr est un montage NFS et que vous n'utilisez pas de carte r�seau "
-"PCMCIA, vous devrez alors d�marrer Openswan apr�s les services NFS afin que "
-"tous les fichiers n�cessaires soient disponibles. Dans ce cas, choisissez "
-"��apr�s NFS��. Veuillez noter que le montage NFS de /usr n'est alors pas "
-"s�curis� par IPSec."
-
-#. Type: select
-#. Description
-#: ../openswan.templates.master:5
-msgid ""
-"If you use a PCMCIA network card for your IPSec connections, then you only "
-"have to choice to start it after the PCMCIA services. Answer \"after PCMCIA"
-"\" in this case. This is also the correct answer if you want to fetch keys "
-"from a locally running DNS server with DNSSec support."
-msgstr ""
-"Si vous utilisez une carte PCMCIA pour vos connexions IPSec, votre seul "
-"choix possible est le d�marrage apr�s les services PCMCIA. Choisissez alors "
-"��apr�s PCMCIA��. Faites �galement ce choix si vous souhaitez r�cup�rer les "
-"cl�s d'authentification sur un serveur DNS reconnaissant DNSSec."
+"Les versions précédentes du paquet d'Openswan permettaient de choisir entre "
+"trois séquences possibles de lancement au démarrage de la machine. Comme "
+"l'organisation générale des scripts de lancement a été profondément modifiée "
+"dans le système, cela n'est désormais plus utile. Pour toutes les nouvelles "
+"installations, ainsi que pour les anciennes qui fonctionnaient selon un des "
+"trois modes prédéfinis, une séquence de lancement sûre va être mise en "
+"place. Si vous effectuez une mise à jour et aviez modifié les paramètres de "
+"lancement d'Openswan, veuillez consulter le fichier NEWS.Debian pour trouver "
+"les informations qui vous permettront d'adapter vos réglages."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:33
-msgid "Do you wish to restart Openswan?"
-msgstr "Souhaitez-vous red�marrer Openswan�?"
+#: ../openswan.templates:2001
+msgid "Restart Openswan now?"
+msgstr "Souhaitez-vous redémarrer Openswan ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:33
+#: ../openswan.templates:2001
 msgid ""
-"Restarting Openswan is a good idea, since if there is a security fix, it "
-"will not be fixed until the daemon restarts. Most people expect the daemon "
-"to restart, so this is generally a good idea. However this might take down "
-"existing connections and then bring them back up."
+"Restarting Openswan is recommended, since if there is a security fix, it "
+"will not be applied until the daemon restarts. Most people expect the daemon "
+"to restart, so this is generally a good idea. However, this might take down "
+"existing connections and then bring them back up, so if you are using such "
+"an Openswan tunnel to connect for this update, restarting is not recommended."
 msgstr ""
-"Red�marrer Openswan est pr�f�rable car un �ventuel correctif de s�curit� ne "
-"prendra place que si le d�mon est red�marr�. La plupart des utilisateurs "
-"s'attendent � ce que le d�mon red�marre et c'est donc le plus souvent le "
+"Redémarrer Openswan est préférable car un éventuel correctif de sécurité ne "
+"sera actif que si le démon est redémarré. La plupart des utilisateurs "
+"s'attendent à ce que le démon redémarre et c'est donc le plus souvent le "
 "meilleur choix. Cependant, cela pourrait interrompre provisoirement des "
-"connexions en cours."
+"connexions en cours, y compris la connexion utilisée actuellement pour cette "
+"mise à jour. En conséquence, il est déconseillé de redémarrer si le tunnel "
+"est utilisé pour l'administration du système."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:42
-msgid "Do you want to create a RSA public/private keypair for this host ?"
-msgstr ""
-"Souhaitez-vous cr�er une paire de cl�s RSA publique et priv�e pour cet h�te�?"
+#: ../openswan.templates:3001
+msgid "Use an X.509 certificate for this host?"
+msgstr "Faut-il utiliser un certificat X.509 existant avec cet hôte ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:42
+#: ../openswan.templates:3001
 msgid ""
-"This installer can automatically create a RSA public/private keypair for "
-"this host. This keypair can be used to authenticate IPSec connections to "
-"other hosts and is the preferred way for building up secure IPSec "
-"connections. The other possibility would be to use shared secrets (passwords "
-"that are the same on both sides of the tunnel) for authenticating an "
-"connection, but for a larger number of connections RSA authentication is "
-"easier to administrate and more secure."
+"An X.509 certificate for this host can be automatically created or imported. "
+"It can be used to authenticate IPsec connections to other hosts and is the "
+"preferred way of building up secure IPsec connections. The other possibility "
+"would be to use shared secrets (passwords that are the same on both sides of "
+"the tunnel) for authenticating a connection, but for a larger number of "
+"connections, key based authentication is easier to administer and more "
+"secure."
 msgstr ""
-"Cet outil d'installation peut cr�er automatiquement une paire de cl�s RSA "
-"publique et priv�e pour cet h�te. Cette paire de cl�s peut servir � "
-"authentifier des connexions IPSec vers d'autres h�tes. Cette m�thode est la "
-"m�thode conseill�e pour l'�tablissement de liaisons IPSec s�res. L'autre "
-"possibilit� d'authentification � la connexion est l'utilisation d'un secret "
-"partag� (��pre-shared key���: des mots de passe identiques aux deux "
-"extr�mit�s du tunnel). Toutefois, pour de nombreuses connexions, "
-"l'authentification RSA est plus simple � administrer et plus s�re."
+"Un certificat X.509 peut être créé automatiquement ou importé, pour cet "
+"hôte. Il peut servir à authentifier des connexions IPSec vers d'autres "
+"hôtes, ce qui est la méthode conseillée pour l'établissement de liaisons "
+"IPSec sûres. L'autre possibilité d'authentification à la connexion est "
+"l'utilisation d'un secret partagé (« pre-shared key » : des mots de passe "
+"identiques aux deux extrémités du tunnel). Toutefois, pour de nombreuses "
+"connexions, l'authentification à base de clés est plus simple à administrer "
+"et plus sûre."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid ""
+"Alternatively you can reject this option and later use the command \"dpkg-"
+"reconfigure openswan\" to come back."
+msgstr ""
+"Vous pouvez ne pas choisir cette option et y revenir plus tard avec la "
+"commande « dpkg-reconfigure openswan »."
 
 #. Type: select
 #. Choices
-#: ../openswan.templates.master:53
-msgid "x509, plain"
-msgstr "X509, simple paire"
+#: ../openswan.templates:4001
+msgid "create"
+msgstr "Créer"
+
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "import"
+msgstr "Importer"
 
 #. Type: select
 #. Description
-#: ../openswan.templates.master:55
-msgid "Which type of RSA keypair do you want to create ?"
-msgstr "Type de paire de cl�s RSA � cr�er�:"
+#: ../openswan.templates:4002
+msgid "Methods for using a X.509 certificate to authenticate this host:"
+msgstr ""
+"Méthode de mise en place d'un certificat X.509 pour l'authentification de "
+"cet hôte :"
 
 #. Type: select
 #. Description
-#: ../openswan.templates.master:55
+#: ../openswan.templates:4002
 msgid ""
-"It is possible to create a plain RSA public/private keypair for the use with "
-"Openswan or to create a X509 certificate file which contains the RSA public "
-"key and additionally store the corresponding private key."
+"It is possible to create a new X.509 certificate with user-defined settings "
+"or to import an existing public and private key stored in PEM file(s) for "
+"authenticating IPsec connections."
 msgstr ""
-"Il est possible de cr�er une simple paire de cl�s destin�e � �tre utilis�e "
-"avec Openswan ou de cr�er un fichier de certificat X509 qui contient la cl� "
-"publique RSA et de conserver la cl� priv�e correspondante par ailleurs."
+"Pour l'authentification des connexions IPsec, il est possible de créer un "
+"nouveau certificat X.509 avec des réglages personnalisés ou importer une "
+"paire de clés publique et privée depuis un ou plusieurs fichiers PEM."
 
 #. Type: select
 #. Description
-#: ../openswan.templates.master:55
+#: ../openswan.templates:4002
 msgid ""
-"If you only want to build up IPSec connections to hosts also running "
-"Openswan, it might be a bit easier using plain RSA keypairs. But if you want "
-"to connect to other IPSec implementations, you will need a X509 certificate. "
-"It is also possible to create a X509 certificate here and extract the RSA "
-"public key in plain format if the other side runs Openswan without X509 "
-"certificate support."
+"If you choose to create a new X.509 certificate you will first be asked a "
+"number of questions which must be answered before the creation can start. "
+"Please keep in mind that if you want the public key to get signed by an "
+"existing Certificate Authority you should not select to create a self-signed "
+"certificate and all the answers given must match exactly the requirements of "
+"the CA, otherwise the certificate request may be rejected."
 msgstr ""
-"Si vous ne pr�voyez d'�tablir des connexions IPSec qu'avec des h�tes "
-"utilisant Openswan, il sera probablement plus facile d'utiliser des cl�s RSA "
-"simples. Mais si vous souhaitez vous connecter � des h�tes utilisant "
-"d'autres impl�mentations d'IPSec, vous aurez besoin d'un certificat X509. Il "
-"est �galement possible de cr�er un certificat X509 puis d'en extraire un "
-"simple cl� publique RSA, si l'autre extr�mit� de la connexion utilise "
-"Openswan sans le support des certificats X509."
+"Si vous choisissez de créer un nouveau certificat X.509, vous devrez fournir "
+"plusieurs informations avant la création. Veuillez noter que si vous "
+"souhaitez utiliser un certificat signé par une autorité de certification, "
+"vous ne devez pas choisir de créer un certificat auto-signé et devrez donner "
+"exactement les réponses souhaitées par l'autorité de certification sinon la "
+"requête de certificat risquerait d'être rejetée."
 
 #. Type: select
 #. Description
-#: ../openswan.templates.master:55
+#: ../openswan.templates:4002
 msgid ""
-"Therefore a X509 certificate is recommended since it is more flexible and "
-"this installer should be able to hide the complex creation of the X509 "
-"certificate and its use in Openswan anyway."
+"If you want to import an existing public and private key you will be "
+"prompted for their filenames (which may be identical if both parts are "
+"stored together in one file). Optionally you may also specify a filename "
+"where the public key(s) of the Certificate Authority are kept, but this file "
+"cannot be the same as the former ones. Please also be aware that the format "
+"for the X.509 certificates has to be PEM and that the private key must not "
+"be encrypted or the import procedure will fail."
 msgstr ""
-"En cons�quence, il vous est conseill� d'utiliser un certificat X509 car "
-"cette m�thode est plus souple. Cet outil d'installation devrait vous "
-"simplifier la t�che de cr�ation et d'utilisation de ce certificat X509."
-
-#. Type: boolean
-#. Description
-#: ../openswan.templates.master:74
-msgid ""
-"Do you have an existing X509 certificate file that you want to use for "
-"Openswan ?"
-msgstr ""
-"Poss�dez-vous un fichier de certificat X509 existant �utiliser avec "
-"Openswan�?"
-
-#. Type: boolean
-#. Description
-#: ../openswan.templates.master:74
-msgid ""
-"This installer can automatically extract the needed information from an "
-"existing X509 certificate with a matching RSA private key. Both parts can be "
-"in one file, if it is in PEM format. Do you have such an existing "
-"certificate and key file and want to use it for authenticating IPSec "
-"connections ?"
-msgstr ""
-"Cet outil d'installation est capable d'extraire automatiquement "
-"l'information n�cessaire d'un fichier de certificat X509 existant, avec la "
-"cl� priv�e RSA correspondante. Les deux parties peuvent se trouver dans un "
-"seul fichier, s'il est en format PEM. Poss�dez-vous un tel certificat ainsi "
-"que la cl� priv�e, et souhaitez-vous vous en servir pour l'authentification "
-"des connexions IPSec�?"
+"Si vous souhaitez importer une paire de clés, vous devrez en fournir les "
+"noms de fichiers (qui peuvent être identiques si les parties privée et "
+"publique sont dans le même fichier). Vous pourrez facultativement fournir le "
+"nom d'un fichier contenant la ou les clés publiques de l'autorité de "
+"certification. Ce fichier devra être différent des précédents. Le format des "
+"certificats X.509 doit être PEM et la clé privée ne doit pas être chiffrée. "
+"Dans le cas contraire, l'importation échouera."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:83
-msgid "Please enter the location of your X509 certificate in PEM format."
-msgstr "Emplacement de votre certificat X509 au format PEM�:"
+#: ../openswan.templates:5001
+msgid "File name of your PEM format X.509 certificate:"
+msgstr "Nom du fichier PEM contenant le certificat X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:83
+#: ../openswan.templates:5001
 msgid ""
-"Please enter the location of the file containing your X509 certificate in "
+"Please enter the location of the file containing your X.509 certificate in "
 "PEM format."
 msgstr ""
-"Veuillez indiquer l'emplacement du fichier contenant votre certificat X509 "
+"Veuillez indiquer l'emplacement du fichier contenant votre certificat X.509 "
 "au format PEM."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:89
-msgid "Please enter the location of your X509 private key in PEM format."
-msgstr "Emplacement de votre cl� priv�e X509 au format PEM�:"
+#: ../openswan.templates:6001
+msgid "File name of your PEM format X.509 private key:"
+msgstr "Nom du fichier PEM contenant la clé privée X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:89
+#: ../openswan.templates:6001
 msgid ""
 "Please enter the location of the file containing the private RSA key "
-"matching your X509 certificate in PEM format. This can be the same file that "
-"contains the X509 certificate."
+"matching your X.509 certificate in PEM format. This can be the same file "
+"that contains the X.509 certificate."
 msgstr ""
-"Veuillez indiquer l'emplacement du fichier contenant la cl� priv�e RSA "
-"correspondant � votre certificat X509 au format PEM. Cela peut �tre le "
-"fichier qui contient le certificat X509."
+"Veuillez indiquer l'emplacement du fichier contenant la clé privée RSA "
+"correspondant au certificat X.509 au format PEM. Cela peut être le fichier "
+"qui contient le certificat X.509."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:97
-msgid "Which length should the created RSA key have ?"
-msgstr "Longueur de la cl� RSA � cr�er�:"
+#: ../openswan.templates:7001
+msgid "File name of your PEM format X.509 RootCA:"
+msgstr ""
+"Nom du fichier PEM contenant le certificat X.509 de l'autorité de "
+"certification :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:97
+#: ../openswan.templates:7001
 msgid ""
-"Please enter the length of the created RSA key. it should not be less than "
-"1024 bits because this should be considered unsecure and you will probably "
-"not need anything more than 2048 bits because it only slows the "
-"authentication process down and is not needed at the moment."
+"Optionally you can now enter the location of the file containing the X.509 "
+"Certificate Authority root used to sign your certificate in PEM format. If "
+"you do not have one or do not want to use it please leave the field empty. "
+"Please note that it's not possible to store the RootCA in the same file as "
+"your X.509 certificate or private key."
 msgstr ""
-"Veuillez indiquer la longueur de la cl� RSA qui sera cr��e. Elle ne doit pas "
-"�tre inf�rieure � 1024 bits car cela serait consid�r� comme insuffisamment "
-"s�r. Un choix exc�dant 2048 bits est probablement inutile car cela ne fait "
+"Veuillez indiquer facultativement l'emplacement du fichier (au format PEM) "
+"contenant le certificat X.509 de l'autorité de certification qui a signé le "
+"certificat que vous avez fourni. Si vous n'utilisez pas d'autorité de "
+"certification, vous pouvez laisser ce champ vide. Veuillez noter que ce "
+"fichier doit être différent du fichier de certificat X.509 et de la clé "
+"privée que vous utilisez."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid "Length of RSA key to be created:"
+msgstr "Longueur de la clé RSA à créer :"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid ""
+"Please enter the required RSA key-length. Anything under 1024 bits should be "
+"considered insecure; anything more than 4096 bits slows down the "
+"authentication process and is not useful at present."
+msgstr ""
+"Veuillez indiquer la longueur de la clé RSA qui sera créée. Elle ne doit pas "
+"être inférieure à 1024 bits car cela serait considéré comme insuffisamment "
+"sûr. Un choix excédant 4096 bits est probablement inutile car cela ne fait "
 "essentiellement que ralentir le processus d'authentification sans avoir "
-"d'int�r�t actuellement."
+"d'intérêt actuellement."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:106
-msgid "Do you want to create a self-signed X509 certificate ?"
-msgstr "Souhaitez-vous cr�er un certificat X509 auto-sign�?"
+#: ../openswan.templates:9001
+msgid "Create a self-signed X.509 certificate?"
+msgstr "Souhaitez-vous créer un certificat X.509 auto-signé ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:106
+#: ../openswan.templates:9001
 msgid ""
-"This installer can only create self-signed X509 certificates automatically, "
-"because otherwise a certificate authority is needed to sign the certificate "
-"request. If you want to create a self-signed certificate, you can use it "
-"immediately to connect to other IPSec hosts that support X509 certificate "
-"for authentication of IPSec connections. However, if you want to use the new "
-"PKI features of Openswan >= 1.91, you will need to have all X509 "
-"certificates signed by a single certificate authority to create a trust path."
+"Only self-signed X.509 certificates can be created automatically, because "
+"otherwise a Certificate Authority is needed to sign the certificate request. "
+"If you choose to create a self-signed certificate, you can use it "
+"immediately to connect to other IPsec hosts that support X.509 certificate "
+"for authentication of IPsec connections. However, using Openswan's PKI "
+"features requires all certificates to be signed by a single Certificate "
+"Authority to create a trust path."
 msgstr ""
-"Cet outil d'installation ne peut cr�er automatiquement qu'un certificat X509 "
-"auto-sign� puisqu'une autorit� de certification est indispensable pour "
-"signer la demande de certificat. Si vous choisissez de cr�er un certificat "
-"auto-sign�, vous pourrez vous en servir imm�diatement pour vous connecter "
-"aux h�tes qui authentifient les connexions IPSec avec des certificats X509. "
-"Cependant, si vous souhaitez utiliser les nouvelles fonctionnalit�s PKI de "
-"Openswan >= 1.91, vous aurez besoin que tous les certificats X509 soient "
-"sign�s par la m�me autorit� de certification afin de cr�er un chemin de "
-"confiance."
+"Seuls des certificats X.509 auto-signés peuvent être créés automatiquement "
+"puisqu'une autorité de certification est indispensable pour signer la "
+"demande de certificat. Si vous choisissez de créer un certificat auto-signé, "
+"vous pourrez vous en servir immédiatement pour vous connecter aux hôtes qui "
+"authentifient les connexions IPsec avec des certificats X.509. Cependant, si "
+"vous souhaitez utiliser les nouvelles fonctionnalités PKI d'Openswan, vous "
+"aurez besoin que tous les certificats soient signés par la même autorité de "
+"certification afin de créer un chemin de confiance."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates.master:106
+#: ../openswan.templates:9001
 msgid ""
-"If you do not want to create a self-signed certificate, then this installer "
-"will only create the RSA private key and the certificate request and you "
-"will have to sign the certificate request with your certificate authority."
+"If you do not choose to create a self-signed certificate, only the RSA "
+"private key and the certificate request will be created, and you will have "
+"to sign the certificate request with your Certificate Authority."
 msgstr ""
-"Si vous ne voulez pas cr�er de certificat auto-sign�, cet outil "
-"d'installation ne fera que cr�er la cl� priv�e RSA et la demande de "
-"certificat, que vous devrez ensuite signer avec votre autorit� de "
-"certification."
+"Si vous ne voulez pas créer de certificat auto-signé, seules la clé privée "
+"RSA et la demande de certificat seront créées et vous devrez ensuite faire "
+"signer la demande de certificat par votre autorité de certification."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:124
-msgid "Please enter the country code for the X509 certificate request."
-msgstr "Code du pays�:"
+#: ../openswan.templates:10001
+msgid "Country code for the X.509 certificate request:"
+msgstr "Code du pays pour la demande de certificat X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:124
+#: ../openswan.templates:10001
 msgid ""
-"Please enter the 2 letter country code for your country. This code will be "
-"placed in the certificate request."
+"Please enter the two-letter code for the country the server resides in (such "
+"as \"AT\" for Austria)."
 msgstr ""
-"Veuillez indiquer le code � deux lettres de votre pays. Ce code sera inclus "
-"dans la demande de certificat."
+"Veuillez indiquer le code à deux lettres du pays où est situé le serveur "
+"(p. ex. « FR » pour la France)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:124
+#: ../openswan.templates:10001
 msgid ""
-"You really need to enter a valid country code here, because openssl will "
-"refuse to generate certificates without one. An empty field is allowed for "
-"any other field of the X.509 certificate, but not for this one."
+"OpenSSL will refuse to generate a certificate unless this is a valid ISO-"
+"3166 country code; an empty field is allowed elsewhere in the X.509 "
+"certificate, but not here."
 msgstr ""
-"Il est imp�ratif de choisir ici un code de pays valide sinon OpenSSL "
-"refusera de g�n�rer les certificats. Tous les autres champs d'un certificat "
-"X.509 peuvent �tre vides, sauf celui-ci."
+"Il est impératif de choisir ici un code de pays ISO-3166 valable sinon "
+"OpenSSL refusera de créer les certificats. Tous les autres champs d'un "
+"certificat X.509 peuvent être vides, sauf celui-ci."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:124
-msgid "Example: AT"
-msgstr "Exemple�: FR"
+#: ../openswan.templates:11001
+#, fuzzy
+#| msgid ""
+#| "Please enter the state or province name for the X509 certificate request:"
+msgid "State or province name for the X.509 certificate request:"
+msgstr "État, province ou région :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:137
+#: ../openswan.templates:11001
+#, fuzzy
+#| msgid ""
+#| "Please enter the two-letter code for the country the server resides in "
+#| "(such as \"AT\" for Austria)."
 msgid ""
-"Please enter the state or province name for the X509 certificate request."
-msgstr "�tat, province ou r�gion�:"
+"Please enter the full name of the state or province the server resides in "
+"(such as \"Upper Austria\")."
+msgstr ""
+"Veuillez indiquer le code à deux lettres du pays où est situé le serveur "
+"(p. ex. « FR » pour la France)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:137
+#: ../openswan.templates:12001
+msgid "Locality name for the X.509 certificate request:"
+msgstr "Localité pour la demande de certificat X.509 :"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
 msgid ""
-"Please enter the full name of the state or province you live in. This name "
-"will be placed in the certificate request."
+"Please enter the locality the server resides in (often a city, such as "
+"\"Vienna\")."
 msgstr ""
-"Veuillez indiquer le nom complet de l'�tat, de la province ou de la r�gion "
-"o� vous r�sidez. Ce nom sera inclus dans la demande de certificat."
+"Veuillez indiquer la localité où est situé le serveur (ce sera souvent une "
+"ville, comme « Montcuq »)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:137
-msgid "Example: Upper Austria"
-msgstr ""
-"Exemples�: Rh�ne-Alpes, Brabant, Bouches du Rh�ne, Qu�bec, Canton de Vaud"
+#: ../openswan.templates:13001
+msgid "Organization name for the X.509 certificate request:"
+msgstr "Organisme pour la demande de certificat X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:146
-msgid "Please enter the locality name for the X509 certificate request."
-msgstr "Localit�:"
-
-#. Type: string
-#. Description
-#: ../openswan.templates.master:146
+#: ../openswan.templates:13001
 msgid ""
-"Please enter the locality (e.g. city) where you live. This name will be "
-"placed in the certificate request."
+"Please enter the organization the server belongs to (such as \"Debian\")."
 msgstr ""
-"Veuillez indiquer la localit� (p.�ex. la ville) o� vous r�sidez. Ce nom sera "
-"inclus dans la demande de certificat."
+"Veuillez indiquer l'organisme propriétaire du serveur (p. ex. « Debian »)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:146
-msgid "Example: Vienna"
-msgstr "Exemple�: Saint-�tienne"
+#: ../openswan.templates:14001
+msgid "Organizational unit for the X.509 certificate request:"
+msgstr "Unité d'organisation pour la demande de certificat X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:155
-msgid "Please enter the organization name for the X509 certificate request."
-msgstr "Organisme�:"
-
-#. Type: string
-#. Description
-#: ../openswan.templates.master:155
+#: ../openswan.templates:14001
 msgid ""
-"Please enter the organization (e.g. company) that the X509 certificate "
-"should be created for. This name will be placed in the certificate request."
+"Please enter the organizational unit the server belongs to (such as "
+"\"security group\")."
 msgstr ""
-"Veuillez indiquer l'organisme (p.�ex. l'entreprise) pour qui sera cr�� le "
-"certificat X509. Ce nom sera inclus dans la demande de certificat."
+"Veuillez indiquer l'unité d'organisation pour la demande de certificat X.509 "
+"(p. ex. « Équipe sécurité »)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:155
-msgid "Example: Debian"
-msgstr "Exemple�: Debian"
+#: ../openswan.templates:15001
+msgid "Common Name for the X.509 certificate request:"
+msgstr "Nom ordinaire pour la demande de certification X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:165
-msgid "Please enter the organizational unit for the X509 certificate request."
-msgstr "Unit� d'organisation�:"
-
-#. Type: string
-#. Description
-#: ../openswan.templates.master:165
+#: ../openswan.templates:15001
 msgid ""
-"Please enter the organizational unit (e.g. section) that the X509 "
-"certificate should be created for. This name will be placed in the "
-"certificate request."
+"Please enter the Common Name for this host (such as \"gateway.example.org\")."
 msgstr ""
-"Veuillez indiquer l'unit� d'organisation (p. ex. d�partement, division, "
-"etc.) pour qui sera cr�� le certificat X509. Ce nom sera inclus dans la "
-"demande de certificat."
+"Veuillez indiquer le nom ordinaire de ce serveur (ce sera souvent son nom "
+"réseau)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:165
-msgid "Example: security group"
-msgstr "Exemple�: D�partement R�seaux et Informatique Scientifique"
+#: ../openswan.templates:16001
+msgid "Email address for the X.509 certificate request:"
+msgstr "Adresse électronique pour la demande de certificat X.509 :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates.master:175
-msgid "Please enter the common name for the X509 certificate request."
-msgstr "Nom ordinaire (��common name��)�:"
-
-#. Type: string
-#. Description
-#: ../openswan.templates.master:175
+#: ../openswan.templates:16001
 msgid ""
-"Please enter the common name (e.g. the host name of this machine) for which "
-"the X509 certificate should be created for. This name will be placed in the "
-"certificate request."
+"Please enter the email address of the person or organization responsible for "
+"the X.509 certificate."
 msgstr ""
-"Veuillez indiquer le nom ordinaire (p.�ex. le nom r�seau de cette machine) "
-"pour qui sera cr�� le certificat X509. Ce nom sera inclus dans la demande de "
-"certificat."
+"Veuillez indiquer l'adresse électronique de la personne ou de l'organisme "
+"responsable du certificat X.509."
 
-#. Type: string
+#. Type: note
 #. Description
-#: ../openswan.templates.master:175
-msgid "Example: gateway.debian.org"
-msgstr "Exemple�: gateway.debian.org"
+#: ../openswan.templates:17001
+msgid "Modification of /etc/ipsec.conf"
+msgstr "Modification de /etc/ipsec.conf"
 
-#. Type: string
+#. Type: note
 #. Description
-#: ../openswan.templates.master:185
-msgid "Please enter the email address for the X509 certificate request."
-msgstr "Adresse �lectronique�:"
-
-#. Type: string
-#. Description
-#: ../openswan.templates.master:185
+#: ../openswan.templates:17001
 msgid ""
-"Please enter the email address of the person or organization who is "
-"responsible for the X509 certificate, This address will be placed in the "
-"certificate request."
+"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"enabled by default. The no_oe.conf file that was shipped in earlier versions "
+"to explicitly disable it can therefore no longer be included by ipsec.conf. "
+"Any such include paragraph will now be automatically removed to ensure that "
+"Openswan can start correctly."
 msgstr ""
-"Veuillez indiquer l'adresse �lectronique de la personne ou de l'organisme "
-"responsable du certificat X509. Cette adresse sera incluse dans la demande "
-"de certificat."
+"En raison de modifications dans la version amont d'Openswan, le chiffrement "
+"opportuniste n'est plus activé par défaut. Le fichier no_oe.conf qui était "
+"fourni avec les versions précédentes pour le désactiver explicitement ne "
+"peut donc plus être inclus dans ipsec.conf. Toute instruction d'inclusion de "
+"ce fichier sera automatiquement retirée afin qu'Openswan puisse démarrer "
+"correctement."
 
-#. Type: boolean
-#. Description
-#: ../openswan.templates.master:193
-msgid "Do you wish to enable opportunistic encryption in Openswan?"
-msgstr "Souhaitez-vous activer le chiffrement opportuniste dansOpenswan�?"
+#~ msgid "Please enter the location of your X509 certificate in PEM format:"
+#~ msgstr "Emplacement du certificat X509 :"
 
-#. Type: boolean
-#. Description
-#: ../openswan.templates.master:193
-msgid ""
-"Openswan comes with support for opportunistic encryption (OE), which stores "
-"IPSec authentication information (i.e. RSA public keys) in (preferably "
-"secure) DNS records. Until this is widely deployed, activating it will cause "
-"a significant slow-down for every new, outgoing connection. Since version "
-"2.0, Openswan upstream comes with OE enabled by default and is thus likely "
-"to break you existing connection to the Internet (i.e. your default route) "
-"as soon as pluto (the Openswan keying daemon) is started."
-msgstr ""
-"Openswan g�re le chiffrement opportuniste (��opportunistic encryption���: "
-"OE) qui permet de conserver les informations d'authentification IPSec (c'est-"
-"�-dire les cl�s publiques RSA) dans des enregistrements DNS, de pr�f�rence "
-"s�curis�s. Tant que cette fonctionnalit� ne sera pas d�ploy�e largement, son "
-"activation provoquera un ralentissement significatif pour toute nouvelle "
-"connexion sortante. � partir de la version 2.0, cette fonctionnalit� est "
-"activ�e par d�faut dans Openswan, ce qui peut interrompre le fonctionnement "
-"de votre connexion � l'Internet (c'est-�-dire votre route par d�faut) d�s le "
-"d�marrage de pluto, le d�mon de gestion de cl�s d'Openswan."
+#~ msgid "Please enter the location of your X509 private key in PEM format:"
+#~ msgstr "Emplacement de la clé privée X509 :"
 
-#. Type: boolean
-#. Description
-#: ../openswan.templates.master:193
-msgid ""
-"Please choose whether you want to enable support for OE. If unsure, do not "
-"enable it."
-msgstr ""
-"Veuillez choisir si vous souhaitez activer la gestion du chiffrement "
-"opportuniste. Ne l'activez pas si vous n'�tes pas certain d'en avoir besoin."
+#~ msgid "You may now enter the location of your X509 RootCA in PEM format:"
+#~ msgstr "Emplacement du certificat X509 de l'autorité de certification :"
 
-#~ msgid "2048"
-#~ msgstr "2048"
+#~ msgid "Please enter which length the created RSA key should have:"
+#~ msgstr "Longueur de la clé RSA à créer :"
+
+#~ msgid ""
+#~ "Please enter the 2 letter country code for your country. This code will "
+#~ "be placed in the certificate request."
+#~ msgstr ""
+#~ "Veuillez indiquer le code à deux lettres de votre pays. Ce code sera "
+#~ "inclus dans la demande de certificat."
+
+#~ msgid "Example: AT"
+#~ msgstr "Exemple : FR"
+
+#~ msgid ""
+#~ "Please enter the full name of the state or province you live in. This "
+#~ "name will be placed in the certificate request."
+#~ msgstr ""
+#~ "Veuillez indiquer le nom complet de l'état, de la province ou de la "
+#~ "région où vous résidez. Ce nom sera inclus dans la demande de certificat."
+
+#~ msgid "Example: Upper Austria"
+#~ msgstr ""
+#~ "Exemples : Rhône-Alpes, Brabant Wallon, Bouches du Rhône, Québec, Canton "
+#~ "de Vaud"
+
+#~ msgid ""
+#~ "Please enter the locality (e.g. city) where you live. This name will be "
+#~ "placed in the certificate request."
+#~ msgstr ""
+#~ "Veuillez indiquer la localité (p. ex. la ville) où vous résidez. Ce nom "
+#~ "sera inclus dans la demande de certificat."
+
+#~ msgid "Example: Vienna"
+#~ msgstr "Exemple : Saint-Étienne"
+
+#~ msgid ""
+#~ "Please enter the organization (e.g. company) that the X509 certificate "
+#~ "should be created for. This name will be placed in the certificate "
+#~ "request."
+#~ msgstr ""
+#~ "Veuillez indiquer l'organisme (p. ex. l'entreprise) pour qui sera créé le "
+#~ "certificat X509. Ce nom sera inclus dans la demande de certificat."
+
+#~ msgid "Example: Debian"
+#~ msgstr "Exemple : Debian"
+
+#~ msgid ""
+#~ "Please enter the organizational unit (e.g. section) that the X509 "
+#~ "certificate should be created for. This name will be placed in the "
+#~ "certificate request."
+#~ msgstr ""
+#~ "Veuillez indiquer l'unité d'organisation (p. ex. département, division, "
+#~ "etc.) pour qui sera créé le certificat X509. Ce nom sera inclus dans la "
+#~ "demande de certificat."
+
+#~ msgid "Example: security group"
+#~ msgstr "Exemple : Département Réseaux et Informatique Scientifique"
+
+#~ msgid ""
+#~ "Please enter the common name (e.g. the host name of this machine) for "
+#~ "which the X509 certificate should be created for. This name will be "
+#~ "placed in the certificate request."
+#~ msgstr ""
+#~ "Veuillez indiquer le nom ordinaire (p. ex. le nom réseau de cette "
+#~ "machine) pour qui sera créé le certificat X509. Ce nom sera inclus dans "
+#~ "la demande de certificat."
+
+#~ msgid "Example: gateway.debian.org"
+#~ msgstr "Exemple : gateway.debian.org"
+
+#~ msgid "Do you want to create a RSA public/private keypair for this host?"
+#~ msgstr ""
+#~ "Souhaitez-vous crÃ©er une paire de clÃ©s RSA publique et privÃ©e pour cet "
+#~ "hÃŽteÂ ?"
+
+#~ msgid ""
+#~ "If you do not want to create a new public/private keypair, you can choose "
+#~ "to use an existing one."
+#~ msgstr ""
+#~ "Si vous ne souhaitez pas crÃ©er une paire de clÃ©s publique et privÃ©e, "
+#~ "vous pouvez choisir d'en utiliser une existante."
+
+#~ msgid "x509"
+#~ msgstr "X509"
+
+#~ msgid "plain"
+#~ msgstr "Simple paire"
+
+#~ msgid ""
+#~ "It is possible to create a plain RSA public/private keypair for use with "
+#~ "Openswan or to create a X509 certificate file which contains the RSA "
+#~ "public key and additionally stores the corresponding private key."
+#~ msgstr ""
+#~ "Il est possible de crÃ©er une simple paire de clÃ©s destinÃ©e Ã  Ãªtre "
+#~ "utilisÃ©e avec Openswan ou de crÃ©er un fichier de certificat X509 qui "
+#~ "contient la clÃ© publique RSA et de conserver la clÃ© privÃ©e "
+#~ "correspondante par ailleurs."
+
+#, fuzzy
+#~| msgid ""
+#~| "If you only want to build up IPSec connections to hosts also running "
+#~| "Openswan, it might be a bit easier using plain RSA keypairs. But if you "
+#~| "want to connect to other IPSec implementations, you will need a X509 "
+#~| "certificate. It is also possible to create a X509 certificate here and "
+#~| "extract the RSA public key in plain format if the other side runs "
+#~| "Openswan without X509 certificate support."
+#~ msgid ""
+#~ "If you only want to create IPsec connections to hosts also running "
+#~ "Openswan, it might be a bit easier using plain RSA keypairs. But if you "
+#~ "want to connect to other IPsec implementations, you will need a X509 "
+#~ "certificate. It is also possible to create a X509 certificate here and "
+#~ "extract the RSA public key in plain format if the other side runs "
+#~ "Openswan without X509 certificate support."
+#~ msgstr ""
+#~ "Si vous ne prÃ©voyez d'Ã©tablir des connexions IPSec qu'avec des hÃŽtes "
+#~ "utilisant Openswan, il sera probablement plus facile d'utiliser des clÃ©s "
+#~ "RSA simples. Mais si vous souhaitez vous connecter Ã  des hÃŽtes "
+#~ "utilisant d'autres implÃ©mentations d'IPSec, vous aurez besoin d'un "
+#~ "certificat X509. Il est Ã©galement possible de crÃ©er un certificat X509 "
+#~ "puis d'en extraire une simple clÃ© publique RSA, si l'autre extrÃ©mitÃ© "
+#~ "de la connexion utilise Openswan sans la gestion des certificats X509."
+
+#, fuzzy
+#~| msgid ""
+#~| "Therefore a X509 certificate is recommended since it is more flexible "
+#~| "and this installer should be able to hide the complex creation of the "
+#~| "X509 certificate and its use in Openswan anyway."
+#~ msgid ""
+#~ "Therefore a X509 certificate is recommended since it is more flexible and "
+#~ "this installer should be able to hide the complex creation of the X509 "
+#~ "certificate and its use in Openswan."
+#~ msgstr ""
+#~ "Ainsi, il vous est conseillÃ© d'utiliser un certificat X509 car cette "
+#~ "mÃ©thode est plus souple. Cet outil d'installation devrait vous "
+#~ "simplifier la tÃ¢che de crÃ©ation et d'utilisation de ce certificat X509."
+
+#, fuzzy
+#~| msgid ""
+#~| "This installer can automatically extract the needed information from an "
+#~| "existing X509 certificate with a matching RSA private key. Both parts "
+#~| "can be in one file, if it is in PEM format. Do you have such an existing "
+#~| "certificate and key file and want to use it for authenticating IPSec "
+#~| "connections?"
+#~ msgid ""
+#~ "This installer can automatically extract the needed information from an "
+#~ "existing X509 certificate with a matching RSA private key. Both parts can "
+#~ "be in one file, if it is in PEM format. If you have such an existing "
+#~ "certificate and key file please select if want to use it for "
+#~ "authenticating IPSec connections."
+#~ msgstr ""
+#~ "Cet outil d'installation est capable d'extraire automatiquement "
+#~ "l'information nÃ©cessaire d'un fichier de certificat X509 existant, avec "
+#~ "la clÃ© privÃ©e RSA correspondante. Les deux parties peuvent se trouver "
+#~ "dans un seul fichier, s'il est en format PEM. Indiquez si vous possÃ©dez "
+#~ "un tel certificat ainsi que la clÃ© privÃ©e, et si vous souhaitez vous en "
+#~ "servir pour l'authentification des connexions IPSec."
+
+#~ msgid "x509, plain"
+#~ msgstr "X509, Simple paire"
+
+#, fuzzy
+#~| msgid "earliest, \"after NFS\", \"after PCMCIA\""
+#~ msgid "earliest, after NFS, after PCMCIA"
+#~ msgstr "Le plus tÃŽt possible, AprÃšs NFS, AprÃšs PCMCIA"
+
+#, fuzzy
+#~| msgid ""
+#~| "With the current Debian startup levels (nearly everything starting in "
+#~| "level 20), it is impossible for Openswan to always start at the correct "
+#~| "time. There are three possibilities when Openswan can start: before or "
+#~| "after the NFS services and after the PCMCIA services. The correct answer "
+#~| "depends on your specific setup."
+#~ msgid ""
+#~ "With the default system startup levels (nearly everything starting in "
+#~ "level 20), it is impossible for Openswan to always start at the correct "
+#~ "time. There are three possibilities when Openswan can start: before or "
+#~ "after the NFS services and after the PCMCIA services. The correct answer "
+#~ "depends on your specific setup."
+#~ msgstr ""
+#~ "Avec les niveaux de dÃ©marrage actuellement utilisÃ©s par Debian (presque "
+#~ "tout dÃ©marre au niveau 20), il est impossible de faire en sorte "
+#~ "qu'Openswan dÃ©marre toujours au moment appropriÃ©. Il existe trois "
+#~ "moments oÃ¹ il est opportun de le dÃ©marrerÂ : avant ou aprÃšs les "
+#~ "services NFS, ou aprÃšs les services PCMCIA. La rÃ©ponse appropriÃ©e "
+#~ "dÃ©pend de vos rÃ©glages spÃ©cifiques."
+
+#, fuzzy
+#~| msgid ""
+#~| "If you do not have your /usr tree mounted via NFS (either you only mount "
+#~| "other, less vital trees via NFS or don't use NFS mounted trees at all) "
+#~| "and don't use a PCMCIA network card, then it's best to start Openswan at "
+#~| "the earliest possible time, thus allowing the NFS mounts to be secured "
+#~| "by IPSec. In this case (or if you don't understand or care about this "
+#~| "issue), answer \"earliest\" to this question (the default)."
+#~ msgid ""
+#~ "If the /usr tree of this system is not mounted via NFS (either you only "
+#~ "mount other, less vital trees via NFS or don't use NFS mounted trees at "
+#~ "all) and no PCMCIA network card is used, then it's best to start Openswan "
+#~ "at the earliest possible time, thus allowing the NFS mounts to be secured "
+#~ "by IPSec. In this case (or if you don't understand or care about this "
+#~ "issue), answer \"earliest\" to this question (the default)."
+#~ msgstr ""
+#~ "Si votre arborescence /usr n'est pas un montage NFS (soit parce que vos "
+#~ "montages NFS sont Ã  d'autres endroits, moins critiques, soit parce que "
+#~ "vous n'utilisez pas du tout de montage NFS) et si vous n'utilisez pas de "
+#~ "carte rÃ©seau PCMCIA, il est prÃ©fÃ©rable de dÃ©marrer Openswan le plus "
+#~ "tÃŽt possible, ce qui permettra de sÃ©curiser les montages NFS avec "
+#~ "IPSec. Dans ce cas (ou bien si vous ne comprenez pas l'objet de la "
+#~ "question ou qu'elle ne vous concerne pas), choisissez Â«Â le plus tÃŽt "
+#~ "possibleÂ Â», qui est le choix par dÃ©faut."
+
+#, fuzzy
+#~| msgid ""
+#~| "If you have your /usr tree mounted via NFS and don't use a PCMCIA "
+#~| "network card, then you will need to start Openswan after NFS so that all "
+#~| "necessary files are available. In this case, answer \"after NFS\" to "
+#~| "this question. Please note that the NFS mount of /usr can not be secured "
+#~| "by IPSec in this case."
+#~ msgid ""
+#~ "If the /usr tree is mounted via NFS and no PCMCIA network card is used, "
+#~ "then you will need to start Openswan after NFS so that all necessary "
+#~ "files are available. In this case, answer \"after NFS\" to this question. "
+#~ "Please note that the NFS mount of /usr can not be secured by IPSec in "
+#~ "this case."
+#~ msgstr ""
+#~ "Si /usr est un montage NFS et que vous n'utilisez pas de carte rÃ©seau "
+#~ "PCMCIA, vous devrez alors dÃ©marrer Openswan aprÃšs les services NFS afin "
+#~ "que tous les fichiers nÃ©cessaires soient disponibles. Dans ce cas, "
+#~ "choisissez Â«Â AprÃšs NFSÂ Â». Veuillez noter que le montage NFS de /usr "
+#~ "n'est alors pas sÃ©curisÃ© par IPSec."
+
+#~ msgid ""
+#~ "If you use a PCMCIA network card for your IPSec connections, then you "
+#~ "only have to choose to start it after the PCMCIA services. Answer \"after "
+#~ "PCMCIA\" in this case. This is also the correct answer if you want to "
+#~ "fetch keys from a locally running DNS server with DNSSec support."
+#~ msgstr ""
+#~ "Si vous utilisez une carte PCMCIA pour vos connexions IPSec, votre seul "
+#~ "choix possible est le dÃ©marrage aprÃšs les services PCMCIA. Choisissez "
+#~ "alors Â«Â AprÃšs PCMCIAÂ Â». Faites Ã©galement ce choix si vous souhaitez "
+#~ "rÃ©cupÃ©rer les clÃ©s d'authentification sur un serveur DNS reconnaissant "
+#~ "DNSSec."
+
+#, fuzzy
+#~| msgid "At which level do you wish to start Openswan?"
+#~ msgid "Please select the level at which you wish to start Openswan:"
+#~ msgstr "Ãtape de lancement d'OpenswanÂ :"
+
+#, fuzzy
+#~| msgid "Which type of RSA keypair do you want to create?"
+#~ msgid "Please select which type of RSA keypair you want to create:"
+#~ msgstr "Type de paire de clÃ©s RSA Ã  crÃ©erÂ :"
+
+#~ msgid "Do you wish to enable opportunistic encryption in Openswan?"
+#~ msgstr "Souhaitez-vous activer le chiffrement opportuniste dans OpenswanÂ ?"
+
+#~ msgid ""
+#~ "Openswan comes with support for opportunistic encryption (OE), which "
+#~ "stores IPSec authentication information (i.e. RSA public keys) in "
+#~ "(preferably secure) DNS records. Until this is widely deployed, "
+#~ "activating it will cause a significant slow-down for every new, outgoing "
+#~ "connection. Since version 2.0, Openswan upstream comes with OE enabled by "
+#~ "default and is thus likely to break your existing connection to the "
+#~ "Internet (i.e. your default route) as soon as pluto (the Openswan keying "
+#~ "daemon) is started."
+#~ msgstr ""
+#~ "Openswan gÃšre le chiffrement opportuniste (Â«Â opportunistic "
+#~ "encryptionÂ Â»Â : OE) qui permet de conserver les informations "
+#~ "d'authentification IPSec (c'est-Ã -dire les clÃ©s publiques RSA) dans des "
+#~ "enregistrements DNS, de prÃ©fÃ©rence sÃ©curisÃ©s. Tant que cette "
+#~ "fonctionnalitÃ© ne sera pas dÃ©ployÃ©e largement, son activation "
+#~ "provoquera un ralentissement significatif pour toute nouvelle connexion "
+#~ "sortante. Ã partir de la versionÂ 2.0, cette fonctionnalitÃ© est activÃ©e "
+#~ "par dÃ©faut dans Openswan, ce qui peut interrompre le fonctionnement de "
+#~ "votre connexion Ã  l'Internet (c'est-Ã -dire votre route par dÃ©faut) "
+#~ "dÃšs le dÃ©marrage de pluto, le dÃ©mon de gestion de clÃ©s d'Openswan."
+
+#~ msgid ""
+#~ "Please choose whether you want to enable support for OE. If unsure, do "
+#~ "not enable it."
+#~ msgstr ""
+#~ "Veuillez choisir si vous souhaitez activer la gestion du chiffrement "
+#~ "opportuniste. Ne l'activez pas si vous n'Ãªtes pas certain d'en avoir "
+#~ "besoin."

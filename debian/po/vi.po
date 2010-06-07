@@ -1,416 +1,411 @@
-# Vietnamese translation for openswan.
-# Copyright © 2005 Free Software Foundation, Inc.
-# Clytie Siddall <clytie@riverland.net.au>, 2005.
-# 
+# Vietnamese translation for Openswan.
+# Copyright © 2010 Free Software Foundation, Inc.
+# Clytie Siddall <clytie@riverland.net.au>, 2005, 2006, 2007, 2008, 2009, 2010.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: openswan 1/2.2.0-10\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-18 20:20+0200\n"
-"PO-Revision-Date: 2005-07-03 13:49+0930\n"
+"Project-Id-Version: openswan 1:2.6.25+dfsg-1\n"
+"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"POT-Creation-Date: 2010-06-01 00:35+0200\n"
+"PO-Revision-Date: 2010-05-13 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
-"Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
+"Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
-"X-Generator: LocFactoryEditor 1.2.2\n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: LocFactoryEditor 1.8\n"
 
-#.Type: select
-#.Choices
-#:../openswan.templates.master:3
-msgid "earliest, \"after NFS\", \"after PCMCIA\""
-msgstr "sớm nhất, «sau NFS», «sau PCMCIA»"
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
+msgid "Old runlevel management superseded"
+msgstr "Quản lý cấp chạy trước bị thay thế vì quá cũ"
 
-#.Type: select
-#.Description
-#:../openswan.templates.master:5
-msgid "At which level do you wish to start Openswan ?"
-msgstr "Bạn có muốn khởi chạy trình Openswan tại cấp nào?"
-
-#.Type: select
-#.Description
-#:../openswan.templates.master:5
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
 msgid ""
-"With the current Debian startup levels (nearly everything starting in level "
-"20), it is impossible for Openswan to always start at the correct time. "
-"There are three possibilities when Openswan can start: before or after the "
-"NFS services and after the PCMCIA services. The correct answer depends on "
-"your specific setup."
-msgstr "Trong những cấp khởi chạy Debian hiện thời (gần mọi trình khởi chạy trên cấp 20), không thể đảm bảo trình Openswan sẽ khởi chạy vào điểm thời đúng. Có ba lúc có thể khởi chạy trình Openswan: lúc trước hay lúc sau dịch vụ NFS và lúc sau dịch vụ PCMCIA. Giá trị đúng phụ thuộc vào thiết lập riêng của bạn."
+"Previous versions of the Openswan package gave a choice between three "
+"different Start/Stop-Levels. Due to changes in the standard system startup "
+"procedure, this is no longer necessary or useful. For all new installations "
+"as well as old ones running in any of the predefined modes, sane default "
+"levels will now be set. If you are upgrading from a previous version and "
+"changed your Openswan startup parameters, then please take a look at NEWS."
+"Debian for instructions on how to modify your setup accordingly."
+msgstr ""
+"Trước đây phiên bản Openswan đã cho phép người dùng chọn trong ba cấp khởi/"
+"ngừng chạy khác nhau. Do thay đổi trong thủ tục khởi chạy hệ thống tiêu "
+"chuẩn, chức năng này không còn cần thiết hay có ích lại. Đối với mọi bản cài "
+"đặt mới, cũng như bản cài đặt cũ đang chạy ở bất cứ chế độ nào định sẵn, một "
+"cấp mặc định có ích sắp được lập. Nếu bạn đang nâng cấp từ một phiên bản "
+"trước và đã thay đổi tham số khởi chạy Openswan thì xem tập tin tin tức « "
+"NEWS.Debian » để tìm hướng dẫn về cách sửa đổi thiết lập một cách thích hợp."
 
-#.Type: select
-#.Description
-#:../openswan.templates.master:5
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
+msgid "Restart Openswan now?"
+msgstr "Khởi chạy lại Openswan ngay bây giờ ?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
 msgid ""
-"If you do not have your /usr tree mounted via NFS (either you only mount "
-"other, less vital trees via NFS or don't use NFS mounted trees at all) and "
-"don't use a PCMCIA network card, then it is the best to start Openswan at "
-"the earliest possible time, thus allowing the NFS mounts  to be secured by "
-"IPSec. In this case (or if you don't understand or care  about this issue), "
-"answer \"earliest\" to this question (the default)."
-msgstr "Nếu bạn không có cây «/usr» mình được gắn thông qua NFS (hoặc bạn chỉ gắn cây khác, ít quan trọng hơn, thông qua NFS, hoặc bạn không sử dụng cây do NFS gắn cách nào cả) và không sử dụng một thẻ mạng PCMCIA, thì tốt nhất là khởi chạy trình Openswan càng sớm càng có thể, mà cho phép IPSec bảo vệ những điểm gắn NFS. Trong trường hợp này (hoặc nếu bạn không hiểu được vấn đề này, hoặc không nghĩ nó là quan trọng) thì hãy trả lời «sớm nhất» (earliest: giá trị mặc định) cho câu hỏi này."
+"Restarting Openswan is recommended, since if there is a security fix, it "
+"will not be applied until the daemon restarts. Most people expect the daemon "
+"to restart, so this is generally a good idea. However, this might take down "
+"existing connections and then bring them back up, so if you are using such "
+"an Openswan tunnel to connect for this update, restarting is not recommended."
+msgstr ""
+"Khởi chạy lại Openswan là một ý kiến tốt, vì chức năng khởi chạy lại trình "
+"nền cũng thực hiện đắp vá bảo mật bị hoãn. Phần lớn người cũng mong đợi "
+"trình nền khởi chạy lại. Tuy nhiên, chức năng khởi chạy lại có thể ngắt rồi "
+"mở lại kết nối đang chạy: do đó nếu bạn đang sử dụng một đường hầm Openswan "
+"như vậy để kết nối cho bản cập nhật này thì không khuyên bạn khởi chạy lại "
+"vào lúc này."
 
-#.Type: select
-#.Description
-#:../openswan.templates.master:5
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid "Use an X.509 certificate for this host?"
+msgstr "Dùng một chứng nhận X.509 cho máy này ?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
 msgid ""
-"If you have your /usr tree mounted via NFS and don't use a PCMCIA network "
-"card, then you will need to start Openswan after NFS so that all necessary "
-"files are available. In this case, answer \"after NFS\" to this question. "
-"Please note that the NFS mount of /usr can  not be secured by IPSec in this "
-"case."
-msgstr "Nếu bạn có cây «/usr» mình được gắn thông qua NFS và không sử dụng một thẻ mạng PCMCIA, thì bạn sẽ cần phải khởi chạy Openswan sau NFS, để mọi tập tin cần thiết có sẵn sàng. Trong trường hợp này, hãy trả lời «sau NFS» (after NFS) cho câu hỏi này. Tuy nhiên, IPsec sẽ không thể bảo vệ điểm gắn của «/usr» trong trường hợp này."
+"An X.509 certificate for this host can be automatically created or imported. "
+"It can be used to authenticate IPsec connections to other hosts and is the "
+"preferred way of building up secure IPsec connections. The other possibility "
+"would be to use shared secrets (passwords that are the same on both sides of "
+"the tunnel) for authenticating a connection, but for a larger number of "
+"connections, key based authentication is easier to administer and more "
+"secure."
+msgstr ""
+"Trình cài đặt này có khả năng tự động tạo hoặc nhập một chứng nhận X.509 cho "
+"máy này. Chứng nhận này có thể được sử dụng để xác thực kết nối IPsec đến "
+"máy khác: đây là phương pháp khuyến khích để xây dựng kết nối IPsec bảo mật. "
+"Tuỳ chọn khác là sử dụng điều bí mật chia sẻ (cùng một mật khẩu ở hai bên "
+"đường hầm) để xác thực kết nối, nhưng mà cho nhiều kết nối chức năng xác "
+"thực dựa vào khoá vẫn dễ quản trị hơn và bảo mật hơn."
 
-#.Type: select
-#.Description
-#:../openswan.templates.master:5
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
 msgid ""
-"If you use a PCMCIA network card for your IPSec connections, then you only "
-"have to choice to start it after the PCMCIA services. Answer \"after PCMCIA"
-"\" in this case. This is also the correct answer if you want to fetch keys "
-"from a locally running DNS server with DNSSec support."
-msgstr "Nếu bạn sử dụng thẻ PCMCIA để kết nối cách loại IPSec, thì chỉ hãy chọn khởi chạy FreeS/WAN sau những dịch vụ PCMCIA. Hãy trả lời «sau PCMCIA» trong trường hợp này. Trả lời này cũng đúng nếu bạn muốn gọi khóa từ một máy phục vụ DNS chạy địa phương có loại hỗ trợ DNSSec."
+"Alternatively you can reject this option and later use the command \"dpkg-"
+"reconfigure openswan\" to come back."
+msgstr ""
+"Hoặc bạn có thể tắt tuỳ chọn này và chạy chạy câu lệnh cấu hình lại « dpkg-"
+"reconfigure openswan » về sau."
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:33
-msgid "Do you wish to restart Openswan?"
-msgstr "Bạn có muốn khởi chạy lại trình Openswan không?"
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "create"
+msgstr "tạo"
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:33
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "import"
+msgstr "nhập"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid "Methods for using a X.509 certificate to authenticate this host:"
+msgstr "Phương pháp dùng chứng nhận X.509 để xác thực máy này:"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
 msgid ""
-"Restarting Openswan is a good idea, since if there is a security fix, it "
-"will not be fixed until the daemon restarts. Most people expect the daemon "
-"to restart, so this is generally a good idea. However this might take down "
-"existing connections and then bring them back up."
-msgstr "Khởi chạy lại trình Openswan là một ý kiến tốt, vì nó hiệu lực việc sửa bảo mật mới nào. Phần lớn người ngờ trình nền (dæmon) sẽ khởi chạy lại, thì nói chung làm như thế là một ý kiến tốt. Tuy nhiên, việc khởi chạy lại có thể ngắt các sự kết nối hiện thời, rồi kết nối chúng lại."
+"It is possible to create a new X.509 certificate with user-defined settings "
+"or to import an existing public and private key stored in PEM file(s) for "
+"authenticating IPsec connections."
+msgstr ""
+"Cũng có thể tạo một chứng nhận X.509 mới với thiết lập được người dùng xác "
+"định, hoặc nhập một cặp khoá công/riêng được lưu vào tập tin PEM, để xác "
+"thực kết nối IPsec."
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:42
-msgid "Do you want to create a RSA public/private keypair for this host ?"
-msgstr "Bạn có muốn tạo một cặp khóa công/riêng RSA cho máy này không?"
-
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:42
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
 msgid ""
-"This installer can automatically create a RSA public/private keypair for "
-"this host. This keypair can be used to authenticate IPSec connections to "
-"other hosts and is the preferred way for building up secure IPSec "
-"connections. The other possibility would be to use shared secrets (passwords "
-"that are the same on both sides of the tunnel) for authenticating an "
-"connection, but for a larger number of connections RSA authentication is "
-"easier to administrate and more secure."
-msgstr "Trình cài đặt này có thể tự động tạo một cặp khóa công/riêng RSA cho máy này. Có thể sử dụng cặp khóa này để xác thực cách kết nối IPSec tới máy khác, và nó là cách ưa thích để xây dụng cách kết nối IPSec bảo mật. Hoặc có thể sử dụng «bí mật dùng chung» (shared secrets), mà có cùng một mật khẩu tại cả hai đầu và cuối đều đường hầm, để xác thực mỗi sự kết nối. Tuy nhiên, với sự kết nối rất nhiều, dễ hơn để sử dụng cách xác thực RSA và nó bảo mật hơn. "
+"If you choose to create a new X.509 certificate you will first be asked a "
+"number of questions which must be answered before the creation can start. "
+"Please keep in mind that if you want the public key to get signed by an "
+"existing Certificate Authority you should not select to create a self-signed "
+"certificate and all the answers given must match exactly the requirements of "
+"the CA, otherwise the certificate request may be rejected."
+msgstr ""
+"Nếu bạn chọn tạo một chứng nhận X.509 mới thì trước tiên bạn cần phải đáp "
+"ứng một số câu hỏi cơ bản. Ghi chú rằng nếu bạn muốn xin một nhà cầm quyền "
+"cấp chứng nhận (CA) ký khoá công này thì không nên bật tuỳ chọn tạo một "
+"chứng nhận tự ký, và tất cả các đáp ứng phải tương ứng với tiêu chuẩn của "
+"CA: không thì yêu cầu chứng nhận có thể bị từ chối."
 
-#.Type: select
-#.Choices
-#:../openswan.templates.master:53
-msgid "x509, plain"
-msgstr "x509, giản dị"
-
-#.Type: select
-#.Description
-#:../openswan.templates.master:55
-msgid "Which type of RSA keypair do you want to create ?"
-msgstr "Bạn có muốn tạo cặp khóa RSA loại nào?"
-
-#.Type: select
-#.Description
-#:../openswan.templates.master:55
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
 msgid ""
-"It is possible to create a plain RSA public/private keypair for the use with "
-"Openswan or to create a X509 certificate file which contains the RSA public "
-"key and additionally store the corresponding private key."
-msgstr "Có thể tạo một cặp khóa công/riêng RSA thô để sử dụng với trình Openswan, hoặc tạo một tập tin chứng nhận X509 chứa khóa công RSA ấy và cũng cất giữ khóa riêng tương ứng."
+"If you want to import an existing public and private key you will be "
+"prompted for their filenames (which may be identical if both parts are "
+"stored together in one file). Optionally you may also specify a filename "
+"where the public key(s) of the Certificate Authority are kept, but this file "
+"cannot be the same as the former ones. Please also be aware that the format "
+"for the X.509 certificates has to be PEM and that the private key must not "
+"be encrypted or the import procedure will fail."
+msgstr ""
+"Nếu bạn muốn nhập một cặp khoá công/riêng đã có, quá trình sẽ nhắc bạn gõ "
+"tên tập tin (mà có thể là trùng nếu cả hai phần nằm trong cùng một tập tin). "
+"Tuỳ chọn bạn cũng có dịp xác định tên tập tin chứa (các) khoá công của nhà "
+"cầm quyền cấp chứng nhận (CA), mà phải khác với tên tập tin gõ trước. Ghi "
+"chú rằng chứng nhận X.509 phải có định dạng PEM, và khoá riêng phải được "
+"giải mật mã: không thì thủ tục nhập khẩu bị lỗi."
 
-#.Type: select
-#.Description
-#:../openswan.templates.master:55
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
+msgid "File name of your PEM format X.509 certificate:"
+msgstr "Tên tập tin của chứng nhận X.509 định dạng PEM:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
 msgid ""
-"If you only want to build up IPSec connections to hosts also running "
-"Openswan, it might be a bit easier using plain RSA keypairs. But if you want "
-"to connect to other IPSec implementations, you will need a X509 certificate. "
-"It is also possible to create a X509 certificate here and extract the RSA "
-"public key in plain format if the other side runs Openswan without X509 "
-"certificate support."
-msgstr "Nếu bạn chỉ muốn xây dụng sự kết nối IPSec đến máy cũng chạy trình Openswan, có thể dễ dàng hơn khi sử dụng cặp khóa RSA thô. Còn nếu bạn muốn kết nối đến một sự thực hiện IPSec khác, thì bạn sẽ cần có một chứng nhận loại X509. Cũng có thể tạo một chứng nhận X509 tại đây, rồi rút khóa công RSA có dạng thô, nếu bên khác có chạy trình Openswan không có hỗ trợ chứng nhận X509."
-
-#.Type: select
-#.Description
-#:../openswan.templates.master:55
-msgid ""
-"Therefore a X509 certificate is recommended since it is more flexible and "
-"this installer should be able to hide the complex creation of the X509 "
-"certificate and its use in Openswan anyway."
-msgstr "Vì vậy khuyến khích một chứng nhận X509, vì nó dẻo hơn và trình cài đặt này nên có thể ẩn việc phức tạp tạo chứng nhận X509 và cách dùng nó trong trình Openswan."
-
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:74
-msgid ""
-"Do you have an existing X509 certificate file that you want to use for "
-"Openswan ?"
-msgstr "Bạn có một tập tin chứng nhận X509 mà bạn muốn sử dụng với trình Openswan chưa?"
-
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:74
-msgid ""
-"This installer can automatically extract the needed information from an "
-"existing X509 certificate with a matching RSA private key. Both parts can be "
-"in one file, if it is in PEM format. Do you have such an existing "
-"certificate and key file and want to use it for authenticating IPSec "
-"connections ?"
-msgstr "Trình cài đặt này có thể tự động giải mã thông tin cần thiết ra một chứng nhận X509 đã có, với khóa riêng RSA tương ứng. Cả hai điều có thể trong cùng một tập tin, nếu nó có dạng PEM. Bạn có chứng nhận đã có như vậy, và muốn sử dụng nó để xác thực cách kết nối IPSec không?"
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:83
-msgid "Please enter the location of your X509 certificate in PEM format."
-msgstr "Hãy nhập địa điểm của chứng nhận X509 của bạn, có dạng PEM."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:83
-msgid ""
-"Please enter the location of the file containing your X509 certificate in "
+"Please enter the location of the file containing your X.509 certificate in "
 "PEM format."
-msgstr "Hãy nhập địa điểm của tập tin chứa chứng nhận X509 của bạn, có dạng PEM."
+msgstr "Hãy nhập vị trí của tập tin chứa chứng nhận X.509 theo định dạng PEM."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:89
-msgid "Please enter the location of your X509 private key in PEM format."
-msgstr "Hãy nhập địa điểm của khóa riêng X509 của bạn, có dạng PEM."
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
+msgid "File name of your PEM format X.509 private key:"
+msgstr "Tên tập tin của khoá riêng X.509 định dạng PEM:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:89
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
 msgid ""
 "Please enter the location of the file containing the private RSA key "
-"matching your X509 certificate in PEM format. This can be the same file that "
-"contains the X509 certificate."
-msgstr "Hãy nhập địa điểm của tập tin chứa khóa RSA riêng khớp với chứng nhận X509 của bạn, có dạng PEM. Có thể là cùng một tập tin chứa chứng nhận X509."
+"matching your X.509 certificate in PEM format. This can be the same file "
+"that contains the X.509 certificate."
+msgstr ""
+"Hãy nhập vị trí của tập tin chứa khoá RSA riêng tương ứng với chứng nhận "
+"X.509 của bạn, cả hai theo định dạng PEM. Có thể là cùng một tập tin chứa "
+"chứng nhận X.509."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:97
-msgid "Which length should the created RSA key have ?"
-msgstr "Khóa RSA mới được tạo nên có độ dài nào?"
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
+msgid "File name of your PEM format X.509 RootCA:"
+msgstr "Tên tập tin của RootCA X.509 định dạng PEM:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:97
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
 msgid ""
-"Please enter the length of the created RSA key. it should not be less than "
-"1024 bits because this should be considered unsecure and you will probably "
-"not need anything more than 2048 bits because it only slows the "
-"authentication process down and is not needed at the moment."
-msgstr "Hãy nhập độ dài của khóa RSA mới được tạo. Nên có ít nhất 1024 bit, vì khóa nào nhỏ hơn kích thước ấy không phải là bảo mật. Rất có thể là bạn sẽ không cần sử dụng độ dài hơn 2048 bit, vì nó chỉ giảm tốc độ tiến trình xác thực, và hiện thời không cần thiết."
+"Optionally you can now enter the location of the file containing the X.509 "
+"Certificate Authority root used to sign your certificate in PEM format. If "
+"you do not have one or do not want to use it please leave the field empty. "
+"Please note that it's not possible to store the RootCA in the same file as "
+"your X.509 certificate or private key."
+msgstr ""
+"Tuỳ chọn bạn giờ có dịp nhập vị trí của tập tin định dạng PEM chứa gốc nhà "
+"cầm quyền cấp chứng nhận X.509 (RootCA) được dùng để ký chứng nhận của mình. "
+"Không có, hoặc không muốn sử dụng nó, thì bỏ trống trường này. Ghi chú rằng "
+"không thể lưu RootCA vào cùng một tập tin với chứng nhận X.509 hay khoá "
+"riêng của bạn."
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:106
-msgid "Do you want to create a self-signed X509 certificate ?"
-msgstr "Bạn có muốn tạo một chứng nhận X509 tự ký không?"
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid "Length of RSA key to be created:"
+msgstr "Chiều dài của khoá RSA cần tạo :"
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:106
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
 msgid ""
-"This installer can only create self-signed X509 certificates automatically, "
-"because otherwise a certificate authority is needed to sign the certificate "
-"request. If you want to create a self-signed certificate, you can use it "
-"immediately to connect to other IPSec hosts that support X509 certificate "
-"for authentication of IPSec connections. However, if you want to use the new "
-"PKI features of Openswan >= 1.91, you will need to have all X509 "
-"certificates signed by a single certificate authority to create a trust path."
-msgstr "Trình cài đặt này chỉ có thể tự động tạo chứng nhận X509 tự ký, vì nếu không thì một nhà cầm quyền chứng nhận (Certificate Authority, CA) phải ký lời yêu cầu chứng nhận ấy. Nếu bạn muốn tạo một chứng nhận tự ký, bạn có thể sử dụng nó ngay lập tức để kết nối đến máy IPSec khác có hỗ trợ sử dụng chứng nhận X509 để xác thực sự kết nối IPSec. Tuy nhiên, nếu bạn muốn sử dụng những tính năng PKI mới của trình Openswan phiên bản ≥1.91, bạn sẽ phải có tất cả những chứng nhận X509 được ký bởi một nhà cầm quyền chứng nhận riêng lẻ, để tạo một «đường dẫn tin cây» (trust path)."
+"Please enter the required RSA key-length. Anything under 1024 bits should be "
+"considered insecure; anything more than 4096 bits slows down the "
+"authentication process and is not useful at present."
+msgstr ""
+"Hãy nhập chiều dài dự định của khoá RSA. Khoá nhỏ hơn 1024 bit không phải an "
+"toàn, và khoá lớn hơn 4096 bit làm cho tiến trình xác thực chạy chậm và hiện "
+"thời không có ích."
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:106
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid "Create a self-signed X.509 certificate?"
+msgstr "Tạo một chứng nhận X.509 tự ký ?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
 msgid ""
-"If you do not want to create a self-signed certificate, then this installer "
-"will only create the RSA private key and the certificate request and you "
-"will have to sign the certificate request with your certificate authority."
-msgstr "Nếu bạn không muốn tạo một chứng nhận tự ký, thì trình cài đặt này sẽ tạo chỉ khóa RSA riêng và lời yêu cầu chứng nhận, và bạn sẽ phải ký lời yêu cầu ấy dùng nhà cầm quyền chứng nhận bạn."
+"Only self-signed X.509 certificates can be created automatically, because "
+"otherwise a Certificate Authority is needed to sign the certificate request. "
+"If you choose to create a self-signed certificate, you can use it "
+"immediately to connect to other IPsec hosts that support X.509 certificate "
+"for authentication of IPsec connections. However, using Openswan's PKI "
+"features requires all certificates to be signed by a single Certificate "
+"Authority to create a trust path."
+msgstr ""
+"Chỉ chứng nhận X.509 tự ký có thể được tự động tạo, vì cho các loại chứng "
+"nhận khác một nhà cầm quyền cấp chứng nhận (CA) cần thiết để ký yêu cầu "
+"chứng nhận. Một chứng nhận tự ký cho phép bạn dùng ngay lập tức để kết nối "
+"tới máy khác mà hỗ trợ sử dụng chứng nhận X.509 để xác thực kết nối IPsec. "
+"Tuy nhiên, tính năng PKI của Openswan yêu cầu mọi chứng nhận đều được ký bởi "
+"cùng một nhà cầm quyền cấp chứng nhận (CA) để tạo một đường dẫn tin cậy."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:124
-msgid "Please enter the country code for the X509 certificate request."
-msgstr "Hãy nhập mã quốc gia cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:124
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
 msgid ""
-"Please enter the 2 letter country code for your country. This code will be "
-"placed in the certificate request."
-msgstr "Hãy nhập mã hai chữ cho quốc gia bạn. Sẽ chèn mã này vào lời yêu cầu chứng nhận."
+"If you do not choose to create a self-signed certificate, only the RSA "
+"private key and the certificate request will be created, and you will have "
+"to sign the certificate request with your Certificate Authority."
+msgstr ""
+"Không muốn tạo chứng nhận tự ký thì trình cài đặt này sẽ chỉ tạo khoá riêng "
+"RSA và yêu cầu chứng nhận, và bạn sẽ cần phải ký yêu cầu chứng nhận bằng nhà "
+"cầm quyền cấp chứng nhận của mình."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:124
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid "Country code for the X.509 certificate request:"
+msgstr "Mã quốc gia cho yêu cầu chứng nhận X.509:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
 msgid ""
-"You really need to enter a valid country code here, because openssl will "
-"refuse to generate certificates without one. An empty field is allowed for "
-"any other field of the X.509 certificate, but not for this one."
-msgstr "Bạn thật cần phải nhập một mã quốc gia hợp lệ vào đây, vì trình OpenSSL sẽ từ chối tạo ra chứng nhận nào khi không có mã ấy. Có thể bỏ rỗng bất cứ trường nào khác cho chứng nhận X509, nhưng mà không phải trường này."
+"Please enter the two-letter code for the country the server resides in (such "
+"as \"AT\" for Austria)."
+msgstr "Hãy nhập mã hai chữ cho quốc gia máy chủ ở (v.d. « VN » cho Việt Nam)."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:124
-msgid "Example: AT"
-msgstr "Lấy thí dụ: VN"
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:137
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
 msgid ""
-"Please enter the state or province name for the X509 certificate request."
-msgstr "Hãy nhập tên bảng hay tỉnh cho lời yêu cầu chứng nhận X509."
+"OpenSSL will refuse to generate a certificate unless this is a valid ISO-"
+"3166 country code; an empty field is allowed elsewhere in the X.509 "
+"certificate, but not here."
+msgstr ""
+"Không có mã quốc gia ISO-3166 đúng thì OpenSSL từ chối tạo chứng nhận. Có "
+"thể bỏ trống trường ở một số nơi khác trong chứng nhận X.509 mà không phải ở "
+"đây."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:137
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
+msgid "State or province name for the X.509 certificate request:"
+msgstr "Tên bang/tỉnh cho yêu cầu chứng nhận X.509:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
 msgid ""
-"Please enter the full name of the state or province you live in. This name "
-"will be placed in the certificate request."
-msgstr "Hãy nhập tên đầy đủ của bang hay tỉnh nơi bạn ở. Sẽ chèn tên này vào lời yêu cầu chứng nhận."
+"Please enter the full name of the state or province the server resides in "
+"(such as \"Upper Austria\")."
+msgstr ""
+"Hãy nhập tên đầy đủ của bang hay tỉnh chứa máy phục vụ (v.d. « Bình Định »)."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:137
-msgid "Example: Upper Austria"
-msgstr "Lấy thí dụ: Bình Định"
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
+msgid "Locality name for the X.509 certificate request:"
+msgstr "Tên vùng cho yêu cầu chứng nhận X.509:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:146
-msgid "Please enter the locality name for the X509 certificate request."
-msgstr "Hãy nhập tên địa phương cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:146
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
 msgid ""
-"Please enter the locality (e.g. city) where you live. This name will be "
-"placed in the certificate request."
-msgstr "Hãy nhập địa phương (v.d. thành phố) nơi bạn ở. Sẽ chèn tên này vào lời yêu cầu chứng nhận."
+"Please enter the locality the server resides in (often a city, such as "
+"\"Vienna\")."
+msgstr "Hãy nhập vùng máy chủ ở (thường là thành phố, v.d. « Hà Nội »)."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:146
-msgid "Example: Vienna"
-msgstr "Lấy thí dụ: Quy Nhơn"
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
+msgid "Organization name for the X.509 certificate request:"
+msgstr "Tên tổ chức cho yêu cầu chứng nhận X.509:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:155
-msgid "Please enter the organization name for the X509 certificate request."
-msgstr "Hãy nhập tên tổ chức cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:155
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
 msgid ""
-"Please enter the organization (e.g. company) that the X509 certificate "
-"should be created for. This name will be placed in the certificate request."
-msgstr "Hãy nhập tổ chức (v.d. công ty) cho mà chứng nhận X509 nên được tạo. Sẽ chèn tên này vào lời yêu cầu chứng nhận."
+"Please enter the organization the server belongs to (such as \"Debian\")."
+msgstr ""
+"Hãy nhập tên của tổ chức (v.d. công ty, trường học, dự án) sở hữu máy chủ."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:155
-msgid "Example: Debian"
-msgstr "Lấy thí dụ: Debian"
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
+msgid "Organizational unit for the X.509 certificate request:"
+msgstr "Tên đơn vị tổ chức cho yêu cầu chứng nhận X.509:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:165
-msgid "Please enter the organizational unit for the X509 certificate request."
-msgstr "Hãy nhập tên đơn vị tổ chức cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:165
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
 msgid ""
-"Please enter the organizational unit (e.g. section) that the X509 "
-"certificate should be created for. This name will be placed in the "
-"certificate request."
-msgstr "Hãy nhập đơn vị tổ chức (v.d. phần) cho mà chứng nhận X509 nên được tạo. Sẽ chèn tên này vào lời yêu cầu chứng nhận."
+"Please enter the organizational unit the server belongs to (such as "
+"\"security group\")."
+msgstr "Hãy nhập đơn vị tổ chức (v.d. « nhóm bảo mật ») sử dụng máy chủ này."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:165
-msgid "Example: security group"
-msgstr "Lấy thí dụ: nhóm Việt hóa"
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
+msgid "Common Name for the X.509 certificate request:"
+msgstr "Tên chung cho yêu cầu chứng nhận X.509:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:175
-msgid "Please enter the common name for the X509 certificate request."
-msgstr "Hãy nhập tên chung cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:175
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
 msgid ""
-"Please enter the common name (e.g. the host name of this machine) for which "
-"the X509 certificate should be created for. This name will be placed in the "
-"certificate request."
-msgstr "Hãy nhập tên chung (v.d. tên máy) cho mà chứng nhận X509 nên được tạo. Sẽ chèn tên này vào lời yêu cầu chứng nhận."
+"Please enter the Common Name for this host (such as \"gateway.example.org\")."
+msgstr "Hãy nhập tên chung cho máy này (v.d. « cổng_ra.ví_dụ.org »)."
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:175
-msgid "Example: gateway.debian.org"
-msgstr "Lấy thí cụ: gateway.debian.org"
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
+msgid "Email address for the X.509 certificate request:"
+msgstr "Địa chỉ thư điện tử cho yêu cầu chứng nhận X.509:"
 
-#.Type: string
-#.Description
-#:../openswan.templates.master:185
-msgid "Please enter the email address for the X509 certificate request."
-msgstr "Hãy nhập địa chỉ thư điện tử chung cho lời yêu cầu chứng nhận X509."
-
-#.Type: string
-#.Description
-#:../openswan.templates.master:185
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
 msgid ""
-"Please enter the email address of the person or organization who is "
-"responsible for the X509 certificate, This address will be placed in the "
-"certificate request."
-msgstr "Hãy nhập địa chỉ thư điện tử của người hay tổ chức chịu trách nhiệm về chứng nhận X509 này. Sẽ chèn địa chỉ này vào lời yêu cầu chứng nhận."
+"Please enter the email address of the person or organization responsible for "
+"the X.509 certificate."
+msgstr ""
+"Hãy nhập địa chỉ thư điện tử của người hay tổ chức chịu trách nhiệm về chứng "
+"nhận X509 này."
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:193
-msgid "Do you wish to enable opportunistic encryption in Openswan?"
-msgstr "Bạn có muốn hiệu lực mật mã loại cơ hội chủ nghĩa trong trình Openswan không?"
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
+msgid "Modification of /etc/ipsec.conf"
+msgstr "Sửa đổi « /etc/ipsec.conf »"
 
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:193
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
 msgid ""
-"Openswan comes with support for opportunistic encryption (OE), which stores "
-"IPSec authentication information (i.e. RSA public keys) in (preferrably "
-"secure) DNS records. Until this is widely deployed, activating it will cause "
-"a significant slow-down for every new, outgoing connection. Since version "
-"2.0, Openswan upstream comes with OE enabled by default and is thus likely "
-"to break you existing connection to the Internet (i.e. your default route) "
-"as soon as pluto (the Openswan keying daemon) is started."
-msgstr "Trình Openswan hỗ trợ có sẵn mật mã cơ hội chủ nghĩa (OE: opportunistic encryption) mà cất giữ thông tin xác thực IPSec (tức là khóa công RSA) trong mục ghi DNS (thích hơn loại bảo mật). Cho đến khi tính năng này thường dụng, hoạt hóa nó sẽ giảm một cách quan trọng mỗi sự kết nối ra mới. Từ phiên bản 2.0, trình Openswan gốc đã hiệu lực OE theo mặc định, thì sẽ rất có thể ngắt sự kết nối hiện thời đến Mạng của bạn (tức là đường mặc định) một khi khởi chạy pluto (trình nền quản lý khóa Openswan)."
-
-#.Type: boolean
-#.Description
-#:../openswan.templates.master:193
-msgid ""
-"Please choose whether you want to enable support for OE. If unsure, do not "
-"enable it."
-msgstr "Hãy chọn có nên muốn hiệu lực hỗ trợ OE hay không. Nếu chưa chắc thì đừng bật nó."
+"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"enabled by default. The no_oe.conf file that was shipped in earlier versions "
+"to explicitly disable it can therefore no longer be included by ipsec.conf. "
+"Any such include paragraph will now be automatically removed to ensure that "
+"Openswan can start correctly."
+msgstr ""
+"Do một thay đổi được làm trong phần mềm Openswan bởi dự án gốc, chức năng "
+"mật mã cơ hội chủ nghĩa không phải được hiệu lực theo mặc định. Tập tin « "
+"no_oe.conf » có sẵn trong phiên bản trước để tắt chức năng này thì không còn "
+"được bao gồm lại bởi « ipsec.conf ». Bất cứ đoạn văn bao gồm (include) tương "
+"ứng nào giờ được tự động gỡ bỏ để đảm bảo rằng Openswan khởi chạy đúng."
