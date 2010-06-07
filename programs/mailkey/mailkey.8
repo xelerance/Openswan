@@ -11,7 +11,7 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec mailkey - mail DNS records for Opportunistic Encryption
+ipsec_mailkey \- mail DNS records for Opportunistic Encryption
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \-\-me\ \fImy@address\.tld\fR [\-\-reverse\ \fI1\.2\.3\.4\ aaa\fR] [\-\-forward\ \fIhostname\.domain\.tld\fR]
@@ -20,7 +20,7 @@ ipsec mailkey - mail DNS records for Opportunistic Encryption
 \fIMailkey\fR
 is a meta\-program\. It generates a script which will attempt to mail the TXT records required to enable Opportunistic Encryption (OE)\.
 .PP
-An e\-mail address for the domain\(^as DNS administrator is derived from SOA records\. The mail body and destination address are freely editable in the script\.
+An e\-mail address for the domain's DNS administrator is derived from SOA records\. The mail body and destination address are freely editable in the script\.
 .PP
 If no administrator can be located, the output file will not be executable\.
 .PP
@@ -44,7 +44,7 @@ creates the i\-OE record for use on bofh\.xelerance\.com\.
 .PP
 \fBipsec mailkey \-\-me paul@xelerance\.com \-\-reverse 193\.110\.157\.17\fR
 .RS 4
-creates full\-OE record for use on bofh\.xelerance\.com\'s static IP address\.
+creates full\-OE record for use on bofh\.xelerance\.com's static IP address\.
 .RE
 .SH "FILES"
 .PP

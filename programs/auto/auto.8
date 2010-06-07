@@ -11,7 +11,7 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec auto - control automatically-keyed IPsec connections
+ipsec_auto \- control automatically-keyed IPsec connections
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \fIauto\fR [\-\-show] [\-\-showonly] [\-\-asynchronous]
@@ -66,13 +66,13 @@ operation adds a connection specification to the internal database within
 already has a specification by that name\. The
 \fB\-\-delete\fR
 operation deletes a connection specification from
-\fIpluto\fR\'s internal database (also tearing down any connections based on it); it will fail if the specification does not exist\. The
+\fIpluto\fR's internal database (also tearing down any connections based on it); it will fail if the specification does not exist\. The
 \fB\-\-replace\fR
 operation is equivalent to
 \fB\-\-delete\fR
 (if there is already a specification by the given name) followed by
 \fB\-\-add\fR, and is a convenience for updating
-\fIpluto\fR\'s internal specification to match an external one\. (Note that a
+\fIpluto\fR's internal specification to match an external one\. (Note that a
 \fB\-\-rereadsecrets\fR
 may also be needed\.) The
 \fB\-\-rereadgroups\fR
@@ -98,7 +98,7 @@ operation\. However, the route and only the route can be established with the
 operation\. Until and unless an actual connection is established, this discards any packets sent there, which may be preferable to having them sent elsewhere based on a more general route (e\.g\., a default route)\.
 .PP
 Normally,
-\fIpluto\fR\'s route to a destination remains in place when a
+\fIpluto\fR's route to a destination remains in place when a
 \fB\-\-down\fR
 operation is used to take the connection down (or if connection setup, or later automatic rekeying, fails)\. This permits establishing a new connection (perhaps using a different specification; the route is altered as necessary) without having a \(lqwindow\(rq in which packets might go elsewhere based on a more general route\. Such a route can be removed using the
 \fB\-\-unroute\fR
@@ -138,23 +138,23 @@ but that may change\.)
 .PP
 The
 \fB\-\-rereadcacerts\fR
-operation reads all certificate files contained in the /etc/ipsec\.d/cacerts directory and adds them to pluto\(^as list of Certification Authority (CA) certificates\.
+operation reads all certificate files contained in the /etc/ipsec\.d/cacerts directory and adds them to pluto's list of Certification Authority (CA) certificates\.
 .PP
 The
 \fB\-\-rereadaacerts\fR
-operation reads all certificate files contained in the /etc/ipsec\.d/aacerts directory and adds them to pluto\(^as list of Authorization Authority (AA) certificates\.
+operation reads all certificate files contained in the /etc/ipsec\.d/aacerts directory and adds them to pluto's list of Authorization Authority (AA) certificates\.
 .PP
 The
 \fB\-\-rereadocspcerts\fR
-operation reads all certificate files contained in the /etc/ipsec\.d/ocspcerts directory and adds them to pluto\(^as list of OCSP signer certificates\.
+operation reads all certificate files contained in the /etc/ipsec\.d/ocspcerts directory and adds them to pluto's list of OCSP signer certificates\.
 .PP
 The
 \fB\-\-rereadacerts\fR
-operation reads all certificate files contained in the /etc/ipsec\.d/acerts directory and adds them to pluto\(^as list of attribute certificates\.
+operation reads all certificate files contained in the /etc/ipsec\.d/acerts directory and adds them to pluto's list of attribute certificates\.
 .PP
 The
 \fB\-\-rereadcrls\fR
-operation reads all certificate revocation list (CRL) files contained in the /etc/ipsec\.d/crls directory and adds them to pluto\(^as list of CRLs\.
+operation reads all certificate revocation list (CRL) files contained in the /etc/ipsec\.d/crls directory and adds them to pluto's list of CRLs\.
 .PP
 The
 \fB\-\-rereadall\fR

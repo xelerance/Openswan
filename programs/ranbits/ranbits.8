@@ -11,7 +11,7 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec ranbits - generate random bits in ASCII form
+ipsec_ranbits \- generate random bits in ASCII form
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \fIranbits\fR [\-\-quick] [\-\-continuous] [\-\-bytes] \fInbits\fR
@@ -69,7 +69,7 @@ There is an internal limit on
 .PP
 Without
 \fB\-\-quick\fR,
-\fIranbits\fR\'s run time is difficult to predict\. A request for a large number of bits, at a time when the system\'s entropy pool is low on randomness, may take quite a while to satisfy\.
+\fIranbits\fR's run time is difficult to predict\. A request for a large number of bits, at a time when the system's entropy pool is low on randomness, may take quite a while to satisfy\.
 .PP
 Though not a bug of ranbits, the direct use of
 \fI/dev/hw_random\fR, the Linux hardware random number generator is not supported because it can produce very non\-random data\. To properly use

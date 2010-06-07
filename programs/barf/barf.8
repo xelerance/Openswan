@@ -11,7 +11,7 @@
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec barf - spew out collected IPsec debugging information
+ipsec_barf \- spew out collected IPsec debugging information
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \fIbarf\fR [\-\-short\ \-\-maxlines\ \fI<100>\fR]
@@ -23,7 +23,7 @@ outputs (on standard output) a collection of debugging information (contents of 
 The
 \fB\-\-short\fR
 option limits the length of the log portion of
-\fIbarf\fR\'s output, which can otherwise be extremely voluminous if debug logging is turned on\.
+\fIbarf\fR's output, which can otherwise be extremely voluminous if debug logging is turned on\.
 .PP
 \fB\-\-maxlines <100>\fR
 option sets the length of some bits of information, currently netstat \-rn\. Useful on boxes where the routing table is thousands of lines long\. Default is 100\.
@@ -63,7 +63,7 @@ Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org\fR> by Hen
 \fIBarf\fR
 uses heuristics to try to pick relevant material out of the logs, and relevant messages which are not labelled with any of the tags that
 \fIbarf\fR
-looks for will be lost\. We think we\'ve eliminated the last such case, but one never knows\.\.\.
+looks for will be lost\. We think we've eliminated the last such case, but one never knows\.\.\.
 .PP
 Finding
 \fIupdown\fR

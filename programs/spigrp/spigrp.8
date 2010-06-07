@@ -42,7 +42,7 @@ Note that spi is only supported on the classic KLIPS stack\&. It is not supporte
 groups IPSEC Security Associations (SAs) together or ungroups previously grouped SAs\&. An entry in the IPSEC extended routing table can only point (via a destination address, a Security Parameters Index (SPI) and a protocol identifier) to one SA\&. If more than one transform must be applied to a given type of packet, this can be accomplished by setting up several SAs with the same destination address but potentially different SPIs and protocols, and grouping them with
 \fIspigrp\fR\&.
 .PP
-The SAs to be grouped, specified by destination address (DNS name lookup, IPv4 dotted quad or IPv6 coloned hex), SPI (\'0x\'\-prefixed hexadecimal number) and protocol ("ah", "esp", "comp" or "tun"), are listed from the inside transform to the outside; in other words, the transforms are applied in the order of the command line and removed in the reverse order\&. The resulting SA group is referred to by its first SA (by
+The SAs to be grouped, specified by destination address (DNS name lookup, IPv4 dotted quad or IPv6 coloned hex), SPI ('0x'\-prefixed hexadecimal number) and protocol ("ah", "esp", "comp" or "tun"), are listed from the inside transform to the outside; in other words, the transforms are applied in the order of the command line and removed in the reverse order\&. The resulting SA group is referred to by its first SA (by
 \fIaf1\fR,
 \fIdst1\fR,
 \fIspi1\fR
@@ -110,4 +110,4 @@ ipsec(8), ipsec_manual(8), ipsec_tncfg(8), ipsec_eroute(8), ipsec_spi(8), ipsec_
 Written for the Linux FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org/\fR\m[]> by Richard Guy Briggs\&.
 .SH "BUGS"
 .PP
-Yes, it really is limited to a maximum of four SAs, although admittedly it\'s hard to see why you would need more\&.
+Yes, it really is limited to a maximum of four SAs, although admittedly it's hard to see why you would need more\&.

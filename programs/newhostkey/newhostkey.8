@@ -5,13 +5,13 @@
 .\"    Manual: 28 Oct 2006
 .\"    Source: 28 Oct 2006
 .\"
-.TH "IPSEC_RANBITS" "8" "11/14/2008" "28 Oct 2006" "28 Oct 2006"
+.TH "IPSEC_NEWHOSTKEY" "8" "11/14/2008" "28 Oct 2006" "28 Oct 2006"
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
 .SH "NAME"
-ipsec newhostkey - generate a new raw RSA authentication key for a host
+ipsec_newhostkey \- generate a new raw RSA authentication key for a host
 .SH "SYNOPSIS"
 .HP 6
 \fBipsec\fR \fInewhostkey\fR [[\-\-quiet] | [\-\-verbose]] [\-\-bits\ \fIbits\fR] [\-\-hostname\ \fIhostname\fR] \-\-output\ \fIfilename\fR
@@ -57,7 +57,7 @@ The output format is that of
 \fIipsec\.secrets\fR
 format\. In the usual case, where
 \fIipsec\.secrets\fR
-contains only the host\(^as own private key, the output of
+contains only the host's own private key, the output of
 \fInewhostkey\fR
 is sufficient as a complete
 \fIipsec\.secrets\fR
@@ -75,7 +75,7 @@ Written for the Linux FreeS/WAN project <\fIhttp://www\.freeswan\.org\fR> by Hen
 .SH "BUGS"
 .PP
 As with
-\fIrsasigkey\fR, the run time is difficult to predict, since depletion of the system\(^as randomness pool can cause arbitrarily long waits for random bits, and the prime\-number searches can also take unpre dictable (and potentially large) amounts of CPU time\. See
+\fIrsasigkey\fR, the run time is difficult to predict, since depletion of the system's randomness pool can cause arbitrarily long waits for random bits, and the prime\-number searches can also take unpre dictable (and potentially large) amounts of CPU time\. See
 \fBipsec_rsasigkey\fR(8)
 for some typical performance numbers\.
 .PP
