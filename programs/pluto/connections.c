@@ -771,11 +771,15 @@ unshare_connection_strings(struct connection *c)
 	
     /* increment references to algo's, if any */
     if(c->alg_info_ike) {
+#ifdef KERNEL_ALG
 	alg_info_addref(IKETOINFO(c->alg_info_ike));
+#endif
     }
 
     if(c->alg_info_esp) {
+#ifdef KERNEL_ALG
 	alg_info_addref(ESPTOINFO(c->alg_info_esp));
+#endif
     }
 }
 
@@ -1398,12 +1402,6 @@ add_connection(const struct whack_message *wm)
 	}
 
 	unshare_connection_strings(c);
-#ifdef KERNEL_ALG
-	alg_info_addref((struct alg_info *)c->alg_info_esp);
-#endif
-#ifdef IKE_ALG
-	alg_info_addref((struct alg_info *)c->alg_info_ike);
-#endif
 
 	(void)orient(c);
 	connect_to_host_pair(c);
@@ -1554,14 +1552,6 @@ instantiate(struct connection *c, const ip_address *him
     unshare_connection_strings(d);
     unshare_ietfAttrList(&d->spd.this.groups);
     unshare_ietfAttrList(&d->spd.that.groups);
-
-
-#ifdef KERNEL_ALG
-    alg_info_addref((struct alg_info *)d->alg_info_esp);
-#endif
-#ifdef IKE_ALG
-    alg_info_addref((struct alg_info *)d->alg_info_ike);
-#endif
 
     d->kind = CK_INSTANCE;
 
