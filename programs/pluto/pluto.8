@@ -44,7 +44,7 @@ ipsec_pluto \- ipsec whack : IPsec IKE keying daemon and control interface
 .br
 
 .br
-[\-\-tunnel] [\-\-psk] [\-\-rsasig] [\-\-encrypt] [\-\-authenticate] [\-\-compress] [\-\-pfs] [\-\-pfsgroup\ [modp1024]\ |\ [modp1536]\ |\ [modp2048]\ |\ [modp3072]\ |\ [modp4096]\ |\ [modp6144]\ |\ [modp8192]] [\-\-disablearrivalcheck] [\-\-ikelifetime\ \fIseconds\fR] [\-\-ipseclifetime\ \fIseconds\fR] [\-\-rekeymargin\ \fIseconds\fR] [\-\-rekeyfuzz\ \fIpercentage\fR] [\-\-keyingtries\ \fIcount\fR] [\-\-esp\ \fIesp\-algos\fR] [\-\-dontrekey] [\-\-aggrmode] [\-\-modecfgpull] [[\-\-dpddelay\ \fIseconds\fR] | [\-\-dpdtimeout\ \fIseconds\fR]] [\-\-dpdaction\ [clear]\ |\ [hold]\ |\ [restart]] [\-\-forceencaps] [[\-\-initiateontraffic]\ |\ [\-\-pass]\ |\ [\-\-drop]\ |\ [\-\-reject]] [[\-\-failnone]\ |\ [\-\-failpass]\ |\ [\-\-faildrop]\ |\ [\-\-failreject]] [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
+[\-\-tunnel] [\-\-psk] [\-\-rsasig] [\-\-encrypt] [\-\-authenticate] [\-\-compress] [\-\-pfs] [\-\-pfsgroup [modp1024] | [modp1536] | [modp2048] | [modp3072] | [modp4096] | [modp6144] | [modp8192]] [\-\-disablearrivalcheck] [\-\-ikelifetime \fIseconds\fR] [\-\-ipseclifetime \fIseconds\fR] [\-\-rekeymargin \fIseconds\fR] [\-\-rekeyfuzz \fIpercentage\fR] [\-\-keyingtries \fIcount\fR] [\-\-esp \fIesp\-algos\fR] [\-\-dontrekey] [\-\-aggrmode] [\-\-modecfgpull] [[\-\-dpddelay \fIseconds\fR] | [\-\-dpdtimeout \fIseconds\fR]] [\-\-dpdaction [clear] | [hold] | [restart]] [\-\-forceencaps] [[\-\-initiateontraffic] | [\-\-pass] | [\-\-drop] | [\-\-reject]] [[\-\-failnone] | [\-\-failpass] | [\-\-faildrop] | [\-\-failreject]] [\-\-ctlbase \fIpath\fR] [\-\-optionsfrom \fIfilename\fR] [\-\-label \fIstring\fR]
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIwhack\fR \-\-keyid\ \fIid\fR [\-\-addkey] [\-\-pubkeyrsa\ \fIkey\fR] [\-\-ctlbase\ \fIpath\fR] [\-\-optionsfrom\ \fIfilename\fR] [\-\-label\ \fIstring\fR]
 .HP \w'\fBipsec\fR\ 'u
@@ -248,7 +248,7 @@ To fire up the daemon, just type
 must be run by the superuser to be able to use the UDP 500 port\&. If pluto is told to enable NAT\-Traversal, then UDP port 4500 is also taken by pluto to listen on\&.
 .PP
 Pluto supports different IPstacks on different operating systems\&. The option
-\fB\-\-use\-auto\fR, which is also the default, lets pluto find a stack automatically\&. This behaviour can be changed by explicitely setting the stack using
+\fB\-\-use\-auto\fR, which is also the default, lets pluto find a stack automatically\&. This behaviour can be changed by explicitly setting the stack using
 \fB\-\-use\-klips\fR,
 \fB\-\-use\-netkey\fR
 or
@@ -300,7 +300,7 @@ interface, see
 \fIadns\fR
 interface if there is no BIND9 running with
 \fIlwres {}\fR
-on the host, but then pluto cannot do any DNSSEC processing\&. Pluto forks and starts these DNS helpers in seperate children\&. The options
+on the host, but then pluto cannot do any DNSSEC processing\&. Pluto forks and starts these DNS helpers in separate children\&. The options
 \fB\-\-lwdnsq\fR
 and
 \fB\-\-adns\fR
@@ -842,7 +842,7 @@ When a DPD enabled peer is declared dead, what action should be taken\&.
 \fBhold\fR(default) means the eroute will be put into
 \fI%hold\fR
 status, while
-\fBclear\fRmeans the eroute and SA with both be cleared\&. Clear is really only usefull on the server of a Road Warrior config\&. The action
+\fBclear\fRmeans the eroute and SA with both be cleared\&. Clear is really only useful on the server of a Road Warrior config\&. The action
 \fBrestart\fR
 is used on tunnels that need to be permanently up, and have static IP addresses\&.
 .RE
