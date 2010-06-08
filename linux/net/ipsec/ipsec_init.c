@@ -283,9 +283,11 @@ ipsec_klips_init(void)
 	if (error)
 		goto error_mast_init_devices;
 
+#ifdef CONFIG_INET_IPSEC_SAREF
 	error = ipsec_mast_init_saref();
 	if (error)
 		goto error_mast_init_saref;
+#endif
 
 /* This is no longer needed for >= 2.6.23. We use HAVE_UDP_ENCAP_CONVERT */
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
@@ -316,8 +318,10 @@ ipsec_klips_init(void)
 
         // undo ipsec_sysctl_register
 error_sysctl_register:
+#ifdef CONFIG_INET_IPSEC_SAREF
 	ipsec_mast_cleanup_saref();
 error_mast_init_saref:
+#endif
 	ipsec_mast_cleanup_devices();
 error_mast_init_devices:
 	ipsec_tunnel_cleanup_devices();
@@ -384,7 +388,10 @@ ipsec_cleanup(void)
 	}
 # endif
 #endif
+
+#ifdef CONFIG_INET_IPSEC_SAREF
 	ipsec_mast_cleanup_saref();
+#endif
 
 	error |= ipsec_mast_cleanup_devices();
 
