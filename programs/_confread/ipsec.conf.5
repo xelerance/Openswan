@@ -2,12 +2,12 @@
 .\"     Title: IPSEC.CONF
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/01/2010
+.\"      Date: 06/09/2010
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC\&.CONF" "5" "06/01/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC\&.CONF" "5" "06/09/2010" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -767,17 +767,17 @@ This option is obsoleted, please use phase2alg if you need the pfs to be differe
 Use Aggressive Mode instead of Main Mode\&. Aggressive Mode is less secure, and vulnerable to Denial Of Service attacks\&. It is also vulnerable to brute force attacks with software such as
 \fBikecrack\fR\&. It should not be used, and it should especially not be used with XAUTH and group secrets (PSK)\&. If the remote system administrator insists on staying irresponsible, enable this option\&.
 .sp
-Aggressive Mode is further limited to only one proposal \- there is no room for negotiation\&. Therefor it is mandatory for Aggressive Mode connections that both
+Aggressive Mode is further limited to only proposals with one DH group as there is no room to negotiate the DH group\&. Therefor it is mandatory for Aggressive Mode connections that both
 \fBike=\fR
 and
 \fBphase2alg=\fR
-options are specified with exactly one fully specified proposal\&. Acceptable values are
+options are specified with only fully specified proposal using one DH group\&. Acceptable values are
 \fByes\fR
 or
 \fBno\fR
 (the default)\&.
 .sp
-The ISAKMP SA is created in exchange 1 in aggressive mode\&. Openswan has to send the exponent during that exchange, so it has to know what DH group to use before starting\&. This is why you can not have multiple DH groups in aggressive mode\&. It also has to pick which has to use since it needs to know which PRF to use to generate keys \- in IKEv1 the hash negotiated is really the PRF\&. In concept, Openswan could perhaps propose 3DES and AES128 in aggressive mode, but this needs to be verified and is currently not supported\&.
+The ISAKMP SA is created in exchange 1 in aggressive mode\&. Openswan has to send the exponent during that exchange, so it has to know what DH group to use before starting\&. This is why you can not have multiple DH groups in aggressive mode\&. In IKEv2, which uses a similar method to IKEv1 Aggressive Mode, there is a message to convey the DH group is wrong, and so an IKEv2 connection can actually recover from picking the wrong DH group by restarting its negotiation\&.
 .RE
 .PP
 \fBsalifetime\fR
