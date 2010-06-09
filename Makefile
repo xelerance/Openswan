@@ -52,7 +52,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 	pcf ocf mcf xcf rcf nopromptgo \
 	precheck verset confcheck kernel \
 	module module24 module26 kinstall minstall minstall24 minstall26 \
-	backup unpatch uinstall install_file_list \
+	backup unpatch uninstall install_file_list \
 	snapready relready ready buildready devready uml check taroldinstall \
 	umluserland
 
