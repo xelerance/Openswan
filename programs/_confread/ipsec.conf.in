@@ -45,5 +45,5 @@ config setup
 #		rightnexthop=10.101.102.103
 #		# To authorize this connection, but not actually start it, 
 #		# at startup, uncomment this.
-#		#auto=start
+#		#auto=add
 
