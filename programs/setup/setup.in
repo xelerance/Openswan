@@ -52,10 +52,10 @@ IPSEC_SBINDIR="${IPSEC_SBINDIR-@IPSEC_SBINDIR@}"
 IPSEC_CONFS="${IPSEC_CONFS-@IPSEC_CONFS@}"
 
 if [ `id -u` -ne 0 ]
-    then
-        echo "permission denied (must be superuser)" |
-	      logger -s -p daemon.error -t ipsec_setup 2>&1
-        exit 4
+then
+    echo "permission denied (must be superuser)" |
+      logger -s -p daemon.error -t ipsec_setup 2>&1
+    exit 4
 fi
 
 if test " $IPSEC_DIR" = " "	# if we were not called by the ipsec command
@@ -94,7 +94,7 @@ start() {
     IPSEC_confreadsection=${IPSEC_confreadsection:-setup}
     export IPSEC_confreadsection
 
-    IPSECsyslog=${IPSECsyslog-daemon.error}
+    IPSECsyslog=${IPSECsyslog:-daemon.error}
     export IPSECsyslog
 
     # remove for: @cygwin_END@
@@ -107,7 +107,7 @@ start() {
 
 
 stop() {
-    IPSECsyslog=${IPSECsyslog-daemon.error}
+    IPSECsyslog=${IPSECsyslog:-daemon.error}
     export IPSECsyslog
     (
     ipsec _realsetup stop
@@ -165,8 +165,8 @@ case "$1" in
          version
          ;;
     *)
-         echo $"Usage: $prog {start|stop|restart|reload|force-reload|condrestart|try-restart|status|version}"
- 	 RETVAL=2
+         echo "Usage: $prog {start|stop|restart|reload|force-reload|condrestart|try-restart|status|version}"
+         RETVAL=2
 esac
  	
 exit $RETVAL

@@ -18,6 +18,7 @@ me='ipsec setup'		# for messages
 # Misc. paths (some of this should perhaps be overrideable from ipsec.conf).
 plutopid=/var/run/pluto/pluto.pid
 plutoctl=/var/run/pluto/pluto.ctl
+subsysdir=/var/lock/subsys
 subsyslock=/var/lock/subsys/ipsec
 lock=/var/run/pluto/ipsec_setup.pid
 info=/var/run/pluto/ipsec.info
@@ -88,10 +89,10 @@ auto)
 klips)  netkey=false; klips=true;  mast=false;;
 mast)   netkey=false; klips=false; mast=true;;
 netkey) 
-        if test \! -f $kamepfkey
-        then
-                @MODPROBE@ af_key;
-	fi;
+    if test \! -f $kamepfkey
+    then
+        @MODPROBE@ af_key;
+	fi
 	netkey=true;  klips=false; mast=false;;
 none)   netkey=false; klips=false; mast=false;;
 nostack) netkey=false; klips=false; mast=false;;
@@ -282,7 +283,7 @@ case "$1" in
 
 	# misc pre-Pluto setup
 
-	perform test -d `dirname $subsyslock` "&&" touch $subsyslock
+	perform test -d $subsysdir "&&" touch $subsyslock
 
 	manualconns
 
@@ -382,7 +383,7 @@ case "$1" in
 		    done
 	fi 
 
-	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
+	perform test -d $subsysdir "&&" rm -f $subsyslock
 
 	perform rm -f $info $lock $plutopid
 	perform echo "...Openswan ${VENDOR}IPsec stopped" "|" $LOGONLY

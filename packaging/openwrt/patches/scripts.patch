@@ -125,27 +125,6 @@ diff -uNr openswan-2.3.0.orig/programs/send-pr/send-pr.in openswan-2.3.0/program
  			echo "/^>${fieldname}:/ s/${dpat}//" >> $FIXFIL
  		    fi
  		    echo "${fmtname}${desc}" >> $file
-diff -uNr openswan-2.3.0.orig/programs/_realsetup/_realsetup.in openswan-2.3.0/programs/_realsetup/_realsetup.in
---- openswan-2.3.0.orig/programs/_realsetup/_realsetup.in	2004-12-10 13:10:04.000000000 +0000
-+++ openswan-2.3.0/programs/_realsetup/_realsetup.in	2005-02-02 20:34:54.000000000 +0000
-@@ -209,7 +209,7 @@
- 
- 	# misc pre-Pluto setup
- 
--	perform test -d `dirname $subsyslock` "&&" touch $subsyslock
-+	perform test -d `echo $subsyslock | sed -r 's/(^.*\/)(.*$)/\1/'` "&&" touch $subsyslock
- 
- 	if test " $IPSECforwardcontrol" = " yes"
- 	then
-@@ -313,7 +313,7 @@
- 		lsmod 2>&1 | grep "^xfrm_user" > /dev/null && rmmod -s xfrm_user
- 	fi 
- 
--	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
-+	perform test -d `echo $subsyslock | sed -r 's/(^.*\/)(.*$)/\1/'` "&&" touch $subsyslock "&&" rm -f $subsyslock
- 
- 	perform rm -f $info $lock $plutopid
- 	perform echo "...Openswan IPsec stopped" "|" $LOGONLY
 --- openswan-2.3.0.orig/programs/_plutorun/_plutorun.in	2004-11-03 20:21:08.000000000 +0000
 +++ openswan-2.3.0/programs/_plutorun/_plutorun.in	2005-02-02 20:34:54.000000000 +0000
 @@ -140,7 +140,7 @@
