@@ -2078,7 +2078,7 @@
           <term><option>--listcacerts</option></term>
 
           <listitem>
-            <para>list all the X.509 Certificate Agency (CA) certificates that
+            <para>list all the X.509 Certificate Authority (CA) certificates that
             are currently loaded.</para>
           </listitem>
         </varlistentry>
