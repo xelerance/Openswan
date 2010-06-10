@@ -89,7 +89,7 @@ orient(struct connection *c)
 	    /* There can be more then 1 spd policy associated - required
 	     * for cisco split networking when remote_peer_type=cisco
 	     */
-	    if(c->remotepeertype ==CISCO && sr != &c->spd ) continue;
+	    if(c->remotepeertype == CISCO && sr != &c->spd ) continue;
 
 	    /* Note: this loop does not stop when it finds a match:
 	     * it continues checking to catch any ambiguity.
