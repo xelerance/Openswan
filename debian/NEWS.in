@@ -1,0 +1,12 @@
+openswan ($VERSION) unstable; urgency=low
+
+  This package is NOT an official Debian paket from the Debian openswan
+  developers. Please do not file any Debian bug reports for this package but
+  contact <dev@openswan.org> or <harald@a-little-linux-box.at> if you have a
+  problem. Thanks!
+
+ -- Harald Jenny <harald@a-little-linux-box.at>  Fri, 11 Jun 2010 23:24:15 +0200
+
+Local variables:
+mode: debian-changelog
+End:
