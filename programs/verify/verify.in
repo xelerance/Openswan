@@ -30,6 +30,14 @@ if ( $ctype && !($ctype eq "serial"))
 {
     $colour="1";
 }
+else
+{
+     $ctype=`/usr/bin/tput colors`;
+     if ( $ctype && ($ctype gt "0"))
+     {
+         $colour="1";
+     }
+}
 
 sub printfun {
   print sprintf("%-60s",@_);
