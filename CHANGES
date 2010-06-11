@@ -5,11 +5,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.27 (unreleased)
-* Remove the obsolete _confread script. [Simon]
-* Correct the creation of the directory /var/lock/subsys. [Simon]
-* Set a default value for IPSECsyslog in setup to avoid logger errors. [Simon]
-* Cleanup source code to use C-style comments [Tuomo]
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
+* KLIPS compile fixes for 2.4 kernels [David]
+* Memory leak fix unshare_connection_strings [Shinichi Furuso]
+* define ALLOW_MICROSOFT_BAD_PROPOSAL to allow connecting to behind NAT [Paul]
 * Missing load_oswcrypto() call 'ipsec showhostkey' [Kevin Locke]
   (this is http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=575757?)
 * Log the netfilter mark (him/me) with HAVE_STATSD=true [Paul]
@@ -18,17 +17,18 @@ v2.6.27 (unreleased)
 * contrib/sarefnc is netcat (nc) with saref settable option [Bart]
 * Allow multiple proposals in Aggressive Mode, as long as the DH group is
   the same for all of them [Michael H. Warfield]
-* KLIPS compile fixes for 2.4 kernels [David]
-* Memory leak fix unshare_connection_strings [Shinichi Furuso]
 * alg_info_addref() needed #ifdef KERNEL_ALG like  alg_info_delref() [Shinichi]
-* define ALLOW_MICROSOFT_BAD_PROPOSAL to allow connecting to behind NAT [Paul]
+* Remove the obsolete _confread script. [Simon]
+* Correct the creation of the directory /var/lock/subsys. [Simon]
+* Set a default value for IPSECsyslog in setup to avoid logger errors. [Simon]
+* Cleanup source code to use C-style comments [Tuomo]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
           Fix virtual_private checks to give correct warnings [Tuomo]
    #1101: protoport code and nat-t code are switching ports with netkey
           [Mika Ilmaranta/Tuomo]
-   #1106: Incorrect xfrm policy with both-NAT client connection
+   #1106: Incorrect xfrm policy with both-NAT client connection [Paul]
 
 v2.6.26 (May 25, 2010)
 * KLIPS fixes for 2.6.33 kernel [Greg Ungerger/David]
