@@ -2554,7 +2554,7 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 			cname="neither";
 		    }
 
-		    openswan_log("overlap is forbidded (%s%s%s agree%s to overlap)"
+		    openswan_log("overlap is forbidden (%s%s%s agree%s to overlap)"
 				 , cname
 				 , cbuf
 				 , doesnot
