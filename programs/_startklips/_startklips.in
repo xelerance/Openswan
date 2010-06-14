@@ -336,7 +336,7 @@ fi
 if $mast
 then
     # flush policy out
-    if iptables -t mangle -L IPSEC >/dev/null
+    if iptables -t mangle -n -L IPSEC >/dev/null
     then
 	iptables -t mangle -F IPSEC
     fi
