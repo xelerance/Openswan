@@ -587,8 +587,13 @@ could_route(struct connection *c)
     {
         loglog(RC_LOG_SERIOUS, "cannot route -- route already in use for \"%s\""
             , ro->name);
-        return route_impossible;  /* another connection already using the
-				     eroute. TODO: NETKEY can do this? */
+        /* We ignore this if the stack supports overlapping, and this
+         * connection was marked that overlapping is OK.  Below we will
+         * check the other eroute, ero. */
+        if (!kernel_ops->overlap_supported || !ero || ero == c
+                        || !LIN(POLICY_OVERLAPIP, c->policy))
+                return route_impossible;  /* another connection already using the
+                                             eroute. TODO: NETKEY can do this? */
     }
 
     /* if there is an eroute for another connection, there is a problem */
@@ -671,11 +676,18 @@ could_route(struct connection *c)
 
             fmt_conn_instance(ero, inst);
 
-            loglog(RC_LOG_SERIOUS
-                , "cannot install eroute -- it is in use for \"%s\"%s #%lu"
-                , ero->name, inst, esr->eroute_owner);
-            return FALSE;       /* another connection already using the eroute,
-				   TODO: NETKEY apparently can do this though */
+            if(!LIN(POLICY_OVERLAPIP, c->policy)
+                        || !LIN(POLICY_OVERLAPIP, ero->policy)) {
+                    loglog(RC_LOG_SERIOUS
+                        , "cannot install eroute -- it is in use for \"%s\"%s #%lu"
+                        , ero->name, inst, esr->eroute_owner);
+                    return FALSE;       /* another connection already using the eroute,
+                                           TODO: NETKEY apparently can do this though */
+            }
+
+            DBG(DBG_CONTROL,
+                DBG_log("overlapping permitted with \"%s\"%s #%lu"
+                        , ero->name, inst, esr->eroute_owner));
         }
     }
     return route_easy;
@@ -2286,11 +2298,18 @@ install_inbound_ipsec_sa(struct state *st)
                 break;  /* ??? is this good enough?? */
 #endif
 
-	    if(kernel_ops->overlap_supported
-	       && !LIN(POLICY_TUNNEL, c->policy)
-	       && !LIN(POLICY_TUNNEL, o->policy)) {
-		break;
-	    }
+            if(kernel_ops->overlap_supported) {
+                    // Both are transport mode, allow overlapping.
+                    // [bart] not sure if this is actually intended, but am
+                    //        leaving it in to make it behave like before.
+                    if (!LIN(POLICY_TUNNEL, c->policy)
+                                    && !LIN(POLICY_TUNNEL, o->policy))
+                            break;
+                    // Both declared that overlapping is OK.
+                    if (LIN(POLICY_OVERLAPIP, c->policy)
+                                    && LIN(POLICY_OVERLAPIP, o->policy))
+                            break;
+            }
 		
 	    loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"		
 		   , o->name, ip_str(&o->spd.that.host_addr));
