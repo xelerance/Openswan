@@ -6,3 +6,7 @@ openswan ($VERSION) unstable; urgency=low
   problem. Thanks!
 
  -- Harald Jenny <harald@a-little-linux-box.at>  Fri, 11 Jun 2010 23:24:15 +0200
+
+Local variables:
+mode: debian-changelog
+End:

@@ -7,6 +7,9 @@
 
 export DH_OPTIONS
 
+VERSION=$(shell if [ "`which git`" ] && [ "`git describe 2>/dev/null`" ]; then git describe | sed 's/^v//' ; else basename `pwd` | sed 's/^openswan-//' ; fi)
+SED_SCRIPT=s!\$$VERSION!$(VERSION)!
+
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -17,6 +20,8 @@ configure-stamp:
 patch:
 	dh_testdir
 	dpatch apply-all
+	sed -e "$(SED_SCRIPT)" debian/changelog.in > debian/changelog
+	sed -e "$(SED_SCRIPT)" debian/NEWS.in > debian/NEWS
 
 unpatch:
 	dpatch deapply-all
@@ -72,6 +77,9 @@ clean: unpatch
 	debconf-updatepo
 
 	dh_clean
+
+	cp -f debian/changelog.in debian/changelog || true
+	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a
 install-openswan: build
