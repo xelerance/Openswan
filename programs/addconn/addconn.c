@@ -13,8 +13,6 @@
  * for more details.
  */
 
-char addconn_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
-
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>

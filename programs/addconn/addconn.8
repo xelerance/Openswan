@@ -1,21 +1,65 @@
+'\" t
 .\"     Title: ipsec addconn
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 7 Mar 2006
-.\"    Source: 7 Mar 2006
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 06/15/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC_ADDCONN" "8" "11/14/2008" "7 Mar 2006" "7 Mar 2006"
+.TH "IPSEC ADDCONN" "8" "06/15/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec_addconn \- load a given policy into pluto
+ipsec_addconn \- load a given policy into the pluto IKE daemon
+.SH "SYNOPSIS"
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIaddconn\fR \fI\-\-configsetup\fR [\-\-rootdir\ \fIdir\fR] [\-\-config\ \fIfilename\fR] [\-\-ctlbase\ \fIsocketfile\fR]
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIaddconn\fR \-\-addall [\-\-rootdir\ \fIdir\fR] [\-\-config\ \fIfilename\fR] [\-\-ctlbase\ \fIsocketfile\fR] [\-\-defaultroute\ \fIaddr\fR] [\-\-defaultroutenexthop\ \fIaddr\fR]
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIaddconn\fR [\-\-rootdir\ \fIdir\fR] [\-\-config\ \fIfilename\fR] [\-\-ctlbase\ \fIsocketfile\fR] [\-\-defaultroute\ \fIaddr\fR] [\-\-defaultroutenexthop\ \fIaddr\fR] \fIname1\fR [\fIname2\ \&.\&.\fR]
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIaddconn\fR [\-\-listroute] [\-\-liststart] [\-\-rootdir\ \fIdir\fR] [\-\-config\ \fIfilename\fR] [\-\-ctlbase\ \fIsocketfile\fR]
+.HP \w'\fBipsec\fR\ 'u
+\fBipsec\fR \fIaddconn\ \-\-help\fR
 .SH "DESCRIPTION"
 .PP
 \fIipsec addconn\fR
-This documentation should be written by Paul\.
+takes a config file containing the format of ipsec\&.conf, or the format of individual "conn" sections, and uses that information to load named or all connections defined in that configuration file into the running openswan pluto IKE daemon\&. If no configuration file is specified, the default configuration file is used\&. If no pluto socket is specified, the default socket location will be used\&.
+.PP
+When
+\fI\-\-addall\fR
+is used, all connections defined in the config file will be operated on\&. Otherwise, only the specified connection names will be affected\&.
+.PP
+When addcon is run, connections that have the
+\fIauto=\fR
+option set to
+\fIadd\fR,
+\fIstart\fR
+or
+\fIroute\fR
+will be loaded, routed or initiated\&. If a connection was loaded or initiated already, it will be replaced\&.
+.PP
+When
+\fI\-\-configsetup\fR
+is specified, the configuration file is parsed for the
+\fIconfig setup\fR
+section and printed to the terminal usable as a shell script\&.
+.PP
+When
+\fI\-\-listroute\fR
+or
+\fI\-\-liststart\fR
+is specified, no connections are added or replaced, only shown\&. This command can be used to verify which connections the addcon command would act upon, without actually performing any action\&.
 .SH "HISTORY"
 .PP
-Man page written for the Xelerance Openswan project <\fIhttp://www\.openswan\.org/\fR> by Michael Richardson\.
+Man page written for the Xelerance Openswan project <\m[blue]\fBhttp://www\&.openswan\&.org/\fR\m[]> by Paul Wouters

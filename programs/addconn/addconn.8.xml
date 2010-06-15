@@ -6,22 +6,132 @@
 <refmeta>
 <refentrytitle>ipsec addconn</refentrytitle>
 <manvolnum>8</manvolnum>
-<refmiscinfo class='date'>7 Mar 2006</refmiscinfo>
+<refmiscinfo class='date'>15 Jun 2010</refmiscinfo>
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec addconn</refname>
-<refpurpose>load a given policy into pluto</refpurpose>
+<refpurpose>load a given policy into the pluto IKE daemon</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 
+  <refsynopsisdiv id="synopsis">
+
+    <cmdsynopsis>
+      <command>ipsec</command>
+      <arg choice="plain"><replaceable>addconn</replaceable></arg>
+      <arg choice="plain"><replaceable>--configsetup</replaceable></arg>
+      <arg choice="opt">--rootdir
+      <replaceable>dir</replaceable></arg>
+
+      <arg choice="opt">--config
+      <replaceable>filename</replaceable></arg>
+
+      <arg choice="opt">--ctlbase
+      <replaceable>socketfile</replaceable></arg>
+
+    </cmdsynopsis>
+
+
+    <cmdsynopsis>
+      <command>ipsec</command>
+      <arg choice="plain"><replaceable>addconn</replaceable></arg>
+      <arg choice="plain">--addall</arg>
+      <arg choice="opt">--rootdir
+      <replaceable>dir</replaceable></arg>
+
+      <arg choice="opt">--config
+      <replaceable>filename</replaceable></arg>
+
+      <arg choice="opt">--ctlbase
+      <replaceable>socketfile</replaceable></arg>
+
+
+      <arg choice="opt">--defaultroute
+      <replaceable>addr</replaceable></arg>
+
+      <arg choice="opt">--defaultroutenexthop
+      <replaceable>addr</replaceable></arg>
+
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>ipsec</command>
+      <arg choice="plain"><replaceable>addconn</replaceable></arg>
+      <arg choice="opt">--rootdir
+      <replaceable>dir</replaceable></arg>
+
+      <arg choice="opt">--config
+      <replaceable>filename</replaceable></arg>
+
+      <arg choice="opt">--ctlbase
+      <replaceable>socketfile</replaceable></arg>
+
+      <arg choice="opt">--defaultroute
+      <replaceable>addr</replaceable></arg>
+
+      <arg choice="opt">--defaultroutenexthop
+      <replaceable>addr</replaceable></arg>
+
+      <arg choice="plain"><replaceable>name1</replaceable></arg>
+      <arg choice="opt"><replaceable>name2 ..</replaceable></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>ipsec</command>
+      <arg choice="plain"><replaceable>addconn</replaceable></arg>
+      <arg choice="opt">--listroute</arg>
+      <arg choice="opt">--liststart</arg>
+
+      <arg choice="opt">--rootdir
+      <replaceable>dir</replaceable></arg>
+
+      <arg choice="opt">--config
+      <replaceable>filename</replaceable></arg>
+
+      <arg choice="opt">--ctlbase
+      <replaceable>socketfile</replaceable></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>ipsec</command>
+      <arg choice="plain"><replaceable>addconn --help</replaceable></arg>
+    </cmdsynopsis>
+
+  </refsynopsisdiv>
+
+
+
+
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>ipsec addconn</emphasis>
-This documentation should be written by Paul.</para>
+takes a config file containing the format of ipsec.conf, or the format of individual
+"conn" sections, and uses that information to load named or all connections defined in that
+configuration file into the running openswan pluto IKE daemon. If no configuration file is
+specified, the default configuration file is used. If no pluto socket is specified, the
+default socket location will be used.
+</para>
+<para> When <emphasis remap='I'>--addall</emphasis> is used, all connections defined in the
+config file will be operated on. Otherwise, only the specified connection names will be
+affected.
+</para>
+<para>When addcon is run, connections that have the <emphasis remap='I'>auto=</emphasis>
+option set to <emphasis remap='I'>add</emphasis>, <emphasis remap='I'>start</emphasis>
+or <emphasis remap='I'>route</emphasis> will be loaded, routed or initiated. If a connection
+was loaded or initiated already, it will be replaced.
+</para>
+<para>When <emphasis remap='I'>--configsetup</emphasis> is specified, the configuration file
+is parsed for the <emphasis remap='I'>config setup</emphasis> section and printed to the terminal
+usable as a shell script.
+</para>
+<para>When <emphasis remap='I'>--listroute</emphasis> or <emphasis remap='I'>--liststart</emphasis>
+is specified, no connections are added or replaced, only shown. This command can be used to verify
+which connections the addcon command would act upon, without actually performing any action.
+</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
 <para>Man page written for the Xelerance Openswan project &lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
-by Michael Richardson. </para>
+by Paul Wouters</para>
 
 </refsect1>
 </refentry>
