@@ -670,7 +670,7 @@ main(int argc, char **argv)
 		    }
 
 		    le++;	/* include NL in line */
-		    write(1, ls, le - ls);
+		    write(STDOUT_FILENO, ls, le - ls);
 
 		    /* figure out prefix number
 		     * and how it should affect our exit status

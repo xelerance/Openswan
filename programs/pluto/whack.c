@@ -1998,11 +1998,11 @@ main(int argc, char **argv)
 		    }
 
 		    le++;	/* include NL in line */
-		    if(write(1, ls, le - ls) != (le-ls)) {
+		    if(write(STDOUT_FILENO, ls, le - ls) != (le-ls)) {
 			int e = errno;
 			fprintf(stderr, "whack: write() failed to stdout(%d %s)\n", e, strerror(e));
 		    }
-		    fsync(1);
+		    fdatasync(STDOUT_FILENO);
 
 		    /* figure out prefix number
 		     * and how it should affect our exit status

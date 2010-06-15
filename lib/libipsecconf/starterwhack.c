@@ -118,12 +118,12 @@ int starter_whack_read_reply(int sock,
 		    }
 		    
 		    le++;	/* include NL in line */
-		    if(write(1, ls, le - ls) == -1) {
+		    if(write(STDOUT_FILENO, ls, le - ls) == -1) {
 			int e = errno;
 			starter_log(LOG_LEVEL_ERR, "whack: write() failed (%d %s), and ignored.\n",
 		    		e, strerror(e));
 		    }
-		    fsync(1);
+		    fdatasync(STDOUT_FILENO);
 		    
 		    /* figure out prefix number
 		     * and how it should affect our exit status
