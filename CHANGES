@@ -24,6 +24,7 @@ v2.6.27 (unreleased)
 * Cleanup source code to use C-style comments [Tuomo]
 * Enable addconn to read config from stdin when called with --config - [Simon]
 * Fix for broken enum_names regarding ENCAPSULATION_MODE_TUNNEL* [Paul]
+* Fix for a few gcc warnings in dnskey.c and xauth.c [Paul]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
