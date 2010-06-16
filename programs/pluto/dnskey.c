@@ -988,7 +988,7 @@ process_key_rr(u_char *ptr, size_t len
  * We concatenate them.
  */
 static err_t
-unpack_txt_rdata(u_char *d, size_t dlen, const u_char *s, size_t slen)
+unpack_txt_rdata(char *d, size_t dlen, const u_char *s, size_t slen)
 {
     size_t i = 0
 	, o = 0;
@@ -1020,7 +1020,7 @@ process_txt_rr(u_char *rdata, size_t rdlen
 , enum dns_auth_level dns_auth_level
 , struct adns_continuation *const cr)
 {
-    u_char str[RSA_MAX_ENCODING_BYTES * 8 / 6 + 200];	/* space for unpacked RDATA */
+    char str[RSA_MAX_ENCODING_BYTES * 8 / 6 + 200];	/* space for unpacked RDATA */
 
     TRY(unpack_txt_rdata(str, sizeof(str), rdata, rdlen));
     return process_txt_rr_body(str, doit, dns_auth_level, cr);
