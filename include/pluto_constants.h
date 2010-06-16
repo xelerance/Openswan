@@ -553,13 +553,6 @@ enum pluto_policy {
 #define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
 #define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
 
-#ifdef NAT_TRAVERSAL
-#define ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS       61443
-#define ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS    61444
-#define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
-#define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
-#endif
-
 /* Oakley Lifetime Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
  * As far as I can see, there is not specification for
