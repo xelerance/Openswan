@@ -544,21 +544,13 @@ enum pluto_policy {
 
 /* Encapsulation Mode attribute */
 
-#define ENCAPSULATION_MODE_UNSPECIFIED 0	/* not legal -- used internally */
-#define ENCAPSULATION_MODE_TUNNEL      1
-#define ENCAPSULATION_MODE_TRANSPORT   2
-
-#define ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS       61443
-#define ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS    61444
+#define ENCAPSULATION_MODE_UNSPECIFIED             0	/* not legal -- used internally */
+#define ENCAPSULATION_MODE_TUNNEL                  1
+#define ENCAPSULATION_MODE_TRANSPORT               2
 #define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
 #define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
-
-#ifdef NAT_TRAVERSAL
 #define ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS       61443
 #define ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS    61444
-#define ENCAPSULATION_MODE_UDP_TUNNEL_RFC          3
-#define ENCAPSULATION_MODE_UDP_TRANSPORT_RFC       4
-#endif
 
 /* Oakley Lifetime Type attribute
  * draft-ietf-ipsec-ike-01.txt appendix A

@@ -536,24 +536,27 @@ static const char *const sa_lifetime_name[] = {
 enum_names sa_lifetime_names =
     { SA_LIFE_TYPE_SECONDS, SA_LIFE_TYPE_KBYTES, sa_lifetime_name, NULL };
 
+
 /* Encapsulation Mode attribute */
 
-static const char *const enc_mode_name[] = {
+static const char *const enc_rfc_mode_name[] = {
 	"ENCAPSULATION_MODE_TUNNEL",
 	"ENCAPSULATION_MODE_TRANSPORT",
-	"ENCAPSULATION_MODE_UDP_TUNNEL",
-	"ENCAPSULATION_MODE_UDP_TRANSPORT",
+	"ENCAPSULATION_MODE_UDP_TUNNEL_RFC",
+	"ENCAPSULATION_MODE_UDP_TRANSPORT_RFC",
     };
 
-static const char *const enc_udp_mode_name[] = {
-	"ENCAPSULATION_MODE_UDP_TUNNEL",
-	"ENCAPSULATION_MODE_UDP_TRANSPORT",
+static const char *const enc_draft_mode_name[] = {
+	"ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS",
+	"ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS",
     };
 
-static enum_names enc_udp_mode_names =
-    { ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS, ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS, enc_udp_mode_name, NULL };
+static enum_names enc_rfc_mode_names =
+    { ENCAPSULATION_MODE_TUNNEL, ENCAPSULATION_MODE_UDP_TRANSPORT_RFC, enc_rfc_mode_name, NULL };
+
 enum_names enc_mode_names =
-    { ENCAPSULATION_MODE_TUNNEL, ENCAPSULATION_MODE_UDP_TRANSPORT_RFC, enc_mode_name, &enc_udp_mode_names };
+    { ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS, ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS, enc_draft_mode_name, &enc_rfc_mode_names };
+
 
 /* Auth Algorithm attribute */
 
