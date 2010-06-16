@@ -232,14 +232,6 @@ main(int argc, char *argv[])
 	}
 	strcat(configfile, "ipsec.conf");
     }
-    else if (strncmp(configfile, "-", sizeof("-")) == 0) {
-        #ifndef MSDOS
-        strncpy(configfile, "/dev/stdin", sizeof("/dev/stdin"));
-        #else
-        fprintf(stderr, "unable to read from stdin on Windows\n");
-        exit(3);
-        #endif
-    }
 
     if(verbose) {
 	printf("opening file: %s\n", configfile);
