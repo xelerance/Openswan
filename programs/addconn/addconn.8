@@ -2,12 +2,12 @@
 .\"     Title: ipsec addconn
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/15/2010
+.\"      Date: 06/16/2010
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC ADDCONN" "8" "06/15/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC ADDCONN" "8" "06/16/2010" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -34,7 +34,7 @@ ipsec_addconn \- load a given policy into the pluto IKE daemon
 .SH "DESCRIPTION"
 .PP
 \fIipsec addconn\fR
-takes a config file containing the format of ipsec\&.conf, or the format of individual "conn" sections, and uses that information to load named or all connections defined in that configuration file into the running openswan pluto IKE daemon\&. If no configuration file is specified, the default configuration file is used\&. If no pluto socket is specified, the default socket location will be used\&.
+takes a config file (or stdin) containing the format of ipsec\&.conf, or the format of individual "conn" sections, and uses that information to load named or all connections defined in that configuration file into the running openswan pluto IKE daemon\&. If no configuration file is specified, the default configuration file is used\&. If no pluto socket is specified, the default socket location will be used\&.
 .PP
 When
 \fI\-\-addall\fR
