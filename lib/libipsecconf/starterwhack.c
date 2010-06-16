@@ -123,7 +123,6 @@ int starter_whack_read_reply(int sock,
 			starter_log(LOG_LEVEL_ERR, "whack: write() failed (%d %s), and ignored.\n",
 		    		e, strerror(e));
 		    }
-		    fdatasync(STDOUT_FILENO);
 		    
 		    /* figure out prefix number
 		     * and how it should affect our exit status

@@ -2002,7 +2002,6 @@ main(int argc, char **argv)
 			int e = errno;
 			fprintf(stderr, "whack: write() failed to stdout(%d %s)\n", e, strerror(e));
 		    }
-		    fdatasync(STDOUT_FILENO);
 
 		    /* figure out prefix number
 		     * and how it should affect our exit status

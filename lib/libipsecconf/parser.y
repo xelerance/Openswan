@@ -22,6 +22,7 @@
 #include <string.h>
 #include <assert.h>
 #include <limits.h>
+#include <unistd.h>
 
 #include "ipsecconf/keywords.h"
 #include "ipsecconf/parser.h"
@@ -498,7 +499,12 @@ struct config_parsed *parser_load_conf (const char *file, err_t *perr)
 	cfg = (struct config_parsed *)malloc(sizeof(struct config_parsed));
 	if (cfg) {
 		memset(cfg, 0, sizeof(struct config_parsed));
-		f = fopen(file, "r");
+		if (strncmp(file, "-", sizeof("-")) == 0) {
+			f = fdopen(STDIN_FILENO, "r");
+		}
+		else {
+			f = fopen(file, "r");
+		}
 		if (f) {
 			yyin = f;
 			parser_y_init(file, f);
