@@ -879,7 +879,7 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     if(st->st_ikev2) {
 	authname="IKEv2";
 	integstr=" integ=";
-	sprintf(integname_tmp,"%s_%d",st->st_oakley.integ_hasher->common.officname
+	sprintf(integname_tmp,"%s_%lu",st->st_oakley.integ_hasher->common.officname
 		, st->st_oakley.integ_hasher->hash_integ_len*BITS_PER_BYTE);
 	integname=(const char*)integname_tmp;
     } else {
