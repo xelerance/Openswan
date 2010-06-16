@@ -1789,7 +1789,7 @@ modecfg_inR1(struct msg_digest *md)
                         , sizeof(a.u.v4.sin_addr.s_addr));
                     
                     addrtot(&a, 0, caddr, sizeof(caddr));
-                    openswan_log("Received DNS %s, len=%d", caddr, strlen(caddr));
+                    openswan_log("Received DNS %s, len=%zd", caddr, strlen(caddr));
 
                     if (first_dns_flag) {
                     strcpy(st->st_connection->cisco_dns_info, caddr);
@@ -1800,7 +1800,7 @@ modecfg_inR1(struct msg_digest *md)
                     strcat(st->st_connection->cisco_dns_info, caddr);
                     }
 
-                    DBG_log("Cisco DNS info: %s, len=%d", st->st_connection->cisco_dns_info, strlen(st->st_connection->cisco_dns_info));
+                    DBG_log("Cisco DNS info: %s, len=%zd", st->st_connection->cisco_dns_info, strlen(st->st_connection->cisco_dns_info));
                 }
                 resp |= LELEM(attr.isaat_af_type);
                 break;
