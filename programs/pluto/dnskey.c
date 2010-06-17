@@ -692,7 +692,7 @@ static const err_t rcode_text[QRS_RCODE_MASK + 1] = {
 static err_t
 eat_name(pb_stream *pbs)
 {
-    u_char name_buf[NS_MAXDNAME + 2];
+    char name_buf[NS_MAXDNAME + 2];
     u_char *ip = pbs->cur;
     unsigned oi = 0;
     unsigned jump_count = 0;
