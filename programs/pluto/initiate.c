@@ -450,7 +450,7 @@ cannot_oppo(struct connection *c
 	{
 	    char state_buf[LOG_WIDTH];
 	    char state_buf2[LOG_WIDTH];
-	    time_t n = now();
+	    const time_t n = now();
 
 	    fmt_state(st, n, state_buf, sizeof(state_buf)
 		      , state_buf2, sizeof(state_buf2));

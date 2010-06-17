@@ -1243,9 +1243,9 @@ state_eroute_usage(ip_subnet *ours, ip_subnet *his
 	});
 }
 
-void fmt_state(struct state *st, time_t n
-, char *state_buf, size_t state_buf_len
-, char *state_buf2, size_t state_buf2_len)
+void fmt_state(struct state *st, const time_t n
+, char *state_buf, const size_t state_buf_len
+, char *state_buf2, const size_t state_buf2_len)
 {
     /* what the heck is interesting about a state? */
     const struct connection *c = st->st_connection;
@@ -1418,7 +1418,7 @@ state_compare(const void *a, const void *b)
 void
 show_states_status(void)
 {
-    time_t n = now();
+    const time_t n = now();
     int i;
     char state_buf[LOG_WIDTH];
     char state_buf2[LOG_WIDTH];
