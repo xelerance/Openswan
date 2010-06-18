@@ -1205,7 +1205,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 	    }
 
             if(!eroute_connection(sr, htonl(SPI_HOLD)
-				  , SA_INT, K_SADB_X_SATYPE_INT
+				  , SA_INT, ET_INT,
 				  , null_proto_info
 				  , op
 				  , reason)) {
@@ -1287,7 +1287,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0;
-    enum eroute_type esatype = 0;
+    enum eroute_type esatype = ET_UNSPEC;
     bool replace;
     bool outgoing_ref_set = FALSE;
     bool incoming_ref_set = FALSE;
