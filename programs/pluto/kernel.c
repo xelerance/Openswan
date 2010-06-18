@@ -1205,7 +1205,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 	    }
 
             if(!eroute_connection(sr, htonl(SPI_HOLD)
-				  , SA_INT, ET_INT,
+				  , SA_INT, ET_INT
 				  , null_proto_info
 				  , op
 				  , reason)) {
