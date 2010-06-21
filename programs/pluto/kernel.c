@@ -2807,6 +2807,12 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 		    {
 			(void) shunt_eroute(c, sr, sr->routing, ERO_REPLACE, "replace with shunt");
 		    }
+
+#ifdef KLIPS_MAST
+		    /* in mast mode we must also delete the iptables rule */
+		    if (kern_interface == USE_MASTKLIPS)
+			    (void) sag_eroute(st, sr, ERO_DELETE, "delete");
+#endif
 		}
 	    }
 	    (void) teardown_half_ipsec_sa(st, FALSE);
