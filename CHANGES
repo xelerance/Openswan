@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.27 (unreleased)
+v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
 * KLIPS compile fixes for 2.4 kernels [David]
 * Memory leak fix unshare_connection_strings [Shinichi Furuso]
