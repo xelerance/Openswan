@@ -402,17 +402,21 @@ changesource() {
 doipsecrule() {
 
 	saref=$PLUTO_PEER_REF
-	nf_saref=$(printf "%d" $(( ($saref * 65536) | 0x80000000 )))
+	nf_saref=$(printf "0x%x0000" $(( $saref | 0x8000 )))
 
 	srcnet=$PLUTO_MY_CLIENT_NET/$PLUTO_MY_CLIENT_MASK
 	dstnet=$PLUTO_PEER_CLIENT_NET/$PLUTO_PEER_CLIENT_MASK
 
 	#echo SAref: $saref '->' $nf_saref
 
+        rulespec="--src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref"
 	case $1 in
-	    add) it="iptables -I NEW_IPSEC_CONN 1 -t mangle --src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref";;
-
-            delete) it="iptables -D NEW_IPSEC_CONN -t mangle --src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref";;
+	    add)
+                it="iptables -t mangle -I NEW_IPSEC_CONN 1 $rulespec"
+                ;;
+            delete)
+                it="iptables -t mangle -D NEW_IPSEC_CONN $rulespec"
+                ;;
         esac
 
 	oops="`set +x; eval $it 2>&1`"
