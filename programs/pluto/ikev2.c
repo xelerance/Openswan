@@ -529,10 +529,10 @@ void ikev2_log_parentSA(struct state *st)
 
     if(st->st_oakley.enckeylen != 0) {
 	/* 3des will use '3des', while aes becomes 'aes128' */
-	sprintf(encalgo, "%s%u", st->st_oakley.encrypter->common.officname
+	snprintf(encalgo, sizeof(encalgo), "%s%u", st->st_oakley.encrypter->common.officname
 		, st->st_oakley.enckeylen);
     } else {
-	strcpy(encalgo, st->st_oakley.encrypter->common.officname);
+	strncpy(encalgo, st->st_oakley.encrypter->common.officname, sizeof(encalgo));
     }
 	
 
