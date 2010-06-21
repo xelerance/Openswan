@@ -77,7 +77,7 @@ How does this all work.
    Although, I guess connected UDP sockets could not care about it, but
    that's really not that common a use.
 
-4) In the case of l2tpd, we use the "refhim" as an additional index into
+4) In the case of xl2tpd, we use the "refhim" as an additional index into
    the call/tunnel list, letting us distinguish two hosts that appear to
    have the same outer IP.
    Actually, we could probably use *ONLY* refhim.
