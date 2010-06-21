@@ -4,6 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.28 (unreleased)
+ 
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
 * KLIPS compile fixes for 2.4 kernels [David]
@@ -26,6 +28,9 @@ v2.6.27 (June 21, 2010)
 * Fix for broken enum_names regarding ENCAPSULATION_MODE_TUNNEL* [Paul]
 * Fix for a few gcc warnings in dnskey.c and xauth.c [Paul/Simon]
 * Fix for kernel_pfkey.c bad_case(esatype) introduced in 2.6.25 [Bart]
+* MAST: cleanup updown.mast iptables rule management [Bart]
+* MAST: rework mast init scripts to use conntrack [Bart]
+* MAST: remove iptables rules after SA is deleted [Bart]
 * Bugtracker bugs fixed:
    #  76: ipsec verify warns about no RSA key when using X509 pem files [Paul]
    #1074: virtual_private broken on U2.6.19/K2.6.27.25-78.2.56.fc9.i686?
