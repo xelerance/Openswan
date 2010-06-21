@@ -336,10 +336,8 @@ fi
 if $mast
 then
     # flush policy out
-    if iptables -t mangle -n -L IPSEC >/dev/null
-    then
-	iptables -t mangle -F IPSEC
-    fi
+    iptables -t mangle -F IPSEC          >/dev/null 2>/dev/null
+    iptables -t mangle -F NEW_IPSEC_CONN >/dev/null 2>/dev/null
 
 elif $klips
 then
