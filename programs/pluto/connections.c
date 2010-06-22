@@ -1099,11 +1099,19 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    }
 	}
     }
+
+#if 0
+    /*
+     * Virtual IP is also valid with rightsubnet=vnet:%priv or with
+     * rightprotoport=17/%any
+     */
     if ((this->virt) && (!isanyaddr(&this->host_addr) || this->has_client)) {
 	loglog(RC_CLASH,
 	    "virtual IP must only be used with %%any and without client");
 	return FALSE;
     }
+#endif
+
     return TRUE;	/* happy */
 }
 
@@ -1394,7 +1402,11 @@ add_connection(const struct whack_message *wm)
 
 	passert(!(wm->left.virt && wm->right.virt));
 	if (wm->left.virt || wm->right.virt) {
-	    passert(isanyaddr(&c->spd.that.host_addr));
+	    /*
+	     * This now happens with wildcards on non-instantiations,
+	     * such as rightsubnet=vnet:%priv or rightprotoport=17/%any
+	     * passert(isanyaddr(&c->spd.that.host_addr));
+	     */
 	    c->spd.that.virt = create_virtual(c,
 		wm->left.virt ? wm->left.virt : wm->right.virt);
 	    if (c->spd.that.virt)

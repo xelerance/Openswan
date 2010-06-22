@@ -472,6 +472,12 @@ case "$1" in
 			exit 3
 		fi
 		echo "but..."
+		if test "$plutokind" != "no"
+		then
+			echo "An ${plutokind} Pluto is active?"
+			exit 1
+		fi
+
 		if test "$hassublock"
 		then
 			echo "has subsystem lock ($subsyslock)!"
@@ -480,10 +486,6 @@ case "$1" in
 		if test "$hasinfo"
 		then
 			echo "has $info file!"
-		fi
-		if test "$plutokind" != "no"
-		then
-			echo "An ${plutokind} Pluto is active?"
 		fi
 		if test "$eroutes" -gt 0
 		then

@@ -187,7 +187,7 @@ typedef enum {
                                                 /* cause pluto to send all messages twice. */
 
 #define DBG_NONE	0	/* no options on, including impairments */
-#define DBG_ALL		LRANGES(DBG_RAW, DBG_X509)  /* all logging options on EXCEPT DBG_PRIVATE */
+#define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */
 #endif
 
 /* State of exchanges

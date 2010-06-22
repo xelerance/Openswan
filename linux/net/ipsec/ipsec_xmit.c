@@ -233,6 +233,12 @@ void
 ipsec_print_ip(struct iphdr *ip)
 {
 	char buf[ADDRTOA_BUF];
+	struct tcphdr *tcphdr = NULL;
+
+	/* we are taking some liberties here assuming that the IP and TCP
+	 * headers are contiguous in memory */
+	if(ip->protocol == IPPROTO_TCP)
+		tcphdr = (struct udphdr*)((caddr_t)ip + (ip->ihl << 2));
 
 	printk(KERN_INFO "klips_debug:   IP:");
 	printk(" ihl:%d", ip->ihl << 2);
@@ -264,22 +270,33 @@ ipsec_print_ip(struct iphdr *ip)
 	printk(" saddr:%s", buf);
 	if(ip->protocol == IPPROTO_UDP)
 		printk(":%d",
-		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
+		       ntohs(tcphdr->source));
 	if(ip->protocol == IPPROTO_TCP)
 		printk(":%d",
-		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
+		       ntohs(tcphdr->source));
 	addrtoa(*((struct in_addr*)(&ip->daddr)), 0, buf, sizeof(buf));
 	printk(" daddr:%s", buf);
 	if(ip->protocol == IPPROTO_UDP)
 		printk(":%d",
-		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
+		       ntohs(tcphdr->dest));
 	if(ip->protocol == IPPROTO_TCP)
 		printk(":%d",
-		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
+		       ntohs(tcphdr->dest));
 	if(ip->protocol == IPPROTO_ICMP)
 		printk(" type:code=%d:%d",
 		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->type,
 		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->code);
+	if(ip->protocol == IPPROTO_TCP) {
+		printk(" seq=%u ack=%u", tcphdr->seq, tcphdr->ack_seq);
+		if (tcphdr->fin) printk(" FIN");
+		if (tcphdr->syn) printk(" SYN");
+		if (tcphdr->rst) printk(" RST");
+		if (tcphdr->psh) printk(" PSH");
+		if (tcphdr->ack) printk(" ACK");
+		if (tcphdr->urg) printk(" URG");
+		if (tcphdr->ece) printk(" ECE");
+		if (tcphdr->cwr) printk(" CWR");
+	}
 	printk("\n");
 
 	if(sysctl_ipsec_debug_verbose) {
@@ -993,6 +1010,10 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 	ixs->newdst = (__u32)ixs->iph->daddr;
 	ixs->newsrc = (__u32)ixs->iph->saddr;
 	
+	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
+	/* we need to do this before any HASH generation is done */
+	KLIPS_IP_SELECT_IDENT(ixs->iph, ixs->skb);
+
 #ifdef NET_21
 	skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));
 #endif /* NET_21 */
@@ -2098,9 +2119,6 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	if(!ixs->pass) {
 		ipsec_nf_reset(ixs->skb);
 	}
-
-	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
-	KLIPS_IP_SELECT_IDENT(ip_hdr(ixs->skb), ixs->skb);
 
 	/* fix up the checksum after changes to the header */
 	ip_hdr(ixs->skb)->check = 0;

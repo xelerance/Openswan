@@ -98,6 +98,8 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 #define IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES (1 << IPSEC_SA_REF_MAINTABLE_IDX_WIDTH)
 #define IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES (1 << IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
 
+#define IPSEC_SA_REF_SUBTABLE_SIZE (IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES * sizeof(struct ipsec_sa *))
+
 #ifdef CONFIG_NETFILTER
 #define IPSEC_SA_REF_HOST_FIELD(x) ((struct sk_buff*)(x))->nfmark
 #define IPSEC_SA_REF_HOST_FIELD_TYPE typeof(IPSEC_SA_REF_HOST_FIELD(NULL))
@@ -262,12 +264,8 @@ struct ipsec_sadb {
 
 extern struct ipsec_sadb ipsec_sadb;
 
-extern int ipsec_SAref_recycle(void);
-extern int ipsec_SArefSubTable_alloc(unsigned table);
-extern int ipsec_saref_freelist_init(void);
 extern int ipsec_sadb_init(void);
 extern struct ipsec_sa *ipsec_sa_alloc(int*error); /* pass in error var by pointer */
-extern IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointer */
 extern int ipsec_sa_free(struct ipsec_sa* ips);
 
 #define ipsec_sa_get(ips,type) __ipsec_sa_get(ips, __FUNCTION__, __LINE__, type)
