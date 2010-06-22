@@ -16,13 +16,13 @@ case "$1" in
 
 		if [ "$RET" = "true" ]; then
 		    invoke-rc.d ipsec stop || true
-		    rmmod ipsec
+		    modprobe -r ipsec
 		    modprobe ipsec 2>/dev/null || true
 		    invoke-rc.d ipsec start || true
 		fi
 	    else
 		if grep -q ipsec /proc/modules 2>/dev/null ; then
-		    rmmod ipsec
+		    modprobe -r ipsec
 		    modprobe ipsec 2>/dev/null || true
 		fi
 	    fi
