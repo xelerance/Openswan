@@ -8,6 +8,7 @@ v2.6.28 (unreleased)
 * MAST: cleanup updown.mast iptables rule management [Bart]
 * MAST: rework mast init scripts to use conntrack [Bart]
 * MAST: remove iptables rules after SA is deleted [Bart]
+* Log SAref and SAbind capabilities on pluto startup [Paul]
  
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
