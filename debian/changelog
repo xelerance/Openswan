@@ -1,3 +1,10 @@
+openswan ($VERSION+nmu1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Update to $VERSION
+
+ -- Simon Deziel <simon@xelerance.com>  Wed, 23 Jun 2010 13:19:53 -0400
+
 openswan ($VERSION) unstable; urgency=low
 
   This package is NOT an official Debian paket from the Debian openswan
