@@ -989,19 +989,20 @@ log_state(struct state *st, enum state_kind new_state)
 	case tun_phase15: tun = "phase15"; break;
 	case tun_phase2:  tun = "phase2";  break;
 	case tun_up:      tun = "up";      break;
-	default:          tun = "unknown"; break;
+	case tun_down:    tun = "down";    break; /* not set anywher */
+	default:          tun = "down"; break;
 	}
 
 	switch (lc.phase1) {
 	case p1_init:     p1 = "init";    break;
 	case p1_encrypt:  p1 = "encrypt"; break;
 	case p1_auth:     p1 = "auth";    break;
-	default:          p1 = "unknown"; break;
+	default:          p1 = "down"; break;
 	}
 
 	switch (lc.phase2) {
 	case p2_neg:      p2 = "neg";     break;
-	default:          p2 = "unknown";  break;
+	default:          p2 = "down";  break;
 	}
 
 
