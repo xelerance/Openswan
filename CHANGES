@@ -11,6 +11,9 @@ v2.6.28 (unreleased)
 * MAST: remove iptables rules after SA is deleted [Bart]
 * Log SAref and SAbind capabilities on pluto startup [Paul]
 * Log tunnel down with HAVE_STATSD as "down", not "unknown" [Paul]
+* Changes to _realsetup.in for making the init script LSB compliant [Avesh]
+  rhbz #594767
+* _startnetkey update for DNS and NetworkManager [Avesh]
  
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
