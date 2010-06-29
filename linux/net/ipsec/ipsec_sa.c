@@ -205,12 +205,11 @@ ipsec_SArefSubTable_alloc(unsigned table)
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_SArefSubTable_alloc: "
 		    "allocating %lu bytes for table %u of %u.\n",
-		    (unsigned long) (IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES * sizeof(struct ipsec_sa *)),
-		    table,
-		    IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES);
+		    (unsigned long) IPSEC_SA_REF_SUBTABLE_SIZE,
+		    table, IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES);
 
 	/* allocate another sub-table */
-	SArefsub = vmalloc(IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES * sizeof(struct ipsec_sa *));
+	SArefsub = vmalloc(IPSEC_SA_REF_SUBTABLE_SIZE);
 	if(SArefsub == NULL) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SArefSubTable_alloc: "

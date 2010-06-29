@@ -98,6 +98,8 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 #define IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES (1 << IPSEC_SA_REF_MAINTABLE_IDX_WIDTH)
 #define IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES (1 << IPSEC_SA_REF_SUBTABLE_IDX_WIDTH)
 
+#define IPSEC_SA_REF_SUBTABLE_SIZE (IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES * sizeof(struct ipsec_sa *))
+
 #ifdef CONFIG_NETFILTER
 #define IPSEC_SA_REF_HOST_FIELD(x) ((struct sk_buff*)(x))->nfmark
 #define IPSEC_SA_REF_HOST_FIELD_TYPE typeof(IPSEC_SA_REF_HOST_FIELD(NULL))
