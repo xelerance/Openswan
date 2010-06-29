@@ -113,7 +113,12 @@ typedef struct {
 
 #define IPS_HASH(said) (((said)->spi + (said)->dst.u.v4.sin_addr.s_addr + (said)->proto) % SADB_HASHMOD)
 
-int
+static int ipsec_saref_verify_slot(IPsecSAref_t ref);
+static int ipsec_SArefSubTable_alloc(unsigned table);
+static int ipsec_saref_freelist_init(void);
+static IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointer */
+
+static int
 ipsec_SAref_recycle(void)
 {
 	int table, i;
@@ -191,7 +196,7 @@ ipsec_SAref_recycle(void)
 	return 0;
 }
 
-int
+static int
 ipsec_SArefSubTable_alloc(unsigned table)
 {
 	unsigned entry;
@@ -232,7 +237,7 @@ ipsec_SArefSubTable_alloc(unsigned table)
 	return 0;
 }
 
-int
+static int
 ipsec_saref_verify_slot(IPsecSAref_t ref)
 {
 	int ref_table=IPsecSAref2table(ref);
@@ -300,7 +305,7 @@ ipsec_sadb_init(void)
 	return error;
 }
 
-IPsecSAref_t
+static IPsecSAref_t
 ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 {
 	IPsecSAref_t SAref;
@@ -353,6 +358,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 	return SAref;
 }
 
+#if 0
 int
 ipsec_sa_print(struct ipsec_sa *ips)
 {
@@ -424,6 +430,7 @@ ipsec_sa_print(struct ipsec_sa *ips)
 	printk("\n");
 	return 0;
 }
+#endif
 
 struct ipsec_sa*
 ipsec_sa_alloc(int*error) /* pass in error var by pointer */

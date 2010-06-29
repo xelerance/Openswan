@@ -262,12 +262,8 @@ struct ipsec_sadb {
 
 extern struct ipsec_sadb ipsec_sadb;
 
-extern int ipsec_SAref_recycle(void);
-extern int ipsec_SArefSubTable_alloc(unsigned table);
-extern int ipsec_saref_freelist_init(void);
 extern int ipsec_sadb_init(void);
 extern struct ipsec_sa *ipsec_sa_alloc(int*error); /* pass in error var by pointer */
-extern IPsecSAref_t ipsec_SAref_alloc(int*erorr); /* pass in error var by pointer */
 extern int ipsec_sa_free(struct ipsec_sa* ips);
 
 #define ipsec_sa_get(ips,type) __ipsec_sa_get(ips, __FUNCTION__, __LINE__, type)
