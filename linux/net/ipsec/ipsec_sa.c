@@ -209,7 +209,7 @@ ipsec_SArefSubTable_alloc(unsigned table)
 		    table, IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES);
 
 	/* allocate another sub-table */
-	SArefsub = vmalloc(IPSEC_SA_REF_SUBTABLE_SIZE);
+	SArefsub = kmalloc(IPSEC_SA_REF_SUBTABLE_SIZE, GFP_ATOMIC);
 	if(SArefsub == NULL) {
 		KLIPS_PRINT(debug_xform,
 			    "klips_debug:ipsec_SArefSubTable_alloc: "
@@ -982,7 +982,7 @@ ipsec_sadb_free(void)
 					ipsec_sadb.refTable[table]->entry[entry] = NULL;
 				}
 			}
-			vfree(ipsec_sadb.refTable[table]);
+			kfree(ipsec_sadb.refTable[table]);
 			ipsec_sadb.refTable[table] = NULL;
 		}
 	}
