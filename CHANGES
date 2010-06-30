@@ -5,10 +5,11 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.28 (unreleased)
-* Allow rightsubnet=vnet:%priv rightprotoport=17/%any w/o right=%any [Paul]
+* MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
 * MAST: cleanup updown.mast iptables rule management [Bart]
 * MAST: rework mast init scripts to use conntrack [Bart]
 * MAST: remove iptables rules after SA is deleted [Bart]
+* Allow rightsubnet=vnet:%priv rightprotoport=17/%any w/o right=%any [Paul]
 * Log SAref and SAbind capabilities on pluto startup [Paul]
 * Log tunnel down with HAVE_STATSD as "down", not "unknown" [Paul]
 * Changes to _realsetup.in for making the init script LSB compliant [Avesh]
