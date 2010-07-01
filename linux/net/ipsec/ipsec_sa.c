@@ -403,20 +403,17 @@ ipsec_sa_print(struct ipsec_sa *ips)
 	}
 	if(ips->ips_addr_s) {
 		char buf[SUBNETTOA_BUF];
-		addrtoa(((struct sockaddr_in*)(ips->ips_addr_s))->sin_addr,
-			0, buf, sizeof(buf));
+		sin_addrtot(ips->ips_addr_s, 0, buf, sizeof(buf));
 		printk(" src=%s", buf);
 	}
 	if(ips->ips_addr_d) {
 		char buf[SUBNETTOA_BUF];
-		addrtoa(((struct sockaddr_in*)(ips->ips_addr_s))->sin_addr,
-			0, buf, sizeof(buf));
+		sin_addrtot(ips->ips_addr_s, 0, buf, sizeof(buf));
 		printk(" dst=%s", buf);
 	}
 	if(ips->ips_addr_p) {
 		char buf[SUBNETTOA_BUF];
-		addrtoa(((struct sockaddr_in*)(ips->ips_addr_p))->sin_addr,
-			0, buf, sizeof(buf));
+		sin_addrtot(ips->ips_addr_p, 0, buf, sizeof(buf));
 		printk(" proxy=%s", buf);
 	}
 	if(ips->ips_key_bits_a) {
@@ -1197,12 +1194,8 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP: {
 		ipsp->ips_xformfuncs = ipip_xform_funcs;
-		addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_s))->sin_addr,
-			0,
-			ipaddr_txt, sizeof(ipaddr_txt));
-		addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr,
-			0,
-			ipaddr2_txt, sizeof(ipaddr_txt));
+		sin_addrtot(ipsp->ips_addr_s, 0, ipaddr_txt, sizeof(ipaddr_txt));
+		sin_addrtot(ipsp->ips_addr_d, 0, ipaddr2_txt, sizeof(ipaddr_txt));
 		KLIPS_PRINT(debug_pfkey,
 			    "ipsec_sa_init: "
 			    "(pfkey defined) IPIP ipsec_sa set for %s->%s.\n",

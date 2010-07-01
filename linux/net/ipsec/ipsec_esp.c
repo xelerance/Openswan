@@ -80,7 +80,7 @@ ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 	int len;	/* packet length */
 
 	len = skb->len;
-	proto = irs->ipp->protocol;
+	proto = osw_ip4_hdr(irs)->protocol;
 
 	/* XXX this will need to be 8 for IPv6 */
 	if ((proto == IPPROTO_ESP) && ((len - irs->iphlen) % 4)) {
@@ -350,7 +350,7 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 		    irs->next_header,
 		    pad - 2 - irs->authlen);
 
-	irs->ipp->tot_len = htons(ntohs(irs->ipp->tot_len) - (irs->esphlen + pad));
+	osw_ip4_hdr(irs)->tot_len = htons(ntohs(osw_ip4_hdr(irs)->tot_len) - (irs->esphlen + pad));
 
 	/*
 	 * move the IP header forward by the size of the ESP header, which
@@ -378,7 +378,7 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, irs->esphlen);
 	skb_set_network_header(skb, ipsec_skb_offset(skb, idat - irs->iphlen));
-	irs->ipp = ip_hdr(skb);
+	irs->iph = (void *) ip_hdr(skb);
 
 	ESP_DMP("esp postpull", skb->data, skb->len);
 
@@ -458,8 +458,8 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   }
   dat[ixs->skb->len - ixs->authlen - 2] = padlen;
   
-  dat[ixs->skb->len - ixs->authlen - 1] = ixs->iph->protocol;
-  ixs->iph->protocol = IPPROTO_ESP;
+  dat[ixs->skb->len - ixs->authlen - 1] = osw_ip4_hdr(ixs)->protocol;
+  osw_ip4_hdr(ixs)->protocol = IPPROTO_ESP;
   
   switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_KLIPS_ENC_3DES

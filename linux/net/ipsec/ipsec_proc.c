@@ -188,14 +188,13 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 		       "in " : "out");
 
 	if(sa_p->ips_addr_s) {
-		addrtoa(((struct sockaddr_in*)(sa_p->ips_addr_s))->sin_addr,
-			0, buf_s, sizeof(buf_s));
-		len += ipsec_snprintf(buffer+len, length-len, " src=%s",
-			       buf_s);
+		sin_addrtot(sa_p->ips_addr_s, 0, buf_s, sizeof(buf_s));
+		len += ipsec_snprintf(buffer+len, length-len, " src=%s", buf_s);
 	}
 
 	if((sa_p->ips_said.proto == IPPROTO_IPIP)
 	   && (sa_p->ips_flags & SADB_X_SAFLAGS_INFLOW)) {
+		if (sa_p->ips_flow_s.u.v4.sin_family == AF_INET) {
 		subnettoa(sa_p->ips_flow_s.u.v4.sin_addr,
 			  sa_p->ips_mask_s.u.v4.sin_addr,
 			  0,
@@ -207,6 +206,19 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 			  0,
 			  buf_d,
 			  sizeof(buf_d));
+		} else {
+		subnet6toa(&sa_p->ips_flow_s.u.v6.sin6_addr,
+			  &sa_p->ips_mask_s.u.v6.sin6_addr,
+			  0,
+			  buf_s,
+			  sizeof(buf_s));
+
+		subnet6toa(&sa_p->ips_flow_d.u.v6.sin6_addr,
+			  &sa_p->ips_mask_d.u.v6.sin6_addr,
+			  0,
+			  buf_d,
+			  sizeof(buf_d));
+		}
 
 		len += ipsec_snprintf(buffer+len, length-len, " policy=%s->%s",
 			       buf_s, buf_d);

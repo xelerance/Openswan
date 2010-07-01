@@ -104,7 +104,7 @@ enum ipsec_rcv_value {
 struct ipsec_rcv_state {
 	struct sk_buff *skb;
 	struct net_device_stats *stats;
-	struct iphdr    *ipp;          /* the IP header */
+	void *iph;                     /* the IP header */
 	struct ipsec_sa *ipsp;         /* current SA being processed */
 	struct ipsec_sa *lastipsp;     /* last SA that was processed */
 	int len;                       /* length of packet */

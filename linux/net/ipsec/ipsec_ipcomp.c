@@ -132,7 +132,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		return IPSEC_RCV_SAIDNOTFOUND;
 	}
 
-	ipsp->ips_comp_ratio_cbytes += ntohs(irs->ipp->tot_len);
+	ipsp->ips_comp_ratio_cbytes += ntohs(osw_ip4_hdr(irs)->tot_len);
 	irs->next_header = irs->protostuff.ipcompstuff.compp->ipcomp_nh;
 
 	skb = skb_decompress(skb, ipsp, &flags);
@@ -154,12 +154,12 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 	irs->skb = skb;
 	
 #ifdef NET_21
-	irs->ipp = ip_hdr(skb);
+	irs->iph = (void *) ip_hdr(skb);
 #else /* NET_21 */
-	irs->ipp = skb->ip_hdr;
+	irs->iph = (void *) skb->ip_hdr;
 #endif /* NET_21 */
 
-	ipsp->ips_comp_ratio_dbytes += ntohs(irs->ipp->tot_len);
+	ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(irs)->tot_len);
 
 	KLIPS_PRINT(debug_rcv,
 		    "klips_debug:ipsec_rcv: "
@@ -169,7 +169,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		    ipsp != NULL ? (__u32)ntohl((ipsp->ips_said.spi)) : 0,
 		    ipsp != NULL ? (__u16)(ntohl(ipsp->ips_said.spi) & 0x0000ffff) : 0,
 		    irs->next_header);
-	KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, irs->ipp);
+	KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, irs->iph);
 
 	return IPSEC_RCV_OK;
 }
@@ -178,28 +178,28 @@ enum ipsec_xmit_value
 ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 {
   unsigned int flags = 0;
-  unsigned int old_tot_len = ntohs(ixs->iph->tot_len);
+  unsigned int old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
 
-  ixs->ipsp->ips_comp_ratio_dbytes += ntohs(ixs->iph->tot_len);
+  ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
 
   ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
 #ifdef NET_21
-  ixs->iph = ip_hdr(ixs->skb);
+  ixs->iph = (void *)ip_hdr(ixs->skb);
 #else /* NET_21 */
-  ixs->iph = ixs->skb->ip_hdr;
+  ixs->iph = (void *)ixs->skb->ip_hdr;
 #endif /* NET_21 */
   
-  ixs->ipsp->ips_comp_ratio_cbytes += ntohs(ixs->iph->tot_len);
+  ixs->ipsp->ips_comp_ratio_cbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
   
   if (debug_tunnel & DB_TN_CROUT)
     {
-      if (old_tot_len > ntohs(ixs->iph->tot_len))
+      if (old_tot_len > ntohs(osw_ip4_hdr(ixs)->tot_len))
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_encap_once: "
 		    "packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
-		    old_tot_len, ntohs(ixs->iph->tot_len),
-		    ntohs(((struct ipcomphdr*)(((char*)ixs->iph) + ((ixs->iph->ihl) << 2)))->ipcomp_cpi),
+		    old_tot_len, ntohs(osw_ip4_hdr(ixs)->tot_len),
+		    ntohs(((struct ipcomphdr*)(((char*)ixs->iph) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
 		    ntohl(ixs->ipsp->ips_said.spi),
 		    (__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));
       else

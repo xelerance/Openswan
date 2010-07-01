@@ -27,8 +27,15 @@
 # define IP_SEND(skb, dev) \
 	ip_send(skb);
 
+# define ICMP6_SEND(skb_in, type, code, info, dev) \
+	icmpv6_send(skb_in, type, code, htonl(info), dev)
 
 #if defined(KLIPS)
+
+#define	osw_ip_hdr_version(ixirs)	(((struct iphdr *) (ixirs)->iph)->version)
+#define	osw_ip4_hdr(ixirs)	((struct iphdr *) (ixirs)->iph)
+#define	osw_ip6_hdr(ixirs)	((struct ipv6hdr *) (ixirs)->iph)
+
 /*
  * Heavily based on drivers/net/new_tunnel.c.  Lots
  * of ideas also taken from the 2.1.x version of drivers/net/shaper.c
@@ -135,4 +142,6 @@ extern int ipsec_xmit_state_cache_init (void);
 extern void ipsec_xmit_state_cache_cleanup (void);
 struct ipsec_xmit_state *ipsec_xmit_state_new (void);
 void ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs);
+
+extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
 

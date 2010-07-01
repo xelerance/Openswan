@@ -41,6 +41,7 @@
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats, dev_queue_xmit() and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
+#include <linux/ipv6.h>          /* struct iphdr */
 
 #include <net/tcp.h>
 #include <net/udp.h>
@@ -61,6 +62,7 @@
 
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
+#include <net/ipv6.h>
 #ifdef NETDEV_23
 # include <linux/netfilter_ipv4.h>
 #endif /* NETDEV_23 */
@@ -229,8 +231,8 @@ skb_copy_expand(const struct sk_buff *skb, int headroom,
 }
 #endif /* !SKB_COPY_EXPAND */
 
-void
-ipsec_print_ip(struct iphdr *ip)
+static void
+ipsec_print_ip4(struct iphdr *ip)
 {
 	char buf[ADDRTOA_BUF];
 
@@ -289,6 +291,76 @@ ipsec_print_ip(struct iphdr *ip)
 		c = ((__u8*)ip) + ip->ihl*4;
 		ipsec_dmp_block("ip_print", c, len);
 	}
+}
+
+static void
+ipsec_print_ip6(struct ipv6hdr *ip)
+{
+	char buf[ADDRTOA_BUF];
+
+	printk(KERN_INFO "klips_debug:   IPV6:");
+	printk(" prio:%d", ip->priority);
+	printk(" ver:%d", ip->version);
+	printk(" flow:%02x%02x%02x", ip->flow_lbl[0], ip->flow_lbl[1], ip->flow_lbl[2]);
+	printk(" pllen:%d", ntohs(ip->payload_len));
+	printk(" hopl:%d", ip->hop_limit);
+	printk(" nexthdr:%d", ip->nexthdr);
+	if(ip->nexthdr == IPPROTO_UDP)
+		printk(" (UDP)");
+	if(ip->nexthdr == IPPROTO_TCP)
+		printk(" (TCP)");
+	if(ip->nexthdr == IPPROTO_ICMP)
+		printk(" (ICMP)");
+	if(ip->nexthdr == IPPROTO_ICMPV6)
+		printk(" (ICMP)");
+	if(ip->nexthdr == IPPROTO_ESP)
+		printk(" (ESP)");
+	if(ip->nexthdr == IPPROTO_AH)
+		printk(" (AH)");
+	if(ip->nexthdr == IPPROTO_COMP)
+		printk(" (COMP)");
+	inet_addrtot(AF_INET6, &ip->saddr, 0, buf, sizeof(buf));
+	printk(" saddr:%s", buf);
+#if 0
+	if(ip->protocol == IPPROTO_UDP)
+		printk(":%d",
+		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
+	if(ip->protocol == IPPROTO_TCP)
+		printk(":%d",
+		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
+#endif
+	inet_addrtot(AF_INET6, &ip->daddr, 0, buf, sizeof(buf));
+	printk(" daddr:%s", buf);
+#if 0
+	if(ip->protocol == IPPROTO_UDP)
+		printk(":%d",
+		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
+	if(ip->protocol == IPPROTO_TCP)
+		printk(":%d",
+		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
+	if(ip->protocol == IPPROTO_ICMP)
+		printk(" type:code=%d:%d",
+		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->type,
+		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->code);
+#endif
+	printk("\n");
+
+	if(sysctl_ipsec_debug_verbose) {
+		__u8 *c;
+		int len = ntohs(ip->payload_len);
+		
+		c = (__u8 *)&ip[1];
+		ipsec_dmp_block("ip_print", c, len);
+	}
+}
+
+void
+ipsec_print_ip(void *ip)
+{
+	if (((struct iphdr *) ip)->version == 6)
+		ipsec_print_ip6((struct ipv6hdr *) ip);
+	else
+		ipsec_print_ip4((struct iphdr *) ip);
 }
 
 #ifdef MSS_HACK
@@ -455,40 +527,43 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
 
 	ixs->iph = ip_hdr(ixs->skb);
 
-	/* sanity check for IP version as we can't handle IPv6 right now */
-	if (ixs->iph->version != 4) {
-		KLIPS_PRINT(debug_tunnel,
-			    "klips_debug:ipsec_xmit_sanity_check_skb: "
-			    "found IP Version %d but cannot process other IP versions than v4.\n",
-			    ixs->iph->version); /* XXX */
-		if (ixs->stats)
-			ixs->stats->tx_dropped++;
-		return IPSEC_XMIT_NOIPV6;
-	}
-	
+	if (osw_ip_hdr_version(ixs) == 6) {
+		if (osw_ip6_hdr(ixs)->hop_limit <= 0) {
+			/* Tell the sender its packet died... */
+			ixs->skb->dev = ixs->physdev;
+			ICMP6_SEND(ixs->skb, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT, 0, ixs->physdev);
+
+			KLIPS_PRINT(debug_tunnel, "klips_debug:ipsec_xmit_sanity_check_skb: "
+				    "hop_limit=0, too many hops!\n");
+			if (ixs->stats)
+				ixs->stats->tx_dropped++;
+			return IPSEC_XMIT_TTLEXPIRED;
+		}
+	} else {
 #if IPSEC_DISALLOW_IPOPTIONS
-	if ((ixs->iph->ihl << 2) != sizeof (struct iphdr)) {
-		KLIPS_PRINT(debug_tunnel,
-			    "klips_debug:ipsec_xmit_sanity_check_skb: "
-			    "cannot process IP header options yet.  May be mal-formed packet.\n"); /* XXX */
-		if (ixs->stats)
-			ixs->stats->tx_dropped++;
-		return IPSEC_XMIT_NOIPOPTIONS;
-	}
+		if ((osw_ip4_hdr(ixs)->ihl << 2) != sizeof (struct iphdr)) {
+			KLIPS_PRINT(debug_tunnel,
+				    "klips_debug:ipsec_xmit_sanity_check_skb: "
+				    "cannot process IP header options yet.  May be mal-formed packet.\n"); /* XXX */
+			if (ixs->stats)
+				ixs->stats->tx_dropped++;
+			return IPSEC_XMIT_NOIPOPTIONS;
+		}
 #endif /* IPSEC_DISALLOW_IPOPTIONS */
 	
 #ifndef NET_21
-	if (ixs->iph->ttl <= 0) {
-		/* Tell the sender its packet died... */
-		ICMP_SEND(ixs->skb, ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, 0, ixs->physdev);
+		if (osw_ip4_hdr(ixs)->ttl <= 0) {
+			/* Tell the sender its packet died... */
+			ICMP_SEND(ixs->skb, ICMP_TIME_EXCEEDED, ICMP_EXC_TTL, 0, ixs->physdev);
 
-		KLIPS_PRINT(debug_tunnel, "klips_debug:ipsec_xmit_sanity_check_skb: "
-			    "TTL=0, too many hops!\n");
-		if (ixs->stats)
-			ixs->stats->tx_dropped++;
-		return IPSEC_XMIT_TTLEXPIRED;
-	}
+			KLIPS_PRINT(debug_tunnel, "klips_debug:ipsec_xmit_sanity_check_skb: "
+				    "TTL=0, too many hops!\n");
+			if (ixs->stats)
+				ixs->stats->tx_dropped++;
+			return IPSEC_XMIT_TTLEXPIRED;
+		}
 #endif /* !NET_21 */
+	}
 	
 	return IPSEC_XMIT_OK;
 }
@@ -507,8 +582,17 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	ixs->ixt_a = NULL;
 #endif /* CONFIG_KLIPS_ALG */
 
-	ixs->iphlen = ixs->iph->ihl << 2;
-	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
+	if (osw_ip_hdr_version(ixs) == 6) {
+		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+		int nexthdroff;
+		nexthdroff = ipv6_skip_exthdr(ixs->skb, ixs->iph -
+				(void*)ixs->skb->data, &nexthdr);
+		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
+		ixs->pyldsz = osw_ip6_hdr(ixs)->payload_len;
+	} else {
+		ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
+		ixs->pyldsz = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
+	}
 	ixs->sa_len = KLIPS_SATOT(debug_tunnel, &ixs->ipsp->ips_said, 0, ixs->sa_txt, SATOT_BUF);
 	KLIPS_PRINT(debug_tunnel & DB_TN_OXFS,
 		    "klips_debug:ipsec_xmit_encap_once: "
@@ -655,8 +739,10 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_BADLEN;
 	}
 	memmove((void *)ixs->dat, (void *)(ixs->dat + ixs->headroom), ixs->iphlen);
-	ixs->iph = (struct iphdr *)ixs->dat;
-	ixs->iph->tot_len = htons(ixs->skb->len);
+	ixs->iph = (void *)ixs->dat;
+
+	if (osw_ip_hdr_version(ixs) != 6)
+		osw_ip4_hdr(ixs)->tot_len = htons(ixs->skb->len);
 
 	return IPSEC_XMIT_OK;
 }
@@ -725,9 +811,8 @@ ipsec_xmit_esp(struct ipsec_xmit_state *ixs)
 		pad[i] = i + 1; 
 	}
 	ixs->dat[ixs->len - ixs->authlen - 2] = padlen;
-	
-	ixs->dat[ixs->len - ixs->authlen - 1] = ixs->iph->protocol;
-	ixs->iph->protocol = IPPROTO_ESP;
+	ixs->dat[ixs->len - ixs->authlen - 1] = osw_ip4_hdr(ixs)->protocol;
+	osw_ip4_hdr(ixs)->protocol = IPPROTO_ESP;
 	
 #ifdef CONFIG_KLIPS_OCF
 	if (ixs->ipsp->ocf_in_use) {
@@ -887,9 +972,9 @@ ipsec_xmit_ah(struct ipsec_xmit_state *ixs)
 	ahp->ah_spi = ixs->ipsp->ips_said.spi;
 	ahp->ah_rpl = htonl(++(ixs->ipsp->ips_replaywin_lastseq));
 	ahp->ah_rv = 0;
-	ahp->ah_nh = ixs->iph->protocol;
+	ahp->ah_nh = osw_ip4_hdr(ixs)->protocol;
 	ahp->ah_hl = (ixs->headroom >> 2) - sizeof(__u64)/sizeof(__u32);
-	ixs->iph->protocol = IPPROTO_AH;
+	osw_ip4_hdr(ixs)->protocol = IPPROTO_AH;
 	dmp("ahp", (char*)ahp, sizeof(*ahp));
 	
 #ifdef CONFIG_KLIPS_OCF
@@ -897,7 +982,7 @@ ipsec_xmit_ah(struct ipsec_xmit_state *ixs)
 		return(ipsec_ocf_xmit(ixs));
 #endif
 
-	ipo = *ixs->iph;
+	ipo = *osw_ip4_hdr(ixs);
 	ipo.tos = 0;
 	ipo.frag_off = 0;
 	ipo.ttl = 0;
@@ -968,34 +1053,34 @@ ipsec_xmit_ah(struct ipsec_xmit_state *ixs)
 enum ipsec_xmit_value
 ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 {
-	ixs->iph->version  = 4;
+	osw_ip4_hdr(ixs)->version  = 4;
 	switch(sysctl_ipsec_tos) {
 	case 0:
 #ifdef NET_21
-		ixs->iph->tos = ip_hdr(ixs->skb)->tos;
+		osw_ip4_hdr(ixs)->tos = ip_hdr(ixs->skb)->tos;
 #else /* NET_21 */
-		ixs->iph->tos = ixs->skb->ip_hdr->tos;
+		osw_ip4_hdr(ixs)->tos = ixs->skb->ip_hdr->tos;
 #endif /* NET_21 */
 		break;
 	case 1:
-		ixs->iph->tos = 0;
+		osw_ip4_hdr(ixs)->tos = 0;
 		break;
 	default:
 		break;
 	}
-	ixs->iph->ttl      = SYSCTL_IPSEC_DEFAULT_TTL;
-	ixs->iph->frag_off = 0;
-	ixs->iph->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
-	ixs->iph->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
-	ixs->iph->protocol = IPPROTO_IPIP;
-	ixs->iph->ihl      = sizeof(struct iphdr) >> 2;
+	osw_ip4_hdr(ixs)->ttl      = SYSCTL_IPSEC_DEFAULT_TTL;
+	osw_ip4_hdr(ixs)->frag_off = 0;
+	osw_ip4_hdr(ixs)->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
+	osw_ip4_hdr(ixs)->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
+	osw_ip4_hdr(ixs)->protocol = IPPROTO_IPIP;
+	osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
 
-	ixs->newdst = (__u32)ixs->iph->daddr;
-	ixs->newsrc = (__u32)ixs->iph->saddr;
-	
+	ixs->newdst = (__u32)osw_ip4_hdr(ixs)->daddr;
+	ixs->newsrc = (__u32)osw_ip4_hdr(ixs)->saddr;
+
 	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
 	/* we need to do this before any HASH generation is done */
-	KLIPS_IP_SELECT_IDENT(ixs->iph, ixs->skb);
+	KLIPS_IP_SELECT_IDENT(osw_ip4_hdr(ixs), ixs->skb);
 
 #ifdef NET_21
 	skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));
@@ -1014,9 +1099,9 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 	unsigned int old_tot_len;
 	int flags = 0;
 
-	old_tot_len = ntohs(ixs->iph->tot_len);
+	old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
 
-	ixs->ipsp->ips_comp_ratio_dbytes += ntohs(ixs->iph->tot_len);
+	ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
 	ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
 #ifdef NET_21
@@ -1025,16 +1110,16 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 	ixs->iph = ixs->skb->ip_hdr;
 #endif /* NET_21 */
 
-	ixs->ipsp->ips_comp_ratio_cbytes += ntohs(ixs->iph->tot_len);
+	ixs->ipsp->ips_comp_ratio_cbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
 
 	if (debug_tunnel & DB_TN_CROUT)
 	{
-		if (old_tot_len > ntohs(ixs->iph->tot_len))
+		if (old_tot_len > ntohs(osw_ip4_hdr(ixs)->tot_len))
 			KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 					"klips_debug:ipsec_xmit_encap_once: "
 					"packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
-					old_tot_len, ntohs(ixs->iph->tot_len),
-					ntohs(((struct ipcomphdr*)(((char*)ixs->iph) + ((ixs->iph->ihl) << 2)))->ipcomp_cpi),
+					old_tot_len, ntohs(osw_ip4_hdr(ixs)->tot_len),
+					ntohs(((struct ipcomphdr*)(((char*)osw_ip4_hdr(ixs)) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
 					ntohl(ixs->ipsp->ips_said.spi),
 					(__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));
 		else
@@ -1074,8 +1159,8 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
 	 * just before the ip_send/nf hook in ipsec_xmit_send.
 	 */
 	if (ixs->ipsp->ips_next) {
-		ixs->iph->check = 0;
-		ixs->iph->check = ip_fast_csum((unsigned char *)ixs->iph, ixs->iph->ihl);
+		osw_ip4_hdr(ixs)->check = 0;
+		osw_ip4_hdr(ixs)->check = ip_fast_csum((unsigned char *)ixs->iph, osw_ip4_hdr(ixs)->ihl);
 	}
 			
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
@@ -1116,21 +1201,25 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
  * If the IP packet (iph) is a carrying TCP/UDP, then set the encaps
  * source and destination ports to those from the TCP/UDP header.
  */
-void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er)
-{
-	struct udphdr *udp;
 
-	switch (iph->protocol) {
+void ipsec_extract_ports(struct sk_buff *skb, unsigned char nexthdr,
+	int nexthdroff, struct sockaddr_encap * er)
+{
+	struct udphdr _udp, *udp;
+	switch (nexthdr) {
 	case IPPROTO_UDP:
 	case IPPROTO_TCP:
 		/*
 		 * The ports are at the same offsets in a TCP and UDP
 		 * header so hack it ...
 		 */
-		udp = (struct udphdr*)(((char*)iph)+(iph->ihl<<2));
-		er->sen_sport = udp->source;
-		er->sen_dport = udp->dest;
-		break;
+		udp = skb_header_pointer(skb, nexthdroff, sizeof(*udp), &_udp);
+		if (udp) {
+		    er->sen_sport = udp->source;
+		    er->sen_dport = udp->dest;
+		    break;
+		}
+		/* FALL THROUGH */
 	default:
 		er->sen_sport = 0;
 		er->sen_dport = 0;
@@ -1141,10 +1230,10 @@ void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er)
 /*
  * A TRAP eroute is installed and we want to replace it with a HOLD
  * eroute.
+ *
+ * NOTE iph == skb->iph
  */
-static int create_hold_eroute(struct eroute *origtrap,
-			      struct sk_buff * skb, struct iphdr * iph,
-			      uint32_t eroute_pid)
+static int create_hold_eroute(struct ipsec_xmit_state *ixs)
 {
 	struct eroute hold_eroute;
 	ip_said hold_said;
@@ -1157,22 +1246,39 @@ static int create_hold_eroute(struct eroute *origtrap,
 	
 	hold_said.proto = IPPROTO_INT;
 	hold_said.spi = htonl(SPI_HOLD);
-	hold_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
+
+	if (osw_ip_hdr_version(ixs) == 6) {
+		struct in6_addr addr6_any = IN6ADDR_ANY_INIT;   
+		hold_said.dst.u.v6.sin6_addr = addr6_any;
+		hold_said.dst.u.v6.sin6_family = AF_INET6;
+	} else {
+		hold_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
+		hold_said.dst.u.v4.sin_family = AF_INET;
+	}
 	
 	hold_eroute.er_eaddr.sen_len = sizeof(struct sockaddr_encap);
 	hold_eroute.er_emask.sen_len = sizeof(struct sockaddr_encap);
 	hold_eroute.er_eaddr.sen_family = AF_ENCAP;
 	hold_eroute.er_emask.sen_family = AF_ENCAP;
-	hold_eroute.er_eaddr.sen_type = SENT_IP4;
+	hold_eroute.er_eaddr.sen_type =
+			(osw_ip_hdr_version(ixs) == 6) ? SENT_IP6 : SENT_IP4;
 	hold_eroute.er_emask.sen_type = 255;
 	
-	hold_eroute.er_eaddr.sen_ip_src.s_addr = iph->saddr;
-	hold_eroute.er_eaddr.sen_ip_dst.s_addr = iph->daddr;
-	hold_eroute.er_emask.sen_ip_src.s_addr = INADDR_BROADCAST;
-	hold_eroute.er_emask.sen_ip_dst.s_addr = INADDR_BROADCAST;
+	if (osw_ip_hdr_version(ixs) == 6) {
+		const struct in6_addr in6addr_linklocal_allnodes = IN6ADDR_LINKLOCAL_ALLNODES_INIT;
+		hold_eroute.er_eaddr.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
+		hold_eroute.er_eaddr.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
+		hold_eroute.er_emask.sen_ip6_src = in6addr_linklocal_allnodes;
+		hold_eroute.er_emask.sen_ip6_dst = in6addr_linklocal_allnodes;
+	} else {
+		hold_eroute.er_eaddr.sen_ip_src.s_addr = osw_ip4_hdr(ixs)->saddr;
+		hold_eroute.er_eaddr.sen_ip_dst.s_addr = osw_ip4_hdr(ixs)->daddr;
+		hold_eroute.er_emask.sen_ip_src.s_addr = INADDR_BROADCAST;
+		hold_eroute.er_emask.sen_ip_dst.s_addr = INADDR_BROADCAST;
+	}
 	hold_eroute.er_emask.sen_sport = 0;
 	hold_eroute.er_emask.sen_dport = 0;
-	hold_eroute.er_pid = eroute_pid;
+	hold_eroute.er_pid = ixs->eroute_pid;
 	hold_eroute.er_count = 0;
 	hold_eroute.er_lasttime = jiffies/HZ;
 
@@ -1180,30 +1286,70 @@ static int create_hold_eroute(struct eroute *origtrap,
 	 * if it wasn't captured by a wildcard, then don't record it as
 	 * a wildcard.
 	 */
-	if(origtrap->er_eaddr.sen_proto != 0) {
-	  hold_eroute.er_eaddr.sen_proto = iph->protocol;
+	if(ixs->eroute->er_eaddr.sen_proto != 0) {
+	  unsigned char nexthdr;
+	  int nexthdroff;
 
-	  if((iph->protocol == IPPROTO_TCP ||
-	      iph->protocol == IPPROTO_UDP) &&
-	     (origtrap->er_eaddr.sen_sport != 0 ||
-	      origtrap->er_eaddr.sen_dport != 0)) {
+	  if (osw_ip_hdr_version(ixs) == 6) {
+	    nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+	    nexthdroff = ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
 
-	    if(origtrap->er_eaddr.sen_sport != 0)
-	      hold_eroute.er_emask.sen_sport = ~0;
+	    hold_eroute.er_eaddr.sen_proto6 = nexthdr;
+	  } else {
+		nexthdr = osw_ip4_hdr(ixs)->protocol;
+		nexthdroff = 0;
+		if ((ntohs(osw_ip4_hdr(ixs)->frag_off) & IP_OFFSET) == 0)
+			nexthdroff = (ixs->iph + (osw_ip4_hdr(ixs)->ihl<<2)) -
+				(void *)ixs->skb->data;
 
-	    if(origtrap->er_eaddr.sen_dport != 0) 
-	      hold_eroute.er_emask.sen_dport = ~0;
+	    hold_eroute.er_eaddr.sen_proto = nexthdr;
+	  }
+if (nexthdroff < 0)
+printk("SKIP HEADER3 failed\n");
 
-	    ipsec_extract_ports(iph, &hold_eroute.er_eaddr);
+	  if (nexthdr == IPPROTO_TCP || nexthdr == IPPROTO_UDP) {
+	  	if (ixs->eroute->er_eaddr.sen_type == SENT_IP4 &&
+			 (ixs->eroute->er_eaddr.sen_sport != 0 ||
+			  ixs->eroute->er_eaddr.sen_dport != 0)) {
+
+			if(ixs->eroute->er_eaddr.sen_sport != 0)
+			  hold_eroute.er_emask.sen_sport = ~0;
+
+			if(ixs->eroute->er_eaddr.sen_dport != 0) 
+			  hold_eroute.er_emask.sen_dport = ~0;
+
+			ipsec_extract_ports(ixs->skb, nexthdr, nexthdroff,
+					&hold_eroute.er_eaddr);
+		} else if (ixs->eroute->er_eaddr.sen_type == SENT_IP6 &&
+			 (ixs->eroute->er_eaddr.sen_sport6 != 0 ||
+			  ixs->eroute->er_eaddr.sen_dport6 != 0)) {
+
+			if(ixs->eroute->er_eaddr.sen_sport6 != 0)
+			  hold_eroute.er_emask.sen_sport6 = ~0;
+
+			if(ixs->eroute->er_eaddr.sen_dport6 != 0) 
+			  hold_eroute.er_emask.sen_dport6 = ~0;
+
+			ipsec_extract_ports(ixs->skb, nexthdr, nexthdroff,
+					&hold_eroute.er_eaddr);
+		}
 	  }
 	}
 
 	if (debug_pfkey) {
 		char buf1[64], buf2[64];
-		subnettoa(hold_eroute.er_eaddr.sen_ip_src,
-			  hold_eroute.er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
-		subnettoa(hold_eroute.er_eaddr.sen_ip_dst,
-			  hold_eroute.er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+		if (osw_ip_hdr_version(ixs) == 6) {
+			subnet6toa(&hold_eroute.er_eaddr.sen_ip6_src,
+				  &hold_eroute.er_emask.sen_ip6_src, 0, buf1, sizeof(buf1));
+			subnet6toa(&hold_eroute.er_eaddr.sen_ip6_dst,
+				  &hold_eroute.er_emask.sen_ip6_dst, 0, buf2, sizeof(buf2));
+		} else {
+			subnettoa(hold_eroute.er_eaddr.sen_ip_src,
+				  hold_eroute.er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
+			subnettoa(hold_eroute.er_eaddr.sen_ip_dst,
+				  hold_eroute.er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+		}
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_tunnel_start_xmit: "
 			    "calling breakeroute and makeroute for %s:%d->%s:%d %d HOLD eroute.\n",
@@ -1217,6 +1363,19 @@ static int create_hold_eroute(struct eroute *origtrap,
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_tunnel_start_xmit: "
 			    "HOLD breakeroute found nothing.\n");
+	} else if (hold_eroute.er_eaddr.sen_type == SENT_IP6 && debug_pfkey) {
+		char buf1[64], buf2[64];
+
+		subnet6toa(&hold_eroute.er_eaddr.sen_ip6_src,
+			  &hold_eroute.er_emask.sen_ip6_src, 0, buf1, sizeof(buf1));
+		subnet6toa(&hold_eroute.er_eaddr.sen_ip6_dst,
+			  &hold_eroute.er_emask.sen_ip6_dst, 0, buf2, sizeof(buf2));
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:ipsec_tunnel_start_xmit: "
+			    "HOLD breakroute deleted [%s]:%u -> [%s]:%u %u\n",
+			    buf1, ntohs(hold_eroute.er_eaddr.sen_sport6),
+			    buf1, ntohs(hold_eroute.er_eaddr.sen_dport6),
+			    hold_eroute.er_eaddr.sen_proto6);
 	} else {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_tunnel_start_xmit: "
@@ -1234,7 +1393,7 @@ static int create_hold_eroute(struct eroute *origtrap,
 
 	error = ipsec_makeroute(&(hold_eroute.er_eaddr),
 				&(hold_eroute.er_emask),
-				hold_said, eroute_pid, skb, NULL, NULL);
+				hold_said, ixs->eroute_pid, ixs->skb, NULL, NULL);
 	if (error) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_tunnel_start_xmit: "
@@ -1259,11 +1418,11 @@ static int create_hold_eroute(struct eroute *origtrap,
 enum ipsec_xmit_value
 ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 {
-	ixs->newdst = ixs->orgdst = ixs->iph->daddr;
-	ixs->newsrc = ixs->orgsrc = ixs->iph->saddr;
+	ixs->newdst = ixs->orgdst = osw_ip4_hdr(ixs)->daddr;
+	ixs->newsrc = ixs->orgsrc = osw_ip4_hdr(ixs)->saddr;
 	ixs->orgedst = ixs->outgoing_said.dst.u.v4.sin_addr.s_addr;
-	ixs->iphlen = ixs->iph->ihl << 2;
-	ixs->pyldsz = ntohs(ixs->iph->tot_len) - ixs->iphlen;
+	ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
+	ixs->pyldsz = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
 	ixs->max_headroom = ixs->max_tailroom = 0;
 		
 	if (ixs->outgoing_said.proto == IPPROTO_INT) {
@@ -1308,7 +1467,104 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 
 		case SPI_TRAP:
 		case SPI_TRAPSUBNET:
-		{
+		if (osw_ip_hdr_version(ixs) == 6) {
+			struct sockaddr_in6 src, dst;
+			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
+			unsigned char nexthdr;
+			int nexthdroff;
+
+			/* Signal all listening KMds with a PF_KEY ACQUIRE */
+
+			memset(&src, 0, sizeof(src));
+			memset(&dst, 0, sizeof(dst));
+			src.sin6_family = AF_INET6;
+			dst.sin6_family = AF_INET6;
+			src.sin6_addr = osw_ip6_hdr(ixs)->saddr;
+			dst.sin6_addr = osw_ip6_hdr(ixs)->daddr;
+
+			ixs->ips.ips_transport_protocol = 0;
+			src.sin6_port = 0;
+			dst.sin6_port = 0;
+
+			nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+			nexthdroff = ipv6_skip_exthdr(ixs->skb,
+				ixs->iph - (void*)ixs->skb->data, &nexthdr);
+			if (nexthdroff == 0) {
+				printk("DAVIDM ERROR 5\n");
+				nexthdr = -1;
+			}
+
+			if (ixs->eroute->er_eaddr.sen_type != SENT_IP6)
+				printk("DAVIDM ERROR 3\n");
+			
+			if(ixs->eroute->er_eaddr.sen_proto != 0) {
+			  struct udphdr _udphdr, *udphdr = NULL;
+			  struct tcphdr _tcphdr, *tcphdr = NULL;
+		
+			  ixs->ips.ips_transport_protocol = nexthdr;
+
+			  if (nexthdroff) {
+			  	if (nexthdr == IPPROTO_UDP)
+					udphdr = skb_header_pointer(ixs->skb, nexthdroff,
+							sizeof(*udphdr), &_udphdr);
+				else if (nexthdr == IPPROTO_TCP)
+					tcphdr = skb_header_pointer(ixs->skb, nexthdroff,
+							sizeof(*tcphdr), &_tcphdr);
+			  }
+			  
+			  if(ixs->eroute->er_eaddr.sen_sport6 != 0) {
+			    src.sin6_port = 
+			      (udphdr ? udphdr->source : (tcphdr ? tcphdr->source : 0));
+			  }
+			  if(ixs->eroute->er_eaddr.sen_dport6 != 0) {
+			    dst.sin6_port = 
+			      (udphdr ? udphdr->dest : (tcphdr ? tcphdr->dest : 0));
+			  }
+			}
+				
+			ixs->ips.ips_addr_s = (struct sockaddr*)(&src);
+			ixs->ips.ips_addr_d = (struct sockaddr*)(&dst);
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				    "klips_debug:ipsec_xmit_encap_bundle: "
+				    "SADB_ACQUIRE sent with src=%s:%d, dst=%s:%d, proto=%d.\n",
+				    sin_addrtot(ixs->ips.ips_addr_s, 0, bufsrc, sizeof(bufsrc)) <= ADDRTOA_BUF ? bufsrc : "BAD_ADDR",
+					ntohs(((struct sockaddr_in6*)(ixs->ips.ips_addr_s))->sin6_port),
+				    sin_addrtot(ixs->ips.ips_addr_d, 0, bufdst, sizeof(bufdst)) <= ADDRTOA_BUF ? bufdst : "BAD_ADDR",
+				    ntohs(((struct sockaddr_in6*)(ixs->ips.ips_addr_d))->sin6_port),
+				    ixs->ips.ips_said.proto);
+				
+			/* increment count of total traps needed */
+			ipsec_xmit_trap_count++;
+
+			if (pfkey_acquire(&ixs->ips) == 0) {
+
+				/* note that we succeeded */
+			        ipsec_xmit_trap_sendcount++;
+					
+				if (ixs->outgoing_said.spi==htonl(SPI_TRAPSUBNET)) {
+					/*
+					 * The spinlock is to prevent any other
+					 * process from accessing or deleting
+					 * the eroute while we are using and
+					 * updating it.
+					 */
+					spin_lock_bh(&eroute_lock);
+					ixs->eroute = ipsec_findroute(&ixs->matcher);
+					if(ixs->eroute) {
+						ixs->eroute->er_said.spi = htonl(SPI_HOLD);
+						ixs->eroute->er_first = ixs->skb;
+						ixs->skb = NULL;
+					}
+					spin_unlock_bh(&eroute_lock);
+				} else if (create_hold_eroute(ixs)) {
+					ixs->skb = NULL;
+				} 
+				/* whether or not the above succeeded, we continue */
+				
+			}
+			if (ixs->stats)
+				ixs->stats->tx_dropped++;
+		} else {
 			struct sockaddr_in src, dst;
 			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
 
@@ -1318,30 +1574,30 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			memset(&dst, 0, sizeof(dst));
 			src.sin_family = AF_INET;
 			dst.sin_family = AF_INET;
-			src.sin_addr.s_addr = ixs->iph->saddr;
-			dst.sin_addr.s_addr = ixs->iph->daddr;
+			src.sin_addr.s_addr = osw_ip4_hdr(ixs)->saddr;
+			dst.sin_addr.s_addr = osw_ip4_hdr(ixs)->daddr;
 
 			ixs->ips.ips_transport_protocol = 0;
 			src.sin_port = 0;
 			dst.sin_port = 0;
 			
 			if(ixs->eroute->er_eaddr.sen_proto != 0) {
-			  ixs->ips.ips_transport_protocol = ixs->iph->protocol;
+			  ixs->ips.ips_transport_protocol = osw_ip4_hdr(ixs)->protocol;
 			  
 			  if(ixs->eroute->er_eaddr.sen_sport != 0) {
 			    src.sin_port = 
-			      (ixs->iph->protocol == IPPROTO_UDP
-			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->source
-			       : (ixs->iph->protocol == IPPROTO_TCP
-				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->source
+			      (osw_ip4_hdr(ixs)->protocol == IPPROTO_UDP
+			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (osw_ip4_hdr(ixs)->ihl << 2)))->source
+			       : (osw_ip4_hdr(ixs)->protocol == IPPROTO_TCP
+				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (osw_ip4_hdr(ixs)->ihl << 2)))->source
 				  : 0));
 			  }
 			  if(ixs->eroute->er_eaddr.sen_dport != 0) {
 			    dst.sin_port = 
-			      (ixs->iph->protocol == IPPROTO_UDP
-			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (ixs->iph->ihl << 2)))->dest
-			       : (ixs->iph->protocol == IPPROTO_TCP
-				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (ixs->iph->ihl << 2)))->dest
+			      (osw_ip4_hdr(ixs)->protocol == IPPROTO_UDP
+			       ? ((struct udphdr*) (((caddr_t)ixs->iph) + (osw_ip4_hdr(ixs)->ihl << 2)))->dest
+			       : (osw_ip4_hdr(ixs)->protocol == IPPROTO_TCP
+				  ? ((struct tcphdr*)((caddr_t)ixs->iph + (osw_ip4_hdr(ixs)->ihl << 2)))->dest
 				  : 0));
 			  }
 			}
@@ -1351,9 +1607,9 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: "
 				    "SADB_ACQUIRE sent with src=%s:%d, dst=%s:%d, proto=%d.\n",
-				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_addr, 0, bufsrc, sizeof(bufsrc)) <= ADDRTOA_BUF ? bufsrc : "BAD_ADDR",
+				    sin_addrtot(ixs->ips.ips_addr_s, 0, bufsrc, sizeof(bufsrc)) <= ADDRTOA_BUF ? bufsrc : "BAD_ADDR",
 				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_s))->sin_port),
-				    addrtoa(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_addr, 0, bufdst, sizeof(bufdst)) <= ADDRTOA_BUF ? bufdst : "BAD_ADDR",
+				    sin_addrtot(ixs->ips.ips_addr_d, 0, bufdst, sizeof(bufdst)) <= ADDRTOA_BUF ? bufdst : "BAD_ADDR",
 				    ntohs(((struct sockaddr_in*)(ixs->ips.ips_addr_d))->sin_port),
 				    ixs->ips.ips_said.proto);
 				
@@ -1380,10 +1636,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 						ixs->skb = NULL;
 					}
 					spin_unlock_bh(&eroute_lock);
-				} else if (create_hold_eroute(ixs->eroute,
-							      ixs->skb,
-							      ixs->iph,
-							      ixs->eroute_pid)) {
+				} else if (create_hold_eroute(ixs)) {
 					ixs->skb = NULL;
 				} 
 				/* whether or not the above succeeded, we continue */
@@ -1691,7 +1944,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 		    "klips_debug:ipsec_xmit_init2: "
 		    "mtu:%d physmtu:%d tothr:%d tottr:%d mtudiff:%d ippkttotlen:%d\n",
 		    ixs->cur_mtu, ixs->physmtu,
-		    ixs->tot_headroom, ixs->tot_tailroom, ixs->mtudiff, ntohs(ixs->iph->tot_len));
+		    ixs->tot_headroom, ixs->tot_tailroom, ixs->mtudiff, ntohs(osw_ip4_hdr(ixs)->tot_len));
 	if(ixs->cur_mtu == 0 || ixs->mtudiff > 0) {
 		int newmtu = ixs->physmtu - (ixs->tot_headroom + ((ixs->tot_tailroom + 2) & ~7) + 5);
 
@@ -1720,10 +1973,10 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 	   ICMP packet from getting back.
 	*/
 	if(sysctl_ipsec_icmp
-	   && ixs->cur_mtu < ntohs(ixs->iph->tot_len)
-	   && (ixs->iph->frag_off & __constant_htons(IP_DF)) ) {
-		int notify = ixs->iph->protocol != IPPROTO_ICMP
-			&& (ixs->iph->frag_off & __constant_htons(IP_OFFSET)) == 0;
+	   && ixs->cur_mtu < ntohs(osw_ip4_hdr(ixs)->tot_len)
+	   && (osw_ip4_hdr(ixs)->frag_off & __constant_htons(IP_DF)) ) {
+		int notify = osw_ip4_hdr(ixs)->protocol != IPPROTO_ICMP
+			&& (osw_ip4_hdr(ixs)->frag_off & __constant_htons(IP_OFFSET)) == 0;
 			
 #ifdef IPSEC_obey_DF
 		KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
@@ -1949,9 +2202,11 @@ static inline int ipsec_xmit_send2(struct sk_buff *skb)
 static inline int ipsec_xmit_send2_mast(struct sk_buff *skb)
 {
 #ifdef NETDEV_25	/* 2.6 kernels */
+#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000)
 		skb->nfmark = 0;
+#endif
 #endif
 	return ipsec_xmit_send2(skb);
 

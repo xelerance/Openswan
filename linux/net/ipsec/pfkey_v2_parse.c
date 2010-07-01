@@ -384,8 +384,7 @@ pfkey_address_parse(struct sadb_ext *pfkey_ext)
 	switch(s->sa_family) {
 	case AF_INET:
 		saddr_len = sizeof(struct sockaddr_in);
-		addrtoa(((struct sockaddr_in*)s)->sin_addr, 0,
-			ipaddr_txt, sizeof(ipaddr_txt));
+		sin_addrtot(s, 0, ipaddr_txt, sizeof(ipaddr_txt));
 		DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 			  "pfkey_address_parse: "
 			  "found exttype=%u(%s) family=%d(AF_INET) address=%s proto=%u port=%u.\n",
@@ -398,15 +397,7 @@ pfkey_address_parse(struct sadb_ext *pfkey_ext)
 		break;
 	case AF_INET6:
 		saddr_len = sizeof(struct sockaddr_in6);
-		sprintf(ipaddr_txt, "%x:%x:%x:%x:%x:%x:%x:%x"
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[0])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[1])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[2])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[3])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[4])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[5])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[6])
-			, ntohs(((struct sockaddr_in6*)s)->sin6_addr.s6_addr16[7]));
+		sin_addrtot(s, 0, ipaddr_txt, sizeof(ipaddr_txt));
 		DEBUGGING(PF_KEY_DEBUG_PARSE_STRUCT,
 			  "pfkey_address_parse: "
 			  "found exttype=%u(%s) family=%d(AF_INET6) address=%s proto=%u port=%u.\n",

@@ -115,6 +115,37 @@ MODULE_PARM_DESC(ipsec_ocf_driver,
 	#define PROCESS_NEXT(this, wqsm, sm) PROCESS_LATER(this->workq, wqsm, this)
 #endif
 
+
+void
+_hexdump(unsigned char *cp, int off, int bytes, char *file, int line, char *prefix)
+{
+#if 0
+	int	i, n;
+	static char buffer[80];
+	static char chars[80];
+
+	printk("_hexump %p %d %d %s %d %s\n", cp, off, bytes, file, line, prefix);
+	//bytes = bytes > 32 ? 32 : bytes;
+
+	for (i = 0; i < bytes; i += 16) {
+		buffer[0] = 0;
+		for (n = 0; n < 16; n++, cp++) {
+			if (i + n < bytes) {
+				sprintf(&buffer[strlen(buffer)], "%02x%c",
+						*cp, n == 8 ? '-' : ' ');
+				chars[n] = (*cp >= 0x20 && *cp <= 0x7f) ? *cp : '.';
+			} else {
+				sprintf(&buffer[strlen(buffer)], "   ");
+				chars[n] = ' ';
+			}
+		}
+		printk("%s,%d: %s %s %s\n", file, line, prefix, buffer, chars);
+	}
+	printk("_HEXUMP %p %d %d %s %d %s\n", cp, off, bytes, file, line, prefix);
+#endif
+}
+
+
 /*
  * convert openswan values to OCF values
  */
@@ -290,16 +321,17 @@ ipsec_ocf_rcv_cb(struct cryptop *crp)
 		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_ocf_rcv_cb: "
 				"error in processing 0x%x\n", crp->crp_etype);
 	} else {
+_hexdump(irs->skb->data, 0, irs->skb->len, __FILE__, __LINE__, "RxSKB");
 		if (!irs->ipsp->ips_encalg) {
 			/* AH post processing, put back fields we had to zero */
-			irs->ipp->ttl      = irs->ttl;
-			irs->ipp->check    = irs->check;
-			irs->ipp->frag_off = irs->frag_off;
-			irs->ipp->tos      = irs->tos;
+			osw_ip4_hdr(irs)->ttl      = irs->ttl;
+			osw_ip4_hdr(irs)->check    = irs->check;
+			osw_ip4_hdr(irs)->frag_off = irs->frag_off;
+			osw_ip4_hdr(irs)->tos      = irs->tos;
 			irs->state         = IPSEC_RSM_AUTH_CHK;
 			/* pull up the IP header again after processing */
 			skb_pull(irs->skb, ((unsigned char *)irs->protostuff.ahstuff.ahp) -
-								((unsigned char *)irs->ipp));
+								((unsigned char *)irs->iph));
 		} else if (ipsec_rcv_esp_post_decrypt(irs) == IPSEC_RCV_OK) {
 			/* this one came up good, set next state */
 			irs->state         = IPSEC_RSM_DECAP_CONT;
@@ -363,7 +395,7 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 		if (!crde) { /* assuming AH processing */
 			/* push the IP header so we can authenticate it */
 			skb_push(irs->skb, ((unsigned char *)irs->protostuff.ahstuff.ahp) -
-								((unsigned char *)irs->ipp));
+								((unsigned char *)irs->iph));
 		}
 
 		crda->crd_key          = ipsp->ips_key_a;
@@ -379,22 +411,23 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 
 		if (!crde) { /* assume AH processing */
 			/* AH processing, save fields we have to zero */
-			irs->ttl           = irs->ipp->ttl;
-			irs->check         = irs->ipp->check;
-			irs->frag_off      = irs->ipp->frag_off;
-			irs->tos           = irs->ipp->tos;
-			irs->ipp->ttl      = 0;
-			irs->ipp->check    = 0;
-			irs->ipp->frag_off = 0;
-			irs->ipp->tos      = 0;
+			irs->ttl           = osw_ip4_hdr(irs)->ttl;
+			irs->check         = osw_ip4_hdr(irs)->check;
+			irs->frag_off      = osw_ip4_hdr(irs)->frag_off;
+			irs->tos           = osw_ip4_hdr(irs)->tos;
+			osw_ip4_hdr(irs)->ttl      = 0;
+			osw_ip4_hdr(irs)->check    = 0;
+			osw_ip4_hdr(irs)->frag_off = 0;
+			osw_ip4_hdr(irs)->tos      = 0;
 			crda->crd_len      = irs->skb->len;
-			crda->crd_skip     = ((unsigned char *)irs->ipp) - irs->skb->data;
+			crda->crd_skip     = ((unsigned char *)irs->iph) - irs->skb->data;
 			memset(irs->authenticator, 0, 12);
 		} else {
 			crda->crd_len      = irs->ilen;
 			crda->crd_skip     =
 				((unsigned char *) irs->protostuff.espstuff.espp) -
 							irs->skb->data;
+_hexdump(irs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "RxAH");
 			/*
 			 * It would be nice to clear the authenticator here
 			 * to be sure we do not see it again later when checking.
@@ -434,6 +467,7 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 		irs->ilen       -= irs->esphlen;
 		crde->crd_skip   = (skb_transport_header(irs->skb) - irs->skb->data) + irs->esphlen;
 		crde->crd_len    = irs->ilen;
+_hexdump(irs->skb->data, crde->crd_skip, crde->crd_len, __FILE__, __LINE__, "RxESP");
 		crde->crd_inject = crde->crd_skip - ipsp->ips_iv_size;
 		crde->crd_klen   = ipsp->ips_key_bits_e;
 		crde->crd_key    = ipsp->ips_key_e;
@@ -515,12 +549,13 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 			"klips_debug:ipsec_ocf_xmit_cb: error in processing 0x%x\n",
 			crp->crp_etype);
 	} else {
+_hexdump(ixs->skb->data, 0, ixs->skb->len, __FILE__, __LINE__, "TxSKB");
 		if (!ixs->ipsp->ips_encalg) {
 			/* AH post processing, put back fields we had to zero */
-			ixs->iph->ttl      = ixs->ttl;
-			ixs->iph->check    = ixs->check;
-			ixs->iph->frag_off = ixs->frag_off;
-			ixs->iph->tos      = ixs->tos;
+			osw_ip4_hdr(ixs)->ttl      = ixs->ttl;
+			osw_ip4_hdr(ixs)->check    = ixs->check;
+			osw_ip4_hdr(ixs)->frag_off = ixs->frag_off;
+			osw_ip4_hdr(ixs)->tos      = ixs->tos;
 		}
 		ixs->state = IPSEC_XSM_CONT; /* ESP was all good */
 	}
@@ -583,14 +618,14 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 		if (!crde) { /* assume AH processing */
 			/* AH processing, save fields we have to zero */
 			crda->crd_skip     = ((unsigned char *) ixs->iph) - ixs->skb->data;
-			ixs->ttl           = ixs->iph->ttl;
-			ixs->check         = ixs->iph->check;
-			ixs->frag_off      = ixs->iph->frag_off;
-			ixs->tos           = ixs->iph->tos;
-			ixs->iph->ttl      = 0;
-			ixs->iph->check    = 0;
-			ixs->iph->frag_off = 0;
-			ixs->iph->tos      = 0;
+			ixs->ttl           = osw_ip4_hdr(ixs)->ttl;
+			ixs->check         = osw_ip4_hdr(ixs)->check;
+			ixs->frag_off      = osw_ip4_hdr(ixs)->frag_off;
+			ixs->tos           = osw_ip4_hdr(ixs)->tos;
+			osw_ip4_hdr(ixs)->ttl      = 0;
+			osw_ip4_hdr(ixs)->check    = 0;
+			osw_ip4_hdr(ixs)->frag_off = 0;
+			osw_ip4_hdr(ixs)->tos      = 0;
 			crda->crd_inject   =
 				(((struct ahhdr *)(ixs->dat + ixs->iphlen))->ah_data) -
 					ixs->skb->data;
@@ -600,6 +635,7 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 			crda->crd_skip     = ((unsigned char *) ixs->espp) - ixs->skb->data;
 			crda->crd_inject   = ixs->len - ixs->authlen;
 			crda->crd_len      = ixs->len - ixs->iphlen - ixs->authlen;
+_hexdump(ixs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "TxAH");
 		}
 
 		/* OCF needs cri_mlen initialized in order to properly migrate
@@ -625,6 +661,7 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 		crde->crd_inject = ((unsigned char *) ixs->espp->esp_iv) - ixs->dat;
 		crde->crd_klen   = ipsp->ips_key_bits_e;
 		crde->crd_key    = ipsp->ips_key_e;
+_hexdump(ixs->skb->data, crde->crd_skip, crde->crd_len, __FILE__, __LINE__, "TxESP");
 	}
 
 	crp->crp_ilen = ixs->skb->len; /* Total input length */

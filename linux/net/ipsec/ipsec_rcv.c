@@ -212,13 +212,16 @@ struct auth_alg ipsec_rcv_sha1[]={
 
 static inline void ipsec_rcv_redodebug(struct ipsec_rcv_state *irs)
 {
-	struct iphdr * ipp = irs->ipp;
-	struct in_addr ipsaddr, ipdaddr;
-
-	ipsaddr.s_addr = ipp->saddr;
-	addrtoa(ipsaddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
-	ipdaddr.s_addr = ipp->daddr;
-	addrtoa(ipdaddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+	if (osw_ip_hdr_version(irs) == 4) {
+		inet_addrtot(AF_INET, &osw_ip4_hdr(irs)->saddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
+		inet_addrtot(AF_INET, &osw_ip4_hdr(irs)->daddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+	} else if (osw_ip_hdr_version(irs) == 6) {
+		inet_addrtot(AF_INET6, &osw_ip6_hdr(irs)->saddr, 0, irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt));
+		inet_addrtot(AF_INET6, &osw_ip6_hdr(irs)->daddr, 0, irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt));
+	} else {
+		snprintf(irs->ipsaddr_txt, sizeof(irs->ipsaddr_txt), "<BAD ADDRESS>");
+		snprintf(irs->ipdaddr_txt, sizeof(irs->ipdaddr_txt), "<BAD ADDRESS>");
+	}
 }
 
 
@@ -474,18 +477,21 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 {
 	struct ipsec_sa *ipsp;
 	struct ipsec_sa* ipsnext = NULL;
-	struct iphdr *ipp;
 	struct sk_buff *skb;
+	struct iphdr *ipp;
+	struct ipv6hdr *ipp6;
+	int failed_inbound_check = 0;
 	enum ipsec_rcv_value result = IPSEC_RCV_DECAPFAIL;
 
-	ipp  = irs->ipp;
+	ipp  = osw_ip4_hdr(irs);
+	ipp6  = osw_ip6_hdr(irs);
 	ipsp = irs->ipsp;
 	skb  = irs->skb;
 	if (debug_rcv)
 		irs->sa_len = satot(&irs->said, 0, irs->sa, sizeof(irs->sa));
 	else
 		irs->sa_len = 0;
-	if((ipp->protocol != IPPROTO_IPIP) && 
+	if(ipp->version == 4 && (ipp->protocol != IPPROTO_IPIP) && 
 	   (ipp->protocol != IPPROTO_ATT_HEARTBEAT)) {  /* AT&T heartbeats to SIG/GIG */
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
@@ -497,7 +503,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		goto rcvleave;
 	}
 	if(sysctl_ipsec_inbound_policy_check) {
-		struct sockaddr_in *psin = (struct sockaddr_in*)(ipsp->ips_addr_s);
+		struct sockaddr_in *psin = NULL;
+		struct sockaddr_in6 *psin6 = NULL;
+
 		if((ipsnext = ipsp->ips_next)) {
 			char sa2[SATOT_BUF];
 			size_t sa_len2;
@@ -515,13 +523,28 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			}
 			goto rcvleave;
 		}
-		if(ipp->saddr != psin->sin_addr.s_addr) {
+
+		if (((struct sockaddr_in6*)(ipsp->ips_addr_s))->sin6_family == AF_INET6) {
+			psin6 = (struct sockaddr_in6*)(ipsp->ips_addr_s);
+		} else if (((struct sockaddr_in*)(ipsp->ips_addr_s))->sin_family == AF_INET6) {
+			psin = (struct sockaddr_in*)(ipsp->ips_addr_s);
+		}
+		if ((psin && ipp->saddr != psin->sin_addr.s_addr) ||
+			(psin6 && memcmp(&ipp6->saddr, &psin6->sin6_addr, sizeof(ipp6->saddr)) != 0)) {
+			char saddr1[SUBNETTOA_BUF], saddr2[SUBNETTOA_BUF];
+			*saddr1 = 0;
+			if (ipp->version == 4)
+				inet_addrtot(AF_INET, &ipp->saddr, 0, saddr1, sizeof(saddr1));
+			else
+				inet_addrtot(AF_INET6, &ipp6->saddr, 0, saddr1, sizeof(saddr1));
+			*saddr2 = 0;
+			sin_addrtot(&psin->sin_addr, 0, saddr2, sizeof(saddr2));
 			KLIPS_PRINT(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
-				    "SA:%s, src=%s(%08x) does match expected 0x%08x.\n",
+				    "SA:%s, src=%s(%s) does match expected %s.\n",
 				    irs->sa_len ? irs->sa : " (error)",
 				    irs->ipsaddr_txt, 
-				    ipp->saddr, psin->sin_addr.s_addr);
+				    saddr1, saddr2);
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
 			}
@@ -531,7 +554,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	
 	ipsec_rcv_setoutif(irs);
 
-	if(ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
+	if(ipp->version == 4 && ipp->protocol == IPPROTO_IPIP)  /* added to support AT&T heartbeats to SIG/GIG */
 	{  
 		/*
 		 * XXX this needs to be locked from when it was first looked
@@ -568,8 +591,15 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		
 		/* now setup new L4 payload location */
 		ipp = (struct iphdr *)skb_network_header(skb);
-		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + (ipp->ihl << 2)));
-
+		ipp6 = (struct ipv6hdr *) ipp;
+		if (ipp->version == 6) {
+			unsigned char nexthdr = ipp6->nexthdr;
+			int nexthdroff;
+			nexthdroff = ipv6_skip_exthdr(skb, (void*)(ipp6+1)-(void*)skb->data,&nexthdr);
+			skb_set_transport_header(skb, (((void *)ipp) + nexthdroff) - (void *)skb->data);
+		} else {
+			skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + (ipp->ihl << 2)));
+		}
 		
 		/* remove any saved options that we might have,
 		 * since we have a new IP header.
@@ -581,11 +611,14 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 #endif
 		
 		/* re-do any strings for debugging */
-		irs->ipp = ipp;
+		irs->iph = (void*)ipp;
 		if (debug_rcv)
 			ipsec_rcv_redodebug(irs);
 
-		skb->protocol = htons(ETH_P_IP);
+		if (osw_ip_hdr_version(irs) == 6)
+			skb->protocol = htons(ETH_P_IPV6);
+		else
+			skb->protocol = htons(ETH_P_IP);
 		skb->ip_summed = 0;
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 			    "klips_debug:ipsec_rcv: "
@@ -593,7 +626,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
 	}
 	
-	if(sysctl_ipsec_inbound_policy_check
+	if(sysctl_ipsec_inbound_policy_check) {
 	   /*
 	     Note: "xor" (^) logically replaces "not equal"
 	     (!=) and "bitwise or" (|) logically replaces
@@ -601,19 +634,65 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	     execution by doing only bitwise operations and
 	     no branch operations
 	   */
-	   && (((ipp->saddr & ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
-		^ ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
-	       | ((ipp->daddr & ipsp->ips_mask_d.u.v4.sin_addr.s_addr)
-		  ^ ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) )
+	   if (ipp->version == 4) {
+	   	 if (ipsp->ips_mask_s.u.v4.sin_family != AF_INET) {
+		 	failed_inbound_check = 1;
+		 } else if (((ipp->saddr & ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
+				  ^ ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
+				  | ((ipp->daddr & ipsp->ips_mask_d.u.v4.sin_addr.s_addr)
+				  ^ ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) {
+		 	failed_inbound_check = 1;
+		 }
+	   } else if (ipp->version == 6) {
+	   	 if (ipsp->ips_mask_s.u.v6.sin6_family != AF_INET6) {
+printk("FAILED ipsec_rcv %d - %d\n", __LINE__, ipsp->ips_mask_s.u.v6.sin6_family);
+		 	failed_inbound_check = 1;
+		 } else if (((ipp6->saddr.s6_addr32[0] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[0])
+				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[0])
+				  | ((ipp6->daddr.s6_addr32[0] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[0])
+				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[0])) {
+		 	failed_inbound_check = 1;
+printk("FAILED ipsec_rcv %d\n", __LINE__);
+		 } else if (((ipp6->saddr.s6_addr32[1] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[1])
+				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[1])
+				  | ((ipp6->daddr.s6_addr32[1] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[1])
+				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[0])) {
+		 	failed_inbound_check = 1;
+printk("FAILED ipsec_rcv %d\n", __LINE__);
+		 } else if (((ipp6->saddr.s6_addr32[2] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[2])
+				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[2])
+				  | ((ipp6->daddr.s6_addr32[2] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[2])
+				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[2])) {
+		 	failed_inbound_check = 1;
+printk("FAILED ipsec_rcv %d\n", __LINE__);
+		 } else if (((ipp6->saddr.s6_addr32[3] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[3])
+				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[3])
+				  | ((ipp6->daddr.s6_addr32[3] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[3])
+				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[3])) {
+		 	failed_inbound_check = 1;
+printk("FAILED ipsec_rcv %d\n", __LINE__);
+		 }
+	   }
+	}
+	if (failed_inbound_check)
 	{
 		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
 		
-		subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
-			  ipsp->ips_mask_s.u.v4.sin_addr,
-			  0, sflow_txt, sizeof(sflow_txt));
-		subnettoa(ipsp->ips_flow_d.u.v4.sin_addr,
-			  ipsp->ips_mask_d.u.v4.sin_addr,
-			  0, dflow_txt, sizeof(dflow_txt));
+		if (ipsp->ips_flow_s.u.v4.sin_family == AF_INET6) {
+			subnet6toa(&ipsp->ips_flow_s.u.v6.sin6_addr,
+				  &ipsp->ips_mask_s.u.v6.sin6_addr,
+				  0, sflow_txt, sizeof(sflow_txt));
+			subnet6toa(&ipsp->ips_flow_d.u.v6.sin6_addr,
+				  &ipsp->ips_mask_d.u.v6.sin6_addr,
+				  0, dflow_txt, sizeof(dflow_txt));
+		} else {
+			subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
+				  ipsp->ips_mask_s.u.v4.sin_addr,
+				  0, sflow_txt, sizeof(sflow_txt));
+			subnettoa(ipsp->ips_flow_d.u.v4.sin_addr,
+				  ipsp->ips_mask_d.u.v4.sin_addr,
+				  0, dflow_txt, sizeof(dflow_txt));
+		}
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
 			    "SA:%s, inner tunnel policy [%s -> %s] does not agree with pkt contents [%s -> %s].\n",
@@ -627,7 +706,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 		goto rcvleave;
 	}
-#ifdef CONFIG_NETFILTER
+#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_TABLE_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
@@ -725,7 +804,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 #endif /* IP_FRAGMENT_LINEARIZE */
 
 	ipp = ip_hdr(skb);
-	irs->ipp = ipp;
+	irs->iph = (void *)ipp;
 
 #if defined(CONFIG_IPSEC_NAT_TRAVERSAL) && !defined(NET_26)
 	if (irs->natt_len) {
@@ -866,7 +945,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 	/* set up for decap */
 	irs->stats= stats;
-	irs->ipp  = ipp;
+	irs->iph  = (void *) ipp;
 	irs->ipsp = NULL;
 	irs->lastipsp = NULL;
 	irs->ilen = 0;
@@ -883,7 +962,7 @@ ipsec_rcv_decap_init(struct ipsec_rcv_state *irs)
 	KLIPS_PRINT(debug_rcv, "klips_debug: %s(st=%d,nxt=%d)\n", __FUNCTION__,
 			irs->state, irs->next_state);
 
-	switch (irs->ipp->protocol) {
+	switch (osw_ip4_hdr(irs)->protocol) {
 	case IPPROTO_ESP:
 		irs->proto_funcs = esp_xform_funcs;
 		break;
@@ -926,7 +1005,7 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs)
 
 	skb = irs->skb;
 	irs->len = skb->len;
-	ipp = irs->ipp;
+	ipp = osw_ip4_hdr(irs);
 	irs->proto = ipp->protocol;
 	if (debug_rcv)
 		ipsec_rcv_redodebug(irs);
@@ -998,7 +1077,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	}
 
 	if(sysctl_ipsec_inbound_policy_check) {
-		if(irs->ipp->saddr != ((struct sockaddr_in*)(newipsp->ips_addr_s))->sin_addr.s_addr) {
+		if(osw_ip4_hdr(irs)->saddr != ((struct sockaddr_in*)(newipsp->ips_addr_s))->sin_addr.s_addr) {
 			KLIPS_ERROR(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
 				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy.\n",
@@ -1090,7 +1169,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 	if (irs->proto_funcs == NULL)
 		return IPSEC_RCV_BADPROTO;
 
-	if (irs->proto_funcs->protocol != irs->ipp->protocol) {
+	if (irs->proto_funcs->protocol != osw_ip4_hdr(irs)->protocol) {
 		if(irs->proto_funcs->protocol == IPPROTO_COMP) {
 			/* looks like an IPCOMP that we can skip */
 			struct ipsec_sa *newipsp;
@@ -1453,7 +1532,6 @@ static enum ipsec_rcv_value
 ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 {
 	struct sk_buff *skb;
-	struct iphdr *ipp;
 	struct ipsec_sa *ipsnext = NULL; /* next SA towards inside of packet */
 	enum ipsec_rcv_value rv;
 
@@ -1474,9 +1552,18 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	 */
 	skb = irs->skb;
 	irs->len = skb->len;
-	ipp = irs->ipp = ip_hdr(skb);
-	irs->iphlen = ipp->ihl<<2;
-	skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
+	irs->iph = (void *) ip_hdr(skb);
+	if (osw_ip_hdr_version(irs) == 6) {
+		unsigned char nexthdr = osw_ip6_hdr(irs)->nexthdr;
+		int nexthdroff;
+		nexthdroff = ipv6_skip_exthdr(irs->skb, ((void *)(osw_ip6_hdr(irs)+1))-
+				(void*)irs->skb->data, &nexthdr);
+		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
+		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
+	} else {
+		irs->iphlen = osw_ip4_hdr(irs)->ihl<<2;
+		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
+	}
 	
 	/* zero any options that there might be */
 	memset(&(IPCB(skb)->opt), 0, sizeof(struct ip_options));
@@ -1487,34 +1574,36 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	/*
 	 *	Discard the original ESP/AH header
 	 */
-	ipp->protocol = irs->next_header;
-
-	ipp->check = 0;	/* NOTE: this will be included in checksum */
-	ipp->check = ip_fast_csum((unsigned char *)ip_hdr(skb), irs->iphlen >> 2);
-
+	if (osw_ip_hdr_version(irs) == 6) {
+		osw_ip6_hdr(irs)->nexthdr = irs->next_header;
+		skb->protocol = htons(ETH_P_IPV6);
+	} else {
+		osw_ip4_hdr(irs)->protocol = irs->next_header;
+		osw_ip4_hdr(irs)->check = 0;	/* NOTE: this will be included in checksum */
+		osw_ip4_hdr(irs)->check = ip_fast_csum((unsigned char *)ip_hdr(skb), irs->iphlen >> 2);
+		skb->protocol = htons(ETH_P_IP);
+	}
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-		    "klips_debug:ipsec_rcv: "
-		    "after <%s%s%s>, SA:%s:\n",
-		    IPS_XFORM_NAME(irs->ipsp),
-		    irs->sa_len ? irs->sa : " (error)");
-	KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
-
-	skb->protocol = htons(ETH_P_IP);
+			"klips_debug:ipsec_rcv: "
+			"after <%s%s%s>, SA:%s:\n",
+			IPS_XFORM_NAME(irs->ipsp),
+			irs->sa_len ? irs->sa : " (error)");
+	KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, irs->iph);
 	skb->ip_summed = 0;
 
 	ipsnext = irs->ipsp->ips_next;
 	if(sysctl_ipsec_inbound_policy_check) {
 		if(ipsnext) {
 			if(
-				ipp->protocol != IPPROTO_AH
-				&& ipp->protocol != IPPROTO_ESP
+				irs->next_header != IPPROTO_AH
+				&& irs->next_header != IPPROTO_ESP
 #ifdef CONFIG_KLIPS_IPCOMP
-				&& ipp->protocol != IPPROTO_COMP
+				&& irs->next_header != IPPROTO_COMP
 				&& (ipsnext->ips_said.proto != IPPROTO_COMP
 				    || ipsnext->ips_next)
 #endif /* CONFIG_KLIPS_IPCOMP */
-				&& ipp->protocol != IPPROTO_IPIP
-				&& ipp->protocol != IPPROTO_ATT_HEARTBEAT  /* heartbeats to AT&T SIG/GIG */
+				&& irs->next_header != IPPROTO_IPIP
+				&& irs->next_header != IPPROTO_ATT_HEARTBEAT  /* heartbeats to AT&T SIG/GIG */
 				) {
 				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
@@ -1541,9 +1630,14 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	/* update ipcomp ratio counters, even if no ipcomp packet is present */
 	if (ipsnext
 	    && ipsnext->ips_said.proto == IPPROTO_COMP
-	    && ipp->protocol != IPPROTO_COMP) {
-		ipsnext->ips_comp_ratio_cbytes += ntohs(ipp->tot_len);
-		ipsnext->ips_comp_ratio_dbytes += ntohs(ipp->tot_len);
+	    && irs->next_header != IPPROTO_COMP) {
+		int tot_len;
+		if (osw_ip_hdr_version(irs) == 6)
+			tot_len = ntohs(osw_ip6_hdr(irs)->payload_len);
+		else
+			tot_len = ntohs(osw_ip4_hdr(irs)->tot_len);
+		ipsnext->ips_comp_ratio_cbytes += tot_len;
+		ipsnext->ips_comp_ratio_dbytes += tot_len;
 	}
 #endif /* CONFIG_KLIPS_IPCOMP */
 
@@ -1556,7 +1650,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	irs->ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
 	irs->ipsp->ips_life.ipl_packets.ipl_count += 1;
 
-#ifdef CONFIG_NETFILTER
+#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	if(irs->proto == IPPROTO_ESP || irs->proto == IPPROTO_AH) {
 		skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 			| IPsecSAref2NFmark(IPsecSA2SAref(irs->ipsp));
@@ -1569,10 +1663,10 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 #endif /* CONFIG_NETFILTER */
 
 	/* do we need to do more decapsulation */
-	if ((irs->ipp->protocol == IPPROTO_ESP ||
-			irs->ipp->protocol == IPPROTO_AH ||
+	if ((osw_ip4_hdr(irs)->protocol == IPPROTO_ESP ||
+			osw_ip4_hdr(irs)->protocol == IPPROTO_AH ||
 #ifdef CONFIG_KLIPS_IPCOMP
-			irs->ipp->protocol == IPPROTO_COMP ||
+			osw_ip4_hdr(irs)->protocol == IPPROTO_COMP ||
 #endif /* CONFIG_KLIPS_IPCOMP */
 			0) && irs->ipsp != NULL) {
 		irs->next_state = IPSEC_RSM_DECAP_INIT;
@@ -1590,8 +1684,8 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 	KLIPS_PRINT(debug_rcv, "klips_debug: %s(st=%d,nxt=%d)\n", __FUNCTION__,
 			irs->state, irs->next_state);
 
-	/* set up for decap loop */
-	ipp = irs->ipp;
+	/* set up for cleanup */
+	ipp = osw_ip4_hdr(irs);
 	skb = irs->skb;
 
 #ifdef NAT_TRAVERSAL
@@ -1696,6 +1790,9 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		memmove(skb_network_header(skb) - irs->hard_header_len,
 			skb_mac_header(skb), irs->hard_header_len);
 		skb_set_mac_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) - irs->hard_header_len));
+		/* we have to fix the protocol,  it's not right with IP4/IP6 or
+		 * IP6/IP4 tunnels */
+		eth_hdr(skb)->h_proto = htons(skb->protocol);
 	}
 	return IPSEC_RCV_OK;
 }
@@ -1715,6 +1812,7 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 #ifdef NET_26
 	irs->skb->data = skb_push(irs->skb, skb_transport_header(irs->skb) - skb_network_header(irs->skb));
 #else
+	/* DAVIDM - broken for IPv6 */
 	irs->skb->data = skb_network_header(irs->skb);
 	{
 	  struct iphdr *iph = ip_hdr(irs->skb);
@@ -1892,6 +1990,10 @@ ipsec_rcv(struct sk_buff *skb
 #endif /* NAT_T */
 
 	irs->skb = skb;
+if (0) {
+extern void _hexdump();
+_hexdump(skb->data, 0, skb->len, __FILE__, __LINE__, "iSKB");
+}
 
 	/*
 	 * we hand off real early to the state machine because we just cannot

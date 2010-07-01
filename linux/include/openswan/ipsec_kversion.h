@@ -343,6 +343,8 @@
 # define ip_chk_addr inet_addr_type
 #define l_inet_addr_type	inet_addr_type
 #endif
+#define ip6_chk_addr(a) ipv6_addr_type(a)
+#define l_ipv6_addr_type(a)	ipv6_addr_type(a)
 
 /* not sure when network name spaces got introduced, but it is in 2.6.26 */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26)

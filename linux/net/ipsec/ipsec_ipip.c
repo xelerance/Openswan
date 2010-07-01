@@ -69,31 +69,31 @@
 enum ipsec_xmit_value
 ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
 {
-  ixs->iph->version  = 4;
+  osw_ip4_hdr(ixs)->version  = 4;
 
   switch(sysctl_ipsec_tos) {
   case 0:
 #ifdef NET_21
-    ixs->iph->tos = ip_hdr(ixs->skb)->tos;
+    osw_ip4_hdr(ixs)->tos = ip_hdr(ixs->skb)->tos;
 #else /* NET_21 */
-    ixs->iph->tos = ixs->skb->ip_hdr->tos;
+    osw_ip4_hdr(ixs)->tos = ixs->skb->ip_hdr->tos;
 #endif /* NET_21 */
     break;
   case 1:
-    ixs->iph->tos = 0;
+    osw_ip4_hdr(ixs)->tos = 0;
     break;
   default:
     break;
   }
-  ixs->iph->ttl      = SYSCTL_IPSEC_DEFAULT_TTL;
-  ixs->iph->frag_off = 0;
-  ixs->iph->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
-  ixs->iph->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
-  ixs->iph->protocol = IPPROTO_IPIP;
-  ixs->iph->ihl      = sizeof(struct iphdr) >> 2;
+  osw_ip4_hdr(ixs)->ttl      = SYSCTL_IPSEC_DEFAULT_TTL;
+  osw_ip4_hdr(ixs)->frag_off = 0;
+  osw_ip4_hdr(ixs)->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
+  osw_ip4_hdr(ixs)->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
+  osw_ip4_hdr(ixs)->protocol = IPPROTO_IPIP;
+  osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
   
-  ixs->newdst = (__u32)ixs->iph->daddr;
-  ixs->newsrc = (__u32)ixs->iph->saddr;
+  ixs->newdst = (__u32)osw_ip4_hdr(ixs)->daddr;
+  ixs->newsrc = (__u32)osw_ip4_hdr(ixs)->saddr;
   
 #ifdef NET_21
   skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));

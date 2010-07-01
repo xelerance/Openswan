@@ -342,11 +342,13 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
+#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	if(skb->nfmark & 0x80000000) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "getting SAref=%d from nfmark\n",
 			    SAref);
 	}
+#endif
 #endif
 
 #ifdef CONFIG_INET_IPSEC_SAREF
@@ -370,10 +372,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 #ifdef NETDEV_25
+#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000) {
 		skb->nfmark = 0;
 	}
+#endif
 #endif
 #if 0
 	/* TODO: do we have to also have to do this? */

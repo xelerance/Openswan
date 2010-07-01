@@ -280,6 +280,8 @@ err_t ttoaddr_num(const char *src, size_t srclen, int af, ip_address *dst);
 
 err_t tnatoaddr(const char *src, size_t srclen, int af, ip_address *dst);
 size_t addrtot(const ip_address *src, int format, char *buf, size_t buflen);
+size_t inet_addrtot(int type,const void *src, int format, char *buf, size_t buflen);
+size_t sin_addrtot(const void *sin, int format, char *dst, size_t dstlen);
 /* RFC 1886 old IPv6 reverse-lookup format is the bulkiest */
 #define	ADDRTOT_BUF	(32*2 + 3 + 1 + 3 + 1 + 1)
 err_t ttosubnet(const char *src, size_t srclen, int af, ip_subnet *dst);
@@ -423,6 +425,14 @@ subnettoa(
 	char *dst,
 	size_t dstlen
 );
+size_t				/* space needed for full conversion */
+subnet6toa(
+	struct in6_addr *addr,
+	struct in6_addr *mask,
+	int format,		/* character; 0 means default */
+	char *dst,
+	size_t dstlen
+);
 #define	SUBNETTOA_BUF	32	/* large enough for worst case result */
 
 /* ranges */
@@ -502,6 +512,7 @@ goodmask(
 	struct in_addr mask
 );
 extern int masktobits(struct in_addr mask);
+extern int mask6tobits(struct in6_addr *mask);
 extern struct in_addr  bitstomask(int n);
 extern struct in6_addr bitstomask6(int n);
 
