@@ -993,6 +993,10 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 	ixs->newdst = (__u32)ixs->iph->daddr;
 	ixs->newsrc = (__u32)ixs->iph->saddr;
 	
+	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
+	/* we need to do this before any HASH generation is done */
+	KLIPS_IP_SELECT_IDENT(ixs->iph, ixs->skb);
+
 #ifdef NET_21
 	skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));
 #endif /* NET_21 */
@@ -2098,9 +2102,6 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	if(!ixs->pass) {
 		ipsec_nf_reset(ixs->skb);
 	}
-
-	/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
-	KLIPS_IP_SELECT_IDENT(ip_hdr(ixs->skb), ixs->skb);
 
 	/* fix up the checksum after changes to the header */
 	ip_hdr(ixs->skb)->check = 0;
