@@ -203,8 +203,8 @@ int klips_header(struct sk_buff *skb, struct net_device *dev,
 			    dev->name ? dev->name : "NULL",
 				prv->dev->header_ops, prv->dev->header_ops ?
 				prv->dev->header_ops->create : 0);
-		stats->tx_dropped++;
-		return -ENODEV;
+		/* don't fail here or devices without header ops (like ppp) fail */
+		return 0;
 	}
 
 	/* check if we have to send a IPv6 packet. It might be a Router
@@ -394,8 +394,8 @@ int klips_header_cache(const struct neighbour *neigh, struct hh_cache *hh)
 			    dev->name ? dev->name : "NULL",
 				prv->dev->header_ops, prv->dev->header_ops ?
 				prv->dev->header_ops->cache : 0);
-		stats->tx_dropped++;
-		return -1;
+		/* don't fail here or devices without header ops (like ppp) fail */
+		return 0;
 	}
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
