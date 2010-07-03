@@ -1,7 +1,7 @@
-From 3daee827e80014145e06275448d36944fd73e38e Mon Sep 17 00:00:00 2001
+From 4b43073a0edec57561d125701eabffb97f40c3a7 Mon Sep 17 00:00:00 2001
 From: Bart Trojanowski <bart@jukie.net>
 Date: Mon, 31 May 2010 16:19:19 -0400
-Subject: [PATCH 2/4] SAREF: implement IP_IPSEC_BINDREF
+Subject: [PATCH 2/2] SAREF: implement IP_IPSEC_BINDREF
 
 Add sockopt IP_IPSEC_BINDREF, which associates an IPsec SAref to an inet
 socket.  The ref is used to seed the skb->sp->ref for each skb on that
@@ -13,8 +13,8 @@ connection, which will force packets out a specific klips SA.
  net/core/sock.c        |    3 +++
  net/ipv4/ip_sockglue.c |    9 +++++++++
  net/ipv4/tcp.c         |    3 +++
- net/ipv4/tcp_output.c  |    4 ++++
- 7 files changed, 36 insertions(+), 1 deletions(-)
+ net/ipv4/tcp_output.c  |    7 +++++++
+ 7 files changed, 39 insertions(+), 1 deletions(-)
 
 diff --git a/include/linux/in.h b/include/linux/in.h
 index b29c2fc..39da2c5 100644
@@ -42,7 +42,7 @@ index 9f96394..19e9caf 100644
  	void			(*sk_data_ready)(struct sock *sk, int bytes);
  	void			(*sk_write_space)(struct sock *sk);
 diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 303671a..8f204f5 100644
+index 4a405ed..feda585 100644
 --- a/include/net/xfrm.h
 +++ b/include/net/xfrm.h
 @@ -950,6 +950,21 @@ secpath_put(struct sec_path *sp)
@@ -144,18 +144,27 @@ index f1813bc..73b3ce1 100644
  			 * Make sure that we have exactly size bytes
  			 * available to the caller, no more, no less.
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index fcd278a..b97583a 100644
+index fcd278a..62a25a0 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -35,6 +35,7 @@
+@@ -35,5 +35,6 @@
   */
  
  #include <net/tcp.h>
 +#include <net/xfrm.h>
  
  #include <linux/compiler.h>
- #include <linux/module.h>
-@@ -2375,6 +2376,9 @@ int tcp_connect(struct sock *sk)
+@@ -640,6 +641,9 @@ static int tcp_transmit_skb(struct sock *sk, struct sk_buff *skb, int clone_it,
+ 			return -ENOBUFS;
+ 	}
+ 
++	/* associate the skb with the socket's SAref */
++	skb_sec_assign_sk_saref(skb, sk);
++
+ 	inet = inet_sk(sk);
+ 	tp = tcp_sk(sk);
+ 	tcb = TCP_SKB_CB(skb);
+@@ -2375,6 +2379,9 @@ int tcp_connect(struct sock *sk)
  	if (unlikely(buff == NULL))
  		return -ENOBUFS;
  

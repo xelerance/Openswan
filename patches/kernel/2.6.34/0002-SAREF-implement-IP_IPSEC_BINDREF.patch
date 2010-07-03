@@ -147,14 +147,23 @@ diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
 index 0dda86e..111eb0a 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -35,6 +35,7 @@
+@@ -35,5 +35,6 @@
   */
  
  #include <net/tcp.h>
 +#include <net/xfrm.h>
  
  #include <linux/compiler.h>
- #include <linux/gfp.h>
+@@ -640,6 +641,9 @@ static int tcp_transmit_skb(struct sock *sk, struct sk_buff *skb, int clone_it,
+ 			return -ENOBUFS;
+ 	}
+ 
++	/* associate the skb with the socket's SAref */
++	skb_sec_assign_sk_saref(skb, sk);
++
+ 	inet = inet_sk(sk);
+ 	tp = tcp_sk(sk);
+ 	tcb = TCP_SKB_CB(skb);
 @@ -2587,6 +2588,9 @@ int tcp_connect(struct sock *sk)
  	if (unlikely(buff == NULL))
  		return -ENOBUFS;

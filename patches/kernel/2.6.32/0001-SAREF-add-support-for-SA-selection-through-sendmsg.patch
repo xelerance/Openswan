@@ -1,7 +1,7 @@
-From 74e1442cce347f33b9b11f6d283a3677c01436e1 Mon Sep 17 00:00:00 2001
+From 8aa6436fc2ea2c2551a4818529ce7a1bfb80fb4a Mon Sep 17 00:00:00 2001
 From: Bart Trojanowski <bart@jukie.net>
 Date: Fri, 4 Jun 2010 11:32:01 -0400
-Subject: [PATCH 1/4] SAREF: add support for SA selection through sendmsg()
+Subject: [PATCH 1/2] SAREF: add support for SA selection through sendmsg()
 
 This patch allows for packets to be tagged with the SAref to be used
 when using the sendmsg() system call, and for the recvmsg() call to
