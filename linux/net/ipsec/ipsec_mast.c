@@ -139,12 +139,14 @@ static int klips_ip_cmsg_send_ipsec_refinfo(struct cmsghdr *cmsg,
 	}
 
 	sp->ref = *ref;
-	KLIPS_PRINT(debug_mast, "sending with saref=%u\n", sp->ref);
+	KLIPS_PRINT(debug_mast, "klips_debug:klips_ip_cmsg_send_ipsec_refinfo: "
+			"sending with saref=%u\n", sp->ref);
 		
 	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
 	if(sa1 && sa1->ips_out) {
 		ipc->oif = sa1->ips_out->ifindex;
-		KLIPS_PRINT(debug_mast, "setting oif: %d\n", ipc->oif);
+		KLIPS_PRINT(debug_mast, "klips_debug:klips_ip_cmsg_send_ipsec_refinfo: "
+			"setting oif: %d\n", ipc->oif);
 	}
 	ipsec_sa_put(sa1, IPSEC_REFOTHER);
 	
@@ -164,7 +166,8 @@ static void klips_ip_cmsg_recv_ipsec_refinfo(struct msghdr *msg,
 
 	if(sp==NULL) return;
 
-	KLIPS_PRINT(debug_rcv, "retrieving saref=%u from skb=%p\n",
+	KLIPS_PRINT(debug_rcv, "klips_debug:klips_ip_cmsg_recv_ipsec_refinfo: "
+			"retrieving saref=%u from skb=%p\n",
 		    sp->ref, skb);
 
 	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
@@ -279,7 +282,8 @@ ipsec_mast_xsm_complete(
 {
 	if (stat != IPSEC_XMIT_OK) {
 		KLIPS_PRINT(debug_mast,
-				"klips_debug:ipsec_mast_xsm_complete: ipsec_xsm failed: %d\n",
+				"klips_debug:ipsec_mast_xsm_complete: "
+				"ipsec_xsm failed: %d\n",
 				stat);
 		goto cleanup;
 	}
@@ -328,14 +332,17 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct ipsec_xmit_state *ixs;
 	IPsecSAref_t SAref;
 
+	KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: skb=%p\n", skb);
 	if(skb == NULL) {
-		printk("mast start_xmit passed NULL\n");
+		printk("ipsec_mast_start_xmit: "
+			"passed NULL\n");
 		return 0;
 	}
 		
 	ixs = ipsec_xmit_state_new();
 	if(ixs == NULL) {
-		printk("mast failed to allocate IXS\n");
+		printk("ipsec_mast_start_xmit: "
+			"failed to allocate IXS\n");
 		return 0;
 	}
 
@@ -344,26 +351,30 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 #ifdef NETDEV_25
 	if(skb->nfmark & 0x80000000) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
-		KLIPS_PRINT(debug_mast, "getting SAref=%d from nfmark\n",
-			    SAref);
+		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
+				"getting SAref=%d from nfmark\n",
+				SAref);
 	}
 #endif
 
 #ifdef CONFIG_INET_IPSEC_SAREF
 	if(skb->sp && skb->sp->ref != IPSEC_SAREF_NULL) {
 		SAref = skb->sp->ref;
-		KLIPS_PRINT(debug_mast, "getting SAref=%d from sec_path\n",
-			    SAref);
+		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
+				"getting SAref=%d from sec_path\n",
+				SAref);
 	}
+	if (SAref != IPSEC_SAREF_NULL && !skb->sp)
+		dump_stack();
 #endif
-	KLIPS_PRINT(debug_mast, "skb=%p\n", skb);
 
 	ipsec_xmit_sanity_check_skb(ixs);
 
 	ixs->ipsp = ipsec_sa_getbyref(SAref, IPSEC_REFOTHER);
 	if(ixs->ipsp == NULL) {
-		KLIPS_ERROR(debug_mast, "%s: no SA for saref=%d\n",
-			    dev->name, SAref);
+		KLIPS_ERROR(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
+				"%s: no SA for saref=%d\n",
+				dev->name, SAref);
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
 		return 0;
