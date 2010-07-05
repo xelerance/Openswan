@@ -259,9 +259,10 @@ main(int argc, char *argv[])
 	char b[ADDRTOT_BUF];
 	e = ttoaddr(defaultroute, strlen(defaultroute), AF_INET, &cfg->dr);
 	if(e) {
-	    printf("invalid default route: %s\n", e);
-	    exit(4);
-	}
+	    printf("ignoring invalid defaultroute: %s\n", e);
+	    defaultroute = NULL;
+	    // exit(4);
+	} else
 
 	if(verbose) {
 	    addrtot(&cfg->dr, 0, b, sizeof(b));
@@ -274,9 +275,10 @@ main(int argc, char *argv[])
 	char b[ADDRTOT_BUF];
 	e = ttoaddr(defaultnexthop, strlen(defaultnexthop), AF_INET, &cfg->dnh);
 	if(e) {
-	    printf("invalid default route: %s\n", e);
-	    exit(4);
-	}
+	    printf("ignoring invalid defaultnexthop: %s\n", e);
+	    defaultnexthop = NULL;
+	     // exit(4);
+	} else
 
 	if(verbose) {
 	    addrtot(&cfg->dnh, 0, b, sizeof(b));

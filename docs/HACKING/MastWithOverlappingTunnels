@@ -76,7 +76,7 @@ SAref by using the `IP_IPSEC_REFINFO` option of `msghdr`.
 
     struct msghdr msgh;
     struct cmsghdr *cmsg;
-    unsigned int saref = 1234;  // soem SAref
+    unsigned int saref = 1234;  // some SAref
 
     ...
 
@@ -168,7 +168,3 @@ everything to be secured by IPsec through the mast interface, but make
 sure that the SAref was set by the application.
 
 
-
-
-
-<!-- vim: tw=72 sw=8 et ft=mkd -->
