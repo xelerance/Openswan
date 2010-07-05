@@ -5,18 +5,22 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.28 (unreleased)
-* ip_select_ident needs to be called before hashing is done [Kirill Berezin]
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
 * MAST: cleanup updown.mast iptables rule management [Bart]
 * MAST: rework mast init scripts to use conntrack [Bart]
 * MAST: remove iptables rules after SA is deleted [Bart]
 * Allow rightsubnet=vnet:%priv rightprotoport=17/%any w/o right=%any [Paul]
-* Log SAref and SAbind capabilities on pluto startup [Paul]
+* SAREF: Log SAref and SAbind capabilities on pluto startup [Paul]
 * Log tunnel down with HAVE_STATSD as "down", not "unknown" [Paul]
 * Changes to _realsetup.in for making the init script LSB compliant [Avesh]
   rhbz #594767
 * _startnetkey update for DNS and NetworkManager [Avesh]
- 
+* SAREF: fix bug in stream-socket saref mode [Bart]
+* Added TCP header flags to ipsec_print_ip() output [Bart]
+* SAREF patches ported to apply on 2.6.34 [Harald]
+* KLIPS: Don't fail non-existant header_ops (breaks ppp) [David]
+* KLIPS: ip_select_ident hashing fix in AH xmit path [Kirill Berezin]
+
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
 * KLIPS compile fixes for 2.4 kernels [David]
