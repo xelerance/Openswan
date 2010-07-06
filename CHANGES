@@ -6,9 +6,11 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.28 (unreleased)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
-* MAST: cleanup updown.mast iptables rule management [Bart]
-* MAST: rework mast init scripts to use conntrack [Bart]
-* MAST: remove iptables rules after SA is deleted [Bart]
+* MAST: Cleanup updown.mast iptables rule management [Bart]
+* MAST: Rework mast init scripts to use conntrack [Bart]
+* MAST: Remove iptables rules after SA is deleted [Bart]
+* SAREF: Fix bug in stream-socket saref mode [Bart]
+* SAREF: Ported to apply on Linux 2.6.34 [Harald]
 * Allow rightsubnet=vnet:%priv rightprotoport=17/%any w/o right=%any [Paul]
 * SAREF: Log SAref and SAbind capabilities on pluto startup [Paul]
 * Log tunnel down with HAVE_STATSD as "down", not "unknown" [Paul]
