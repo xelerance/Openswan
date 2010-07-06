@@ -271,7 +271,7 @@ addsource() {
     st=0
     # check if given sourceip is local and add as alias if not
     if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local; then
-	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev ${PLUTO_INTERFACE%:*}"
+	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev lo"
 	oops="`eval $it 2>&1`"
 	st=$?
 	if [ " $oops" = " " -a " $st" != " 0" ]; then
