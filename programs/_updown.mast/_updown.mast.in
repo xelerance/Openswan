@@ -180,6 +180,11 @@ checkipsec() {
         iptables -t mangle -N IPSEC
     fi
 
+    # we also need to have a NEW_IPSEC_CONN chain
+    if ! ( iptables -n -t mangle -L NEW_IPSEC_CONN >/dev/null 2>&1) ; then
+        iptables -t mangle -N NEW_IPSEC_CONN
+    fi
+
     # initialize the IPSEC chain if needed
     if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
         iptables -t mangle -F IPSEC
@@ -187,11 +192,6 @@ checkipsec() {
         iptables -t mangle -A IPSEC -m mark --mark 0x80000000/0x80000000 -j RETURN
         iptables -t mangle -A IPSEC -j NEW_IPSEC_CONN
         iptables -t mangle -A IPSEC -j CONNMARK --save-mark
-    fi
-
-    # we need to have a NEW_IPSEC_CONN chain
-    if ! ( iptables -n -t mangle -L NEW_IPSEC_CONN >/dev/null 2>&1) ; then
-        iptables -t mangle -N NEW_IPSEC_CONN
     fi
 
     # next, setup routing rules and tables:
