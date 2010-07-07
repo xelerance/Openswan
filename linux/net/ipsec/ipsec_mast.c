@@ -364,8 +364,6 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 				"getting SAref=%d from sec_path\n",
 				SAref);
 	}
-	if (SAref != IPSEC_SAREF_NULL && !skb->sp)
-		dump_stack();
 #endif
 
 	ipsec_xmit_sanity_check_skb(ixs);
