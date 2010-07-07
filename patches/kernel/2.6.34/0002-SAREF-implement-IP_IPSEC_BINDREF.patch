@@ -5,7 +5,7 @@ Subject: [PATCH 2/2] SAREF: implement IP_IPSEC_BINDREF
 
 Add sockopt IP_IPSEC_BINDREF, which associates an IPsec SAref to an inet
 socket.  The ref is used to seed the skb->sp->ref for each skb on that
-connection, which will force packets out a specific klips SA.
+connection, which will force packets out a specific SA.
 ---
  include/linux/in.h     |    1 +
  include/net/sock.h     |    2 +-
