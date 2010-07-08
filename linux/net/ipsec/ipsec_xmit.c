@@ -235,6 +235,18 @@ static void
 ipsec_print_ip4(struct iphdr *ip)
 {
 	char buf[ADDRTOA_BUF];
+	struct tcphdr *tcphdr = NULL;
+
+	/* we are taking some liberties here assuming that the IP and TCP
+	 * headers are contiguous in memory */
+	switch (IPPROTO_TCP) {
+	case IPPROTO_TCP:
+	case IPPROTO_UDP:
+		// NOTE: we only use this for getting port numbers, and they
+		// are at the same offsets for both tcp and udp headers
+		tcphdr = (struct tcphdr*)((caddr_t)ip + (ip->ihl << 2));
+		break;
+	}
 
 	printk(KERN_INFO "klips_debug:   IP:");
 	printk(" ihl:%d", ip->ihl << 2);
@@ -264,24 +276,29 @@ ipsec_print_ip4(struct iphdr *ip)
 	printk(" chk:%d", ntohs(ip->check));
 	addrtoa(*((struct in_addr*)(&ip->saddr)), 0, buf, sizeof(buf));
 	printk(" saddr:%s", buf);
-	if(ip->protocol == IPPROTO_UDP)
+	if(tcphdr)
 		printk(":%d",
-		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
-	if(ip->protocol == IPPROTO_TCP)
-		printk(":%d",
-		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->source));
+		       ntohs(tcphdr->source));
 	addrtoa(*((struct in_addr*)(&ip->daddr)), 0, buf, sizeof(buf));
 	printk(" daddr:%s", buf);
-	if(ip->protocol == IPPROTO_UDP)
+	if(tcphdr)
 		printk(":%d",
-		       ntohs(((struct udphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
-	if(ip->protocol == IPPROTO_TCP)
-		printk(":%d",
-		       ntohs(((struct tcphdr*)((caddr_t)ip + (ip->ihl << 2)))->dest));
+		       ntohs(tcphdr->dest));
 	if(ip->protocol == IPPROTO_ICMP)
 		printk(" type:code=%d:%d",
 		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->type,
 		       ((struct icmphdr*)((caddr_t)ip + (ip->ihl << 2)))->code);
+	if(ip->protocol == IPPROTO_TCP) {
+		printk(" seq=%u ack=%u", tcphdr->seq, tcphdr->ack_seq);
+		if (tcphdr->fin) printk(" FIN");
+		if (tcphdr->syn) printk(" SYN");
+		if (tcphdr->rst) printk(" RST");
+		if (tcphdr->psh) printk(" PSH");
+		if (tcphdr->ack) printk(" ACK");
+		if (tcphdr->urg) printk(" URG");
+		if (tcphdr->ece) printk(" ECE");
+		if (tcphdr->cwr) printk(" CWR");
+	}
 	printk("\n");
 
 	if(sysctl_ipsec_debug_verbose) {

@@ -1,8 +1,31 @@
 #!/bin/sh
 set -e
 
-export IPSEC_SAREF=$1
+do_help() {
+        cat <<END
+saref - bind process to given SAref
+
+   saref <saref> <command> <options...>
+
+END
+        exit 0
+}
+
+[ -z "$1" ] && do_help
+
+case "$1" in 
+-h|--help)
+        do_help
+        ;;
+esac
+
+export IPSEC_SAREF="$1"
 shift
 
-export LD_PRELOAD=libsaref.so
+if [ "$IPSEC_SAREF" -lt 0 ] || [ "$IPSEC_SAREF" -gt 65536 ] ; then
+        echo >&2 "Error: invalid SAref value of $IPSEC_SAREF"
+        exit 1
+fi
+
+export LD_PRELOAD="libsaref.so $LD_PRELOAD"
 exec ${@}
