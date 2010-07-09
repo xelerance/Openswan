@@ -1943,7 +1943,7 @@ ipsec_tunnel_createnum(int ifnum)
 		    dev_ipsec->name);
 	
 	/* reference and hold the device reference */
-	dev_hold(dev_ipsec);
+	ipsec_dev_hold(dev_ipsec);
 	ipsecdevices[vifentry]=dev_ipsec;
 	
 	if (register_netdev(dev_ipsec) != 0) {
@@ -2027,7 +2027,7 @@ ipsec_tunnel_get_device(int vifnum)
 	if(vifnum < ipsecdevices_max) {
 		nd = ipsecdevices[vifnum];
 
-		if(nd) dev_hold(nd);
+		if(nd) ipsec_dev_hold(nd);
 		return nd;
 	} else {
 		return NULL;

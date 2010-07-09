@@ -2096,8 +2096,8 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 
 	// the device associated with the skb needs to be set to the route->dev
 	if (ixs->skb->dev != ixs->route->u.dst.dev) {
-		dev_put(ixs->skb->dev);
-		dev_hold(ixs->route->u.dst.dev);
+		ipsec_dev_put(ixs->skb->dev);
+		ipsec_dev_hold(ixs->route->u.dst.dev);
 		ixs->skb->dev = ixs->route->u.dst.dev;
 	}
 

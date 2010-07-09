@@ -865,7 +865,7 @@ int ipsec_mast_createnum(int vifnum)
 		return -EIO;
 	}
 
-	dev_hold(im);
+	ipsec_dev_hold(im);
 	mastdevices[vifentry]=im;
 
 	return 0;
@@ -925,7 +925,7 @@ ipsec_mast_get_device(int vifnum)
 		if(vifnum <= mastdevices_max) {
 			nd = mastdevices[vifnum];
 
-			if(nd) dev_hold(nd);
+			if(nd) ipsec_dev_hold(nd);
 			return nd;
 		} else {
 			KLIPS_ERROR(debug_tunnel,
@@ -983,7 +983,7 @@ ipsec_mast_cleanup_devices(void)
 			kfree(dev_mast->priv);
 			dev_mast->priv=NULL;
 #endif
-			dev_put(mastdevices[i]);
+			ipsec_dev_put(mastdevices[i]);
 			mastdevices[i]=NULL;
 		}
 	}
