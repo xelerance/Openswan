@@ -235,9 +235,12 @@ ipsec_print_ip(struct iphdr *ip)
 	char buf[ADDRTOA_BUF];
 	struct tcphdr *tcphdr = NULL;
 
+	if (!ip)
+		return;
+
 	/* we are taking some liberties here assuming that the IP and TCP
 	 * headers are contiguous in memory */
-	switch (IPPROTO_TCP) {
+	switch (ip->protocol) {
 	case IPPROTO_TCP:
 	case IPPROTO_UDP:
 		// NOTE: we only use this for getting port numbers, and they
