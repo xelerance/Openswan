@@ -380,6 +380,9 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 
+	/* fill in outgoing_said using the ipsp we have */
+	ixs->outgoing_said = ixs->ipsp->ips_said;
+
 #ifdef NETDEV_25
 #if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
@@ -404,6 +407,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->cur_mtu = 1460;
 	ixs->physmtu = 1460;
 
+	ixs->mast_mode = 1;
 	ixs->xsm_complete = ipsec_mast_xsm_complete;
 	ixs->state = IPSEC_XSM_INIT2;	/* we start later in the process */
 
@@ -865,7 +869,7 @@ int ipsec_mast_createnum(int vifnum)
 		return -EIO;
 	}
 
-	dev_hold(im);
+	ipsec_dev_hold(im);
 	mastdevices[vifentry]=im;
 
 	return 0;
@@ -925,7 +929,7 @@ ipsec_mast_get_device(int vifnum)
 		if(vifnum <= mastdevices_max) {
 			nd = mastdevices[vifnum];
 
-			if(nd) dev_hold(nd);
+			if(nd) ipsec_dev_hold(nd);
 			return nd;
 		} else {
 			KLIPS_ERROR(debug_tunnel,
@@ -983,7 +987,7 @@ ipsec_mast_cleanup_devices(void)
 			kfree(dev_mast->priv);
 			dev_mast->priv=NULL;
 #endif
-			dev_put(mastdevices[i]);
+			ipsec_dev_put(mastdevices[i]);
 			mastdevices[i]=NULL;
 		}
 	}

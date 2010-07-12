@@ -200,12 +200,12 @@ checkipsec() {
         # note "fwmarkmask" is an (obsolete) Openswan patch to "ip" command.
         # note2: iproute2-2.6.22-070710 supports mask via /mask notation instead
         # ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 50
-        sudo ip rule add from all fwmark 0x80000000/0x80000000 lookup 50
+        ip rule add from all fwmark 0x80000000/0x80000000 lookup 50
     fi
 
     # the default route goes over the mast interface
     if ! ( ip route show table 50 | grep -qF 'default dev mast0' ) ; then
-        sudo ip route add default dev $PLUTO_INTERFACE table 50
+        ip route add default dev $PLUTO_INTERFACE table 50
     fi
 
     # now look for -j IPSEC in OUTPUT chains.

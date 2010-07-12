@@ -131,6 +131,11 @@ struct ipsec_xmit_state
 #endif
 
 	/*
+	 * xmit flags
+	 */
+	uint16_t mast_mode:1;
+
+	/*
 	 * xmit state machine use
 	 */
 	void (*xsm_complete)(struct ipsec_xmit_state *ixs,
