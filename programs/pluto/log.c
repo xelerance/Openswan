@@ -989,20 +989,22 @@ log_state(struct state *st, enum state_kind new_state)
 	case tun_phase15: tun = "phase15"; break;
 	case tun_phase2:  tun = "phase2";  break;
 	case tun_up:      tun = "up";      break;
-	case tun_down:    tun = "down";    break; /* not set anywher */
-	default:          tun = "down"; break;
+	case tun_down:    tun = "down";    break; /* not set anywhere, default */
+	default:          tun = "unknown"; break;
 	}
 
 	switch (lc.phase1) {
-	case p1_init:     p1 = "init";    break;
-	case p1_encrypt:  p1 = "encrypt"; break;
-	case p1_auth:     p1 = "auth";    break;
-	default:          p1 = "down"; break;
+	case p1_init:     p1 = "init";     break;
+	case p1_encrypt:  p1 = "encrypt";  break;
+	case p1_auth:     p1 = "auth";     break;
+	case p1_up:       p1 = "up";       break;
+	default:          p1 = "down";     break;
 	}
 
 	switch (lc.phase2) {
-	case p2_neg:      p2 = "neg";     break;
-	default:          p2 = "down";  break;
+	case p2_neg:      p2 = "neg";      break;
+	case p2_up:       p2 = "up";       break;
+	default:          p2 = "down";     break;
 	}
 
 
@@ -1010,16 +1012,17 @@ log_state(struct state *st, enum state_kind new_state)
 			"%s ipsec-tunnel-%s if_stats /proc/net/dev/%s \\; "
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "
-			"%s ipsec-tunnel-%s phase2 %s "
-			"nfmark-me/him %u/%u",
+			"%s ipsec-tunnel-%s phase2 %s \\; "
+			"%s ipsec-tunnel-%s nfmark-me/him %u/%u",
 
 			conn->interface ? "push" : "drop", conn->name,
 		   			conn->interface ? conn->interface->ip_dev->id_vname : "",
 			tun ? "push" : "drop", conn->name, tun ? tun : "",
 			p1  ? "push" : "drop", conn->name, p1  ? p1  : "",
 			p2  ? "push" : "drop", conn->name, p2  ? p2  : "",
-			st->st_ref ? IPsecSAref2NFmark(st->st_ref) : "none",
-			st->st_refhim ? IPsecSAref2NFmark(st->st_refhim) : "none"
+			(st->st_ref || st->st_refhim) ? "push" : "drop", conn->name,
+				st->st_ref ? IPsecSAref2NFmark(st->st_ref) : "none",
+				st->st_refhim ? IPsecSAref2NFmark(st->st_refhim) : "none"
 		);
 	system(buf);
 }
