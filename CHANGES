@@ -21,7 +21,6 @@ v2.6.28 (unreleased)
 * _startnetkey update for DNS and NetworkManager [Avesh]
 * SAREF: fix bug in stream-socket saref mode [Bart]
 * Added TCP header flags to ipsec_print_ip() output [Bart]
-* SAREF patches ported to apply on 2.6.34 [Harald]
 * KLIPS: Don't fail non-existant header_ops (breaks ppp) [David]
 * KLIPS: ip_select_ident hashing fix in AH xmit path [Kirill Berezin]
 * Fix phase1/phase2 logging through HAVE_STATSD interface [David]
