@@ -467,14 +467,20 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
         }
 
 	if (key->sen_type == SENT_IP6) {
-		buf_len = subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1, sizeof(buf1));
 		if(key->sen_sport6 != 0) {
-		  sprintf(buf1+buf_len-1, ":%d", ntohs(key->sen_sport6));
-		}
-		buf_len = subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2, sizeof(buf2));
+		  *buf1 = '[';
+		  buf_len = subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1+1, sizeof(buf1));
+		  buf1[buf_len-1] = ']';
+		  sprintf(buf1+buf_len, ":%d", ntohs(key->sen_sport6));
+		} else
+		  buf_len = subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1, sizeof(buf1));
 		if(key->sen_dport6 != 0) {
-		  sprintf(buf2+buf_len-1, ":%d", ntohs(key->sen_dport6));
-		}
+		  *buf1 = '[';
+		  buf_len = subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2+1, sizeof(buf2));
+		  buf1[buf_len-1] = ']';
+		  sprintf(buf2+buf_len, ":%d", ntohs(key->sen_dport6));
+		} else
+		  buf_len = subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2, sizeof(buf2));
 
 	} else if (key->sen_type == SENT_IP4) {
 		buf_len = subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
