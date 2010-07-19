@@ -180,6 +180,11 @@ checkipsec() {
         iptables -t mangle -N IPSEC
     fi
 
+    # we also need to have a NEW_IPSEC_CONN chain
+    if ! ( iptables -n -t mangle -L NEW_IPSEC_CONN >/dev/null 2>&1) ; then
+        iptables -t mangle -N NEW_IPSEC_CONN
+    fi
+
     # initialize the IPSEC chain if needed
     if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
         iptables -t mangle -F IPSEC
@@ -189,23 +194,18 @@ checkipsec() {
         iptables -t mangle -A IPSEC -j CONNMARK --save-mark
     fi
 
-    # we need to have a NEW_IPSEC_CONN chain
-    if ! ( iptables -n -t mangle -L NEW_IPSEC_CONN >/dev/null 2>&1) ; then
-        iptables -t mangle -N NEW_IPSEC_CONN
-    fi
-
     # next, setup routing rules and tables:
     # we pick table 50, cause proto50=ESP
     if ! ( ip rule show | grep -qF 'from all fwmark 0x80000000/0x80000000 lookup 50' ) ; then
         # note "fwmarkmask" is an (obsolete) Openswan patch to "ip" command.
         # note2: iproute2-2.6.22-070710 supports mask via /mask notation instead
         # ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 50
-        sudo ip rule add from all fwmark 0x80000000/0x80000000 lookup 50
+        ip rule add from all fwmark 0x80000000/0x80000000 lookup 50
     fi
 
     # the default route goes over the mast interface
     if ! ( ip route show table 50 | grep -qF 'default dev mast0' ) ; then
-        sudo ip route add default dev $PLUTO_INTERFACE table 50
+        ip route add default dev $PLUTO_INTERFACE table 50
     fi
 
     # now look for -j IPSEC in OUTPUT chains.

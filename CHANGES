@@ -11,6 +11,8 @@ v2.6.28 (unreleased)
 * MAST: Remove iptables rules after SA is deleted [Bart]
 * SAREF: Fix bug in stream-socket saref mode [Bart]
 * SAREF: Ported to apply on Linux 2.6.34 [Harald]
+* MAST: Fix for NAT-T mode (set ixs->outgoing_said in mast mode) [Bart]
+* MAST: Fix module unload with mast [Bart]
 * Allow rightsubnet=vnet:%priv rightprotoport=17/%any w/o right=%any [Paul]
 * SAREF: Log SAref and SAbind capabilities on pluto startup [Paul]
 * Log tunnel down with HAVE_STATSD as "down", not "unknown" [Paul]
@@ -19,9 +21,9 @@ v2.6.28 (unreleased)
 * _startnetkey update for DNS and NetworkManager [Avesh]
 * SAREF: fix bug in stream-socket saref mode [Bart]
 * Added TCP header flags to ipsec_print_ip() output [Bart]
-* SAREF patches ported to apply on 2.6.34 [Harald]
 * KLIPS: Don't fail non-existant header_ops (breaks ppp) [David]
 * KLIPS: ip_select_ident hashing fix in AH xmit path [Kirill Berezin]
+* Fix phase1/phase2 logging through HAVE_STATSD interface [David]
 
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]

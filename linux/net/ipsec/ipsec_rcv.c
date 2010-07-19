@@ -449,10 +449,6 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 				    skb->dev->name,
 				    irs->ipsp->ips_out->name);
 		}
-		if (skb->dev)
-			dev_put(skb->dev);
-
-		dev_hold(irs->ipsp->ips_out);
 		skb->dev = irs->ipsp->ips_out;
 		
 #ifdef USE_NETDEV_OPS
@@ -833,8 +829,6 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 					"virtual device %s from "
 					"physical device %s.\n",
 				ipsecdev->name, skb->dev->name);
-			dev_hold(ipsecdev);
-			dev_put(skb->dev);
 			skb->dev = ipsecdev;
 		} else {
 			KLIPS_PRINT(debug_rcv,
@@ -844,10 +838,10 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 					"physical device %s.\n",
 				skb->dev->name);
 
-			dev_put(skb->dev);
+			skb->dev = ipsec_mast_get_device(0);
 
 			/* ipsec_mast_get takes the device */
-			skb->dev = ipsec_mast_get_device(0);
+			if(skb->dev) dev_put(skb->dev);
 		}
 
 		if(prvdev) {

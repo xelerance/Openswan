@@ -235,10 +235,19 @@ ipsec_print_ip(struct iphdr *ip)
 	char buf[ADDRTOA_BUF];
 	struct tcphdr *tcphdr = NULL;
 
+	if (!ip)
+		return;
+
 	/* we are taking some liberties here assuming that the IP and TCP
 	 * headers are contiguous in memory */
-	if(ip->protocol == IPPROTO_TCP)
-		tcphdr = (struct udphdr*)((caddr_t)ip + (ip->ihl << 2));
+	switch (ip->protocol) {
+	case IPPROTO_TCP:
+	case IPPROTO_UDP:
+		// NOTE: we only use this for getting port numbers, and they
+		// are at the same offsets for both tcp and udp headers
+		tcphdr = (struct tcphdr*)((caddr_t)ip + (ip->ihl << 2));
+		break;
+	}
 
 	printk(KERN_INFO "klips_debug:   IP:");
 	printk(" ihl:%d", ip->ihl << 2);
@@ -268,18 +277,12 @@ ipsec_print_ip(struct iphdr *ip)
 	printk(" chk:%d", ntohs(ip->check));
 	addrtoa(*((struct in_addr*)(&ip->saddr)), 0, buf, sizeof(buf));
 	printk(" saddr:%s", buf);
-	if(ip->protocol == IPPROTO_UDP)
-		printk(":%d",
-		       ntohs(tcphdr->source));
-	if(ip->protocol == IPPROTO_TCP)
+	if(tcphdr)
 		printk(":%d",
 		       ntohs(tcphdr->source));
 	addrtoa(*((struct in_addr*)(&ip->daddr)), 0, buf, sizeof(buf));
 	printk(" daddr:%s", buf);
-	if(ip->protocol == IPPROTO_UDP)
-		printk(":%d",
-		       ntohs(tcphdr->dest));
-	if(ip->protocol == IPPROTO_TCP)
+	if(tcphdr)
 		printk(":%d",
 		       ntohs(tcphdr->dest));
 	if(ip->protocol == IPPROTO_ICMP)
@@ -2091,13 +2094,6 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_RECURSDETECT;
 	}
 
-	// the device associated with the skb needs to be set to the route->dev
-	if (ixs->skb->dev != ixs->route->u.dst.dev) {
-		dev_put(ixs->skb->dev);
-		dev_hold(ixs->route->u.dst.dev);
-		ixs->skb->dev = ixs->route->u.dst.dev;
-	}
-
 	skb_dst_drop(ixs->skb);
 	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	if(ixs->stats) {
@@ -2258,11 +2254,10 @@ ipsec_xsm(struct ipsec_xmit_state *ixs)
 	 * if we have a valid said,  then we must check it here to ensure it
 	 * hasn't gone away while we were waiting for a task to complete.
 	 *
-	 * but if the said was found via saref in the mast code, skip it since
-	 * the outgoing_said was never set.
+	 * If the said was found via saref in mast code, skip this check.
 	 */
 
-	if (ixs->ipsp && ixs->outgoing_said.proto) {
+	if (ixs->ipsp && !ixs->mast_mode) {
 		struct ipsec_sa *ipsp;
 		ipsp = ipsec_sa_getbyid(&ixs->outgoing_said, IPSEC_REFTX);
 		if (unlikely(ipsp == NULL)) {
