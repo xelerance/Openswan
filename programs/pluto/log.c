@@ -911,8 +911,15 @@ connection_state(struct state *st, void *data)
 {
 	struct log_conn_info *lc = data;
 
-	if (!st || st == lc->ignore || st->st_connection != lc->conn)
+	if (!st || st == lc->ignore || !st->st_connection || !lc->conn)
 		return;
+
+	if (st->st_connection != lc->conn) {
+		if (lc->conn->host_pair != st->st_connection->host_pair ||
+			!same_peer_ids(lc->conn, st->st_connection, NULL))
+		    return;
+		/* phase1 is shared with another connnection */
+	}
 
 	/* ignore undefined states (ie., just deleted) */
 	if (st->st_state == STATE_UNDEFINED)
@@ -935,6 +942,9 @@ connection_state(struct state *st, void *data)
 		}
 	}
 
+	/* only phase one shares across connections, so we can quit now */
+	if (st->st_connection != lc->conn)
+		return;
 
 	if (IS_PHASE15(st->st_state)) {
 		if (lc->tunnel < tun_phase15)
