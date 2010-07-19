@@ -1410,6 +1410,15 @@ read_proto(const char * s, size_t * len, int * transport_proto)
 
     l = *len;
     p = memchr(s, ':', l);
+	if (p && memchr(p+1, ':', l - (p - s) - 1)) {
+		/* multiple ':'s means IPv6 address, so no port
+		   unless it's in []'s */
+		p = memchr(s, ']', l);
+		if (p && *(p+1) == ':')
+			p++;
+		else
+			p = NULL;
+	}
     if (p == 0) {
         *transport_proto = 0;
         return 0;
