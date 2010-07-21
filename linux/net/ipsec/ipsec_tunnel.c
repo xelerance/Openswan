@@ -103,6 +103,12 @@ DEBUG_NO_STATIC int ipsec_tunnel_attach(struct net_device *dev, struct net_devic
 DEBUG_NO_STATIC int ipsec_tunnel_detach(struct net_device *dev);
 extern const struct net_device_ops klips_device_ops;
 
+#ifdef HAVE_UDP_ENCAP_CONVERT
+DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type);
+DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_destruct(struct sock *sk);
+DEBUG_NO_STATIC void ipsec_tunnel_upd_encap_cleanup(void);
+#endif
+
 #ifdef CONFIG_KLIPS_DEBUG
 int debug_tunnel = 0;
 #endif /* CONFIG_KLIPS_DEBUG */
@@ -1585,30 +1591,8 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		/*unsigned int *ifp =(unsigned int *)&ifr->ifr_data;*/
 		/* overlay our struct ipsectunnel onto ifr.ifr_ifru union (hope it fits!) */
 		unsigned int *ifp =(unsigned int *)ifr->ifr_ifru.ifru_newname;
-		const struct socket *sock;
-		int err = 0;
 
- 		/* translate # to socket structure */
-		sock = sockfd_lookup(ifp[0], &err);
-		if (!sock)
-			goto encap_out;
-
-		/* check that it's a UDP socket */
-		udp_sk(sock->sk)->encap_type = ifp[1];
-		udp_sk(sock->sk)->encap_rcv  = klips26_udp_encap_rcv;
-
-		KLIPS_PRINT(debug_tunnel
-			    , "UDP socket: %u set to %s (0x%x) encap mode\n"
-			    , ifp[0]
-				, ifp[1] == UDP_ENCAP_ESPINUDP_NON_IKE ?
-					"UDP_ENCAP_ESPINUDP_NON_IKE" : "UDP_ENCAP_ESPINUDP_NON_ESP"
-				, ifp[1]
-				);
-		       
-		err = 0;
-
-	encap_out:
-		return err;
+		return ipsec_tunnel_udp_encap_prepare(ifp[0], ifp[1]);
 	}
 #endif /* HAVE_UDP_ENCAP_CONVERT */
 
@@ -1621,6 +1605,203 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 	}
 }
+
+#ifdef HAVE_UDP_ENCAP_CONVERT
+
+#define IPSEC_TUNNEL_UDP_ENCAP_MAGIC 0x58c0b472
+struct ipsec_tunnel_udp_encap_ctx {
+	u32 magic;
+	atomic_t refcnt;
+	struct list_head link;
+	struct sock *sk;
+	void (*old_sk_destruct)(struct sock *sk);
+};
+#define list_head_to_udp_encap_ctx(lh) \
+	list_entry(lh, struct ipsec_tunnel_udp_encap_ctx, link)
+
+static spinlock_t ipsec_tunnel_udp_encap_lock = SPIN_LOCK_UNLOCKED;
+static LIST_HEAD(ipsec_tunnel_udp_encap_list);
+
+DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
+{
+	struct socket *sock;
+	struct sock *sk;
+	struct ipsec_tunnel_udp_encap_ctx *ctx = NULL;
+	int err = 0;
+
+	switch (encap_type) {
+	case UDP_ENCAP_ESPINUDP:
+	case UDP_ENCAP_ESPINUDP_NON_IKE:
+		break;
+	default:
+		err = -EINVAL;
+		printk ("ipsec: pid %d sent fd %d with invalid encap_type %d\n",
+				fd, current->pid, encap_type);
+		goto error;
+	}
+
+	/* translate descriptor to socket structure */
+	err = -EBADF;
+	sock = sockfd_lookup(fd, &err);
+	if (!sock) {
+		printk ("ipsec: failed to lookup socket for fd %d for pid %d\n",
+				fd, current->pid);
+		goto error;
+	}
+	sk = sock->sk;
+
+	/* Quick sanity checks */
+	err = -EAFNOSUPPORT;
+	if (sock->ops->family != AF_INET) {
+		printk ("ipsec: pid %d sent fd %d with wrong family, "
+				"got %d, expected %d\n",
+				current->pid, fd, sock->ops->family, AF_INET);
+		goto error;
+	}
+
+	err = -EPROTONOSUPPORT;
+	if (sk->sk_protocol != IPPROTO_UDP) {
+		printk ("ipsec: pid %d sent fd %d with wrong protocol, "
+				"got %d, expected %d\n",
+				current->pid, fd, sk->sk_protocol, IPPROTO_UDP);
+		goto error;
+	}
+
+	err = -EBUSY;
+	if (udp_sk(sk)->encap_type) {
+		printk ("ipsec: pid %d sent fd %d with encap_type "
+				"assigned to %d",
+				current->pid, fd, udp_sk(sk)->encap_type);
+		goto error;
+	}
+
+	err = -EBUSY;
+	ctx = (struct ipsec_tunnel_udp_encap_ctx*)sk->sk_user_data;
+	if (ctx) {
+		printk ("ipsec: pid %d sent fd %d with user_data assigned\n",
+				current->pid, fd);
+		goto error;
+	}
+
+	err = -ENOMEM;
+	sk->sk_user_data = ctx = kzalloc(sizeof (*ctx), GFP_KERNEL);
+	if (!ctx)
+		goto error;
+
+	/* setup the context */
+	ctx->magic           = IPSEC_TUNNEL_UDP_ENCAP_MAGIC;
+	ctx->sk              = sk;
+	ctx->old_sk_destruct = sk->sk_destruct;
+	wmb();
+
+	/* one ref is for sk other for the list */
+	atomic_set(&ctx->refcnt, 2);
+
+	/* convert socket to use our (de)encapsulation routine */
+	sk->sk_destruct        = ipsec_tunnel_udp_encap_destruct;
+	udp_sk(sk)->encap_type = encap_type;
+	udp_sk(sk)->encap_rcv  = klips26_udp_encap_rcv;
+
+	/* add the tunnel to our list */
+	spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
+	list_add(&ctx->link, &ipsec_tunnel_udp_encap_list);
+	spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+
+	KLIPS_PRINT(debug_tunnel
+			, "UDP socket: %u set to %s (0x%x) encap mode\n"
+			, fd
+			, encap_type == UDP_ENCAP_ESPINUDP_NON_IKE ?
+			"UDP_ENCAP_ESPINUDP_NON_IKE" : "UDP_ENCAP_ESPINUDP_NON_ESP"
+			, encap_type
+		   );
+
+	/* success */
+	err = 0;
+
+error:
+	if (sock)
+		sockfd_put(sock);
+	return err;
+}
+
+DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_restore(
+		struct ipsec_tunnel_udp_encap_ctx *ctx)
+{
+	struct sock *sk = ctx->sk;
+
+	/* revert the socket back */
+	udp_sk(sk)->encap_type = 0;
+	udp_sk(sk)->encap_rcv  = NULL;
+
+	sk->sk_user_data = NULL;
+	sk->sk_destruct = ctx->old_sk_destruct;
+
+	if (sk->sk_destruct)
+		sk->sk_destruct(sk);
+}
+
+DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_destruct(struct sock *sk)
+{
+	struct ipsec_tunnel_udp_encap_ctx *ctx;
+
+	if (!sk || !sk->sk_user_data)
+		return;
+
+	ctx = (struct ipsec_tunnel_udp_encap_ctx*)sk->sk_user_data;
+	if (ctx->magic != IPSEC_TUNNEL_UDP_ENCAP_MAGIC) {
+		printk ("ipsec: called to destroy ctx with wrong magic, "
+				"got %08x, expected %08x\n",
+				ctx->magic, IPSEC_TUNNEL_UDP_ENCAP_MAGIC);
+		return;
+	}
+
+	ipsec_tunnel_udp_encap_restore(ctx);
+
+	/* remove it from the list */
+	spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
+	if (ctx->link.next) {
+		/* we are on the list, remove and deref */
+		list_del(&ctx->link);
+		atomic_dec(&ctx->refcnt);
+	} else {
+		/* it was already removed, someone else will clean up */
+		ctx = NULL;
+	}
+	spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+
+	/* if we removed it from the list, then we need to free it */
+	if (ctx && atomic_dec_and_test(&ctx->refcnt))
+		kfree(ctx);
+}
+
+DEBUG_NO_STATIC void ipsec_tunnel_upd_encap_cleanup(void)
+{
+	struct ipsec_tunnel_udp_encap_ctx *ctx;
+
+	for (;;) {
+		ctx = NULL;
+		spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
+		if (!list_empty(&ipsec_tunnel_udp_encap_list)) {
+			struct list_head *ent;
+			ent = ipsec_tunnel_udp_encap_list.next;
+			list_del(ent);
+			ctx = list_head_to_udp_encap_ctx(ent);
+		}
+		spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+
+		// are we done?
+		if (!ctx)
+			break;
+
+		ipsec_tunnel_udp_encap_restore(ctx);
+
+		if (atomic_dec_and_test(&ctx->refcnt))
+			kfree(ctx);
+	}
+}
+#endif
+
+
 
 struct net_device *ipsec_get_device(int inst)
 {
@@ -2066,6 +2247,13 @@ ipsec_tunnel_cleanup_devices(void)
 		dev_ipsec->priv=NULL;
 #endif /* alloc_netdev */
 	}
+
+#ifdef HAVE_UDP_ENCAP_CONVERT
+	/* once all devices are down, it's time to restore UDP connections to
+	 * not use as for (de)encapsulation anymore */
+	ipsec_tunnel_upd_encap_cleanup();
+#endif
+
 	return error;
 }
 
