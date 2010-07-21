@@ -25,6 +25,9 @@ v2.6.28 (unreleased)
 * KLIPS: ip_select_ident hashing fix in AH xmit path [Kirill Berezin]
 * Fix phase1/phase2 logging through HAVE_STATSD interface [David]
 * Fix for HAVE_STATSD log output when two connections share a phase1 [David]
+* Bugtracker bugs fixed:
+   # 1120: [PATCH] netlink receive buffer size too small for linux 2.6.32
+           [Roman Hoog Antink]
 
 v2.6.27 (June 21, 2010)
 * Fixes to the SAREF / MAST code to avoid recursion loops [Bart]
