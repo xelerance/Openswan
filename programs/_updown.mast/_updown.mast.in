@@ -161,6 +161,13 @@ case "$PLUTO_VERSION" in
 	;;
 esac
 
+# Temporary workaround until rp_filter / martians problem is solved with
+# the mast stack. It seems setting this once is not enough - it needs to
+# happen every time openswan restarts. We put it here as a temporary easy
+# workaround.
+for n in eth0 eth1 eth2 mast0 ipsec0 ipsec1 ipsec2 all default ; do sysctl net.ipv4.conf.$n.rp_filter=0; done > /dev/null 2>/dev/null
+
+
 # check parameter(s)
 case "$1:$*" in
 ':')			# no parameters
