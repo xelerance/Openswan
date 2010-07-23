@@ -23,8 +23,9 @@ v2.6.28 (unreleased)
 * Added TCP header flags to ipsec_print_ip() output [Bart]
 * KLIPS: Don't fail non-existant header_ops (breaks ppp) [David]
 * KLIPS: ip_select_ident hashing fix in AH xmit path [Kirill Berezin]
-* Fix phase1/phase2 logging through HAVE_STATSD interface [David]
-* Fix for HAVE_STATSD log output when two connections share a phase1 [David]
+* HAVE_STATSD: Fix phase1/phase2 logging through HAVE_STATSD interface [David]
+* HAVE_STATSD: log output fix when two connections share a phase1 [David]
+* HAVE_STATSD: Slightly clarified and changed log messages [Paul]
 * SAREF: Clarified defines and fixed nfmark printing in HAVE_STATSD [dhr/Paul]
 * MAST: Temp workaround in _updown.mast for martians problem [Bart/Paul]
 * Bugtracker bugs fixed:
