@@ -890,6 +890,7 @@ struct log_conn_info {
 		p1_encrypt,
 		p1_auth,
 		p1_up,
+		p1_down
 	} phase1;
 
 	enum {
@@ -940,7 +941,7 @@ connection_state(struct state *st, void *data)
 			if (IS_ISAKMP_AUTHENTICATED(st->st_state) && lc->phase1 < p1_auth)
 				lc->phase1 = p1_auth;
 		}
-	}
+	} else lc->phase1 = p1_down;
 
 	/* only phase one shares across connections, so we can quit now */
 	if (st->st_connection != lc->conn)
@@ -1000,7 +1001,7 @@ log_state(struct state *st, enum state_kind new_state)
 	case tun_phase2:  tun = "phase2";  break;
 	case tun_up:      tun = "up";      break;
 	case tun_down:    tun = "down";    break; /* not set anywhere, default */
-	default:          tun = "unknown"; break;
+	default:          tun = "unchanged"; break;
 	}
 
 	switch (lc.phase1) {
@@ -1008,7 +1009,8 @@ log_state(struct state *st, enum state_kind new_state)
 	case p1_encrypt:  p1 = "encrypt";  break;
 	case p1_auth:     p1 = "auth";     break;
 	case p1_up:       p1 = "up";       break;
-	default:          p1 = "down";     break;
+	case p1_down:       p1 = "down";   break;
+	default:          p1 = "unchanged";  break;
 	}
 
 	switch (lc.phase2) {
