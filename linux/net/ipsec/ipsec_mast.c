@@ -120,32 +120,24 @@ static inline int ipsec_mast_xmit2(struct sk_buff *skb)
 }
 
 #ifdef CONFIG_INET_IPSEC_SAREF
-static int klips_ip_cmsg_send_ipsec_refinfo(struct cmsghdr *cmsg,
-		struct ipcm_cookie *ipc)
+static int klips_set_ipc_saref(struct ipcm_cookie *ipc,
+		xfrm_sec_unique_t ref)
 {
 	struct ipsec_sa *sa1;
-	xfrm_sec_unique_t *ref;
 	struct sec_path *sp;
 
-	if(cmsg->cmsg_len != CMSG_LEN(sizeof(xfrm_sec_unique_t))) {
-		return -EINVAL;
-	}
-
-	ref = (xfrm_sec_unique_t *)CMSG_DATA(cmsg);
-
 	sp = secpath_dup(NULL);
-	if(!sp) {
+	if(!sp)
 		return -EINVAL;
-	}
 
-	sp->ref = *ref;
-	KLIPS_PRINT(debug_mast, "klips_debug:klips_ip_cmsg_send_ipsec_refinfo: "
+	sp->ref = ref;
+	KLIPS_PRINT(debug_mast, "klips_debug:klips_set_ipc_saref: "
 			"sending with saref=%u\n", sp->ref);
 		
 	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
 	if(sa1 && sa1->ips_out) {
 		ipc->oif = sa1->ips_out->ifindex;
-		KLIPS_PRINT(debug_mast, "klips_debug:klips_ip_cmsg_send_ipsec_refinfo: "
+		KLIPS_PRINT(debug_mast, "klips_debug:klips_set_ipc_saref: "
 			"setting oif: %d\n", ipc->oif);
 	}
 	ipsec_sa_put(sa1, IPSEC_REFOTHER);
@@ -155,48 +147,38 @@ static int klips_ip_cmsg_send_ipsec_refinfo(struct cmsghdr *cmsg,
 	return 0;
 }
 
-static void klips_ip_cmsg_recv_ipsec_refinfo(struct msghdr *msg,
-		struct sk_buff *skb)
+static void klips_get_secpath_refs(struct sec_path *sp,
+		xfrm_sec_unique_t *refme, xfrm_sec_unique_t *refhim)
 {
 	struct ipsec_sa *sa1;
-	struct sec_path *sp;
-	xfrm_sec_unique_t refs[2];
-
-	sp = skb->sp;
 
 	if(sp==NULL) return;
 
-	KLIPS_PRINT(debug_rcv, "klips_debug:klips_ip_cmsg_recv_ipsec_refinfo: "
-			"retrieving saref=%u from skb=%p\n",
-		    sp->ref, skb);
+	KLIPS_PRINT(debug_rcv, "klips_debug:klips_get_secpath_refs: "
+			"retrieving saref=%u from sp=%p\n",
+		    sp->ref, sp);
+
+	*refme = sp->ref;
 
 	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
-	if(sa1) {
-		refs[1]= sa1->ips_refhim;
-	} else {
-		refs[1]= 0;
-	}
-	refs[0]=sp->ref;
+	*refhim = sa1 ? sa1->ips_refhim : 0;
 
-	put_cmsg(msg, SOL_IP, IP_IPSEC_REFINFO,
-		 sizeof(xfrm_sec_unique_t)*2, &refs);
-	if(sa1) {
+	if(sa1)
 		ipsec_sa_put(sa1, IPSEC_REFOTHER);
-	}
 }
 
-static struct ipsec_saref_ip_cmsg_ops klips_saref_ops = {
-	.send_refinfo = klips_ip_cmsg_send_ipsec_refinfo,
-	.recv_refinfo = klips_ip_cmsg_recv_ipsec_refinfo,
+static struct ipsec_secpath_saref_ops klips_saref_ops = {
+	.set_ipc_saref = klips_set_ipc_saref,
+	.get_secpath_sarefs = klips_get_secpath_refs,
 };
 
 int ipsec_mast_init_saref(void)
 {
-	return register_ipsec_saref_ip_cmsg_refinfo(&klips_saref_ops);
+	return register_ipsec_secpath_saref_ops(&klips_saref_ops);
 }
 void ipsec_mast_cleanup_saref(void)
 {
-	unregister_ipsec_saref_ip_cmsg_refinfo(&klips_saref_ops);
+	unregister_ipsec_secpath_saref_ops(&klips_saref_ops);
 }
 #endif
 
