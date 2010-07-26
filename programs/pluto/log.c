@@ -890,6 +890,7 @@ struct log_conn_info {
 		p1_encrypt,
 		p1_auth,
 		p1_up,
+		p1_down
 	} phase1;
 
 	enum {
@@ -940,7 +941,7 @@ connection_state(struct state *st, void *data)
 			if (IS_ISAKMP_AUTHENTICATED(st->st_state) && lc->phase1 < p1_auth)
 				lc->phase1 = p1_auth;
 		}
-	}
+	} else lc->phase1 = p1_down;
 
 	/* only phase one shares across connections, so we can quit now */
 	if (st->st_connection != lc->conn)
@@ -1000,7 +1001,7 @@ log_state(struct state *st, enum state_kind new_state)
 	case tun_phase2:  tun = "phase2";  break;
 	case tun_up:      tun = "up";      break;
 	case tun_down:    tun = "down";    break; /* not set anywhere, default */
-	default:          tun = "unknown"; break;
+	default:          tun = "unchanged"; break;
 	}
 
 	switch (lc.phase1) {
@@ -1008,7 +1009,8 @@ log_state(struct state *st, enum state_kind new_state)
 	case p1_encrypt:  p1 = "encrypt";  break;
 	case p1_auth:     p1 = "auth";     break;
 	case p1_up:       p1 = "up";       break;
-	default:          p1 = "down";     break;
+	case p1_down:       p1 = "down";   break;
+	default:          p1 = "unchanged";  break;
 	}
 
 	switch (lc.phase2) {
@@ -1023,16 +1025,21 @@ log_state(struct state *st, enum state_kind new_state)
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "
 			"%s ipsec-tunnel-%s phase2 %s \\; "
-			"%s ipsec-tunnel-%s nfmark-me/him %u/%u",
+			"%s ipsec-tunnel-%s nfmark-me/him 0x%x/0x%x",
 
 			conn->interface ? "push" : "drop", conn->name,
-		   			conn->interface ? conn->interface->ip_dev->id_vname : "",
+					conn->interface ? conn->interface->ip_dev->id_vname : "",
 			tun ? "push" : "drop", conn->name, tun ? tun : "",
 			p1  ? "push" : "drop", conn->name, p1  ? p1  : "",
 			p2  ? "push" : "drop", conn->name, p2  ? p2  : "",
 			(st->st_ref || st->st_refhim) ? "push" : "drop", conn->name,
-				st->st_ref ? IPsecSAref2NFmark(st->st_ref) : "none",
-				st->st_refhim ? IPsecSAref2NFmark(st->st_refhim) : "none"
+				st->st_ref == IPSEC_SAREF_NA ? IPSEC_SAREF_NA
+				: st->st_ref == IPSEC_SAREF_NULL ? 0u
+				: IPsecSAref2NFmark(st->st_ref) | IPSEC_NFMARK_IS_SAREF_BIT
+				,
+				st->st_refhim == IPSEC_SAREF_NA ? IPSEC_SAREF_NA
+				: st->st_refhim == IPSEC_SAREF_NULL ? 0u
+				: IPsecSAref2NFmark(st->st_refhim) | IPSEC_NFMARK_IS_SAREF_BIT 
 		);
 	system(buf);
 }
