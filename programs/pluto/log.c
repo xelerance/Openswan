@@ -1025,7 +1025,7 @@ log_state(struct state *st, enum state_kind new_state)
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "
 			"%s ipsec-tunnel-%s phase2 %s \\; "
-			"%s ipsec-tunnel-%s nfmark-me/him %u/%u",
+			"%s ipsec-tunnel-%s nfmark-me/him 0x%x/0x%x",
 
 			conn->interface ? "push" : "drop", conn->name,
 					conn->interface ? conn->interface->ip_dev->id_vname : "",
