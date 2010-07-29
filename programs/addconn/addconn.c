@@ -137,7 +137,7 @@ main(int argc, char *argv[])
     while((opt = getopt_long(argc, argv, "", longopts, 0)) != EOF) {
 	switch(opt) {
 	case 'h':
-	    //usage:
+	    /* usage: */
 	    usage();
 	    break;
 
@@ -261,7 +261,7 @@ main(int argc, char *argv[])
 	if(e) {
 	    printf("ignoring invalid defaultroute: %s\n", e);
 	    defaultroute = NULL;
-	    // exit(4);
+	    /* exit(4); */
 	} else
 
 	if(verbose) {
@@ -277,7 +277,7 @@ main(int argc, char *argv[])
 	if(e) {
 	    printf("ignoring invalid defaultnexthop: %s\n", e);
 	    defaultnexthop = NULL;
-	     // exit(4);
+	    /* exit(4); */
 	} else
 
 	if(verbose) {

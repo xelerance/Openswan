@@ -2104,8 +2104,9 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 }
 #endif
 
-// ------------------------------------------------------------------------
-// this handles creating and managing state for recv path
+/* ------------------------------------------------------------------------
+ * this handles creating and managing state for recv path
+ */
 
 static spinlock_t irs_cache_lock = SPIN_LOCK_UNLOCKED;
 #ifdef HAVE_KMEM_CACHE_MACRO
@@ -2179,7 +2180,7 @@ ipsec_rcv_state_new (void)
         if (unlikely (NULL == irs))
                 goto bail;
 
-        // initialize the object
+        /* initialize the object */
 #if 1
         memset((caddr_t)irs, 0, sizeof(*irs));
 #else

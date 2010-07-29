@@ -90,10 +90,10 @@ safe_skb_put(struct sk_buff *skb, int extend)
         unsigned char *ptr;
 
         if (extend>0) {
-                // increase the size of the packet
+		/* increase the size of the packet */
                 ptr = skb_put(skb, extend);
         } else {
-                // shrink the size of the packet
+		/* shrink the size of the packet */
                 ptr = skb_tail_pointer(skb);
                 skb_trim (skb, skb->len + extend);
         }
