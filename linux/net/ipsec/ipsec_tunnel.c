@@ -1789,7 +1789,7 @@ DEBUG_NO_STATIC void ipsec_tunnel_upd_encap_cleanup(void)
 		}
 		spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
 
-		// are we done?
+		/* are we done? */
 		if (!ctx)
 			break;
 
@@ -2257,8 +2257,9 @@ ipsec_tunnel_cleanup_devices(void)
 	return error;
 }
 
-// ------------------------------------------------------------------------
-// this handles creating and managing state for xmit path
+/* ------------------------------------------------------------------------
+ * this handles creating and managing state for xmit path
+ */
 
 static spinlock_t ixs_cache_lock = SPIN_LOCK_UNLOCKED;
 #ifdef HAVE_KMEM_CACHE_MACRO
@@ -2342,7 +2343,7 @@ ipsec_xmit_state_new (void)
         if (unlikely (NULL == ixs))
                 goto bail;
 
-        // initialize the object
+        /* initialize the object */
 #if 1 /* optimised to only clear the required bits */
 		memset((caddr_t)ixs, 0, sizeof(*ixs));
 #else

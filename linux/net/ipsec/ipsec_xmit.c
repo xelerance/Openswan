@@ -243,8 +243,9 @@ ipsec_print_ip(struct iphdr *ip)
 	switch (ip->protocol) {
 	case IPPROTO_TCP:
 	case IPPROTO_UDP:
-		// NOTE: we only use this for getting port numbers, and they
-		// are at the same offsets for both tcp and udp headers
+		/* NOTE: we only use this for getting port numbers, and they
+		 * are at the same offsets for both tcp and udp headers
+		 */
 		tcphdr = (struct tcphdr*)((caddr_t)ip + (ip->ihl << 2));
 		break;
 	}
@@ -2130,8 +2131,8 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		int err;
 		if (is_mast_packet)
-			// skip filtering on mast devices, since it resets our
-			// route, nfmark, and causes nasty reentrancy.
+			/* skip filtering on mast devices, since it resets our
+			 * route, nfmark, and causes nasty reentrancy. */
 			err = ipsec_xmit_send2_mast(ixs->skb);
 
 		else
