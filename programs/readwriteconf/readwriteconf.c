@@ -54,12 +54,12 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 #include "ipsecconf/starterlog.h"
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterwhack.h"
-//#include "ipsecconf/pluto.h"
-//#include "ipsecconf/klips.h"
-//#include "ipsecconf/netkey.h"
-//#include "ipsecconf/cmp.h"
-//#include "ipsecconf/interfaces.h"
-//#include "ipsecconf/keywords.h"
+/* #include "ipsecconf/pluto.h"
+ * #include "ipsecconf/klips.h"
+ * #include "ipsecconf/netkey.h"
+ * #include "ipsecconf/cmp.h"
+ * #include "ipsecconf/interfaces.h"
+ * #include "ipsecconf/keywords.h" */
 
 char *progname;
 int verbose=0;
@@ -110,7 +110,7 @@ main(int argc, char *argv[])
     while((opt = getopt_long(argc, argv, "", longopts, 0)) != EOF) {
 	switch(opt) {
 	case 'h':
-	    //usage:
+	    /* usage: */
 	    usage();
 	    break;
 
