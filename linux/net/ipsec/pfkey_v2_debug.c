@@ -120,6 +120,9 @@ static char *pfkey_sadb_type_strings[]={
 	"x-addflow(eroute)",            /* K_SADB_X_ADDFLOW     */
 	"x-delflow(eroute)",            /* K_SADB_X_DELFLOW     */
 	"x-debug",                      /* K_SADB_X_DEBUG       */
+	"x-natt-new-mapping",           /* K_SADB_X_NAT_T_NEW_MAPPING */
+	"x-plumbif",                    /* K_SADB_X_PLUMBIF     */
+	"x-unplumbif",                  /* K_SADB_X_UNPLUMBIF   */
 };
 
 const char *
