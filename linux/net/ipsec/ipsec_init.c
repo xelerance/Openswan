@@ -249,7 +249,7 @@ ipsec_klips_init(void)
         if (error)
                 goto error_xfrm_register;
 
-#else // CONFIG_XFRM_ALTERNATE_STACK
+#else /* CONFIG_XFRM_ALTERNATE_STACK */
 
 #ifdef CONFIG_KLIPS_ESP
 	error |= openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
@@ -273,7 +273,7 @@ ipsec_klips_init(void)
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
-#endif // CONFIG_XFRM_ALTERNATE_STACK
+#endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 	error |= ipsec_tunnel_init_devices();
         if (error)
@@ -316,7 +316,7 @@ ipsec_klips_init(void)
 	prng_init(&ipsec_prng, seed, sizeof(seed));
 	return error;
 
-        // undo ipsec_sysctl_register
+        /* undo ipsec_sysctl_register */
 error_sysctl_register:
 #ifdef CONFIG_INET_IPSEC_SAREF
 	ipsec_mast_cleanup_saref();
@@ -329,7 +329,7 @@ error_tunnel_init_devices:
 #ifdef CONFIG_XFRM_ALTERNATE_STACK
         xfrm_deregister_alternate_rcv(ipsec_rcv);
 error_xfrm_register:
-#else // CONFIG_XFRM_ALTERNATE_STACK
+#else /* CONFIG_XFRM_ALTERNATE_STACK */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
 error_openswan_inet_add_protocol_comp:
@@ -353,8 +353,10 @@ error_radijinit:
 	ipsec_sadb_free();
 error_sadb_init:
 error_proc_init:
-        // ipsec_proc_init() does not cleanup after itself, so we have to do it here
-        // TODO: ipsec_proc_init() should roll back what it chaned on failure
+        /* ipsec_proc_init() does not cleanup after itself, so we have to do
+	 * it here
+	 * TODO: ipsec_proc_init() should roll back what it chaned on failure
+	 */
 	ipsec_proc_cleanup();
         ipsec_rcv_state_cache_cleanup ();
 error_rcv_state_cache:
@@ -406,7 +408,7 @@ ipsec_cleanup(void)
 
         xfrm_deregister_alternate_rcv(ipsec_rcv);
 
-#else // CONFIG_XFRM_ALTERNATE_STACK
+#else /* CONFIG_XFRM_ALTERNATE_STACK */
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
@@ -429,7 +431,7 @@ ipsec_cleanup(void)
 		       "esp close: can't remove protocol\n");
 #endif /* CONFIG_KLIPS_ESP */
 
-#endif // CONFIG_XFRM_ALTERNATE_STACK
+#endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 	error |= unregister_netdevice_notifier(&ipsec_dev_notifier);
 

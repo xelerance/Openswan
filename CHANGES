@@ -4,9 +4,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.28 (unreleased)
+v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
 * SAREF: rework exported interface to avoid might_sleep() during rcu lock [Bart]
+* SAREF: Use the correct mask when updating nfmark in rcv path [Bart]
 * MAST: Cleanup updown.mast iptables rule management [Bart]
 * MAST: Rework mast init scripts to use conntrack [Bart]
 * MAST: Remove iptables rules after SA is deleted [Bart]
@@ -29,6 +30,7 @@ v2.6.28 (unreleased)
 * HAVE_STATSD: Slightly clarified and changed log messages [Paul]
 * SAREF: Clarified defines and fixed nfmark printing in HAVE_STATSD [dhr/Paul]
 * MAST: Temp workaround in _updown.mast for martians problem [Bart/Paul]
+* Cleanup source code to use C-style comments [Tuomo]
 * Bugtracker bugs fixed:
    # 1120: [PATCH] netlink receive buffer size too small for linux 2.6.32
            [Roman Hoog Antink]

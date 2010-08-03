@@ -876,9 +876,10 @@ ipsec_sadb_cleanup(__u8 proto)
 	unsigned i;
 	int error = 0;
 	struct ipsec_sa *ips;
-	//struct ipsec_sa *ipsnext, **ipsprev;
-        //char sa[SATOT_BUF];
-	//size_t sa_len;
+	/* struct ipsec_sa *ipsnext, **ipsprev; */
+	/* char sa[SATOT_BUF]; */
+	/* size_t sa_len; */
+	 
 
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_sadb_cleanup: "
@@ -899,7 +900,7 @@ ipsec_sadb_cleanup(__u8 proto)
 		}
 	}
 
-//errlab:
+/* errlab: */
 
 	spin_unlock_bh(&tdb_lock);
 

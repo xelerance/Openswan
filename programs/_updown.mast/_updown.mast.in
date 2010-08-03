@@ -148,6 +148,8 @@ then
     . /etc/default/pluto_updown
 fi
 
+use_conntrack=false
+
 # check interface version
 case "$PLUTO_VERSION" in
 1.*)	# Older Pluto?!?  Play it safe, script may be using new features.
@@ -193,12 +195,19 @@ checkipsec() {
     fi
 
     # initialize the IPSEC chain if needed
-    if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
-        iptables -t mangle -F IPSEC
-        iptables -t mangle -A IPSEC -j CONNMARK --restore-mark
-        iptables -t mangle -A IPSEC -m mark --mark 0x80000000/0x80000000 -j RETURN
-        iptables -t mangle -A IPSEC -j NEW_IPSEC_CONN
-        iptables -t mangle -A IPSEC -j CONNMARK --save-mark
+    if $use_conntrack ; then
+        if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
+            iptables -t mangle -F IPSEC
+            iptables -t mangle -A IPSEC -j CONNMARK --restore-mark
+            iptables -t mangle -A IPSEC -m mark --mark 0x80000000/0x80000000 -j RETURN
+            iptables -t mangle -A IPSEC -j NEW_IPSEC_CONN
+            iptables -t mangle -A IPSEC -j CONNMARK --save-mark
+        fi
+    else
+        if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 3 ] ; then
+            iptables -t mangle -F IPSEC
+            iptables -t mangle -A IPSEC -j NEW_IPSEC_CONN
+        fi
     fi
 
     # next, setup routing rules and tables:

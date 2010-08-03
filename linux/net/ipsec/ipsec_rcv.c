@@ -703,7 +703,7 @@ printk("FAILED ipsec_rcv %d\n", __LINE__);
 		goto rcvleave;
 	}
 #if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
-	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_TABLE_MASK))))
+	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
@@ -2206,8 +2206,9 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 }
 #endif
 
-// ------------------------------------------------------------------------
-// this handles creating and managing state for recv path
+/* ------------------------------------------------------------------------
+ * this handles creating and managing state for recv path
+ */
 
 static spinlock_t irs_cache_lock = SPIN_LOCK_UNLOCKED;
 #ifdef HAVE_KMEM_CACHE_MACRO
@@ -2281,7 +2282,7 @@ ipsec_rcv_state_new (void)
         if (unlikely (NULL == irs))
                 goto bail;
 
-        // initialize the object
+        /* initialize the object */
 #if 1
         memset((caddr_t)irs, 0, sizeof(*irs));
 #else

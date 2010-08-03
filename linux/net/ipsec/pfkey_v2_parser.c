@@ -2788,7 +2788,12 @@ pfkey_x_simple_reply(struct sock *sk , struct sadb_ext *extensions[], int err)
 	int error = 0;
 	struct sadb_msg *m = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED]);
 
-	m->sadb_msg_errno = err;
+	/* err is either 0 (success) or a negative 'errno' value */
+	if (err <= 0 && err >= -255)
+		m->sadb_msg_errno = -err;
+	else
+		/* out of range for a uint8_t */
+		m->sadb_msg_errno = 255;
 
 	if ((error = pfkey_msg_build(&pfkey_reply, extensions, EXT_BITS_OUT))) {
 		KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_expire: "
@@ -2895,7 +2900,7 @@ pfkey_build_reply(struct sadb_msg *pfkey_msg,
 	if (!extr || !extr->ips) {
 			KLIPS_PRINT(debug_pfkey, "klips_debug:pfkey_build_reply: "
 				    "bad ipsec_sa passed\n");
-			return EINVAL; // TODO: should this not be negative?
+			return EINVAL; /* TODO: should this not be negative? */
 	}
 	error = pfkey_safe_build(pfkey_msg_hdr_build(&extensions[0],
 						     msg_type,
