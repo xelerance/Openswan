@@ -500,6 +500,10 @@
 #define	CTL_NAME(n)	.ctl_name = n,
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
+#define HAVE_SOCKET_WQ
+#endif
+
 #if __KERNEL__
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
 #  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
