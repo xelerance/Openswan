@@ -404,6 +404,7 @@ netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
     struct {
 	struct nlmsghdr n;
 	struct nlmsgerr e;
+	char data[1024];
     } rsp;
     int error;
 

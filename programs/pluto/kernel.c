@@ -2299,16 +2299,16 @@ install_inbound_ipsec_sa(struct state *st)
 #endif
 
             if(kernel_ops->overlap_supported) {
-                    // Both are transport mode, allow overlapping.
-                    // [bart] not sure if this is actually intended, but am
-                    //        leaving it in to make it behave like before.
-                    if (!LIN(POLICY_TUNNEL, c->policy)
-                                    && !LIN(POLICY_TUNNEL, o->policy))
-                            break;
-                    // Both declared that overlapping is OK.
-                    if (LIN(POLICY_OVERLAPIP, c->policy)
-                                    && LIN(POLICY_OVERLAPIP, o->policy))
-                            break;
+		/* Both are transport mode, allow overlapping.
+		 * [bart] not sure if this is actually intended, but am
+		 *        leaving it in to make it behave like before */
+		if (!LIN(POLICY_TUNNEL, c->policy)
+		    && !LIN(POLICY_TUNNEL, o->policy))
+		    break;
+		/* Both declared that overlapping is OK. */
+		if (LIN(POLICY_OVERLAPIP, c->policy)
+		    && LIN(POLICY_OVERLAPIP, o->policy))
+		    break;
             }
 		
 	    loglog(RC_LOG_SERIOUS, "route to peer's client conflicts with \"%s\" %s; releasing old connection to free the route"		

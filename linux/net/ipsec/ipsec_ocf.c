@@ -595,7 +595,7 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 				(((struct ahhdr *)(ixs->dat + ixs->iphlen))->ah_data) -
 					ixs->skb->data;
 			crda->crd_len      = ixs->len - ixs->authlen;
-			memset(ixs->skb->data + crda->crd_inject, 0, 12); // DM
+			memset(ixs->skb->data + crda->crd_inject, 0, 12); /* DM */
 		} else {
 			crda->crd_skip     = ((unsigned char *) ixs->espp) - ixs->skb->data;
 			crda->crd_inject   = ixs->len - ixs->authlen;

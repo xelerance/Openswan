@@ -137,7 +137,7 @@ ipsec_rcv_esp_decrypt_setup(struct ipsec_rcv_state *irs,
 			    unsigned char **authenticator)
 {
 	struct esphdr *espp = irs->protostuff.espstuff.espp;
-	//unsigned char *idat = (unsigned char *)espp;
+	/* unsigned char *idat = (unsigned char *)espp; */
 
 	KLIPS_PRINT(debug_rcv,
 		    "klips_debug:ipsec_rcv: "

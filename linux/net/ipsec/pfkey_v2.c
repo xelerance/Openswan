@@ -720,11 +720,20 @@ pfkey_create(struct socket *sock, int protocol)
 /*	sk->num = protocol; */
 	sk->sk_protocol = protocol;
 	key_pid(sk) = current_uid();
+
+#ifdef HAVE_SOCKET_WQ
+	KLIPS_PRINT(debug_pfkey,
+		    "klips_debug:pfkey_create: "
+		    "sock->wq->fasync_list=0p%p sk_sleep(sk)=0p%p.\n",
+		    sock->wq->fasync_list,
+		    sk_sleep(sk));
+#else
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_create: "
 		    "sock->fasync_list=0p%p sk->sleep=0p%p.\n",
 		    sock->fasync_list,
 		    sk->sk_sleep);
+#endif
 
 	pfkey_insert_socket(sk);
 	pfkey_list_insert_socket(sock, &pfkey_open_sockets);
@@ -1157,7 +1166,9 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk,
 					key_pid(sk),
 					sock_flag(sk, SOCK_DEAD),
+#ifndef HAVE_SOCKET_WQ
 					sk->sk_sleep,
+#endif
 					sk->sk_socket,
 					sk->sk_err,
 					sk->sk_reuse,

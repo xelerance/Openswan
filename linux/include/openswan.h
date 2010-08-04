@@ -233,13 +233,16 @@ typedef uint32_t IPsecSAref_t;
  */
 #define IPSEC_SA_REF_TABLE_IDX_WIDTH 15
 #define IPSEC_SA_REF_TABLE_OFFSET    16
-#define IPSEC_SA_REF_MASK           ((1<<IPSEC_SA_REF_TABLE_IDX_WIDTH)-1)
+#define IPSEC_SA_REF_MASK           ((1u<<IPSEC_SA_REF_TABLE_IDX_WIDTH)-1u)
+#define IPSEC_NFMARK_IS_SAREF_BIT 0x80000000u
 
 #define IPsecSAref2NFmark(x) (((x)&IPSEC_SA_REF_MASK) << IPSEC_SA_REF_TABLE_OFFSET)
 #define NFmark2IPsecSAref(x) (((x) >> IPSEC_SA_REF_TABLE_OFFSET)&IPSEC_SA_REF_MASK)
 
-#define IPSEC_SAREF_NULL ((IPsecSAref_t)0)
+#define IPSEC_SAREF_NULL ((IPsecSAref_t)0u)
+/* Not representable as an nfmark */
 #define IPSEC_SAREF_NA   ((IPsecSAref_t)0xffff0001)
+
 
 /* GCC magic for use in function definitions! */
 #ifdef GCC_LINT
