@@ -139,7 +139,6 @@ install-openswan: build
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Empty directory
 	rmdir $(CURDIR)/debian/openswan/usr/bin
@@ -179,7 +178,6 @@ install-openswan-doc: build
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan-doc -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-doc -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 install-openswan-modules-source: DH_OPTIONS=-popenswan-modules-source
 install-openswan-modules-source: PKGDIR=$(CURDIR)/debian/openswan-modules-source
@@ -217,7 +215,6 @@ install-openswan-modules-source: patch
 
 	# more lintian cleanups
 	find $(PKGDIR) -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
 install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d: -f2 | cut -d- -f1)
@@ -242,7 +239,6 @@ install-openswan-modules-dkms: patch
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan-modules-dkms -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-modules-dkms -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Ensure +x for scrips
 	find $(CURDIR)/debian/openswan-modules-dkms -type f -name "*.sh" -o -name "*.pl" | xargs --no-run-if-empty chmod 755

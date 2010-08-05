@@ -1,10 +1,9 @@
 Source: openswan
 Section: net
 Priority: optional
-Maintainer: $KMAINT <$KEMAIL>
+Maintainer: Simon Deziel <simon@xelerance.com>
 Standards-Version: 3.8.4
-Vcs-Browser: http://svn.debian.org/viewsvn/pkg-openswan
-Vcs-Svn: svn://svn.debian.org/svn/pkg-openswan
+Vcs-Git: http://git.openswan.org/cgi-bin/gitweb.cgi?p=openswan.public/.git;a=summary
 Build-Depends: debhelper
 Homepage: http://www.openswan.org/
 
