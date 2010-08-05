@@ -1295,6 +1295,19 @@ add_connection(const struct whack_message *wm)
 	c->sa_rekey_fuzz = wm->sa_rekey_fuzz;
 	c->sa_keying_tries = wm->sa_keying_tries;
 
+	if (c->sa_rekey_margin >= c->sa_ipsec_life_seconds) {
+		time_t new_rkm;
+
+		new_rkm = c->sa_ipsec_life_seconds / 2;
+
+		openswan_log("conn: %s, rekeymargin (%lus) > salifetime (%lus); "
+				"reducing rekeymargin to %lu seconds", c->name,
+				c->sa_rekey_margin, c->sa_ipsec_life_seconds,
+				new_rkm);
+
+		c->sa_rekey_margin = new_rkm;
+	}
+
 	/* RFC 3706 DPD */
         c->dpd_delay = wm->dpd_delay;
         c->dpd_timeout = wm->dpd_timeout;
