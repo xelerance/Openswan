@@ -470,6 +470,44 @@ mast_shunt_eroute(struct connection *c UNUSED
     return TRUE;
 }
 
+/**
+ * replace existing iptables rule using the updown.mast script.
+ * @param st - new state
+ * @param sr - new route
+ * @return TRUE if add was successful, FALSE otherwise
+ */
+static bool
+mast_sag_eroute_replace(struct state *st, struct spd_route *sr)
+{
+	struct connection *c = st->st_connection;
+	struct state *old_st;
+	bool success;
+
+	/* The state, st, has the new SAref values, but we need to remove
+	 * the rule based on the previous state with the old SAref values.
+	 * So we have to find it the hard way (it's a cpu hog). */
+	old_st = state_with_serialno(sr->eroute_owner);
+	if (!old_st)
+		old_st = st;
+
+	DBG_log("mast_sag_eroute_replace state #%d{ref=%d refhim=%d} "
+			"with #%d{ref=%d refhim=%d}",
+			(int)old_st->st_serialno,
+			(int)old_st->st_ref,
+			(int)old_st->st_refhim,
+			(int)st->st_serialno,
+			(int)st->st_ref,
+			(int)st->st_refhim);
+
+	/* add the new rule */
+	success = mast_do_command(c, sr, "spdadd", st);
+
+	/* drop the old rule -- we ignore failure */
+	(void)mast_do_command(c, sr, "spddel", old_st);
+
+	return success;
+}
+
 /* install or remove eroute for SA Group */
 static bool
 mast_sag_eroute(struct state *st, struct spd_route *sr
@@ -484,8 +522,7 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 	return mast_do_command(st->st_connection, sr, "spddel", st);
 
     case ERO_REPLACE:
-	(void)mast_do_command(st->st_connection, sr, "spddel", st);
-	return mast_do_command(st->st_connection, sr, "spdadd", st);
+	return mast_sag_eroute_replace(st, sr);
 	
     case ERO_ADD_INBOUND:
     case ERO_REPLACE_INBOUND:
