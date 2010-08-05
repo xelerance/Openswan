@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
-"POT-Creation-Date: 2010-06-01 00:35+0200\n"
+"POT-Creation-Date: 2010-06-08 09:02+0200\n"
 "PO-Revision-Date: 2010-04-26 20:26+0200\n"
 "Last-Translator: Christian Perrier <bubulle@debian.org>\n"
 "Language-Team: fr <debian-l10n-french@lists.debian.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: Plural-Forms: nplurals=2; plural=n>1;\n"
 
@@ -315,8 +315,8 @@ msgstr ""
 #. Description
 #: ../openswan.templates:10001
 msgid ""
-"OpenSSL will refuse to generate a certificate unless this is a valid ISO-"
-"3166 country code; an empty field is allowed elsewhere in the X.509 "
+"OpenSSL will refuse to generate a certificate unless this is a valid "
+"ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
 "certificate, but not here."
 msgstr ""
 "Il est impératif de choisir ici un code de pays ISO-3166 valable sinon "
@@ -326,25 +326,18 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid ""
-#| "Please enter the state or province name for the X509 certificate request:"
 msgid "State or province name for the X.509 certificate request:"
-msgstr "État, province ou région :"
+msgstr "État, province ou région pour la demande de certificat X.509 :"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid ""
-#| "Please enter the two-letter code for the country the server resides in "
-#| "(such as \"AT\" for Austria)."
 msgid ""
 "Please enter the full name of the state or province the server resides in "
 "(such as \"Upper Austria\")."
 msgstr ""
-"Veuillez indiquer le code à deux lettres du pays où est situé le serveur "
-"(p. ex. « FR » pour la France)."
+"Veuillez indiquer le nom de la région, de l'état ou de la province où est situé le serveur "
+"(p. ex. « Jura »)."
 
 #. Type: string
 #. Description
