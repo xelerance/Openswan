@@ -1,0 +1,39 @@
+#!/bin/sh
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+
+cd "`dirname $0`/../.."
+
+# Test if version replace can occur
+if ! grep -m1 -q "IPSECBASEVERSION" debian/changelog ; then
+    echo "Unable to find the string \"IPSECBASEVERSION\" used for "
+    echo "automatic version number replacing."
+    echo "Please manually edit debian/changelog with the appropriate value."
+    exit 1
+fi
+
+# Use the latest version in CHANGES and append the date
+VERSION="`grep -m1 "^v" CHANGES | cut -dv -f2 | cut -d" " -f1`-`date +%Y%m%d%H%M`"
+
+# Update debian/changelog to make debuild/dpkg-buildpackage happy
+sed -i "s/IPSECBASEVERSION/$VERSION/g" debian/changelog
+
+EFFECTIVE_VER=$(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)
+
+if [ "$VERSION" != "$EFFECTIVE_VER" ]; then
+    echo "Unable to change version from $EFFECTIVE_VER to $VERSION in debian/changelog"
+    echo "Please copy the file debian/changelog.in to debian/changelog and run this script again."
+    exit 1
+else
+    echo "Building Openswan version $VERSION"
+
+    # Build the debs and skip the signature part
+    debuild -i -us -uc -b
+fi

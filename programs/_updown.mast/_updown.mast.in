@@ -425,7 +425,7 @@ doipsecrule() {
 
 	#echo SAref: $saref '->' $nf_saref
 
-        rulespec="--src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref"
+        rulespec="--src $srcnet --dst $dstnet -m mark --mark 0/0x80000000 -j MARK --set-mark $nf_saref"
 	case $1 in
 	    add)
                 it="iptables -t mangle -I NEW_IPSEC_CONN 1 $rulespec"

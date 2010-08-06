@@ -7,9 +7,6 @@
 
 export DH_OPTIONS
 
-VERSION=$(shell if [ "`which git`" ] && [ "`git describe 2>/dev/null`" ]; then git describe | sed 's/^v//' ; else basename `pwd` | sed 's/^openswan-//' ; fi)
-SED_SCRIPT=s!\$$VERSION!$(VERSION)!
-
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -20,8 +17,7 @@ configure-stamp:
 patch:
 	dh_testdir
 	dpatch apply-all
-	sed -e "$(SED_SCRIPT)" debian/changelog.in > debian/changelog
-	sed -e "$(SED_SCRIPT)" debian/NEWS.in > debian/NEWS
+	cp -f debian/changelog debian/NEWS || true
 
 unpatch:
 	dpatch deapply-all
@@ -78,7 +74,6 @@ clean: unpatch
 
 	dh_clean
 
-	cp -f debian/changelog.in debian/changelog || true
 	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a
@@ -143,8 +138,7 @@ install-openswan: build
 	chmod 644 $(CURDIR)/debian/openswan/etc/ipsec.d/examples/*
 
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Empty directory
@@ -184,8 +178,7 @@ install-openswan-doc: build
 	rm -rf $(CURDIR)/debian/openswan-doc/usr/share/doc/openswan-doc/doc/src
 
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan-doc -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-doc -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-doc -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan-doc -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 install-openswan-modules-source: DH_OPTIONS=-popenswan-modules-source
@@ -223,8 +216,7 @@ install-openswan-modules-source: patch
 	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
-	find $(PKGDIR) -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(PKGDIR) -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 	find $(PKGDIR) -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
@@ -249,8 +241,7 @@ install-openswan-modules-dkms: patch
 	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan-modules-dkms -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-modules-dkms -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(CURDIR)/debian/openswan-modules-dkms -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan-modules-dkms -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Ensure +x for scrips

@@ -1,11 +1,8 @@
 Source: openswan
 Section: net
 Priority: optional
-Maintainer: Rene Mayrhofer <rmayr@debian.org>
-Uploaders: Harald Jenny <harald@a-little-linux-box.at>
+Maintainer: Simon Deziel <simon@xelerance.com>
 Standards-Version: 3.8.4
-Vcs-Browser: http://svn.debian.org/viewsvn/pkg-openswan
-Vcs-Svn: svn://svn.debian.org/svn/pkg-openswan
 Build-Depends: debhelper (>= 7.1), libgmp3-dev, libssl-dev (>= 0.9.8), htmldoc, man2html, libcurl4-openssl-dev, libopensc2-dev, libldap2-dev, libpam0g-dev, libkrb5-dev, bison, flex, dpatch, bzip2, po-debconf
 Homepage: http://www.openswan.org/
 

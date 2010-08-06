@@ -275,7 +275,6 @@ USE_DYNAMICDNS?=true
 USE_SINGLE_CONF_DIR?=false
 
 # whether or not to include ipsec policy code into pluto.
-# false for now, since it is still experimental.
 USE_IPSECPOLICY?=true
 
 # Build ikeping (a utility for testing IKE daemons) in the distribution
