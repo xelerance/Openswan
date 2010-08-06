@@ -19,9 +19,6 @@ set -e
 case "$1" in
        purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
 
-                                # update the menu system
-#        if [ -x /usr/bin/update-menus ]; then update-menus; fi
-
         ;;
 
     *)

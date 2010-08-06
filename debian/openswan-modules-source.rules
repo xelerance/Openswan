@@ -82,7 +82,7 @@ build: debian/control debian/docs debian/lintian-overrides configure-stamp build
 build-stamp:
 	dh_testdir
 
-	$(MAKE) module
+	$(MAKE) module26
 
 	touch build-stamp
 
@@ -91,7 +91,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp configure-stamp
 
-	$(MAKE) moduleclean
+	$(MAKE) module26clean
 	rm -rf OBJ.* || true
 
 	dh_clean
@@ -105,7 +105,7 @@ install:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	mkdir -p $(MODDESTDIR)

@@ -11,9 +11,10 @@ Package: openswan
 Architecture: any
 Pre-Depends: debconf | debconf-2.0
 Depends: ${shlibs:Depends}, ${misc:Depends}, bsdmainutils, openssl, host, iproute, iproute (>=20041019-0.1) | ipsec-tools
-Suggests: openswan-modules-source | openswan-modules-dkms, curl
+Suggests: openswan-modules-source | openswan-modules-dkms, openswan-doc, curl
 Provides: ike-server
 Conflicts: ike-server
+Replaces: ike-server
 Description: Internet Key Exchange daemon
  Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
  native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2
@@ -31,7 +32,7 @@ Package: openswan-dbg
 Architecture: any
 Section: debug
 Priority: extra
-Depends: ${misc:Depends}, openswan
+Depends: ${misc:Depends}, openswan (= ${binary:Version})
 Description: Internet Key Exchange daemon - debugging symbols
  Openswan is an IPsec based VPN solution for the Linux kernel. It can use the
  native IPsec stack as well as the KLIPS kernel module. Both IKEv1 and IKEv2

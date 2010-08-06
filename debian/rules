@@ -74,6 +74,7 @@ clean: unpatch
 
 	dh_clean
 
+	rmdir debian/patched || true
 	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a
@@ -137,6 +138,10 @@ install-openswan: build
 	chmod 644 $(CURDIR)/debian/openswan/etc/ipsec.d/policies/*
 	chmod 644 $(CURDIR)/debian/openswan/etc/ipsec.d/examples/*
 
+	# create /var/lib/openswan with permissions similar to ipsec.secrets
+	mkdir -p $(CURDIR)/debian/openswan/var/lib/openswan
+	chmod 700 -R $(CURDIR)/debian/openswan/var/lib/openswan
+
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan -name ".cvsignore" -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 
@@ -190,11 +195,15 @@ install-openswan-modules-source: patch
 	mkdir -p "$(BUILDDIR)/modules/openswan/lib"
 	mkdir -p "$(BUILDDIR)/modules/openswan/debian"
 	mkdir -p "$(BUILDDIR)/modules/openswan/packaging"
+	mkdir -p "$(BUILDDIR)/modules/openswan/patches/kernel"
 	cp -r CHANGES CREDITS Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(BUILDDIR)/modules/openswan"
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
 	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
 		"$(BUILDDIR)/modules/openswan/packaging/"
+	cp -r patches/kernel/2.6.32 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/2.6.34 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/2.6.35 "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
 	install --mode=755 debian/openswan-modules-source.rules "$(BUILDDIR)/modules/openswan/debian/rules"
@@ -256,7 +265,7 @@ binary-common:
 	dh_link
 	dh_strip --dbg-package=openswan-dbg
 	dh_compress
-	dh_fixperms -X etc/ipsec.secrets -X etc/ipsec.d/private
+	dh_fixperms -X etc/ipsec.secrets -X etc/ipsec.d/private -X var/lib/openswan
 
 	dh_lintian
 	dh_installdeb
@@ -266,11 +275,11 @@ binary-common:
 	dh_builddeb
 
 # Build architecture-independent files here.
-binary-indep: install-openswan-doc install-openswan-modules-source install-openswan-modules-dkms
+binary-indep: install-openswan-doc install-openswan-modules-source
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture-dependent files here.
-binary-arch: install-openswan
+binary-arch: install-openswan install-openswan-modules-dkms
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
 binary: binary-indep binary-arch
