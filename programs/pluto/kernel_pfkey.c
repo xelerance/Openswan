@@ -830,6 +830,13 @@ static int kernelop2klips(enum pluto_sadb_operations op)
 	break;
     }
 
+#if defined(KLIPS_MAST)
+    /* In mast mode, we never want to set an eroute.
+     * Setting the POLICYONLY disables eroutes. */
+    if (kernel_ops->type == USE_MASTKLIPS)
+	klips_flags |= SADB_X_SAFLAGS_POLICYONLY;
+#endif
+
     return klips_op | (klips_flags << KLIPS_OP_FLAG_SHIFT);
 }
 

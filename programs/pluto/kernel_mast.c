@@ -433,25 +433,6 @@ mast_do_command(struct connection *c, struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
-static bool
-mast_raw_eroute(const ip_address *this_host UNUSED
-		, const ip_subnet *this_client UNUSED
-		, const ip_address *that_host UNUSED
-		, const ip_subnet *that_client UNUSED
-		, ipsec_spi_t spi UNUSED
-		, unsigned int proto UNUSED
-		, unsigned int transport_proto UNUSED
-		, unsigned int satype UNUSED
-		, const struct pfkey_proto_info *proto_info UNUSED
-		, time_t use_lifetime UNUSED
-		, enum pluto_sadb_operations op UNUSED
-		, const char *text_said UNUSED)
-{
-	
-	/* actually, we did all the work with iptables in _updown */
-	return TRUE;
-}
-
 /* Add/replace/delete a shunt eroute.
  * Such an eroute determines the fate of packets without the use
  * of any SAs.  These are defaults, in effect.
@@ -513,8 +494,33 @@ static bool
 mast_sag_eroute(struct state *st, struct spd_route *sr
 		, enum pluto_sadb_operations op, const char *opname UNUSED)
 {
-    switch(op)
-    {
+    bool ok;
+
+    /* handle ops we have to do no work for */
+    switch(op) {
+    case ERO_ADD_INBOUND:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DEL_INBOUND:
+	return TRUE;
+
+    default:
+	bad_case(op);
+	return FALSE;
+
+    case ERO_ADD:
+    case ERO_DELETE:
+    case ERO_REPLACE:
+	/* these one require more work... */
+	break;
+    }
+
+    /* first try to update the routing policy */
+    ok = pfkey_sag_eroute(st, sr, op, opname);
+    if (!ok)
+	return FALSE;
+
+    /* now run the iptable updown script */
+    switch(op) {
     case ERO_ADD:
 	return mast_do_command(st->st_connection, sr, "spdadd", st);
 	
@@ -523,13 +529,11 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 
     case ERO_REPLACE:
 	return mast_sag_eroute_replace(st, sr);
-	
-    case ERO_ADD_INBOUND:
-    case ERO_REPLACE_INBOUND:
-    case ERO_DEL_INBOUND:
-	return TRUE;
+
+    default:
+	/* this should never happen */
+	return FALSE;
     }
-    return FALSE;
 }
 
 const struct kernel_ops mast_kernel_ops = {
@@ -541,7 +545,7 @@ const struct kernel_ops mast_kernel_ops = {
     pfkey_register_response: klips_pfkey_register_response,
     process_queue: pfkey_dequeue,
     process_msg: pfkey_event,
-    raw_eroute: mast_raw_eroute,
+    raw_eroute: pfkey_raw_eroute,
     shunt_eroute: mast_shunt_eroute,
     sag_eroute: mast_sag_eroute,
     add_sa: pfkey_add_sa,
