@@ -1881,6 +1881,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	struct socket_list *pfkey_socketsp;
 	uint8_t satype = ((struct sadb_msg*)extensions[K_SADB_EXT_RESERVED])->sadb_msg_satype;
 	ip_address srcflow, dstflow, srcmask, dstmask;
+	struct ipsec_sa *ipsp, *ipsq;
 
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_x_addflow_parse: .\n");
@@ -1919,54 +1920,66 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    "calling breakeroute and/or makeroute for %s->%s\n",
 			    buf1, buf2);
 	}
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
-/*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
-		struct ipsec_sa *ipsp, *ipsq;
+
+	// set tunneling policy on this SA/flow
+
+	spin_lock_bh(&tdb_lock);
+
+	ipsq = ipsec_sa_getbyid(&(extr->ips->ips_said), IPSEC_REFSA);
+	if(ipsq == NULL) {
+		spin_unlock_bh(&tdb_lock);
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_x_addflow_parse: "
+			    "ipsec_sa not found, cannot set %s policy.\n",
+			    (extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW)
+			    ? "incoming" : "outgoing");
+		SENDERR(ENOENT);
+	}
+
+	ipsp = ipsq;
+	// for INFLOW this ipsq is IPIP, right?
+	while(ipsp && ipsp->ips_said.proto != IPPROTO_IPIP) {
+		ipsp = ipsp->ips_next;
+	}
+
+	if(ipsp == NULL) {
+		ipsec_sa_put(ipsq, IPSEC_REFSA);
+		spin_unlock_bh(&tdb_lock);
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_x_addflow_parse: "
+			    "SA chain does not have an IPIP SA, cannot set %s policy.\n",
+			    (extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW)
+			    ? "incoming" : "outgoing");
+		SENDERR(ENOENT);
+	}
+	
+	ipsp->ips_flags |= extr->ips->ips_flags
+		& (SADB_X_SAFLAGS_INFLOW | SADB_X_SAFLAGS_POLICYONLY);
+	ipsp->ips_flow_s = srcflow;
+	ipsp->ips_flow_d = dstflow;
+	ipsp->ips_mask_s = srcmask;
+	ipsp->ips_mask_d = dstmask;
+
+	ipsec_sa_put(ipsq, IPSEC_REFSA);
+
+	spin_unlock_bh(&tdb_lock);
+
+	if (debug_pfkey) {
 		char sa[SATOT_BUF];
 		size_t sa_len;
 
-		spin_lock_bh(&tdb_lock);
-
-		ipsq = ipsec_sa_getbyid(&(extr->ips->ips_said), IPSEC_REFSA);
-		if(ipsq == NULL) {
-			spin_unlock_bh(&tdb_lock);
-			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_x_addflow_parse: "
-				    "ipsec_sa not found, cannot set incoming policy.\n");
-			SENDERR(ENOENT);
-		}
-
-		ipsp = ipsq;
-		while(ipsp && ipsp->ips_said.proto != IPPROTO_IPIP) {
-			ipsp = ipsp->ips_next;
-		}
-
-		if(ipsp == NULL) {
-			ipsec_sa_put(ipsq, IPSEC_REFSA);
-			spin_unlock_bh(&tdb_lock);
-			KLIPS_PRINT(debug_pfkey,
-				    "klips_debug:pfkey_x_addflow_parse: "
-				    "SA chain does not have an IPIP SA, cannot set incoming policy.\n");
-			SENDERR(ENOENT);
-		}
-		
 		sa_len = KLIPS_SATOT(debug_pfkey, &extr->ips->ips_said, 0, sa, sizeof(sa));
-
-		ipsp->ips_flags |= SADB_X_SAFLAGS_INFLOW;
-		ipsp->ips_flow_s = srcflow;
-		ipsp->ips_flow_d = dstflow;
-		ipsp->ips_mask_s = srcmask;
-		ipsp->ips_mask_d = dstmask;
-
-		ipsec_sa_put(ipsq, IPSEC_REFSA);
-
-		spin_unlock_bh(&tdb_lock);
-
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_addflow_parse: "
-			    "inbound eroute, setting incoming policy information in IPIP ipsec_sa for SA: %s.\n",
+			    "inbound eroute, setting %s policy information in IPIP ipsec_sa for SA: %s.\n",
+			    (extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) ? "incoming" : "outgoing",
 			    sa_len ? sa : " (error)");
-	} else {
+	}
+
+	/* If both INFLOW and POLICYONLY are not set, then we are being asked
+	 * to create an eroute entry. */
+	if(!(extr->ips->ips_flags & (SADB_X_SAFLAGS_INFLOW
+					| SADB_X_SAFLAGS_POLICYONLY))) {
 		struct sk_buff *first = NULL, *last = NULL;
 
 		if(extr->ips->ips_flags & SADB_X_SAFLAGS_REPLACEFLOW) {
