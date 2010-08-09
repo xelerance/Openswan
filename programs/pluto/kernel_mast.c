@@ -498,11 +498,6 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 
     /* handle ops we have to do no work for */
     switch(op) {
-    case ERO_ADD_INBOUND:
-    case ERO_REPLACE_INBOUND:
-    case ERO_DEL_INBOUND:
-	return TRUE;
-
     default:
 	bad_case(op);
 	return FALSE;
@@ -510,6 +505,9 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
     case ERO_ADD:
     case ERO_DELETE:
     case ERO_REPLACE:
+    case ERO_ADD_INBOUND:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DEL_INBOUND:
 	/* these one require more work... */
 	break;
     }
@@ -521,6 +519,11 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 
     /* now run the iptable updown script */
     switch(op) {
+    case ERO_ADD_INBOUND:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DEL_INBOUND:
+	return TRUE;
+
     case ERO_ADD:
 	return mast_do_command(st->st_connection, sr, "spdadd", st);
 	
