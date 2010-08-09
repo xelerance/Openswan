@@ -74,7 +74,7 @@ clean: unpatch
 
 	dh_clean
 
-	rmdir debian/patched || true
+	rm -rf debian/patched || true
 	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a

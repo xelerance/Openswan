@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)-.*/\1/')
+VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)/\1/' -e 's/\(.*\)-.*/\1/')
 ARCH=`dpkg --print-architecture`
 
 . /usr/share/debconf/confmodule

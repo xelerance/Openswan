@@ -74,7 +74,7 @@ Description: Internet Key Exchange daemon - kernel module source
  Traversal support for KLIPS.
 
 Package: openswan-modules-dkms
-Architecture: all
+Architecture: any
 Section: kernel
 Depends: ${misc:Depends}, dkms, openswan
 Description: Internet Key Exchange daemon - DKMS source

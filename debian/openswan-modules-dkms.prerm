@@ -3,7 +3,7 @@ set -e
 
 #DEBHELPER#
 
-VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)-.*/\1/')
+VERSION=$(dpkg-query -W -f='${Version}' openswan-modules-dkms | sed -e 's/.*:\(.*\)/\1/' -e 's/\(.*\)-.*/\1/')
 
 case "$1" in
     remove|upgrade)

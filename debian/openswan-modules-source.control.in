@@ -8,7 +8,7 @@ Build-Depends: debhelper
 Homepage: http://www.openswan.org/
 
 Package: openswan-modules-$KVERS
-Architecture: any
+Architecture: all
 Section: kernel
 Recommends: linux-image-$KVERS (= $KDREV)
 Description: Internet Key Exchange daemon - binary kernel module
