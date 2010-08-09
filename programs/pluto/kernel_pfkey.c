@@ -796,12 +796,14 @@ netlink_register_proto(unsigned satype, const char *satypename)
 static int kernelop2klips(enum pluto_sadb_operations op)
 {
     int klips_op=0;
+    int klips_flags=0;
 
     /* translate sadb_operations -> KLIPS speak */
     switch (op)
     {
     case ERO_REPLACE:
-	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = K_SADB_X_ADDFLOW;
+	klips_flags = SADB_X_SAFLAGS_REPLACEFLOW;
 	break;
 
     case ERO_ADD:
@@ -811,21 +813,31 @@ static int kernelop2klips(enum pluto_sadb_operations op)
     case ERO_DELETE:
 	klips_op = K_SADB_X_DELFLOW;
 	break;
-	    
+
     case ERO_ADD_INBOUND:
-	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = K_SADB_X_ADDFLOW;
+	klips_flags = SADB_X_SAFLAGS_INFLOW;
 	break;
 
     case ERO_DEL_INBOUND:
-	klips_op = (K_SADB_X_DELFLOW | (SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = K_SADB_X_DELFLOW;
+	klips_flags = SADB_X_SAFLAGS_INFLOW;
 	break;
 
     case ERO_REPLACE_INBOUND:
-	klips_op = (K_SADB_X_ADDFLOW | (SADB_X_SAFLAGS_REPLACEFLOW|SADB_X_SAFLAGS_INFLOW << KLIPS_OP_FLAG_SHIFT));
+	klips_op = K_SADB_X_ADDFLOW;
+	klips_flags = SADB_X_SAFLAGS_REPLACEFLOW | SADB_X_SAFLAGS_INFLOW;
 	break;
     }
 
-    return klips_op;
+#if defined(KLIPS_MAST)
+    /* In mast mode, we never want to set an eroute.
+     * Setting the POLICYONLY disables eroutes. */
+    if (kernel_ops->type == USE_MASTKLIPS)
+	klips_flags |= SADB_X_SAFLAGS_POLICYONLY;
+#endif
+
+    return klips_op | (klips_flags << KLIPS_OP_FLAG_SHIFT);
 }
 
 #ifdef KLIPS
