@@ -1401,6 +1401,13 @@ add_connection(const struct whack_message *wm)
 	     * or wildcard ID */
 	    c->kind = CK_TEMPLATE;
 	}
+
+	else if ((c->spd.that.virt != NULL) || (c->spd.this.virt != NULL))
+	{
+	   /* If we have a subnet=vnet:, instantiate so we can accept multiple subnets from the remote peer */
+	    DBG(DBG_CONTROL, DBG_log("virt was set (via vnet=?), the connection is a template"));
+	    c->kind = CK_TEMPLATE;
+	}
 	else
 	{
 	    c->kind = CK_PERMANENT;
