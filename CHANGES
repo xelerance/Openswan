@@ -15,6 +15,8 @@ v2.6.29 (unreleased)
 * MAST: inforce outgoing tunnel policy [Bart]
 * MAST: use addflow pfkey command to set policy on tunnel SAs [Bart]
 * Added a new pfkey flag, POLICYONLY, to the ADDFLOW command [Bart]
+* MAST: allow for setting of policy for inbound SAs [Bart]
+* MAST: favour deleting an SA even if the pfkey op failed [Bart]
  
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
