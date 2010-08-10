@@ -2166,7 +2166,13 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		SENDERR(EINVAL);
 	}
 
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
+	if(extr->ips->ips_flags & SADB_X_SAFLAGS_POLICYONLY) {
+		/* nothing else to do */
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_x_delflow_parse: "
+			    "POLICYONLY flag set, done.\n");
+
+	} else if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_delflow_parse: "
 			    "CLEARFLOW flag set, calling cleareroutes.\n");
