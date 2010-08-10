@@ -495,6 +495,7 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 		, enum pluto_sadb_operations op, const char *opname UNUSED)
 {
     bool ok;
+    bool addop = FALSE;
 
     /* handle ops we have to do no work for */
     switch(op) {
@@ -503,10 +504,12 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 	return FALSE;
 
     case ERO_ADD:
-    case ERO_DELETE:
-    case ERO_REPLACE:
     case ERO_ADD_INBOUND:
+	addop = TRUE;
+	/* fallthrough expected */
+    case ERO_REPLACE:
     case ERO_REPLACE_INBOUND:
+    case ERO_DELETE:
     case ERO_DEL_INBOUND:
 	/* these one require more work... */
 	break;
@@ -514,7 +517,9 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 
     /* first try to update the routing policy */
     ok = pfkey_sag_eroute(st, sr, op, opname);
-    if (!ok)
+    if (!ok && addop)
+	/* If the pfkey op failed, and we were adding a new SA,
+	 * then it's OK to fail early. */
 	return FALSE;
 
     /* now run the iptable updown script */
