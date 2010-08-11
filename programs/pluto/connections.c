@@ -1403,7 +1403,6 @@ add_connection(const struct whack_message *wm)
 	}
 	else
 	{
-	    DBG(DBG_CONTROL, DBG_log("virt was not set - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
 
