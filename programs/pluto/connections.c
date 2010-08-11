@@ -1402,7 +1402,7 @@ add_connection(const struct whack_message *wm)
 	    c->kind = CK_TEMPLATE;
 	}
 
-	else if ((c->spd.that.virt != NULL) || (c->spd.this.virt != NULL))
+	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
 	{
 	   /* If we have a subnet=vnet:, instantiate so we can accept multiple subnets from the remote peer */
 	    DBG(DBG_CONTROL, DBG_log("virt was set (via vnet=?), the connection is a template"));
@@ -1410,6 +1410,7 @@ add_connection(const struct whack_message *wm)
 	}
 	else
 	{
+	    DBG(DBG_CONTROL, DBG_log("virt was not set - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
 	set_policy_prio(c);	/* must be after kind is set */
