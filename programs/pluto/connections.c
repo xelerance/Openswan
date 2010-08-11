@@ -1401,16 +1401,21 @@ add_connection(const struct whack_message *wm)
 	     * or wildcard ID */
 	    c->kind = CK_TEMPLATE;
 	}
+	else
+	{
+	    DBG(DBG_CONTROL, DBG_log("virt was not set - this is a CK_PERMANENT"));
+	    c->kind = CK_PERMANENT;
+	}
 
-	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
+	if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
 	{
 	   /* If we have a subnet=vnet:, instantiate so we can accept multiple subnets from the remote peer */
-	    DBG(DBG_CONTROL, DBG_log("virt was set (via vnet=?), the connection is a template"));
+	    DBG(DBG_CONTROL, DBG_log("virt was set in whack message (via vnet=?), the connection is a template"));
 	    c->kind = CK_TEMPLATE;
 	}
 	else
 	{
-	    DBG(DBG_CONTROL, DBG_log("virt was not set - this is a CK_PERMANENT"));
+	    DBG(DBG_CONTROL, DBG_log("virt was not set in whack message - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
 	set_policy_prio(c);	/* must be after kind is set */
