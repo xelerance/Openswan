@@ -92,10 +92,8 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
   osw_ip4_hdr(ixs)->protocol = IPPROTO_IPIP;
   osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
   
-  ixs->newdst = (__u32)osw_ip4_hdr(ixs)->daddr;
-  ixs->newsrc = (__u32)osw_ip4_hdr(ixs)->saddr;
-  
 #ifdef NET_21
+  printk("THIS CODE IS NEVER CALLED\n");
   skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));
 #endif /* NET_21 */
   return IPSEC_XMIT_OK;

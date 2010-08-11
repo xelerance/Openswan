@@ -83,11 +83,9 @@ struct ipsec_xmit_state
 	struct sk_buff *oskb;		/* Original skb pointer */
 	struct net_device_stats *stats;	/* This device's statistics */
 	void	*iph;		/* Our new IP header */
-	__u32   newdst;			/* The other SG's IP address */
-	__u32	orgdst;			/* Original IP destination address */
-	__u32	orgedst;		/* 1st SG's IP address */
-	__u32   newsrc;			/* The new source SG's IP address */
-	__u32	orgsrc;			/* Original IP source address */
+
+	ip_address	orgedst;		/* 1st SG's IP address */
+
 	int	iphlen;			/* IP header length */
 	int	pyldsz;			/* upper protocol payload size */
 	int	headroom;
