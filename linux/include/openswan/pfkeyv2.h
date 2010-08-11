@@ -253,6 +253,7 @@ enum sadb_sastate {
 #define SADB_X_SAFLAGS_REPLACEFLOW	2
 #define SADB_X_SAFLAGS_CLEARFLOW	4
 #define SADB_X_SAFLAGS_INFLOW		8
+#define SADB_X_SAFLAGS_POLICYONLY       16  /* suppress eroute creation */
 
 /* not obvious, but these are the same values as used in isakmp,
  * and in freeswan/ipsec_policy.h. If you need to add any, they

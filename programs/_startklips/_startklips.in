@@ -200,6 +200,21 @@ klipsinterface() {
                 fi
 	fi
 
+	if $mast
+	then
+		# odd - $virt = ipsec0 instead of mast0
+		# Double check the mtu is not 0 - if it is set it to a saner default
+		ip link show dev mast0 | grep -q 'mtu 0 '
+		RETVAL=$?
+		if [ "$RETVAL" -eq 0 ];
+		then
+			echo "Fixup of mtu on mast0 to 1542"
+			#ip link set mtu 1452 dev $virt
+			ip link set mtu 1452 dev mast0
+		fi
+	fi
+
+
 	# if %defaultroute, note the facts
 	if test " $2" != " "
 	then

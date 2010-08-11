@@ -29,7 +29,8 @@ set -e
 #     installation fails and the `postinst' is called with `abort-upgrade',
 #     `abort-remove' or `abort-deconfigure'.
 
-SECRETS_INC_FILE=/var/lib/openswan/ipsec.secrets.inc
+SECRETS_INC_DIR=/var/lib/openswan
+SECRETS_INC_FILE="$SECRETS_INC_DIR"/ipsec.secrets.inc
 
 Warn ()
 {
@@ -78,6 +79,19 @@ make_x509_cert() {
 
 case "$1" in
     configure)
+	# if SECRETS_INC_FILE is not there we touch it to avoid error messages
+	if [ ! -f "$SECRETS_INC_FILE" ]; then
+	    touch $SECRETS_INC_FILE
+	fi
+
+	# now we fix permissions of SECRETS_INC_DIR and SECRETS_INC_FILE (if the admin did not specify different ones)
+	if [ "`dpkg-statoverride --list $SECRETS_INC_DIR`" ] || [ "`find $SECRETS_INC_DIR ! -perm 0700`" ]; then
+	    chmod 0700 $SECRETS_INC_DIR
+	fi
+	if [ "`dpkg-statoverride --list $SECRETS_INC_FILE`" ] || [ "`find $SECRETS_INC_FILE ! -perm 0700`" ]; then
+	    chmod 0600 $SECRETS_INC_FILE
+	fi
+
 	db_get openswan/install_x509_certificate
 	if [ "$RET" = "true" ]; then
 	    db_get openswan/how_to_get_x509_certificate
@@ -118,7 +132,6 @@ case "$1" in
        			if [ -z "$email" ]; then email="."; fi
        			make_x509_cert $keylength 1500 "$newkeyfile" "$newcertfile" "$selfsigned" "$countrycode" "$statename" "$localityname" "$orgname" "$orgunit" "$commonname" "$email"
        			chmod 0600 "$newkeyfile"
-       			umask 077
        			insert_private_key_filename "$newkeyfile"
        			echo "Successfully created x509 certificate."
        		fi
@@ -157,7 +170,6 @@ case "$1" in
 			Error "Please remove them first and then re-run dpkg-reconfigure to extract an existing keypair"${newcafile:+ and a rootca}"."
 		    else
 			openssl x509 -in $certfile -out $newcertfile 2>/dev/null
-			umask 077
 			openssl rsa -passin pass:"" -in $keyfile -out $newkeyfile 2>/dev/null
 			chmod 0600 "$newkeyfile"
 			insert_private_key_filename "$newkeyfile"

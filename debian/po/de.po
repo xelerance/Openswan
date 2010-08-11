@@ -1,4 +1,4 @@
-# translation of openswan debconf templates to German
+# German translation of openswan debconf templates
 # Copyright (C) 2007, Matthias Julius
 # This file is distributed under the same license as the openswan package.
 #
@@ -7,25 +7,26 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: openswan 1:2.6.24+dfsg-1\n"
+"Project-Id-Version: openswan 1:2.6.26+dfsg-1\n"
 "Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
-"POT-Creation-Date: 2010-06-01 00:35+0200\n"
-"PO-Revision-Date: 2010-05-07 08:15+0200\n"
+"POT-Creation-Date: 2010-08-06 00:50+0200\n"
+"PO-Revision-Date: 2010-07-19 11:33+0200\n"
 "Last-Translator: Martin Eberhard Schauer <Martin.E.Schauer@gmx.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: de\n"
-"X-Generator: KBabel 1.11.4\n"
 
-# (mes) andere Übersetzungen für supersede: etw.Akk. ersetzen, für etw.Akk. Ersatz sein, an die Stelle von etw. Dat. treten, etw.Akk. überflüssig machen, etw.Akk. verdrängen
 #. Type: note
 #. Description
 #: ../openswan.templates:1001
 msgid "Old runlevel management superseded"
 msgstr "Alte Verwaltung der Runlevel abgelöst"
 
+# (mes) sync 1 Im letzten Satz:
+# Helge: setup -> Installation  Martin: setup -> Setup
+# strongswan :2001              openswan: 1001
 #. Type: note
 #. Description
 #: ../openswan.templates:1001
@@ -39,21 +40,22 @@ msgid ""
 "Debian for instructions on how to modify your setup accordingly."
 msgstr ""
 "Frühere Versionen von Openswan ermöglichten eine Wahl zwischen drei "
-"verschiedenen Start/Stop-Ebenen. Aufgrund von Änderungen des standardmäßigen "
+"verschiedenen Start/Stopp-Modi. Aufgrund von Änderungen des standardmäßigen "
 "Systemstarts ist dies nicht mehr notwendig oder nützlich. Sowohl für alle "
 "neuen als auch bestehende Installationen, die in einem der vordefinierten "
 "Modi betrieben wurden, werden jetzt vernünftige Standardwerte gesetzt. Wenn "
 "Sie jetzt ein Upgrade von einer früheren Version durchführen und Sie die "
 "Openswan-Startparameter angepasst haben, werfen Sie bitte einen Blick auf "
-"NEWS.Debian. Die Datei enthält Anweisungen, wie Sie Ihren Setup entsprechend "
-"ändern."
+"NEWS.Debian. Die Datei enthält Anweisungen, wie Sie Ihre Installation "
+"entsprechend ändern."
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:2001
 msgid "Restart Openswan now?"
-msgstr "Möchten Sie jetzt Openswan neu starten?"
+msgstr "Openswan jetzt neu starten?"
 
+# (mes) sync 2 Gemeinsame Formulierung erforderlich
 #. Type: boolean
 #. Description
 #: ../openswan.templates:2001
@@ -64,13 +66,12 @@ msgid ""
 "existing connections and then bring them back up, so if you are using such "
 "an Openswan tunnel to connect for this update, restarting is not recommended."
 msgstr ""
-"Der Neustart von Openswan wird empfohlen. Wenn mit dieser Version ein "
-"Sicherheitsproblem beseitigt wurde, wird dies erst nach dem Neustart des "
-"Daemons wirksam. Weil meisten Anwender einen Neustart des Daemons erwarten,  "
-"ist dies grundsätzlich eine gute Idee. Der Neustart kann aber bestehende "
-"Verbindungen schließen und anschließend wiederherstellen. Wenn Sie einen "
-"solchen Openswan-Tunnel für die Verbindung bei dieser Aktualisierung "
-"verwenden, wird von einem Neustart abgeraten."
+"Es wird empfohlen, Openswan neu zu starten, da eine Sicherheitskorrektur "
+"erst nach dem Neustart des Daemons greift. Weil meisten Anwender einen "
+"Neustart des Daemons erwarten, ist dies grundsätzlich eine gute Idee. Der "
+"Neustart kann aber bestehende Verbindungen beenden und erneut aufbauen. Wenn "
+"Sie einen solchen Openswan-Tunnel für die Verbindung bei dieser "
+"Aktualisierung verwenden, wird der Neustart nicht empfohlen."
 
 #. Type: boolean
 #. Description
@@ -90,7 +91,7 @@ msgid ""
 "connections, key based authentication is easier to administer and more "
 "secure."
 msgstr ""
-"Für diesen Rechner kann ein X.509-Zertifikat automatisch erzeugt oder "
+"Für diesen Rechner kann ein X.509-Zertifikat automatisch erstellt oder "
 "importiert werden, das zur Authentifizierung von IPSec-Verbindungen zu "
 "anderen Rechnern verwendet werden kann. Dieses Vorgehen ist für den Aufbau "
 "gesicherter IPSec-Verbindungen vorzuziehen. Die andere Möglichkeit ist die "
@@ -106,14 +107,14 @@ msgid ""
 "Alternatively you can reject this option and later use the command \"dpkg-"
 "reconfigure openswan\" to come back."
 msgstr ""
-" Alternativ können Sie diese Option ablehnen und später mit dem Befehl »dpkg-"
-"reconfigure openswan« zurückzukommen."
+"Alternativ können Sie diese Option ablehnen und später mit dem Befehl »dpkg-"
+"reconfigure openswan« zurückkehren."
 
 #. Type: select
 #. Choices
 #: ../openswan.templates:4001
 msgid "create"
-msgstr "erzeugen"
+msgstr "erstellen"
 
 #. Type: select
 #. Choices
@@ -156,7 +157,7 @@ msgstr ""
 "Wenn Sie sich für die Erzeugung eines neuen X.509-Zertifikats entscheiden, "
 "wird Ihnen zunächst eine Reihe von Fragen gestellt. Diese Fragen müssen "
 "beantwortet werden, damit das Zertifikat erzeugt werden kann. Bitte beachten "
-"Sie: Wenn der öffentliche Schlüssel von einer bestehenden "
+"Sie: Wenn Sie den öffentlichen Schlüssel von einer bestehenden "
 "Zertifizierungsstelle (Certificate Authority, CA) bestätigen lassen wollen, "
 "sollten Sie nicht wählen, ein selbst signiertes Zertifikat zu erstellen. "
 "Außerdem müssen dann alle gegebenen Antworten exakt den Anforderungen der CA "
@@ -223,7 +224,7 @@ msgstr ""
 #. Description
 #: ../openswan.templates:7001
 msgid "File name of your PEM format X.509 RootCA:"
-msgstr "Dateinamen Ihrer PEM-Format-X.509-RootCA:"
+msgstr "Dateiname Ihrer PEM-Format-X.509-RootCA:"
 
 #. Type: string
 #. Description
@@ -246,7 +247,7 @@ msgstr ""
 #. Description
 #: ../openswan.templates:8001
 msgid "Length of RSA key to be created:"
-msgstr "Länge des zu erzeugenden RSA-Schlüssels:"
+msgstr "Länge des zu erstellenden RSA-Schlüssels:"
 
 #. Type: string
 #. Description
@@ -256,7 +257,7 @@ msgid ""
 "considered insecure; anything more than 4096 bits slows down the "
 "authentication process and is not useful at present."
 msgstr ""
-"Bitte geben Sie die Länge des zu erzeugenden RSA-Schlüssels ein. Sie sollte "
+"Bitte geben Sie die Länge des zu erstellenden RSA-Schlüssels ein. Sie sollte "
 "nicht weniger als 1024 Bit sein, da dies als unsicher betrachtet wird. Alles "
 "über 4098 Bit verlangsamt den Authentifizierungs-Prozess und ist zur Zeit "
 "nicht nützlich."
@@ -265,7 +266,7 @@ msgstr ""
 #. Description
 #: ../openswan.templates:9001
 msgid "Create a self-signed X.509 certificate?"
-msgstr "Selbstsigniertes X.509-Zertifikat erzeugen?"
+msgstr "Selbstsigniertes X.509-Zertifikat erstellen?"
 
 #. Type: boolean
 #. Description
@@ -280,12 +281,12 @@ msgid ""
 "Authority to create a trust path."
 msgstr ""
 "Nur selbstsignierte X.509-Zertifikate können automatisch erzeugt werden, da "
-"anderenfalls für die Unterzeichnung der Zertifikatsanforderung eine "
-"Zertifizierungsstelle benötigt wird. Falls Sie ein selbstsigniertes "
-"Zertifikat erzeugen, können Sie dieses sofort verwenden, um sich mit anderen "
-"IPSec-Rechnern zu verbinden, die X.509-Zertifikate zur Authentifizierung von "
-"IPsec-Verbindungen benutzen. Falls Sie jedoch die PKI-Funktionen von "
-"Openswan verwenden möchten, müssen alle X.509-Zertifikate von einer einzigen "
+"anderenfalls eine Zertifizierungsstelle zur Signatur der Zertifikatsanfrage "
+"benötigt wird. Falls Sie sich entscheiden, ein selbstsigniertes Zertifikat "
+"zu erstellen, können Sie es sofort zur Verbindung mit anderen IPSec-Rechnern "
+"verwenden, die X.509-Zertifikate zur Authentifizierung von IPSec-"
+"Verbindungen verwenden. Falls Sie jedoch die PKI-Funktionen von Openswan "
+"verwenden möchten, müssen alle X.509-Zertifikate von einer einzigen "
 "Zertifizierungsstelle signiert sein, um einen Vertrauenspfad zu schaffen."
 
 #. Type: boolean
@@ -297,7 +298,7 @@ msgid ""
 "to sign the certificate request with your Certificate Authority."
 msgstr ""
 "Falls Sie kein selbstsigniertes Zertifikat erstellen möchten, wird nur der "
-"private RSA-Schlüssel und die Zertifikatsanforderung erzeugt. Sie müssen "
+"private RSA-Schlüssel und die Zertifikatsanforderung erstellt. Sie müssen "
 "diese Zertifikatsanforderung von Ihrer Zertifizierungsstelle signieren "
 "lassen."
 
@@ -332,24 +333,18 @@ msgstr ""
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid "Common Name for the X.509 certificate request:"
 msgid "State or province name for the X.509 certificate request:"
-msgstr "Common Name für die X.509-Zertifikatsanforderung:"
+msgstr "Name des Landes oder der Provinz für diese X.509-Zertifikatsanfrage:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid ""
-#| "Please enter the two-letter code for the country the server resides in "
-#| "(such as \"AT\" for Austria)."
 msgid ""
 "Please enter the full name of the state or province the server resides in "
 "(such as \"Upper Austria\")."
 msgstr ""
-"Geben Sie den Ländercode (zwei Zeichen) für das Land ein, in dem der Server "
-"steht (z. B. »AT« für Österreich)."
+"Bitte geben Sie den kompletten Namen des Landes oder der Provinz ein, in der "
+"sich der Server befindet (wie »Oberösterreich«)."
 
 #. Type: string
 #. Description
@@ -371,7 +366,7 @@ msgstr ""
 #. Description
 #: ../openswan.templates:13001
 msgid "Organization name for the X.509 certificate request:"
-msgstr "Organisation für die X.509-Zertifikatsanforderung:"
+msgstr "Organisationsname für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
