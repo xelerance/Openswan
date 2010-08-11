@@ -158,9 +158,24 @@ openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *
 }
 
 static inline int
+openswan_inet6_add_protocol(struct inet6_protocol *prot, unsigned protocol, char *protstr)
+{
+	int err = inet6_add_protocol(prot, protocol);
+	if (err)
+		printk(KERN_ERR "KLIPS: can not register %s protocol - recompile with CONFIG_INET_%s disabled or as module\n", protstr,protstr);
+	return err;
+}
+
+static inline int
 openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 	return inet_del_protocol(prot, protocol);
+}
+
+static inline int
+openswan_inet6_del_protocol(struct inet6_protocol *prot, unsigned protocol)
+{
+	return inet6_del_protocol(prot, protocol);
 }
 
 #else
@@ -256,6 +271,10 @@ ipsec_klips_init(void)
 	if (error)
 		goto error_openswan_inet_add_protocol_esp;
 
+	error |= openswan_inet6_add_protocol(&esp6_protocol, IPPROTO_ESP, "ESP");
+	if (error)
+		goto error_openswan_inet6_add_protocol_esp;
+
 #endif /* CONFIG_KLIPS_ESP */
 
 #ifdef CONFIG_KLIPS_AH
@@ -340,6 +359,8 @@ error_openswan_inet_add_protocol_comp:
 error_openswan_inet_add_protocol_ah:
 	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
 #endif
+error_openswan_inet6_add_protocol_esp:
+	openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP);
 error_openswan_inet_add_protocol_esp:
 	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
 #endif

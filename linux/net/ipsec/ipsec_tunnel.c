@@ -544,8 +544,6 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
-if (nexthdroff < 0)
-printk("SKIP HEADER1 failed\n");
 		ixs->matcher.sen_type = SENT_IP6;
 		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
 		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
@@ -904,8 +902,6 @@ ipsec_tunnel_xsm_complete(
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
-if (nexthdroff < 0)
-printk("SKIP HEADER2 failed\n");
 		ixs->matcher.sen_type = SENT_IP6;
 		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
 		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
@@ -934,8 +930,8 @@ printk("SKIP HEADER2 failed\n");
 	spin_unlock_bh(&eroute_lock);
 
 	if (/*((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc))*/
-			(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
-			ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
+			ip_address_cmp(&ixs->orgedst, &ixs->outgoing_said.dst) != 0 &&
+			!ip_address_isany(&ixs->outgoing_said.dst) &&
 			ixs->eroute) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			"klips_debug:ipsec_tunnel_start_xmit: "
@@ -1725,10 +1721,9 @@ DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
 	case UDP_ENCAP_ESPINUDP_NON_IKE:
 		break;
 	default:
-		err = -EINVAL;
 		printk ("ipsec: pid %d sent fd %d with invalid encap_type %d\n",
 				fd, current->pid, encap_type);
-		goto error;
+		return -EINVAL;
 	}
 
 	/* translate descriptor to socket structure */

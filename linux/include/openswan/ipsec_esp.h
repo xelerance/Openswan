@@ -53,6 +53,7 @@ struct des_eks {
 
 #ifndef CONFIG_XFRM_ALTERNATE_STACK
 extern struct inet_protocol esp_protocol;
+extern struct inet6_protocol esp6_protocol;
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 struct options;

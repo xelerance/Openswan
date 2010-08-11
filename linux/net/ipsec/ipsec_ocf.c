@@ -116,10 +116,10 @@ MODULE_PARM_DESC(ipsec_ocf_driver,
 #endif
 
 
+#if 0
 void
 _hexdump(unsigned char *cp, int off, int bytes, char *file, int line, char *prefix)
 {
-#if 0
 	int	i, n;
 	static char buffer[80];
 	static char chars[80];
@@ -142,8 +142,8 @@ _hexdump(unsigned char *cp, int off, int bytes, char *file, int line, char *pref
 		printk("%s,%d: %s %s %s\n", file, line, prefix, buffer, chars);
 	}
 	printk("_HEXUMP %p %d %d %s %d %s\n", cp, off, bytes, file, line, prefix);
-#endif
 }
+#endif
 
 
 /*
@@ -321,7 +321,6 @@ ipsec_ocf_rcv_cb(struct cryptop *crp)
 		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_ocf_rcv_cb: "
 				"error in processing 0x%x\n", crp->crp_etype);
 	} else {
-_hexdump(irs->skb->data, 0, irs->skb->len, __FILE__, __LINE__, "RxSKB");
 		if (!irs->ipsp->ips_encalg) {
 			/* AH post processing, put back fields we had to zero */
 			osw_ip4_hdr(irs)->ttl      = irs->ttl;
@@ -427,7 +426,6 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 			crda->crd_skip     =
 				((unsigned char *) irs->protostuff.espstuff.espp) -
 							irs->skb->data;
-_hexdump(irs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "RxAH");
 			/*
 			 * It would be nice to clear the authenticator here
 			 * to be sure we do not see it again later when checking.
@@ -467,7 +465,6 @@ _hexdump(irs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "RxA
 		irs->ilen       -= irs->esphlen;
 		crde->crd_skip   = (skb_transport_header(irs->skb) - irs->skb->data) + irs->esphlen;
 		crde->crd_len    = irs->ilen;
-_hexdump(irs->skb->data, crde->crd_skip, crde->crd_len, __FILE__, __LINE__, "RxESP");
 		crde->crd_inject = crde->crd_skip - ipsp->ips_iv_size;
 		crde->crd_klen   = ipsp->ips_key_bits_e;
 		crde->crd_key    = ipsp->ips_key_e;
@@ -549,7 +546,6 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 			"klips_debug:ipsec_ocf_xmit_cb: error in processing 0x%x\n",
 			crp->crp_etype);
 	} else {
-_hexdump(ixs->skb->data, 0, ixs->skb->len, __FILE__, __LINE__, "TxSKB");
 		if (!ixs->ipsp->ips_encalg) {
 			/* AH post processing, put back fields we had to zero */
 			osw_ip4_hdr(ixs)->ttl      = ixs->ttl;
@@ -635,7 +631,6 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 			crda->crd_skip     = ((unsigned char *) ixs->espp) - ixs->skb->data;
 			crda->crd_inject   = ixs->len - ixs->authlen;
 			crda->crd_len      = ixs->len - ixs->iphlen - ixs->authlen;
-_hexdump(ixs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "TxAH");
 		}
 
 		/* OCF needs cri_mlen initialized in order to properly migrate
@@ -661,7 +656,6 @@ _hexdump(ixs->skb->data, crda->crd_skip, crda->crd_len, __FILE__, __LINE__, "TxA
 		crde->crd_inject = ((unsigned char *) ixs->espp->esp_iv) - ixs->dat;
 		crde->crd_klen   = ipsp->ips_key_bits_e;
 		crde->crd_key    = ipsp->ips_key_e;
-_hexdump(ixs->skb->data, crde->crd_skip, crde->crd_len, __FILE__, __LINE__, "TxESP");
 	}
 
 	crp->crp_ilen = ixs->skb->len; /* Total input length */

@@ -188,6 +188,21 @@ typedef struct {
 	ip_address addr;
 	int maskbits;
 } ip_subnet;
+#define ip_address_family(a)	((a)->u.v4.sin_family)
+#define ip_address_cmp(a, b) \
+	(ip_address_family((a)) != ip_address_family((b)) || \
+	(ip_address_family((a)) == AF_INET ? \
+			((a)->u.v4.sin_addr.s_addr != (b)->u.v4.sin_addr.s_addr) : \
+			memcmp((a)->u.v6.sin6_addr.s6_addr32, \
+					(b)->u.v6.sin6_addr.s6_addr32, sizeof(u_int32_t) * 4) \
+			))
+#define	ip_address_isany(a) \
+	(ip_address_family((a)) == AF_INET6 ? \
+			((a)->u.v6.sin6_addr.s6_addr[0] == 0 && \
+				(a)->u.v6.sin6_addr.s6_addr[1] == 0 && \
+				(a)->u.v6.sin6_addr.s6_addr[2] == 0 && \
+				(a)->u.v6.sin6_addr.s6_addr[3] == 0) : \
+			((a)->u.v4.sin_addr.s_addr == 0))
 
 /* and the SA ID stuff */
 #ifdef __KERNEL__

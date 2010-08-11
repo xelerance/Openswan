@@ -76,17 +76,12 @@ enum ipsec_rcv_value
 ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 		     struct sk_buff *skb)
 {
-	__u8 proto;
-	int len;	/* packet length */
-
-	len = skb->len;
-	proto = osw_ip4_hdr(irs)->protocol;
-
 	/* XXX this will need to be 8 for IPv6 */
-	if ((proto == IPPROTO_ESP) && ((len - irs->iphlen) % 4)) {
+	if ((irs->proto == IPPROTO_ESP) && ((skb->len - irs->iphlen) % 4)) {
 		printk("klips_error:ipsec_rcv: "
-		       "got packet with content length = %d from %s -- should be on 4 octet boundary, packet dropped\n",
-		       len - irs->iphlen,
+		       "got packet with content length %d - %d = %d from %s -- should be on 4 octet boundary, packet dropped\n",
+			   skb->len, irs->iphlen,
+		       skb->len - irs->iphlen,
 		       irs->ipsaddr_txt);
 		if(irs->stats) {
 			irs->stats->rx_errors++;
@@ -350,8 +345,6 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 		    irs->next_header,
 		    pad - 2 - irs->authlen);
 
-	osw_ip4_hdr(irs)->tot_len = htons(ntohs(osw_ip4_hdr(irs)->tot_len) - (irs->esphlen + pad));
-
 	/*
 	 * move the IP header forward by the size of the ESP header, which
 	 * will remove the the ESP header from the packet.
@@ -395,6 +388,8 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 			    "bogus packet, size is zero or negative, dropping.\n");
 		return IPSEC_RCV_DECAPFAIL;
 	}
+
+	ESP_DMP("esp posttrim", skb->data, skb->len);
 
 	return IPSEC_RCV_OK;
 }
@@ -544,6 +539,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     return IPSEC_XMIT_AH_BADALG;
   }
 
+  printk("IS THIS CODE EVER CALLED?\n");
   skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, espp));
 
   return IPSEC_XMIT_OK;
@@ -569,6 +565,11 @@ struct xform_functions esp_xform_funcs[]={
 struct inet_protocol esp_protocol = {
   .handler = ipsec_rcv,
   .no_policy = 1,
+};
+
+struct inet6_protocol esp6_protocol = {
+  .handler = ipsec_rcv,
+  .flags = INET6_PROTO_NOPOLICY,
 };
 #else
 struct inet_protocol esp_protocol =

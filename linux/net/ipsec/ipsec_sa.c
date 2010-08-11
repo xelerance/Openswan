@@ -481,7 +481,7 @@ ipsec_sa_untern(struct ipsec_sa *ips)
 int
 ipsec_sa_intern(struct ipsec_sa *ips)
 {
-	int error;
+	int error = 0;
 	IPsecSAref_t ref = ips->ips_ref;
 
 	if(ref == IPSEC_SAREF_NULL) {

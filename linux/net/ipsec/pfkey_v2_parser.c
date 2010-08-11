@@ -60,6 +60,7 @@
 #ifdef NET_21
 # include <net/route.h>          /* inet_addr_type */
 # include <linux/in6.h>
+# include <net/ipv6.h>
 # define IS_MYADDR RTN_LOCAL
 #endif
 
@@ -179,7 +180,6 @@ pfkey_x_protocol_process(struct sadb_ext *pfkey_ext,
 		SENDERR(EINVAL);
 	}
 
-printk("DAVIDM2  - broke it here\n");
 	extr->eroute->er_eaddr.sen_proto = p->sadb_protocol_proto;
 	extr->eroute->er_emask.sen_proto = p->sadb_protocol_proto ? ~0:0;
 	KLIPS_PRINT(debug_pfkey,
@@ -301,6 +301,10 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(EEXIST);
 	}
 
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
@@ -451,6 +455,10 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ENOENT);
 	}
 
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
@@ -722,6 +730,10 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	}
 	spin_unlock_bh(&tdb_lock);
 
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
