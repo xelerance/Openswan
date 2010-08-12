@@ -121,6 +121,9 @@ extern struct net_device *ipsec_get_device(int inst);
 
 extern int debug_tunnel;
 extern int sysctl_ipsec_debug_verbose;
+
+extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
+
 #endif /* __KERNEL__ */
 
 #define DB_TN_INIT	0x0001
@@ -142,6 +145,4 @@ extern int ipsec_xmit_state_cache_init (void);
 extern void ipsec_xmit_state_cache_cleanup (void);
 struct ipsec_xmit_state *ipsec_xmit_state_new (void);
 void ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs);
-
-extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
 
