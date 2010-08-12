@@ -990,9 +990,9 @@ log_state(struct state *st, enum state_kind new_state)
 	for_each_state((void *)connection_state, &lc);
 	st->st_state = save_state;
 
-	if (conn->statsval == LOG_CONN_STATSVAL(&lc))
+	if (conn->statsval == IPsecSAref2NFmark(st->st_ref) + LOG_CONN_STATSVAL(&lc))
 		return;
-	conn->statsval = LOG_CONN_STATSVAL(&lc);
+	conn->statsval = IPsecSAref2NFmark(st->st_ref) + LOG_CONN_STATSVAL(&lc);
 
 	switch (lc.tunnel) {
 	case tun_phase1:  tun = "phase1";  break;
