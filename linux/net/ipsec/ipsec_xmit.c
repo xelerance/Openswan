@@ -185,7 +185,7 @@ skb_copy_expand(const struct sk_buff *skb, int headroom,
 #ifdef NET_21
 	n->csum=skb->csum;
 	n->priority=skb->priority;
-	n->dst=dst_clone(skb->dst);
+	n->dst=dst_clone(skb_dst(skb));
 	if(skb->nh.raw)
 		n->nh.raw=skb->nh.raw+offset;
 #ifndef NETDEV_23
@@ -2531,11 +2531,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 
 		else if (ip_hdr(ixs->skb)->version == 6)
 			err = NF_HOOK(PF_INET6, NF_INET_LOCAL_OUT, ixs->skb, NULL,
-					ixs->route ? ixs->route->u.dst.dev : ixs->skb->dst->dev,
+					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 		else
 			err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
-					ixs->route ? ixs->route->u.dst.dev : ixs->skb->dst->dev,
+					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
