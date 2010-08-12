@@ -1413,12 +1413,12 @@ add_connection(const struct whack_message *wm)
 	    DBG(DBG_CONTROL, DBG_log("virt was set in whack message (via vnet=?), the connection is a template"));
 	    c->kind = CK_TEMPLATE;
 	}
-#endif
 	else
 	{
 	    DBG(DBG_CONTROL, DBG_log("virt was not set in whack message - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
+#endif
 	set_policy_prio(c);	/* must be after kind is set */
 
 #ifdef DEBUG
