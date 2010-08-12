@@ -242,7 +242,7 @@ if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
    fi
 
    rm -f -- $ORIG_RESOLV_CONF
-   echo -e $RESOLVE_CONF > $ORIG_RESOLV_CONF
+   printf "$RESOLVE_CONF" > $ORIG_RESOLV_CONF
    return $?
 else
    echo "Updating resolv.conf is controlled by Network Manager"
