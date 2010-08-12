@@ -447,9 +447,9 @@ mast_raw_eroute(const ip_address *this_host UNUSED
                , enum pluto_sadb_operations op UNUSED
                , const char *text_said UNUSED)
 {
-       
-       /* actually, we did all the work with iptables in _updown */
-       return TRUE;
+    /* actually, we did all the work with iptables in _updown */
+    DBG_log("mast_raw_eroute called op=%u said=%s", op, text_said);
+    return TRUE;
 }
 
 
@@ -467,7 +467,7 @@ mast_shunt_eroute(struct connection *c UNUSED
 		   , enum pluto_sadb_operations op UNUSED
 		  , const char *opname UNUSED)
 {
-    DBG_log("mast_shunt_eroute called");
+    DBG_log("mast_shunt_eroute called op=%u/%s", op, opname);
     return TRUE;
 }
 
@@ -504,7 +504,8 @@ mast_sag_eroute_replace(struct state *st, struct spd_route *sr)
 	success = mast_do_command(c, sr, "spdadd", st);
 
 	/* drop the old rule -- we ignore failure */
-	(void)mast_do_command(c, sr, "spddel", old_st);
+	if (old_st->st_serialno != st->st_serialno)
+	    (void)mast_do_command(c, sr, "spddel", old_st);
 
 	return success;
 }
@@ -516,6 +517,8 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 {
     bool ok;
     bool addop = FALSE;
+
+    DBG_log("mast_sag_eroute called op=%u/%s", op, opname);
 
     /* handle ops we have to do no work for */
     switch(op) {
