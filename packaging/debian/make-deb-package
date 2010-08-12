@@ -10,30 +10,31 @@
 # for more details.
 
 cd "`dirname $0`/../.."
+STRING="IPSECBASEVERSION"
+
+# To build the debs and skip the signature part
+BUILD_CMD="debuild -i -us -uc -b"
 
 # Test if version replace can occur
-if ! grep -m1 -q "IPSECBASEVERSION" debian/changelog ; then
-    echo "Unable to find the string \"IPSECBASEVERSION\" used for "
+if ! grep -m1 -q $STRING debian/changelog ; then
+    echo "Unable to find the string \"$STRING\" used for "
     echo "automatic version number replacing."
-    echo "Please manually edit debian/changelog with the appropriate value."
+    echo
+    echo "To use this script, copy the file debian/changelog.in"
+    echo "to debian/changelog and run this script again."
+    echo
+    echo "OR"
+    echo
+    echo "Manually edit debian/changelog with the appropriate value and run"
+    echo "\"$BUILD_CMD\""
     exit 1
 fi
 
 # Use the latest version in CHANGES and append the date
-VERSION="`grep -m1 "^v" CHANGES | cut -dv -f2 | cut -d" " -f1`-`date +%Y%m%d%H%M`"
+VERSION="`grep -m1 "^v" CHANGES | cut -dv -f2 | cut -d" " -f1`"
 
 # Update debian/changelog to make debuild/dpkg-buildpackage happy
-sed -i "s/IPSECBASEVERSION/$VERSION/g" debian/changelog
+sed -i -e "s/$STRING/$VERSION/g" -e "/^openswan/ s/-.*xelerance.*)/-1git`date +%Y%m%d`)/" debian/changelog
 
-EFFECTIVE_VER=$(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)
-
-if [ "$VERSION" != "$EFFECTIVE_VER" ]; then
-    echo "Unable to change version from $EFFECTIVE_VER to $VERSION in debian/changelog"
-    echo "Please copy the file debian/changelog.in to debian/changelog and run this script again."
-    exit 1
-else
-    echo "Building Openswan version $VERSION"
-
-    # Build the debs and skip the signature part
-    debuild -i -us -uc -b
-fi
+echo "Building Openswan version $(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)"
+$BUILD_CMD
