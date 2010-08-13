@@ -178,7 +178,7 @@ skb_copy_expand(const struct sk_buff *skb, int headroom,
 #ifdef NET_21
 	n->csum=skb->csum;
 	n->priority=skb->priority;
-	n->dst=dst_clone(skb->dst);
+	skb_dst_set(n, dst_clone(skb_dst(skb)));
 	if(skb->nh.raw)
 		n->nh.raw=skb->nh.raw+offset;
 #ifndef NETDEV_23
@@ -1727,7 +1727,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 
 		/* this would seem to adjust the MTU of the route as well */
 #if 0
-		ixs->skb->dst->pmtu = ixs->prv->mtu; /* RGB */
+		skb_dst(ixs->skb)->pmtu = ixs->prv->mtu; /* RGB */
 #endif /* 0 */
 	}
 
