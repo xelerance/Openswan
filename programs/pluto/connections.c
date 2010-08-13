@@ -2086,6 +2086,14 @@ route_owner(struct connection *c
 
     for (d = connections; d != NULL; d = d->ac_next)
     {
+
+#ifdef KLIPS_MAST
+	/* in mast mode we must also delete the iptables rule */
+	if (kern_interface == USE_MASTKLIPS)
+	    if (compatible_overlapping_connections(c, d))
+		continue;
+#endif
+
 	for (srd = &d->spd; srd; srd = srd->next)
 	{
 	    if (srd->routing == RT_UNROUTED)

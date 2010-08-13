@@ -590,9 +590,8 @@ could_route(struct connection *c)
         /* We ignore this if the stack supports overlapping, and this
          * connection was marked that overlapping is OK.  Below we will
          * check the other eroute, ero. */
-        if (!kernel_ops->overlap_supported || !ero || ero == c
-                        || !LIN(POLICY_OVERLAPIP, c->policy))
-                return route_impossible;  /* another connection already using the
+	if (!compatible_overlapping_connections(c, ero))
+		return route_impossible;  /* another connection already using the
                                              eroute. TODO: NETKEY can do this? */
     }
 
@@ -2370,8 +2369,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 {
     struct spd_route *esr;
     struct spd_route *rosr;
-    struct connection *ero      /* who, if anyone, owns our eroute? */
-        , *ro = route_owner(c, sr, &rosr, &ero, &esr);
+    struct connection *ero, *ro;      /* who, if anyone, owns our eroute? */
     bool eroute_installed = FALSE
         , firewall_notified = FALSE
         , route_installed = FALSE;
@@ -2381,6 +2379,8 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 
     struct connection *ero_top;
     struct bare_shunt **bspp;
+
+    ro = route_owner(c, sr, &rosr, &ero, &esr);
 
     DBG(DBG_CONTROLMORE,
         DBG_log("route_and_eroute with c: %s (next: %s) ero:%s esr:{%p} ro:%s rosr:{%p} and state: %lu"
