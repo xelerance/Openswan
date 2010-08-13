@@ -185,7 +185,7 @@ skb_copy_expand(const struct sk_buff *skb, int headroom,
 #ifdef NET_21
 	n->csum=skb->csum;
 	n->priority=skb->priority;
-	n->dst=dst_clone(skb_dst(skb));
+	skb_dst_set(n, dst_clone(skb_dst(skb)));
 	if(skb->nh.raw)
 		n->nh.raw=skb->nh.raw+offset;
 #ifndef NETDEV_23
@@ -2059,7 +2059,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 
 		/* this would seem to adjust the MTU of the route as well */
 #if 0
-		ixs->skb->dst->pmtu = ixs->prv->mtu; /* RGB */
+		skb_dst(ixs->skb)->pmtu = ixs->prv->mtu; /* RGB */
 #endif /* 0 */
 	}
 
@@ -2530,11 +2530,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 			err = ipsec_xmit_send2_mast(ixs->skb);
 
 		else if (ip_hdr(ixs->skb)->version == 6)
-			err = NF_HOOK(PF_INET6, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+			err = NF_HOOK(PF_INET6, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
 					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 		else
-			err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+			err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
 					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 

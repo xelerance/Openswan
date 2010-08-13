@@ -2,7 +2,7 @@
 
 # -*- sh -*-
 
-source umlsetup.sh
+. umlsetup.sh
 
 KERN=$1
 shift
@@ -12,7 +12,7 @@ patch22=false
 patch24=false
 patch26=false
 
-source packaging/utils/kernelpatching.sh
+. packaging/utils/kernelpatching.sh
 
 case $KERN in
     2.0) kv=; patchname=os2_0; altname=fs2_0; patch20=true ;;

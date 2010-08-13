@@ -212,8 +212,8 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;
 	}
-	dst_release(ixs->skb->dst);
-	ixs->skb->dst = &ixs->route->u.dst;
+	dst_release(skb_dst(ixs->skb));
+	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	ixs->stats->tx_bytes += ixs->skb->len;
 	if(ixs->skb->len < ixs->skb->nh.raw - ixs->skb->data) {
 		ixs->stats->tx_errors++;
@@ -236,7 +236,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 	{
 		int err;
 
-		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
+		err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
 			      ipsec_mast_xmit2);
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
 			if(net_ratelimit())

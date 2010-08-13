@@ -905,7 +905,7 @@ struct log_conn_info {
  * so we track what we have told it in a long (triple)
  */
 #define	LOG_CONN_STATSVAL(lci) \
-	((lci)->tunnel | ((lci)->phase1 << 8) | ((lci)->phase2 << 16))
+	((lci)->tunnel | ((lci)->phase1 << 4) | ((lci)->phase2 << 8))
 
 static void
 connection_state(struct state *st, void *data)
@@ -990,9 +990,9 @@ log_state(struct state *st, enum state_kind new_state)
 	for_each_state((void *)connection_state, &lc);
 	st->st_state = save_state;
 
-	if (conn->statsval == LOG_CONN_STATSVAL(&lc))
+	if (conn->statsval == IPsecSAref2NFmark(st->st_ref) | LOG_CONN_STATSVAL(&lc))
 		return;
-	conn->statsval = LOG_CONN_STATSVAL(&lc);
+	conn->statsval = IPsecSAref2NFmark(st->st_ref) | LOG_CONN_STATSVAL(&lc);
 
 	switch (lc.tunnel) {
 	case tun_phase1:  tun = "phase1";  break;
