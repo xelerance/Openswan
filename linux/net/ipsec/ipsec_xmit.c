@@ -2136,7 +2136,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 			err = ipsec_xmit_send2_mast(ixs->skb);
 
 		else
-			err = NF_HOOK(PF_INET, NF_INET_LOCAL_OUT, ixs->skb, NULL,
+			err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
 					ixs->route->u.dst.dev,
 					ipsec_xmit_send2);
 
