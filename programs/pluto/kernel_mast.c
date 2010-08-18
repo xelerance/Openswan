@@ -449,9 +449,10 @@ mast_raw_eroute(const ip_address *this_host UNUSED
 {
     /* actually, we did all the work with iptables in _updown */
     DBG_log("mast_raw_eroute called op=%u said=%s", op, text_said);
-    return TRUE;
+    return pfkey_raw_eroute(this_host, this_client, that_host, that_client,
+		    spi, proto, transport_proto, satype,
+		    proto_info, use_lifetime, op, text_said);
 }
-
 
 /* Add/replace/delete a shunt eroute.
  * Such an eroute determines the fate of packets without the use
@@ -538,14 +539,15 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 	break;
     }
 
-#if 0
     /* first try to update the routing policy */
     ok = pfkey_sag_eroute(st, sr, op, opname);
-    if (!ok && addop)
-	/* If the pfkey op failed, and we were adding a new SA,
-	 * then it's OK to fail early. */
-	return FALSE;
-#endif
+    if (!ok) {
+        DBG_log("mast_sag_eroute failed to %s/%d pfkey eroute", opname, op);
+        if (addop)
+            /* If the pfkey op failed, and we were adding a new SA,
+             * then it's OK to fail early. */
+            return FALSE;
+    }
 
     /* now run the iptable updown script */
     switch(op) {
@@ -578,7 +580,6 @@ const struct kernel_ops mast_kernel_ops = {
     pfkey_register_response: klips_pfkey_register_response,
     process_queue: pfkey_dequeue,
     process_msg: pfkey_event,
-    //raw_eroute: pfkey_raw_eroute,
     raw_eroute: mast_raw_eroute,
     shunt_eroute: mast_shunt_eroute,
     sag_eroute: mast_sag_eroute,
