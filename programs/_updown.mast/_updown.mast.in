@@ -427,7 +427,7 @@ doipsecrule() {
 	#echo SAref: $saref '->' $nf_saref
 
         rulespec="--src $srcnet --dst $dstnet -m mark --mark 0/0x80000000 -j MARK --set-mark $nf_saref"
-        if [ -n "$use_comment" ]; then
+        if $use_comment ; then
                 # WARNING: you should only edit use_comment while you have no established conns
                 rulespec="$rulespec -m comment --comment '$PLUTO_CONNECTION'"
         fi
