@@ -920,6 +920,12 @@ main(int argc, char **argv)
 #endif
 /** Initialize all of the various features */
 
+#ifdef HAVE_STATSD
+	openswan_log("HAVE_STATSD notification via /bin/openswan-statsd enabled");
+#else
+	openswan_log("HAVE_STATSD notification support not compiled in");
+#endif
+
 #ifdef NAT_TRAVERSAL
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
 #endif
