@@ -344,7 +344,7 @@ ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 				ixs->sa_txt, sizeof(ixs->sa_txt));
 
 		KLIPS_PRINT(debug_mast,
-			    "klips_debug:ipsec_mast_start_xmit: "
+			    "klips_debug:ipsec_mast_check_outbound_policy: "
 			    "SA:%s, inner tunnel policy [%s -> %s] does not agree with pkt contents [%s -> %s].\n",
 			    ixs->sa_len ? ixs->sa_txt : " (error)",
 			    sflow_txt, dflow_txt, saddr_txt, daddr_txt);
@@ -352,6 +352,36 @@ ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 			ixs->stats->rx_dropped++;
 		return -EACCES;
 	}
+
+#if 0
+	{
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+		char saddr_txt[ADDRTOA_BUF], daddr_txt[ADDRTOA_BUF];
+		struct in_addr ipaddr;
+
+		subnettoa(ixs->ipsp->ips_flow_s.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_s.u.v4.sin_addr,
+			  0, sflow_txt, sizeof(sflow_txt));
+		subnettoa(ixs->ipsp->ips_flow_d.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_d.u.v4.sin_addr,
+			  0, dflow_txt, sizeof(dflow_txt));
+
+		ipaddr.s_addr = ixs->iph->saddr;
+		addrtoa(ipaddr, 0, saddr_txt, sizeof(saddr_txt));
+		ipaddr.s_addr = ixs->iph->daddr;
+		addrtoa(ipaddr, 0, daddr_txt, sizeof(daddr_txt));
+
+		if (!ixs->sa_len) ixs->sa_len = KLIPS_SATOT(debug_mast,
+				&ixs->outgoing_said, 0,
+				ixs->sa_txt, sizeof(ixs->sa_txt));
+
+		KLIPS_PRINT(debug_mast,
+			    "klips_debug:ipsec_mast_check_outbound_policy: "
+			    "SA:%s, inner tunnel policy [%s -> %s] agrees with pkt contents [%s -> %s].\n",
+			    ixs->sa_len ? ixs->sa_txt : " (error)",
+			    sflow_txt, dflow_txt, saddr_txt, daddr_txt);
+	}
+#endif
 
 	return 0;
 }
