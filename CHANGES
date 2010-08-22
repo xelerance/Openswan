@@ -19,6 +19,7 @@ v2.6.29 (unreleased)
 * MAST: favour deleting an SA even if the pfkey op failed [Bart]
 * HAVESTATSD: Log new phase2 messages as a result of a rekey [Paul]
 * MAST: use iptables --comment to show the conn name [Bart]
+* VNET: differentiate instantiation of road warriors and vnet [Paul]
  
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
