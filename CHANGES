@@ -21,6 +21,7 @@ v2.6.29 (unreleased)
 * MAST: use iptables --comment to show the conn name [Bart]
 * VNET: differentiate instantiation of road warriors and vnet [Paul]
 * Log LEAK_DETECTIVE and HAVE_LIBNSS support on startup [Paul]
+* [IKEv2] connections were broken since 2.6.25 [Avesh]
  
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
