@@ -20,6 +20,7 @@ v2.6.29 (unreleased)
 * HAVESTATSD: Log new phase2 messages as a result of a rekey [Paul]
 * MAST: use iptables --comment to show the conn name [Bart]
 * VNET: differentiate instantiation of road warriors and vnet [Paul]
+* Log LEAK_DETECTIVE and HAVE_LIBNSS support on startup [Paul]
  
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
