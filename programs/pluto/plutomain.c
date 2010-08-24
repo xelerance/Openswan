@@ -889,6 +889,12 @@ main(int argc, char **argv)
 	openswan_log("core dump dir: %s", coredir);
     }
 
+#ifdef LEAK_DETECTIVE
+	openswan_log("LEAK_DETECTIVE support [enabled]");
+#else
+	openswan_log("LEAK_DETECTIVE support [disabled]");
+#endif
+
    /* Check for SAREF support */
 #ifdef KLIPS_MAST
 #include <ipsec_saref.h>
@@ -918,13 +924,20 @@ main(int argc, char **argv)
 	close(sk);
 }
 #endif
-/** Initialize all of the various features */
+
+#ifdef HAVE_LIBNSS
+	openswan_log("NSS support [enabled]");
+#else
+	openswan_log("NSS support [disabled]");
+#endif
 
 #ifdef HAVE_STATSD
 	openswan_log("HAVE_STATSD notification via /bin/openswan-statsd enabled");
 #else
 	openswan_log("HAVE_STATSD notification support not compiled in");
 #endif
+
+/** Initialize all of the various features */
 
 #ifdef NAT_TRAVERSAL
     init_nat_traversal(nat_traversal, keep_alive, force_keepalive, nat_t_spf);
