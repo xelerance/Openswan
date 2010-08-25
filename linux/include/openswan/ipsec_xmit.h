@@ -133,6 +133,9 @@ struct ipsec_xmit_state
 	 */
 	uint16_t mast_mode:1;
 
+	/* if carrying IPv6,  IPPROTO_IPV6, else IPPROTO_IPIP */
+	uint8_t ipip_proto;
+
 	/*
 	 * xmit state machine use
 	 */

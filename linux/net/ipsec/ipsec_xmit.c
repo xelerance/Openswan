@@ -1130,7 +1130,7 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 		osw_ip6_hdr(ixs)->hop_limit= SYSCTL_IPSEC_DEFAULT_TTL;
 		osw_ip6_hdr(ixs)->saddr    = ((struct sockaddr_in6*)(ixs->ipsp->ips_addr_s))->sin6_addr;
 		osw_ip6_hdr(ixs)->daddr    = ((struct sockaddr_in6*)(ixs->ipsp->ips_addr_d))->sin6_addr;
-		osw_ip6_hdr(ixs)->nexthdr  = IPPROTO_IPIP;
+		osw_ip6_hdr(ixs)->nexthdr  = ixs->ipip_proto;
 		/* DAVIDM No identification/fragment code here yet */
 		skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ixs->iph));
 	} else {
@@ -1153,7 +1153,7 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 		osw_ip4_hdr(ixs)->frag_off = 0;
 		osw_ip4_hdr(ixs)->saddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_s))->sin_addr.s_addr;
 		osw_ip4_hdr(ixs)->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
-		osw_ip4_hdr(ixs)->protocol = IPPROTO_IPIP;
+		osw_ip4_hdr(ixs)->protocol = ixs->ipip_proto;
 		osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
 
 		/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
@@ -1989,6 +1989,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 			    ixs->headroom += sizeof(struct ipv6hdr);
 			else
 			    ixs->headroom += sizeof(struct iphdr);
+			ixs->ipip_proto = osw_ip_hdr_version(ixs) == 6 ?  IPPROTO_IPV6 : IPPROTO_IPIP;
 			break;
 #endif /* !CONFIG_KLIPS_IPIP */
 		case IPPROTO_COMP:

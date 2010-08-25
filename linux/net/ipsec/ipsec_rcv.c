@@ -487,8 +487,10 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		irs->sa_len = satot(&irs->said, 0, irs->sa, sizeof(irs->sa));
 	else
 		irs->sa_len = 0;
-	if(ipp->version == 4 && (ipp->protocol != IPPROTO_IPIP) && 
-	   (ipp->protocol != IPPROTO_ATT_HEARTBEAT)) {  /* AT&T heartbeats to SIG/GIG */
+	if(ipp->version == 4
+		&& ipp->protocol != IPPROTO_IPIP
+		&& ipp->protocol != IPPROTO_IPV6
+		&& ipp->protocol != IPPROTO_ATT_HEARTBEAT) {  /* AT&T heartbeats to SIG/GIG */
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv: "
 			    "SA:%s, Hey!  How did this get through?  Dropped.\n",
@@ -551,7 +553,8 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	ipsec_rcv_setoutif(irs);
 
 	/* added to support AT&T heartbeats to SIG/GIG */
-	if ((ipp->version == 4 || ipp6->version == 6) && irs->proto == IPPROTO_IPIP)
+	if ((ipp->version == 4 || ipp6->version == 6)
+		&& (irs->proto == IPPROTO_IPIP || irs->proto == IPPROTO_IPV6))
 	{
 		/*
 		 * XXX this needs to be locked from when it was first looked
@@ -1613,10 +1616,10 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 				    || ipsnext->ips_next)
 #endif /* CONFIG_KLIPS_IPCOMP */
 				&& irs->next_header != IPPROTO_IPIP
+				&& irs->next_header != IPPROTO_IPV6
 				&& irs->next_header != IPPROTO_ATT_HEARTBEAT  /* heartbeats to AT&T SIG/GIG */
 				) {
 				KLIPS_PRINT(debug_rcv,
-					    "klips_debug:ipsec_rcv: "
 					    "packet with incomplete policy dropped, last successful SA:%s.\n",
 					    irs->sa_len ? irs->sa : " (error)");
 				if(irs->stats) {
