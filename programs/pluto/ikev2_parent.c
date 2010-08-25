@@ -1481,12 +1481,6 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 	return STF_FATAL;
     }
 
-    /* process AUTH payload */
-    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
-	openswan_log("no authentication payload found");
-	return STF_FATAL;
-    }
-
     /* now. we need to go calculate the g^xy */
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
@@ -1580,6 +1574,15 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(ret != STF_OK) return ret;
     }
 
+
+    /*Once the message has been decrypted, then only we can check for auth payload*/
+    /*check the presense of auth payload now so that it does not crash in rehash_state if auth payload has not been received*/
+    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
+        openswan_log("no authentication payload found");
+        return STF_FAIL;
+    }
+
+
     /* if it decrypted okay, then things are good, this packet is
      * well received, and we should change state.
      */
@@ -1626,6 +1629,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    ikev2_decode_cr(md, &st->st_connection->requested_ca);
     }
 
+    /* process AUTH payload now */
     /* now check signature from RSA key */
     switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
     {

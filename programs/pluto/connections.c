@@ -1401,24 +1401,20 @@ add_connection(const struct whack_message *wm)
 	     * or wildcard ID */
 	    c->kind = CK_TEMPLATE;
 	}
-	else
+	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
 	{
-	    c->kind = CK_PERMANENT;
-	}
-
-#if 0
-	if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
-	{
-	   /* If we have a subnet=vnet:, instantiate so we can accept multiple subnets from the remote peer */
-	    DBG(DBG_CONTROL, DBG_log("virt was set in whack message (via vnet=?), the connection is a template"));
+	   /* If we have a subnet=vnet: needing instantiation so we can accept multiple subnets from the remote peer */
+	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was set in whack message (via vnet=?), the connection is a template"));
 	    c->kind = CK_TEMPLATE;
 	}
 	else
 	{
-	    DBG(DBG_CONTROL, DBG_log("virt was not set in whack message - this is a CK_PERMANENT"));
+	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was not set in whack message - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
-#endif
+
+
+
 	set_policy_prio(c);	/* must be after kind is set */
 
 #ifdef DEBUG
@@ -2086,6 +2082,14 @@ route_owner(struct connection *c
 
     for (d = connections; d != NULL; d = d->ac_next)
     {
+
+#ifdef KLIPS_MAST
+	/* in mast mode we must also delete the iptables rule */
+	if (kern_interface == USE_MASTKLIPS)
+	    if (compatible_overlapping_connections(c, d))
+		continue;
+#endif
+
 	for (srd = &d->spd; srd; srd = srd->next)
 	{
 	    if (srd->routing == RT_UNROUTED)

@@ -149,6 +149,7 @@ then
 fi
 
 use_conntrack=false
+use_comment=true
 
 # check interface version
 case "$PLUTO_VERSION" in
@@ -426,6 +427,11 @@ doipsecrule() {
 	#echo SAref: $saref '->' $nf_saref
 
         rulespec="--src $srcnet --dst $dstnet -m mark --mark 0/0x80000000 -j MARK --set-mark $nf_saref"
+        if $use_comment ; then
+                # WARNING: you should only edit use_comment while you have no established conns
+                rulespec="$rulespec -m comment --comment '$PLUTO_CONNECTION'"
+        fi
+
 	case $1 in
 	    add)
                 it="iptables -t mangle -I NEW_IPSEC_CONN 1 $rulespec"
