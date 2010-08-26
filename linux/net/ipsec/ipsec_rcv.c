@@ -1839,7 +1839,7 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 					skb_network_header(irs->skb) - irs->hard_header_len));
 		/* we have to fix the protocol,  it's not right with IP4/IP6 or
 		 * IP6/IP4 tunnels */
-		eth_hdr(irs->skb)->h_proto = htons(irs->skb->protocol);
+		eth_hdr(irs->skb)->h_proto = irs->skb->protocol;
 	}
 
 	ipsec_nf_reset(irs->skb);
