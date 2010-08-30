@@ -145,24 +145,16 @@ klipsinterface() {
 	*)	echo "invalid interface \`$virt' in \`$1'" ; exit 1	;;
 	esac
 
-	# figure out ifconfig for interface
+	# see if we can find an IPv4/IPv6 address on the interface,  if not error
+	# out,  only use the first one here, otheraddr will include a /mask
 	addr=
-	eval `ifconfig $phys |
-		awk '$1 == "inet" && $2 ~ /^addr:/ && $NF ~ /^Mask:/ {
-			gsub(/:/, " ", $0)
-			print "addr=" $3
-			other = $5
-			if ($4 == "Bcast")
-				print "type=broadcast"
-			else if ($4 == "P-t-P")
-				print "type=pointopoint"
-			else if (NF == 5) {
-				print "type="
-				other = ""
-			} else
-				print "type=unknown"
-			print "otheraddr=" other
-			print "mask=" $NF
+	otheraddr=
+	eval `ip addr show dev $phys | awk '$1 == "inet" || $1 == "inet6" {
+			sub("/.*$","",$2)
+			print "addr=" $2
+			if ($3 == "peer")
+				print "otheraddr=" $4
+			exit 0
 		}'`
 	if test " $addr" = " "
 	then
@@ -186,10 +178,20 @@ klipsinterface() {
 	then
 		# attach the interface and bring it up
 		ipsec tncfg --attach --virtual $virt --physical $phys
-		ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+		# configure all the IPv4/IPv4 addresses (including point-to-point)
+		ip addr show dev $phys | awk '$1 == "inet" || $1 == "inet6" {
+				cmd = "ip addr add"
+		        	for (i = 2; i < NF; i++)
+					cmd = cmd " " $i
+				if ($NF != phys)
+					cmd = cmd " " $NF
+				cmd = cmd " dev " virt "> /dev/null"
+				system(cmd)
+			}' phys=$phys virt=$virt
+		ip link set up dev $virt
 
                 # do we have to fix the route metric for this device?
-                maxmetric=$(ip route show $otheraddr/$mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
+                maxmetric=$(ip route show "$otheraddr" 2> /dev/null | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
                 if [ -n "$maxmetric" ] ; then
                         # If there are other none-zero-metric routes that match this spec
                         # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
