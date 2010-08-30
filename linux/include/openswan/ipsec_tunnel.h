@@ -27,9 +27,6 @@
 # define IP_SEND(skb, dev) \
 	ip_send(skb);
 
-# define ICMP6_SEND(skb_in, type, code, info, dev) \
-	icmpv6_send(skb_in, type, code, htonl(info), dev)
-
 #if defined(KLIPS)
 
 #define	osw_ip_hdr_version(ixirs)	(((struct iphdr *) (ixirs)->iph)->version)
@@ -123,6 +120,14 @@ extern int debug_tunnel;
 extern int sysctl_ipsec_debug_verbose;
 
 extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,34)
+# define ICMP6_SEND(skb_in, type, code, info, dev) \
+	icmpv6_send(skb_in, type, code, htonl(info), dev)
+#else
+# define ICMP6_SEND(skb_in, type, code, info, dev) \
+	icmpv6_send(skb_in, type, code, htonl(info))
+#endif
 
 #endif /* __KERNEL__ */
 
