@@ -576,8 +576,8 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		if(ixs->skb->sk) {
 #ifdef NET_26
 #ifdef HAVE_INET_SK_SPORT
-			ixs->sport = ntohs(inet_sk(ixs->skb->sk)->sport);
-			ixs->dport = ntohs(inet_sk(ixs->skb->sk)->dport);
+			ixs->sport = ntohs(inet_sk(ixs->skb->sk)->inet_sport);
+			ixs->dport = ntohs(inet_sk(ixs->skb->sk)->inet_dport);
 #else
 			struct udp_sock *us;
 			
@@ -621,8 +621,8 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		if(ixs->skb->sk) {
 #ifdef NET_26
 #ifdef HAVE_INET_SK_SPORT
-			ixs->sport = ntohs(inet_sk(ixs->skb->sk)->sport);
-			ixs->dport = ntohs(inet_sk(ixs->skb->sk)->dport);
+			ixs->sport = ntohs(inet_sk(ixs->skb->sk)->inet_sport);
+			ixs->dport = ntohs(inet_sk(ixs->skb->sk)->inet_dport);
 #else
 			struct tcp_tw_bucket *tw;
 			tw = (struct tcp_tw_bucket *)ixs->skb->sk;
