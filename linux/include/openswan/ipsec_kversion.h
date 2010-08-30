@@ -502,12 +502,12 @@
 # define OSW_NF_INET_LOCAL_OUT NF_INET_LOCAL_OUT
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,33)
 #define	inet_sport	sport
 #define	inet_dport	dport
-#define	CTL_NAME(n)
-#else
 #define	CTL_NAME(n)	.ctl_name = n,
+#else
+#define	CTL_NAME(n)
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
