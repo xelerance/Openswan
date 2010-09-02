@@ -12,7 +12,7 @@ v2.6.29 (unreleased)
 * MAST: use only the most recent iptables rule [Bart]
 * pluto: restrict rekeymargin to be smaller than salifetime [Bart]
 * MAST: ensure we don't end up with mtu=0 on mast0 [Bart/Paul]
-* MAST: inforce outgoing tunnel policy [Bart]
+* MAST: enforce outgoing tunnel policy [Bart]
 * MAST: use addflow pfkey command to set policy on tunnel SAs [Bart]
 * Added a new pfkey flag, POLICYONLY, to the ADDFLOW command [Bart]
 * MAST: allow for setting of policy for inbound SAs [Bart]
@@ -22,6 +22,7 @@ v2.6.29 (unreleased)
 * VNET: differentiate instantiation of road warriors and vnet [Paul]
 * Log LEAK_DETECTIVE and HAVE_LIBNSS support on startup [Paul]
 * [IKEv2] connections were broken since 2.6.25 [Avesh]
+* MAST: new "ipsec policy" command replaces "ipsec eroute" [Bart]
  
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
