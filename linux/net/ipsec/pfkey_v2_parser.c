@@ -2242,7 +2242,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_flags);
 	}
 
-	if(!(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW)) {
+	if(!(extr->ips->ips_flags & (SADB_X_SAFLAGS_CLEARFLOW | SADB_X_SAFLAGS_POLICYONLY))) {
 		if(pfkey_safe_build(error, extensions_reply)) {
 			error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
 							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,
