@@ -195,7 +195,8 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 	}
 
 	if((sa_p->ips_said.proto == IPPROTO_IPIP)
-	   && (sa_p->ips_flags & SADB_X_SAFLAGS_INFLOW)) {
+	   && (sa_p->ips_flags & (SADB_X_SAFLAGS_INFLOW
+			   |SADB_X_SAFLAGS_POLICYONLY))) {
 		subnettoa(sa_p->ips_flow_s.u.v4.sin_addr,
 			  sa_p->ips_mask_s.u.v4.sin_addr,
 			  0,
