@@ -135,35 +135,50 @@ sysflag() {
 	esac
 }
 
+# get info about a given interface
+# getinterfaceinfo eth0 prefix_
+getinterfaceinfo() {
+        ifconfig $1 \
+         | awk '$1 == "inet" && $2 ~ /^addr:/ && $NF ~ /^Mask:/ {
+			gsub(/:/, " ", $0)
+			print "'$2'addr=" $3
+			other = $5
+			if ($4 == "Bcast")
+				print "'$2'type=broadcast"
+			else if ($4 == "P-t-P")
+				print "'$2'type=pointopoint"
+			else if (NF == 5) {
+				print "'$2'type="
+				other = ""
+			} else
+				print "'$2'type=unknown"
+			print "'$2'otheraddr=" other
+			print "'$2'mask=" $NF
+		}'
+}
+
+# get default route info
+getdefaultrouteinfo() {
+        netstat -nr | awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print "phys=" $NF; print "next=" $2; exit 0 }'
+}
+
 # set up a Klips interface
 klipsinterface() {
 	# pull apart the interface spec
 	virt=`expr $1 : '\([^=]*\)=.*'`
 	phys=`expr $1 : '[^=]*=\(.*\)'`
+
+        # we expect virt to be ipsec# in klips mode, and mast# in mast mode
+        devprefix=ipsec
+        $mast && devprefix=mast
 	case "$virt" in
-	ipsec[0-9])	;;
+	$devprefix[0-9])	;;
 	*)	echo "invalid interface \`$virt' in \`$1'" ; exit 1	;;
 	esac
 
 	# figure out ifconfig for interface
 	addr=
-	eval `ifconfig $phys |
-		awk '$1 == "inet" && $2 ~ /^addr:/ && $NF ~ /^Mask:/ {
-			gsub(/:/, " ", $0)
-			print "addr=" $3
-			other = $5
-			if ($4 == "Bcast")
-				print "type=broadcast"
-			else if ($4 == "P-t-P")
-				print "type=pointopoint"
-			else if (NF == 5) {
-				print "type="
-				other = ""
-			} else
-				print "type=unknown"
-			print "otheraddr=" other
-			print "mask=" $NF
-		}'`
+	eval `getinterfaceinfo $phys`
 	if test " $addr" = " "
 	then
 		echo "unable to determine address of \`$phys'"
@@ -182,38 +197,43 @@ klipsinterface() {
 	fi
 	echo "KLIPS $virt on $phys $addr/$mask $type $otheraddr $mtu" | logonly
 
+        # make sure this mast device exists, if not create it
+        virt_addr=
+        eval `getinterfaceinfo $virt virt_`
+        if test " $virt_addr" = " "
+        then
+                # in mast mode we just create the virtual interface
+                ipsec tncfg --create --virtual $virt
+        fi
+
+        # in klips mode we attach it to the physical device
 	if $klips
 	then
-		# attach the interface and bring it up
 		ipsec tncfg --attach --virtual $virt --physical $phys
-		ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+        fi
 
-                # do we have to fix the route metric for this device?
-                maxmetric=$(ip route show $otheraddr/$mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
-                if [ -n "$maxmetric" ] ; then
-                        # If there are other none-zero-metric routes that match this spec
-                        # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
-                        newmetric=$(( $maxmetric + 1))
-                        oldroute=$(ip route show $otheraddr/$mask dev $virt)
-                        ip route del $oldroute dev $virt
-                        ip route add $oldroute dev $virt metric $newmetric
-                fi
-	fi
+        # configure the device
+        ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
 
-	if $mast
-	then
-		# odd - $virt = ipsec0 instead of mast0
-		# Double check the mtu is not 0 - if it is set it to a saner default
-		ip link show dev mast0 | grep -q 'mtu 0 '
-		RETVAL=$?
-		if [ "$RETVAL" -eq 0 ];
-		then
-			echo "Fixup of mtu on mast0 to 1542"
-			#ip link set mtu 1452 dev $virt
-			ip link set mtu 1452 dev mast0
-		fi
-	fi
+        # do we have to fix the route metric for this device?
+        maxmetric=$(ip route show $otheraddr/$mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
+        if [ -n "$maxmetric" ] ; then
+                # If there are other none-zero-metric routes that match this spec
+                # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
+                newmetric=$(( $maxmetric + 1))
+                oldroute=$(ip route show $otheraddr/$mask dev $virt)
+                ip route del $oldroute dev $virt
+                ip route add $oldroute dev $virt metric $newmetric
+        fi
 
+        # Double check the mtu is not 0 - if it is set it to a saner default
+	ip link show dev $virt | grep -q 'mtu 0 '
+        RETVAL=$?
+        if [ "$RETVAL" -eq 0 ];
+        then
+                echo "Fixup of mtu on $virt to 1542"
+                ip link set mtu 1452 dev $virt
+        fi
 
 	# if %defaultroute, note the facts
 	if test " $2" != " "
@@ -238,15 +258,14 @@ klipsinterface() {
 
 # interfaces=%defaultroute:  put ipsec0 on top of default route's interface
 defaultinterface() {
-	phys=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $NF; exit 0 }'`
+        phys=
+        eval `getdefaultrouteinfo`
+
 	if test " $phys" = " "
 	then
 		echo "no default route, %defaultroute cannot cope!!!"
 		exit 1
 	fi
-	next=`netstat -nr |
-		awk '$1 == "0.0.0.0" && $3 == "0.0.0.0" { print $2; exit 0 }'`
         if test `echo " $phys" | wc -l` -gt 1
         then
                 echo "multiple default routes, %defaultroute using: $next"
@@ -255,6 +274,11 @@ defaultinterface() {
 	if $klips
 	then
 	    klipsinterface "ipsec0=$phys" $next
+	fi
+
+	if $mast
+	then
+                klipsinterface "mast0=$phys" $next
 	fi
 }
 
