@@ -221,13 +221,13 @@ sub print_spi
         return unless ($s->{'xform'} eq 'IPIP');
         return unless (defined $s->{'policy'});
 
-        my @s = split("->", $s->{'policy'});
+        my @p = split("->", $s->{'policy'});
 
         printf "%-3s  %-10d   %-18s -> %-18s     %s     ref:%d him:%d\n",
                 $prefix,
-                0,
-                $s[0],
-                $s[1],
+                $s->{'life_packets_c'} || 0,
+                $p[0],
+                $p[1],
                 $s->{'name'},
                 $s->{'ref'},
                 $s->{'refhim'};
@@ -361,8 +361,22 @@ sub read_spdb
 
                         dbg "  $var = $val";
 
-                        $tmp->{$var} = $val
+                        $tmp->{$var} = $val;
 
+                        if ($var eq 'life(c,s,h)') {
+                                # life(c,s,h)=bytes(19240,0,0)addtime(811,0,0)usetime(784,0,0)packets(185,0,0)
+                                for my $n (qw{bytes addtime usetime packets}) {
+                                        if ($val =~ m/$n\((\d+),(\d+),(\d+)\)/) {
+                                                dbg "    life_${n}_c = $1";
+                                                dbg "    life_${n}_s = $2";
+                                                dbg "    life_${n}_h = $3";
+
+                                                $tmp->{"life_${n}_c"} = $1;
+                                                $tmp->{"life_${n}_s"} = $2;
+                                                $tmp->{"life_${n}_h"} = $3;
+                                        }
+                                }
+                        }
                 }
 
                 $this->add_spdb_entry($tmp);
