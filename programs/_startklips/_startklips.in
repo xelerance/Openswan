@@ -154,7 +154,12 @@ getinterfaceinfo() {
 				print "'$2'type=unknown"
 			print "'$2'otheraddr=" other
 			print "'$2'mask=" $NF
-		}'
+		}
+                $NF ~ /^Metric:/ && $(NF-1) ~ /^MTU:/ {
+                        sub(/^MTU:/, "", $(NF-1))
+                        print "'$2'mtu=" $(NF-1)
+                }
+                '
 }
 
 # get default route info
@@ -177,25 +182,23 @@ klipsinterface() {
 	esac
 
 	# figure out ifconfig for interface
-	addr=
-	eval `getinterfaceinfo $phys`
-	if test " $addr" = " "
+	phys_addr=
+	eval `getinterfaceinfo $phys phys_`
+	if test " $phys_addr" = " "
 	then
 		echo "unable to determine address of \`$phys'"
 		exit 1
 	fi
-	if test " $type" = " unknown"
+	if test " $phys_type" = " unknown"
 	then
 		echo "\`$phys' is of an unknown type"
 		exit 1
 	fi
 	if test " $omtu" != " "
 	then
-		mtu="mtu $omtu"
-	else
-		mtu=
+                phys_mtu=$omtu
 	fi
-	echo "KLIPS $virt on $phys $addr/$mask $type $otheraddr $mtu" | logonly
+	echo "KLIPS $virt on $phys $phys_addr/$phys_mask $phys_type $phys_otheraddr mtu $phys_mtu" | logonly
 
         # make sure this mast device exists, if not create it
         virt_addr=
@@ -213,15 +216,15 @@ klipsinterface() {
         fi
 
         # configure the device
-        ifconfig $virt inet $addr $type $otheraddr netmask $mask $mtu
+        ifconfig $virt inet $phys_addr $phys_type $phys_otheraddr netmask $phys_mask mtu $phys_mtu
 
         # do we have to fix the route metric for this device?
-        maxmetric=$(ip route show $otheraddr/$mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
+        maxmetric=$(ip route show $phys_otheraddr/$phys_mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
         if [ -n "$maxmetric" ] ; then
                 # If there are other none-zero-metric routes that match this spec
                 # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
                 newmetric=$(( $maxmetric + 1))
-                oldroute=$(ip route show $otheraddr/$mask dev $virt)
+                oldroute=$(ip route show $phys_otheraddr/$phys_mask dev $virt)
                 ip route del $oldroute dev $virt
                 ip route add $oldroute dev $virt metric $newmetric
         fi
@@ -241,7 +244,7 @@ klipsinterface() {
 		(
 			echo "defaultroutephys=$phys"
 			echo "defaultroutevirt=$virt"
-			echo "defaultrouteaddr=$addr"
+			echo "defaultrouteaddr=$phys_addr"
 			if test " $2" = " 0.0.0.0"
 			then
 				# this happens on people with ppp interfaces with 'route add default dev ppp0'.
