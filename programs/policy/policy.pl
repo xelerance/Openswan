@@ -28,7 +28,9 @@ ipsec_policy - show ipsec policy information
 
 =head1 DESCRIPTION
 
-This script ... blah blah blah.
+I<policy> displays the incoming, outgoing, and forwarding packet policies of
+the system.  It is a wrapper around eixsting klips and netkey data, but
+presented in a less terse form.
 
 =head1 OPTIONS
 
