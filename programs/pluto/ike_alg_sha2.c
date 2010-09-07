@@ -50,15 +50,32 @@ struct hash_desc hash_desc_sha2_256 = {
 	common:{officname:  "sha256",
 		algo_type: IKE_ALG_HASH,
 		algo_id:   OAKLEY_SHA2_256,
+		algo_v2id: IKEv2_PRF_HMAC_SHA2_256,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha256_context),
-	hash_key_size: 0,
+	hash_key_size: SHA2_256_DIGEST_SIZE,
 	hash_digest_len: SHA2_256_DIGEST_SIZE,
 	hash_integ_len: 0,	/*Not applicable*/
 	hash_init: (void (*)(void *))sha256_init,
 	hash_update: (void (*)(void *, const u_char *, size_t ))sha256_write,
 	hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
+
+struct hash_desc integ_desc_sha2_256 = {
+        common:{officname:  "sha256",
+                algo_type: IKE_ALG_INTEG,
+                algo_id:   OAKLEY_SHA2_256,
+                algo_v2id: IKEv2_AUTH_HMAC_SHA2_256_128,
+                algo_next: NULL, },
+        hash_ctx_size: sizeof(sha256_context),
+        hash_key_size: SHA2_256_DIGEST_SIZE,
+        hash_digest_len: SHA2_256_DIGEST_SIZE,
+        hash_integ_len: SHA2_256_DIGEST_SIZE/2,
+        hash_init: (void (*)(void *))sha256_init,
+        hash_update: (void (*)(void *, const u_char *, size_t ))sha256_write,
+        hash_final:(void (*)(u_char *, void *))sha256_hash_final,
+};
+
 struct hash_desc hash_desc_sha2_512 = {
 	common:{officname: "sha512",
 		algo_type: IKE_ALG_HASH,
@@ -81,6 +98,8 @@ ike_alg_sha2_init(void)
 	if (ret)
 		goto out;
 	ret = ike_alg_register_hash(&hash_desc_sha2_256);
+
+	ike_alg_add((struct ike_alg *) &integ_desc_sha2_256);
 out:
 	return ret;
 }

@@ -891,7 +891,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
    PK11_FreeSymKey(tkey22);
    PK11_FreeSymKey(tkey23);
 
-   DBG(DBG_CRYPT, DBG_log("NSS: Freed symkeys 1-23 (24 does not exists)\n"));
+   DBG(DBG_CRYPT, DBG_log("NSS: Freed symkeys 1-23\n"));
 
    freeanychunk(hmac_opad);
    freeanychunk(hmac_ipad);
@@ -1206,7 +1206,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct hash_desc *hasher = crypto_get_hasher(skq->prf_hash);
+    const struct hash_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
     passert(hasher);
 
 
@@ -1227,7 +1227,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(skeyseed_k);
 
 #else
-    vpss.prf_hasher = crypto_get_hasher(skq->prf_hash);
+    vpss.prf_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
     passert(vpss.prf_hasher);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
@@ -1270,7 +1270,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_p needs PRF hasher*2 key bits */
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
-	const struct hash_desc *integ_hasher = crypto_get_hasher(skq->integ_hash);
+	const struct hash_desc *integ_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG, skq->integ_hash, 0);
 #ifdef HAVE_LIBNSS
        int skd_bytes = hasher->hash_key_size;
        int skp_bytes = hasher->hash_key_size;       
