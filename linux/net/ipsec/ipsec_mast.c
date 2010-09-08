@@ -413,7 +413,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
-	if(skb->nfmark & 0x80000000) {
+	if(skb->nfmark & IPSEC_NFMARK_IS_SAREF_BIT) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
 				"getting SAref=%d from nfmark\n",

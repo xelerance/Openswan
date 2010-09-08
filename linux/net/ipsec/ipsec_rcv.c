@@ -645,7 +645,8 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	}
 #endif
 #ifdef CONFIG_NETFILTER
-	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+	skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+		| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
@@ -1573,7 +1574,8 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 
 #ifdef CONFIG_NETFILTER
 	if(irs->proto == IPPROTO_ESP || irs->proto == IPPROTO_AH) {
-		skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+		skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+			| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 			| IPsecSAref2NFmark(IPsecSA2SAref(irs->ipsp));
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 			    "klips_debug:ipsec_rcv: "
