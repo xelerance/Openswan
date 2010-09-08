@@ -25,6 +25,7 @@ v2.6.29 (unreleased)
 * MAST: new "ipsec policy" command replaces "ipsec eroute" [Bart]
 * Fix SElinux warning in realsetup (bz628879) [Avesh]
 * Support for SHA2_256 in IKEv2 (bz621790) [Avesh]
+* [IKEv2] Fix for using MD5 and PRF conversion function [Avesh]
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
