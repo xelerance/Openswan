@@ -283,7 +283,7 @@ enum ikev2_trans_type_integ v1tov2_integ(int oakley)
    }
 }
 
-enum ikev2_trans_type_prf v1tov2_prf(int oakley)
+static enum ikev2_trans_type_prf v1tov2_prf(int oakley)
 {
     switch(oakley) {
     case OAKLEY_MD5:
