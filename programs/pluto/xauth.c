@@ -1813,9 +1813,11 @@ modecfg_inR1(struct msg_digest *md)
 
 		case CISCO_BANNER:
                 {
-                DBG_dump("Received cisco banner: ", strattr.cur, pbs_left(&strattr));
-		strncpy(st->st_connection->server_banner, strattr.cur, pbs_left(&strattr));
-		st->st_connection->server_banner[pbs_left(&strattr)]='\0';
+		size_t cbsz = sizeof(st->st_connection->server_banner)-1 < pbs_left(&strattr)
+		    ? sizeof(st->st_connection->server_banner)-1 : pbs_left(&strattr);
+
+		strncpy(st->st_connection->server_banner, strattr.cur, cbsz);
+		st->st_connection->server_banner[cbsz]='\0';
 		DBG_log("Cisco banner: %s", st->st_connection->server_banner);
                 resp |= LELEM(attr.isaat_af_type);
                 }
@@ -1824,13 +1826,14 @@ modecfg_inR1(struct msg_digest *md)
 
 		case CISCO_DEF_DOMAIN:
                 {
-                char tmp[50];
-                DBG_dump("Received cisco def domain: ", strattr.cur, pbs_left(&strattr));
-                strncpy(tmp, strattr.cur, pbs_left(&strattr));
-                tmp[pbs_left(&strattr)]='\0';
+                char tmp[sizeof(st->st_connection->cisco_domain_info)];
+		size_t cddsz = sizeof(tmp)-1 < pbs_left(&strattr)
+		    ? sizeof(tmp)-1 : pbs_left(&strattr);
+
+                strncpy(tmp, strattr.cur, cddsz);
+                tmp[cddsz]='\0';
                 DBG_log("Cisco defined domain: %s", tmp);
                 strcpy(st->st_connection->cisco_domain_info, tmp);
-                DBG_log("Cisco defined domain: %s", st->st_connection->cisco_domain_info);
                 resp |= LELEM(attr.isaat_af_type);
                 }
                 break;
