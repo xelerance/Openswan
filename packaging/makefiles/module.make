@@ -43,7 +43,7 @@ EXTRA_CFLAGS += -I${TOPDIR}/include
 EXTRA_CFLAGS += -I${LIBZLIBSRCDIR}
 
 version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' $< >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' $< >$@
 
 include ${KLIPSSRC}/Makefile.fs2_4
 

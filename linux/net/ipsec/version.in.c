@@ -20,7 +20,7 @@
 
 #include "openswan.h"
 
-#define	V	"xxx"		/* substituted in by Makefile */
+#define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
 static const char openswan_number[] = V;
 static const char openswan_string[] = "Openswan " V;
 

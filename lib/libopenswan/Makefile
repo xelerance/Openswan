@@ -174,7 +174,7 @@ $(LOGOBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a

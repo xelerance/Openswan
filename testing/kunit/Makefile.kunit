@@ -20,7 +20,7 @@ ${TESTCASE}.o: ${srcdir}${TESTCASE}.c
 
 # build version.c using version number from Makefile.ver
 version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
 ifneq (${PACKFILE},)
 ${TESTCASE}.o: ${PACKFILE}.c 
