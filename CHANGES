@@ -5,6 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.29 (unreleased)
+* NETLEY: Fix for spurious %hold netlink-acquires [Paul/dhr]
 * SAREF: Updated for 2.6.35 kernel [Harald]
 * KLIPS: Updated for 2.6.35 kernel [Harald]
 * PACKAGING Use Epoch 1: for Debian/Ubuntu [Simon]
