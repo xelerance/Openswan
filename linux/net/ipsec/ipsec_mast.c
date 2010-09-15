@@ -212,8 +212,8 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;
 	}
-	dst_release(ixs->skb->dst);
-	ixs->skb->dst = &ixs->route->u.dst;
+	dst_release(skb_dst(ixs->skb));
+	skb_dst_set(ixs->skb, &ixs->route->u.dst);
 	ixs->stats->tx_bytes += ixs->skb->len;
 	if(ixs->skb->len < ixs->skb->nh.raw - ixs->skb->data) {
 		ixs->stats->tx_errors++;
@@ -236,7 +236,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 	{
 		int err;
 
-		err = NF_HOOK(PF_INET, NF_IP_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
+		err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL, ixs->route->u.dst.dev,
 			      ipsec_mast_xmit2);
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
 			if(net_ratelimit())
@@ -305,6 +305,88 @@ cleanup:
 }
 
 /*
+ * Verify that the skb can go out on this ipsp.
+ * Return 0 if OK, error code otherwise.
+ */
+static int
+ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
+{
+	if (!ixs || !ixs->ipsp || !ixs->iph)
+		return -EFAULT;
+
+	/* Note: "xor" (^) logically replaces "not equal"
+	 * (!=) and "bitwise or" (|) logically replaces
+	 * "boolean or" (||).  This is done to speed up
+	 * execution by doing only bitwise operations and
+	 * no branch operations */
+	if((((ixs->iph->saddr & ixs->ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
+				^ ixs->ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
+			| ((ixs->iph->daddr & ixs->ipsp->ips_mask_d.u.v4.sin_addr.s_addr)
+				^ ixs->ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) ) {
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+		char saddr_txt[ADDRTOA_BUF], daddr_txt[ADDRTOA_BUF];
+		struct in_addr ipaddr;
+
+		subnettoa(ixs->ipsp->ips_flow_s.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_s.u.v4.sin_addr,
+			  0, sflow_txt, sizeof(sflow_txt));
+		subnettoa(ixs->ipsp->ips_flow_d.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_d.u.v4.sin_addr,
+			  0, dflow_txt, sizeof(dflow_txt));
+
+		ipaddr.s_addr = ixs->iph->saddr;
+		addrtoa(ipaddr, 0, saddr_txt, sizeof(saddr_txt));
+		ipaddr.s_addr = ixs->iph->daddr;
+		addrtoa(ipaddr, 0, daddr_txt, sizeof(daddr_txt));
+
+		if (!ixs->sa_len) ixs->sa_len = KLIPS_SATOT(debug_mast,
+				&ixs->outgoing_said, 0,
+				ixs->sa_txt, sizeof(ixs->sa_txt));
+
+		KLIPS_PRINT(debug_mast,
+			    "klips_debug:ipsec_mast_check_outbound_policy: "
+			    "SA:%s, inner tunnel policy [%s -> %s] does not agree with pkt contents [%s -> %s].\n",
+			    ixs->sa_len ? ixs->sa_txt : " (error)",
+			    sflow_txt, dflow_txt, saddr_txt, daddr_txt);
+		if(ixs->stats)
+			ixs->stats->rx_dropped++;
+		return -EACCES;
+	}
+
+#if 0
+	{
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+		char saddr_txt[ADDRTOA_BUF], daddr_txt[ADDRTOA_BUF];
+		struct in_addr ipaddr;
+
+		subnettoa(ixs->ipsp->ips_flow_s.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_s.u.v4.sin_addr,
+			  0, sflow_txt, sizeof(sflow_txt));
+		subnettoa(ixs->ipsp->ips_flow_d.u.v4.sin_addr,
+			  ixs->ipsp->ips_mask_d.u.v4.sin_addr,
+			  0, dflow_txt, sizeof(dflow_txt));
+
+		ipaddr.s_addr = ixs->iph->saddr;
+		addrtoa(ipaddr, 0, saddr_txt, sizeof(saddr_txt));
+		ipaddr.s_addr = ixs->iph->daddr;
+		addrtoa(ipaddr, 0, daddr_txt, sizeof(daddr_txt));
+
+		if (!ixs->sa_len) ixs->sa_len = KLIPS_SATOT(debug_mast,
+				&ixs->outgoing_said, 0,
+				ixs->sa_txt, sizeof(ixs->sa_txt));
+
+		KLIPS_PRINT(debug_mast,
+			    "klips_debug:ipsec_mast_check_outbound_policy: "
+			    "SA:%s, inner tunnel policy [%s -> %s] agrees with pkt contents [%s -> %s].\n",
+			    ixs->sa_len ? ixs->sa_txt : " (error)",
+			    sflow_txt, dflow_txt, saddr_txt, daddr_txt);
+	}
+#endif
+
+	return 0;
+}
+
+/*
  *	This function assumes it is being called from dev_queue_xmit()
  *	and that skb is filled properly by that function.
  */
@@ -331,7 +413,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
-	if(skb->nfmark & 0x80000000) {
+	if(skb->nfmark & IPSEC_NFMARK_IS_SAREF_BIT) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
 				"getting SAref=%d from nfmark\n",
@@ -355,6 +437,13 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		KLIPS_ERROR(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
 				"%s: no SA for saref=%d\n",
 				dev->name, SAref);
+		ipsec_xmit_cleanup(ixs);
+		ipsec_xmit_state_delete(ixs);
+		return 0;
+	}
+
+	/* make sure this packet can go out on this SA */
+	if (ipsec_mast_check_outbound_policy(ixs)) {
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
 		return 0;

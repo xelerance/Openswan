@@ -1,4 +1,0 @@
-static_init.c
-lib*
-*.o
-.*.o*

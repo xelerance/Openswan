@@ -149,6 +149,7 @@ then
 fi
 
 use_conntrack=false
+use_comment=true
 
 # check interface version
 case "$PLUTO_VERSION" in
@@ -162,13 +163,6 @@ case "$PLUTO_VERSION" in
 	exit 2
 	;;
 esac
-
-# Temporary workaround until rp_filter / martians problem is solved with
-# the mast stack. It seems setting this once is not enough - it needs to
-# happen every time openswan restarts. We put it here as a temporary easy
-# workaround.
-for n in eth0 eth1 eth2 mast0 ipsec0 ipsec1 ipsec2 all default ; do sysctl net.ipv4.conf.$n.rp_filter=0; done > /dev/null 2>/dev/null
-
 
 # check parameter(s)
 case "$1:$*" in
@@ -217,10 +211,14 @@ checkipsec() {
         # note2: iproute2-2.6.22-070710 supports mask via /mask notation instead
         # ip rule add fwmark 0x80000000 fwmarkmask 0x80000000 table 50
         ip rule add from all fwmark 0x80000000/0x80000000 lookup 50
+        # This rule makes sure that packets originating from mast0 (ones that came
+        # out of a tunnel) go directly to the main table.  This makes sure that
+        # rp_filter can find the right reverse path route.
+        ip rule add from all iif $PLUTO_INTERFACE lookup main
     fi
 
     # the default route goes over the mast interface
-    if ! ( ip route show table 50 | grep -qF 'default dev mast0' ) ; then
+    if ! ( ip route show table 50 | grep -qF "default dev $PLUTO_INTERFACE" ) ; then
         ip route add default dev $PLUTO_INTERFACE table 50
     fi
 
@@ -236,6 +234,19 @@ checkipsec() {
     # now look for -j IPSEC in PREROUTING chains.
     if ! (iptables -n -t mangle -L PREROUTING | grep -q '^IPSEC') ; then
 	iptables -t mangle -I PREROUTING 1 -j IPSEC
+    fi
+
+    if [ -w /proc/sys/net/ipv4/conf/$PLUTO_INTERFACE/src_valid_mark ] ; then
+        # finally make sure that the top bit of source vmark for mast0 is set
+        vmark=$(cat /proc/sys/net/ipv4/conf/$PLUTO_INTERFACE/src_valid_mark)
+        vmark=$(( $vmark | 0x80000000 ))
+        echo "$vmark" > /proc/sys/net/ipv4/conf/$PLUTO_INTERFACE/src_valid_mark
+    else
+        # In case that we don't have the means to get rp_filter to cooperate 
+        # with KLIPS nfmark based routing scheme, we disable rp_filter.
+        for n in /proc/sys/net/ipv4/conf/*/rp_filter ; do
+            echo 0 > $n
+        done
     fi
 }
 
@@ -301,7 +312,7 @@ if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
    fi
 
    rm -f -- $ORIG_RESOLV_CONF
-   echo -e $RESOLVE_CONF > $ORIG_RESOLV_CONF
+   printf "$RESOLVE_CONF" > $ORIG_RESOLV_CONF
    return $?
 else
    echo "Updating resolv.conf is controlled by Network Manager"
@@ -425,7 +436,12 @@ doipsecrule() {
 
 	#echo SAref: $saref '->' $nf_saref
 
-        rulespec="--src $srcnet --dst $dstnet -j MARK --set-mark $nf_saref"
+        rulespec="--src $srcnet --dst $dstnet -m mark --mark 0/0x80000000 -j MARK --set-mark $nf_saref"
+        if $use_comment ; then
+                # WARNING: you should only edit use_comment while you have no established conns
+                rulespec="$rulespec -m comment --comment '$PLUTO_CONNECTION'"
+        fi
+
 	case $1 in
 	    add)
                 it="iptables -t mangle -I NEW_IPSEC_CONN 1 $rulespec"

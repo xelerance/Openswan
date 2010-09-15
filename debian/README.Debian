@@ -42,8 +42,13 @@ ipsec.secrets, ipsec_showhostkey and ipsec.conf.
 
 3) IPsec Kernel Support
 
-Note: This package makes per default use of the in-kernel IPsec stack, which is
-available in all recent stock Debian kernel images.
+Note: This package per default uses the in-kernel IPsec stack, which is 
+available in all recent stock Debian kernel images. The advantage of this
+in-kernel stack is that it is well supported and does not require external
+modules to be built. The disadvantage is that it no longer uses virtual ipsecX
+network interfaces and therefore makes debugging IPsec connections slightly
+harder (e.g., tcpdump can not be used separately on encrypted and unencrypted
+traffic).
 
 If you want to use the openswan utilities, you will need the appropriate
 kernel modules. The Debian default kernel native IPsec stack can be used
@@ -55,7 +60,7 @@ Traversal support) and is well integrated into the kernel networking subsystem
 IPsec support in Debian is to use the default kernels (or recompile from the
 Debian kernel sources).
 
-If you do not want to use the in-kernel IPsec stack then the openswan kernel
+If you do not want to use the in-kernel IPsec stack, then the openswan kernel
 part can be compiled as stand-alone module. Starting with kernel >= 2.6.23 and
 openswan >= 2.6.22, NAT Traversal will work without patching the kernel, also
 with KLIPS compiled as a module. Therefore, the linux-patch-openswan package and
@@ -63,15 +68,16 @@ the NAT Traversal patches have both been dropped. On the other hand, please note
 that there are two packages available, each gearing towards a different group
 of users:
 
-* openswan-modules-dkms is suitable for the end user who wants to use KLIPS on
-  a stand-alone PC or laptop without much hassle. When installed, the module
-  will be built automatically upon installing a new kernel and its respective
-  headers package.
+* openswan-modules-dkms is suitable for end users to use KLIPS on on the same 
+  machine where the package is being installed. The module will be built 
+  automatically upon installing a new kernel and its respective headers 
+  package. No further documentation is necessary, as the build and installation
+  process is fully automatic when this package and the kernel headers are 
+  installed.
 
-* openswan-modules-source on the other side targets the system administrator
-  willing to distribute pre-built KLIPS modules around a number of machines in
-  a clean and easily maintainable manner as a standard Debian package. This
-  approach consists of more work but is also a lot more flexible.
+* openswan-modules-source targets the system administrators wishing to 
+  distribute pre-built KLIPS modules to multiple machines as a standard Debian 
+  package. This approach takes more work but is also a lot more flexible.
 
 4) Building KLIPS from openswan-modules-source
 
@@ -83,8 +89,8 @@ can be used:
       module-assistant build openswan
   to build the package.
   Please note that when compiling modules for a kernel version which differs
-  from the one running on the compile host then the option --kvers-list has to
-  be supplied to the module-assistant command.
+  from the one running on the compilation host then the option --kvers-list 
+  must be supplied to the module-assistant command.
 
 * When invoking make-kpkg from kernel-package to do the module compilation the
   linux-source package has to be installed and the openswan-modules.tar.gz
@@ -104,10 +110,9 @@ can be used:
   which provides the --revision argument.
 
 * Invoking debian/rules directly is the third and most flexible approach to
-  compile and package the module, but keep in mind this method also leaves the
-  task of cleaning up to the administrator.
-  After extracting openswan-modules.tar.gz change to /usr/src/modules/openswan
-  and issue the command
+  compile and package the module, but this method also leaves the task of 
+  cleaning up to the administrator. After extracting openswan-modules.tar.gz 
+  change to /usr/src/modules/openswan and issue the command
       debian/rules binary-modules
   to start building the module. Some variables that might need to be set in
   order to make the process run correctly:
@@ -122,4 +127,37 @@ can be used:
       debian/rules kdist_clean
   Otherwise, future build processes might lead to incorrect results.
 
- -- Harald Jenny <harald@a-little-linux-box.at>  Sun,  2 May 2010 18:15:33 +0200
+5) Using Openswan with SAref
+
+In order to use the SAref feature which allows to connect multiple clients
+from behind the same NAT device and multiple clients using the same internal IP
+behind different NAT devices, the Linux kernel needs to be patched. At the time
+of this writing there are patches available for kernel version 2.6.32 from 
+Lenny/Sid and 2.6.34 which are shipped in the openswan-modules.tar.bz2 file
+from openswan-modules-source.
+The recommended method for creating a patched kernel is using the make-kpkg
+approach which is documented in the above section. After extracting the linux
+and the openswan source in /usr/src change to the to the kernel source
+directory and patch the source code by issuing the commands
+    patch -p1 < /usr/src/modules/openswan/patches/kernel/$VERSION/0001-SAREF-add-support-for-SA-selection-through-sendmsg.patch
+    patch -p1 < /usr/src/modules/openswan/patches/kernel/$VERSION/0002-SAREF-implement-IP_IPSEC_BINDREF.patch
+where $VERSION is the base kernel version (without the --append_to_version
+suffix). To enable the new feature in the kernel config, compile the kernel
+and the openswan module, you may also want to install libncurses5-dev and then
+call make-kpkg this way:
+    make-kpkg --append_to_version APPEND_PARAM --revision REVISION_PARAM \
+    --added_modules openswan --initrd --config menuconfig configure kernel_\
+    image modules_image
+In the displayed menu first enter "Networking support", then proceed to
+"Networking options", there select "IP: IPsec SAref interface (KLIPS)". When
+exiting answer yes to save your new kernel configuration so that make-kpkg
+uses it when compiling the new kernel. Afterwards install the newly created
+linux-image and openswan-modules packages and then reboot the computer.
+To finally activate the SAref feature the ipsec.conf file must be modified: In
+the config setup section protostack=mast has to be specified and overlapip=yes
+needs to be added to the affected conn descriptions. Also note that the MAST
+stack does not use "eroutes", so the
+    ipsec eroute
+command no longer returns tunnel information, at the moment please issue
+    ipsec auto --status
+to retrieve connection details.

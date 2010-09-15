@@ -1295,6 +1295,19 @@ add_connection(const struct whack_message *wm)
 	c->sa_rekey_fuzz = wm->sa_rekey_fuzz;
 	c->sa_keying_tries = wm->sa_keying_tries;
 
+	if (c->sa_rekey_margin >= c->sa_ipsec_life_seconds) {
+		time_t new_rkm;
+
+		new_rkm = c->sa_ipsec_life_seconds / 2;
+
+		openswan_log("conn: %s, rekeymargin (%lus) > salifetime (%lus); "
+				"reducing rekeymargin to %lu seconds", c->name,
+				c->sa_rekey_margin, c->sa_ipsec_life_seconds,
+				new_rkm);
+
+		c->sa_rekey_margin = new_rkm;
+	}
+
 	/* RFC 3706 DPD */
         c->dpd_delay = wm->dpd_delay;
         c->dpd_timeout = wm->dpd_timeout;
@@ -1388,10 +1401,20 @@ add_connection(const struct whack_message *wm)
 	     * or wildcard ID */
 	    c->kind = CK_TEMPLATE;
 	}
+	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
+	{
+	   /* If we have a subnet=vnet: needing instantiation so we can accept multiple subnets from the remote peer */
+	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was set in whack message (via vnet=?), the connection is a template"));
+	    c->kind = CK_TEMPLATE;
+	}
 	else
 	{
+	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was not set in whack message - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
+
+
+
 	set_policy_prio(c);	/* must be after kind is set */
 
 #ifdef DEBUG
@@ -2059,6 +2082,14 @@ route_owner(struct connection *c
 
     for (d = connections; d != NULL; d = d->ac_next)
     {
+
+#ifdef KLIPS_MAST
+	/* in mast mode we must also delete the iptables rule */
+	if (kern_interface == USE_MASTKLIPS)
+	    if (compatible_overlapping_connections(c, d))
+		continue;
+#endif
+
 	for (srd = &d->spd; srd; srd = srd->next)
 	{
 	    if (srd->routing == RT_UNROUTED)

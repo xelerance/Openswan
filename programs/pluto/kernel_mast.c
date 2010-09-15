@@ -435,21 +435,23 @@ mast_do_command(struct connection *c, struct spd_route *sr
 
 static bool
 mast_raw_eroute(const ip_address *this_host UNUSED
-		, const ip_subnet *this_client UNUSED
-		, const ip_address *that_host UNUSED
-		, const ip_subnet *that_client UNUSED
-		, ipsec_spi_t spi UNUSED
-		, unsigned int proto UNUSED
-		, unsigned int transport_proto UNUSED
-		, unsigned int satype UNUSED
-		, const struct pfkey_proto_info *proto_info UNUSED
-		, time_t use_lifetime UNUSED
-		, enum pluto_sadb_operations op UNUSED
-		, const char *text_said UNUSED)
+               , const ip_subnet *this_client UNUSED
+               , const ip_address *that_host UNUSED
+               , const ip_subnet *that_client UNUSED
+               , ipsec_spi_t spi UNUSED
+               , unsigned int proto UNUSED
+               , unsigned int transport_proto UNUSED
+               , unsigned int satype UNUSED
+               , const struct pfkey_proto_info *proto_info UNUSED
+               , time_t use_lifetime UNUSED
+               , enum pluto_sadb_operations op UNUSED
+               , const char *text_said UNUSED)
 {
-	
-	/* actually, we did all the work with iptables in _updown */
-	return TRUE;
+    /* actually, we did all the work with iptables in _updown */
+    DBG_log("mast_raw_eroute called op=%u said=%s", op, text_said);
+    return pfkey_raw_eroute(this_host, this_client, that_host, that_client,
+		    spi, proto, transport_proto, satype,
+		    proto_info, use_lifetime, op, text_said);
 }
 
 /* Add/replace/delete a shunt eroute.
@@ -466,8 +468,47 @@ mast_shunt_eroute(struct connection *c UNUSED
 		   , enum pluto_sadb_operations op UNUSED
 		  , const char *opname UNUSED)
 {
-    DBG_log("mast_shunt_eroute called");
+    DBG_log("mast_shunt_eroute called op=%u/%s", op, opname);
     return TRUE;
+}
+
+/**
+ * replace existing iptables rule using the updown.mast script.
+ * @param st - new state
+ * @param sr - new route
+ * @return TRUE if add was successful, FALSE otherwise
+ */
+static bool
+mast_sag_eroute_replace(struct state *st, struct spd_route *sr)
+{
+	struct connection *c = st->st_connection;
+	struct state *old_st;
+	bool success;
+
+	/* The state, st, has the new SAref values, but we need to remove
+	 * the rule based on the previous state with the old SAref values.
+	 * So we have to find it the hard way (it's a cpu hog). */
+	old_st = state_with_serialno(sr->eroute_owner);
+	if (!old_st)
+		old_st = st;
+
+	DBG_log("mast_sag_eroute_replace state #%d{ref=%d refhim=%d} "
+			"with #%d{ref=%d refhim=%d}",
+			(int)old_st->st_serialno,
+			(int)old_st->st_ref,
+			(int)old_st->st_refhim,
+			(int)st->st_serialno,
+			(int)st->st_ref,
+			(int)st->st_refhim);
+
+	/* add the new rule */
+	success = mast_do_command(c, sr, "spdadd", st);
+
+	/* drop the old rule -- we ignore failure */
+	if (old_st->st_serialno != st->st_serialno)
+	    (void)mast_do_command(c, sr, "spddel", old_st);
+
+	return success;
 }
 
 /* install or remove eroute for SA Group */
@@ -475,8 +516,46 @@ static bool
 mast_sag_eroute(struct state *st, struct spd_route *sr
 		, enum pluto_sadb_operations op, const char *opname UNUSED)
 {
-    switch(op)
-    {
+    bool ok;
+    bool addop = FALSE;
+
+    DBG_log("mast_sag_eroute called op=%u/%s", op, opname);
+
+    /* handle ops we have to do no work for */
+    switch(op) {
+    default:
+	bad_case(op);
+	return FALSE;
+
+    case ERO_ADD:
+    case ERO_ADD_INBOUND:
+	addop = TRUE;
+	/* fallthrough expected */
+    case ERO_REPLACE:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DELETE:
+    case ERO_DEL_INBOUND:
+	/* these one require more work... */
+	break;
+    }
+
+    /* first try to update the routing policy */
+    ok = pfkey_sag_eroute(st, sr, op, opname);
+    if (!ok) {
+        DBG_log("mast_sag_eroute failed to %s/%d pfkey eroute", opname, op);
+        if (addop)
+            /* If the pfkey op failed, and we were adding a new SA,
+             * then it's OK to fail early. */
+            return FALSE;
+    }
+
+    /* now run the iptable updown script */
+    switch(op) {
+    case ERO_ADD_INBOUND:
+    case ERO_REPLACE_INBOUND:
+    case ERO_DEL_INBOUND:
+	return TRUE;
+
     case ERO_ADD:
 	return mast_do_command(st->st_connection, sr, "spdadd", st);
 	
@@ -484,15 +563,12 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 	return mast_do_command(st->st_connection, sr, "spddel", st);
 
     case ERO_REPLACE:
-	(void)mast_do_command(st->st_connection, sr, "spddel", st);
-	return mast_do_command(st->st_connection, sr, "spdadd", st);
-	
-    case ERO_ADD_INBOUND:
-    case ERO_REPLACE_INBOUND:
-    case ERO_DEL_INBOUND:
-	return TRUE;
+	return mast_sag_eroute_replace(st, sr);
+
+    default:
+	/* this should never happen */
+	return FALSE;
     }
-    return FALSE;
 }
 
 const struct kernel_ops mast_kernel_ops = {

@@ -1919,7 +1919,8 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    "calling breakeroute and/or makeroute for %s->%s\n",
 			    buf1, buf2);
 	}
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW) {
+	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW
+			|| extr->ips->ips_flags & SADB_X_SAFLAGS_POLICYONLY) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
 		struct ipsec_sa *ipsp, *ipsq;
 		char sa[SATOT_BUF];
@@ -1952,7 +1953,8 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		
 		sa_len = KLIPS_SATOT(debug_pfkey, &extr->ips->ips_said, 0, sa, sizeof(sa));
 
-		ipsp->ips_flags |= SADB_X_SAFLAGS_INFLOW;
+		ipsp->ips_flags |= extr->ips->ips_flags
+			& (SADB_X_SAFLAGS_INFLOW | SADB_X_SAFLAGS_POLICYONLY);
 		ipsp->ips_flow_s = srcflow;
 		ipsp->ips_flow_d = dstflow;
 		ipsp->ips_mask_s = srcmask;
@@ -1966,6 +1968,7 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			    "klips_debug:pfkey_x_addflow_parse: "
 			    "inbound eroute, setting incoming policy information in IPIP ipsec_sa for SA: %s.\n",
 			    sa_len ? sa : " (error)");
+
 	} else {
 		struct sk_buff *first = NULL, *last = NULL;
 
@@ -2153,7 +2156,13 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		SENDERR(EINVAL);
 	}
 
-	if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
+	if(extr->ips->ips_flags & SADB_X_SAFLAGS_POLICYONLY) {
+		/* nothing else to do */
+		KLIPS_PRINT(debug_pfkey,
+				"klips_debug:pfkey_x_delflow_parse: "
+				"POLICYONLY flag set, done.\n");
+
+	} else if(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_delflow_parse: "
 			    "CLEARFLOW flag set, calling cleareroutes.\n");
@@ -2233,7 +2242,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_flags);
 	}
 
-	if(!(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW)) {
+	if(!(extr->ips->ips_flags & (SADB_X_SAFLAGS_CLEARFLOW | SADB_X_SAFLAGS_POLICYONLY))) {
 		if(pfkey_safe_build(error, extensions_reply)) {
 			error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
 							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,

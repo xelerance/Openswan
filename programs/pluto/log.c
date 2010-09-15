@@ -905,7 +905,7 @@ struct log_conn_info {
  * so we track what we have told it in a long (triple)
  */
 #define	LOG_CONN_STATSVAL(lci) \
-	((lci)->tunnel | ((lci)->phase1 << 8) | ((lci)->phase2 << 16))
+	((lci)->tunnel | ((lci)->phase1 << 4) | ((lci)->phase2 << 8))
 
 static void
 connection_state(struct state *st, void *data)
@@ -976,13 +976,18 @@ log_state(struct state *st, enum state_kind new_state)
 	enum state_kind save_state;
 
 
-	if (!st || !st->st_connection || !st->st_connection->name)
+	if (!st || !st->st_connection || !st->st_connection->name) {
+		DBG(DBG_CONTROLMORE, DBG_log("log_state() called without state"));
 		return;
+	}
 
 	conn = st->st_connection;
-	if (!conn)
+	if (!conn) {
+		DBG(DBG_CONTROLMORE, DBG_log("log_state() called without st->st_connection (this line cannot fire)"));
 		return;
+	}
 
+	DBG(DBG_CONTROLMORE, DBG_log("log_state called for state update for connection %s ", conn->name));
 	memset(&lc, 0, sizeof(lc));
 	lc.conn = conn;
 	save_state = st->st_state;
@@ -990,9 +995,12 @@ log_state(struct state *st, enum state_kind new_state)
 	for_each_state((void *)connection_state, &lc);
 	st->st_state = save_state;
 
-	if (conn->statsval == LOG_CONN_STATSVAL(&lc))
+	if (conn->statsval == (IPsecSAref2NFmark(st->st_ref) | LOG_CONN_STATSVAL(&lc))) {
+		DBG(DBG_CONTROLMORE, DBG_log("log_state for connection %s state change signature (%d) matches last one - skip logging", conn->name, conn->statsval));
 		return;
-	conn->statsval = LOG_CONN_STATSVAL(&lc);
+	}
+	conn->statsval = IPsecSAref2NFmark(st->st_ref) | LOG_CONN_STATSVAL(&lc);
+	DBG(DBG_CONTROLMORE, DBG_log("log_state set state change signature for connection %s to %d", conn->name, conn->statsval));
 
 	switch (lc.tunnel) {
 	case tun_phase1:  tun = "phase1";  break;
@@ -1018,7 +1026,7 @@ log_state(struct state *st, enum state_kind new_state)
 	case p2_up:       p2 = "up";       break;
 	default:          p2 = "down";     break;
 	}
-
+	DBG(DBG_CONTROLMORE, DBG_log("log_state calling openswan-statsd for connection %s with tunnel(%s) phase1(%s) phase2(%s)", conn->name, tun, p1, p2));
 
 	snprintf(buf, sizeof(buf), "/bin/openswan-statsd "
 			"%s ipsec-tunnel-%s if_stats /proc/net/dev/%s \\; "
@@ -1042,6 +1050,7 @@ log_state(struct state *st, enum state_kind new_state)
 				: IPsecSAref2NFmark(st->st_refhim) | IPSEC_NFMARK_IS_SAREF_BIT 
 		);
 	system(buf);
+	DBG(DBG_CONTROLMORE, DBG_log("log_state for connection %s completed", conn->name));
 }
 
 #endif

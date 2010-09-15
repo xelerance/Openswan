@@ -212,7 +212,10 @@ KERNEL=$(shell if expr " `uname -m`" : ' i.86' >/dev/null ; \
 	fi)
 
 # look for XMLTO command
-XMLTO?=$(shell which xmlto|grep /)
+XMLTO?=$(shell which xmlto | grep / | head -n1)
+
+# look for POD2MAN command
+POD2MAN?=$(shell which pod2man | grep / | head -n1)
 
 #
 # default number of bits for ipsec newhostkey
@@ -275,7 +278,6 @@ USE_DYNAMICDNS?=true
 USE_SINGLE_CONF_DIR?=false
 
 # whether or not to include ipsec policy code into pluto.
-# false for now, since it is still experimental.
 USE_IPSECPOLICY?=true
 
 # Build ikeping (a utility for testing IKE daemons) in the distribution

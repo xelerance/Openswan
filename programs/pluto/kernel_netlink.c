@@ -457,7 +457,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , const ip_subnet *that_client
 		   , ipsec_spi_t spi
 		   , unsigned int proto
-		   , unsigned int transport_proto UNUSED
+		   , unsigned int transport_proto
 		   , enum eroute_type esatype
 		   , const struct pfkey_proto_info *proto_info
 		   , time_t use_lifetime UNUSED

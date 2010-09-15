@@ -7,9 +7,6 @@
 
 export DH_OPTIONS
 
-VERSION=$(shell if [ "`which git`" ] && [ "`git describe 2>/dev/null`" ]; then git describe | sed 's/^v//' ; else basename `pwd` | sed 's/^openswan-//' ; fi)
-SED_SCRIPT=s!\$$VERSION!$(VERSION)!
-
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
@@ -20,8 +17,7 @@ configure-stamp:
 patch:
 	dh_testdir
 	dpatch apply-all
-	sed -e "$(SED_SCRIPT)" debian/changelog.in > debian/changelog
-	sed -e "$(SED_SCRIPT)" debian/NEWS.in > debian/NEWS
+	cp -f debian/changelog debian/NEWS || true
 
 unpatch:
 	dpatch deapply-all
@@ -78,7 +74,7 @@ clean: unpatch
 
 	dh_clean
 
-	cp -f debian/changelog.in debian/changelog || true
+	rm -rf debian/patched || true
 	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a
@@ -142,10 +138,12 @@ install-openswan: build
 	chmod 644 $(CURDIR)/debian/openswan/etc/ipsec.d/policies/*
 	chmod 644 $(CURDIR)/debian/openswan/etc/ipsec.d/examples/*
 
+	# create /var/lib/openswan with permissions similar to ipsec.secrets
+	mkdir -p $(CURDIR)/debian/openswan/var/lib/openswan
+	chmod 700 -R $(CURDIR)/debian/openswan/var/lib/openswan
+
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan -name ".cvsignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Empty directory
 	rmdir $(CURDIR)/debian/openswan/usr/bin
@@ -184,9 +182,7 @@ install-openswan-doc: build
 	rm -rf $(CURDIR)/debian/openswan-doc/usr/share/doc/openswan-doc/doc/src
 
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan-doc -name ".cvsignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan-doc -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-doc -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 install-openswan-modules-source: DH_OPTIONS=-popenswan-modules-source
 install-openswan-modules-source: PKGDIR=$(CURDIR)/debian/openswan-modules-source
@@ -199,11 +195,15 @@ install-openswan-modules-source: patch
 	mkdir -p "$(BUILDDIR)/modules/openswan/lib"
 	mkdir -p "$(BUILDDIR)/modules/openswan/debian"
 	mkdir -p "$(BUILDDIR)/modules/openswan/packaging"
+	mkdir -p "$(BUILDDIR)/modules/openswan/patches/kernel"
 	cp -r CHANGES CREDITS Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(BUILDDIR)/modules/openswan"
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
 	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
 		"$(BUILDDIR)/modules/openswan/packaging/"
+	cp -r patches/kernel/2.6.32 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/2.6.34 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/2.6.35 "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
 	install --mode=755 debian/openswan-modules-source.rules "$(BUILDDIR)/modules/openswan/debian/rules"
@@ -223,9 +223,7 @@ install-openswan-modules-source: patch
 	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
-	find $(PKGDIR) -name ".cvsignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(PKGDIR) -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
+	find $(PKGDIR) -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
 install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d: -f2 | cut -d- -f1)
@@ -249,9 +247,7 @@ install-openswan-modules-dkms: patch
 	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
-	find $(CURDIR)/debian/openswan-modules-dkms -name ".cvsignore" | xargs --no-run-if-empty rm -f
 	find $(CURDIR)/debian/openswan-modules-dkms -name ".gitignore" | xargs --no-run-if-empty rm -f
-	find $(CURDIR)/debian/openswan-modules-dkms -name ".svn" -a -type d | xargs --no-run-if-empty rm -rf
 
 	# Ensure +x for scrips
 	find $(CURDIR)/debian/openswan-modules-dkms -type f -name "*.sh" -o -name "*.pl" | xargs --no-run-if-empty chmod 755
@@ -269,7 +265,7 @@ binary-common:
 	dh_link
 	dh_strip --dbg-package=openswan-dbg
 	dh_compress
-	dh_fixperms -X etc/ipsec.secrets -X etc/ipsec.d/private
+	dh_fixperms -X etc/ipsec.secrets -X etc/ipsec.d/private -X var/lib/openswan
 
 	dh_lintian
 	dh_installdeb
@@ -279,11 +275,11 @@ binary-common:
 	dh_builddeb
 
 # Build architecture-independent files here.
-binary-indep: install-openswan-doc install-openswan-modules-source install-openswan-modules-dkms
+binary-indep: install-openswan-doc install-openswan-modules-source
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture-dependent files here.
-binary-arch: install-openswan
+binary-arch: install-openswan install-openswan-modules-dkms
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
 binary: binary-indep binary-arch

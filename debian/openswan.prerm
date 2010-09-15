@@ -4,6 +4,7 @@
 # see: dh_installdeb(1)
 
 set -e
+test $DEBIAN_SCRIPT_DEBUG && set -v -x
 
 # summary of how this script can be called:
 #        * <prerm> `remove'
@@ -20,7 +21,6 @@ case "$1" in
         ;;
     remove|deconfigure)
         invoke-rc.d ipsec stop || true
-#       install-info --quiet --remove /usr/info/openswan.info.gz
         ;;
     failed-upgrade)
         ;;

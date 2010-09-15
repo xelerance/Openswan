@@ -488,16 +488,22 @@
 # endif
 #endif
 
-#ifndef NF_INET_LOCAL_OUT
-# define NF_INET_LOCAL_OUT NF_IP_LOCAL_OUT
+#include <linux/netfilter.h>
+#include <linux/netfilter_ipv4.h>
+#include <linux/netfilter_ipv6.h>
+#ifdef NF_IP_LOCAL_OUT
+# define OSW_NF_INET_LOCAL_OUT	NF_IP_LOCAL_OUT
+#endif
+#ifndef OSW_NF_INET_LOCAL_OUT
+# define OSW_NF_INET_LOCAL_OUT NF_INET_LOCAL_OUT
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,33)
 #define	inet_sport	sport
 #define	inet_dport	dport
-#define	CTL_NAME(n)
-#else
 #define	CTL_NAME(n)	.ctl_name = n,
+#else
+#define	CTL_NAME(n)
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)

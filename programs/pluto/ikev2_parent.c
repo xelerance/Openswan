@@ -1104,7 +1104,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 
     authstart=md->packet_pbs.start;
     iv     = e_pbs->cur;
-    encend = e_pbs->roof - 12;
+    encend = e_pbs->roof - pst->st_oakley.integ_hasher->hash_integ_len;
     
     /* start by checking authenticator */
     {
@@ -1122,6 +1122,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	}
 	
 	/* compare first 96 bits == 12 bytes */
+	/* It is not always 96 bytes, it depends upon which integ algo is used*/
 	if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
 	    openswan_log("R2 failed to match authenticator");
 	    return STF_FAIL;
@@ -1481,12 +1482,6 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
 	return STF_FATAL;
     }
 
-    /* process AUTH payload */
-    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
-	openswan_log("no authentication payload found");
-	return STF_FATAL;
-    }
-
     /* now. we need to go calculate the g^xy */
     {
 	struct dh_continuation *dh = alloc_thing(struct dh_continuation
@@ -1580,6 +1575,15 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(ret != STF_OK) return ret;
     }
 
+
+    /*Once the message has been decrypted, then only we can check for auth payload*/
+    /*check the presense of auth payload now so that it does not crash in rehash_state if auth payload has not been received*/
+    if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
+        openswan_log("no authentication payload found");
+        return STF_FAIL;
+    }
+
+
     /* if it decrypted okay, then things are good, this packet is
      * well received, and we should change state.
      */
@@ -1626,6 +1630,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    ikev2_decode_cr(md, &st->st_connection->requested_ca);
     }
 
+    /* process AUTH payload now */
     /* now check signature from RSA key */
     switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
     {

@@ -14,6 +14,9 @@ USE_YACC=false
 
 USE_BSDKAME=true
 
+# This should really be fixed, only a few debug/logging functions are used
+USE_PFKEYv2=true
+
 # build modules, etc. for KLIPS.
 BUILD_KLIPS=false
 

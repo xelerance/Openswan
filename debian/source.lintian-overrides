@@ -1,2 +1,4 @@
 # openswan-doc is just doc but gets made in build
 openswan source: debhelper-but-no-misc-depends openswan-doc
+# temporary override until manpage fixes are in openswan upstream and number of patches drop
+openswan source: more-than-one-patch-system

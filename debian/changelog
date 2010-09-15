@@ -1,15 +1,15 @@
-openswan ($VERSION+nmu1) unstable; urgency=low
+openswan (1:IPSECBASEVERSION-1xelerance1) lucid; urgency=low
 
-  * Non-maintainer upload.
-  * Update to $VERSION
+  * Update to IPSECBASEVERSION
 
- -- Simon Deziel <simon@xelerance.com>  Wed, 23 Jun 2010 13:19:53 -0400
+  The real changelog is in /usr/share/doc/openswan/changelog.gz
 
-openswan ($VERSION) unstable; urgency=low
+  This package is NOT an official Debian/Ubuntu package. Please do
+  not file any Debian/Ubuntu bug reports for this package but contact
+  <dev@openswan.org> or <simon@xelerance.com> if you have a problem.
 
-  This package is NOT an official Debian paket from the Debian openswan
-  developers. Please do not file any Debian bug reports for this package but
-  contact <dev@openswan.org> or <harald@a-little-linux-box.at> if you have a
-  problem. Thanks!
+ -- Simon Deziel <simon@xelerance.com>  Mon, 09 Aug 2010 11:29:42 +0200
 
- -- Harald Jenny <harald@a-little-linux-box.at>  Fri, 11 Jun 2010 23:24:15 +0200
+Local variables:
+mode: debian-changelog
+End:

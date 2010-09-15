@@ -623,8 +623,30 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 		goto rcvleave;
 	}
+#if 0
+	if(sysctl_ipsec_inbound_policy_check)
+	{
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+
+		subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
+			  ipsp->ips_mask_s.u.v4.sin_addr,
+			  0, sflow_txt, sizeof(sflow_txt));
+		subnettoa(ipsp->ips_flow_d.u.v4.sin_addr,
+			  ipsp->ips_mask_d.u.v4.sin_addr,
+			  0, dflow_txt, sizeof(dflow_txt));
+
+		KLIPS_PRINT(debug_mast,
+			    "klips_debug:ipsec_rcv: "
+			    "SA:%s, inner tunnel policy [%s -> %s] agrees with pkt contents [%s -> %s].\n",
+			    irs->sa_len ? irs->sa : " (error)",
+			    sflow_txt, dflow_txt,
+			    irs->ipsaddr_txt,
+			    irs->ipdaddr_txt);
+	}
+#endif
 #ifdef CONFIG_NETFILTER
-	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+	skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+		| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
@@ -1552,7 +1574,8 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 
 #ifdef CONFIG_NETFILTER
 	if(irs->proto == IPPROTO_ESP || irs->proto == IPPROTO_AH) {
-		skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+		skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+			| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 			| IPsecSAref2NFmark(IPsecSA2SAref(irs->ipsp));
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 			    "klips_debug:ipsec_rcv: "
