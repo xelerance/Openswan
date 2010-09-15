@@ -302,7 +302,7 @@ restart_connections_by_peer(struct connection *c)
 }
 
 /* (Possibly) Opportunistic Initiation:
- * Knowing clients (single IP addresses), try to build an tunnel.
+ * Knowing clients (single IP addresses), try to build a tunnel.
  * This may involve discovering a gateway and instantiating an
  * Opportunistic connection.  Called when a packet is caught by
  * a %trap, or when whack --oppohere --oppothere is used.
@@ -401,10 +401,10 @@ cannot_oppo(struct connection *c
 	struct state *st;
 
 	passert(c->kind == CK_TEMPLATE);
-	passert(c->policy_next->kind == CK_PERMANENT);
+	passert(nc->kind == CK_PERMANENT);
 
 	DBG(DBG_OPPO, DBG_log("OE failed for %s to %s, but %s overrides shunt"
-			      , ocb, pcb, c->policy_next->name));
+			      , ocb, pcb, nc->name));
 
 	/*
 	 * okay, here we need add to the "next" policy, which is ought
@@ -469,25 +469,23 @@ cannot_oppo(struct connection *c
 	return;
     }
 
-#ifdef KLIPS
+#ifdef KLIPS /* This should really be 'if opportunistic is supported' - netlink has acquires too */
     if (b->held)
     {
 	int failure_shunt = b->failure_shunt;
 
 	/* Replace HOLD with b->failure_shunt.
-	 * If no b->failure_shunt specified, use SPI_PASS -- THIS MAY CHANGE.
+	 * If no failure_shunt specified, use SPI_PASS -- THIS MAY CHANGE.
 	 */
-	if (b->failure_shunt == 0)
+	if (failure_shunt == 0)
 	{
-	    DBG(DBG_OPPO, DBG_log("no explicit failure shunt for %s to %s; installing %%pass"
+	    DBG(DBG_OPPO, DBG_log("no explicit failure shunt for %s to %s; removing spurious hold shunt"
 				  , ocb, pcb));
-	    failure_shunt = SPI_PASS;
 	}
-
 	(void) replace_bare_shunt(&b->our_client, &b->peer_client
 	    , b->policy_prio
 	    , failure_shunt
-	    , failure_shunt == SPI_PASS
+	    , failure_shunt != 0
 	    , b->transport_proto
 	    , ughmsg);
     }
@@ -753,10 +751,10 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	cannot_oppo(NULL, b, "impossible IP address");
 	work = 0;
     }
-    else if ((c = find_connection_for_clients(&sr
+    else if (!(c = find_connection_for_clients(&sr
 					      , &b->our_client
 					      , &b->peer_client
-					      , b->transport_proto)) == NULL)
+					      , b->transport_proto)))
     {
 	/* No connection explicitly handles the clients and there
 	 * are no Opportunistic connections -- whine and give up.
