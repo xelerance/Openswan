@@ -110,7 +110,7 @@ void openswan_passert_fail(const char *pred_str
 void pexpect_log(const char *pred_str
 		 , const char *file_str, unsigned long line_no)
 {
-  fprintf(stderr, "Passert failed: %s: %d, %s\n",
+  fprintf(stderr, "Pexpect dismayed: %s: %d, %s\n",
 	  file_str, line_no, pred_str);
 }
 
