@@ -345,6 +345,13 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 		    irs->next_header,
 		    pad - 2 - irs->authlen);
 
+	if (osw_ip_hdr_version(irs) == 6)
+		osw_ip6_hdr(irs)->payload_len =
+			htons(ntohs(osw_ip6_hdr(irs)->payload_len) - (irs->esphlen + pad));
+	else
+		osw_ip4_hdr(irs)->tot_len =
+			htons(ntohs(osw_ip4_hdr(irs)->tot_len) - (irs->esphlen + pad));
+
 	/*
 	 * move the IP header forward by the size of the ESP header, which
 	 * will remove the the ESP header from the packet.
