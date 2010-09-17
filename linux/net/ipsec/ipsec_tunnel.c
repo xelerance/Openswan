@@ -1624,7 +1624,7 @@ static LIST_HEAD(ipsec_tunnel_udp_encap_list);
 
 DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
 {
-	struct socket *sock;
+	struct socket *sock = NULL;
 	struct sock *sk;
 	struct ipsec_tunnel_udp_encap_ctx *ctx = NULL;
 	int err = 0;

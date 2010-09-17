@@ -797,7 +797,30 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     }
 
     aead = get_aead_alg(sa->encalg);
-    if (aead)
+    if (sa->esatype == ET_IPCOMP)
+    {
+	struct xfrm_algo algo;
+	const char *name;
+
+	name = sparse_name(calg_list, sa->encalg);
+	if (!name) {
+	    loglog(RC_LOG_SERIOUS, "unknown compression algorithm: %u"
+		, sa->encalg);
+	    return FALSE;
+	}
+
+	strcpy(algo.alg_name, name);
+	algo.alg_key_len = 0;
+
+	attr->rta_type = XFRMA_ALG_COMP;
+	attr->rta_len = RTA_LENGTH(sizeof(algo));
+
+	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+
+	req.n.nlmsg_len += attr->rta_len;
+	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+    }
+    else if (aead)
     {
 	struct xfrm_algo_aead algo;
 
@@ -836,30 +859,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
 	    , sa->enckeylen);
-
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
-
-    if (sa->esatype == ET_IPCOMP)
-    {
-	struct xfrm_algo algo;
-	const char *name;
-
-	name = sparse_name(calg_list, sa->encalg);
-	if (!name) {
-	    loglog(RC_LOG_SERIOUS, "unknown compression algorithm: %u"
-		, sa->encalg);
-	    return FALSE;
-	}
-
-	strcpy(algo.alg_name, name);
-	algo.alg_key_len = 0;
-
-	attr->rta_type = XFRMA_ALG_COMP;
-	attr->rta_len = RTA_LENGTH(sizeof(algo));
-
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);

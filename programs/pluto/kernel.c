@@ -421,11 +421,17 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_STACK='%s' "
 		    "%s "           /* possible metric */
 		    "PLUTO_CONN_POLICY='%s' "
-		    "%s "           /* XAUTH username */
-		    "%s "           /* PLUTO_MY_SRCIP */
+#ifdef XAUTH
+		    "%s "           /* XAUTH username - if any */
+#endif
+		    "%s "           /* PLUTO_MY_SRCIP - if any */
+#ifdef XAUTH
+# ifdef MODECFG
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    "PLUTO_PEER_BANNER='%s' "
+# endif /* MODECFG */
+#endif /* XAUTH */
 #ifdef HAVE_NM
 		    "PLUTO_NM_CONFIGURED='%u' "
 #endif
@@ -451,11 +457,17 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , kernel_ops->kern_name
 		    , metric_str
 		    , prettypolicy(c->policy)
+#ifdef XAUTH
 		    , secure_xauth_username_str
+#endif
 		    , srcip_str
+#ifdef XAUTH
+# ifdef MODECFG
 		    , c->cisco_dns_info
 		    , c->cisco_domain_info
-		    , c->server_banner
+		    , c->cisco_banner
+# endif /* MODECFG */
+#endif /* XAUTH */
 #ifdef HAVE_NM
 		    , c->nmconfigured
 #endif

@@ -5,6 +5,11 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.29 (unreleased)
+! This release is made for CVE-2010-3302 containg:
+* XAUTH: Avoid buffer overflow in CISCO BANNER/DEF_DOMAIN [dhr/paul]
+* XAUTH: Avoid buffer overflow in CISCO DNS info [dhr/paul]
+* XAUTH: Avoid shell problems with single quotes in CISCO paramters [dhr/paul]
+*
 * NETLEY: Fix for spurious %hold netlink-acquires [Paul/dhr]
 * SAREF: Updated for 2.6.35 kernel [Harald]
 * KLIPS: Updated for 2.6.35 kernel [Harald]
@@ -28,6 +33,9 @@ v2.6.29 (unreleased)
 * Support for SHA2_256 in IKEv2 (bz621790) [Avesh]
 * IKEv2: Fix for using MD5 and PRF conversion function [Avesh]
 * SAREF: Improved workaround for rp_filter [Bart]
+* NSS: Increase minimum nss for rhbz#453577 [Paul]
+  (this allows us to revert workaround in git 6c8ff2791d1)
+* SAREF: Added /proc/net/ipsec/saref that shows kernel patch state [Bart]
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]

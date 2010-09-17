@@ -33,7 +33,7 @@ DONTMENTION='^(ipsec|_.*|.*\.old|.*~)$'
 # version numbering (details filled in by build)
 # Possibly should call a C program to invoke the version_code() function
 # instead, but for performance's sake, we inline it here (and only here).
-version="xxx"
+version="@IPSECVERSION@"
 
 # export the version information
 IPSEC_VERSION="$version"

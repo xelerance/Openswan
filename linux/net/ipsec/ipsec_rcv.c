@@ -1014,12 +1014,29 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	}
 
 	if(sysctl_ipsec_inbound_policy_check) {
-		if(irs->ipp->saddr != ((struct sockaddr_in*)(newipsp->ips_addr_s))->sin_addr.s_addr) {
+		struct sockaddr_in *sa_saddr;
+		char sa_saddr_txt[ADDRTOA_BUF] = {0,};
+
+		sa_saddr = (struct sockaddr_in*)(newipsp->ips_addr_s);
+		if(irs->ipp->saddr != sa_saddr->sin_addr.s_addr) {
+			if (debug_rcv) {
+				// generate SA->saddr
+				addrtoa(sa_saddr->sin_addr, 0,
+					sa_saddr_txt, sizeof(sa_saddr_txt));
+				// generate ipsaddr_txt
+				if (!(*irs->ipsaddr_txt))
+					ipsec_rcv_redodebug(irs);
+				// regenerate sa_len
+				if (!irs->sa_len)
+					irs->sa_len = satot(&irs->said, 0,
+						irs->sa, sizeof(irs->sa));
+			}
 			KLIPS_ERROR(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
-				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy.\n",
+				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy (%s).\n",
 				    irs->sa_len ? irs->sa : " (error)",
-				    irs->ipsaddr_txt);
+				    irs->ipsaddr_txt,
+				    sa_saddr_txt);
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
 			}

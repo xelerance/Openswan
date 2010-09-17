@@ -42,6 +42,6 @@ doversion() {
     echo '--- /dev/null   Tue Mar 11 13:02:56 2003'
     echo "+++ $target     Mon Feb  9 13:51:03 2004"
     echo "@@ -0,0 +1,$lines @@"
-    sed -e 's/^/+/' -e '/"/s/xxx/'${IPSECVERSION}'/' $content 
+    sed -e 's/^/+/' -e '/"/s/@IPSECVERSION@/'${IPSECVERSION}'/' $content 
 }
 

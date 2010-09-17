@@ -204,7 +204,7 @@ include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
 
-TRANSFORM_VARIABLES = sed -e "s/xxx/$(IPSECVERSION)/" \
+TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
 			-e "s:@IPSEC_EXECDIR@:$(FINALLIBEXECDIR):" \
 			-e "s:@IPSEC_SBINDIR@:$(FINALSBINDIR):" \
