@@ -319,6 +319,11 @@ delete_connection(struct connection *c, bool relations)
     set_debugging(old_cur_debugging);
 #endif
     pfreeany(c->name);
+#ifdef XAUTH
+    pfreeany(c->cisco_dns_info);
+    pfreeany(c->cisco_domain_info);
+    pfreeany(c->cisco_banner);
+#endif
 #ifdef DYNAMICDNS
     pfreeany(c->dnshostname);
 #endif /* DYNAMICDNS */
@@ -755,6 +760,12 @@ unshare_connection_strings(struct connection *c)
     struct spd_route *sr;
 
     c->name = clone_str(c->name, "connection name");
+
+#ifdef XAUTH
+    c->cisco_dns_info = clone_str(c->cisco_dns_info, "connection cisco_dns_info");
+    c->cisco_domain_info = clone_str(c->cisco_domain_info, "connection cisco_domain_info");
+    c->cisco_banner = clone_str(c->cisco_banner, "connection cisco_banner");
+#endif
 
 #ifdef DYNAMICDNS
     c->dnshostname = clone_str(c->dnshostname, "connection dnshostname");
@@ -1197,7 +1208,17 @@ add_connection(const struct whack_message *wm)
 	c->name = wm->name;
 	c->connalias = wm->connalias;
 
+#ifdef XAUTH_USEPAM
+	c->pamh = NULL;
+#endif
+
+#ifdef XAUTH
+	c->cisco_dns_info = NULL;
+	c->cisco_domain_info = NULL;
+	c->cisco_banner = NULL;
+#endif
 #ifdef DYNAMICDNS
+	c->dnshostname = NULL;
 	if (wm->dnshostname)
 		c->dnshostname = wm->dnshostname;
 #endif /* DYNAMICDNS */
@@ -1315,11 +1336,6 @@ add_connection(const struct whack_message *wm)
 
         /* Cisco interop: remote peer type */
         c->remotepeertype=wm->remotepeertype;
-        /* Initializing Cisco dns and domain info */
-        if (c->remotepeertype == CISCO) {
-        c->cisco_dns_info[0] ='\0'; 
-        c->cisco_domain_info[0] ='\0';
-        }
 
         /* Network Manager support */
 #ifdef HAVE_NM

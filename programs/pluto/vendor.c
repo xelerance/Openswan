@@ -385,7 +385,7 @@ void init_vendorid(void)
 	for (vid = _vid_tab; vid->id; vid++) {
 	    if(vid->flags & VID_SELF) {
 		char *d;
-		vid->vid = strdup(init_pluto_vendorid());
+		vid->vid = clone_str(init_pluto_vendorid(),"init_pluto_vendorid");
 		vid->vid_len = strlen(vid->vid);
 		d = alloc_bytes(strlen(vid->descr)+4
 				+strlen(ipsec_version_code())
@@ -398,7 +398,7 @@ void init_vendorid(void)
 	    }
 	    else if (vid->flags & VID_STRING) {
 		/** VendorID is a string **/
-		vid->vid = strdup(vid->data);
+		vid->vid = clone_str(vid->data,"vid->data");
 		vid->vid_len = strlen(vid->data);
 	    }
 	    else if (vid->flags & VID_MD5HASH) {

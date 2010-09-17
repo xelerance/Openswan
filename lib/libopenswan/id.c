@@ -301,18 +301,28 @@ escape_metachar(const char *src, char *dst, size_t dstlen)
 void
 remove_metachar(const unsigned char *src, char *dst, size_t dstlen)
 {
+    bool changed = FALSE;
+
+    passert(dstlen >= 1);
     while (*src != '\0' && dstlen > 1)
     {
 	if((*src >= '0' && *src <= '9')
 	   || (*src >= 'a' && *src <= 'z')
 	   || (*src >= 'A' && *src <= 'Z')
-	   || *src == '_') {
+	   || *src == '_')
+	{
 	    *dst++ = *src;
 	    dstlen--;
-	} 
+	}
+	else
+	{
+	    changed = TRUE;
+	}
 	src++;
     }
     *dst = '\0';
+    if (changed)
+	openswan_log("Warning: XAUTH username changed from '%s' to '%s'");
 }
 
 

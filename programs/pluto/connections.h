@@ -259,15 +259,17 @@ struct connection {
 #ifdef DYNAMICDNS
     char *dnshostname;
 #endif /* DYNAMICDNS */
-#ifdef MODECFG
+#ifdef XAUTH
+# ifdef MODECFG
     ip_address modecfg_dns1;
     ip_address modecfg_dns2;
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
-#endif
-    char cisco_dns_info[50];
-    char cisco_domain_info[50];
-    char server_banner[500];
+# endif
+    char *cisco_dns_info;
+    char *cisco_domain_info;
+    char *cisco_banner;
+#endif /* XAUTH */
     u_int8_t metric;              /* metric for tunnel routes */
 #ifdef HAVE_STATSD
     u_int32_t statsval;			/* track what we have told statsd */
