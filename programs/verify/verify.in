@@ -397,7 +397,7 @@ sub cmdchecks {
     printfun "Checking for 'iptables' command";
     run "which iptables";
     errchk "@out";
-    open("cat","/etc/ipsec.conf");
+    open("cat","$conf/ipsec.conf");
     foreach(grep /crlcheckinterval/,<cat>)
      {
       if(!$curlcheckdone) {
@@ -491,9 +491,9 @@ else
 	tunnelchecks;
 	cmdchecks;
 	# Go find include files and put them all into an array.
-	@configfiles[0] = "/etc/ipsec.conf";
+	@configfiles[0] = "$conf/ipsec.conf";
 	$n=1;
-	open(OE,"grep ^include /etc/ipsec.conf|");
+	open(OE,"grep ^include $conf/ipsec.conf|");
 	while(<OE>) {
 		($include_temp,$configfiles[$n]) = split(" ",$_);
 		$n++;
