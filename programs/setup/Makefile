@@ -20,7 +20,6 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 # not as /etc/rc.d/init.d/setup.
 PROGRAMDIR=$(RCDIR)
 PROGRAM=setup
-NOINSTALL=true
 EXTRA8MAN=setup.8
 
 include ${srcdir}../Makefile.program
