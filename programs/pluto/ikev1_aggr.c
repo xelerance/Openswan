@@ -1089,8 +1089,8 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 		    , &oakley_am_sadb[policy_index], st
 		    , TRUE, TRUE, ISAKMP_NEXT_KE))
 	{
-	    return STF_INTERNAL_ERROR;
 	    cur_state = NULL;
+	    return STF_INTERNAL_ERROR;
 	}
 
 	/* save initiator SA for later HASH */
