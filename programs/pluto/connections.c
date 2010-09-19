@@ -639,7 +639,7 @@ format_end(char *buf
 	const char *plus = "+";
 	endopts[0]='\0';
 
-	if(id_obrackets && id_obrackets[0]=='[')
+	if(id_obrackets[0]=='[')
 	{
 	    id_comma=",";
 	} else {
@@ -801,7 +801,6 @@ load_end_certificate(const char *filename, struct end *dst)
     time_t valid_until;
     cert_t cert;
     err_t ugh = NULL;
-    bool cached_cert = FALSE;
 
     memset(&dst->cert, 0, sizeof(dst->cert));
 
@@ -838,15 +837,10 @@ load_end_certificate(const char *filename, struct end *dst)
     case CERT_PGP:
 	select_pgpcert_id(cert.u.pgp, &dst->id);
 	
-	if (cached_cert)
-	    dst->cert = cert;
-	else
-	{
-	    valid_until = cert.u.pgp->until;
-	    add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
-	    dst->cert.type = cert.type;
-	    dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
-	}
+	valid_until = cert.u.pgp->until;
+	add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
+	dst->cert.type = cert.type;
+	dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
 	break;
 	
     case CERT_X509_SIGNATURE:
@@ -854,12 +848,9 @@ load_end_certificate(const char *filename, struct end *dst)
 	    select_x509cert_id(cert.u.x509, &dst->id);
 	}
 	
-	if (!cached_cert)
-	{
-	    /* check validity of cert */
-	    valid_until = cert.u.x509->notAfter;
-	    ugh = check_validity(cert.u.x509, &valid_until);
-	}
+	/* check validity of cert */
+	valid_until = cert.u.x509->notAfter;
+	ugh = check_validity(cert.u.x509, &valid_until);
 	if (ugh != NULL)
 	{
 	    openswan_log("  %s", ugh);
@@ -870,14 +861,10 @@ load_end_certificate(const char *filename, struct end *dst)
 	    DBG(DBG_CONTROL,
 		DBG_log("certificate is valid")
 		);
-	    if (cached_cert)
-		dst->cert = cert;
-	    else
-	    {
-		add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
-		dst->cert.type = cert.type;
-		dst->cert.u.x509 = add_x509cert(cert.u.x509);
-	    }
+	    add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
+	    dst->cert.type = cert.type;
+	    dst->cert.u.x509 = add_x509cert(cert.u.x509);
+
 	    /* if no CA is defined, use issuer as default */
 	    if (dst->ca.ptr == NULL)
 		dst->ca = dst->cert.u.x509->issuer;
