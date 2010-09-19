@@ -757,7 +757,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     {
 	time_t delay;
 	enum event_type kind = svm->timeout_event;
-	bool agreed_time = FALSE;
 	struct connection *c = st->st_connection;
 
 	switch (kind)
@@ -804,13 +803,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	     * Note: for ISAKMP SA, we let the negotiated
 	     * time stand (implemented by earlier logic).
 	     */
-	    if (agreed_time
-		&& (c->policy & POLICY_DONT_REKEY))
-	    {
-		kind = (svm->flags & SMF2_INITIATOR)
-		    ? EVENT_SA_REPLACE_IF_USED
-		    : EVENT_SA_EXPIRE;
-	    }
 	    if (kind != EVENT_SA_EXPIRE)
 	    {
 		unsigned long marg = c->sa_rekey_margin;
