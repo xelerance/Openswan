@@ -102,33 +102,33 @@ pfkey_v2_sadb_ext_string(int ext)
 }
 
 
-static char *pfkey_sadb_type_strings[]={
-	"reserved",                     /* K_SADB_RESERVED      */
-	"getspi",                       /* K_SADB_GETSPI        */
-	"update",                       /* K_SADB_UPDATE        */
-	"add",                          /* K_SADB_ADD           */
-	"delete",                       /* K_SADB_DELETE        */
-	"get",                          /* K_SADB_GET           */
-	"acquire",                      /* K_SADB_ACQUIRE       */
-	"register",                     /* K_SADB_REGISTER      */
-	"expire",                       /* K_SADB_EXPIRE        */
-	"flush",                        /* K_SADB_FLUSH         */
-	"dump",                         /* K_SADB_DUMP          */
-	"x-promisc",                    /* K_SADB_X_PROMISC     */
-	"x-pchange",                    /* K_SADB_X_PCHANGE     */
-	"x-groupsa",                    /* K_SADB_X_GRPSA       */
-	"x-addflow(eroute)",            /* K_SADB_X_ADDFLOW     */
-	"x-delflow(eroute)",            /* K_SADB_X_DELFLOW     */
-	"x-debug",                      /* K_SADB_X_DEBUG       */
-	"x-natt-new-mapping",           /* K_SADB_X_NAT_T_NEW_MAPPING */
-	"x-plumbif",                    /* K_SADB_X_PLUMBIF     */
-	"x-unplumbif",                  /* K_SADB_X_UNPLUMBIF   */
+static char *pfkey_sadb_type_strings[K_SADB_MAX + 1]={
+	[K_SADB_RESERVED] = "reserved",                     /* K_SADB_RESERVED      */
+	[K_SADB_GETSPI] = "getspi",                       /* K_SADB_GETSPI        */
+	[K_SADB_UPDATE] = "update",                       /* K_SADB_UPDATE        */
+	[K_SADB_ADD] = "add",                          /* K_SADB_ADD           */
+	[K_SADB_DELETE] = "delete",                       /* K_SADB_DELETE        */
+	[K_SADB_GET] = "get",                          /* K_SADB_GET           */
+	[K_SADB_ACQUIRE] = "acquire",                      /* K_SADB_ACQUIRE       */
+	[K_SADB_REGISTER] = "register",                     /* K_SADB_REGISTER      */
+	[K_SADB_EXPIRE] = "expire",                       /* K_SADB_EXPIRE        */
+	[K_SADB_FLUSH] = "flush",                        /* K_SADB_FLUSH         */
+	[K_SADB_DUMP] = "dump",                         /* K_SADB_DUMP          */
+	[K_SADB_X_PROMISC] = "x-promisc",                    /* K_SADB_X_PROMISC     */
+	[K_SADB_X_PCHANGE] = "x-pchange",                    /* K_SADB_X_PCHANGE     */
+	[K_SADB_X_GRPSA] = "x-groupsa",                    /* K_SADB_X_GRPSA       */
+	[K_SADB_X_ADDFLOW] = "x-addflow(eroute)",            /* K_SADB_X_ADDFLOW     */
+	[K_SADB_X_DELFLOW] = "x-delflow(eroute)",            /* K_SADB_X_DELFLOW     */
+	[K_SADB_X_DEBUG] = "x-debug",                      /* K_SADB_X_DEBUG       */
+	[K_SADB_X_NAT_T_NEW_MAPPING] = "x-natt-new-mapping",           /* K_SADB_X_NAT_T_NEW_MAPPING */
+	[K_SADB_X_PLUMBIF] = "x-plumbif",                    /* K_SADB_X_PLUMBIF     */
+	[K_SADB_X_UNPLUMBIF] = "x-unplumbif",                  /* K_SADB_X_UNPLUMBIF   */
 };
 
 const char *
-pfkey_v2_sadb_type_string(int sadb_type)
+pfkey_v2_sadb_type_string(unsigned sadb_type)
 {
-  if(sadb_type <= K_SADB_MAX) {
+  if(sadb_type <= K_SADB_MAX && pfkey_sadb_type_strings[sadb_type] != NULL) {
     return pfkey_sadb_type_strings[sadb_type];
   } else {
     return "unknown-sadb-type";
