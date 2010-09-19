@@ -58,13 +58,13 @@ static const char *const cert_status_names[] = {
 };
 
 
-static const char *const response_status_names[] = {
-    "successful",
-    "malformed request",
-    "internal error",
-    "try later",
-    "signature required",
-    "unauthorized"
+static const char *const response_status_names[STATUS_UNAUTHORIZED+1] = {
+    [STATUS_SUCCESSFUL] = "successful",
+    [STATUS_MALFORMEDREQUEST] = "malformed request",
+    [STATUS_INTERNALERROR] = "internal error",
+    [STATUS_TRYLATER] = "try later",
+    [STATUS_SIGREQUIRED] = "signature required",
+    [STATUS_UNAUTHORIZED] = "unauthorized"
 };
 
 /* response container */
