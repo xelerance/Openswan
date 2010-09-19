@@ -495,7 +495,6 @@ void add_any_oeconns(struct starter_config *cfg,
 	
 	for(i=0, oc=implicit_conns; *oc!=NULL; oc++, i++) {
 		if(found_conns[i]==FALSE) {
-			int connerr = 0;
 			struct starter_conn *conn;
 			const struct starter_conn *tconn;
 
@@ -530,12 +529,6 @@ void add_any_oeconns(struct starter_config *cfg,
 			conn->desired_state = tconn->desired_state;
 			conn->policy = tconn->policy;
 			conn->state = STATE_LOADED;
-
-			if(connerr) {
-				starter_log(LOG_LEVEL_INFO, "implicit %s: %s"
-					    , (*oc)->oe_cn, perr);
-			}
-
 		}
 	}
 }
