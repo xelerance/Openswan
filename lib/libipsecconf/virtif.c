@@ -245,8 +245,8 @@ int starter_ifaces_load (char **ifaces, unsigned int omtu, int nat_t)
 	for (j=0; j<N_IPSEC_IF; j++) {
 		found = 0;
 		for (i=ifaces; i && *i; i++) {
-			if ((valid_str(*i, &n, &tmp_phys)) && (tmp_phys) &&
-			(n>=0) && (n<N_IPSEC_IF)) {
+			if ((valid_str(*i, &n, &tmp_phys)) && (tmp_phys)
+			&& (n<N_IPSEC_IF)) {
 				if (n==j) {
 					if (found) {
 						starter_log(LOG_LEVEL_ERR,
