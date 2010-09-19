@@ -10,7 +10,8 @@ v2.6.29 (unreleased)
 * XAUTH: Avoid buffer overflow in CISCO DNS info [dhr/paul]
 * XAUTH: Avoid shell problems with single quotes in CISCO paramters [dhr/paul]
 *
-* NETLEY: Fix for spurious %hold netlink-acquires [Paul/dhr]
+* NETKEY: Fix for spurious %hold netlink-acquires [Paul/dhr]
+* Various fixes based on automated source code review [dhr]
 * SAREF: Updated for 2.6.35 kernel [Harald]
 * KLIPS: Updated for 2.6.35 kernel [Harald]
 * PACKAGING Use Epoch 1: for Debian/Ubuntu [Simon]
