@@ -112,16 +112,18 @@ int open_tcp_sock(unsigned short port)
 
 int udp_recv_loop(int udpsock)
 {
-	struct sockaddr_in from, to;
-	int fromlen, tolen;
-	struct msghdr msgh;
-	struct iovec iov;
-	char cbuf[256];
-	int  readlen, err;
-	char buf[512];
 	int packetcount =0;
+	int err;
 	
 	do {
+		struct sockaddr_in from, to;
+		size_t fromlen, tolen;
+		struct msghdr msgh;
+		struct iovec iov;
+		char cbuf[256];
+		int  readlen;
+		char buf[512];
+
 		unsigned int pktref[2] = {0};
 
 		memset(&from, 0, sizeof(from));
@@ -175,13 +177,13 @@ int udp_recv_loop(int udpsock)
 		/*
 		 * OKAY, now send the packet back again.
 		 */
-		memset(&msgh, 0, sizeof(struct msghdr));
-
 		{
 			struct cmsghdr *cmsg;
 			char cbuf[CMSG_SPACE(sizeof (unsigned int))];
 			unsigned int *refp;
 		
+			memset(&msgh, 0, sizeof(struct msghdr));
+
 			msgh.msg_control = cbuf;
 			msgh.msg_controllen = sizeof(cbuf);
 
@@ -209,12 +211,12 @@ int udp_recv_loop(int udpsock)
 			msgh.msg_iov  = &iov;
 			msgh.msg_iovlen = 1;
 			msgh.msg_flags = 0;
-		}
 
-		/* Receive one packet. */
-		if ((err = sendmsg(udpsock, &msgh, 0)) < 0) {
-			perror("sendmsg");
-			err = 0;
+			/* Receive one packet. */
+			if ((err = sendmsg(udpsock, &msgh, 0)) < 0) {
+				perror("sendmsg");
+				err = 0;
+			}
 		}
 		
 		printf("sent message of length: %d\n", err);
