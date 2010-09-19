@@ -261,7 +261,6 @@ static char *connection_name (struct starter_conn *conn)
 	else {
 		return conn->name;
 	}
-	return conn->name;
 }
 
 static void set_whack_end(struct starter_config *cfg
