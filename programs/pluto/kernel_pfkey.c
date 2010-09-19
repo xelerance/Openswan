@@ -102,7 +102,6 @@ static sparse_names pfkey_type_names = {
 	NE(K_SADB_X_NAT_T_NEW_MAPPING),
 	NE(K_SADB_X_PLUMBIF),
 	NE(K_SADB_X_UNPLUMBIF),
-	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
 
@@ -142,7 +141,6 @@ static sparse_names pfkey_ext_names = {
 	NE(K_SADB_X_EXT_NAT_T_OA),
 	NE(K_SADB_X_EXT_PLUMBIF),
 	NE(K_SADB_X_EXT_SAREF),
-	NE(K_SADB_EXT_MAX),
 	{ 0, sparse_end }
 };
 #endif /* NEVER */

@@ -36,6 +36,7 @@ typedef enum {
     STATUS_MALFORMEDREQUEST = 	1,
     STATUS_INTERNALERROR = 	2,
     STATUS_TRYLATER = 		3,
+    /* 4 is unused */
     STATUS_SIGREQUIRED = 	5,
     STATUS_UNAUTHORIZED= 	6
 } response_status;
