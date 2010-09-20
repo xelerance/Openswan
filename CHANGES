@@ -11,6 +11,7 @@ v2.6.29 (unreleased)
 * XAUTH: Avoid shell problems with single quotes in CISCO paramters [dhr/paul]
 *
 * NETKEY: Fix for spurious %hold netlink-acquires [Paul/dhr]
+* KLIPS: Fix compiling on 2.6.18 based RHEL5 kernels [Paul]
 * Various fixes based on automated source code review [dhr]
 * SAREF: Updated for 2.6.35 kernel [Harald]
 * KLIPS: Updated for 2.6.35 kernel [Harald]
