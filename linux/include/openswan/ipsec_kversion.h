@@ -235,6 +235,9 @@
 # define nfmark mark
 #else
 # define HAVE_KMEM_CACHE_T
+# if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,0)
+#  define FLOW_HAS_NO_MARK
+# endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
