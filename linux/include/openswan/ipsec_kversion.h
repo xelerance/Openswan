@@ -230,15 +230,10 @@
 # define VOID_SOCK_UNREGISTER
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,0)) 
-/*
- * skb->nfmark changed to skb->mark in linux 2.6.20
- * Red Hat backported this to their RHEL5 2.6.18 kernel
- */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
+/* skb->nfmark changed to skb->mark in 2.6.20 */
 # define nfmark mark
-#endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,20)
+#else
 # define HAVE_KMEM_CACHE_T
 #endif
 
