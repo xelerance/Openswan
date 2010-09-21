@@ -14,7 +14,6 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -1065,7 +1064,7 @@ main(int argc, char *argv[])
 			usage(progname, stderr);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "%s, %s\n", progname, spi_c_version);
+			fprintf(stdout, "%s, %s\n", progname, ipsec_version_code());
 			exit(1);
 		case '+': /* optionsfrom */
 			optionsfrom(optarg, &argc, &argv, optind, stderr);
