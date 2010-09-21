@@ -45,6 +45,7 @@ v2.6.29 (unreleased)
    #1112: Prototypes only, if function enabled in c-source with KLIPS or
           PFKEY [Henry N.]
    #1113: crypt_dh.c: Fix "warning: multi-line comment" [Tuomo]
+   #1115: Fix various warnings u_char * vs. char * for sscanf,strlen,strcpy [Henry N.]
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
