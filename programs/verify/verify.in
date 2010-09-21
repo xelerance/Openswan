@@ -284,6 +284,27 @@ sub installstartcheck {
 	   } else { warnchk "","UNKNOWN"; }
 	}
 
+# Check for SAref kernel
+	  if ( -e "/proc/net/ipsec/saref") {
+		printfun "IPsec SAref kernel support";
+		{ errchk "OK"; }
+		run "grep 'refinfo patch applied' /proc/net/ipsec/saref";
+		if("@out" == "refinfo patch applied\n")
+			{ errchk "OK"; }
+		else
+			{ warnchk "", "N/A"; }
+
+		printfun "IPsec SAref kernel detected, checking for SAbind support";
+		run "grep 'bindref patch applied' /proc/net/ipsec/saref";
+		if("@out" == "bindref patch applied\n")
+			{ errchk "OK"; }
+		else
+			{ warnchk "", "N/A"; }
+	   } else {
+		printfun "SAref kernel support";
+			{ warnchk "", "N/A"; }
+	   }
+
         if ( -e "/selinux/enforce") {
         printfun "Testing against enforced SElinux mode";
         open("cat", "/selinux/enforce");
