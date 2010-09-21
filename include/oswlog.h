@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswlog.h,v 1.11 2005/01/26 00:52:16 mcr Exp $
  */
 
 #ifndef _OSWLOG_H_
@@ -21,6 +20,9 @@
 #include <openswan.h>
 #include <stdarg.h>
 #include <stdio.h>
+#if defined(NO_DEBUG)
+# include <stdlib.h> /* for abort() */
+#endif
 
 /* moved common code to library file */
 #include "openswan/passert.h"
