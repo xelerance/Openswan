@@ -99,7 +99,7 @@ netkey)
     if test \! -f $kamepfkey
     then
         @MODPROBE@ af_key;
-	fi
+    fi
 	netkey=true;  klips=false; mast=false;;
 none)   netkey=false; klips=false; mast=false;;
 nostack) netkey=false; klips=false; mast=false;;
