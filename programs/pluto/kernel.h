@@ -356,15 +356,11 @@ extern bool eroute_connection(struct spd_route *sr
 static inline bool
 compatible_overlapping_connections(struct connection *a, struct connection *b)
 {
-#if defined(KLIPS) || defined(KLIPS_MAST)
 	return kernel_ops->overlap_supported
 		&& a && b
 		&& a != b
 		&& LIN(POLICY_OVERLAPIP, a->policy)
 		&& LIN(POLICY_OVERLAPIP, a->policy);
-#else
-	return FALSE;
-#endif
 }
 
 #ifdef KLIPS

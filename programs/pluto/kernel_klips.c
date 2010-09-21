@@ -369,7 +369,8 @@ const struct kernel_ops klips_kernel_ops = {
     set_debug: pfkey_set_debug,
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     process_ifaces: klips_process_raw_ifaces,
-    kern_name: "klips"
+    kern_name: "klips",
+    .overlap_supported = FALSE
 };
 #endif /* KLIPS */
 
