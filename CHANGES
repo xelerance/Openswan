@@ -43,6 +43,7 @@ v2.6.29 (unreleased)
 * SAREF: Add SAref checks to ipsec verify [bart/paul]
 * A bunch of Makefile.inc variables could not be overridden properly [Paul]
 * Bugtracker bugs fixed:
+   #1102: Ensure KLIPS still works on older kernels [Paul]
    #1112: Prototypes only, if function enabled in c-source with KLIPS or
           PFKEY [Henry N.]
    #1113: crypt_dh.c: Fix "warning: multi-line comment" [Tuomo]
