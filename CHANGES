@@ -40,6 +40,7 @@ v2.6.29 (unreleased)
 * NSS: Increase minimum nss for rhbz#453577 [Paul]
   (this allows us to revert workaround in git 6c8ff2791d1)
 * SAREF: Added /proc/net/ipsec/saref that shows kernel patch state [Bart]
+* SAREF: Add SAref checks to ipsec verify [bart/paul]
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
