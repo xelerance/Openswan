@@ -426,11 +426,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    "%s "           /* PLUTO_MY_SRCIP - if any */
 #ifdef XAUTH
-# ifdef MODECFG
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    "PLUTO_PEER_BANNER='%s' "
-# endif /* MODECFG */
 #endif /* XAUTH */
 #ifdef HAVE_NM
 		    "PLUTO_NM_CONFIGURED='%u' "
@@ -462,11 +460,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    , srcip_str
 #ifdef XAUTH
-# ifdef MODECFG
 		    , c->cisco_dns_info
 		    , c->cisco_domain_info
 		    , c->cisco_banner
-# endif /* MODECFG */
 #endif /* XAUTH */
 #ifdef HAVE_NM
 		    , c->nmconfigured
