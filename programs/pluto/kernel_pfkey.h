@@ -13,15 +13,20 @@
  * for more details.
  */
 
-#ifdef KLIPS
+#ifdef PFKEY
 extern void init_pfkey(void);
+#ifdef KLIPS
 extern void klips_register_proto(unsigned satype, const char *satypename);
+#endif
 extern void pfkey_close(void);
-
+#ifdef KLIPS
 extern void klips_pfkey_register_response(const struct sadb_msg *msg);
+#endif
 extern void pfkey_dequeue(void);
 extern void pfkey_event(void);
+#ifdef KLIPS
 extern void klips_pfkey_register(void);
+#endif
 extern bool pfkey_add_sa(struct kernel_sa *sa, bool replace);
 extern bool pfkey_grp_sa(const struct kernel_sa *sa0, const struct kernel_sa *sa1);
 extern bool pfkey_del_sa(const struct kernel_sa *sa);
@@ -55,7 +60,7 @@ extern bool pfkey_shunt_eroute(struct connection *c
 
 extern int pfkeyfd;
 
-#endif
+#endif /* PFKEY */
 
 #ifdef NETKEY_SUPPORT
 extern void netlink_register_proto(unsigned satype, const char *satypename);

@@ -363,6 +363,10 @@ pfkey_get_response(pfkey_buf *buf, pfkey_seq_t seq)
     return FALSE;
 }
 
+/* Note ideally, this entire file should not be required for non-klips/mast
+ * and this ifdef can go. Or this function should be moved to kernel_klips.c
+ */
+#ifdef KLIPS
 /* Process a K_SADB_REGISTER message from the kernel.
  * This will be a response to one of ours, but it may be asynchronous
  * (if kernel modules are loaded and unloaded).
@@ -400,6 +404,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 	break;
     }
 }
+#endif
 
 /* Processs a K_SADB_ACQUIRE message from KLIPS.
  * Try to build an opportunistic connection!
