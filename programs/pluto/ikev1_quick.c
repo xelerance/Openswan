@@ -2117,7 +2117,6 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 {
     struct msg_digest *md = dh->md;
     struct state *st = md->st;
-    struct connection *c = st->st_connection;
     struct payload_digest *const id_pd = md->chain[ISAKMP_NEXT_ID];
     struct payload_digest *const sapd = md->chain[ISAKMP_NEXT_SA];
     struct isakmp_sa sa = sapd->payload.sa;
@@ -2143,7 +2142,6 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
     /* HASH(2) out -- first pass */
     START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_SA);
 
-    passert(st->st_connection == c);
     passert(st->st_connection != NULL);
 
     /* sa header is unchanged -- except for np */
