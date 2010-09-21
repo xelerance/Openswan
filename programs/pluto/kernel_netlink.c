@@ -1456,10 +1456,8 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         proto_info[i].reqid = sr->reqid + 2;
     }
 
-    if (i == sizeof(proto_info) / sizeof(proto_info[0]) - 1)
-    {
-        impossible();   /* no transform at all! */
-    }
+    /* check for no transform at all */
+    passert(i == sizeof(proto_info) / sizeof(proto_info[0]) - 1)
 
     if (tunnel)
     {
