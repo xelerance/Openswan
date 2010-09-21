@@ -43,11 +43,13 @@ v2.6.29 (unreleased)
 * SAREF: Add SAref checks to ipsec verify [bart/paul]
 * A bunch of Makefile.inc variables could not be overridden properly [Paul]
 * Bugtracker bugs fixed:
+   #1042 NF_INET_LOCAL_OUT vs NF_IP_LOCAL_OUT still broken [David]
    #1102: Ensure KLIPS still works on older kernels [Paul]
    #1112: Prototypes only, if function enabled in c-source with KLIPS or
           PFKEY [Henry N.]
    #1113: crypt_dh.c: Fix "warning: multi-line comment" [Tuomo]
-   #1115: Fix various warnings u_char * vs. char * for sscanf,strlen,strcpy [Henry N.]
+   #1115: Fix various warnings u_char * vs. char * for sscanf,... [Henry N.]
+
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
