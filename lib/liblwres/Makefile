@@ -22,7 +22,7 @@ CINCLUDES =	-I${srcdir}${ISCARCH}/include \
 		-I${srcdir}../libisc/${ISCARCH}/include \
 		-I${srcdir}../libisc/include \
 		-I. -I./include -I${srcdir}include 
-CDEFINES = -g
+CDEFINES =
 CWARNINGS = -Werror
 
 CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${CINCLUDES} ${CDEFINES} ${CWARNINGS} 
