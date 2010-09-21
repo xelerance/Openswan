@@ -279,7 +279,7 @@ asn1totime(const chunk_t *utctime, asn1_t type)
 	const char* format = (type == ASN1_UTCTIME)? "%2d%2d%2d%2d%2d":
 						     "%4d%2d%2d%2d%2d";
 
-	if (sscanf(utctime->ptr, format, &t.tm_year, &t.tm_mon, &t.tm_mday,
+	if (sscanf((const char *)utctime->ptr, format, &t.tm_year, &t.tm_mon, &t.tm_mday,
 					 &t.tm_hour, &t.tm_min) != 5)
 	{
 	    return 0; /* error in time st [yy]yymmddhhmm time format */
