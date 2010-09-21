@@ -4,9 +4,10 @@
  *
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2003-2008  Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -485,9 +486,9 @@ RSA_check_signature_gen(struct state *st
 	pathlen = pathlen;      /* make sure it used even with !X509 */
 
 	{
-	  char buf[IDTOA_BUF];
 	  
 	  DBG(DBG_CONTROL,
+	      char buf[IDTOA_BUF];
 	      dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
 	      DBG_log("required CA is '%s'", buf));
 	}
@@ -502,13 +503,10 @@ RSA_check_signature_gen(struct state *st
 	    {
 		time_t tnow;
 
-		{
-		  char buf[IDTOA_BUF];
-		  
-		  DBG(DBG_CONTROL,
-		      dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
-		      DBG_log("key issuer CA is '%s'", buf));
-		}
+		DBG(DBG_CONTROL,
+		    char buf[IDTOA_BUF];
+		    dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
+		    DBG_log("key issuer CA is '%s'", buf));
 
 		/* check if found public key has expired */
 		time(&tnow);

@@ -1,6 +1,6 @@
 /* netlink interface to the kernel's IPsec mechanism
  *
- * Copyright (C) 2003,2008 Herbert Xu.
+ * Copyright (C) 2003-2008 Herbert Xu
  * Copyright (C) 2006-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2006 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2007 Bart Trojanowski <bart@jukie.net>
@@ -8,10 +8,12 @@
  * Copyright (C) 2009 Carsten Schlote <c.schlote@konzeptpark.de>
  * Copyright (C) 2008 Andreas Steffen
  * Copyright (C) 2008 Neil Horman <nhorman@redhat.com>
- * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2006-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2010 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2006-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  * Copyright (C) 2010 Mika Ilmaranta <ilmis@foobar.fi>
+ * Copyright (C) 2010 Roman Hoog Antink <rha@open.ch>
+ * Copyright (C) 2010 D. Hugh Redelmeier
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1457,7 +1459,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     }
 
     /* check for no transform at all */
-    passert(i == sizeof(proto_info) / sizeof(proto_info[0]) - 1)
+    passert(i == sizeof(proto_info) / sizeof(proto_info[0]) - 1);
 
     if (tunnel)
     {

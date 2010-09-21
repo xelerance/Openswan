@@ -1,6 +1,9 @@
 /* do X.509 operations for IKEv2
  *
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -226,7 +229,6 @@ doi_send_ikev2_cert_thinking(struct state *st)
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;
     enum certpolicy policy = st->st_connection->spd.this.sendcert;
-    bool gotcertrequest = st->hidden_variables.st_got_certrequest;
     bool send_cert	 = FALSE;
 
     struct connection *c  = st->st_connection;
@@ -249,13 +251,14 @@ doi_send_ikev2_cert_thinking(struct state *st)
 		     (c->policy & POLICY_RSASIG) ? "" : "no",
 		     prettypolicy(c->policy)));
 
-    DBG(DBG_CONTROL
-	, DBG_log(" sendcert: %s and I did%s get a certificate request "
+    DBG(DBG_CONTROL,
+	bool gotcertrequest = st->hidden_variables.st_got_certrequest;
+	DBG_log(" sendcert: %s and I did%s get a certificate request "
 		  , enum_show(&certpolicy_type_names, policy)
-		  , gotcertrequest ? "" : " not"));
+		  , gotcertrequest ? "" : " not")
+       );
 
-    DBG(DBG_CONTROL
-	, DBG_log(" so %ssend cert.", send_cert ? "" : "do not "));
+    DBG(DBG_CONTROL, DBG_log(" so %ssend cert.", send_cert ? "" : "do not "));
 
     if(!send_cert) {
 	if(!(c->policy & POLICY_RSASIG))

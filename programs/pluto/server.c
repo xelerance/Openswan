@@ -2,9 +2,10 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1094,7 +1095,6 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 bool
 send_packet(struct state *st, const char *where, bool verbose)
 {
-    bool err;
     u_int8_t ike_pkt[MAX_OUTPUT_UDP_SIZE];
     u_int8_t *ptr;
     unsigned long len;
@@ -1136,15 +1136,6 @@ send_packet(struct state *st, const char *where, bool verbose)
     (void) check_msg_errqueue(st->st_interface, POLLOUT);
 #endif /* defined(IP_RECVERR) && defined(MSG_ERRQUEUE) */
 
-#if 0
-    wlen = sendfromto(st->st_interface->fd
-		      , ptr
-		      , len, 0
-		      , sockaddrof(&st->st_remoteaddr)
-		      , sockaddrlenof(&st->st_remoteaddr)
-		      , sockaddrof(&st->st_localaddr)
-		      , sockaddrlenof(&st->st_localaddr));
-#else
     wlen = sendto(st->st_interface->fd
 		  , ptr
 		  , len, 0
@@ -1152,6 +1143,9 @@ send_packet(struct state *st, const char *where, bool verbose)
 		  , sockaddrlenof(&st->st_remoteaddr));
 
 #ifdef DEBUG
+    /* XXX This is a flow change depending on debug. not good. I assume it is only useful
+     * for actual debugging something 
+     */
     if(DBGP(IMPAIR_JACOB_TWO_TWO)) {
 	/* sleep for half a second, and second another packet */
 	usleep(500000);
@@ -1163,7 +1157,6 @@ send_packet(struct state *st, const char *where, bool verbose)
 		, st->st_interface->port
 		, ip_str(&st->st_remoteaddr)
 		, st->st_remoteport);
-#endif
 
 	wlen = sendto(st->st_interface->fd
 		      , ptr
@@ -1171,12 +1164,9 @@ send_packet(struct state *st, const char *where, bool verbose)
 		      , sockaddrof(&st->st_remoteaddr)
 		      , sockaddrlenof(&st->st_remoteaddr));
     }
-
-	
 #endif
-    err = (wlen != (ssize_t)len);
 
-    if (err)
+    if (wlen != (ssize_t)len)
     {
         /* do not log NAT-T Keep Alive packets */
         if (!verbose)

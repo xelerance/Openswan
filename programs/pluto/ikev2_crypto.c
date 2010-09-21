@@ -1,6 +1,7 @@
 /* IKEv2 - more cryptographic calculations
  *
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -114,17 +115,17 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	 * if(role == INITIATOR) {
 	 */
 	if(role != INITIATOR) {
-	    if(DBGP(DBG_CRYPT)) {
+	    DBG(DBG_CRYPT,
 		DBG_dump_chunk("our  keymat", ikeymat);
 		DBG_dump_chunk("peer keymat", rkeymat);
-	    }
+	    );
 	    st->st_esp.our_keymat = ikeymat.ptr;
 	    st->st_esp.peer_keymat= rkeymat.ptr;
 	} else {
-	    if(DBGP(DBG_CRYPT)) {
+	    DBG(DBG_CRYPT,
 		DBG_dump_chunk("our  keymat", rkeymat);
 		DBG_dump_chunk("peer keymat", ikeymat);
-	    }
+	    );
 	    st->st_esp.peer_keymat= ikeymat.ptr;
 	    st->st_esp.our_keymat = rkeymat.ptr;
 	}

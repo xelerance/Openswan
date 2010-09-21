@@ -5,7 +5,7 @@
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -1605,7 +1605,6 @@ gntoid(struct id *id, const generalName_t *gn)
 static generalName_t*
 parse_generalName(chunk_t blob, int level0)
 {
-    u_char buf[ASN1_BUF_LEN];
     asn1_ctx_t ctx;
     chunk_t object;
     unsigned int objectID = 0;
@@ -1631,6 +1630,7 @@ parse_generalName(chunk_t blob, int level0)
 	    break;
 	case GN_OBJ_DIRECTORY_NAME:
 	    DBG(DBG_PARSING,
+		u_char buf[ASN1_BUF_LEN];
 		dntoa((char *)buf, ASN1_BUF_LEN, object);
 		DBG_log("  '%s'", buf)
 	    )
@@ -1960,7 +1960,6 @@ parse_crlDistributionPoints(chunk_t blob, int level0)
 bool
 parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
 {
-    u_char  buf[ASN1_BUF_LEN];
     asn1_ctx_t ctx;
     bool critical;
     chunk_t object;
@@ -2000,6 +1999,7 @@ parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
 	case X509_OBJ_ISSUER:
 	    cert->issuer = object;
 	    DBG(DBG_PARSING,
+		u_char  buf[ASN1_BUF_LEN];
 		dntoa((char *)buf, ASN1_BUF_LEN, object);
 		DBG_log("  '%s'",buf));
 	    break;
@@ -2012,6 +2012,7 @@ parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
 	case X509_OBJ_SUBJECT:
 	    cert->subject = object;
 	    DBG(DBG_PARSING,
+		u_char  buf[ASN1_BUF_LEN];
 		dntoa((char *)buf, ASN1_BUF_LEN, object);
 		DBG_log("  '%s'",buf));
 	    break;
@@ -2117,7 +2118,6 @@ parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
 bool
 parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
 {
-    u_char buf[ASN1_BUF_LEN];
     asn1_ctx_t ctx;
     bool critical;
     chunk_t extnID;
@@ -2158,6 +2158,7 @@ parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
 	case CRL_OBJ_ISSUER:
 	    crl->issuer = object;
 	    DBG(DBG_PARSING,
+		u_char buf[ASN1_BUF_LEN];
 		dntoa((char *)buf, ASN1_BUF_LEN, object);
 		DBG_log("  '%s'",buf));
 	    break;

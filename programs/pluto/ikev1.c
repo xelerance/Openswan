@@ -1,6 +1,11 @@
 /* State machine for IKEv1
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2010  D. Hugh Redelmeier.
+ * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Hiren Joshi <joshihirenn@gmail.com>
+ * Copyright (C) 2009 Anthony Tong <atong@TrustedCS.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -707,14 +712,17 @@ informational(struct msg_digest *md)
 
                 DBG_cond_dump(DBG_PARSING, "redirected remote end info:", n_pbs->cur + pbs_left(n_pbs)-4, 4);
 
+#ifdef DEBUG
                 /*Current remote peer info*/
                 {
 
                 char buftest[ADDRTOT_BUF];
                 struct spd_route *tmp_spd = &tmp_c->spd;
                 int count_spd=0;
+
                 do {
-                DBG(DBG_CONTROLMORE, DBG_log("spd route number: %d", ++count_spd));
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("spd route number: %d", ++count_spd));
 
                 /**that info**/
                 DBG(DBG_CONTROLMORE, DBG_log("that id kind: %d",tmp_spd->that.id.kind));
@@ -735,7 +743,6 @@ informational(struct msg_digest *md)
                 tmp_spd = tmp_spd->next;
                 } while(tmp_spd!=NULL);
 
-
                 if(tmp_c->interface!=NULL){
                 DBG(DBG_CONTROLMORE, 
                 DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest)));
@@ -749,7 +756,7 @@ informational(struct msg_digest *md)
                 }
 
                 }
-
+#endif
                 ip_address old_addr;
                 /*storing old address for comparison purposes*/
                 old_addr = tmp_c->spd.that.host_addr;
@@ -763,33 +770,27 @@ informational(struct msg_digest *md)
                 tmp_c->spd.that.host_addr_name = NULL;
                 tmp_c->spd.that.id.ip_addr= tmp_c->spd.that.host_addr;
 
-                if(sameaddr(&tmp_c->spd.this.host_nexthop, &old_addr)) {
-                char buftest[ADDRTOT_BUF];
-                DBG(DBG_CONTROLMORE, DBG_log("Old remote addr %s", (addrtot(&old_addr, 0, buftest, sizeof(buftest)), buftest)));
                 DBG(DBG_CONTROLMORE,
-                DBG_log("Old this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
-                tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
-                DBG(DBG_CONTROLMORE,
-                DBG_log("New this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
-                }
+                    char buftest[ADDRTOT_BUF];
+                    if(sameaddr(&tmp_c->spd.this.host_nexthop, &old_addr)) {
+                       DBG_log("Old remote addr %s", (addrtot(&old_addr, 0, buftest, sizeof(buftest)), buftest));
+                       DBG_log("Old this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest));
+                       tmp_c->spd.this.host_nexthop = tmp_c->spd.that.host_addr;
+                       DBG_log("New this host next hop %s", (addrtot(&tmp_c->spd.this.host_nexthop, 0, buftest, sizeof(buftest)), buftest));
+                    }
 
-                if(sameaddr(&tmp_c->spd.that.host_srcip, &old_addr)) {
-                char buftest[ADDRTOT_BUF];
-                DBG(DBG_CONTROLMORE, 
-                DBG_log("Old that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
-                tmp_c->spd.that.host_srcip = tmp_c->spd.that.host_addr;
-                DBG(DBG_CONTROLMORE, 
-                DBG_log("New that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
-                }
+                    if(sameaddr(&tmp_c->spd.that.host_srcip, &old_addr)) {
+                       DBG_log("Old that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest));
+                       tmp_c->spd.that.host_srcip = tmp_c->spd.that.host_addr;
+                       DBG_log("New that host srcip %s", (addrtot(&tmp_c->spd.that.host_srcip, 0, buftest, sizeof(buftest)), buftest));
+                    }
 
-                if(sameaddr(&tmp_c->spd.that.client.addr, &old_addr)) {
-                char buftest[ADDRTOT_BUF];
-                DBG(DBG_CONTROLMORE, 
-                DBG_log("Old that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest)));
-                tmp_c->spd.that.client.addr = tmp_c->spd.that.host_addr;
-                DBG(DBG_CONTROLMORE, 
-                DBG_log("New that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest)));
-                }
+                    if(sameaddr(&tmp_c->spd.that.client.addr, &old_addr)) {
+                       DBG_log("Old that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest));
+                       tmp_c->spd.that.client.addr = tmp_c->spd.that.host_addr;
+                       DBG_log("New that client ip %s", (addrtot(&tmp_c->spd.that.client.addr, 0, buftest, sizeof(buftest)), buftest));
+                    }
+                   );
 
 		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
 
@@ -1993,10 +1994,10 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* if requested, send the new reply packet */
 	    if (smc->flags & SMF_REPLY)
 	    {
-		char buf[ADDRTOT_BUF];
 
-		DBG(DBG_CONTROL
-		    , DBG_log("sending reply packet to %s:%u (from port %u)"
+		DBG(DBG_CONTROL,
+		    char buf[ADDRTOT_BUF];
+		    DBG_log("sending reply packet to %s:%u (from port %u)"
 			      , (addrtot(&st->st_remoteaddr
 					 , 0, buf, sizeof(buf)), buf)
 			      , st->st_remoteport

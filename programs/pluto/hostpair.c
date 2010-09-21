@@ -1,5 +1,9 @@
 /* information about connections between hosts and clients
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -128,7 +132,6 @@ find_host_pair(const ip_address *myaddr
 	       , u_int16_t hisport)
 {
     struct host_pair *p, *prev;
-    char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
 
     /* default hisaddr to an appropriate any */
     if (hisaddr == NULL) {
@@ -163,8 +166,10 @@ find_host_pair(const ip_address *myaddr
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
-	DBG(DBG_CONTROLMORE
-	    , DBG_log("find_host_pair: comparing to %s:%d %s:%d\n"
+	DBG(DBG_CONTROLMORE,
+	    char b1[ADDRTOT_BUF];
+	    char b2[ADDRTOT_BUF];
+	    DBG_log("find_host_pair: comparing to %s:%d %s:%d\n"
 		      , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
 		      , p->me.host_port
 		      , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
@@ -199,11 +204,12 @@ find_host_pair_connections(const char *func
 			   , const ip_address *myaddr, u_int16_t myport			   
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
-    char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
     struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
 
-    DBG(DBG_CONTROLMORE
-	, DBG_log("find_host_pair_conn (%s): %s:%d %s:%d -> hp:%s\n"
+    DBG(DBG_CONTROLMORE,
+	char b1[ADDRTOT_BUF];
+	char b2[ADDRTOT_BUF];
+	DBG_log("find_host_pair_conn (%s): %s:%d %s:%d -> hp:%s\n"
 		  , func
 		  , (addrtot(myaddr,  0, b1, sizeof(b1)), b1)
 		  , myport
@@ -224,10 +230,11 @@ connect_to_host_pair(struct connection *c)
 					      , &c->spd.that.host_addr
 					      , c->spd.that.host_port);
 
-	char b1[ADDRTOT_BUF],b2[ADDRTOT_BUF];
 
-	DBG(DBG_CONTROLMORE
-	    , DBG_log("connect_to_host_pair: %s:%d %s:%d -> hp:%s\n"
+	DBG(DBG_CONTROLMORE,
+	    char b1[ADDRTOT_BUF];
+	    char b2[ADDRTOT_BUF];
+	    DBG_log("connect_to_host_pair: %s:%d %s:%d -> hp:%s\n"
 		      , (addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1)), b1)
 		      , c->spd.this.host_port
 		      , (addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2)), b2)

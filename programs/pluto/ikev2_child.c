@@ -1,7 +1,8 @@
 /* IKEv2 - CHILD SA - calculations
  *
- * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -283,8 +284,6 @@ static int ikev2_evaluate_connection_fit(struct connection *d
     int bestfit = -1;
     int best_tsr, best_tsi; 
     struct end *ei, *er;
-#ifdef DEBUG
-    char ei3[SUBNETTOT_BUF],er3[SUBNETTOT_BUF];
     
     if(role == INITIATOR) {
 	ei = &sr->this;
@@ -294,8 +293,10 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	er = &sr->this;
     }
 	
-    if (DBGP(DBG_CONTROLMORE))
+    DBG(DBG_CONTROLMORE,
     {
+	char ei3[SUBNETTOT_BUF];
+	char er3[SUBNETTOT_BUF];
 	subnettot(&ei->client,  0, ei3, sizeof(ei3));
 	subnettot(&er->client,  0, er3, sizeof(er3));
 	DBG_log("  ikev2_eval_conn evaluating "
@@ -304,17 +305,19 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		, er3, er->protocol, er->port
 		, is_virtual_connection(d) ? "(virt)" : "");
     }
-#endif /* DEBUG */
+    );
    
     /* compare tsi/r array to this/that, evaluating how well it fits */
     for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
 	for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
 	    /* does it fit at all? */
 
-	    if (DBGP(DBG_CONTROLMORE))
+	    DBG(DBG_CONTROLMORE,
 	    {
-		char lbi[ADDRTOT_BUF], hbi[ADDRTOT_BUF];
-		char lbr[ADDRTOT_BUF], hbr[ADDRTOT_BUF];
+		char lbi[ADDRTOT_BUF];
+		char hbi[ADDRTOT_BUF];
+		char lbr[ADDRTOT_BUF];
+		char hbr[ADDRTOT_BUF];
 		addrtot(&tsi[tsi_ni].low,  0, lbi, sizeof(lbi));
 		addrtot(&tsi[tsi_ni].high, 0, hbi, sizeof(hbi));
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
@@ -324,7 +327,7 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 			, tsi_ni, lbi, hbi
 			, tsr_ni, lbr, hbr);
 	    }
-
+	    );
 	    /* do addresses fit into the policy? */
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
@@ -346,12 +349,13 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		int fitbits2  = maskbits2 + ts_range2;
 		int fitbits = (fitbits1 << 8) + fitbits2;
 
-		if (DBGP(DBG_CONTROLMORE))
+		DBG(DBG_CONTROLMORE,
 		{
 		    DBG_log("      has ts_range1=%u maskbits1=%u ts_range2=%u maskbits2=%u fitbits=%d <> %d"
 			    , ts_range1, maskbits1, ts_range2, maskbits2
 			    , fitbits, bestfit);
 		}
+		);
 
 		if(fitbits > bestfit) {
 		    best_tsi = tsi_ni;

@@ -1,6 +1,10 @@
 /* Support of X.509 attribute certificates
  * Copyright (C) 2002 Ueli Gallizzi, Ariane Seiler
  * Copyright (C) 2003 Martin Berner, Lukas Suter
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Gilles Espinasse <g.esp@free.fr>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +16,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ac.c,v 1.10 2005/09/19 00:22:00 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -669,12 +672,12 @@ check_ac_validity(const x509acert_t *ac)
 static bool
 verify_x509acert(x509acert_t *ac, bool strict)
 {
-    u_char buf[BUF_LEN];
     x509cert_t *aacert;
     err_t ugh = NULL;
     time_t valid_until = ac->notAfter;
 
     DBG(DBG_CONTROL,
+	u_char buf[BUF_LEN];
 	dntoa((char *)buf, BUF_LEN, ac->entityName);
 	DBG_log("holder: '%s'",buf);
 	dntoa((char *)buf, BUF_LEN, ac->issuerName);

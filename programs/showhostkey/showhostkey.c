@@ -5,6 +5,8 @@
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
  * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -476,7 +478,11 @@ int main(int argc, char *argv[])
     }
 
     if(verbose > 2) {
+#ifdef DEBUG
 	set_debugging(DBG_ALL);
+#else
+	fprintf(stderr, "verbosity cannot be set - compiled without DEBUG\n");
+#endif
     }
 
     /* now load file from indicated location */

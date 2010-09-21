@@ -1,5 +1,7 @@
 /* Implement policy groups-style control files (aka "foodgroups")
  * Copyright (C) 2002  D. Hugh Redelmeier.
+ * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -144,10 +146,10 @@ read_foodgroup(struct fg_groups *g)
     snprintf(fg_path, fg_path_space, "%s/%s", oco->policies_dir, fgn);
     if (!lexopen(&flp_space, fg_path, TRUE))
     {
-	char cwd[PATH_MAX];
 
-	DBG(DBG_CONTROL
-	    , DBG_log("no group file \"%s\" (pwd:%s)"
+	DBG(DBG_CONTROL,
+	    char cwd[PATH_MAX];
+	    DBG_log("no group file \"%s\" (pwd:%s)"
 		      , fg_path
 		      , getcwd(cwd, sizeof(cwd))));
     }

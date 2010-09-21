@@ -1,11 +1,13 @@
 /* 
  * Cryptographic helper function.
  * Copyright (C) 2004-2007 Michael C. Richardson <mcr@xelerance.com>
- * Copyright (C) 2004-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2004-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2006 Luis F. Ortiz <lfo@polyad.org>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2008 Anthony Tong <atong@TrustedCS.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -944,8 +946,10 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	init_rnd_pool();
 	load_oswcrypto();
 	free_preshared_secrets();
+#ifdef DEBUG
 	openswan_passert_fail = helper_passert_fail;
 	debug_prefix='!';
+#endif
 
 	pluto_crypto_helper(fds[1], n);
 

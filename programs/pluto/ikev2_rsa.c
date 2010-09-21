@@ -3,7 +3,7 @@
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -209,10 +209,10 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 
     sig += der_digestinfo_len;
 
-    if(DBGP(DBG_CRYPT)) {
+    DBG(DBG_CRYPT,
 	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
 	DBG_dump("v2rsa computed hash:", sig, hash_len);
-    }
+    );
 	
     if(memcmp(sig, hash_val, hash_len) != 0) {
 	return "9""authentication failure: received SIG does not match computed HASH, but message is well-formed";

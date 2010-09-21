@@ -1,7 +1,7 @@
 /*
  * Openswan config file parser (keywords.c)
  * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -207,7 +207,7 @@ struct keyword_enum_values kw_nm_configured=
 extern struct keyword_enum_values kw_host_list;
 
 
-
+#ifdef DEBUG
 struct keyword_enum_value kw_plutodebug_values[]={
     { "none",     DBG_NONE },
     { "all",      DBG_ALL },
@@ -264,7 +264,7 @@ struct keyword_enum_value kw_klipsdebug_values[]={
 
 struct keyword_enum_values kw_klipsdebug_list=
     { kw_klipsdebug_values, sizeof(kw_klipsdebug_values)/sizeof(struct keyword_enum_value)};
-    
+#endif
 
 struct keyword_enum_value kw_phase2types_values[]={
     { "ah+esp",   POLICY_ENCRYPT|POLICY_AUTHENTICATE },
@@ -295,8 +295,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"interfaces",     kv_config, kt_string,    KSF_INTERFACES,NOT_ENUM},
     {"myid",           kv_config, kt_string,    KSF_MYID,NOT_ENUM},
     {"syslog",         kv_config, kt_string,    KSF_SYSLOG,NOT_ENUM},
+#ifdef DEBUG
     {"klipsdebug",     kv_config, kt_list,      KBF_KLIPSDEBUG, &kw_klipsdebug_list},
     {"plutodebug",     kv_config, kt_list,      KBF_PLUTODEBUG, &kw_plutodebug_list},
+#endif
     {"plutoopts",      kv_config, kt_string,    KSF_PLUTOOPTS,NOT_ENUM},
     {"plutostderrlog", kv_config, kt_filename,  KSF_PLUTOSTDERRLOG,NOT_ENUM},
     {"plutorestartoncrash", kv_config, kt_bool, KBF_PLUTORESTARTONCRASH,NOT_ENUM},
