@@ -4,7 +4,19 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.29 (unreleased)
+v2.6.30 (unreleased)
+* Bugtracker bugs fixed:
+   # 619: XP Pro SP2 sends more then 20 CA payloads when leftsendcert=always is not set
+   # 690 ipsec lwdnsq --help not implemented
+   # 860 Port --random for newhostkey [Paul]
+   #1005 Incorrect message "R_U_THERE_ACK has unexpected sequence number" [Mike]
+   #1040: Fix to compile without DEBUG [Paul]
+   #1054: Startup warning: "ignored obsolete keyword (null)" [Michael Smith]
+   #1112: Prototypes only, if function enabled in c-source with KLIPS or
+          PFKEY [Henry N.]
+   #1115: Fix various warnings u_char * vs. char * for sscanf,... [Henry N.]
+
+v2.6.29 (September 27, 2010)
 ! This release is made for CVE-2010-3302 and CVE-2010-3308
 * XAUTH: Avoid buffer overflow in CISCO DNS info [dhr/paul]
          Avoid shell problems with single quotes CISCO DNS paramters [dhr/paul]
@@ -43,18 +55,9 @@ v2.6.29 (unreleased)
 * SAREF: Add SAref checks to ipsec verify [bart/paul]
 * A bunch of Makefile.inc variables could not be overridden properly [Paul]
 * Bugtracker bugs fixed:
-   # 690 ipsec lwdnsq --help not implemented
-   # 860 Port --random for newhostkey [Paul]
-   #1005 Incorrect message "R_U_THERE_ACK has unexpected sequence number" [Mike]
-   #1040: Fix to compile without DEBUG [Paul]
    #1042 NF_INET_LOCAL_OUT vs NF_IP_LOCAL_OUT still broken [David]
-   #1054: Startup warning: "ignored obsolete keyword (null)" [Michael Smith]
    #1102: Ensure KLIPS still works on older kernels [Paul]
-   #1112: Prototypes only, if function enabled in c-source with KLIPS or
-          PFKEY [Henry N.]
    #1113: crypt_dh.c: Fix "warning: multi-line comment" [Tuomo]
-   #1115: Fix various warnings u_char * vs. char * for sscanf,... [Henry N.]
-
 
 v2.6.28 (July 29, 2010)
 * MAST: Fix SAref vmalloc() call that could cause a kernel panic [Bart]
