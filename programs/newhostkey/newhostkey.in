@@ -12,16 +12,16 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: newhostkey.in,v 1.8 2005/08/18 12:11:19 ken Exp $
 
 me="ipsec newhostkey"
-usage="Usage: $me --output filename [--bits n] [--quiet] [--hostname host] [--configdir nssdbdir] [--password password] 
+usage="Usage: $me --output filename [--random device] [--bits n] [--quiet] [--hostname host] [--configdir nssdbdir] [--password password] 
          or
-       $me --output - [--bits n] [--quiet] [--verbose] [--hostname host]  [--configdir nssdbdir] [--password password] >filename"
+       $me --output - [--random device] [--bits n] [--quiet] [--verbose] [--hostname host]  [--configdir nssdbdir] [--password password] >filename"
 
 bits=2192
 verbose=
 host=
+random=/dev/random
 output=
 configdir=
 password=
@@ -34,7 +34,7 @@ do
 	--output)	output="$2" ; shift		;;
 	--verbose)	verbose=--verbose 	;;
 	--version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
-	--random)	host="$host --random $2" ; shift	;;
+	--random)	random="--random $2" ; shift	;;
     --configdir)    configdir="--configdir $2" ;    shift   ;;
     --password)     password="--password $2" ;      shift   ;;
 	--help)	echo "$usage" ; exit 0	;;
@@ -61,7 +61,7 @@ fi
 
 (
 	echo ': RSA	{'
-	ipsec rsasigkey $verbose $configdir $password $host $bits 
+	ipsec rsasigkey $verbose $random $configdir $password $host $bits 
 	echo '	}'
 	echo '# do not change the indenting of that "}"'
 ) |
