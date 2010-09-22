@@ -45,6 +45,7 @@ v2.6.29 (unreleased)
 * Bugtracker bugs fixed:
    #1040: Fix to compile without DEBUG [Paul]
    #1042 NF_INET_LOCAL_OUT vs NF_IP_LOCAL_OUT still broken [David]
+   #1054: Startup warning: "ignored obsolete keyword (null)" [Michael Smith]
    #1102: Ensure KLIPS still works on older kernels [Paul]
    #1112: Prototypes only, if function enabled in c-source with KLIPS or
           PFKEY [Henry N.]
