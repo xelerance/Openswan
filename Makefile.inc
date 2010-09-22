@@ -265,7 +265,7 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # Note you need a locally running bind9 nameserver with lwres{} enabled
 # to use this, or have the "lwres" package installed and running.
 # This only affects conns that use DNS for keys in lookups.
-USE_LWRES?=true
+USE_LWRES?=false
 
 # Do a new lookup every time a connection is (re)started. This works better
 # on hosts with some dyndns service, since DPD will cause a new dns lookup,
