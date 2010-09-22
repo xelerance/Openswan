@@ -241,6 +241,7 @@ v2.6.24 (Jan 8, 2010)
 * Move NSS debug logging to DBG_PARSING [Tuomo]
 * Bugtracker bugs fixed:
    # 428:  KLIPS NULL encryption patch (through cryptoapi)
+   # 860 Port --random for newhostkey [Paul]
    #1004: L2TP broken with NAT'ed clients [dhr/Tuomo/Paul]
    #1005 Incorrect message "R_U_THERE_ACK has unexpected sequence number" [Mike]
    #1053: typo in notification sending routine [Seong-hun Lim]
