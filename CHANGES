@@ -6,7 +6,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.30 (unreleased)
 * Bugtracker bugs fixed:
-   # 619: XP Pro SP2 sends more then 20 CA payloads when leftsendcert=always is not set
+   # 252/619 more than 20 payloads in message; ignored [paul]
    # 690 ipsec lwdnsq --help not implemented
    # 860 Port --random for newhostkey [Paul]
    #1005 Incorrect message "R_U_THERE_ACK has unexpected sequence number" [Mike]
