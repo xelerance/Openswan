@@ -366,6 +366,12 @@
 #endif
 #endif
 
+#if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,30)
+# ifndef CONFIG_COMPAT_NET_DEV_OPS
+#  define USE_NETDEV_OPS
+# endif
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)
 # define USE_NETDEV_OPS
 #else
