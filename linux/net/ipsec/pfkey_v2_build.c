@@ -22,7 +22,7 @@
  * kernel and in user space
 */
 
-#if defined(__KERNEL__) && defined(linux)
+#if defined(__KERNEL__) && (defined(linux) || defined(__linux__))
 
 # include <linux/kernel.h>  /* for printk */
 

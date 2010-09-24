@@ -12,21 +12,18 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_ext_bits.c,v 1.22 2005/05/11 01:45:31 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parse.c.
  */
 
-char pfkey_v2_ext_bits_c_version[] = "$Id: pfkey_v2_ext_bits.c,v 1.22 2005/05/11 01:45:31 mcr Exp $";
-
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
  * kernel and in user space
 */
 
-#if defined(__KERNEL__) && defined(linux)
+#if defined(__KERNEL__) && (defined(linux) || defined(__linux__))
 
 # include <linux/kernel.h>  /* for printk */
 
