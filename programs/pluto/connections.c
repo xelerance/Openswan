@@ -1452,6 +1452,7 @@ add_connection(const struct whack_message *wm)
 	    (void) format_connection(topo, sizeof(topo), c, &c->spd);
 
 	    DBG_log("%s", topo);
+	);
 
 #if 0
 	    /* Make sure that address families can be correctly inferred
@@ -1468,6 +1469,7 @@ add_connection(const struct whack_message *wm)
 		    == subnettypeof(&c->spd.that.client));
 #endif
 
+	DBG(DBG_CONTROL,
 	    DBG_log("ike_life: %lus; ipsec_life: %lus; rekey_margin: %lus;"
 		" rekey_fuzz: %lu%%; keyingtries: %lu; policy: %s"
 		, (unsigned long) c->sa_ike_life_seconds
