@@ -17,8 +17,6 @@
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
 
-char pfkey_v2_build_c_version[] = "$Id: pfkey_v2_build.c,v 1.53 2005/11/09 00:30:37 mcr Exp $";
-
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
  * kernel and in user space
