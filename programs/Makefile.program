@@ -219,7 +219,6 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_CONFS@:$(FINALCONFDIR):" \
 			-e "s:@IPSEC_CONFDDIR@:$(FINALCONFDDIR):" \
 			-e "s:@USE_IPROUTE2@:$(USE_IPROUTE2):" \
-			-e "s:@OE_FLAG@:$(OE_FLAG):" \
 			-e "s:@USE_DEFAULT_CONNS@:$(USE_DEFAULT_CONNS):" \
                         -e "s:@MODPROBE@:$(MODPROBE):" \
 

@@ -1330,6 +1330,7 @@ in_struct(void *struct_ptr, struct_desc *sd
 	    {
 		u_int32_t n = 0;
 
+		/* Reportedly fails on arm, see bug #775 */
 		for (; i != 0; i--)
 		    n = (n << BITS_PER_BYTE) | *cur++;
 

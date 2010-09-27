@@ -1,5 +1,12 @@
 /* Openswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2009 Gilles Espinasse <g.esp@free.fr>
+ * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -990,14 +997,16 @@ void nat_traversal_change_port_lookup(struct msg_digest *md, struct state *st)
 	      && st->st_localport == st->st_interface->port))
 	    
 	{
-	    char b1[ADDRTOT_BUF], b2[ADDRTOT_BUF];
 
 	    DBG(DBG_NATT,
+	        char b1[ADDRTOT_BUF];
+	        char b2[ADDRTOT_BUF];
 		DBG_log("NAT-T connection has wrong interface definition %s:%u vs %s:%u"
 			, (addrtot(&st->st_localaddr, 0, b1, sizeof(b1)),b1)
 			, st->st_localport
 			, (addrtot(&st->st_interface->ip_addr, 0, b2, sizeof(b2)),b2)
-			, st->st_interface->port));
+			, st->st_interface->port)
+	    );
 
 	    for (i = interfaces; i !=  NULL; i = i->next) {
 		if ((sameaddr(&st->st_localaddr, &i->ip_addr))
@@ -1059,10 +1068,6 @@ void process_pfkey_nat_t_new_mapping(
 		ugh = "only AF_INET supported";
 	}
 	else {
-		char text_said[SATOT_BUF];
-		char _srca[ADDRTOT_BUF], _dsta[ADDRTOT_BUF];
-		ip_said said;
-
 		initaddr((const void *) &((const struct sockaddr_in *)srca)->sin_addr,
 			sizeof(((const struct sockaddr_in *)srca)->sin_addr),
 			srca->sa_family, &(nfo.src));
@@ -1073,6 +1078,11 @@ void process_pfkey_nat_t_new_mapping(
 		nfo.dport = ntohs(((const struct sockaddr_in *)dsta)->sin_port);
 
 		DBG(DBG_NATT,
+			char text_said[SATOT_BUF];
+			char _srca[ADDRTOT_BUF];
+			char _dsta[ADDRTOT_BUF];
+			ip_said said;
+
 			initsaid(&nfo.src, nfo.sa->sadb_sa_spi, SA_ESP, &said);
 			satot(&said, 0, text_said, SATOT_BUF);
 			addrtot(&nfo.src, 0, _srca, ADDRTOT_BUF);

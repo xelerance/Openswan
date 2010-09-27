@@ -1,6 +1,7 @@
 /* error logging functions
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: oswlog.c,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #include <stdio.h>
@@ -42,9 +42,11 @@ bool
 bool
     logged_txt_warning = FALSE;  /* should we complain about finding KEY? */
 
+#ifdef DEBUG
 void openswanlib_passert_fail(const char *pred_str, const char *file_str,
 			      unsigned long line_no);
 openswan_passert_fail_t openswan_passert_fail = openswanlib_passert_fail;
+#endif
 
 void
 tool_init_log(void)

@@ -1,6 +1,11 @@
 /* demultiplex incoming IKE messages
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2010  D. Hugh Redelmeier.
+ * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Simon Deziel <simon@xelerance.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -703,7 +708,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     /* if requested, send the new reply packet */
     if (svm->flags & SMF2_REPLY)
     {
-	char buf[ADDRTOT_BUF];
 
 	/* free previously transmitted packet */
 	freeanychunk(st->st_tpacket);
@@ -713,8 +717,9 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    nat_traversal_change_port_lookup(md, st);
 	}
 #endif
-	DBG(DBG_CONTROL
-	    , DBG_log("sending reply packet to %s:%u (from port %u)"
+	DBG(DBG_CONTROL,
+	    char buf[ADDRTOT_BUF];
+	    DBG_log("sending reply packet to %s:%u (from port %u)"
 		      , (addrtot(&st->st_remoteaddr
 				 , 0, buf, sizeof(buf)), buf)
 		      , st->st_remoteport

@@ -68,6 +68,7 @@ extern void openswan_switch_fail(int n
 # define impossible() osw_abort()
 # define bad_case(n) osw_abort()
 # define passert(pred)  { }	/* do nothing */
+# define pexpect(pred)  { }	/* do nothing */
 # define happy(x)  { (void) x; }	/* evaluate non-judgementally */
 
 #endif /*!DEBUG*/

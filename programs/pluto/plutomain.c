@@ -2,10 +2,11 @@
  * Copyright (C) 1997      Angelos D. Keromytis.
  * Copyright (C) 1998-2001 D. Hugh Redelmeier.
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009-2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -111,7 +112,9 @@
 
 const char *ctlbase = "/var/run/pluto";
 
+#ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
+#endif
 
 /** usage - print help messages
  *
@@ -333,7 +336,9 @@ main(int argc, char **argv)
 
     global_argv = argv;
     global_argc = argc;
+#ifdef DEBUG
     openswan_passert_fail = passert_fail;
+#endif
 
     /* see if there is an environment variable */
     coredir = getenv("PLUTO_CORE_DIR");
@@ -639,9 +644,11 @@ main(int argc, char **argv)
 	case '4':	/* --disable_port_floating */
 	    nat_t_spf = FALSE;
 	    continue;
+#ifdef DEBUG
 	case '5':	/* --debug-nat_t */
 	    base_debugging |= DBG_NATT;
 	    continue;
+#endif
 #endif
 	case '6':	/* --virtual_private */
 	    virtual_private = optarg;

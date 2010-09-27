@@ -514,8 +514,7 @@ dpd_inR(struct state *p1st
 		seqno, p1st->st_dpd_expectseqno, p1st->st_serialno));
 
     if (!p1st->st_dpd_expectseqno && seqno != p1st->st_dpd_expectseqno) {
-        loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has unexpected sequence number (expected: %u got: %u"
-	       , seqno, p1st->st_dpd_expectseqno);
+        loglog(RC_LOG_SERIOUS, "DPD: unexpected R_U_THERE_ACK packet with sequence number %u", seqno);
 	p1st->st_dpd_expectseqno = 0;
 	/* do not update time stamp, so we'll send a new one sooner */
     } else {

@@ -3,7 +3,10 @@
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
- * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006 Matthias Haas" <mh@pompase.net>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,7 +18,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: x509keys.c,v 1.6 2005/08/05 19:18:47 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -280,7 +282,6 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 
 	if (cr->isacr_type == CERT_X509_SIGNATURE)
 	{
-	    char buf[IDTOA_BUF];
 
 	    if (ca_name.len > 0)
 	    {
@@ -298,6 +299,7 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	    }
 
 	    DBG(DBG_PARSING | DBG_CONTROL,
+		char buf[IDTOA_BUF];
 		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
 		DBG_log("requested CA: '%s'", buf);
 	    )
@@ -328,7 +330,6 @@ ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 
 	if (cr->isacertreq_enc == CERT_X509_SIGNATURE)
 	{
-	    char buf[IDTOA_BUF];
 
 	    if (ca_name.len > 0)
 	    {
@@ -346,6 +347,7 @@ ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	    }
 
 	    DBG(DBG_PARSING | DBG_CONTROL,
+		char buf[IDTOA_BUF];
 		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
 		DBG_log("requested CA: '%s'", buf);
 	    )

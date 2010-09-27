@@ -2,8 +2,12 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003-2008 Michael C. Richardson <mcr@xelerance.com>
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2008 Ilia Sotnikov
+ * Copyright (C) 2009 Seong-hun Lim
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1331,7 +1335,6 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct ke_continuation *ke = (struct ke_continuation *)pcrc;
     struct msg_digest *md = ke->md;
     struct state *st = md->st;
-    int next_payload;
 
     /* send CR if auth is RSA and no preloaded RSA public key exists*/
     bool send_cr = FALSE;
@@ -1355,7 +1358,9 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 	}
 
 #ifdef DEBUG
+ {
     /* Nr out */
+    int next_payload;
     next_payload = ISAKMP_NEXT_NONE;
 
     if(cur_debugging & IMPAIR_BUST_MR2)
@@ -1384,6 +1389,7 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_INTERNAL_ERROR;
 	close_output_pbs(&vid_pbs);
     }
+ }
 #else
     /* Nr out */
     if (!ship_nonce(&st->st_nr, r

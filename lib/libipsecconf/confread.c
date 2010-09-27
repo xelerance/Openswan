@@ -310,7 +310,7 @@ static int load_setup (struct starter_config *cfg
 	    case kt_comment:
 		break;
 	    case kt_obsolete:
-	        starter_log(LOG_LEVEL_INFO, "Warning: ignored obsolete keyword %s",kw->string);
+	        starter_log(LOG_LEVEL_INFO, "Warning: ignored obsolete keyword %s",kw->keyword.keydef->keyname);
 		break;
 	    }
 	}

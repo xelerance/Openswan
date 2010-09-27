@@ -375,15 +375,6 @@ USE_LDAP?=false
 # Include libcurl support (currently used for fetching CRLs)
 USE_LIBCURL?=false
 
-# should opportunistic encryption be turned on by default?
-# Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=true
-ifeq ($(USE_OE),false)
-# warning: examples subdirectory is statically defined here
-OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
-else
-endif
-
 # should we include all manner of known to be broken/weak?
 # use this only if you are building some kind of a testing
 # device. Normal use does not need any of this.

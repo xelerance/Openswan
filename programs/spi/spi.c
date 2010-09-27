@@ -2,6 +2,8 @@
  * All-in-one program to set Security Association parameters
  * Copyright (C) 1996  John Ioannidis.
  * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002  Richard Guy Briggs.
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +16,6 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: spi.c,v 1.114 2005/08/18 14:04:40 ken Exp $";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -548,10 +549,14 @@ main(int argc, char *argv[])
 	while((c = getopt_long(argc, argv, ""/*"H:P:Z:46dcA:E:e:s:a:w:i:D:S:hvgl:+:f:"*/, longopts, 0)) != EOF) {
 		switch(c) {
 		case 'g':
+#ifdef DEBUG
 			debug = 1;
 			pfkey_lib_debug = PF_KEY_DEBUG_PARSE_MAX;
 			cur_debugging = 0xffffffff;
 			argcount--;
+#else
+			fprintf(stderr, "%s: Cannot set debug - compiled without DEBUG\n", progname);
+#endif
 			break;
 
 		case 'R':
@@ -1065,7 +1070,7 @@ main(int argc, char *argv[])
 			usage(progname, stderr);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "%s, %s\n", progname, spi_c_version);
+			fprintf(stdout, "%s, %s\n", progname, ipsec_version_code());
 			exit(1);
 		case '+': /* optionsfrom */
 			optionsfrom(optarg, &argc, &argv, optind, stderr);
