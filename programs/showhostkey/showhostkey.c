@@ -37,6 +37,10 @@
 #include <sys/utsname.h>
 
 #include <arpa/nameser.h>
+/* older versions lack ipseckey support */
+#ifndef ns_t_ipseckey
+# define ns_t_ipseckey 45
+#endif
 
 #include "constants.h"
 #include "oswalloc.h"
