@@ -1,6 +1,7 @@
 #! /bin/sh
 # show defaults for %defaultroute
 # Copyright (C) 2000  Henry Spencer.
+# Copyright (C) 2010  Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -12,7 +13,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: showdefaults.in,v 1.7 2005/01/11 17:52:50 ken Exp $
 
 info=/var/run/pluto/ipsec.info
 me="ipsec showdefaults"
@@ -27,6 +27,10 @@ if test -s $info
 then
 	sed -n '/^defaultroute/s/default//p' $info
 	sed -n '/^#dr:/s/dr://p' $info
+elif test -f $info
+then
+	echo "$me: defaults file is empty \`$info'" >&2
+	exit 1
 else
 	echo "$me: cannot find defaults file \`$info'" >&2
 	exit 1
