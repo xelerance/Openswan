@@ -1320,9 +1320,9 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		    s->ids = i;
 		    idtoa(&id, idb, IDTOA_BUF);
 		    DBG(DBG_CONTROL,
-			DBG_log("id type added to secret(%p) %d: %s",
+			DBG_log("id type added to secret(%p) %s: %s",
 				s,
-				s->pks.kind,
+				enum_name(&ppk_names,s->pks.kind),
 				idb));
 		}
 		if (!shift())
