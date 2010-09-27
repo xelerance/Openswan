@@ -26,4 +26,6 @@
 /*
  * Not all environments set this? happened on a arm_tools cross compile
  */
-#define linux
+#ifndef linux
+# define linux
+#endif
