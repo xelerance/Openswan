@@ -14,7 +14,7 @@ mv openswan-2 openswan-$1
 cd openswan-$1
 
 echo "Fixing Makefile.inc..."
-cat Makefile.inc | sed s/^USE_LWRES.*/USE_LWRES?=false/ | sed s/^USE_OE.*/USE_OE?=false/ > Makefile.inc2 && mv Makefile.inc2 Makefile.inc
+cat Makefile.inc | sed s/^USE_LWRES.*/USE_LWRES?=false/ > Makefile.inc2 && mv Makefile.inc2 Makefile.inc
 
 
 echo "I am setting the Version info..."
