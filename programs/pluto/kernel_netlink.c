@@ -1459,7 +1459,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     }
 
     /* check for no transform at all */
-    passert(i == sizeof(proto_info) / sizeof(proto_info[0]) - 1);
+    passert(!(!st->st_ipcomp.present && !st->st_esp.present && !st->st_ah.present));
 
     if (tunnel)
     {
