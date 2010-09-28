@@ -14,8 +14,6 @@
  * for more details.
  */
 
-char eroute_c_version[] = "RCSID $Id: eroute.c,v 1.67 2005/08/18 14:04:39 ken Exp $";
-
 
 #include <sys/types.h>
 #include <linux/types.h> /* new */

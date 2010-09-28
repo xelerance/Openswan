@@ -14,8 +14,6 @@
  * for more details.
  */
 
-char spi_c_version[] = "RCSID $Id: algoinfo.c,v 1.1 2004/04/29 04:13:02 mcr Exp $";
-
 #include <asm/types.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
@@ -386,6 +384,7 @@ static struct option const longopts[] =
 int
 main(int argc, char *argv[])
 {
+	const char spi_c_version[] = "RCSID $Id: algoinfo.c,v 1.1 2004/04/29 04:13:02 mcr Exp $";
 	char *endptr;
 	__u32 spi = 0;
 	int c, previous = -1;

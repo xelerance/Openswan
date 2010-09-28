@@ -15,8 +15,6 @@
  * for more details.
  */
 
-char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:39 ken Exp $";
-
 
 #include <sys/types.h>
 #include <linux/types.h> /* new */
@@ -113,6 +111,7 @@ int
 main(int argc, char **argv)
 {
 /*	int fd; */
+	const char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:39 ken Exp $";
 	unsigned char action = 0;
 	int c, previous = -1;
 	
