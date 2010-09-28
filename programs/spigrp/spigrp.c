@@ -14,9 +14,6 @@
  * for more details.
  */
 
-char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.51 2005/08/18 14:04:39 ken Exp $";
-
-
 #include <sys/types.h>
 #include <linux/types.h> /* new */
 #include <string.h>
@@ -85,6 +82,7 @@ int debug = 0;
 int
 main(int argc, char **argv)
 {
+	const char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.51 2005/08/18 14:04:39 ken Exp $";
 	int i, nspis;
 	char *endptr;
 	int said_opt = 0;
