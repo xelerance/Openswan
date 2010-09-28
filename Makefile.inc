@@ -180,8 +180,9 @@ BISONOSFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
-#USERCOMPILE?=-g -O3 ${WERROR} 
+#Example for a cross compile:
+#USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
+USERCOMPILE?=-g -O3 ${WERROR} 
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
