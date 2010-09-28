@@ -82,7 +82,6 @@ int debug = 0;
 int
 main(int argc, char **argv)
 {
-	const char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.51 2005/08/18 14:04:39 ken Exp $";
 	int i, nspis;
 	char *endptr;
 	int said_opt = 0;
@@ -183,7 +182,7 @@ main(int argc, char **argv)
 		if(debug) {
 			fprintf(stdout, "\"--version\" option requested.\n");
 		}
-                fprintf(stderr, "%s, %s\n", progname, spigrp_c_version);
+                fprintf(stderr, "%s, %s\n", progname, ipsec_version_code());
                 exit(1);
         }
 
