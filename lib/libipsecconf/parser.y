@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: parser.y,v 1.8 2004/12/02 07:55:36 mcr Exp $
  */
 
 #include <sys/queue.h>
@@ -59,11 +58,9 @@ static struct starter_comments_list *_parser_comments;
 %union {
 	char *s;
         unsigned int num;
-	double dblnum;
 	struct keyword k;
 }
 %token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION 
-%token <dblnum> NUMBER
 %token <s>      STRING
 %token <num>    INTEGER
 %token <num>    BOOL
@@ -85,8 +82,7 @@ config_file:
 
 /* check out the version number */
 versionstmt: 
-	VERSION NUMBER EOL  { int ver = $2; checkversion(ver); }
-        | VERSION INTEGER EOL { int ver = $2; checkversion(ver); }
+        VERSION INTEGER EOL { int ver = $2; checkversion(ver); }
 	;
 
 blanklines: /* NULL */
@@ -277,24 +273,7 @@ statement_kw:
 		    if (!*_parser_kw) *_parser_kw = new;
 		}
 	}
-	| KEYWORD EQUAL NUMBER {
-		struct kw_list *new;
 
-		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
-		if (new) {
-		    new->keyword = $1;
-		    new->decimal = $<dblnum>3;  /* Should not be necessary! */
-		    new->next = NULL;
-		    if (_parser_kw_last)
-			_parser_kw_last->next = new;
-		    _parser_kw_last = new;
-		    if (!*_parser_kw) *_parser_kw = new;
-		}
-		else {
-		    yyerror("can't allocate memory in statement_kw");
-		}
-	}
 	| BOOLWORD EQUAL BOOL {
 		struct kw_list *new;
 
