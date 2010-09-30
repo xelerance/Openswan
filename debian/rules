@@ -17,7 +17,6 @@ configure-stamp:
 patch:
 	dh_testdir
 	dpatch apply-all
-	cp -f debian/changelog debian/NEWS || true
 
 unpatch:
 	dpatch deapply-all
@@ -75,7 +74,6 @@ clean: unpatch
 	dh_clean
 
 	rm -rf debian/patched || true
-	rm -f debian/NEWS || true
 
 install-openswan: DH_OPTIONS=-a
 install-openswan: build
