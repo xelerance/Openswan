@@ -12,8 +12,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _plutoload.in,v 1.4 2002/09/15 22:45:14 dhr Exp $
-#
 # exit status is 13 for protocol violation, that of Pluto otherwise
 
 me='ipsec _plutoload'		# for messages
