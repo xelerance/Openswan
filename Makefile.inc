@@ -336,8 +336,8 @@ USE_VENDORID?=true
 USE_AGGRESSIVE?=true
 
 # Build XAUTH authentication system code - both Server and Client.
-# This is off by default, since XAUTH is tricky, and you can get into 
-# security trouble unless you do additional configuration.
+# XAUTH is tricky, and you can get into security trouble unless you
+# do additional configuration - but it is often needed for Cisco interop
 USE_XAUTH?=true
 
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
