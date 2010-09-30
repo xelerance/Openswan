@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: parser.h,v 1.5 2004/01/19 17:55:45 mcr Exp $
  */
 
 #ifndef _IPSEC_PARSER_H_
