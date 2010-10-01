@@ -180,9 +180,11 @@ BISONOSFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
+# -DGCC_LINT uses gcc-specific declarations to improve compile-time
+#    diagnostics.
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
-USERCOMPILE?=-g -O3 ${WERROR} 
+USERCOMPILE?=-g -O3 ${WERROR} -DGCC_LINT
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
