@@ -1407,12 +1407,10 @@ add_connection(const struct whack_message *wm)
 	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
 	{
 	   /* If we have a subnet=vnet: needing instantiation so we can accept multiple subnets from the remote peer */
-	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was set in whack message (via vnet=?), the connection is a template"));
 	    c->kind = CK_TEMPLATE;
 	}
 	else
 	{
-	    DBG(DBG_CONTROL, DBG_log("PAUL:virt was not set in whack message - this is a CK_PERMANENT"));
 	    c->kind = CK_PERMANENT;
 	}
 
