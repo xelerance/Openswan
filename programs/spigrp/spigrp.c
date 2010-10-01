@@ -14,9 +14,6 @@
  * for more details.
  */
 
-char spigrp_c_version[] = "RCSID $Id: spigrp.c,v 1.51 2005/08/18 14:04:39 ken Exp $";
-
-
 #include <sys/types.h>
 #include <linux/types.h> /* new */
 #include <string.h>
@@ -185,7 +182,7 @@ main(int argc, char **argv)
 		if(debug) {
 			fprintf(stdout, "\"--version\" option requested.\n");
 		}
-                fprintf(stderr, "%s, %s\n", progname, spigrp_c_version);
+                fprintf(stderr, "%s, %s\n", progname, ipsec_version_code());
                 exit(1);
         }
 

@@ -316,7 +316,7 @@ int parser_y_eof(void)
 [\t ]+			/* ignore spaces in line */ ;
 
 <USERDEF>[0-9]+         { /* process a number */
-                           yylval.num = atof(yytext);
+                           yylval.num = strtoul(yytext, NULL, 10);
                            BEGIN INITIAL;
 			   return INTEGER;
                         }
@@ -327,22 +327,10 @@ int parser_y_eof(void)
 			   return INTEGER;
 			}
 
-<USERDEF>[0-9]+\.[0-9]* { /* process a number */
-                           yylval.dblnum = atof(yytext);
-                           BEGIN INITIAL;
-			   return NUMBER;
-                        }
-
 [0-9]+                  { /* process a number */
-                           yylval.num = atof(yytext);
+                           yylval.num = strtoul(yytext, NULL, 10);
                            BEGIN INITIAL;
 			   return INTEGER;
-                        }
-
-[0-9]+\.[0-9]*          { /* process a number */
-                           yylval.dblnum = atof(yytext);
-                           BEGIN INITIAL;
-			   return NUMBER;
                         }
 
 <BOOLEAN>y   |

@@ -486,7 +486,7 @@ has_preloaded_public_key(struct state *st)
  */
 
 bool
-extract_peer_id(struct id *peer, const pb_stream const* id_pbs)
+extract_peer_id(struct id *peer, const pb_stream *id_pbs)
 {
     switch (peer->kind)
     {

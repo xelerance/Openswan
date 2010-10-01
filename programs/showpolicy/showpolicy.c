@@ -16,8 +16,6 @@
  * for more details.
  */
 
-char showpolicy_version[] = "RCSID $Id: showpolicy.c,v 1.5 2004/04/04 01:50:56 ken Exp $";
-
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>

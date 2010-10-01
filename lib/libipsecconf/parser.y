@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: parser.y,v 1.8 2004/12/02 07:55:36 mcr Exp $
  */
 
 #include <sys/queue.h>
@@ -36,7 +35,6 @@
  * Bison
  */
 static char parser_errstring[ERRSTRING_LEN+1];
-static void checkversion(int ver);
 void yyerror(const char *s);
 extern int yylex (void);
 static struct kw_list *alloc_kwlist(void);
@@ -59,11 +57,9 @@ static struct starter_comments_list *_parser_comments;
 %union {
 	char *s;
         unsigned int num;
-	double dblnum;
 	struct keyword k;
 }
 %token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION 
-%token <dblnum> NUMBER
 %token <s>      STRING
 %token <num>    INTEGER
 %token <num>    BOOL
@@ -83,10 +79,12 @@ config_file:
         | blanklines sections 
         ;
 
-/* check out the version number */
+/* check out the version number - this is optional (and we're phasing out its use) */
+/* we have configs shipped with version 2 (INTEGER) and with version 2.0 (STRING, now  NUMBER/float was removed */
+
 versionstmt: 
-	VERSION NUMBER EOL  { int ver = $2; checkversion(ver); }
-        | VERSION INTEGER EOL { int ver = $2; checkversion(ver); }
+        | VERSION STRING EOL
+        | VERSION INTEGER EOL
 	;
 
 blanklines: /* NULL */
@@ -277,24 +275,7 @@ statement_kw:
 		    if (!*_parser_kw) *_parser_kw = new;
 		}
 	}
-	| KEYWORD EQUAL NUMBER {
-		struct kw_list *new;
 
-		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
-		if (new) {
-		    new->keyword = $1;
-		    new->decimal = $<dblnum>3;  /* Should not be necessary! */
-		    new->next = NULL;
-		    if (_parser_kw_last)
-			_parser_kw_last->next = new;
-		    _parser_kw_last = new;
-		    if (!*_parser_kw) *_parser_kw = new;
-		}
-		else {
-		    yyerror("can't allocate memory in statement_kw");
-		}
-	}
 	| BOOLWORD EQUAL BOOL {
 		struct kw_list *new;
 
@@ -464,25 +445,6 @@ void yyerror(const char *s)
 	extern void parser_y_error(char *b, int size, const char *sp);
 	if (_save_errors_)
 		parser_y_error(parser_errstring, ERRSTRING_LEN, s);
-}
-
-void checkversion(int ver) 
-{
-        if(_parser_cfg->ipsec_conf_version == 0
-	   || _parser_cfg->ipsec_conf_version == ver)
-	{
-		_parser_cfg->ipsec_conf_version = ver;
-	} else {
-		yyerror("can not set version more than once");
-	}
-	
-	if(_parser_cfg->ipsec_conf_version != THIS_IPSEC_CONF_VERSION)
-	{
-		char buf[128];
-		
-		snprintf(buf, 128, "only version %d configuration files are supported, not %d", THIS_IPSEC_CONF_VERSION,  _parser_cfg->ipsec_conf_version);
-		yyerror(buf);
-	}
 }
 
 struct config_parsed *parser_load_conf (const char *file, err_t *perr)

@@ -463,9 +463,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    , srcip_str
 #ifdef XAUTH
-		    , c->cisco_dns_info
-		    , c->cisco_domain_info
-		    , c->cisco_banner
+		    , c->cisco_dns_info ? c->cisco_dns_info : ""
+		    , c->cisco_domain_info ? c->cisco_domain_info : ""
+		    , c->cisco_banner ? c->cisco_banner : ""
 #endif /* XAUTH */
 #ifdef HAVE_NM
 		    , c->nmconfigured

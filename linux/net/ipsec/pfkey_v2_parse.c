@@ -12,14 +12,11 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: pfkey_v2_parse.c,v 1.65 2005/04/06 17:46:05 mcr Exp $
  */
 
 /*
  *		Template from klips/net/ipsec/ipsec/ipsec_parser.c.
  */
-
-char pfkey_v2_parse_c_version[] = "$Id: pfkey_v2_parse.c,v 1.65 2005/04/06 17:46:05 mcr Exp $";
 
 /*
  * Some ugly stuff to allow consistent debugging code for use in the
