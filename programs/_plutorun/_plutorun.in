@@ -37,7 +37,8 @@ do
 	--keep_alive)            keep_alive="$2" ; shift ;;
 	--force_keepalive)       force_keepalive="$2" ; shift ;;
 	--disable_port_floating) disable_port_floating="$2" ; shift  ;;
-	--virtual_private)       virtual_private="$2" ; shift ;; 	
+	--virtual_private)       virtual_private="$2" ; shift ;;
+	--listen)                listen="$2" ; shift ;;
 	--nocrsend)	         nocrsend="$2" ; shift	;;
 	--strictcrlpolicy)	 strictcrlpolicy="$2" ; shift	;;
 	--crlcheckinterval)	 crlcheckinterval="$2"; shift	;;
@@ -123,6 +124,7 @@ no|'')                ;;
 *)    echo "unknown disable_port_floating (not yes/no) \`$disable_port_floating'" ;;
 esac
 [ -n "$virtual_private" ] && popts="$popts --virtual_private $virtual_private"
+[ -n "$listen" ] && popts="$popts --listen $listen"
 
 # add crl check interval
 if test ${crlcheckinterval:-0} -gt 0

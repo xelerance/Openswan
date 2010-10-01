@@ -322,7 +322,7 @@ remove_metachar(const unsigned char *src, char *dst, size_t dstlen)
     }
     *dst = '\0';
     if (changed)
-	openswan_log("Warning: XAUTH username changed from '%s' to '%s'");
+	openswan_log("Warning: XAUTH username changed from '%s' to '%s'",src,dst);
 }
 
 

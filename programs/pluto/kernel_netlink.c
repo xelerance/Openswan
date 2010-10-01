@@ -77,6 +77,8 @@
 # define DEFAULT_UPDOWN "ipsec _updown"
 #endif
 
+extern char *pluto_listen;
+
 extern const struct pfkey_proto_info null_proto_info[2];
 
 static const struct pfkey_proto_info broad_proto_info[2] = { 
@@ -1635,6 +1637,15 @@ static void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
+    ip_address lip; /* --listen filter option */
+    if(pluto_listen) {
+	err_t e;
+	e = ttoaddr(pluto_listen,0,0,&lip);
+	if (e) {
+		DBG_log("invalid listen= option ignored: %s\n", e);
+		pluto_listen = NULL;
+	}
+    }
 
     /* Find all virtual/real interface pairs.
      * For each real interface...
@@ -1733,6 +1744,15 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 		DBG(DBG_CONTROL,
 			DBG_log("IP interface %s %s has no matching ipsec* interface -- ignored"
 			    , ifp->name, ip_str(&ifp->addr)));
+		continue;
+	    }
+	}
+
+	/* ignore if --listen is specified and we do not match */
+	if (pluto_listen!=NULL) {
+	    if (!sameaddr(&lip, &ifp->addr)) {
+		openswan_log("skipping interface %s with %s"
+		, ifp->name , ip_str(&ifp->addr));
 		continue;
 	    }
 	}
