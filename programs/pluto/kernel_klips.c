@@ -57,6 +57,8 @@
 # define DEFAULT_UPDOWN "ipsec _updown"
 #endif
 
+extern char *pluto_listen;
+
 static void
 klips_process_raw_ifaces(struct raw_iface *rifaces)
 {
@@ -72,6 +74,16 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	bool after = FALSE; /* has vfp passed ifp on the list? */
 	bool bad = FALSE;
 	struct raw_iface *vfp;
+	ip_address lip;
+
+    if(pluto_listen) {
+	err_t e;
+	e = ttoaddr(pluto_listen,0,0,&lip);
+	if (e) {
+		DBG_log("invalid listen= option ignored: %s\n", e);
+		pluto_listen = NULL;
+	}
+    }
 
 	/* ignore if virtual (ipsec*) interface */
 	if (strncmp(ifp->name, IPSECDEVPREFIX, sizeof(IPSECDEVPREFIX)-1) == 0)
@@ -165,6 +177,15 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 			    , ifp->name, ip_str(&ifp->addr)));
 		continue;
 	    }
+	}
+
+	/* ignore if --listen is specified and we do not match */
+	if (pluto_listen!=NULL) {
+	   if (!sameaddr(&lip, &ifp->addr)) {
+		openswan_log("skipping interface %s with %s"
+			, ifp->name , ip_str(&ifp->addr));
+		continue;
+	   }
 	}
 
 	/* We've got all we need; see if this is a new thing:

@@ -324,6 +324,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"keep_alive", kv_config,kt_number,    KBF_KEEPALIVE, NOT_ENUM},
     {"force_keepalive", kv_config,kt_bool,    KBF_FORCE_KEEPALIVE, NOT_ENUM},
 #endif
+    {"listen",     kv_config, kt_string, KSF_LISTEN,NOT_ENUM},
     {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
 

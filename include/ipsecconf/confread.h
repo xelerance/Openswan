@@ -124,6 +124,7 @@ struct starter_config {
 	bool force_busy;
 	unsigned int keep_alive;
 	char *virtual_private;
+	char *listen;
     } setup;
 
     /* conn %default */

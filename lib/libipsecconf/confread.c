@@ -1306,6 +1306,7 @@ void confread_free(struct starter_config *cfg)
 	struct starter_conn *conn, *c;
 	FREE_LST(cfg->setup.interfaces);
 	FREE_STR(cfg->setup.virtual_private);
+	FREE_STR(cfg->setup.listen);
 	for(i=0 ;i<KSF_MAX; i++)
 	{
 	    FREE_STR(cfg->setup.strings[i]);

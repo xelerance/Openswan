@@ -111,6 +111,7 @@
 #endif
 
 const char *ctlbase = "/var/run/pluto";
+const char *pluto_listen = "";
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -148,6 +149,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--interface <ifname|ifaddr>]"
 	    " [--ikeport <port-number>]"
+	    "[--listen <ifaddr>]"
 	    " \\\n\t"
 	    "[--ctlbase <path>]"
 	    " \\\n\t"
@@ -377,6 +379,7 @@ main(int argc, char **argv)
 	    { "use-mastklips",   no_argument, NULL, 'M' },
 	    { "use-bsdkame",   no_argument, NULL, 'F' },
 	    { "interface", required_argument, NULL, 'i' },
+	    { "listen", required_argument, NULL, 'L' },
 	    { "ikeport", required_argument, NULL, 'p' },
 	    { "ctlbase", required_argument, NULL, 'b' },
 	    { "secretsfile", required_argument, NULL, 's' },
@@ -509,6 +512,19 @@ main(int argc, char **argv)
 	    kern_interface = USE_KLIPS;
 	    continue;
 
+	case 'L':	/* --listen ip_addr */
+	    {
+	    ip_address lip;
+	     err_t e = ttoaddr(optarg,0,0,&lip);
+	    if(e) {
+		openswan_log("invalid listen argument ignored: %s\n",e);
+	    } else {
+		pluto_listen = clone_str(optarg, "pluto_listen");
+		openswan_log("bind() will be filtered for %s\n",pluto_listen);
+	    }
+            }
+	   continue;
+
 	case 'M':       /* --use-mast */
 	    kern_interface = USE_MASTKLIPS;
 	    continue;
@@ -576,7 +592,6 @@ main(int argc, char **argv)
 	case 'p':	/* --port <portnumber> */
 	    if (optarg == NULL || !isdigit(optarg[0]))
 		usage("missing port number");
-
 	    {
 		char *endptr;
 		long port = strtol(optarg, &endptr, 0);

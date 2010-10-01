@@ -55,6 +55,7 @@
 
 static int next_free_mast_device=-1;
 int  useful_mastno=-1;
+extern char *pluto_listen;
 
 #ifndef DEFAULT_UPDOWN
 # define DEFAULT_UPDOWN "ipsec _updown"
@@ -186,6 +187,16 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
     struct iface_port *firstq=NULL;
     char useful_mast_name[256];
     bool found_mast=FALSE;
+    ip_address lip; /* --listen filter option */
+
+    if(pluto_listen) {
+	err_t e;
+	e = ttoaddr(pluto_listen,0,0,&lip);
+	if (e) {
+		DBG_log("invalid listen= option ignored: %s\n", e);
+		pluto_listen = NULL;
+	}
+    }
 
     strcpy(useful_mast_name, "useless");
     { int new_useful=recalculate_mast_device_list(rifaces);
@@ -218,6 +229,15 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	/* ignore if loopback interface */
 	if (strncmp(ifp->name, "lo", 2) == 0)
 	    continue;
+
+	/* ignore if --listen is specified and we do not match */
+	if (pluto_listen!=NULL) {
+	   if (!sameaddr(&lip, &ifp->addr)) {
+		openswan_log("skipping interface %s with %s"
+			     , ifp->name , ip_str(&ifp->addr));
+		continue;
+	   }
+	}
 
 	/*
 	 * see if this is a new thing: search old interfaces list.
