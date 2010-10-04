@@ -34,8 +34,8 @@ build-stamp: patch
 			 PUBDIR=/usr/sbin \
 			 MANTREE=/usr/share/man \
 			 CONFDIR=$(CURDIR)/debian \
-			 USE_LDAP=true USE_LIBCURL=true HAVE_THREADS=true \
-			 USE_XAUTH=true USE_XAUTHPAM=true
+			 USE_LDAP=false USE_LIBCURL=false HAVE_THREADS=false \
+			 USE_XAUTH=true USE_XAUTHPAM=false
 	# remove the temporary file, it will be created during install
 	rm -f $(CURDIR)/debian/ipsec.secrets
 
