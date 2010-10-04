@@ -1789,7 +1789,7 @@ main(int argc, char *argv[])
  *
  * Revision 1.79  2001/10/24 03:23:55  rgb
  * Moved lifetime option parsing to a seperate function and allowed for
- * comma-seperated lists of lifetime parameters.
+ * comma-separated lists of lifetime parameters.
  * Moved SATYPE registrations to a seperate function.
  *
  * Revision 1.78  2001/10/22 19:49:35  rgb
