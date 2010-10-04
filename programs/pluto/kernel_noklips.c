@@ -151,6 +151,7 @@ const struct kernel_ops noklips_kernel_ops = {
     exceptsocket: NULL,
     docommand: NULL,
     kern_name: "noklips",
+    .overlap_supported = FALSE
 };
 
 

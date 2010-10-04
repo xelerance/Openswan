@@ -1,6 +1,6 @@
 /* netlink interface to the kernel's IPsec mechanism
  *
- * Copyright (C) 2003,2008 Herbert Xu.
+ * Copyright (C) 2003-2008 Herbert Xu
  * Copyright (C) 2006-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2006 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2007 Bart Trojanowski <bart@jukie.net>
@@ -8,10 +8,12 @@
  * Copyright (C) 2009 Carsten Schlote <c.schlote@konzeptpark.de>
  * Copyright (C) 2008 Andreas Steffen
  * Copyright (C) 2008 Neil Horman <nhorman@redhat.com>
- * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2006-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2010 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2006-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  * Copyright (C) 2010 Mika Ilmaranta <ilmis@foobar.fi>
+ * Copyright (C) 2010 Roman Hoog Antink <rha@open.ch>
+ * Copyright (C) 2010 D. Hugh Redelmeier
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -74,6 +76,8 @@
 #ifndef DEFAULT_UPDOWN
 # define DEFAULT_UPDOWN "ipsec _updown"
 #endif
+
+extern char *pluto_listen;
 
 extern const struct pfkey_proto_info null_proto_info[2];
 
@@ -1456,10 +1460,8 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         proto_info[i].reqid = sr->reqid + 2;
     }
 
-    if (i == sizeof(proto_info) / sizeof(proto_info[0]) - 1)
-    {
-        impossible();   /* no transform at all! */
-    }
+    /* check for no transform at all */
+    passert(!(!st->st_ipcomp.present && !st->st_esp.present && !st->st_ah.present));
 
     if (tunnel)
     {
@@ -1635,6 +1637,15 @@ static void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
+    ip_address lip; /* --listen filter option */
+    if(pluto_listen) {
+	err_t e;
+	e = ttoaddr(pluto_listen,0,0,&lip);
+	if (e) {
+		DBG_log("invalid listen= option ignored: %s\n", e);
+		pluto_listen = NULL;
+	}
+    }
 
     /* Find all virtual/real interface pairs.
      * For each real interface...
@@ -1733,6 +1744,15 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 		DBG(DBG_CONTROL,
 			DBG_log("IP interface %s %s has no matching ipsec* interface -- ignored"
 			    , ifp->name, ip_str(&ifp->addr)));
+		continue;
+	    }
+	}
+
+	/* ignore if --listen is specified and we do not match */
+	if (pluto_listen!=NULL) {
+	    if (!sameaddr(&lip, &ifp->addr)) {
+		openswan_log("skipping interface %s with %s"
+		, ifp->name , ip_str(&ifp->addr));
 		continue;
 	    }
 	}
@@ -1981,5 +2001,6 @@ const struct kernel_ops netkey_kernel_ops = {
      * if netlink  specific changes are needed.
      */
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
+    .overlap_supported = FALSE
 };
 #endif /* linux && NETKEY_SUPPORT */

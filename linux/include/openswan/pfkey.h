@@ -366,7 +366,7 @@ const char *
 pfkey_v2_sadb_ext_string(int extnum);
 
 const char *
-pfkey_v2_sadb_type_string(int sadb_type);
+pfkey_v2_sadb_type_string(unsigned sadb_type);
 
 struct sadb_builds {
 	struct k_sadb_sa       sa_base;

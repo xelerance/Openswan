@@ -3,6 +3,8 @@
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2010 Paul Wouters <paul@xelerance.com>
+ *
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -416,9 +418,9 @@ trust_authcert_candidate(const x509cert_t *cert, const x509cert_t *alt_chain)
     for (pathlen = 0; pathlen < MAX_CA_PATH_LEN; pathlen++)
     {
        const x509cert_t *authcert = NULL;
-       char buf[ASN1_BUF_LEN];
 
        DBG(DBG_CONTROL,
+           char buf[ASN1_BUF_LEN];
            dntoa(buf, ASN1_BUF_LEN, cert->subject);
            DBG_log("subject: '%s'",buf);
            dntoa(buf, ASN1_BUF_LEN, cert->issuer);

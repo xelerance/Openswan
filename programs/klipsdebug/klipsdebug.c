@@ -15,8 +15,6 @@
  * for more details.
  */
 
-char klipsdebug_c_version[] = "RCSID $Id: klipsdebug.c,v 1.58 2005/08/18 14:04:39 ken Exp $";
-
 
 #include <sys/types.h>
 #include <linux/types.h> /* new */
@@ -268,8 +266,8 @@ main(int argc, char **argv)
 			usage(program_name);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "klipsdebug (Linux FreeS/WAN %s) %s\n",
-				ipsec_version_code(), klipsdebug_c_version);
+			fprintf(stdout, "klipsdebug (Openswan %s) \n",
+				ipsec_version_code());
 			fputs(copyright, stdout);
 			exit(0);
 		case 'l':

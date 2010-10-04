@@ -3,6 +3,9 @@
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2006-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Gilles Espinasse <g.esp@free.fr>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -611,7 +614,6 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	x509cert_t *issuer_cert;
 	char sbuf[ASN1_BUF_LEN];
 	char ibuf[ASN1_BUF_LEN];
-	char abuf[ASN1_BUF_LEN];
 
 	err_t ugh = NULL;
 
@@ -623,6 +625,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	    DBG_log("issuer:  '%s'", ibuf);
 	    if (cert->authKeyID.ptr != NULL)
 	    {
+		char abuf[ASN1_BUF_LEN];
 		datatot(cert->authKeyID.ptr, cert->authKeyID.len, ':'
 			, abuf, ASN1_BUF_LEN);
 		DBG_log("authkey:  %s", abuf);

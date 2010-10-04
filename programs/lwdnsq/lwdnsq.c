@@ -13,9 +13,6 @@
  * for more details.
  */
 
-char tncfg_c_version[] = "RCSID $Id: lwdnsq.c,v 1.23 2005/08/26 19:13:48 mcr Exp $";
-
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h> 
@@ -63,12 +60,14 @@ extern int EF_FREE_WIPES;
 static void
 usage(char *name)
 {	
-	fprintf(stdout,"%s\n", name);
+	fprintf(stdout,"usage: %s [-h] [-i] [-s] [-g] [-l <file>] [-X] [-Z]\n", name);
+	fprintf(stdout," long opts: --help --prompt --serial --debug --log <file> --regress --ignoreeof\n");
 	exit(1);
 }
 
 static struct option const longopts[] =
 {
+	{"help", 0, 0, 'h'},
 	{"prompt", 0, 0, 'i'},
 	{"serial", 0, 0, 's'},
 	{"debug",  0, 0, 'g'},
@@ -294,8 +293,11 @@ main(int argc, char *argv[])
 		exit(5);
 	}
 
-	while((c = getopt_long_only(argc, argv, "dgl:siXZ", longopts, 0)) != EOF) {
+	while((c = getopt_long_only(argc, argv, "hdgl:siXZ", longopts, 0)) != EOF) {
 		switch(c) {
+		case 'h':
+			usage(program_name);
+			break;
 		case 'd':
 			gs.debug+=2;
 			logfilename="/var/run/pluto/lwdns.req.log";

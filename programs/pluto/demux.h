@@ -80,7 +80,7 @@ struct msg_digest {
     stf_status result;  /* temporary stored here for access by Tcl */
 
 
-#   define PAYLIMIT 20
+#   define PAYLIMIT 30
     struct payload_digest
 	digest[PAYLIMIT],
 	*digest_roof,

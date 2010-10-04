@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: confread.c,v 1.11 2004/04/11 15:17:30 ken Exp $
  */
 
 #include <stdlib.h>
@@ -310,7 +309,7 @@ static int load_setup (struct starter_config *cfg
 	    case kt_comment:
 		break;
 	    case kt_obsolete:
-	        starter_log(LOG_LEVEL_INFO, "Warning: ignored obsolete keyword %s",kw->string);
+	        starter_log(LOG_LEVEL_INFO, "Warning: ignored obsolete keyword %s",kw->keyword.keydef->keyname);
 		break;
 	    }
 	}
@@ -663,7 +662,8 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		    free((*the_strings)[field]);
 	    }
-	    
+
+	    passert(kw->string!=NULL);
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
@@ -1307,6 +1307,7 @@ void confread_free(struct starter_config *cfg)
 	struct starter_conn *conn, *c;
 	FREE_LST(cfg->setup.interfaces);
 	FREE_STR(cfg->setup.virtual_private);
+	FREE_STR(cfg->setup.listen);
 	for(i=0 ;i<KSF_MAX; i++)
 	{
 	    FREE_STR(cfg->setup.strings[i]);

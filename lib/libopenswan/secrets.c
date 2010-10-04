@@ -572,6 +572,9 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 			same = same_RSA_public_key(&s->pks.u.RSA_private_key.pub
 						   , &best->pks.u.RSA_private_key.pub);
 			break;
+		    case PPK_XAUTH:
+			/* We don't support this yet, but no need to die */
+			break;
 		    default:
 			bad_case(kind);
 		    }
@@ -1317,9 +1320,9 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		    s->ids = i;
 		    idtoa(&id, idb, IDTOA_BUF);
 		    DBG(DBG_CONTROL,
-			DBG_log("id type added to secret(%p) %d: %s",
+			DBG_log("id type added to secret(%p) %s: %s",
 				s,
-				s->pks.kind,
+				enum_name(&ppk_names,s->pks.kind),
 				idb));
 		}
 		if (!shift())

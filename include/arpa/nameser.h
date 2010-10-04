@@ -48,10 +48,6 @@
  * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/*
- *	$Id: nameser.h,v 1.2 2005/08/05 08:33:35 mcr Exp $
- */
-
 #ifndef _ARPA_NAMESER_H_
 #define _ARPA_NAMESER_H_
 

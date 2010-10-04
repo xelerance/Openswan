@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: ttoaddr.c,v 1.13 2005/08/05 17:36:24 mcr Exp $
  */
 #include "internal.h"
 #include "openswan.h"

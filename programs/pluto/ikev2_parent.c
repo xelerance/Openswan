@@ -1,8 +1,11 @@
 /* 
  * IKEv2 parent SA creation routines
- * Copyright (C) 2007  Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008  Paul Wouters <paul@xelerance.com>
- * Copyright (C) 2008  Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1064,11 +1067,11 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
 	hmac_update(&ctx, authstart, authloc-authstart);
 	hmac_final(authloc, &ctx);
-	
-	if(DBGP(DBG_PARSING)) {
+
+	DBG(DBG_PARSING,
 	    DBG_dump("data being hmac:", authstart, authloc-authstart);
 	    DBG_dump("out calculated auth:", authloc, pst->st_oakley.integ_hasher->hash_integ_len); 
-	}
+           );
     }
     
     return STF_OK;
@@ -1115,11 +1118,11 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	hmac_update(&ctx, authstart, encend-authstart);
 	hmac_final(b12, &ctx);
 	
-	if(DBGP(DBG_PARSING)) {
+	DBG(DBG_PARSING,
 	    DBG_dump("data being hmac:", authstart, encend-authstart);
 	    DBG_dump("R2 calculated auth:", b12, pst->st_oakley.integ_hasher->hash_integ_len); 
 	    DBG_dump("R2  provided  auth:", encend, pst->st_oakley.integ_hasher->hash_integ_len);
-	}
+	);
 	
 	/* compare first 96 bits == 12 bytes */
 	/* It is not always 96 bytes, it depends upon which integ algo is used*/
@@ -1156,10 +1159,10 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	    return STF_FAIL;
 	}
 	
-	if(DBGP(DBG_CRYPT)) {
+	DBG(DBG_CRYPT,
 	    DBG_dump("decrypted payload:", encstart, enclen);
 	    DBG_log("striping %u bytes as pad", padlen+1);
-	}
+	);
 	
 	init_pbs(&md->clr_pbs, encstart, enclen - (padlen+1), "cleartext");
     }

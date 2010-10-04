@@ -22,7 +22,7 @@ CINCLUDES =	-I${srcdir}${ISCARCH}/include \
 		-I${srcdir}nothreads/include \
 		-I. -I./include -I${srcdir}include \
 		$(PORTINCLUDE) -I${OPENSWANSRCDIR}/include
-CDEFINES = -g -DHAVE_STRERROR ${USERCOMPILE} ${PORTINCLUDE}
+CDEFINES = -DHAVE_STRERROR ${USERCOMPILE} ${PORTINCLUDE}
 # CWARNINGS = -Werror
 
 CFLAGS+=${CINCLUDES} ${CDEFINES} ${CWARNINGS}

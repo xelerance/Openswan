@@ -1,6 +1,6 @@
 /*
  * DNS KEY lookup helper
- * Copyright (C) 2002 Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2002-2005 Michael Richardson <mcr@freeswan.org>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,9 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  */
-
-char lookup_c_version[] = "@(#) RCSID $Id: lookup.c,v 1.9 2005/08/05 17:07:42 mcr Exp $";
-
 
 #include <stdio.h>
 #include <string.h>

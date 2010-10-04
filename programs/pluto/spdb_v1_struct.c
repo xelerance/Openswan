@@ -802,6 +802,9 @@ parse_isakmp_sa_body(
 	u_int16_t life_type;
 	struct trans_attrs ta;
 	err_t ugh = NULL;	/* set to diagnostic when problem detected */
+#ifdef IKE_ALG
+	char ugh_buf[256];	/* room for building a diagnostic */
+#endif
 	zero(&ta);
 
 	life_type = 0;
@@ -880,7 +883,7 @@ parse_isakmp_sa_body(
 	    {
 		case OAKLEY_ENCRYPTION_ALGORITHM | ISAKMP_ATTR_AF_TV:
 #ifdef IKE_ALG
-		    if (ike_alg_enc_ok(val, 0, c->alg_info_ike, &ugh)) {
+		    if (ike_alg_enc_ok(val, 0, c->alg_info_ike, &ugh, ugh_buf, sizeof(ugh_buf))) {
 		    /* if (ike_alg_enc_present(val)) { */
 			ta.encrypt = val;
 			ta.encrypter = crypto_get_encrypter(val);
@@ -1139,7 +1142,7 @@ parse_isakmp_sa_body(
 		     * check if this keylen is compatible with 
 		     * specified alg_info_ike
 		     */
-		    if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, &ugh)) {
+		    if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, NULL, ugh_buf, sizeof(ugh_buf))) {
 			ugh = "peer proposed key_len not valid for encrypt algo setup specified";
 		    }
 		    ta.enckeylen=val;

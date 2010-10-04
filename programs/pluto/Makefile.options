@@ -68,8 +68,6 @@ endif
 # -DPLUTO_SENDS_VENDORID enables pluto to send out a VendorID payload.
 #    this can be used by remote nodes to work around faults (bugs),
 #    but is most useful to humans who are debugging things.
-# -DGCC_LINT uses gcc-specific declarations to improve compile-time
-#    diagnostics.
 # -DLEAK_DETECTIVE enables crude code to find memory allocation leaks.
 # -DOLD_RESOLVER.  At some point, the resolver interface changed.
 #    This macro enables Pluto support for the old interface.
@@ -277,7 +275,6 @@ DEFINES = $(EXTRA_DEFINES) \
 	${KLIPS_DEFS} ${WIN2K_DEFS} ${TPM_DEFS} ${MAST_DEFS} ${BSDKAME_DEFS} \
 	-DBUILDER=\"${BUILDER}\" \
 	-DDEBUG \
-	-DGCC_LINT \
 	-DUSE_AES -DUSE_3DES \
 	-DIKE_ALG -DKERNEL_ALG \
 	${AGGRESSIVE_DEFS} \
@@ -287,7 +284,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	${SINGLE_CONF_DIR} \
 	${HAVE_STATSD_DEFS} \
 	${IPSEC_CONNECTION_LIMIT_DEFS} \
-	# -DLEAK_DETECTIVE
+	-DLEAK_DETECTIVE
 
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl

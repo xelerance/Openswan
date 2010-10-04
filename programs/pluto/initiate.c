@@ -1,5 +1,12 @@
 /* information about connections between hosts and clients
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2010  D. Hugh Redelmeier.
+ * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
+ * Copyright (C) 2009-2010 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -339,7 +346,6 @@ enum find_oppo_step {
     fos_done
 };
 
-#ifdef DEBUG
 static const char *const oppo_step_name[] = {
     "fos_start",
     "fos_myid_ip_txt",
@@ -354,7 +360,6 @@ static const char *const oppo_step_name[] = {
     "fos_his_client",
     "fos_done"
 };
-#endif /* DEBUG */
 
 struct find_oppo_bundle {
     enum find_oppo_step step;
@@ -829,10 +834,10 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	enum find_oppo_step next_step;
 	err_t ugh = ac_ugh;
 	char mycredentialstr[IDTOA_BUF];
-	char cib[CONN_INST_BUF];
 
-	DBG(DBG_CONTROL, DBG_log("creating new instance from \"%s\"%s"
-				 , c->name
+	DBG(DBG_CONTROL,
+	    char cib[CONN_INST_BUF];
+	    DBG_log("creating new instance from \"%s\"%s" , c->name
 				 , (fmt_conn_instance(c, cib), cib)));
 
 	idtoa(&sr->this.id, mycredentialstr, sizeof(mycredentialstr));

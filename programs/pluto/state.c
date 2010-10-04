@@ -1346,11 +1346,13 @@ void fmt_state(struct state *st, const time_t n
 	}
 	if (st->st_esp.present)
 	{
+#if defined(linux) && defined(NETKEY_SUPPORT)
 	    time_t ago;
-
+#endif
 	    add_said(&c->spd.that.host_addr, st->st_esp.attrs.spi, SA_ESP);
 /* needs proper fix, via kernel_ops? */
 #if defined(linux) && defined(NETKEY_SUPPORT)
+
 	    if (get_sa_info(st, FALSE, &ago))
 	    {
 		snprintf(state_buf2, state_buf2_len,

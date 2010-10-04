@@ -8,7 +8,12 @@
 #include <limits.h>
 /* POSIX 1003.1-2001 says <unistd.h> defines this */
 #ifndef HOST_NAME_MAX
-# define HOST_NAME_MAX _POSIX_HOST_NAME_MAX
+  /* some don't even use _POSIX_HOST_NAME_MAX */
+# ifdef _POSIX_HOST_NAME_MAX
+#  define HOST_NAME_MAX _POSIX_HOST_NAME_MAX
+# else
+#  define HOST_NAME_MAX 255 /* last resort */
+# endif
 #endif
 
 /* 
@@ -17,3 +22,10 @@
  */
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_UNISTD_H 1
+
+/*
+ * Not all environments set this? happened on a arm_tools cross compile
+ */
+#ifndef linux
+# define linux
+#endif

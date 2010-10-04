@@ -2,6 +2,10 @@
  *
  * Copyright (C) 2003 Christoph Gysin, Simon Zwahlen
  *                    Zuercher Hochschule Winterthur
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2005-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2010 D. Hugh Redelmeier <hugh@mimosa.com>
+ * Copyright (C) 2010 Harald Jenny <harald@a-little-linux-box.at>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,7 +16,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
  */
 
 #include <unistd.h>
@@ -58,13 +61,13 @@ static const char *const cert_status_names[] = {
 };
 
 
-static const char *const response_status_names[] = {
-    "successful",
-    "malformed request",
-    "internal error",
-    "try later",
-    "signature required",
-    "unauthorized"
+static const char *const response_status_names[STATUS_UNAUTHORIZED+1] = {
+    [STATUS_SUCCESSFUL] = "successful",
+    [STATUS_MALFORMEDREQUEST] = "malformed request",
+    [STATUS_INTERNALERROR] = "internal error",
+    [STATUS_TRYLATER] = "try later",
+    [STATUS_SIGREQUIRED] = "signature required",
+    [STATUS_UNAUTHORIZED] = "unauthorized"
 };
 
 /* response container */
@@ -480,17 +483,18 @@ check_ocsp(void)
     
     while (location != NULL)
     {
-	char buf[BUF_LEN];
+#ifdef DEBUG
 	bool first = TRUE;
+#endif
 	ocsp_certinfo_t *certinfo = location->certinfo;
 
 	while (certinfo != NULL)
 	{
 	    if (!certinfo->once)
 	    {
-		time_t time_left = certinfo->nextUpdate - time(NULL);
-
 		DBG(DBG_CONTROL,
+		    time_t time_left = certinfo->nextUpdate - time(NULL);
+		    char buf[BUF_LEN];
 		    if (first)
 		    {
 			dntoa(buf, BUF_LEN, location->issuer);
@@ -737,7 +741,6 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 
     for (;;)
     {
-	char buf[BUF_LEN];
 
 	/* looking for a certificate from the same issuer */
 	cert = get_x509cert(location->issuer, location->authKeySerialNumber
@@ -746,6 +749,7 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 	    break;
 
 	DBG(DBG_CONTROL,
+	    char buf[BUF_LEN];
 	    dntoa(buf, BUF_LEN, cert->subject);
 	    DBG_log("candidate: '%s'", buf);
 	)
@@ -1059,10 +1063,10 @@ build_ocsp_request(ocsp_location_t *location)
 {
     bool has_requestor_cert;
     chunk_t request, tbsRequest, signature;
-    char buf[BUF_LEN];
     u_char *pos;
 
     DBG(DBG_CONTROL,
+        char buf[BUF_LEN];
 	DBG_log("assembling ocsp request");
 	dntoa(buf, BUF_LEN, location->issuer);
 	DBG_log("issuer: '%s'", buf);
@@ -1134,13 +1138,13 @@ valid_ocsp_response(response_t *res)
 
     for (pathlen = 0; pathlen < MAX_CA_PATH_LEN; pathlen++)
     {
-	char buf[BUF_LEN];
 	err_t ugh = NULL;
 	time_t until;
 
 	x509cert_t *cert = authcert;
 
 	DBG(DBG_CONTROL,
+	    char buf[BUF_LEN];
 	    dntoa(buf, BUF_LEN, cert->subject);
 	    DBG_log("subject: '%s'",buf);
 	    dntoa(buf, BUF_LEN, cert->issuer);
@@ -1213,7 +1217,6 @@ static bool
 parse_basic_ocsp_response(chunk_t blob, int level0, response_t *res)
 {
     u_int level, version, extn_oid = 0;
-    char buf[BUF_LEN];
     asn1_ctx_t ctx;
     bool critical;
     chunk_t object;
@@ -1242,6 +1245,7 @@ parse_basic_ocsp_response(chunk_t blob, int level0, response_t *res)
 	case BASIC_RESPONSE_ID_BY_NAME:
 	    res->responder_id_name = object;
 	    DBG(DBG_PARSING,
+		char buf[BUF_LEN];
 		dntoa(buf, BUF_LEN, object);
 		DBG_log("  '%s'",buf)
 	    )
@@ -1497,7 +1501,6 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
 {
     ocsp_location_t *location;
     ocsp_certinfo_t *certinfo, **certinfop;
-    char buf[BUF_LEN];
     time_t tnow;
     int cmp = -1;
 
@@ -1530,6 +1533,7 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
     }
 	
     DBG(DBG_CONTROL,
+	char buf[BUF_LEN];
 	datatot(info->serialNumber.ptr, info->serialNumber.len, ':'
 	    , buf, BUF_LEN);
 	DBG_log("ocsp %s for serial %s %s"

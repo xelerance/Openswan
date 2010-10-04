@@ -2,11 +2,14 @@
  * common routines for interfaces that use pfkey to talk to kernel
  *
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2010  D. Hugh Redelmeier.
  * Copyright (C) 2003 Herbert Xu.
- * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2006-2010 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2003-2007  Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2007-2008  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2007-2010  Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009-2010 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2010 Henry N <henrynmail-oswan@yahoo.de>
+ * Copyright (C) 2010 Ajay.V.Sarraju
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -102,7 +105,6 @@ static sparse_names pfkey_type_names = {
 	NE(K_SADB_X_NAT_T_NEW_MAPPING),
 	NE(K_SADB_X_PLUMBIF),
 	NE(K_SADB_X_UNPLUMBIF),
-	NE(K_SADB_MAX),	
 	{ 0, sparse_end }
 };
 
@@ -142,7 +144,6 @@ static sparse_names pfkey_ext_names = {
 	NE(K_SADB_X_EXT_NAT_T_OA),
 	NE(K_SADB_X_EXT_PLUMBIF),
 	NE(K_SADB_X_EXT_SAREF),
-	NE(K_SADB_EXT_MAX),
 	{ 0, sparse_end }
 };
 #endif /* NEVER */
@@ -365,6 +366,10 @@ pfkey_get_response(pfkey_buf *buf, pfkey_seq_t seq)
     return FALSE;
 }
 
+/* Note ideally, this entire file should not be required for non-klips/mast
+ * and this ifdef can go. Or this function should be moved to kernel_klips.c
+ */
+#ifdef KLIPS
 /* Process a K_SADB_REGISTER message from the kernel.
  * This will be a response to one of ours, but it may be asynchronous
  * (if kernel modules are loaded and unloaded).
@@ -402,6 +407,7 @@ klips_pfkey_register_response(const struct sadb_msg *msg)
 	break;
     }
 }
+#endif
 
 /* Processs a K_SADB_ACQUIRE message from KLIPS.
  * Try to build an opportunistic connection!
@@ -1649,8 +1655,6 @@ scan_proc_shunts(void)
                 if (bare_shunt_ptr(&eri.ours, &eri.his, eri.transport_proto) == NULL
                 && shunt_owner(&eri.ours, &eri.his) == NULL)
                 {
-                    int ourport = ntohs(portof(&eri.ours.addr));
-                    int hisport = ntohs(portof(&eri.his.addr));
                     char ourst[SUBNETTOT_BUF];
                     char hist[SUBNETTOT_BUF];
                     char sat[SATOT_BUF];
@@ -1660,6 +1664,8 @@ scan_proc_shunts(void)
                     satot(&eri.said, 0, sat, sizeof(sat));
 
                     DBG(DBG_CONTROL,
+                        int ourport = ntohs(portof(&eri.ours.addr));
+                        int hisport = ntohs(portof(&eri.his.addr));
                         DBG_log("add orphaned shunt %s:%d -> %s:%d => %s:%d"
                             , ourst, ourport, hist, hisport, sat, eri.transport_proto)
                      )
@@ -1828,11 +1834,13 @@ void pfkey_set_debug(int cur_debug
 		     , openswan_keying_debug_func_t debug_func
 		     , openswan_keying_debug_func_t error_func)
 {
+#ifdef DEBUG
     pfkey_lib_debug = (cur_debug&DBG_PFKEY ?
 		       PF_KEY_DEBUG_PARSE_MAX : PF_KEY_DEBUG_PARSE_NONE);
     
     pfkey_debug_func = debug_func;
     pfkey_error_func = error_func;
+#endif
 }
 
 void pfkey_remove_orphaned_holds(int transport_proto

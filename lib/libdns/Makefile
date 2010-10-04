@@ -30,7 +30,7 @@ CINCLUDES =	-I${srcdir}${ISCARCH}/include \
 		-I${srcdir}../libisc/nothreads/include \
 		-I. -I./include -I${srcdir}include \
 		-I${srcdir}../libisc/include
-CDEFINES = -g ${USERCOMPILE} ${PORTINCLUDE}
+CDEFINES = ${USERCOMPILE} ${PORTINCLUDE}
 CWARNINGS = -Werror
 
 CFLAGS+=${CINCLUDES} ${CDEFINES} ${CWARNINGS}

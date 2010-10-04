@@ -52,6 +52,7 @@ enum keyword_string_config_field {
     KSF_ALSOFLIP,
     KSF_ACCELERATION,
     KSF_CONNALIAS,
+    KSF_LISTEN,
     KSF_MAX
 };
 

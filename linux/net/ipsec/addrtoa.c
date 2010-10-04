@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: addrtoa.c,v 1.10 2004/07/10 07:43:47 mcr Exp $
  */
 #include "openswan.h"
 

@@ -84,18 +84,18 @@ MANPLACES=man3 man5 man8
 
 # where configuration files go
 FINALCONFFILE?=/etc/ipsec.conf
-CONFFILE=$(DESTDIR)$(FINALCONFFILE)
+CONFFILE?=$(DESTDIR)$(FINALCONFFILE)
 
 FINALCONFDIR?=/etc
-CONFDIR=$(DESTDIR)$(FINALCONFDIR)
+CONFDIR?=$(DESTDIR)$(FINALCONFDIR)
 
 FINALCONFDDIR?=${FINALCONFDIR}/ipsec.d
-CONFDDIR=$(DESTDIR)$(FINALCONFDDIR)
+CONFDDIR?=$(DESTDIR)$(FINALCONFDDIR)
 
 # sample configuration files go into
 INC_DOCDIR?=share/doc
-FINALEXAMPLECONFDIR=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
-EXAMPLECONFDIR=${DESTDIR}${FINALEXAMPLECONFDIR}
+FINALEXAMPLECONFDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
+EXAMPLECONFDIR?=${DESTDIR}${FINALEXAMPLECONFDIR}
 
 FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
 DOCDIR=${DESTDIR}${FINALDOCDIR}
@@ -112,18 +112,18 @@ LOGDIR?=${DESTDIR}${FINALLOGDIR}
 # If none of those exists (or INC_RCDIRS is empty), INC_RCDEFAULT gets them.
 # With a non-null DESTDIR, INC_RCDEFAULT will be used unless one of the
 # INC_RCDIRS directories has been pre-created under DESTDIR.
-INC_RCDIRS=/etc/rc.d/init.d /etc/rc.d /etc/init.d /sbin/init.d
-INC_RCDEFAULT=/etc/rc.d/init.d
+INC_RCDIRS?=/etc/rc.d/init.d /etc/rc.d /etc/init.d /sbin/init.d
+INC_RCDEFAULT?=/etc/rc.d/init.d
 
 # RCDIR is where boot/shutdown scripts go; FINALRCDIR is where they think
 # will finally be (so utils/Makefile can create a symlink in BINDIR to the
 # place where the boot/shutdown script will finally be, rather than the
 # place where it is installed).
-FINALRCDIR=$(shell for d in $(INC_RCDIRS) ; \
+FINALRCDIR?=$(shell for d in $(INC_RCDIRS) ; \
 		do if test -d $(DESTDIR)/$$d ; \
 		then echo $$d ; exit 0 ; \
 		fi ; done ; echo $(INC_RCDEFAULT) )
-RCDIR=$(DESTDIR)$(FINALRCDIR)
+RCDIR?=$(DESTDIR)$(FINALRCDIR)
 
 
 
@@ -180,8 +180,11 @@ BISONOSFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
-USERCOMPILE?=-g ${WERROR} ${PORTDEFINE}
-#USERCOMPILE?=-g -O3 ${WERROR} 
+# -DGCC_LINT uses gcc-specific declarations to improve compile-time
+#    diagnostics.
+#Example for a cross compile:
+#USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
+USERCOMPILE?=-g -O3 ${WERROR} -DGCC_LINT
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
@@ -335,8 +338,8 @@ USE_VENDORID?=true
 USE_AGGRESSIVE?=true
 
 # Build XAUTH authentication system code - both Server and Client.
-# This is off by default, since XAUTH is tricky, and you can get into 
-# security trouble unless you do additional configuration.
+# XAUTH is tricky, and you can get into security trouble unless you
+# do additional configuration - but it is often needed for Cisco interop
 USE_XAUTH?=true
 
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
@@ -374,15 +377,6 @@ USE_LDAP?=false
 
 # Include libcurl support (currently used for fetching CRLs)
 USE_LIBCURL?=false
-
-# should opportunistic encryption be turned on by default?
-# Enabled during testing, but probably turned off in shipping versions.
-USE_OE?=true
-ifeq ($(USE_OE),false)
-# warning: examples subdirectory is statically defined here
-OE_FLAG=\#Disable Opportunistic Encryption\\ninclude ${FINALCONFDDIR}/examples/no_oe.conf
-else
-endif
 
 # should we include all manner of known to be broken/weak?
 # use this only if you are building some kind of a testing

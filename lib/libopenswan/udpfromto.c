@@ -32,10 +32,7 @@
  * sendfromto	added 18/08/2003, Jan Berkel <jan@sitadelle.com>
  *		Works on Linux and FreeBSD (5.x)
  *
- * Version: $Id: udpfromto.c,v 1.2 2005/01/25 20:06:40 mcr Exp $
  */
-
-static const char rcsid[] = "$Id: udpfromto.c,v 1.2 2005/01/25 20:06:40 mcr Exp $";
 
 #include <sys/types.h>
 

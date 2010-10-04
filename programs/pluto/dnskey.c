@@ -1008,7 +1008,7 @@ unpack_txt_rdata(char *d, size_t dlen, const u_char *s, size_t slen)
 	o += cl;
     }
     d[o] = '\0';
-    if (strlen(d) != o)
+    if (strlen((const char *)d) != o)
 	return "TXT rr RDATA contains a NUL";
 
     return NULL;

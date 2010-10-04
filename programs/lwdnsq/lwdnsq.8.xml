@@ -16,6 +16,7 @@
 <cmdsynopsis>
   <command>ipsec</command>
     <arg choice='plain'><replaceable>lwdnsq</replaceable></arg>
+    <arg choice='opt'>--help </arg>
     <arg choice='opt'>--prompt </arg>
     <arg choice='opt'>--serial </arg>
     <arg choice='opt'>--debug </arg>

@@ -639,7 +639,7 @@ format_end(char *buf
 	const char *plus = "+";
 	endopts[0]='\0';
 
-	if(id_obrackets && id_obrackets[0]=='[')
+	if(id_obrackets[0]=='[')
 	{
 	    id_comma=",";
 	} else {
@@ -801,7 +801,6 @@ load_end_certificate(const char *filename, struct end *dst)
     time_t valid_until;
     cert_t cert;
     err_t ugh = NULL;
-    bool cached_cert = FALSE;
 
     memset(&dst->cert, 0, sizeof(dst->cert));
 
@@ -838,15 +837,10 @@ load_end_certificate(const char *filename, struct end *dst)
     case CERT_PGP:
 	select_pgpcert_id(cert.u.pgp, &dst->id);
 	
-	if (cached_cert)
-	    dst->cert = cert;
-	else
-	{
-	    valid_until = cert.u.pgp->until;
-	    add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
-	    dst->cert.type = cert.type;
-	    dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
-	}
+	valid_until = cert.u.pgp->until;
+	add_pgp_public_key(cert.u.pgp, cert.u.pgp->until, DAL_LOCAL);
+	dst->cert.type = cert.type;
+	dst->cert.u.pgp = pluto_add_pgpcert(cert.u.pgp);
 	break;
 	
     case CERT_X509_SIGNATURE:
@@ -854,12 +848,9 @@ load_end_certificate(const char *filename, struct end *dst)
 	    select_x509cert_id(cert.u.x509, &dst->id);
 	}
 	
-	if (!cached_cert)
-	{
-	    /* check validity of cert */
-	    valid_until = cert.u.x509->notAfter;
-	    ugh = check_validity(cert.u.x509, &valid_until);
-	}
+	/* check validity of cert */
+	valid_until = cert.u.x509->notAfter;
+	ugh = check_validity(cert.u.x509, &valid_until);
 	if (ugh != NULL)
 	{
 	    openswan_log("  %s", ugh);
@@ -870,14 +861,10 @@ load_end_certificate(const char *filename, struct end *dst)
 	    DBG(DBG_CONTROL,
 		DBG_log("certificate is valid")
 		);
-	    if (cached_cert)
-		dst->cert = cert;
-	    else
-	    {
-		add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
-		dst->cert.type = cert.type;
-		dst->cert.u.x509 = add_x509cert(cert.u.x509);
-	    }
+	    add_x509_public_key(&dst->id, cert.u.x509, valid_until, DAL_LOCAL);
+	    dst->cert.type = cert.type;
+	    dst->cert.u.x509 = add_x509cert(cert.u.x509);
+
 	    /* if no CA is defined, use issuer as default */
 	    if (dst->ca.ptr == NULL)
 		dst->ca = dst->cert.u.x509->issuer;
@@ -1465,6 +1452,7 @@ add_connection(const struct whack_message *wm)
 	    (void) format_connection(topo, sizeof(topo), c, &c->spd);
 
 	    DBG_log("%s", topo);
+	);
 
 #if 0
 	    /* Make sure that address families can be correctly inferred
@@ -1481,6 +1469,7 @@ add_connection(const struct whack_message *wm)
 		    == subnettypeof(&c->spd.that.client));
 #endif
 
+	DBG(DBG_CONTROL,
 	    DBG_log("ike_life: %lus; ipsec_life: %lus; rekey_margin: %lus;"
 		" rekey_fuzz: %lu%%; keyingtries: %lu; policy: %s"
 		, (unsigned long) c->sa_ike_life_seconds
@@ -1587,7 +1576,9 @@ instantiate(struct connection *c, const ip_address *him
 	    , const struct id *his_id)
 {
     struct connection *d;
+#ifdef DEBUG
     int wildcards;
+#endif
 
     passert(c->kind == CK_TEMPLATE);
     passert(c->spd.next == NULL);
@@ -1674,7 +1665,6 @@ oppo_instantiate(struct connection *c
 		 , const ip_address *peer_client)
 {
     struct connection *d = instantiate(c, him, his_id);
-    char instbuf[512];
 
     DBG(DBG_CONTROL,
 	DBG_log("oppo instantiate d=%s from c=%s with c->routing %s, d->routing %s"
@@ -1682,6 +1672,7 @@ oppo_instantiate(struct connection *c
 		, enum_name(&routing_story, c->spd.routing)
 		, enum_name(&routing_story, d->spd.routing)));
     DBG(DBG_CONTROL,
+	char instbuf[512];
 	DBG_log("new oppo instance: %s"
 		, (format_connection(instbuf, sizeof(instbuf), d, &d->spd), instbuf)));
 
@@ -1854,18 +1845,17 @@ find_connection_for_clients(struct spd_route **srp,
     best_sr = NULL;
 
     passert(!isanyaddr(our_client) && !isanyaddr(peer_client));
-#ifdef DEBUG
-    if (DBGP(DBG_CONTROL))
-    {
-	char ocb[ADDRTOT_BUF], pcb[ADDRTOT_BUF];
+
+    DBG(DBG_CONTROL,
+	char ocb[ADDRTOT_BUF];
+	char pcb[ADDRTOT_BUF];
 
 	addrtot(our_client, 0, ocb, sizeof(ocb));
 	addrtot(peer_client, 0, pcb, sizeof(pcb));
 	DBG_log("find_connection: "
 		"looking for policy for connection: %s:%d/%d -> %s:%d/%d"
-		, ocb, transport_proto, our_port, pcb, transport_proto, peer_port);
-    }
-#endif /* DEBUG */
+		, ocb, transport_proto, our_port, pcb, transport_proto, peer_port));
+
 
     for (c = connections; c != NULL; c = c->ac_next)
     {
@@ -1881,18 +1871,17 @@ find_connection_for_clients(struct spd_route **srp,
  	    && (!sr->this.port || our_port == sr->this.port)
  	    && (!sr->that.port || peer_port == sr->that.port))
 	    {
-		char cib[CONN_INST_BUF];
-		char cib2[CONN_INST_BUF];
 
  		policy_prio_t prio = 8 * (c->prio + (c->kind == CK_INSTANCE))
  				   + 2 * (sr->this.port == our_port)
  				   + 2 * (sr->that.port == peer_port)
  				   +     (sr->this.protocol == transport_proto);
 
-#ifdef DEBUG
-		if (DBGP(DBG_CONTROL|DBG_CONTROLMORE))
+		DBG(DBG_CONTROLMORE,
 		{
-		    char c_ocb[SUBNETTOT_BUF], c_pcb[SUBNETTOT_BUF];
+		    char cib[CONN_INST_BUF];
+		    char c_ocb[SUBNETTOT_BUF];
+		    char c_pcb[SUBNETTOT_BUF];
 
 		    subnettot(&c->spd.this.client, 0, c_ocb, sizeof(c_ocb));
 		    subnettot(&c->spd.that.client, 0, c_pcb, sizeof(c_pcb));
@@ -1902,7 +1891,7 @@ find_connection_for_clients(struct spd_route **srp,
 			    , (fmt_conn_instance(c, cib), cib)
 			    , c_ocb, c_pcb, prio);
 		}
-#endif /* DEBUG */
+		);
 
 		if (best == NULL)
 		{
@@ -1912,6 +1901,9 @@ find_connection_for_clients(struct spd_route **srp,
 		}
 
 		DBG(DBG_CONTROLMORE,
+		{
+		    char cib[CONN_INST_BUF];
+		    char cib2[CONN_INST_BUF];
 		    DBG_log("find_connection: comparing best \"%s\"%s [pri:%ld]{%p} (child %s) to \"%s\"%s [pri:%ld]{%p} (child %s)"
 			    , best->name
 			    , (fmt_conn_instance(best, cib), cib)
@@ -1922,7 +1914,9 @@ find_connection_for_clients(struct spd_route **srp,
 			    , (fmt_conn_instance(c, cib2), cib2)
 			    , prio
 			    , c
-			    , (c->policy_next ? c->policy_next->name : "none")));
+			    , (c->policy_next ? c->policy_next->name : "none"));
+		}
+		);
 
 		if (prio > best_prio)
 		{
@@ -2212,8 +2206,9 @@ find_host_connection2(const char *func
 		     , const ip_address *him, u_int16_t his_port, lset_t policy)
 {
     struct connection *c;
-    char mebuf[ADDRTOT_BUF], himbuf[ADDRTOT_BUF];
     DBG(DBG_CONTROLMORE,
+        char mebuf[ADDRTOT_BUF];
+        char himbuf[ADDRTOT_BUF];
 	DBG_log("find_host_connection2 called from %s, me=%s:%d him=%s:%d policy=%s", func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
 		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"

@@ -486,7 +486,7 @@ has_preloaded_public_key(struct state *st)
  */
 
 bool
-extract_peer_id(struct id *peer, const pb_stream const* id_pbs)
+extract_peer_id(struct id *peer, const pb_stream *id_pbs)
 {
     switch (peer->kind)
     {
@@ -511,13 +511,9 @@ extract_peer_id(struct id *peer, const pb_stream const* id_pbs)
     case ID_USER_FQDN:
 	if (memchr(id_pbs->cur, '@', pbs_left(id_pbs)) == NULL)
 	{
-	    char idbuf[IDTOA_BUF];
-	    int len = pbs_left(id_pbs);
-	    if(len>(IDTOA_BUF-1)) len = IDTOA_BUF;
-
-	    memcpy(idbuf, id_pbs->cur, len-1);
-	    idbuf[len]='\0';
-	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %s", idbuf);
+	    loglog(RC_LOG_SERIOUS, "peer's ID_USER_FQDN contains no @: %.*s"
+		, (int) pbs_left(id_pbs)
+		, id_pbs->cur);
 	    /* return FALSE; */
 	}
 	/* FALLTHROUGH */

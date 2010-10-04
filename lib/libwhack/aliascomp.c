@@ -34,7 +34,8 @@ bool osw_alias_cmp(const char *needle, const char *haystack)
 	int nlen = strlen(needle);
 	const char *s = haystack;
 
-	if(haystack == NULL || needle == NULL) return FALSE;
+	if (s == NULL)
+	   return FALSE;
 
 	while(*s!='\0') {
 		/* does it match, and does it end with a space?

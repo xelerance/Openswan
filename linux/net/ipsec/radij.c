@@ -1,5 +1,3 @@
-char radij_c_version[] = "RCSID $Id: radij.c,v 1.48 2005/04/29 05:10:22 mcr Exp $";
-
 /*
  * This file is defived from ${SRC}/sys/net/radix.c of BSD 4.4lite
  *

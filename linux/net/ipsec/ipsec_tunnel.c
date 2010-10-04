@@ -2068,7 +2068,7 @@ ipsec_tunnel_init(struct net_device *dev)
 		priv_dev = kmalloc(sizeof(struct ipsecpriv), GFP_KERNEL);
 		if (priv_dev == NULL)
 			return;
-		dev->priv = priv_net;
+		dev->priv = priv_dev;
 	}
 #endif
 	memset((caddr_t)netdev_priv(dev), 0, sizeof(struct ipsecpriv));

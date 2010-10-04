@@ -1,8 +1,11 @@
 /* 
  * Cryptographic helper function - calculate DH
  * Copyright (C) 2007-2008 Michael C. Richardson <mcr@xelerance.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
- * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009-2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1285,14 +1288,14 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	vpss.t.len = 0;
 	total_keysize = skd_bytes + (2*(ska_bytes + ske_bytes + skp_bytes));
 
-	if(DBGP(DBG_CRYPT)) {
+	DBG(DBG_CRYPT,
 	    DBG_log("PRF+ input");
 	    DBG_dump_chunk("Ni", vpss.ni);
 	    DBG_dump_chunk("Nr", vpss.nr);
 	    DBG_dump_chunk("SPIi", vpss.spii);
 	    DBG_dump_chunk("SPIr", vpss.spir);
 	    DBG_log("Total keysize needed %d", (int)total_keysize);
-	}
+	);
 #ifdef HAVE_LIBNSS
 	counter.ptr = &vpss.counter[0];
 	counter.len =1;

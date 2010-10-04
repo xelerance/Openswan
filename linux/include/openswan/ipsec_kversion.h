@@ -235,6 +235,11 @@
 # define nfmark mark
 #else
 # define HAVE_KMEM_CACHE_T
+# if defined(RHEL_RELEASE_CODE)
+#  if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,0)
+#   define FLOW_HAS_NO_MARK
+# endif
+#  endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
@@ -365,6 +370,12 @@
 #  define NETDEV_TX_BUSY 1
 # endif
 #endif
+#endif
+
+#if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,30)
+# ifndef CONFIG_COMPAT_NET_DEV_OPS
+#  define USE_NETDEV_OPS
+# endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,31)

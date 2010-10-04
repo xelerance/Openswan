@@ -1,9 +1,12 @@
 /* routines that interface with the kernel's IPsec mechanism
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2010  D. Hugh Redelmeier.
  * Copyright (C) 2003-2008 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2007-2009 Paul Wouters <paul@xelerance.com>
- * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2010 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2010 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2009-2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -426,11 +429,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    "%s "           /* PLUTO_MY_SRCIP - if any */
 #ifdef XAUTH
-# ifdef MODECFG
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    "PLUTO_PEER_BANNER='%s' "
-# endif /* MODECFG */
 #endif /* XAUTH */
 #ifdef HAVE_NM
 		    "PLUTO_NM_CONFIGURED='%u' "
@@ -462,11 +463,9 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    , srcip_str
 #ifdef XAUTH
-# ifdef MODECFG
-		    , c->cisco_dns_info
-		    , c->cisco_domain_info
-		    , c->cisco_banner
-# endif /* MODECFG */
+		    , c->cisco_dns_info ? c->cisco_dns_info : ""
+		    , c->cisco_domain_info ? c->cisco_domain_info : ""
+		    , c->cisco_banner ? c->cisco_banner : ""
 #endif /* XAUTH */
 #ifdef HAVE_NM
 		    , c->nmconfigured
@@ -894,14 +893,14 @@ raw_eroute(const ip_address *this_host
            , const char *opname USED_BY_DEBUG)
 {
     char text_said[SATOT_BUF];
-    int sport = ntohs(portof(&this_client->addr));
-    int dport = ntohs(portof(&that_client->addr));
     bool result;
 
     set_text_said(text_said, that_host, spi, proto);
 
     DBG(DBG_CONTROL | DBG_KLIPS,
         {
+            int sport = ntohs(portof(&this_client->addr));
+            int dport = ntohs(portof(&that_client->addr));
             char mybuf[SUBNETTOT_BUF];
             char peerbuf[SUBNETTOT_BUF];
 
@@ -2581,10 +2580,10 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
         }
         else
         {
-            char cib[CONN_INST_BUF];
             sr->routing = RT_ROUTED_TUNNEL;
 
             DBG(DBG_CONTROL,
+                char cib[CONN_INST_BUF];
                 DBG_log("route_and_eroute: instance \"%s\"%s, setting eroute_owner {spd=%p,sr=%p} to #%ld (was #%ld) (newest_ipsec_sa=#%ld)"
                         , st->st_connection->name
                         , (fmt_conn_instance(st->st_connection, cib), cib)

@@ -1,6 +1,10 @@
 /* timer event handling
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2005-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
+ *
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -155,7 +159,6 @@ retransmit_v1_msg(struct state *st)
 {
     time_t delay = 0;
     struct connection *c;
-    ip_address peer;
     unsigned long try;
     unsigned long try_limit;
 	
@@ -165,8 +168,9 @@ retransmit_v1_msg(struct state *st)
     try       = st->st_try;
     try_limit = c->sa_keying_tries;
 	
-    DBG(DBG_CONTROL, DBG_log(
-	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
+    DBG(DBG_CONTROL, 
+	    ip_address peer;
+	    DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&peer), c->name, st->st_serialno));
     
     if (st->st_retransmit < maximum_retransmissions)
@@ -270,7 +274,6 @@ retransmit_v2_msg(struct state *st)
 {
     time_t delay = 0;
     struct connection *c;
-    ip_address peer;
     unsigned long try;
     unsigned long try_limit;
     const char *details = "";
@@ -281,8 +284,9 @@ retransmit_v2_msg(struct state *st)
     try = st->st_try;
     try++;
     
-    DBG(DBG_CONTROL, DBG_log(
-	    "handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
+    DBG(DBG_CONTROL, 
+	ip_address peer;
+	DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&peer), c->name, st->st_serialno));
     
     if (st->st_retransmit < maximum_retransmissions)

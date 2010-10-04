@@ -14,8 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_sa.c,v 1.31 2005/11/11 04:38:56 paul Exp $
- *
  * This is the file formerly known as "ipsec_xform.h"
  *
  */
@@ -1165,8 +1163,10 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
         int error = 0;
         char sa[SATOT_BUF];
 	size_t sa_len;
+#ifdef CONFIG_KLIPS_DEBUG
 	char ipaddr_txt[ADDRTOA_BUF];
 	char ipaddr2_txt[ADDRTOA_BUF];
+#endif
 #if defined (CONFIG_KLIPS_AUTH_HMAC_MD5) || defined (CONFIG_KLIPS_AUTH_HMAC_SHA1)
 	unsigned char kb[AHMD596_BLKLEN];
 	int i;
@@ -1195,13 +1195,15 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP: {
 		ipsp->ips_xformfuncs = ipip_xform_funcs;
+#ifdef CONFIG_KLIPS_DEBUG
 		sin_addrtot(ipsp->ips_addr_s, 0, ipaddr_txt, sizeof(ipaddr_txt));
-		sin_addrtot(ipsp->ips_addr_d, 0, ipaddr2_txt, sizeof(ipaddr_txt));
+		sin_addrtot(ipsp->ips_addr_d, 0, ipaddr2_txt, sizeof(ipaddr2_txt));
 		KLIPS_PRINT(debug_pfkey,
 			    "ipsec_sa_init: "
 			    "(pfkey defined) IPIP ipsec_sa set for %s->%s.\n",
 			    ipaddr_txt,
 			    ipaddr2_txt);
+#endif
 	}
 	break;
 #endif /* !CONFIG_KLIPS_IPIP */

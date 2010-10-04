@@ -48,7 +48,7 @@
 #include "kernel.h"
 #include "plutoalg.h"
 
-#define return_on(var, val) do { var=val;goto return_out; } while(0);
+#define return_on(var, val) { (var) = (val); goto return_out; }
 
 /*==========================================================
  *
@@ -64,42 +64,42 @@ bool ike_alg_enc_present(int ealg)
 	struct encrypt_desc *enc_desc = ike_alg_get_encrypter(ealg);
 	return enc_desc ? enc_desc->enc_blocksize : 0;
 }
+
 /*	check if IKE hash algo is present */
 bool ike_alg_hash_present(int halg)
 {
 	struct hash_desc *hash_desc = ike_alg_get_hasher(halg);
 	return hash_desc ? hash_desc->hash_digest_len : 0;
 }
+
 bool ike_alg_enc_ok(int ealg, unsigned key_len, 
 		struct alg_info_ike *alg_info_ike __attribute__((unused)), 
-		const char **errp)
+		const char **errp, char *ugh_buf, size_t ugh_buf_len)
 {
 	int ret=TRUE;
 	struct encrypt_desc *enc_desc;
-	char errbuf[256]="encrypt algo not found";
-	/* 
-	 * test #1: encrypt algo must be present 
-	 */
+
 	enc_desc = ike_alg_get_encrypter(ealg);
-	if (!enc_desc) return_on(ret, FALSE);
-	/* 
-	 * test #2: if key_len specified, it must be in range 
-	 */
-	if ((key_len) && ((key_len < enc_desc->keyminlen) ||
+	if (!enc_desc) {
+		/* failure: encrypt algo must be present */
+		snprintf(ugh_buf, ugh_buf_len, "encrypt algo not found");
+		ret = FALSE;
+	} if ((key_len) && ((key_len < enc_desc->keyminlen) ||
 			 (key_len > enc_desc->keymaxlen))) {
-		snprintf(errbuf, sizeof(errbuf)-1,
+		/* failure: if key_len specified, it must be in range */
+		snprintf(ugh_buf, ugh_buf_len,
 				"key_len not in range: encalg=%d, "
 				"key_len=%d, keyminlen=%d, keymaxlen=%d",
 				ealg, key_len,
 				enc_desc->keyminlen,
 				enc_desc->keymaxlen
 		       );
-		plog ("ike_alg_enc_ok(): %s", errbuf);
-		return_on(ret, FALSE);
+		plog ("ike_alg_enc_ok(): %.*s", (int)ugh_buf_len,  ugh_buf);
+		ret = FALSE;
 	} 
-return_out:
+
 	DBG(DBG_KLIPS, 
-		if (ret) 
+		if (ret) {
 			DBG_log("ike_alg_enc_ok(ealg=%d,key_len=%d): "
 				"blocksize=%d, keyminlen=%d, "
 				"keydeflen=%d, keymaxlen=%d, "
@@ -110,12 +110,13 @@ return_out:
 				enc_desc->keydeflen,
 				enc_desc->keymaxlen,
 				ret);
-		else 
+		} else {
 			DBG_log("ike_alg_enc_ok(ealg=%d,key_len=%d): NO",
 				ealg, key_len);
+		}
 	);
 	if (!ret && *errp)
-		*errp=errbuf;
+		*errp = ugh_buf;
 	return ret;
 }
 /* 
