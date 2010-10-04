@@ -487,13 +487,15 @@ check_ocsp(void)
 	bool first = TRUE;
 #endif
 	ocsp_certinfo_t *certinfo = location->certinfo;
+#ifdef HAVE_THREADS
+	time_t time_left = certinfo->nextUpdate - time(NULL);
+#endif
 
 	while (certinfo != NULL)
 	{
 	    if (!certinfo->once)
 	    {
 		DBG(DBG_CONTROL,
-		    time_t time_left = certinfo->nextUpdate - time(NULL);
 		    char buf[BUF_LEN];
 		    if (first)
 		    {
@@ -507,10 +509,12 @@ check_ocsp(void)
 			}
 			first = FALSE;
 		    }
+#ifdef HAVE_THREADS
 		    datatot(certinfo->serialNumber.ptr, certinfo->serialNumber.len
 			, ':', buf, BUF_LEN);
 		    DBG_log("serial: %s, %ld seconds left", buf
 			    , (unsigned long)time_left)
+#endif
 		)
 
 #ifdef HAVE_THREADS
