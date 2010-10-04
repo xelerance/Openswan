@@ -58,7 +58,7 @@ $(obj-y):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c
-	sed '/"/s/xxx/$(IPSECVERSION)/' version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' version.in.c >$@
 
 clean:
 	rm -f $(L_TARGET) *.o try* core *.core version.c

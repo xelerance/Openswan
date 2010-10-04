@@ -272,22 +272,28 @@ enum ikev2_trans_type_encr v1tov2_encr(int oakley)
 enum ikev2_trans_type_integ v1tov2_integ(int oakley)
 {
     switch(oakley) {
-    case AUTH_ALGORITHM_HMAC_MD5:
-	return IKEv2_AUTH_HMAC_MD5_96;
-    case AUTH_ALGORITHM_HMAC_SHA1:
-	return IKEv2_AUTH_HMAC_SHA1_96;
-    case AUTH_ALGORITHM_DES_MAC:
-	return IKEv2_AUTH_DES_MAC;
-    case AUTH_ALGORITHM_KPDK:
-	return IKEv2_AUTH_KPDK_MD5;
-
-    case AUTH_ALGORITHM_HMAC_SHA2_256:
-    case AUTH_ALGORITHM_HMAC_SHA2_384:
-    case AUTH_ALGORITHM_HMAC_SHA2_512:
-    case AUTH_ALGORITHM_HMAC_RIPEMD:
+    case OAKLEY_MD5:
+        return IKEv2_AUTH_HMAC_MD5_96;
+    case OAKLEY_SHA1:
+        return IKEv2_AUTH_HMAC_SHA1_96;
+    case OAKLEY_SHA2_256:
+        return IKEv2_AUTH_HMAC_SHA2_256_128;
     default:
-	return IKEv2_AUTH_INVALID;
-	/* return IKEv2_AUTH_AES_XCBC_96; */
+        return IKEv2_AUTH_INVALID;
+   }
+}
+
+static enum ikev2_trans_type_prf v1tov2_prf(int oakley)
+{
+    switch(oakley) {
+    case OAKLEY_MD5:
+        return IKEv2_PRF_HMAC_MD5;
+    case OAKLEY_SHA1:
+        return IKEv2_PRF_HMAC_SHA1;
+    case OAKLEY_SHA2_256:
+        return IKEv2_PRF_HMAC_SHA2_256;
+    default:
+        return IKEv2_PRF_INVALID;
     }
 }
 
@@ -355,7 +361,8 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 			    break;
 			
 			case OAKLEY_HASH_ALGORITHM:
-			    dtfone->integ_transid = attr->val;
+			    dtfone->integ_transid = v1tov2_integ(attr->val);
+			    dtfone->prf_transid = v1tov2_prf(attr->val);
 			    break;
 			    
 			case OAKLEY_GROUP_DESCRIPTION:
@@ -481,7 +488,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	if(dtfone->protoid == PROTO_ISAKMP) {
 	    /* XXX Let the user set the PRF.*/
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_PRF;
-	    tr[tr_pos].transid        = IKEv2_PRF_HMAC_SHA1;
+	    tr[tr_pos].transid        = dtfone->prf_transid;
 	    tr_pos++;
 	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
 	    tr[tr_pos].transid        = dtfone->group_transid;

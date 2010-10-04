@@ -26,6 +26,8 @@
 usage="Usage: $0 file ..."
 me="ipsec _include"
 
+IPSEC_CONFS="${IPSEC_CONFS-@IPSEC_CONFS@}"
+
 for dummy
 do
 	case "$1" in
@@ -47,10 +49,10 @@ for f
 do
 	if test ! -r "$f"
 	then
-		if test ! "$f" = "/etc/ipsec.conf"
+		if test ! "$f" = "$IPSEC_CONFS/ipsec.conf"
 		then
 			echo "#:cannot open configuration file \'$f\'"
-			if test "$f" = "/etc/ipsec.secrets"
+			if test "$f" = "$IPSEC_CONFS/ipsec.secrets"
 			then
 				echo "#:Your secrets file will be created when you start FreeS/WAN for the first time."
 			fi

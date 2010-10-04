@@ -39,6 +39,8 @@
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
 
+#include "oswalloc.h"
+
 #include "sysdep.h"
 #include "oswconf.h"
 #include "constants.h"
@@ -912,12 +914,10 @@ int xauth_pam_conv(int num_msg, const struct pam_message **msgm,
 
             reply[count].resp_retcode = 0;
             reply[count].resp = string;
-            string = NULL;
         }
     }
 
     *response = reply;
-    reply = NULL;
     return PAM_SUCCESS;
 }
 #endif
@@ -1626,6 +1626,39 @@ modecfg_inI2(struct msg_digest *md)
     return STF_OK;
 }
 
+/* Auxillary function for modecfg_inR1() */
+static char *
+cisco_stringify(pb_stream *pbs, const char *attr_name)
+{
+	char strbuf[500]; /* Cisco maximum unknown - arbitrary choice */
+	size_t len = pbs_left(pbs);
+
+	if (len > sizeof(strbuf)-1)
+		len = sizeof(strbuf)-1;
+
+	memcpy(strbuf, pbs->cur, len);
+	strbuf[len] = '\0';
+	/* ' is poison to the way this string will be used
+	 * in system() and hence shell.  Remove any.
+	 */
+	{
+	    char *s = strbuf;
+
+	    for (;;)
+	    {
+		s = strchr(s, '\'');
+		if (s == NULL)
+		    break;
+		*s = '?';
+	    }
+	}
+	(void)sanitize_string(strbuf, sizeof(strbuf));
+	DBG(DBG_CONTROL, DBG_log("Received Cisco %s: %s", attr_name, strbuf));
+	return clone_str(strbuf, attr_name);
+}
+
+
+
 /** STATE_MODE_CFG_R1:
  *  HDR*, HASH, ATTR(SET=IP) --> HDR*, HASH, ATTR(ACK,OK)
  *	    
@@ -1639,7 +1672,6 @@ modecfg_inR1(struct msg_digest *md)
     pb_stream *attrs = &md->chain[ISAKMP_NEXT_ATTR]->pbs;
     int resp = LEMPTY;
     struct payload_digest *p;
-    bool first_dns_flag = TRUE;
 
     DBG(DBG_CONTROL, DBG_log("modecfg_inR1"));
     openswan_log("received mode cfg reply");
@@ -1791,14 +1823,30 @@ modecfg_inR1(struct msg_digest *md)
                     addrtot(&a, 0, caddr, sizeof(caddr));
                     openswan_log("Received DNS %s, len=%zd", caddr, strlen(caddr));
 
-                    if (first_dns_flag) {
-                    strcpy(st->st_connection->cisco_dns_info, caddr);
-                    first_dns_flag = 0;
-                    }
-                    else {
-                    strcat(st->st_connection->cisco_dns_info, " ");
-                    strcat(st->st_connection->cisco_dns_info, caddr);
-                    }
+		    {
+			struct connection *c = st->st_connection;
+			char *old = c->cisco_dns_info;
+
+			if (old == NULL)
+			{
+			    c->cisco_dns_info = clone_str(caddr, "cisco_dns_info");
+			}
+			else
+			{
+			    /* concatenate new IP address string on end of
+			     * existing string, separated by ' '.
+			     */
+			    size_t sz_old = strlen(old);
+			    size_t sz_added = strlen(caddr) + 1;
+			    char *new = alloc_bytes(sz_old + 1 + sz_added, "cisco_dns_info+");
+
+			    memcpy(new, old, sz_old);
+			    *(new + sz_old) =' ';
+			    memcpy(new + sz_old + 1, caddr, sz_added);
+			    c->cisco_dns_info = new;
+			    pfree(old);
+			}
+		    }
 
                     DBG_log("Cisco DNS info: %s, len=%zd", st->st_connection->cisco_dns_info, strlen(st->st_connection->cisco_dns_info));
                 }
@@ -1812,28 +1860,14 @@ modecfg_inR1(struct msg_digest *md)
 		    break;
 
 		case CISCO_BANNER:
-                {
-                DBG_dump("Received cisco banner: ", strattr.cur, pbs_left(&strattr));
-		strncpy(st->st_connection->server_banner, strattr.cur, pbs_left(&strattr));
-		st->st_connection->server_banner[pbs_left(&strattr)]='\0';
-		DBG_log("Cisco banner: %s", st->st_connection->server_banner);
-                resp |= LELEM(attr.isaat_af_type);
-                }
-                break;
-
+		    st->st_connection->cisco_banner = cisco_stringify(&strattr,"Cisco Banner");
+                    resp |= LELEM(attr.isaat_af_type);
+                    break;
 
 		case CISCO_DEF_DOMAIN:
-                {
-                char tmp[50];
-                DBG_dump("Received cisco def domain: ", strattr.cur, pbs_left(&strattr));
-                strncpy(tmp, strattr.cur, pbs_left(&strattr));
-                tmp[pbs_left(&strattr)]='\0';
-                DBG_log("Cisco defined domain: %s", tmp);
-                strcpy(st->st_connection->cisco_domain_info, tmp);
-                DBG_log("Cisco defined domain: %s", st->st_connection->cisco_domain_info);
-                resp |= LELEM(attr.isaat_af_type);
-                }
-                break;
+		    st->st_connection->cisco_domain_info = cisco_stringify(&strattr,"Cisco Domain");
+                    resp |= LELEM(attr.isaat_af_type);
+                    break;
 
 		case CISCO_SPLIT_INC:
                 {

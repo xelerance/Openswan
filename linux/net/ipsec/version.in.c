@@ -15,14 +15,29 @@
  */
 
 #ifdef __KERNEL__
-#include <linux/netdevice.h>
+#ifndef AUTOCONF_INCLUDED
+#include <linux/config.h>
+#endif
+#include <linux/version.h>
+#define __NO_VERSION__
+#include <linux/module.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) 
+#include <linux/moduleparam.h>
+#endif
 #endif
 
 #include "openswan.h"
 
-#define	V	"xxx"		/* substituted in by Makefile */
+#define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
 static const char openswan_number[] = V;
 static const char openswan_string[] = "Openswan " V;
+
+/*
+ * pass version to modinfo
+ */
+#ifdef MODULE_VERSION
+MODULE_VERSION(V);
+#endif
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string
@@ -41,3 +56,4 @@ ipsec_version_string()
 {
 	return openswan_string;
 }
+

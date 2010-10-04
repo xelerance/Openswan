@@ -27,6 +27,9 @@ modules=/proc/modules
 ipsecversion=/proc/net/ipsec_version
 kamepfkey=/proc/net/pfkey
 
+#pluto searches the current directory, so this is required for making it selinux compliant
+cd /
+
 #/etc/resolv.conf related paths
 OPENSWAN_RESOLV_CONF=/var/run/pluto/openswan-resolv-conf-backup
 ORIG_RESOLV_CONF=/etc/resolv.conf

@@ -85,7 +85,7 @@ $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
 cleanall:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c

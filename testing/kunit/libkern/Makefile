@@ -85,7 +85,7 @@ $(LOGOBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	${srcdir}version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${srcdir}version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${srcdir}version.in.c >$@
 
 clean:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c

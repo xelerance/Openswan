@@ -1973,10 +1973,8 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		
 		sa_len = KLIPS_SATOT(debug_pfkey, &extr->ips->ips_said, 0, sa, sizeof(sa));
 
-		if (extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW)
-			ipsp->ips_flags |= SADB_X_SAFLAGS_INFLOW;
-		else
-			ipsp->ips_flags &= ~SADB_X_SAFLAGS_INFLOW;
+		ipsp->ips_flags |= extr->ips->ips_flags
+			& (SADB_X_SAFLAGS_INFLOW | SADB_X_SAFLAGS_POLICYONLY);
 		ipsp->ips_flow_s = srcflow;
 		ipsp->ips_flow_d = dstflow;
 		ipsp->ips_mask_s = srcmask;
@@ -2264,7 +2262,7 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 							extr->ips->ips_flags);
 	}
 
-	if(!(extr->ips->ips_flags & SADB_X_SAFLAGS_CLEARFLOW)) {
+	if(!(extr->ips->ips_flags & (SADB_X_SAFLAGS_CLEARFLOW | SADB_X_SAFLAGS_POLICYONLY))) {
 		if(pfkey_safe_build(error, extensions_reply)) {
 			error = pfkey_address_build(&extensions_reply[K_SADB_X_EXT_ADDRESS_SRC_FLOW],
 							     K_SADB_X_EXT_ADDRESS_SRC_FLOW,

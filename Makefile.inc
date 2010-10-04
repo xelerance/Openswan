@@ -212,7 +212,10 @@ KERNEL=$(shell if expr " `uname -m`" : ' i.86' >/dev/null ; \
 	fi)
 
 # look for XMLTO command
-XMLTO?=$(shell which xmlto|grep /)
+XMLTO?=$(shell which xmlto | grep / | head -n1)
+
+# look for POD2MAN command
+POD2MAN?=$(shell which pod2man | grep / | head -n1)
 
 #
 # default number of bits for ipsec newhostkey
@@ -452,7 +455,7 @@ OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
-IPSECVERSION:=${IPSECBASEVERSION}$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${OPENSWANSRCDIR})
+IPSECVERSION:=$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${IPSECBASEVERSION} ${OPENSWANSRCDIR})
 export IPSECVERSION
 
 # include OSDEP/ARCH specific makefiles, if any.

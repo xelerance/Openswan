@@ -204,9 +204,7 @@ include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
 
-%: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  $< '->' $@
-	@cat $< | sed -e "s/xxx/$(IPSECVERSION)/" \
+TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
 			-e "s:@IPSEC_EXECDIR@:$(FINALLIBEXECDIR):" \
 			-e "s:@IPSEC_SBINDIR@:$(FINALSBINDIR):" \
@@ -224,9 +222,19 @@ include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 			-e "s:@OE_FLAG@:$(OE_FLAG):" \
 			-e "s:@USE_DEFAULT_CONNS@:$(USE_DEFAULT_CONNS):" \
                         -e "s:@MODPROBE@:$(MODPROBE):" \
-			| cat >$@
+
+
+%: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
+	@echo  'IN' $< '->' $@
+	${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
+
+%: ${srcdir}%.pl ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
+	@echo  'PL' $< '->' $@
+	@${TRANSFORM_VARIABLES} < $< > $@
+	@if [ -x $< ]; then chmod +x $@; fi
+	@if [ "${PROGRAM}.pl" = $< ]; then chmod +x $@; fi
 
 distclean: clean
 
@@ -237,6 +245,7 @@ realclean: clean
 cleanall::
 ifneq ($(strip $(PROGRAM)),)
 	@if [ -r ${srcdir}$(PROGRAM).in ]; then rm -f $(PROGRAM); fi
+	@if [ -r ${srcdir}$(PROGRAM).pl ]; then rm -f $(PROGRAM); fi
 	@if [ -r ${srcdir}$(PROGRAM).c ];  then rm -f $(PROGRAM); fi
 	@if [ -n "$(OBJS)" ];     then rm -f $(PROGRAM); fi
 endif

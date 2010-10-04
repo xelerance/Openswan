@@ -15,7 +15,7 @@
  * RCSID $Id: version.in.c,v 1.2 2003/05/14 02:12:12 mcr Exp $
  */
 
-#define	V	"xxx"		/* substituted in by Makefile */
+#define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
 static const char ipsecpolicy_number[] = V;
 static const char ipsecpolicy_string[] = "Linux FreeS/WAN policylib " V;
 

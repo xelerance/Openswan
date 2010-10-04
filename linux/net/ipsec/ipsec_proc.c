@@ -91,6 +91,11 @@
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
+#include <linux/in.h>
+#if defined(IP_IPSEC_REFINFO) || defined(IP_IPSEC_BINDREF)
+#define IPSEC_PROC_SHOW_SAREF_INFO
+#endif
+
 #ifdef CONFIG_PROC_FS
 
 #ifdef IPSEC_PROC_SUBDIRS
@@ -193,7 +198,8 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 	}
 
 	if((sa_p->ips_said.proto == IPPROTO_IPIP)
-	   && (sa_p->ips_flags & SADB_X_SAFLAGS_INFLOW)) {
+	   && (sa_p->ips_flags & (SADB_X_SAFLAGS_INFLOW
+			   |SADB_X_SAFLAGS_POLICYONLY))) {
 		if (sa_p->ips_flow_s.u.v4.sin_family == AF_INET) {
 		subnettoa(sa_p->ips_flow_s.u.v4.sin_addr,
 			  sa_p->ips_mask_s.u.v4.sin_addr,
@@ -727,6 +733,54 @@ ipsec_version_get_info(char *buffer,
 	return len;
 }
 
+#ifdef IPSEC_PROC_SHOW_SAREF_INFO
+IPSEC_PROCFS_DEBUG_NO_STATIC
+int
+ipsec_saref_get_info(char *buffer,
+		       char **start,
+		       off_t offset,
+		       int length  IPSEC_PROC_LAST_ARG)
+{
+	int rc, len = 0;
+	off_t begin = 0;
+
+	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
+		    "klips_debug:ipsec_saref_get_info: "
+		    "buffer=0p%p, *start=0p%p, offset=%d, length=%d\n",
+		    buffer,
+		    *start,
+		    (int)offset,
+		    length);
+
+#ifdef IP_IPSEC_REFINFO
+	len += rc = ipsec_snprintf(buffer + len,length-len, "refinfo patch applied\n",
+		       ipsec_version_code());
+	if (rc<0) return 0;
+#endif
+
+#ifdef IP_IPSEC_BINDREF
+	len += rc = ipsec_snprintf(buffer + len,length-len, "bindref patch applied\n",
+		       ipsec_version_code());
+	if (rc<0) return 0;
+#endif
+
+#ifdef CONFIG_INET_IPSEC_SAREF
+	len += rc = ipsec_snprintf(buffer + len,length-len, "saref enabled\n",
+		       ipsec_version_code());
+#else
+	len += rc = ipsec_snprintf(buffer + len,length-len, "saref disabled\n",
+		       ipsec_version_code());
+#endif
+	if (rc<0) return 0;
+
+	*start = buffer + (offset - begin);	/* Start of wanted data */
+	len -= (offset - begin);			/* Start slop */
+	if (len > length)
+		len = length;
+	return len;
+}
+#endif
+
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 unsigned int natt_available = 1;
 #elif defined (HAVE_UDP_ENCAP_CONVERT)
@@ -936,6 +990,18 @@ struct proc_dir_entry ipsec_version =
 	NULL, NULL, NULL, NULL, NULL
 };
 
+#ifdef IPSEC_PROC_SHOW_SAREF_INFO
+struct proc_dir_entry ipsec_saref =
+{
+	0,
+	13, "ipsec_saref",
+	S_IFREG | S_IRUGO, 1, 0, 0, 0,
+	&proc_net_inode_operations,
+	ipsec_saref_get_info,
+	NULL, NULL, NULL, NULL, NULL
+};
+#endif
+
 struct proc_dir_entry ipsec_klipsdebug =
 {
 	0,
@@ -982,6 +1048,9 @@ static struct ipsec_proc_list proc_items[]={
 	{"trap_sendcount", &proc_stats_dir, NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_sendcount},
 	{"natt",       &proc_net_ipsec_dir, NULL,             ipsec_natt_get_info,    NULL, NULL},
 	{"version",    &proc_net_ipsec_dir, NULL,             ipsec_version_get_info,    NULL, NULL},
+#ifdef IPSEC_PROC_SHOW_SAREF_INFO
+	{"saref",      &proc_net_ipsec_dir, NULL,             ipsec_saref_get_info,    NULL, NULL},
+#endif
 	{NULL,         NULL,                NULL,             NULL,      NULL, NULL}
 };
 #endif

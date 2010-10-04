@@ -122,6 +122,7 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 
 #define IPsecSAref2SA(x) (ipsec_sadb.refTable[IPsecSAref2table(x)]->entry[IPsecSAref2entry(x)])
 #define IPsecSA2SAref(x) ((x)->ips_ref)
+#define IPsecSA2SArefhim(x) ((x)->ips_refhim)
 
 #define EMT_INBOUND	0x01	/* SA direction, 1=inbound */
 

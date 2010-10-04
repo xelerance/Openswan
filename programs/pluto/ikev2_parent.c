@@ -1104,7 +1104,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 
     authstart=md->packet_pbs.start;
     iv     = e_pbs->cur;
-    encend = e_pbs->roof - 12;
+    encend = e_pbs->roof - pst->st_oakley.integ_hasher->hash_integ_len;
     
     /* start by checking authenticator */
     {
@@ -1122,6 +1122,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	}
 	
 	/* compare first 96 bits == 12 bytes */
+	/* It is not always 96 bytes, it depends upon which integ algo is used*/
 	if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
 	    openswan_log("R2 failed to match authenticator");
 	    return STF_FAIL;

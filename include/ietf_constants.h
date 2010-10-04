@@ -576,6 +576,7 @@ enum ikev2_trans_type_prf {
 	IKEv2_PRF_AES128_CMAC   = 8, /* RFC4615 */
 	/* 9 - 1023 Reserved to IANA    RFC4306 */
 	/* 1024 - 65535 Private Use     RFC4306 */
+	IKEv2_PRF_INVALID	= 65536
 };
 
 enum ikev2_trans_type_integ {

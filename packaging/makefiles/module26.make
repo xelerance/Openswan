@@ -31,7 +31,7 @@ EXTRA_CFLAGS += -I${KLIPSSRC}/.
 
 # build version.c using version number from Makefile.ver
 ${BUILDDIR}/version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/xxx/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
+	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
 ${BUILDDIR}/%.c : ${KLIPSSRC}/%.c
 	ln -s -f $< $@

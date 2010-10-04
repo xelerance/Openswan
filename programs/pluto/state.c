@@ -1462,9 +1462,9 @@ show_states_status(void)
 	  st = array[i];
 	  fmt_state(st, n, state_buf, sizeof(state_buf)
 		, state_buf2, sizeof(state_buf2));
-	  whack_log(RC_COMMENT, state_buf);
+	  whack_log(RC_COMMENT, "%s", state_buf);
 	  if (state_buf2[0] != '\0')
-		whack_log(RC_COMMENT, state_buf2);
+		whack_log(RC_COMMENT, "%s", state_buf2);
 
 	  /* show any associated pending Phase 2s */
 	  if (IS_PHASE1(st->st_state))

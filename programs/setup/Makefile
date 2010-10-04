@@ -19,7 +19,8 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 # this dance is because setup has to get installed as /etc/rc.d/init.d/ipsec
 # not as /etc/rc.d/init.d/setup.
 PROGRAMDIR=$(RCDIR)
-PROGRAM=
+PROGRAM=setup
+NOINSTALL=true
 EXTRA8MAN=setup.8
 
 include ${srcdir}../Makefile.program

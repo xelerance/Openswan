@@ -703,8 +703,30 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 		goto rcvleave;
 	}
+#if 0
+	if(sysctl_ipsec_inbound_policy_check)
+	{
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+
+		subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
+			  ipsp->ips_mask_s.u.v4.sin_addr,
+			  0, sflow_txt, sizeof(sflow_txt));
+		subnettoa(ipsp->ips_flow_d.u.v4.sin_addr,
+			  ipsp->ips_mask_d.u.v4.sin_addr,
+			  0, dflow_txt, sizeof(dflow_txt));
+
+		KLIPS_PRINT(debug_mast,
+			    "klips_debug:ipsec_rcv: "
+			    "SA:%s, inner tunnel policy [%s -> %s] agrees with pkt contents [%s -> %s].\n",
+			    irs->sa_len ? irs->sa : " (error)",
+			    sflow_txt, dflow_txt,
+			    irs->ipsaddr_txt,
+			    irs->ipdaddr_txt);
+	}
+#endif
 #if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
-	skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+	skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+		| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
@@ -1078,6 +1100,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	if(sysctl_ipsec_inbound_policy_check) {
 		struct sockaddr_in *psin = NULL;
 		struct sockaddr_in6 *psin6 = NULL;
+		char sa_saddr_txt[ADDRTOA_BUF] = {0,};
 
 		if (((struct sockaddr_in6*)(newipsp->ips_addr_s))->sin6_family == AF_INET6) {
 			psin6 = (struct sockaddr_in6*)(newipsp->ips_addr_s);
@@ -1086,11 +1109,29 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		}
 		if ((psin && osw_ip4_hdr(irs)->saddr != psin->sin_addr.s_addr) ||
 			(psin6 && memcmp(&osw_ip6_hdr(irs)->saddr, &psin6->sin6_addr, sizeof(osw_ip6_hdr(irs)->saddr)) != 0)) {
+			if (debug_rcv) {
+				// generate SA->saddr
+				if (psin) {
+					inet_addrtot(AF_INET, psin->sin_addr.s_addr, 0,
+						sa_saddr_txt, sizeof(sa_saddr_txt));
+				} else if (psin6) {
+					inet_addrtot(AF_INET6, psin6->sin6_addr.s6_addr, 0,
+						sa_saddr_txt, sizeof(sa_saddr_txt));
+				}
+				// generate ipsaddr_txt
+				if (!(*irs->ipsaddr_txt))
+					ipsec_rcv_redodebug(irs);
+				// regenerate sa_len
+				if (!irs->sa_len)
+					irs->sa_len = satot(&irs->said, 0,
+						irs->sa, sizeof(irs->sa));
+			}
 			KLIPS_ERROR(debug_rcv,
 				    "klips_debug:ipsec_rcv: "
-				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy.\n",
+				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy (%s).\n",
 				    irs->sa_len ? irs->sa : " (error)",
-				    irs->ipsaddr_txt);
+				    irs->ipsaddr_txt,
+				    sa_saddr_txt);
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
 			}
@@ -1665,7 +1706,8 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 
 #if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
 	if(irs->proto == IPPROTO_ESP || irs->proto == IPPROTO_AH) {
-		skb->nfmark = (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
+		skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
+			| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 			| IPsecSAref2NFmark(IPsecSA2SAref(irs->ipsp));
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 			    "klips_debug:ipsec_rcv: "

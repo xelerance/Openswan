@@ -118,7 +118,7 @@ DBG_bare_shunt_log(const char *op, const struct bare_shunt *bs)
             subnettot(&(bs)->his, 0, hist, sizeof(hist));
             satot(&(bs)->said, 0, sat, sizeof(sat));
             fmt_policy_prio(bs->policy_prio, prio);
-            DBG_log("%s bare shunt %p %s:%d -%d-> %s:%d => %s %s    %s"
+            DBG_log("%s bare shunt %p %s:%d --%d--> %s:%d => %s %s    %s"
                 , op, (const void *)(bs), ourst, ourport, (bs)->transport_proto, hist, hisport
                 , sat, prio, (bs)->why);
         });
@@ -133,7 +133,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
 {
     passert(samesubnettype(ours, his));
 
-    /* Add to bare shunt list.
+    /* Add the kernel shunt to the pluto bare shunt list.
      * We need to do this because the shunt was installed by KLIPS
      * which can't do this itself.
      */
@@ -421,11 +421,17 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_STACK='%s' "
 		    "%s "           /* possible metric */
 		    "PLUTO_CONN_POLICY='%s' "
-		    "%s "           /* XAUTH username */
-		    "%s "           /* PLUTO_MY_SRCIP */
+#ifdef XAUTH
+		    "%s "           /* XAUTH username - if any */
+#endif
+		    "%s "           /* PLUTO_MY_SRCIP - if any */
+#ifdef XAUTH
+# ifdef MODECFG
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    "PLUTO_PEER_BANNER='%s' "
+# endif /* MODECFG */
+#endif /* XAUTH */
 #ifdef HAVE_NM
 		    "PLUTO_NM_CONFIGURED='%u' "
 #endif
@@ -451,11 +457,17 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , kernel_ops->kern_name
 		    , metric_str
 		    , prettypolicy(c->policy)
+#ifdef XAUTH
 		    , secure_xauth_username_str
+#endif
 		    , srcip_str
+#ifdef XAUTH
+# ifdef MODECFG
 		    , c->cisco_dns_info
 		    , c->cisco_domain_info
-		    , c->server_banner
+		    , c->cisco_banner
+# endif /* MODECFG */
+#endif /* XAUTH */
 #ifdef HAVE_NM
 		    , c->nmconfigured
 #endif
@@ -967,7 +979,7 @@ clear_narrow_holds(
 	    (void) replace_bare_shunt(&p->ours.addr, &p->his.addr
 		    , BOTTOM_PRIO
 		    , SPI_PASS	/* not used */
-		    , FALSE, 0
+		    , FALSE, transport_proto
 		    , "removing clashing narrow holds");
 
 	    /* restart from beginning as we just removed and entry */
@@ -1033,7 +1045,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                 
                                 bs->ours = this_broad_client;
                                 bs->his =  that_broad_client;
-                                bs->transport_proto = 0;
+                                bs->transport_proto = transport_proto;
                                 bs->said.proto = SA_INT;
                                 bs->why = clone_str(why, "bare shunt story");
                                 bs->policy_prio = policy_prio;
@@ -1083,9 +1095,12 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
                                                            , &that_client, 0);
                 
+		passert(bs_pp != NULL);
                 if (repl)
                     {
-                        /* change over to new bare eroute */
+                        /* change over to new bare eroute
+			 * ours, his, transport_proto are the same.
+			 */
                         struct bare_shunt *bs = *bs_pp;
                         
                         pfree(bs->why);

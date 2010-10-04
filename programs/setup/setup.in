@@ -78,12 +78,12 @@ RETVAL=0
 start() {
 
     test -x $IPSEC_SBINDIR/ipsec || exit 5
-    test -f /etc/ipsec.conf || exit 6
+    test -f $IPSEC_CONFS/ipsec.conf || exit 6
     
     # Pick up IPsec configuration (until we have done this, successfully, we
     # do not know where errors should go, hence the explicit "daemon.error"s.)
     # Note the "--export", which exports the variables created.
-    variables=`ipsec addconn /etc/ipsec.conf --varprefix IPSEC --configsetup`
+    variables=`ipsec addconn $IPSEC_CONFS/ipsec.conf --varprefix IPSEC --configsetup`
     eval $variables
     if [ $? != 0 ]
     then
