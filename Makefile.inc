@@ -414,10 +414,6 @@ HAVE_OPENSSL?=false
 # Do we have OCF available?
 HAVE_OCF?=false
 
-# Do we assume that the /bin/sh is BASH?
-# if so, then internationalization code is retained in the shell scripts
-USE_BASH?=true
-
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
 # you need at least swig 1.3.24, as well as tcl libraries and includes
 USE_TAPROOM?=false
