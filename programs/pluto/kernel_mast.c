@@ -437,11 +437,14 @@ mast_do_command(struct connection *c, struct spd_route *sr
 		       , "2>&1 "   /* capture stderr along with stdout */
 		       "PLUTO_MY_REF=%u "
 		       "PLUTO_PEER_REF=%u "
+		       "PLUTO_SAREF_TRACKING=%s "
 		       "PLUTO_VERB='%s%s' "
 		       "%s"        /* other stuff   */
 		       "%s"        /* actual script */
 		       , ref
 		       , refhim
+		       , (c->policy & POLICY_SAREF_TRACK_CONNTRACK) ? "conntrack" : 
+			( (c->policy & POLICY_SAREF_TRACK) ? "yes" : "no")
 		       , verb, verb_suffix
 		       , common_shell_out_str
 		       , sr->this.updown == NULL? DEFAULT_UPDOWN : sr->this.updown))

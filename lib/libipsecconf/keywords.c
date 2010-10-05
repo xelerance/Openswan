@@ -176,6 +176,17 @@ struct keyword_enum_value kw_proto_stack_list[]={
 struct keyword_enum_values kw_proto_stack=
     { kw_proto_stack_list, sizeof(kw_proto_stack_list)/sizeof(struct keyword_enum_value)};
 
+/*
+ * Values for sareftrack={yes, no, conntrack }
+ */
+struct keyword_enum_value kw_sareftrack_values[]={
+    { "yes",          sat_yes },
+    { "no",           sat_no },
+    { "conntrack",    sat_conntrack },
+};
+
+struct keyword_enum_values kw_sareftrack_list=
+    { kw_sareftrack_values, sizeof(kw_sareftrack_values)/sizeof(struct keyword_enum_value)};
 
 /*
  *  Cisco interop: remote peer type
@@ -364,6 +375,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
     {"ikev2",          kv_conn|kv_auto|kv_processed,kt_enum,KBF_IKEv2,&kw_fourvalued_list},
+    {"sareftrack",     kv_conn|kv_auto|kv_processed,kt_enum,KBF_SAREFTRACK,&kw_sareftrack_list},
     {"pfs",            kv_conn|kv_auto, kt_bool,   KBF_PFS,          NOT_ENUM},
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},

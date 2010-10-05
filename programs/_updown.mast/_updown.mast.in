@@ -118,6 +118,9 @@ LC_ALL=C export LC_ALL
 #	PLUTO_NM_CONFIGURED
 #		is NetworkManager used for resolv.conf update
 #
+#	PLUTO_SAREF_TRACKING
+#		If we need to manipulate any iptables for SAref tracking
+#
 
 # for debugging of the script
 #exec >/tmp/_updown.m$$
@@ -148,7 +151,6 @@ then
     . /etc/default/pluto_updown
 fi
 
-use_conntrack=false
 use_comment=true
 
 # check interface version
@@ -178,6 +180,9 @@ esac
 # function to see if iptables has an IPSEC chain already, and if not,
 # it will create one and insert it into the OUTPUT and FORWARD chains.
 checkipsec() {
+  if [ -z "$PLUTO_SAREF_TRACKING" -o "$PLUTO_SAREF_TRACKING" = "no" ]; then
+	echo "SAref table initialisation left to third party"
+  else
     # make sure we have an IPSEC chain
     if ! ( iptables -n -t mangle -L IPSEC >/dev/null 2>&1) ; then
         iptables -t mangle -N IPSEC
@@ -189,7 +194,7 @@ checkipsec() {
     fi
 
     # initialize the IPSEC chain if needed
-    if $use_conntrack ; then
+    if "$PLUTO_SAREF_TRACKING" = "conntrack"; then
         if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
             iptables -t mangle -F IPSEC
             iptables -t mangle -A IPSEC -j CONNMARK --restore-mark
@@ -248,6 +253,7 @@ checkipsec() {
             echo 0 > $n
         done
     fi
+  fi
 }
 
 # utility functions for route manipulation
@@ -427,7 +433,9 @@ changesource() {
 # This is not be done for OE packets --- they are supposed to get a
 # new netfilter module instead.
 doipsecrule() {
-
+  if [ -z "$PLUTO_SAREF_TRACKING" -o "$PLUTO_SAREF_TRACKING" = "no" ]; then
+	echo "SAref tracking left to third party"
+  else
 	saref=$PLUTO_PEER_REF
 	nf_saref=$(printf "0x%x0000" $(( $saref | 0x8000 )))
 
@@ -462,6 +470,7 @@ doipsecrule() {
 	    echo "$0: doroute \`$it' failed ($oops)" >&2
 	fi
 	return $st
+  fi
 }
  
 

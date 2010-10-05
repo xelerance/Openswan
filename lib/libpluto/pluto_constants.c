@@ -295,6 +295,8 @@ const char *const sa_policy_bit_names[] = {
 	"ModeCFGDNS2",
 	"ModeCFGWINS1",
 	"ModeCFGWINS2",
+	"SAREFTRACK",
+	"SAREFCONNTRACK",
 	NULL
     };
 
