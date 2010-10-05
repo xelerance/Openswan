@@ -291,6 +291,10 @@ const char *const sa_policy_bit_names[] = {
 	"!IKEv1",
 	"IKEv2ALLOW",
 	"IKEv2Init",
+	"ModeCFGDNS1",
+	"ModeCFGDNS2",
+	"ModeCFGWINS1",
+	"ModeCFGWINS2",
 	NULL
     };
 
