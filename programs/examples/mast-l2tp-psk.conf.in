@@ -33,7 +33,7 @@ conn L2TP-PSK-noNAT
 	type=transport
 	#
 	# MAST parameters - requires ipsec saref = yes in /etc/xl2tpd/xl2tpd.conf
-	sareftrackging=yes
+	sareftrack=yes
 	overlapip=yes
 	#
 	left=YourGatewayIP
