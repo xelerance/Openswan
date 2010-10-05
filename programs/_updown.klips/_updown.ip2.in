@@ -283,7 +283,14 @@ addsource() {
 	# (peer) network for the sourceip as suggested by Patrick McHardy.
 	#
 	cidr=${PLUTO_MY_CLIENT##*/}
-	snet=${PLUTO_MY_SOURCEIP%/*}/32
+	case "${PLUTO_MY_SOURCEIP%/*}" in
+	*:*)
+		snet=${PLUTO_MY_SOURCEIP%/*}/128
+		;;
+	*)
+		snet=${PLUTO_MY_SOURCEIP%/*}/32
+		;;
+	esac
 	if test "${PLUTO_PEER_CLIENT}" != "${cidr}"
 	then
 		snet=${PLUTO_MY_SOURCEIP%/*}/${cidr}
@@ -330,6 +337,7 @@ changesource() {
 	fi
 	it="ip route $cmd $parms $parms2 $parms3"
  	case "$PLUTO_PEER_CLIENT" in
+	# IPV6 version of this ????
  	"0.0.0.0/0")
 		# opportunistic encryption work around
 		it=
@@ -360,6 +368,7 @@ dorule() {
 	iprule2="$iprule2 $IPRULEARGS"
 
 	case "$PLUTO_PEER_CLIENT" in
+	# IPV6 version of this ????
 	"0.0.0.0/0")
 		# opportunistic encryption work around
 		st=0
@@ -477,6 +486,7 @@ doroute() {
 	fi
 
 	case "$PLUTO_PEER_CLIENT" in
+	# IPV6 version of this ????
 	"0.0.0.0/0")
 		# opportunistic encryption work around
 		# need to provide route that eclipses default, without 
@@ -583,29 +593,42 @@ restoreresolvconf-host|restoreresolvconf-client)
 # IPv6
 #
 prepare-host-v6:*|prepare-client-v6:*)
+	case "${PLUTO_PEER_CLIENT_NET}" in 
+	0.0.0.0|%any)
+		;;
+	*)
+		route del -net ${PLUTO_PEER_CLIENT_NET} netmask ${PLUTO_PEER_CLIENT_MASK}
+		;;
+	esac
 	;;
 route-host-v6:*|route-client-v6:*)
 	# connection to me or my client subnet being routed
+	uproute
 	#uproute_v6
 	;;
 unroute-host-v6:*|unroute-client-v6:*)
 	# connection to me or my client subnet being unrouted
+	downroute
 	#downroute_v6
 	;;
 up-host-v6:*)
 	# connection to me coming up
+	uprule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 down-host-v6:*)
 	# connection to me going down
+	downrule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 up-client-v6:)
 	# connection to my client subnet coming up
+	uprule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 down-client-v6:)
 	# connection to my client subnet going down
+	downrule
 	# If you are doing a custom version, firewall commands go here.
 	;;
 *)	echo "$0: unknown verb \`$PLUTO_VERB' or parameter \`$1'" >&2
