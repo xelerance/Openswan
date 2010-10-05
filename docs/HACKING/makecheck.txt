@@ -325,7 +325,7 @@ umlXhost parameters
 
    umlXtest has a series of slots, each of which should be filled by a
    host. The list of slots is controlled by the variable, XHOST_LIST.
-   This variable should be set to a space seperated list of slots. The
+   This variable should be set to a space separated list of slots. The
    former umlplutotest is now implemented as a variation of the umlXhost
    test, with XHOST_LIST="EAST WEST".
 

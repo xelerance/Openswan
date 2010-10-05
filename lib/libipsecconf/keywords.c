@@ -324,6 +324,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"keep_alive", kv_config,kt_number,    KBF_KEEPALIVE, NOT_ENUM},
     {"force_keepalive", kv_config,kt_bool,    KBF_FORCE_KEEPALIVE, NOT_ENUM},
 #endif
+    {"listen",     kv_config, kt_string, KSF_LISTEN,NOT_ENUM},
     {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
 
@@ -536,7 +537,7 @@ unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list)
     valresult = 0;
 
     /*
-     * split up the string into comma seperated pieces, and look each piece up in the
+     * split up the string into comma separated pieces, and look each piece up in the
      * value list provided in the definition.
      */
 

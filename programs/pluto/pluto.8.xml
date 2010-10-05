@@ -76,6 +76,9 @@
       <arg choice="opt">--interface
       <replaceable>interfacename</replaceable></arg>
 
+      <arg choice="opt">--listen
+      <replaceable>ipaddr</replaceable></arg>
+
       <arg choice="opt">--ikeport <replaceable>portnumber</replaceable></arg>
 
       <arg choice="opt">--ctlbase <replaceable>path</replaceable></arg>
@@ -885,7 +888,8 @@
       taken as a <emphasis remap="B">KLIPS</emphasis> virtual public
       interface. Another network interface with the same IP address (the first
       one found will be used) is taken as the corresponding real public
-      interface. <citerefentry>
+      interface. The <option>--listen</option> can be used to limit listening on
+      only 1 IP address of a certain interface. <citerefentry>
           <refentrytitle>ifconfig</refentrytitle>
 
           <manvolnum>8</manvolnum>

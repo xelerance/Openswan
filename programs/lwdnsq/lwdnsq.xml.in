@@ -266,42 +266,42 @@
 <refsect2 id='txt_and_adtxt'><title>TXT and AD-TXT</title>
 
 
-<para>This is an interim reply. If there are TXT resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are TXT resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 
 <refsect2 id='a_and_ada'><title>A and AD-A</title>
 
 
-<para>This is an interim reply. If there are A resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are A resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 
 <refsect2 id='aaaa_and_adaaaa'><title>AAAA and AD-AAAA</title>
 
 
-<para>This is an interim reply. If there are AAAA resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are AAAA resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 
 <refsect2 id='ptr_and_adptr'><title>PTR and AD-PTR</title>
 
 
-<para>This is an interim reply. If there are PTR resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are PTR resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 
 <refsect2 id='key_and_adkey'><title>KEY and AD-KEY</title>
 
 
-<para>This is an interim reply. If there are KEY resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are KEY resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 
 <refsect2 id='ipseckey_and_adipseckey'><title>IPSECKEY and AD-IPSECKEY</title>
 
 
-<para>This is an interim reply. If there are IPSEC resource records in the reply, then each one is presented using this type. If preceeded by AD-, then this record was signed with DNSSEC.</para>
+<para>This is an interim reply. If there are IPSEC resource records in the reply, then each one is presented using this type. If preceded by AD-, then this record was signed with DNSSEC.</para>
 
 </refsect2>
 </refsect1>

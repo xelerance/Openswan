@@ -180,9 +180,11 @@ BISONOSFLAGS=
 
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
+# -DGCC_LINT uses gcc-specific declarations to improve compile-time
+#    diagnostics.
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
-USERCOMPILE?=-g -O3 ${WERROR} 
+USERCOMPILE?=-g -O3 ${WERROR} -DGCC_LINT
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
@@ -336,8 +338,8 @@ USE_VENDORID?=true
 USE_AGGRESSIVE?=true
 
 # Build XAUTH authentication system code - both Server and Client.
-# This is off by default, since XAUTH is tricky, and you can get into 
-# security trouble unless you do additional configuration.
+# XAUTH is tricky, and you can get into security trouble unless you
+# do additional configuration - but it is often needed for Cisco interop
 USE_XAUTH?=true
 
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
@@ -411,10 +413,6 @@ HAVE_OPENSSL?=false
 
 # Do we have OCF available?
 HAVE_OCF?=false
-
-# Do we assume that the /bin/sh is BASH?
-# if so, then internationalization code is retained in the shell scripts
-USE_BASH?=true
 
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
 # you need at least swig 1.3.24, as well as tcl libraries and includes

@@ -4,3 +4,5 @@ openswan: non-standard-file-perm etc/ipsec.secrets 0600 != 0644
 openswan: non-standard-dir-perm var/lib/openswan/ 0700 != 0755
 # we have a right link in it too
 openswan: copyright-refers-to-symlink-license usr/share/common-licenses/GPL
+# the config param in this line shouldn't be splitted
+openswan: manpage-has-errors-from-man usr/share/man/man5/ipsec.conf.5.gz 1018: warning [p 13, 0.7i]: can't break line
