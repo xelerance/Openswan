@@ -8,6 +8,7 @@ v2.6.30 (unreleased)
 * Add geode-aes to the list of crypto modules to load [paul]
 * Add --listen/listen= option to limit listening to a single IP [Paul]
 * sa_policy_bit_names was missing ModeConfig DNS and WINS bit names [Paul]
+* SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
 
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
