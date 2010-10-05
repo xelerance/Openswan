@@ -61,6 +61,7 @@ d.ipsec.conf/configsections.xml
 d.ipsec.conf/myid.xml
 d.ipsec.conf/protostack.xml
 d.ipsec.conf/interfaces.xml
+d.ipsec.conf/listen.xml
 d.ipsec.conf/nat_traversal.xml
 d.ipsec.conf/disable_port_floating.xml
 d.ipsec.conf/force_keepalive.xml

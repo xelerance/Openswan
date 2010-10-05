@@ -537,7 +537,7 @@ unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list)
     valresult = 0;
 
     /*
-     * split up the string into comma seperated pieces, and look each piece up in the
+     * split up the string into comma separated pieces, and look each piece up in the
      * value list provided in the definition.
      */
 

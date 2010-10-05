@@ -710,7 +710,7 @@ whack_handle(int whackctlfd)
 	{
 	    if (msg.magic == WHACK_BASIC_MAGIC)
 	    {
-		/* Only basic commands.  Simpler inter-version compatability. */
+		/* Only basic commands.  Simpler inter-version compatibility. */
 		if (msg.whack_status)
 		    show_status();
 
