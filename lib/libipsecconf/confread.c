@@ -663,7 +663,7 @@ bool translate_conn (struct starter_conn *conn
 		    free((*the_strings)[field]);
 	    }
 
-	    passert(kw->string!=NULL);
+	    assert(kw->string!=NULL);
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
