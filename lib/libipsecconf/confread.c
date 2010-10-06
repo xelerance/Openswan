@@ -1057,6 +1057,24 @@ static int load_conn (struct starter_config *cfg
 	}
     }
 
+    if(conn->options_set[KBF_SAREFTRACK]) {
+	switch(conn->options[KBF_SAREFTRACK]) {
+	case sat_yes:
+	    /* this is the default for now */
+	    conn->policy |= POLICY_SAREF_TRACK;
+	    break;
+	    
+	case sat_conntrack:
+	    conn->policy |= POLICY_SAREF_TRACK|POLICY_SAREF_TRACK_CONNTRACK;
+	    break;
+	    
+	case sat_no:
+	    conn->policy &= ~POLICY_SAREF_TRACK;
+	    conn->policy &= ~POLICY_SAREF_TRACK_CONNTRACK;
+	    break;
+	}
+    }
+
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
 

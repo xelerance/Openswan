@@ -383,6 +383,12 @@ enum four_options {
 	fo_insist  = 3   /* propose, and only accept if peer agrees */
 };
 
+enum saref_tracking {
+	sat_yes = 0, /* SAref tracking via _updown - the default */
+	sat_no = 1, /* no SAref tracking - third party will handle this */
+	sat_conntrack = 2, /* Saref tracking using connmark optimizations */
+};
+
 /* Policies for establishing an SA
  *
  * These are used to specify attributes (eg. encryption) and techniques
@@ -393,7 +399,11 @@ enum four_options {
 
 extern const char *prettypolicy(lset_t policy);
 
-/* ISAKMP auth techniques (none means never negotiate) */
+/* 
+ * ISAKMP auth techniques (none means never negotiate)
+ * a pluto policy is stored in a lset_t which is an unsigned long long,
+ * so we should have 64 bits to play with
+ */
 enum pluto_policy {
 	POLICY_PSK     = LELEM(0), 
 	POLICY_RSASIG  = LELEM(1),
@@ -460,10 +470,14 @@ enum pluto_policy {
 	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
 	POLICY_IKEV2_PROPOSE = LELEM(26), /* propose IKEv2?  0x0400 0000 */
 	POLICY_IKEV2_MASK = POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE,
+
 	POLICY_MODECFGDNS1  = LELEM(27),   /* should we offer a DNS server IP */
 	POLICY_MODECFGDNS2  = LELEM(28),   /* should we offer another DNS server IP */
 	POLICY_MODECFGWINS1 = LELEM(29),   /* should we offer a WINS server IP */
 	POLICY_MODECFGWINS2 = LELEM(30),   /* should we offer another WINS server IP */
+
+	POLICY_SAREF_TRACK    = LELEM(31), /* Saref tracking via _updown */
+	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(32), /* use conntrack optimization */
 };
 
 /* Any IPsec policy?  If not, a connection description
