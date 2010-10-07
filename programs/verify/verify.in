@@ -25,18 +25,24 @@ if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --con
 $print_depricacted=0;
 
 # Should we print in colour by default?
-$ctype=`/sbin/consoletype`;
-if ( $ctype && !($ctype eq "serial"))
+if ( -e "/sbin/consoletype" )
 {
-    $colour="1";
+    $ctype=`/sbin/consoletype`;
+    if ( $ctype && !($ctype eq "serial"))
+    {
+        $colour="1";
+    }
 }
 else
 {
-     $ctype=`/usr/bin/tput colors`;
-     if ( $ctype && ($ctype gt "0"))
-     {
-         $colour="1";
-     }
+    if ( -e "/usr/bin/tput" )
+    {
+        $ctype=`/usr/bin/tput colors`;
+        if ( $ctype && ($ctype gt "0"))
+        {
+            $colour="1";
+        }
+    }
 }
 
 sub printfun {
