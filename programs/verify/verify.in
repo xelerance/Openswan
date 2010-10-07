@@ -288,14 +288,14 @@ sub installstartcheck {
 	  if ( -e "/proc/net/ipsec/saref") {
 		printfun "IPsec SAref kernel support";
 		run "grep 'refinfo patch applied' /proc/net/ipsec/saref";
-		if("@out" == "refinfo patch applied\n")
+		if("@out" eq "refinfo patch applied\n")
 			{ errchk "OK"; }
 		else
 			{ warnchk "", "N/A"; }
 
 		printfun "IPsec SAref Bind kernel support";
 		run "grep 'bindref patch applied' /proc/net/ipsec/saref";
-		if("@out" == "bindref patch applied\n")
+		if("@out" eq "bindref patch applied\n")
 			{ errchk "OK"; }
 		else
 			{ warnchk "", "N/A"; }
