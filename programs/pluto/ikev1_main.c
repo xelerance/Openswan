@@ -714,10 +714,6 @@ main_inI1_outR1(struct msg_digest *md)
     int next;
     int numvidtosend = 1;  /* we always send DPD VID */
 
-#ifdef LEAK_DETECTIVE
-	report_leaks();         /* report memory leaks now, after all free()s */
-#endif
-
 #ifdef NAT_TRAVERSAL
     if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
 	DBG(DBG_NATT, DBG_log("nat-t detected, sending nat-t VID"));
