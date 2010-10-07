@@ -23,6 +23,7 @@ v2.6.30 (unreleased)
 
 v2.6.29 (September 27, 2010)
 ! This release is made for CVE-2010-3302 and CVE-2010-3308
+! Duplicate CVE's issues for these are CVE-2010-3752 and CVE-2010-3753
 * XAUTH: Avoid buffer overflow in CISCO DNS info [dhr/paul]
          Avoid shell problems with single quotes CISCO DNS paramters [dhr/paul]
   http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2010-3302
