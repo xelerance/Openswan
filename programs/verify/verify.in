@@ -19,7 +19,7 @@
 
 $reterr = 0;
 $me="ipsec verify";
-$ENV{'PATH'}="/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
+$ENV{'PATH'}="/sbin:/usr/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
 if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
 
 $print_depricacted=0;
