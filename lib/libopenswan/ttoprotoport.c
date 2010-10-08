@@ -13,7 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ttoprotoport.c,v 1.5 2004/06/09 00:41:09 mcr Exp $
  */
 
 #include "internal.h"
@@ -95,9 +94,13 @@ int *has_port_wildcard;	/* set if port is %any */
 	l = strtol(service_name, &end, 0);
 
 	if (*service_name && *end)
-	    return "<port> is neither a number nor a valid name";
+	    /* 
+	     * set port to 0, this is needed for protocols without port in
+	     * the proposal, such as with GRE (protoport=47)
+	     */
+	    l = 0;
 
-	if (l < 0 || l > 0xffff)
+	else if (l < 0 || l > 0xffff)
 	    return "<port> must be between 0 and 65535";
 
 	*port = (u_int16_t)l;
