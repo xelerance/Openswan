@@ -5,6 +5,12 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.30 (unreleased)
+* Add geode-aes to the list of crypto modules to load [Paul]
+* Add --listen/listen= option to limit listening to a single IP [Paul]
+* sa_policy_bit_names was missing ModeConfig DNS and WINS bit names [Paul]
+* SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
+* Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
+* Fix for specifying protport=47 (GRE has no ports) [Paul]
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
    # 690 ipsec lwdnsq --help not implemented
@@ -18,6 +24,7 @@ v2.6.30 (unreleased)
 
 v2.6.29 (September 27, 2010)
 ! This release is made for CVE-2010-3302 and CVE-2010-3308
+! Duplicate CVE's issues for these are CVE-2010-3752 and CVE-2010-3753
 * XAUTH: Avoid buffer overflow in CISCO DNS info [dhr/paul]
          Avoid shell problems with single quotes CISCO DNS paramters [dhr/paul]
   http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=2010-3302

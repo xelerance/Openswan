@@ -2,12 +2,12 @@
 .\"     Title: IPSEC.CONF
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 06/09/2010
+.\"      Date: 10/06/2010
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC\&.CONF" "5" "06/09/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC\&.CONF" "5" "10/06/2010" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -510,6 +510,20 @@ or
 \fBinsist\fR, no IKEv1 negotiation is allowed, and no bid down attack is possible\&.
 .RE
 .PP
+\fBsareftrack\fR
+.RS 4
+Set the method of tracking reply packets with SArefs when using an SAref compatible stack\&. Currently only the
+\fImast\fR
+stack supports this\&. Acceptable values are
+\fBno\fR
+(the default),
+\fByes\fR
+or
+\fBconntrack\fR\&. This option is ignored when SArefs are not supported\&. This option is passed as PLUTO_SAREF_TRACKING to the
+\fIupdown\fR
+script which makes the actual decisions whether to perform any iptables/ip_conntrack manipulation\&. A value of yes means that an IPSEC mangle table will be created\&. This table will be used to match reply packets\&. A value of conntrack means that additionally, subsequent packets using this connection will be marked as well, reducing the lookups needed to find the proper SAref by using the ip_conntrack state\&. A value of no means no IPSEC mangle table is created, and SAref tracking is left to a third\-party (kernel) module\&. In case of a third party module, the SArefs can be relayed using the HAVE_STATSD deamon\&.
+.RE
+.PP
 \fBleftid\fR
 .RS 4
 how the left participant should be identified for authentication; defaults to
@@ -972,6 +986,13 @@ is used (implicitly or explicitly) information about the default route and its i
 \fBipsec_manual\fR(8)
 and
 \fBipsec_auto\fR(8)\&.)
+.RE
+.PP
+\fBlisten\fR
+.RS 4
+IP address to listen on (default depends on
+\fBinterfaces=\fR
+setting)\&. Currently only accepts one IP address\&.
 .RE
 .PP
 \fBnat_traversal\fR

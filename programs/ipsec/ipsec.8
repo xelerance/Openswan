@@ -1,19 +1,27 @@
+'\" t
 .\"     Title: IPSEC
-.\"    Author: 
-.\" Generator: DocBook XSL Stylesheets v1.73.2 <http://docbook.sf.net/>
-.\"      Date: 11/14/2008
-.\"    Manual: 26 March 2002
-.\"    Source: 26 March 2002
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
+.\"      Date: 10/06/2010
+.\"    Manual: [FIXME: manual]
+.\"    Source: [FIXME: source]
+.\"  Language: English
 .\"
-.TH "IPSEC" "8" "11/14/2008" "26 March 2002" "26 March 2002"
+.TH "IPSEC" "8" "10/06/2010" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
 .\" disable hyphenation
 .nh
 .\" disable justification (adjust text to left margin only)
 .ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
 .SH "NAME"
-ipsec - invoke IPsec utilities
+ipsec \- invoke IPsec utilities
 .SH "SYNOPSIS"
-.HP 6
+.HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIcommand\fR [\fIargument\fR...] \fIipsec\fR \-\-help
 .br
 \fIipsec\fR \-\-version
@@ -31,55 +39,57 @@ ipsec - invoke IPsec utilities
 invokes any of several utilities involved in controlling the IPsec encryption/authentication system, running the specified
 \fIcommand\fR
 with the specified
-\fIargument\fRs as if it had been invoked directly\. This largely eliminates possible name collisions with other software, and also permits some centralized services\.
+\fIargument\fRs as if it had been invoked directly\&. This largely eliminates possible name collisions with other software, and also permits some centralized services\&.
 .PP
 In particular,
 \fBipsec\fR
 supplies the invoked
 \fIcommand\fR
-with a suitable PATH environment variable, and also provides IPSEC_DIR, IPSEC_CONFS, and IPSEC_VERSION environment variables, containing respectively the full pathname of the directory where the IPsec utilities are stored, the full pathname of the directory where the configuration files live, and the IPsec version number\.
+with a suitable PATH environment variable, and also provides IPSEC_DIR, IPSEC_CONFS, and IPSEC_VERSION environment variables, containing respectively the full pathname of the directory where the IPsec utilities are stored, the full pathname of the directory where the configuration files live, and the IPsec version number\&.
 .PP
 \fBipsec \-\-help\fR
-lists the available commands\. Most have their own manual pages, e\.g\.
+lists the available commands\&. Most have their own manual pages, e\&.g\&.
 \fBipsec_auto\fR(8)
 for
-\fIauto\fR\.
+\fIauto\fR\&.
 .PP
 \fBipsec \-\-version\fR
-outputs version information about Linux FreeS/WAN\. A version code of the form ``U\fIxxx\fR/K\fIyyy\fR\'\' indicates that the user\-level utilities are version
+outputs version information about Linux FreeS/WAN\&. A version code of the form ``U\fIxxx\fR/K\fIyyy\fR\'\' indicates that the user\-level utilities are version
 \fIxxx\fR
 but the kernel portion appears to be version
 \fIyyy\fR
-(this form is used only if the two disagree)\.
+(this form is used only if the two disagree)\&.
 .PP
 \fBipsec \-\-versioncode\fR
 outputs
 \fIjust\fR
 the version code, with none of
-\fB\-\-version\fR\'s supporting information, for use by scripts\.
+\fB\-\-version\fR\'s supporting information, for use by scripts\&.
 .PP
 \fBipsec \-\-copyright\fR
-supplies boring copyright details\.
+supplies boring copyright details\&.
 .PP
 \fBipsec \-\-directory\fR
 reports where
 \fBipsec\fR
-thinks the IPsec utilities are stored\.
+thinks the IPsec utilities are stored\&.
 .PP
 \fBipsec \-\-confdir\fR
 reports where
 \fBipsec\fR
-thinks the IPsec configuration files are stored\.
+thinks the IPsec configuration files are stored\&.
 .SH "FILES"
 .PP
 /usr/local/lib/ipsec usual utilities directory
 .SH "ENVIRONMENT"
 .PP
-The following environment variables control where FreeS/WAN finds its components\. The
+The following environment variables control where FreeS/WAN finds its components\&. The
 \fBipsec\fR
-command sets them if they are not already set\.
+command sets them if they are not already set\&.
 .sp
+.if n \{\
 .RS 4
+.\}
 .nf
 
 IPSEC_EXECDIR	directory containing published commands
@@ -88,11 +98,12 @@ IPSEC_SBINDIR	directory containing \fBipsec\fR command
 IPSEC_CONFS	directory containing configuration files
 
 .fi
+.if n \{\
 .RE
-.sp
+.\}
 .SH "SEE ALSO"
 .PP
-ipsec\.\fBconf\fR(5), ipsec\.\fBsecrets\fR(5),
+ipsec\&.\fBconf\fR(5), ipsec\&.\fBsecrets\fR(5),
 \fBipsec_auto\fR(8),
 \fBipsec_barf\fR(8),
 \fBipsec_setup\fR(8),
@@ -100,13 +111,13 @@ ipsec\.\fBconf\fR(5), ipsec\.\fBsecrets\fR(5),
 \fBipsec_showhostkey\fR(8)
 .PP
 HTML documentation shipped with the release, starting with
-\fIdoc/index\.html\fR\.
-\fI<\fR\fI\fIhttp://www\.freeswan\.org/doc\.html\fR\fR\fI>\fR
-may also be of use\.
+\fIdoc/index\&.html\fR\&.
+\fI<\fR\fI\m[blue]\fBhttp://www\&.freeswan\&.org/doc\&.html\fR\m[]\fR\fI>\fR
+may also be of use\&.
 .SH "HISTORY"
 .PP
-Written for Linux FreeS/WAN <\fIhttp://www\.freeswan\.org\fR> by Henry Spencer\.
+Written for Linux FreeS/WAN <\m[blue]\fBhttp://www\&.freeswan\&.org\fR\m[]> by Henry Spencer\&.
 .SH "BUGS"
 .PP
 The provision of centralized services, while convenient, does compromise the original concept of making the utilities invocable directly as well as via
-\fBipsec\fR\.
+\fBipsec\fR\&.

@@ -18,7 +18,7 @@ Version: IPSECBASEVERSION
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
-Release: %{ourrelease}
+Release: %{ourrelease}%{?dist}
 License: GPLv2, some BSD
 Url: http://www.openswan.org/
 Source: openswan-%{srcpkgver}.tar.gz

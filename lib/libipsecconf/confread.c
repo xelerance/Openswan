@@ -663,7 +663,7 @@ bool translate_conn (struct starter_conn *conn
 		    free((*the_strings)[field]);
 	    }
 
-	    passert(kw->string!=NULL);
+	    assert(kw->string!=NULL);
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
@@ -1053,6 +1053,24 @@ static int load_conn (struct starter_config *cfg
 	case fo_insist:
 	    conn->policy |= POLICY_IKEV1_DISABLE;
 	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
+	    break;
+	}
+    }
+
+    if(conn->options_set[KBF_SAREFTRACK]) {
+	switch(conn->options[KBF_SAREFTRACK]) {
+	case sat_yes:
+	    /* this is the default for now */
+	    conn->policy |= POLICY_SAREF_TRACK;
+	    break;
+	    
+	case sat_conntrack:
+	    conn->policy |= POLICY_SAREF_TRACK|POLICY_SAREF_TRACK_CONNTRACK;
+	    break;
+	    
+	case sat_no:
+	    conn->policy &= ~POLICY_SAREF_TRACK;
+	    conn->policy &= ~POLICY_SAREF_TRACK_CONNTRACK;
 	    break;
 	}
     }

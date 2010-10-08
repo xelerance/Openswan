@@ -714,10 +714,6 @@ main_inI1_outR1(struct msg_digest *md)
     int next;
     int numvidtosend = 1;  /* we always send DPD VID */
 
-#ifdef LEAK_DETECTIVE
-	report_leaks();         /* report memory leaks now, after all free()s */
-#endif
-
 #ifdef NAT_TRAVERSAL
     if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
 	DBG(DBG_NATT, DBG_log("nat-t detected, sending nat-t VID"));
@@ -820,15 +816,15 @@ main_inI1_outR1(struct msg_digest *md)
 	    /* Create a temporary connection that is a copy of this one.
 	     * His ID isn't declared yet.
 	     */
+	   DBG(DBG_CONTROL, DBG_log("instantiating \"%s\" for initial Main Mode message received on %s:%u"
+		, c->name, ip_str(&md->iface->ip_addr), pluto_port));
 	    c = rw_instantiate(c, &md->sender
 			       , NULL, NULL);
 	}
      } else {
 	/* we found a non-wildcard conn. double check if it needs instantiation anyway (eg vnet=) */
-	if (c->spd.that.virt) {
-	   // FIXME: the kind should really have been set on "adding" the conn in the first place
-	   // c->kind = CK_TEMPLATE; 
-	   DBG(DBG_CONTROL, DBG_log("remote endpoint has virt (vnet?) set - needs instantiation"));
+	if ((c->kind == CK_TEMPLATE) && c->spd.that.virt) {
+	   DBG(DBG_CONTROL, DBG_log("local endpoint has virt (vnet/vhost) set without wildcards - needs instantiation"));
 	   c = rw_instantiate(c,&md->sender,NULL,NULL);
 	}
     }
