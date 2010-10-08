@@ -19,24 +19,30 @@
 
 $reterr = 0;
 $me="ipsec verify";
-$ENV{'PATH'}="/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
+$ENV{'PATH'}="/sbin:/usr/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
 if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
 
-$print_depricacted=0;
+$print_deprecated = 0;
 
 # Should we print in colour by default?
-$ctype=`/sbin/consoletype`;
-if ( $ctype && !($ctype eq "serial"))
+if ( -e "/sbin/consoletype" )
 {
-    $colour="1";
+    $ctype=`/sbin/consoletype`;
+    if ( $ctype && !($ctype eq "serial"))
+    {
+        $colour="1";
+    }
 }
 else
 {
-     $ctype=`/usr/bin/tput colors`;
-     if ( $ctype && ($ctype gt "0"))
-     {
-         $colour="1";
-     }
+    if ( -e "/usr/bin/tput" )
+    {
+        $ctype=`/usr/bin/tput colors`;
+        if ( $ctype && ($ctype gt "0"))
+        {
+            $colour="1";
+        }
+    }
 }
 
 sub printfun {
@@ -511,7 +517,7 @@ else
 	tunnelchecks;
 	cmdchecks;
 	# Go find include files and put them all into an array.
-	@configfiles[0] = "$conf/ipsec.conf";
+	$configfiles[0] = "$conf/ipsec.conf";
 	$n=1;
 	open(OE,"grep ^include $conf/ipsec.conf|");
 	while(<OE>) {
