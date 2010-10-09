@@ -10,6 +10,7 @@ v2.6.30 (unreleased)
 * sa_policy_bit_names was missing ModeConfig DNS and WINS bit names [Paul]
 * SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
 * Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
+* Fix for "handling event EVENT_RETRANSMIT for <invalid>" [Paul]
 * Fix for specifying protport=47 (GRE has no ports) [Paul]
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
