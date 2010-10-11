@@ -662,8 +662,18 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		    free((*the_strings)[field]);
 	    }
+	    
+	    if(kw->string == NULL) 
+		{
+		*error = _tmp_err;
+		
+		snprintf(_tmp_err, sizeof(_tmp_err)
+			 , "Invalid %s value"
+			 , kw->keyword.keydef->keyname);
+		    err++;
+		    break;
+		}
 
-	    assert(kw->string!=NULL);
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
