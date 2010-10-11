@@ -1645,6 +1645,7 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 		DBG_log("invalid listen= option ignored: %s\n", e);
 		pluto_listen = NULL;
 	}
+	DBG(DBG_CONTROL, DBG_log("Only looking to listen on %s\n", ip_str(&lip)));
     }
 
     /* Find all virtual/real interface pairs.
@@ -1748,6 +1749,12 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	    }
 	}
 
+
+	/* We've got all we need; see if this is a new thing:
+	 * search old interfaces list.
+	 */
+add_entry:
+	/* last check before we actually add the entry due to ugly goto code */
 	/* ignore if --listen is specified and we do not match */
 	if (pluto_listen!=NULL) {
 	    if (!sameaddr(&lip, &ifp->addr)) {
@@ -1757,10 +1764,6 @@ netlink_process_raw_ifaces(struct raw_iface *rifaces)
 	    }
 	}
 
-	/* We've got all we need; see if this is a new thing:
-	 * search old interfaces list.
-	 */
-add_entry:
 	{
 	    struct iface_port **p = &interfaces;
 
