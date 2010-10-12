@@ -464,7 +464,7 @@ include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
 # file suffix.
 ifeq ($(BUILDENV),"darwin")
 USE_YACC?=true
-INSTBINFLAGS=-b -B .old
+INSTBINFLAGS=-D -b -B .old
 INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 endif
 
