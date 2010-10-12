@@ -146,7 +146,8 @@ struct starter_config {
 extern struct starter_config *confread_load(const char *file
 					    , err_t *perr
 					    , bool resolvip
-					    , char *ctlbase);
+					    , char *ctlbase
+					    , bool setuponly);
 extern struct starter_conn *alloc_add_conn(struct starter_config *cfg
 					   , char *name, err_t *perr);
 extern int init_load_conn(struct starter_config *cfg

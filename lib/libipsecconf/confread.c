@@ -662,8 +662,18 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		    free((*the_strings)[field]);
 	    }
+	    
+	    if(kw->string == NULL) 
+		{
+		*error = _tmp_err;
+		
+		snprintf(_tmp_err, sizeof(_tmp_err)
+			 , "Invalid %s value"
+			 , kw->keyword.keydef->keyname);
+		    err++;
+		    break;
+		}
 
-	    assert(kw->string!=NULL);
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
@@ -1191,7 +1201,8 @@ int init_load_conn(struct starter_config *cfg
 struct starter_config *confread_load(const char *file
 				     , err_t *perr
 				     , bool resolvip
-				     , char *ctlbase)
+				     , char *ctlbase
+				     , bool setuponly)
 {
 	struct starter_config *cfg = NULL;
 	struct config_parsed *cfgp;
@@ -1229,12 +1240,13 @@ struct starter_config *confread_load(const char *file
 
 	if(err) {return NULL;}
 
-	/**
-	 * Find %default and %oedefault conn
-	 *
-	 */
-	for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
-	{
+	if(!setuponly) {
+	   /**
+	    * Find %default and %oedefault conn
+	    *
+	    */
+	   for(sconn = cfgp->sections.tqh_first; (!err) && sconn != NULL; sconn = sconn->link.tqe_next)
+	   {
 		if (strcmp(sconn->name,"%default")==0) {
 			starter_log(LOG_LEVEL_DEBUG, "Loading default conn");
 			err += load_conn (cfg, &cfg->conn_default,
@@ -1253,13 +1265,13 @@ struct starter_config *confread_load(const char *file
 			    cfg->got_oedefault=TRUE;
 			}
 		}
-	}
+	   }
 
-	/**
-	 * Load other conns
-	 */
-	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
-	{
+	   /**
+	    * Load other conns
+	    */
+	   for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
+	   {
 		if (strcmp(sconn->name,"%default")==0) continue;
 		if (strcmp(sconn->name,"%oedefault")==0) continue;
 
@@ -1272,12 +1284,13 @@ struct starter_config *confread_load(const char *file
 		    return NULL;
 		}
 		err += connerr;
-	}
+	   }
 
-	/* if we have OE on, then create any missing OE conns! */
-	if(cfg->setup.options[KBF_OPPOENCRYPT]) {
-	    starter_log(LOG_LEVEL_DEBUG, "Enabling OE conns\n");
-	    add_any_oeconns(cfg, cfgp);
+	   /* if we have OE on, then create any missing OE conns! */
+	   if(cfg->setup.options[KBF_OPPOENCRYPT]) {
+	       starter_log(LOG_LEVEL_DEBUG, "Enabling OE conns\n");
+	       add_any_oeconns(cfg, cfgp);
+	   }
 	}
 
 	parser_free_conf(cfgp);

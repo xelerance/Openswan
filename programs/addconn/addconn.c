@@ -246,7 +246,7 @@ main(int argc, char *argv[])
 	/* but not if we have no use for them... might cause delays too! */
 	resolvip=FALSE;
     }
-    cfg = confread_load(configfile, &err, resolvip, ctlbase);
+    cfg = confread_load(configfile, &err, resolvip, ctlbase,typeexport);
     
     if(cfg == NULL) {
 	fprintf(stderr, "can not load config '%s': %s\n",
