@@ -20,6 +20,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 # not as /etc/rc.d/init.d/setup.
 PROGRAMDIR=$(RCDIR)
 PROGRAM=setup
+NOINSTALL=true
 EXTRA8MAN=setup.8
 
 include ${srcdir}../Makefile.program
@@ -29,11 +30,15 @@ include ${srcdir}../Makefile.program
 # into the $BINDIR.
 #
 # the priorities match those in setup's chkconfig line
-doinstall:: setup
+doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LIBFILES) $(CONFDFILES)
+	# remove any old vendor file installed previously
 	@rm -f $(BINDIR)/setup
+	# check the directories we need exist (ie., make install DESTDIR=/tmp/IPsec)
+	@mkdir -p $(RCDIR) $(BINDIR)
+	-@for i in 0 1 2 3 4 5 6; do mkdir -p $(RCDIR)/../rc$$i.d; done
+	# install and link everything
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
-	-@for i in 0 1 2 3 4 5 6; do mkdir -p $(RCDIR)/../rc$$i.d; done
 	-@cd $(RCDIR)/../rc0.d && ln -f -s ../init.d/ipsec K76ipsec
 	-@cd $(RCDIR)/../rc1.d && ln -f -s ../init.d/ipsec K76ipsec
 	-@cd $(RCDIR)/../rc2.d && ln -f -s ../init.d/ipsec S47ipsec
