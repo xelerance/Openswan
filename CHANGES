@@ -24,6 +24,7 @@ v2.6.30 (unreleased)
    #1115: Fix various warnings u_char * vs. char * for sscanf,... [Henry N.]
    #1149: pluto uses empty NAT_OA as IDci, Server behind NAT and non natted
           Windows XP [Wolfgang Nothdurft]
+   #1151: The ipsec module is not removed by 'ipsec setup stop' [Paul]
 
 v2.6.29 (September 27, 2010)
 ! This release is made for CVE-2010-3302 and CVE-2010-3308
