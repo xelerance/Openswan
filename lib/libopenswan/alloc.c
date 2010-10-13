@@ -163,6 +163,8 @@ report_leaks(void)
 	*p = allocs,
 	*pprev = NULL;
     unsigned long n = 0;
+    unsigned long numleaks = 0;
+    unsigned long total = 0;
 
     while (p != NULL)
     {
@@ -174,12 +176,19 @@ report_leaks(void)
 	if (p == NULL || pprev->i.name != p->i.name)
 	{
 	    if (n != 1)
-		openswan_log("leak: %lu * %s, item size: %u", n, pprev->i.name, pprev->i.size);
+		openswan_log("leak: %lu * %s, item size: %lu", n, pprev->i.name, pprev->i.size);
 	    else
-		openswan_log("leak: %s, item size: %u", pprev->i.name, pprev->i.size);
+		openswan_log("leak: %s, item size: %lu", pprev->i.name, pprev->i.size);
+	    numleaks += n;
+	    total += pprev->i.size;
 	    n = 0;
 	}
     }
+    if(numleaks != 0)
+    	openswan_log("leak detective found %lu leaks, total size %lu",numleaks,total);
+    else
+    	openswan_log("leak detective found no leaks");
+
 }
 
 #endif /* !LEAK_DETECTIVE */
