@@ -514,6 +514,9 @@ nattpatch:
 	else	echo "Cannot determine Linux kernel version. Perhaps you need to set KERNELSRC? (eg: export KERNELSRC=/usr/src/linux-`uname -r`/)"; exit 1; \
 	fi;
 
+sarefpatch:
+	packaging/utils/ngpatch 2.6
+
 ngpatch2.6:
 	packaging/utils/ngpatch 2.6
 
