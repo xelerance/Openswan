@@ -1052,6 +1052,9 @@ exit_pluto(int status)
     NSS_Shutdown();
 #endif
     delete_lock();          /* delete any lock files */
+#ifdef LEAK_DETECTIVE
+    report_leaks();         /* report memory leaks now, after all free()s */
+#endif /* LEAK_DETECTIVE */
     close_log();            /* close the logfiles */
     exit(status);           /* exit, with our error code */
 }
