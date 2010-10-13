@@ -1,7 +1,7 @@
-
-    ********* See docs/RELEASE-NOTES.txt for more information *********
-
-			Openswan 2.X Release Notes
+#########################################################################
+#            Openswan 2.X Release Notes
+#########################################################################
+************ See docs/RELEASE-NOTES.txt for more information ************
 
 Openswan is an IPsec implementation for Linux. It has support for most 
 of the extensions (RFC + IETF drafts) related to IPsec, including 
@@ -12,13 +12,18 @@ minor bug fixes from 2.05 and 2.06.  See CREDITS for the history.
 
 Download it from http://www.openswan.org/code
 
-
-				REQUIREMENTS
+#########################################################################
+# REQUIREMENTS
+#########################################################################
 
 A recent Linux distribution based on either Kernel 2.4.x, or 2.6.x are 
-the currently supported platforms
+the currently supported platforms.
 
-There a few packages required for Openswan to compile:
+Most recent distributions have package support for openswan.  Unless
+a source based build is truly needed,  it is often best to use the pre-built
+distributions packaged version.
+
+There a few packages required for Openswan to compile from source:
 
 1. libgmp + libgmp-devel headers.  (GNU Math Precision Library)
 
@@ -28,143 +33,156 @@ There a few packages required for Openswan to compile:
 # HOW TO INSTALL on Kernel 2.6 (And Kernels with 2.6 IPsec backport)
 #########################################################################
 
-For Linux Kernels 2.6.0 and higher, Openswan can use the built in IPsec
-support, or KLIPS (ipsec0 devices).  
+NETKEY (Native linux IPsec stack)
+---------------------------------
 
-To use KLIPS:
+To use Openswan with the linux native (builtin) IPsec stack,  then the
+following steps should be all that are needed. Please use at least kernel
+version 2.6.6, as prior versions of the kernel have serious bugs in the
+native IPsec stack.  From the openswan directory:
 
-0)	If you want NAT-T support, you need to patch your kernel and build
-	a new bzImage.  From the Openswan source directory:
-
-	make nattpatch | (cd /usr/src/linux-2.6 && patch -p1 && make bzImage)
-	
-	Note: Build and install kernel as normal, as you have modified
-	the TCP/IP stack in the kernel, so it needs to be recompiled and
-	installed.
-
-        eg: cd /usr/src/linux && make dep bzImage install
-
-	See your distribution documentation on how to install a new kernel
-
-
-1)	From the openswan source directory, build the userland tools, and
-	ipsec.o kernel module:
-
-	make KERNELSRC=/usr/src/linux-2.6 programs module
-
-2)	As root, install the userland tools, and the ipsec.o module:
-
-	make KERNELSRC=/usr/src/linux-2.6 install minstall
-
-3)	For OCF HW offloading support, you need a patched kernel
-	See: http://ocf-linux.sourceforge.net/
-
-To use the native (aka, Netkey) stack:
-
-0)	Please use at least version kernel version 2.6.6, as prior 
-	versions of the kernel have serious bugs in the  IPsec stack.
-
-1)	From the openswan source directory:
-
-	make programs
-
-2)	As root, install the userland tools:
-
-	make install
+    make programs
+    sudo make install
 
 Note: The ipsec-tools package is no longer needed. Instead iproute2 >= 2.6.8
 is required. For backported kernels, setkey and thus ipsec-tools might still
 be required. Run 'ipsec verify' to determine if your system has either one
 of the requirements.
 
+KLIPS (Openswan IPsec stack)
+----------------------------
+
+To use the Openswan KLIPS IPsec stack (ipsec0 devices) for Linux
+Kernels 2.6.23 and higher, the following steps should work.  From the
+openswan directory:
+
+    make programs
+    make KERNELSRC=/lib/modules/`uname -r`/build module
+    sudo make KERNELSRC=/lib/modules/`uname -r`/build install minstall
+
+For Linux 2.6 Kernels before 2.6.23, the kernel requires patching if
+NAT-T support is required.
+
+    Add NAT-T support.
+
+        NAT-T support needs to patch the kernel and build a new bzImage.
+        From the Openswan source directory:
+
+          make KERNELSRC=/lib/modules/`uname -r`/build nattpatch | \
+            (cd /usr/src/linux-2.6 && patch -p1 && make bzImage)
+    
+        Note: Build and install kernel as normal, as you have modified
+        the TCP/IP stack in the kernel, so it needs to be recompiled and
+        installed.
+
+          eg: cd /usr/src/linux-2.6 && make dep bzImage install
+
+        See your distribution documentation on how to install a new kernel
+
+    From the openswan directory:
+
+        make programs
+        make KERNELSRC=/lib/modules/`uname -r`/build module
+        sudo make KERNELSRC=/lib/modules/`uname -r`/build install minstall
+
+    For OCF HW offloading support, you need a patched kernel
+    See: http://ocf-linux.sourceforge.net/
 
 #########################################################################
 # HOW TO INSTALL on Linux Kernel 2.4 systems
 #########################################################################
 
-0.0)	The following instructions assume the kernel source tree is in 
-	/usr/src/linux-2.4.  If this isn't the case, simply change the 
-	parameters in the instructions below.
+The following instructions assume the kernel source tree is in
+/usr/src/linux-2.4.  If this isn't the case, simply change the 
+parameters in the instructions below.
 
-1.0) 	Uncompress linux-2.#.#.tar.bz2 in /usr/src (or elsewhere), build a 
-	normal working kernel.  This ensures any compiliation problems 
-	that occur are isolated and resolved *before* any Openswan patches 
-	are applied to the kernel.
+1)  Uncompress linux-2.#.#.tar.bz2 in /usr/src (or elsewhere), build a 
+    normal working kernel.  This ensures any compiliation problems 
+    that occur are isolated and resolved *before* any Openswan patches 
+    are applied to the kernel.
 
-1.1)	If you want NAT-T support, you need to patch your kernel and build
-	a new bzImage.  From the Openswan source directory:
+2)  If you want NAT-T support, you need to patch your kernel and build
+    a new bzImage.  From the Openswan source directory:
 
-	make nattpatch | (cd /usr/src/linux-2.4 && patch -p1 && make bzImage)
-	
-	Note: Build and install kernel as normal, as you have modified
-	the TCP/IP stack in the kernel, so it needs to be recompiled and
-	installed.
+    make KERNELSRC=/usr/src/linux-2.4 nattpatch | \
+        (cd /usr/src/linux-2.4 && patch -p1 && make bzImage)
+    
+    Note: Build and install kernel as normal, as you have modified
+    the TCP/IP stack in the kernel, so it needs to be recompiled and
+    installed.
 
-        eg: cd /usr/src/linux && make dep bzImage install
+        eg: cd /usr/src/linux-2.4 && make dep bzImage install
 
+3)  From the openswan source directory, build the userland tools, and
+    ipsec.o kernel module:
 
+    make KERNELSRC=/usr/src/linux-2.4 programs module
 
-2.0)	From the openswan source directory, build the userland tools, and
-	ipsec.o kernel module:
+4)  As root, install the userland tools, and the ipsec.o module:
 
-	make KERNELSRC=/usr/src/linux-2.4 programs module
+    make KERNELSRC=/usr/src/linux-2.4 install minstall
 
-3.0)	As root, install the userland tools, and the ipsec.o module:
-
-	make KERNELSRC=/usr/src/linux-2.4 install minstall
-
-
-				UPGRADING
+#########################################################################
+# UPGRADING
+#########################################################################
 
 1. If you are upgrading from a 1.x product to Openswan 2.x, you will
-need to adjust your config files.  See doc/upgrading.html for details
-on what has changed.
+   need to adjust your config files.  See doc/upgrading.html for details
+   on what has changed.
 
 2. You can 'make install' overtop of your old version - it won't replace
-your /etc/ipsec.* config files
+   your /etc/ipsec.* config files
 
-
-				SUPPORT
+#########################################################################
+# SUPPORT
+#########################################################################
 
 Mailing Lists:
 
-http://lists.openswan.org is home of the mailing lists.  Note: these are 
-closed lists - you *must* be subscribed to post.
+    http://lists.openswan.org is home of the mailing lists.  Note: these are 
+    closed lists - you *must* be subscribed to post.
 
 Wiki:
 
-http://wiki.openswan.org is home to the Openswan WIKI.  It has the most
-up to date documentation, interop guides and other related information.
+    http://wiki.openswan.org is home to the Openswan WIKI.  It has the most
+    up to date documentation, interop guides and other related information.
 
 IRC:
 
-Openswan developers and users can be found on IRC, on #openswan on
-irc.freenode.net.  If you need more information on our IRC channel, see
-http://www.openswan.org/support/irc.php
+    Openswan developers and users can be found on IRC, on #openswan on
+    irc.freenode.net.  If you need more information on our IRC channel, see
+    http://www.openswan.org/support/irc.php
 
 Commercial support for Openswan is also available - see
 http://www.xelerance.com/openswan/support.php for more information, or
 email sales@xelerance.com
 
-				BUGS
+#########################################################################
+# BUGS
+#########################################################################
 
 Bugs with the package can be filed into our Mantis system, at
 http://bugs.openswan.org
 
+#########################################################################
+# SECURITY HOLES
+#########################################################################
 
-				SECURITY HOLES
+Hopefully none :-)  If you find one, please email vuln@xelerance.com with
+details.  Please use GPG (finger vuln@xelerance.com for GPG key) for this.
 
-None :)  If you find one, please email vuln@xelerance.com with details.
-Please use GPG (finger vuln@xelerance.com for GPG key) for this.
-
-				DEVELOPMENT
+#########################################################################
+# DEVELOPMENT
+#########################################################################
 
 Those interested in the development, patches, beta releases of Openswan
 can join the development mailing list (http://lists.openswan.org -
 dev@lists.openswan.org) or join the development team on IRC in
 #openswan-dev on irc.freenode.net
 
-				DOCUMENTATION
+#########################################################################
+# DOCUMENTATION
+#########################################################################
 
 The most up to date docs are at http://wiki.openswan.org.
 
@@ -178,4 +196,3 @@ currently 40MB)
 The bulk of this software is under the GNU General Public License; see
 LICENSE.  Some parts of it are not; see CREDITS for the details.
 
-$Id: README,v 1.102 2005/07/06 22:50:02 ken Exp $.

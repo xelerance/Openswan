@@ -52,6 +52,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 	pcf ocf mcf xcf rcf nopromptgo \
 	precheck verset confcheck kernel \
 	module module24 module26 kinstall minstall minstall24 minstall26 \
+	moduleclean mod24clean module24clean mod26clean module26clean \
 	backup unpatch uninstall install_file_list \
 	snapready relready ready buildready devready uml check taroldinstall \
 	umluserland
@@ -295,10 +296,10 @@ confcheck:
 # kernel building, with error checks
 kernel:
 	rm -f out.kbuild out.kinstall
-        # undocumented kernel folklore: clean BEFORE dep. 
-        # we run make dep seperately, because there is no point in running ERRCHECK
-        # on the make dep output.
-        # see LKML thread "clean before or after dep?"
+	# undocumented kernel folklore: clean BEFORE dep. 
+	# we run make dep seperately, because there is no point in running ERRCHECK
+	# on the make dep output.
+	# see LKML thread "clean before or after dep?"
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) $(KERNCLEAN) $(KERNDEP) )
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) $(KERNEL) ) 2>&1 | tee out.kbuild
 	@if egrep -q '^CONFIG_MODULES=y' $(KCFILE) ; \
@@ -352,6 +353,12 @@ module:
         else echo "Building module for a 2.6 kernel"; ${MAKE} module26; \
         fi;
 
+modclean moduleclean:
+	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
+		echo "Cleaning module for a 2.4 kernel"; ${MAKE} module24clean ; \
+	else echo "Cleaning module for a 2.6 kernel"; ${MAKE} module26clean; \
+	fi;
+
 module24:
 	@if [ ! -f ${KERNELSRC}/Rules.make ] ; then \
                 echo "Warning: Building for a 2.4 kernel in what looks like a 2.6 tree"; \
@@ -372,7 +379,7 @@ module24:
 	@echo '========================================================='
 	@echo 
 
-modclean: 
+mod24clean module24clean: 
 	rm -rf ${MODBUILDDIR}
 
 #autoodetect 2.4 and 2.6
