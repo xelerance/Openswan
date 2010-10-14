@@ -13,6 +13,7 @@ v2.6.30 (unreleased)
 * Fix for specifying protport=47 (GRE has no ports) [Paul]
 * Don't fill traffic selector struct in IKEv2 child SA when not recv'd [Paul]
 * Add geode-aes to the list of crypto modules to load [Paul]
+* Don't install ipsec init script as /etc/init.d/setup [David]
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
    # 690 ipsec lwdnsq --help not implemented
