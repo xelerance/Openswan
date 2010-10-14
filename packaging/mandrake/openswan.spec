@@ -121,8 +121,6 @@ done
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
-#this needs to be fixed in 'make install'
-rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 

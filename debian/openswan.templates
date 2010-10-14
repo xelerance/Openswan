@@ -1,14 +1,3 @@
-Template: openswan/runlevel_changes
-Type: note
-_Description: Old runlevel management superseded
- Previous versions of the Openswan package gave a choice between
- three different Start/Stop-Levels. Due to changes in the standard system
- startup procedure, this is no longer necessary or useful. For all new
- installations as well as old ones running in any of the predefined modes,
- sane default levels will now be set. If you are upgrading from a previous
- version and changed your Openswan startup parameters, then please take a
- look at NEWS.Debian for instructions on how to modify your setup accordingly.
-
 Template: openswan/restart
 Type: boolean
 Default: true

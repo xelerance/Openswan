@@ -95,9 +95,6 @@ install-openswan: build
 	rm -f $(CURDIR)/debian/openswan/etc/init.d/ipsec?*
 	rm -f $(CURDIR)/debian/openswan/usr/lib/ipsec/_plutorun?*
 
-	# this is handled by update-rc.d
-	rm -rf $(CURDIR)/debian/openswan/etc/rc?.d
-
 	# delete var/lock/subsys and var/run to satisfy lintian
 	rm -rf $(CURDIR)/debian/openswan/var/lock
 	rm -rf $(CURDIR)/debian/openswan/var/run
@@ -281,4 +278,5 @@ binary-arch: install-openswan install-openswan-modules-dkms
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
 binary: binary-indep binary-arch
-.PHONY: clean binary-indep binary-arch
+.PHONY: clean binary-indep binary-arch binary-common install-openswan-modules-dkms \
+        install-openswan-modules-source install-openswan-doc install-openswan
