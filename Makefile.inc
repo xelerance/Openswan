@@ -184,7 +184,7 @@ BISONOSFLAGS=
 #    diagnostics.
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
-USERCOMPILE?=-g -O3 ${WERROR} -DGCC_LINT
+USERCOMPILE?=-g -O3 ${WERROR} -DGCC_LINT #-DLEAK_DETECTIVE
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
@@ -464,7 +464,7 @@ include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
 # file suffix.
 ifeq ($(BUILDENV),"darwin")
 USE_YACC?=true
-INSTBINFLAGS=-b -B .old
+INSTBINFLAGS=-D -b -B .old
 INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 endif
 
