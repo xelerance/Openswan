@@ -294,8 +294,8 @@ msgstr "Hãy nhập mã hai chữ cho quốc gia máy chủ ở (v.d. « VN » c
 #. Description
 #: ../openswan.templates:10001
 msgid ""
-"OpenSSL will refuse to generate a certificate unless this is a valid ISO-"
-"3166 country code; an empty field is allowed elsewhere in the X.509 "
+"OpenSSL will refuse to generate a certificate unless this is a valid "
+"ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
 "certificate, but not here."
 msgstr ""
 "Không có mã quốc gia ISO-3166 đúng thì OpenSSL từ chối tạo chứng nhận. Có "
