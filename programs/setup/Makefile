@@ -35,28 +35,13 @@ doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LI
 	@rm -f $(BINDIR)/setup
 	# check the directories we need exist (ie., make install DESTDIR=/tmp/IPsec)
 	@mkdir -p $(RCDIR) $(BINDIR)
-	-@for i in 0 1 2 3 4 5 6; do mkdir -p $(RCDIR)/../rc$$i.d; done
 	# install and link everything
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
-	-@cd $(RCDIR)/../rc0.d && ln -f -s ../init.d/ipsec K76ipsec
-	-@cd $(RCDIR)/../rc1.d && ln -f -s ../init.d/ipsec K76ipsec
-	-@cd $(RCDIR)/../rc2.d && ln -f -s ../init.d/ipsec S47ipsec
-	-@cd $(RCDIR)/../rc3.d && ln -f -s ../init.d/ipsec S47ipsec
-	-@cd $(RCDIR)/../rc4.d && ln -f -s ../init.d/ipsec S47ipsec
-	-@cd $(RCDIR)/../rc5.d && ln -f -s ../init.d/ipsec S47ipsec
-	-@cd $(RCDIR)/../rc6.d && ln -f -s ../init.d/ipsec K76ipsec
 
 install_file_list::
 	@echo $(RCDIR)/ipsec
 	@echo $(BINDIR)/setup
-	@echo $(RCDIR)/../rc0.d/K76ipsec
-	@echo $(RCDIR)/../rc1.d/K76ipsec
-	@echo $(RCDIR)/../rc2.d/S47ipsec
-	@echo $(RCDIR)/../rc3.d/S47ipsec
-	@echo $(RCDIR)/../rc4.d/S47ipsec
-	@echo $(RCDIR)/../rc5.d/S47ipsec
-	@echo $(RCDIR)/../rc6.d/K76ipsec
 
 cleanall::
 	@rm -f setup
