@@ -85,7 +85,6 @@ define Package/openswan/install
 	rm -rf $(1)/usr/share
 	rm -rf $(1)/usr/man
 	rm -rf $(1)/var
-	rm -rf $(1)/etc/rc.d
 	find $(1) -name \*.old | xargs rm -rf
 endef
 
