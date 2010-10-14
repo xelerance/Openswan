@@ -278,4 +278,5 @@ binary-arch: install-openswan install-openswan-modules-dkms
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
 binary: binary-indep binary-arch
-.PHONY: clean binary-indep binary-arch
+.PHONY: clean binary-indep binary-arch binary-common install-openswan-modules-dkms \
+        install-openswan-modules-source install-openswan-doc install-openswan
