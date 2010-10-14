@@ -5,13 +5,14 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.30 (unreleased)
-* Add geode-aes to the list of crypto modules to load [Paul]
+* Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
 * Add --listen/listen= option to limit listening to a single IP [Paul]
 * sa_policy_bit_names was missing ModeConfig DNS and WINS bit names [Paul]
 * SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
-* Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
 * Fix for "handling event EVENT_RETRANSMIT for <invalid>" [Paul]
 * Fix for specifying protport=47 (GRE has no ports) [Paul]
+* Don't fill traffic selector struct in IKEv2 child SA when not recv'd [Paul]
+* Add geode-aes to the list of crypto modules to load [Paul]
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
    # 690 ipsec lwdnsq --help not implemented
