@@ -169,9 +169,8 @@ retransmit_v1_msg(struct state *st)
     try_limit = c->sa_keying_tries;
 	
     DBG(DBG_CONTROL, 
-	    ip_address peer;
 	    DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
-	    , ip_str(&peer), c->name, st->st_serialno));
+	    , ip_str(&c->spd.that.host_addr), c->name, st->st_serialno));
     
     if (st->st_retransmit < maximum_retransmissions)
 	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
@@ -285,9 +284,8 @@ retransmit_v2_msg(struct state *st)
     try++;
     
     DBG(DBG_CONTROL, 
-	ip_address peer;
 	DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
-	    , ip_str(&peer), c->name, st->st_serialno));
+	    , ip_str(&c->spd.that.host_addr), c->name, st->st_serialno));
     
     if (st->st_retransmit < maximum_retransmissions)
 	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
@@ -437,7 +435,6 @@ handle_next_timer_event(void)
     struct event *ev = evlist;
     int type;
     struct state *st;
-    ip_address peer;
 
     if (ev == (struct event *) NULL)    
     {
@@ -480,7 +477,6 @@ handle_next_timer_event(void)
 	    passert(st->st_event == ev);
 	    st->st_event = NULL;
         }
-	peer = c->spd.that.host_addr;
 	set_cur_state(st);
     }
 

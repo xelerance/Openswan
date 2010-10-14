@@ -10,6 +10,7 @@ v2.6.30 (unreleased)
 * sa_policy_bit_names was missing ModeConfig DNS and WINS bit names [Paul]
 * SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
 * Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
+* Fix for "handling event EVENT_RETRANSMIT for <invalid>" [Paul]
 * Fix for specifying protport=47 (GRE has no ports) [Paul]
 * Bugtracker bugs fixed:
    # 252/619 more than 20 payloads in message; ignored [paul]
@@ -21,6 +22,9 @@ v2.6.30 (unreleased)
    #1112: Prototypes only, if function enabled in c-source with KLIPS or
           PFKEY [Henry N.]
    #1115: Fix various warnings u_char * vs. char * for sscanf,... [Henry N.]
+   #1149: pluto uses empty NAT_OA as IDci, Server behind NAT and non natted
+          Windows XP [Wolfgang Nothdurft]
+   #1151: The ipsec module is not removed by 'ipsec setup stop' [Paul]
 
 v2.6.29 (September 27, 2010)
 ! This release is made for CVE-2010-3302 and CVE-2010-3308

@@ -192,23 +192,6 @@ case "$1" in
 	    mv /etc/ipsec.conf.tmp /etc/ipsec.conf
 	fi
 
-	# scheduled for removal 2011-03
-	runlevels=`find /etc/rc*.d -type l -a -name "*ipsec" -a -lname "../init.d/ipsec" -print0 | sed 's/\/etc\/rc//g' | sed 's/\.d\///g' | sed 's/ipsec//g'`
-
-	# lets see if we are already using dependency based booting or the correct runlevel parameters
-	if ! ( [ "`find /etc/init.d/ -name '.depend.*'`" ] || [ "$runlevels" = "0K841K842S163S164S165S166K84" ] ); then
-	    db_fset openswan/runlevel_changes seen false
-	    db_input high openswan/runlevel_changes || true
-	    db_go
-
-	    # if the admin did not change the runlevels which got installed by older packages we can modify them
-	    if [ "$runlevels" = "0K346K34SS41" ] || [ "$runlevels" = "0K301K302S153S154S155S156K30" ] || [ "$runlevels" = "0K191K192S213S214S215S216K19" ]; then
-		update-rc.d -f ipsec remove
-	    fi
-
-	    update-rc.d ipsec defaults 16 84 > /dev/null
-	fi
-
 	if [ -z "$2" ]; then
 	    # no old configured version - start openswan now
             invoke-rc.d ipsec start || true
