@@ -494,8 +494,11 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	 * the state structure as the tsi/tsr
 	 *
 	 */
-	st1->st_ts_this = ikev2_subnettots(&bsr->this);
-	st1->st_ts_that = ikev2_subnettots(&bsr->that);
+	/* Paul: should we STF_FAIL here instead of checking for NULL */
+	if (bsr != NULL) {
+		st1->st_ts_this = ikev2_subnettots(&bsr->this);
+		st1->st_ts_that = ikev2_subnettots(&bsr->that);
+	}
     }
     ret = ikev2_calc_emit_ts(md, outpbs, role
 			     , c, c->policy);
