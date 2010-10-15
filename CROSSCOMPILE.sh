@@ -38,4 +38,3 @@ export WERROR=' '
 
 # for binary in `find $DESTDIR -type f |xargs file |grep "ELF 32-bit LSB executable" |sed "s/:.*$//"` ; do mv $binary $binary.elf ; elf2flt -z -v $binary.elf -o $binary ; done
 
->>>>>>> b4c1b26... update cross compile info for BLFT file format
