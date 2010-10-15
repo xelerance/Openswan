@@ -27,3 +27,15 @@ export WERROR=' '
 #and run:
 # make install
 #and the install will go into $DESTDIR/
+
+# note: the arm_tools I had were so broken that some code failed to compile, this was ifdef'ed with BROKEN_COMPILER_HACK
+# This relates to the PRINTF_LIKE(x) macro
+
+# EXECUTABLE FILE FORMAT
+#
+# Some uClibc/busybox combinations use different executable files formats from ELF. This is configured during Linux kernel
+# build. To convert the ELF binaries to BLTF, use elf2flt. The following script would convert all the binaries:
+
+# for binary in `find $DESTDIR -type f |xargs file |grep "ELF 32-bit LSB executable" |sed "s/:.*$//"` ; do mv $binary $binary.elf ; elf2flt -z -v $binary.elf -o $binary ; done
+
+>>>>>>> b4c1b26... update cross compile info for BLFT file format
