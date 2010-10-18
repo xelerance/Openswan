@@ -4,6 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.31 (unreleased)
+
 v2.6.30 (October 18, 2010)
 * Fix for: ASSERTION FAILED at connections.c:1579: c->kind == CK_TEMPLATE [Paul]
 * Add --listen/listen= option to limit listening to a single IP [Paul]
