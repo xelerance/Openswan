@@ -511,6 +511,7 @@ check_ocsp(void)
 		    } );
 #ifdef HAVE_THREADS
 		DBG(DBG_CONTROL,
+		    char buf[BUF_LEN];
 		    datatot(certinfo->serialNumber.ptr, certinfo->serialNumber.len
 			, ':', buf, BUF_LEN);
 		    DBG_log("serial: %s, %ld seconds left", buf
