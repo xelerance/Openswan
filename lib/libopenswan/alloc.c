@@ -26,7 +26,6 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#define LEAK_DETECTIVE
 #include "oswalloc.h"
 
 int leak_detective = 0;
