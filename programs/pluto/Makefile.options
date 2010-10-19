@@ -290,9 +290,6 @@ DEFINES = $(EXTRA_DEFINES) \
 	${IPSEC_CONNECTION_LIMIT_DEFS} \
         ${LEAK_CONF} # -DLEAK_DETECTIVE now handled via USE_LEAK_DETECTIVE in Makefile.inc
 
-ifeq ($(LEAK_DETECTIVE),true)
-DEFINES+=-DLEAK_DETECTIVE
-endif
 
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl
