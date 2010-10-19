@@ -307,8 +307,8 @@ msgstr ""
 #. Description
 #: ../openswan.templates:10001
 msgid ""
-"OpenSSL will refuse to generate a certificate unless this is a valid ISO-"
-"3166 country code; an empty field is allowed elsewhere in the X.509 "
+"OpenSSL will refuse to generate a certificate unless this is a valid "
+"ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
 "certificate, but not here."
 msgstr ""
 "Здесь нужно ввести правильный код страны согласно ISO-3166, так как OpenSSL "

@@ -122,8 +122,6 @@ rm -rf ${RPM_BUILD_ROOT}
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
-#this needs to be fixed in 'make install'
-rm -rf %{buildroot}/etc/rc.d/rc?.d/*ipsec
 rm -rf %{buildroot}/%{_initrddir}/setup
 rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x

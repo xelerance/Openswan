@@ -33,6 +33,13 @@ if [ "$1" = "purge" ] ; then
 	rm -rf /etc/ipsec.d/
 	rm -rf /var/lib/openswan/
 	rm -rf /var/run/pluto/
+
+	if [ -e /usr/share/debconf/confmodule ]; then
+		# Source debconf library.
+		. /usr/share/debconf/confmodule
+		# Remove my changes to the db.
+		db_purge
+	fi
 fi
 
 # dh_installdeb will replace this with shell code automatically

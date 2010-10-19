@@ -508,14 +508,15 @@ check_ocsp(void)
 			    DBG_log("authkey: %s", buf);
 			}
 			first = FALSE;
-		    }
+		    } );
 #ifdef HAVE_THREADS
+		DBG(DBG_CONTROL,
+		    char buf[BUF_LEN];
 		    datatot(certinfo->serialNumber.ptr, certinfo->serialNumber.len
 			, ':', buf, BUF_LEN);
 		    DBG_log("serial: %s, %ld seconds left", buf
-			    , (unsigned long)time_left)
+			    , (unsigned long)time_left));
 #endif
-		)
 
 #ifdef HAVE_THREADS
 		if (time_left < 2*crl_check_interval)
