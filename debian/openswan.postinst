@@ -208,7 +208,7 @@ case "$1" in
         db_go
         db_get openswan/autostart
         if [ "$RET" = "true" ]; then
-             update-rc.d defaults ipsec || true
+             update-rc.d ipsec defaults > /dev/null || true
         fi
 
 
