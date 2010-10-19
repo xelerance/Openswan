@@ -418,7 +418,11 @@ HAVE_OCF?=false
 # you need at least swig 1.3.24, as well as tcl libraries and includes
 USE_TAPROOM?=false
 
-# Use dmalloc. Requires -DLEAK_DETECTIVE to be set in programs/pluto/Makefile
+# Whether to use LEAK_DETECTIVE to find memory leaks.
+# disabled for now as it causes some pfree()s due to bad code
+USE_LEAK_DETECTIVE?=false
+
+# Use dmalloc. Requires USE_LEAK_DETECTIVE
 USE_DMALLOC?=false
 
 # for Angstrom linux with broken popen() set to true. See bug #1067
