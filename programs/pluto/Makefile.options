@@ -284,7 +284,7 @@ DEFINES = $(EXTRA_DEFINES) \
 	${SINGLE_CONF_DIR} \
 	${HAVE_STATSD_DEFS} \
 	${IPSEC_CONNECTION_LIMIT_DEFS} \
-	-DLEAK_DETECTIVE
+	# toggled in Makefile.inc now -DLEAK_DETECTIVE
 
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl
