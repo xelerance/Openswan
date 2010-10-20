@@ -255,6 +255,10 @@ ifeq ($(USE_SINGLE_CONF_DIR),true)
 SINGLE_CONF_DIR=-DSINGLE_CONF_DIR
 endif
 
+ifeq ($(USE_LEAK_DETECTIVE),true)
+LEAK_CONF=-DLEAK_DETECTIVE
+endif
+
 ifeq ($(USE_TAPROOM),true)
 LIBTPM=tpm/libtpm.a
 TPM_LIBS=${LIBTPM} ${TCLLIB}
@@ -284,7 +288,8 @@ DEFINES = $(EXTRA_DEFINES) \
 	${SINGLE_CONF_DIR} \
 	${HAVE_STATSD_DEFS} \
 	${IPSEC_CONNECTION_LIMIT_DEFS} \
-	-DLEAK_DETECTIVE
+        ${LEAK_CONF} # -DLEAK_DETECTIVE now handled via USE_LEAK_DETECTIVE in Makefile.inc
+
 
 # libefence is a free memory allocation debugger
 # Solaris 2 needs -lsocket -lnsl

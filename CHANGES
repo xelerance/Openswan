@@ -5,6 +5,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.32 (unreleased)
+* Remove -DLEAK_DETECTIVE forced by default [Tuomo]
+* Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
 
 v2.6.31 (October 18, 2010)
 * Fix for OCSP compile of commit 934ce6c9443832c [Paul]
