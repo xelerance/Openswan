@@ -1,3 +1,12 @@
+Template: openswan/autostart
+Type: boolean
+Default: false
+_Description: Autostart Openswan at boot?
+ It is possible to have Openswan (ipsec) to start automatically at boot time
+ by adding its init script (/etc/init.d/ipsec) to the boot sequence. Most 
+ people will prefer to configure the daemon before enabling autostart. To 
+ enable it manually, simply run "update-rc.d ipsec defaults".
+
 Template: openswan/restart
 Type: boolean
 Default: true

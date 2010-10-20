@@ -26,6 +26,9 @@
 #include "constants.h"
 #include "oswlog.h"
 
+/* leave enabled so support functions are always in libopenswan, and
+ * pluto can be recompiled with just the leak detective changes
+ */
 #define LEAK_DETECTIVE
 #include "oswalloc.h"
 

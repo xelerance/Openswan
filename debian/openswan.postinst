@@ -203,6 +203,15 @@ case "$1" in
 	    fi
 	fi
 
+        # does the user wish to autostart openswan at boot?
+        db_input low openswan/autostart || true
+        db_go
+        db_get openswan/autostart
+        if [ "$RET" = "true" ]; then
+             update-rc.d ipsec defaults > /dev/null || true
+        fi
+
+
         db_stop
 
     ;;
