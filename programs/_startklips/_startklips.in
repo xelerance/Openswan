@@ -137,29 +137,29 @@ sysflag() {
 
 # get info about a given interface
 # getinterfaceinfo eth0 prefix_
+# see if we can find an IPv4/IPv6 address on the interface,
+# only use the first one here, otheraddr will include a /mask
 getinterfaceinfo() {
-        ifconfig $1 \
-         | awk '$1 == "inet" && $2 ~ /^addr:/ && $NF ~ /^Mask:/ {
-			gsub(/:/, " ", $0)
-			print "'$2'addr=" $3
-			other = $5
-			if ($4 == "Bcast")
-				print "'$2'type=broadcast"
-			else if ($4 == "P-t-P")
-				print "'$2'type=pointopoint"
-			else if (NF == 5) {
-				print "'$2'type="
-				other = ""
-			} else
-				print "'$2'type=unknown"
-			print "'$2'otheraddr=" other
-			print "'$2'mask=" $NF
+	ip addr show dev $1 | awk '
+	BEGIN {
+		MTU=""
+	}
+	/mtu/ {
+			sub("^.*mtu ", "", $0)
+			MTU=$1
 		}
-                $NF ~ /^Metric:/ && $(NF-1) ~ /^MTU:/ {
-                        sub(/^MTU:/, "", $(NF-1))
-                        print "'$2'mtu=" $(NF-1)
-                }
-                '
+	$1 == "inet" || $1 == "inet6" {
+			addr=$2
+			sub("/.*$","",addr)
+			sub("^.*/","",$2)
+			print "'$2'addr=" addr
+			print "'$2'mask=" $2
+			if (MTU != "")
+				print "'$2'mtu=" MTU
+			if ($3 == "peer")
+				print "'$2'otheraddr=" $4
+			exit 0
+		}'
 }
 
 # get default route info
@@ -181,7 +181,7 @@ klipsinterface() {
 	*)	echo "invalid interface \`$virt' in \`$1'" ; exit 1	;;
 	esac
 
-	# figure out ifconfig for interface
+	# figure out config for interface
 	phys_addr=
 	eval `getinterfaceinfo $phys phys_`
 	if test " $phys_addr" = " "
@@ -213,13 +213,21 @@ klipsinterface() {
 	if $klips
 	then
 		ipsec tncfg --attach --virtual $virt --physical $phys
+		# configure all the IPv4/IPv6 addresses (including point-to-point)
+		ip addr show dev $phys | awk '$1 == "inet" || $1 == "inet6" {
+				cmd = "ip addr add"
+		        	for (i = 2; i < NF; i++)
+					cmd = cmd " " $i
+				if ($NF != phys)
+					cmd = cmd " " $NF
+				cmd = cmd " dev " virt "> /dev/null"
+				system(cmd)
+			}' phys=$phys virt=$virt
+		ip link set up dev $virt
         fi
 
-        # configure the device
-        ifconfig $virt inet $phys_addr $phys_type $phys_otheraddr netmask $phys_mask mtu $phys_mtu
-
         # do we have to fix the route metric for this device?
-        maxmetric=$(ip route show $phys_otheraddr/$phys_mask | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
+        maxmetric=$(ip route show $phys_otheraddr/$phys_mask 2> /dev/null | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
         if [ -n "$maxmetric" ] ; then
                 # If there are other none-zero-metric routes that match this spec
                 # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
