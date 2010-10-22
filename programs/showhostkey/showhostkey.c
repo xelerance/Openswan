@@ -273,7 +273,7 @@ void show_dnskey(struct secret *s
     char base64[8192];
     const struct private_key_stuff *pks = osw_get_pks(s);
     unsigned char *keyblob;
-    unsigned int keybloblen;
+    unsigned int keybloblen = 0;
 
     gethostname(qname, sizeof(qname));
 
@@ -330,7 +330,7 @@ void show_confkey(struct secret *s
     char base64[8192];
     const struct private_key_stuff *pks = osw_get_pks(s);
     unsigned char *keyblob;
-    unsigned int keybloblen;
+    unsigned int keybloblen = 0;
 
     if(pks->kind != PPK_RSA) {
         char *enumstr = "gcc is crazy";
