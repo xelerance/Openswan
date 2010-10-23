@@ -7,6 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.32 (unreleased)
 * Remove -DLEAK_DETECTIVE forced by default [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
+* Bugtracker bugs fixed:
+   #1095 Local packets are dropped on ipsec device when marking packets in OUTPUT chain
 
 v2.6.31 (October 18, 2010)
 * Fix for OCSP compile of commit 934ce6c9443832c [Paul]
