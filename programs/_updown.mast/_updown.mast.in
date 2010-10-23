@@ -194,7 +194,7 @@ checkipsec() {
     fi
 
     # initialize the IPSEC chain if needed
-    if "$PLUTO_SAREF_TRACKING" = "conntrack"; then
+    if [ "$PLUTO_SAREF_TRACKING" = "conntrack" ]; then
         if [ "$(iptables -n -t mangle -L IPSEC | wc -l )" != 6 ] ; then
             iptables -t mangle -F IPSEC
             iptables -t mangle -A IPSEC -j CONNMARK --restore-mark
