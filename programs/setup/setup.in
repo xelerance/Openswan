@@ -91,10 +91,11 @@ start() {
     # Note the "--export", which exports the variables created.
     variables=`ipsec addconn $IPSEC_CONFS/ipsec.conf --varprefix IPSEC --configsetup`
     eval $variables
-    if [ $? != 0 ]
+    RETVAL=$?
+    if [ $RETVAL != 0 ]
     then
          echo "Failed to parse config setup portion of ipsec.conf"
-         exit $?
+         exit $RETVAL
     fi
     
     IPSEC_confreadsection=${IPSEC_confreadsection:-setup}

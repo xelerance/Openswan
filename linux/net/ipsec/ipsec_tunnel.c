@@ -651,7 +651,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	ixs->outgoing_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_SAlookup: "
-		    "checking for local udp/500 IKE packet "
+		    "checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
 		    "saddr=%x, er=0p%p, daddr=%x, er_dst=%x, proto=%d sport=%d dport=%d\n",
 		    ntohl((unsigned int)ixs->iph->saddr),
 		    ixs->eroute,
@@ -670,8 +670,10 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	    && (ixs->eroute==NULL
 		|| ixs->iph->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
 		|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-	    && (ixs->iph->protocol == IPPROTO_UDP &&
-		(ixs->sport == 500 || ixs->sport == 4500))) {
+	    && (ixs->iph->protocol == IPPROTO_ESP ||
+	        ixs->iph->protocol == IPPROTO_AH ||
+		(ixs->iph->protocol == IPPROTO_UDP &&
+		(ixs->sport == 500 || ixs->sport == 4500)))) {
 		/* Whatever the eroute, this is an IKE message 
 		 * from us (i.e. not being forwarded).
 		 * Furthermore, if there is a tunnel eroute,
