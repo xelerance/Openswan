@@ -40,7 +40,7 @@ preptest() {
 
     cd $testdir
 
-    source ./testparams.sh
+    . ./testparams.sh
 
     if [ "X$TEST_TYPE" != "X$testtype" ]
     then
@@ -73,7 +73,7 @@ lookforcore() {
 
 	if [ -f ./testparams.sh ]
 	then
-	    source ./testparams.sh
+	    . ./testparams.sh
 	fi
 
 	# get rid of any pluto core files.
@@ -1140,13 +1140,13 @@ complibtest() {
 
     if [ -f ${SRCDIR}FLAGS ]; then 
         ${ECHO} "   "Sourcing ${SRCDIR}FLAGS
-	source ${SRCDIR}FLAGS
+	. ${SRCDIR}FLAGS
     fi
      	
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
         ${ECHO} "   "Sourcing ${SRCDIR}FLAGS.$testobj
-	source ${SRCDIR}FLAGS.$testobj
+	. ${SRCDIR}FLAGS.$testobj
     fi
 
     stat=99
@@ -1503,7 +1503,7 @@ do_module_compile_test() {
 
     if [ -n "${KERNEL_PROCESS_FILE}" ]
     then
-      source ${KERNEL_PROCESS_FILE} 
+      . ${KERNEL_PROCESS_FILE}
 
     elif [ -r OUTPUT${KLIPS_MODULE}/module/ipsec.o ]
     then
