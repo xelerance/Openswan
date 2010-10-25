@@ -143,21 +143,24 @@ getinterfaceinfo() {
 	ip addr show dev $1 | awk '
 	BEGIN {
 		MTU=""
+		TYPE="unknown"
 	}
+	/BROADCAST/   { TYPE="broadcast" }
+	/POINTOPOINT/ { TYPE="pointtopoint" }
 	/mtu/ {
 			sub("^.*mtu ", "", $0)
 			MTU=$1
 		}
 	$1 == "inet" || $1 == "inet6" {
-			addr=$2
-			sub("/.*$","",addr)
-			sub("^.*/","",$2)
-			print "'$2'addr=" addr
-			print "'$2'mask=" $2
-			if (MTU != "")
-				print "'$2'mtu=" MTU
+			split($2,addr,"/")
+			other=""
 			if ($3 == "peer")
-				print "'$2'otheraddr=" $4
+				other=$4
+			print "'$2'type=" TYPE
+			print "'$2'addr=" addr[1]
+			print "'$2'mask=" addr[2]
+			print "'$2'otheraddr=" other
+			print "'$2'mtu=" MTU
 			exit 0
 		}'
 }
@@ -408,4 +411,5 @@ do
 	esac
 done
 
+# vim: set noet sw=8 ts=8
 exit 0
