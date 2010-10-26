@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.32 (unreleased)
 * Remove -DLEAK_DETECTIVE forced by default [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
+* Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support an arm-elf-gcc compiler [Paul]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
