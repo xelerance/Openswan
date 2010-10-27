@@ -2,7 +2,8 @@ Source: openswan
 Section: net
 Priority: optional
 Maintainer: Simon Deziel <simon@xelerance.com>
-Vcs-Git: http://git.openswan.org/cgi-bin/gitweb.cgi?p=openswan.public/.git;a=summary
+Vcs-Browser: http://git.openswan.org/cgi-bin/gitweb.cgi?p=openswan.public/.git;a=summary
+Vcs-Git: git://git.openswan.org/public/scm/openswan.public
 Standards-Version: 3.8.4
 Build-Depends: debhelper (>= 7.1), libgmp3-dev, libssl-dev (>= 0.9.8), htmldoc, man2html, libcurl4-openssl-dev, libopensc2-dev, libldap2-dev, libpam0g-dev, libkrb5-dev, bison, flex, dpatch, bzip2, po-debconf
 Homepage: http://www.openswan.org/

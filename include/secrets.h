@@ -125,7 +125,11 @@ struct pubkey_list {
 #define MAX_PROMPT_PASS_TRIALS	5
 #define PROMPT_PASS_LEN		64
 
+#ifndef COMPILER_HAS_NO_PRINTF_LIKE
 typedef void (*pass_prompt_func)(int mess_no, const char *message, ...) PRINTF_LIKE(2);   
+#else
+typedef void (*pass_prompt_func)(int mess_no, const char *message, ...);
+#endif
 
 typedef struct {
     char secret[PROMPT_PASS_LEN];
