@@ -1241,10 +1241,10 @@ static int create_hold_eroute(struct eroute *origtrap,
 	} else {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:ipsec_tunnel_start_xmit: "
-			    "HOLD breakroute deleted %u.%u.%u.%u:%u -> %u.%u.%u.%u:%u %u\n",
-			    NIPQUAD(hold_eroute.er_eaddr.sen_ip_src),
+			    "HOLD breakroute deleted %pI4:%u -> %pI4:%u %u\n",
+			    &hold_eroute.er_eaddr.sen_ip_src,
 			    ntohs(hold_eroute.er_eaddr.sen_sport),
-			    NIPQUAD(hold_eroute.er_eaddr.sen_ip_dst),
+			    &hold_eroute.er_eaddr.sen_ip_dst,
 			    ntohs(hold_eroute.er_eaddr.sen_dport),
 			    hold_eroute.er_eaddr.sen_proto);
 	}
