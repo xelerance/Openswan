@@ -686,6 +686,11 @@ main(int argc, char **argv)
 	usage("unexpected argument");
     reset_debugging();
 
+    /* if --nofork was given, also disable nhelpers */
+    if (fork_desired == FALSE) {
+           nhelpers = 0;
+    }
+
     /* if a core dir was set, chdir there */
     if(coredir) 
 	if(chdir(coredir) == -1) {
