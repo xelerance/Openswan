@@ -130,7 +130,7 @@ init_adns(void)
 	    if (n < 0)
 # ifdef __uClibc__
 		/* on some nommu we have no proc/self/exe, try without path */
-		*adns_path_space = 0;
+		*adns_path_space = '\0', n = 0;
 # else
 		exit_log_errno((e
 		    , "readlink(\"/proc/self/exe\") failed in init_adns()"));
