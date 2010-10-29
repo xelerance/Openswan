@@ -686,6 +686,9 @@ main(int argc, char **argv)
 	usage("unexpected argument");
     reset_debugging();
 
+#ifdef HAVE_NO_FORK
+	fork_desired = FALSE;
+#endif
     /* if --nofork was given, also disable nhelpers */
     if (fork_desired == FALSE) {
            nhelpers = 0;

@@ -158,7 +158,11 @@ init_adns(void)
     if (pipe(qfds) != 0 || pipe(afds) != 0)
 	exit_log_errno((e, "pipe(2) failed in init_adns()"));
 
+#ifdef HAVE_NO_FORK
+    adns_pid = vfork(); /* for better, for worse, in sickness and health..... */
+#else
     adns_pid = fork();
+#endif
     switch (adns_pid)
     {
     case -1:
