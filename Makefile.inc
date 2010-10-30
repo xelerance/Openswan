@@ -425,8 +425,12 @@ USE_LEAK_DETECTIVE?=false
 # Use dmalloc. Requires USE_LEAK_DETECTIVE
 USE_DMALLOC?=false
 
-# for Angstrom linux with broken popen() set to true. See bug #1067
+# For Angstrom linux with broken popen() set to true. See bug #1067
 HAVE_BROKEN_POPEN?=false
+
+# For sysmems with no fork (uclibc nommu)
+# requires  USE_LWRES=false
+HAVE_NO_FORK?=false
 
 NONINTCONFIG=oldconfig
 

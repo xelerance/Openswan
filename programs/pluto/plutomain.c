@@ -111,7 +111,7 @@
 #endif
 
 const char *ctlbase = "/var/run/pluto";
-const char *pluto_listen = "";
+char *pluto_listen = NULL;
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -686,6 +686,9 @@ main(int argc, char **argv)
 	usage("unexpected argument");
     reset_debugging();
 
+#ifdef HAVE_NO_FORK
+	fork_desired = FALSE;
+#endif
     /* if --nofork was given, also disable nhelpers */
     if (fork_desired == FALSE) {
            nhelpers = 0;
