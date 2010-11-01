@@ -4,7 +4,7 @@
 <!-- lifted from troff+man by doclifter -->
 <refentry>
 <refmeta>
-<refentrytitle>ipsec addconn</refentrytitle>
+<refentrytitle>IPSEC_ADDCONN</refentrytitle>
 <manvolnum>8</manvolnum>
 <refmiscinfo class='date'>15 Jun 2010</refmiscinfo>
 </refmeta>
