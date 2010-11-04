@@ -890,9 +890,13 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		    "\n\nipsec_tunnel_start_xmit: STARTING");
 
 	stat = IPSEC_XMIT_ERRMEMALLOC;
-	ixs = ipsec_xmit_state_new();
+	ixs = ipsec_xmit_state_new(dev);
 	if (! ixs) {
-		netif_stop_queue(dev);
+		/* check for something that should never happen */
+		if (!netif_queue_stopped(dev)) {
+		    netif_stop_queue(dev);
+		    printk("ipsec_tunnel_start_xmit: cannot TX while awake\n");
+		}
 		return NETDEV_TX_BUSY;
 	}
 
@@ -2320,7 +2324,7 @@ ipsec_xmit_state_cache_cleanup (void)
 }
 
 struct ipsec_xmit_state *
-ipsec_xmit_state_new (void)
+ipsec_xmit_state_new (struct net_device *dev)
 {
 	struct ipsec_xmit_state *ixs;
 
@@ -2337,8 +2341,12 @@ ipsec_xmit_state_new (void)
 
         ixs = kmem_cache_alloc (ixs_cache_allocator, GFP_ATOMIC);
 
-        if (likely (ixs != NULL))
+        if (likely (ixs != NULL)) {
                 ixs_cache_allocated_count++;
+		/* stop the Q if we took the last one */
+		if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_count_max)
+			netif_stop_queue(dev);
+	}
 
         spin_unlock_bh (&ixs_cache_lock);
 

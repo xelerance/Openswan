@@ -403,11 +403,14 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return 0;
 	}
 		
-	ixs = ipsec_xmit_state_new();
+	ixs = ipsec_xmit_state_new(dev);
 	if(ixs == NULL) {
-		printk("ipsec_mast_start_xmit: "
-			"failed to allocate IXS\n");
-		return 0;
+		/* check for something that should never happen */
+		if (!netif_queue_stopped(dev)) {
+		    netif_stop_queue(dev);
+		    printk("ipsec_mast_start_xmit: cannot TX while awake\n");
+		}
+		return NETDEV_TX_BUSY;
 	}
 
 	ixs->skb = skb;
