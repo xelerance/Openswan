@@ -679,7 +679,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				"klips_debug:ipsec_xmit_SAlookup: "
-				"checking for local udp/500 IKE packet "
+				"checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
 				"saddr=%s, er=0p%p, daddr=%s, er_dst=%s, proto=%d sport=%d dport=%d\n",
 				tsrc,
 				ixs->eroute,
@@ -724,7 +724,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		ixs->outgoing_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				"klips_debug:ipsec_xmit_SAlookup: "
-				"checking for local udp/500 IKE packet "
+				"checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
 				"saddr=%s, er=0p%p, daddr=%s, er_dst=%x, proto=%d sport=%d dport=%d\n",
 				tsrc,
 				ixs->eroute,

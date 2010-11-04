@@ -10,7 +10,7 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec ttodata</refname>
-<refname>datatot</refname>
+<refname>ipsec datatot</refname>
 <refpurpose>convert binary data bytes from and to text formats</refpurpose>
 </refnamediv>
 <!-- body begins here -->

@@ -71,7 +71,7 @@ funnel randomness from <filename>/dev/hw_random</filename> into <filename>/dev/r
 be done by the pz_probab_prime_p probabilistic primality checker. The default,
 30, is fairly rigorous and should not normally have to be overridden.</para>
 
-<para>The <option>--Configdir</option> option specifies the nss configuration directory to use.
+<para>The <option>--configdir</option> option specifies the nss configuration directory to use.
 This is the directory where the NSS certificate, key and security modules databases reside.</para>
 
 <para>The <option>--password</option> option specifies the nss cryptographic module authentication
@@ -83,7 +83,7 @@ of the output (see below); the default is what
 <citerefentry><refentrytitle>gethostname</refentrytitle><manvolnum>2</manvolnum></citerefentry>
 returns.</para>
 
-<para>The <option>--hostname</option> option suppresses an optimization of the
+<para>The <option>--noopt</option> option suppresses an optimization of the
 private key (to be precise, setting of the decryption exponent to
 <emphasis remap='B'>lcm(p-1,q-1)</emphasis> rather than
 <emphasis remap='B'>(p-1)*(q-1))</emphasis> which speeds up operations on it

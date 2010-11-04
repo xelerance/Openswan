@@ -5,11 +5,15 @@
 # Provides:          ipsec
 # Required-Start:    $network $remote_fs $syslog $named
 # Required-Stop:     $syslog $remote_fs
-# Default-Start:     2 3 4 5
+# Default-Start:
 # Default-Stop:      0 1 6
 # Short-Description: Start Openswan IPsec at boot time
 # Description:       Enable automatic key management for IPsec (KLIPS and NETKEY)
 ### END INIT INFO
+#
+### see https://bugzilla.redhat.com/show_bug.cgi?id=636572
+### Debian and Fedora interpret the LSB differently
+### Default-Start:     2 3 4 5
 #
 # Copyright (C) 1998, 1999, 2001  Henry Spencer.
 # Copyright (C) 2002              Michael Richardson <mcr@freeswan.org>
@@ -85,10 +89,11 @@ start() {
     # Note the "--export", which exports the variables created.
     variables=`ipsec addconn $IPSEC_CONFS/ipsec.conf --varprefix IPSEC --configsetup`
     eval $variables
-    if [ $? != 0 ]
+    RETVAL=$?
+    if [ $RETVAL != 0 ]
     then
          echo "Failed to parse config setup portion of ipsec.conf"
-         exit $?
+         exit $RETVAL
     fi
     
     IPSEC_confreadsection=${IPSEC_confreadsection:-setup}

@@ -399,7 +399,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv: "
 					    /* not IPv6 compliant message */
-					    "NAT-keepalive from %d.%d.%d.%d.\n", NIPQUAD(ip->saddr));
+					    "NAT-keepalive from %pI4.\n", &ip->saddr);
 				*udp_decap_ret_p = 0;
 				return NULL;
 			}

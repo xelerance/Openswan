@@ -1,0 +1,24 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: fdebd
+## DP: Author: Simon Deziel <simon@xelerance.com>
+## DP:
+## DP:
+## DP:     programs/setup/setup.in: Add a proper Default-Start
+
+@DPATCH@
+
+diff --git a/programs/setup/setup.in b/programs/setup/setup.in
+index 3399e0c..55bb3ec 100755
+--- a/programs/setup/setup.in
++++ b/programs/setup/setup.in
+@@ -5,7 +5,7 @@
+ # Provides:          ipsec
+ # Required-Start:    $network $remote_fs $syslog $named
+ # Required-Stop:     $syslog $remote_fs
+-# Default-Start:
++# Default-Start:     2 3 4 5
+ # Default-Stop:      0 1 6
+ # Short-Description: Start Openswan IPsec at boot time
+ # Description:       Enable automatic key management for IPsec (KLIPS and NETKEY)
