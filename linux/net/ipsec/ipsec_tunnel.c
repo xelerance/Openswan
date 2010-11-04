@@ -1464,7 +1464,7 @@ ipsec_tunnel_clear(void)
 	KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 		    "klips_debug:ipsec_tunnel_clear: .\n");
 
-	for(i = 0; i < IPSEC_NUM_IF; i++) {
+	for(i = 0; i < IPSEC_NUM_IFMAX; i++) {
    	        ipsecdev = ipsecdevices[i];
 		if(ipsecdev != NULL) {
 			if((prv = (struct ipsecpriv *)netdev_priv(ipsecdev))) {
@@ -1811,7 +1811,7 @@ struct net_device *ipsec_get_device(int inst)
 
   ipsec_dev = NULL;
 
-  if(inst < IPSEC_NUM_IF) {
+  if(inst < IPSEC_NUM_IFMAX) {
     ipsec_dev = ipsecdevices[inst];
   }
 
@@ -1870,7 +1870,7 @@ ipsec_device_event(struct notifier_block *unused, unsigned long event, void *ptr
 #endif /* NET_21 */
 		
 		/* find the attached physical device and detach it. */
-		for(i = 0; i < IPSEC_NUM_IF; i++) {
+		for(i = 0; i < IPSEC_NUM_IFMAX; i++) {
 			ipsec_dev = ipsecdevices[i];
 
 			if(ipsec_dev) {
@@ -2064,7 +2064,7 @@ ipsec_tunnel_createnum(int ifnum)
 	struct net_device *dev_ipsec;
 	int vifentry;
 
-	if(ifnum > IPSEC_NUM_IFMAX) {
+	if(ifnum >= IPSEC_NUM_IFMAX) {
 		return -ENOENT;
 	}
 
