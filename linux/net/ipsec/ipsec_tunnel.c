@@ -698,8 +698,9 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			&& (ixs->eroute==NULL
 			    || ipv6_addr_cmp(&osw_ip6_hdr(ixs)->daddr, &ixs->eroute->er_said.dst.u.v6.sin6_addr) == 0
 			    || ipv6_addr_any(&ixs->eroute->er_said.dst.u.v6.sin6_addr))
-			&& (nexthdr == IPPROTO_UDP &&
-			    (ixs->sport == 500 || ixs->sport == 4500))) {
+			&& (nexthdr == IPPROTO_ESP || nexthdr == IPPROTO_AH ||
+			    (nexthdr == IPPROTO_UDP &&
+			    (ixs->sport == 500 || ixs->sport == 4500)))) {
 			/* Whatever the eroute, this is an IKE message 
 			 * from us (i.e. not being forwarded).
 			 * Furthermore, if there is a tunnel eroute,
@@ -743,8 +744,9 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			&& (ixs->eroute==NULL
 			|| osw_ip4_hdr(ixs)->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
 			|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-			&& (nexthdr == IPPROTO_UDP &&
-			(ixs->sport == 500 || ixs->sport == 4500))) {
+			&& (nexthdr == IPPROTO_ESP || nexthdr == IPPROTO_AH ||
+			    (nexthdr == IPPROTO_UDP &&
+			    (ixs->sport == 500 || ixs->sport == 4500)))) {
 			/* Whatever the eroute, this is an IKE message 
 			 * from us (i.e. not being forwarded).
 			 * Furthermore, if there is a tunnel eroute,
