@@ -1166,7 +1166,9 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk,
 					key_pid(sk),
 					sock_flag(sk, SOCK_DEAD),
-#ifndef HAVE_SOCKET_WQ
+#ifdef HAVE_SOCKET_WQ
+					sk->sk_wq,
+#else
 					sk->sk_sleep,
 #endif
 					sk->sk_socket,
