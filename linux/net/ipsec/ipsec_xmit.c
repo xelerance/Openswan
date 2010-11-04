@@ -2085,7 +2085,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		return IPSEC_XMIT_ROUTEERR;
 	}
 
-	if(ixs->dev == ixs->route->u.dst.dev) {
+	if(ixs->dev == ipsec_route_dst(ixs->route).dev) {
 		ip_rt_put(ixs->route);
 		/* This is recursion, drop it. */
 		if (ixs->stats)
@@ -2098,7 +2098,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	}
 
 	skb_dst_drop(ixs->skb);
-	skb_dst_set(ixs->skb, &ixs->route->u.dst);
+	skb_dst_set(ixs->skb, &ipsec_route_dst(ixs->route));
 	if(ixs->stats) {
 		ixs->stats->tx_bytes += ixs->skb->len;
 	}
@@ -2139,7 +2139,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 
 		else
 			err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
-					ixs->route->u.dst.dev,
+					ipsec_route_dst(ixs->route).dev,
 					ipsec_xmit_send2);
 
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {
