@@ -2,8 +2,8 @@
 /*	$OpenBSD: cryptodev.h,v 1.31 2002/06/11 11:14:29 beck Exp $	*/
 
 /*-
- * Linux port done by David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2006-2007 David McCullough
+ * Linux port done by David McCullough <david_mccullough@mcafee.com>
+ * Copyright (C) 2006-2010 David McCullough
  * Copyright (C) 2004-2005 Intel Corporation.
  * The license and original author are listed below.
  *
@@ -57,10 +57,6 @@
  * Materiel Command, USAF, under agreement number F30602-01-2-0537.
  *
  */
-
-#if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
-#include <openswan.h>
-#endif
 
 #ifndef _CRYPTO_CRYPTO_H_
 #define _CRYPTO_CRYPTO_H_
@@ -160,7 +156,8 @@
 #define CRYPTO_SHA2_384			23
 #define CRYPTO_SHA2_512			24
 #define CRYPTO_RIPEMD160		25
-#define CRYPTO_ALGORITHM_MAX	25 /* Keep updated - see below */
+#define	CRYPTO_LZS_COMP			26
+#define CRYPTO_ALGORITHM_MAX	26 /* Keep updated - see above */
 
 /* Algorithm flags */
 #define CRYPTO_ALG_FLAG_SUPPORTED	0x01 /* Algorithm is supported */

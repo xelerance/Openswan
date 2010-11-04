@@ -644,7 +644,7 @@ ipsec_tncfg_get_info(char *buffer,
 		    (int)offset,
 		    length);
 
-	for(i = 0; i < IPSEC_NUM_IF; i++) {
+	for(i = 0; i < IPSEC_NUM_IFMAX; i++) {
 		ipsec_snprintf(name, (ssize_t) sizeof(name), IPSEC_DEV_FORMAT, i);
 		dev = __ipsec_dev_get(name);
 		if(dev) {

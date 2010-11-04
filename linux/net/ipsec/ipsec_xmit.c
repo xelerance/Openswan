@@ -2442,7 +2442,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 		error = ip_route_output_key(&init_net, &ixs->route, fl);
 #endif
 		if (ixs->route)
-			dst = &ixs->route->u.dst;
+			dst = &ipsec_route_dst(ixs->route);
 	}
 #else
 #ifdef CONFIG_IPV6
@@ -2456,7 +2456,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
                                     /* mcr->rgb: should this be 0 instead? */
 				    ixs->physdev->ifindex);
 	if (ixs->route)
-		dst = &ixs->route->u.dst;
+		dst = &ipsec_route_dst(ixs->route);
 #endif
 	if (error) {
 		if (ixs->stats)
@@ -2536,11 +2536,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 
 		else if (ip_hdr(ixs->skb)->version == 6)
 			err = NF_HOOK(PF_INET6, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
-					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
+					ixs->route ? ipsec_route_dst(ixs->route).dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 		else
 			err = NF_HOOK(PF_INET, OSW_NF_INET_LOCAL_OUT, ixs->skb, NULL,
-					ixs->route ? ixs->route->u.dst.dev : skb_dst(ixs->skb)->dev,
+					ixs->route ? ipsec_route_dst(ixs->route).dev : skb_dst(ixs->skb)->dev,
 					ipsec_xmit_send2);
 
 		if(err != NET_XMIT_SUCCESS && err != NET_XMIT_CN) {

@@ -139,5 +139,13 @@ config KLIPS_IF_MAX
 	   it keeps track of certain items in an array (FIX ME), and needs
 	   to preallocate this array. Only a pointer is used per item.
 
+config KLIPS_IF_NUM
+	int 'Number of virtual interfaces to auto create'
+	default 2
+	range 0 256
+	help
+	   KLIPS will auto create a number of interfaces, any further interfaces
+	   need to be created with tncfg.
+
 endmenu
 
