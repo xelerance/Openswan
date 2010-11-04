@@ -538,17 +538,6 @@
 # endif
 #endif
 
-#ifndef NIPQUAD
-#define NIPQUAD(addr) \
-	((unsigned char *)&addr)[0], \
-	((unsigned char *)&addr)[1], \
-	((unsigned char *)&addr)[2], \
-	((unsigned char *)&addr)[3]
-#endif
-#ifndef NIPQUAD_FMT
-#define NIPQUAD_FMT "%u.%u.%u.%u"
-#endif
-
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)
 #define	ipsec_route_dst(x)	(x)->dst
 #else
