@@ -94,7 +94,7 @@
 
 #define IPCOMP_NONE		0
 #define IPCOMP_OUI		1
-#define IPCOMP_DEFLAT		2
+#define IPCOMP_DEFLATE		2
 #define IPCOMP_LZS		3
 #define IPCOMP_V42BIS		4
 
