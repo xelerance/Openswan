@@ -125,6 +125,7 @@ enum ipsec_cipher_algo {
  */
 
 enum ipsec_comp_algo {
+  IPCOMP_NONE=              0,
   IPCOMP_OUI=               1,
   IPCOMP_DEFLATE=           2,
   IPCOMP_LZS=               3,
