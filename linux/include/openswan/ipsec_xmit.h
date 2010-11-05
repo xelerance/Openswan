@@ -78,6 +78,7 @@ enum ipsec_xmit_value
 struct ipsec_xmit_state
 {
 	struct sk_buff *skb;		/* working skb pointer */
+	struct sk_buff *pre_ipcomp_skb; /* skb before ipcomp was attempted */
 	struct net_device *dev;		/* working dev pointer */
 	struct ipsecpriv *prv;		/* Our device' private space */
 	struct sk_buff *oskb;		/* Original skb pointer */
@@ -114,6 +115,7 @@ struct ipsec_xmit_state
 	short physmtu;
 	short cur_mtu;          /* copy of prv->mtu, cause prv may == NULL */
 	short mtudiff;
+	__u8 next_header;               /* protocol of the nested header */
 #ifdef NET_21
 	struct rtable *route;
 #endif /* NET_21 */

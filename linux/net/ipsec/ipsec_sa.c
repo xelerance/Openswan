@@ -1218,12 +1218,13 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #ifdef CONFIG_KLIPS_AH
 	case IPPROTO_AH:
 
+		ipsp->ips_xformfuncs = ah_xform_funcs;
+
 #ifdef CONFIG_KLIPS_OCF
 		if (ipsec_ocf_sa_init(ipsp, ipsp->ips_authalg, 0))
 		    break;
 #endif
 
-		ipsp->ips_xformfuncs = ah_xform_funcs;
 		switch(ipsp->ips_authalg) {
 # ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		case AH_MD5: {
@@ -1611,7 +1612,19 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 #endif /* !CONFIG_KLIPS_ESP */
 #ifdef CONFIG_KLIPS_IPCOMP
 	case IPPROTO_COMP:
+
 		ipsp->ips_xformfuncs = ipcomp_xform_funcs;
+
+		ipsp->ips_comp_adapt_tries = 0;
+		ipsp->ips_comp_adapt_skip = 0;
+		ipsp->ips_comp_ratio_cbytes = 0;
+		ipsp->ips_comp_ratio_dbytes = 0;
+
+#ifdef CONFIG_KLIPS_OCF
+		if (ipsec_ocf_comp_sa_init(ipsp, ipsp->ips_encalg))
+			break;
+#endif
+
 		ipsp->ips_comp_adapt_tries = 0;
 		ipsp->ips_comp_adapt_skip = 0;
 		ipsp->ips_comp_ratio_cbytes = 0;
