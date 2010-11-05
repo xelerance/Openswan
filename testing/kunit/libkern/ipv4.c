@@ -484,7 +484,11 @@ int ip_route_input(struct sk_buff *skb, u32 daddr, u32 saddr,
 
 
 	log_route(skb, "ERROR: packet is not local and no matching "
-		"route (dst=%pI4)", daddr);
+		"route (dst=%u.%u.%u.%u)",
+		       ((unsigned char *)&daddr)[0],
+		       ((unsigned char *)&daddr)[1],
+		       ((unsigned char *)&daddr)[2],
+		       ((unsigned char *)&daddr)[3]);
 
 	return 1;
 
@@ -873,9 +877,15 @@ static char *describe(char *ptr, int len, struct iphdr *iph, char *dump_flags)
 			       (iph->tos >> IPT_DSCP_SHIFT));
 	if (dump_flags && strstr(dump_flags, "ect"))
 		ptr += sprintf(ptr, "ECT=0x%x ", (iph->tos & 3));
-	ptr += sprintf(ptr, "%pI4 %pI4 ",
-		       iph->saddr,
-		       iph->daddr);
+	ptr += sprintf(ptr, "%u.%u.%u.%u %u.%u.%u.%u ",
+		       ((unsigned char *)&iph->saddr)[0],
+		       ((unsigned char *)&iph->saddr)[1],
+		       ((unsigned char *)&iph->saddr)[2],
+		       ((unsigned char *)&iph->saddr)[3],
+		       ((unsigned char *)&iph->daddr)[0],
+		       ((unsigned char *)&iph->daddr)[1],
+		       ((unsigned char *)&iph->daddr)[2],
+		       ((unsigned char *)&iph->daddr)[3]);
 
 	if (ntohs(iph->frag_off) & IP_OFFSET)
 		goto out;
