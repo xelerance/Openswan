@@ -165,6 +165,10 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	case IPPROTO_COMP:
 		ipsp->ips_authalg = AH_NONE;
 		ipsp->ips_encalg = pfkey_sa->sadb_sa_encrypt;
+		KLIPS_PRINT(debug_pfkey,
+				"klips_debug:pfkey_sa_process: "
+				"IPPROTO_COMP ips_encalg=%d.\n",
+				ipsp->ips_encalg);
 		break;
 #endif /* CONFIG_KLIPS_IPCOMP */
 	case IPPROTO_INT:
