@@ -29,6 +29,7 @@
 #include <cryptodev.h>
 
 extern int  ipsec_ocf_sa_init(struct ipsec_sa *ipsp, int authalg, int encalg);
+extern int  ipsec_ocf_comp_sa_init(struct ipsec_sa *ipsp, int compalg);
 extern int  ipsec_ocf_sa_free(struct ipsec_sa *ipsp);
 extern enum ipsec_rcv_value ipsec_ocf_rcv(struct ipsec_rcv_state *irs);
 extern enum ipsec_xmit_value ipsec_ocf_xmit(struct ipsec_xmit_state *ixs);

@@ -1178,6 +1178,11 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 	unsigned int old_tot_len;
 	int flags = 0;
 
+#ifdef CONFIG_KLIPS_OCF
+	if (ixs->ipsp->ocf_in_use)
+		return(ipsec_ocf_xmit(ixs));
+#endif
+
 	old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
 
 	ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
@@ -2301,6 +2306,10 @@ ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 	if(ixs->oskb) {
 		ipsec_kfree_skb(ixs->oskb);
 		ixs->oskb=NULL;
+	}
+	if(ixs->pre_ipcomp_skb) {
+		ipsec_kfree_skb(ixs->pre_ipcomp_skb);
+		ixs->pre_ipcomp_skb=NULL;
 	}
 	if (ixs->ips.ips_ident_s.data) {
 		kfree(ixs->ips.ips_ident_s.data);

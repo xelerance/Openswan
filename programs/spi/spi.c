@@ -141,7 +141,7 @@ spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <eke
 spi --esp <algo> <SA> [<life> ][ --replay_window <replay-window> ] --enckey <ekey>\n\
 	where <algo> is:	3des\n\
 spi --comp <algo> <SA>\n\
-	where <algo> is:	deflate\n\
+	where <algo> is:	deflate | lzs\n\
 [ --sarefme=XXX ]  set the saref to use for this SA\n\
 [ --sarefhim=XXX ] set the saref to use for paired SA\n\
 [ --dumpsaref ] show the saref allocated\n\
@@ -657,6 +657,8 @@ main(int argc, char *argv[])
 			}
 			if       (!strcmp(optarg, "deflate")) {
 				alg = XF_COMPDEFLATE;
+			} else if (!strcmp(optarg, "lzs")) {
+				alg = XF_COMPLZS;
 			} else {
 				fprintf(stderr, "%s: Unknown compression algorithm '%s' follows '--comp' option.\n",
 					progname, optarg);
@@ -1180,6 +1182,7 @@ main(int argc, char *argv[])
 	case XF_ESP3DESSHA196:
 	case XF_ESP3DES:
 	case XF_COMPDEFLATE:
+	case XF_COMPLZS:
 		if(!said_opt) {
 			if(isanyaddr(&edst)) {
 				fprintf(stderr, "%s: SA destination not specified.\n",
@@ -1233,6 +1236,7 @@ main(int argc, char *argv[])
 	case XF_ESP3DESSHA196:
 	case XF_ESP3DES:
 	case XF_COMPDEFLATE:
+	case XF_COMPLZS:
 #ifdef KERNEL_ALG
 	case XF_OTHER_ALG:
 #endif /* NO_KERNEL_ALG */
@@ -1316,6 +1320,9 @@ main(int argc, char *argv[])
 		break;
 	case XF_COMPDEFLATE:
 		encryptalg = SADB_X_CALG_DEFLATE;
+		break;
+	case XF_COMPLZS:
+		encryptalg = SADB_X_CALG_LZS;
 		break;
 #ifdef KERNEL_ALG
 	case XF_OTHER_ALG:

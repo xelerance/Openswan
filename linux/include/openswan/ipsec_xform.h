@@ -34,6 +34,7 @@
 #define	XF_ESP3DESSHA196	14	/* triple DES, HMAC-SHA-1, 96-bits of authentication */
 #define XF_IP6			15	/* IPv6 inside IPv6 */
 #define XF_COMPDEFLATE		16	/* IPCOMP deflate */
+#define XF_COMPLZS              17      /* IPCOMP LZS */
 
 #define XF_CLR			126	/* Clear SA table */
 #define XF_DEL			127	/* Delete SA */
@@ -119,9 +120,11 @@ static inline const char *auth_name_id (unsigned id) {
 }
 #define IPS_XFORM_NAME(x) \
 	PROTO2TXT((x)->ips_said.proto), \
-	(x)->ips_said.proto == IPPROTO_COMP ? \
-		((x)->ips_encalg == SADB_X_CALG_DEFLATE ? \
-		 "_DEFLATE" : "_UNKNOWN_comp") : \
+        (x)->ips_said.proto == IPPROTO_COMP ? \
+                ((x)->ips_encalg == SADB_X_CALG_NONE ? "_NONE" :       \
+                 (x)->ips_encalg == SADB_X_CALG_DEFLATE ? "_DEFLATE":  \
+                 (x)->ips_encalg == SADB_X_CALG_LZS ? "_LZS" :         \
+                 "_UNKNOWN_comp") :                                     \
 	(x)->ips_encalg == ESP_NONE ? "" : \
 	(x)->ips_encalg == ESP_NULL ? "_NULL" : \
 	(x)->ips_encalg == ESP_3DES ? "_3DES" : \

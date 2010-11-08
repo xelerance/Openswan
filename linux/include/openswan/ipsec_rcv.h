@@ -80,7 +80,8 @@ enum ipsec_rcv_value {
 	IPSEC_RCV_AUTHFAILED=-16,
 	IPSEC_RCV_REPLAYROLLED=-17,
 	IPSEC_RCV_BAD_DECRYPT=-18,
-	IPSEC_RCV_REALLYBAD=-19
+	IPSEC_RCV_REALLYBAD=-19,
+	IPSEC_RCV_ERRMEMALLOC=-20
 };
 
 /*
@@ -103,6 +104,7 @@ enum ipsec_rcv_value {
 
 struct ipsec_rcv_state {
 	struct sk_buff *skb;
+	struct sk_buff *pre_ipcomp_skb;/* skb before ipcomp was attempted */
 	struct net_device_stats *stats;
 	void *iph;                     /* the IP header */
 	struct ipsec_sa *ipsp;         /* current SA being processed */

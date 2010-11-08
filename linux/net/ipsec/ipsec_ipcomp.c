@@ -67,6 +67,10 @@ extern int sysctl_ipsec_inbound_policy_check;
 
 #include "openswan/ipsec_proto.h"
 
+#ifdef CONFIG_KLIPS_OCF
+#include "ipsec_ocf.h"
+#endif
+
 #ifdef CONFIG_KLIPS_IPCOMP
 enum ipsec_rcv_value
 ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
@@ -134,6 +138,11 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 
 	ipsp->ips_comp_ratio_cbytes += ntohs(osw_ip4_hdr(irs)->tot_len);
 	irs->next_header = irs->protostuff.ipcompstuff.compp->ipcomp_nh;
+
+#ifdef CONFIG_KLIPS_OCF
+	if (irs->ipsp->ocf_in_use)
+		return(ipsec_ocf_rcv(irs));
+#endif
 
 	skb = skb_decompress(skb, ipsp, &flags);
 	if (!skb || flags) {

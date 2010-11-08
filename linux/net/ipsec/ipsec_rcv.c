@@ -251,6 +251,7 @@ ipsec_rcv_err(int err)
 	case IPSEC_RCV_REPLAYROLLED:	return("IPSEC_RCV_REPLAYROLLED");
 	case IPSEC_RCV_BAD_DECRYPT:		return("IPSEC_RCV_BAD_DECRYPT");
 	case IPSEC_RCV_REALLYBAD:		return("IPSEC_RCV_REALLYBAD");
+	case IPSEC_RCV_ERRMEMALLOC:     return("IPSEC_RCV_ERRMEMALLOC");
 	}
 	snprintf(tmp, sizeof(tmp), "%d", err);
 	return tmp;
@@ -1443,7 +1444,7 @@ ipsec_rcv_auth_calc(struct ipsec_rcv_state *irs)
 
 	if(irs->authfuncs ||
 #ifdef CONFIG_KLIPS_OCF
-			irs->ipsp->ocf_in_use ||
+			(irs->ipsp->ocf_in_use && irs->ipsp->ips_authalg) ||
 #endif
 #ifdef CONFIG_KLIPS_ALG
 			irs->ixt_a ||
@@ -1500,7 +1501,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 
 	if(irs->authfuncs ||
 #ifdef CONFIG_KLIPS_OCF
-			irs->ipsp->ocf_in_use ||
+			(irs->ipsp->ocf_in_use && irs->ipsp->ips_authalg) ||
 #endif
 #ifdef CONFIG_KLIPS_ALG
 			irs->ixt_a ||
@@ -1986,6 +1987,11 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 	if (irs->skb) {
 		ipsec_kfree_skb(irs->skb);
 		irs->skb = NULL;
+	}
+
+	if (irs->pre_ipcomp_skb) {
+		ipsec_kfree_skb(irs->pre_ipcomp_skb);
+		irs->pre_ipcomp_skb = NULL;
 	}
 
 	ipsec_rcv_state_delete(irs);
