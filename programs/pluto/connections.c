@@ -1158,6 +1158,13 @@ add_connection(const struct whack_message *wm)
     {
 	loglog(RC_DUPNAME, "attempt to redefine connection \"%s\"", wm->name);
     }
+#if 0
+    /*
+     * A valid proposal done by others to which we need to respond is something like
+     *  port 80 only, which is assymetric, eg leftprotoport=6/80 rightprotoport=6/%any
+     * So this check is disabled, but it has not been verified this assumption is not
+     *  assumed elsewhere.  -- Paul
+     */
     else if (wm->right.protocol != wm->left.protocol)
     {
 	/* this should haven been diagnosed by whack
@@ -1165,6 +1172,7 @@ add_connection(const struct whack_message *wm)
 	 */
 	loglog(RC_CLASH, "the protocol must be the same for leftport and rightport");
     }
+#endif
     else if(wm->ike != NULL
 	    && ((alg_info_ike = alg_info_ike_create_from_str(wm->ike, &ugh))==NULL
 		|| alg_info_ike->alg_info_cnt==0)) {
