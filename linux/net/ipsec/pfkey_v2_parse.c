@@ -73,13 +73,8 @@ extern int debug_pfkey;
 #include <openswan/pfkey_debug.h>
 
 unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
-#ifndef COMPILER_HAS_NO_PRINTF_LIKE
 int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
 int (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
-#else
-int (*pfkey_debug_func)(const char *message, ...);
-int (*pfkey_error_func)(const char *message, ...);
-#endif
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 

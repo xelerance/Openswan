@@ -256,6 +256,11 @@ typedef uint32_t IPsecSAref_t;
 # define BLANK_FORMAT ""
 #endif
 
+#ifdef COMPILER_HAS_NO_PRINTF_LIKE
+# undef PRINTF_LIKE
+# define PRINTF_LIKE(n)	/* ignore */
+#endif
+
 
 /*
  * function to log stuff from libraries that may be used in multiple
