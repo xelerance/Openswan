@@ -475,7 +475,7 @@ ipsec_ocf_rcv_cb(struct cryptop *crp)
 		KLIPS_IP_PRINT(debug_rcv & DB_TN_XMIT, irs->ipp);
 
 		orig_len = irs->skb->len - sizeof (struct ipcomphdr);
-		decomp_len = crp->crp_olen - crdc->crd_inject;
+		decomp_len = crp->crp_olen;
 
 		newiph = (struct iphdr*)((char*)irs->ipp + sizeof (struct ipcomphdr));
 
@@ -874,7 +874,11 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 		KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->iph);
 
 		orig_len = ntohs(ixs->iph->tot_len) - ixs->iphlen;
-		comp_len = crp->crp_olen - crdc->crd_inject;
+		comp_len = crp->crp_olen;
+
+		if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose)
+			ipsec_dmp_block("compress after",
+					((unsigned char*)ixs->iph) + ixs->iphlen, comp_len);
 
 		newiph = (struct iphdr *)((char*)ixs->iph - sizeof(struct ipcomphdr));
 		cmph = (struct ipcomphdr *)((char*)newiph + ixs->iphlen);
@@ -1109,6 +1113,10 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 		crdc->crd_len    = ntohs(ixs->iph->tot_len) - ixs->iphlen;
 		/* compress inplace (some hardware can only do inplace) */
 		crdc->crd_inject = crdc->crd_skip;
+
+		if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose)
+			ipsec_dmp_block("compress before",
+					((unsigned char*)ixs->iph) + ixs->iphlen, crdc->crd_len);
 	}
 
 	crp->crp_ilen = ixs->skb->len; /* Total input length */
