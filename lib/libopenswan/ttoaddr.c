@@ -470,8 +470,7 @@ ttoaddr_num(const char *src,
 			return "empty string";
 	} 
 
-	err_t err = ttoaddr_base(src, srclen, af, &numfailed, dst);
-	return err;
+	return ttoaddr_base(src, srclen, af, &numfailed, dst);
 }
 
 #ifdef TTOADDR_MAIN

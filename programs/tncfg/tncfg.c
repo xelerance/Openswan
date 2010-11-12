@@ -184,6 +184,7 @@ main(int argc, char *argv[])
 	int argcount = argc;
 	int createdelete = 0;
 	char virtname[64];
+        struct stat sts;
      
 	memset(&ifr, 0, sizeof(ifr));
 	memset(&shc, 0, sizeof(shc));
@@ -259,7 +260,6 @@ main(int argc, char *argv[])
 		previous = c;
 	}
 
-        struct stat sts;
         if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
                 fprintf(stderr, "%s: NETKEY does not support virtual interfaces.\n",progname);
                 exit(1);

@@ -397,6 +397,7 @@ ipsecdoi_replace(struct state *st
 		 , lset_t policy_add, lset_t policy_del
 		 , unsigned long try)
 {
+	initiator_function *initiator;
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
 
@@ -407,7 +408,7 @@ ipsecdoi_replace(struct state *st
 	policy = policy & ~policy_del;
 	policy = policy | policy_add;
 
-	initiator_function *initiator = pick_initiator(c, policy);
+	initiator = pick_initiator(c, policy);
 	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
 	    (void) initiator(whack_sock, st->st_connection, st, policy

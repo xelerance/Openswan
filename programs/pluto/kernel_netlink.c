@@ -1508,6 +1508,8 @@ netlink_shunt_eroute(struct connection *c
                    , enum pluto_sadb_operations op 
 		   , const char *opname)
 {
+    ipsec_spi_t spi;
+
     DBG(DBG_CONTROL, DBG_log("request to %s a %s policy with netkey kernel --- experimental"
 		, opname
 		, enum_name(&routing_story, rt_kind)));
@@ -1518,7 +1520,7 @@ netlink_shunt_eroute(struct connection *c
      * The satype has no meaning, but is required for PF_KEY header!
      * The SPI signifies the kind of shunt.
      */
-    ipsec_spi_t spi = shunt_policy_spi(c, rt_kind == RT_ROUTED_PROSPECTIVE);
+    spi = shunt_policy_spi(c, rt_kind == RT_ROUTED_PROSPECTIVE);
 
     if (spi == 0)
     {

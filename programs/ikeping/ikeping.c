@@ -195,6 +195,7 @@ receive_ping(int afamily, int s, int reply, int natt)
 	unsigned int sendlen;
 	const char *xchg_name;
 	int xchg;
+	u_int32_t tmp_ic, tmp_rc;
 
 	rport = 500;
 	xchg  = 0;
@@ -254,7 +255,6 @@ receive_ping(int afamily, int s, int reply, int natt)
 	printf("received %d(%s) packet from %s/%d of len: %d\n",
 	       ih.isa_xchg, xchg_name, buf, ntohs(rport), n);
 
-	u_int32_t tmp_ic, tmp_rc;
 	memcpy(&tmp_ic, ih.isa_icookie, sizeof(u_int32_t));
 	memcpy(&tmp_rc, ih.isa_rcookie, sizeof(u_int32_t));
 	printf("\trcookie=%08x_%08x icookie=%08x_%08x msgid=%08x\n",

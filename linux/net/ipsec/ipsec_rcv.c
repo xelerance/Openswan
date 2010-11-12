@@ -27,7 +27,7 @@
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) && LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,26)
 # include <linux/moduleparam.h>
 #endif
 #include <linux/kernel.h> /* printk() */

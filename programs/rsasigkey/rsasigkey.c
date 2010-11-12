@@ -428,6 +428,10 @@ int				/* nbits */
 getoldkey(filename)
 char *filename;
 {
+#ifdef OLD_GCC
+	fprintf(stderr, "%s: getoldkey is broken\n", me);
+	exit(1);
+#else
 	FILE *f;
 	char line[MAXBITS/2];
 	char *p;
@@ -523,6 +527,7 @@ char *filename;
 
 	assert(sawpr1);		/* and thus nbits is known */
 	return(nbits);
+#endif
 }
 
 /*

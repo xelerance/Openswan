@@ -354,6 +354,8 @@ static void
 do_3des(u_int8_t *buf, size_t buf_len
 	, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
+    des_key_schedule ks[3];
+
     passert(key != NULL);
 
 #ifdef HAVE_LIBNSS
@@ -361,8 +363,6 @@ do_3des(u_int8_t *buf, size_t buf_len
 #else
 
     passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
-
-    des_key_schedule ks[3];
 
     (void) oswcrypto.des_set_key((des_cblock *)key + 0, ks[0]);
     (void) oswcrypto.des_set_key((des_cblock *)key + 1, ks[1]);

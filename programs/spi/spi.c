@@ -525,6 +525,7 @@ main(int argc, char *argv[])
 	u_int16_t sport, dport;
 	uint32_t life[life_maxsever][life_maxtype];
 	char *life_opt[life_maxsever][life_maxtype];
+        struct stat sts;
 	
 	progname = argv[0];
 	mypid = getpid();
@@ -1097,7 +1098,6 @@ main(int argc, char *argv[])
 				progname);
 	}
 
-        struct stat sts;
         if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
                 fprintf(stderr, "%s: NETKEY does not use the ipsec spi command. Use 'ip xfrm' instead.\n",progname);
                 exit(1);
