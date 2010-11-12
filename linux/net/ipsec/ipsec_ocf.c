@@ -874,7 +874,7 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 		KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->iph);
 
 		orig_len = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
-		comp_len = crp->crp_olen - crdc->crd_inject;
+		comp_len = crp->crp_olen;
 
 		if(sysctl_ipsec_debug_ipcomp && sysctl_ipsec_debug_verbose)
 			ipsec_dmp_block("compress after",
