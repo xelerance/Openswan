@@ -130,6 +130,7 @@ static int print_secrets(struct secret *secret
     char idb2[IDTOA_BUF];
     const char *kind = "?";
     const char *more = "";
+    struct id_list *ids;
     
     switch(pks->kind) {
     case PPK_PSK: kind="PSK"; break;
@@ -140,7 +141,7 @@ static int print_secrets(struct secret *secret
 	return 1;
     }
 
-    struct id_list *ids = osw_get_idlist(secret);
+    ids = osw_get_idlist(secret);
     strcpy(idb1,"%any");
     strcpy(idb2,"");
 

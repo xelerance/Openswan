@@ -555,13 +555,14 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
        	if ( md->chain[ISAKMP_NEXT_v2KE] &&   md->chain[ISAKMP_NEXT_v2N] &&
        	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == COOKIE))
 		{
+			u_int8_t spisize;
+	        const pb_stream *dc_pbs;
+			chunk_t blob; 
 			DBG(DBG_CONTROLMORE
 	        	, DBG_log("received a DOS cookie in I1 verify it"));
 	       	/* we received dcookie we send earlier verify it */
-			u_int8_t spisize 
-					= md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
-	        const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
-			chunk_t blob; 
+			spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
+	        dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
 			blob.ptr = dc_pbs->cur + spisize;
 			blob.len = pbs_left(dc_pbs) - spisize;
 			DBG(DBG_CONTROLMORE
@@ -826,11 +827,13 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     if( md->chain[ISAKMP_NEXT_v2N]
 		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
     {
+		u_int8_t spisize;
+	    const pb_stream *dc_pbs;
 		DBG(DBG_CONTROLMORE 
 			,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
     	    DBG_log("resend the I1 with a cookie payload"));
-		u_int8_t spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
-	    const pb_stream *dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
+		spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
+	    dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
     	clonetochunk(st->st_dcookie,  (dc_pbs->cur + spisize)
 		 , (pbs_left(dc_pbs) - spisize), "saved received dcookie");
 
@@ -1382,6 +1385,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 * SA2i, TSi and TSr and (USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
 	if(c0) {
+		chunk_t child_spi, notifiy_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
@@ -1393,7 +1397,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
 		DBG_log("Initiator child policy is transport mode, sending USE_TRANSPORT_MODE");
-		chunk_t child_spi, notifiy_data;
 		memset(&child_spi, 0, sizeof(child_spi));
 		memset(&notifiy_data, 0, sizeof(notifiy_data));
 		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
@@ -2107,6 +2110,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
     u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
+	chunk_t child_spi;
 	/* this function is not generic enough yet just enough for 6msg 
 	 * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
 	 * TBD when there is a child SA use that SPI in the notify paylod.
@@ -2149,7 +2153,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	}
 		
     } 
-	chunk_t child_spi;
 	child_spi.ptr = NULL;
 	child_spi.len = 0;
 
@@ -2171,10 +2174,10 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 				    u_int8_t protoid, chunk_t *spi, 
 					u_int16_t type, chunk_t *n_data, pb_stream *rbody)
 {
-	DBG(DBG_CONTROLMORE
-   		,DBG_log("Adding a v2N Payload"));  
    	struct ikev2_notify n;
    	pb_stream n_pbs;
+	DBG(DBG_CONTROLMORE
+   		,DBG_log("Adding a v2N Payload"));  
    	n.isan_np =  np;
    	n.isan_critical = critical;
    	n.isan_protoid =  protoid;

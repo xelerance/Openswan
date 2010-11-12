@@ -1885,6 +1885,7 @@ modecfg_inR1(struct msg_digest *md)
                     }
 
                     while (len > 0) {
+                    u_int32_t *ap;
                     tmp_spd = clone_thing(c->spd, "remote subnets policies");
 
                     tmp_spd->this.id.name.ptr = NULL;
@@ -1895,7 +1896,7 @@ modecfg_inR1(struct msg_digest *md)
                     tmp_spd->this.host_addr_name = NULL;
                     tmp_spd->that.host_addr_name = NULL;
 
-                    u_int32_t *ap = (u_int32_t *)(strattr.cur);
+                    ap = (u_int32_t *)(strattr.cur);
                     a.u.v4.sin_family = AF_INET;
                     memcpy(&a.u.v4.sin_addr.s_addr, ap
                            , sizeof(a.u.v4.sin_addr.s_addr));

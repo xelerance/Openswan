@@ -430,11 +430,12 @@ handle_timer_event(void)
 void
 handle_next_timer_event(void)
 {
-    time_t tm;
-    tm = now();
     struct event *ev = evlist;
+    time_t tm;
     int type;
     struct state *st;
+
+    tm = now();
 
     if (ev == (struct event *) NULL)    
     {

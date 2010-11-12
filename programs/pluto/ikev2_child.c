@@ -505,6 +505,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     if(ret != STF_OK) return ret;
 
     if( role == RESPONDER ) {
+	chunk_t child_spi, notifiy_data;
 	if ( md->chain[ISAKMP_NEXT_v2N] && (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE) ) {
 
 	if(st1->st_connection->policy & POLICY_TUNNEL) {
@@ -516,7 +517,6 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		DBG_log("Now responding with USE_TRANSPORT_MODE notify");
 	}
 
-	chunk_t child_spi, notifiy_data;
 	memset(&child_spi, 0, sizeof(child_spi));
 	memset(&notifiy_data, 0, sizeof(notifiy_data));
 	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,

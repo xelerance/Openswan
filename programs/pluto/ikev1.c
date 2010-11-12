@@ -699,6 +699,7 @@ informational(struct msg_digest *md)
 		char *tmp_name;
 		int tmp_whack_sock;
 		struct connection *tmp_c;
+                ip_address old_addr;
 
                 /* Saving connection name and whack sock id*/
 		tmp_name = st->st_connection->name;
@@ -757,7 +758,6 @@ informational(struct msg_digest *md)
 
                 }
 #endif
-                ip_address old_addr;
                 /*storing old address for comparison purposes*/
                 old_addr = tmp_c->spd.that.host_addr;
 

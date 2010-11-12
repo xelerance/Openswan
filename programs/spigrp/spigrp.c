@@ -92,6 +92,7 @@ main(int argc, char **argv)
 	struct said_af said_af_array[4];
 
 	int error = 0;
+        struct stat sts;
 
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
@@ -145,7 +146,6 @@ main(int argc, char **argv)
 	}
 
 
-        struct stat sts;
         if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
                 fprintf(stderr, "%s: NETKEY does not use the ipsec spigrp command. Use 'ip xfrm' instead.\n",progname);
                 exit(1);

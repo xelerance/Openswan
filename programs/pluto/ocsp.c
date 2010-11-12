@@ -746,6 +746,7 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 
     for (;;)
     {
+	    const struct RSA_private_key *pri;
 
 	/* looking for a certificate from the same issuer */
 	cert = get_x509cert(location->issuer, location->authKeySerialNumber
@@ -760,7 +761,7 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 	)
 
 	    /* look for a matching private key in the chained list */
-	    const struct RSA_private_key *pri = get_x509_private_key(cert);
+	    pri = get_x509_private_key(cert);
 
 	    if (pri != NULL)
 	    {
