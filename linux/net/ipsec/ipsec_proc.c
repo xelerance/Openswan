@@ -1121,7 +1121,7 @@ ipsec_proc_init()
 				*it->dir = item;
 			} else {
 				/* FIXME: we put the mode in the struct proc_dir_entry, but it is not used here?? */
-				item = create_proc_entry(it->name, (it->name == "version") ? 0444 : 0400, *it->parent);
+				item = create_proc_entry(it->name, strcmp(it->name, "version") == 0 ? 0444 : 0400, *it->parent);
 			}
 			if(item) {
 				item->read_proc  = it->readthing;
