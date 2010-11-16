@@ -897,15 +897,23 @@ static const char *const notification_ios_alives_name[] = {
 	"ISAKMP_N_IOS_KEEP_ALIVE_ACK",
     };
 
+static const char *const notification_juniper_name[] = {
+	"NETSCREEN_NHTB_INFORM", /* 40001 */
+};
+
 static const char *const notification_cisco_more_name[] = {
         "ISAKMP_N_CISCO_LOAD_BALANCE", /* 40501 */
 	"ISAKMP_N_CISCO_UNKNOWN_40502",
 	"ISAKMP_N_CISCO_PRESHARED_KEY_HASH",
     };
 
+enum_names notification_juniper_names =
+    { NETSCREEN_NHTB_INFORM, NETSCREEN_NHTB_INFORM,
+     notification_juniper_name, NULL };
+
 enum_names notification_cisco_more_names = 
     {  ISAKMP_N_CISCO_LOAD_BALANCE, ISAKMP_N_CISCO_PRESHARED_KEY_HASH,
-      notification_cisco_more_name, NULL };
+      notification_cisco_more_name, &notification_juniper_names };
 
 enum_names notification_ios_alives_names =
     { ISAKMP_N_IOS_KEEP_ALIVE_REQ, ISAKMP_N_IOS_KEEP_ALIVE_ACK,
