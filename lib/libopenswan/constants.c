@@ -898,6 +898,7 @@ static const char *const notification_ios_alives_name[] = {
     };
 
 static const char *const notification_juniper_name[] = {
+        /* Next Hop Tunnel Binding */
 	"NETSCREEN_NHTB_INFORM", /* 40001 */
 };
 
