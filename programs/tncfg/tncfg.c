@@ -59,8 +59,6 @@ usage(char *name)
 	fprintf(stdout,"%s --delete <virtual>\n", name);
 	fprintf(stdout,"%s --attach --virtual <virtual-device> --physical <physical-device>\n",
 		name);
-	fprintf(stdout,"%s --attach --virtual <virtual-device> --physical <physical-device>\n",
-		name);
 	fprintf(stdout,"%s --detach --virtual <virtual-device>\n",
 		name);
 	fprintf(stdout,"%s --clear\n",
