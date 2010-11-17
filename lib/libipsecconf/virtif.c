@@ -48,15 +48,43 @@ static struct st_ipsec_if _ipsec_if[N_IPSEC_IF];
 extern char *starter_find_physical_iface(int sock, char *iface);
 
 
-static int valid_str(char *str, unsigned int *pn, char **pphys)
+static int valid_str(const char * const str, unsigned int * const pn, char ** const pphys)
 {
+	char *pequal = NULL;
+	char *pnum_start = NULL;
+	char numeric[5] = {'\0'};
+	char ch = '\0';
+	unsigned int i = 0;
 	if (!str) return 0;
 	if (strlen(str)<8) return 0;
-	if ((str[0]!='i') || (str[1]!='p') || (str[2]!='s') || (str[3]!='e') ||
-		(str[4]!='c') || (str[5]<'0') || (str[5]>'9') || (str[6]!='='))
-		return 0;
-	if (pn) *pn = str[5] - '0';
-	if (pphys) *pphys = &(str[7]);
+
+	/* Check if the string has an = sign */
+	pequal = strchr(str,'=');
+	if (!pequal) return 0;
+
+	/* Where does the device number start ? */
+	pnum_start = strstr(str,"ipsec");
+	if (!pnum_start) {
+		pnum_start = strstr(str,"mast");
+		if (!pnum_start) return 0;
+		else pnum_start += (sizeof("mast") - 1);
+	}
+	else pnum_start += (sizeof("ipsec") - 1);
+
+	/* Is there a device number ? */
+	if (pequal == pnum_start) return 0;
+
+	/* Is there enough room to store the device number ? */
+	if ((pequal - pnum_start) >= sizeof(numeric)) return 0;
+
+	/* Copy only digit characters */
+	while ( '=' != (ch = pnum_start[i]) ) {
+		if (ch < '0' || ch > '9') return 0;
+		numeric[i++] = ch;
+	}
+
+	if (pn) *pn = atoi(numeric);
+	if (pphys) *pphys = pequal + 1;
 	return 1;
 }
 

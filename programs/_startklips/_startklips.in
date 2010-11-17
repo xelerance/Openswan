@@ -177,7 +177,7 @@ klipsinterface() {
         devprefix=ipsec
         $mast && devprefix=mast
 	case "$virt" in
-	$devprefix[0-9])	;;
+	$devprefix[0-9]*)	;;
 	*)	echo "invalid interface \`$virt' in \`$1'" ; exit 1	;;
 	esac
 
