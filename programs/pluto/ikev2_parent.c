@@ -2003,8 +2003,11 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-	if ( md->chain[ISAKMP_NEXT_v2N] ) {
-	    if ( (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE )) {
+	struct payload_digest *p;	
+
+	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+	{
+	    if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
 		if ( st->st_connection->policy & POLICY_TUNNEL) {
 		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
 			DBG(DBG_CONTROLMORE,
@@ -2018,18 +2021,17 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
 			}
 		}
+	    break;
 	    }
 	}
 
-        if ( md->chain[ISAKMP_NEXT_v2N] == NULL ||
-               !(md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == USE_TRANSPORT_MODE ) ) {
+        if (!p) {
                 if ( !(st->st_connection->policy & POLICY_TUNNEL) ) {
                 /*This means we sent USE_TRANSPORT, however responder did not send it or did not agree with that*/
                         DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is transport, responder did not send USE_TRANSPORT_MODE, so falling back to tunnel mode (rfc 4306)"));
                 }
         }
-
     }
 
 	
