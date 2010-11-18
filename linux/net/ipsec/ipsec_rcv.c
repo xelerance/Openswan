@@ -576,6 +576,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		
 		/* now setup new L4 payload location */
 		ipp = (struct iphdr *)skb_network_header(skb);
+#ifdef CONFIG_IPV6
 		ipp6 = (struct ipv6hdr *) ipp;
 		if (ipp->version == 6) {
 			unsigned char nexthdr = ipp6->nexthdr;
@@ -583,7 +584,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			nexthdroff = ipv6_skip_exthdr(skb, ipsec_skb_offset(skb, ipp6+1), &nexthdr);
 			skb_set_transport_header(skb, ipsec_skb_offset(skb, (void*)skb->data + nexthdroff));
 			irs->iphlen = nexthdroff - ipsec_skb_offset(skb, ipp6);
-		} else {
+		} else
+#endif /* CONFIG_IPV6 */
+		{
 			skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + (ipp->ihl << 2)));
 			irs->iphlen = ipp->ihl << 2;
 		}
@@ -872,6 +875,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 	if (debug_rcv)
 		ipsec_rcv_redodebug(irs);
 
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
 		int nexthdroff;
 		irs->proto = osw_ip6_hdr(irs)->nexthdr;
@@ -879,7 +883,9 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			((void *)(osw_ip6_hdr(irs)+1)) - (void*)irs->skb->data,
 			&irs->proto);
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 		irs->iphlen = osw_ip4_hdr(irs)->ihl << 2;
 		irs->proto = osw_ip4_hdr(irs)->protocol;
 	}
@@ -1607,6 +1613,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	skb = irs->skb;
 	irs->len = skb->len;
 	irs->iph = (void *) ip_hdr(skb);
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
 		unsigned char nexthdr = osw_ip6_hdr(irs)->nexthdr;
 		int nexthdroff;
@@ -1614,7 +1621,9 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 				(void*)irs->skb->data, &nexthdr);
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 		irs->iphlen = osw_ip4_hdr(irs)->ihl<<2;
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
 	}

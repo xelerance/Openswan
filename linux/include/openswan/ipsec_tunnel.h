@@ -121,6 +121,7 @@ extern int sysctl_ipsec_debug_verbose;
 
 extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
 
+#ifdef CONFIG_IPV6
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,34)
 # define ICMP6_SEND(skb_in, type, code, info, dev) \
 	icmpv6_send(skb_in, type, code, htonl(info), dev)
@@ -128,6 +129,7 @@ extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, in
 # define ICMP6_SEND(skb_in, type, code, info, dev) \
 	icmpv6_send(skb_in, type, code, htonl(info))
 #endif
+#endif /* CONFIG_IPV6 */
 
 #endif /* __KERNEL__ */
 

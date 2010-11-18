@@ -574,10 +574,12 @@ struct inet_protocol esp_protocol = {
   .no_policy = 1,
 };
 
+#ifdef CONFIG_IPV6
 struct inet6_protocol esp6_protocol = {
   .handler = ipsec_rcv,
   .flags = INET6_PROTO_NOPOLICY,
 };
+#endif
 #else
 struct inet_protocol esp_protocol =
 {

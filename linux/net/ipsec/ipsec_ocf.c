@@ -1015,6 +1015,7 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 		 * skip packets that have less then 90 bytes of payload to
 		 * compress
 		 */
+#ifdef CONFIG_IPV6
 		if (osw_ip_hdr_version(ixs) == 6) {
 			int nexthdroff;
 			unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
@@ -1023,7 +1024,9 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 				&nexthdr);
 			ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 			payload_size = ntohs(osw_ip6_hdr(ixs)->payload_len);
-		} else {
+		} else
+#endif /* CONFIG_IPV6 */
+		{
 			ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
 			payload_size = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
 		}

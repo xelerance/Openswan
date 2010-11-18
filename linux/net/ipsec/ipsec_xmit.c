@@ -553,6 +553,7 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
 
 	ixs->iph = ip_hdr(ixs->skb);
 
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		if (osw_ip6_hdr(ixs)->hop_limit <= 0) {
 			/* Tell the sender its packet died... */
@@ -565,7 +566,9 @@ ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
 				ixs->stats->tx_dropped++;
 			return IPSEC_XMIT_TTLEXPIRED;
 		}
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 #if IPSEC_DISALLOW_IPOPTIONS
 		if ((osw_ip4_hdr(ixs)->ihl << 2) != sizeof (struct iphdr)) {
 			KLIPS_PRINT(debug_tunnel,
@@ -609,6 +612,7 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	ixs->ixt_a = NULL;
 #endif /* CONFIG_KLIPS_ALG */
 
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
@@ -618,7 +622,9 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len) +
 				sizeof(struct ipv6hdr) - ixs->iphlen;
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 		ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
 		ixs->pyldsz = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
 	}
@@ -860,12 +866,15 @@ ipsec_xmit_esp(struct ipsec_xmit_state *ixs)
 	ixs->dat[ixs->len - ixs->authlen - 2] = padlen;
 
 
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 	    nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 	    i = ipv6_skip_exthdr(ixs->skb,
 		    ((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
 		    &nexthdr);
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 	    nexthdr = osw_ip4_hdr(ixs)->protocol;
 	}
 	ixs->dat[ixs->len - ixs->authlen - 1] = nexthdr;
@@ -1374,13 +1383,16 @@ static int create_hold_eroute(struct ipsec_xmit_state *ixs)
 	  unsigned char nexthdr;
 	  int nexthdroff;
 
+#ifdef CONFIG_IPV6
 	  if (osw_ip_hdr_version(ixs) == 6) {
 	    nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 	    nexthdroff = ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
 
 	    hold_eroute.er_eaddr.sen_proto6 = nexthdr;
-	  } else {
+	  } else
+#endif /* CONFIG_IPV6 */
+	  {
 		nexthdr = osw_ip4_hdr(ixs)->protocol;
 		nexthdroff = 0;
 		if ((ntohs(osw_ip4_hdr(ixs)->frag_off) & IP_OFFSET) == 0)
@@ -1502,6 +1514,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 {
 	ixs->orgedst = ixs->outgoing_said.dst;
 	ixs->max_headroom = ixs->max_tailroom = 0;
+#ifdef CONFIG_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
@@ -1510,7 +1523,9 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			&nexthdr);
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len);
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 		ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
 		ixs->pyldsz = ntohs(osw_ip4_hdr(ixs)->tot_len) - ixs->iphlen;
 	}
@@ -1529,6 +1544,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 				    "klips_debug:ipsec_xmit_encap_bundle: "
 				    "shunt SA of REJECT: notifying and dropping.\n");
+#ifdef CONFIG_IPV6
 			if (osw_ip_hdr_version(ixs) == 6)
 				ICMP6_SEND(ixs->skb,
 					  ICMP_DEST_UNREACH,
@@ -1536,6 +1552,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 					  0,
 					  ixs->physdev);
 			else
+#endif
 				ICMP_SEND(ixs->skb,
 					  ICMP_DEST_UNREACH,
 					  ICMP_PKT_FILTERED,
@@ -1564,6 +1581,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 
 		case SPI_TRAP:
 		case SPI_TRAPSUBNET:
+#ifdef CONFIG_IPV6
 		if (osw_ip_hdr_version(ixs) == 6) {
 			struct sockaddr_in6 src, dst;
 			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
@@ -1662,7 +1680,9 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			}
 			if (ixs->stats)
 				ixs->stats->tx_dropped++;
-		} else {
+		} else
+#endif /* CONFIG_IPV6 */
+		{
 			struct sockaddr_in src, dst;
 			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
 
@@ -2114,7 +2134,9 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 				  ixs->cur_mtu,
 				  ixs->physdev);
 #endif /* IPSEC_obey_DF */
-	    } else if (ixs->cur_mtu < tot_len && osw_ip_hdr_version(ixs) == 6) {
+	    }
+#ifdef CONFIG_IPV6
+		else if (ixs->cur_mtu < tot_len && osw_ip_hdr_version(ixs) == 6) {
 		int nexthdroff, notify;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
@@ -2141,6 +2163,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 		bundle_stat = IPSEC_XMIT_CANNOTFRAG;
 		goto cleanup;
 	    }
+#endif
 	}
 		
 #ifdef MSS_HACK_DELETE_ME_PLEASE
@@ -2424,6 +2447,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
 
 #ifdef NETDEV_25
+#ifdef CONFIG_IPV6
 	if (ip_hdr(ixs->skb)->version == 6) {
 		if (ixs->pass)
 			memset(&fl->nl_u.ip6_u.saddr, 0, sizeof(fl->nl_u.ip6_u.saddr));
@@ -2437,7 +2461,9 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #endif
 		dst = ip6_route_output(&init_net, NULL, fl);
 		error = dst->error;
-	} else {
+	} else
+#endif /* CONFIG_IPV6 */
+	{
 		fl->nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
 		fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
 		fl->nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
