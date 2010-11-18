@@ -1111,7 +1111,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		if ((psin && osw_ip4_hdr(irs)->saddr != psin->sin_addr.s_addr) ||
 			(psin6 && memcmp(&osw_ip6_hdr(irs)->saddr, &psin6->sin6_addr, sizeof(osw_ip6_hdr(irs)->saddr)) != 0)) {
 			if (debug_rcv) {
-				// generate SA->saddr
+				/* generate SA->saddr */
 				if (psin) {
 					inet_addrtot(AF_INET, &psin->sin_addr.s_addr, 0,
 						sa_saddr_txt, sizeof(sa_saddr_txt));
@@ -1119,10 +1119,10 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 					inet_addrtot(AF_INET6, &psin6->sin6_addr.s6_addr, 0,
 						sa_saddr_txt, sizeof(sa_saddr_txt));
 				}
-				// generate ipsaddr_txt
+				/* generate ipsaddr_txt */
 				if (!(*irs->ipsaddr_txt))
 					ipsec_rcv_redodebug(irs);
-				// regenerate sa_len
+				/* regenerate sa_len */
 				if (!irs->sa_len)
 					irs->sa_len = satot(&irs->said, 0,
 						irs->sa, sizeof(irs->sa));
