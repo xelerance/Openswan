@@ -11,6 +11,8 @@ v2.6.32 (unreleased)
 * If pluto is started with --nofork, then also disable nhelpers [Paul]
 * Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
 * Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
+* Check for USE_TRANSPORT_MODE in all received notification payloads, not just
+  the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
