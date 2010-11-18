@@ -1113,10 +1113,10 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 			if (debug_rcv) {
 				// generate SA->saddr
 				if (psin) {
-					inet_addrtot(AF_INET, psin->sin_addr.s_addr, 0,
+					inet_addrtot(AF_INET, &psin->sin_addr.s_addr, 0,
 						sa_saddr_txt, sizeof(sa_saddr_txt));
 				} else if (psin6) {
-					inet_addrtot(AF_INET6, psin6->sin6_addr.s6_addr, 0,
+					inet_addrtot(AF_INET6, &psin6->sin6_addr.s6_addr, 0,
 						sa_saddr_txt, sizeof(sa_saddr_txt));
 				}
 				// generate ipsaddr_txt
