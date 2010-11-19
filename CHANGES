@@ -7,13 +7,17 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.32 (unreleased)
 * Remove -DLEAK_DETECTIVE forced by default [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
-* Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support an arm-elf-gcc compiler [Paul]
-* If pluto is started with --nofork, then also disable nhelpers [Paul]
-* Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
-* Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
-* Check for USE_TRANSPORT_MODE in all received notification payloads, not just
-  the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
-* Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
+* NOMMU: Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support an arm-elf-gcc compiler [Paul]
+* NOMMU: If pluto is started with --nofork, then also disable nhelpers [Paul]
+* NOMMU: Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
+* INTEROP: Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
+* IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads, not just
+         the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
+* TESTING:  Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
+* MAST: avoid routes towards virtual ipsecN interface [Bart/Roel]
+* fix interface parsing in getinterfaceinfo() [Bart/Roel]
+* KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
+* OCF: Fix up usage of crp_olen as returned from ocf [David]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
@@ -30,8 +34,8 @@ v2.6.30 (October 18, 2010)
 * SAREF: Add sareftrack=<no|yes|conntrack> connection option [Paul]
 * Fix for "handling event EVENT_RETRANSMIT for <invalid>" [Paul]
 * Fix for specifying protport=47 (GRE has no ports) [Paul]
-* Don't fill traffic selector struct in IKEv2 child SA when not recv'd [Paul]
-* Add geode-aes to the list of crypto modules to load [Paul]
+* IKEv2: Don't fill traffic selector struct in IKEv2 child SA when not recv'd [Paul]
+* MODULES: Add geode-aes to the list of crypto modules to load [Paul]
 * Don't install ipsec init script as /etc/init.d/setup [David]
 * Don't create rc.? symlinks - let user use chkconfig etc instead [Paul]
 * Bugtracker bugs fixed:
@@ -76,7 +80,7 @@ v2.6.29 (September 27, 2010)
 * MAST: use iptables --comment to show the conn name [Bart]
 * VNET: differentiate instantiation of road warriors and vnet [Paul]
 * Log LEAK_DETECTIVE and HAVE_LIBNSS support on startup [Paul]
-* [IKEv2] connections were broken since 2.6.25 [Avesh]
+* IKEv2 connections were broken since 2.6.25 [Avesh]
 * MAST: new "ipsec policy" command replaces "ipsec eroute" [Bart]
 * Fix SElinux warning in realsetup (bz628879) [Avesh]
 * Support for SHA2_256 in IKEv2 (bz621790) [Avesh]
