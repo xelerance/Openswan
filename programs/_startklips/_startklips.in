@@ -230,9 +230,8 @@ klipsinterface() {
 		| awk '$1 == "inet" || ($1 == "inet6" && !/ dynamic/) {
 				cmd = "ip addr add"
 				sub("/.*","",$2)
-				sub("secondary","",$0)
 				for (i = 2; i < NF; i++) {
-					if ($i == "brd" || $i == "peer")
+					if ($i == "brd" || $i == "peer" || $i == "secondary")
 						i++
 					else
 						cmd = cmd " " $i
