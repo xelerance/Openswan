@@ -143,21 +143,24 @@ getinterfaceinfo() {
 	ip addr show dev $1 | awk '
 	BEGIN {
 		MTU=""
+		TYPE="unknown"
 	}
+	/BROADCAST/   { TYPE="broadcast" }
+	/POINTOPOINT/ { TYPE="pointtopoint" }
 	/mtu/ {
 			sub("^.*mtu ", "", $0)
 			MTU=$1
 		}
 	$1 == "inet" || $1 == "inet6" {
-			addr=$2
-			sub("/.*$","",addr)
-			sub("^.*/","",$2)
-			print "'$2'addr=" addr
-			print "'$2'mask=" $2
-			if (MTU != "")
-				print "'$2'mtu=" MTU
+			split($2,addr,"/")
+			other=""
 			if ($3 == "peer")
-				print "'$2'otheraddr=" $4
+				other=$4
+			print "'$2'type=" TYPE
+			print "'$2'addr=" addr[1]
+			print "'$2'mask=" addr[2]
+			print "'$2'otheraddr=" other
+			print "'$2'mtu=" MTU
 			exit 0
 		}'
 }
@@ -214,27 +217,22 @@ klipsinterface() {
 	then
 		ipsec tncfg --attach --virtual $virt --physical $phys
 		# configure all the IPv4/IPv6 addresses (including point-to-point)
-		ip addr show dev $phys | awk '$1 == "inet" || $1 == "inet6" {
+		ip addr show dev $phys \
+		| awk '$1 == "inet" || ($1 == "inet6" && !/ dynamic/) {
 				cmd = "ip addr add"
-		        	for (i = 2; i < NF; i++)
-					cmd = cmd " " $i
+				sub("/.*","",$2)
+				for (i = 2; i < NF; i++) {
+					if ($i == "brd" || $i == "peer")
+						i++
+					else
+						cmd = cmd " " $i
+				}
 				if ($NF != phys)
 					cmd = cmd " " $NF
 				cmd = cmd " dev " virt "> /dev/null"
 				system(cmd)
 			}' phys=$phys virt=$virt
 		ip link set up dev $virt
-        fi
-
-        # do we have to fix the route metric for this device?
-        maxmetric=$(ip route show $phys_otheraddr/$phys_mask 2> /dev/null | sed -n -e 's/.*metric \([0-9]\+\)/\1/p' | sort -n | tail -n1)
-        if [ -n "$maxmetric" ] ; then
-                # If there are other none-zero-metric routes that match this spec
-                # (the case on Ubuntu 10.04, Lucid) then move the route to the end.
-                newmetric=$(( $maxmetric + 1))
-                oldroute=$(ip route show $phys_otheraddr/$phys_mask dev $virt)
-                ip route del $oldroute dev $virt
-                ip route add $oldroute dev $virt metric $newmetric
         fi
 
         # Double check the mtu is not 0 - if it is set it to a saner default
@@ -408,4 +406,5 @@ do
 	esac
 done
 
+# vim: set noet sw=8 ts=8
 exit 0

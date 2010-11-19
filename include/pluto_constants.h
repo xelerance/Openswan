@@ -184,7 +184,7 @@ typedef enum {
 #define IMPAIR_SA_CREATION LELEM(IMPAIR0+4)     /* fail all SA creation */
 #define IMPAIR_DIE_ONINFO  LELEM(IMPAIR0+5)     /* cause state to be deleted upon receipt of information payload */
 #define IMPAIR_JACOB_TWO_TWO LELEM(IMPAIR0+6)   /* cause pluto to send all messages twice. */
-                                                /* cause pluto to send all messages twice. */
+#define IMPAIR_SHARED_PHASE1 LELEM(IMPAIR0+7)   /* cause pluto to never share a phase1 connection */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */
