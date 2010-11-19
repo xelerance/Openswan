@@ -643,6 +643,8 @@
       <arg choice="opt">--impair-die-oninfo</arg>
 
       <arg choice="opt">--impair-jacob-two-two</arg>
+
+      <arg choice="opt">--impair-shared-phase1</arg>
     </cmdsynopsis>
 
     <cmdsynopsis>

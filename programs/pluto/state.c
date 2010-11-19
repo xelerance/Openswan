@@ -601,9 +601,7 @@ static void delete_state_function(struct state *this
 }
 
 /*
- * delete all states that were created for a given connection.
- * if relations == TRUE, then also delete states that share
- * the same phase 1 SA.
+ * 
  */
 static bool same_phase1_sa_relations(struct state *this
 				     , struct connection *c, void *arg
@@ -611,6 +609,12 @@ static bool same_phase1_sa_relations(struct state *this
 {
     so_serial_t *pparent_sa = (so_serial_t *)arg;
     so_serial_t parent_sa = *pparent_sa;
+
+    if (cur_debugging & IMPAIR_SHARED_PHASE1)
+      {
+	/* lie so we never share a phase1, used for benchmarking */
+	return FALSE;
+      }
 
     return (this->st_connection == c
 	    || (parent_sa != SOS_NOBODY 
@@ -642,15 +646,19 @@ void delete_states_dead_interfaces(void)
 }
 
 /*
- * delete all states that were created for a given connection.
- * if relations == TRUE, then also delete states that share
- * the same phase 1 SA.
+ * 
  */
 static bool same_phase1_sa(struct state *this,
 			   struct connection *c
 			   , void *arg UNUSED
 			   , int pass UNUSED)
 {
+    if (cur_debugging & IMPAIR_SHARED_PHASE1)
+      {
+	/* lie so we never share a phase1, used for benchmarking */
+	return FALSE;
+      }
+
     return (this->st_connection == c);
 }
 
@@ -713,6 +721,12 @@ static bool same_phase1_no_phase2(struct state *this
 				  , void *arg
 				  , int pass)
 {
+    if (cur_debugging & IMPAIR_SHARED_PHASE1)
+      {
+	/* lie so we never share a phase1, used for benchmarking */
+	return FALSE;
+      }
+
     if(pass == 2) return FALSE;
 
     if(IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
