@@ -397,8 +397,9 @@ then
     iptables -t mangle -F NEW_IPSEC_CONN >/dev/null 2>/dev/null
     # remove any ipsecX interfaces, as we are using mastX
     # Note: currently it seems klips cannot delete ipsec0
-    ipsec tncfg --delete ipsec1 #>/dev/null 2> /dev/null
-    ipsec tncfg --delete ipsec0 #>/dev/null 2> /dev/null
+    for device in `ip -oneline link show | grep ipsec | cut -d: -f2`; do
+        ipsec tncfg --delete $device
+    done
 
 elif $klips
 then
@@ -406,7 +407,9 @@ then
 	ipsec eroute --clear
 	ipsec spi --clear
 	# remove any mastX interfaces, as we are using ipsecX
-	ipsec tncfg --delete mast0 #>/dev/null 2> /dev/null
+        for device in `ip -oneline link show | grep mast | cut -d: -f2`; do
+            ipsec tncfg --delete $device
+        done
 fi
 
 # figure out interfaces
