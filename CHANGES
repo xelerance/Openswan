@@ -13,6 +13,7 @@ v2.6.32 (unreleased)
 * Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
 * Check for USE_TRANSPORT_MODE in all received notification payloads, not just
   the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
+* Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
