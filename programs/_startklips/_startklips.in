@@ -203,18 +203,27 @@ klipsinterface() {
 	fi
 	echo "KLIPS $virt on $phys $phys_addr/$phys_mask $phys_type $phys_otheraddr mtu $phys_mtu" | logonly
 
-        # make sure this mast device exists, if not create it
-        virt_addr=
-        eval `getinterfaceinfo $virt virt_`
-        if test " $virt_addr" = " "
-        then
-                # in mast mode we just create the virtual interface
-                ipsec tncfg --create --virtual $virt
-        fi
+	if $mast
+        	# make sure this mast device exists, if not create it
+        	virt_addr=
+        	eval `getinterfaceinfo $virt virt_`
+        	if test " $virt_addr" = " "
+        	then
+                	# in mast mode we just create the virtual interface
+                	ipsec tncfg --create --virtual $virt
+        	fi
+	fi
 
         # in klips mode we attach it to the physical device
 	if $klips
 	then
+		# ipsecX might not exist yet
+		ipsec tncfg | grep $virt 
+		RETVAL=$?
+	        if [ "$RETVAL" -eq 1 ];
+		then
+			ipsec tncfg --create --virtual $virt 
+		fi
 		ipsec tncfg --attach --virtual $virt --physical $phys
 		# configure all the IPv4/IPv6 addresses (including point-to-point)
 		ip addr show dev $phys \
@@ -222,7 +231,7 @@ klipsinterface() {
 				cmd = "ip addr add"
 				sub("/.*","",$2)
 				for (i = 2; i < NF; i++) {
-					if ($i == "brd" || $i == "peer")
+					if ($i == "brd" || $i == "peer" || $i == "secondary")
 						i++
 					else
 						cmd = cmd " " $i
@@ -386,12 +395,21 @@ then
     # flush policy out
     iptables -t mangle -F IPSEC          >/dev/null 2>/dev/null
     iptables -t mangle -F NEW_IPSEC_CONN >/dev/null 2>/dev/null
+    # remove any ipsecX interfaces, as we are using mastX
+    # Note: currently it seems klips cannot delete ipsec0
+    for device in `ip -oneline link show | grep ipsec | cut -d: -f2`; do
+        ipsec tncfg --delete $device
+    done
 
 elif $klips
 then
 	# clear tables out in case dregs have been left over
 	ipsec eroute --clear
 	ipsec spi --clear
+	# remove any mastX interfaces, as we are using ipsecX
+        for device in `ip -oneline link show | grep mast | cut -d: -f2`; do
+            ipsec tncfg --delete $device
+        done
 fi
 
 # figure out interfaces

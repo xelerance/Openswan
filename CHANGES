@@ -15,6 +15,7 @@ v2.6.32 (unreleased)
          the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * TESTING:  Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
 * MAST: avoid routes towards virtual ipsecN interface [Bart/Roel]
+* KLIPS: Better interface handling in _startklips [Paul]
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
 * OCF: Fix up usage of crp_olen as returned from ocf [David]
