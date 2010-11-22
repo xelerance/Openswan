@@ -82,7 +82,7 @@ void ipsecconf_default_values(struct starter_config *cfg)
 #endif
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW; /* ikev2=yes */
-	cfg->conn_default.policy |= POLICY_SAREF_TRACK  /* sareftrack=yes */
+	cfg->conn_default.policy |= POLICY_SAREF_TRACK;  /* sareftrack=yes */
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
