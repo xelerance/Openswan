@@ -11,6 +11,7 @@ v2.6.32 (unreleased)
 * NOMMU: If pluto is started with --nofork, then also disable nhelpers [Paul]
 * NOMMU: Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
 * INTEROP: Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
+* IKEv2: Fix crasher on receiving retransmited STATE_PARENT_I2 on bad AUTH [Paul]
 * IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads,
     not just the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * TESTING:  Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
