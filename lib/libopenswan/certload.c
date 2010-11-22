@@ -255,7 +255,7 @@ load_cert(bool forcedtype, const char *filename,
 	 * as a blob, don't interpret or validate it at all
 	 *
 	 */
-	int bytes;
+	size_t bytes;
 	const FILE *fd = fopen(filename, "r");
 	    
 	if(fd == NULL) {
