@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 # postinst script for openswan
 #
 # see: dh_installdeb(1)
@@ -70,7 +70,7 @@ make_x509_cert() {
         ;;
     esac
 
-    echo -e "$6\n$7\n$8\n$9\n${10}\n${11}\n${12}\n\n\n" | \
+    printf "$6\n$7\n$8\n$9\n${10}\n${11}\n${12}\n\n\n" | \
       /usr/bin/openssl req -new -outform PEM -out $certreq \
                        -newkey rsa:$1 -nodes -keyout $3 -keyform PEM \
                        -days $2 $selfsigned >/dev/null
