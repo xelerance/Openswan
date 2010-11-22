@@ -148,7 +148,7 @@ allocate_mast_device(void)
 }
 
 static int
-init_useful_mast(ip_address addr, char *vname)
+init_useful_mast(ip_address addr UNUSED, char *vname)
 {
     int mastno;
 
@@ -299,7 +299,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		}
 
 		vname = clone_str(useful_mast_name
-				  , "virtual device name");
+				  , "virtual device name mast");
 		fd = create_socket(ifp, vname, pluto_port);
 		
 		if (fd < 0) 

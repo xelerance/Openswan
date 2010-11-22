@@ -165,7 +165,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 
 		    q->ip_dev = id;
 		    id->id_rname = clone_str(ifp->name, "real device name");
-		    id->id_vname = clone_str(ifp->name, "virtual device name");
+		    id->id_vname = clone_str(ifp->name, "virtual device name bsd");
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
