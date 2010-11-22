@@ -80,9 +80,10 @@ void ipsecconf_default_values(struct starter_config *cfg)
 #ifdef HAVE_NM
 	cfg->conn_default.options[KBF_NMCONFIGURED] = NO;
 #endif
-
+PAUL
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
-	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;
+	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW; /* ikev2=yes */
+	cfg->conn_default.policy |= POLICY_SAREF_TRACK  /* sareftrack=yes */
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
@@ -1070,7 +1071,7 @@ static int load_conn (struct starter_config *cfg
     if(conn->options_set[KBF_SAREFTRACK]) {
 	switch(conn->options[KBF_SAREFTRACK]) {
 	case sat_yes:
-	    /* this is the default for now */
+	    /* this is the default */
 	    conn->policy |= POLICY_SAREF_TRACK;
 	    break;
 	    
