@@ -255,8 +255,8 @@ load_cert(bool forcedtype, const char *filename,
 	 * as a blob, don't interpret or validate it at all
 	 *
 	 */
-	const FILE *fd = fopen(filename, "r");
 	int bytes;
+	const FILE *fd = fopen(filename, "r");
 	    
 	if(fd == NULL) {
 	    openswan_log("  can not open certificate-blob filename '%s': %s\n",
