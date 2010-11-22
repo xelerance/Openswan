@@ -269,6 +269,9 @@ load_cert(bool forcedtype, const char *filename,
 	rewind(fd);
 	cert->u.blob.ptr = alloc_bytes(cert->u.blob.len, " cert blob");
 	bytes = fread(cert->u.blob.ptr, 1, cert->u.blob.len, fd);
+	if(bytes != cert->u.blob.len)	{
+		openswan_log("  WARNING: could not fully read certificate-blob filename '%s'\n", filename);
+	}
 	fclose(fd);
     }
     return FALSE;
