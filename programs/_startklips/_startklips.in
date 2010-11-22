@@ -212,6 +212,7 @@ klipsinterface() {
         	then
                 	# in mast mode we just create the virtual interface
                 	ipsec tncfg --create --virtual $virt
+			ip link set $virt up
         	fi
 	fi
 
