@@ -86,9 +86,7 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
 		const char *type, chunk_t *blob, bool *pgp)
 {
     err_t ugh = NULL;
-    FILE *fd;
-
-    fd = fopen(filename, "r");
+    const FILE *fd = fopen(filename, "r");
     if (fd)
     {
 	int bytes;
@@ -257,10 +255,9 @@ load_cert(bool forcedtype, const char *filename,
 	 * as a blob, don't interpret or validate it at all
 	 *
 	 */
-	FILE *fd;
+	const FILE *fd = fopen(filename, "r");
 	int bytes;
 	    
-	fd = fopen(filename, "r");
 	if(fd == NULL) {
 	    openswan_log("  can not open certificate-blob filename '%s': %s\n",
 			 filename, strerror(errno));
