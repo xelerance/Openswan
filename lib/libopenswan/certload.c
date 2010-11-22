@@ -97,7 +97,7 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
 
 	if (blob->len <= 0) {
 	   if (verbose)
-		openswan_log("  discarded %s file '%s', bad size %d bytes",
+		openswan_log("  discarded %s file '%s', bad size %zu bytes",
 			type, filename, blob->len);
 	   fclose(fd);
 	   return FALSE;
