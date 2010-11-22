@@ -204,6 +204,7 @@ klipsinterface() {
 	echo "KLIPS $virt on $phys $phys_addr/$phys_mask $phys_type $phys_otheraddr mtu $phys_mtu" | logonly
 
 	if $mast
+	then
         	# make sure this mast device exists, if not create it
         	virt_addr=
         	eval `getinterfaceinfo $virt virt_`
