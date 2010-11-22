@@ -225,7 +225,7 @@ add_entry:
 
 		    q->ip_dev = id;
 		    id->id_rname = clone_str(ifp->name, "real device name");
-		    id->id_vname = clone_str(v->name, "virtual device name");
+		    id->id_vname = clone_str(v->name, "virtual device name klips");
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
