@@ -91,7 +91,7 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
     fd = fopen(filename, "r");
     if (fd)
     {
-	int bytes;
+	size_t bytes;
 	fseek(fd, 0, SEEK_END );
 	blob->len = ftell(fd);
 
@@ -106,10 +106,13 @@ load_coded_file(const char *filename, prompt_pass_t *pass,
 	rewind(fd);
 	blob->ptr = alloc_bytes(blob->len, type);
 	bytes = fread(blob->ptr, 1, blob->len, fd);
+	if(bytes != blob->len) {
+	        openswan_log("  WARNING: could not fully read certificate-blob filename '%s'\n", filename);
+	}
 	fclose(fd);
 
 	if(verbose) {
-	    openswan_log("  loaded %s file '%s' (%d bytes)", type, filename, bytes);
+	    openswan_log("  loaded %s file '%s' (%zu bytes)", type, filename, bytes);
 	}
 
 	*pgp = FALSE;
