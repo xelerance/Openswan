@@ -57,7 +57,7 @@ fi
 ###          This will go away!
 #######################################################################
 IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
-	if test " $IPSECinterfaces" = " %none" ; then IPSECinterfaces= ; fi
+IPSECinterfaces=${IPSECinterfaces%%%none}
 # IPSECsyslog	"daemon.error"
 # IPSECklipsdebug	"none"
 # IPSECplutodebug	"none"

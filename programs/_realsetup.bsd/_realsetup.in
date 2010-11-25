@@ -31,8 +31,7 @@ unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
 # defaults for "config setup" items
 IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
-	if test " $IPSECinterfaces" = " %none" ; then IPSECinterfaces= ; fi
-
+IPSECinterfaces=${IPSECinterfaces%%%none}
 # IPSECforwardcontrol	"no"
 # IPSECsyslog	"daemon.error"
 # IPSECklipsdebug	"none"
