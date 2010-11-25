@@ -15,6 +15,8 @@
 
 test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 
+LC_ALL=C export LC_ALL
+
 me='ipsec setup'		# for messages
 
 # Misc. paths (some of this should perhaps be overrideable from ipsec.conf).
@@ -40,9 +42,6 @@ ORIG_RESOLV_CONF=/etc/resolv.conf
 if [ -f ${IPSEC_EXECDIR}/vendor ]; then
     VENDOR=`cat ${IPSEC_EXECDIR}/vendor`
 fi
-
-# make sure output of (e.g.) ifconfig is in English
-unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
 if test `ip addr list|grep -c cipsec` -ne 0
 then
