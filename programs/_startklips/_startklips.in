@@ -204,6 +204,7 @@ klipsinterface() {
 	echo "KLIPS $virt on $phys $phys_addr/$phys_mask $phys_type $phys_otheraddr mtu $phys_mtu" | logonly
 
 	if $mast
+	then
         	# make sure this mast device exists, if not create it
         	virt_addr=
         	eval `getinterfaceinfo $virt virt_`
@@ -211,6 +212,7 @@ klipsinterface() {
         	then
                 	# in mast mode we just create the virtual interface
                 	ipsec tncfg --create --virtual $virt
+			ip link set $virt up
         	fi
 	fi
 
@@ -397,7 +399,7 @@ then
     iptables -t mangle -F NEW_IPSEC_CONN >/dev/null 2>/dev/null
     # remove any ipsecX interfaces, as we are using mastX
     # Note: currently it seems klips cannot delete ipsec0
-    for device in `ip -oneline link show | grep ipsec | cut -d: -f2`; do
+    for device in `ip -oneline link show | grep ipsec | cut -d: -f2 | sort -r`; do
         ipsec tncfg --delete $device
     done
 
@@ -407,7 +409,7 @@ then
 	ipsec eroute --clear
 	ipsec spi --clear
 	# remove any mastX interfaces, as we are using ipsecX
-        for device in `ip -oneline link show | grep mast | cut -d: -f2`; do
+        for device in `ip -oneline link show | grep mast | cut -d: -f2 | sort -r`; do
             ipsec tncfg --delete $device
         done
 fi

@@ -1651,7 +1651,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(authstat != STF_OK) {
 	    openswan_log("RSA authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
-	    return STF_FAIL;
+	    return STF_FATAL;
 	}
 	break;
     }
@@ -1664,7 +1664,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(authstat != STF_OK) {
 	    openswan_log("PSK authentication failed AUTH mismatch!");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
-	    return STF_FAIL;
+	    return STF_FATAL;
 	}
 	break;
     }
@@ -1672,7 +1672,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	openswan_log("authentication method: %s not supported"
 		     , enum_name(&ikev2_auth_names
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
-	return STF_FAIL;
+	return STF_FATAL;
     }
 
     /* good. now create child state */

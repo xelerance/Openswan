@@ -184,7 +184,7 @@ openswan_exit_log_errno_routine(int e, const char *message, ...)
 void
 openswan_log_abort(const char *file_str, int line_no)
 {
-	openswan_loglog(RC_LOG_SERIOUS, "ABORT at %s:%lu", file_str, line_no);
+	openswan_loglog(RC_LOG_SERIOUS, "ABORT at %s:%d", file_str, line_no);
 	abort();
 }
 

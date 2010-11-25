@@ -7,14 +7,19 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.32 (unreleased)
 * Remove -DLEAK_DETECTIVE forced by default [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
-* NOMMU: Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support an arm-elf-gcc compiler [Paul]
+* NOMMU: Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support arm-elf-gcc [Paul]
 * NOMMU: If pluto is started with --nofork, then also disable nhelpers [Paul]
 * NOMMU: Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
 * INTEROP: Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
-* IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads, not just
-         the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
+* IKEv2: Fix crasher on receiving retransmited STATE_PARENT_I2 on bad AUTH [Paul]
+* IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads,
+    not just the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * TESTING:  Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
+* MAST: The mastX interface no longer gets/needs an IP address [Paul]
 * MAST: avoid routes towards virtual ipsecN interface [Bart/Roel]
+* SAREF: set sareftrack=yes as the default policy [Paul]
+* Fix printf format arguments [Simon]
+* Fix for:  either "local" is duplicate, or "secondary" is a garbage [Simon]
 * KLIPS: Better interface handling in _startklips [Paul]
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]

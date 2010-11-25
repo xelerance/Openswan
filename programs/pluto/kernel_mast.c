@@ -148,7 +148,7 @@ allocate_mast_device(void)
 }
 
 static int
-init_useful_mast(ip_address addr, char *vname)
+init_useful_mast(ip_address addr UNUSED, char *vname)
 {
     int mastno;
 
@@ -163,7 +163,14 @@ init_useful_mast(ip_address addr, char *vname)
 	mastdevice[mastno]=MAST_INUSE;
 	pfkey_plumb_mast_device(mastno);
     }
-    
+
+
+#if 0
+    /*
+     * The mast interface does not need an IP address, as we route
+     *  into it using using route table 50 from the main routing table
+     */
+
     /* now configure an IP address on the mast number */
     {
 	char cmd[512];
@@ -176,6 +183,7 @@ init_useful_mast(ip_address addr, char *vname)
 	
 	invoke_command("plumb","", cmd);
     }
+#endif
     return mastno;
 }
 
@@ -291,7 +299,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		}
 
 		vname = clone_str(useful_mast_name
-				  , "virtual device name");
+				  , "virtual device name mast");
 		fd = create_socket(ifp, vname, pluto_port);
 		
 		if (fd < 0) 
