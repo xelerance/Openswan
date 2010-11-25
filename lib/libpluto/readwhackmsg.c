@@ -30,7 +30,7 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	int abuflen;
 
-	if(fread(&a, 4, 2, record) == 0) ; /* eat time stamp */
+	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
 	
 	/* account for this header we just consumed */
