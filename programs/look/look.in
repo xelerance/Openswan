@@ -12,7 +12,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: look.in,v 1.35 2005/08/25 22:27:06 paul Exp $
+
+LC_ALL=C export LC_ALL
 
 info=/var/run/pluto/ipsec.info
 me="ipsec look"
@@ -21,9 +22,6 @@ case "$1" in
 --help)		echo "Usage: ipsec look" ; exit 0	;;
 --version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
 esac
-
-# clear out variables that have strange effects on sort etc.
-unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
 # Pick up IPsec configuration etc.
 eval `ipsec addconn --varprefix IPSEC --configsetup`
