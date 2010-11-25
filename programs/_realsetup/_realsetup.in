@@ -13,6 +13,8 @@
 # for more details.
 #
 
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
+
 me='ipsec setup'		# for messages
 
 # Misc. paths (some of this should perhaps be overrideable from ipsec.conf).

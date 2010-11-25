@@ -12,7 +12,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: ipsec.in,v 1.38 2004/12/10 12:38:29 paul Exp $
+
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 
 # where the private directory and the config files are
 IPSEC_EXECDIR="${IPSEC_EXECDIR-@IPSEC_EXECDIR@}"

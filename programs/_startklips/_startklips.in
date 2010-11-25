@@ -14,6 +14,8 @@
 # for more details.
 #
 
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
+
 me='ipsec _startklips'		# for messages
 
 # KLIPS-related paths

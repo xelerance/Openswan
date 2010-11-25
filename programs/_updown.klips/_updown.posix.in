@@ -19,9 +19,9 @@
 # that, and use the (left/right)updown parameters in ipsec.conf to make
 # FreeS/WAN use yours instead of this default one.
 
-
 # For explanation of how this is invoked, see ipsec_pluto(8) man page
 
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 
 # check interface version
 case "$PLUTO_VERSION" in

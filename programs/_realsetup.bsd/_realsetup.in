@@ -12,7 +12,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.50 2005/08/26 14:49:01 ken Exp $
+
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 
 me='ipsec setup'		# for messages
 

@@ -22,6 +22,8 @@
 # that, and use the (left/right)updown parameters in ipsec.conf to make
 # FreeS/WAN use yours instead of this default one.
 
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
+
 LC_ALL=C export LC_ALL
 
 # things that this script gets (from ipsec_pluto(8) man page)
