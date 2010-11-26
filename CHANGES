@@ -14,7 +14,6 @@ v2.6.32 (unreleased)
 * IKEv2: Fix crasher on receiving retransmited STATE_PARENT_I2 on bad AUTH [Paul]
 * IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads,
     not just the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
-* TESTING:  Added --impair-shared-phase1 option to pluto for benchmarking [Paul]
 * MAST: The mastX interface no longer gets/needs an IP address [Paul]
 * MAST: avoid routes towards virtual ipsecN interface [Bart/Roel]
 * SAREF: set sareftrack=yes as the default policy [Paul]
