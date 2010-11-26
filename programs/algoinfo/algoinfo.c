@@ -384,7 +384,6 @@ static struct option const longopts[] =
 int
 main(int argc, char *argv[])
 {
-	const char spi_c_version[] = "RCSID $Id: algoinfo.c,v 1.1 2004/04/29 04:13:02 mcr Exp $";
 	char *endptr;
 	__u32 spi = 0;
 	int c, previous = -1;
@@ -922,7 +921,7 @@ main(int argc, char *argv[])
 			usage(program_name, stderr);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "%s, %s\n", program_name, spi_c_version);
+			fprintf(stdout, "%s, %s\n", program_name, ipsec_version_code());
 			exit(1);
 		case '+': /* optionsfrom */
 			optionsfrom(optarg, &argc, &argv, optind, stderr);
