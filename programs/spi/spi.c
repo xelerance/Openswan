@@ -525,7 +525,8 @@ main(int argc, char *argv[])
 	u_int16_t sport, dport;
 	uint32_t life[life_maxsever][life_maxtype];
 	char *life_opt[life_maxsever][life_maxtype];
-        struct stat sts;
+	struct stat sts;
+	struct sadb_builds sab;
 	
 	progname = argv[0];
 	mypid = getpid();
@@ -1337,16 +1338,19 @@ main(int argc, char *argv[])
 		encryptalg = SADB_EALG_NONE;
 	}
 	if(!(alg == XF_CLR /* IE: pfkey_msg->sadb_msg_type == SADB_FLUSH */)) {
-	    struct sadb_builds sab = {
-		.sa_base.sadb_sa_exttype = SADB_EXT_SA,
-		.sa_base.sadb_sa_spi     = htonl(spi),
-		.sa_base.sadb_sa_replay  = replay_window,
-		.sa_base.sadb_sa_state   = K_SADB_SASTATE_MATURE,
-		.sa_base.sadb_sa_auth    = authalg,
-		.sa_base.sadb_sa_encrypt = encryptalg,
-		.sa_base.sadb_sa_flags   = 0,
-		.sa_base.sadb_x_sa_ref   = IPSEC_SAREF_NULL,
-	    };
+		sab.sa_base.sadb_sa_len        = 0;
+		sab.sa_base.sadb_sa_exttype    = SADB_EXT_SA;
+		sab.sa_base.sadb_sa_spi        = htonl(spi);
+		sab.sa_base.sadb_sa_replay     = replay_window;
+		sab.sa_base.sadb_sa_state      = K_SADB_SASTATE_MATURE;
+		sab.sa_base.sadb_sa_auth       = authalg;
+		sab.sa_base.sadb_sa_encrypt    = encryptalg;
+		sab.sa_base.sadb_sa_flags      = 0;
+		sab.sa_base.sadb_x_sa_ref      = IPSEC_SAREF_NULL;
+		sab.sa_base.sadb_x_reserved[0] = 0;
+		sab.sa_base.sadb_x_reserved[1] = 0;
+		sab.sa_base.sadb_x_reserved[2] = 0;
+		sab.sa_base.sadb_x_reserved[3] = 0;
 
 	    if((error = pfkey_sa_builds(&extensions[SADB_EXT_SA],sab))) {
 		fprintf(stderr, "%s: Trouble building sa extension, error=%d.\n",
