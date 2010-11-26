@@ -244,6 +244,12 @@ umlXhost	nat-pluto-06		good
 # Test of NAT traversal, with IP address change during negotiation.
 umlXhost	nat-pluto-07		good
 
+# Test of NAT traversal, using vnet: syntax
+umlXhost	nat-pluto-08		good
+
+# Test of NAT traversal, using vnet: syntax with an added subnet per-conn
+umlXhost	nat-pluto-09		good
+
 #
 # Test of NAT traversal w/DPD
 umlXhost	nat-dpd-pluto-01	good
