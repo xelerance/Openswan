@@ -4,7 +4,7 @@ Version: IPSECBASEVERSION
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
-
+%{!?buildefence: %{expand: %%define buildefence 0}}
 # nss build
 %{!?buildnss: %{expand: %%define buildnss 0}}
 
@@ -30,6 +30,9 @@ BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
 %if %{buildnss}
 BuildRequires: nss-devel >= 3.12.6-2, nspr-devel fipscheck-devel, libcap-ng-devel
 Requires: nss-tools
+%endif
+%if %{buildefence}
+BuildRequires: ElectricFence
 %endif
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
@@ -73,9 +76,15 @@ kernels.
 #sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 
 %build
+%if %{buildefence}
+ %define efence "-lefence"
+%else
+ %define efence ""
+%endif
+
 %{__make} \
-  USERCOMPILE="-g %{optflags} -fPIE -pie" \
-  USERLINK="-g -pie" \
+  USERCOMPILE="-g %{optflags} %{efence} -fPIE -pie" \
+  USERLINK="-g -pie %{efence}" \
   HAVE_THREADS="true" \
 %if %{buildnss}
   USE_LIBNSS="true" \
