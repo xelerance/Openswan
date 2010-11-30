@@ -233,7 +233,8 @@ klipsinterface() {
 		ip addr show dev $phys \
 		| awk '$1 == "inet" || ($1 == "inet6" && !/ dynamic/) {
 				cmd = "ip addr add"
-				sub(" [^ ]+:[^ ]+"," ",$0)
+				if ($1 == "inet")
+					sub(" [^ ]+:[^ ]+"," ",$0)
 				sub("/.*","",$2)
 				for (i = 2; i < NF; i++) {
 					if ($i == "brd" || $i == "peer" || $i == "secondary")
