@@ -13,6 +13,8 @@
 # for more details.
 #
 
+LC_ALL=C export LC_ALL
+
 LOGS=${LOGS-/var/log}
 CONFS=${IPSEC_CONFS-/etc}
 CONFDDIR=${IPSEC_CONFDDIR-/etc/ipsec.d}
@@ -37,9 +39,6 @@ case "$1" in
 --version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
 --maxlines)     maxlines=$2; shift;;
 esac
-
-# make sure output is in English
-unset LANG LANGUAGE LC_ALL LC_MESSAGES
 
 # log-location guesser, results in $findlog_file and $findlog_startline
 # Fine point:  startline is the *last* line containing "string", or

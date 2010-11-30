@@ -70,7 +70,8 @@ static const struct option long_opts[] = {
 
 int maxpacketcount=0;
 
-int open_udp_sock(unsigned short port)
+static
+int open_udp_sock(const unsigned short port)
 {
 	struct sockaddr_in s;
 	int one;
@@ -103,11 +104,13 @@ int open_udp_sock(unsigned short port)
 	return fd;
 }
 
-int open_tcp_sock(unsigned short port)
+static
+int open_tcp_sock(const unsigned short port UNUSED)
 {
 	return -1;
 }
 
+static
 int udp_recv_loop(int udpsock)
 {
 	int packetcount =0;
@@ -226,6 +229,7 @@ int udp_recv_loop(int udpsock)
 }
 	
 
+static
 void dump_policyreply(struct ipsec_policy_cmd_query *q)
 {
   char src[ADDRTOT_BUF], dst[ADDRTOT_BUF];

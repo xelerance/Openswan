@@ -78,11 +78,11 @@ int (*pfkey_error_func)(const char *message, ...) PRINTF_LIKE(1);
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
-struct satype_tbl {
+static struct satype_tbl {
 	uint8_t proto;
 	uint8_t satype;
 	char* name;
-} static satype_tbl[] = {
+} satype_tbl[] = {
 #ifdef __KERNEL__
 	{ IPPROTO_ESP,	K_SADB_SATYPE_ESP,	"ESP"  },
 	{ IPPROTO_AH,	K_SADB_SATYPE_AH,		"AH"   },

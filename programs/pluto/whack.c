@@ -531,9 +531,8 @@ enum option_enums {
     DBGOPT_IMPAIR_SA_CREATION,  /* make all SA creation fail */
     DBGOPT_IMPAIR_DIE_ONINFO,   /* cause state to be deleted upon receipt of information payload */
     DBGOPT_IMPAIR_JACOB_TWO_TWO, /* cause pluto to send all messages twice */
-    DBGOPT_IMPAIR_SHARED_PHASE1, /* cause pluto to never share a phase1 - used for benchmarking */
 
-#   define DBGOPT_LAST DBGOPT_IMPAIR_SHARED_PHASE1
+#   define DBGOPT_LAST DBGOPT_IMPAIR_DIE_ONINFO
 #endif
 
 };
@@ -740,7 +739,6 @@ static const struct option long_opts[] = {
     { "impair-sa-fail",    no_argument, NULL, DBGOPT_IMPAIR_SA_CREATION + OO },
     { "impair-die-oninfo", no_argument, NULL, DBGOPT_IMPAIR_DIE_ONINFO  + OO },
     { "impair-jacob-two-two", no_argument, NULL, DBGOPT_IMPAIR_JACOB_TWO_TWO + OO },
-    { "impair-shared-phase1", no_argument, NULL, DBGOPT_IMPAIR_SHARED_PHASE1 + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
     { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
@@ -1725,7 +1723,6 @@ main(int argc, char **argv)
 	case DBGOPT_IMPAIR_SA_CREATION:	/* --impair-sa-creation */
 	case DBGOPT_IMPAIR_DIE_ONINFO:	/* --impair-die-oninfo */
 	case DBGOPT_IMPAIR_JACOB_TWO_TWO: /* --impair-jacob-two-two */
-	case DBGOPT_IMPAIR_SHARED_PHASE1: /* --impair-shared-phase1 */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif

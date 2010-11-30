@@ -433,7 +433,6 @@ main(int argc, char **argv)
 	    { "impair-bust-mi2", no_argument, NULL, IMPAIR_BUST_MI2 + DBG_OFFSET },
 	    { "impair-bust-mr2", no_argument, NULL, IMPAIR_BUST_MR2 + DBG_OFFSET },
 	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
-	    { "impair-shared-phase1", no_argument, NULL, IMPAIR_SHARED_PHASE1 + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
 	    };

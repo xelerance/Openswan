@@ -47,6 +47,8 @@
 # description: IPsec provides encrypted and authenticated communications; \
 # KLIPS is the kernel half of it, Pluto is the user-level management daemon.
 
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
+
 prog='ipsec setup'		# for messages
 
 # where the private directory and the config files are

@@ -28,9 +28,9 @@ void readwhackmsg(char *infile)
 	err_t ugh = NULL;
         struct whackpacker wp;
 	struct whack_message m1;
-	int abuflen;
+	size_t abuflen;
 
-	if(fread(&a, 4, 2, record) == 0) ; /* eat time stamp */
+	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
 	
 	/* account for this header we just consumed */
@@ -40,8 +40,8 @@ void readwhackmsg(char *infile)
 	abuflen = (plen + 3) & ~0x3;
 
 	if(abuflen > sizeof(m1)) {
-	    fprintf(stderr, "whackmsg file has too big a record=%u > %lu\n"
-		    , abuflen, (long unsigned) sizeof(m1));
+	    fprintf(stderr, "whackmsg file has too big a record=%zu > %zu\n"
+		    , abuflen, sizeof(m1));
 	    exit(6);
 	}
 

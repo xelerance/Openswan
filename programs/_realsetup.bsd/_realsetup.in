@@ -12,7 +12,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: _realsetup.in,v 1.50 2005/08/26 14:49:01 ken Exp $
+
+test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
+
+LC_ALL=C export LC_ALL
 
 me='ipsec setup'		# for messages
 
@@ -25,13 +28,9 @@ info=/var/run/pluto/ipsec.info
 
 kamepfkey=/proc/net/pfkey
 
-# make sure output of (e.g.) ifconfig is in English
-unset LANG LANGUAGE LC_ALL LC_MESSAGES
-
 # defaults for "config setup" items
 IPSECinterfaces=${IPSECinterfaces:-%defaultroute}
-	if test " $IPSECinterfaces" = " %none" ; then IPSECinterfaces= ; fi
-
+IPSECinterfaces=${IPSECinterfaces%%%none}
 # IPSECforwardcontrol	"no"
 # IPSECsyslog	"daemon.error"
 # IPSECklipsdebug	"none"

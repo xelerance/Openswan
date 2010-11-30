@@ -1,0 +1,5 @@
+This is a test of NAT-traversal.
+
+This test is identical to nat-pluto-01, except we now use a
+rightsubnet=vnet:%priv setup.
+
