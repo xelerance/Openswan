@@ -1184,7 +1184,7 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 enum ipsec_xmit_value
 ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 {
-	unsigned int old_tot_len;
+	unsigned int old_tot_len, tot_len;
 	int flags = 0;
 
 #ifdef CONFIG_KLIPS_OCF
@@ -1192,9 +1192,15 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 		return(ipsec_ocf_xmit(ixs));
 #endif
 
-	old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+#ifdef CONFIG_IPV6
+	if (osw_ip_hdr_version(ixs) == 6)
+		old_tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len)
+	                + sizeof(struct ipv6hdr);
+	else
+#endif
+		old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+	ixs->ipsp->ips_comp_ratio_dbytes += old_tot_len;
 
-	ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
 	ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
 #ifdef NET_21
@@ -1203,15 +1209,26 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 	ixs->iph = ixs->skb->ip_hdr;
 #endif /* NET_21 */
 
-	ixs->ipsp->ips_comp_ratio_cbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
+#ifdef CONFIG_IPV6
+	if (osw_ip_hdr_version(ixs) == 6) {
+		int nexthdroff;
+		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+				((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
+				&nexthdr);
+		tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
+	} else
+#endif
+		tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+	ixs->ipsp->ips_comp_ratio_cbytes += tot_len;
 
 	if (debug_tunnel & DB_TN_CROUT)
 	{
-		if (old_tot_len > ntohs(osw_ip4_hdr(ixs)->tot_len))
+		if (old_tot_len > tot_len)
 			KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 					"klips_debug:ipsec_xmit_encap_once: "
 					"packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
-					old_tot_len, ntohs(osw_ip4_hdr(ixs)->tot_len),
+					old_tot_len, tot_len,
 					ntohs(((struct ipcomphdr*)(((char*)osw_ip4_hdr(ixs)) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
 					ntohl(ixs->ipsp->ips_said.spi),
 					(__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));

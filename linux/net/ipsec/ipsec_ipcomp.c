@@ -191,17 +191,20 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 	return IPSEC_RCV_OK;
 }
 
+#if 0
 enum ipsec_xmit_value
 ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 {
   unsigned int flags = 0;
-  unsigned int tot_len, old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+  unsigned int tot_len, old_tot_len;
 
+#ifdef CONFIG_IPV6
   if (osw_ip_hdr_version(ixs) == 6)
-    ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip6_hdr(ixs)->payload_len)
-	                + sizeof(struct ipv6hdr);
+    old_tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
   else
-    ixs->ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(ixs)->tot_len);
+#endif
+    old_tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+  ixs->ipsp->ips_comp_ratio_dbytes += old_tot_len;
 
   ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
@@ -211,10 +214,21 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   ixs->iph = (void *)ixs->skb->ip_hdr;
 #endif /* NET_21 */
   
-  if (osw_ip_hdr_version(ixs) == 6)
+#ifdef CONFIG_IPV6
+  if (osw_ip_hdr_version(ixs) == 6) {
+	int nexthdroff;
+	unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+	nexthdroff = ipv6_skip_exthdr(ixs->skb,
+		((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
+		&nexthdr);
+	ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
     tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
-  else
+  } else
+#endif
+  {
+	ixs->iphlen = osw_ip4_hdr(ixs)->ihl << 2;
     tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
+  }
   ixs->ipsp->ips_comp_ratio_cbytes += tot_len;
   
   if (debug_tunnel & DB_TN_CROUT)
@@ -236,15 +250,18 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 
   return IPSEC_XMIT_OK;
 }
+#endif
 
 struct xform_functions ipcomp_xform_funcs[]={
 	{
 		protocol:           IPPROTO_COMP,
 		rcv_checks:  ipsec_rcv_ipcomp_checks,
 		rcv_decrypt: ipsec_rcv_ipcomp_decomp,
+#if 0
 		xmit_setup:  ipsec_xmit_ipcomp_setup,
 		xmit_headroom: 0,
 		xmit_needtailroom: 0,
+#endif
 	},
 };
 

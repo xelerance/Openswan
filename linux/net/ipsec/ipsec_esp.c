@@ -401,6 +401,7 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 	return IPSEC_RCV_OK;
 }
 
+#if 0
 /*
  *
  */
@@ -546,11 +547,11 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     return IPSEC_XMIT_AH_BADALG;
   }
 
-  printk("IS THIS CODE EVER CALLED?\n");
   skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, espp));
 
   return IPSEC_XMIT_OK;
 }
+#endif
 
 
 struct xform_functions esp_xform_funcs[]={
@@ -561,9 +562,11 @@ struct xform_functions esp_xform_funcs[]={
 		rcv_calc_auth:      ipsec_rcv_esp_authcalc,
 		rcv_decrypt:        ipsec_rcv_esp_decrypt,
 
+#if 0
 		xmit_setup:         ipsec_xmit_esp_setup,
 		xmit_headroom:      sizeof(struct esphdr),
 		xmit_needtailroom:  1,
+#endif
 	},
 };
 
