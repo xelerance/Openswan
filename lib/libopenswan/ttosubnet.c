@@ -54,17 +54,9 @@ ip_subnet *dst;
 	if (srclen == 0)
 		return "empty string";
 
-	switch (af) {
-	case AF_INET:
-		nbits = 32;
-		break;
-	case AF_INET6:
-		nbits = 128;
-		break;
-	default:
-		return "unknown address family in ttosubnet";
-		break;
-	}
+	/* you cannot use af==0 and src=0/0, makes no sense as will it be AF_INET */
+	if (af == 0 && srclen == DEFLEN && strncmp(src, def, srclen) == 0)
+		return "unknown address family with 0/0 subnet not allowed.";
 
 	if (srclen == DEFLEN && strncmp(src, def, srclen) == 0) {
 		src = (af == AF_INET) ? defis4 : defis6;
@@ -79,6 +71,21 @@ ip_subnet *dst;
 	oops = ttoaddr(src, slash-src, af, &addrtmp);
 	if (oops != NULL)
 		return oops;
+
+	if (af == 0)
+		af = ip_address_family(&addrtmp);
+
+	switch (af) {
+	case AF_INET:
+		nbits = 32;
+		break;
+	case AF_INET6:
+		nbits = 128;
+		break;
+	default:
+		return "unknown address family in ttosubnet";
+		break;
+	}
 
 	/* extract port, as last : */
 	colon = memchr(mask, ':', mlen);
