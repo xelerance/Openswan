@@ -350,14 +350,14 @@ ipsec_ocf_comp_sa_init(struct ipsec_sa *ipsp, int compalg)
 	cric.cri_alg = ipsec_ocf_compalg(compalg);
 
 	if (! cric.cri_alg) {
-		KLIPS_ERROR(debug_pfkey, "klips_debug:ipsec_ocf_comp_sa_init: "
+		KLIPS_PRINT(debug_pfkey, "klips_debug:ipsec_ocf_comp_sa_init: "
 				"invalid compalg=%d given\n", compalg);
 		return 0;
 	}
 
 	error = crypto_newsession(&ipsp->ocf_cryptoid, &cric, ipsec_ocf_crid);
 	if (error) {
-		KLIPS_ERROR(debug_pfkey, "klips_debug:ipsec_ocf_comp_sa_init: "
+		KLIPS_PRINT(debug_pfkey, "klips_debug:ipsec_ocf_comp_sa_init: "
 				"crypto_newsession failed 0x%x\n", error);
 		return 0;
 	}
@@ -756,7 +756,7 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 	crp->crp_opaque = (caddr_t) irs;
   rcv_migrate:
 	if ((err = crypto_dispatch(crp))){
-		KLIPS_ERROR(debug_rcv, "crypto_dispatch rcv failure %u\n", err);
+		KLIPS_PRINT(debug_rcv, "crypto_dispatch rcv failure %u\n", err);
 		crypto_freereq(crp);
 		return IPSEC_RCV_REALLYBAD;
 	}
@@ -1199,7 +1199,7 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 	crp->crp_opaque = (caddr_t) ixs;
   xmit_migrate:
 	if ((err = crypto_dispatch(crp))){
-		KLIPS_ERROR(debug_tunnel&DB_TN_XMIT,
+		KLIPS_PRINT(debug_tunnel&DB_TN_XMIT,
 				"crypto_dispatch xmit failure %u\n", err);
 		crypto_freereq(crp);
 		return IPSEC_XMIT_ERRMEMALLOC;
