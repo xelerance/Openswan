@@ -456,6 +456,11 @@ ipsec_cleanup(void)
  	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
+#ifdef CONFIG_IPV6
+ 	if (openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP) < 0)
+		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
+		       "esp6 close: can't remove protocol\n");
+#endif
 #endif /* CONFIG_KLIPS_ESP */
 
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */
