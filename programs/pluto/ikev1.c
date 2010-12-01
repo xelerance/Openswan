@@ -1935,7 +1935,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
         case STF_INLINE:         /* this is second time through complete
 				  * state transition, so the MD has already
 				  * been freed.
-0				  */
+				  */
 	    *mdp = NULL;
 	    break;
 
