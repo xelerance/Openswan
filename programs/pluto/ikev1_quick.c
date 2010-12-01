@@ -2038,8 +2038,12 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 			    , st->st_import
 			    , RESPONDER
 			    , st->st_pfs_group->group);
-	
-	if(e != STF_SUSPEND) {
+
+	/* In the STF_INLINE, quick_inI1_outR1_cryptocontinue1 has already
+	 * called complete_v1_state_transition and it has freed *dh. It
+	 * called quick_inI1_outR1_cryptocontinue2 which did the release_md too.
+	 */
+	if(e != STF_SUSPEND && e != STF_INLINE) {
 	    if(dh->md != NULL) {
 		complete_v1_state_transition(&qke->md, e);
 		if(dh->md) release_md(qke->md);
