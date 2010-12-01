@@ -5,6 +5,7 @@ Version: IPSECBASEVERSION
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
 %{!?buildefence: %{expand: %%define buildefence 0}}
+%{!?development: %{expand: %%define development 0}}
 # nss build
 %{!?buildnss: %{expand: %%define buildnss 0}}
 
@@ -78,13 +79,15 @@ kernels.
 %build
 %if %{buildefence}
  %define efence "-lefence"
-%else
- %define efence ""
 %endif
 
 %{__make} \
-  USERCOMPILE="-g %{optflags} %{efence} -fPIE -pie" \
-  USERLINK="-g -pie %{efence}" \
+%if %{development}
+  USERCOMPILE="-g %(echo %{optflags} | sed -e s/-O./ /) %{?efence} -fPIE -pie" \
+%else
+  USERCOMPILE="-g %{optflags} %{?efence} -fPIE -pie" \
+%endif
+  USERLINK="-g -pie %{?efence}" \
   HAVE_THREADS="true" \
 %if %{buildnss}
   USE_LIBNSS="true" \
