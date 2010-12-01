@@ -1635,7 +1635,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	    case ISAKMP_NEXT_ID:
 	    case ISAKMP_NEXT_NATOA_RFC:
 		/* dump ID section */
-		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_room(&pd->pbs)));
+		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_left(&pd->pbs)));
 		break;
 	    }
 
@@ -1935,7 +1935,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
         case STF_INLINE:         /* this is second time through complete
 				  * state transition, so the MD has already
 				  * been freed.
-0				  */
+				  */
 	    *mdp = NULL;
 	    break;
 
