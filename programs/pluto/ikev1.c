@@ -1635,7 +1635,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	    case ISAKMP_NEXT_ID:
 	    case ISAKMP_NEXT_NATOA_RFC:
 		/* dump ID section */
-		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_room(&pd->pbs)));
+		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_left(&pd->pbs)));
 		break;
 	    }
 
