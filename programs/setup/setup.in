@@ -74,6 +74,9 @@ then
     export IPSEC_DIR IPSEC_CONFS IPSEC_LIBDIR IPSEC_EXECDIR
 fi
 
+# Does not make any sense at all to continue without the main binary
+test -x $IPSEC_SBINDIR/ipsec || exit 5
+
 # misc setup
 umask 022
 
@@ -81,22 +84,27 @@ mkdir -p /var/run/pluto
 
 RETVAL=0
 
-start() {
-
-    test -x $IPSEC_SBINDIR/ipsec || exit 5
+verify_config() {
     test -f $IPSEC_CONFS/ipsec.conf || exit 6
-    
+
+    config_error=`ipsec addconn --checkconfig 2>&1`
+    RETVAL=$?
+    if [ $RETVAL != 0 ]
+    then
+        echo "failed to start openswan IKE daemon - the following error occured:"
+        echo $config_error
+        exit $RETVAL
+    fi
+}
+
+start() {
+    verify_config
+
     # Pick up IPsec configuration (until we have done this, successfully, we
     # do not know where errors should go, hence the explicit "daemon.error"s.)
     # Note the "--export", which exports the variables created.
     variables=`ipsec addconn $IPSEC_CONFS/ipsec.conf --varprefix IPSEC --configsetup`
     eval $variables
-    RETVAL=$?
-    if [ $RETVAL != 0 ]
-    then
-         echo "Failed to parse config setup portion of ipsec.conf"
-         exit $RETVAL
-    fi
     
     IPSEC_confreadsection=${IPSEC_confreadsection:-setup}
     export IPSEC_confreadsection
@@ -124,18 +132,18 @@ stop() {
 }
 
 restart() {
+    verify_config
     stop
     start
 }
 
 condrestart() {
-    test -x $IPSEC_SBINDIR/ipsec || exit 5
+    verify_config
     ipsec _realsetup status || exit 0
     restart
 }
 
 status() {
-    test -x $IPSEC_SBINDIR/ipsec || exit 5
     ipsec _realsetup status
     RETVAL=$?	
     return $RETVAL
