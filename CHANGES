@@ -11,7 +11,7 @@ v2.6.32 (unreleased)
 * NOMMU: If pluto is started with --nofork, then also disable nhelpers [Paul]
 * NOMMU: Added HAVE_NO_FORK?= option to Makefile.inc (default false) [Paul]
 * INTEROP: Ignore IKEv1 notification type 40001 (Netscreen private use) [Andreas/Daniel]
-* IKEv2: Fix crasher on receiving retransmited STATE_PARENT_I2 on bad AUTH [Paul]
+* IKEv2: Fix crash on receiving retransmited STATE_PARENT_I2 on bad AUTH [Paul]
 * IKEv2: Check for USE_TRANSPORT_MODE in all received notification payloads,
     not just the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * MAST: The mastX interface no longer gets/needs an IP address [Paul]
@@ -23,8 +23,12 @@ v2.6.32 (unreleased)
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
 * OCF: Fix up usage of crp_olen as returned from ocf [David]
-* Fix for bad memory read with full debugging enable (pbs_room vs pbs_left) [Dhr]
+* OCF: Order algs correctly for processing when mixing AUTH/CIPHER algs [David]
+* Fix bad memory read with full debugging enable (pbs_room vs pbs_left) [Dhr]
 * Fix for STF_INLINE case in quick_inI1_outR1_cryptocontinue1() [Dhr]
+* KLIPS: make kpatch is more robust, less manual patching [Paul]
+* UML: Various minor fixes to get uml system back online [Paul]
+* SPEC: Add "development" define in spec file to build devel version [Tuomo]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
