@@ -23,6 +23,8 @@ v2.6.32 (unreleased)
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
 * OCF: Fix up usage of crp_olen as returned from ocf [David]
+* Fix for bad memory read with full debugging enable (pbs_room vs pbs_left) [Dhr]
+* Fix for STF_INLINE case in quick_inI1_outR1_cryptocontinue1() [Dhr]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
