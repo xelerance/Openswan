@@ -63,6 +63,7 @@ static const char *usage_string = ""
     "               [--rootdir dir] \n"
     "               [--ctlbase socketfile] \n"
     "               [--configsetup] \n"
+    "               {--checkconfig] \n"
     "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
     
     "               names\n";
@@ -93,6 +94,7 @@ static struct option const longopts[] =
 	{"search",              no_argument, NULL, 'S'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"configsetup",         no_argument, NULL, 'T'},
+	{"checkconfig",		no_argument, NULL, 'K'},
 	{"help",                no_argument, NULL, 'h'},
 	{0, 0, 0, 0}
 };
@@ -106,6 +108,7 @@ main(int argc, char *argv[])
     int all = 0;
     int search = 0;
     int typeexport = 0;
+    int checkconfig = 0;
     int listroute=0, liststart=0;
     struct starter_config *cfg = NULL;
     err_t err = NULL;
@@ -161,6 +164,10 @@ main(int argc, char *argv[])
 	    typeexport++;
 	    break;
 
+	case 'K':
+	    checkconfig++;
+	    break;
+
 	case 'C':
 	    configfile = clone_str(optarg, "config file name");
 	    break;
@@ -204,7 +211,7 @@ main(int argc, char *argv[])
     }
 
     /* if nothing to add, then complain */
-    if(optind == argc && !all && !listroute && !liststart && !search && !typeexport) {
+    if(optind == argc && !all && !listroute && !liststart && !search && !typeexport && !checkconfig) {
 	usage();
     }
 
@@ -242,7 +249,7 @@ main(int argc, char *argv[])
     err = NULL;      /* reset to no error */
     resolvip=TRUE;   /* default to looking up names */
 
-    if(typeexport || listroute || liststart || search) {
+    if(typeexport || checkconfig || listroute || liststart || search) {
 	/* but not if we have no use for them... might cause delays too! */
 	resolvip=FALSE;
     }
@@ -253,6 +260,8 @@ main(int argc, char *argv[])
 		configfile, err);
 	exit(3);
     }
+    else if(checkconfig)
+	exit(0);
 
     if(defaultroute) {
 	err_t e;

@@ -46,8 +46,17 @@ bool osw_alias_cmp(const char *needle, const char *haystack)
 			return TRUE;
 		}
 		
-		s += nlen;
-		while(*s!='\0' && *s!=' ' && *s!='\t') s++;
+        	for (;;) {
+            	s++;
+            	if (*s == '\0')
+                	break;  /* or return FALSE: we're done */
+            	if (*s == ' ' || *s == '\t') {
+                	/* at whitespace: start next scan right after */
+                	s++;
+                	break;
+            		}
+        	}
+
 	}
 	
 	return FALSE;
