@@ -603,8 +603,18 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 	/* we currently don't support any chaining across protocols */
 	switch(ipsp->ips_said.proto) {
 	case IPPROTO_ESP:
-		crde = crp->crp_desc;
-		crda = crde->crd_next;
+		/*
+		 * we are decrypting,  from the setup in ipsec_ocf_sa_init above,  we
+		 * need to flip the order of hash/cipher for recieve so that it is
+		 * hash first then decrypt.  Transmit is ok.
+		 */
+		if (crp->crp_desc && crp->crp_desc->crd_next) {
+			crda = crp->crp_desc;
+			crde = crda->crd_next;
+		} else {
+			crde = crp->crp_desc;
+			crda = crde->crd_next;
+		}
 		break;
 	case IPPROTO_COMP:
 		crdc = crp->crp_desc;
