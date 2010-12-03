@@ -31,6 +31,8 @@ v2.6.32 (unreleased)
 * KLIPS: make kpatch is more robust, less manual patching [Paul]
 * UML: Various minor fixes to get uml system back online [Paul]
 * SPEC: Add "development" define in spec file to build devel version [Tuomo]
+* DPD: move unroute_connection() before deleting it, not after it for the
+       dpdaction=clear case when the remove has vanished [dhr/paul]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
