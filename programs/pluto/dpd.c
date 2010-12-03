@@ -572,7 +572,7 @@ dpd_timeout(struct state *st)
 	    force an initiation of the conn again.  */
 	openswan_log("DPD: Putting connection into %%trap");
 	if (c->kind == CK_INSTANCE) {
-	    DBG(DBG_DPD, DBG_log("DPD: warning dpdaction=hold on instance futile - will be deleted"));"
+	    DBG(DBG_DPD, DBG_log("DPD: warning dpdaction=hold on instance futile - will be deleted"));
 	}
 	delete_states_by_connection(c, TRUE);  
 	break;
