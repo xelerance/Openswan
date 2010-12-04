@@ -925,6 +925,12 @@ main(int argc, char **argv)
 	openswan_log("LEAK_DETECTIVE support [disabled]");
 #endif
 
+#ifdef HAVE_OCF
+	openswan_log("OCF support [enabled]");
+#else
+	openswan_log("OCF support [disabled]");
+#endif
+
    /* Check for SAREF support */
 #ifdef KLIPS_MAST
 #include <ipsec_saref.h>

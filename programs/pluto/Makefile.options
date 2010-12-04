@@ -48,6 +48,10 @@ CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
 	-Wstrict-prototypes # -Wundef
 
+ifeq ($(HAVE_OCF),true)
+CFLAGS += -DHAVE_OCF
+endif
+
 # where to find klips headers and Openswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
 HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC) 

@@ -571,6 +571,9 @@ dpd_timeout(struct state *st)
 	    leak traffic.  Also, being in %trap means new packets will
 	    force an initiation of the conn again.  */
 	openswan_log("DPD: Putting connection into %%trap");
+	if (c->kind == CK_INSTANCE) {
+	    DBG(DBG_DPD, DBG_log("DPD: warning dpdaction=hold on instance futile - will be deleted"));
+	}
 	delete_states_by_connection(c, TRUE);  
 	break;
 
@@ -578,9 +581,9 @@ dpd_timeout(struct state *st)
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
-	delete_states_by_connection(c, TRUE);
 	DBG(DBG_DPD, DBG_log("DPD: unrouting connection"));
         unroute_connection(c);        /* --unroute */
+	delete_states_by_connection(c, TRUE);
 	break;
 
     case DPD_ACTION_RESTART:

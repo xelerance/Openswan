@@ -5,7 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.32 (unreleased)
-* Remove -DLEAK_DETECTIVE forced by default [Tuomo]
+* Remove by default forced -DLEAK_DETECTIVE [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
 * NOMMU: Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support arm-elf-gcc [Paul]
 * NOMMU: If pluto is started with --nofork, then also disable nhelpers [Paul]
@@ -31,6 +31,8 @@ v2.6.32 (unreleased)
 * KLIPS: make kpatch is more robust, less manual patching [Paul]
 * UML: Various minor fixes to get uml system back online [Paul]
 * SPEC: Add "development" define in spec file to build devel version [Tuomo]
+* DPD: move unroute_connection() before deleting it, not after it for the
+       dpdaction=clear case when the remote has vanished [dhr/paul]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
