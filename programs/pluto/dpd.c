@@ -573,9 +573,9 @@ dpd_timeout(struct state *st)
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
+	delete_states_by_connection(c, TRUE); /* unroute_connection may not take RT_ROUTED_TUNNEL */
 	DBG(DBG_DPD, DBG_log("DPD: unrouting connection"));
         unroute_connection(c);        /* --unroute */
-	delete_states_by_connection(c, TRUE);
 	break;
 
     case DPD_ACTION_RESTART:
