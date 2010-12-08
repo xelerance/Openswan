@@ -470,8 +470,8 @@ handle_next_timer_event(void)
     {
         if( type  == EVENT_DPD || type == EVENT_DPD_TIMEOUT)
         {
-                passert(st->st_dpd_event == ev);
-                st->st_dpd_event = NULL;
+            passert(st->st_dpd_event == ev);
+            st->st_dpd_event = NULL;
         } else {
 	    passert(st->st_event == ev);
 	    st->st_event = NULL;
