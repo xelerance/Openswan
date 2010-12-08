@@ -83,7 +83,7 @@ kernels.
 
 %{__make} \
 %if %{development}
-  USERCOMPILE="-g %(echo %{optflags} | sed -e s/-O./ /) %{?efence} -fPIE -pie" \
+   USERCOMPILE="-g %(echo %{optflags} | sed -e s/-O[0-9]*/ /) %{?efence} -fPIE -pie" \
 %else
   USERCOMPILE="-g %{optflags} %{?efence} -fPIE -pie" \
 %endif
