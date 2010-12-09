@@ -32,6 +32,7 @@ v2.6.32 (unreleased)
 * UML: Various minor fixes to get uml system back online [Paul]
 * SPEC: Add "development" define in spec file to build devel version [Tuomo]
 * DPD: DPD_ACTION_RESTART would always execute DPD_ACTION_RESTART_BY_PEER [dhr]
+* DPD: DPD_ACTION_CLEAR crash on CK_INSTANCE with -lefence [Tuomo]
 * Bugtracker bugs fixed:
    #1095 Local packets are dropped on ipsec device when marking packets in
          OUTPUT chain [Wolfgang Nothdurft]
