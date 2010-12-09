@@ -573,7 +573,11 @@ dpd_timeout(struct state *st)
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
-	/* For instance delete_states will clear */
+	/* 
+	 * For CK_INSTANCE, delete_states_by_connection() will clear 
+	 * Note that delete_states_by_connection changes c->kind but we need
+	 * to remember what it was to know if we still need to unroute after delete
+	 */
 	if (c->kind == CK_INSTANCE) {
 	    delete_states_by_connection(c, TRUE);
 	} else {
