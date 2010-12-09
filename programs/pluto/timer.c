@@ -468,12 +468,10 @@ handle_next_timer_event(void)
     passert(GLOBALS_ARE_RESET());
     if (st != NULL)
     {
-	struct connection *c;
-	c = st->st_connection;
         if( type  == EVENT_DPD || type == EVENT_DPD_TIMEOUT)
         {
-                passert(st->st_dpd_event == ev);
-                st->st_dpd_event = NULL;
+            passert(st->st_dpd_event == ev);
+            st->st_dpd_event = NULL;
         } else {
 	    passert(st->st_event == ev);
 	    st->st_event = NULL;
