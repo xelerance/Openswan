@@ -581,6 +581,7 @@ dpd_timeout(struct state *st)
 	if (c->kind == CK_INSTANCE) {
 	    delete_states_by_connection(c, TRUE);
 	} else {
+	    flush_pending_by_connection(c); /* remove any partial negotiations that are failing */
 	    delete_states_by_connection(c, TRUE);
 	    DBG(DBG_DPD, DBG_log("DPD: unrouting connection (%s)",enum_names(&connection_kind_names,c->kind)));
 	    unroute_connection(c);       /* --unroute */
