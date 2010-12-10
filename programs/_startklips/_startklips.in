@@ -422,7 +422,7 @@ fi
 for i
 do
 	case "$i" in
-	ipsec*=?*)	klipsinterface "$i"	;;
+	ipsec*=?*|mast*=?*)	klipsinterface "$i"	;;
 	%defaultroute)	defaultinterface	;;
 	*)	echo "interface \`$i' not understood"
 		exit 1
