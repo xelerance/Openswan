@@ -288,7 +288,8 @@ USE_IKEPING?=true
 
 # Build support for KEY RR 
 # this will become false in the future, as all OE sites transition to
-# using TXT instead of KEY records.  See references to 'Flag Day'
+# using IPSECKEY instead of KEY records.  See references to 'Flag Day'
+# Except this to change in Q1 2011
 USE_KEYRR?=true
 
 # Build support for Linux 2.4 and 2.6 KLIPS kernel level IPsec support
@@ -321,19 +322,17 @@ USE_PFKEYv2=true
 endif
 endif
 
-# Whether or not to use iproute2 based commands.
-# On Kernel 2.0, and early 2.2 systems you may need to either install the
-# iproute2 package, or set this to false. Required for USE_NETKEY.
+# These days, this must always be true on Linux systems, false otherwise.
 USE_IPROUTE2?=true
 
-# include support for BSD/KAME IPsec in pluto (on *BSD)
+# include support for BSD/KAME IPsec in pluto (on *BSD and OSX)
 USE_BSDKAME?=false
 
 # Build support for sending Openswan Vendor IDs
 USE_VENDORID?=true
 
 # Build aggressive mode authentication system code - both Server and Client.
-# This is off by default, since aggressive mode leads to denial of service
+# This was off by default, since aggressive mode leads to denial of service
 # attacks.
 USE_AGGRESSIVE?=true
 
@@ -345,6 +344,10 @@ USE_XAUTH?=true
 # When doing XAUTH, include PAM support as well, requires HAVE_THREADS be
 # true as well
 USE_XAUTHPAM?=false
+
+ifeq ($(USE_XAUTHPAM),true)
+HAVE_THREADS=true
+endif
 
 # Support for integrity check for binaries (requires USE_LIBNSS and fipscheck-devel)
 USE_FIPSCHECK?=false
@@ -364,7 +367,7 @@ USE_LIBCAP_NG?=false
 USE_NM?=false
 
 # Support for MODP groups described in RFC 5114
-USE_MODP_RFC5114?=false
+USE_MODP_RFC5114?=true
 
 # whether to support NAT Traversal (aka NAT-T)
 USE_NAT_TRAVERSAL?=true
@@ -398,7 +401,7 @@ USE_IPSEC_CONNECTION_LIMIT?=false
 IPSEC_CONNECTION_LIMIT?=250
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
-# or if you need it for CRL fetching or if you need it for USE_LIBNSS
+# or if you need it for CRL fetching.
 # Note: USE_LIBNSS by default uses pthreads, enabling it here will only 
 # affect it for XAUTH+PAM, and CRL. 
 HAVE_THREADS?=false
@@ -411,8 +414,12 @@ HAVE_STATSD?=false
 # Required of HAVE_OCF support
 HAVE_OPENSSL?=false
 
-# Do we have OCF available?
+# Open Cryptographic Framework support (hw crypto offload)
 HAVE_OCF?=false
+
+ifeq ($(HAVE_OCF),true)
+HAVE_OPENSSL=true
+endif
 
 # Whether or not to include TaProoM (TCL Pluto Mix) into pluto.
 # you need at least swig 1.3.24, as well as tcl libraries and includes
@@ -424,13 +431,20 @@ USE_LEAK_DETECTIVE?=false
 
 # Use dmalloc. Requires USE_LEAK_DETECTIVE
 USE_DMALLOC?=false
+ifeq ($(USE_DMALLOC),true)
+USE_LEAK_DETECTIVE=true
+endif
 
 # For Angstrom linux with broken popen() set to true. See bug #1067
 HAVE_BROKEN_POPEN?=false
 
-# For sysmems with no fork (uclibc nommu)
+# For systems with no fork (uclibc nommu)
 # requires  USE_LWRES=false
 HAVE_NO_FORK?=false
+
+ifeq ($(HAVE_NO_FORK),true)
+USE_LWRES=false
+endif
 
 NONINTCONFIG=oldconfig
 
