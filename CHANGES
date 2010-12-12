@@ -31,6 +31,7 @@ v2.6.32 (unreleased)
 * KLIPS: make kpatch is more robust, less manual patching [Paul]
 * UML: Various minor fixes to get uml system back online [Paul]
 * SPEC: Add "development" define in spec file to build devel version [Tuomo]
+* RSA: Fix generation of ipsec.secrets when missing on first startup [Paul]
 * DPD: move unroute_connection() before deleting it, not after it for the
        dpdaction=clear case when the remote has vanished [dhr/paul]
 * Bugtracker bugs fixed:
