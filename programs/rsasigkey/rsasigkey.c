@@ -76,9 +76,9 @@
 
 #ifdef HAVE_LIBNSS
 /*#define F4	65537*/	/* preferred public exponent, Fermat's 4th number */
-char usage[] = "rsasigkey [--verbose] [--random device] [--configdir dir] [--password password] nbits";
+char usage[] = "rsasigkey [--verbose] [--random device] [--configdir dir] [--password password] nbits [--hostname host] [--noopt] [--rounds num]";
 #else
-char usage[] = "rsasigkey [--verbose] [--random device] nbits";
+char usage[] = "rsasigkey [--verbose] [--random device] nbits [--hostname host] [--noopt] [--rounds num]";
 char usage2[] = "rsasigkey [--verbose] --oldkey filename";
 #endif
 struct option opts[] = {
