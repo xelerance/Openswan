@@ -647,8 +647,6 @@ lset_t
     base_debugging = DBG_NONE,	/* default to reporting nothing */
     cur_debugging =  DBG_NONE;
 
-static const struct connection *lastc = NULL;
-
 void
 extra_debugging(const struct connection *c)
 {
@@ -670,15 +668,10 @@ extra_debugging(const struct connection *c)
      * we are processing, because it may not be clear in later debugging.
      */
     if(cur_debugging) {
-	if(lastc != c) {
 	    char b1[CONN_INST_BUF];
-	    
 	    fmt_conn_instance(c, b1);
 	    DBG_log("processing connection %s%s"
 		    , c->name, b1);
-	} else {
-	    lastc = c;
-	}
     }
     
 }

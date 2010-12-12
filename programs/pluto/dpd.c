@@ -549,17 +549,9 @@ dpd_inR(struct state *p1st
 void
 dpd_timeout(struct state *st)
 {
-    int action;
     struct connection *c = st->st_connection;
-    action = st->st_connection->dpd_action;
+    int action = c->dpd_action;
     
-    /* probably wrong thing to assert here */
-    passert(action == DPD_ACTION_HOLD
-	    || action == DPD_ACTION_CLEAR
-	    || action == DPD_ACTION_RESTART
-	    || action == DPD_ACTION_RESTART_BY_PEER
-	    );
-        
     /** delete the state, which is probably in phase 2 */
     set_cur_connection(c);
 
@@ -581,9 +573,19 @@ dpd_timeout(struct state *st)
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
-	DBG(DBG_DPD, DBG_log("DPD: unrouting connection"));
-        unroute_connection(c);        /* --unroute */
-	delete_states_by_connection(c, TRUE);
+	/* 
+	 * For CK_INSTANCE, delete_states_by_connection() will clear 
+	 * Note that delete_states_by_connection changes c->kind but we need
+	 * to remember what it was to know if we still need to unroute after delete
+	 */
+	if (c->kind == CK_INSTANCE) {
+	    delete_states_by_connection(c, TRUE);
+	} else {
+	    flush_pending_by_connection(c); /* remove any partial negotiations that are failing */
+	    delete_states_by_connection(c, TRUE);
+	    DBG(DBG_DPD, DBG_log("DPD: unrouting connection (%s)",enum_names(&connection_kind_names,c->kind)));
+	    unroute_connection(c);       /* --unroute */
+	}
 	break;
 
     case DPD_ACTION_RESTART:
@@ -610,14 +612,16 @@ dpd_timeout(struct state *st)
 	delete_event(st);
 	delete_dpd_event(st);
 	event_schedule(EVENT_SA_REPLACE, 0, st);
+	break;
 
-	case DPD_ACTION_RESTART_BY_PEER:
+    case DPD_ACTION_RESTART_BY_PEER:
 	/* dpdaction=restart_by_peer - immediately renegotiate connections to the same peer. */
 	openswan_log("DPD: Restarting all connections that share this peer");
 	restart_connections_by_peer(c);
 	break;
 
-	break;
+    default:
+	bad_case(action);
     }
     reset_cur_connection();
 }

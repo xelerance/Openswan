@@ -420,13 +420,20 @@ sub cmdchecks {
     printfun "Checking for 'ip' command";
     run "which ip";
     errchk "@out";
+
     printfun "Checking /bin/sh is not /bin/dash";
-    run "cmp /bin/sh /bin/dash";
-    ($dash)=grep differ, @out;
-    if(!$dash)
-    	{ warnchk "", "WARNING"; }
-    else
-	{ errchk "OK"; }
+    if (-e "/bin/dash") {
+	run "cmp /bin/sh /bin/dash";
+	($dash)=grep(/differ/, @out);
+	if(!$dash) {
+		warnchk "", "WARNING";
+	} else {
+		errchk "OK";
+	}
+    } else {
+		errchk "OK";
+    }
+
     printfun "Checking for 'iptables' command";
     run "which iptables";
     errchk "@out";
