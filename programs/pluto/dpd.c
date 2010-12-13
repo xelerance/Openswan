@@ -59,6 +59,7 @@
 
 #include "pending.h" /* for flush_pending_by_connection */
 
+
 #include "dpd.h"
 #include "x509more.h"
 
@@ -585,7 +586,7 @@ dpd_timeout(struct state *st)
 	} else {
 	    flush_pending_by_connection(c); /* remove any partial negotiations that are failing */
 	    delete_states_by_connection(c, TRUE);
-	    DBG(DBG_DPD, DBG_log("DPD: unrouting connection (%s)",enum_names(&connection_kind_names,c->kind)));
+	    DBG(DBG_DPD, DBG_log("DPD: unrouting connection (%s)",enum_name(&connection_kind_names,c->kind)));
 	    unroute_connection(c);       /* --unroute */
 	}
 	break;
