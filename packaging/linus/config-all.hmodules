@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-all.hmodules,v 1.2 2004/08/22 20:12:46 mcr Exp $
  */
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
@@ -54,12 +53,11 @@
 #define CONFIG_KLIPS_ENC_3DES 1
 #endif
 
+/* no longer needed as of 2.6.22 and up */
+#if 0
 #ifndef CONFIG_KLIPS_NAT_TRAVERSAL
 #define CONFIG_KLIPS_NAT_TRAVERSAL 1
 #endif
-
-#ifndef CONFIG_IPSEC_NAT_TRAVERSAL
-#define CONFIG_IPSEC_NAT_TRAVERSAL 1
 #endif
 
 #ifndef CONFIG_KLIPS_ENC_AES
