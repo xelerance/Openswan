@@ -255,8 +255,8 @@ klipsinterface() {
         RETVAL=$?
         if [ "$RETVAL" -eq 0 ];
         then
-                echo "Fixup of mtu on $virt to 1452"
-                ip link set mtu 1452 dev $virt
+                echo "Fixup of mtu on $virt to 16260"
+                ip link set mtu 16260 dev $virt
         fi
 
 	# if %defaultroute, note the facts
