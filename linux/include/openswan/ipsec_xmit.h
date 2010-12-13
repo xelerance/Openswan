@@ -144,12 +144,6 @@ struct ipsec_xmit_state
 			enum ipsec_xmit_value stat);
 	int		state;
 	int		next_state;
-#ifdef CONFIG_KLIPS_OCF
-	struct work_struct	workq;
-#ifdef DECLARE_TASKLET
-	struct tasklet_struct	tasklet;
-#endif
-#endif
 #ifdef CONFIG_KLIPS_ALG
 	struct ipsec_alg_auth *ixt_a;
 	struct ipsec_alg_enc *ixt_e;

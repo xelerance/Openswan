@@ -413,6 +413,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		return NETDEV_TX_BUSY;
 	}
 
+	ixs->dev = dev;
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
@@ -433,7 +434,11 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 
-	ipsec_xmit_sanity_check_skb(ixs);
+	if (ipsec_xmit_sanity_check_skb(ixs) != IPSEC_XMIT_OK) {
+		ipsec_xmit_cleanup(ixs);
+		ipsec_xmit_state_delete(ixs);
+		return 0;
+	}
 
 	ixs->ipsp = ipsec_sa_getbyref(SAref, IPSEC_REFOTHER);
 	if(ixs->ipsp == NULL) {

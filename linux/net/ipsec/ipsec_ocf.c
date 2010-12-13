@@ -54,58 +54,44 @@ extern int debug_rcv;
 int ipsec_ocf_crid = (CRYPTOCAP_F_HARDWARE|CRYPTOCAP_F_SOFTWARE);
 
 /*
- * Tuning parameters,  the settings below appear best for
- * the IXP
+ * Tuning parameters,  CBIMM prob off for multi core and ON for single core
  */
 #define USE_BATCH 1	/* enable batch mode */
 #define USE_CBIMM 1	/* enable immediate callbacks */
-#define FORCE_QS  0	/* force use of queues for continuation of state machine */
-#ifdef DECLARE_TASKLET
-#define USE_TASKLET 1  /* use tasklet for continuation of state machine */
-#else
-#define USE_TASKLET 0  /* don't use tasklet for continuation of state machine */
-#endif
+
 /*
- * Because some OCF operations are synchronous (ie., software encryption)
- * we need to protect ourselves from distructive re-entry.  All we do
- * is track where we are at and either callback  immediately or Q the
- * callback to avoid conflicts.  This allows us to deal with the fact that
- * OCF doesn't tell us if our crypto operations will be async or sync.
+ * processing on different kernels
  */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
-#define	_INIT_WORK(wq, fn, arg)	INIT_WORK(&(wq), (void (*)(struct work_struct *))(fn))
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
-#define	_INIT_WORK(wq, fn, arg)	INIT_WORK(&(wq), (void (*)(struct work_queue *))(fn))
-#else
-#define	_INIT_WORK(wq, fn, arg)	INIT_WORK(&(wq), (void (*)(void *))(fn), (void *)(arg))
-#endif
 
-#define PROCESS_LATER(wq, sm, arg) \
-	({ \
-		_INIT_WORK(wq, sm, arg); \
-		schedule_work(&(wq)); \
-	})
+#ifdef DECLARE_TASKLET
+static struct tasklet_struct ipsec_ocf_task;
+static struct sk_buff_head ipsec_ocf_skbq;
 
-#define PROCESS_NOW(sm, arg) \
-	({ \
-		(*sm)(arg); \
-	})
+static void ipsec_ocf_skbq_process(unsigned long arg)
+{
+	void (*func)(void *arg);
+	void *this;
+	struct sk_buff *skb = skb_dequeue(&ipsec_ocf_skbq);
+	if (!skb)
+		return;
+	tasklet_schedule(&ipsec_ocf_task); /* force us to run again */
+	func = ((void **) (&skb->cb[0]))[0];
+	this = ((void **) (&skb->cb[0]))[1];
+	(*func)(this);
+}
 
-#if USE_TASKLET == 1
-	#define PROCESS_NEXT(this, wqsm, sm) ({ \
-		tasklet_init(&this->tasklet, \
-			(void (*)(unsigned long)) sm, (unsigned long)this); \
-		tasklet_schedule(&this->tasklet); \
-		})
-#elif FORCE_QS == 0
-	#define PROCESS_NEXT(this, wqsm, sm) \
-		if (in_interrupt()) { \
-			PROCESS_LATER(this->workq, wqsm, this); \
-		} else { \
-			PROCESS_NOW(sm, this); \
-		}
-#else
-	#define PROCESS_NEXT(this, wqsm, sm) PROCESS_LATER(this->workq, wqsm, this)
+static void ipsec_ocf_queue_init(void)
+{
+	skb_queue_head_init(&ipsec_ocf_skbq);
+	tasklet_init(&ipsec_ocf_task, ipsec_ocf_skbq_process, (unsigned long) 0);
+}
+
+#define ipsec_ocf_queue_task(func, this) \
+	((void **) (&(this)->skb->cb[0]))[0] = func; \
+	((void **) (&(this)->skb->cb[0]))[1] = this; \
+	skb_queue_tail(&ipsec_ocf_skbq, (this)->skb); \
+	tasklet_schedule(&ipsec_ocf_task);
+
 #endif
 
 
@@ -371,19 +357,6 @@ ipsec_ocf_sa_free(struct ipsec_sa *ipsp)
 	return 1;
 }
 
-#if USE_TASKLET == 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
-static void
-ipsec_rsm_wq(struct work_struct *work)
-{
-	struct ipsec_rcv_state *irs = container_of(work, struct ipsec_rcv_state, workq);
-	ipsec_rsm(irs);
-}
-#else
-#define	ipsec_rsm_wq	ipsec_rsm
-#endif
-#endif /* USE_TASKLET */
-
 
 static int
 ipsec_ocf_rcv_cb(struct cryptop *crp)
@@ -530,9 +503,7 @@ ipsec_ocf_rcv_cb(struct cryptop *crp)
 bail:
 	crypto_freereq(crp);
 	crp = NULL;
-
-	/* setup the rest of the processing now */
-	PROCESS_NEXT(irs, ipsec_rsm_wq, ipsec_rsm);
+	ipsec_ocf_queue_task(ipsec_rsm, irs);
 	return 0;
 }
 
@@ -758,20 +729,6 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 	return(IPSEC_RCV_PENDING);
 }
 
-#if USE_TASKLET == 0
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,20)
-static void
-ipsec_xsm_wq(struct work_struct *work)
-{
-	struct ipsec_xmit_state *ixs = container_of(work, struct ipsec_xmit_state, workq);
-	ipsec_xsm(ixs);
-}
-#else
-#define	ipsec_xsm_wq	ipsec_xsm
-#endif
-#endif /* USE_TASKLET */
-
-
 static int
 ipsec_ocf_xmit_cb(struct cryptop *crp)
 {
@@ -945,9 +902,7 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 bail:
 	crypto_freereq(crp);
 	crp = NULL;
-
-	/* setup the rest of the processing now */
-	PROCESS_NEXT(ixs, ipsec_xsm_wq, ipsec_xsm);
+	ipsec_ocf_queue_task(ipsec_xsm, ixs);
 	return 0;
 }
 
@@ -1272,6 +1227,8 @@ void
 ipsec_ocf_init(void)
 {
 	struct ipsec_alg_supported *s;
+
+	ipsec_ocf_queue_init();
 
 	for (s = ocf_esp_algs; s->ias_name; s++) {
 		if (ipsec_ocf_check_alg(s))
