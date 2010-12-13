@@ -77,6 +77,11 @@
 # define SADB_HASHMOD	257
 #endif /* CONFIG_KLIPS_BIGGATE */
 
+/* always enable nat-traversal support on 2.6.22+ (does not need nat-t patch) */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
+# define CONFIG_IPSEC_NAT_TRAVERSAL 1
+#endif
+
 #endif /* __KERNEL__ */
 
 /*
