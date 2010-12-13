@@ -57,6 +57,8 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "whack.h"
 
+#include "pending.h" /* for flush_pending_by_connection */
+
 #include "dpd.h"
 #include "x509more.h"
 
