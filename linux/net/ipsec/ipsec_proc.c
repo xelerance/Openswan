@@ -769,6 +769,33 @@ ipsec_saref_get_info(char *buffer,
 }
 #endif
 
+#ifdef CONFIG_KLIPS_OCF
+unsigned int ocf_available = 1;
+#else
+unsigned int ocf_available = 0;
+#endif
+module_param(ocf_available,int,0644);
+
+IPSEC_PROCFS_DEBUG_NO_STATIC
+int
+ipsec_ocf_get_info(char *buffer,
+		    char **start,
+		    off_t offset,
+		    int length  IPSEC_PROC_LAST_ARG)
+{
+	int len = 0;
+	off_t begin = 0;
+
+	len += ipsec_snprintf(buffer + len,
+			      length-len, "%d\n", ocf_available);
+
+	*start = buffer + (offset - begin);	/* Start of wanted data */
+	len -= (offset - begin);			/* Start slop */
+	if (len > length)
+		len = length;
+	return len;
+}
+
 #ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 unsigned int natt_available = 1;
 #elif defined (HAVE_UDP_ENCAP_CONVERT)
@@ -1035,6 +1062,7 @@ static struct ipsec_proc_list proc_items[]={
 	{"trap_count", &proc_stats_dir,     NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_count},
 	{"trap_sendcount", &proc_stats_dir, NULL,             ipsec_stats_get_int_info, NULL, &ipsec_xmit_trap_sendcount},
 	{"natt",       &proc_net_ipsec_dir, NULL,             ipsec_natt_get_info,    NULL, NULL},
+	{"ocf",       &proc_net_ipsec_dir, NULL,             ipsec_ocf_get_info,    NULL, NULL},
 	{"version",    &proc_net_ipsec_dir, NULL,             ipsec_version_get_info,    NULL, NULL},
 #ifdef IPSEC_PROC_SHOW_SAREF_INFO
 	{"saref",      &proc_net_ipsec_dir, NULL,             ipsec_saref_get_info,    NULL, NULL},
