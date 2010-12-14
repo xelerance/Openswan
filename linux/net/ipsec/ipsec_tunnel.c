@@ -2392,14 +2392,11 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
         if (unlikely (! ixs))
                 return;
 
-        if (ixs->dev && netif_queue_stopped(ixs->dev))
-                netif_wake_queue(ixs->dev);
-
         spin_lock_bh (&ixs_cache_lock);
-
         ixs_cache_allocated_count--;
         kmem_cache_free (ixs_cache_allocator, ixs);
-
+        if (ixs->dev && netif_queue_stopped(ixs->dev))
+                netif_wake_queue(ixs->dev);
         spin_unlock_bh (&ixs_cache_lock);
 }
 
