@@ -686,7 +686,23 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 			loglog(RC_LOG_SERIOUS, "NAT-Traversal: Trying new style NAT-T");
 
 		memset(&ifr, 0, sizeof(ifr));
-		strcpy(ifr.ifr_name, "ipsec0");
+		switch(kern_interface) {
+
+			case USE_MASTKLIPS:
+				strcpy(ifr.ifr_name, "mast0");
+				break;
+			case USE_KLIPS:
+				strcpy(ifr.ifr_name, "ipsec0");
+				break;
+			case USE_NETKEY:
+				/* Let's hope we have at least one ethernet device */
+				strcpy(ifr.ifr_name, "eth0");
+				break;
+			default:
+				/* We have nothing , really prob just abort and return -1 */
+				strcpy(ifr.ifr_name, "eth0");
+				break;
+		}
 		fdp[0] = sk;
 		fdp[1] = type;
 		r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
