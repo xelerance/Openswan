@@ -27,6 +27,7 @@ v2.6.32 (unreleased)
 * OCF: Order algs correctly for processing when mixing AUTH/CIPHER algs [David]
 * OCF: Update to OCF for SMP systems to allow using multiple CPU's [David]
 * OCF: Added /proc/net/ipsec/ocf to indicate if we support OCF or not [Paul]
+* OCF: move netif_wake_queue inside the lock in ipsec_xmit_state_delete [David]
 * Fix bad memory read with full debugging enabled (pbs_room vs pbs_left) [Dhr]
 * Fix bad memory read with -lefence in osw_alias_cmp() [Dhr]
 * Fix for STF_INLINE case in quick_inI1_outR1_cryptocontinue1() [Dhr]
