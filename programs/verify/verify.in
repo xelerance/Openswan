@@ -276,7 +276,8 @@ sub installstartcheck {
 
 # This requires KLIPS NAT-T patch > 2.4.x
 	if ( -e "/proc/net/ipsec_eroute") {
-	  printfun "KLIPS detected, checking for NAT Traversal support";
+
+	  printfun "KLIPS: checking for NAT Traversal support";
 	  if ( -e "/sys/module/ipsec/parameters/natt_available") {
 		run "cat /sys/module/ipsec/parameters/natt_available";
 		if("@out" =="1\n")
@@ -288,18 +289,29 @@ sub installstartcheck {
 			{ warnchk "", "UNKNOWN"; }
 		}
 	   } else { warnchk "","UNKNOWN"; }
+
+	  printfun "KLIPS: checking for OCF crypto offload support ";
+	  if ( -e "/sys/module/ipsec/parameters/ocf_available") {
+		run "cat /sys/module/ipsec/parameters/ocf_available";
+		if("@out" =="1\n")
+		   { errchk "OK"; }
+		else {
+			{ warnchk "", "N/A"; }
+		}
+	   } else { warnchk "","UNKNOWN"; }
+
 	}
 
 # Check for SAref kernel
 	  if ( -e "/proc/net/ipsec/saref") {
-		printfun "IPsec SAref kernel support";
+		printfun "Kernel: IPsec SAref kernel support";
 		run "grep 'refinfo patch applied' /proc/net/ipsec/saref";
 		if("@out" eq "refinfo patch applied\n")
 			{ errchk "OK"; }
 		else
 			{ warnchk "", "N/A"; }
 
-		printfun "IPsec SAref Bind kernel support";
+		printfun "Kernel: IPsec SAref Bind kernel support";
 		run "grep 'bindref patch applied' /proc/net/ipsec/saref";
 		if("@out" eq "bindref patch applied\n")
 			{ errchk "OK"; }
