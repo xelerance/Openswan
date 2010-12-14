@@ -12,7 +12,7 @@ case "$1" in
 	if [ -x /usr/lib/dkms/common.postinst ]; then
 	    /usr/lib/dkms/common.postinst openswan $VERSION /usr/share/openswan-modules-dkms $ARCH $2
 
-	    if [ "`ipsec setup status | grep 'IPsec running'`" -a grep -q ipsec /proc/modules 2>/dev/null ]; then
+	    if ipsec --versioncode | grep -q '(klips)'; then
 		db_get openswan/restart
 
 		if [ "$RET" = "true" ]; then
