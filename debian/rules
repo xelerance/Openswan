@@ -194,7 +194,7 @@ install-openswan-modules-source: patch
 	cp -r CHANGES CREDITS Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(BUILDDIR)/modules/openswan"
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
-	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
+	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ packaging/ocf \
 		"$(BUILDDIR)/modules/openswan/packaging/"
 	cp -r patches/kernel/2.6.32 "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	cp -r patches/kernel/2.6.34 "$(BUILDDIR)/modules/openswan/patches/kernel/"
@@ -232,7 +232,7 @@ install-openswan-modules-dkms: patch
 	cp -r Makefile Makefile.top Makefile.inc Makefile.ver linux/ \
 		"$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)"
 	cp -r lib/libcrypto "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/lib"
-	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ \
+	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ packaging/ocf \
 		"$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/packaging/"
 	find "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/lib" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(CURDIR)/debian/openswan-modules-dkms/usr/src/openswan-$(VERSION)/config-all.h"
