@@ -404,14 +404,8 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 		
 	ixs = ipsec_xmit_state_new(dev);
-	if(ixs == NULL) {
-		/* check for something that should never happen */
-		if (!netif_queue_stopped(dev)) {
-		    netif_stop_queue(dev);
-		    printk("ipsec_mast_start_xmit: cannot TX while awake\n");
-		}
+	if(ixs == NULL)
 		return NETDEV_TX_BUSY;
-	}
 
 	ixs->dev = dev;
 	ixs->skb = skb;

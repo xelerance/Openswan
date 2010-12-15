@@ -891,14 +891,8 @@ ipsec_tunnel_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	stat = IPSEC_XMIT_ERRMEMALLOC;
 	ixs = ipsec_xmit_state_new(dev);
-	if (! ixs) {
-		/* check for something that should never happen */
-		if (!netif_queue_stopped(dev)) {
-		    netif_stop_queue(dev);
-		    printk("ipsec_tunnel_start_xmit: cannot TX while awake\n");
-		}
+	if(ixs == NULL)
 		return NETDEV_TX_BUSY;
-	}
 
 	ixs->dev = dev;
 	ixs->skb = skb;
@@ -2331,6 +2325,11 @@ ipsec_xmit_state_new (struct net_device *dev)
         spin_lock_bh (&ixs_cache_lock);
 
 	if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_count_max) {
+		/* check for something that should never happen */
+		if (!netif_queue_stopped(dev)) {
+			netif_stop_queue(dev);
+			printk("ipsec_tunnel_start_xmit: cannot TX while awake\n");
+		}
 		spin_unlock_bh (&ixs_cache_lock);
 		KLIPS_PRINT(debug_tunnel,
 			"klips_debug:ipsec_xmit_state_new: "
@@ -2395,8 +2394,13 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
         spin_lock_bh (&ixs_cache_lock);
         ixs_cache_allocated_count--;
         kmem_cache_free (ixs_cache_allocator, ixs);
+#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
         if (ixs->dev && netif_queue_stopped(ixs->dev))
                 netif_wake_queue(ixs->dev);
+#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
+        if (ixs->dev)
+                ixs->dev->tbusy = 0;
+#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
         spin_unlock_bh (&ixs_cache_lock);
 }
 

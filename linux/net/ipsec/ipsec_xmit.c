@@ -1928,14 +1928,6 @@ cleanup:
 void
 ipsec_xmit_cleanup(struct ipsec_xmit_state*ixs)
 {
-	if(ixs->dev) {
-#if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
-		netif_wake_queue(ixs->dev);
-#else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-		ixs->dev->tbusy = 0;
-#endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-	}
-
 	if(ixs->saved_header) {
 		kfree(ixs->saved_header);
 		ixs->saved_header = NULL;
