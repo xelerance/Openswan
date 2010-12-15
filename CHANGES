@@ -46,6 +46,8 @@ v2.6.32 (unreleased)
          OUTPUT chain [Wolfgang Nothdurft]
    #1160 init.d script not reporting correct exit status on config parse
          error [James Mead]
+   #1162 IKEv2 transport mode interop with racoon [PATCH] [Avesh]
+   #1170 pluto option --impair-shared-phase1 causes segfaults on --down'ing a connection
 
 v2.6.31 (October 18, 2010)
 * Fix for OCSP compile of commit 934ce6c9443832c [Paul]
