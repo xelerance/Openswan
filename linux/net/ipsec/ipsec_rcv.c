@@ -728,7 +728,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			    irs->ipdaddr_txt);
 	}
 #endif
-#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
+#if defined(CONFIG_NETFILTER)
 	skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
 		| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
@@ -1714,7 +1714,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	irs->ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
 	irs->ipsp->ips_life.ipl_packets.ipl_count += 1;
 
-#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
+#if defined(CONFIG_NETFILTER)
 	if(irs->proto == IPPROTO_ESP || irs->proto == IPPROTO_AH) {
 		skb->nfmark = IPSEC_NFMARK_IS_SAREF_BIT
 			| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))

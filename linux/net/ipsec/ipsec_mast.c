@@ -458,7 +458,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
-#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
+#if defined(CONFIG_NETFILTER)
 	if(skb->nfmark & IPSEC_NFMARK_IS_SAREF_BIT) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
@@ -504,7 +504,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->outgoing_said = ixs->ipsp->ips_said;
 
 #ifdef NETDEV_25
-#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
+#if defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000) {
 		skb->nfmark = 0;

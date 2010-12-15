@@ -2370,7 +2370,7 @@ static inline int ipsec_xmit_send2(struct sk_buff *skb)
 static inline int ipsec_xmit_send2_mast(struct sk_buff *skb)
 {
 #ifdef NETDEV_25	/* 2.6 kernels */
-#if defined(CONFIG_INET_IPSEC_SAREF) && defined(CONFIG_NETFILTER)
+#if defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000)
 		skb->nfmark = 0;
