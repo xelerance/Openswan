@@ -515,7 +515,7 @@ ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
 		printk(" \n");
 	}
 
-	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, osw_ip4_hdr(ixs));
+	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ixs->iph);
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_strip_hard_header: "
