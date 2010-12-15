@@ -31,8 +31,14 @@ def:
 	@echo
 	@echo "Commonly used build commands:"
 	@echo
-	@echo "When using KLIPS: make KERNELSRC=/usr/src/linux-2.6.18 module minstall programs install"
-	@echo "When using NETKEY: make programs install"
+	@echo "When using KLIPS:"
+	@echo " make KERNELSRC=/usr/src/linux-2.6.36 module minstall programs install"
+	@echo
+	@echo "When using KLIPS with OCF:"
+	@echo " make KERNELSRC=/usr/src/linux-2.6.36-ocf/ MODULE_DEF_INCLUDE=/usr/src/openswan-2.6.32/packaging/ocf/config-all.hmodules module minstall programs install"
+	@echo
+	@echo "When using NETKEY:"
+	@echo " make programs install"
 	@echo
 	@echo
 

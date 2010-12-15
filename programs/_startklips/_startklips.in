@@ -255,8 +255,8 @@ klipsinterface() {
         RETVAL=$?
         if [ "$RETVAL" -eq 0 ];
         then
-                echo "Fixup of mtu on $virt to 1452"
-                ip link set mtu 1452 dev $virt
+                echo "Fixup of mtu on $virt to 16260"
+                ip link set mtu 16260 dev $virt
         fi
 
 	# if %defaultroute, note the facts
@@ -419,10 +419,13 @@ then
 fi
 
 # figure out interfaces
+# note: that mast0 is not "bound" via tncfg to a physical interface, so we
+#       ignore it, but it allows things to work with interfaces=%defaultroute
+#       and allows us to ignore interfaces="mast0=eth0"
 for i
 do
 	case "$i" in
-	ipsec*=?*)	klipsinterface "$i"	;;
+	ipsec*=?*|mast*=?*)	klipsinterface "$i"	;;
 	%defaultroute)	defaultinterface	;;
 	*)	echo "interface \`$i' not understood"
 		exit 1

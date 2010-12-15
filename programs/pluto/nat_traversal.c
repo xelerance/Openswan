@@ -683,35 +683,52 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 		int *fdp = (int *) &ifr.ifr_data;
 
 		if (style == auto_style)
-			loglog(RC_LOG_SERIOUS, "NAT-Traversal: Trying new style NAT-T");
+			DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying new style NAT-T"));
 
 		memset(&ifr, 0, sizeof(ifr));
-		strcpy(ifr.ifr_name, "ipsec0");
+		switch(kern_interface) {
+
+			case USE_MASTKLIPS:
+				strcpy(ifr.ifr_name, "mast0");
+				break;
+			case USE_KLIPS:
+				strcpy(ifr.ifr_name, "ipsec0");
+				break;
+			case USE_NETKEY:
+				/* Let's hope we have at least one ethernet device */
+				strcpy(ifr.ifr_name, "eth0");
+				break;
+			default:
+				/* We have nothing , really prob just abort and return -1 */
+				strcpy(ifr.ifr_name, "eth0");
+				break;
+		}
 		fdp[0] = sk;
 		fdp[1] = type;
 		r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
-		if (r == -1)
-			loglog(RC_LOG_SERIOUS,
-				   "NAT-Traversal: ESPINUDP(%d) setup failed for "
+		if (r == -1) { 
+			DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
 				   "new style NAT-T family %s (errno=%d)"
-				   , type, fam, errno);
-		else
+				   , type, fam, errno));
+		} else {
 			style = new_style;
+		}
 	}
 
 	if (style == auto_style || style == old_style) {
 
 		if (style == auto_style)
-			loglog(RC_LOG_SERIOUS, "NAT-Traversal: Trying old style NAT-T");
+			DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying old style NAT-T"));
 
 		r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
-		if (r == -1)
-			loglog(RC_LOG_SERIOUS,
-				   "NAT-Traversal: ESPINUDP(%d) setup failed for "
+		if (r == -1) {
+			DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
 				   "old style NAT-T family %s (errno=%d)"
-				   , type, fam, errno);
-		else
+				   , type, fam, errno));
+		}
+		else {
 			style = old_style;
+		}
 	}
 
 	if (r == -1 && (errno == ENOPROTOOPT)) {

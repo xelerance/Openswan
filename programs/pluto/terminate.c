@@ -108,7 +108,7 @@ terminate_connection(const char *nm)
 		&& c->kind >= CK_PERMANENT
 		&& !NEVER_NEGOTIATE(c->policy))
 	    {
-		terminate_a_connection(c, NULL);
+		(void) terminate_a_connection(c, NULL);
 	    }
 	}
 	return;

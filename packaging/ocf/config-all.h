@@ -12,7 +12,12 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
+ * This is the OCF version. It builds support for 3 crypto subsystems, and KLIPS
+ * will use the first one found in the following order: OCF, CryptoAPI, inline
+ * Cryptoapi might support more ciphers then the other subsystems.
+ * Requires ocf kernel module - see http://ocf-linux.sf.net/ 
  */
+
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
 #define CONFIG_KLIPS 1
@@ -53,10 +58,10 @@
 #define CONFIG_KLIPS_ENC_3DES 1
 #endif
 
-/* no longer needed as of 2.6.22 and up */
+/* no longer needed on 2.6.22 and newer */
 #if 0
-#ifndef CONFIG_KLIPS_NAT_TRAVERSAL
-#define CONFIG_KLIPS_NAT_TRAVERSAL 1
+#ifndef CONFIG_IPSEC_NAT_TRAVERSAL
+#define CONFIG_IPSEC_NAT_TRAVERSAL 0
 #endif
 #endif
 
@@ -64,20 +69,18 @@
 #define CONFIG_KLIPS_ENC_AES 1
 #endif
 
-/* off by default for now */
+/* enable cryptoapi as well */
 #ifndef CONFIG_KLIPS_ENC_CRYPTOAPI
-#define CONFIG_KLIPS_ENC_CRYPTOAPI 0
+#define CONFIG_KLIPS_ENC_CRYPTOAPI 1
 #endif
-
-#if 0
-/* off by default requiers kernel patch */
-#ifndef CONFIG_KLIPS_OCF
-#define CONFIG_KLIPS_OCF 0
-#endif
-##endif
 
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
 #define CONFIG_KLIPS_ALG_AES #error
+
+/* requires ocf kernel module - see http://ocf-linux.sf.net/ */
+#ifndef CONFIG_KLIPS_OCF
+#define CONFIG_KLIPS_OCF 1
+#endif
 
 #ifndef CONFIG_KLIPS_ALG_AES_MAC
 #define CONFIG_KLIPS_ALG_AES_MAC 1

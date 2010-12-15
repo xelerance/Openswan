@@ -152,12 +152,6 @@ struct ipsec_rcv_state {
 	int		next_state;
 	int		auth_checked;
 
-#ifdef CONFIG_KLIPS_OCF
-	struct work_struct	workq;
-#ifdef DECLARE_TASKLET
-	struct tasklet_struct	tasklet;
-#endif
-#endif
 #ifndef NET_21
 	struct net_device *devp;
 	struct inet_protocol *protop;

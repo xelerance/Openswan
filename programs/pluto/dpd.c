@@ -57,6 +57,9 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "whack.h"
 
+#include "pending.h" /* for flush_pending_by_connection */
+
+
 #include "dpd.h"
 #include "x509more.h"
 
@@ -573,9 +576,19 @@ dpd_timeout(struct state *st)
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
         openswan_log("DPD: Clearing Connection");
-	delete_states_by_connection(c, TRUE); /* unroute_connection may not take RT_ROUTED_TUNNEL */
-	DBG(DBG_DPD, DBG_log("DPD: unrouting connection"));
-        unroute_connection(c);        /* --unroute */
+	/* 
+	 * For CK_INSTANCE, delete_states_by_connection() will clear 
+	 * Note that delete_states_by_connection changes c->kind but we need
+	 * to remember what it was to know if we still need to unroute after delete
+	 */
+	if (c->kind == CK_INSTANCE) {
+	    delete_states_by_connection(c, TRUE);
+	} else {
+	    flush_pending_by_connection(c); /* remove any partial negotiations that are failing */
+	    delete_states_by_connection(c, TRUE);
+	    DBG(DBG_DPD, DBG_log("DPD: unrouting connection (%s)",enum_name(&connection_kind_names,c->kind)));
+	    unroute_connection(c);       /* --unroute */
+	}
 	break;
 
     case DPD_ACTION_RESTART:
