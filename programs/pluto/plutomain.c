@@ -926,9 +926,17 @@ main(int argc, char **argv)
 #endif
 
 #ifdef HAVE_OCF
-	openswan_log("OCF support [enabled]");
+       {
+        struct stat buf;
+	errno=0;
+
+	if( stat("/dev/crypto",&buf) != -1) 
+		openswan_log("OCF support for IKE via /dev/crypto [enabled]");
+	else 
+		openswan_log("OCF support for IKE via /dev/crypto [failed:%s]", strerror(errno));
+       }
 #else
-	openswan_log("OCF support [disabled]");
+	openswan_log("OCF support for IKE [disabled]");
 #endif
 
    /* Check for SAREF support */

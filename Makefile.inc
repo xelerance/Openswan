@@ -414,8 +414,10 @@ HAVE_STATSD?=false
 # Required of HAVE_OCF support
 HAVE_OPENSSL?=false
 
-# Open Cryptographic Framework support (hw crypto offload)
-HAVE_OCF?=false
+# Userland (IKE) Open Cryptographic Framework support (hw crypto offload)
+# For Kernel level OCF support, enable CONFIG_KLIPS_OCF on a kernel that
+# has support for OCF (inline or module)
+HAVE_OCF?=true
 
 ifeq ($(HAVE_OCF),true)
 HAVE_OPENSSL=true
