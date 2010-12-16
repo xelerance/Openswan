@@ -6,6 +6,4 @@
 
 . $UTILS/functions.sh
 
-source ./TESTLIST
-
-
+. ./TESTLIST
