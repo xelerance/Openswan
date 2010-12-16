@@ -26,10 +26,10 @@ def:
 	@false
 
 check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source ${UTILS}/functions.sh; source TESTLIST
+	source ${OPENSWANSRCDIR}/umlsetup.sh; source ./setup.sh; source ${UTILS}/functions.sh; source TESTLIST
 
 spotcheck:
-	@source ${OPENSWANSRCDIR}/umlsetup.sh; source setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@source ${OPENSWANSRCDIR}/umlsetup.sh; source ./setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 install install_file_list checkprograms programs:
 	@true
