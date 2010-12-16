@@ -23,7 +23,7 @@ def:
 	@false
 
 check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	source ${OPENSWANSRCDIR}/umlsetup.sh; source ./setup.sh; source ${UTILS}/functions.sh; source ./TESTLIST
+	. ${OPENSWANSRCDIR}/umlsetup.sh; . ./setup.sh; . ${UTILS}/functions.sh; . ./TESTLIST
 
 install install_file_list checkprograms programs:
 	@true

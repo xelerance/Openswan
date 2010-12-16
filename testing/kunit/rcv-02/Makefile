@@ -8,7 +8,7 @@ OPENSWANSRCDIR?=$(shell cd ../../..;pwd)
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-UMLPLAIN=$(shell source ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+UMLPLAIN=$(shell . ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
 KLIPS_TOP=${OPENSWANSRCDIR}/linux
 
 INPUTS=${OPENSWANSRCDIR}/testing/klips/inputs/01-sunrise-sunset-udpesp-ping.pcap

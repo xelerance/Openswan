@@ -32,7 +32,7 @@ checkmod:
 	KLIPS_MODULE=-module ./dotests.sh
 
 spotcheck:
-	@source ${OPENSWANSRCDIR}/umlsetup.sh; source ./setup.sh; source $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@. ${OPENSWANSRCDIR}/umlsetup.sh; . ./setup.sh; . $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 
 checkcon:
@@ -43,7 +43,7 @@ checkcon:
 	done	
 
 results:
-	source ./setup.sh; perl $$UTILS/regress-summarize-results.pl results
+	. ./setup.sh; perl $$UTILS/regress-summarize-results.pl results
 
 install install_file_list checkprograms programs:
 	@true

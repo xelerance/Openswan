@@ -27,17 +27,17 @@ all: ${TESTS}
 	echo ${TESTS}
 
 one:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
-	source ${UTILS}/functions.sh; multilibtest `basename $< .c`
+	. ${UTILS}/functions.sh; multilibtest `basename $< .c`
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false
 
 check:
-	@ECHO=: REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+	@ECHO=: REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; . ${srcdir}TESTLIST
 	@echo */core.*
 
 install install_file_list checkprograms programs:
@@ -61,7 +61,7 @@ mostlyclean: clean
 realclean: clean
 
 depend:
-	(source ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
+	(. ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
 
 -include ${srcdir}Makefile.depend.${OSDEP}
 
@@ -69,7 +69,7 @@ depend:
 east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
 	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)
 	(cd ${OPENSWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
-	source ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .
+	. ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .
 
 updatepcaps:
 	cp lib-parentI1/parentI1.pcap lib-parentR1
