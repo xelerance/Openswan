@@ -32,7 +32,7 @@
 #
 iface lo inet loopback
 
-auto eth0
+auto eth0 eth0:1
 
 # An example ethernet card setup: (broadcast and gateway are optional)
 #

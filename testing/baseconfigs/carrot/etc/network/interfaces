@@ -15,6 +15,7 @@
 # know about is another matter, perhaps.
 #
 iface lo inet loopback 
+
 auto eth0 
 
 #
