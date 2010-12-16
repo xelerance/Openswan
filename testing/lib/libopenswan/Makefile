@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.5 2005/01/24 01:13:13 mcr Exp $
 
 OPENSWANSRCDIR=../../..
 include $(OPENSWANSRCDIR)/Makefile.inc
@@ -22,7 +20,7 @@ UTILS=${OPENSWANSRCDIR}/testing/utils
 def:	check
 
 check:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source TESTLIST
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; source ./TESTLIST
 
 one:
 	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
