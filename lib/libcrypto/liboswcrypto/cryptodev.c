@@ -826,7 +826,7 @@ void load_cryptodev(void)
 	struct oswcrypto_meth old_meth = oswcrypto;
 
 	if ((cryptodev_fd = get_dev_crypto()) == -1) {
-		openswan_log("OCF assist disabled: is the cryptodev module loaded ?");
+		openswan_log("OCF assist for IKE disabled: is the cryptodev module loaded ?");
 		return;
 	}
 
@@ -835,12 +835,12 @@ void load_cryptodev(void)
 		if (feat & CRF_MOD_EXP) {
 			/* Use modular exponentiation */
 			oswcrypto.mod_exp = cryptodev_mod_exp;
-			openswan_log("OCF assisted modular exponentiation enabled");
+			openswan_log("OCF assist for IKE for modular exponentiation enabled");
 			assisted++;
 		}
 		if (feat & CRF_MOD_EXP_CRT) {
 			oswcrypto.rsa_mod_exp_crt = cryptodev_rsa_mod_exp_crt;
-			openswan_log("OCF assisted modular exponentiation (CRT) enabled");
+			openswan_log("OCF assist for IKE for modular exponentiation (CRT) enabled");
 			assisted++;
 		}
 	}
@@ -852,7 +852,7 @@ void load_cryptodev(void)
 	ses.keylen = 16;
 	if (ioctl(cryptodev_fd, CIOCGSESSION, &ses) != -1 &&
 			ioctl(cryptodev_fd, CIOCFSESSION, &ses.ses) != -1) {
-		openswan_log("OCF assisted AES crypto enabled");
+		openswan_log("OCF assist for IKE for AES crypto enabled");
 		oswcrypto.aes_set_key     = cryptodev_aes_set_key;
 		oswcrypto.aes_cbc_encrypt = cryptodev_aes_cbc_encrypt;
 		assisted++;
@@ -865,7 +865,7 @@ void load_cryptodev(void)
 	ses.keylen = 8;
 	if (ioctl(cryptodev_fd, CIOCGSESSION, &ses) != -1 &&
 			ioctl(cryptodev_fd, CIOCFSESSION, &ses.ses) != -1) {
-		openswan_log("OCF assisted DES crypto enabled");
+		openswan_log("OCF assist for IKE for DES crypto enabled");
 		oswcrypto.des_set_key      = cryptodev_des_set_key;
 		oswcrypto.des_cbc_encrypt  = cryptodev_des_cbc_encrypt;
 		oswcrypto.des_encrypt      = cryptodev_des_encrypt;
@@ -877,7 +877,7 @@ void load_cryptodev(void)
 		ses.keylen = 24;
 		if (ioctl(cryptodev_fd, CIOCGSESSION, &ses) != -1 &&
 				ioctl(cryptodev_fd, CIOCFSESSION, &ses.ses) != -1) {
-			openswan_log("OCF assisted 3DES crypto enabled");
+			openswan_log("OCF assist for IKE for 3DES crypto enabled");
 			oswcrypto.des_ede3_cbc_encrypt = cryptodev_des_ede3_cbc_encrypt;
 			//DAVIDM 3des setkey is technically needed if HW can only do DES
 			assisted++;
