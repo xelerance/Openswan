@@ -53,11 +53,17 @@ extern int debug_rcv;
 
 int ipsec_ocf_crid = (CRYPTOCAP_F_HARDWARE|CRYPTOCAP_F_SOFTWARE);
 
-/*
- * Tuning parameters,  CBIMM prob off for multi core and ON for single core
- */
-#define USE_BATCH 1	/* enable batch mode */
-#define USE_CBIMM 1	/* enable immediate callbacks */
+/* tuning params for OCF */
+
+int ipsec_ocf_batch = 1;
+module_param(ipsec_ocf_batch,int,0644);
+MODULE_PARM_DESC(ipsec_ocf_batch,
+	"Make OCF queue packets rather than process them immediately");
+
+int ipsec_ocf_cbimm = 1;
+module_param(ipsec_ocf_cbimm,int,0644);
+MODULE_PARM_DESC(ipsec_ocf_cbimm,
+	"Does OCF immediately (ie., at irq time) run callbacks or queue and call later");
 
 /*
  * processing on different kernels
@@ -726,12 +732,8 @@ ipsec_ocf_rcv(struct ipsec_rcv_state *irs)
 	crp->crp_olen = irs->skb->len; /* Total output length */
 	crp->crp_flags =
 			CRYPTO_F_SKBUF |
-#if USE_CBIMM == 1
-			CRYPTO_F_CBIMM |
-#endif
-#if USE_BATCH == 1
-			CRYPTO_F_BATCH |
-#endif
+			(ipsec_ocf_cbimm ? CRYPTO_F_BATCH : 0) |
+			(ipsec_ocf_batch ? CRYPTO_F_BATCH : 0) |
 			0;
 	crp->crp_buf = (caddr_t) irs->skb;
 	crp->crp_callback = ipsec_ocf_rcv_cb;
@@ -1153,12 +1155,8 @@ ipsec_ocf_xmit(struct ipsec_xmit_state *ixs)
 	crp->crp_olen = ixs->skb->len; /* Total output length */
 	crp->crp_flags =
 			CRYPTO_F_SKBUF |
-#if USE_CBIMM == 1
-			CRYPTO_F_CBIMM |
-#endif
-#if USE_BATCH == 1
-			CRYPTO_F_BATCH |
-#endif
+			(ipsec_ocf_cbimm ? CRYPTO_F_BATCH : 0) |
+			(ipsec_ocf_batch ? CRYPTO_F_BATCH : 0) |
 			0;
 	crp->crp_buf = (caddr_t) ixs->skb;
 	crp->crp_callback = ipsec_ocf_xmit_cb;

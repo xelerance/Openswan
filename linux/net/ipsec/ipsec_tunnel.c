@@ -2364,16 +2364,9 @@ static kmem_cache_t *ixs_cache_allocator = NULL;
 #endif
 static unsigned  ixs_cache_allocated_count = 0;
 
-#if !defined(MODULE_PARM) && defined(module_param)
-/*
- * As of 2.6.17 MODULE_PARM no longer exists, use module_param instead.
- */
-#define	MODULE_PARM(a,b)	module_param(a,int,0644)
-#endif
-
-int ipsec_ixs_cache_allocated_count_max = 1000;
-MODULE_PARM(ipsec_ixs_cache_allocated_count_max, "i");
-MODULE_PARM_DESC(ipsec_ixs_cache_allocated_count_max,
+int ipsec_ixs_cache_allocated_max = 1000;
+module_param(ipsec_ixs_cache_allocated_max,int,0644);
+MODULE_PARM_DESC(ipsec_ixs_cache_allocated_max,
 	"Maximum outstanding transmit packets");
 
 int
@@ -2419,7 +2412,7 @@ ipsec_xmit_state_new (struct net_device *dev)
 
         spin_lock_bh (&ixs_cache_lock);
 
-	if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_count_max) {
+	if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_max) {
 		/* check for something that should never happen */
 		if (!netif_queue_stopped(dev)) {
 			netif_stop_queue(dev);
@@ -2438,7 +2431,7 @@ ipsec_xmit_state_new (struct net_device *dev)
         if (likely (ixs != NULL)) {
                 ixs_cache_allocated_count++;
 		/* stop the Q if we took the last one */
-		if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_count_max)
+		if (ixs_cache_allocated_count >= ipsec_ixs_cache_allocated_max)
 			netif_stop_queue(dev);
 	}
 
