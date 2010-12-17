@@ -24,6 +24,11 @@ v2.6.32 (unreleased)
 * KLIPS: Better interface handling in _startklips [Paul]
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
+* OCF: Change some hardcoded variables to module paramters [David]
+  -ipsec_ocf_batch(1): Make OCF queue packets rather than process them immediately
+  -ipsec_ocf_cbimm(1): Does OCF immediately (ie., at irq time) run callbacks
+                   or queue and call later"
+  -ipsec_ixs_cache_allocated_max(1000):
 * OCF: Fix up usage of crp_olen as returned from ocf [David]
 * OCF: Order algs correctly for processing when mixing AUTH/CIPHER algs [David]
 * OCF: Update to OCF for SMP systems to allow using multiple CPU's [David]
@@ -31,6 +36,7 @@ v2.6.32 (unreleased)
 * OCF: move netif_wake_queue inside the lock in ipsec_xmit_state_delete [David]
 * OCF: OCF: Attempt to load OCF kernel HW module on startup [Paul]
 * SMP/OCF: Fix up queue stop/start on SMP systems [David]
+* OCF: Fix OCF deadlock (do not call schedule with a lock) [David]
 * Fix bad memory read with full debugging enabled (pbs_room vs pbs_left) [Dhr]
 * Fix bad memory read with -lefence in osw_alias_cmp() [Dhr]
 * Fix for STF_INLINE case in quick_inI1_outR1_cryptocontinue1() [Dhr]
