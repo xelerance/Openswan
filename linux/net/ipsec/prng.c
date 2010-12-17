@@ -33,15 +33,14 @@
 
 #define LOCK_PRNG() \
 	int ul = 0; \
-	if (!spin_is_locked(&tdb_lock)) { \
-		spin_lock_bh(&tdb_lock); \
+	if (spin_trylock_bh(&tdb_lock)) { \
 		ul = 1; \
 	} else
 
 #define UNLOCK_PRNG() \
 	if (ul) { \
-		spin_unlock_bh(&tdb_lock); \
 		ul = 0; \
+		spin_unlock_bh(&tdb_lock); \
 	} else
 
 #else
