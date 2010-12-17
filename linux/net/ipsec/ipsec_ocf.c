@@ -71,13 +71,15 @@ static void ipsec_ocf_skbq_process(unsigned long arg)
 {
 	void (*func)(void *arg);
 	void *this;
-	struct sk_buff *skb = skb_dequeue(&ipsec_ocf_skbq);
-	if (!skb)
-		return;
-	tasklet_schedule(&ipsec_ocf_task); /* force us to run again */
-	func = ((void **) (&skb->cb[0]))[0];
-	this = ((void **) (&skb->cb[0]))[1];
-	(*func)(this);
+	struct sk_buff *skb;
+	
+	if ((skb = skb_dequeue(&ipsec_ocf_skbq)) != NULL) {
+		func = ((void **) (&skb->cb[0]))[0];
+		this = ((void **) (&skb->cb[0]))[1];
+		(*func)(this);
+		/* make sure we run again */
+		tasklet_schedule(&ipsec_ocf_task);
+	}
 }
 
 static void ipsec_ocf_queue_init(void)
