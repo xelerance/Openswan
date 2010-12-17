@@ -35,7 +35,7 @@ OBJS=${SRCS:.c=.o} ${ASSRCS:.S=.o} ${KSRCS:.c=.o} version.o
 LIBA=libkern.a
 KLIPSSRCDIR=${OPENSWANSRCDIR}/linux
 
-UMLPLAIN=$(shell source ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+UMLPLAIN=$(shell . ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
 
 # Original flags
 CFLAGS=-I. -I${KLIPSSRCDIR}/include -I${OPENSWANSRCDIR} -DDEBUG

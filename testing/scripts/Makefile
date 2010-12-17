@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.4 2004/12/18 18:13:45 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 export OPENSWANSRCDIR
@@ -26,10 +24,10 @@ def:
 	@false
 
 check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	source ${OPENSWANSRCDIR}/umlsetup.sh; source ${srcdir}setup.sh; source ${UTILS}/functions.sh; source ${srcdir}TESTLIST
+	. ${OPENSWANSRCDIR}/umlsetup.sh; . ${srcdir}setup.sh; . ${UTILS}/functions.sh; . ${srcdir}TESTLIST
 
 one:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; source ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
 install install_file_list checkprograms programs:
 	@true

@@ -15,7 +15,7 @@
 # know about is another matter, perhaps.
 #
 iface lo inet loopback
-auto eth0
+auto eth0 eth0:1 eth0:2 eth0:3 eth0:4 eth0:5 eth0:7 eth1 eth2
 
 # An example ethernet card setup: (broadcast and gateway are optional)
 #
