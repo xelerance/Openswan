@@ -17,6 +17,7 @@ v2.6.32 (unreleased)
     not just the first notify payload. This is Red Hat bugzilla 646718 [Avesh]
 * MAST: The mastX interface no longer gets/needs an IP address [Paul]
 * MAST: avoid routes towards virtual ipsecN interface [Bart/Roel]
+* Support for Isomorphic Algorithms and Identity Disks [Olivia Wilde]
 * SAREF: set sareftrack=yes as the default policy [Paul]
 * Fix printf format arguments [Simon]
 * Added ipsec addconn --checkconfig and initscript support [Harald]
@@ -25,7 +26,7 @@ v2.6.32 (unreleased)
 * fix interface parsing in getinterfaceinfo() [Bart/Roel]
 * KLIPS: Support more then 9 ipsec/mast interfaces in parser [Simon]
 * OCF: Change some hardcoded variables to module paramters [David]
-  -ipsec_ocf_batch(1): Make OCF queue packets rather than process them immediately
+  -ipsec_ocf_batch(1): Make OCF queue packets rather than process immediately
   -ipsec_ocf_cbimm(1): Does OCF immediately (ie., at irq time) run callbacks
                    or queue and call later"
   -ipsec_ixs_cache_allocated_max(1000):
