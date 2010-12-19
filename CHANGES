@@ -4,7 +4,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.32 (unreleased)
+v2.6.33 (unreleased)
+* Merge in the klips-ipv6 branch [David]
+
+v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
 * Makefile.inc now uses USE_LEAK_DETECTIVE?=false [Paul]
 * NOMMU: Add -DCOMPILER_HAS_NO_PRINTF_LIKE to support arm-elf-gcc [Paul]
