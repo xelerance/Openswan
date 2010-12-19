@@ -18,10 +18,8 @@
 
 #ifndef _IPSEC_ENCAP_H_
 
-#define SENT_IP4	16	/* data is two struct in_addr + proto + ports*/
-			/* (2 * sizeof(struct in_addr)) */
-			/* sizeof(struct sockaddr_encap)
-			   - offsetof(struct sockaddr_encap, Sen.Sip4.Src) */
+#define SENT_IP4	0x01 /* match OpenBSD for what it's worth */
+#define SENT_IP6	0x02 /* match OpenBSD for what it's worth */
 
 struct sockaddr_encap
 {
@@ -38,14 +36,28 @@ struct sockaddr_encap
 			__u16 Sport;
 			__u16 Dport;
 		} Sip4;
+		struct			/* SENT_IP6 */
+		{
+			struct in6_addr Src;
+			struct in6_addr Dst;
+			__u8 Proto;
+			__u16 Sport;
+			__u16 Dport;
+		} Sip6;
 	} Sen;
-};
+} __attribute__((packed));
 
 #define sen_ip_src	Sen.Sip4.Src
 #define sen_ip_dst	Sen.Sip4.Dst
 #define sen_proto       Sen.Sip4.Proto
 #define sen_sport       Sen.Sip4.Sport
 #define sen_dport       Sen.Sip4.Dport
+
+#define sen_ip6_src	Sen.Sip6.Src
+#define sen_ip6_dst	Sen.Sip6.Dst
+#define sen_proto6      Sen.Sip6.Proto
+#define sen_sport6      Sen.Sip6.Sport
+#define sen_dport6      Sen.Sip6.Dport
 
 #ifndef AF_ENCAP
 #define AF_ENCAP 26

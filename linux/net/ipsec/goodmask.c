@@ -106,6 +106,27 @@ int n;
 	return result;
 }
 
+
+int				/* -1 means !goodmask() */
+mask6tobits(mask)
+struct in6_addr *mask;
+{
+	int i;
+	int bits = 0;
+
+	for (i = 0; i < 4; i++) {
+		if (mask->s6_addr32[i] == 0xffffffffUL) {
+			bits += 32;
+			continue;
+		}
+		if (!goodmask(* ((struct in_addr *) &mask->s6_addr32[i])))
+			return -1;
+		bits += masktobits(* ((struct in_addr *) &mask->s6_addr32[i]));
+		break;
+	}
+	return bits;
+}
+
 /*
  - bitstomask6 - return a mask with this many high bits on
  */

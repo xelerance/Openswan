@@ -27,8 +27,12 @@
 # define IP_SEND(skb, dev) \
 	ip_send(skb);
 
-
 #if defined(KLIPS)
+
+#define	osw_ip_hdr_version(ixirs)	(((struct iphdr *) (ixirs)->iph)->version)
+#define	osw_ip4_hdr(ixirs)	((struct iphdr *) (ixirs)->iph)
+#define	osw_ip6_hdr(ixirs)	((struct ipv6hdr *) (ixirs)->iph)
+
 /*
  * Heavily based on drivers/net/new_tunnel.c.  Lots
  * of ideas also taken from the 2.1.x version of drivers/net/shaper.c
@@ -114,6 +118,19 @@ extern struct net_device *ipsec_get_device(int inst);
 
 extern int debug_tunnel;
 extern int sysctl_ipsec_debug_verbose;
+
+extern int osw_ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset, int target, unsigned short *fragoff);
+
+#ifdef CONFIG_IPV6
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,34)
+# define ICMP6_SEND(skb_in, type, code, info, dev) \
+	icmpv6_send(skb_in, type, code, htonl(info), dev)
+#else
+# define ICMP6_SEND(skb_in, type, code, info, dev) \
+	icmpv6_send(skb_in, type, code, htonl(info))
+#endif
+#endif /* CONFIG_IPV6 */
+
 #endif /* __KERNEL__ */
 
 #define DB_TN_INIT	0x0001

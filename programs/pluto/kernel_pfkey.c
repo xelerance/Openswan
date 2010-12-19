@@ -1441,6 +1441,15 @@ read_proto(const char * s, size_t * len, int * transport_proto)
 
     l = *len;
     p = memchr(s, ':', l);
+	if (p && memchr(p+1, ':', l - (p - s) - 1)) {
+		/* multiple ':'s means IPv6 address, so no port
+		   unless it's in []'s */
+		p = memchr(s, ']', l);
+		if (p && *(p+1) == ':')
+			p++;
+		else
+			p = NULL;
+	}
     if (p == 0) {
         *transport_proto = 0;
         return 0;
@@ -1591,14 +1600,14 @@ scan_proc_shunts(void)
             /* our client */
 
             context = "source subnet field malformed: ";
-            ugh = ttosubnet((char *)ff[0].ptr, ff[0].len, AF_INET, &eri.ours);
+            ugh = ttosubnet((char *)ff[0].ptr, ff[0].len, 0, &eri.ours);
             if (ugh != NULL)
                 break;
 
             /* his client */
 
             context = "destination subnet field malformed: ";
-            ugh = ttosubnet((char *)ff[2].ptr, ff[2].len, AF_INET, &eri.his);
+            ugh = ttosubnet((char *)ff[2].ptr, ff[2].len, 0, &eri.his);
             if (ugh != NULL)
                 break;
 

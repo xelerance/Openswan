@@ -76,17 +76,12 @@ enum ipsec_rcv_value
 ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 		     struct sk_buff *skb)
 {
-	__u8 proto;
-	int len;	/* packet length */
-
-	len = skb->len;
-	proto = irs->ipp->protocol;
-
 	/* XXX this will need to be 8 for IPv6 */
-	if ((proto == IPPROTO_ESP) && ((len - irs->iphlen) % 4)) {
+	if ((irs->proto == IPPROTO_ESP) && ((skb->len - irs->iphlen) % 4)) {
 		printk("klips_error:ipsec_rcv: "
-		       "got packet with content length = %d from %s -- should be on 4 octet boundary, packet dropped\n",
-		       len - irs->iphlen,
+		       "got packet with content length %d - %d = %d from %s -- should be on 4 octet boundary, packet dropped\n",
+			   skb->len, irs->iphlen,
+		       skb->len - irs->iphlen,
 		       irs->ipsaddr_txt);
 		if(irs->stats) {
 			irs->stats->rx_errors++;
@@ -350,7 +345,12 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 		    irs->next_header,
 		    pad - 2 - irs->authlen);
 
-	irs->ipp->tot_len = htons(ntohs(irs->ipp->tot_len) - (irs->esphlen + pad));
+	if (osw_ip_hdr_version(irs) == 6)
+		osw_ip6_hdr(irs)->payload_len =
+			htons(ntohs(osw_ip6_hdr(irs)->payload_len) - (irs->esphlen + pad));
+	else
+		osw_ip4_hdr(irs)->tot_len =
+			htons(ntohs(osw_ip4_hdr(irs)->tot_len) - (irs->esphlen + pad));
 
 	/*
 	 * move the IP header forward by the size of the ESP header, which
@@ -378,7 +378,7 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 	}
 	skb_pull(skb, irs->esphlen);
 	skb_set_network_header(skb, ipsec_skb_offset(skb, idat - irs->iphlen));
-	irs->ipp = ip_hdr(skb);
+	irs->iph = (void *) ip_hdr(skb);
 
 	ESP_DMP("esp postpull", skb->data, skb->len);
 
@@ -396,9 +396,12 @@ ipsec_rcv_esp_post_decrypt(struct ipsec_rcv_state *irs)
 		return IPSEC_RCV_DECAPFAIL;
 	}
 
+	ESP_DMP("esp posttrim", skb->data, skb->len);
+
 	return IPSEC_RCV_OK;
 }
 
+#if 0
 /*
  *
  */
@@ -458,8 +461,8 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   }
   dat[ixs->skb->len - ixs->authlen - 2] = padlen;
   
-  dat[ixs->skb->len - ixs->authlen - 1] = ixs->iph->protocol;
-  ixs->iph->protocol = IPPROTO_ESP;
+  dat[ixs->skb->len - ixs->authlen - 1] = osw_ip4_hdr(ixs)->protocol;
+  osw_ip4_hdr(ixs)->protocol = IPPROTO_ESP;
   
   switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_KLIPS_ENC_3DES
@@ -548,6 +551,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
 
   return IPSEC_XMIT_OK;
 }
+#endif
 
 
 struct xform_functions esp_xform_funcs[]={
@@ -558,9 +562,11 @@ struct xform_functions esp_xform_funcs[]={
 		rcv_calc_auth:      ipsec_rcv_esp_authcalc,
 		rcv_decrypt:        ipsec_rcv_esp_decrypt,
 
+#if 0
 		xmit_setup:         ipsec_xmit_esp_setup,
 		xmit_headroom:      sizeof(struct esphdr),
 		xmit_needtailroom:  1,
+#endif
 	},
 };
 
@@ -570,6 +576,13 @@ struct inet_protocol esp_protocol = {
   .handler = ipsec_rcv,
   .no_policy = 1,
 };
+
+#ifdef CONFIG_IPV6
+struct inet6_protocol esp6_protocol = {
+  .handler = ipsec_rcv,
+  .flags = INET6_PROTO_NOPOLICY,
+};
+#endif
 #else
 struct inet_protocol esp_protocol =
 {

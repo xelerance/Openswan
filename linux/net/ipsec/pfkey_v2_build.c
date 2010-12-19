@@ -445,10 +445,9 @@ pfkey_address_build(struct sadb_ext**	pfkey_ext,
 			"pfkey_address_build: "
 			"found address family AF_INET.\n");
 		saddr_len = sizeof(struct sockaddr_in);
-		len = addrtoa(((struct sockaddr_in*)address)->sin_addr, 0,
-			ipaddr_txt, sizeof(ipaddr_txt));
+		len = sin_addrtot(address, 0, ipaddr_txt, sizeof(ipaddr_txt));
 		if (len > 0 && len < sizeof(ipaddr_txt))
-			sprintf(&ipaddr_txt[len-1], ":%d",
+			snprintf(&ipaddr_txt[len-1], sizeof(ipaddr_txt) - len, ":%d",
 				ntohs(((struct sockaddr_in*)address)->sin_port));
 		break;
 	case AF_INET6:
@@ -456,16 +455,13 @@ pfkey_address_build(struct sadb_ext**	pfkey_ext,
 			"pfkey_address_build: "
 			"found address family AF_INET6.\n");
 		saddr_len = sizeof(struct sockaddr_in6);
-		sprintf(ipaddr_txt, "%x:%x:%x:%x:%x:%x:%x:%x-%x"
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[0])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[1])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[2])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[3])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[4])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[5])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[6])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_addr.s6_addr16[7])
-			, ntohs(((struct sockaddr_in6*)address)->sin6_port));
+		/* IPv6 convention with a port is [addr]:port */
+		len = sin_addrtot(address, 0, &ipaddr_txt[1], sizeof(ipaddr_txt) - 2);
+		if (len > 0) {
+			ipaddr_txt[0] = '[';
+			snprintf(&ipaddr_txt[len], sizeof(ipaddr_txt) - len, "]:%d",
+				ntohs(((struct sockaddr_in6*)address)->sin6_port));
+		}
 		break;
 	default:
 		ERROR("pfkey_address_build: "

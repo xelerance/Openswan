@@ -450,6 +450,10 @@ rj_addmask(n_arg, search, skip)
 #if 0
 struct radij_node *
 #endif
+
+unsigned char *dumper;
+int dumper_len;
+
 int
 rj_addroute(v_arg, n_arg, head, treenodes)
 	void *v_arg, *n_arg;

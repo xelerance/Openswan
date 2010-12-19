@@ -157,12 +157,30 @@ openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *
 	return err;
 }
 
+#ifdef CONFIG_IPV6
+static inline int
+openswan_inet6_add_protocol(struct inet6_protocol *prot, unsigned protocol, char *protstr)
+{
+	int err = inet6_add_protocol(prot, protocol);
+	if (err)
+		printk(KERN_ERR "KLIPS: can not register %s protocol - recompile with CONFIG_INET_%s disabled or as module\n", protstr,protstr);
+	return err;
+}
+#endif
+
 static inline int
 openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 	return inet_del_protocol(prot, protocol);
 }
 
+#ifdef CONFIG_IPV6
+static inline int
+openswan_inet6_del_protocol(struct inet6_protocol *prot, unsigned protocol)
+{
+	return inet6_del_protocol(prot, protocol);
+}
+#endif
 #else
 static inline int
 openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char*protstr)
@@ -256,6 +274,11 @@ ipsec_klips_init(void)
 	if (error)
 		goto error_openswan_inet_add_protocol_esp;
 
+#ifdef CONFIG_IPV6
+	error |= openswan_inet6_add_protocol(&esp6_protocol, IPPROTO_ESP, "ESP");
+	if (error)
+		goto error_openswan_inet6_add_protocol_esp;
+#endif
 #endif /* CONFIG_KLIPS_ESP */
 
 #ifdef CONFIG_KLIPS_AH
@@ -339,6 +362,10 @@ error_openswan_inet_add_protocol_comp:
 #ifdef CONFIG_KLIPS_AH
 error_openswan_inet_add_protocol_ah:
 	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
+#endif
+#ifdef CONFIG_IPV6
+error_openswan_inet6_add_protocol_esp:
+	openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP);
 #endif
 error_openswan_inet_add_protocol_esp:
 	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
@@ -429,6 +456,11 @@ ipsec_cleanup(void)
  	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
+#ifdef CONFIG_IPV6
+ 	if (openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP) < 0)
+		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
+		       "esp6 close: can't remove protocol\n");
+#endif
 #endif /* CONFIG_KLIPS_ESP */
 
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */

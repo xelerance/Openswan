@@ -65,6 +65,7 @@
 
 #include <net/icmp.h>		/* icmp_send() */
 #include <net/ip.h>
+#include <net/ipv6.h>
 #include <net/arp.h>
 #ifdef NETDEV_23
 # include <linux/netfilter_ipv4.h>
@@ -479,7 +480,7 @@ enum ipsec_xmit_value
 ipsec_tunnel_strip_hard_header(struct ipsec_xmit_state *ixs)
 {
 	/* ixs->physdev->hard_header_len is unreliable and should not be used */
-        ixs->hard_header_len = (unsigned char *)(ixs->iph) - ixs->skb->data;
+	ixs->hard_header_len = (unsigned char *)ixs->iph - ixs->skb->data;
 
 	if(ixs->hard_header_len < 0) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
@@ -528,6 +529,9 @@ enum ipsec_xmit_value
 ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 {
 	unsigned int bypass;
+	unsigned char nexthdr;
+	int nexthdroff;
+	char tsrc[ADDRTOT_BUF+1], tdst[ADDRTOT_BUF+1];
 
 	bypass = FALSE;
 
@@ -536,11 +540,37 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	 */
 	ixs->matcher.sen_len = sizeof (struct sockaddr_encap);
 	ixs->matcher.sen_family = AF_ENCAP;
-	ixs->matcher.sen_type = SENT_IP4;
-	ixs->matcher.sen_ip_src.s_addr = ixs->iph->saddr;
-	ixs->matcher.sen_ip_dst.s_addr = ixs->iph->daddr;
-	ixs->matcher.sen_proto = ixs->iph->protocol;
-	ipsec_extract_ports(ixs->iph, &ixs->matcher);
+#ifdef CONFIG_IPV6
+	if (osw_ip_hdr_version(ixs) == 6) {
+		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
+		ixs->matcher.sen_type = SENT_IP6;
+		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
+		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
+		ixs->matcher.sen_proto6 = nexthdr;
+		if (debug_tunnel & DB_TN_XMIT) {
+			inet_addrtot(AF_INET6, &osw_ip6_hdr(ixs)->saddr, 0, tsrc, sizeof(tsrc));
+			inet_addrtot(AF_INET6, &osw_ip6_hdr(ixs)->daddr, 0, tdst, sizeof(tdst));
+		}
+	} else
+#endif /* CONFIG_IPV6 */
+	{
+		nexthdr = osw_ip4_hdr(ixs)->protocol;
+		nexthdroff = 0;
+		if ((ntohs(osw_ip4_hdr(ixs)->frag_off) & IP_OFFSET) == 0)
+			nexthdroff = (ixs->iph + (osw_ip4_hdr(ixs)->ihl<<2)) -
+				(void *)ixs->skb->data;
+		ixs->matcher.sen_type = SENT_IP4;
+		ixs->matcher.sen_ip_src.s_addr = osw_ip4_hdr(ixs)->saddr;
+		ixs->matcher.sen_ip_dst.s_addr = osw_ip4_hdr(ixs)->daddr;
+		ixs->matcher.sen_proto = nexthdr;
+		if (debug_tunnel & DB_TN_XMIT) {
+			inet_addrtot(AF_INET, &osw_ip4_hdr(ixs)->saddr, 0, tsrc, sizeof(tsrc));
+			inet_addrtot(AF_INET, &osw_ip4_hdr(ixs)->daddr, 0, tdst, sizeof(tdst));
+		}
+	}
+	ipsec_extract_ports(ixs->skb, nexthdr, nexthdroff, &ixs->matcher);
 
 	/*
 	 * The spinlock is to prevent any other process from accessing or deleting
@@ -550,27 +580,20 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	
 	ixs->eroute = ipsec_findroute(&ixs->matcher);
 
-	if(ixs->iph->protocol == IPPROTO_UDP) {
-		struct udphdr *t = NULL;
+	if (nexthdr == IPPROTO_UDP) {
+		struct udphdr _udphdr, *udphdr = NULL;
+		
+		if (nexthdroff)
+			udphdr = skb_header_pointer(ixs->skb, nexthdroff,
+				sizeof(*udphdr), &_udphdr);
 
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_debug:udp port check: "
-			    "fragoff: %d len: %d>%ld \n",
-			    ntohs(ixs->iph->frag_off) & IP_OFFSET,
-			    (ixs->skb->len - ixs->hard_header_len),
-                            (unsigned long int) ((ixs->iph->ihl << 2) + sizeof(struct udphdr)));
+			    "version: %d "
+			    "nexthdroff: %d "
+			    "udphdr: %p\n",
+			    osw_ip_hdr_version(ixs), nexthdroff, udphdr);
 		
-		if((ntohs(ixs->iph->frag_off) & IP_OFFSET) == 0 &&
-		   ((ixs->skb->len - ixs->hard_header_len) >=
-		    ((ixs->iph->ihl << 2) + sizeof(struct udphdr))))
-		{
-			t =((struct udphdr*)((caddr_t)ixs->iph+(ixs->iph->ihl<<2)));
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:udp port in packet: "
-				    "port %d -> %d\n",
-				    ntohs(t->source), ntohs(t->dest));
-		}
-
 		ixs->sport=0; ixs->dport=0;
 
 		if(ixs->skb->sk) {
@@ -590,15 +613,14 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			ixs->sport = ntohs(ixs->skb->sk->sport);
 			ixs->dport = ntohs(ixs->skb->sk->dport);
 #endif
-
 		} 
 
-		if(t != NULL) {
+		if(udphdr != NULL) {
 			if(ixs->sport == 0) {
-				ixs->sport = ntohs(t->source);
+				ixs->sport = ntohs(udphdr->source);
 			}
 			if(ixs->dport == 0) {
-				ixs->dport = ntohs(t->dest);
+				ixs->dport = ntohs(udphdr->dest);
 			}
 		}
 	}
@@ -607,14 +629,12 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	 * practically identical to above, but let's be careful about
 	 * tcp vs udp headers
 	 */
-	if(ixs->iph->protocol == IPPROTO_TCP) {
-		struct tcphdr *t = NULL;
-
-		if((ntohs(ixs->iph->frag_off) & IP_OFFSET) == 0 &&
-		   ((ixs->skb->len - ixs->hard_header_len) >=
-		    ((ixs->iph->ihl << 2) + sizeof(struct tcphdr)))) {
-			t =((struct tcphdr*)((caddr_t)ixs->iph+(ixs->iph->ihl<<2)));
-		}
+	if (nexthdr == IPPROTO_TCP) {
+		struct tcphdr _tcphdr, *tcphdr = NULL;
+		
+		if (nexthdroff)
+			tcphdr = skb_header_pointer(ixs->skb, nexthdroff,
+				sizeof(*tcphdr), &_tcphdr);
 
 		ixs->sport=0; ixs->dport=0;
 
@@ -635,59 +655,119 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 #endif
 		} 
 
-		if(t != NULL) {
+		if(tcphdr != NULL) {
 			if(ixs->sport == 0) {
-				ixs->sport = ntohs(t->source);
+				ixs->sport = ntohs(tcphdr->source);
 			}
 			if(ixs->dport == 0) {
-				ixs->dport = ntohs(t->dest);
+				ixs->dport = ntohs(tcphdr->dest);
 			}
 		}
 	}
-	
-	/* default to a %drop eroute */
-	ixs->outgoing_said.proto = IPPROTO_INT;
-	ixs->outgoing_said.spi = htonl(SPI_DROP);
-	ixs->outgoing_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
-	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-		    "klips_debug:ipsec_xmit_SAlookup: "
-		    "checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
-		    "saddr=%x, er=0p%p, daddr=%x, er_dst=%x, proto=%d sport=%d dport=%d\n",
-		    ntohl((unsigned int)ixs->iph->saddr),
-		    ixs->eroute,
-		    ntohl((unsigned int)ixs->iph->daddr),
-		    ixs->eroute ? ntohl((unsigned int)ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr) : 0,
-		    ixs->iph->protocol,
-		    ixs->sport,
-		    ixs->dport); 
 
-	/*
-	 * cheat for now...are we udp/500? If so, let it through
-	 * without interference since it is most likely an IKE packet.
-	 */
+#ifdef CONFIG_IPV6
+	if (osw_ip_hdr_version(ixs) == 6) {
+		char edst[ADDRTOT_BUF+1];
+		struct in6_addr addr6_any = IN6ADDR_ANY_INIT;
 
-	if (ip_chk_addr((unsigned long)ixs->iph->saddr) == IS_MYADDR
-	    && (ixs->eroute==NULL
-		|| ixs->iph->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
-		|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
-	    && (ixs->iph->protocol == IPPROTO_ESP ||
-	        ixs->iph->protocol == IPPROTO_AH ||
-		(ixs->iph->protocol == IPPROTO_UDP &&
-		(ixs->sport == 500 || ixs->sport == 4500)))) {
-		/* Whatever the eroute, this is an IKE message 
-		 * from us (i.e. not being forwarded).
-		 * Furthermore, if there is a tunnel eroute,
-		 * the destination is the peer for this eroute.
-		 * So %pass the packet: modify the default %drop.
+		/* default to a %drop eroute */
+		ixs->outgoing_said.proto = IPPROTO_INT;
+		ixs->outgoing_said.spi = htonl(SPI_DROP);
+		ixs->outgoing_said.dst.u.v6.sin6_addr = addr6_any;
+		if (debug_tunnel & DB_TN_XMIT) {
+			if (ixs->eroute)
+				sin_addrtot(&ixs->eroute->er_said.dst.u, 0, edst, sizeof(edst));
+			else
+				memcpy(edst, "0", 2);
+		}
+
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				"klips_debug:ipsec_xmit_SAlookup: "
+				"checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
+				"saddr=%s, er=0p%p, daddr=%s, er_dst=%s, proto=%d sport=%d dport=%d\n",
+				tsrc,
+				ixs->eroute,
+				tdst,
+				edst,
+				nexthdr,
+				ixs->sport,
+				ixs->dport); 
+
+		/*
+		 * cheat for now...are we udp/500? If so, let it through
+		 * without interference since it is most likely an IKE packet.
 		 */
 
-		ixs->outgoing_said.spi = htonl(SPI_PASS);
-		if(!(ixs->skb->sk) && ((ntohs(ixs->iph->frag_off) & IP_MF) != 0)) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-				    "klips_debug:ipsec_xmit_SAlookup: "
-				    "local UDP/500 (probably IKE) passthrough: base fragment, rest of fragments will probably get filtered.\n");
+		if (ip6_chk_addr(&osw_ip6_hdr(ixs)->saddr) == IS_MYADDR
+			&& (ixs->eroute==NULL
+			    || ipv6_addr_cmp(&osw_ip6_hdr(ixs)->daddr, &ixs->eroute->er_said.dst.u.v6.sin6_addr) == 0
+			    || ipv6_addr_any(&ixs->eroute->er_said.dst.u.v6.sin6_addr))
+			&& (nexthdr == IPPROTO_ESP || nexthdr == IPPROTO_AH ||
+			    (nexthdr == IPPROTO_UDP &&
+			    (ixs->sport == 500 || ixs->sport == 4500)))) {
+			/* Whatever the eroute, this is an IKE message 
+			 * from us (i.e. not being forwarded).
+			 * Furthermore, if there is a tunnel eroute,
+			 * the destination is the peer for this eroute.
+			 * So %pass the packet: modify the default %drop.
+			 */
+			unsigned int ptr;
+
+			ixs->outgoing_said.spi = htonl(SPI_PASS);
+			if(!ixs->skb->sk
+				&& osw_ipv6_find_hdr(ixs->skb, &ptr, NEXTHDR_FRAGMENT, NULL) != ENOENT) {
+				KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+						"klips_debug:ipsec_xmit_SAlookup: "
+						"local UDP/500 (probably IKE) passthrough: base fragment, rest of fragments will probably get filtered.\n");
+			}
+			bypass = TRUE;
 		}
-		bypass = TRUE;
+	} else
+#endif /* CONFIG_IPV6 */
+	{
+		/* default to a %drop eroute */
+		ixs->outgoing_said.proto = IPPROTO_INT;
+		ixs->outgoing_said.spi = htonl(SPI_DROP);
+		ixs->outgoing_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+				"klips_debug:ipsec_xmit_SAlookup: "
+				"checking for local udp/500 IKE, udp/4500 NAT-T, ESP or AH packets "
+				"saddr=%s, er=0p%p, daddr=%s, er_dst=%x, proto=%d sport=%d dport=%d\n",
+				tsrc,
+				ixs->eroute,
+				tdst,
+				ixs->eroute ? ntohl((unsigned int)ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr) : 0,
+				nexthdr,
+				ixs->sport,
+				ixs->dport); 
+
+		/*
+		 * cheat for now...are we udp/500? If so, let it through
+		 * without interference since it is most likely an IKE packet.
+		 */
+
+		if (ip_chk_addr(osw_ip4_hdr(ixs)->saddr) == IS_MYADDR
+			&& (ixs->eroute==NULL
+			|| osw_ip4_hdr(ixs)->daddr == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr
+			|| INADDR_ANY == ixs->eroute->er_said.dst.u.v4.sin_addr.s_addr)
+			&& (nexthdr == IPPROTO_ESP || nexthdr == IPPROTO_AH ||
+			    (nexthdr == IPPROTO_UDP &&
+			    (ixs->sport == 500 || ixs->sport == 4500)))) {
+			/* Whatever the eroute, this is an IKE message 
+			 * from us (i.e. not being forwarded).
+			 * Furthermore, if there is a tunnel eroute,
+			 * the destination is the peer for this eroute.
+			 * So %pass the packet: modify the default %drop.
+			 */
+
+			ixs->outgoing_said.spi = htonl(SPI_PASS);
+			if(!(ixs->skb->sk) && ((ntohs(osw_ip4_hdr(ixs)->frag_off) & IP_MF) != 0)) {
+				KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+						"klips_debug:ipsec_xmit_SAlookup: "
+						"local UDP/500 (probably IKE) passthrough: base fragment, rest of fragments will probably get filtered.\n");
+			}
+			bypass = TRUE;
+		}
 	}
 
 	if (bypass==FALSE && ixs->eroute) {
@@ -813,6 +893,8 @@ ipsec_tunnel_xsm_complete(
 	struct ipsec_xmit_state *ixs,
 	enum ipsec_xmit_value stat)
 {
+	unsigned char nexthdr;
+	int nexthdroff;
 	if(stat != IPSEC_XMIT_OK) {
 		if(stat == IPSEC_XMIT_PASS) {
 			goto bypass;
@@ -824,10 +906,29 @@ ipsec_tunnel_xsm_complete(
 		goto cleanup;
 	}
 
-	ixs->matcher.sen_ip_src.s_addr = ixs->iph->saddr;
-	ixs->matcher.sen_ip_dst.s_addr = ixs->iph->daddr;
-	ixs->matcher.sen_proto = ixs->iph->protocol;
-	ipsec_extract_ports(ixs->iph, &ixs->matcher);
+#ifdef CONFIG_IPV6
+	if (osw_ip_hdr_version(ixs) == 6) {
+		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
+		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
+		ixs->matcher.sen_type = SENT_IP6;
+		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
+		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
+		ixs->matcher.sen_proto6 = nexthdr;
+	} else
+#endif /* CONFIG_IPV6 */
+	{
+		nexthdr = osw_ip4_hdr(ixs)->protocol;
+		nexthdroff = 0;
+		if ((ntohs(osw_ip4_hdr(ixs)->frag_off) & IP_OFFSET) == 0)
+			nexthdroff = (ixs->iph + (osw_ip4_hdr(ixs)->ihl<<2)) -
+				(void *)ixs->skb->data;
+		ixs->matcher.sen_type = SENT_IP4;
+		ixs->matcher.sen_ip_src.s_addr = osw_ip4_hdr(ixs)->saddr;
+		ixs->matcher.sen_ip_dst.s_addr = osw_ip4_hdr(ixs)->daddr;
+		ixs->matcher.sen_proto = nexthdr;
+	}
+	ipsec_extract_ports(ixs->skb, nexthdr, nexthdroff, &ixs->matcher);
 
 	spin_lock_bh(&eroute_lock);
 	ixs->eroute = ipsec_findroute(&ixs->matcher);
@@ -839,18 +940,13 @@ ipsec_tunnel_xsm_complete(
 	}
 	spin_unlock_bh(&eroute_lock);
 
-	KLIPS_PRINT((debug_tunnel & DB_TN_XMIT) &&
-			/* ((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc)) */
-			(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
-			ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
-			ixs->eroute,
+	if (/*((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc))*/
+			ip_address_cmp(&ixs->orgedst, &ixs->outgoing_said.dst) != 0 &&
+			!ip_address_isany(&ixs->outgoing_said.dst) &&
+			ixs->eroute) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			"klips_debug:ipsec_tunnel_start_xmit: "
 			"We are recursing here.\n");
-
-	if (/*((ixs->orgdst != ixs->newdst) || (ixs->orgsrc != ixs->newsrc))*/
-			(ixs->orgedst != ixs->outgoing_said.dst.u.v4.sin_addr.s_addr) &&
-			ixs->outgoing_said.dst.u.v4.sin_addr.s_addr &&
-			ixs->eroute) {
 		ipsec_xsm(ixs);
 		return;
 	}
@@ -1634,10 +1730,9 @@ DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
 	case UDP_ENCAP_ESPINUDP_NON_IKE:
 		break;
 	default:
-		err = -EINVAL;
 		printk ("ipsec: pid %d sent fd %d with invalid encap_type %d\n",
 				fd, current->pid, encap_type);
-		goto error;
+		return -EINVAL;
 	}
 
 	/* translate descriptor to socket structure */
@@ -2486,6 +2581,88 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 
 	return 0;
 }
+
+#ifdef CONFIG_IPV6
+/*
+ * stolen from ip6tables,  we need a copy incase iptables iscompiled out of
+ * the kernel.
+ *
+ * find the offset to specified header or the protocol number of last header
+ * if target < 0. "last header" is transport protocol header, ESP, or
+ * "No next header".
+ *
+ * If target header is found, its offset is set in *offset and return protocol
+ * number. Otherwise, return -1.
+ *
+ * If the first fragment doesn't contain the final protocol header or
+ * NEXTHDR_NONE it is considered invalid.
+ *
+ * Note that non-1st fragment is special case that "the protocol number
+ * of last header" is "next header" field in Fragment header. In this case,
+ * *offset is meaningless and fragment offset is stored in *fragoff if fragoff
+ * isn't NULL.
+ *
+ */
+int osw_ipv6_find_hdr(const struct sk_buff *skb,
+	unsigned int *offset, int target, unsigned short *fragoff)
+{
+	unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
+	u8 nexthdr = ipv6_hdr(skb)->nexthdr;
+	unsigned int len = skb->len - start;
+
+	if (fragoff)
+		*fragoff = 0;
+
+	while (nexthdr != target) {
+		struct ipv6_opt_hdr _hdr, *hp;
+		unsigned int hdrlen;
+
+		if ((!ipv6_ext_hdr(nexthdr)) || nexthdr == NEXTHDR_NONE) {
+			if (target < 0)
+				break;
+			return -ENOENT;
+		}
+
+		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
+		if (hp == NULL)
+			return -EBADMSG;
+		if (nexthdr == NEXTHDR_FRAGMENT) {
+			unsigned short _frag_off;
+			__be16 *fp;
+			fp = skb_header_pointer(skb,
+						start+offsetof(struct frag_hdr,
+							       frag_off),
+						sizeof(_frag_off),
+						&_frag_off);
+			if (fp == NULL)
+				return -EBADMSG;
+
+			_frag_off = ntohs(*fp) & ~0x7;
+			if (_frag_off) {
+				if (target < 0 &&
+				    ((!ipv6_ext_hdr(hp->nexthdr)) ||
+				     hp->nexthdr == NEXTHDR_NONE)) {
+					if (fragoff)
+						*fragoff = _frag_off;
+					return hp->nexthdr;
+				}
+				return -ENOENT;
+			}
+			hdrlen = 8;
+		} else if (nexthdr == NEXTHDR_AUTH)
+			hdrlen = (hp->hdrlen + 2) << 2;
+		else
+			hdrlen = ipv6_optlen(hp);
+
+		nexthdr = hp->nexthdr;
+		len -= hdrlen;
+		start += hdrlen;
+	}
+
+	*offset = start;
+	return nexthdr;
+}
+#endif /* CONFIG_IPV6 */
 
 
 /*

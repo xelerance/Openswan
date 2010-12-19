@@ -83,12 +83,10 @@ struct ipsec_xmit_state
 	struct ipsecpriv *prv;		/* Our device' private space */
 	struct sk_buff *oskb;		/* Original skb pointer */
 	struct net_device_stats *stats;	/* This device's statistics */
-	struct iphdr  *iph;		/* Our new IP header */
-	__u32   newdst;			/* The other SG's IP address */
-	__u32	orgdst;			/* Original IP destination address */
-	__u32	orgedst;		/* 1st SG's IP address */
-	__u32   newsrc;			/* The new source SG's IP address */
-	__u32	orgsrc;			/* Original IP source address */
+	void	*iph;		/* Our new IP header */
+
+	ip_address	orgedst;		/* 1st SG's IP address */
+
 	int	iphlen;			/* IP header length */
 	int	pyldsz;			/* upper protocol payload size */
 	int	headroom;
@@ -137,6 +135,9 @@ struct ipsec_xmit_state
 	 */
 	uint16_t mast_mode:1;
 
+	/* if carrying IPv6,  IPPROTO_IPV6, else IPPROTO_IPIP */
+	uint8_t ipip_proto;
+
 	/*
 	 * xmit state machine use
 	 */
@@ -177,7 +178,7 @@ extern struct kmem_cache *ipsec_ixs_cache;
 extern int ipsec_ixs_max;
 extern atomic_t ipsec_ixs_cnt;
 
-extern void ipsec_extract_ports(struct iphdr * iph, struct sockaddr_encap * er);
+extern void ipsec_extract_ports(struct sk_buff *skb, unsigned char nexthdr, int nexthdroff, struct sockaddr_encap * er);
 
 /* avoid forward reference complain on < 2.5 */
 struct flowi;

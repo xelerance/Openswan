@@ -201,9 +201,18 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 
 		{
                        char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
+					   if (eaddr->sen_type == SENT_IP6) {
+						   subnet6toa(&eaddr->sen_ip6_src, &emask->sen_ip6_src,
+						   			0, buf1, sizeof(buf1));
+						   subnet6toa(&eaddr->sen_ip6_dst, &emask->sen_ip6_dst,
+						   			0, buf2, sizeof(buf2));
+					   } else {
+						   subnettoa(eaddr->sen_ip_src, emask->sen_ip_src,
+						   			0, buf1, sizeof(buf1));
+						   subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst,
+						   			0, buf2, sizeof(buf2));
+					   }
 
-                       subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
-                       subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
                        sa_len = satot(&said, 0, sa, sizeof(sa));
                        KLIPS_PRINT(debug_eroute,
                                    "klips_debug:ipsec_makeroute: "
@@ -244,6 +253,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		       "not able to allocate kernel memory");
 		return -ENOMEM;
 	}
+
 	memset((caddr_t)retrt, 0, sizeof (struct eroute));
 
 	retrt->er_eaddr = *eaddr;
@@ -260,7 +270,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	  
 	  rje->rd_nodes->rj_key= er;
 	}
-	
+
 	if (ident_s && ident_s->type != SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_s->len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
 		
@@ -314,7 +324,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		    "calling rj_addroute now\n");
 
 	spin_lock_bh(&eroute_lock);
-	
+
 	error = rj_addroute(&(retrt->er_eaddr), &(retrt->er_emask), 
 			 rnh, retrt->er_rjt.rd_nodes);
 
@@ -338,12 +348,21 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 
 	if (debug_eroute) {
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
-/*
-		subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
-		subnettoa(eaddr->sen_ip_dst, emask->sen_ip_dst, 0, buf2, sizeof(buf2));
-*/
-		subnettoa(rd_key((&(retrt->er_rjt)))->sen_ip_src, rd_mask((&(retrt->er_rjt)))->sen_ip_src, 0, buf1, sizeof(buf1));
-		subnettoa(rd_key((&(retrt->er_rjt)))->sen_ip_dst, rd_mask((&(retrt->er_rjt)))->sen_ip_dst, 0, buf2, sizeof(buf2));
+		if (rd_key((&(retrt->er_rjt)))->sen_type == SENT_IP6) {
+			subnet6toa(&rd_key((&(retrt->er_rjt)))->sen_ip6_src,
+					&rd_mask((&(retrt->er_rjt)))->sen_ip6_src, 0,
+					buf1, sizeof(buf1));
+			subnet6toa(&rd_key((&(retrt->er_rjt)))->sen_ip6_dst,
+					&rd_mask((&(retrt->er_rjt)))->sen_ip6_dst, 0,
+					buf2, sizeof(buf2));
+		} else {
+			subnettoa(rd_key((&(retrt->er_rjt)))->sen_ip_src,
+					rd_mask((&(retrt->er_rjt)))->sen_ip_src, 0,
+					buf1, sizeof(buf1));
+			subnettoa(rd_key((&(retrt->er_rjt)))->sen_ip_dst,
+					rd_mask((&(retrt->er_rjt)))->sen_ip_dst, 0,
+					buf2, sizeof(buf2));
+		}
 		sa_len = satot(&retrt->er_said, 0, sa, sizeof(sa));
 		
 		KLIPS_PRINT(debug_eroute,
@@ -372,23 +391,41 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 	char buf1[ADDRTOA_BUF], buf2[ADDRTOA_BUF];
 	
 	if (debug_radij & DB_RJ_FINDROUTE) {
-		addrtoa(eaddr->sen_ip_src, 0, buf1, sizeof(buf1));
-		addrtoa(eaddr->sen_ip_dst, 0, buf2, sizeof(buf2));
+		unsigned short *sp, *dp;
+		unsigned char *pp, *sb, *eb;
+		if (eaddr->sen_type == SENT_IP6) {
+			inet_addrtot(AF_INET6, &eaddr->sen_ip6_src, 0, buf1, sizeof(buf1));
+			inet_addrtot(AF_INET6, &eaddr->sen_ip6_dst, 0, buf2, sizeof(buf2));
+			sp = &eaddr->sen_sport6;
+			dp = &eaddr->sen_dport6;
+			pp = &eaddr->sen_proto6;
+			sb = "[";
+			eb = "]";
+		} else {
+			addrtoa(eaddr->sen_ip_src, 0, buf1, sizeof(buf1));
+			addrtoa(eaddr->sen_ip_dst, 0, buf2, sizeof(buf2));
+			sp = &eaddr->sen_sport;
+			dp = &eaddr->sen_dport;
+			pp = &eaddr->sen_proto;
+			sb = eb = "";
+		}
 		KLIPS_PRINT(debug_eroute,
 			    "klips_debug:ipsec_findroute: "
-			    "%s:%d->%s:%d %d\n",
-			    buf1, ntohs(eaddr->sen_sport),
-			    buf2, ntohs(eaddr->sen_dport),
-			    eaddr->sen_proto);
+			    "%s%s%s:%d->%s%s%s:%d %d\n",
+			    sb, buf1, eb, ntohs(*sp),
+			    sb, buf2, eb, ntohs(*dp),
+			    *pp);
 	}
 	rn = rj_match((caddr_t)eaddr, rnh);
 	if(rn) {
+		if (debug_eroute && sysctl_ipsec_debug_verbose)
+			sin_addrtot(&((struct eroute*)rn)->er_said.dst.u, 0, buf1, sizeof(buf1));
 		KLIPS_PRINT(debug_eroute && sysctl_ipsec_debug_verbose,
 			    "klips_debug:ipsec_findroute: "
-			    "found, points to proto=%d, spi=%x, dst=%x.\n",
+			    "found, points to proto=%d, spi=%x, dst=%s.\n",
 			    ((struct eroute*)rn)->er_said.proto,
 			    ntohl(((struct eroute*)rn)->er_said.spi),
-			    ntohl(((struct eroute*)rn)->er_said.dst.u.v4.sin_addr.s_addr));
+				buf1);
 	}
 	return (struct eroute *)rn;
 }
@@ -429,14 +466,34 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
                 return 0;
         }
 
-	buf_len = subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
-	if(key->sen_sport != 0) {
-	  sprintf(buf1+buf_len-1, ":%d", ntohs(key->sen_sport));
-	}
+	if (key->sen_type == SENT_IP6) {
+		if(key->sen_sport6 != 0) {
+		  *buf1 = '[';
+		  buf_len = subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1+1, sizeof(buf1));
+		  buf1[buf_len-1] = ']';
+		  sprintf(buf1+buf_len, ":%d", ntohs(key->sen_sport6));
+		} else
+		  buf_len = subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1, sizeof(buf1));
+		if(key->sen_dport6 != 0) {
+		  *buf1 = '[';
+		  buf_len = subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2+1, sizeof(buf2));
+		  buf1[buf_len-1] = ']';
+		  sprintf(buf2+buf_len, ":%d", ntohs(key->sen_dport6));
+		} else
+		  buf_len = subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2, sizeof(buf2));
 
-	buf_len = subnettoa(key->sen_ip_dst, mask->sen_ip_dst, 0, buf2, sizeof(buf2));
-	if(key->sen_dport != 0) {
-	  sprintf(buf2+buf_len-1, ":%d", ntohs(key->sen_dport));
+	} else if (key->sen_type == SENT_IP4) {
+		buf_len = subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
+		if(key->sen_sport != 0) {
+		  sprintf(buf1+buf_len-1, ":%d", ntohs(key->sen_sport));
+		}
+		buf_len = subnettoa(key->sen_ip_dst, mask->sen_ip_dst, 0, buf2, sizeof(buf2));
+		if(key->sen_dport != 0) {
+		  sprintf(buf2+buf_len-1, ":%d", ntohs(key->sen_dport));
+		}
+
+	} else {
+		return 0;
 	}
 
 	buf3[0]='\0';
@@ -500,8 +557,13 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	}
 	if(debug_radij)	{
 		char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
+		if (key->sen_type == SENT_IP6) {
+		subnet6toa(&key->sen_ip6_src, &mask->sen_ip6_src, 0, buf1, sizeof(buf1));
+		subnet6toa(&key->sen_ip6_dst, &mask->sen_ip6_dst, 0, buf2, sizeof(buf2));
+		} else {
 		subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(key->sen_ip_dst, mask->sen_ip_dst, 0, buf2, sizeof(buf2));
+		}
 		KLIPS_PRINT(debug_radij, 
 			    "klips_debug:ipsec_rj_walker_delete: "
 			    "deleting: %s -> %s\n",

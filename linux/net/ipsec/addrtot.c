@@ -104,7 +104,6 @@ size_t dstlen;
 		break;
 	default:		/* including (AF_INET, 'R') */
 	        goto bad;
-		break;
 	}
 
 	if (dstlen > 0) {
@@ -113,6 +112,90 @@ size_t dstlen;
 		strcpy(dst, p);
 	}
 	return n;
+}
+
+/*
+ - inet_addrtot - convert binary inet address to text (dotted decimal or IPv6 string)
+ */
+size_t				/* space needed for full conversion */
+inet_addrtot(t, src, format, dst, dstlen)
+int t;			/* AF_INET/AF_INET6 */
+const void *src;
+int format;			/* character */
+char *dst;			/* need not be valid if dstlen is 0 */
+size_t dstlen;
+{
+	size_t n;
+	char buf[1+ADDRTOT_BUF+1];	/* :address: */
+	char *p;
+#	define	TF(t, f)	(((t)<<8) | (f))
+
+	switch (t) {
+	case AF_INET: n = IP4BYTES; break;
+	case AF_INET6: n = IP6BYTES; break;
+	default:
+	bad:
+	  dst[0]='\0';
+	  strncat(dst, "<invalid>", dstlen);
+	  return sizeof("<invalid>");
+	}
+
+	switch (TF(t, format)) {
+	case TF(AF_INET, 0):
+		n = normal4(src, n, buf, &p);
+		break;
+	case TF(AF_INET6, 0):
+		n = normal6(src, n, buf, &p, 1);
+		break;
+	case TF(AF_INET, 'Q'):
+		n = normal4(src, n, buf, &p);
+		break;
+	case TF(AF_INET6, 'Q'):
+		n = normal6(src, n, buf, &p, 0);
+		break;
+	case TF(AF_INET, 'r'):
+		n = reverse4(src, n, buf, &p);
+		break;
+	case TF(AF_INET6, 'r'):
+		n = reverse6(src, n, buf, &p);
+		break;
+	default:		/* including (AF_INET, 'R') */
+		goto bad;
+	}
+
+	if (dstlen > 0) {
+		if (dstlen < n)
+			p[dstlen - 1] = '\0';
+		strcpy(dst, p);
+	}
+	return n;
+}
+
+/*
+ * sin_addrtot - convert binary sockaddr_in/sockaddr_in6 address to text
+ * (dotted decimal or IPv6 string)
+ */
+size_t				/* space needed for full conversion */
+sin_addrtot(src, format, dst, dstlen)
+const void *src;
+int format;			/* character */
+char *dst;			/* need not be valid if dstlen is 0 */
+size_t dstlen;
+{
+	union SINSIN6 {
+		struct sockaddr_in sin;
+		struct sockaddr_in6 sin6;
+	} *sinp = (union SINSIN6 *) src;
+	switch (sinp->sin.sin_family) {
+	case AF_INET:
+		return inet_addrtot(AF_INET,&sinp->sin.sin_addr,format,dst,dstlen);
+	case AF_INET6:
+		return inet_addrtot(AF_INET6,&sinp->sin6.sin6_addr,format,dst,dstlen);
+	default:
+		dst[0]='\0';
+		strncat(dst, "<invalid>", dstlen);
+		return sizeof("<invalid>");
+	}
 }
 
 /*

@@ -104,6 +104,10 @@ safe_skb_put(struct sk_buff *skb, int extend)
 struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned int *flags)
 {
 	struct iphdr *iph;
+#ifdef CONFIG_IPV6
+	struct ipv6hdr *iph6;
+#endif
+	unsigned char nexthdr;
 	unsigned int iphlen, pyldsz, cpyldsz;
 	unsigned char *buffer;
 	z_stream zs;
@@ -145,8 +149,27 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 #else /* NET_21 */
 	iph = skb->ip_hdr;
 #endif /* NET_21 */
+#ifdef CONFIG_IPV6
+	iph6 = ipv6_hdr(skb);
+#endif
 
-	switch (iph->protocol) {
+#ifdef CONFIG_IPV6
+	if (iph->version == 6) {
+		int nexthdroff;
+		nexthdr = iph6->nexthdr;
+		nexthdroff = ipv6_skip_exthdr(skb,
+			((void *)(iph6+1)) - (void*)skb->data, &nexthdr);
+		iphlen = nexthdroff - ((void *)iph6 - (void*)skb->data);
+		pyldsz = ntohs(iph6->payload_len) + sizeof(struct ipv6hdr) - iphlen;
+	} else
+#endif
+	{
+		nexthdr = iph->protocol;
+		iphlen = iph->ihl << 2;
+		pyldsz = ntohs(iph->tot_len) - iphlen;
+	}
+
+	switch (nexthdr) {
 	case IPPROTO_COMP:
 	case IPPROTO_AH:
 	case IPPROTO_ESP:
@@ -159,7 +182,8 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 	}
 	
 	/* Don't compress packets already fragmented */
-	if (iph->frag_off & __constant_htons(IP_MF | IP_OFFSET)) {
+	if (iph->version == 4 &&
+			(iph->frag_off & __constant_htons(IP_MF | IP_OFFSET))) {
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
 			    "klips_debug:skb_compress: "
 			    "skipping compression of fragmented packet.\n");
@@ -167,9 +191,6 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 		return skb;
 	}
 	
-	iphlen = iph->ihl << 2;
-	pyldsz = ntohs(iph->tot_len) - iphlen;
-
 	/* Don't compress less than 90 bytes (rfc 2394) */
 	if (pyldsz < 90) {
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
@@ -281,7 +302,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 	cpyldsz -= zs.avail_out;
 	
 	/* Insert IPCOMP header */
-	((struct ipcomphdr*) ((char*) iph + iphlen))->ipcomp_nh = iph->protocol;
+	((struct ipcomphdr*) ((char*) iph + iphlen))->ipcomp_nh = nexthdr;
 	((struct ipcomphdr*) ((char*) iph + iphlen))->ipcomp_flags = 0;
 	/* use the bottom 16 bits of the spi for the cpi.  The top 16 bits are
 	   for internal reference only. */
@@ -296,12 +317,21 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 		    cpyldsz);
 	
 	/* Update IP header */
-	iph->protocol = IPPROTO_COMP;
-	iph->tot_len = htons(iphlen + sizeof(struct ipcomphdr) + cpyldsz);
-#if 1 /* XXX checksum is done by ipsec_tunnel ? */
-	iph->check = 0;
-	iph->check = ip_fast_csum((char *) iph, iph->ihl);
+#ifdef CONFIG_IPV6
+	if (iph->version == 6) {
+		iph6->nexthdr = IPPROTO_COMP;
+		iph6->payload_len = htons(iphlen + sizeof(struct ipcomphdr) + cpyldsz
+							- sizeof(struct ipv6hdr));
+	} else
 #endif
+	{
+		iph->protocol = IPPROTO_COMP;
+		iph->tot_len = htons(iphlen + sizeof(struct ipcomphdr) + cpyldsz);
+#if 1 /* XXX checksum is done by ipsec_tunnel ? */
+		iph->check = 0;
+		iph->check = ip_fast_csum((char *) iph, iph->ihl);
+#endif
+	}
 	
 	/* Copy compressed payload */
 	memcpy((char *) iph + iphlen + sizeof(struct ipcomphdr),
@@ -328,10 +358,13 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned int *flags)
 {
 	struct sk_buff *nskb = NULL;
-
 	/* original ip header */
 	struct iphdr *oiph, *iph;
-	unsigned int iphlen, pyldsz, cpyldsz;
+#ifdef CONFIG_IPV6
+	struct ipv6hdr *oiph6, *iph6;
+#endif
+	unsigned char nexthdr;
+	unsigned int tot_len, iphlen, pyldsz, cpyldsz;
 	z_stream zs;
 	int zresult;
 
@@ -367,10 +400,27 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #else /* NET_21 */
 	oiph = skb->ip_hdr;
 #endif /* NET_21 */
+#ifdef CONFIG_IPV6
+	oiph6 = ipv6_hdr(skb);
+#endif
 	
-	iphlen = oiph->ihl << 2;
+#ifdef CONFIG_IPV6
+	if (oiph->version == 6) {
+		int nexthdroff;
+		nexthdr = oiph6->nexthdr;
+		nexthdroff = ipv6_skip_exthdr(skb,
+			((void *)(oiph6+1)) - (void*)skb->data, &nexthdr);
+		iphlen = nexthdroff - ((void *)oiph6 - (void*)skb->data);
+		tot_len = ntohs(oiph6->payload_len) + sizeof(struct ipv6hdr);
+	} else
+#endif
+	{
+		iphlen = oiph->ihl << 2;
+		tot_len = ntohs(oiph->tot_len);
+		nexthdr = oiph->protocol;
+	}
 	
-	if (oiph->protocol != IPPROTO_COMP) {
+	if (nexthdr != IPPROTO_COMP) {
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
 			    "klips_error:skb_decompress: "
 			    "called with non-IPCOMP packet (protocol=%d),"
@@ -397,7 +447,8 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 		return skb;
 	}
 	
-	if (ntohs(oiph->frag_off) & ~0x4000) {
+	/* if anything other than the DF bit is set */
+	if (oiph->version == 4 && ntohs(oiph->frag_off) & ~IP_DF) {
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
 			    "klips_error:skb_decompress: "
 			    "called with fragmented IPCOMP packet, "
@@ -407,7 +458,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	}
 	
 	/* original compressed payload size */
-	cpyldsz = ntohs(oiph->tot_len) - iphlen - sizeof(struct ipcomphdr);
+	cpyldsz = tot_len - iphlen - sizeof(struct ipcomphdr);
 
 	zs.zalloc = my_zcalloc;
 	zs.zfree = my_zfree;
@@ -487,6 +538,9 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #else /* NET_21 */
 	iph = nskb->ip_hdr;
 #endif /* NET_21 */
+#ifdef CONFIG_IPV6
+	iph6 = ipv6_hdr(nskb);
+#endif
 	zs.next_out = (char *)iph + iphlen;
 	zs.avail_out = pyldsz;
 
@@ -520,8 +574,21 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	/* Update IP header */
 	/* resulting decompressed size */
 	pyldsz -= zs.avail_out;
-	iph->tot_len = htons(iphlen + pyldsz);
-	iph->protocol = ((struct ipcomphdr*) ((char*) oiph + iphlen))->ipcomp_nh;
+	nexthdr = ((struct ipcomphdr *) ((char *)oiph + iphlen))->ipcomp_nh;
+#ifdef CONFIG_IPV6
+	if (iph->version == 6) {
+		iph6->payload_len = htons(pyldsz + iphlen - sizeof(struct ipv6hdr));
+		iph6->nexthdr = nexthdr;
+	} else
+#endif
+	{
+		iph->tot_len = htons(iphlen + pyldsz);
+		iph->protocol = nexthdr;
+#if 1 /* XXX checksum is done by ipsec_rcv ? */
+		iph->check = 0;
+		iph->check = ip_fast_csum((char*) iph, iph->ihl);
+#endif
+	}
 	KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,
 		    "klips_debug:skb_decompress: "
 		    "spi=%08x, spi&0xffff=%04x, cpi=%04x, payload size: comp=%d, raw=%d, nh=%d.\n",
@@ -530,19 +597,14 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 		    ntohs(((struct ipcomphdr*)(((char*)oiph)+iphlen))->ipcomp_cpi),
 		    cpyldsz,
 		    pyldsz,
-		    iph->protocol);
-	
-#if 1 /* XXX checksum is done by ipsec_rcv ? */
-	iph->check = 0;
-	iph->check = ip_fast_csum((char*) iph, iph->ihl);
-#endif
+		    nexthdr);
 	
 	/* Update skb length/tail by "unputting" the unused data area */
 	safe_skb_put(nskb, -zs.avail_out);
 	
 	ipsec_kfree_skb(skb);
 	
-	if (iph->protocol == IPPROTO_COMP)
+	if (nexthdr == IPPROTO_COMP)
 	{
 		if(sysctl_ipsec_debug_ipcomp)
 		KLIPS_PRINT(sysctl_ipsec_debug_ipcomp,

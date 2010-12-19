@@ -67,7 +67,7 @@ extern int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type);
 struct ipsec_xmit_state;
 extern enum ipsec_xmit_value ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs);
 extern enum ipsec_xmit_value ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs);
-extern void ipsec_print_ip(struct iphdr *ip);
+extern void ipsec_print_ip(void *ip);
 
 
 

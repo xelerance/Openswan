@@ -60,6 +60,7 @@
 #ifdef NET_21
 # include <net/route.h>          /* inet_addr_type */
 # include <linux/in6.h>
+# include <net/ipv6.h>
 # define IS_MYADDR RTN_LOCAL
 #endif
 
@@ -300,6 +301,12 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(EEXIST);
 	}
 
+#ifdef CONFIG_IPV6
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
+#endif
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
@@ -450,6 +457,12 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ENOENT);
 	}
 
+#ifdef CONFIG_IPV6
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
+#endif
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
@@ -721,6 +734,12 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	}
 	spin_unlock_bh(&tdb_lock);
 
+#ifdef CONFIG_IPV6
+	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
+			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
+		extr->ips->ips_flags |= EMT_INBOUND;
+	} else
+#endif
 	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) {
 		extr->ips->ips_flags |= EMT_INBOUND;
 	}
@@ -1899,10 +1918,17 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		SENDERR(EINVAL);
 	}
 
-	srcflow.u.v4.sin_family = AF_INET;
-	dstflow.u.v4.sin_family = AF_INET;
-	srcmask.u.v4.sin_family = AF_INET;
-	dstmask.u.v4.sin_family = AF_INET;
+	if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
+		srcflow.u.v4.sin_family = AF_INET6;
+		dstflow.u.v4.sin_family = AF_INET6;
+		srcmask.u.v4.sin_family = AF_INET6;
+		dstmask.u.v4.sin_family = AF_INET6;
+	} else {
+		srcflow.u.v4.sin_family = AF_INET;
+		dstflow.u.v4.sin_family = AF_INET;
+		srcmask.u.v4.sin_family = AF_INET;
+		dstmask.u.v4.sin_family = AF_INET;
+	}
 	srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
 	dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
 	srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;

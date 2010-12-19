@@ -311,6 +311,9 @@ cleanup:
 static int
 ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 {
+	int failed_outbound_check = 0;
+	struct ipsec_sa *ipsp = ixs->ipsp;
+
 	if (!ixs || !ixs->ipsp || !ixs->iph)
 		return -EFAULT;
 
@@ -319,25 +322,69 @@ ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 	 * "boolean or" (||).  This is done to speed up
 	 * execution by doing only bitwise operations and
 	 * no branch operations */
-	if((((ixs->iph->saddr & ixs->ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
-				^ ixs->ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
-			| ((ixs->iph->daddr & ixs->ipsp->ips_mask_d.u.v4.sin_addr.s_addr)
-				^ ixs->ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) ) {
-		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
+	if (osw_ip_hdr_version(ixs) == 4) {
+		struct iphdr *ipp = osw_ip4_hdr(ixs);
+		if (ipsp->ips_mask_s.u.v4.sin_family != AF_INET) {
+			failed_outbound_check = 1;
+		} else if (((ipp->saddr & ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
+				^ ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
+				| ((ipp->daddr & ipsp->ips_mask_d.u.v4.sin_addr.s_addr)
+				^ ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) {
+			failed_outbound_check = 1;
+		}
+	} else if (osw_ip_hdr_version(ixs) == 6) {
+		struct ipv6hdr *ipp6 = osw_ip6_hdr(ixs);
+		if (ipsp->ips_mask_s.u.v6.sin6_family != AF_INET6) {
+			failed_outbound_check = 1;
+		} else if (((ipp6->saddr.s6_addr32[0] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[0])
+				^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[0])
+				| ((ipp6->daddr.s6_addr32[0] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[0])
+				^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[0])) {
+			failed_outbound_check = 1;
+		} else if (((ipp6->saddr.s6_addr32[1] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[1])
+				^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[1])
+				| ((ipp6->daddr.s6_addr32[1] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[1])
+				^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[0])) {
+			failed_outbound_check = 1;
+		} else if (((ipp6->saddr.s6_addr32[2] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[2])
+				^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[2])
+				| ((ipp6->daddr.s6_addr32[2] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[2])
+				^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[2])) {
+			failed_outbound_check = 1;
+		} else if (((ipp6->saddr.s6_addr32[3] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[3])
+				^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[3])
+				| ((ipp6->daddr.s6_addr32[3] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[3])
+				^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[3])) {
+			failed_outbound_check = 1;
+		}
+	}
+	if (failed_outbound_check) {
 		char saddr_txt[ADDRTOA_BUF], daddr_txt[ADDRTOA_BUF];
-		struct in_addr ipaddr;
+		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
 
-		subnettoa(ixs->ipsp->ips_flow_s.u.v4.sin_addr,
-			  ixs->ipsp->ips_mask_s.u.v4.sin_addr,
-			  0, sflow_txt, sizeof(sflow_txt));
-		subnettoa(ixs->ipsp->ips_flow_d.u.v4.sin_addr,
-			  ixs->ipsp->ips_mask_d.u.v4.sin_addr,
-			  0, dflow_txt, sizeof(dflow_txt));
-
-		ipaddr.s_addr = ixs->iph->saddr;
-		addrtoa(ipaddr, 0, saddr_txt, sizeof(saddr_txt));
-		ipaddr.s_addr = ixs->iph->daddr;
-		addrtoa(ipaddr, 0, daddr_txt, sizeof(daddr_txt));
+		if (ipsp->ips_flow_s.u.v4.sin_family == AF_INET6) {
+			subnet6toa(&ipsp->ips_flow_s.u.v6.sin6_addr,
+					&ipsp->ips_mask_s.u.v6.sin6_addr,
+					0, sflow_txt, sizeof(sflow_txt));
+			subnet6toa(&ipsp->ips_flow_d.u.v6.sin6_addr,
+					&ipsp->ips_mask_d.u.v6.sin6_addr,
+					0, dflow_txt, sizeof(dflow_txt));
+			inet_addrtot(AF_INET6, &osw_ip6_hdr(ixs)->saddr, 0, saddr_txt,
+					sizeof(saddr_txt));
+			inet_addrtot(AF_INET6, &osw_ip6_hdr(ixs)->daddr, 0, daddr_txt,
+					sizeof(daddr_txt));
+		} else {
+			subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
+					ipsp->ips_mask_s.u.v4.sin_addr,
+					0, sflow_txt, sizeof(sflow_txt));
+			subnettoa(ipsp->ips_flow_d.u.v4.sin_addr,
+					ipsp->ips_mask_d.u.v4.sin_addr,
+					0, dflow_txt, sizeof(dflow_txt));
+			inet_addrtot(AF_INET, &osw_ip4_hdr(ixs)->saddr, 0, saddr_txt,
+					sizeof(saddr_txt));
+			inet_addrtot(AF_INET, &osw_ip4_hdr(ixs)->daddr, 0, daddr_txt,
+					sizeof(daddr_txt));
+		}
 
 		if (!ixs->sa_len) ixs->sa_len = KLIPS_SATOT(debug_mast,
 				&ixs->outgoing_said, 0,
@@ -411,12 +458,14 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->skb = skb;
 	SAref = 0;
 #ifdef NETDEV_25
+#if defined(CONFIG_NETFILTER)
 	if(skb->nfmark & IPSEC_NFMARK_IS_SAREF_BIT) {
 		SAref = NFmark2IPsecSAref(skb->nfmark);
 		KLIPS_PRINT(debug_mast, "klips_debug:ipsec_mast_start_xmit: "
 				"getting SAref=%d from nfmark\n",
 				SAref);
 	}
+#endif
 #endif
 
 #ifdef CONFIG_INET_IPSEC_SAREF
@@ -455,10 +504,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->outgoing_said = ixs->ipsp->ips_said;
 
 #ifdef NETDEV_25
+#if defined(CONFIG_NETFILTER)
 	/* prevent recursion through the saref route */
 	if(skb->nfmark & 0x80000000) {
 		skb->nfmark = 0;
 	}
+#endif
 #endif
 #if 0
 	/* TODO: do we have to also have to do this? */

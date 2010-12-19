@@ -279,7 +279,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	case AF_INET:
 		saddr_len = sizeof(struct sockaddr_in);
 		if (debug_pfkey)
-			addrtoa(((struct sockaddr_in*)s)->sin_addr, 0, ipaddr_txt, sizeof(ipaddr_txt));
+			sin_addrtot(s, 0, ipaddr_txt, sizeof(ipaddr_txt));
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
 			    "found address family=%d, AF_INET, %s.\n",
@@ -289,6 +289,13 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 #if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
 	case AF_INET6:
 		saddr_len = sizeof(struct sockaddr_in6);
+		if (debug_pfkey)
+			sin_addrtot(s, 0, ipaddr_txt, sizeof(ipaddr_txt));
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_address_process: "
+			    "found address family=%d, AF_INET6, %s.\n",
+			    s->sa_family,
+			    ipaddr_txt);
 		break;
 #endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 	default:
@@ -341,8 +348,15 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		if(pfkey_alloc_eroute(&(extr->eroute)) == ENOMEM) {
 			SENDERR(ENOMEM);
 		}
+		if (s->sa_family == AF_INET6) {
+		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip6_src);
+		portp = &(extr->eroute->er_eaddr.sen_sport6);
+		extr->eroute->er_eaddr.sen_type = SENT_IP6;
+		} else {
 		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip_src);
 		portp = &(extr->eroute->er_eaddr.sen_sport);
+		extr->eroute->er_eaddr.sen_type = SENT_IP4;
+		}
 		break;
 	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
 		KLIPS_PRINT(debug_pfkey,
@@ -351,8 +365,15 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		if(pfkey_alloc_eroute(&(extr->eroute)) == ENOMEM) {
 			SENDERR(ENOMEM);
 		}
+		if (s->sa_family == AF_INET6) {
+		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip6_dst);
+		portp = &(extr->eroute->er_eaddr.sen_dport6);
+		extr->eroute->er_eaddr.sen_type = SENT_IP6;
+		} else {
 		sap = (unsigned char **)&(extr->eroute->er_eaddr.sen_ip_dst);
 		portp = &(extr->eroute->er_eaddr.sen_dport);
+		extr->eroute->er_eaddr.sen_type = SENT_IP4;
+		}
 		break;
 	case K_SADB_X_EXT_ADDRESS_SRC_MASK:
 		KLIPS_PRINT(debug_pfkey,
@@ -361,8 +382,15 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		if(pfkey_alloc_eroute(&(extr->eroute)) == ENOMEM) {
 			SENDERR(ENOMEM);
 		}
+		if (s->sa_family == AF_INET6) {
+		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip6_src);
+		portp = &(extr->eroute->er_emask.sen_sport6);
+		extr->eroute->er_eaddr.sen_type = SENT_IP6;
+		} else {
 		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip_src);
 		portp = &(extr->eroute->er_emask.sen_sport);
+		extr->eroute->er_eaddr.sen_type = SENT_IP4;
+		}
 		break;
 	case K_SADB_X_EXT_ADDRESS_DST_MASK:
 		KLIPS_PRINT(debug_pfkey,
@@ -371,8 +399,15 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		if(pfkey_alloc_eroute(&(extr->eroute)) == ENOMEM) {
 			SENDERR(ENOMEM);
 		}
+		if (s->sa_family == AF_INET6) {
+		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip6_dst);
+		portp = &(extr->eroute->er_emask.sen_dport6);
+		extr->eroute->er_eaddr.sen_type = SENT_IP6;
+		} else {
 		sap = (unsigned char **)&(extr->eroute->er_emask.sen_ip_dst);
 		portp = &(extr->eroute->er_emask.sen_dport);
+		extr->eroute->er_eaddr.sen_type = SENT_IP4;
+		}
 		break;
 #ifdef NAT_TRAVERSAL
 	case K_SADB_X_EXT_NAT_T_OA:
@@ -396,6 +431,12 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	case K_SADB_EXT_ADDRESS_DST:
 	case K_SADB_EXT_ADDRESS_PROXY:
 	case K_SADB_X_EXT_ADDRESS_DST2:
+#if 0
+	case K_SADB_X_EXT_ADDRESS_SRC_FLOW:
+	case K_SADB_X_EXT_ADDRESS_DST_FLOW:
+	case K_SADB_X_EXT_ADDRESS_SRC_MASK:
+	case K_SADB_X_EXT_ADDRESS_DST_MASK:
+#endif
 #ifdef NAT_TRAVERSAL
 	case K_SADB_X_EXT_NAT_T_OA:
 #endif
@@ -409,33 +450,49 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 		memcpy(*sap, s, saddr_len);
 		break;
 	default:
-		if(s->sa_family	!= AF_INET) {
+		if(s->sa_family	!= AF_INET && s->sa_family != AF_INET6) {
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_address_process: "
-				    "s->sa_family=%d not supported.\n",
-				    s->sa_family);
+				    "s->sa_family=%d "
+					"sadb_address_exttype=%d "
+					"not supported.\n",
+				    s->sa_family, pfkey_address->sadb_address_exttype);
 			SENDERR(EPFNOSUPPORT);
 		}
-		{
+		if (s->sa_family == AF_INET6) {
+			*(struct in6_addr *)sap = ((struct sockaddr_in6 *)s)->sin6_addr;
+			if (portp != 0)
+				*portp = ((struct sockaddr_in6*)s)->sin6_port;
+		} else {
 			*(struct in_addr *)sap = ((struct sockaddr_in *)s)->sin_addr;
+			if (portp != 0)
+				*portp = ((struct sockaddr_in*)s)->sin_port;
 		}
 
-		if (portp != 0)
-			*portp = ((struct sockaddr_in*)s)->sin_port;
 		if(extr->eroute) {
 			if (debug_pfkey) {
 				char buf1[64], buf2[64];
-				subnettoa(extr->eroute->er_eaddr.sen_ip_src,
-					  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
-				subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
-					  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+				unsigned short sp, dp;
+
+				if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
+					subnet6toa(&extr->eroute->er_eaddr.sen_ip6_src,
+						  &extr->eroute->er_emask.sen_ip6_src, 0, buf1, sizeof(buf1));
+					subnet6toa(&extr->eroute->er_eaddr.sen_ip6_dst,
+						  &extr->eroute->er_emask.sen_ip6_dst, 0, buf2, sizeof(buf2));
+					sp = extr->eroute->er_eaddr.sen_sport6;
+					dp = extr->eroute->er_eaddr.sen_dport6;
+				} else {
+					subnettoa(extr->eroute->er_eaddr.sen_ip_src,
+						  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
+					subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
+						  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+					sp = extr->eroute->er_eaddr.sen_sport;
+					dp = extr->eroute->er_eaddr.sen_dport;
+				}
 				KLIPS_PRINT(debug_pfkey,
 					    "klips_debug:pfkey_address_parse: "
 					    "extr->eroute set to %s:%d->%s:%d\n",
-					    buf1,
-					    ntohs(extr->eroute->er_eaddr.sen_sport),
-					    buf2,
-					    ntohs(extr->eroute->er_eaddr.sen_dport));
+					    buf1, ntohs(sp), buf2, ntohs(dp));
 			}
 		}
 	}
@@ -449,10 +506,16 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			ipsp->ips_said.dst.u.v4.sin_addr.s_addr = ((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr.s_addr;
 			ipsp->ips_said.dst.u.v4.sin_family      = AF_INET;
 			if (debug_pfkey)
-				addrtoa(((struct sockaddr_in*)(ipsp->ips_addr_d))->sin_addr,
-				0,
-				ipaddr_txt,
-				sizeof(ipaddr_txt));
+				sin_addrtot(ipsp->ips_addr_d,0,ipaddr_txt,sizeof(ipaddr_txt));
+			KLIPS_PRINT(debug_pfkey,
+				    "klips_debug:pfkey_address_process: "
+				    "ips_said.dst set to %s.\n",
+				    ipaddr_txt);
+		} else if (s->sa_family == AF_INET6) {
+			ipsp->ips_said.dst.u.v6.sin6_addr = ((struct sockaddr_in6 *)(ipsp->ips_addr_d))->sin6_addr;
+			ipsp->ips_said.dst.u.v6.sin6_family      = AF_INET6;
+			if (debug_pfkey)
+				sin_addrtot(ipsp->ips_addr_d,0,ipaddr_txt,sizeof(ipaddr_txt));
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_address_process: "
 				    "ips_said.dst set to %s.\n",
