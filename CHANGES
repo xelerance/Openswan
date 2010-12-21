@@ -7,8 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.33 (unreleased)
 * Merge in the klips-ipv6 branch [David]
 * Bugtracker bugs fixed:
+   #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
-
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
