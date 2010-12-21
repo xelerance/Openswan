@@ -1205,7 +1205,7 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	    digest->len = SHA1_DIGEST_SIZE;
 	    return TRUE;
 	}
-#ifdef SHA2
+#ifdef USE_SHA2
 	case OID_SHA256:
 	case OID_SHA256_WITH_RSA:
 	{
@@ -1234,12 +1234,12 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 #ifdef HAVE_LIBNSS
 	   unsigned int len;
 	   SECStatus s;
-	   s = PK11_DigestOp(ctx.ctx_nss, tbs.ptr, tbs.len);
+	   s = PK11_DigestOp(context.ctx_nss, tbs.ptr, tbs.len);
 	   passert(s==SECSuccess);
-	   s=PK11_DigestFinal(ctx.ctx_nss, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
+	   s=PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
 	   passert(len==SHA2_384_DIGEST_SIZE);
 	   passert(s==SECSuccess);
-	   PK11_DestroyContext(ctx.ctx_nss, PR_TRUE);
+	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
 #else
 	   sha512_write(&context, tbs.ptr, tbs.len);
 	   sha512_final(&context);

@@ -5,6 +5,7 @@
  * Do not edit manually!
  */
 
+#include <sys/types.h>
 typedef struct {
     u_char octet;
     u_int  next;
@@ -52,3 +53,6 @@ extern const oid_t oid_names[];
 #define OID_SERVICE_LOCATOR		119
 #define OID_SHA1			123
 #define OID_SHA1_WITH_RSA_OIW		124
+#define OID_SHA256			140
+#define OID_SHA384			141
+#define OID_SHA512			142
