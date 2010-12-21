@@ -197,7 +197,8 @@ fi
 
 		# load the most common ciphers/algo's
 		# aes-x86_64 has higher priority in via crypto api
-		for crypto in aes-x86_64 geode-aes aes aes_generic des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm
+		for crypto in aes-x86_64 geode-aes aes aes_generic des sha512 sha256 md5 cbc xcbc ecb twofish blowfish serpent ccm gcm \
+				ctr cts deflate cast5 cast6 lzo sha256_generic sha512_generic camellia
 		   do
 			#echo -n "$crypto "
 			@MODPROBE@ $crypto 2> /dev/null
