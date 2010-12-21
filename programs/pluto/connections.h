@@ -127,11 +127,6 @@ struct virtual_t;
 #include <security/pam_appl.h>
 #endif
 
-/* for CIRCLEQ_ENTRY */
-#if defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
-#include <sys/queue.h>
-#endif
-
 struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
 struct host_pair;    /* opaque type */
 

@@ -1,6 +1,7 @@
 /*
  * routines that are OSX/darwin specific
  *
+ * Copyright (C) 2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -59,6 +60,9 @@
 #include "server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
+
+/* for CIRCLEQ_ENTRY */
+#include <sys/queue.h>
 
 /* invoke the updown script to do the routing and firewall commands required
  *

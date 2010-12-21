@@ -1,7 +1,8 @@
 /*
- * routines that are Linux specific
+ * routines that are FreeBSD specific
  *
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -14,7 +15,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: sysdep_linux.c,v 1.3 2005/08/05 19:18:47 mcr Exp $
  */
 
 #include <stddef.h>
@@ -59,6 +59,9 @@
 #include "server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
+
+/* for CIRCLEQ_ENTRY */
+#include <sys/queue.h>
 
 /* invoke the updown script to do the routing and firewall commands required
  *
