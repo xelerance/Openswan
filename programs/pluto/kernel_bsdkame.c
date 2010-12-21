@@ -29,9 +29,8 @@
 
 #include <openswan.h>
 #include <net/pfkeyv2.h>
-#include <netkey/keydb.h>
+#include <netipsec/keydb.h>
 #include <netinet/in.h>
-#include <netinet6/ipsec.h>
 #include "libbsdkame/libpfkey.h"         /* this is a copy of a freebsd libipsec/ file */
 
 #include "sysdep.h"
