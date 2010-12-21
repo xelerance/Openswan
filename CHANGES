@@ -359,7 +359,7 @@ v2.6.23 (Sep 8, 2009)
 * Bugtracker bugs fixed:
    #1044: openswan.spec file builds an RPM that is missing lwdnsq [Joe Steele]
 
-v2.6.22 (?)
+v2.6.22 (Jun 23, 2009)
 * Malicious X.509 certificates could crash the asn.1 parser.
   Found by Orange Labs vulnerability research team. Patches via
   an irresponsible 0-day public announcement by Andreas Steffen 
@@ -695,7 +695,7 @@ v2.6.08 (Mar 9, 2008)
 v2.6.07 (Feb 8, 2008)
 * IKEv2 retransmit fixes [mcr]
 
-v2.5.18 (?)
+v2.5.18 (not released)
 * Do not use the KMEM_CACHE macro for now, so KLIPS works on 2.6.23 [paul]
 * Sha2 support for X.509 certificates in pluto [Daniel Mueller]
 * Various memory leaks
