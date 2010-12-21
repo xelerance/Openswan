@@ -35,6 +35,7 @@
 #include <sys/un.h>
 #include <fcntl.h>
 #include <getopt.h>
+#include <netinet/in.h>
 #include <resolv.h>
 
 #include <openswan.h>
