@@ -40,9 +40,9 @@
 # include <linux/netdevice.h>   /* struct device, and other headers */
 # include <linux/etherdevice.h> /* eth_type_trans */
 # include <linux/ip.h>          /* struct iphdr */ 
-# if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+# if defined(CONFIG_KLIPS_IPV6)
 #  include <linux/ipv6.h>
-# endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
+# endif /* defined(CONFIG_KLIPS_IPV6) */
 
 #else /* __KERNEL__ */
 
