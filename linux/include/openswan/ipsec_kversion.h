@@ -47,6 +47,13 @@
 #include <linux/config.h>
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
+/* Only enable IPv6 support on newer kernels with IPv6 enabled */
+# if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#  define CONFIG_KLIPS_IPV6 1
+# endif
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,1,0)
 # define SPINLOCK
 # define PROC_FS_21
@@ -349,6 +356,8 @@
 #define l_inet_addr_type	inet_addr_type
 #endif
 
+#include <linux/spinlock.h>
+#include <linux/interrupt.h>
 #include <net/addrconf.h>
 #define ip6_chk_addr(a) (ipv6_chk_addr(&init_net, a, NULL, 1) ? IS_MYADDR : 0)
 #define l_ipv6_addr_type(a)	ip6_chk_addr(a)

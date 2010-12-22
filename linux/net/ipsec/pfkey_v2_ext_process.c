@@ -286,7 +286,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			    s->sa_family,
 			    ipaddr_txt);
 		break;
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#if defined(CONFIG_KLIPS_IPV6)
 	case AF_INET6:
 		saddr_len = sizeof(struct sockaddr_in6);
 		if (debug_pfkey)
@@ -297,7 +297,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			    s->sa_family,
 			    ipaddr_txt);
 		break;
-#endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
+#endif /* defined(CONFIG_KLIPS_IPV6) */
 	default:
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "

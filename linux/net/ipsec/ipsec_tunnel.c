@@ -540,7 +540,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	 */
 	ixs->matcher.sen_len = sizeof (struct sockaddr_encap);
 	ixs->matcher.sen_family = AF_ENCAP;
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
@@ -554,7 +554,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			inet_addrtot(AF_INET6, &osw_ip6_hdr(ixs)->daddr, 0, tdst, sizeof(tdst));
 		}
 	} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 	{
 		nexthdr = osw_ip4_hdr(ixs)->protocol;
 		nexthdroff = 0;
@@ -665,7 +665,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 		}
 	}
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		char edst[ADDRTOT_BUF+1];
 		struct in6_addr addr6_any = IN6ADDR_ANY_INIT;
@@ -723,7 +723,7 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 			bypass = TRUE;
 		}
 	} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 	{
 		/* default to a %drop eroute */
 		ixs->outgoing_said.proto = IPPROTO_INT;
@@ -906,7 +906,7 @@ ipsec_tunnel_xsm_complete(
 		goto cleanup;
 	}
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
@@ -916,7 +916,7 @@ ipsec_tunnel_xsm_complete(
 		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
 		ixs->matcher.sen_proto6 = nexthdr;
 	} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 	{
 		nexthdr = osw_ip4_hdr(ixs)->protocol;
 		nexthdroff = 0;
@@ -2582,7 +2582,7 @@ ipsec_tunnel_attach(struct net_device *dev, struct net_device *physdev)
 	return 0;
 }
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 /*
  * stolen from ip6tables,  we need a copy incase iptables iscompiled out of
  * the kernel.
@@ -2662,7 +2662,7 @@ int osw_ipv6_find_hdr(const struct sk_buff *skb,
 	*offset = start;
 	return nexthdr;
 }
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 
 
 /*

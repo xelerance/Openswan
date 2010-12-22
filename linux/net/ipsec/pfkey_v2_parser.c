@@ -301,7 +301,7 @@ pfkey_getspi_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(EEXIST);
 	}
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
 			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
 		extr->ips->ips_flags |= EMT_INBOUND;
@@ -457,7 +457,7 @@ pfkey_update_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_e
 		SENDERR(ENOENT);
 	}
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
 			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
 		extr->ips->ips_flags |= EMT_INBOUND;
@@ -734,7 +734,7 @@ pfkey_add_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey_extr
 	}
 	spin_unlock_bh(&tdb_lock);
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (ip_address_family(&extr->ips->ips_said.dst) == AF_INET6 &&
 			ip6_chk_addr(&extr->ips->ips_said.dst.u.v6.sin6_addr) == IS_MYADDR){
 		extr->ips->ips_flags |= EMT_INBOUND;
