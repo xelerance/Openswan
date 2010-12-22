@@ -18,6 +18,14 @@ This parameter is only needed on the server side and not on the client side that
 the client will just use its IP address for the inner IP setting.
 This parameter may eventually become per-connection.
 </para>
+<para>Note: It seems that T-Mobile in the US and Rogers/Fido in Canada have
+started using 25.0.0.0/8 as their pre-NAT range. This range technically belows
+to the Defence Interoperable Network Services Authority (DINSA), an agency of
+the Ministry of Defence of the United Kingdom. The network range seems to not
+have been announced for decades, which is probably why these organisasions
+"borrowed" this range. To support roadwarriors on these 3G networks, you might
+have to add it to the virtual_private= line.
+</para>
 
   </listitem>
   </varlistentry>
