@@ -967,7 +967,7 @@ main(int argc, char **argv)
 
 
 	close(sk);
-}
+    }
 #endif
 
 #ifdef HAVE_LIBNSS
@@ -981,6 +981,24 @@ main(int argc, char **argv)
 #else
 	openswan_log("HAVE_STATSD notification support not compiled in");
 #endif
+
+
+/** Log various impair-* functions if they were enabled */
+
+    if(DBGP(IMPAIR_BUST_MI2))
+	openswan_log("Warning: IMPAIR_BUST_MI2 enabled");
+    if(DBGP(IMPAIR_BUST_MR2))
+	openswan_log("Warning: IMPAIR_BUST_MR2 enabled");
+    if(DBGP(IMPAIR_SA_CREATION))
+	openswan_log("Warning: IMPAIR_SA_CREATION enabled");
+    if(DBGP(IMPAIR_JACOB_TWO_TWO))
+	openswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
+    if(DBGP(IMPAIR_DIE_ONINFO))
+	openswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
+    if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
+	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
+    if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))
+	openswan_log("Warning: IMPAIR_DELAY_ADNS_TXT_ANSWER enabled");
 
 /** Initialize all of the various features */
 
