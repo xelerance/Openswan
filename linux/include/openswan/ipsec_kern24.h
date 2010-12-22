@@ -64,7 +64,25 @@ static inline void random_ether_addr(u8 *addr)
 extern int printk_ratelimit(void);
 #endif
 
+#include <linux/skbuff.h>
+static inline void *skb_header_pointer(const struct sk_buff *skb, int offset,
+				       int len, void *buffer)
+{
+	int hlen = skb_headlen(skb);
 
+	if (offset + len <= hlen)
+		return skb->data + offset;
+
+	if (skb_copy_bits(skb, offset, buffer, len) < 0)
+		return NULL;
+
+	return buffer;
+}
+
+static inline struct ethhdr *eth_hdr(const struct sk_buff *skb)
+{
+    return (struct ethhdr *)skb_mac_header(skb);
+}
 #define _IPSEC_KERN24_H 1
 
 #endif /* _IPSEC_KERN24_H */
