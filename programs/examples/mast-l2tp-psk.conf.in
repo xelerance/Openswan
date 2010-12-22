@@ -3,7 +3,8 @@ config setup
 	interfaces="%defaultroute"
 	protostack=mast
 	nat_traversal=yes
-	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:!192.168.1.0/24.
+	# T-Mobile and Rogers/FIDO now use 25/8 as "private space" too :(
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:!192.168.1.0/24
 
 conn L2TP-PSK-NAT
 	rightsubnet=vhost:%priv
