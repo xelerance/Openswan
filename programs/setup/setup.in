@@ -75,7 +75,10 @@ then
 fi
 
 # Does not make any sense at all to continue without the main binary
-test -x $IPSEC_SBINDIR/ipsec || exit 5
+# But before we can quit we should check if we are on a Debian based
+# system as their policy demands a graceful exit code
+test -f /etc/debian_version && BINARY_ERROR=0 || BINARY_ERROR=5
+test -x $IPSEC_SBINDIR/ipsec || exit $BINARY_ERROR
 
 # misc setup
 umask 022
