@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.33 (unreleased)
 * Merge in the klips-ipv6 branch [David]
 * modprobe more crypto modules on startup (gcm, camelia, sha2* etc) [Paul]
+* Added %v4:26/8 to virtual_private ("thanks" to T-Mobile/Rogers/FIDO) [Paul]
 * Bugtracker bugs fixed:
    #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
