@@ -60,6 +60,7 @@ typedef struct {
 #endif
 
 extern const struct osw_conf_options *osw_init_options(void);
+extern void osw_conf_free_oco(void);
 extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
 extern const struct osw_conf_options *osw_init_rootdir(const char *root_dir);
 

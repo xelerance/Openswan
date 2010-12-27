@@ -1088,6 +1088,10 @@ exit_pluto(int status)
     free_acerts();             /* free chain of X.509 attribute certificates */
     free_ocsp();               /* free ocsp cache */
 
+    osw_conf_free_oco();	/* free global_oco containing path names */
+
+    free_myFQDN();	    /* free myid FQDN */
+
     free_ifaces();          /* free interface list from memory */
     stop_adns();            /* Stop async DNS process (if running) */
     free_md_pool();         /* free the md pool */

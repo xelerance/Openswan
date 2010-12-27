@@ -45,6 +45,7 @@ extern void set_myid(enum myid_state s, char *);
 extern void show_myid_status(void);
 extern const struct id *resolve_myid(const struct id *id);
 extern void set_myFQDN(void);
+extern void free_myFQDN(void);
 
 extern err_t atoid(char *src, struct id *id, bool myid_ok);
 extern void iptoid(const ip_address *ip, struct id *id);

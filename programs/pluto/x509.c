@@ -423,7 +423,7 @@ load_crls(void)
     char buf[PATH_MAX];
     char *save_dir;
     int n;
-    const struct osw_conf_options *oco = osw_init_options(); 
+    const struct osw_conf_options *oco = osw_init_options();
 
     /* change directory to specified path */
     save_dir = getcwd(buf, PATH_MAX);
@@ -471,7 +471,7 @@ load_crls(void)
         int e = errno;
         openswan_log("Changing back to directory '%s' failed - (%d %s)",
                 save_dir, e, strerror(e));
-    } 
+    }
 }
 
 /*

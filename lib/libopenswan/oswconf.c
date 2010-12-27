@@ -80,21 +80,26 @@ void osw_conf_setdefault(void)
     char *ipsecd_dir = FINALCONFDDIR;
     char *conffile   = FINALCONFFILE;
     char *var_dir    = FINALVARDIR;
+    char *env;
+#if 0
     char *exec_dir   = FINALLIBEXECDIR;
     char *lib_dir    = FINALLIBDIR;
     char *sbin_dir   = FINALSBINDIR;
-    char *env;
+#endif
 
     memset(&global_oco, 0, sizeof(global_oco));
 
     /* allocate them all to make it consistent */
-    ipsec_conf_dir = clone_str(ipsec_conf_dir, "default conf");
-    ipsecd_dir = clone_str(ipsecd_dir, "default conf");
-    conffile   = clone_str(conffile, "default conf");
-    var_dir    = clone_str(var_dir, "default conf");
-    exec_dir   = clone_str(exec_dir, "default conf");
-    lib_dir    = clone_str(lib_dir, "default conf");
-    sbin_dir   = clone_str(sbin_dir, "default conf");
+    ipsec_conf_dir = clone_str(ipsec_conf_dir, "default conf ipsec_conf_dir");
+    ipsecd_dir = clone_str(ipsecd_dir, "default conf ipsecd_dir");
+    conffile   = clone_str(conffile, "default conf conffile");
+    var_dir    = clone_str(var_dir, "default conf var_dir");
+#if 0
+    /* unused and were not freed */
+    exec_dir   = clone_str(exec_dir, "default conf exec_dir");
+    lib_dir    = clone_str(lib_dir, "default conf lib_dir");
+    unused sbin_dir   = clone_str(sbin_dir, "default conf sbin_dir");
+#endif
     
     /* figure out what we are doing, look for variables in the environment */
     if((env = getenv("IPSEC_CONFS")) != NULL) {
@@ -130,6 +135,26 @@ void osw_conf_setdefault(void)
     NSSPassword.source =  PW_FROMFILE;
 #endif
     /* DBG_log("default setting of ipsec.d to %s", global_oco.confddir); */
+}
+
+/* mostly estatic value, to surpress within LEAK_DETECTIVE */
+void osw_conf_free_oco(void)
+{
+    /* Must be a nicer way to loop over this? */
+    pfree(global_oco.crls_dir);
+    /* pfree(global_oco.rootdir); */
+    pfree(global_oco.confdir); /* there is one more alloc that did not get freed? */
+    pfree(global_oco.conffile);
+    pfree(global_oco.confddir);
+    pfree(global_oco.vardir);
+    pfree(global_oco.policies_dir);
+    pfree(global_oco.acerts_dir);
+    pfree(global_oco.cacerts_dir);
+    // wrong leak magic? pfree(global_oco.crls_dir);
+    pfree(global_oco.private_dir);
+    pfree(global_oco.certs_dir);
+    pfree(global_oco.aacerts_dir);
+    pfree(global_oco.ocspcerts_dir);
 }
 
 const struct osw_conf_options *osw_init_options(void)

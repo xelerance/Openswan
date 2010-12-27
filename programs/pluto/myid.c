@@ -157,6 +157,13 @@ set_myFQDN(void)
     }
 }
 
+void
+free_myFQDN(void)
+{
+   free_id_content(&myids[MYID_HOSTNAME]);
+   /* wrong leak magic? pfree(myid_str); */
+}
+
 /* build an ID payload
  * Note: no memory is allocated for the body of the payload (tl->ptr).
  * We assume it will end up being a pointer into a sufficiently
