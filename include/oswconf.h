@@ -30,15 +30,6 @@ struct paththing {
   size_t   path_space;
 };
 
-struct pluto_paths {
-  struct paththing acerts;
-  struct paththing cacerts;
-  struct paththing crls;
-  struct paththing private;
-  struct paththing certs;
-  struct paththing aacerts;
-  struct paththing ocspcerts;
-};
 
 struct osw_conf_options {
     char *rootdir;                /* default is "" --- used for testing */
