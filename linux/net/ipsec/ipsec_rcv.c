@@ -475,13 +475,13 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	struct ipsec_sa *ipsp;
 	struct ipsec_sa* ipsnext = NULL;
 	struct sk_buff *skb;
-	struct iphdr *ipp;
-	struct ipv6hdr *ipp6;
+	struct iphdr *ipp = osw_ip4_hdr(irs);
+#ifdef CONFIG_KLIPS_IPV6
+	struct ipv6hdr *ipp6 = osw_ip6_hdr(irs);
+#endif /* CONFIG_KLIPS_IPV6 */
 	int failed_inbound_check = 0;
 	enum ipsec_rcv_value result = IPSEC_RCV_DECAPFAIL;
 
-	ipp  = osw_ip4_hdr(irs);
-	ipp6  = osw_ip6_hdr(irs);
 	ipsp = irs->ipsp;
 	skb  = irs->skb;
 	if (debug_rcv)
@@ -528,14 +528,19 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		} else if (((struct sockaddr_in*)(ipsp->ips_addr_s))->sin_family == AF_INET6) {
 			psin = (struct sockaddr_in*)(ipsp->ips_addr_s);
 		}
-		if ((psin && ipp->saddr != psin->sin_addr.s_addr) ||
-			(psin6 && memcmp(&ipp6->saddr, &psin6->sin6_addr, sizeof(ipp6->saddr)) != 0)) {
+		if ((psin && ipp->saddr != psin->sin_addr.s_addr)
+#ifdef CONFIG_KLIPS_IPV6
+				|| (psin6 && memcmp(&ipp6->saddr, &psin6->sin6_addr, sizeof(ipp6->saddr)) != 0)
+#endif
+				) {
 			char saddr1[SUBNETTOA_BUF], saddr2[SUBNETTOA_BUF];
 			*saddr1 = 0;
-			if (ipp->version == 4)
-				inet_addrtot(AF_INET, &ipp->saddr, 0, saddr1, sizeof(saddr1));
-			else
+#ifdef CONFIG_KLIPS_IPV6
+			if (ipp->version == 6)
 				inet_addrtot(AF_INET6, &ipp6->saddr, 0, saddr1, sizeof(saddr1));
+			else
+#endif
+				inet_addrtot(AF_INET, &ipp->saddr, 0, saddr1, sizeof(saddr1));
 			*saddr2 = 0;
 			sin_addrtot(&psin->sin_addr, 0, saddr2, sizeof(saddr2));
 			KLIPS_PRINT(debug_rcv,
@@ -554,7 +559,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	ipsec_rcv_setoutif(irs);
 
 	/* added to support AT&T heartbeats to SIG/GIG */
-	if ((ipp->version == 4 || ipp6->version == 6)
+	if ((ipp->version == 4 || ipp->version == 6)
 		&& (irs->proto == IPPROTO_IPIP || irs->proto == IPPROTO_IPV6))
 	{
 		/*
@@ -576,7 +581,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		
 		/* now setup new L4 payload location */
 		ipp = (struct iphdr *)skb_network_header(skb);
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 		ipp6 = (struct ipv6hdr *) ipp;
 		if (ipp->version == 6) {
 			unsigned char nexthdr = ipp6->nexthdr;
@@ -585,7 +590,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			skb_set_transport_header(skb, ipsec_skb_offset(skb, (void*)skb->data + nexthdroff));
 			irs->iphlen = nexthdroff - ipsec_skb_offset(skb, ipp6);
 		} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 		{
 			skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + (ipp->ihl << 2)));
 			irs->iphlen = ipp->ihl << 2;
@@ -649,7 +654,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 				  ^ ipsp->ips_flow_d.u.v4.sin_addr.s_addr)) {
 		 	failed_inbound_check = 1;
 		 }
-	   } else if (ipp->version == 6) {
+	   }
+#ifdef CONFIG_KLIPS_IPV6
+	   else if (ipp->version == 6) {
 	   	 if (ipsp->ips_mask_s.u.v6.sin6_family != AF_INET6) {
 		 	failed_inbound_check = 1;
 		 } else if (((ipp6->saddr.s6_addr32[0] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[0])
@@ -674,11 +681,13 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		 	failed_inbound_check = 1;
 		 }
 	   }
+#endif /* CONFIG_KLIPS_IPV6 */
 	}
 	if (failed_inbound_check)
 	{
 		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
 		
+#ifdef CONFIG_KLIPS_IPV6
 		if (ipsp->ips_flow_s.u.v4.sin_family == AF_INET6) {
 			subnet6toa(&ipsp->ips_flow_s.u.v6.sin6_addr,
 				  &ipsp->ips_mask_s.u.v6.sin6_addr,
@@ -686,7 +695,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			subnet6toa(&ipsp->ips_flow_d.u.v6.sin6_addr,
 				  &ipsp->ips_mask_d.u.v6.sin6_addr,
 				  0, dflow_txt, sizeof(dflow_txt));
-		} else {
+		} else
+#endif
+		{
 			subnettoa(ipsp->ips_flow_s.u.v4.sin_addr,
 				  ipsp->ips_mask_s.u.v4.sin_addr,
 				  0, sflow_txt, sizeof(sflow_txt));
@@ -849,8 +860,8 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			    , irs->natt_len);
 
 		irs->iph = (struct iphdr *)skb->data;
-		irs->iphlen = ipp->ihl << 2;
-		ipp->tot_len = htons(ntohs(ipp->tot_len) - irs->natt_len);
+		irs->iphlen = osw_ip4_hdr(irs)->ihl << 2;
+		osw_ip4_hdr(irs)->tot_len = htons(ntohs(osw_ip4_hdr(irs)->tot_len) - irs->natt_len);
 		if (skb->len < irs->iphlen + irs->natt_len) {
 			printk(KERN_WARNING
 			       "klips_error:ipsec_rcv: "
@@ -875,7 +886,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 	if (debug_rcv)
 		ipsec_rcv_redodebug(irs);
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
 		int nexthdroff;
 		irs->proto = osw_ip6_hdr(irs)->nexthdr;
@@ -884,7 +895,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			&irs->proto);
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
 	} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 	{
 		irs->iphlen = osw_ip4_hdr(irs)->ihl << 2;
 		irs->proto = osw_ip4_hdr(irs)->protocol;
@@ -1613,7 +1624,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	skb = irs->skb;
 	irs->len = skb->len;
 	irs->iph = (void *) ip_hdr(skb);
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
 		unsigned char nexthdr = osw_ip6_hdr(irs)->nexthdr;
 		int nexthdroff;
@@ -1622,7 +1633,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
 	} else
-#endif /* CONFIG_IPV6 */
+#endif /* CONFIG_KLIPS_IPV6 */
 	{
 		irs->iphlen = osw_ip4_hdr(irs)->ihl<<2;
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
@@ -1863,12 +1874,13 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 	{
 	  int len;
 	  struct iphdr *iph = ip_hdr(irs->skb);
+#ifdef CONFIG_KLIPS_IPV6
 	  struct ipv6hdr *ip6h = (struct ipv6hdr *) iph;
-	  if (iph->version == 6) {
+	  if (iph->version == 6)
 	  	len = ntohs(iph->payload_len) + sizeof(*ip6h);
-	  } else {
+	  else
+#endif /* CONFIG_KLIPS_IPV6 */
 	  	len = ntohs(iph->tot_len);
-	  }
 	  irs->skb->len  = len;
 	}
 #endif

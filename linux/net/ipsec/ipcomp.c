@@ -104,7 +104,7 @@ safe_skb_put(struct sk_buff *skb, int extend)
 struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned int *flags)
 {
 	struct iphdr *iph;
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	struct ipv6hdr *iph6;
 #endif
 	unsigned char nexthdr;
@@ -149,11 +149,11 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 #else /* NET_21 */
 	iph = skb->ip_hdr;
 #endif /* NET_21 */
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	iph6 = ipv6_hdr(skb);
 #endif
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (iph->version == 6) {
 		int nexthdroff;
 		nexthdr = iph6->nexthdr;
@@ -317,7 +317,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 		    cpyldsz);
 	
 	/* Update IP header */
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (iph->version == 6) {
 		iph6->nexthdr = IPPROTO_COMP;
 		iph6->payload_len = htons(iphlen + sizeof(struct ipcomphdr) + cpyldsz
@@ -360,7 +360,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	struct sk_buff *nskb = NULL;
 	/* original ip header */
 	struct iphdr *oiph, *iph;
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	struct ipv6hdr *oiph6, *iph6;
 #endif
 	unsigned char nexthdr;
@@ -400,11 +400,11 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #else /* NET_21 */
 	oiph = skb->ip_hdr;
 #endif /* NET_21 */
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	oiph6 = ipv6_hdr(skb);
 #endif
 	
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (oiph->version == 6) {
 		int nexthdroff;
 		nexthdr = oiph6->nexthdr;
@@ -538,7 +538,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 #else /* NET_21 */
 	iph = nskb->ip_hdr;
 #endif /* NET_21 */
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	iph6 = ipv6_hdr(nskb);
 #endif
 	zs.next_out = (char *)iph + iphlen;
@@ -575,7 +575,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	/* resulting decompressed size */
 	pyldsz -= zs.avail_out;
 	nexthdr = ((struct ipcomphdr *) ((char *)oiph + iphlen))->ipcomp_nh;
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
 	if (iph->version == 6) {
 		iph6->payload_len = htons(pyldsz + iphlen - sizeof(struct ipv6hdr));
 		iph6->nexthdr = nexthdr;

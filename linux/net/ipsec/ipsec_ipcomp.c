@@ -198,7 +198,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   unsigned int flags = 0;
   unsigned int tot_len, old_tot_len;
 
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
   if (osw_ip_hdr_version(ixs) == 6)
     old_tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
   else
@@ -214,7 +214,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   ixs->iph = (void *)ixs->skb->ip_hdr;
 #endif /* NET_21 */
   
-#ifdef CONFIG_IPV6
+#ifdef CONFIG_KLIPS_IPV6
   if (osw_ip_hdr_version(ixs) == 6) {
 	int nexthdroff;
 	unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;

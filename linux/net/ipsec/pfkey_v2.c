@@ -1454,11 +1454,11 @@ pfkey_init(void)
 	};
 	static struct ipsec_alg_supported supported_init_ipip[] = {
 		{K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv4, 0, 32, 32}
-#if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#if defined(CONFIG_KLIPS_IPV6)
 		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv4, 0, 128, 32}
 		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv4_in_IPv6, 0, 32, 128}
 		, {K_SADB_EXT_SUPPORTED_ENCRYPT, K_SADB_X_TALG_IPv6_in_IPv6, 0, 128, 128}
-#endif /* defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
+#endif /* defined(CONFIG_KLIPS_IPV6) */
 	};
 #ifdef CONFIG_KLIPS_IPCOMP
 	static struct ipsec_alg_supported supported_init_ipcomp[] = {
