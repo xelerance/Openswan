@@ -433,6 +433,8 @@ main(int argc, char **argv)
 	    { "impair-delay-adns-txt-answer", no_argument, NULL, IMPAIR_DELAY_ADNS_TXT_ANSWER + DBG_OFFSET },
 	    { "impair-bust-mi2", no_argument, NULL, IMPAIR_BUST_MI2 + DBG_OFFSET },
 	    { "impair-bust-mr2", no_argument, NULL, IMPAIR_BUST_MR2 + DBG_OFFSET },
+	    { "impair-sa-creation", no_argument, NULL, IMPAIR_SA_CREATION + DBG_OFFSET },
+	    { "impair-die-oninfo", no_argument, NULL, IMPAIR_DIE_ONINFO + DBG_OFFSET },
 	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
