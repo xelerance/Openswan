@@ -710,7 +710,7 @@ static const struct option long_opts[] = {
 #endif
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
-    { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
+    { "debug-all", no_argument, NULL, DBGOPT_ALL + OO },
     { "debug-raw", no_argument, NULL, DBGOPT_RAW + OO },
     { "debug-crypt", no_argument, NULL, DBGOPT_CRYPT + OO },
     { "debug-parsing", no_argument, NULL, DBGOPT_PARSING + OO },
