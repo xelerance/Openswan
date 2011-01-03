@@ -308,7 +308,8 @@ proc loginuml {umlname} {
 	          puts stderr "EOF in loginuml" 
     	          shutdownumls
 	}
-	-exact "normal startup):"
+#	-exact "normal startup):"
+	-exact "enter for maintenance"
     }
     netjigdebug "\nLogging in to $umlname"
     send -i $umlid($umlname,spawnid) -- "root\r"
