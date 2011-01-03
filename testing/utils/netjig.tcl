@@ -303,7 +303,7 @@ proc loginuml {umlname} {
     trace variable expect_out(buffer) w log_by_tracing
     expect {
     	-i $umlid($umlname,spawnid)
-	timeout	{ puts stderr "timeout in logginuml" }
+	timeout	{ puts stderr "timeout in loginuml" }
 	eof	{ 
 	          puts stderr "EOF in loginuml" 
     	          shutdownumls
