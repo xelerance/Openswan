@@ -571,7 +571,7 @@ ready:		devready
 # set up for build
 buildready:
 	rm -f dtrmakefile cvs.datemark
-	cd doc ; $(MAKE) -s
+	# obsolete cd doc ; $(MAKE) -s
 
 rpm:
 	@echo To build an rpm, use: rpmbuild -ba packaging/XXX/openswan.spec
