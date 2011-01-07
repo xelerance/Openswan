@@ -676,85 +676,66 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 {
 	int r = -1;
+	struct ifreq ifr;
+	int *fdp = (int *) &ifr.ifr_data;
 
-#if !defined(linux)
-# warning NAT-T support for non-linux is unknown - disabled
-	disable_nat_traversal(type);
-	return -1;
-#endif
-
-#if defined(linux)
-	static enum { auto_style, new_style, old_style } style = auto_style;
-
-# if defined(NETKEY_SUPPORT)
-	if (style == auto_style || style == new_style) {
-		struct ifreq ifr;
-		int *fdp = (int *) &ifr.ifr_data;
-
-		if (style == auto_style)
-			DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying new style NAT-T"));
-
-		memset(&ifr, 0, sizeof(ifr));
-		switch(kern_interface) {
-
-			case USE_MASTKLIPS:
-				strcpy(ifr.ifr_name, "mast0");
-				break;
-			case USE_KLIPS:
-				strcpy(ifr.ifr_name, "ipsec0");
-				break;
-			case USE_NETKEY:
-				/* Let's hope we have at least one ethernet device */
-				strcpy(ifr.ifr_name, "eth0");
-				break;
-			default:
-				/* We have nothing , really prob just abort and return -1 */
-				strcpy(ifr.ifr_name, "eth0");
-				break;
-		}
-		fdp[0] = sk;
-		fdp[1] = type;
-		r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
-		if (r == -1) { 
-			DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
-				   "new style NAT-T family %s (errno=%d)"
-				   , type, fam, errno));
-		} else {
-			style = new_style;
-		}
+	DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying new style NAT-T"));
+	memset(&ifr, 0, sizeof(ifr));
+	switch(kern_interface) {
+		case USE_MASTKLIPS:
+			strcpy(ifr.ifr_name, "mast0");
+			break;
+		case USE_KLIPS:
+			strcpy(ifr.ifr_name, "ipsec0");
+			break;
+		case USE_NETKEY:
+			/* Let's hope we have at least one ethernet device */
+			strcpy(ifr.ifr_name, "eth0");
+			break;
+		case USE_BSDKAME:
+			/* Let's hope we have at least one ethernet device */
+			strcpy(ifr.ifr_name, "en0");
+			break;
+		default:
+			/* We have nothing , really prob just abort and return -1 */
+			strcpy(ifr.ifr_name, "eth0");
+			break;
 	}
-# else
-	DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP() setup failed for new style NAT-T family - NETKEY support not compiled in"));
-# endif /* NETKEY_SUPPORT */
+	fdp[0] = sk;
+	fdp[1] = type;
+	r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
+	if (r == -1) { 
+		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
+			   "new style NAT-T family %s (errno=%d)"
+			   , type, fam, errno));
+	} else {
+		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup succeeded for "
+			   "new style NAT-T family %s" , type, fam));
+		return r;
+	}
 
 #if defined(KLIPS)
-	if (style == auto_style || style == old_style) {
-
-		if (style == auto_style)
-			DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying old style NAT-T"));
-
-		r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
-		if (r == -1) {
-			DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
-				   "old style NAT-T family %s (errno=%d)"
-				   , type, fam, errno));
-		}
-		else {
-			style = old_style;
-		}
+	DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying old style NAT-T"));
+	r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
+	if (r == -1) {
+		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
+			   "old style NAT-T family %s (errno=%d)"
+			   , type, fam, errno));
+	}
+	else {
+		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup succeeded for "
+			   "new style NAT-T family %s" , type, fam));
+		return r;
 	}
 # else
-	DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP() setup failed for old style NAT-T family - KLIPS support not compiled in"));
+	DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP() setup for old style NAT-T family not available - KLIPS support not compiled in"));
 # endif
 
-	if (r == -1) {
-		loglog(RC_LOG_SERIOUS,
-		       "NAT-Traversal: ESPINUDP(%d) not supported by kernel for family %s"
-		       , type, fam);
-		disable_nat_traversal(type);
-	}
-#endif /* linux */
-	return r;
+	loglog(RC_LOG_SERIOUS,
+	       "NAT-Traversal: ESPINUDP(%d) not supported by kernel for family %s"
+	       , type, fam);
+	disable_nat_traversal(type);
+	return -1;
 }
 
 void nat_traversal_new_ka_event (void)
