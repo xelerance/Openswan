@@ -11,6 +11,7 @@ v2.6.33 (unreleased)
 * Bugtracker bugs fixed:
    #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
+   #1190 nat-t broke on transport mode for klips between 2.6.31 and 2.6.32 [Paul]
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
