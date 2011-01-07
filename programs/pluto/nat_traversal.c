@@ -683,7 +683,7 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 	memset(&ifr, 0, sizeof(ifr));
 	switch(kern_interface) {
 		case USE_MASTKLIPS:
-			strcpy(ifr.ifr_name, "mast0");
+			strcpy(ifr.ifr_name, "ipsec0"); /* using mast0 will break it! */
 			break;
 		case USE_KLIPS:
 			strcpy(ifr.ifr_name, "ipsec0");
