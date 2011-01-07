@@ -2,12 +2,12 @@
 .\"     Title: IPSEC_RSASIGKEY
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 10/06/2010
+.\"      Date: 01/06/2011
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC_RSASIGKEY" "8" "10/06/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC_RSASIGKEY" "8" "01/06/2011" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -73,7 +73,7 @@ The
 option specifies the number of rounds to be done by the pz_probab_prime_p probabilistic primality checker\&. The default, 30, is fairly rigorous and should not normally have to be overridden\&.
 .PP
 The
-\fB\-\-Configdir\fR
+\fB\-\-configdir\fR
 option specifies the nss configuration directory to use\&. This is the directory where the NSS certificate, key and security modules databases reside\&.
 .PP
 The
@@ -87,7 +87,7 @@ option specifies what host name to use in the first line of the output (see belo
 returns\&.
 .PP
 The
-\fB\-\-hostname\fR
+\fB\-\-noopt\fR
 option suppresses an optimization of the private key (to be precise, setting of the decryption exponent to
 \fBlcm(p\-1,q\-1)\fR
 rather than
