@@ -691,11 +691,8 @@ main(int argc, char **argv)
 
 #ifdef HAVE_NO_FORK
 	fork_desired = FALSE;
+	nhelpers = 0;
 #endif
-    /* if --nofork was given, also disable nhelpers */
-    if (fork_desired == FALSE) {
-           nhelpers = 0;
-    }
 
     /* if a core dir was set, chdir there */
     if(coredir) 

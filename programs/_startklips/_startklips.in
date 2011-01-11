@@ -26,6 +26,9 @@ ipsecversion=/proc/net/ipsec/version
 moduleplace=/lib/modules/`uname -r`/kernel/net/ipsec
 bareversion=`uname -r | sed -e 's/\.nptl//' | sed -e 's/^\(2\.[0-9]\.[1-9][0-9]*-[1-9][0-9]*\(\.[0-9][0-9]*\)*\(\.x\)*\).*$/\1/'`
 moduleinstplace=/lib/modules/$bareversion/kernel/net/ipsec
+bogomips=`grep -i bogomips /proc/cpuinfo | head -1 | awk ' { print $3;}'| sed "s/\..*$//" `
+ram=`head -1 /proc/meminfo | awk '{print $2;}'`
+
 case $bareversion in
 	2.6*)
 		modulename=ipsec.ko
@@ -316,6 +319,23 @@ logonly() {
 	@MODPROBE@ cryptosoft 2>/dev/null
 	# OCF cryptodev is for userland IKE acceleration - let user do this
 	# @MODPROBE@ cryptodev 2>/dev/null
+
+	# If we have OCF with enough bogomips and RAM, use bigger OCF queues
+	limit = 1000
+	if [ -f /sys/module/ocf/paramaters/crypto_q_max ]
+	then
+		if [ $bogomips > 1000 ]
+		then
+			if [ $ram > 262143 ]
+			then
+				limit = 10000
+			fi
+		fi
+	fi
+	echo $limit  > /sys/module/ocf/paramaters/crypto_q_max
+	echo $limit  > /sys/module/ocf/paramaters/ipsec_irs_cache_allocated_max
+	echo $limit  > /sys/module/ocf/paramaters/ipsec_ixs_cache_allocated_max
+
 	# CryptoAPI drivers follow next
 	@MODPROBE@ padlock 2>/dev/null
 	@MODPROBE@ padlock-aes 2>/dev/null
