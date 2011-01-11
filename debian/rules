@@ -214,7 +214,7 @@ install-openswan-modules-source: patch
 	find $(PKGDIR) -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
-install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version: ' | cut -d: -f3 | sed 's/\(.*\)\(rc\|dr\)\(.*\)\-\(.*\)/\1~\2\3/')
+install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version: ' | cut -d: -f3 | cut -d- -f1)
 install-openswan-modules-dkms: patch
 	dh_testdir
 	dh_testroot
