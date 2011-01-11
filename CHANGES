@@ -9,6 +9,7 @@ v2.6.33 (unreleased)
 * modprobe more crypto modules on startup (gcm, camelia, sha2* etc) [Paul]
 * Added %v4:26/8 to virtual_private ("thanks" to T-Mobile/Rogers/FIDO) [Paul]
 * Pluto did not start nhelpers due to --nofork, bug introduced in 2.6.32 [Paul]
+* OCF: Set the OCF queues to 10000 when 256MB+ RAM and 1000+ bogomips [Paul]
 * Bugtracker bugs fixed:
    #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
