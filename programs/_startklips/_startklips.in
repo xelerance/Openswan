@@ -321,7 +321,7 @@ logonly() {
 	# @MODPROBE@ cryptodev 2>/dev/null
 
 	# If we have OCF with enough bogomips and RAM, use bigger OCF queues
-	if [ -f /sys/module/ocf/paramaters/crypto_q_max ]
+	if [ -f /sys/module/ocf ]
 	then
 		limit = 1000
 		if [ $bogomips > 1000 ]
@@ -333,8 +333,8 @@ logonly() {
 		fi
 
 		echo $limit  > /sys/module/ocf/paramaters/crypto_q_max
-		echo $limit  > /sys/module/ocf/paramaters/ipsec_irs_cache_allocated_max
-		echo $limit  > /sys/module/ocf/paramaters/ipsec_ixs_cache_allocated_max
+		echo $limit  > /sys/module/ipsec/paramaters/ipsec_irs_cache_allocated_max
+		echo $limit  > /sys/module/ipsec/paramaters/ipsec_ixs_cache_allocated_max
 	fi
 
 	# CryptoAPI drivers follow next
