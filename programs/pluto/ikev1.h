@@ -136,4 +136,7 @@ aggr_id_and_auth(struct msg_digest *md
     return oakley_id_and_auth(md, initiator, TRUE, cont_fn, kc);
 }
 
+extern bool
+do_command(struct connection *c, struct spd_route *sr
+           , const char *verb, struct state *st);
 #endif
