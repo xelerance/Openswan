@@ -371,7 +371,7 @@ endif
 USE_LIBCAP_NG?=false
 
 # Support for Network Manager
-USE_NM?=false
+USE_NM?=true
 
 # Support for MODP groups described in RFC 5114
 USE_MODP_RFC5114?=true
