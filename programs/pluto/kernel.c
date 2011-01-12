@@ -2748,8 +2748,15 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     }
 
    if (st->st_connection->remotepeertype == CISCO) {
-	if(!do_command(st->st_connection, &st->st_connection->spd, "updateresolvconf", st)) {
-	DBG(DBG_CONTROL, DBG_log("Updating resolv.conf failed, you may need to update it manually"));
+
+	sr = st->st_connection->spd.next;
+	st->st_connection->spd.eroute_owner = sr->eroute_owner;
+	st->st_connection->spd.routing = sr->routing;
+
+	if(!st->st_connection->newest_ipsec_sa) {
+		if(!do_command(st->st_connection, &st->st_connection->spd, "updateresolvconf", st)) {
+		DBG(DBG_CONTROL, DBG_log("Updating resolv.conf failed, you may need to update it manually"));
+		}
 	}
    }
 
@@ -2791,7 +2798,11 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 		     */
 		    sr->routing = (c->policy & POLICY_FAIL_MASK) == POLICY_FAIL_NONE
 			? RT_ROUTED_PROSPECTIVE : RT_ROUTED_FAILURE;
-		    
+
+		    if (sr == &c->spd && c->remotepeertype == CISCO) {
+			continue;
+		    }
+
 		    (void) do_command(c, sr, "down", st);
 		    if ((c->policy & POLICY_DONT_REKEY)
 			&& c->kind == CK_INSTANCE)
@@ -2821,7 +2832,7 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 	}
 	(void) teardown_half_ipsec_sa(st, TRUE);
 
-	if (st->st_connection->remotepeertype == CISCO) {
+	if (st->st_connection->remotepeertype == CISCO && st->st_serialno == st->st_connection->newest_ipsec_sa) {
 		if(!do_command(st->st_connection, &st->st_connection->spd, "restoreresolvconf", st)) {
 		DBG(DBG_CONTROL, DBG_log("Restoring resolv.conf failed, you may need to do it manually"));
 		}
