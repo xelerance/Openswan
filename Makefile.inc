@@ -190,6 +190,9 @@ KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
 
+# extra link flags
+USERLINK?=-Wl,-z,relro
+
 PORTINCLUDE?=
 
 # command used to link/copy KLIPS into kernel source tree
