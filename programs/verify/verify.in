@@ -421,7 +421,7 @@ sub tunnelchecks {
 	    }
 	    else
 	    { 
-		errchk "","N/A";
+		errchk "OK";
 	    }
 	}
     }
