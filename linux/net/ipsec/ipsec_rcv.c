@@ -1779,6 +1779,13 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 			osw_ip4_hdr(irs)->check = ip_fast_csum((unsigned char *)irs->iph, osw_ip4_hdr(irs)->ihl);
 			KLIPS_PRINT(debug_rcv, "csum: %04x\n", osw_ip4_hdr(irs)->check);
 		}
+/*
+ * This fails when both systems are behind NAT
+ * mcr: So, either the ports passed in by the NAT-OA mechanism for the fixup
+ * are wrong, and so the checksum fixup is wrong
+ * Not very harmful since the checksum is useless and the crypto hash will
+ * be used anyway.
+ */
 #ifdef DISABLE_UDP_CHECKSUM
 		/* see https://bugs.openswan.org/issues/601 */
 		if(ipp->protocol == IPPROTO_UDP) {
