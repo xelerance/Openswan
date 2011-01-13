@@ -333,7 +333,7 @@ logonly() {
 
 	if [ -d /sys/module/ocf ]
 	then
-		echo $limit  > /sys/module/ocf/paramaters/crypto_q_max
+		echo $limit  > /sys/module/ocf/parameters/crypto_q_max
 	fi
 
 	# CryptoAPI drivers follow next
