@@ -3,7 +3,7 @@
   <listitem>
 <para>contains the networks that are allowed as subnet= for the remote
 clients when using the <emphasis remap='B'>vhost:<emphasis> or <emphasis remap='B'>vnet:</emphasis>
-keywords in the <emphasis remap='B'>subnet=</emphasis> paramters.
+keywords in the <emphasis remap='B'>subnet=</emphasis> parameters.
 In other words, the address ranges that may live behind a NAT
 router through which a client connects.  This value is usually set to
 all the RFC-1918 address space, excluding the space used in the local
