@@ -2342,6 +2342,14 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    whack_log(RC_FATAL
 		      , "encountered fatal error in state %s"
 		      , enum_name(&state_names, st->st_state));
+#ifdef HAVE_NM
+	   if (st->st_connection->remotepeertype == CISCO 
+	       && st->st_connection->nmconfigured) {
+		if(!do_command(st->st_connection, &st->st_connection->spd, "disconnectNM", st)) {
+                DBG(DBG_CONTROL, DBG_log("sending disconnect to NM failed, you may need to do it manually"));
+                }
+	   }
+#endif
 	    delete_event(st);
 	    release_pending_whacks(st, "fatal error");
 	    delete_state(st);
@@ -2369,7 +2377,14 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		DBG_log("state transition function for %s failed: %s"
 			, enum_name(&state_names, from_state)
 			, enum_name(&ipsec_notification_names, md->note)));
-
+#ifdef HAVE_NM
+           if (st->st_connection->remotepeertype == CISCO
+               && st->st_connection->nmconfigured) {
+                if(!do_command(st->st_connection, &st->st_connection->spd, "disconnectNM", st)) {
+                DBG(DBG_CONTROL, DBG_log("sending disconnect to NM failed, you may need to do it manually"));
+                }
+           }
+#endif
 	    if(st!=NULL && IS_PHASE1_INIT(st->st_state)) {
 		delete_event(st);
 		release_whack(st);

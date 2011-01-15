@@ -39,9 +39,6 @@ build-stamp: patch
 	# remove the temporary file, it will be created during install
 	rm -f $(CURDIR)/debian/ipsec.secrets
 
-	# here we re-generate the upstream HTML documentation
-	$(MAKE) -C doc/ index.html
-
 	touch build-stamp
 
 clean: unpatch
@@ -62,8 +59,6 @@ clean: unpatch
 	rm -f lib/libopenswan/libopenswan.a || true
 	rm -f lib/libopenswan/liboswlog.a || true
 	rm -rf OBJ.* || true
-	rm -rf doc/manpage.d/*.html || true
-	rm -f doc/index.html || true
 
 	# just in case something went wrong
 	rm -f $(CURDIR)/debian/ipsec.secrets
@@ -173,8 +168,6 @@ install-openswan-doc: build
 		    rm $$f.old; \
 		fi; \
 	  done )
-	# but remove the doc/src dir, which just duplicates the HTML files
-	rm -rf $(CURDIR)/debian/openswan-doc/usr/share/doc/openswan-doc/doc/src
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan-doc -name ".gitignore" | xargs --no-run-if-empty rm -f
@@ -221,7 +214,7 @@ install-openswan-modules-source: patch
 	find $(PKGDIR) -o -name ".gitignore" | xargs --no-run-if-empty rm -f
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
-install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version:' | cut -d' ' -f2 | cut -d: -f2 | cut -d- -f1)
+install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version: ' | cut -d: -f3 | cut -d- -f1)
 install-openswan-modules-dkms: patch
 	dh_testdir
 	dh_testroot

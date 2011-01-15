@@ -186,9 +186,12 @@ BISONOSFLAGS=
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
 GCC_LINT ?= -DGCC_LINT 
 USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
-KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG
+KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # for AMD64 use 
 #USERCOMPILE?=-g -O3 -m64
+
+# extra link flags
+USERLINK?=-Wl,-z,relro
 
 PORTINCLUDE?=
 
@@ -368,7 +371,7 @@ endif
 USE_LIBCAP_NG?=false
 
 # Support for Network Manager
-USE_NM?=false
+USE_NM?=true
 
 # Support for MODP groups described in RFC 5114
 USE_MODP_RFC5114?=true
