@@ -1014,9 +1014,7 @@ ipsec_mast_deletenum(int vifnum)
 	mastdevices[vifnum]=NULL;
 	ipsec_dev_put(dev_ipsec);
 	
-	KLIPS_PRINT(debug_tunnel, "Unregistering %s (refcnt=%d)\n",
-		    dev_ipsec->name,
-		    atomic_read(&dev_ipsec->refcnt));
+	KLIPS_PRINT(debug_tunnel, "Unregistering %s\n", dev_ipsec->name);
 	unregister_netdev(dev_ipsec);
 	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
 #ifndef NETDEV_23
