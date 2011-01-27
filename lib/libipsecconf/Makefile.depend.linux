@@ -124,3 +124,4 @@ virtif.o: virtif.c \
   ../../include/ipsecconf/exec.h \
   ../../include/ipsecconf/files.h \
   ../../include/ipsecconf/starterlog.h
+parser.tab.c: parser.tab.h
