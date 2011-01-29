@@ -1788,7 +1788,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
  */
 #ifdef DISABLE_UDP_CHECKSUM
 		/* see https://bugs.openswan.org/issues/601 */
-		if(ipp->protocol == IPPROTO_UDP) {
+		if(osw_ip4_hdr(irs)->protocol == IPPROTO_UDP) {
 			udp_hdr(skb)->check = 0;
 			KLIPS_PRINT(debug_rcv, "UDP checksum for NAT packet disabled at compile time\n");
 		}
