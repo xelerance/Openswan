@@ -22,7 +22,7 @@ $me="ipsec verify";
 $ENV{'PATH'}="/sbin:/usr/sbin:/usr/bin:/usr/local/sbin:@IPSEC_SBINDIR@:$ENV{'PATH'}";
 if($ENV{'IPSEC_CONFS'}) { $conf=$ENV{'IPSEC_CONFS'} } else { $conf= `ipsec --confdir`; chomp($conf); }
 
-$print_deprecated = 0;
+$print_deprecated = 1;
 
 # Should we print in colour by default?
 if ( -e "/sbin/consoletype" )
@@ -542,40 +542,24 @@ else
 	installstartcheck;
 	tunnelchecks;
 	cmdchecks;
-	# Go find include files and put them all into an array.
-	$configfiles[0] = "$conf/ipsec.conf";
-	$n=1;
-	open(OE,"grep ^include $conf/ipsec.conf|");
-	while(<OE>) {
-		($include_temp,$configfiles[$n]) = split(" ",$_);
-		$n++;
-	}
-	$oe_disabled = 0;
-	for ($n2 = 0;$n2 < $n; $n2++) {
-		$oe_disabled_temp = `cat $configfiles[$n2]| grep -A3 private-or-clear | grep -c auto=ignore`;
-		if($oe_disabled_temp == 1) {
-			$oe_disabled = 1;
-		}
-		$oe_disabled_temp = `cat $configfiles[$n2]| grep -i 'oe=off'`;
-		if($oe_disabled_temp) {
-			$oe_disabled = 1;
-		}
-
-	}
-	if( $oe_disabled) {
-		printfun "Opportunistic Encryption Support";
-		warnchk "", "DISABLED";
-	} else {
+	run "ipsec addconn --configsetup";
+        ($oe)=grep(/oe=\'yes\'/, @out);
+	if( $oe) {
 		dnschecks;
-	}
-        if($print_deprecated)
-        {
-        print "
+        	if($print_deprecated)
+        	{
+        	print "
 
    RFC 3445 restricts the use of the KEY RR to DNSSEC applications. The use of 
    a KEY record sub-type for Opporunistic Encryption (OE) has been deprecated.
-   TXT records are used to provide all OE functionality.";
+   TXT records are used to provide all OE functionality.\n";
+        	}
+	} else {
+		printfun "Opportunistic Encryption Support";
+		warnchk "", "DISABLED";
         }
     }
+    # finally, run the config file through the parser checks
+    run "ipsec auto addconn --checkconfig";
 }
 exit $reterr
