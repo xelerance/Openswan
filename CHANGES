@@ -13,6 +13,7 @@ v2.6.33 (unreleased)
 * Improved NetworkManager support [Avesh]
   - This is Red Hat bugzilla 642722, 658253, 659709 and 641068
 * ipsec verify now also shows parse errors in ipsec.conf [Paul]
+* Always build SHA2 family support for IKE [Paul]
 * Bugtracker bugs fixed:
    #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
