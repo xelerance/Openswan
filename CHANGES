@@ -17,6 +17,7 @@ v2.6.33 (unreleased)
 * KLIPS: Add a new option to override the replay window via /sys [David]
   (echo 0 > /sys/module/ipsec/parameters/ipsec_replaywin_override)
 * Add aesni_intel to the list of crypto modules we attempt to load [Paul]
+* enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
 * Bugtracker bugs fixed:
    #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
