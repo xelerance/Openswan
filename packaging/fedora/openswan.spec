@@ -170,7 +170,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0700,root,root) %dir %{_localstatedir}/log/pluto/peer
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%{_localstatedir}/run/pluto
+%ghost %{_localstatedir}/run/pluto
 %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec
@@ -205,41 +205,3 @@ fi
 /sbin/chkconfig --add ipsec
 
 %changelog
-* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.03-1
-- Applied patch by RedHat to allow building with debug package
-* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.01-1
-- Work around for warnings in BIND related code
-- Remove bogus file /etc/init.d/setup at install
-- Cleaned up spec file
-
-* Mon Oct 10 2005 Paul Wouters <paul@xelerance.com>
-- Updated for klips on xen 
-- added ldconfig for post klips to obtain ipsec module dependancies
-- Run 'make include' since on FC4 kernel source does not have the links yet.
-
-* Wed Jan  5 2005 Paul Wouters <paul@xelerance.com>
-- Updated for x86_64 and klips on 2.6
-
-* Sun Sep  5 2004 Paul Wouters <paul@xelerance.com>
-- Updated for openswan
-
-* Fri Aug 22 2003 Sam Sgro <sam@freeswan.org>
-- Juggling release/source package names to allow for 
-  -pre/-rc releases to build.
-
-* Thu Aug 14 2003 Sam Sgro <sam@freeswan.org>
-- Reverting back to pre-x.509 version, cosmetic changes.
-
-* Tue May 20 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-x509_1.3.2_2es
-- Add "Obsoletes: freeswan" to userland RPM.
-
-* Fri May 16 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-x509_1.3.2_1es
-- Add version 1.3.2 of the x509 patch.
-- Add missing /usr/libexec/ipsec dir and files.
-- Minor tidy up of spec file.
-
-* Thu May 15 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-1es
-- Based on work by Paul Lahaie of Steamballoon, Michael
-  Richardson of freeS/WAN team and Tuomo Soini <tis@foobar.fi>.
-- Build freeswan RPMs from a single source RPM, for RedHat, but
-  should work on any RPM based system.
