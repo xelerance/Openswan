@@ -124,10 +124,18 @@ static void ipsec_rcv_state_delete (struct ipsec_rcv_state *irs);
  *  ed on being an implementation sample.
  */
 
+int ipsec_replaywin_override = -1;
+module_param(ipsec_replaywin_override,int,0644);
+MODULE_PARM_DESC(ipsec_replaywin_override,
+		"override replay window (-1=no change, 0=disable, N=override value");
+
 DEBUG_NO_STATIC int
 ipsec_checkreplaywindow(struct ipsec_sa*ipsp, __u32 seq)
 {
 	__u32 diff;
+
+	if (ipsec_replaywin_override >= 0)
+		ipsp->ips_replaywin = ipsec_replaywin_override;
 
 	if (ipsp->ips_replaywin == 0)	/* replay shut off */
 		return 1;
@@ -154,6 +162,9 @@ DEBUG_NO_STATIC int
 ipsec_updatereplaywindow(struct ipsec_sa*ipsp, __u32 seq)
 {
 	__u32 diff;
+
+	if (ipsec_replaywin_override >= 0)
+		ipsp->ips_replaywin = ipsec_replaywin_override;
 
 	if (ipsp->ips_replaywin == 0)	/* replay shut off */
 		return 1;
