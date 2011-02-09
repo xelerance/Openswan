@@ -23,6 +23,8 @@ v2.6.33 (unreleased)
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
    #1190 nat-t broke on transport mode for klips between 2.6.31 and 2.6.32
          [Paul]
+   #1199 when leftsubnet has a different netmask than the localnet, a route
+         is added for the localnet to the ipsec device [Tuomo]
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
