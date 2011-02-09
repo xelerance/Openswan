@@ -14,6 +14,8 @@ v2.6.33 (unreleased)
   - This is Red Hat bugzilla 642722, 658253, 659709 and 641068
 * ipsec verify now also shows parse errors in ipsec.conf [Paul]
 * Always build SHA2 family support for IKE [Paul]
+* KLIPS: Add a new option to override the replay window via /sys [David]
+  (echo 0 > /sys/module/ipsec/parameters/ipsec_replaywin_override)
 * Bugtracker bugs fixed:
    #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
