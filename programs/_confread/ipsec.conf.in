@@ -14,11 +14,15 @@ config setup
 	# "raw crypt parsing emitting control klips pfkey natt x509 dpd private"
 	# eg:
 	# plutodebug="control parsing"
+	# Again: only enable plutodebug or klipsdebug when asked by a developer
 	#
 	# enable to get logs per-peer
 	# plutoopts="--perpeerlog"
 	#
-	# Again: only enable plutodebug or klipsdebug when asked by a developer
+	# Enable core dumps (might require system changes, like ulimit -C)
+	# This is required for abrtd to work properly
+	# Note: incorrect SElinux policies might prevent pluto writing the core
+	dumpdir=/var/run/ipsec/
 	#
 	# NAT-TRAVERSAL support, see README.NAT-Traversal
 	nat_traversal=yes
@@ -31,7 +35,6 @@ config setup
 	oe=off
 	# which IPsec stack to use. auto will try netkey, then klips then mast
 	protostack=auto
-	
 
 # Add connections here
 

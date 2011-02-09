@@ -14,6 +14,10 @@ v2.6.33 (unreleased)
   - This is Red Hat bugzilla 642722, 658253, 659709 and 641068
 * ipsec verify now also shows parse errors in ipsec.conf [Paul]
 * Always build SHA2 family support for IKE [Paul]
+* KLIPS: Add a new option to override the replay window via /sys [David]
+  (echo 0 > /sys/module/ipsec/parameters/ipsec_replaywin_override)
+* Add aesni_intel to the list of crypto modules we attempt to load [Paul]
+* enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
 * Bugtracker bugs fixed:
    #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
@@ -21,6 +25,8 @@ v2.6.33 (unreleased)
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
    #1190 nat-t broke on transport mode for klips between 2.6.31 and 2.6.32
          [Paul]
+   #1199 when leftsubnet has a different netmask than the localnet, a route
+         is added for the localnet to the ipsec device [Tuomo]
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]

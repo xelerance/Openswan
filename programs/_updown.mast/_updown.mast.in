@@ -3,7 +3,7 @@
 #
 # Copyright (C) 2003-2004 Nigel Metheringham
 # Copyright (C) 2002-2007 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2003-2010 Tuomo Soini <tis@foobar.fi>
+# Copyright (C) 2003-2011 Tuomo Soini <tis@foobar.fi>
 # Copyright (C) 2008 Paul Wouters <paul@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -373,43 +373,28 @@ disconnectNM() {
  }
 
 addsource() {
-	st=0
-	#
-	# Fix for Bug #66215 to solve SNAT/MASQUERADE problems with recent
-	# 2.6.x kernels.
-	# Instead of a /32 it seems better to use the netmask of the remote
-	# (peer) network for the sourceip as suggested by Patrick McHardy.
-	#
-	cidr=${PLUTO_PEER_CLIENT##*/}
-	snet=${PLUTO_MY_SOURCEIP%/*}/32
-	if test "${PLUTO_PEER_CLIENT}" != "${cidr}"
-	then
-		snet=${PLUTO_MY_SOURCEIP%/*}/${cidr}
+    st=0
+    # check if given sourceip is local and add as alias if not
+    if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local; then
+	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev ${PLUTO_INTERFACE%:*}"
+	oops="`eval $it 2>&1`"
+	st=$?
+	if [ " $oops" = " " -a " $st" != " 0" ]; then
+	    oops="silent error, exit status $st"
 	fi
-	if ! ip addr show dev ${PLUTO_INTERFACE%:*} | grep -qs "inet ${snet}"
-	then
-		it="ip addr add ${snet} dev ${PLUTO_INTERFACE%:*}"
-
-	    oops="`eval $it 2>&1`"
-	    st=$?
-	    if test " $oops" = " " -a " $st" != " 0"
-	    then
-		oops="silent error, exit status $st"
-	    fi
-	    case "$oops" in
-		'RTNETLINK answers: File exists'*)
+	case "$oops" in
+	    'RTNETLINK answers: File exists'*)
 		# should not happen, but ... ignore if the
 		# address was already assigned on interface
 		oops=""
 		st=0
-	    ;;
-	    esac
-	    if test " $oops" != " " -o " $st" != " 0"
-	    then
-		echo "$0: addsource \`$it' failed ($oops)" >&2
-	    fi
+		;;
+	esac
+	if [ " $oops" != " " -o " $st" != " 0" ]; then
+	    echo "$0: addsource \`$it' failed ($oops)" >&2
 	fi
-	return $st
+    fi
+    return $st
 }
 
 # WARNING: changesource might not work as expected with mast
