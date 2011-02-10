@@ -323,7 +323,7 @@ sub installstartcheck {
 	   }
 
         if ( -e "/proc/net/pfkey") {
-        printfun " NETKEY:  Testing for disabled ICMP send_redirects";
+        printfun " NETKEY:  Testing XFRM related proc values";
         open("cat", "/proc/sys/net/ipv4/conf/default/send_redirects");
 	if(<cat> == "1")
 	    {
@@ -333,13 +333,21 @@ sub installstartcheck {
 	    }
 	else { errchk "1"; } 
 	
-        printfun "NETKEY detected, testing for disabled ICMP accept_redirects";
         open("cat", "/proc/sys/net/ipv4/conf/default/accept_redirects");
 	if(<cat> == "1")
 	    {
 	        $reterr = 1;
 		errchk "";
 		print "\n  Please disable /proc/sys/net/ipv4/conf/*/accept_redirects\n  or NETKEY will accept bogus ICMP redirects!\n\n"; 
+	    }
+	else { errchk "1"; } 
+
+        open("cat", "/proc/sys/net/core/xfrm_larval_drop");
+	if(<cat> == "0")
+	    {
+	        $reterr = 1;
+		errchk "";
+		print "\n  Please enable /proc/sys/net/core/xfrm_larval_drop\n  or NETKEY will cause non-POSIX compliant long time-outs\n\n"; 
 	    }
 	else { errchk "1"; } 
 	}
