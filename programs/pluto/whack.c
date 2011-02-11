@@ -473,6 +473,7 @@ enum option_enums {
     CD_MODECFGWINS1,
     CD_MODECFGWINS2,
     CD_METRIC,
+    CD_CONNMTU,
     CD_TUNNELIPV4,
     CD_TUNNELIPV6,
     CD_CONNIPV4,
@@ -689,6 +690,7 @@ static const struct option long_opts[] = {
 #endif
 #endif
     { "metric", required_argument, NULL, CD_METRIC + OO + NUMERIC_ARG },
+    { "mtu", required_argument, NULL, CD_CONNMTU + OO + NUMERIC_ARG },
     { "sendcert", required_argument, NULL, END_SENDCERT + OO },
     { "certtype", required_argument, NULL, END_CERTTYPE + OO + NUMERIC_ARG },
     { "ipv4", no_argument, NULL, CD_CONNIPV4 + OO },
@@ -1664,6 +1666,10 @@ main(int argc, char **argv)
 
 	case CD_METRIC:
 	    msg.metric = opt_whole;
+	    continue;
+
+	case CD_CONNMTU:
+	    msg.connmtu = opt_whole;
 	    continue;
 
 	case OPT_TPMEVAL:

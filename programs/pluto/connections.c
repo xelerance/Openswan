@@ -1337,6 +1337,7 @@ add_connection(const struct whack_message *wm)
 #endif
 
 	c->metric = wm->metric;
+	c->connmtu = wm->connmtu;
 
 	c->forceencaps = wm->forceencaps;
 
@@ -3256,7 +3257,16 @@ show_one_connection(struct connection *c)
 	      , c->spd.that.key_from_DNS_on_demand? "+rKOD" : ""
 	      , prio
 	      , ifn);
-    
+   
+    if(c->connmtu > 0 || c->metric > 0) {
+	whack_log(RC_COMMENT
+		  , "\"%s\"%s:   network params: metric:%lu; mtu:%lu; "
+		  , c->name
+		  , instance
+		  , (unsigned long)c->metric 
+		  , (unsigned long)c->connmtu);
+    }
+ 
     /* slightly complicated stuff to avoid extra crap */
     if(c->dpd_timeout > 0 || DBGP(DBG_DPD)) {
 	whack_log(RC_COMMENT
