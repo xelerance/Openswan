@@ -20,8 +20,9 @@ v2.6.33 (unreleased)
 * enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
 * New per-conn keyword mtu= allows setting the mtu per tunnel [Paul]
 * Bugtracker bugs fixed:
-   #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
+   # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
+   # 645 hundreds of replacements [...]: 000 #3: pending Phase 2 [Anthony Tong]
    #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
    #1190 nat-t broke on transport mode for klips between 2.6.31 and 2.6.32
