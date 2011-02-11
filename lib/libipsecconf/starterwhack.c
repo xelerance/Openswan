@@ -485,6 +485,7 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	msg.connalias = conn->connalias;
 
 	msg.metric = conn->options[KBF_METRIC];
+	msg.connmtu = conn->options[KBF_CONNMTU];
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {

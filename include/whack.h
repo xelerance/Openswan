@@ -132,8 +132,11 @@ struct whack_message {
     /* Force the use of NAT-T on a connection */
     bool forceencaps;
 
-    /*Checking if this connection is configured by Network Manager*/
+    /* Checking if this connection is configured by Network Manager*/
     enum keyword_nmconfigured nmconfigured;
+
+    /* Force the MTU for this connection */
+    int connmtu;
 
     /*  note that each end contains string 2/5.id, string 3/6 cert,
      *  and string 4/7 updown
