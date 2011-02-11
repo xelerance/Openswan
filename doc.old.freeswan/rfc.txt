@@ -1,12 +1,18 @@
 
+A latest IPsec roadmap is released as RFC 6071
 
-All RFC's can be downloaded from http://www.rfc-editor.org/ or one
-of the many mirror sites.
+http://datatracker.ietf.org/doc/rfc6071/
 
-IPsec related RFC's and drafts:
+To search for IPsec related RFCs and drafts, see:
+
+http://datatracker.ietf.org/doc/search/?name=ipsec&rfcs=on&activeDrafts=on&oldDrafts=on
+
+IPsec related RFC's and drafts (list will likely be out of date):
+
 
 Overview RFCs
 
+RFC 6071	IP Security (IPsec) and Internet Key Exchange (IKE) Document Roadmap
 RFC 2401	Security Architecture for the Internet Protocol
 RFC 2411	IP Security Document Roadmap
 RFC 4301	Security Architecture for the Internet Protocol
