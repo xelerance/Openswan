@@ -474,6 +474,11 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	msg.addr_family = conn->left.addr_family;
 	msg.tunnel_addr_family = conn->left.addr_family;
 
+	if (conn->right.addrtype == KH_IPHOSTNAME)
+	{
+		msg.dnshostname = conn->right.strings[KSCF_IP];
+	}
+
 	msg.sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
 	msg.sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
 	msg.sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
@@ -485,7 +490,10 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	msg.connalias = conn->connalias;
 
 	msg.metric = conn->options[KBF_METRIC];
-	msg.connmtu = conn->options[KBF_CONNMTU];
+
+	if(conn->options_set[KBF_CONNMTU]) {
+		msg.connmtu   = conn->options[KBF_CONNMTU];
+	}
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {
