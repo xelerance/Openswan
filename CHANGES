@@ -31,6 +31,7 @@ v2.6.33 (unreleased)
    #1199 when leftsubnet has a different netmask than the localnet, a route
          is added for the localnet to the ipsec device [Tuomo]
    #1201 dpd + ddns does not work [Mattias Walström]
+   #1210 Failes to compile with uClibc >= 0.9.29 [mb@openwrt]
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
