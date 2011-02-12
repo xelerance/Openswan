@@ -187,7 +187,7 @@ write_pipe(int fd, const unsigned char *stuff)
     res_query(dname, class, type, answer, anslen)
 # define res_nclose(statp) res_close()
 
-static struct __res_state *statp = &_res;
+#define statp  ((struct __res_state *)(&_res))
 
 #else /* !OLD_RESOLVER */
 
