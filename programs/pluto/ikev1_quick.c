@@ -1199,6 +1199,7 @@ quick_inI1_outR1(struct msg_digest *md)
 		}
 	}
 	/* End Hack for MacOS/iPhone */
+#endif
 
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
 	b.his.port = id_pd->payload.ipsec_id.isaiid_port;
