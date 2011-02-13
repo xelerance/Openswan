@@ -310,6 +310,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	peer_str[ADDRTOT_BUF],
 	peerid_str[IDTOA_BUF],
 	metric_str[sizeof("PLUTO_METRIC")+5],
+	connmtu_str[sizeof("PLUTO_MTU")+5],
 	peerclient_str[SUBNETTOT_BUF],
 	peerclientnet_str[ADDRTOT_BUF],
 	peerclientmask_str[ADDRTOT_BUF],
@@ -354,6 +355,10 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
     metric_str[0]='\0';
     if (c->metric)
     	snprintf(metric_str, sizeof(metric_str), "PLUTO_METRIC=%d", c->metric);
+
+    connmtu_str[0]='\0';
+    if (c->connmtu)
+    	snprintf(connmtu_str, sizeof(connmtu_str), "PLUTO_MTU=%d", c->connmtu);
 
     secure_xauth_username_str[0]='\0';
     if (st != NULL && st->st_xauth_username) {

@@ -54,6 +54,7 @@ d.ipsec.conf/keyingtries.xml
 d.ipsec.conf/ikelifetime.xml
 d.ipsec.conf/compress.xml
 d.ipsec.conf/metric.xml
+d.ipsec.conf/mtu.xml
 d.ipsec.conf/disablearrivalcheck.xml
 d.ipsec.conf/failureshunt.xml
 d.ipsec.conf/connautoend.xml

@@ -67,6 +67,7 @@ enum keyword_numeric_config_field {
     KBF_UNIQUEIDS,
     KBF_PLUTOWAIT,
     KBF_OVERRIDEMTU,
+    KBF_CONNMTU,
     KBF_STRICTCRLPOLICY,
     KBF_NOCRSEND,
     KBF_NATTRAVERSAL,

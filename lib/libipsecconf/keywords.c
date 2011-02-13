@@ -417,10 +417,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"metric",         kv_conn|kv_auto, kt_number, KBF_METRIC, NOT_ENUM},
 
     /* DPD */ 
-    {"dpddelay", kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},
-    {"dpdtimeout", kv_conn|kv_auto,kt_number,KBF_DPDTIMEOUT , NOT_ENUM},
-    {"dpdaction", kv_conn|kv_auto,kt_enum, KBF_DPDACTION , &kw_dpdaction_list},
+    {"dpddelay",       kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},
+    {"dpdtimeout",     kv_conn|kv_auto,kt_number,KBF_DPDTIMEOUT , NOT_ENUM},
+    {"dpdaction",      kv_conn|kv_auto,kt_enum, KBF_DPDACTION , &kw_dpdaction_list},
 
+    {"mtu",            kv_conn|kv_auto,kt_number, KBF_CONNMTU, NOT_ENUM},
 
     /* aggr/xauth/modeconfig */ 
     {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},

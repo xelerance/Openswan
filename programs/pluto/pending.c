@@ -75,11 +75,26 @@ add_pending(int whack_sock
 , unsigned long try
 , so_serial_t replacing)
 {
-    struct pending *p = alloc_thing(struct pending, "struct pending");
+    struct pending *p, **pp;
+
+    /* look for duplicate pending phase #2, skip add operation */
+    pp = host_pair_first_pending(c);
+
+    for ( p = pp ? *pp : NULL ; p != NULL; p = p->next)
+    {
+	if (p->connection == c && p->isakmp_sa == isakmp_sa)
+	{
+	    DBG(DBG_CONTROL, DBG_log("Ignored already queued up pending Quick Mode with %s \"%s\""
+		, ip_str(&c->spd.that.host_addr), c->name));
+	    return;
+	}
+    }
 
     DBG(DBG_CONTROL, DBG_log("Queuing pending Quick Mode with %s \"%s\""
 	, ip_str(&c->spd.that.host_addr)
 	, c->name));
+
+    p = alloc_thing(struct pending, "struct pending");
     p->whack_sock = whack_sock;
     p->isakmp_sa = isakmp_sa;
     p->connection = c;

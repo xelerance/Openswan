@@ -518,7 +518,7 @@ static int validate_end(struct starter_conn *conn_st
 	    end->has_client = TRUE;
 	    end->has_client_wildcard = FALSE;
 	}
-    } 
+    }
 
     /* copy certificate path name */
     if(end->strings_set[KSCF_CERT]) {

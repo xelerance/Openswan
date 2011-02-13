@@ -18,15 +18,21 @@ v2.6.33 (unreleased)
   (echo 0 > /sys/module/ipsec/parameters/ipsec_replaywin_override)
 * Add aesni_intel to the list of crypto modules we attempt to load [Paul]
 * enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
+* New per-conn keyword mtu= allows setting the mtu per tunnel [Paul]
+* Cleaned up and moved some old docs [Paul]
 * Bugtracker bugs fixed:
-   #601  KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
+   # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
+   # 645 hundreds of replacements [...]: 000 #3: pending Phase 2 [Anthony Tong]
    #1182 Verification of X509 certificate signed by SHA2 [fryasu@yahoo.co.jp]
    #1183 Fix documentation typo (in ipsec.conf) [Tuomo]
    #1190 nat-t broke on transport mode for klips between 2.6.31 and 2.6.32
          [Paul]
    #1199 when leftsubnet has a different netmask than the localnet, a route
          is added for the localnet to the ipsec device [Tuomo]
+   #1201 dpd + ddns does not work [Mattias Walström]
+   #1204 Workaround for iPhone/MacOS X NAT problem [Wolfgang Nothdurft]
+   #1210 Failes to compile with uClibc >= 0.9.29 [mb@openwrt]
 
 v2.6.32 (December 17, 2010)
 * Remove by default forced -DLEAK_DETECTIVE [Tuomo]
