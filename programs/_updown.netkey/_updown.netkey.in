@@ -62,6 +62,12 @@ LC_ALL=C export LC_ALL
 #	PLUTO_ME
 #		is the IP address of our host.
 #
+#	PLUTO_METRIC
+#		is the metric to set for the route
+#
+#	PLUTO_MTU
+#		is the mtu to set for the route
+#
 #	PLUTO_MY_CLIENT
 #		is the IP address / count of our client subnet.	 If
 #		the  client  is	 just  the  host,  this will be the
@@ -341,7 +347,7 @@ doroute() {
     if [ -z "$PLUTO_PEER_INTERFACE" ]; then
 	PLUTO_PEER_INTERFACE=$PLUTO_INTERFACE
     fi
-    parms2="$parms2 dev ${PLUTO_PEER_INTERFACE%:*} $IPROUTEARGS"
+    parms2="$parms2 dev ${PLUTO_PEER_INTERFACE%:*}${PLUTO_MTU:+ mtu ${PLUTO_MTU}}${PLUTO_METRIC:+ metric ${PLUTO_METRIC}} $IPROUTEARGS"
 
     # make sure whe have sourceip locally in this machine
     if [ "$1" = "replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then

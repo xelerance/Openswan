@@ -60,6 +60,12 @@ LC_ALL=C export LC_ALL
 #       PLUTO_ME
 #              is the IP address of our host.
 #
+#	PLUTO_METRIC
+#		is the metric to set for the route
+#
+#	PLUTO_MTU
+#		is the mtu to set for the route
+#
 #       PLUTO_MY_CLIENT
 #              is the IP address / count of our client subnet.  If
 #              the  client  is  just  the  host,  this will be the
@@ -472,7 +478,7 @@ doroute() {
 	   fi
 	fi
 
-	parms2="$parms2 dev $PLUTO_INTERFACE"
+	parms2="$parms2 dev ${PLUTO_INTERFACE}${PLUTO_MTU:+ mtu ${PLUTO_MTU}}${PLUTO_METRIC:+ metric ${PLUTO_METRIC}}"
 	parms3="$IPROUTEARGS"
 	if [ -n "$IPROUTETABLE" ]
 	then
