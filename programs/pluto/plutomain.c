@@ -592,7 +592,12 @@ main(int argc, char **argv)
 		usage("too many --interface specifications");
 	    continue;
 
-	case 'p':	/* --port <portnumber> */
+	/* 
+	 * This option does not really work, as this is the "left"
+	 * site only, you also need --to --ikeport again later on
+	 * It will result in: yourport -> 500, still not bypassing filters
+	 */
+	case 'p':	/* --ikeport <portnumber> */
 	    if (optarg == NULL || !isdigit(optarg[0]))
 		usage("missing port number");
 	    {
