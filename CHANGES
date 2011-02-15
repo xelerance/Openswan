@@ -19,7 +19,9 @@ v2.6.33 (unreleased)
 * Add aesni_intel to the list of crypto modules we attempt to load [Paul]
 * enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
 * New per-conn keyword mtu= allows setting the mtu per tunnel [Paul]
+* per-conn keyword metric= did not export to userland or updown [Paul/Tuomo]
 * Cleaned up and moved some old docs [Paul]
+* MAST: increase traffic counters for mast0 [David]
 * Bugtracker bugs fixed:
    # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
