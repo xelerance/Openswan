@@ -530,6 +530,8 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	ixs->mast_mode = 1;
 	ixs->xsm_complete = ipsec_mast_xsm_complete;
 	ixs->state = IPSEC_XSM_INIT2;	/* we start later in the process */
+	ixs->prv = netdev_priv(ixs->dev);
+	ixs->stats = (struct net_device_stats *) &(ixs->prv->mystats);
 
 	ipsec_xsm(ixs);
 	return 0;
