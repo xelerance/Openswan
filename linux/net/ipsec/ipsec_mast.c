@@ -677,7 +677,9 @@ ipsec_mast_neigh_setup(struct neighbour *n)
 		    "klips_debug:ipsec_mast_neigh_setup:\n");
 
         if (n->nud_state == NUD_NONE) {
+#ifndef PRIVATE_ARP_BROKEN_OPS
                 n->ops = &arp_broken_ops;
+#endif
                 n->output = n->ops->output;
         }
         return 0;
