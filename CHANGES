@@ -20,6 +20,7 @@ v2.6.33 (unreleased)
 * enable dumpdir= in stock ipsec.conf for use with abrtd [Paul]
 * New per-conn keyword mtu= allows setting the mtu per tunnel [Paul]
 * Cleaned up and moved some old docs [Paul]
+* MAST: increase traffic counters for mast0 [David]
 * Bugtracker bugs fixed:
    # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
