@@ -292,13 +292,70 @@ static inline void *sg_virt(struct scatterlist *sg)
 #define late_initcall(init) module_init(init)
 #endif
 
-#ifndef CONFIG_SMP
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,4) || !defined(CONFIG_SMP)
 #define ocf_for_each_cpu(cpu) for ((cpu) = 0; (cpu) == 0; (cpu)++)
-#define ocf_bind_cpu(pid, cpu)	/* already done */
+#else
+#define ocf_for_each_cpu(cpu) for_each_cpu(cpu, cpu_present_mask)
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,27)
+#include <linux/sched.h>
+#define	kill_proc(p,s,v)	send_sig(s,find_task_by_vpid(p),0)
+#endif
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,4)
+
+struct ocf_thread {
+	struct task_struct	*task;
+	int					(*func)(void *arg);
+	void				*arg;
+};
+
+/* thread startup helper func */
+static inline int ocf_run_thread(void *arg)
+{
+	struct ocf_thread *t = (struct ocf_thread *) arg;
+	if (!t)
+		return -1; /* very bad */
+	t->task = current;
+	daemonize();
+	spin_lock_irq(&current->sigmask_lock);
+	sigemptyset(&current->blocked);
+	recalc_sigpending(current);
+	spin_unlock_irq(&current->sigmask_lock);
+	return (*t->func)(t->arg);
+}
+
+#define kthread_create(f,a,fmt...) \
+	({ \
+		struct ocf_thread t; \
+		pid_t p; \
+		t.task = NULL; \
+		t.func = (f); \
+		t.arg = (a); \
+		p = kernel_thread(ocf_run_thread, &t, CLONE_FS|CLONE_FILES); \
+		while (p != (pid_t) -1 && t.task == NULL) \
+			schedule(); \
+		if (t.task) \
+			snprintf(t.task->comm, sizeof(t.task->comm), fmt); \
+		(t.task); \
+	})
+
+#define kthread_bind(t,cpu)	/**/
+
+#define kthread_should_stop()	(strcmp(current->comm, "stopping") == 0)
+
+#define kthread_stop(t) \
+	({ \
+		strcpy((t)->comm, "stopping"); \
+		kill_proc((t)->pid, SIGTERM, 1); \
+		do { \
+			schedule(); \
+		} while (kill_proc((t)->pid, SIGTERM, 1) == 0); \
+	})
+
 #else
 #include <linux/kthread.h>
-#define ocf_for_each_cpu(cpu) for_each_cpu(cpu, cpu_present_mask)
-#define ocf_bind_cpu(cpu) set_cpus_allowed_ptr(current, cpumask_of((cpu)))
 #endif
 
 #endif /* __KERNEL__ */
