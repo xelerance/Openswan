@@ -2474,6 +2474,8 @@ bail:
 void
 ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 {
+        struct net_device *dev = ixs->dev;
+
         if (unlikely (! ixs))
                 return;
 
@@ -2481,11 +2483,11 @@ ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
         ixs_cache_allocated_count--;
         kmem_cache_free (ixs_cache_allocator, ixs);
 #if defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE)
-        if (ixs->dev && netif_queue_stopped(ixs->dev))
-                netif_wake_queue(ixs->dev);
+        if (dev && netif_queue_stopped(dev))
+                netif_wake_queue(dev);
 #else /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
-        if (ixs->dev)
-                ixs->dev->tbusy = 0;
+        if (dev)
+                dev->tbusy = 0;
 #endif /* defined(HAS_NETIF_QUEUE) || defined (HAVE_NETIF_QUEUE) */
         spin_unlock_bh (&ixs_cache_lock);
 }
