@@ -22,6 +22,7 @@ v2.6.33 (unreleased)
 * per-conn keyword metric= did not export to userland or updown [Paul/Tuomo]
 * Cleaned up and moved some old docs [Paul]
 * MAST: increase traffic counters for mast0 [David]
+* KLIPS: arp_broken_ops is no longer exported in 2.6.37+ [Paul]
 * Bugtracker bugs fixed:
    # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]

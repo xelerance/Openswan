@@ -807,7 +807,7 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 			if (! ixs->pre_ipcomp_skb) {
 				KLIPS_PRINT(debug_tunnel & DB_TN_XMIT, 
 						"klips_debug:ipsec_ocf_xmit_cb: "
-						"IPcomp on %d bytes failed, "
+						"IPcomp on %lu bytes failed, "
 						"but we have no clone!\n", 
 							(osw_ip_hdr_version(ixs) == 6 ?
 								(ntohs(osw_ip6_hdr(ixs)->payload_len)+
@@ -820,7 +820,7 @@ ipsec_ocf_xmit_cb(struct cryptop *crp)
 
 			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT, 
 					"klips_debug:ipsec_ocf_xmit_cb: "
-					"IPcomp on %d bytes failed, "
+					"IPcomp on %lu bytes failed, "
 					"using backup clone.\n", 
 						(osw_ip_hdr_version(ixs) == 6 ?
 							(ntohs(osw_ip6_hdr(ixs)->payload_len)+
