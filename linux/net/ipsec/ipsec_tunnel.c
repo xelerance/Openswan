@@ -2474,10 +2474,12 @@ bail:
 void
 ipsec_xmit_state_delete (struct ipsec_xmit_state *ixs)
 {
-        struct net_device *dev = ixs->dev;
+        struct net_device *dev;
 
         if (unlikely (! ixs))
                 return;
+
+        dev = ixs->dev;
 
         spin_lock_bh (&ixs_cache_lock);
         ixs_cache_allocated_count--;
