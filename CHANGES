@@ -4,6 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.34 (unreleased)
+* Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
+
 v2.6.33 (February 18, 2011)
 * Merge in the klips-ipv6 branch [David]
 * modprobe more crypto modules on startup (gcm, camelia, sha2* etc) [Paul]
