@@ -22,7 +22,7 @@ config setup
 	# Enable core dumps (might require system changes, like ulimit -C)
 	# This is required for abrtd to work properly
 	# Note: incorrect SElinux policies might prevent pluto writing the core
-	dumpdir=/var/run/ipsec/
+	dumpdir=/var/run/pluto/
 	#
 	# NAT-TRAVERSAL support, see README.NAT-Traversal
 	nat_traversal=yes

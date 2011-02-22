@@ -317,7 +317,9 @@ ipsec_klips_init(void)
 	/* register our ESP-UDP handler */
 	if(udp4_register_esp_rcvencap(klips26_rcv_encap
 				      , &klips_old_encap)!=0) {
-	   printk(KERN_ERR "KLIPS: can not register klips_rcv_encap function\n");
+	   printk(KERN_ERR "KLIPS: can not register klips26_rcv_encap function\n");
+	} else {
+	   KLIPS_PRINT(1, "KLIPS: registered klips26_rcv_encap function\n");
 	}
 #endif	
 

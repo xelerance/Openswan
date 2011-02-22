@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.33 (unreleased)
+v2.6.33 (February 18, 2011)
 * Merge in the klips-ipv6 branch [David]
 * modprobe more crypto modules on startup (gcm, camelia, sha2* etc) [Paul]
 * Added %v4:26/8 to virtual_private ("thanks" to T-Mobile/Rogers/FIDO) [Paul]
@@ -21,8 +21,8 @@ v2.6.33 (unreleased)
 * New per-conn keyword mtu= allows setting the mtu per tunnel [Paul]
 * per-conn keyword metric= did not export to userland or updown [Paul/Tuomo]
 * Cleaned up and moved some old docs [Paul]
-* MAST: increase traffic counters for mast0 [David]
 * KLIPS: arp_broken_ops is no longer exported in 2.6.37+ [Paul]
+* KLIPS: Fix crasher in ipsec_xmit_state_delete [David]
 * Bugtracker bugs fixed:
    # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
