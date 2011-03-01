@@ -18,7 +18,7 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM:=pf_key
-EXTRA5MAN=${PROGRAM}.5
+EXTRA5PROC=${PROGRAM}.5
 
 LIBS:=${OPENSWANLIB}
 
