@@ -427,7 +427,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "PLUTO_PEER_PROTOCOL='%u' "
 		    "PLUTO_PEER_CA='%s' "
 		    "PLUTO_STACK='%s' "
-		    "%s "           /* possible metric */
+		    "%s "           /* optional metric */
+		    "%s "           /* optional mtu */
 		    "PLUTO_CONN_POLICY='%s' "
 #ifdef XAUTH
 		    "%s "           /* XAUTH username - if any */
@@ -462,6 +463,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , secure_peerca_str
 		    , kernel_ops->kern_name
 		    , metric_str
+		    , connmtu_str
 		    , prettypolicy(c->policy)
 #ifdef XAUTH
 		    , secure_xauth_username_str
