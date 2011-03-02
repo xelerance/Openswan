@@ -401,7 +401,7 @@ USE_NOCRYPTO?=false
 # amount of code space to pluto, and many of the algorithms have not had
 # the same scrutiny that AES and 3DES have received, but offers possibilities 
 # of switching away from AES/3DES quickly. 
-USE_EXTRACRYPTO?=true
+USE_EXTRACRYPTO?=false
 
 # Do we want to limit the number of ipsec connections artificially
 USE_IPSEC_CONNECTION_LIMIT?=false
