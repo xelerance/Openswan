@@ -1,5 +1,5 @@
-# 
-# Copyright (C) 2006 OpenWrt.org
+#
+# Copyright (C) 2006-2009 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -20,6 +20,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/openswan/Default
   TITLE:=Openswan
   URL:=http://www.openswan.org/
+  DEPENDS:=@LINUX_2_6
 endef
 
 define Package/openswan/Default/description
@@ -28,11 +29,11 @@ endef
 
 define Package/openswan
 $(call Package/openswan/Default)
+  SUBMENU:=VPN
   SECTION:=net
   CATEGORY:=Network
   DEPENDS:=+kmod-openswan +libgmp +ip
   TITLE+= (daemon)
-  URL:=http://www.openswan.org/
 endef
 
 define Package/openswan/description
@@ -52,12 +53,7 @@ $(call Package/openswan/Default/description)
  This package contains the Openswan kernel module.
 endef
 
-TARGET_CPPFLAGS = \
-	-I$(STAGING_DIR)/usr/include \
-	-I$(LINUX_DIR)/include
-
-TARGET_LDFLAGS = \
-	-L$(STAGING_DIR)/usr/lib
+TARGET_CPPFLAGS += -I$(LINUX_DIR)/include
 
 OPENSWAN_MAKE := $(MAKE) -C $(PKG_BUILD_DIR) \
 	$(TARGET_CONFIGURE_OPTS) \
@@ -65,7 +61,7 @@ OPENSWAN_MAKE := $(MAKE) -C $(PKG_BUILD_DIR) \
 	KERNELSRC="$(LINUX_DIR)" \
 	ARCH="$(LINUX_KARCH)" \
 	CROSS_COMPILE="$(TARGET_CROSS)" \
-	USERCOMPILE="$(TARGET_CFLAGS) -I$(PKG_BUILD_DIR)/linux/include $(TARGET_CPPFLAGS) $(TARGET_LDFLAGS)" \
+	USERCOMPILE="$(TARGET_CFLAGS) -I$(PKG_BUILD_DIR)/ports/linux/include -I$(PKG_BUILD_DIR)/linux/include -I$(PKG_BUILD_DIR)/include $(TARGET_CPPFLAGS) $(TARGET_LDFLAGS)" \
 	IPSECDIR="/usr/lib/ipsec" \
 	INC_USRLOCAL="/usr" \
 	INC_RCDEFAULT="/etc/init.d" \
@@ -85,6 +81,7 @@ define Package/openswan/install
 	rm -rf $(1)/usr/share
 	rm -rf $(1)/usr/man
 	rm -rf $(1)/var
+	rm -rf $(1)/etc/rc.d
 	find $(1) -name \*.old | xargs rm -rf
 endef
 
