@@ -561,9 +561,9 @@ already &quot;private-or-clear&quot;</PRE>
 </DL>
 <P> Other man pages are on<A HREF="manpages.html"> this list</A> and in</P>
 <UL>
-<LI>/usr/local/man/man3</LI>
-<LI>/usr/local/man/man5</LI>
-<LI>/usr/local/man/man8/ipsec_*</LI>
+<LI>/usr/share/man/man3/ipsec_*</LI>
+<LI>/usr/share/man/man5/ipsec_*</LI>
+<LI>/usr/share/man/man8/ipsec_*</LI>
 </UL>
 <H4><A NAME="statusinfo"></A>Status information</H4>
 <DL>
@@ -683,7 +683,7 @@ suitable directory (see <A HREF="manpage.d/ipsec.conf.5.html">ipsec.conf(5)</A>)
 To get gdb to tell you interesting stuff:
         $ script
         $ cd dump-directory-you-chose
-        $ gdb /usr/local/lib/ipsec/pluto core
+        $ gdb /usr/lib/ipsec/pluto core
         (gdb) where
         (gdb) quit
         $ exit
