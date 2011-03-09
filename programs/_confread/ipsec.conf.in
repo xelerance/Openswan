@@ -28,13 +28,15 @@ config setup
 	nat_traversal=yes
 	# exclude networks used on server side by adding %v4:!a.b.c.0/24
 	# It seems that T-Mobile in the US and Rogers/Fido in Canada are
-	# using %v4:25/8 as "private" address space on their 3G network.
+	# using 25/8 as "private" address space on their 3G network.
 	# This range has not been announced via BGP (at least upto 2010-12-21)
-	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25/8
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8
 	# OE is now off by default. Uncomment and change to on, to enable.
 	oe=off
 	# which IPsec stack to use. auto will try netkey, then klips then mast
 	protostack=auto
+	# Use this to log to a file, or disable logging on embedded systems (like openwrt)
+	#plutostderrlog=/dev/null
 
 # Add connections here
 
