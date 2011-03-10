@@ -27,13 +27,19 @@ conn L2TP-PSK-noNAT
 	keyingtries=3
 	# we cannot rekey for %any, let client rekey
 	rekey=no
+	# Apple iOS doesn't send delete notify so we need dead peer detection
+	# to detect vanishing clients
+	dpddelay=10
+	dpdtimeout=90
+	dpdaction=clear
 	# Set ikelifetime and keylife to same defaults windows has
 	ikelifetime=8h
 	keylife=1h
 	# l2tp-over-ipsec is transport mode
 	type=transport
 	#
-	# MAST parameters - requires ipsec saref = yes in /etc/xl2tpd/xl2tpd.conf
+	# MAST parameters - requires
+	# ipsec saref = yes in /etc/xl2tpd/xl2tpd.conf
 	sareftrack=yes
 	overlapip=yes
 	#
@@ -46,9 +52,8 @@ conn L2TP-PSK-noNAT
 	# The remote user.
 	#
 	right=%any
-	# Using the magic port of "0" means "any one single port". This is
+	# Using the magic port of "%any" means "any one single port". This is
 	# a work around required for Apple OSX clients that use a randomly
-	# high port, but propose "0" instead of their port. If this does
-	# not work, use 17/%any instead.
-	rightprotoport=17/0
+	# high port.
+	rightprotoport=17/%any
 

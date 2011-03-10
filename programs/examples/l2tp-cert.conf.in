@@ -12,6 +12,11 @@ conn l2tp-X.509
 	auto=add
 	# we cannot rekey for %any, let client rekey
 	rekey=no
+	# Apple iOS doesn't send delete notify so we need dead peer detection
+	# to detect vanishing clients
+	dpddelay=10
+	dpdtimeout=90
+	dpdaction=clear
 	# Set ikelifetime and keylife to same defaults windows has
 	ikelifetime=8h
 	keylife=1h
@@ -30,11 +35,10 @@ conn l2tp-X.509
 	right=%any
 	rightca=%same
 	rightrsasigkey=%cert
-	# Using the magic port of "0" means "any one single port". This is
+	# Using the magic port of "%any" means "any one single port". This is
 	# a work around required for Apple OSX clients that use a randomly
-	# high port, but propose "0" instead of their port. If that does
-	# not work, try 17/%any
-	rightprotoport=17/0
+	# high port.
+	rightprotoport=17/%any
 	rightsubnet=vhost:%priv,%no
 
 # Normally, KLIPS drops all plaintext traffic from IP's it has a crypted
