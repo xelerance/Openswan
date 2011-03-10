@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.34 (unreleased)
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
+* Add Apple iOS work-around to l2tp example configs [Tuomo]
 
 v2.6.33 (February 18, 2011)
 * Merge in the klips-ipv6 branch [David]
