@@ -476,8 +476,13 @@ OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
 -include ${OPENSWANSRCDIR}/Makefile.ver
+
+# make sure we only run this once per build,  its too expensive to run
+# every time Makefile.inc is included
+ifndef IPSECVERSION
 IPSECVERSION:=$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${IPSECBASEVERSION} ${OPENSWANSRCDIR})
 export IPSECVERSION
+endif
 
 # include OSDEP/ARCH specific makefiles, if any.
 # OSDEP=linux,bsd,cygwin,darwin
