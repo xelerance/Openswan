@@ -21,7 +21,8 @@
  * 	PK:	make XCBC comply with latest draft (keylength)
  *
  */
-#ifndef AUTOCONF_INCLUDED
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 #include <linux/config.h>
 #endif
 #include <linux/version.h>

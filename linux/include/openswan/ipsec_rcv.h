@@ -36,13 +36,13 @@
 /* struct options; */
 
 #define __NO_VERSION__
-#ifndef AUTOCONF_INCLUDED
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 #include <linux/config.h>
 #endif	/* for CONFIG_IP_FORWARD */
 #ifdef CONFIG_MODULES
 #include <linux/module.h>
 #endif
-#include <linux/version.h>
 #include <openswan.h>
 
 #ifdef CONFIG_KLIPS_OCF

@@ -16,10 +16,10 @@
  * RCSID $Id: ipsec_xform.c,v 1.65 2005/04/29 05:10:22 mcr Exp $
  */
 
-#ifndef AUTOCONF_INCLUDED
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 #include <linux/config.h>
 #endif
-#include <linux/version.h>
 #include <linux/kernel.h> /* printk() */
 
 #include "freeswan/ipsec_param.h"

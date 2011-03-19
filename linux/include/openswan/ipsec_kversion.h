@@ -43,7 +43,7 @@
  * We use a lot of config defines,  on older kernels that means we
  * need to include config.h
  */
-#ifndef AUTOCONF_INCLUDED
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 #include <linux/config.h>
 #endif
 

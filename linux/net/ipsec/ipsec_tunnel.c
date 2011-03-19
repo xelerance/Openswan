@@ -20,10 +20,10 @@
 
 #define __NO_VERSION__
 #include <linux/module.h>
-#ifndef AUTOCONF_INCLUDED
-#include <linux/config.h>
-#endif	/* for CONFIG_IP_FORWARD */
 #include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
+#include <linux/config.h>
+#endif
 #include <linux/kernel.h> /* printk() */
 
 #include "openswan/ipsec_param.h"

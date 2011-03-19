@@ -18,10 +18,10 @@
  * Split out from ipsec_init.c version 1.70.
  */
 
-#ifndef AUTOCONF_INCLUDED
+#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 # include <linux/config.h>
 #endif
-#include <linux/version.h>
 #define __NO_VERSION__
 #include <linux/module.h>
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) && LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,26)
