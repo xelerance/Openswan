@@ -4,6 +4,15 @@
 # configuration files
 # differs from eastlocal.sh in that it copies, not appends
 
+# Seems our root-36 Lenny does not cause sysctl -p to be run.
+# Redirect because we don't want to see diffs or ipv6 errors
+sysctl -p >/dev/null 2> /dev/null
+
+# prepare the LOGDROP table for use
+iptables -N LOGDROP
+iptables -A LOGDROP -j LOG --log-prefix "LOGDROP "
+iptables -A LOGDROP -j DROP
+
 TESTING=${TESTING-/testing}
 
 if [ "$EAST_USERLAND" == "strongswan" ]
