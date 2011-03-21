@@ -309,7 +309,8 @@ proc loginuml {umlname} {
     	          shutdownumls
 	}
 #	-exact "normal startup):"
-	-exact "enter for maintenance"
+#	-exact "enter for maintenance"
+	-exact "login:"
     }
     netjigdebug "\nLogging in to $umlname"
     send -i $umlid($umlname,spawnid) -- "root\r"
