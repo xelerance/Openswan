@@ -2,10 +2,9 @@
 
 . ../../umlsetup.sh
 
-. setup.sh
+. ./setup.sh
 
 . $UTILS/functions.sh
 
-source TESTLIST
-
+source ./TESTLIST
 
