@@ -29,7 +29,7 @@ void initiate_connection(const char *name, int whackfd
 			 , enum crypto_importance importance) {}
 void initiate_ondemand(const ip_address *our_client
 		       , const ip_address *peer_client
-		       , int transport_proto UNUSED
+		       , int transport_proto 
 		       , bool held
 		       , int whackfd
 		       , err_t why) {}
