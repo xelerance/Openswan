@@ -182,10 +182,10 @@ int format;			/* character */
 char *dst;			/* need not be valid if dstlen is 0 */
 size_t dstlen;
 {
-	union SINSIN6 {
+	const union SINSIN6 {
 		struct sockaddr_in sin;
 		struct sockaddr_in6 sin6;
-	} *sinp = (union SINSIN6 *) src;
+	} *sinp = (const union SINSIN6 *) src;
 	switch (sinp->sin.sin_family) {
 	case AF_INET:
 		return inet_addrtot(AF_INET,&sinp->sin.sin_addr,format,dst,dstlen);
