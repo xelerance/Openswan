@@ -192,7 +192,9 @@ conn road-east-base
 
 conn westnet-eastnet-x509
 	leftsubnet=192.0.1.0/24
+	leftsourceip-192.0.1.254
 	rightsubnet=192.0.2.0/24
+	rightsourceip-192.0.2.254
 	also=west-east-x509
 
 conn west-east-x509
