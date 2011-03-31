@@ -48,9 +48,6 @@ int parser_y_eof(void);
 #if 0
 #define YY_NO_INPUT
 #endif
-/*    
-#define YY_NO_UNPUT
-*/
 
 extern void yyerror(const char *);
 
