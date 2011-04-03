@@ -599,7 +599,7 @@ netlink_raw_eroute(const ip_address *this_host
      * therefore, this code extracts upper 8 bits and lower 8 bits and puts
      * into source and destination ports before passing to NETKEY. */
 
-    if( 1 == transport_proto /*icmp*/ || 58 == transport_proto /*ipv6-icmp*/) {
+    if( transport_proto == IPPROTO_ICMP || transport_proto == IPPROTO_ICMPV6) {
 	u_int16_t icmp_type;
 	u_int16_t icmp_code;
 
