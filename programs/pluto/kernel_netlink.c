@@ -587,6 +587,30 @@ netlink_raw_eroute(const ip_address *this_host
 
     req.u.p.sel.sport = portof(&this_client->addr);
     req.u.p.sel.dport = portof(&that_client->addr);
+
+    /* As per RFC 4301/5996, icmp type is put in the most significant 8 bits
+     * and icmp code is in the least significant 8 bits of port field. 
+     * Although Openswan does not have any configuration options for 
+     * icmp type/code values, it is possible to specify icmp type and code 
+     * using protoport option. For example, icmp echo request (type 8/code 0) 
+     * needs to be encoded as 0x0800 in the port field and can be specified 
+     * as left/rightprotoport=icmp/2048. Now with NETKEY, icmp type and code
+     * need to be passed as source and destination ports, respectively.
+     * therefore, this code extracts upper 8 bits and lower 8 bits and puts
+     * into source and destination ports before passing to NETKEY. */
+
+    if( transport_proto == IPPROTO_ICMP || transport_proto == IPPROTO_ICMPV6) {
+	u_int16_t icmp_type;
+	u_int16_t icmp_code;
+
+	icmp_type = ntohs(req.u.p.sel.sport) >> 8;
+	icmp_code = ntohs(req.u.p.sel.sport) & 0xFF;
+
+	req.u.p.sel.sport = htons(icmp_type);
+	req.u.p.sel.dport = htons(icmp_code);
+	
+    }
+
     req.u.p.sel.sport_mask = (req.u.p.sel.sport) ? ~0:0;
     req.u.p.sel.dport_mask = (req.u.p.sel.dport) ? ~0:0;
     ip2xfrm(&this_client->addr, &req.u.p.sel.saddr);
