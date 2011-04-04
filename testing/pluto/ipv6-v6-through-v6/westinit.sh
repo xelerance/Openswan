@@ -1,13 +1,13 @@
 : ==== start ====
-TESTNAME=ipv6-basic-pluto-01
+TESTNAME=ipv6-v6-through-v6
 source /testing/pluto/bin/westlocal.sh
 
 # confirm that the network is alive
-ping6 -n -c 4 2001:db8:1:2::23
+ping6 -n -c 4 -I 2001:db8:0:1::254 2001:db8:0:2::254
 # make sure that clear text does not get through
-ip6tables -A INPUT -i eth1 -s 2001:db8:1:2::/48 -j DROP
+ip6tables -A INPUT -i eth1 -s 2001:db8:0:2::254 -j DROP
 # confirm with a ping to east-in
-ping6 -n -c 4 2001:db8:1:2::23
+ping6 -n -c 4 2001:db8:0:1::254 2001:db8:0:2::254
 
 ipsec setup start
 ipsec auto --add westnet-eastnet-ipv6

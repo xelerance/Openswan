@@ -4,7 +4,7 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=ipv6-basic-pluto-01
+TESTNAME=ipv6-v6-through-v4
 EASTHOST=east
 WESTHOST=west
 

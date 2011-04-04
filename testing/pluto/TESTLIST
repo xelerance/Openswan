@@ -445,6 +445,13 @@ umlplutotest	sourceip-01			good
 umlplutotest	sourceip-02			good
 
 #################################################################
+# IPv6 tests
+#################################################################
+umlplutotest	ipv6-v6-through-v6	good
+umlplutotest	ipv6-v6-through-v4	good
+umlplutotest	ipv6-v4-through-v6	good
+
+#################################################################
 # IKEv2 tests
 #################################################################
 umlplutotest	ikev2-01-fallback-ikev1			good
