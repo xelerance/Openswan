@@ -97,7 +97,8 @@ endif
 ifneq ($(strip(${REGRESSRESULTS})),)
 	-perl testing/utils/regress-summarize-results.pl ${REGRESSRESULTS}
 endif
-	-echo "======== End of make check target. ========"
+	-ln -s ${REGRESSRESULTS}/testresults.html ${REGRESSRESULTS}/index.html
+	@echo "======== End of make check target. ========"
 
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them
