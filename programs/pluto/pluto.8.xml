@@ -45,6 +45,8 @@
 
       <arg choice="opt">--use-klips</arg>
 
+      <arg choice="opt">--use-mast</arg>
+
       <arg choice="opt">--use-netkey</arg>
 
       <arg choice="opt">--use-nostack</arg>
@@ -1008,6 +1010,7 @@
       The option <option>--use-auto</option>, which is also the default, lets
       pluto find a stack automatically. This behaviour can be changed by
       explicitly setting the stack using <option>--use-klips</option>,
+      <option>--use-mast</option>, <option>--use-bsdkame</option>
       <option>--use-netkey</option> or <option>--use-nostack</option>. The
       latter is meant for testing only - no actual IPsec connections will be
       loaded into the kernel.</para>
