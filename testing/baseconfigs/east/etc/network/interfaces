@@ -42,19 +42,34 @@ iface eth0 inet static
      netmask 255.255.255.0
      broadcast 192.0.2.255
 
+iface eth0 inet6 static
+     address 2001:db8:0:2::254
+     netmask 64
+
 iface eth1 inet static
      address 192.1.2.23
      network 192.1.2.0
      netmask 255.255.255.0
      broadcast 192.1.2.255
-	gateway 192.1.2.254
-        up route add -net 192.0.1.0 netmask 255.255.255.0 gw 192.1.2.45
+     gateway 192.1.2.254
+     up route add -net 192.0.1.0 netmask 255.255.255.0 gw 192.1.2.45
+
+iface eth1 inet6 static
+     address 2001:db8:1:2::23
+     netmask 64
+     gateway 2001:db8:1:2::254
+     up ip -6 addr add 2001:db8:0:1::254/48 via 2001:db8:1:2::45
+
 
 iface eth2 inet static
      address 192.9.2.23
      network 192.9.2.0
      netmask 255.255.255.0
      broadcast 192.9.2.255
+
+iface eth2 inet6 static
+     address 2001:db8:9:2::23
+     netmask 64
 
 # A more complicated ethernet setup: (the "up" lines are executed verbatim
 # when the interface is brought up, the "down" lines when it's brought down)
