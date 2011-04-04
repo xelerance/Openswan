@@ -20,7 +20,8 @@ SUBDIRS=lib utils
 SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging
 #SUBDIRS+=kunit
-SUBDIRS+=pfkey
+# FIXUP: pfkey should NOT be commented out, but it needs debuging:
+#SUBDIRS+=pfkey
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
@@ -31,6 +32,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+		 ${MAKE} -C $$d srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ;\
 	done; 
 
