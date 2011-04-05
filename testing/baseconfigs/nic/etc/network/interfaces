@@ -1,20 +1,13 @@
 ######################################################################
 # /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
-#
-# A "#" character in the very first column makes the rest of the line
-# be ignored. Blank lines are ignored. Lines may be indented freely.
-# A "\" character at the very end of the line indicates the next line
-# should be treated as a continuation of the current one.
-#
-# The "noauto", "up", and "down" options are valid for all interfaces.
-# "up" and "down" may be specified multiple times, all other options
-# may only be specified once.
 ######################################################################
 
 # We always want the loopback interface. Whether we want ifup/ifdown to
 # know about is another matter, perhaps.
-#
+auto lo
 iface lo inet loopback
+iface lo inet6 loopback
+
 auto eth0 eth0:1 eth0:2 eth0:3 eth0:4 eth0:5 eth0:7 eth1 eth2
 
 # An example ethernet card setup: (broadcast and gateway are optional)
