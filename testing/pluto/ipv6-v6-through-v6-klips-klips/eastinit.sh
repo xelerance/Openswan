@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=ipv6-v6-through-v6
+TESTNAME=ipv6-v6-through-v6-klips-klips
 source /testing/pluto/bin/eastlocal.sh
 
 ipsec setup start

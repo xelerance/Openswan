@@ -1,5 +1,5 @@
 : ==== start ====
-TESTNAME=ipv6-v6-through-v6
+TESTNAME=ipv6-v6-through-v6-klips-netkey
 source /testing/pluto/bin/westlocal.sh
 
 # confirm that the network is alive
