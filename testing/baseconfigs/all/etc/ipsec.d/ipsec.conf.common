@@ -156,8 +156,11 @@ conn westnet-eastnet
 
 conn westnet-eastnet-ipv6
 	also=west-east-base-ipv6
-	also=westnet-ipv6
-	also=eastnet-ipv6
+	# subnets cannot be included via also= as this gives either a
+	# [non-ipv6 address may not contain `:'] or a 
+	# duplicate key 'connaddrfamily' error
+	leftsubnet=2001:db8:0:1::/48
+	rightsubnet=2001:db8:0:2::/48
 	#auto=start
 
 conn westnet-eastnet-pass
@@ -177,14 +180,8 @@ conn westnet-eastnet-drop
 conn eastnet
 	rightsubnet=192.0.2.0/24
 
-conn eastnet-ipv6
-	rightsubnet=2001:db8:0:2::/48
-
 conn westnet
 	leftsubnet=192.0.1.0/24
-
-conn westnet-ipv6
-	leftsubnet=2001:db8:0:1::/48
 
 conn west-east-base-ipv4
 	also=west-east-base
