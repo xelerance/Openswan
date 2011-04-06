@@ -290,7 +290,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 	    {
 		ugh = "read(whackfd) failed";
 
-		pass->prompt(RC_LOG_SERIOUS,ugh);
+		pass->prompt(RC_LOG_SERIOUS,"%s", ugh);
 		return ugh;
 	    }
 
@@ -298,7 +298,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 	    {
 	        ugh = "no passphrase entered, aborted";
 
-		pass->prompt(RC_LOG_SERIOUS, ugh);
+		pass->prompt(RC_LOG_SERIOUS, "%s", ugh);
 		return ugh;
 	    }
 
@@ -315,7 +315,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 	    pfree(blob->ptr);
 	    *blob = blob_copy;
 	}
-	pass->prompt(RC_LOG_SERIOUS, ugh);
+	pass->prompt(RC_LOG_SERIOUS, "%s", ugh);
 	return ugh;
     }
     else

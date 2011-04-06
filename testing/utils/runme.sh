@@ -10,7 +10,7 @@
 . ../../../umlsetup.sh
 . ../setup.sh
 . $UTILS/functions.sh
-. testparams.sh
+. ./testparams.sh
 
 if [ -z "${TEST_TYPE}" ]
 then
