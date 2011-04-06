@@ -159,8 +159,8 @@ conn westnet-eastnet-ipv6
 	# subnets cannot be included via also= as this gives either a
 	# [non-ipv6 address may not contain `:'] or a 
 	# duplicate key 'connaddrfamily' error
-	leftsubnet=2001:db8:0:1::/48
-	rightsubnet=2001:db8:0:2::/48
+	leftsubnet=2001:db8:0:1::/64
+	rightsubnet=2001:db8:0:2::/64
 	#auto=start
 
 conn westnet-eastnet-pass
