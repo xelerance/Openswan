@@ -162,7 +162,7 @@ enum rc_type {
 #define log_errno(a) { int e = errno; openswan_log_errno_routine a; }
 extern void openswan_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2);
 #define exit_log_errno(a) { int e = errno; openswan_exit_log_errno_routine a; }
-extern void openswan_exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) NEVER_RETURNS NEVER_RETURNS;
+extern void openswan_exit_log_errno_routine(int e, const char *message, ...) PRINTF_LIKE(2) ;
 
 /*
  * general utilities
