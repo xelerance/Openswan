@@ -49,7 +49,7 @@ proc netjigstart {} {
 
 
 proc sendnjcmd {netjig cmd} {
-    global expect_out(buffer)
+    global expect_out
 
     # expect -i $netjig "OK netjig>"
     expect {
@@ -94,7 +94,7 @@ proc sendnjcmd {netjig cmd} {
 
 proc newswitch {netjig net} {
     global env
-    global expect_out(buffer)
+    global expect_out
     global umlid
 
     set arpreply ""
@@ -125,7 +125,7 @@ proc newswitch {netjig net} {
 
 proc njcmd {netjig cmdline} {
     global env
-    global expect_out(buffer)
+    global expect_out
     set lines [sendnjcmd $netjig "$cmdline"]
 
     while {$lines > 0} {
