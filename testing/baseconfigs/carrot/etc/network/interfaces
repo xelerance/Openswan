@@ -13,8 +13,9 @@
 
 # We always want the loopback interface. Whether we want ifup/ifdown to
 # know about is another matter, perhaps.
-#
-iface lo inet loopback 
+auto lo
+iface lo inet loopback
+iface lo inet6 loopback
 
 auto eth0 
 

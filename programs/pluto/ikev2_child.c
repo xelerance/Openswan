@@ -97,6 +97,26 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 	break;
     }
 
+    /* 
+     * The IKEv2 code used to send 0-65535 as port regardless of
+     * the local policy specified. if local policy states a specific 
+     * protocol and port, then send that protocol value and port to 
+     * other end  -- Avesh
+     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
+     */
+
+    ts.ipprotoid = e->protocol;
+
+    /*if port is %any or 0*/
+    if(e->port == 0 || e->has_port_wildcard) {
+	/* Paul: TODO 0 might have to mean "any single 1 port" - check the IKEv2 RFC */
+	ts.startport = 0;
+	ts.endport = 65535;
+    } else {
+	ts.startport = e->port;
+	ts.endport = e->port;
+    }
+	
     return ts;
 }
 
@@ -128,9 +148,18 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 	its1.isat1_sellen = 40;
 	break;
     }
-    its1.isat1_ipprotoid = 0;      /* all protocols */
-    its1.isat1_startport = 0;      /* all ports */
-    its1.isat1_endport = 65535;  
+
+    /* 
+     * The IKEv2 code used to send 0-65535 as port regardless of
+     * the local policy specified. if local policy states a specific 
+     * protocol and port, then send that protocol value and port to 
+     * other end  -- Avesh
+     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
+     */
+
+    its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
+    its1.isat1_startport = htons(ts->startport);      /* ports as per local policy*/
+    its1.isat1_endport = htons(ts->endport);  
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
 	return STF_INTERNAL_ERROR;
     
@@ -268,8 +297,9 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	    }
 
 	    array[i].ipprotoid = ts1.isat1_ipprotoid;
-	    array[i].startport = ts1.isat1_startport;
-	    array[i].endport   = ts1.isat1_startport;
+	    /*should be converted to host byte order for local processing*/
+	    array[i].startport = ntohs(ts1.isat1_startport);
+	    array[i].endport   = ntohs(ts1.isat1_endport);
 	}
     }
     

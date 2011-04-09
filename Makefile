@@ -41,7 +41,7 @@ def:
 	@echo " make programs install"
 	@echo
 	@echo "When called in openwrt/packaging/openswan/Makefile to build kmod-openswan"
-	@echo " make MODULE_DEF_INCLUDE=$${OPENSWANSRCDIR}/packaging/openwrt/defconfig MODULE_DEF_INCLUDE=$${OPENSWANSRCDIR}/packaging/openwrt/config-all.h module"
+	@echo " make MODULE_DEFCONFIG=$${OPENSWANSRCDIR}/packaging/openwrt/defconfig MODULE_DEF_INCLUDE=$${OPENSWANSRCDIR}/packaging/openwrt/config-all.h module"
 	@echo
 	@echo
 include ${OPENSWANSRCDIR}/Makefile.top

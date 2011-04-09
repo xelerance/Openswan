@@ -18,6 +18,10 @@
 #include <linux/string.h>
 #endif
 
+#if !defined(__KERNEL__)
+# include <stdlib.h>
+#endif
+
 #include "openswan.h"
 
 #define	IP4BYTES	4	/* bytes in an IPv4 address */

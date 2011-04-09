@@ -92,12 +92,12 @@ endif
 		echo ===================================; \
 		echo Now making check in $$d; \
 		echo ===================================; \
-		(cd $$d && $(MAKE) DESTDIR=${DESTDIR} check || exit 1);\
+		${MAKE} -C $$d DESTDIR=${DESTDIR} check ;\
 	done
 ifneq ($(strip(${REGRESSRESULTS})),)
 	-perl testing/utils/regress-summarize-results.pl ${REGRESSRESULTS}
 endif
-
+	-echo "======== End of make check target. ========"
 
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them

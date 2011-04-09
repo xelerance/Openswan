@@ -4,9 +4,13 @@ TEST_PURPOSE=regress
 TEST_PROB_REPORT=0
 TEST_TYPE=umlplutotest
 
-TESTNAME=ipv6-basic-pluto-01
+TESTNAME=ipv6-v6-through-v6-netkey-netkey
 EASTHOST=east
 WESTHOST=west
+
+# both ends should use the netkey kernel
+WEST_NETKEY=true
+EAST_NETKEY=true
 
 WEST_ARPREPLY=1
 
