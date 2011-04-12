@@ -9,7 +9,10 @@ v2.6.34 (unreleased)
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
 * Add Apple iOS work-around to l2tp example configs [Tuomo]
 * KLIPS: Support to compile on Linux 2.6.38 [David]
+* Various uml testing/ fixes and updates [Paul/Hugh]
 * Improve build speed (don't recalculate build version all the time [David]
+* Bugtracker bugs fixed:
+   #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 
 v2.6.33 (February 18, 2011)
 * Merge in the klips-ipv6 branch [David]
