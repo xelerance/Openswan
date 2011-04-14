@@ -151,9 +151,12 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =/EXTRAVERSION = plain/' Makefile
+    grep "EXTRAVERSION =plain" Makefile > /dev/null
+    if [ $RETVAL -ne 0 ]; then
+	sed -i 's/EXTRAVERSION =/EXTRAVERSION =plain/' Makefile
+    fi
     PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
-    echo "using $PLAINKCONF to build  plain kernel"
+    echo "using $PLAINKCONF to build plain kernel"
      (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$PLAINKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
 fi
 
@@ -168,10 +171,12 @@ if [ ! -x $NETKEYKERNEL ]
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =/EXTRAVERSION = netkey/' Makefile 
-    echo "make a netkey enabled kernel" 
+    grep "EXTRAVERSION =netkey" Makefile > /dev/null
+    if [ $RETVAL -ne 0 ]; then
+	sed -i 's/EXTRAVERSION =/EXTRAVERSION =netkey/' Makefile 
+    fi
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
-    echo "using $NETKEYCONF for umlnetkey "
+    echo "using $NETKEYCONF to build netkey kernel"
      (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
 fi
 
@@ -238,14 +243,15 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =/EXTRAVERSION = klips/' Makefile 
+    grep "EXTRAVERSION =klips" Makefile > /dev/null
+    if [ $RETVAL -ne 0 ]; then
+	sed -i 's/EXTRAVERSION =/EXTRAVERSION =klips/' Makefile 
+    fi
     # copy the config file
     rm -f .config
     cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
-    sed -i 's/EXTRAVERSION =/EXTRAVERSION = klips/' Makefile
-    echo "make a klips enabled kernel"
     KLIPSKCONF=${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config
-    echo "using $KLIPSKCONF for umlswan "
+    echo "using $KLIPSKCONF to build umlswan kernel"
     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
 
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
