@@ -34,7 +34,7 @@ iface eth1 inet6 static
      address 2001:db8:1:2::45
      netmask 64
      gateway 2001:db8:1:2::254
-     up ip -6 addr add 2001:db8:0:2::254/48 via 2001:db8:1:2::23
+     up ip -6 route add 2001:db8:0:2::254/48 via 2001:db8:1:2::23
 
 iface eth2 inet static
      address 192.9.4.45
