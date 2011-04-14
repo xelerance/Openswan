@@ -2208,10 +2208,17 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 			SENDERR(EINVAL);
 		}
 		
-		srcflow.u.v4.sin_family = AF_INET;
-		dstflow.u.v4.sin_family = AF_INET;
-		srcmask.u.v4.sin_family = AF_INET;
-		dstmask.u.v4.sin_family = AF_INET;
+		if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
+			srcflow.u.v4.sin_family = AF_INET6;
+			dstflow.u.v4.sin_family = AF_INET6;
+			srcmask.u.v4.sin_family = AF_INET6;
+			dstmask.u.v4.sin_family = AF_INET6;
+		} else {
+			srcflow.u.v4.sin_family = AF_INET;
+			dstflow.u.v4.sin_family = AF_INET;
+			srcmask.u.v4.sin_family = AF_INET;
+			dstmask.u.v4.sin_family = AF_INET;
+		}
 		srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
 		dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
 		srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
