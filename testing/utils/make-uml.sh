@@ -242,22 +242,13 @@ then
     # copy the config file
     rm -f .config
     cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
-
-    # nuke final executable here since we will do Openswan in a moment.
-    rm -f linux .depend
-    KERNDEP=dep
+    sed -i 's/EXTRAVERSION =/EXTRAVERSION = klips/' Makefile
+    echo "make a klips enabled kernel"
+    KLIPSKCONF=${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config
+    echo "using $KLIPSKCONF for umlswan "
+    (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
 
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
-fi
-
-if $NEED_swan && [ ! -x $UMLSWAN/linux ]
-then
-    cd $OPENSWANSRCDIR || exit 1
- 
-    make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR NONINTCONFIG=${NONINTCONFIG} verset kpatch rcf kernel modules|| exit 1 </dev/null 
-
-    # mark it as read-only, so that we don't edit the wrong files by mistake!
-    find $UMLSWAN/net/ipsec $UMLSWAN/include/openswan -name '*.[ch]' -type f -print | xargs chmod a-w
 fi
 
 cd $OPENSWANSRCDIR || exit 1
