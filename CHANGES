@@ -9,8 +9,15 @@ v2.6.34 (unreleased)
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
 * Add Apple iOS work-around to l2tp example configs [Tuomo]
 * KLIPS: Support to compile on Linux 2.6.38 [David]
-* Various uml testing/ fixes and updates [Paul/Hugh]
+* Many uml testing harness fixes and updates [Paul/Hugh]
 * Improve build speed (don't recalculate build version all the time [David]
+* XAUTH: Fix rekey with Cisco when remote_peer_type=cisco [Avesh]
+* Openswan (IKEv2/IKEv1) icmp issue (redhat bz 681974) [Avesh]
+* IKEv2: port range was hardcoded to 0-65535, not local policy [Avesh]
+* MAST: Fix oops on module unload [David]
+* Improve build speed, calulate version once [David]
+* Import OpenWRT packaging updates [Simon]
+* contrib: added openswan patch for 2.4.37.9 [Yannick Koehler]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 
