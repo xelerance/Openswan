@@ -80,11 +80,12 @@ uint32_t pfkey_seq = 0;
 #define EMT_REPLACEROUTE	12	/* set an extended route */
 #define EMT_GETDEBUG	13	/* get debug level if active */
 #define EMT_INEROUTE	14	/* set incoming policy for IPIP on a chain */
+#define EMT_INREPLACEROUTE	15	/* replace incoming policy for IPIP on a chain */
 
 static void
 usage(char* arg)
 {
-	fprintf(stdout, "usage: %s --{add,addin,replace} --eraf <inet | inet6> --src <src>/<srcmaskbits>|<srcmask> --dst <dst>/<dstmaskbits>|<dstmask> [ --transport-proto <protocol> ] [ --src-port <source-port> ] [ --dst-port <dest-port> ] <SA>\n", arg);
+	fprintf(stdout, "usage: %s --{add,addin,replace,replacein} --eraf <inet | inet6> --src <src>/<srcmaskbits>|<srcmask> --dst <dst>/<dstmaskbits>|<dstmask> [ --transport-proto <protocol> ] [ --src-port <source-port> ] [ --dst-port <dest-port> ] <SA>\n", arg);
 	fprintf(stdout, "            where <SA> is '--af <inet | inet6> --edst <edst> --spi <spi> --proto <proto>'\n");
 	fprintf(stdout, "                       OR '--said <said>'\n");
 	fprintf(stdout, "                       OR '--said <%%passthrough | %%passthrough4 | %%passthrough6 | %%drop | %%reject | %%trap | %%hold | %%pass>'.\n");
@@ -106,6 +107,7 @@ static struct option const longopts[] =
 	{"add", 0, 0, 'a'},
 	{"addin", 0, 0, 'A'},
 	{"replace", 0, 0, 'r'},
+	{"replacein", 0, 0, 'E'},
 	{"clear", 0, 0, 'c'},
 	{"del", 0, 0, 'd'},
 	{"af", 1, 0, 'i'},
@@ -187,7 +189,7 @@ main(int argc, char **argv)
 			break;
 		case 'a':
 			if(action_type) {
-				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
+				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--replacein', '--clear', or '--del' options permitted.\n",
 					progname);
 				exit(1);
 			}
@@ -195,7 +197,7 @@ main(int argc, char **argv)
 			break;
 		case 'A':
 			if(action_type) {
-				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
+				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--replacein', '--clear', or '--del' options permitted.\n",
 					progname);
 				exit(1);
 			}
@@ -203,11 +205,19 @@ main(int argc, char **argv)
 			break;
 		case 'r':
 			if(action_type) {
-				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--clear', or '--del' options permitted.\n",
+				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--replacein', '--clear', or '--del' options permitted.\n",
 					progname);
 				exit(1);
 			}
 			action_type = EMT_REPLACEROUTE;
+			break;
+		case 'E':
+			if(action_type) {
+				fprintf(stderr, "%s: Only one of '--add', '--addin', '--replace', '--replacein', '--clear', or '--del' options permitted.\n",
+					progname);
+				exit(1);
+			}
+			action_type = EMT_INREPLACEROUTE;
 			break;
 		case 'c':
 			if(action_type) {
@@ -565,6 +575,7 @@ main(int argc, char **argv)
 	case EMT_SETEROUTE:
 	case EMT_REPLACEROUTE:
 	case EMT_INEROUTE:
+	case EMT_INREPLACEROUTE:
 		if(!(said_af_opt && edst_opt && spi_opt && proto_opt) && !(said_opt)) {
 			fprintf(stderr, "%s: add and addin options must have SA specified.\n",
 				progname);
@@ -605,6 +616,7 @@ main(int argc, char **argv)
 	if((error = pfkey_msg_hdr_build(&extensions[0],
 					(action_type == EMT_SETEROUTE
 					 || action_type == EMT_REPLACEROUTE
+					 || action_type == EMT_INREPLACEROUTE
 					 || action_type == EMT_INEROUTE)
 					? SADB_X_ADDFLOW : SADB_X_DELFLOW,
 					proto2satype(said.proto),
@@ -630,8 +642,15 @@ main(int argc, char **argv)
 		sa_flags = SADB_X_SAFLAGS_REPLACEFLOW;
 		goto sa_build;
 
-	case EMT_SETEROUTE:
+	case EMT_INREPLACEROUTE:
+		sa_flags = SADB_X_SAFLAGS_REPLACEFLOW | SADB_X_SAFLAGS_INFLOW;
+		goto sa_build;
+
 	case EMT_INEROUTE:
+		sa_flags = SADB_X_SAFLAGS_INFLOW;
+		goto sa_build;
+
+	case EMT_SETEROUTE:
 	sa_build:
 		if((error = pfkey_sa_build(&extensions[SADB_EXT_SA],
 					   SADB_EXT_SA,
@@ -658,6 +677,7 @@ main(int argc, char **argv)
 	case EMT_SETEROUTE:
 	case EMT_REPLACEROUTE:
 	case EMT_INEROUTE:
+	case EMT_INREPLACEROUTE:
 		anyaddr(said_af, &pfkey_address_s_ska);
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
 						SADB_EXT_ADDRESS_SRC,
@@ -696,6 +716,7 @@ main(int argc, char **argv)
 	case EMT_SETEROUTE:
 	case EMT_REPLACEROUTE:
 	case EMT_INEROUTE:
+	case EMT_INREPLACEROUTE:
 	case EMT_DELEROUTE:
 		networkof(&s_subnet, &pfkey_address_sflow_ska); /* src flow */
 		add_port(eroute_af, &pfkey_address_sflow_ska, src_port);
@@ -847,7 +868,7 @@ main(int argc, char **argv)
 			fprintf(stderr, "eroute already in use.  Delete old one first.\n");
 			break;
 		case ENOENT:
-			if((action_type == EMT_INEROUTE)) {
+			if(action_type == EMT_INEROUTE || action_type == EMT_INREPLACEROUTE) {
 				fprintf(stderr, "non-existant IPIP SA.\n");
 				break;
 			}
