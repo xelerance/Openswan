@@ -394,12 +394,14 @@ applypatches() {
             echo Not applying the NAT-Traversal patch
 	fi
 
-	if $NGPATCH
+	if $SAREFPATCH
+	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ] 
 	then
-	    echo Applying the klipsNG patch
-	    (cd $OPENSWANSRCDIR && make ngpatch${KERNVERSION} ) | patch -p1
+	    echo Applying the SAref patches
+	    (cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1
+		mkdir -p arch/um/.SAREFPATCHAPPLIED
 	else
-            echo Not applying the klipsNG patch
+            echo Not applying the SAref patch
 	fi
 
 	mkdir -p arch/um/.PATCHAPPLIED

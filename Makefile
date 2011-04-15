@@ -68,7 +68,7 @@ KERNELREL=$(shell ${KVSHORTUTIL} ${KERNELSRC}/Makefile)
 
 kpatch: unapplypatch applypatch klipsdefaults
 npatch: unapplynpatch applynpatch
-ngpatch: unapplyngpatch applyngpatch
+sarefpatch: unapplysarefpatch applysarefpatch
 
 unapplypatch:
 	-@if [ -f ${KERNELSRC}/openswan.patch ]; then \
@@ -90,15 +90,15 @@ applynpatch:
 	@echo Now performing forward NAT patches; 
 	${MAKE} nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
-unapplyngpatch:
-	-@if [ -f ${KERNELSRC}/klipsng.patch ]; then \
-		echo Undoing previous klipsNG patches; \
-		cat ${KERNELSRC}/klipsng.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preng --reverse --ignore-whitespace ); \
+unapplysarefpatch:
+	-@if [ -f ${KERNELSRC}/saref.patch ]; then \
+		echo Undoing previous saref patches; \
+		cat ${KERNELSRC}/saref.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preng --reverse --ignore-whitespace ); \
 	fi
 
-applyngpatch:
-	@echo Now performing klipsNG patches; 
-	${MAKE} ngpatch${KERNELREL} | tee ${KERNELSRC}/klipsng.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preng --forward --ignore-whitespace )
+applysarefpatch:
+	@echo Now performing SAref patches; 
+	${MAKE} sarefpatch${KERNELREL} | tee ${KERNELSRC}/klipsng.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preng --forward --ignore-whitespace )
 
 # patch kernel
 PATCHER=packaging/utils/patcher
@@ -529,11 +529,8 @@ nattpatch:
 	else	echo "Cannot determine Linux kernel version. Perhaps you need to set KERNELSRC? (eg: export KERNELSRC=/usr/src/linux-`uname -r`/)"; exit 1; \
 	fi;
 
-sarefpatch:
-	packaging/utils/ngpatch 2.6
-
-ngpatch2.6:
-	packaging/utils/ngpatch 2.6
+sarefpatch26:
+	packaging/utils/sarefpatch 2.6
 
 nattpatch2.6:
 	packaging/utils/nattpatch 2.6
