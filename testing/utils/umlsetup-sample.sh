@@ -24,16 +24,16 @@ POOLSPACE=$UMLPREFIX/umlbuild
 #KERNPOOL=/usr/src/linux
 #
 # or something you downloaded.
-KERNPOOL=$UMLPREFIX/kernel/linux-2.4.19/linux
+KERNPOOL=$UMLPREFIX/kernel/linux-2.6.38
 
 # if you have a kernel that already has the NAT-T patch applies, then
 # set this to false.
-NATTPATCH=true
+NATTPATCH=false
 
 # if you want a kernel that supports the BTNS IPsec API
 #   see draft-ietf-btns-capi-xx.txt
 # this requires your kernel to be rebuilt.
-NGPATCH=true
+SAREFPATCH=true
 
 # if you also have a copy of the L2TP IPsec API patch, you can
 # set this to true as well
