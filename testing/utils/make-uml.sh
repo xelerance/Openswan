@@ -151,10 +151,7 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    grep "EXTRAVERSION =plain" Makefile > /dev/null
-    if [ $RETVAL -ne 0 ]; then
-	sed -i 's/EXTRAVERSION =/EXTRAVERSION =plain/' Makefile
-    fi
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
     PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     echo "using $PLAINKCONF to build plain kernel"
      (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$PLAINKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
@@ -171,10 +168,7 @@ if [ ! -x $NETKEYKERNEL ]
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    grep "EXTRAVERSION =netkey" Makefile > /dev/null
-    if [ $RETVAL -ne 0 ]; then
-	sed -i 's/EXTRAVERSION =/EXTRAVERSION =netkey/' Makefile 
-    fi
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     echo "using $NETKEYCONF to build netkey kernel"
      (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
@@ -243,10 +237,7 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    grep "EXTRAVERSION =klips" Makefile > /dev/null
-    if [ $RETVAL -ne 0 ]; then
-	sed -i 's/EXTRAVERSION =/EXTRAVERSION =klips/' Makefile 
-    fi
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile 
     # copy the config file
     rm -f .config
     cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
