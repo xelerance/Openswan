@@ -151,7 +151,7 @@ then
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
     PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     echo "using $PLAINKCONF to build plain kernel"
-     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$PLAINKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
+     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$PLAINKCONF INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install) || exit 1 </dev/null
 fi
 
 UMLNETKEY=$POOLSPACE/netkey${KERNVER}
@@ -168,7 +168,7 @@ if [ ! -x $NETKEYKERNEL ]
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     echo "using $NETKEYCONF to build netkey kernel"
-     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
+     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF INSTALL_MOD_PATH=${BASICROOT}/ ARCH=um linux modules modules_install) || exit 1 </dev/null
 fi
 
 
@@ -235,13 +235,20 @@ then
 
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile 
+
+    # looks like applypatches does not patch in klips - make line changed from the old one in commit b195c03ff554 as it built kernel and modules too
+    cd $OPENSWANSRCDIR || exit 1
+    (make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR NONINTCONFIG=${NONINTCONFIG} verset kpatch rcf) || exit 1
+    cd $UMLSWAN || exit 1
+
     # copy the config file
     rm -f .config
-    cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
+    #cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
     KLIPSKCONF=${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config
     echo "using $KLIPSKCONF to build umlswan kernel"
-    (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF && make CC=${CC} ARCH=um linux modules) || exit 1 </dev/null
+    (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install) || exit 1 </dev/null
 
+    echo "Confirming KLIPS is compiled into the UMLSWAN kernel..."
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
 fi
 
