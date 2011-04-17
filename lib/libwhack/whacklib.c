@@ -77,15 +77,9 @@ pack_str(struct whackpacker *wp, char **p)
 static bool
 unpack_str(struct whackpacker *wp, char **p)
 {
-    unsigned int len = wp->str_roof - wp->str_next;
     unsigned char *end;
 
-    if(len == 0) {
-	*p = (char *)NULL;
-	return TRUE;
-    }
-	
-    end = memchr(wp->str_next, '\0', len);
+    end = memchr(wp->str_next, '\0', (wp->str_roof - wp->str_next) );
 
     if (end == NULL)
     {
@@ -145,7 +139,7 @@ err_t pack_whack_msg (struct whackpacker *wp)
 	|| !pack_str(wp, &wp->msg->string2)                /* string 25 */
 	|| !pack_str(wp, &wp->msg->string3)                /* string 26 */
 	|| !pack_str(wp, &wp->msg->dnshostname) /* string 27 ? */
-	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 19) */
+	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 28) */
     {
 	ugh = "too many bytes of strings to fit in message to pluto";
 	return ugh;
