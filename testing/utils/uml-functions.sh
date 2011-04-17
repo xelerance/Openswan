@@ -326,6 +326,7 @@ setup_host() {
 
 applypatches() {
     if [ ! -d arch/um/.PATCHAPPLIED ] 
+    
     then
 	echo Applying $UMLPATCH
 
@@ -338,18 +339,18 @@ applypatches() {
 		echo "Failed to apply UML patch: $UMLPATCH"
 		exit 1;
 	    fi
-        fi
+	fi
 
 	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
 	then
-		echo Applying $UMLPATCH2
-		if bzcat $UMLPATCH2 | patch -p1 
-		then
+	    echo Applying $UMLPATCH2
+	    if bzcat $UMLPATCH2 | patch -p1 
+	    then
 		    :
-		else
-		    echo "Failed to apply UML patch: $UMLPATCH2"
-		    exit 1;
-		fi
+	    else
+		echo "Failed to apply UML patch: $UMLPATCH2"
+		exit 1;
+	    fi
 	fi
 
 	if [ -n "$NONINTPATCH" ] && [ "$NONINTPATCH" != "none" ]
@@ -385,23 +386,27 @@ applypatches() {
 	    if [ ! -d arch/um/.NATPATCHAPPLIED ] 
 	    then
 		echo Applying the NAT-Traversal patch
-		(cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
+		( cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
 		mkdir -p arch/um/.NATPATCHAPPLIED
 	    else
 		echo "NAT-Traversal patch already applied"
 	    fi
 	else
-            echo Not applying the NAT-Traversal patch
+	    echo Not applying the NAT-Traversal patch
 	fi
 
 	if $SAREFPATCH
+        then
 	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ] 
-	then
-	    echo Applying the SAref patches
-	    (cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1
+	    then
+		echo Applying the SAref patches
+		( cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1
 		mkdir -p arch/um/.SAREFPATCHAPPLIED
+	    else
+		echo "SAref patch already applied"
+	    fi
 	else
-            echo Not applying the SAref patch
+		echo Not applying the SAref patch
 	fi
 
 	mkdir -p arch/um/.PATCHAPPLIED
