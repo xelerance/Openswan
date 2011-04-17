@@ -53,8 +53,8 @@ echo Setting up for kernel KERNVER=$KERNVER and KERNVERSION=$KERNVERSION
 
 
 # set the default for these
-NATTPATCH=${NATTPATCH-false}
-SAREFPATCH=${SAREFPATCH-false}
+NATTPATCH=${NATTPATCH:-false}
+SAREFPATCH=${SAREFPATCH:-false}
 
 # make absolute so that we can reference it from POOLSPACE
 OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd`;export OPENSWANSRCDIR
