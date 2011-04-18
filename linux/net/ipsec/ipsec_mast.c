@@ -324,7 +324,7 @@ ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 	 * no branch operations */
 	if (osw_ip_hdr_version(ixs) == 4) {
 		struct iphdr *ipp = osw_ip4_hdr(ixs);
-		if (ipsp->ips_mask_s.u.v4.sin_family != AF_INET) {
+		if (ip_address_family(&ipsp->ips_said.dst) != AF_INET) {
 			failed_outbound_check = 1;
 		} else if (((ipp->saddr & ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
 				^ ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
@@ -334,7 +334,7 @@ ipsec_mast_check_outbound_policy(struct ipsec_xmit_state *ixs)
 		}
 	} else if (osw_ip_hdr_version(ixs) == 6) {
 		struct ipv6hdr *ipp6 = osw_ip6_hdr(ixs);
-		if (ipsp->ips_mask_s.u.v6.sin6_family != AF_INET6) {
+		if (ip_address_family(&ipsp->ips_said.dst) != AF_INET6) {
 			failed_outbound_check = 1;
 		} else if (((ipp6->saddr.s6_addr32[0] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[0])
 				^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[0])
