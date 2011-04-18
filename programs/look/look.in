@@ -87,8 +87,11 @@ else
 		pat="$pat|$i"
 	done
 fi
-echo IPSEC TABLE
+echo IPSEC mangle TABLE
 iptables -n -t mangle -L IPSEC
-echo ROUTING TABLE
+echo NEW_IPSEC_CONN mangle TABLE
+iptables -n -t mangle -L NEW_IPSEC_CONN
+echo ROUTING TABLES
 ip route | egrep "$pat"
+ip -6 route | egrep "$pat"
 
