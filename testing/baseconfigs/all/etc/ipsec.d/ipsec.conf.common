@@ -177,8 +177,21 @@ conn westnet-eastnet-drop
 	type=drop
 	#auto=start
 
+conn westnet-eastnet-x509
+	also=westnet
+	leftsourceip=192.0.1.254
+	also=eastnet
+	rightsourceip=192.0.2.254
+	also=west-east-x509
+
+conn eastnet-ipv4
+	also=eastnet
+
 conn eastnet
 	rightsubnet=192.0.2.0/24
+
+conn westnet-ipv4
+	also=westnet
 
 conn westnet
 	leftsubnet=192.0.1.0/24
@@ -213,13 +226,6 @@ conn road-east-base
 	rightnexthop=192.1.2.45
 	leftid=@road.testing.xelerance.com
         leftrsasigkey=0sAQNxbOBmDqiNrUmn5q4kzBQ6I6pW/g2c8iDh3Y/KDtELBC6G0dASaaa95lV0cZT2kla681hVLzRF4MUCmFkH5ih514Nrwc5aptte49/70WotqcbvAhXeBX0zbg78gUPaT7CcUEAYxHoqHubao4mmfWlSrOnpf4crE/q3J6zH+8Z3bfsTGnpThgfNCItHpH7jkHPUYDilHsk0Zfd5fxjVDbl8JbQoT3P1KrdmpK7M1sXQhug12ocq8HlrXa3smJIq5b4T0rF+MYrThrNytNIEn53phuj6S8qmONin4usCqpUw50i2VqaBNQSY++/B57AqThFZNqt7TjqqT0CQ7tPRELgXwRvWA04GDhqBHHWoOrLdsR0p
-
-conn westnet-eastnet-x509
-	leftsubnet=192.0.1.0/24
-	leftsourceip=192.0.1.254
-	rightsubnet=192.0.2.0/24
-	rightsourceip=192.0.2.254
-	also=west-east-x509
 
 conn west-east-x509
         # Left security gateway, subnet behind it, next hop toward right.
