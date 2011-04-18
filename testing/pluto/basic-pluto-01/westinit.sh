@@ -10,9 +10,8 @@ iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j LOGDROP
 ping -n -c 4 192.0.2.254
 
 ipsec setup start
+/testing/pluto/bin/wait-until-pluto-started
 ipsec auto --add westnet-eastnet
 ipsec whack --debug-control --debug-controlmore --debug-parsing --debug-crypt
-/testing/pluto/bin/wait-until-pluto-started
-
 echo done
 
