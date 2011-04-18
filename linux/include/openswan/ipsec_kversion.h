@@ -3,8 +3,8 @@
  * header file for Openswan library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
- * Copyright (C) 2003 - 2009 Paul Wouters <paul@xelerance.com>
- * Copyright (C) 2008 - 2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2003 - 2011 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008 - 2011 David McCullough <david_mccullough@securecomputing.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -245,8 +245,10 @@
 # if defined(RHEL_RELEASE_CODE)
 #  if RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,0)
 #   define FLOW_HAS_NO_MARK
-# endif
 #  endif
+# elif defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10)
+#  define FLOW_HAS_NO_MARK
+# endif
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,21)
