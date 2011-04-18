@@ -3,6 +3,7 @@
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998-2003   Richard Guy Briggs.
  * Copyright (C) 2004-2005   Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2010-2011   David McCullough <david_mccullough@mcafee.com>
  * 
  * OCF/receive state machine written by
  * David McCullough <dmccullough@cyberguard.com>
@@ -1367,11 +1368,14 @@ static int create_hold_eroute(struct ipsec_xmit_state *ixs)
 	hold_said.proto = IPPROTO_INT;
 	hold_said.spi = htonl(SPI_HOLD);
 
+#ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
 		struct in6_addr addr6_any = IN6ADDR_ANY_INIT;   
 		hold_said.dst.u.v6.sin6_addr = addr6_any;
 		hold_said.dst.u.v6.sin6_family = AF_INET6;
-	} else {
+	} else
+#endif
+	{
 		hold_said.dst.u.v4.sin_addr.s_addr = INADDR_ANY;
 		hold_said.dst.u.v4.sin_family = AF_INET;
 	}
