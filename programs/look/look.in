@@ -75,6 +75,14 @@ if test -f /proc/net/ipsec_spi ; then
 	sort /proc/net/ipsec_spi
 fi
 
+# xfrm for netkey
+if test -f /proc/net/pfkey ; then
+	echo "XFRM state:"
+	ip xfrm state
+	echo "XFRM policy:"
+	ip xfrm policy
+	echo "XFRM done"
+fi
 # relevant routing information, including header line (which is good
 # enough as a separator, no need for another bar)
 pat="^Dest"
