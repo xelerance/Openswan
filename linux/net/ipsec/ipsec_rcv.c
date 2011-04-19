@@ -678,7 +678,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		 } else if (((ipp6->saddr.s6_addr32[1] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[1])
 				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[1])
 				  | ((ipp6->daddr.s6_addr32[1] & ipsp->ips_mask_d.u.v6.sin6_addr.s6_addr32[1])
-				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[0])) {
+				  ^ ipsp->ips_flow_d.u.v6.sin6_addr.s6_addr32[1])) {
 		 	failed_inbound_check = 1;
 		 } else if (((ipp6->saddr.s6_addr32[2] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[2])
 				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[2])
