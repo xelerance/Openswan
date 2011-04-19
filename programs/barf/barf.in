@@ -305,6 +305,15 @@ _________________________ iptables-nat
 _________________________ iptables-mangle
 	iptables -t mangle -L -v -n
 fi
+_________________________ ip6tables
+if test -r /sbin/ip6tables
+then
+	ip6tables -L -v -n
+_________________________ ip6tables-nat
+#	ip6tables -t nat -L -v -n
+#_________________________ ip6tables-mangle
+	ip6tables -t mangle -L -v -n
+fi
 _________________________ /proc/modules
 if test -f /proc/modules
 then
