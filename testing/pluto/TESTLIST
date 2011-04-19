@@ -450,8 +450,8 @@ umlplutotest	sourceip-02			good
 umlplutotest	ipv6-v6-through-v6-klips-klips		good
 umlplutotest	ipv6-v6-through-v6-netkey-netkey	good
 umlplutotest	ipv6-v6-through-v6-klips-netkey		good
-umlplutotest	ipv6-v6-through-v4	good
-umlplutotest	ipv6-v4-through-v6	good
+umlplutotest	ipv6-v4-through-v6-klips-klips		good
+umlplutotest	ipv6-v6-through-v4-klips-klips		good
 
 #################################################################
 # IKEv2 tests
