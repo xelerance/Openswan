@@ -2485,7 +2485,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #ifndef FLOW_HAS_NO_MARK
 		fl->mark = ixs->skb->mark;
 #endif
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
+		dst = ip6_route_output(NULL, fl);
+#else
 		dst = ip6_route_output(&init_net, NULL, fl);
+#endif
 		error = dst->error;
 	} else
 #endif /* CONFIG_KLIPS_IPV6 */
