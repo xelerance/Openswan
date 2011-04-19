@@ -296,6 +296,7 @@
 #  define tcp_hdr(skb)  ((skb)->h.th)
 #  define udp_hdr(skb)  ((skb)->h.uh)
 #  define skb_transport_header(skb)  ((skb)->h.raw)
+#  define skb_network_offset(skb)  ((skb)->nh.raw - (skb)->data)
 #  define skb_set_transport_header(skb,off)  ((skb)->h.raw = (skb)->data + (off))
 #  define skb_reset_transport_header(skb) ((skb)->h.raw = (skb)->data - (skb)->head)
 #  define skb_mac_header(skb)  ((skb)->mac.raw)
@@ -361,7 +362,11 @@
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <net/addrconf.h>
-#define ip6_chk_addr(a) (ipv6_chk_addr(&init_net, a, NULL, 1) ? IS_MYADDR : 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,25)
+# define ip6_chk_addr(a) (ipv6_chk_addr(&init_net, a, NULL, 1) ? IS_MYADDR : 0)
+#else
+# define ip6_chk_addr(a) (ipv6_chk_addr(a, NULL, 1) ? IS_MYADDR : 0)
+#endif
 #define l_ipv6_addr_type(a)	ip6_chk_addr(a)
 
 /* not sure when network name spaces got introduced, but it is in 2.6.26 */
@@ -399,6 +404,16 @@
 				})
 # define skb_dst_set(s,p)	(s)->dst = (p)
 # define skb_dst(s)		(s)->dst
+#endif
+
+/* The SLES10 kernel is known to not have these defines */
+#ifdef CONFIG_KLIPS_IPV6
+# ifndef IN6ADDR_ANY_INIT
+#  define IN6ADDR_ANY_INIT { { { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 } } }
+# endif
+# ifndef IN6ADDR_LINKLOCAL_ALLNODES_INIT
+#  define IN6ADDR_LINKLOCAL_ALLNODES_INIT { { { 0xff,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1 } } }
+# endif
 #endif
 
 #if 0
