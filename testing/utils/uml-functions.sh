@@ -1,8 +1,5 @@
 #! /bin/sh 
 #
-# 
-# $Id: uml-functions.sh,v 1.45 2005/11/21 08:44:57 mcr Exp $
-#
 
 setup_make() {
     domodules=$1
@@ -44,10 +41,8 @@ setup_make() {
     fi
 
     # now describe how to build the initrd.
-    # echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd-x86_64.list"
-    # echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-x86_64.list ${OPENSWANSRCDIR} ${BASICROOT}" 
-    echo "initrd.cpio: ${OPENSWANSRCDIR}/testing/utils/initrd.list"
-    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd.list ${OPENSWANSRCDIR} ${BASICROOT}" 
+    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list"
+    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list ${OPENSWANSRCDIR} ${BASICROOT}" 
 }
 
 # output should directed to a Makefile
