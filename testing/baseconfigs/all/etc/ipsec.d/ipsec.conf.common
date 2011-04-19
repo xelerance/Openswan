@@ -184,6 +184,15 @@ conn westnet-eastnet-x509
 	rightsourceip=192.0.2.254
 	also=west-east-x509
 
+conn west-east-4in6
+	also=west-east-base-ipv6
+	also=westnet-ipv4
+	also=eastnet-ipv4
+
+conn west-east-6in4
+	also=west-east-base-ipv4
+	also=westnet-eastnet-ipv6
+
 conn eastnet-ipv4
 	also=eastnet
 
