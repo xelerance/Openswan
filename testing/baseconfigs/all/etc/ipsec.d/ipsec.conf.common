@@ -188,6 +188,7 @@ conn west-east-4in6
 	also=west-east-base-ipv6
 	also=westnet-ipv4
 	also=eastnet-ipv4
+	auto=ignore
 
 conn west-east-6in4
 	also=west-east-base-ipv4
