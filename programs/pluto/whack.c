@@ -111,6 +111,8 @@ help(void)
 	    " [--tunnel]"
 	    " [--pfs]"
 	    " \\\n   "
+	    " [--pfsgroup [modp1024] | [modp1536] | [modp2048] | [modp3072] | [modp4096] | [modp6144] | [modp8192]]"
+	    " \\\n   "
 	    " [--ikelifetime <seconds>]"
 	    " [--ipseclifetime <seconds>]"
 	    " \\\n   "
