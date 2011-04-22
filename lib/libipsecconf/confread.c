@@ -381,10 +381,14 @@ static int validate_end(struct starter_conn *conn_st
 	    break;
 	}
 
+	/* XXX Wrongly assumed family of endpoints == family of subnets ?? */
 	er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
 	if(er) {
-	    /* not numeric, so set the type to the string type */
-	    end->addrtype = KH_IPHOSTNAME; 
+	    er = ttoaddr_num(end->strings[KNCF_IP], 0, (family == AF_INET) ? AF_INET6 : AF_INET, &(end->addr));
+	    if (er) {
+		/* not numeric, so set the type to the string type */
+		end->addrtype = KH_IPHOSTNAME;
+	    }
 	}
 
         if(end->id == NULL) {
@@ -437,6 +441,7 @@ static int validate_end(struct starter_conn *conn_st
     }
 
     /* set nexthop address to something consistent, by default */
+    /* XXX Wrongly assumed family of endpoints == family of subnets ?? */
     anyaddr(family, &end->nexthop);
     anyaddr(addrtypeof(&end->addr), &end->nexthop);
 
@@ -449,8 +454,11 @@ static int validate_end(struct starter_conn *conn_st
 	    end->nexttype=KH_DEFAULTROUTE;
 	} else {
 	    er = ttoaddr(value, 0, family, &(end->nexthop));
-	    if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
-
+	    if (er) {
+		 /* Note we need to verify in the end left/leftnexthop and right/rightnexthop are the samy faily */
+		er = ttoaddr(value, 0, ((family == AF_INET) ? AF_INET6 : AF_INET), &(end->nexthop));
+		if (er) ERR_FOUND("bad addr %snexthop=%s [%s] ie neither ipv4 nor ipv6", leftright, value, er);
+	    }
 	    end->nexttype = KH_IPADDR;
 	}
     } else {
@@ -1087,6 +1095,18 @@ static int load_conn (struct starter_config *cfg
 
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
+
+
+
+    /*
+     * TODO:
+     * verify both ends are using the same inet family, if one end
+     * is "%any" or "%defaultroute", then perhaps adjust it.
+     * ensource this for left,leftnexthop,right,rightnexthop
+     * Ideally, phase out connaddrfamily= which now wrongly assumes
+     * left,leftnextop,leftsubnet are the same inet family
+     */
+
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
