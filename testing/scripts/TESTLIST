@@ -47,6 +47,10 @@ unittest	readwriteconf-20	good
 unittest	readwriteconf-21	good
 unittest	readwriteconf-22	good
 unittest	readwriteconf-23	good
+# ipv6 tests
+unittest	readwriteconf-24	good
+# ipv4 - ipv6 mixes - need to be split in parts?
+unittest	readwriteconf-25	bad
 
 # test cases for showhostkey.
 umlXhost	showhostkey-01		good
