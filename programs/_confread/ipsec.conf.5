@@ -1,13 +1,22 @@
 '\" t
 .\"     Title: IPSEC.CONF
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
-.\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 12/20/2010
+.\" Generator: DocBook XSL Stylesheets v1.76.1 <http://docbook.sf.net/>
+.\"      Date: 04/21/2011
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC\&.CONF" "5" "12/20/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC\&.CONF" "5" "04/21/2011" "[FIXME: source]" "[FIXME: manual]"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -80,7 +89,7 @@ is enclosed in double quotes (\fB"\fR); a
 \fIvalue\fR
 cannot itself contain a double quote, nor may it be continued across more than one line\&.
 .PP
-Numeric values are specified to be either an \(lqinteger\(rq (a sequence of digits) or a \(lqdecimal number\(rq (sequence of digits optionally followed by `\&.\' and another sequence of digits)\&.
+Numeric values are specified to be either an \(lqinteger\(rq (a sequence of digits) or a \(lqdecimal number\(rq (sequence of digits optionally followed by `\&.\*(Aq and another sequence of digits)\&.
 .PP
 There is currently one parameter which is available in any type of section:
 .PP
@@ -101,7 +110,7 @@ can be used in a
 \fBconn\fR
 section\&. It acts like an
 \fBalso\fR
-that flips the referenced section\'s entries left\-for\-right\&.
+that flips the referenced section\*(Aqs entries left\-for\-right\&.
 .RE
 .PP
 Parameter names beginning with
@@ -141,7 +150,7 @@ section contains a
 \fIconnection specification\fR, defining a network connection to be made using IPsec\&. The name given is arbitrary, and is used to identify the connection to
 \fBipsec_auto\fR(8)
 and
-\fBipsec_manual\fR(8)\&. Here\'s a simple example:
+\fBipsec_manual\fR(8)\&. Here\*(Aqs a simple example:
 .sp
 .if n \{\
 .RS 4
@@ -203,9 +212,9 @@ The following parameters are relevant to both automatic and manual keying\&. Unl
 the connection addrress family of the connection; currently the accepted values are
 \fBipv4\fR
 (the default); or
-\fBipv6\fR,
+\fBipv6\fR\&. This option is confusing, especially when doing IPv4\-in\-IPv6 or IPv6\-in\-IPv4 tunnels\&. The developers hope to remove this option in the near future for proper auto\-detection\&. For now, set connaddrfamily= to the family of the *subnet= options, and if those are not defined, to the family of the left=/right= options\&.
 .sp
-The ipv6 family is currently only supported using the NETKEY stack\&.
+IPv6 is supported with NETKEY since openswan 2\&.4 and with KLIPS since Openswan 2\&.6\&.33
 .RE
 .PP
 \fBtype\fR
@@ -221,12 +230,12 @@ the type of the connection; currently the accepted values are
 .PP
 \fBleft\fR
 .RS 4
-(required) the IP address of the left participant\'s public\-network interface, in any form accepted by
+(required) the IP address of the left participant\*(Aqs public\-network interface, in any form accepted by
 \fBipsec_ttoaddr\fR(3)\&. Currently, IPv4 and IPv6 IP addresses are supported\&. There are several magic values\&. If it is
 \fB%defaultroute\fR, and the
 \fBconfig\fR
 \fBsetup\fR
-section\'s,
+section\*(Aqs,
 \fBinterfaces\fR
 specification contains
 \fB%defaultroute,\fR
@@ -246,7 +255,7 @@ signifies that both
 and
 \fBleftnexthop\fR
 are to be filled in (by automatic keying) from DNS data for
-\fBleft\fR\'s client\&. The value can also contain the interface name, which will then later be used to obtain the IP address from to fill in\&. For example
+\fBleft\fR\*(Aqs client\&. The value can also contain the interface name, which will then later be used to obtain the IP address from to fill in\&. For example
 \fB%ppp0\fR
 The values
 \fB%group\fR
@@ -254,8 +263,8 @@ and
 \fB%opportunisticgroup\fR
 makes this a policy group conn: one that will be instantiated into a regular or opportunistic conn for each CIDR block listed in the policy group file with the same name as the conn\&.
 .sp
-If using IP addresses in combination with NAT, always use the actual local machine\'s (NAT\'ed) IP address, and if the remote (eg right=) is NAT\'ed as well, the remote\'s public (\fBnot\fR
-NAT\'ed) IP address\&. Note that this makes the configuration no longer symmetrical on both sides, so you cannot use an identical configuration file on both hosts\&.
+If using IP addresses in combination with NAT, always use the actual local machine\*(Aqs (NAT\*(Aqed) IP address, and if the remote (eg right=) is NAT\*(Aqed as well, the remote\*(Aqs public (\fBnot\fR
+NAT\*(Aqed) IP address\&. Note that this makes the configuration no longer symmetrical on both sides, so you cannot use an identical configuration file on both hosts\&.
 .RE
 .PP
 \fBleftsubnet\fR
@@ -265,6 +274,20 @@ private subnet behind the left participant, expressed as
 (actually, any form acceptable to
 \fBipsec_ttosubnet\fR(3)); Currentlly, IPv4 and IPv6 ranges are supported\&. if omitted, essentially assumed to be
 \fIleft\fR/32, signifying that the left end of the connection goes to the left participant only
+.sp
+It supports two magic shorthands
+\fIvhost:\fR
+and
+\fIvnet:\fR, which can list subnets in the same syntax as
+\fIvirtual_private\fR\&. The value
+\fI%priv\fR
+expands to the networks specified in
+\fIvirtual_private\fR\&. The value
+\fI%no\fR
+means no subnet\&. A common use for allowing roadwarrios to come in on public IPs or via accepted NATed networks from RFC1918 is to use
+\fIleftsubnet=vhost:%no,%priv\fR\&. The
+\fIvnet:\fR
+option can be used to allow RFC1918 subnets without hardcoding them\&. When using vnet the connection will instantiate, allowing for multiple tunnels with different subnets\&.
 .RE
 .PP
 \fBleftsubnets\fR
@@ -306,7 +329,7 @@ to denote
 .PP
 \fBleftnexthop\fR
 .RS 4
-next\-hop gateway IP address for the left participant\'s connection to the public network; defaults to
+next\-hop gateway IP address for the left participant\*(Aqs connection to the public network; defaults to
 \fB%direct\fR
 (meaning
 \fIright\fR)\&. If the value is to be overridden by the
@@ -323,7 +346,7 @@ is used in the
 \fBsetup\fR
 section, the next\-hop gateway address of the default\-route interface will be used\&. The magic value
 \fB%direct\fR
-signifies a value to be filled in (by automatic keying) with the peer\'s address\&. Relevant only locally, other end need not agree on it\&.
+signifies a value to be filled in (by automatic keying) with the peer\*(Aqs address\&. Relevant only locally, other end need not agree on it\&.
 .RE
 .PP
 \fBleftsourceip\fR
@@ -424,7 +447,7 @@ option is specified, the mode is always strict, meaning no other received propos
 \fBike=3des\-md5;modp1024,aes\-sha1;modp1536\fR
 or
 \fBike=modp1536\fR\&. The options must be suitable as a value of
-\fBipsec_spi\fR(8)\'s
+\fBipsec_spi\fR(8)\*(Aqs
 \fB\-\-ike\fR
 option\&. The default is to use IKE, and to allow all combinations of:
 .sp
@@ -459,7 +482,7 @@ for authentication only\&.
 .PP
 \fBphase2alg\fR
 .RS 4
-Specifies the algorithms that will be offered/accepted for a phase2 negotiation\&. If not specified, a secure set of defaults will be used\&. Sets are separated using comma\'s\&.
+Specifies the algorithms that will be offered/accepted for a phase2 negotiation\&. If not specified, a secure set of defaults will be used\&. Sets are separated using comma\*(Aqs\&.
 .sp
 The default values are the same as for ike= Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here\&.
 .sp
@@ -484,7 +507,7 @@ instead\&.
 AH authentication algorithm to be used for the connection, e\&.g here\&.
 \fBhmac\-md5\fR
 The options must be suitable as a value of
-\fBipsec_spi\fR(8)\'s
+\fBipsec_spi\fR(8)\*(Aqs
 \fB\-\-ah\fR
 option\&. The default is not to use AH\&. If for some (invalid) reason you still think you need AH, please use esp with the null encryption cipher instead\&. Note also that not all ciphers available to the kernel (eg through CryptoAPI) are necessarilly supported here\&.
 .RE
@@ -543,12 +566,12 @@ stands for the current setting of
 or by
 \fBipsec_whack\fR(8)), or, if not set, it is the IP address in
 \fB%defaultroute\fR
-(if that is supported by a TXT record in its reverse domain), or otherwise it is the system\'s hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&.
+(if that is supported by a TXT record in its reverse domain), or otherwise it is the system\*(Aqs hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&.
 .RE
 .PP
 \fBleftrsasigkey\fR
 .RS 4
-the left participant\'s public key for RSA signature authentication, in RFC 2537 format using
+the left participant\*(Aqs public key for RSA signature authentication, in RFC 2537 format using
 \fBipsec_ttodata\fR(3)
 encoding\&. The magic value
 \fB%none\fR
@@ -613,7 +636,7 @@ This option configures when Openswan will send X\&.509 certificates to the remot
 \fBno|never\fR
 (signifying that we will never send a X\&.509 certificate)\&. The default for this option is
 \fBifasked\fR
-which may break compatibility with other vendor\'s IPSec implementations, such as Cisco and SafeNet\&. If you find that you are getting errors about no ID/Key found, you likely need to set this to
+which may break compatibility with other vendor\*(Aqs IPSec implementations, such as Cisco and SafeNet\&. If you find that you are getting errors about no ID/Key found, you likely need to set this to
 \fBalways\fR\&. This per\-conn option replaces the obsolete global
 \fBnocrsend\fR
 option\&.
@@ -755,7 +778,7 @@ means the the SA will immediately be renegotiated, and
 \fBrestart_by_peer\fR
 means that
 \fIALL\fR
-SA\'s to the dead peer will renegotiated\&.
+SA\*(Aqs to the dead peer will renegotiated\&.
 .sp
 \fIdpdaction=clear\fR
 is really only useful on the server of a Road Warrior config\&.
@@ -763,7 +786,7 @@ is really only useful on the server of a Road Warrior config\&.
 .PP
 \fBpfs\fR
 .RS 4
-whether Perfect Forward Secrecy of keys is desired on the connection\'s keying channel (with PFS, penetration of the key\-exchange protocol does not compromise keys negotiated earlier); Since there is no reason to ever refuse PFS, Openswan will allow a connection defined with
+whether Perfect Forward Secrecy of keys is desired on the connection\*(Aqs keying channel (with PFS, penetration of the key\-exchange protocol does not compromise keys negotiated earlier); Since there is no reason to ever refuse PFS, Openswan will allow a connection defined with
 \fBpfs=no\fR
 to use PFS anyway\&. Acceptable values are
 \fByes\fR
@@ -834,7 +857,7 @@ how long before connection expiry or keying\-channel expiry should attempts to n
 .RS 4
 maximum percentage by which
 \fBrekeymargin\fR
-should be randomly increased to randomize rekeying intervals (important for hosts with many connections); acceptable values are an integer, which may exceed 100, followed by a `%\' (default set by
+should be randomly increased to randomize rekeying intervals (important for hosts with many connections); acceptable values are an integer, which may exceed 100, followed by a `%\*(Aq (default set by
 \fBipsec_pluto\fR(8), currently
 \fB100%\fR)\&. The value of
 \fBrekeymargin\fR, after this random increase, must not exceed
@@ -885,9 +908,14 @@ Set the metric for the routes to the ipsecX or mastX interface\&. This makes it 
 \fB1\fR\&.
 .RE
 .PP
+\fBmtu\fR
+.RS 4
+Set the mtu for the route(s) to the remote endpoint and/or subnets\&. This is sometimes required when the overhead of the IPsec encapsultion would cause the packet the become too big for a router on the path\&. Since IPsec cannot trust any unauthenticated ICMP messages, PATH MTU discovery does not work\&. This can also be needed when using "6to4" IPV6 deployments, which adds another header on the packet size\&. Acceptable values are positive numbers\&. There is no default\&.
+.RE
+.PP
 \fBdisablearrivalcheck\fR
 .RS 4
-whether KLIPS\'s normal tunnel\-exit check (that a packet emerging from a tunnel has plausible addresses in its header) should be disabled; acceptable values are
+whether KLIPS\*(Aqs normal tunnel\-exit check (that a packet emerging from a tunnel has plausible addresses in its header) should be disabled; acceptable values are
 \fByes\fR
 and
 \fBno\fR
@@ -922,7 +950,7 @@ At present, the only
 \fBconfig\fR
 section known to the IPsec software is the one named
 \fBsetup\fR, which contains information used when the software is being started (see
-\fBipsec_setup\fR(8))\&. Here\'s an example:
+\fBipsec_setup\fR(8))\&. Here\*(Aqs an example:
 .sp
 .if n \{\
 .RS 4
@@ -960,7 +988,7 @@ is used in the implicit policy group conns and can be used as an identity in exp
 \fB%myid\fR
 is set to the IP address in
 \fB%defaultroute\fR
-(if that is supported by a TXT record in its reverse domain), or otherwise the system\'s hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&. An explicit value generally starts with ``\fB@\fR\'\'\&.
+(if that is supported by a TXT record in its reverse domain), or otherwise the system\*(Aqs hostname (if that is supported by a TXT record in its forward domain), or otherwise it is undefined\&. An explicit value generally starts with ``\fB@\fR\*(Aq\*(Aq\&.
 .RE
 .PP
 \fBprotostack\fR
@@ -976,7 +1004,7 @@ pair, a (quoted!) list of pairs separated by white space, or
 \fB%none\fR\&. One of the pairs may be written as
 \fB%defaultroute\fR, which means: find the interface
 \fId\fR
-that the default route points to, and then act as if the value was ``\fBipsec0=\fR\fId\fR\'\'\&.
+that the default route points to, and then act as if the value was ``\fBipsec0=\fR\fId\fR\*(Aq\*(Aq\&.
 \fB%defaultroute\fR
 is the default;
 \fB%none\fR
@@ -1031,17 +1059,26 @@ This parameter may eventually become per\-connection\&.
 .PP
 \fBvirtual_private\fR
 .RS 4
-contains the networks that are allowed as subnet= for the remote client\&. In other words, the address ranges that may live behind a NAT router through which a client connects\&. This value is usually set to all the RFC\-1918 address space, excluding the space used in the local subnet behind the NAT (An IP address cannot live at two places at once)\&. IPv4 address ranges are denoted as
+contains the networks that are allowed as subnet= for the remote clients when using the
+\fBvhost:\fR
+or
+\fBvnet:\fR
+keywords in the
+\fBsubnet=\fR
+parameters\&. In other words, the address ranges that may live behind a NAT router through which a client connects\&. This value is usually set to all the RFC\-1918 address space, excluding the space used in the local subnet behind the NAT (An IP address cannot live at two places at once)\&. IPv4 address ranges are denoted as
 \fI%v4:a\&.b\&.c\&.d/mm\fR
 and IPv6 is denoted as
 \fI%v6:aaaa::bbbb:cccc:dddd:eeee/mm\fR\&. One can exclude subnets by using the
 \fB!\fR\&. For example, if the VPN server is giving access to 192\&.168\&.1\&.0/24, this option should be set to:
-\fIvirtual_private=%v4:10\&.0\&.0\&.0/8,%v4:192\&.168\&.0\&.0/16,%v4:172\&.16\&.0\&.0/12,%v4:!192\&.168\&.1\&.0/24\fR\&. This parameter is only needed on the server side and not on the client side that resides behind the NAT router, as the client will just use its IP address for the inner IP setting\&. This parameter may eventually become per\-connection\&.
+\fIvirtual_private=%v4:10\&.0\&.0\&.0/8,%v4:192\&.168\&.0\&.0/16,%v4:172\&.16\&.0\&.0/12,%v4:!192\&.168\&.1\&.0/24\fR\&. This parameter is only needed on the server side and not on the client side that resides behind the NAT router, as the client will just use its IP address for the inner IP setting\&. This parameter may eventually become per\-connection\&. See also
+\fBleftsubnet=\fR
+.sp
+Note: It seems that T\-Mobile in the US and Rogers/Fido in Canada have started using 25\&.0\&.0\&.0/8 as their pre\-NAT range\&. This range technically belows to the Defence Interoperable Network Services Authority (DINSA), an agency of the Ministry of Defence of the United Kingdom\&. The network range seems to not have been announced for decades, which is probably why these organisasions "borrowed" this range\&. To support roadwarriors on these 3G networks, you might have to add it to the virtual_private= line\&.
 .RE
 .PP
 \fBoe\fR
 .RS 4
-a boolean (yes/no) that determines if Opportunistic Encryption will be enabled\&. Opportunistic Encryption is the term to describe using IPsec tunnels without prearrangement\&. It uses IPSECKEY or TXT records to announce public RSA keys for certain IP\'s or identities\&.
+a boolean (yes/no) that determines if Opportunistic Encryption will be enabled\&. Opportunistic Encryption is the term to describe using IPsec tunnels without prearrangement\&. It uses IPSECKEY or TXT records to announce public RSA keys for certain IP\*(Aqs or identities\&.
 .sp
 For a complete description see /doc/draft\-richardson\-ipsec\-opportunistic\&.txt, doc/opportunism\-spec\&.txt and doc/opportunism\&.howto\&. See also the IETF BTNS working group and RFC4025\&.
 .sp
@@ -1058,18 +1095,18 @@ are started to help with cryptographic operations\&. Pluto will start
 \fI(n\-1)\fR
 of them, where
 \fIn\fR
-is the number of CPU\'s you have (including hypherthreaded CPU\'s)\&. A value of 0 forces pluto to do all operations in the main process\&. A value of \-1 tells pluto to perform the above calculation\&. Any other value forces the number to that amount\&.
+is the number of CPU\*(Aqs you have (including hypherthreaded CPU\*(Aqs)\&. A value of 0 forces pluto to do all operations in the main process\&. A value of \-1 tells pluto to perform the above calculation\&. Any other value forces the number to that amount\&.
 .RE
 .PP
 \fBcrlcheckinterval\fR
 .RS 4
-interval, specified in seconds, after which pluto will verify loaded X\&.509 CRL\'s for expiration\&. If any of the CRL\'s is expired, or if they previously failed to get updated, a new attempt at updating the CRL is made\&. The first attempt to update a CRL is started at two times the crlcheckinterval\&. If set to
+interval, specified in seconds, after which pluto will verify loaded X\&.509 CRL\*(Aqs for expiration\&. If any of the CRL\*(Aqs is expired, or if they previously failed to get updated, a new attempt at updating the CRL is made\&. The first attempt to update a CRL is started at two times the crlcheckinterval\&. If set to
 \fB0\fR, which is also the default value if this option is not specified, CRL updating is disabled\&.
 .RE
 .PP
 \fBstrictcrlpolicy\fR
 .RS 4
-if not set, pluto is tolerant about missing or expired X\&.509 Certificate Revocation Lists (CRL\'s), and will allow peer certificates as long as they do not appear on an expired CRL\&. When this option is enabled, all connections with an expired or missing CRL will be denied\&. Active connections will be terminated at rekey time\&. This setup is more secure, but also dangerous\&. If the CRL is fetched through an IPsec tunnel with a CRL that expired, the entire VPN server will be dead in the water until a new CRL is manually transferred to the machine (if it allows non\-IPsec connections)\&. Acceptable values are
+if not set, pluto is tolerant about missing or expired X\&.509 Certificate Revocation Lists (CRL\*(Aqs), and will allow peer certificates as long as they do not appear on an expired CRL\&. When this option is enabled, all connections with an expired or missing CRL will be denied\&. Active connections will be terminated at rekey time\&. This setup is more secure, but also dangerous\&. If the CRL is fetched through an IPsec tunnel with a CRL that expired, the entire VPN server will be dead in the water until a new CRL is manually transferred to the machine (if it allows non\-IPsec connections)\&. Acceptable values are
 \fByes\fR
 or
 \fBno\fR
@@ -1172,7 +1209,7 @@ or
 .RS 4
 shell command to run before starting Pluto (e\&.g\&., to decrypt an encrypted copy of the
 \fIipsec\&.secrets\fR
-file)\&. It\'s run in a very simple way; complexities like I/O redirection are best hidden within a script\&. Any output is redirected for logging, so running interactive commands is difficult unless they use
+file)\&. It\*(Aqs run in a very simple way; complexities like I/O redirection are best hidden within a script\&. Any output is redirected for logging, so running interactive commands is difficult unless they use
 /dev/tty
 or equivalent for their interaction\&. Default is none\&.
 .RE
@@ -1181,7 +1218,7 @@ or equivalent for their interaction\&. Default is none\&.
 .RS 4
 shell command to run after starting Pluto (e\&.g\&., to remove a decrypted copy of the
 \fIipsec\&.secrets\fR
-file)\&. It\'s run in a very simple way; complexities like I/O redirection are best hidden within a script\&. Any output is redirected for logging, so running interactive commands is difficult unless they use
+file)\&. It\*(Aqs run in a very simple way; complexities like I/O redirection are best hidden within a script\&. Any output is redirected for logging, so running interactive commands is difficult unless they use
 /dev/tty
 or equivalent for their interaction\&. Default is none\&.
 .RE
@@ -1195,7 +1232,7 @@ in what directory should things started by
 .PP
 \fBfragicmp\fR
 .RS 4
-whether a tunnel\'s need to fragment a packet should be reported back with an ICMP message, in an attempt to make the sender lower his PMTU estimate; acceptable values are
+whether a tunnel\*(Aqs need to fragment a packet should be reported back with an ICMP message, in an attempt to make the sender lower his PMTU estimate; acceptable values are
 \fByes\fR
 (the default) and
 \fBno\fR\&. This KLIPS option has no effect on NETKEY, Windows or BSD stacks\&.
@@ -1203,7 +1240,7 @@ whether a tunnel\'s need to fragment a packet should be reported back with an IC
 .PP
 \fBhidetos\fR
 .RS 4
-whether a tunnel packet\'s TOS field should be set to
+whether a tunnel packet\*(Aqs TOS field should be set to
 0
 rather than copied from the user packet inside; acceptable values are
 \fByes\fR
@@ -1214,7 +1251,7 @@ rather than copied from the user packet inside; acceptable values are
 \fBoverridemtu\fR
 .RS 4
 value that the MTU of the ipsec\fIn\fR
-interface(s) should be set to, overriding IPsec\'s (large) default\&. This parameter is needed only in special situations\&. This KLIPS option has no effect on NETKEY, Windows or BSD stacks\&.
+interface(s) should be set to, overriding IPsec\*(Aqs (large) default\&. This parameter is needed only in special situations\&. This KLIPS option has no effect on NETKEY, Windows or BSD stacks\&.
 .RE
 .SH "IMPLICIT CONNS"
 .PP
@@ -1346,7 +1383,7 @@ is a policy group connection\&. When a policy group file of the same name is loa
 .PP
 \ \&\ \&\ \&\ \&\ \&\fBipsec auto \-\-rereadgroups\fR
 .PP
-or at system start, the connection is instantiated such that each CIDR block serves as an instance\'s
+or at system start, the connection is instantiated such that each CIDR block serves as an instance\*(Aqs
 \fBright\fR
 value\&. The system treats the resulting instances as normal connections\&.
 .PP
@@ -1375,9 +1412,9 @@ described above\&.
 .PP
 When choosing a connection to apply to an outbound packet caught with a
 \fB%trap,\fR
-the system prefers the one with the most specific eroute that includes the packet\'s source and destination IP addresses\&. Source subnets are examined before destination subnets\&. For initiating, only routed connections are considered\&. For responding, unrouted but added connections are considered\&.
+the system prefers the one with the most specific eroute that includes the packet\*(Aqs source and destination IP addresses\&. Source subnets are examined before destination subnets\&. For initiating, only routed connections are considered\&. For responding, unrouted but added connections are considered\&.
 .PP
-When choosing a connection to use to respond to a negotiation which doesn\'t match an ordinary conn, an opportunistic connection may be instantiated\&. Eventually, its instance will be /32 \-> /32, but for earlier stages of the negotiation, there will not be enough information about the client subnets to complete the instantiation\&.
+When choosing a connection to use to respond to a negotiation which doesn\*(Aqt match an ordinary conn, an opportunistic connection may be instantiated\&. Eventually, its instance will be /32 \-> /32, but for earlier stages of the negotiation, there will not be enough information about the client subnets to complete the instantiation\&.
 .SH "FILES"
 .sp
 .if n \{\
@@ -1427,7 +1464,7 @@ The use of
 \fB%any\fR
 with the
 \fIprotoport=\fR
-option is ambiguous\&. Should the SA permits any port through or should the SA negotiate any single port through? The first is a basic conn with a wildcard\&. The second is a template\&. The second is the current behaviour, and it\'s wrong for quite a number of uses involving TCP\&. The keyword
+option is ambiguous\&. Should the SA permits any port through or should the SA negotiate any single port through? The first is a basic conn with a wildcard\&. The second is a template\&. The second is the current behaviour, and it\*(Aqs wrong for quite a number of uses involving TCP\&. The keyword
 \fB%one\fR
 may be introduced in the future to separate these two cases\&.
 .PP
@@ -1452,7 +1489,7 @@ and
 Multiple L2TP clients behind the same NAT router, and multiple L2TP clients behind different NAT routers using the same Virtual IP is currently only working for the KLIPSNG stack\&.
 .PP
 The ability to specify different identities,
-\fBauthby\fR, and public keys for different automatic\-keyed connections between the same participants is misleading; this doesn\'t work dependably because the identity of the participants is not known early enough\&. This is especially awkward for the \(lqRoad Warrior\(rq case, where the remote IP address is specified as
+\fBauthby\fR, and public keys for different automatic\-keyed connections between the same participants is misleading; this doesn\*(Aqt work dependably because the identity of the participants is not known early enough\&. This is especially awkward for the \(lqRoad Warrior\(rq case, where the remote IP address is specified as
 0\&.0\&.0\&.0, and that is considered to be the \(lqparticipant\(rq for such connections\&.
 .PP
 In principle it might be necessary to control MTU on an interface\-by\-interface basis, rather than with the single global override that
@@ -1469,7 +1506,7 @@ If conns are to be added before DNS is available,
 \fBleftrsasigkey=%dnsonload\fR
 will fail\&.
 \fBipsec_pluto\fR(8)
-does not actually use the public key for our side of a conn but it isn\'t generally known at a add\-time which side is ours (Road Warrior and Opportunistic conns are currently exceptions)\&.
+does not actually use the public key for our side of a conn but it isn\*(Aqt generally known at a add\-time which side is ours (Road Warrior and Opportunistic conns are currently exceptions)\&.
 .PP
 The
 \fBmyid\fR
