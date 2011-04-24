@@ -265,7 +265,6 @@
  
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) 
 #  define HAVE_KERNEL_TSTAMP
-#  define HAVE_KMEM_CACHE_MACRO
 #  define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
 #else
 #  define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
