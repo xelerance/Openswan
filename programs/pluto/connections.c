@@ -1030,18 +1030,6 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	       , addrtypeof(&this->host_nexthop));
 	return FALSE;
     }
-    /* this check actually prevents IPv4 in IPv6 and vv, so it will
-     * have to go away at some point.
-     */
-    if ((this->has_client? wm->tunnel_addr_family : wm->addr_family)
-	!= subnettypeof(&this->client))
-    {
-	/* this should have been diagnosed by whack, so we need not be clear
-	 * !!! overloaded use of RC_CLASH
-	 */
-	loglog(RC_CLASH, "address family inconsistency in this client connection");
-	return FALSE;
-    }
 
     if (subnettypeof(&this->client) != subnettypeof(&that->client))
     {
