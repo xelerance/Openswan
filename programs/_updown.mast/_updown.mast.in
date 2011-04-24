@@ -420,7 +420,7 @@ changesource() {
 	fi
 	it="ip route $cmd $parms $parms2 $parms3"
  	case "$PLUTO_PEER_CLIENT" in
- 	"0.0.0.0/0")
+ 	"0.0.0.0/0"|"::/0")
 		# opportunistic encryption work around
 		it=
  		;;
