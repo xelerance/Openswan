@@ -27,6 +27,7 @@ v2.6.34 (unreleased)
 * Improve build speed, calulate version once [David]
 * Import OpenWRT packaging updates [Simon]
 * contrib: added openswan patch for 2.4.37.9 [Yannick Koehler]
+* KLIPS: Fix for compiling on 2.6.22 (Fedora Core 6 based) kernels [Paul]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 
