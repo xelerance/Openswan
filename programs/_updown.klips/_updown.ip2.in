@@ -505,7 +505,9 @@ doroute() {
 			ip -6 route $1 1::/1 $parms2 $parms3"
 		;;
 
-	*)	it="ip route $1 $parms $parms2 $parms3"
+	*)
+		# Despite not having -6, the ip route commands works for ipv6
+		it="ip route $1 $parms $parms2 $parms3"
 		;;
 	esac
 	oops="`eval $it 2>&1`"
@@ -620,7 +622,7 @@ prepare-host-v6:*|prepare-client-v6:*)
 	"0.0.0.0"|"::/0"|"%any")
 		;;
 	*)
-		route del -net ${PLUTO_PEER_CLIENT_NET} netmask ${PLUTO_PEER_CLIENT_MASK}
+		ip -6 route del ${PLUTO_PEER_CLIENT} || echo ""
 		;;
 	esac
 	;;
