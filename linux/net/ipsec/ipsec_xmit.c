@@ -2171,7 +2171,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 	    }
 #ifdef CONFIG_KLIPS_IPV6
 		else if (ixs->cur_mtu < tot_len && osw_ip_hdr_version(ixs) == 6) {
-		int nexthdroff, notify;
+		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
 		nexthdroff = ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
@@ -2179,19 +2179,17 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr) - ixs->iphlen;
 
-		notify = nexthdr != IPPROTO_ICMP &&
-				nexthdr != IPPROTO_ICMPV6;
-			
 		KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 			    "klips_debug:ipsec_xmit_init2: "
-			    "fragmentation needed ; %sdropping packet\n",
-			    notify ? "sending ICMP and " : "");
-		if (notify)
-			ICMP6_SEND(ixs->skb,
-				  ICMP_DEST_UNREACH,
-				  ICMP_FRAG_NEEDED,
-				  ixs->cur_mtu,
-				  ixs->physdev);
+			    "fragmentation needed for nexthdr(%d) (got %d but mtu is %d); sending ICMPV6_PKT_TOOBIG and dropping the packet\n",
+				nexthdr, tot_len, ixs->cur_mtu);
+		
+		ICMP6_SEND(ixs->skb,
+		  ICMPV6_PKT_TOOBIG, /* type */
+		  0, /* code */
+		  ixs->cur_mtu,
+		  ixs->physdev);
+
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		bundle_stat = IPSEC_XMIT_CANNOTFRAG;
