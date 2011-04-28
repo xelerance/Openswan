@@ -267,6 +267,7 @@ checkipsec() {
         done
     fi
   fi
+  fi
 }
 
 # utility functions for route manipulation
@@ -490,6 +491,7 @@ doipsecrule() {
 	    echo "$0: doroute \`$it' failed ($oops)" >&2
 	fi
 	return $st
+  fi
   fi
 }
  
