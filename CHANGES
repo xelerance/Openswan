@@ -29,6 +29,7 @@ v2.6.34 (unreleased)
 * contrib: added openswan patch for 2.4.37.9 [Yannick Koehler]
 * KLIPS: Fix for compiling on 2.6.22 (Fedora Core 6 based) kernels [Paul]
 * KLIPS IPV6: Fix packet fragmentation [Paul]
+* Added PLUTO_CONN_ADDRFAMILY= to updown.* (to disable SAref on v6) [Paul]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 
