@@ -120,6 +120,9 @@ LC_ALL=C export LC_ALL
 #
 #       PLUTO_CONNECTION_TYPE
 #
+#       PLUTO_CONN_ADDRFAMILY
+#               is the family type, "ipv4" or "ipv6"
+#
 #	PLUTO_STACK
 #		IPsec stack used by pluto (eg protostack= values)
 #
@@ -190,6 +193,8 @@ esac
 checkipsec() {
   if [ -z "$PLUTO_SAREF_TRACKING" -o "$PLUTO_SAREF_TRACKING" = "no" ]; then
 	echo "SAref table initialisation left to third party"
+  else if [ -z "$PLUTO_CONN_ADDRFAMILY" -o "$PLUTO_CONN_ADDRFAMILY" = "ipv6" ]; then
+	echo "SAref not activated for IPv6"
   else
     # make sure we have an IPSEC chain
     if ! ( iptables -n -t mangle -L IPSEC >/dev/null 2>&1) ; then
@@ -448,6 +453,8 @@ changesource() {
 doipsecrule() {
   if [ -z "$PLUTO_SAREF_TRACKING" -o "$PLUTO_SAREF_TRACKING" = "no" ]; then
 	echo "SAref tracking left to third party"
+  else if [ -z "$PLUTO_CONN_ADDRFAMILY" -o "$PLUTO_CONN_ADDRFAMILY" = "ipv6" ]; then
+	echo "SAref not activated for IPv6"
   else
 	saref=$PLUTO_PEER_REF
 	nf_saref=$(printf "0x%x0000" $(( $saref | 0x8000 )))

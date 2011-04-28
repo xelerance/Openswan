@@ -120,6 +120,9 @@ LC_ALL=C export LC_ALL
 #
 #       PLUTO_CONNECTION_TYPE
 #
+#       PLUTO_CONN_ADDRFAMILY
+#               is the family type, "ipv4" or "ipv6"
+#
 #	PLUTO_STACK
 #		the kernel stack being used (eg protostack= value)
 #
