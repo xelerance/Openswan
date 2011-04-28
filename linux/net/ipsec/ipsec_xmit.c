@@ -2187,7 +2187,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 		ICMP6_SEND(ixs->skb,
 		  ICMPV6_PKT_TOOBIG, /* type */
 		  0, /* code */
-		  ixs->cur_mtu,
+		  ntohl(ixs->cur_mtu),
 		  ixs->physdev);
 
 		if (ixs->stats)
