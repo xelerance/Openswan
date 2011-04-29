@@ -2098,13 +2098,13 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
 		    "klips_debug:ipsec_xmit_init2: "
-		    "mtu:%d physmtu:%d tothr:%d tottr:%d mtudiff:%d ippkttotlen:%lu\n",
+		    "mtu:%d physmtu:%d tothr:%d tottr:%d mtudiff:%d ippkttotlen:%u\n",
 		    ixs->cur_mtu, ixs->physmtu,
 		    ixs->tot_headroom, ixs->tot_tailroom, ixs->mtudiff,
-		    osw_ip_hdr_version(ixs) == 6 ?
+		    (unsigned int) (osw_ip_hdr_version(ixs) == 6 ?
 			(ntohs(osw_ip6_hdr(ixs)->payload_len)
 			+ sizeof(struct ipv6hdr)) :
-			ntohs(osw_ip4_hdr(ixs)->tot_len));
+			ntohs(osw_ip4_hdr(ixs)->tot_len)));
 	if(ixs->cur_mtu == 0 || ixs->mtudiff > 0) {
 		int newmtu = ixs->physmtu - (ixs->tot_headroom + ((ixs->tot_tailroom + 2) & ~7) + 5);
 
