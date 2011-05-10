@@ -1,7 +1,7 @@
 /* Security Policy Data Base (such as it is)
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2003-2008 Paul Wouters <mcr@xelerance.com>
+ * Copyright (C) 2003-2008 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
