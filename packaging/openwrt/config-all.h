@@ -50,8 +50,6 @@
 
 #define CONFIG_KLIPS_ALG_AES_MAC 1
 
-#define CONFIG_KLIPS_REGRESS 0
-
 #ifndef CONFIG_KLIPS_ALG
 #define CONFIG_KLIPS_ALG 1
 #endif

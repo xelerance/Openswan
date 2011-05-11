@@ -1,6 +1,7 @@
 #ifndef _CONFIG_ALL_H_
 /*
  * Copyright (C) 2002              Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2011              Paul Wouters <paul@xelerance.com>
  * 
  * This kernel module is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -55,26 +56,27 @@
 
 /* no longer needed as of 2.6.22 and up */
 #if 0
-#ifndef CONFIG_KLIPS_NAT_TRAVERSAL
-#define CONFIG_KLIPS_NAT_TRAVERSAL 1
+# ifndef CONFIG_KLIPS_NAT_TRAVERSAL
+#  define CONFIG_KLIPS_NAT_TRAVERSAL 1
+# endif
 #endif
-#endif
+#undef CONFIG_KLIPS_NAT_TRAVERSAL
 
 #ifndef CONFIG_KLIPS_ENC_AES
 #define CONFIG_KLIPS_ENC_AES 1
 #endif
 
-/* off by default for now */
 #ifndef CONFIG_KLIPS_ENC_CRYPTOAPI
-#define CONFIG_KLIPS_ENC_CRYPTOAPI 0
+#define CONFIG_KLIPS_ENC_CRYPTOAPI 1
 #endif
 
 #if 0
 /* off by default requiers kernel patch */
-#ifndef CONFIG_KLIPS_OCF
-#define CONFIG_KLIPS_OCF 0
+# ifndef CONFIG_KLIPS_OCF
+#  define CONFIG_KLIPS_OCF 1
+# endif
 #endif
-#endif
+#undef CONFIG_KLIPS_OCF
 
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
 #define CONFIG_KLIPS_ALG_AES #error
@@ -83,16 +85,12 @@
 #define CONFIG_KLIPS_ALG_AES_MAC 1
 #endif
 
-#ifndef CONFIG_KLIPS_REGRESS
-#define CONFIG_KLIPS_REGRESS 0
-#endif
-
 /* ALGO: */
 #if 0
 /* goal: cleanup KLIPS code from hardcoded algos :} */
-#undef CONFIG_KLIPS_AUTH_HMAC_MD5
-#undef CONFIG_KLIPS_AUTH_HMAC_SHA1
-#undef CONFIG_KLIPS_ENC_3DES
+# undef CONFIG_KLIPS_AUTH_HMAC_MD5
+# undef CONFIG_KLIPS_AUTH_HMAC_SHA1
+# undef CONFIG_KLIPS_ENC_3DES
 #endif
 
 #ifndef CONFIG_KLIPS_ALG

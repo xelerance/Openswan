@@ -1,6 +1,7 @@
 #ifndef _CONFIG_ALL_H_
 /*
  * Copyright (C) 2002              Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2011              Paul Wouters <paul@xelerance.com>
  * 
  * This kernel module is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -60,10 +61,11 @@
 
 /* no longer needed on 2.6.22 and newer */
 #if 0
-#ifndef CONFIG_IPSEC_NAT_TRAVERSAL
-#define CONFIG_IPSEC_NAT_TRAVERSAL 0
+# ifndef CONFIG_IPSEC_NAT_TRAVERSAL
+#  define CONFIG_IPSEC_NAT_TRAVERSAL 1
+# endif
 #endif
-#endif
+#undef CONFIG_IPSEC_NAT_TRAVERSAL
 
 #ifndef CONFIG_KLIPS_ENC_AES
 #define CONFIG_KLIPS_ENC_AES 1
@@ -77,25 +79,21 @@
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
 #define CONFIG_KLIPS_ALG_AES #error
 
-/* requires ocf kernel module - see http://ocf-linux.sf.net/ */
+/* requires ocf kernel module - see http://ocf-linux.sf.net */
 #ifndef CONFIG_KLIPS_OCF
-#define CONFIG_KLIPS_OCF 1
+# define CONFIG_KLIPS_OCF 1
 #endif
 
 #ifndef CONFIG_KLIPS_ALG_AES_MAC
 #define CONFIG_KLIPS_ALG_AES_MAC 1
 #endif
 
-#ifndef CONFIG_KLIPS_REGRESS
-#define CONFIG_KLIPS_REGRESS 0
-#endif
-
 /* ALGO: */
 #if 0
 /* goal: cleanup KLIPS code from hardcoded algos :} */
-#undef CONFIG_KLIPS_AUTH_HMAC_MD5
-#undef CONFIG_KLIPS_AUTH_HMAC_SHA1
-#undef CONFIG_KLIPS_ENC_3DES
+# undef CONFIG_KLIPS_AUTH_HMAC_MD5
+# undef CONFIG_KLIPS_AUTH_HMAC_SHA1
+# undef CONFIG_KLIPS_ENC_3DES
 #endif
 
 #ifndef CONFIG_KLIPS_ALG
