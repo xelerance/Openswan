@@ -31,6 +31,7 @@ v2.6.34 (unreleased)
 * KLIPS: Fix for compiling on 2.6.22 (Fedora Core 6 based) kernels [Paul]
 * KLIPS IPV6: Fix packet fragmentation [Paul]
 * Added PLUTO_CONN_ADDRFAMILY= to updown.* (to disable SAref on v6) [Paul]
+* KLIPS: cleanup packaging/*/config-* files [Paul]
 * Fix a few gcc unused-but-set-variable warnings [Paul]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
