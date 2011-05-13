@@ -192,10 +192,10 @@ static struct vid_struct _vid_tab[] = {
 		"SSH Communications Security IPSEC Express version 4.2.0")
 
 
-	/* note: md5('CISCO-UNITY') = 12f5f28c457168a9702d9fe274cc02d4 */
-	{ VID_CISCO_UNITY, VID_KEEP, NULL, "Cisco-Unity",
-		"\x12\xf5\xf2\x8c\x45\x71\x68\xa9\x70\x2d\x9f\xe2\x74\xcc\x01\x00",
-		16 },
+	/* note: It's not md5/sha1? 'IKE Fragmentation' = 4048b7d56ebce88525e7de7f00d6c2d3c0000000 */
+	{ VID_CISCO_IKE_FRAGMENTATION, VID_KEEP, NULL, "Cisco IKE Fragmentation",
+		"\x40\x48\xb7\xd5\x6e\xbc\xe8\x85\x25\xe7\xde\x7f\x00\xd6\xc2\xd3\xc0\x00\x00\x00",
+		20 },
 
 	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
           NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
@@ -203,6 +203,10 @@ static struct vid_struct _vid_tab[] = {
 	{ VID_CISCO_IOS, VID_KEEP | VID_SUBSTRING_MATCH, 
 	  NULL, "Cisco IOS Device", "\x3e\x98\x40\x48", 4},
 
+	/* note: md5('CISCO-UNITY') = 12f5f28c457168a9702d9fe274cc02d4 */
+	{ VID_CISCO_UNITY, VID_KEEP, NULL, "Cisco-Unity",
+		"\x12\xf5\xf2\x8c\x45\x71\x68\xa9\x70\x2d\x9f\xe2\x74\xcc\x01\x00",
+		16 },
 
 	/*
 	 * Timestep VID seen:
