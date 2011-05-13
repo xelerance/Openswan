@@ -1,6 +1,7 @@
-#ifndef _CONFIG_MD_I686_BIGMEM_H_
+#ifndef _CONFIG_ALL_H_
 /*
  * Copyright (C) 2002              Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2011              Paul Wouters <paul@xelerance.com>
  * 
  * This kernel module is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -12,9 +13,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
  *
- * RCSID $Id: config-i686-bigmem.h,v 1.1 2005/09/26 16:39:16 paul Exp $
  */
-#define	_CONFIG_MD_I686_BIGMEM_H_	/* seen it, no need to see it again */
+#define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
 #define CONFIG_KLIPS 1
 
@@ -59,56 +59,43 @@
 #endif
 
 #ifndef CONFIG_KLIPS_NAT_TRAVERSAL
-#define CONFIG_KLIPS_NAT_TRAVERSAL 0
+#define CONFIG_KLIPS_NAT_TRAVERSAL 1
 #endif
 
 #ifndef CONFIG_IPSEC_NAT_TRAVERSAL
-#define CONFIG_IPSEC_NAT_TRAVERSAL 0
+#define CONFIG_IPSEC_NAT_TRAVERSAL 1
 #endif
 
-/* off by default for now */
 #ifndef CONFIG_KLIPS_ENC_CRYPTOAPI
-#define CONFIG_KLIPS_ENC_CRYPTOAPI 0
+#define CONFIG_KLIPS_ENC_CRYPTOAPI 1
 #endif
 
 #define CONFIG_KLIPS_ALG_CRYPTOAPI #error
 #define CONFIG_KLIPS_ALG_AES #error
 
+#if 0
+/* off by default requiers kernel patch */
+# ifndef CONFIG_KLIPS_OCF
+#  define CONFIG_KLIPS_OCF 0
+# endif
+#endif
+#undef CONFIG_KLIPS_OCF
+
 #ifndef CONFIG_KLIPS_ALG_AES_MAC
 #define CONFIG_KLIPS_ALG_AES_MAC 1
-#endif
-
-#ifndef CONFIG_KLIPS_REGRESS
-#define CONFIG_KLIPS_REGRESS 0
 #endif
 
 /* ALGO: */
 #if 0
 /* goal: cleanup KLIPS code from hardcoded algos :} */
-#undef CONFIG_KLIPS_AUTH_HMAC_MD5
-#undef CONFIG_KLIPS_AUTH_HMAC_SHA1
-#undef CONFIG_KLIPS_ENC_3DES
+# undef CONFIG_KLIPS_AUTH_HMAC_MD5
+# undef CONFIG_KLIPS_AUTH_HMAC_SHA1
+# undef CONFIG_KLIPS_ENC_3DES
 #endif
 
 #ifndef CONFIG_KLIPS_ALG
 #define CONFIG_KLIPS_ALG 1
 #endif
 
-/* keep rhconfig.h from doing anything */
-#define __rh_config_h__ 
-
-/* pick which arch we are supposed to be */
-#undef  __module__up
-#define __module__bigmem
-#define __module__i686_bigmem
-
-#if defined(__module__smp) || defined(__module__BOOTsmp) || defined(__module__enterprise) || defined(__module__bigmem)
-#define _ver_str(x) smp_ ## x
-#else
-#define _ver_str(x) x
-#endif
-
-#define MANDRAKE_LINUX_KERNEL 1
-
-#endif /* _CONFIG_MD_I686_BIGMEM_H_ */
+#endif /* _CONFIG_ALL_H */
 

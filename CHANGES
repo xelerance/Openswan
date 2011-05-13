@@ -12,6 +12,7 @@ v2.6.34 (unreleased)
 * KLIPS: Make sin_family setting in delflow the same as addflow [David]
 * KLIPS: IPv6 and SLES10 compile fixes [Sony Japan]
 * KLIPS: IPv6 outbound policy check used wrong index [Sony Japan]
+* MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
 * Many uml testing harness fixes and updates, mostly IPv6 related [Paul/Hugh]
 * "ipsec look" now shows NETKEY/XFRM and IPv6 routing table [Paul]
 * "ipsec look" now shows iptables NEW_IPSEC_CONN mangle table [Paul]
@@ -30,6 +31,8 @@ v2.6.34 (unreleased)
 * KLIPS: Fix for compiling on 2.6.22 (Fedora Core 6 based) kernels [Paul]
 * KLIPS IPV6: Fix packet fragmentation [Paul]
 * Added PLUTO_CONN_ADDRFAMILY= to updown.* (to disable SAref on v6) [Paul]
+* KLIPS: cleanup packaging/*/config-* files [Paul]
+* Fix a few gcc unused-but-set-variable warnings [Paul]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 

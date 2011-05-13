@@ -1148,6 +1148,10 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		}
 	}
 #endif
+	if(ips->ips_out != NULL) {
+		ipsec_dev_put(ips->ips_out);
+		ips->ips_out = NULL;
+	}
 
 	memset((caddr_t)ips, 0, sizeof(*ips));
 	kfree(ips);
