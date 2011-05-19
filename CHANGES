@@ -55,6 +55,7 @@ v2.6.33 (February 18, 2011)
 * Cleaned up and moved some old docs [Paul]
 * KLIPS: arp_broken_ops is no longer exported in 2.6.37+ [Paul]
 * KLIPS: Fix crasher in ipsec_xmit_state_delete [David]
+* KLIPS: Fix oops if packet is received on detached tunnel [David]
 * Bugtracker bugs fixed:
    # 601 KLIPS: NAT-OA UDP checksum bad in transport mode when both sides are
          NATted [Wolfgang]
