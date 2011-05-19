@@ -1933,6 +1933,13 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 
 	ipsec_nf_reset(irs->skb);
 
+	if (irs->skb->dev == NULL) {
+		/* the physical dev went down and is no longer attached */
+		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
+				"klips_debug:ipsec_rcv: interface for skb is detached.\n");
+		return IPSEC_RCV_REALLYBAD;
+	}
+
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
 		    "klips_debug:ipsec_rcv: "
 		    "netif_rx(%s) called.\n", irs->skb->dev->name);
