@@ -1974,7 +1974,8 @@ ipsec_device_event(struct notifier_block *unused, unsigned long event, void *ptr
 					;
 					if(((struct net_device *)(priv->dev)) == dev) {
 						/* dev_close(ipsec_dev); */
-						/* return */ ipsec_tunnel_detach(ipsec_dev);
+						/* return */
+						ipsec_tunnel_detach(ipsec_dev);
 						KLIPS_PRINT(debug_tunnel & DB_TN_INIT,
 							    "klips_debug:ipsec_device_event: "
 							    "device '%s' has been detached.\n",
