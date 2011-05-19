@@ -21,6 +21,7 @@
 #define	_CONFIG_ALL_H_	/* seen it, no need to see it again */
 
 #define CONFIG_KLIPS 1
+#define CONFIG_KLIPS_MODULE 1
 
 #ifndef CONFIG_KLIPS_AH
 #define CONFIG_KLIPS_AH 1
