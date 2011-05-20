@@ -480,10 +480,10 @@ netlink_raw_eroute(const ip_address *this_host
     int dir;
     int family;
     int policy;
-    int satype;
     bool ok;
     bool enoent_ok;
     ip_subnet local_that_client;
+    int satype = 0;
 
     policy = IPSEC_POLICY_IPSEC;
 
@@ -533,6 +533,8 @@ netlink_raw_eroute(const ip_address *this_host
 	    }
 	    break;
     }
+    DBG(DBG_NETKEY,
+	DBG_log("satype(%d) is not used in netlink_raw_eroute.",satype));
 
     /* Bug #1004 fix.
      * There really isn't "client" with NETKEY and transport mode
