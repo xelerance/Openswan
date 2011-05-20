@@ -980,7 +980,6 @@ static
 int do_md5_authentication(void *varg)
 {
     struct thread_arg	*arg = varg;
-    int len;
     char szline[1024]; /* more than enough */
     FILE *fp;
     char *szuser;
@@ -1008,7 +1007,6 @@ int do_md5_authentication(void *varg)
 
     while( fgets( szline, sizeof(szline), fp) != (char *)0)
     {
-        len = strlen( szline );
         loc = 0; /* reset our index */
         if(szline[0] == '#') /* comment line move on */
            continue;
@@ -2014,7 +2012,6 @@ stf_status xauth_client_resp(struct state *st
 	struct isakmp_attribute attr;
 	pb_stream strattr,attrval;
 	int attr_type;
-	int dns_idx, wins_idx;
 	bool dont_advance;
 
 	attrh.isama_np = ISAKMP_NEXT_NONE;
@@ -2024,8 +2021,6 @@ stf_status xauth_client_resp(struct state *st
 	if(!out_struct(&attrh, &isakmp_attr_desc, rbody, &strattr))
 	    return STF_INTERNAL_ERROR;
 	
-	dns_idx = 0;
-	wins_idx = 0;
 	attr_type = XAUTH_TYPE;
 
 	while(xauth_resp != 0)
@@ -2422,8 +2417,6 @@ stf_status xauth_client_ackstatus(struct state *st
 	struct  isakmp_mode_attr attrh;
 	struct isakmp_attribute attr;
 	pb_stream strattr,attrval;
-	int attr_type;
-	int dns_idx, wins_idx;
 
 	attrh.isama_np = ISAKMP_NEXT_NONE;
 	attrh.isama_type = ISAKMP_CFG_ACK;
@@ -2432,10 +2425,6 @@ stf_status xauth_client_ackstatus(struct state *st
 	if(!out_struct(&attrh, &isakmp_attr_desc, rbody, &strattr))
 	    return STF_INTERNAL_ERROR;
 	
-	dns_idx = 0;
-	wins_idx = 0;
-	attr_type = XAUTH_TYPE;
-
 	/* ISAKMP attr out */
 	attr.isaat_af_type = XAUTH_STATUS | ISAKMP_ATTR_AF_TV;
 	attr.isaat_lv = 1;
