@@ -355,7 +355,6 @@ parse_pgp_secretkey_packet(chunk_t *packet, rsa_privkey_t *key)
 static bool
 parse_pgp_signature_packet(chunk_t *packet, pgpcert_t *cert)
 {
-    time_t created;
     chunk_t keyid;
     u_char  sig_type;
     u_char version = pgp_version(packet);
@@ -378,7 +377,6 @@ parse_pgp_signature_packet(chunk_t *packet, pgpcert_t *cert)
     )
 
     /* creation date - 4 bytes */
-    created = (time_t)pgp_size(packet, 4);
     DBG(DBG_PARSING,
 	char tbuf[TIMETOA_BUF];
 	DBG_log("L3 - created:");
