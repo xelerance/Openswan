@@ -902,13 +902,8 @@ int ipsec_alg_init(void) {
 	KLIPS_PRINT(1, "klips_info:ipsec_alg_init: "
 		"calling ipsec_alg_static_init()\n");
 
-	/* If we are suppose to use our AES, and don't have
-	 * CryptoAPI enabled...
-	 */
 #if defined(CONFIG_KLIPS_ENC_AES) && CONFIG_KLIPS_ENC_AES && !defined(CONFIG_KLIPS_ENC_AES_MODULE) 
-#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
-#warning "Using built-in AES rather than CryptoAPI AES"
-#endif	
+	/* register our own AES code */
 	{
 		extern int ipsec_aes_init(void);
 		ipsec_aes_init();
@@ -916,9 +911,7 @@ int ipsec_alg_init(void) {
 #endif
 
 #if defined(CONFIG_KLIPS_ENC_3DES) && !defined(CONFIG_KLIPS_ENC_3DES_MODULE) 
-#if defined(CONFIG_KLIPS_ENC_CRYPTOAPI) && CONFIG_KLIPS_ENC_CRYPTOAPI
-#warning "Using built-in 3des rather than CryptoAPI 3des"
-#endif	
+	/* register our own 3DES code */
 	{
 		extern int ipsec_3des_init(void);
 		ipsec_3des_init();
