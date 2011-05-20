@@ -1386,7 +1386,7 @@ parse_ocsp_response(chunk_t blob, response_t * res)
 static bool
 parse_ocsp_single_response(chunk_t blob, int level0, single_response_t *sres)
 {
-    u_int level, extn_oid;
+    u_int level;
     asn1_ctx_t ctx;
     bool critical;
     chunk_t object;
@@ -1435,7 +1435,6 @@ parse_ocsp_single_response(chunk_t blob, int level0, single_response_t *sres)
 	    sres->nextUpdate = asn1totime(&object, ASN1_GENERALIZEDTIME);
 	    break;
 	case SINGLE_RESPONSE_EXT_ID:
-	    extn_oid = known_oid(object);
 	    break;
 	case SINGLE_RESPONSE_CRITICAL:
 	    critical = object.len && *object.ptr;
