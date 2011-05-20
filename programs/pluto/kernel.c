@@ -2159,19 +2159,6 @@ init_kernel(void)
 	/* FALL THROUGH */
 #endif
 
-#if defined(KLIPS_MAST) 
-    case USE_MASTKLIPS:
-        if (stat("/proc/sys/net/ipsec/debug_mast", &buf) == 0) {
-	    kern_interface = USE_MASTKLIPS;
-	    openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
-			 , kversion);
-	    kernel_ops = &mast_kernel_ops;
-	    break;
-	} else
-	    openswan_log("No Kernel MASTKLIPS interface detected");
-	/* FALL THROUGH */
-#endif
-
 #if defined(KLIPS) 
     case USE_KLIPS:
 	if (stat("/proc/net/pf_key", &buf) == 0) {
@@ -2182,6 +2169,19 @@ init_kernel(void)
 	    break;
 	} else
 	    openswan_log("No Kernel KLIPS interface detected");
+	/* FALL THROUGH */
+#endif
+
+#if defined(KLIPS_MAST) 
+    case USE_MASTKLIPS:
+        if (stat("/proc/sys/net/ipsec/debug_mast", &buf) == 0) {
+	    kern_interface = USE_MASTKLIPS;
+	    openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
+			 , kversion);
+	    kernel_ops = &mast_kernel_ops;
+	    break;
+	} else
+	    openswan_log("No Kernel MASTKLIPS interface detected");
 	/* FALL THROUGH */
 #endif
 
