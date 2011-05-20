@@ -222,22 +222,7 @@ out_sa(pb_stream *outs
 	int valid_prop_cnt;
 	
 	pc = &sadb->prop_conjs[pcn];
-
-	/*
-	 * figure out how many proposals we are going to make,
-	 * so we'll know when we are finished! This repeats some calculations
-	 * but this seems like the best method to avoid empty proposals.
-	 */
-	valid_prop_cnt = 0;
-	for (pn = 0; pn < pc->prop_cnt; pn++)
-	{
-	    struct db_prop *p;
-
-	    p = &pc->props[pn];
-
-	    valid_prop_cnt++;
-	}
-	    
+	valid_prop_cnt = pc->prop_cnt;
 	DBG(DBG_EMITTING, 
 	    DBG_log("out_sa pcn: %d has %d valid proposals",
 		    pcn, valid_prop_cnt));
@@ -571,8 +556,6 @@ lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs)
     struct isakmp_proposal proposal;
     pb_stream trans_pbs;
     struct isakmp_transform trans;
-    u_char *attr_start;
-    size_t attr_len;
     struct isakmp_attribute a;
     pb_stream attr_pbs;
     u_int32_t ipsecdoisit;
@@ -601,9 +584,6 @@ lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs)
 	if (!in_struct(&trans, &isakmp_isakmp_transform_desc, &proposal_pbs,
 	    &trans_pbs))
 	    return LEMPTY;
-
-	attr_start = trans_pbs.cur;
-	attr_len = pbs_left(&trans_pbs);
 
 	while (pbs_left(&trans_pbs) != 0) {
 	    if (!in_struct(&a, &isakmp_oakley_attribute_desc, &trans_pbs,
