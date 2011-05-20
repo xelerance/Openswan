@@ -306,6 +306,9 @@ process_v2_packet(struct msg_digest **mdp)
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
+	if (!rcookiezero) {
+		openswan_log("received packet that claimed to be (I)nitiator, but rcookie is not zero?");
+	}
 
 	md->role = RESPONDER;
 
