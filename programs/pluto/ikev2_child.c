@@ -317,7 +317,10 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 {
     unsigned int tsi_ni, tsr_ni;
     int bestfit = -1;
+/* not used? */
+#if 0
     int best_tsr, best_tsi; 
+#endif
     struct end *ei, *er;
     
     if(role == INITIATOR) {
@@ -393,8 +396,11 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		);
 
 		if(fitbits > bestfit) {
+/* not used ? */
+#if 0
 		    best_tsi = tsi_ni;
 		    best_tsr = tsr_ni;
+#endif
 		    bestfit = fitbits;
 		}
 	    }
@@ -456,7 +462,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
      * similar to find_client_connection/fc_try.
      */
     {
+/* b is not used? */
+#if 0
 	struct connection *b = c;
+#endif
 	struct connection *d;
 	int bestfit, newfit;
 	struct spd_route *sra, *bsr;
@@ -470,7 +479,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 						   ,tsi,tsr,tsi_n,tsr_n);
 	    if(bfit > bestfit) {
 		bestfit = bfit;
+/* b is not used ? */
+#if 0
 		b = c;
+#endif
 		bsr = sra;
 	    }
 	}
@@ -517,7 +529,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 							 ,tsi,tsr,tsi_n,tsr_n);
 		    if(newfit > bestfit) {
 			bestfit = newfit;
+/* not used? */
+#if 0
 			b=d;
+#endif
 			bsr = sr;
 		    }
 		}
