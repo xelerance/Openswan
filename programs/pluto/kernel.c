@@ -619,7 +619,7 @@ could_route(struct connection *c)
     /* if there is an eroute for another connection, there is a problem */
     if (ero != NULL && ero != c)
     {
-        struct connection *ero2, *ero_top;
+        struct connection *ero2;
         struct connection *inside, *outside;
 
         /*
@@ -677,7 +677,7 @@ could_route(struct connection *c)
         }
 
         /* look along the chain of policies for one with the same name */
-        ero_top = ero;
+
 
         for (ero2 = ero; ero2 != NULL; ero2 = ero->policy_next)
         {
@@ -2389,7 +2389,6 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
     bool new_eroute = FALSE;
 #endif
 
-    struct connection *ero_top;
     struct bare_shunt **bspp;
 
     ro = route_owner(c, sr, &rosr, &ero, &esr);
@@ -2405,7 +2404,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                 , st ? st->st_serialno : 0));
 
     /* look along the chain of policies for one with the same name */
-    ero_top = ero;
+
 
 #if 0
     /* XXX - mcr this made sense before, and likely will make sense
