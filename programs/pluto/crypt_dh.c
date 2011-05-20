@@ -1182,7 +1182,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     )
 {
     struct v2prf_stuff vpss;
-    chunk_t gi, gr;
     size_t total_keysize;
     memset(&vpss, 0, sizeof(vpss));
 
@@ -1195,8 +1194,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     PK11SymKey *skeyseed_k, *SK_d_k, *SK_ai_k, *SK_ar_k, *SK_ei_k, *SK_er_k, *SK_pi_k, *SK_pr_k;
 #endif
     /* this doesn't take any memory, it's just moving pointers around */
-    setchunk_fromwire(gi,      &skq->gi, skq);
-    setchunk_fromwire(gr,      &skq->gr, skq);
     setchunk_fromwire(vpss.ni, &skq->ni, skq);
     setchunk_fromwire(vpss.nr, &skq->nr, skq);
     setchunk_fromwire(vpss.spii, &skq->icookie, skq);
