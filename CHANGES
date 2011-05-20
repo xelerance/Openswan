@@ -13,6 +13,7 @@ v2.6.34 (unreleased)
 * KLIPS: IPv6 and SLES10 compile fixes [Sony Japan]
 * KLIPS: IPv6 outbound policy check used wrong index [Sony Japan]
 * MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
+* MAST: Don't autopick mast [David]
 * Many uml testing harness fixes and updates, mostly IPv6 related [Paul/Hugh]
 * "ipsec look" now shows NETKEY/XFRM and IPv6 routing table [Paul]
 * "ipsec look" now shows iptables NEW_IPSEC_CONN mangle table [Paul]
