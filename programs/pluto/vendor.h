@@ -58,6 +58,7 @@ enum known_vendorid {
   VID_CISCO_IOS             =38,
   VID_SONICWALL_1           =39,
   VID_SONICWALL_2           =40,
+  VID_CISCO_IKE_FRAGMENTATION=41,
 
 /* World of Microsoft */
   VID_VISTA_AUTHIP	    =51,
