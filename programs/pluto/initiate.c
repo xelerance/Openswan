@@ -1719,12 +1719,9 @@ void connection_check_phase2(void)
 	
 	if(pending_check_timeout(c)) {
 	    struct state *p1st;
-	    enum connection_kind kind;
 	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1" 
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
-
-	    kind = c->kind;
 
 	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
 
