@@ -515,9 +515,6 @@ ikev2_acceptable_group(struct state *st, oakley_group_t group)
     struct db_sa *sadb = st->st_sadb;
     struct db_v2_prop *pd;
     unsigned int       pd_cnt;
-    bool dh_matched;
-
-    dh_matched=FALSE;
 
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
 	struct db_v2_prop_conj  *pj;
@@ -525,7 +522,6 @@ ikev2_acceptable_group(struct state *st, oakley_group_t group)
 	unsigned int             tr_cnt;
 
 	pd = &sadb->prop_disj[pd_cnt];
-	dh_matched=FALSE;
 
 	/* In PARENT SAs, we only support one conjunctive item */
 	if(pd->prop_cnt != 1) continue;
@@ -926,7 +922,7 @@ ikev2_parse_parent_sa_body(
     unsigned int np = ISAKMP_NEXT_P;
     /* we need to parse proposal structures until there are none */
     unsigned int lastpropnum=-1;
-    bool conjunction, gotmatch, oldgotmatch;
+    bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
     struct db_sa *sadb;
     struct trans_attrs ta;
@@ -1010,7 +1006,6 @@ ikev2_parse_parent_sa_body(
 	    continue;
 	}
 
-	oldgotmatch = gotmatch;
 	gotmatch = FALSE;
 
 	{ stf_status ret = ikev2_process_transforms(&proposal
@@ -1230,7 +1225,7 @@ ikev2_parse_child_sa_body(
     unsigned int np = ISAKMP_NEXT_P;
     /* we need to parse proposal structures until there are none */
     unsigned int lastpropnum=-1;
-    bool conjunction, gotmatch, oldgotmatch;
+    bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
     struct db_sa *p2alg;
     struct trans_attrs ta;
@@ -1313,7 +1308,6 @@ ikev2_parse_child_sa_body(
 	    continue;
 	}
 
-	oldgotmatch = gotmatch;
 	gotmatch = FALSE;
 
 	{ stf_status ret = ikev2_process_transforms(&proposal
