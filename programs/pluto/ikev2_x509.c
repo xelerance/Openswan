@@ -132,8 +132,6 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     /*   send own (Initiator CERT) */
     {
 	pb_stream cert_pbs;
-	struct isakmp_cert cert_hd;
-	cert_hd.isacert_type = mycert.type;
 	
         DBG_log("I am sending my certificate");
 	
