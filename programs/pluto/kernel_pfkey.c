@@ -1103,6 +1103,9 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    int error;
 
 	    error = pfkey_msg_parse(&pfb.msg, NULL, replies, EXT_BITS_IN);
+	    if (error) {
+		plog("success on unparsable message - cannot happen");
+	    }
 #ifdef KLIPS_MAST	    
 	    if(replies[K_SADB_X_EXT_SAREF]) {
 		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
