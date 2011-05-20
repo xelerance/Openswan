@@ -733,6 +733,9 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     set_cur_state(st);	/* we must reset before exit */
     set_suspended(st, NULL);
     e = quick_outI1_tail(pcrc, r);
+    if (e != STF_OK) {
+	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() returned STF_INTERNAL_ERROR", __FUNCTION__);
+    }
 
     reset_globals();
 }
@@ -2513,7 +2516,8 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
     {
 	u_char	/* set by START_HASH_PAYLOAD: */
 	    *r_hashval,	/* where in reply to jam hash value */
-	    *r_hash_start;	/* start of what is to be hashed */
+	    *r_hash_start;      /* start of what is to be hashed */
+
 
 #ifdef IMPAIR_UNALIGNED_I2_MSG
 	{
