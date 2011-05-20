@@ -1587,6 +1587,11 @@ gntoid(struct id *id, const generalName_t *gn)
 
 	    id->kind = afi->id_addr;
 	    ugh = initaddr(gn->name.ptr, gn->name.len, afi->af, &id->ip_addr);
+	    if (!ugh)
+		{
+		 openswan_log("Warning: gntoid() failed to initaddr(): %s", ugh);
+		}
+
 	}
 	break;
     case GN_RFC822_NAME:	/* ID type: ID_USER_FQDN */
