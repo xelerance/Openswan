@@ -358,6 +358,9 @@ send_eof(struct worker_info *w)
     /* reap child */
     p = waitpid(w->pid, &status, 0);
     /* ignore result -- what could we do with it? */
+    if(p == -1) {
+	    syslog(LOG_ERR, "waitpid(2) failed, ignored");
+    }
 }
 
 static void
