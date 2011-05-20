@@ -243,14 +243,14 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     last = (p1st->st_last_dpd > st->st_last_dpd
 	    ? st->st_last_dpd : p1st->st_last_dpd );
 
-    nextdelay = p1st->st_last_dpd + delay - tm;
+    nextdelay = last + delay - tm;
 
     /* has there been enough activity of late? */
     if(nextdelay > 0) {
 	/* Yes, just reschedule "phase 2" */
 	DBG(DBG_DPD, DBG_log("DPD: not yet time for dpd event: %lu < %lu"
 			     , (unsigned long)tm
-			     , (unsigned long)(p1st->st_last_dpd + delay)));
+			     , (unsigned long)(last + delay)));
 	event_schedule(EVENT_DPD, nextdelay, st);
 	return;
     }
