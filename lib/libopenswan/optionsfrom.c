@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: optionsfrom.c,v 1.9 2005/08/25 01:19:23 paul Exp $
  */
 #include "internal.h"
 #include "openswan.h"
@@ -97,8 +96,10 @@ int optind;			/* current optind, number of next argument */
 
 	newargc = *argcp + SOME;
 	newargv = malloc((newargc+1) * sizeof(char *));
-	if (newargv == NULL)
+	if (newargv == NULL) {
+		fclose(f);
 		return "unable to allocate memory";
+	}
 	memcpy(newargv, *argvp, optind * sizeof(char *));
 	room = SOME;
 	next = optind;
