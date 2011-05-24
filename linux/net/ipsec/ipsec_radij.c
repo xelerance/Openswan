@@ -64,11 +64,7 @@
 #include "openswan/ipsec_proto.h"
 
 struct radij_node_head *rnh = NULL;
-#ifdef SPINLOCK
-spinlock_t eroute_lock = SPIN_LOCK_UNLOCKED;
-#else /* SPINLOCK */
-spinlock_t eroute_lock;
-#endif /* SPINLOCK */
+DEFINE_SPINLOCK(eroute_lock);
 
 int
 ipsec_radijinit(void)

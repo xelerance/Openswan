@@ -26,7 +26,7 @@ extern void *malloc(unsigned int size);
 #include "talloc.h"
 
 struct prng ipsec_prng;
-spinlock_t eroute_lock = SPIN_LOCK_UNLOCKED;
+DEFINE_SPINLOCK(eroute_lock);
 
 struct supported_list *pfkey_supported_list[SADB_SATYPE_MAX+1];
 

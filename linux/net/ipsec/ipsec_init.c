@@ -235,16 +235,7 @@ ipsec_klips_init(void)
         if (error)
                 goto error_proc_init;
 
-#ifdef SPINLOCK
-	ipsec_sadb.sadb_lock = SPIN_LOCK_UNLOCKED;
-#else /* SPINLOCK */
-	ipsec_sadb.sadb_lock = 0;
-#endif /* SPINLOCK */
-
-#ifndef SPINLOCK
-	tdb_lock.lock = 0;
-	eroute_lock.lock = 0;
-#endif /* !SPINLOCK */
+	spin_lock_init(&ipsec_sadb.sadb_lock);
 
 	error |= ipsec_sadb_init();
         if (error)

@@ -2323,7 +2323,7 @@ ipsec_tunnel_cleanup_devices(void)
  * this handles creating and managing state for xmit path
  */
 
-static spinlock_t ixs_cache_lock = SPIN_LOCK_UNLOCKED;
+static DEFINE_SPINLOCK(ixs_cache_lock);
 #ifdef HAVE_KMEM_CACHE_MACRO
 static struct kmem_cache *ixs_cache_allocator = NULL;
 #else

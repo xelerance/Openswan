@@ -32,7 +32,7 @@
  * every printk_ratelimit_jiffies to make a denial-of-service
  * attack impossible.
  */
-static spinlock_t ratelimit_lock = SPIN_LOCK_UNLOCKED;
+static DEFINE_SPINLOCK(ratelimit_lock);
 
 int __printk_ratelimit(int ratelimit_jiffies, int ratelimit_burst)
 {

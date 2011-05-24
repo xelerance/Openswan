@@ -2479,14 +2479,16 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 			fl->nl_u.ip6_u.saddr = ipv6_hdr(ixs->skb)->saddr;
 		fl->nl_u.ip6_u.daddr = ipv6_hdr(ixs->skb)->daddr;
 		/* fl->nl_u.ip6_u.tos = RT_TOS(ipv6_hdr(ixs->skb)->tos); */
-		fl->proto = IPPROTO_IPV6;
+		fl->flowi_proto = IPPROTO_IPV6;
 #ifndef FLOW_HAS_NO_MARK
-		fl->mark = ixs->skb->mark;
+		fl->flowi_mark = ixs->skb->mark;
 #endif
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
 		dst = ip6_route_output(NULL, fl);
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
 		dst = ip6_route_output(&init_net, NULL, fl);
+#else
+		dst = ip6_route_output(&init_net, NULL, &fl->nl_u.ip6_u);
 #endif
 		error = dst->error;
 	} else
@@ -2494,18 +2496,25 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	{
 		fl->nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
 		fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
-		fl->nl_u.ip4_u.tos = RT_TOS(ip_hdr(ixs->skb)->tos);
-		fl->proto = ip_hdr(ixs->skb)->protocol;
+		fl->flowi_tos = RT_TOS(ip_hdr(ixs->skb)->tos);
+		fl->flowi_proto = ip_hdr(ixs->skb)->protocol;
 #ifndef FLOW_HAS_NO_MARK
-		fl->mark = ixs->skb->mark;
+		fl->flowi_mark = ixs->skb->mark;
 #endif
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
 		error = ip_route_output_key(&ixs->route, fl);
-#else
+#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
 		error = ip_route_output_key(&init_net, &ixs->route, fl);
-#endif
-		if (ixs->route)
+#else
+		ixs->route = ip_route_output_key(&init_net, &fl->u.ip4);
+		if (IS_ERR(ixs->route)) {
+			error = PTR_ERR(ixs->route);
+			ixs->route = NULL;
+		} else {
+			error = 0;
 			dst = &ipsec_route_dst(ixs->route);
+		}
+#endif
 	}
 #else
 #ifdef CONFIG_KLIPS_IPV6
@@ -2641,7 +2650,7 @@ ipsec_tunnel_send(struct ipsec_xmit_state *ixs)
 
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
- 	fl.oif = ixs->physdev->ifindex;
+ 	fl.flowi_oif = ixs->physdev->ifindex;
 
 	return ipsec_xmit_send(ixs, &fl);
 }

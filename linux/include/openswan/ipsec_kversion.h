@@ -445,6 +445,8 @@
        volatile unsigned int lock;
      } rwlock_t;                                                                     
 
+#  define SPIN_LOCK_UNLOCKED {0}
+
 #  define spin_lock_init(x) { (x)->lock = 0;}
 #  define rw_lock_init(x) { (x)->lock = 0; }
 
@@ -552,6 +554,26 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
 # define PRIVATE_ARP_BROKEN_OPS
+#endif
+
+#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,38)
+# ifndef DEFINE_SPINLOCK
+#  define DEFINE_SPINLOCK(x) spinlock_t x = SPIN_LOCK_UNLOCKED
+# endif
+# define flowi_tos nl_u.ip4_u.tos
+# define flowi_proto proto
+# define flowi_mark mark
+# define flowi_oif oif
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,39)
+# define nl_u u
+# define ip4_u ip4
+# define ip6_u ip6
+#endif
+
+#ifndef DEFINE_RWLOCK
+#define DEFINE_RWLOCK(x) rwlock_t x = RW_LOCK_UNLOCKED
 #endif
 
 #if __KERNEL__
