@@ -119,7 +119,7 @@ void osw_conf_setdefault(void)
     
     if((env = getenv("IPSEC_CONFFILE")) != NULL) {
 	pfree(conffile);
-	ipsec_conf_dir = clone_str(env, "ipsec.conf");
+	conffile = clone_str(env, "ipsec.conf");
     }
     
     global_oco.rootdir = "";
@@ -198,7 +198,7 @@ secuPWData *osw_return_nss_password_file_info(void)
 
 bool Pluto_IsFIPS(void)
 {
-     char fips_flag[2];
+     char fips_flag[1];
      int n;
      FILE *fd=fopen("/proc/sys/crypto/fips_enabled","r");
      
@@ -206,18 +206,19 @@ bool Pluto_IsFIPS(void)
 	    n = fread ((void *)fips_flag, 1, 1, fd);
 		if(n==1) {
 		    if(fips_flag[0]=='1') {
-	            return TRUE;	         	
-            }
+		    fclose(fd);
+		    return TRUE;
+		    }
 		    else {
 		    openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
 		    }
-	    }
-	    else {
+		} else {
 			openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
-	    } 
+		} 
      }
      else {
-     	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode"); 
+	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode"); 
+	fclose(fd);
      }
 return FALSE;
 }

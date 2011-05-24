@@ -12,7 +12,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  *
- * RCSID $Id: atoaddr.c,v 1.15 2004/04/09 18:00:38 mcr Exp $
  */
 #include "internal.h"
 #include "openswan.h"
@@ -83,10 +82,18 @@ struct in_addr *addrp;
 
 	/* next, check that it's a vaguely legal name */
 	for (q = p; *q != '\0'; q++)
-		if (!isprint(*q))
+		if (!isprint(*q)) {
+			if (p != namebuf) {
+				FREE(p);
+			}
 			return "unprintable character in name";
-	if (strspn(p, namechars) != srclen)
+		}
+	if (strspn(p, namechars) != srclen) {
+		if (p != namebuf) {
+			FREE(p);
+		}
 		return "illegal (non-DNS-name) character in name";
+	}
 
 	/* try as host name, failing that as /etc/networks network name */
 	h = gethostbyname(p);

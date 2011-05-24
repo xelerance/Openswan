@@ -1160,12 +1160,12 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
     struct starter_conn *conn;
     
     conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
-    memset(conn, 0, sizeof(struct starter_conn));
     if (!conn) {
 	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
 	return NULL;
     }
 
+    memset(conn, 0, sizeof(struct starter_conn));
     conn_default(name, conn, &cfg->conn_default);
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
@@ -1249,7 +1249,11 @@ struct starter_config *confread_load(const char *file
 	 */
 	err += load_setup(cfg, cfgp, perr);
 
-	if(err) {return NULL;}
+	if(err) {
+		parser_free_conf(cfgp);
+		confread_free(cfg);
+		return NULL;
+	}
 
 	if(!setuponly) {
 	   /**
