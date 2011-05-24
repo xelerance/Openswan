@@ -2501,10 +2501,14 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #ifndef FLOW_HAS_NO_MARK
 		fl->flowi_mark = ixs->skb->mark;
 #endif
-#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
+# if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
 		error = ip_route_output_key(&ixs->route, fl);
-#elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
+# else
 		error = ip_route_output_key(&init_net, &ixs->route, fl);
+# endif
+		if (ixs->route)
+			dst = &ipsec_route_dst(ixs->route);
 #else
 		ixs->route = ip_route_output_key(&init_net, &fl->u.ip4);
 		if (IS_ERR(ixs->route)) {
