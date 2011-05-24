@@ -94,7 +94,7 @@
 extern struct proto_ops SOCKOPS_WRAPPED(pfkey_ops);
 
 #ifdef NET_26
-static rwlock_t pfkey_sock_lock = RW_LOCK_UNLOCKED;
+static DEFINE_RWLOCK(pfkey_sock_lock);
 HLIST_HEAD(pfkey_sock_list);
 static DECLARE_WAIT_QUEUE_HEAD(pfkey_sock_wait);
 static atomic_t pfkey_sock_users = ATOMIC_INIT(0);
@@ -110,7 +110,11 @@ struct socket_list *pfkey_registered_sockets[K_SADB_SATYPE_MAX+1];
 int pfkey_msg_interp(struct sock *, struct sadb_msg *);
 
 #ifdef NET_26_24_SKALLOC
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+DEBUG_NO_STATIC int pfkey_create(struct net *net, struct socket *sock, int protocol, int kern);
+#else
 DEBUG_NO_STATIC int pfkey_create(struct net *net, struct socket *sock, int protocol);
+#endif
 #else
 DEBUG_NO_STATIC int pfkey_create(struct socket *sock, int protocol);
 #endif
@@ -156,7 +160,9 @@ struct proto_ops SOCKOPS_WRAPPED(pfkey_ops) = {
 	mmap:		sock_no_mmap,
 };
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
 #include <linux/smp_lock.h>
+#endif
 SOCKOPS_WRAP(pfkey, PF_KEY);
 
 #ifdef NET_26
@@ -638,7 +644,11 @@ static struct proto key_proto = {
 #endif
 #ifdef NET_26_24_SKALLOC
 DEBUG_NO_STATIC int
-pfkey_create(struct net *net, struct socket *sock, int protocol)
+pfkey_create(struct net *net, struct socket *sock, int protocol
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	, int kern
+#endif
+)
 #else
 DEBUG_NO_STATIC int
 pfkey_create(struct socket *sock, int protocol)
@@ -667,6 +677,15 @@ pfkey_create(struct socket *sock, int protocol)
 			    "only SOCK_RAW supported.\n");
 		return -ESOCKTNOSUPPORT;
 	}
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)
+	if (!kern && !capable(CAP_NET_RAW)) {
+		KLIPS_PRINT(debug_pfkey,
+			    "klips_debug:pfkey_create: "
+			    "no permissions.\n");
+		return -EPERM;
+	}
+#endif
 
 	if(protocol != PF_KEY_V2) {
 		KLIPS_PRINT(debug_pfkey,

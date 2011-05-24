@@ -185,7 +185,7 @@ main(int argc, char *argv[])
     }
 
     confwrite(cfg, stdout);
-
+    confread_free(cfg);
     exit(0);
 }
 

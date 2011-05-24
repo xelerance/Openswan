@@ -42,12 +42,14 @@ void readwhackmsg(char *infile)
 	if(abuflen > sizeof(m1)) {
 	    fprintf(stderr, "whackmsg file has too big a record=%zu > %zu\n"
 		    , abuflen, sizeof(m1));
+	    fclose(record);
 	    exit(6);
 	}
 
 	if((iocount=fread(&m1, abuflen, 1, record)) != 1) {
 	    if(feof(record)) break;
 	    perror(infile);
+	    fclose(record);
 	    exit(5);
 	}
 	
@@ -77,6 +79,7 @@ void readwhackmsg(char *infile)
     }
 
     if(iocount != 0 || !feof(record)) {
+	fclose(record);
 	perror(infile);
     }
 }

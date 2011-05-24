@@ -338,6 +338,7 @@ allocate_RSA_public_key(const cert_t cert)
 	break;
     default:
 	openswan_log("RSA public key allocation error");
+	pfreeany(pk)
 	return NULL;
     }
 
@@ -1252,11 +1253,11 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	}
 	else
 	{
-	    struct secret *s = NULL;
+	    struct secret *s;
 
 	    /* expecting a list of indices and then the key info */
 	    s = alloc_thing(struct secret, "secret");
-	    
+
 	    s->ids = NULL;
 	    s->pks.kind = PPK_PSK;	/* default */
 	    setchunk(s->pks.u.preshared_secret, NULL, 0);

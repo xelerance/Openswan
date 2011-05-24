@@ -2333,7 +2333,7 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
  * this handles creating and managing state for recv path
  */
 
-static spinlock_t irs_cache_lock = SPIN_LOCK_UNLOCKED;
+static DEFINE_SPINLOCK(irs_cache_lock);
 #ifdef HAVE_KMEM_CACHE_MACRO
 static struct kmem_cache *irs_cache_allocator = NULL;
 #else

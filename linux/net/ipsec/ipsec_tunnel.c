@@ -72,6 +72,7 @@
 #endif /* NETDEV_23 */
 
 #include <linux/if_arp.h>
+#include <linux/delay.h>
 #include <net/arp.h>
 
 #include "openswan/ipsec_kversion.h"
@@ -1709,7 +1710,6 @@ ipsec_tunnel_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 #define IPSEC_TUNNEL_UDP_ENCAP_MAGIC 0x58c0b472
 struct ipsec_tunnel_udp_encap_ctx {
 	u32 magic;
-	atomic_t refcnt;
 	struct list_head link;
 	struct sock *sk;
 	void (*old_sk_destruct)(struct sock *sk);
@@ -1717,7 +1717,7 @@ struct ipsec_tunnel_udp_encap_ctx {
 #define list_head_to_udp_encap_ctx(lh) \
 	list_entry(lh, struct ipsec_tunnel_udp_encap_ctx, link)
 
-static spinlock_t ipsec_tunnel_udp_encap_lock = SPIN_LOCK_UNLOCKED;
+static DEFINE_SPINLOCK(ipsec_tunnel_udp_encap_lock);
 static LIST_HEAD(ipsec_tunnel_udp_encap_list);
 
 DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
@@ -1725,6 +1725,7 @@ DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
 	struct socket *sock = NULL;
 	struct sock *sk;
 	struct ipsec_tunnel_udp_encap_ctx *ctx = NULL;
+	unsigned long flags;
 	int err = 0;
 
 	switch (encap_type) {
@@ -1785,24 +1786,22 @@ DEBUG_NO_STATIC int ipsec_tunnel_udp_encap_prepare(int fd, int encap_type)
 	if (!ctx)
 		goto error;
 
+	spin_lock_irqsave(&ipsec_tunnel_udp_encap_lock, flags);
+
 	/* setup the context */
 	ctx->magic           = IPSEC_TUNNEL_UDP_ENCAP_MAGIC;
 	ctx->sk              = sk;
 	ctx->old_sk_destruct = sk->sk_destruct;
-	wmb();
-
-	/* one ref is for sk other for the list */
-	atomic_set(&ctx->refcnt, 2);
 
 	/* convert socket to use our (de)encapsulation routine */
 	sk->sk_destruct        = ipsec_tunnel_udp_encap_destruct;
 	udp_sk(sk)->encap_type = encap_type;
 	udp_sk(sk)->encap_rcv  = klips26_udp_encap_rcv;
 
-	/* add the tunnel to our list */
-	spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
+	/* add the tunnel to our list so we can check on it later */
 	list_add(&ctx->link, &ipsec_tunnel_udp_encap_list);
-	spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+
+	spin_unlock_irqrestore(&ipsec_tunnel_udp_encap_lock, flags);
 
 	KLIPS_PRINT(debug_tunnel
 			, "UDP socket: %u set to %s (0x%x) encap mode\n"
@@ -1821,28 +1820,18 @@ error:
 	return err;
 }
 
-DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_restore(
-		struct ipsec_tunnel_udp_encap_ctx *ctx)
-{
-	struct sock *sk = ctx->sk;
-
-	/* revert the socket back */
-	udp_sk(sk)->encap_type = 0;
-	udp_sk(sk)->encap_rcv  = NULL;
-
-	sk->sk_user_data = NULL;
-	sk->sk_destruct = ctx->old_sk_destruct;
-
-	if (sk->sk_destruct)
-		sk->sk_destruct(sk);
-}
-
 DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_destruct(struct sock *sk)
 {
 	struct ipsec_tunnel_udp_encap_ctx *ctx;
+	unsigned long flags;
 
 	if (!sk || !sk->sk_user_data)
 		return;
+
+	if (!sock_flag(sk, SOCK_DEAD)) {
+		pr_err("Attempt to destruct a live pfkey socket: %p\n", sk);
+		return;
+	}
 
 	ctx = (struct ipsec_tunnel_udp_encap_ctx*)sk->sk_user_data;
 	if (ctx->magic != IPSEC_TUNNEL_UDP_ENCAP_MAGIC) {
@@ -1852,49 +1841,62 @@ DEBUG_NO_STATIC void ipsec_tunnel_udp_encap_destruct(struct sock *sk)
 		return;
 	}
 
-	ipsec_tunnel_udp_encap_restore(ctx);
+	if (ctx->sk != sk) {
+		printk("ipsec: called to destroy ctx with sk(%p) != ctx->sk(%p)\n",
+				sk, ctx->sk);
+		return;
+	}
+
+	spin_lock_irqsave(&ipsec_tunnel_udp_encap_lock, flags);
+
+	/* revert the socket back */
+	udp_sk(sk)->encap_type = 0;
+	udp_sk(sk)->encap_rcv  = NULL;
+
+	sk->sk_user_data = NULL;
+	sk->sk_destruct = ctx->old_sk_destruct;
 
 	/* remove it from the list */
-	spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
-	if (ctx->link.next) {
-		/* we are on the list, remove and deref */
-		list_del(&ctx->link);
-		atomic_dec(&ctx->refcnt);
-	} else {
-		/* it was already removed, someone else will clean up */
-		ctx = NULL;
-	}
-	spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+	list_del(&ctx->link);
+	ctx->sk = NULL;
 
-	/* if we removed it from the list, then we need to free it */
-	if (ctx && atomic_dec_and_test(&ctx->refcnt))
-		kfree(ctx);
+	spin_unlock_irqrestore(&ipsec_tunnel_udp_encap_lock, flags);
+
+	if (sk->sk_destruct)
+		sk->sk_destruct(sk);
+
+	kfree(ctx);
 }
 
 DEBUG_NO_STATIC void ipsec_tunnel_upd_encap_cleanup(void)
 {
-	struct ipsec_tunnel_udp_encap_ctx *ctx;
+	struct ipsec_tunnel_udp_encap_ctx *ctx, *tmp;
+	unsigned long flags;
+	int i = 0;
 
-	for (;;) {
-		ctx = NULL;
-		spin_lock_bh(&ipsec_tunnel_udp_encap_lock);
-		if (!list_empty(&ipsec_tunnel_udp_encap_list)) {
-			struct list_head *ent;
-			ent = ipsec_tunnel_udp_encap_list.next;
-			list_del(ent);
-			ctx = list_head_to_udp_encap_ctx(ent);
-		}
-		spin_unlock_bh(&ipsec_tunnel_udp_encap_lock);
+	/* wait a bit, see if we can cleanup nicely */
+	while (i++ < 60 && !list_empty(&ipsec_tunnel_udp_encap_list))
+		mdelay(50);
 
-		/* are we done? */
-		if (!ctx)
-			break;
+	/*
+	 * ok,  if there is anything left now force it back to the old
+	 * destructor
+	 */
+	spin_lock_irqsave(&ipsec_tunnel_udp_encap_lock, flags);
+	list_for_each_entry_safe(ctx, tmp, &ipsec_tunnel_udp_encap_list, link) {
+		struct sock *sk = ctx->sk;
+		/* revert the socket back */
+		udp_sk(sk)->encap_type = 0;
+		udp_sk(sk)->encap_rcv  = NULL;
 
-		ipsec_tunnel_udp_encap_restore(ctx);
+		sk->sk_user_data = NULL;
+		sk->sk_destruct = ctx->old_sk_destruct;
 
-		if (atomic_dec_and_test(&ctx->refcnt))
-			kfree(ctx);
+		/* remove it from the list */
+		list_del(&ctx->link);
+		kfree(ctx);
 	}
+	spin_unlock_irqrestore(&ipsec_tunnel_udp_encap_lock, flags);
 }
 #endif
 
@@ -2355,7 +2357,7 @@ ipsec_tunnel_cleanup_devices(void)
  * this handles creating and managing state for xmit path
  */
 
-static spinlock_t ixs_cache_lock = SPIN_LOCK_UNLOCKED;
+static DEFINE_SPINLOCK(ixs_cache_lock);
 #ifdef HAVE_KMEM_CACHE_MACRO
 static struct kmem_cache *ixs_cache_allocator = NULL;
 #else

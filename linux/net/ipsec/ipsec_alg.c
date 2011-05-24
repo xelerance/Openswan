@@ -74,7 +74,7 @@
 #warning Compiling with limited ESP support ( K_SADB_EALG_MAX < 256 )
 #endif
 
-static rwlock_t ipsec_alg_lock = RW_LOCK_UNLOCKED;
+static DEFINE_RWLOCK(ipsec_alg_lock);
 #define IPSEC_ALG_HASHSZ	16	/* must be power of 2, even 2^0=1 */
 static struct list_head ipsec_alg_hash_table[IPSEC_ALG_HASHSZ];
 

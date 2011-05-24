@@ -8,11 +8,12 @@ v2.6.34 (unreleased)
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
 * Add Apple iOS work-around to l2tp example configs [Tuomo]
-* KLIPS: Support to compile on Linux 2.6.38 [David]
+* KLIPS: Support to compile on Linux 2.6.38 and 2.6.39 [David]
 * KLIPS: Make sin_family setting in delflow the same as addflow [David]
 * KLIPS: IPv6 and SLES10 compile fixes [Sony Japan]
 * KLIPS: IPv6 outbound policy check used wrong index [Sony Japan]
 * KLIPS: Enable CryptoAPI per default [Paul]
+* KLIPS: Module unload fixes [David]
 * MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
 * MAST: Don't autopick mast [David]
 * Many uml testing harness fixes and updates, mostly IPv6 related [Paul/Hugh]
@@ -35,6 +36,7 @@ v2.6.34 (unreleased)
 * Added PLUTO_CONN_ADDRFAMILY= to updown.* (to disable SAref on v6) [Paul]
 * KLIPS: cleanup packaging/*/config-* files [Paul]
 * Fix a bunch of gcc unused-but-set-variable warnings [Paul]
+* Various file descriptor leaks and mimor memleaks [Avesh/dhr]
 * Bugtracker bugs fixed:
    #1233 WARNING: at net/ipv4/af_inet.c:151 inet_sock_destruct on stop [David]
 

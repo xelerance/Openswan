@@ -81,11 +81,7 @@
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 struct ipsec_sa *ipsec_sadb_hash[SADB_HASHMOD];
-#ifdef SPINLOCK
-spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;
-#else /* SPINLOCK */
-spinlock_t tdb_lock;
-#endif /* SPINLOCK */
+DEFINE_SPINLOCK(tdb_lock);
 
 #ifdef IPSEC_SA_RECOUNT_DEBUG
 struct ipsec_sa *ipsec_sa_raw = NULL;
