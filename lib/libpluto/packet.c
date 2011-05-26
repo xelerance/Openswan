@@ -1282,7 +1282,7 @@ in_struct(void *struct_ptr, struct_desc *sd
     {
         ugh = builddiag("not enough room in input packet for %s"
                         " (remain=%li, sd->size=%zu)"
-                        , sd->name, ins->roof - cur, sd->size);
+                        , sd->name, (long int)(ins->roof - cur), sd->size);
 
     }
     else
