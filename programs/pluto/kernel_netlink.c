@@ -868,7 +868,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
-    else
+    else if (sa->esatype == ET_ESP)
     {
 	struct xfrm_algo algo;
 	const char *name;
