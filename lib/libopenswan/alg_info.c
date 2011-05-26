@@ -610,7 +610,6 @@ parser_alg_info_add(struct parser_context *p_ctx
 {
 	int ealg_id, aalg_id;
 	int modp_id = 0;
-	const struct oakley_group_desc *gd;
 
 	ealg_id=aalg_id=-1;
 	if (p_ctx->ealg_permit && *p_ctx->ealg_buf) {
