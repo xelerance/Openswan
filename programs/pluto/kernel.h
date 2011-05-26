@@ -206,6 +206,9 @@ extern int fmt_common_shell_out(char *buf, int blen, struct connection *c
 extern bool pfkey_plumb_mast_device(int mast_dev);
 #endif
 
+/* many bits reach in to use this, but maybe shouldn't */
+extern bool do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st);
+
 #if defined(linux)
 extern bool do_command_linux(struct connection *c, struct spd_route *sr
 			     , const char *verb, struct state *st);

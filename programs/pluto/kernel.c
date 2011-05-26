@@ -487,7 +487,6 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	return ((result>=blen) || (result<0))? -1 : result;
 }
 
-//static bool
 bool
 do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st)
 {
