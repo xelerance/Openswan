@@ -44,7 +44,7 @@ bool
 
 #ifdef DEBUG
 void openswanlib_passert_fail(const char *pred_str, const char *file_str,
-			      unsigned long line_no);
+			      unsigned long line_no) NEVER_RETURNS;
 openswan_passert_fail_t openswan_passert_fail = openswanlib_passert_fail;
 #endif
 
