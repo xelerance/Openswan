@@ -1123,7 +1123,7 @@ xfrm_to_ip_address(unsigned family, const xfrm_address_t *src, ip_address *dst)
 static void
 netlink_acquire(struct nlmsghdr *n)
 {
-    struct xfrm_user_acquire *acquire;
+    struct xfrm_user_acquire ac1, *acquire;
     const xfrm_address_t *srcx, *dstx;
     int src_proto, dst_proto;
     ip_address src, dst;
@@ -1140,7 +1140,11 @@ netlink_acquire(struct nlmsghdr *n)
 	return;
     }
 
-    acquire = NLMSG_DATA(n);
+    /* to get rid of complaints about strict alignment: */
+    /* structure copy it first */
+    memcpy(NLMSG_DATA(n), &ac1, sizeof(struct xfrm_user_acquire));
+    acquire = &ac1;   /* then use it. */
+
     srcx = &acquire->sel.saddr;
     dstx = &acquire->sel.daddr;
     family = acquire->policy.sel.family;
@@ -1201,7 +1205,7 @@ netlink_shunt_expire(struct xfrm_userpolicy_info *pol)
 static void
 netlink_policy_expire(struct nlmsghdr *n)
 {
-    struct xfrm_user_polexpire *upe;
+    struct xfrm_user_polexpire up1, *upe;
     struct {
 	struct nlmsghdr n;
 	struct xfrm_userpolicy_id id;
@@ -1220,7 +1224,8 @@ netlink_policy_expire(struct nlmsghdr *n)
 	return;
     }
 
-    upe = NLMSG_DATA(n);
+    memcpy(NLMSG_DATA(n), &up1, sizeof(up1));
+    upe = &up1;
     req.id.dir = upe->pol.dir;
     req.id.index = upe->pol.index;
     req.n.nlmsg_flags = NLM_F_REQUEST;
@@ -2035,3 +2040,10 @@ const struct kernel_ops netkey_kernel_ops = {
     .overlap_supported = FALSE
 };
 #endif /* linux && NETKEY_SUPPORT */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
