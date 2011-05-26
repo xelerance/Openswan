@@ -657,7 +657,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	     no branch operations
 	   */
 	   if (ipp->version == 4) {
-		 if (ip_address_family(&ipsp->ips_said.dst) != AF_INET) {
+		 if (ip_address_family(&ipsp->ips_flow_s) != AF_INET) {
+		 	failed_inbound_check = 1;
+		 } else if (ip_address_family(&ipsp->ips_flow_d) != AF_INET) {
 		 	failed_inbound_check = 1;
 		 } else if (((ipp->saddr & ipsp->ips_mask_s.u.v4.sin_addr.s_addr)
 				  ^ ipsp->ips_flow_s.u.v4.sin_addr.s_addr)
@@ -668,7 +670,9 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	   }
 #ifdef CONFIG_KLIPS_IPV6
 	   else if (ipp->version == 6) {
-		 if (ip_address_family(&ipsp->ips_said.dst) != AF_INET6) {
+		 if (ip_address_family(&ipsp->ips_flow_s) != AF_INET6) {
+		 	failed_inbound_check = 1;
+		 } else if (ip_address_family(&ipsp->ips_flow_d) != AF_INET6) {
 		 	failed_inbound_check = 1;
 		 } else if (((ipp6->saddr.s6_addr32[0] & ipsp->ips_mask_s.u.v6.sin6_addr.s6_addr32[0])
 				  ^ ipsp->ips_flow_s.u.v6.sin6_addr.s6_addr32[0])
