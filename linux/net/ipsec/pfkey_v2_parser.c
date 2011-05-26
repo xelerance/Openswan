@@ -1919,32 +1919,46 @@ pfkey_x_addflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 	}
 
 	if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
-		srcflow.u.v4.sin_family = AF_INET6;
-		dstflow.u.v4.sin_family = AF_INET6;
-		srcmask.u.v4.sin_family = AF_INET6;
-		dstmask.u.v4.sin_family = AF_INET6;
+		srcflow.u.v6.sin6_family = AF_INET6;
+		dstflow.u.v6.sin6_family = AF_INET6;
+		srcmask.u.v6.sin6_family = AF_INET6;
+		dstmask.u.v6.sin6_family = AF_INET6;
+
+		srcflow.u.v6.sin6_addr = extr->eroute->er_eaddr.sen_ip6_src;
+		dstflow.u.v6.sin6_addr = extr->eroute->er_eaddr.sen_ip6_dst;
+		srcmask.u.v6.sin6_addr = extr->eroute->er_emask.sen_ip6_src;
+		dstmask.u.v6.sin6_addr = extr->eroute->er_emask.sen_ip6_dst;
 	} else {
 		srcflow.u.v4.sin_family = AF_INET;
 		dstflow.u.v4.sin_family = AF_INET;
 		srcmask.u.v4.sin_family = AF_INET;
 		dstmask.u.v4.sin_family = AF_INET;
+
+		srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
+		dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
+		srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
+		dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 	}
-	srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
-	dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
-	srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
-	dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
 	if (debug_pfkey) {
 		char buf1[64], buf2[64];
-		subnettoa(extr->eroute->er_eaddr.sen_ip_src,
-			  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
-		subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
-			  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+		if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
+			subnet6toa(&extr->eroute->er_eaddr.sen_ip6_src,
+				  &extr->eroute->er_emask.sen_ip6_src, 0, buf1, sizeof(buf1));
+			subnet6toa(&extr->eroute->er_eaddr.sen_ip6_dst,
+				  &extr->eroute->er_emask.sen_ip6_dst, 0, buf2, sizeof(buf2));
+		} else {
+			subnettoa(extr->eroute->er_eaddr.sen_ip_src,
+				  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
+			subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
+				  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+		}
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_x_addflow_parse: "
 			    "calling breakeroute and/or makeroute for %s->%s\n",
 			    buf1, buf2);
 	}
+
 	if(extr->ips->ips_flags & SADB_X_SAFLAGS_INFLOW
 			|| extr->ips->ips_flags & SADB_X_SAFLAGS_POLICYONLY) {
 /*	if(ip_chk_addr((unsigned long)extr->ips->ips_said.dst.u.v4.sin_addr.s_addr) == IS_MYADDR) */ 
@@ -2209,27 +2223,40 @@ pfkey_x_delflow_parse(struct sock *sk, struct sadb_ext **extensions, struct pfke
 		}
 		
 		if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
-			srcflow.u.v4.sin_family = AF_INET6;
-			dstflow.u.v4.sin_family = AF_INET6;
-			srcmask.u.v4.sin_family = AF_INET6;
-			dstmask.u.v4.sin_family = AF_INET6;
+			srcflow.u.v6.sin6_family = AF_INET6;
+			dstflow.u.v6.sin6_family = AF_INET6;
+			srcmask.u.v6.sin6_family = AF_INET6;
+			dstmask.u.v6.sin6_family = AF_INET6;
+
+			srcflow.u.v6.sin6_addr = extr->eroute->er_eaddr.sen_ip6_src;
+			dstflow.u.v6.sin6_addr = extr->eroute->er_eaddr.sen_ip6_dst;
+			srcmask.u.v6.sin6_addr = extr->eroute->er_emask.sen_ip6_src;
+			dstmask.u.v6.sin6_addr = extr->eroute->er_emask.sen_ip6_dst;
 		} else {
 			srcflow.u.v4.sin_family = AF_INET;
 			dstflow.u.v4.sin_family = AF_INET;
 			srcmask.u.v4.sin_family = AF_INET;
 			dstmask.u.v4.sin_family = AF_INET;
+
+			srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
+			dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
+			srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
+			dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 		}
-		srcflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_src;
-		dstflow.u.v4.sin_addr = extr->eroute->er_eaddr.sen_ip_dst;
-		srcmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_src;
-		dstmask.u.v4.sin_addr = extr->eroute->er_emask.sen_ip_dst;
 
 		if (debug_pfkey) {
 			char buf1[64], buf2[64];
-			subnettoa(extr->eroute->er_eaddr.sen_ip_src,
-				  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
-			subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
-				  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+			if (extr->eroute->er_eaddr.sen_type == SENT_IP6) {
+				subnet6toa(&extr->eroute->er_eaddr.sen_ip6_src,
+					  &extr->eroute->er_emask.sen_ip6_src, 0, buf1, sizeof(buf1));
+				subnet6toa(&extr->eroute->er_eaddr.sen_ip6_dst,
+					  &extr->eroute->er_emask.sen_ip6_dst, 0, buf2, sizeof(buf2));
+			} else {
+				subnettoa(extr->eroute->er_eaddr.sen_ip_src,
+					  extr->eroute->er_emask.sen_ip_src, 0, buf1, sizeof(buf1));
+				subnettoa(extr->eroute->er_eaddr.sen_ip_dst,
+					  extr->eroute->er_emask.sen_ip_dst, 0, buf2, sizeof(buf2));
+			}
 			KLIPS_PRINT(debug_pfkey,
 				    "klips_debug:pfkey_x_delflow_parse: "
 				    "calling breakeroute for %s->%s\n",
