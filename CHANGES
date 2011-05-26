@@ -17,6 +17,9 @@ v2.6.34 (unreleased)
 * MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
 * MAST: Don't autopick mast [David]
 * NETKEY: Fix AH mode [Avesh]
+  - rh #704548
+* DYNDNS: using hostnames could lead to loss of ports in SA [Avesh]
+  - rh #703473
 * Many uml testing harness fixes and updates, mostly IPv6 related [Paul/Hugh]
 * "ipsec look" now shows NETKEY/XFRM and IPv6 routing table [Paul]
 * "ipsec look" now shows iptables NEW_IPSEC_CONN mangle table [Paul]
