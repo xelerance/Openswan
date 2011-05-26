@@ -278,7 +278,7 @@ error:
 #else
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
-    long reqbuf[PCR_REQ_SIZE/sizeof(long)];
+    struct pluto_crypto_req reqbuf[2];
     struct pluto_crypto_req *r;
 
     signal(SIGHUP, catchhup);
@@ -297,7 +297,7 @@ error:
 	int actnum;
 	unsigned char *reqrest = ((unsigned char *)reqbuf)+sizeof(r->pcr_len);
 
-	r = (struct pluto_crypto_req *)reqbuf;
+	r = &reqbuf[0];
 	restlen = r->pcr_len-sizeof(r->pcr_len);
 	
 	passert(restlen < (signed)PCR_REQ_SIZE);
@@ -702,7 +702,7 @@ void delete_cryptographic_continuation(struct state *st)
  */
 void handle_helper_comm(struct pluto_crypto_worker *w)
 {
-    long reqbuf[PCR_REQ_SIZE/sizeof(long)];
+    struct pluto_crypto_req reqbuf[2];
     unsigned char *inloc;
     struct pluto_crypto_req *r;
     int restlen;
@@ -736,7 +736,7 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
     /* we can accept more work now that we have read from the pipe */
     w->pcw_work--;
 
-    r = (struct pluto_crypto_req *)reqbuf;
+    r = &reqbuf[0];
 
     if(r->pcr_len > sizeof(reqbuf)) {
 	loglog(RC_LOG_SERIOUS, "helper(%d) pid=%d screwed up length: %lu > %lu, killing it"
