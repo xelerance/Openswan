@@ -24,6 +24,7 @@
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/spinlock.h>
+#include "openswan/ipsec_kversion.h"
 
 /*
  * printk rate limiting, lifted from the networking subsystem.

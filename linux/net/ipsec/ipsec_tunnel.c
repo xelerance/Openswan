@@ -18,9 +18,12 @@
  * for more details.
  */
 
+#include <linux/version.h>
 #define __NO_VERSION__
 #include <linux/module.h>
-#include <linux/version.h>
+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) && LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,26)
+# include <linux/moduleparam.h>
+#endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
 #include <linux/config.h>
 #endif
