@@ -89,7 +89,7 @@ case "$1" in
 	done
 	echo
 	echo "Most of these have their own manual pages, e.g. ipsec_auto(8)."
-	echo "See also <http://www.freeswan.org> or the ipsec(8) manual page."
+	echo "See also the ipsec(8) manual page."
 	exit 0
 	;;
 version|--version)
