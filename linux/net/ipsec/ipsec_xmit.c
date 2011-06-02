@@ -109,6 +109,8 @@ static __u32 zeroes[64];
 #endif
 #endif
 
+static int ipsec_set_dst(struct ipsec_xmit_state *ixs);
+
 int ipsec_xmit_trap_count = 0;
 int ipsec_xmit_trap_sendcount = 0;
 
@@ -1135,6 +1137,7 @@ ipsec_xmit_ah(struct ipsec_xmit_state *ixs)
 enum ipsec_xmit_value
 ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 {
+	int error;
 #ifdef CONFIG_KLIPS_IPV6
 	if (ip_address_family(&ixs->ipsp->ips_said.dst) == AF_INET6) {
 		ixs->skb->ip_summed = CHECKSUM_NONE;
@@ -1149,6 +1152,9 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 		osw_ip6_hdr(ixs)->saddr    = ((struct sockaddr_in6*)(ixs->ipsp->ips_addr_s))->sin6_addr;
 		osw_ip6_hdr(ixs)->daddr    = ((struct sockaddr_in6*)(ixs->ipsp->ips_addr_d))->sin6_addr;
 		osw_ip6_hdr(ixs)->nexthdr  = ixs->ipip_proto;
+		error = ipsec_set_dst(ixs);
+		if (error != IPSEC_XMIT_OK)
+			return error;
 		/* DAVIDM No identification/fragment code here yet */
 		skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ixs->iph));
 	} else
@@ -1175,9 +1181,11 @@ ipsec_xmit_ipip(struct ipsec_xmit_state *ixs)
 		osw_ip4_hdr(ixs)->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
 		osw_ip4_hdr(ixs)->protocol = ixs->ipip_proto;
 		osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
-
 		/* newer kernels require skb->dst to be set in KLIPS_IP_SELECT_IDENT */
 		/* we need to do this before any HASH generation is done */
+		error = ipsec_set_dst(ixs);
+		if (error != IPSEC_XMIT_OK)
+			return error;
 		KLIPS_IP_SELECT_IDENT(osw_ip4_hdr(ixs), ixs->skb);
 #ifdef NET_21
 		skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ixs->iph));
@@ -2457,60 +2465,64 @@ enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 #endif
 
 
-/* avoid forward reference complain on <2.5 */
-struct flowi;
-
-enum ipsec_xmit_value
-ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
+static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 {
-	int error;
-	int is_mast_packet;
 	struct dst_entry *dst = NULL;
+	int error = 0;
+#ifdef NETDEV_25
+	struct flowi fl;
+#endif
 
-	/* check if this packet is sent from the mast, before we route */
-	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
+	if (ixs->set_dst)
+		return IPSEC_XMIT_OK;
 
 #ifdef NETDEV_25
+	memset(&fl, 0, sizeof(fl));
+
+	/* new route/dst cache code from James Morris */
+	ixs->skb->dev = ixs->physdev;
+ 	fl.flowi_oif = ixs->physdev->ifindex;
+
 #ifdef CONFIG_KLIPS_IPV6
-	if (ip_hdr(ixs->skb)->version == 6) {
+	if (osw_ip_hdr_version(ixs) == 6) {
 		if (ixs->pass)
-			memset(&fl->nl_u.ip6_u.saddr, 0, sizeof(fl->nl_u.ip6_u.saddr));
+			memset(&fl.nl_u.ip6_u.saddr, 0, sizeof(fl.nl_u.ip6_u.saddr));
 		else
-			fl->nl_u.ip6_u.saddr = ipv6_hdr(ixs->skb)->saddr;
-		fl->nl_u.ip6_u.daddr = ipv6_hdr(ixs->skb)->daddr;
-		/* fl->nl_u.ip6_u.tos = RT_TOS(ipv6_hdr(ixs->skb)->tos); */
-		fl->flowi_proto = IPPROTO_IPV6;
+			fl.nl_u.ip6_u.saddr = osw_ip6_hdr(ixs)->saddr;
+		fl.nl_u.ip6_u.daddr = osw_ip6_hdr(ixs)->daddr;
+		/* fl->nl_u.ip6_u.tos = RT_TOS(osw_ip6_hdr(ixs)->tos); */
+		fl.flowi_proto = IPPROTO_IPV6;
 #ifndef FLOW_HAS_NO_MARK
-		fl->flowi_mark = ixs->skb->mark;
+		fl.flowi_mark = ixs->skb->mark;
 #endif
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
-		dst = ip6_route_output(NULL, fl);
+		dst = ip6_route_output(NULL, &fl);
 #elif LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
-		dst = ip6_route_output(&init_net, NULL, fl);
+		dst = ip6_route_output(&init_net, NULL, &fl);
 #else
-		dst = ip6_route_output(&init_net, NULL, &fl->nl_u.ip6_u);
+		dst = ip6_route_output(&init_net, NULL, &fl.nl_u.ip6_u);
 #endif
 		error = dst->error;
 	} else
 #endif /* CONFIG_KLIPS_IPV6 */
 	{
-		fl->nl_u.ip4_u.daddr = ip_hdr(ixs->skb)->daddr;
-		fl->nl_u.ip4_u.saddr = ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr;
-		fl->flowi_tos = RT_TOS(ip_hdr(ixs->skb)->tos);
-		fl->flowi_proto = ip_hdr(ixs->skb)->protocol;
+		fl.nl_u.ip4_u.daddr = osw_ip4_hdr(ixs)->daddr;
+		fl.nl_u.ip4_u.saddr = ixs->pass ? 0 : osw_ip4_hdr(ixs)->saddr;
+		fl.flowi_tos = RT_TOS(osw_ip4_hdr(ixs)->tos);
+		fl.flowi_proto = osw_ip4_hdr(ixs)->protocol;
 #ifndef FLOW_HAS_NO_MARK
-		fl->flowi_mark = ixs->skb->mark;
+		fl.flowi_mark = ixs->skb->mark;
 #endif
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,39)
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,24)
-		error = ip_route_output_key(&ixs->route, fl);
+		error = ip_route_output_key(&ixs->route, &fl);
 # else
-		error = ip_route_output_key(&init_net, &ixs->route, fl);
+		error = ip_route_output_key(&init_net, &ixs->route, &fl);
 # endif
 		if (ixs->route)
 			dst = &ipsec_route_dst(ixs->route);
 #else
-		ixs->route = ip_route_output_key(&init_net, &fl->u.ip4);
+		ixs->route = ip_route_output_key(&init_net, &fl.u.ip4);
 		if (IS_ERR(ixs->route)) {
 			error = PTR_ERR(ixs->route);
 			ixs->route = NULL;
@@ -2526,9 +2538,9 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 #endif
 	/*skb_orphan(ixs->skb);*/
 	error = ip_route_output(&ixs->route,
-				    ip_hdr(ixs->skb)->daddr,
-				    ixs->pass ? 0 : ip_hdr(ixs->skb)->saddr,
-				    RT_TOS(ip_hdr(ixs->skb)->tos),
+				    osw_ip4_hdr(ixs)->daddr,
+				    ixs->pass ? 0 : osw_ip4_hdr(ixs)->saddr,
+				    RT_TOS(osw_ip4_hdr(ixs)->tos),
                                     /* mcr->rgb: should this be 0 instead? */
 				    ixs->physdev->ifindex);
 	if (ixs->route)
@@ -2554,7 +2566,7 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	}
 
 	if(ixs->dev == dst->dev) {
-		if (ip_hdr(ixs->skb)->version == 6)
+		if (osw_ip_hdr_version(ixs) == 6)
 			dst_release(dst);
 		else
 			ip_rt_put(ixs->route);
@@ -2570,6 +2582,32 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 
 	skb_dst_drop(ixs->skb);
 	skb_dst_set(ixs->skb, dst);
+
+	ixs->set_dst = 1;
+
+	return IPSEC_XMIT_OK;
+}
+
+
+enum ipsec_xmit_value
+ipsec_xmit_send(struct ipsec_xmit_state *ixs)
+{
+	int error;
+	int is_mast_packet;
+
+	/* check if this packet is sent from the mast, before we route */
+	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
+
+	/*
+	 * ipsec_set_dst may have been done in the IPIP code,  or we do it now.
+	 * DAVIDM - I actually think it must have always been done before
+	 *          now,  but ESP without IPIP and no AH may be the
+	 *          exception.  You cannot hash and then do ipsec_set_dst :-)
+	 */
+	error = ipsec_set_dst(ixs);
+	if (error != IPSEC_XMIT_OK)
+		return error;
+
 	if(ixs->stats) {
 		ixs->stats->tx_bytes += ixs->skb->len;
 	}
@@ -2645,26 +2683,11 @@ ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl)
 	return IPSEC_XMIT_OK;
 }
 
-#ifdef NETDEV_25
 enum ipsec_xmit_value
 ipsec_tunnel_send(struct ipsec_xmit_state *ixs)
 {
-	struct flowi fl;
-	memset(&fl, 0, sizeof(fl));
-
-	/* new route/dst cache code from James Morris */
-	ixs->skb->dev = ixs->physdev;
- 	fl.flowi_oif = ixs->physdev->ifindex;
-
-	return ipsec_xmit_send(ixs, &fl);
+	return ipsec_xmit_send(ixs);
 }
-#else
-enum ipsec_xmit_value
-ipsec_tunnel_send(struct ipsec_xmit_state *ixs)
-{
-	return ipsec_xmit_send(ixs, NULL);
-}
-#endif
 
 
 /*

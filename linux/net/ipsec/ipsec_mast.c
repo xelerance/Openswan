@@ -278,17 +278,7 @@ ipsec_mast_xsm_complete(
 	}
 #endif
 
-#ifdef NETDEV_25	/* 2.6 kernels */
-	/* now send the packet again */
-	{
-		struct flowi fl;
-		
-		memset(&fl, 0, sizeof(fl));
-		ipsec_xmit_send(ixs, &fl);
-	}
-#else
-	ipsec_xmit_send(ixs, NULL);
-#endif
+	ipsec_xmit_send(ixs);
 
 cleanup:
 	ipsec_xmit_cleanup(ixs);

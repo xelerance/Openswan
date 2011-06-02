@@ -134,6 +134,7 @@ struct ipsec_xmit_state
 	 * xmit flags
 	 */
 	uint16_t mast_mode:1;
+	uint16_t set_dst:1;
 
 	/* if carrying IPv6,  IPPROTO_IPV6, else IPPROTO_IPIP */
 	uint8_t ipip_proto;
@@ -180,11 +181,8 @@ extern atomic_t ipsec_ixs_cnt;
 
 extern void ipsec_extract_ports(struct sk_buff *skb, unsigned char nexthdr, int nexthdroff, struct sockaddr_encap * er);
 
-/* avoid forward reference complain on < 2.5 */
-struct flowi;
-
 extern enum ipsec_xmit_value
-ipsec_xmit_send(struct ipsec_xmit_state*ixs, struct flowi *fl);
+ipsec_xmit_send(struct ipsec_xmit_state *ixs);
 
 extern enum ipsec_xmit_value
 ipsec_nat_encap(struct ipsec_xmit_state*ixs);
