@@ -1142,7 +1142,7 @@ netlink_acquire(struct nlmsghdr *n)
 
     /* to get rid of complaints about strict alignment: */
     /* structure copy it first */
-    memcpy(NLMSG_DATA(n), &ac1, sizeof(struct xfrm_user_acquire));
+    memcpy(&ac1, NLMSG_DATA(n), sizeof(struct xfrm_user_acquire));
     acquire = &ac1;   /* then use it. */
 
     srcx = &acquire->sel.saddr;
@@ -1224,7 +1224,7 @@ netlink_policy_expire(struct nlmsghdr *n)
 	return;
     }
 
-    memcpy(NLMSG_DATA(n), &up1, sizeof(up1));
+    memcpy(&up1, NLMSG_DATA(n), sizeof(up1));
     upe = &up1;
     req.id.dir = upe->pol.dir;
     req.id.index = upe->pol.index;
