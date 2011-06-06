@@ -15,6 +15,7 @@ v2.6.34 (unreleased)
 * KLIPS: Enable CryptoAPI per default [Paul]
 * KLIPS: Module unload fixes [David]
 * KLIPS: Routing cache corruption due to ip_select_ident [David]
+* KLIPS: Only fixup the ethernet header it might be on [David]
 * MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
 * MAST: Don't autopick mast [David]
 * NETKEY: Fix AH mode [Avesh]
