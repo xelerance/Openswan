@@ -964,7 +964,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		}
 
 		if(ipsecdev) {
-			KLIPS_PRINT(debug_rcv && prvdev,
+			KLIPS_PRINT(debug_rcv,
 					"klips_debug:ipsec_rcv_init: "
 					"assigning packet ownership to "
 					"virtual device %s from "
@@ -1932,7 +1932,8 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 					skb_network_header(irs->skb) - irs->hard_header_len));
 		/* we have to fix the protocol,  it's not right with IP4/IP6 or
 		 * IP6/IP4 tunnels */
-		eth_hdr(irs->skb)->h_proto = irs->skb->protocol;
+		if (irs->hard_header_len == ETH_HLEN)
+			eth_hdr(irs->skb)->h_proto = irs->skb->protocol;
 	}
 
 	ipsec_nf_reset(irs->skb);
