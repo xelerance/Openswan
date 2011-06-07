@@ -2595,6 +2595,9 @@ ipsec_xmit_send(struct ipsec_xmit_state *ixs)
 	int error;
 	int is_mast_packet;
 
+	if (ixs->skb == NULL || ixs->skb->dev == NULL)
+		return IPSEC_XMIT_NODEV;
+
 	/* check if this packet is sent from the mast, before we route */
 	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
 
