@@ -4,7 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.34 (unreleased)
+v2.6.35 (unreleased)
+
+v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
 * Add Apple iOS work-around to l2tp example configs [Tuomo]
