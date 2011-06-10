@@ -31,9 +31,9 @@ moduleinstplace=/lib/modules/$bareversion/kernel/net/ipsec
 bogomips=`grep -i bogomips /proc/cpuinfo | head -1 | awk ' { print $3;}'| sed "s/\..*$//" `
 ram=`head -1 /proc/meminfo | awk '{print $2;}'`
 limit=1000
-if [ $bogomips > 1000 ]
+if [ $bogomips -gt 1000 ]
 then
-	if [ $ram > 262143 ]
+	if [ $ram -gt 262143 ]
 	then
 		limit=10000
 		#echo "OCF limit set to $limit"
