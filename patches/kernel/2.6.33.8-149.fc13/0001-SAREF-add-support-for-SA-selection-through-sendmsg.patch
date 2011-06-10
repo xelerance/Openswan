@@ -208,7 +208,7 @@ index 1e64dab..3db631d 100644
 +
 +	rcu_read_lock_bh();
 +	ops = rcu_dereference(ipsec_secpath_saref_ops);
-+	if (ops->get_secpath_sarefs)
++	if (ops && ops->get_secpath_sarefs)
 +		ops->get_secpath_sarefs(skb->sp, &refs[0], &refs[1]);
 +	rcu_read_unlock_bh();
 +
@@ -228,7 +228,7 @@ index 1e64dab..3db631d 100644
 +
 +	rcu_read_lock_bh();
 +	ops = rcu_dereference(ipsec_secpath_saref_ops);
-+	if (ops->set_ipc_saref)
++	if (ops && ops->set_ipc_saref)
 +		rc = ops->set_ipc_saref(ipc, *ref);
 +	rcu_read_unlock_bh();
 +
