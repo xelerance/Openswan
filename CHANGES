@@ -4,7 +4,11 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.34 (unreleased)
+v2.6.35 (unreleased)
+* OCF: Fix accidental 'always' setting of large resources [Sony Japan]
+* SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
+
+v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
 * Fix new leftmtu= option to pass correctly to _updown [Mattias Walstrom]
 * Add Apple iOS work-around to l2tp example configs [Tuomo]
@@ -16,6 +20,7 @@ v2.6.34 (unreleased)
 * KLIPS: Module unload fixes [David]
 * KLIPS: Routing cache corruption due to ip_select_ident [David]
 * KLIPS: Only fixup the ethernet header it might be on [David]
+* KLIPS: Fix for ixs->skb->dev is null at the top of ipsec_xmit_send [David]
 * MAST: refcount bug in transport mode prevented ipsec.ko unload [Sony Japan]
 * MAST: Don't autopick mast [David]
 * NETKEY: Fix AH mode [Avesh]
