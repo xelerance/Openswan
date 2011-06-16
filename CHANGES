@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.35 (unreleased)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
+* MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]

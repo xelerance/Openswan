@@ -513,12 +513,15 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 		return 	IPSEC_XMIT_NOPRIVDEV;
 	}
 
-	ixs->physdev = ixs->prv->dev;
-	if (ixs->physdev == NULL) {
-		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+	/* Only ipsecX attaches to a physical device, mastX just exists */
+	if (!ipsec_is_mast_device(ixs->prv->dev)) {
+		ixs->physdev = ixs->prv->dev;
+		if (ixs->physdev == NULL) {
+			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
 			    "Device is not attached to physical device!\n" );
-		return IPSEC_XMIT_NOPHYSDEV;
+			return IPSEC_XMIT_NOPHYSDEV;
+		}
 	}
 
 	ixs->physmtu = ixs->physdev->mtu;
