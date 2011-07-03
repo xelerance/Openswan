@@ -1878,7 +1878,11 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		secpath_put(skb->sp);
 	}
 	skb->sp = secpath_dup(NULL);
-	skb->sp->ref = irs->lastipsp->ips_ref;
+	if(skb->sp) {
+		skb->sp->ref = irs->lastipsp->ips_ref;
+	} else {
+		return IPSEC_RCV_REALLYBAD;
+	}
 #endif
 
 	return IPSEC_RCV_OK;
