@@ -9,6 +9,7 @@ v2.6.35 (unreleased)
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
 * MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
 * MAST:  Be more careful about {mast,ipsec}priv structure [Bart]
+* SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
