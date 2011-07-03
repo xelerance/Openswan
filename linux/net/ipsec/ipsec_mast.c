@@ -81,7 +81,7 @@ char ipsec_mast_c_version[] = "Please use ipsec --version instead";
 #endif
 
 int ipsec_mastdevice_count = -1;
-int debug_mast = -1;
+int debug_mast;
 
 static __u32 zeroes[64];
 
