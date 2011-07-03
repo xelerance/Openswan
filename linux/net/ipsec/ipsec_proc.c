@@ -648,7 +648,7 @@ ipsec_tncfg_get_info(char *buffer,
 		ipsec_snprintf(name, (ssize_t) sizeof(name), IPSEC_DEV_FORMAT, i);
 		dev = __ipsec_dev_get(name);
 		if(dev) {
-			priv = (struct ipsecpriv *)netdev_priv(dev);
+			priv = netdev_to_ipsecpriv(dev);
 			len += ipsec_snprintf(buffer+len, length-len, "%s",
 				       dev->name);
 			if(priv) {

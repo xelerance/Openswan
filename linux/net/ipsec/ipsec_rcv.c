@@ -953,10 +953,10 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 		for(i = 0; i <= ipsecdevices_max; i++) {
 			if(ipsecdevices[i] == NULL) continue;
-			prvdev = netdev_priv(ipsecdevices[i]);
-			
-			if(prvdev == NULL) continue;
+			if(!netdev_priv(ipsecdevices[i])) continue;
 
+			prvdev = netdev_to_ipsecpriv(ipsecdevices[i]);
+			
 			if(prvdev->dev == skb->dev) {
 				ipsecdev = ipsecdevices[i];
 				break;
