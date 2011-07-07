@@ -950,10 +950,10 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 		for(i = 0; i <= ipsecdevices_max; i++) {
 			if(ipsecdevices[i] == NULL) continue;
-			prvdev = netdev_priv(ipsecdevices[i]);
-			
-			if(prvdev == NULL) continue;
+			if(!netdev_priv(ipsecdevices[i])) continue;
 
+			prvdev = netdev_to_ipsecpriv(ipsecdevices[i]);
+			
 			if(prvdev->dev == skb->dev) {
 				ipsecdev = ipsecdevices[i];
 				break;
@@ -1875,7 +1875,11 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 		secpath_put(skb->sp);
 	}
 	skb->sp = secpath_dup(NULL);
-	skb->sp->ref = irs->lastipsp->ips_ref;
+	if(skb->sp) {
+		skb->sp->ref = irs->lastipsp->ips_ref;
+	} else {
+		return IPSEC_RCV_REALLYBAD;
+	}
 #endif
 
 	return IPSEC_RCV_OK;

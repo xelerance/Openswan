@@ -410,7 +410,7 @@ minstall24:
 	set -x ; \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 	cp $(MODBUILDDIR)/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
-	if [ -f /sbin/depmod ] ; then depmod -a ; fi; \
+	if [ -f /sbin/depmod ] ; then /sbin/depmod -a ; fi; \
 	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
         mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
                 if [ -f $$OSMODLIB/kernel/ipsec.o -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ] ; then \
@@ -479,7 +479,7 @@ minstall26:
 	set -x ; \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 	cp $(MOD26BUILDDIR)/ipsec.ko $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
-	if [ -f /sbin/depmod ] ; then depmod -a ; fi; \
+	if [ -f /sbin/depmod ] ; then /sbin/depmod -a ; fi; \
 	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
 	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
 		if [ -f $$OSMODLIB/kernel/ipsec.ko -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.ko ] ; then \

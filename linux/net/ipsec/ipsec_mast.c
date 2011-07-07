@@ -88,7 +88,7 @@ static __u32 zeroes[64];
 DEBUG_NO_STATIC int
 ipsec_mast_open(struct net_device *dev)
 {
-        struct mastpriv *prv = netdev_priv(dev); 
+	struct mastpriv *prv = netdev_to_mastpriv(dev); 
 
 	prv = prv;
 
@@ -467,12 +467,12 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 
-	if (ipsec_xmit_sanity_check_dev(ixs) != IPSEC_XMIT_OK) {
+	if (ipsec_xmit_sanity_check_mast_dev(ixs) != IPSEC_XMIT_OK) {
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
 		return 0;
 	}
- 
+
 	if (ipsec_xmit_sanity_check_skb(ixs) != IPSEC_XMIT_OK) {
 		ipsec_xmit_cleanup(ixs);
 		ipsec_xmit_state_delete(ixs);
@@ -515,19 +515,9 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 
-	/*
-	 * we should be calculating the MTU by looking up a route
-	 * based upon the destination in the SA, and then cache
-	 * it into the SA, but we don't do that right now.
-	 */
-	ixs->cur_mtu = 1460;
-	ixs->physmtu = 1460;
-
 	ixs->mast_mode = 1;
 	ixs->xsm_complete = ipsec_mast_xsm_complete;
 	ixs->state = IPSEC_XSM_INIT2;	/* we start later in the process */
-	ixs->prv = netdev_priv(ixs->dev);
-	ixs->stats = (struct net_device_stats *) &(ixs->prv->mystats);
 
 	ipsec_xsm(ixs);
 	return 0;
@@ -537,7 +527,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 DEBUG_NO_STATIC struct net_device_stats *
 ipsec_mast_get_stats(struct net_device *dev)
 {
-	return &(((struct mastpriv *)netdev_priv(dev))->mystats);
+	return &(netdev_to_mastpriv(dev)->mystats);
 }
 
 #if 0
@@ -549,7 +539,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	unsigned short type, void *daddr, void *saddr, unsigned len)
 {
-	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
+	struct mastpriv *mprv = netdev_to_mastpriv(dev);
 	struct net_device_stats *stats;	/* This device's statistics */
 	int ret = 0;
 	
@@ -623,7 +613,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 DEBUG_NO_STATIC int
 ipsec_mast_rebuild_header(struct sk_buff *skb)
 {
-	struct mastpriv *prv = (struct mastpriv *)netdev_priv(skb->dev);
+	struct mastpriv *prv = netdev_to_mastpriv(skb->dev);
 
 	prv = prv;
 	return 0;
@@ -632,7 +622,7 @@ ipsec_mast_rebuild_header(struct sk_buff *skb)
 DEBUG_NO_STATIC int
 ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 {
-	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
+	struct mastpriv *prv = netdev_to_mastpriv(dev);
 	
 	prv = prv;
 	return 0;
@@ -642,7 +632,7 @@ ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 DEBUG_NO_STATIC void
 ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
 {
-	struct mastpriv *prv = (struct mastpriv *)netdev_priv(dev);
+	struct mastpriv *prv = netdev_to_mastpriv(dev);
 	
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
@@ -703,10 +693,10 @@ ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	/* struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;*/
 	/* overlay our struct ipsecmast onto ifr.ifr_ifru union (hope it fits!) */
 	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr->ifr_ifru.ifru_newname;       
-	struct ipsecpriv *prv = netdev_priv(dev);
+	struct mastpriv *mprv = netdev_to_mastpriv(dev);
 
 	cf = cf;
-	prv=prv;
+	mprv = mprv;
 	
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
@@ -736,7 +726,7 @@ int
 ipsec_mast_device_event(struct notifier_block *unused, unsigned long event, void *ptr)
 {
 	struct net_device *dev = ptr;
-	struct mastpriv *priv = netdev_priv(dev);
+	struct mastpriv *priv = netdev_to_mastpriv(dev);
 
 	priv = priv;
 
@@ -858,7 +848,7 @@ int
 ipsec_mast_probe(struct net_device *dev)
 {
 	int i;
-	struct ipsecpriv *ipriv;
+	struct mastpriv *mprv;
 
 	KLIPS_PRINT(debug_mast,
 		    "klips_debug:ipsec_mast_probe: "
@@ -886,8 +876,9 @@ ipsec_mast_probe(struct net_device *dev)
 	if (dev->priv == NULL)
 		return -ENOMEM;
 #endif
-	ipriv = netdev_priv(dev);
-	memset(netdev_priv(dev), 0, sizeof(struct mastpriv));
+	mprv = netdev_priv(dev);
+	memset(mprv, 0, sizeof(struct mastpriv));
+	mprv->magic = MASTPRIV_MAGIC;
 
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;

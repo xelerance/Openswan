@@ -8,6 +8,9 @@ v2.6.35 (unreleased)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
 * MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
+* MAST:  Be more careful about {mast,ipsec}priv structure [Bart]
+* SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
+* SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
@@ -40,7 +43,7 @@ v2.6.34 (June 8, 2011))
 * Openswan (IKEv2/IKEv1) icmp issue (redhat bz 681974) [Avesh]
 * IKEv2: port range was hardcoded to 0-65535, not local policy [Avesh]
 * MAST: Fix oops on module unload [David]
-* Improve build speed, calulate version once [David]
+* Improve build speed, calculate version once [David]
 * Import OpenWRT packaging updates [Simon]
 * contrib: added openswan patch for 2.4.37.9 [Yannick Koehler]
 * KLIPS: Fix for compiling on 2.6.22 (Fedora Core 6 based) kernels [Paul]
