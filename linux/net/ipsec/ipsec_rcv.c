@@ -333,7 +333,7 @@ struct sk_buff *ipsec_rcv_unclone(struct sk_buff *skb,
 			       "tried to skb_push hhlen=%d, %d available.  This should never happen, please report(1).\n",
 			       irs->hard_header_len,
 			       skb_headroom(skb));
-			goto rcvleave;
+			return NULL;
 		}
 		skb_push(skb, irs->hard_header_len);
 		if
@@ -343,22 +343,19 @@ struct sk_buff *ipsec_rcv_unclone(struct sk_buff *skb,
 		  ((skb = skb_cow(skb, skb_headroom(skb))) == NULL)
 #endif /* SKB_COW_NEW */
 		{
-			goto rcvleave;
+			return NULL;
 		}
 		if(skb->len < irs->hard_header_len) {
 			printk(KERN_WARNING "klips_error:ipsec_rcv: "
 			       "tried to skb_pull hhlen=%d, %d available.  This should never happen, please report(2).\n",
 			       irs->hard_header_len,
 			       skb->len);
-			goto rcvleave;
+			return NULL;
 		}
 		skb_pull(skb, irs->hard_header_len);
 	}
 	return skb;
 
-rcvleave:
-	ipsec_kfree_skb(skb);
-	return NULL;
 }
 
 
