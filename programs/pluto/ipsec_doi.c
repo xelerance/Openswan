@@ -604,7 +604,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
      * things for checking the hash
      */
     st->st_peeridentity_protocol = id->isaid_doi_specific_a;
-    st->st_peeridentity_port = id->isaid_doi_specific_b;
+    st->st_peeridentity_port = ntohs(id->isaid_doi_specific_b);
 
     {
 	char buf[IDTOA_BUF];
