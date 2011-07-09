@@ -138,7 +138,7 @@ else
 ifneq ($(wildcard /usr/src/linux-2.4),)
 KERNELSRC?=/usr/src/linux-2.4
 else
-KERNELSRC?=/usr/src/linux
+KERNELSRC?=/lib/modules/$(shell uname -r)/build
 endif
 endif
 
