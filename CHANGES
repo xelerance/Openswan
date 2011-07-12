@@ -11,6 +11,8 @@ v2.6.35 (unreleased)
 * MAST:  Be more careful about {mast,ipsec}priv structure [Bart]
 * SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
+* pluto: Fix IPcomp pull-up from 2.4 introduced in 2.6.20 [Paul]
+         (malloc <-> pfree caused assertion with LEAK_DETECTIVE set)
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
