@@ -261,7 +261,7 @@ klipsinterface() {
 				cmd = cmd " dev " virt "> /dev/null"
 				system(cmd)
 			}' phys=$phys virt=$virt
-		ip link set up dev $virt
+		ip link set up mtu $phys_mtu dev $virt
         fi
 
         # Double check the mtu is not 0 - if it is set it to a saner default
