@@ -12,6 +12,7 @@ v2.6.35 (unreleased)
 * SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
 * KLIPS: Fix possible double skb free [Sony Japan]
+* KLIPS: Fix MTU on interface - bug introduced in 2.6.33 [Wolfgang Nothdurft]
 * pluto: Fix IPcomp pull-up from 2.4 introduced in 2.6.20 [Paul]
          (malloc <-> pfree caused assertion with LEAK_DETECTIVE set)
 * pluto: st_peeridentity_port missed ntohs() causing interop
