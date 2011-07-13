@@ -143,10 +143,10 @@ out_sa(pb_stream *outs
 
 	if (revised_sadb && ((st->st_policy) & POLICY_COMPRESS)) {
 
-	    struct db_trans *ipcomp_trans = alloc_thing (struct db_trans, "ipcomp_trans");
+	    struct db_trans *ipcomp_trans = alloc_thing(struct db_trans, "ipcomp_trans");
 
 	    /* allocate space for 2 proposals */
-	    struct db_prop *ipcomp_prop = alloc_thing ( (sizeof (struct db_prop) * 2), "ipcomp_prop");
+	    struct db_prop *ipcomp_prop = alloc_bytes( (sizeof (struct db_prop) * 2), "ipcomp_prop");
 
 	    if (ipcomp_trans && ipcomp_prop) {
 
