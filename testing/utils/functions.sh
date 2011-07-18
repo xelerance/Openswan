@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # $Id: functions.sh,v 1.131 2005/11/16 21:31:50 mcr Exp $
