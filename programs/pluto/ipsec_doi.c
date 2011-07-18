@@ -686,8 +686,8 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 
 	    st->st_connection = r;	/* kill reference to c */
 
-	    /* this ensures we don't move cur_connection from NULL to something,
-	     * requiring a restet_cur_connection() */
+	    /* this ensures we don't move cur_connection from NULL to
+	     * something, requiring a reset_cur_connection() */
 	    if (cur_connection == c) {
 		set_cur_connection(r);
 	    }
