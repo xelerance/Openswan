@@ -17,6 +17,7 @@ v2.6.35 (unreleased)
          (malloc <-> pfree caused assertion with LEAK_DETECTIVE set)
 * pluto: st_peeridentity_port missed ntohs() causing interop
          failure between big/little-endian machines [Magnus Öberg]
+* pluto: Fix for Tuomo's (rare) crasher where globals were not reset [dhr]
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
