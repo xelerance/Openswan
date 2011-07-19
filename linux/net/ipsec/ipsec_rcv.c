@@ -1539,7 +1539,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 		if (memcmp(irs->hash, irs->authenticator, irs->authlen)) {
 			irs->ipsp->ips_errs.ips_auth_errs += 1;
 			KLIPS_ERROR(debug_rcv & DB_RX_INAU,
-				    "klips_debug:ipsec_rcv_auth_calc: "
+				    "klips_debug:ipsec_rcv_auth_chk: "
 				    "auth failed on incoming packet from %s (replay=%d): calculated hash=%08x%08x%08x received hash=%08x%08x%08x, dropped\n",
 				    irs->ipsaddr_txt,
 				    irs->replay,
@@ -1555,7 +1555,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_AUTHFAILED;
 		} else {
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv_auth_calc: "
+				    "klips_debug:ipsec_rcv_auth_chk: "
 				    "authentication successful.\n");
 		}
 
@@ -1570,7 +1570,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 			ipsec_sa_rm(irs->ipsp);
 
 			KLIPS_ERROR(debug_rcv,
-				    "klips_debug:ipsec_rcv_auth_calc: "
+				    "klips_debug:ipsec_rcv_auth_chk: "
 				    "replay window counter rolled, expiring SA.\n");
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
@@ -1582,7 +1582,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 		if (!ipsec_updatereplaywindow(irs->ipsp, irs->replay)) {
 			irs->ipsp->ips_errs.ips_replaywin_errs += 1;
 			KLIPS_ERROR(debug_rcv & DB_RX_REPLAY,
-				    "klips_debug:ipsec_rcv_auth_calc: "
+				    "klips_debug:ipsec_rcv_auth_chk: "
 				    "duplicate frame from %s, packet dropped\n",
 				    irs->ipsaddr_txt);
 			if(irs->stats) {
@@ -1942,12 +1942,12 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 	if (irs->skb->dev == NULL) {
 		/* the physical dev went down and is no longer attached */
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-				"klips_debug:ipsec_rcv_decap_cont: interface for skb is detached.\n");
+				"klips_debug:ipsec_rcv_complete: interface for skb is detached.\n");
 		return IPSEC_RCV_REALLYBAD;
 	}
 
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-		    "klips_debug:ipsec_rcv_decap_cont: "
+		    "klips_debug:ipsec_rcv_complete: "
 		    "netif_rx(%s) called.\n", irs->skb->dev->name);
 	netif_rx(irs->skb);
 	irs->skb = NULL;
