@@ -329,7 +329,7 @@ struct sk_buff *ipsec_rcv_unclone(struct sk_buff *skb,
 	if(skb_cloned(skb)) {
 		/* include any mac header while copying.. */
 		if(skb_headroom(skb) < irs->hard_header_len) {
-			printk(KERN_WARNING "klips_error:ipsec_rcv: "
+			printk(KERN_WARNING "klips_error:ipsec_rcv_unclone: "
 			       "tried to skb_push hhlen=%d, %d available.  This should never happen, please report(1).\n",
 			       irs->hard_header_len,
 			       skb_headroom(skb));
@@ -346,7 +346,7 @@ struct sk_buff *ipsec_rcv_unclone(struct sk_buff *skb,
 			return NULL;
 		}
 		if(skb->len < irs->hard_header_len) {
-			printk(KERN_WARNING "klips_error:ipsec_rcv: "
+			printk(KERN_WARNING "klips_error:ipsec_rcv_unclone: "
 			       "tried to skb_pull hhlen=%d, %d available.  This should never happen, please report(2).\n",
 			       irs->hard_header_len,
 			       skb->len);
@@ -397,7 +397,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 		irs->natt_dport = ntohs(udp->dest);
 	  
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_natt_decap: "
 			    "suspected ESPinUDP packet (NAT-Traversal) [%d].\n",
 			    tp->esp_in_udp);
 		KLIPS_IP_PRINT(debug_rcv, ip);
@@ -406,7 +406,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 			unsigned int len = skb->tail - udpdata;
 			if ((len==1) && (udpdata[0]==0xff)) {
 				KLIPS_PRINT(debug_rcv,
-					    "klips_debug:ipsec_rcv: "
+					    "klips_debug:ipsec_rcv_natt_decap: "
 					    /* not IPv6 compliant message */
 					    "NAT-keepalive from %pI4.\n", &ip->saddr);
 				*udp_decap_ret_p = 0;
@@ -417,7 +417,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				  (udpdata32[0]==0) && (udpdata32[1]==0) ) {
 				/* ESP Packet with Non-IKE header */
 				KLIPS_PRINT(debug_rcv, 
-					    "klips_debug:ipsec_rcv: "
+					    "klips_debug:ipsec_rcv_natt_decap: "
 					    "ESPinUDP pkt with Non-IKE - spi=0x%x\n",
 					    ntohl(udpdata32[2]));
 				irs->natt_type = ESPINUDP_WITH_NON_IKE;
@@ -430,13 +430,13 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				irs->natt_type = ESPINUDP_WITH_NON_ESP;
 				irs->natt_len = sizeof(struct udphdr);
 				KLIPS_PRINT(debug_rcv, 
-					    "klips_debug:ipsec_rcv: "
+					    "klips_debug:ipsec_rcv_natt_decap: "
 					    "ESPinUDP pkt without Non-ESP - spi=0x%x\n",
 					    ntohl(udpdata32[0]));
 			}
 			else {
 				KLIPS_PRINT(debug_rcv,
-					    "klips_debug:ipsec_rcv: "
+					    "klips_debug:ipsec_rcv_natt_decap: "
 					    "IKE packet - not handled here\n");
 				*udp_decap_ret_p = -1;
 				return NULL;
@@ -501,7 +501,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		&& ipp->protocol != IPPROTO_IPV6
 		&& ipp->protocol != IPPROTO_ATT_HEARTBEAT) {  /* AT&T heartbeats to SIG/GIG */
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_decap_ipip: "
 			    "SA:%s, Hey!  How did this get through?  Dropped.\n",
 			    irs->sa_len ? irs->sa : " (error)");
 		if(irs->stats) {
@@ -521,7 +521,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			else
 				sa_len2 = 0;
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_decap_ipip: "
 				    "unexpected SA:%s after IPIP SA:%s\n",
 				    sa_len2 ? sa2 : " (error)",
 				    irs->sa_len ? irs->sa : " (error)");
@@ -552,7 +552,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			*saddr2 = 0;
 			sin_addrtot(&psin->sin_addr, 0, saddr2, sizeof(saddr2));
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_decap_ipip: "
 				    "SA:%s, src=%s(%s) does match expected %s.\n",
 				    irs->sa_len ? irs->sa : " (error)",
 				    irs->ipsaddr_txt, 
@@ -605,7 +605,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		}
 
 		if(skb->len < irs->iphlen) {
-			printk(KERN_WARNING "klips_debug:ipsec_rcv: "
+			printk(KERN_WARNING "klips_debug:ipsec_rcv_decap_ipip: "
 			       "tried to skb_pull iphlen=%d, %d available.  This should never happen, please report(3).\n",
 			       irs->iphlen,
 			       (int)(skb->len));
@@ -640,7 +640,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			skb->protocol = htons(ETH_P_IP);
 		skb->ip_summed = 0;
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_decap_ipip: "
 			    "IPIP tunnel stripped.\n");
 		KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
 	}
@@ -718,7 +718,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 				  0, dflow_txt, sizeof(dflow_txt));
 		}
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_decap_ipip: "
 			    "SA:%s, inner tunnel policy [%s -> %s] does not agree with pkt contents [%s -> %s].\n",
 			    irs->sa_len ? irs->sa : " (error)",
 			    sflow_txt,
@@ -743,7 +743,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			  0, dflow_txt, sizeof(dflow_txt));
 
 		KLIPS_PRINT(debug_mast,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_decap_ipip: "
 			    "SA:%s, inner tunnel policy [%s -> %s] agrees with pkt contents [%s -> %s].\n",
 			    irs->sa_len ? irs->sa : " (error)",
 			    sflow_txt, dflow_txt,
@@ -756,7 +756,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 		| IPsecSAref2NFmark(IPsecSA2SAref(ipsp));
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-		    "klips_debug:ipsec_rcv: "
+		    "klips_debug:ipsec_rcv_decap_ipip: "
 		    "IPIP SA sets skb->nfmark=0x%x.\n",
 		    (unsigned)skb->nfmark);
 #endif /* CONFIG_NETFILTER */
@@ -812,7 +812,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 	if (skb->data == NULL) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_init: "
 			    "NULL skb->data passed in, packet is bogus, dropping.\n");
 		return IPSEC_RCV_REALLYBAD;
 	}
@@ -862,12 +862,12 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			unsigned int _len = (unsigned char *)skb->data -
 				(unsigned char *)ip_hdr(skb);
 			KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: adjusting skb: skb_push(%u)\n",
+				"klips_debug:ipsec_rcv_init: adjusting skb: skb_push(%u)\n",
 				_len);
 			skb_push(skb, _len);
 		}
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_init: "
 			    "removing %d bytes from ESPinUDP packet\n"
 			    , irs->natt_len);
 
@@ -876,7 +876,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		osw_ip4_hdr(irs)->tot_len = htons(ntohs(osw_ip4_hdr(irs)->tot_len) - irs->natt_len);
 		if (skb->len < irs->iphlen + irs->natt_len) {
 			printk(KERN_WARNING
-			       "klips_error:ipsec_rcv: "
+			       "klips_error:ipsec_rcv_init: "
 			       "ESPinUDP packet is too small (%d < %d+%d). "
 			       "This should never happen, please report.\n",
 			       (int)(skb->len), irs->iphlen, irs->natt_len);
@@ -914,7 +914,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 	}
 
 	KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
+		    "klips_debug:ipsec_rcv_init: "
 		    "<<< Info -- ");
 	KLIPS_PRINTMORE(debug_rcv && skb->dev, "skb->dev=%s ",
 			skb->dev->name ? skb->dev->name : "NULL");
@@ -923,7 +923,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 #ifndef NET_21
 	if((!protocol) || (protocol->protocol != irs->proto)) {
 		KLIPS_PRINT(debug_rcv & DB_RX_IPSA,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_init: "
 			    "protocol arg is NULL or unequal to the packet contents, this is odd, using value in packet.\n");
 	}
 #endif /* !NET_21 */
@@ -934,7 +934,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 #endif /* CONFIG_KLIPS_IPCOMP */
 	    (irs->proto != IPPROTO_ESP) ) {
 		KLIPS_PRINT(debug_rcv & DB_RX_IPSA,
-			    "klips_debug:ipsec_rcv: Why the hell is someone "
+			    "klips_debug:ipsec_rcv_init: Why the hell is someone "
 			    "passing me a non-ipsec irs->proto = %d packet? -- dropped.\n",
 			    irs->proto);
 		return IPSEC_RCV_REALLYBAD;
@@ -1095,7 +1095,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	newipsp = ipsec_sa_getbyid(&irs->said, IPSEC_REFRX);
 	if (newipsp == NULL) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_auth_init: "
 			    "no ipsec_sa for SA:%s: incoming packet with no SA dropped\n",
 			    irs->sa_len ? irs->sa : " (error)");
 		if(irs->stats) {
@@ -1107,7 +1107,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 	/* If it is in larval state, drop the packet, we cannot process yet. */
 	if(newipsp->ips_state == K_SADB_SASTATE_LARVAL) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_auth_init: "
 			    "ipsec_sa in larval state, cannot be used yet, dropping packet.\n");
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
@@ -1118,7 +1118,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 
 	if(newipsp->ips_state == K_SADB_SASTATE_DEAD) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_auth_init: "
 			    "ipsec_sa in dead state, cannot be used any more, dropping packet.\n");
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
@@ -1157,7 +1157,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 						irs->sa, sizeof(irs->sa));
 			}
 			KLIPS_ERROR(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_init: "
 				    "SA:%s, src=%s of pkt does not agree with expected SA source address policy (%s).\n",
 				    irs->sa_len ? irs->sa : " (error)",
 				    irs->ipsaddr_txt,
@@ -1170,7 +1170,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		}
 
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_auth_init: "
 			    "SA:%s, src=%s of pkt agrees with expected SA source address policy.\n",
 			    irs->sa_len ? irs->sa : " (error)",
 			    irs->ipsaddr_txt);
@@ -1183,7 +1183,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 		if(irs->ipsp) {
 			if(irs->ipsp->ips_next != newipsp) {
 				KLIPS_ERROR(debug_rcv,
-					    "klips_debug:ipsec_rcv: "
+					    "klips_debug:ipsec_rcv_auth_init: "
 					    "unexpected SA:%s: does not agree with ips->inext policy, dropped\n",
 					    irs->sa_len ? irs->sa : " (error)");
 				if(irs->stats) {
@@ -1193,12 +1193,12 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 				return IPSEC_RCV_FAILEDINBOUND;
 			}
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_init: "
 				    "SA:%s grouping from previous SA is OK.\n",
 				    irs->sa_len ? irs->sa : " (error)");
 		} else {
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_init: "
 				    "SA:%s First SA in group.\n",
 				    irs->sa_len ? irs->sa : " (error)");
 		}
@@ -1206,13 +1206,13 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
 #ifdef NAT_TRAVERSAL
                 if (irs->proto == IPPROTO_ESP) {
                         KLIPS_PRINT(debug_rcv,
-                                "klips_debug:ipsec_rcv: "
+                                "klips_debug:ipsec_rcv_auth_init: "
                                 "natt_type=%u tdbp->ips_natt_type=%u : %s\n",
                                 irs->natt_type, newipsp->ips_natt_type,
                                 (irs->natt_type==newipsp->ips_natt_type)?"ok":"bad");
                         if (irs->natt_type != newipsp->ips_natt_type) {
                                 KLIPS_PRINT(debug_rcv,
-                                            "klips_debug:ipsec_rcv: "
+                                            "klips_debug:ipsec_rcv_auth_init: "
                                             "SA:%s does not agree with expected NAT-T policy.\n",
                                             irs->sa_len ? irs->sa : " (error)");
                                 if(irs->stats) {
@@ -1268,7 +1268,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_OK;
 		}
 
-		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_rcv: "
+		KLIPS_PRINT(debug_rcv, "klips_debug:ipsec_rcv_auth_decap: "
 				"packet with protocol %d!=%d dropped, last successful SA:%s.\n",
 				irs->proto_funcs->protocol, irs->proto,
 				irs->sa_len ? irs->sa : " (error)");
@@ -1305,7 +1305,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 		}
 		
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv_decap_once: "
+			    "klips_debug:ipsec_rcv_auth_decap: "
 			    "decap (%d) failed lifetime check\n",
 			    irs->proto);
 
@@ -1353,7 +1353,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 		 */
 		if (sysctl_ipsec_inbound_policy_check) {
 			KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: "
+				"klips_debug:ipsec_rcv_auth_decap: "
 				"SA:%s, src=%s:%u of pkt does not agree with expected "
 				"SA source address [%08x:%u] (notifying pluto of change).\n",
 				irs->sa_len ? irs->sa : " (error)",
@@ -1393,7 +1393,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 		irs->ictx_len = 0;
 		irs->octx_len = 0;
 		KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: "
+				"klips_debug:ipsec_rcv_auth_decap: "
 				"authalg=%d authlen=%d\n",
 				irs->ipsp->ips_authalg, 
 				irs->authlen);
@@ -1440,7 +1440,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 	irs->ilen = ((irs->skb->data + irs->skb->len) - skb_transport_header(irs->skb)) - irs->authlen;
 	if(irs->ilen <= 0) {
 	  KLIPS_PRINT(debug_rcv,
-		      "klips_debug:ipsec_rcv: "
+		      "klips_debug:ipsec_rcv_auth_decap: "
 		      "runt %s packet with no data, dropping.\n",
 		      (irs->proto == IPPROTO_ESP ? "esp" : "ah"));
 	  if(irs->stats) {
@@ -1490,7 +1490,7 @@ ipsec_rcv_auth_calc(struct ipsec_rcv_state *irs)
 		if(!ipsec_checkreplaywindow(irs->ipsp, irs->replay)) {
 			irs->ipsp->ips_errs.ips_replaywin_errs += 1;
 			KLIPS_PRINT(debug_rcv & DB_RX_REPLAY,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_calc: "
 				    "duplicate frame from %s, packet dropped\n",
 				    irs->ipsaddr_txt);
 			if(irs->stats) {
@@ -1504,7 +1504,7 @@ ipsec_rcv_auth_calc(struct ipsec_rcv_state *irs)
 		 */
 
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_auth_calc: "
 			    "encalg = %d, authalg = %d.\n",
 			    irs->ipsp->ips_encalg,
 			    irs->ipsp->ips_authalg);
@@ -1539,7 +1539,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 		if (memcmp(irs->hash, irs->authenticator, irs->authlen)) {
 			irs->ipsp->ips_errs.ips_auth_errs += 1;
 			KLIPS_ERROR(debug_rcv & DB_RX_INAU,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_calc: "
 				    "auth failed on incoming packet from %s (replay=%d): calculated hash=%08x%08x%08x received hash=%08x%08x%08x, dropped\n",
 				    irs->ipsaddr_txt,
 				    irs->replay,
@@ -1555,7 +1555,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_AUTHFAILED;
 		} else {
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_calc: "
 				    "authentication successful.\n");
 		}
 
@@ -1570,7 +1570,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 			ipsec_sa_rm(irs->ipsp);
 
 			KLIPS_ERROR(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_calc: "
 				    "replay window counter rolled, expiring SA.\n");
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
@@ -1582,7 +1582,7 @@ ipsec_rcv_auth_chk(struct ipsec_rcv_state *irs)
 		if (!ipsec_updatereplaywindow(irs->ipsp, irs->replay)) {
 			irs->ipsp->ips_errs.ips_replaywin_errs += 1;
 			KLIPS_ERROR(debug_rcv & DB_RX_REPLAY,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_auth_calc: "
 				    "duplicate frame from %s, packet dropped\n",
 				    irs->ipsaddr_txt);
 			if(irs->stats) {
@@ -1671,7 +1671,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	}
 	irs->proto = irs->next_header; /* needed for decap_init recursion */
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-			"klips_debug:ipsec_rcv: "
+			"klips_debug:ipsec_rcv_decap_cont: "
 			"after <%s%s%s>, SA:%s:\n",
 			IPS_XFORM_NAME(irs->ipsp),
 			irs->sa_len ? irs->sa : " (error)");
@@ -1702,12 +1702,12 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 				return IPSEC_RCV_FAILEDINBOUND;
 			}
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_decap_cont: "
 				    "SA:%s, Another IPSEC header to process.\n",
 				    irs->sa_len ? irs->sa : " (error)");
 		} else {
 			KLIPS_PRINT(debug_rcv,
-				    "klips_debug:ipsec_rcv: "
+				    "klips_debug:ipsec_rcv_decap_cont: "
 				    "No ips_inext from this SA:%s.\n",
 				    irs->sa_len ? irs->sa : " (error)");
 		}
@@ -1743,7 +1743,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 			| (skb->nfmark & (~(IPsecSAref2NFmark(IPSEC_SA_REF_MASK))))
 			| IPsecSAref2NFmark(IPsecSA2SAref(irs->ipsp));
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_decap_cont: "
 			    "%s SA sets skb->nfmark=0x%x.\n",
 			    irs->proto == IPPROTO_ESP ? "ESP" : "AH",
 			    (unsigned)skb->nfmark);
@@ -1942,12 +1942,12 @@ ipsec_rcv_complete(struct ipsec_rcv_state *irs)
 	if (irs->skb->dev == NULL) {
 		/* the physical dev went down and is no longer attached */
 		KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-				"klips_debug:ipsec_rcv: interface for skb is detached.\n");
+				"klips_debug:ipsec_rcv_decap_cont: interface for skb is detached.\n");
 		return IPSEC_RCV_REALLYBAD;
 	}
 
 	KLIPS_PRINT(debug_rcv & DB_RX_PKTRX,
-		    "klips_debug:ipsec_rcv: "
+		    "klips_debug:ipsec_rcv_decap_cont: "
 		    "netif_rx(%s) called.\n", irs->skb->dev->name);
 	netif_rx(irs->skb);
 	irs->skb = NULL;
@@ -1987,7 +1987,7 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 		ipsp = ipsec_sa_getbyid(&irs->said, IPSEC_REFRX);
 		if (ipsp == NULL) {
 			KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: "
+				"klips_debug:ipsec_rsm: "
 				"no ipsec_sa for SA:%s: "
 				"incoming packet with no SA dropped\n",
 				irs->sa_len ? irs->sa : " (error)");
@@ -2272,14 +2272,14 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 
 	if (skb == NULL) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:klips26_rcv_encap: "
 			    "NULL skb passed in.\n");
 		goto rcvleave;
 	}
 
 	if (skb->data == NULL) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:klips26_rcv_encap: "
 			    "NULL skb->data passed in, packet is bogus, dropping.\n");
 		goto rcvleave;
 	}
@@ -2287,7 +2287,7 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 	irs = ipsec_rcv_state_new();
 	if (unlikely (! irs)) {
 		KLIPS_PRINT(debug_rcv,
-				"klips_debug:ipsec_rcv: "
+				"klips_debug:klips26_rcv_encap: "
 				"failled to allocate a rcv state object\n");
 		goto rcvleave;
 	}

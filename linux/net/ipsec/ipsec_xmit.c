@@ -814,7 +814,7 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	if(skb_tailroom(ixs->skb) < ixs->tailroom) {
 		printk(KERN_WARNING
 		       "klips_error:ipsec_xmit_encap_init: "
-		       "tried to skb_put %d, %d available.  This should never happen, please report.\n",
+		       "tried to skb_put %d, %d available. Retuning IPSEC_XMIT_ESP_PUSHPULLERR  This should never happen, please report.\n",
 		       ixs->tailroom, skb_tailroom(ixs->skb));
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
@@ -2455,7 +2455,7 @@ enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 		struct iphdr *ipp = ip_hdr(ixs->skb);
 		struct udphdr *udp;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_tunnel_start_xmit: "
+			    "klips_debug:ipsec_nat_encap: "
 			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
 			    ixs->natt_type, ixs->natt_head);
 
@@ -2463,8 +2463,8 @@ enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 		ipp->tot_len =
 			htons(ntohs(ipp->tot_len) + ixs->natt_head);
 		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
-			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
-				"tried to skb_put %d, %d available. "
+			printk(KERN_WARNING "klips_error:ipsec_nat_encap: "
+				"tried to skb_put %d, %d available. Returning IPSEC_XMIT_ESPUDP. "
 				"This should never happen, please report.\n",
 				ixs->natt_head,
 				skb_tailroom(ixs->skb));
@@ -2594,7 +2594,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "ip_route_output failed with error code %d, dropped\n",
 			    error);
 		return IPSEC_XMIT_ROUTEERR;
@@ -2604,7 +2604,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "ip_route_output failed with no dst, dropped\n");
 		return IPSEC_XMIT_ROUTEERR;
 	}
@@ -2623,7 +2623,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "suspect recursion, dev=rt->u.dst.dev=%s, dropped\n",
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;

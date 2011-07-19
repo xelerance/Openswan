@@ -82,7 +82,7 @@ ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 
 	if(skb->len < (ipcompminlen + sizeof(struct ipcomphdr))) {
 		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_checks: "
 			    "runt comp packet of skb->len=%d received from %s, dropped.\n",
 			    skb->len,
 			    irs->ipsaddr_txt);
@@ -122,7 +122,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		sa_len2 = KLIPS_SATOT(debug_rcv, &ipsp->ips_said, 0, sa2, sizeof(sa2));
 
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 			    "Incoming packet with SA(IPCA):%s does not match policy SA(IPCA):%s cpi=%04x cpi->spi=%08x spi=%08x, spi->cpi=%04x for SA grouping, dropped.\n",
 			    irs->sa_len ? irs->sa : " (error)",
 			    sa_len2 ? sa2 : " (error)",
@@ -151,7 +151,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 	skb = skb_decompress(skb, ipsp, &flags);
 	if (!skb || flags) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 			    "skb_decompress() returned error flags=%x, dropped.\n",
 			    flags);
 		if (irs->stats) {
@@ -179,7 +179,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(irs)->tot_len);
 
 	KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
+		    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 		    "packet decompressed SA(IPCA):%s cpi->spi=%08x spi=%08x, spi->cpi=%04x, nh=%d.\n",
 		    irs->sa_len ? irs->sa : " (error)",
 		    (__u32)ntohl(irs->said.spi),
