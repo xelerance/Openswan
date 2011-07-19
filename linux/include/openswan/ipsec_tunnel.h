@@ -61,8 +61,11 @@ struct ipsectunnelconf
 #ifndef KERNEL_VERSION
 #  define KERNEL_VERSION(x,y,z) (((x)<<16)+((y)<<8)+(z))
 #endif
+#define IPSECPRIV_MAGIC 0x15ECC0DE
 struct ipsecpriv
 {
+	uint32_t magic;
+
 	struct sk_buff_head sendq;
 	struct net_device *dev;
 	struct wait_queue *wait_queue;
@@ -101,6 +104,16 @@ struct ipsecpriv
 	struct net_device_stats mystats;
 	int mtu;	/* What is the desired MTU? */
 };
+
+static inline struct ipsecpriv *netdev_to_ipsecpriv(const struct net_device *dev)
+{
+	struct ipsecpriv *iprv = netdev_priv(dev);
+
+	BUG_ON(!iprv);
+	BUG_ON(iprv->magic != IPSECPRIV_MAGIC);
+
+	return iprv;
+}
 
 extern char ipsec_tunnel_c_version[];
 

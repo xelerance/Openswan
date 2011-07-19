@@ -157,7 +157,7 @@ then
 			exit 1
 		fi
 	else
-		if test ! -w "`dirname $stderrlog`"
+		if test ! -w "${stderrlog%/*}"
 		then
 			echo Cannot write to directory to create \"$stderrlog\".
 			exit 1

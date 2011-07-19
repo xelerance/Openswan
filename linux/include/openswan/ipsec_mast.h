@@ -21,8 +21,11 @@ struct ipsecmastconf {
 #define cf_name cf_u.cfu_name
 };
 
+#define MASTPRIV_MAGIC 0x4A57C0DE
 struct mastpriv
 {
+	uint32_t magic;
+
 	struct sk_buff_head sendq;
 	struct wait_queue *wait_queue;
 	int  (*hard_header) (struct sk_buff *skb,
@@ -31,22 +34,19 @@ struct mastpriv
 			     void *daddr,
 			     void *saddr,
 			     unsigned len);
-#if 0
-	char locked;
-	int  (*hard_start_xmit) (struct sk_buff *skb,
-				 struct net_device *dev);
-	int  (*rebuild_header)(struct sk_buff *skb);
-	int  (*set_mac_address)(struct net_device *dev, void *addr);
-	void (*header_cache_bind)(struct hh_cache **hhp, struct net_device *dev,
-				  unsigned short htype, __u32 daddr);
-	void (*header_cache_update)(struct hh_cache *hh,
-				    struct net_device *dev,
-				    unsigned char *  haddr);
-	struct net_device_stats *(*get_stats)(struct net_device *dev);
-#endif
 	struct net_device_stats mystats;
 	int mtu;	/* What is the desired MTU? */
 };
+
+static inline struct mastpriv *netdev_to_mastpriv(const struct net_device *dev)
+{
+	struct mastpriv *mprv = netdev_priv(dev);
+
+	BUG_ON(!mprv);
+	BUG_ON(mprv->magic != MASTPRIV_MAGIC);
+
+	return mprv;
+}
 
 extern int ipsec_mast_init_devices(void);
 extern int ipsec_mast_cleanup_devices(void);

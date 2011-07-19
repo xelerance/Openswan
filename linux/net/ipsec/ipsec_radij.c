@@ -158,14 +158,14 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 	}
 	if (ro->er_first != NULL) {
 #if 0
-		struct net_device_stats *stats = (struct net_device_stats *) &(((struct ipsecpriv *)(netdev_priv(ro->er_first->dev)))->mystats);
+		struct net_device_stats *stats = &(netdev_to_ipsecpriv(dev)->mystats);
 		stats->tx_dropped--;
 #endif
 		*first = ro->er_first;
 	}
 	if (ro->er_last != NULL) {
 #if 0
-		struct net_device_stats *stats = (struct net_device_stats *) &(((struct ipsecpriv *)(netdev_priv(ro->er_last->dev)))->mystats);
+		struct net_device_stats *stats = &(netdev_to_ipsecpriv(dev)->mystats);
 		stats->tx_dropped--;
 #endif
 		*last = ro->er_last;

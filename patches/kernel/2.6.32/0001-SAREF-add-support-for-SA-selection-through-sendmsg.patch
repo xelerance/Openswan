@@ -205,7 +205,7 @@ index e982b5c..0f88698 100644
 +static void ip_cmsg_recv_ipsec_refinfo(struct msghdr *msg, struct sk_buff *skb)
 +{
 +	struct ipsec_secpath_saref_ops *ops;
-+	xfrm_sec_unique_t refs[2];
++	xfrm_sec_unique_t refs[2] = {0, 0};
 +
 +	rcu_read_lock_bh();
 +	ops = rcu_dereference(ipsec_secpath_saref_ops);

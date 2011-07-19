@@ -415,13 +415,6 @@
 # endif
 #endif
 
-#if 0
-/* nicely, latest netdevice.h includes this define */
-#ifndef HAVE_NETDEV_PRIV
-#define netdev_priv(dev) (dev->priv)
-#endif
-#endif
-
 #if !defined(HAVE_CURRENT_UID)
 #define current_uid() (current->uid)
 #endif

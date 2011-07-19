@@ -490,14 +490,13 @@ ipsec_xmit_err(int err)
 	snprintf(tmp, sizeof(tmp), "%d", err);
 	return tmp;
 }
-                                                        
+
 /*
  * Sanity checks
  */
 enum ipsec_xmit_value
-ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
+ipsec_xmit_sanity_check_ipsec_dev(struct ipsec_xmit_state *ixs)
 {
-
 	if (ixs->dev == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
@@ -505,31 +504,73 @@ ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs)
 		return IPSEC_XMIT_NODEV;
 	}
 
-	ixs->prv = netdev_priv(ixs->dev);
-	if (ixs->prv == NULL) {
+	ixs->iprv = netdev_priv(ixs->dev);
+	if (ixs->iprv == NULL) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
 			    "Device has no private structure!\n" );
 		return 	IPSEC_XMIT_NOPRIVDEV;
 	}
 
-	/* Only ipsecX attaches to a physical device, mastX just exists */
-	if (!ipsec_is_mast_device(ixs->prv->dev)) {
-		ixs->physdev = ixs->prv->dev;
-		if (ixs->physdev == NULL) {
-			KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+	ixs->physdev = ixs->iprv->dev;
+
+	if (ixs->physdev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
-			    "Device is not attached to physical device!\n" );
-			return IPSEC_XMIT_NOPHYSDEV;
-		}
+			    "No physical device set\n" );
+		return 	IPSEC_XMIT_NOPHYSDEV;
+	}
+
+	if (ipsec_is_mast_device(ixs->physdev)) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_error:ipsec_xmit_sanity_check_dev: "
+			    "Unexpectedly using mast device\n" );
+		return 	IPSEC_XMIT_NOPHYSDEV;
 	}
 
 	ixs->physmtu = ixs->physdev->mtu;
-        ixs->cur_mtu = ixs->physdev->mtu;
-	ixs->stats = (struct net_device_stats *) &(ixs->prv->mystats);
+	ixs->cur_mtu = ixs->physdev->mtu;
+	ixs->stats = (struct net_device_stats *) &(ixs->iprv->mystats);
 
 	return IPSEC_XMIT_OK;
 }
+
+/*
+ * Sanity checks
+ */
+enum ipsec_xmit_value
+ipsec_xmit_sanity_check_mast_dev(struct ipsec_xmit_state *ixs)
+{
+	if (ixs->dev == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_error:ipsec_xmit_sanity_check_dev: "
+			    "No device associated with skb!\n" );
+		return IPSEC_XMIT_NODEV;
+	}
+
+	ixs->mprv = netdev_priv(ixs->dev);
+	if (ixs->mprv == NULL) {
+		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
+			    "klips_error:ipsec_xmit_sanity_check_dev: "
+			    "Device has no private structure!\n" );
+		return 	IPSEC_XMIT_NOPRIVDEV;
+	}
+
+	ixs->physdev = NULL; // not used here
+
+	/*
+	 * we should be calculating the MTU by looking up a route
+	 * based upon the destination in the SA, and then cache
+	 * it into the SA, but we don't do that right now.
+	 */
+	ixs->cur_mtu = 1460;
+	ixs->physmtu = 1460;
+
+	ixs->stats = (struct net_device_stats *) &(ixs->mprv->mystats);
+
+	return IPSEC_XMIT_OK;
+}
+
 
 enum ipsec_xmit_value
 ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs)
@@ -643,7 +684,7 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	}
 	ixs->sa_len = KLIPS_SATOT(debug_tunnel, &ixs->ipsp->ips_said, 0, ixs->sa_txt, SATOT_BUF);
 	KLIPS_PRINT(debug_tunnel & DB_TN_OXFS,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_encap_init: "
 		    "calling output for <%s%s%s>, SA:%s\n", 
 		    IPS_XFORM_NAME(ixs->ipsp),
 		    ixs->sa_len ? ixs->sa_txt : " (error)");
@@ -755,12 +796,12 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	}
 	
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_encap_init: "
 		    "pushing %d bytes, putting %d, proto %d.\n", 
 		    ixs->headroom, ixs->tailroom, ixs->ipsp->ips_said.proto);
 	if(skb_headroom(ixs->skb) < ixs->headroom) {
 		printk(KERN_WARNING
-		       "klips_error:ipsec_xmit_encap_once: "
+		       "klips_error:ipsec_xmit_encap_init: "
 		       "tried to skb_push headroom=%d, %d available.  This should never happen, please report.\n",
 		       ixs->headroom, skb_headroom(ixs->skb));
 		if (ixs->stats)
@@ -772,8 +813,8 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	ixs->ilen = ixs->skb->len - ixs->tailroom;
 	if(skb_tailroom(ixs->skb) < ixs->tailroom) {
 		printk(KERN_WARNING
-		       "klips_error:ipsec_xmit_encap_once: "
-		       "tried to skb_put %d, %d available.  This should never happen, please report.\n",
+		       "klips_error:ipsec_xmit_encap_init: "
+		       "tried to skb_put %d, %d available. Retuning IPSEC_XMIT_ESP_PUSHPULLERR  This should never happen, please report.\n",
 		       ixs->tailroom, skb_tailroom(ixs->skb));
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
@@ -781,12 +822,12 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 	}
 	skb_put(ixs->skb, ixs->tailroom);
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_encap_init: "
 		    "head,tailroom: %d,%d before xform.\n",
 		    skb_headroom(ixs->skb), skb_tailroom(ixs->skb));
 	ixs->len = ixs->skb->len;
 	if(ixs->len > 0xfff0) {
-		printk(KERN_WARNING "klips_error:ipsec_xmit_encap_once: "
+		printk(KERN_WARNING "klips_error:ipsec_xmit_encap_init: "
 		       "tot_len (%d) > 65520.  This should never happen, please report.\n",
 		       ixs->len);
 		if (ixs->stats)
@@ -1248,7 +1289,7 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 	{
 		if (old_tot_len > tot_len)
 			KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-					"klips_debug:ipsec_xmit_encap_once: "
+					"klips_debug:ipsec_xmit_ipcomp: "
 					"packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
 					old_tot_len, tot_len,
 					ntohs(((struct ipcomphdr*)(((char*)osw_ip4_hdr(ixs)) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
@@ -1256,7 +1297,7 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 					(__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));
 		else
 			KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-					"klips_debug:ipsec_xmit_encap_once: "
+					"klips_debug:ipsec_xmit_ipcomp: "
 					"packet did not compress (flags = %d).\n",
 					flags);
 	}
@@ -1296,7 +1337,7 @@ ipsec_xmit_cont(struct ipsec_xmit_state *ixs)
 	}
 			
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_cont: "
 		    "after <%s%s%s>, SA:%s:\n",
 		    IPS_XFORM_NAME(ixs->ipsp),
 		    ixs->sa_len ? ixs->sa_txt : " (error)");
@@ -2130,7 +2171,7 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 
 		/* this would seem to adjust the MTU of the route as well */
 #if 0
-		skb_dst(ixs->skb)->pmtu = ixs->prv->mtu; /* RGB */
+		skb_dst(ixs->skb)->pmtu = ixs->iprv->mtu; /* RGB */
 #endif /* 0 */
 	}
 
@@ -2414,7 +2455,7 @@ enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 		struct iphdr *ipp = ip_hdr(ixs->skb);
 		struct udphdr *udp;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_tunnel_start_xmit: "
+			    "klips_debug:ipsec_nat_encap: "
 			    "encapsuling packet into UDP (NAT-Traversal) (%d %d)\n",
 			    ixs->natt_type, ixs->natt_head);
 
@@ -2422,8 +2463,8 @@ enum ipsec_xmit_value ipsec_nat_encap(struct ipsec_xmit_state *ixs)
 		ipp->tot_len =
 			htons(ntohs(ipp->tot_len) + ixs->natt_head);
 		if(skb_tailroom(ixs->skb) < ixs->natt_head) {
-			printk(KERN_WARNING "klips_error:ipsec_tunnel_start_xmit: "
-				"tried to skb_put %d, %d available. "
+			printk(KERN_WARNING "klips_error:ipsec_nat_encap: "
+				"tried to skb_put %d, %d available. Returning IPSEC_XMIT_ESPUDP. "
 				"This should never happen, please report.\n",
 				ixs->natt_head,
 				skb_tailroom(ixs->skb));
@@ -2484,7 +2525,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 
 	/* new route/dst cache code from James Morris */
 	ixs->skb->dev = ixs->physdev;
- 	fl.flowi_oif = ixs->physdev->ifindex;
+	fl.flowi_oif = ixs->physdev ? ixs->physdev->ifindex : 0;
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
@@ -2553,7 +2594,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "ip_route_output failed with error code %d, dropped\n",
 			    error);
 		return IPSEC_XMIT_ROUTEERR;
@@ -2563,10 +2604,15 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "ip_route_output failed with no dst, dropped\n");
 		return IPSEC_XMIT_ROUTEERR;
 	}
+
+	/* ixs->physdev can be NULL in mast mode and we searched for a non-device
+	 * specific route.  Now we can use the device for the route we found. */
+	if (!ixs->skb->dev)
+		ixs->skb->dev = dst->dev;
 
 	if(ixs->dev == dst->dev) {
 		if (osw_ip_hdr_version(ixs) == 6)
@@ -2577,7 +2623,7 @@ static int ipsec_set_dst(struct ipsec_xmit_state *ixs)
 		if (ixs->stats)
 			ixs->stats->tx_errors++;
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
-			    "klips_debug:ipsec_xmit_send: "
+			    "klips_debug:ipsec_set_dst: "
 			    "suspect recursion, dev=rt->u.dst.dev=%s, dropped\n",
 			    ixs->dev->name);
 		return IPSEC_XMIT_RECURSDETECT;

@@ -80,7 +80,8 @@ struct ipsec_xmit_state
 	struct sk_buff *skb;		/* working skb pointer */
 	struct sk_buff *pre_ipcomp_skb; /* skb before ipcomp was attempted */
 	struct net_device *dev;		/* working dev pointer */
-	struct ipsecpriv *prv;		/* Our device' private space */
+	struct ipsecpriv *iprv;		/* Our device' private space */
+	struct mastpriv *mprv;
 	struct sk_buff *oskb;		/* Original skb pointer */
 	struct net_device_stats *stats;	/* This device's statistics */
 	void	*iph;		/* Our new IP header */
@@ -161,13 +162,16 @@ struct ipsec_xmit_state
 	__u16 ttl, check;
 };
 
-enum ipsec_xmit_value
-ipsec_xmit_sanity_check_dev(struct ipsec_xmit_state *ixs);
+extern enum ipsec_xmit_value
+ipsec_xmit_sanity_check_ipsec_dev(struct ipsec_xmit_state *ixs);
 
-enum ipsec_xmit_value
+extern enum ipsec_xmit_value
+ipsec_xmit_sanity_check_mast_dev(struct ipsec_xmit_state *ixs);
+
+extern enum ipsec_xmit_value
 ipsec_xmit_sanity_check_skb(struct ipsec_xmit_state *ixs);
 
-enum ipsec_xmit_value
+extern enum ipsec_xmit_value
 ipsec_xmit_encap_bundle(struct ipsec_xmit_state *ixs);
 
 extern void ipsec_xsm(struct ipsec_xmit_state *ixs);
