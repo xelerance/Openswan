@@ -35,6 +35,8 @@ extern enum ipsec_rcv_value ipsec_ocf_rcv(struct ipsec_rcv_state *irs);
 extern enum ipsec_xmit_value ipsec_ocf_xmit(struct ipsec_xmit_state *ixs);
 extern void	ipsec_ocf_init(void);
 
+#else
+# error This file should not be used without CONFIG_KLIPS_OCF, check MODULE_DEF_INCLUDE and MODULE_DEFCONFIG
 #endif
 
 /****************************************************************************/
