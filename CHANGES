@@ -13,11 +13,14 @@ v2.6.35 (unreleased)
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
 * KLIPS: Fix possible double skb free [Sony Japan]
 * KLIPS: Fix MTU on interface - bug introduced in 2.6.33 [Wolfgang Nothdurft]
+* KLIPS: debug messages often had pre-refactor names in prefix [Paul]
+* DPD: Do not ignore failure in dpd_init() but return STF_FAIL [Paul]
 * pluto: Fix IPcomp pull-up from 2.4 introduced in 2.6.20 [Paul]
          (malloc <-> pfree caused assertion with LEAK_DETECTIVE set)
 * pluto: st_peeridentity_port missed ntohs() causing interop
          failure between big/little-endian machines [Magnus Öberg]
 * pluto: Fix for Tuomo's (rare) crasher where globals were not reset [dhr]
+* OCF: Give a hard #error in ipsec_ocf.h without proper CONFIG_KLIPS_OCF [Paul]
 
 v2.6.34 (June 8, 2011))
 * Fix build without USE_EXTRACRYPTO introduced in 2.6.33 [Tuomo]
