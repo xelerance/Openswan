@@ -235,7 +235,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
     {
       if (old_tot_len > tot_len)
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_ipcomp_setup: "
 		    "packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
 		    old_tot_len, tot_len,
 		    ntohs(((struct ipcomphdr*)(((char*)ixs->iph) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
@@ -243,7 +243,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 		    (__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));
       else
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_ipcomp_setup: "
 		    "packet did not compress (flags = %d).\n",
 		    flags);
     }
