@@ -101,7 +101,9 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
-#include "ipsec_ocf.h"
+#ifdef CONFIG_KLIPS_OCF
+# include "ipsec_ocf.h"
+#endif
 
 #if defined(CONFIG_KLIPS_AH)
 #if defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1)

@@ -63,7 +63,9 @@
 #include "openswan/ipsec_ah.h"
 #include "openswan/ipsec_proto.h"
 
-#include "ipsec_ocf.h"
+#ifdef CONFIG_KLIPS_OCF
+# include "ipsec_ocf.h"
+#endif
 
 __u32 zeroes[AH_AMAX];
 
