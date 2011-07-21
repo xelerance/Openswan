@@ -8,7 +8,8 @@ v2.6.35 (unreleased)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
 * MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
-* MAST:  Be more careful about {mast,ipsec}priv structure [Bart]
+* MAST: Be more careful about {mast,ipsec}priv structure [Bart]
+* MAST: Fix host-host connections, bug introduced in v2.6.34 [David[
 * SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
 * KLIPS: Fix possible double skb free [Sony Japan]
