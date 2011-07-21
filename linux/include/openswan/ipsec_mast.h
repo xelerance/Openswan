@@ -54,7 +54,6 @@ extern int ipsec_mast_deletenum(int vifnum);
 extern int ipsec_mast_createnum(int vifnum);
 extern struct net_device *ipsec_mast_get_device(int vifnum);
 extern unsigned int ipsec_mast_is_transport(int vifnum);
-extern int ipsec_is_mast_device(const struct net_device *dev);
 
 extern int ipsec_mast_init_saref(void);
 extern void ipsec_mast_cleanup_saref(void);
