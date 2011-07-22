@@ -67,7 +67,9 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
-#include "ipsec_ocf.h"
+#ifdef CONFIG_KLIPS_OCF
+# include "ipsec_ocf.h"
+#endif
 
 #define ESP_DMP(_x,_y,_z) if(debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
 

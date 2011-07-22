@@ -93,8 +93,6 @@
 #include "openswan/ipsec_alg.h"
 #include "openswan/ipsec_kversion.h"
 
-#include "ipsec_ocf.h"
-
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 
 struct sklist_t {

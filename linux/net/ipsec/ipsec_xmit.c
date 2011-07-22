@@ -101,7 +101,9 @@
 
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
-#include "ipsec_ocf.h"
+#ifdef CONFIG_KLIPS_OCF
+# include "ipsec_ocf.h"
+#endif
 
 #if defined(CONFIG_KLIPS_AH)
 #if defined(CONFIG_KLIPS_AUTH_HMAC_MD5) || defined(CONFIG_KLIPS_AUTH_HMAC_SHA1)
@@ -521,7 +523,7 @@ ipsec_xmit_sanity_check_ipsec_dev(struct ipsec_xmit_state *ixs)
 		return 	IPSEC_XMIT_NOPHYSDEV;
 	}
 
-	if (ipsec_is_mast_device(ixs->physdev)) {
+	if (ixs->mast_mode) {
 		KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 			    "klips_error:ipsec_xmit_sanity_check_dev: "
 			    "Unexpectedly using mast device\n" );
@@ -2642,13 +2644,9 @@ enum ipsec_xmit_value
 ipsec_xmit_send(struct ipsec_xmit_state *ixs)
 {
 	int error;
-	int is_mast_packet;
 
 	if (ixs->skb == NULL || ixs->skb->dev == NULL)
 		return IPSEC_XMIT_NODEV;
-
-	/* check if this packet is sent from the mast, before we route */
-	is_mast_packet = ipsec_is_mast_device(ixs->skb->dev);
 
 	/*
 	 * ipsec_set_dst may have been done in the IPIP code,  or we do it now.
@@ -2689,13 +2687,14 @@ ipsec_xmit_send(struct ipsec_xmit_state *ixs)
 
 	KLIPS_PRINT(debug_tunnel & DB_TN_XMIT,
 		    "klips_debug:ipsec_xmit_send: "
-		    "...done, calling ip_send() on device:%s\n",
-		    ixs->skb->dev ? ixs->skb->dev->name : "NULL");
+		    "...done, calling ip_send() on device:%s%s\n",
+		    ixs->skb->dev ? ixs->skb->dev->name : "NULL",
+			ixs->mast_mode ? "(mast)" : "");
 	KLIPS_IP_PRINT(debug_tunnel & DB_TN_XMIT, ip_hdr(ixs->skb));
 #ifdef NETDEV_23	/* 2.4 kernels */
 	{
 		int err;
-		if (is_mast_packet)
+		if (ixs->mast_mode)
 			/* skip filtering on mast devices, since it resets our
 			 * route, nfmark, and causes nasty reentrancy. */
 			err = ipsec_xmit_send2_mast(ixs->skb);

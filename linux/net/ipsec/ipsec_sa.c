@@ -75,7 +75,9 @@
 #include "openswan/ipsec_proto.h"
 #include "openswan/ipsec_alg.h"
 
-#include "ipsec_ocf.h"
+#ifdef CONFIG_KLIPS_OCF
+# include "ipsec_ocf.h"
+#endif
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
