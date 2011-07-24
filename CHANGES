@@ -4,6 +4,9 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
+v2.6.36 (unreleased)
+*
+
 v2.6.35 (July 23, 2011)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
 * OCF: Give a hard #error in ipsec_ocf.h without proper CONFIG_KLIPS_OCF [Paul]
