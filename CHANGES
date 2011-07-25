@@ -4,13 +4,17 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.35 (unreleased)
+v2.6.36 (unreleased)
+* auto: Add --checkpubkeys option for checking expiry of X.509 certs
+        [Mika Ilmaranta]
+
+v2.6.35 (July 23, 2011)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
 * OCF: Give a hard #error in ipsec_ocf.h without proper CONFIG_KLIPS_OCF [Paul]
 * OCF: Only include ipsec_ocf.h when using CONFIG_KLIPS_OCF
 * MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
 * MAST: Be more careful about {mast,ipsec}priv structure [Bart]
-* MAST: Fix host-host connections, bug introduced in v2.6.34 [David[
+* MAST: Fix host-host connections, bug introduced in v2.6.34 [David]
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
 * SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]

@@ -225,6 +225,7 @@ help(void)
 	    " (--listen | --unlisten)"
 	    "\n\n"
 	"list: whack [--utc]"
+	    " [--checkpubkeys]"
 	    " [--listpubkeys]"
 	    " [--listcerts]"
 	    " [--listcacerts]"
@@ -396,6 +397,7 @@ enum option_enums {
 
 #   define LST_FIRST LST_UTC   /* first list option */
     LST_UTC,
+    LST_CHECKPUBKEYS,
     LST_PUBKEYS,
     LST_CERTS,
     LST_CACERTS,
@@ -603,6 +605,7 @@ static const struct option long_opts[] = {
     /* list options */
 
     { "utc", no_argument, NULL, LST_UTC + OO },
+    { "checkpubkeys", no_argument, NULL, LST_CHECKPUBKEYS + OO },
     { "listpubkeys", no_argument, NULL, LST_PUBKEYS + OO },
     { "listcerts", no_argument, NULL, LST_CERTS + OO },
     { "listcacerts", no_argument, NULL, LST_CACERTS + OO },
@@ -1224,6 +1227,11 @@ main(int argc, char **argv)
         case LST_EVENTS:         /* --listevents */
             msg.whack_list |= LELEM(c - LST_PUBKEYS);
             continue;
+
+	case LST_CHECKPUBKEYS:   /* --checkpubkeys */
+	    msg.whack_list |= LELEM(LST_PUBKEYS - LST_PUBKEYS);
+	    msg.whack_check_pub_keys = TRUE;
+	    continue;
 
         case LST_ALL:   /* --listall */
             msg.whack_list = LIST_ALL;

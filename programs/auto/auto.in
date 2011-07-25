@@ -23,6 +23,7 @@ usage="Usage:
         $me [--showonly] --{rereadcacerts|rereadaacerts|rereadocspcerts}
         $me [--showonly] --{rereadacerts|rereadcrls|rereadall}
         $me [--showonly] [--utc] --{listpubkeys|listcerts}
+        $me [--showonly] [--utc] --checkpubkeys
         $me [--showonly] [--utc] --{listcacerts|listaacerts|listocspcerts}
         $me [--showonly] [--utc] --{listacerts|listgroups}
         $me [--showonly] [--utc] --{listcrls|listocsp|listall}
@@ -64,6 +65,7 @@ do
         --rereadcacerts|--rereadaacerts|--rereadocspcerts|\
         --rereadacerts|--rereadcrls|--rereadall|\
         --listpubkeys|--listcerts|\
+        --checkpubkeys|\
         --listcacerts|--listaacerts|--listocspcerts|\
         --listacerts|--listgroups|\
         --listcrls|--listocsp|--listall|\
@@ -140,6 +142,7 @@ case "$op" in
 --rereadcrls)     echo "ipsec whack --rereadcrls"            | runit ; exit ;;
 --rereadall)      echo "ipsec whack --rereadall"             | runit ; exit ;;
 --listpubkeys)    echo "ipsec whack $utc --listpubkeys"      | runit ; exit ;;
+--checkpubkeys)   echo "ipsec whack $utc --checkpubkeys"     | runit ; exit ;;
 --listcerts)      echo "ipsec whack $utc --listcerts"        | runit ; exit ;;
 --listcacerts)    echo "ipsec whack $utc --listcacerts"      | runit ; exit ;;
 --listaacerts)    echo "ipsec whack $utc --listaacerts"      | runit ; exit ;;

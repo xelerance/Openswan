@@ -930,13 +930,16 @@ add_public_key(const struct id *id
 /*
  *  list all public keys in the chained list
  */
-void list_public_keys(bool utc)
+void list_public_keys(bool utc, bool check_pub_keys)
 {
     struct pubkey_list *p = pluto_pubkeys;
 
-    whack_log(RC_COMMENT, " ");
-    whack_log(RC_COMMENT, "List of Public Keys:");
-    whack_log(RC_COMMENT, " ");
+    if(!check_pub_keys)
+    {
+	whack_log(RC_COMMENT, " ");
+	whack_log(RC_COMMENT, "List of Public Keys:");
+	whack_log(RC_COMMENT, " ");
+    }
 
     while (p != NULL)
     {
@@ -947,27 +950,35 @@ void list_public_keys(bool utc)
 	    char id_buf[IDTOA_BUF];
 	    char expires_buf[TIMETOA_BUF];
 	    char installed_buf[TIMETOA_BUF];
+	    char *check_expiry_msg = NULL;
 
-	    idtoa(&key->id, id_buf, IDTOA_BUF);
-	    whack_log(RC_COMMENT, "%s, %4d RSA Key %s (%s private key), until %s %s"
-		      , timetoa(&key->installed_time, utc,
-				installed_buf, sizeof(installed_buf))
-		      , 8*key->u.rsa.k
-		      , key->u.rsa.keyid
-		      , (has_private_rawkey(key) ? "has" : "no")
-		      , timetoa(&key->until_time, utc,
-				expires_buf, sizeof(expires_buf))
-		      , check_expiry(key->until_time
-				     , PUBKEY_WARNING_INTERVAL
-				     , TRUE));
+	    check_expiry_msg = check_expiry(key->until_time
+					    , PUBKEY_WARNING_INTERVAL
+					    , TRUE);
 
-	    whack_log(RC_COMMENT,"       %s '%s'",
-		enum_show(&ident_names, key->id.kind), id_buf);
-
-	    if (key->issuer.len > 0)
+	    if(!check_pub_keys || (check_pub_keys && strncmp(check_expiry_msg, "ok", 2)))
 	    {
-		dntoa(id_buf, IDTOA_BUF, key->issuer);
-		whack_log(RC_COMMENT,"       Issuer '%s'", id_buf);
+		idtoa(&key->id, id_buf, IDTOA_BUF);
+		whack_log(RC_COMMENT, "%s, %4d RSA Key %s (%s private key), until %s %s"
+			  , timetoa(&key->installed_time, utc,
+				    installed_buf, sizeof(installed_buf))
+			  , 8*key->u.rsa.k
+			  , key->u.rsa.keyid
+			  , (has_private_rawkey(key) ? "has" : "no")
+			  , timetoa(&key->until_time, utc,
+				    expires_buf, sizeof(expires_buf))
+			  , check_expiry(key->until_time
+					 , PUBKEY_WARNING_INTERVAL
+					 , TRUE));
+
+		whack_log(RC_COMMENT,"       %s '%s'",
+			  enum_show(&ident_names, key->id.kind), id_buf);
+
+		if (key->issuer.len > 0)
+		{
+		    dntoa(id_buf, IDTOA_BUF, key->issuer);
+		    whack_log(RC_COMMENT,"       Issuer '%s'", id_buf);
+		}
 	    }
 	}
 	p = p->next;
