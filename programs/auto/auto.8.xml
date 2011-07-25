@@ -256,7 +256,7 @@ but that may change.)</para>
        sasigkey / leftrsasigkey parameters in ipsec.conf(5).
 
 </para>
-<para>      The  <option>--listcerts</option>  operation  lists  all  X.509 and OpenPGP certificates
+<para>      The  <option>--listcerts</option>  operation  lists  all  X.509 certificates
        loaded  locally  using  the  rightcert  and  leftcert   parameters   in
        ipsec.conf(5).
 </para>

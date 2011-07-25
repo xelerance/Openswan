@@ -2085,7 +2085,7 @@
           <term><option>--checkpubkeys</option></term>
 
           <listitem>
-            <para>list all the loaded X.509 public keys which are about to
+            <para>list all the loaded X.509 certificates which are about to
             expire or have been expired.</para>
           </listitem>
         </varlistentry>
