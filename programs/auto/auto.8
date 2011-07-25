@@ -2,12 +2,12 @@
 .\"     Title: IPSEC_AUTO
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.75.2 <http://docbook.sf.net/>
-.\"      Date: 10/06/2010
+.\"      Date: 07/25/2011
 .\"    Manual: [FIXME: manual]
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "IPSEC_AUTO" "8" "10/06/2010" "[FIXME: source]" "[FIXME: manual]"
+.TH "IPSEC_AUTO" "8" "07/25/2011" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -41,7 +41,7 @@ ipsec_auto \- control automatically\-keyed IPsec connections
 .HP \w'\fBipsec\fR\ 'u
 \fBipsec\fR \fIauto\fR {\ \-\-route\ |\ \-\-unroute\ } \fIconnection\fR
 .HP \w'\fBipsec\fR\ 'u
-\fBipsec\fR \fIauto\fR [\-\-utc] [\-\-listall\ |\ \-\-rereadall] [\-\-rereadsecrets] [\-\-listcerts] [\-\-listpubkeys] [\-\-listcacerts\ |\ \-\-rereadcacerts] [\-\-listcrls\ |\ \-\-rereadcrls] [[\-\-listocspcerts\ |\ \-\-rereadocspcerts\ ]\ [\-\-listocsp\ |\ \-\-purgeocsp\ ]] [\-\-listacerts\ |\ \-\-rereadacerts] [\-\-listaacerts\ |\ \-\-rereadaacerts] [\-\-listgroups\ |\ \-\-rereadgroups]
+\fBipsec\fR \fIauto\fR [\-\-utc] [\-\-listall\ |\ \-\-rereadall] [\-\-rereadsecrets] [\-\-listcerts] [\-\-listpubkeys] [\-\-checkpubkeys] [\-\-listcacerts\ |\ \-\-rereadcacerts] [\-\-listcrls\ |\ \-\-rereadcrls] [[\-\-listocspcerts\ |\ \-\-rereadocspcerts\ ]\ [\-\-listocsp\ |\ \-\-purgeocsp\ ]] [\-\-listacerts\ |\ \-\-rereadacerts] [\-\-listaacerts\ |\ \-\-rereadaacerts] [\-\-listgroups\ |\ \-\-rereadgroups]
 .SH "DESCRIPTION"
 .PP
 \fIAuto\fR
@@ -177,6 +177,10 @@ operation lists all RSA public keys either received from peers via the IKE proto
 The
 \fB\-\-listcerts\fR
 operation lists all X\&.509 and OpenPGP certificates loaded locally using the rightcert and leftcert parameters in ipsec\&.conf(5)\&.
+.PP
+The
+\fB\-\-checkpubkeys\fR
+operation lists all loaded X\&.509 certificates which are about to expire or have been expired\&.
 .PP
 The
 \fB\-\-listcacerts\fR
