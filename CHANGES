@@ -13,7 +13,7 @@ v2.6.35 (July 23, 2011)
 * OCF: Only include ipsec_ocf.h when using CONFIG_KLIPS_OCF
 * MAST: Add ipsec_xmit_sanity_check_dev() in the mast path [Paul]
 * MAST: Be more careful about {mast,ipsec}priv structure [Bart]
-* MAST: Fix host-host connections, bug introduced in v2.6.34 [David[
+* MAST: Fix host-host connections, bug introduced in v2.6.34 [David]
 * SAREF: Fix crasher in ipsec.ko unload with saref kernel [Sony Japan]
 * SAREF: ip_cmsg_recv_ipsec_refinfo() doesn't initialize refs array [Sony Japan]
 * SAREF: Added null check of secpath_dup(NULL) [Sony Japan]
