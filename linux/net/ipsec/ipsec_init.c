@@ -100,6 +100,9 @@
 #include <openswan/pfkey.h>
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
+# ifdef HAVE_UDP_ENCAP_CONVERT
+#  warning "You have CONFIG_IPSEC_NAT_TRAVERSAL set on a kernel > 2.6.22 that no longer need the NAT-T patch - you should recompile without it"
+# endif
 #include <net/xfrmudp.h>
 #endif
 

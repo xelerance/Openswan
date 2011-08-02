@@ -685,7 +685,13 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    }
 
 	    st->st_connection = r;	/* kill reference to c */
-	    set_cur_connection(r);
+
+	    /* this ensures we don't move cur_connection from NULL to
+	     * something, requiring a reset_cur_connection() */
+	    if (cur_connection == c) {
+		set_cur_connection(r);
+	    }
+
 	    connection_discard(c);
 	}
 	else if (c->spd.that.has_id_wildcards)

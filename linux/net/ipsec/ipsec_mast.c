@@ -81,7 +81,7 @@ char ipsec_mast_c_version[] = "Please use ipsec --version instead";
 #endif
 
 int ipsec_mastdevice_count = -1;
-int debug_mast = -1;
+int debug_mast;
 
 static __u32 zeroes[64];
 
@@ -1046,16 +1046,6 @@ ipsec_mast_get_device(int vifnum)
 			return NULL;
 		}
 	}
-}
-
-int
-ipsec_is_mast_device(const struct net_device *dev)
-{
-#ifndef USE_NETDEV_OPS
-	return dev && (dev->hard_start_xmit == ipsec_mast_start_xmit);
-#else
-	return dev && (dev->netdev_ops == &ipsec_mast_ops);
-#endif
 }
 
 unsigned int

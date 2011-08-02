@@ -82,7 +82,7 @@ ipsec_rcv_ipcomp_checks(struct ipsec_rcv_state *irs,
 
 	if(skb->len < (ipcompminlen + sizeof(struct ipcomphdr))) {
 		KLIPS_PRINT(debug_rcv & DB_RX_INAU,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_checks: "
 			    "runt comp packet of skb->len=%d received from %s, dropped.\n",
 			    skb->len,
 			    irs->ipsaddr_txt);
@@ -122,7 +122,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		sa_len2 = KLIPS_SATOT(debug_rcv, &ipsp->ips_said, 0, sa2, sizeof(sa2));
 
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 			    "Incoming packet with SA(IPCA):%s does not match policy SA(IPCA):%s cpi=%04x cpi->spi=%08x spi=%08x, spi->cpi=%04x for SA grouping, dropped.\n",
 			    irs->sa_len ? irs->sa : " (error)",
 			    sa_len2 ? sa2 : " (error)",
@@ -151,7 +151,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 	skb = skb_decompress(skb, ipsp, &flags);
 	if (!skb || flags) {
 		KLIPS_PRINT(debug_rcv,
-			    "klips_debug:ipsec_rcv: "
+			    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 			    "skb_decompress() returned error flags=%x, dropped.\n",
 			    flags);
 		if (irs->stats) {
@@ -179,7 +179,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 		ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip4_hdr(irs)->tot_len);
 
 	KLIPS_PRINT(debug_rcv,
-		    "klips_debug:ipsec_rcv: "
+		    "klips_debug:ipsec_rcv_ipcomp_decomp: "
 		    "packet decompressed SA(IPCA):%s cpi->spi=%08x spi=%08x, spi->cpi=%04x, nh=%d.\n",
 		    irs->sa_len ? irs->sa : " (error)",
 		    (__u32)ntohl(irs->said.spi),
@@ -235,7 +235,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
     {
       if (old_tot_len > tot_len)
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_ipcomp_setup: "
 		    "packet shrunk from %d to %d bytes after compression, cpi=%04x (should be from spi=%08x, spi&0xffff=%04x.\n",
 		    old_tot_len, tot_len,
 		    ntohs(((struct ipcomphdr*)(((char*)ixs->iph) + ((osw_ip4_hdr(ixs)->ihl) << 2)))->ipcomp_cpi),
@@ -243,7 +243,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 		    (__u16)(ntohl(ixs->ipsp->ips_said.spi) & 0x0000ffff));
       else
 	KLIPS_PRINT(debug_tunnel & DB_TN_CROUT,
-		    "klips_debug:ipsec_xmit_encap_once: "
+		    "klips_debug:ipsec_xmit_ipcomp_setup: "
 		    "packet did not compress (flags = %d).\n",
 		    flags);
     }

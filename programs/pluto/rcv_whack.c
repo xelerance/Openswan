@@ -1,3 +1,4 @@
+
 /* whack communicating routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
@@ -451,7 +452,7 @@ void whack_process(int whackfd, struct whack_message msg)
 
     if (msg.whack_list & LIST_PUBKEYS)
     {
-	list_public_keys(msg.whack_utc);
+	list_public_keys(msg.whack_utc, msg.whack_check_pub_keys);
     }
 
     if (msg.whack_reread & REREAD_CACERTS)

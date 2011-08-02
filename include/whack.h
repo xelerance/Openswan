@@ -195,6 +195,7 @@ struct whack_message {
 
     /* for WHACK_LIST */
     bool whack_utc;
+    bool whack_check_pub_keys;
     lset_t whack_list;
 
     /* for WHACK_PURGEOCSP */
