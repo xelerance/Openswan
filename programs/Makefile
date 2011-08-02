@@ -55,9 +55,12 @@ def:
 
 # programs
 
-cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
+cleanall distclean mostlyclean realclean install programs checkprograms clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; \
+
+check:
+	@echo "info: all tests (check) are now in ../testing, doing nothing here."
 

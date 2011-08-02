@@ -16,6 +16,11 @@
 # TODO: Some creative ifeq ($(BUILDENV,xxx) to automatically determine
 # where we are building on and disable things (eg KLIPS on OSX)
 
+#  Doc:		man make
+#  Doc:		http://www.gnu.org/software/make/manual/make.html
+
+#
+#  If there is a "local" makfile include it, else ignore:
 -include ${OPENSWANSRCDIR}/Makefile.inc.local
 
 
@@ -34,8 +39,9 @@
 
 
 
-### boilerplate, do not change
-SHELL=/bin/sh
+### boilerplate, do not change, various scripts use extended BASH syntax!
+SHELL=/bin/bash
+export SHELL
 
 .PHONY:	programs checkprograms clean
 
@@ -506,12 +512,18 @@ endif
 
 ifeq ($(USE_OBJDIR),true)
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
-OBJDIRTOP=${OPENSWANSRCDIR}/${OBJDIR}
+OBJDIRTOP?=${OPENSWANSRCDIR}/${OBJDIR}
 else
 # where to place the object files which are built 
 OBJDIR?=.
 OBJDIRTOP?=${OPENSWANSRCDIR}
 endif
+
+#
+#  Paranoia says to export these just to sure:
+export OBJDIR
+export OBJDIRTOP
+
 
 ### paths within the source tree
 
@@ -576,3 +588,4 @@ export LIBOSWCRYPTO
 # mode: makefile ;;;
 # End Variables: ;;;
 #
+

@@ -13,7 +13,6 @@
 # for more details.
 #
 
-
 OPENSWANSRCDIR?=$(shell pwd)
 export OPENSWANSRCDIR
 
@@ -71,33 +70,36 @@ npatch: unapplynpatch applynpatch
 sarefpatch: unapplysarefpatch applysarefpatch
 
 unapplypatch:
+	@echo "info: making unapplypatch in `pwd` and KERNELSRC=\"${KERNELSRC}\";"
 	-@if [ -f ${KERNELSRC}/openswan.patch ]; then \
 		echo Undoing previous patches; \
 		cat ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
 	fi
 
 applypatch:
-	@echo Now performing forward patches; 
+	@echo "info: Now performing forward patches in `pwd`";
 	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 unapplynpatch:
+	@echo "info: making unapplynpatch (note the second N) in `pwd`";
 	-@if [ -f ${KERNELSRC}/natt.patch ]; then \
 		echo Undoing previous NAT patches; \
 		cat ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
 	fi
 
 applynpatch:
-	@echo Now performing forward NAT patches; 
+	@echo "info: Now performing forward NAT patches in `pwd`"; 
 	${MAKE} nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 unapplysarefpatch:
+	@echo "info: making unapplysarefpatch in `pwd`";
 	-@if [ -f ${KERNELSRC}/saref.patch ]; then \
 		echo Undoing previous saref patches; \
 		cat ${KERNELSRC}/saref.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preng --reverse --ignore-whitespace ); \
 	fi
 
 applysarefpatch:
-	@echo Now performing SAref patches; 
+	@echo "info: Now performing SAref patches in `pwd`";
 	${MAKE} sarefpatch${KERNELREL} | tee ${KERNELSRC}/klipsng.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preng --forward --ignore-whitespace )
 
 # patch kernel
@@ -167,13 +169,12 @@ klipsdefaults:
 
 # programs
 
-ifeq ($(strip $(OBJDIR)),.)
+ifeq ($(strip $(OBJDIR)),.) # If OBJDIR is OPENSWANSRCDIR (ie dot) then the simple case:
 programs install clean:: 
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
 	done; 
-
 else
 ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
 OBJDIRTOP=${ABSOBJDIR}
@@ -616,10 +617,14 @@ tarpkg:
 	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz 
 	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
 	@rm -rf /var/tmp/openswan-${USER}
-	
 
 
 env:
 	@env | sed -e "s/'/'\\\\''/g" -e "s/\([^=]*\)=\(.*\)/\1='\2'/"
+
+#
+#  A target that does nothing intesting is sometimes interesting...
+war:
+	@echo "Not Love?"
 
 

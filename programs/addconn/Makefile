@@ -11,6 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
+$(info info: addcon/Makefile: MAKECMDGOALS="$(MAKECMDGOALS)")
+
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 

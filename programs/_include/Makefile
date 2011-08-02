@@ -16,6 +16,8 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+$(info info: at .../programs/_include/Makefile OBJDIR="$(OBJDIR)" USE_OBJDIR="$(USE_OBJDIR)" MAKECMDGOALS="$(MAKECMDGOALS)" pwd:"$(shell pwd)")
+
 PROGRAM=_include
 PROGRAMDIR=${LIBDIR}
 
