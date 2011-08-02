@@ -19,6 +19,7 @@ srcdir?=${OPENSWANSRCDIR}/testing/
 SUBDIRS=lib utils 
 SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging
+SUBDIRS+=umltree
 #SUBDIRS+=kunit
 # FIXUP: pfkey should NOT be commented out, but it needs debuging:
 #SUBDIRS+=pfkey
@@ -29,7 +30,7 @@ def:
 
 # programs
 
-cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
+prerequisites cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
 		 ${MAKE} -C $$d srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ;\

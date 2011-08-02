@@ -2,7 +2,7 @@
 # Currently, this test will be confounded if not run before any of 
 # the basic install tests.
 #
-mkinsttest	basic-docmake-01	good
+##mkinsttest	basic-docmake-01	good  ## Test removed as it's dir (doc) is GONE. --HD
 
 # Test to see if your basic /usr/local install works correctly.
 #

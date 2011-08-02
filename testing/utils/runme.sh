@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # $Id: runme.sh,v 1.3 2004/05/28 02:07:02 mcr Exp $
@@ -14,10 +14,12 @@
 
 if [ -z "${TEST_TYPE}" ]
 then
-    echo runme.sh now requires that testparams.sh defines TEST_TYPE=
+    echo >&2 "Error: runme.sh now requires that testparams.sh defines TEST_TYPE= (current value null or undef)"
+	exit 99
 fi
 
 ( cd .. && $TEST_TYPE $TESTNAME good )
+# FIXUP: test return value from above?
 
 perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} notest
 

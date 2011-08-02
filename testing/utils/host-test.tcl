@@ -11,19 +11,20 @@ proc usage {} {
     global argv0
 
     puts stderr "Usage: $argv0 "
-    puts stderr "\t-i <script>        script to initialize UML"
-    puts stderr "\t-s <script>        script to run before data flows"
-    puts stderr "\t-I <script>        script to finalize UML"
-    puts stderr "\t-n <netjigprog>    path to netjig program"
     puts stderr "\t-a                 if netjig should enable --arpreply"
+    puts stderr "\t-c <file>          file to send console output to"
     puts stderr "\t-D                 start up the UML nic so that there is DNS"
     puts stderr "\t-H host=path,host=path start up additional UMLs as specified"
-    puts stderr "\t-p <file>          pcap file to play on private network"
+    puts stderr "\t-I <script>        script to finalize UML"
+    puts stderr "\t-i <script>        script to initialize UML"
+    puts stderr "\t-n <netjigprog>    path to netjig program"
     puts stderr "\t-P <file>          pcap file to play on public network"
-    puts stderr "\t-r <file>          record private network to file"
+    puts stderr "\t-p <file>          pcap file to play on private network"
     puts stderr "\t-R <file>          record public network to file"
+    puts stderr "\t-r <file>          record private network to file"
+    puts stderr "\t-s <script>        script to run before data flows"
+    puts stderr "\t-U <hostname>      UML Host name (aka umlid)"
     puts stderr "\t-u <uml>           User Mode Linux program to start"
-    puts stderr "\t-c <file>          file to send console output to"
     puts stderr "\n"
     puts stderr "The following environment variables are also consulted:\n"
     puts stderr "PACKETRATE\tthe rate at which packets will be replayed"
@@ -50,7 +51,7 @@ if {[info exists env(NETJIGTESTDEBUG)]} {
     }
 }
 
-netjigdebug "Program invoked with $argv"
+netjigdebug "host-test.tcl: invoked with args: $argv"
 set arpreply ""
 set umlid(extra_hosts) ""
 
@@ -125,18 +126,20 @@ foreach host $managed_hosts {
 }
 
 if {! [file executable $netjig_prog]} {
-    puts "The NETJIG management program is not present. Did you run \"make checkprograms\"?"
-    exit
+    puts stderr "host-test.tcl: Error: The NETJIG management program is not present. Did you run \"make checkprograms\"?"
+    exit 99
 }
 
-netjigdebug "Starting up the netjig program: $netjig_prog"
+netjigdebug "host-test.tcl: Starting up the netjig program: $netjig_prog"
 
-netjigdebug "Will start additional hosts: $umlid(extra_hosts)"
+netjigdebug "host-test.tcl: Will start additional hosts: $umlid(extra_hosts)"
 
 # we start up netjig_prog with a plain pipe, so that
 # stderr from it will go to our stderr.
-spawn -noecho -open [open "|$netjig_prog --cmdproto $netjig_debug_opt 2>@stderr" w+]
+set retval [spawn -noecho -open [open "|$netjig_prog --cmdproto $netjig_debug_opt 2>@stderr" w+]]
+
 set netjig1 $spawn_id
+# FIXUP: the above needs to test the return value of the netjig startup
 
 netjigsetup $netjig1
 
@@ -158,6 +161,9 @@ foreach host $umlid(extra_hosts) {
     initdns  $host
 }
 
+#
+#  Base UML that is always run.
+#  FIXUP: change this name (uml) to something more unique and understandable.
 startuml uml
 loginuml uml
 inituml  uml

@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 #
 # configuration for this file has moved to $OPENSWANSRCDIR/umlsetup.sh
 # By default, that file does not exist. A sample is at

@@ -7,7 +7,7 @@
 source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
 source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
-set netjig_prog $env(OPENSWANSRCDIR)/testing/utils/uml_netjig/uml_netjig
+set netjig_prog $env(OBJDIRTOP)/testing/utils/uml_netjig/uml_netjig
 
 set arpreply ""
 set umlid(extra_hosts) ""

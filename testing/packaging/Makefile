@@ -21,10 +21,10 @@ def:
 	@false
 
 check:
-	sh ./dotests.sh
+	${SHELL} ./dotests.sh
 
 install install_file_list checkprograms programs:
-	@true
+	true # not actually doing anything for this target, but thats OK.
 
 clean:
 	cat TESTLIST | while read testtype name status; \

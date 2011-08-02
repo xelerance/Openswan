@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PATH="/sbin:/bin"
 
@@ -63,7 +63,7 @@ make_extra_nodes() {
 ##############################################################################
 
 mount -n -t proc none /proc
-if grep SHELL /proc/cmdline; then echo STARTING SHELL - exit to continue; /bin/sh; fi
+if grep SHELL /proc/cmdline; then echo STARTING SHELL - exit to continue; /bin/bash; fi
 
 for v in $(cat /proc/cmdline)
 do

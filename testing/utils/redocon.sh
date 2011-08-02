@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/cash
 
 #
 # $Id: redocon.sh,v 1.12 2005/11/16 22:27:38 mcr Exp $

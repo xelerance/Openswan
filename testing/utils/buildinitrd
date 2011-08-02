@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # build up a cramfs for initrd use.
 # probably you will run this under fakeroot
@@ -9,7 +9,7 @@ list=$1
 srctree=$2
 basicroot=$3
 
-echo PWD: `pwd`
+echo "info: buildinitrd script, list=\"$1\" scrctree=\"$2\" basicroot=\"$3\" and pwd=\"`pwd`\""
 
 rm -rf initrd
 mkdir -p initrd

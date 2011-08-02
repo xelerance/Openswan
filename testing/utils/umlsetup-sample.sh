@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This is the configuration file that helps setup for
 # a kernel pool for UML compilation w/FreeSWAN.

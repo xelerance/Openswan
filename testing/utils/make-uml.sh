@@ -2,7 +2,7 @@
 #
 
 # show me
-#set -x
+set -x
 
 # fail if any command fails
 set -e
@@ -103,6 +103,12 @@ else
 fi
 
 mkdir -p $POOLSPACE
+retval=$?
+if test ${retval} -ne 0 ; then
+	echo >&2 "Error: could not create POOLSPACE=\"${POOLSPACE}\";, mkdir returned ${retval} from make-uml.sh:${LINENO}"
+	exit ${retval}
+fi
+
 if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
 
 UMLMAKE=$POOLSPACE/Makefile
@@ -150,8 +156,8 @@ then
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
     PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
-    echo "using $PLAINKCONF to build plain kernel"
-     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$PLAINKCONF INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install) || exit 1 </dev/null
+    echo "make-uml.sh: Using \"${PLAINKCONF}\" to build a new plain kernel"
+    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install ) || exit 1 </dev/null
 fi
 
 UMLNETKEY=$POOLSPACE/netkey${KERNVER}
@@ -183,7 +189,10 @@ fi
 setup_make $BUILD_MODULES >>$UMLMAKE
 
 # now, execute the Makefile that we have created!
-cd $POOLSPACE && make $REGULARHOSTS 
+echo "info: make-uml.sh:${LINENO} in `pwd`"
+echo " aand MAKE=${MAKE}"
+MAKE_DEBUG="--debug=b";
+${MAKE:-make} ${MAKE_DEBUG} -C ${POOLSPACE}   ${REGULARHOSTS}
 
 # now, copy the kernel, apply the UML patches.
 # then, make Openswan patches as well.
@@ -258,4 +267,6 @@ make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true programs
 
 # now, execute the Makefile that we have created!
 cd $POOLSPACE && make $OPENSWANHOSTS 
+
+echo "###  bottom exiting make-umls.sh running at pwd: `pwd`"
 

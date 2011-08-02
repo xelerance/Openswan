@@ -11,7 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR=../../..
+SHELL=/bin/bash
+export SHELL
+
+OPENSWANSRCDIR?=../../..
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
@@ -20,10 +23,10 @@ UTILS=${OPENSWANSRCDIR}/testing/utils
 def:	check
 
 check:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; . ./TESTLIST
+	${SHELL} -c "export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; . ./TESTLIST"
 
 one:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+	${SHELL} -c "export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`"
 
 install install_file_list checkprograms programs:
 	@true

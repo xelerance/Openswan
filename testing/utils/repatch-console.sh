@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # $Id: repatch-console.sh,v 1.2 2002/10/16 21:59:47 mcr Exp $

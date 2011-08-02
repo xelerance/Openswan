@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # $Id: update-ref-console.sh,v 1.2 2002/10/10 16:09:59 mcr Exp $

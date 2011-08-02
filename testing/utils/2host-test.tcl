@@ -54,7 +54,7 @@ if {[info exists env(HOSTTESTDEBUG)]} {
     }
 }
 
-puts "Program invoked with $argv"
+puts "2host-test.tcl: invoked with args: $argv"
 set arpreply ""
 set umlid(extra_hosts) ""
 

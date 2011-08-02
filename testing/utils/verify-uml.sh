@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # show me
 #set -x

@@ -4,6 +4,21 @@
 # $Id: functions.sh,v 1.131 2005/11/16 21:31:50 mcr Exp $
 #
 
+#
+#  Root out incorrect shell invocations by failing if invoked with the wrong shell.
+#  This script uses extended BASH syntax, so it is NOT POSIX "/bin/sh" compliant.
+if test -z "${BASH_VERSION}" ; then 
+	echo >&2 "Fatal-Error: testing/utils/functions.sh MUST be run under \"/bin/bash\"."
+	exit 55
+fi
+
+#
+#  DHR says, alwasy eat your dogfood!:
+#set -u -e
+set     -e
+
+#
+#  Variable declarations:
 KLIPS_MODULE=${KLIPS_MODULE-}
 TESTHOST=${TESTHOST-}
 NETJIGVERBOSE=${NETJIGVERBOSE-}
@@ -11,12 +26,14 @@ THREEEIGHT=${THREEEIGHT-}
 TCPDUMP=${TCPDUMP-}
 TCPDUMPFLAGS=${TCPDUMPFLAGS-}
 WESTHOST=${WESTHOST-}
-EASTHOST=${EASTHOST-}
+EASTHOST=${EASTHOST:-east}
 TEST_GOAL_ITEM=${TEST_GOAL_ITEM-0}
 TEST_PROB_REPORT=${TEST_PROB_REPORT-0}
 TEST_EXPLOIT_URL=${TEST_EXPLOIT_URL-http://www.openswan.org/vuln/}
 MAKE=${MAKE-make}
 
+#
+#  ???
 preptest() {
     local testdir="$1"
     local testtype="$2"
@@ -64,6 +81,8 @@ preptest() {
     done
 }
 
+#
+#  ???
 lookforcore() {
     local testdir="$1"
 
@@ -97,7 +116,8 @@ lookforcore() {
     fi
 }
 
-
+#
+#  ???
 verboseecho() {
     if [ -n "${NETJIGVERBOSE-}" ]
     then
@@ -105,6 +125,7 @@ verboseecho() {
     fi
 }
 
+#
 # ??? NOTE:
 # This seems to only sometimes set $success.
 # Whatever interesting settings are made seem to be lost by the caller :-(
@@ -163,6 +184,8 @@ consolediff() {
     fi
 }
 
+#
+#  ???
 compat_variables() {
     if [ -z "${REF_CONSOLE_OUTPUT-}" ] && [ -n "${REFCONSOLEOUTPUT-}" ]
     then
@@ -268,6 +291,7 @@ compat_variables() {
 
 }
 
+#
 # this is called to set additional variables that depend upon testparams.sh
 prerunsetup() {
     if [ -n "$KLIPS_MODULE" ]
@@ -281,8 +305,9 @@ prerunsetup() {
 	if [ -n "$EAST_NETKEY" ] 
 	 then
 	  EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start-netkey.sh}
-	else 
-	  EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start.sh}
+	else
+	  echo "functions.sh:prerunsetup: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
+	  EAST_START=${EAST_START-${POOLSPACE}/${EASTHOST}/start.sh}
 	fi
 	if [ -n "$WEST_NETKEY" ] 
 	 then
@@ -302,7 +327,8 @@ prerunsetup() {
     perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} ${TESTNAME}${KLIPS_MODULE}
 }
 
-
+#
+#  ???
 setup_additional_hosts() {
 
     if [ -n "${ADDITIONAL_HOSTS-}" ]
@@ -365,6 +391,8 @@ foreach_ref_console() {
     done
 }
 
+#
+#  ???
 roguekill() {
     REPORT_NAME="$1"
     local rogue_sighted=""
@@ -387,7 +415,8 @@ roguekill() {
 	    break;
 	fi
 	pointless=true
-	for i in `grep -s -l '^'"$POOLSPACE"'/[a-z]*/linux\>' /proc/[1-9]*/cmdline`
+	# Debugging_note: the next line shows up as line 410 to -u, even if it's 417:
+	for i in `grep -s -l '^'"${POOLSPACE}"'/[a-z]*/linux\>' /proc/[1-9]*/cmdline`
 	do
 	    local pdir=`dirname "$i"`
 	    local badpid=`basename $pdir`
@@ -421,7 +450,7 @@ roguekill() {
 	echo "ROGUES without brand $UML_BRAND:"
 	ps -f -w -p $other_rogues
     fi
-    stat="$stat$rogue_sighted"
+    stat="${stat:-}${rogue_sighted}"; # I am guessing here as to the original intent --HD
 }
 
 #
@@ -594,6 +623,7 @@ pcap_filter() {
     fi
 }
 
+#
 # netjigtest - invoke a single UML with input/output setup for KLIPS
 #              testing.
 #
@@ -677,7 +707,13 @@ netjigtest() {
 
     cmd="expect -f $UTILS/host-test.tcl -- -U $TESTHOST -u $HOST_START -i ${INIT_SCRIPT} -n $NJ $NJARGS"
     $NETJIGDEBUG && echo $cmd
+
     eval $cmd
+    retval="${?}";
+    if test ${retval} -ne 0 ; then
+	echo >&2 "Error: functions.sh:netjigtest() expect command returned an Error: retval=${retval} "
+	exit 98
+    fi
 
     #uml_mconsole $TESTHOST halt
 
@@ -707,6 +743,7 @@ netjigtest() {
 #
 ###################################
 
+#
 # test entry point:
 klipstest() {
     testdir=$1
@@ -727,6 +764,8 @@ klipstest() {
 #
 ###################################
 
+#
+#  ???
 do_ctl_test() {
     success=true
 
@@ -754,8 +793,12 @@ do_ctl_test() {
 
     cmd="expect -f $UTILS/host-test.tcl -- -U $TESTHOST -u $HOST_START -i ${INIT_SCRIPT} -n $NJ $NJARGS"
     $NETJIGDEBUG && echo $cmd
-    eval $cmd
 
+    eval $cmd
+    retval="${?}";
+    if test ${retval} -ne 0 ; then
+	echo >&2 "WARNING: functions.sh:do_ctl_test() expect command returned an Error: retval=${retval} "
+    fi
 
     if [ -n "${REF_CONSOLE_OUTPUT-}" ]
     then
@@ -768,7 +811,7 @@ do_ctl_test() {
     esac
 }
 
-
+#
 # test entry point:
 ctltest() {
     testdir=$1
@@ -783,6 +826,8 @@ ctltest() {
     recordresults $testdir "$testexpect" "$stat" $testdir${KLIPS_MODULE} ""
 }
 
+#
+#  ???
 skiptest() {
     testdir=$1
     testexpect=$2
@@ -798,6 +843,8 @@ skiptest() {
 #
 ###################################
 
+#
+#  ???
 do_make_install_test() {
 
     rm -rf OUTPUT${KLIPS_MODULE}/root
@@ -883,6 +930,7 @@ do_make_install_test() {
     esac
 }
 
+#
 # test entry point:
 mkinsttest() {
     testdir=$1
@@ -1674,9 +1722,14 @@ do_umlX_test() {
     rm -f OUTPUT${KLIPS_MODULE}/westconsole.txt
     rm -f OUTPUT${KLIPS_MODULE}/japanconsole.txt
 
-    cmd="expect -f $UTILS/Xhost-test.tcl -- -n $NJ $EXP2_ARGS "
+    cmd="expect -f $UTILS/Xhost-test.tcl -- -n \"$NJ\" $EXP2_ARGS "
     $NETJIGDEBUG && echo $cmd
+
     eval $cmd
+    retval="${?}";
+    if test ${retval} -ne 0 ; then
+	echo >&2 "WARNING: functions.sh:do_umlX_test() expect command returned an Error: retval=${retval} "
+    fi
 
     pcap_filter west   "${REF_WEST_OUTPUT-}" "$WESTOUTPUT" "${REF_WEST_FILTER-}"
     pcap_filter east   "${REF_EAST_OUTPUT-}" "$EASTOUTPUT" "${REF_EAST_FILTER-}"
@@ -1905,6 +1958,8 @@ do_unittest() {
     fi
 }
 
+#
+#  ???
 unittest() {
     testcase=$1
     testexpect=$2

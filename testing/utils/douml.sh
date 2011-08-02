@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script downloads everything you need and sets up a UML.
 

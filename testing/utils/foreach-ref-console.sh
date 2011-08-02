@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #
 # $Id: foreach-ref-console.sh,v 1.1 2002/10/10 16:09:59 mcr Exp $

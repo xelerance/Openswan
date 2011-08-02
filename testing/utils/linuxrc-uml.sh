@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 PATH="/sbin:/bin"
 
@@ -12,7 +12,7 @@ udev_root="/root/dev"
 ##############################################################################
 
 mount -n -t proc none /proc
-if grep SHELL /proc/cmdline; then echo STARTING SHELL - exit to continue; /bin/sh; fi
+if grep SHELL /proc/cmdline; then echo STARTING SHELL - exit to continue; /bin/bash; fi
 
 for v in $(cat /proc/cmdline)
 do
@@ -45,7 +45,7 @@ echo Invoked with Arguments: $*
 cd /root
 mount -n -t proc none /proc 
 mount -n --move . /
-if grep LATE /proc/cmdline; then echo STARTING SHELL2 - exit to continue; /bin/sh; fi
+if grep LATE /proc/cmdline; then echo STARTING SHELL2 - exit to continue; /bin/bash; fi
 exec </dev/console >/dev/console 2>&1
 exec /usr/sbin/chroot . /sbin/init $*
 

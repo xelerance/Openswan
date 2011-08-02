@@ -23,10 +23,10 @@ def:
 	@false
 
 check:
-	unset KLIPS_MODULE; sh ./dotests.sh
+	unset KLIPS_MODULE; ${SHELL} ./dotests.sh
 
 checkbase:
-	unset KLIPS_MODULE; sh ./dotests.sh
+	unset KLIPS_MODULE; ${SHELL} ./dotests.sh
 
 checkmod:
 	KLIPS_MODULE=-module ./dotests.sh

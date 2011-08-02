@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # this touch program knows how to realize symlink copies.
 # this is for the kernel's benefit.

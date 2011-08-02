@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 BUILDTOP=${MYBOX-/c2/freeswan/freeswan-1.92}
 export BUILDTOP

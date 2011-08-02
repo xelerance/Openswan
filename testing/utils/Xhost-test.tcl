@@ -5,7 +5,7 @@
 #
 
 if {! [info exists env(OPENSWANSRCDIR)]} {
-    puts stderr "Please point \$OPENSWANSRCDIR to ../testing/utils/"
+    puts stderr "Error: Please point \$OPENSWANSRCDIR to ../testing/utils/ (OPENSWANSRDIR=\"$OPENSWANSRCDIR\";)"
     exit 24
 }
 
@@ -13,7 +13,7 @@ source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
 source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
 
 proc usage {} {
-    puts stderr "Usage: Xhost-test "
+    puts stderr "Usage: Xhost-test [args]"
     puts stderr "\t-D                 start up the UML nic so that there is DNS"
     puts stderr "\t-H host=path,host=path start up additional UMLs as specified"
     puts stderr "\t-n <netjigprog>    path to netjig program"
@@ -38,7 +38,6 @@ proc usage {} {
     puts stderr "PACKETRATE\tthe rate at which packets will be replayed"
     puts stderr "{NORTH,SOUTH,EAST,WEST}_PLAY denotes a pcap file to play on that network"
     puts stderr "{NORTH,SOUTH,EAST,WEST}_REC  denotes a pcap file to reocrd into from that network"
-    exit 22
 }
 
 set umlid(neteast,setplay)      0
@@ -58,7 +57,7 @@ if {[info exists env(HOSTTESTDEBUG)]} {
     }
 }
 
-netjigdebug "Program invoked with $argv"
+netjigdebug "Xhost-test.tcl: invoked with args: $argv"
 set arpreply ""
 set umlid(extra_hosts) ""
 
@@ -68,8 +67,9 @@ foreach net $managednets {
 
 while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
     if { $err < 0 } then {
-	puts stderr "Xhost-test.tcl: $opt and $optarg" 
+	puts stderr "Error: Xhost-test.tcl: opt=\"$opt\" and optarg=\"$optarg\"" 
 	usage
+	exit 96
     } else {
 	#puts stderr "Opt $opt arg: $optarg"
 
@@ -121,7 +121,7 @@ while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
 }
 
 if {! [info exists env(XHOST_LIST)]} {
-    puts stderr "You must specify at least one host to manage in \$XHOST_LIST"
+    puts stderr "Error: You must specify at least one host to manage in \$XHOST_LIST (XHOST_LIST=\"$XHOST_LIST\";)"
     exit 23
 }
 
@@ -138,8 +138,8 @@ foreach host $managed_hosts {
 set argv [ lrange $argv $optind end ]
 
 if {! [file executable $netjig_prog]} {
-    puts "UML startup must be provided - did you run \"make checkprograms\"?"
-    exit
+    puts stderr "Error: Xhost-test.tcl: UML startup (netjig_prog=\"$netjig_prog\";) must be provided - did you run \"make checkprograms\"?"
+    exit 99
 }
 
 netjigdebug "Starting up the netjig for $netjig_prog"
@@ -242,12 +242,12 @@ foreach host $managed_hosts {
     expect {
 	-i $umlid($host,spawnid) -exact "# " {}
 	timeout { 
-	    puts "Can not find prompt prior to final script for $host (timeout)"
-	    exit;
+	    puts stderr "Can not find prompt prior to final script for host: \"$host\" (timeout)"
+	    exit 98;
 	}
 	eof { 
-	    puts "Can not find prompt prior to final script for $host (EOF)"
-	    exit;
+	    puts stderr "Can not find prompt prior to final script for host: \"$host\" (EOF)"
+	    exit 97;
 	}
     }
 }

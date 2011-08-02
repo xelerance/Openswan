@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash 
 
 # This script is used to setup the regression testing environment
 # invoke the tests and record the results. It expects the following

@@ -172,7 +172,7 @@ proc expectprompt {umlid msg} {
 	-re {([^\r\n]*)\n} { exp_continue }
 	eof {
 	    puts "Cannot find prompt $msg (eof)"
-	    puts stderr "Can not find prompt $msg (eof)"
+	    puts stderr "Error: netjig.tcl:expectprompt(): Can not find prompt \"$msg\" (eof)"
 	    shutdownumls
 	    exit;
 	}
@@ -284,7 +284,7 @@ proc startuml {umlname} {
 	set console [open "OUTPUT/$umlname-console-default.txt" w]
     }
 
-    netjigdebug "Starting UML $umlid($umlname,program) for $umlname"
+    netjigdebug "netjig.tcl:startuml(): Starting UML script \"$umlid($umlname,program)\" in \"$umlname\""
 
     set umlid($umlname,pid) [spawn $umlid($umlname,program) single]
     set umlid($umlname,spawnid) $spawn_id
@@ -305,7 +305,7 @@ proc loginuml {umlname} {
     	-i $umlid($umlname,spawnid)
 	timeout	{ puts stderr "timeout in loginuml" }
 	eof	{ 
-	          puts stderr "EOF in loginuml" 
+	          puts stderr "Error: netjig.tcl:loginuml(): unexpected EOF from umlname=\"$umlname\"" 
     	          shutdownumls
 	}
 #	-exact "normal startup):"
@@ -516,7 +516,7 @@ proc set_from_env {host param varname} {
     
     netjigdebug "Looking for $varname..."
     if {[info exists env($varname)]} {
-	netjigdebug "found it: umlid($host,$param)=$env($varname)"
+	netjigdebug "netjig.tcl: found it: varname=\"$varname\" umlid($host,$param)=$env($varname)"
 	set umlid($host,$param) $env($varname)
     }
 }

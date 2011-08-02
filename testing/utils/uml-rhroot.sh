@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # don't touch below
 rpmcanon() {
