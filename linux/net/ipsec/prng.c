@@ -233,8 +233,8 @@ regress()
 		exit(1);
 	}
 	if (prng_count(&pr) != sizeof(buf)) {
-		fprintf(stderr, "got %u bytes, but count is %lu\n",
-					sizeof(buf), prng_count(&pr));
+		fprintf(stderr, "got %lu bytes, but count is %lu\n",
+			(unsigned long)sizeof(buf), prng_count(&pr));
 		exit(1);
 	}
 	prng_final(&pr);
