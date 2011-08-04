@@ -7,6 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.36 (unreleased)
 * auto: Add --checkpubkeys option for checking expiry of X.509 certs
         [Mika Ilmaranta]
+* Bugtracker bugs fixed:
+   #1270 malloc is being used which does not use alloc_bytes/pfree
 
 v2.6.35 (July 23, 2011)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
