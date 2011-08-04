@@ -889,8 +889,7 @@ int xauth_pam_conv(int num_msg, const struct pam_message **msgm,
     if (num_msg <= 0)
         return PAM_CONV_ERR;
 
-    reply = (struct pam_response *) calloc(num_msg,
-                                           sizeof(struct pam_response));
+    reply = (struct pam_response *) alloc_bytes(num_msg * sizeof(struct pam_response),"pam_response");
     if (reply == NULL) {
         return PAM_CONV_ERR;
     }
@@ -900,11 +899,11 @@ int xauth_pam_conv(int num_msg, const struct pam_message **msgm,
 
         switch (msgm[count]->msg_style) {
         case PAM_PROMPT_ECHO_OFF:
-	    string = malloc(arg->password.len+1);
+	    string = alloc_bytes(arg->password.len+1, "pam_echo_off");
 	    strcpy(string,arg->password.ptr);
             break;
         case PAM_PROMPT_ECHO_ON:
-	    string = malloc(arg->name.len+1);
+	    string = alloc_bytes(arg->name.len+1,"pam_echo_on");
 	    strcpy(string,arg->name.ptr);
             break;
         }

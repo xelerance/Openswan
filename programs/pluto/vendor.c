@@ -411,7 +411,7 @@ void init_vendorid(void)
 	    }
 	    else if (vid->flags & VID_MD5HASH) {
 		/** VendorID is a string to hash with MD5 **/
-		unsigned char *vidm =  malloc(MD5_DIGEST_SIZE);
+		unsigned char *vidm =  alloc_bytes(MD5_DIGEST_SIZE,"VendorID MD5");
 		vid->vid = (char *)vidm;
 		if (vidm) {
 		    unsigned const char *d = (unsigned const char *)vid->data;
@@ -425,7 +425,7 @@ void init_vendorid(void)
 		/** FreeS/WAN 2.00+ specific hash **/
 #define FSWAN_VID_SIZE 12
 		unsigned char hash[MD5_DIGEST_SIZE];
-		char *vidm =  malloc(FSWAN_VID_SIZE);
+		char *vidm =  alloc_bytes(FSWAN_VID_SIZE,"fswan VID");
 		vid->vid = vidm;
 		if (vidm) {
 		    osMD5Init(&ctx);

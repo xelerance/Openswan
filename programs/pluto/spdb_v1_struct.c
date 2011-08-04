@@ -176,7 +176,7 @@ out_sa(pb_stream *outs
 
 	    }
 	    else {
-		/* couldn't malloc something, so skip adding the proposal */
+		/* couldn't alloc something, so skip adding the proposal */
 		if (ipcomp_trans)
 		    pfreeany (ipcomp_trans);
 		if (ipcomp_prop)
