@@ -19,7 +19,7 @@ srcdir?=${OPENSWANSRCDIR}/testing/
 SUBDIRS=lib utils 
 SUBDIRS+=klips 
 SUBDIRS+=pluto dnssec scripts packaging
-SUBDIRS+=umltree
+#SUBDIRS+=umltree
 #SUBDIRS+=kunit
 # FIXUP: pfkey should NOT be commented out, but it needs debuging:
 #SUBDIRS+=pfkey
