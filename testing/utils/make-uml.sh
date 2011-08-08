@@ -35,7 +35,8 @@ export PATH=$OPENSWANSRCDIR/testing/utils:$PATH
 OPENSWANSRCDIR=${OPENSWANSRCDIR-../..}
 if [ ! -f ${OPENSWANSRCDIR}/umlsetup.sh ]
 then
-    echo No umlsetup.sh. Please read instructions in doc/umltesting.html and testing/utils/umlsetup-sample.sh.
+    echo >&2 "make-uml.sh: Error: No umlsetup.sh configuration file in OPENSWANSRCDIR=\"${OPENSWANSRCDIR}\"."
+    echo >&2 "    Please read instructions in doc/umltesting.html and testing/utils/umlsetup-sample.sh."
     exit 1
 fi
 
