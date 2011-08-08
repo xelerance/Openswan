@@ -7,6 +7,7 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.36 (unreleased)
 * auto: Add --checkpubkeys option for checking expiry of X.509 certs
         [Mika Ilmaranta]
+* KLIPS: Support for backported 2.6.19 CryptoAPI in SuSe kernels [Shinichi Furuso]
 * Bugtracker bugs fixed:
    #1270 malloc is being used which does not use alloc_bytes/pfree
 
