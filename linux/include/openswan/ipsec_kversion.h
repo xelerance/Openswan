@@ -588,5 +588,9 @@
 #define	ipsec_route_dst(x)	(x)->u.dst
 #endif
 
+# if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP >= 3)
+# define HAVE_BACKPORTED_NEW_CRYPTOAPI 1
+#endif
+
 #endif /* _OPENSWAN_KVERSIONS_H */
 
