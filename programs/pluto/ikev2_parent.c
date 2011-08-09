@@ -337,7 +337,10 @@ ikev2_parent_outI1_common(struct msg_digest *md
 			  , struct state *st)
 {
     /* struct connection *c = st->st_connection; */
-    int numvidtosend = 1;  /* we always send Openswan VID */
+    int numvidtosend = 0; 
+#ifdef PLUTO_SENDS_VENDORID
+    numvidtosend++;  /* we send Openswan VID */
+#endif
 
     /* set up reply */
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
@@ -425,7 +428,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	close_output_pbs(&pb);
     }
 
-    /* Send DPD VID */
+#ifdef PLUTO_SENDS_VENDORID
+    /* Send VendorID VID */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 
@@ -433,6 +437,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
+#endif
 
     close_message(&md->rbody);
     close_output_pbs(&reply_stream);
@@ -696,7 +701,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
     pb_stream *keyex_pbs;
-    int    numvidtosend=1;
+    int    numvidtosend = 0;
+#ifdef PLUTO_SENDS_VENDORID
+    numvidtosend++;  /* we send Openswan VID */
+#endif
 
     /* note that we don't update the state here yet */
     memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
@@ -769,7 +777,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	close_output_pbs(&pb);
     }
 
-    /* Send DPD VID */
+#ifdef PLUTO_SENDS_VENDORID
+    /* Send VendorID VID */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 
@@ -777,6 +786,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
+#endif
 
     close_message(&md->rbody);
     close_output_pbs(&reply_stream);
