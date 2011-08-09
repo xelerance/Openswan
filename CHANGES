@@ -8,6 +8,14 @@ v2.6.36 (unreleased)
 * auto: Add --checkpubkeys option for checking expiry of X.509 certs
         [Mika Ilmaranta]
 * KLIPS: Support for backported 2.6.19 CryptoAPI in SuSe kernels [Shinichi Furuso]
+* IKEv2: We always sent the openswan VID instead of using #ifdef [Avesh/Paul]
+* IKEv2: ikev2_get_dcookie used SHA1Update() with pointer size [Avesh]
+* TESTING: Added some more consistent logging in prerunsetup() [Paul]
+* pcr_init() should memset the request helper size, not pointer size [Avesh]
+* Prevent deferencing ctx->trans_cur  using passert() in db_trans_add() [Avesh/Paul]
+* XAUTH: whack_get_value() never decremeanted "tries" so asked indefinitely [Avesh]
+* Fix closing fd in lib/libopenswan/oswconf.c [Avesh]
+* rsasigkey: configdir is always set in the NSS #ifdef part [Avesh]
 * Bugtracker bugs fixed:
    #1270 malloc is being used which does not use alloc_bytes/pfree
 
