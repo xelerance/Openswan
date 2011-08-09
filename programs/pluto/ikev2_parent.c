@@ -2070,7 +2070,7 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
 	SHA1Init(&ctx_sha1);
 	SHA1Update(&ctx_sha1, st_ni.ptr, st_ni.len);
 	SHA1Update(&ctx_sha1, addr_buff, addr_length);
-	SHA1Update(&ctx_sha1, spiI, sizeof(spiI));
+	SHA1Update(&ctx_sha1, spiI, sizeof(*spiI));
 	SHA1Update(&ctx_sha1, ikev2_secret_of_the_day
 		 , SHA1_DIGEST_SIZE);
 	SHA1Final(dcookie, &ctx_sha1);
