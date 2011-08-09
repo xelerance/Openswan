@@ -622,7 +622,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 	}
 	privkey = PK11_GenerateKeyPair(slot
 		, CKM_RSA_PKCS_KEY_PAIR_GEN, &rsaparams, &pubkey
-		, configdir ? PR_TRUE : PR_FALSE, password ? PR_TRUE : PR_FALSE, &pwdata);
+		, PR_TRUE, password ? PR_TRUE : PR_FALSE, &pwdata);
 	/* inTheToken, isSensitive, passwordCallbackFunction */
 	if (!privkey) {
 		fprintf(stderr, "%s: key pair generation failed: \"%d\"\n", me, PORT_GetError());
@@ -631,9 +631,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 
 	/*privkey->wincx = &pwdata;*/
 	PORT_Assert(pubkey != NULL);
-	if (configdir) {
-		fprintf(stderr, "Generated RSA key pair using the NSS database\n");
-	}
+	fprintf(stderr, "Generated RSA key pair using the NSS database\n");
        
 	SECItemToHex(getModulus(pubkey), n_str);
 	assert(!mpz_set_str(n, n_str, 16));
