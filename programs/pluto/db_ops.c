@@ -291,6 +291,7 @@ db_trans_add(struct db_context *ctx, u_int8_t transid)
 	 *	after few allocations, eg.:
 	 *	0,1,2,4,8,13,20,31,47
 	 */
+	passert(ctx->trans_cur != NULL);
 	if ((ctx->trans_cur - ctx->trans0) >= ctx->max_trans) {
 		/* XXX:jjo if fails should shout and flag it */
 		if (db_trans_expand(ctx, ctx->max_trans/2 + 1)<0)
