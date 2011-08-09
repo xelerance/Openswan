@@ -250,7 +250,10 @@ whack_get_value(char *buf, size_t bufsize)
 	{
 	    fprintf(stderr, "answer was empty, retry\n");
 	}
+
+        try--;
     }
+
     if(len ==  0)
     {
 	exit(RC_WHACK_PROBLEM);
