@@ -215,10 +215,10 @@ bool Pluto_IsFIPS(void)
 		} else {
 			openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
 		} 
+     fclose(fd);
      }
      else {
 	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode"); 
-	fclose(fd);
      }
 return FALSE;
 }
