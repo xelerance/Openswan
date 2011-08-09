@@ -294,26 +294,33 @@ compat_variables() {
 #
 # this is called to set additional variables that depend upon testparams.sh
 prerunsetup() {
+    # Somewhat misleading, as non-klips_module *used* to imply klips_inline, but could now
+    #  also mean netkey inline/module
     if [ -n "$KLIPS_MODULE" ]
     then
 	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/startmodule.sh}
 	EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/startmodule.sh}
 	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/startmodule.sh}
+	echo "functions.sh:prerunsetup: KLIPS_MODULE is set: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
+	echo "WEST_START=\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
 	REPORT_NAME=${TESTNAME}${KLIPS_MODULE}
     else
 	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/start.sh}
 	if [ -n "$EAST_NETKEY" ] 
 	 then
 	  EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start-netkey.sh}
+	  echo "functions.sh:prerunsetup: netkey: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
 	else
-	  echo "functions.sh:prerunsetup: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
 	  EAST_START=${EAST_START-${POOLSPACE}/${EASTHOST}/start.sh}
+	  echo "functions.sh:prerunsetup: klips: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
 	fi
 	if [ -n "$WEST_NETKEY" ] 
 	 then
 	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start-netkey.sh}
+	  echo "functions.sh:prerunsetup: netkey: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
 	else 
 	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
+	  echo "functions.sh:prerunsetup: klips: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
 	fi
 	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
 	REPORT_NAME=${TESTNAME}
