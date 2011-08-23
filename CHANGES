@@ -16,6 +16,7 @@ v2.6.36 (unreleased)
 * XAUTH: whack_get_value() never decremeanted "tries" so asked indefinitely [Avesh]
 * Fix closing fd in lib/libopenswan/oswconf.c [Avesh]
 * rsasigkey: configdir is always set in the NSS #ifdef part [Avesh]
+* examples: clarify hub-spoke netkey design [Tuomo]
 * Bugtracker bugs fixed:
    #1270 malloc is being used which does not use alloc_bytes/pfree
 
