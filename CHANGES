@@ -7,7 +7,8 @@ See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 v2.6.36 (unreleased)
 * auto: Add --checkpubkeys option for checking expiry of X.509 certs
         [Mika Ilmaranta]
-* KLIPS: Support for backported 2.6.19 CryptoAPI in SuSe kernels [Shinichi Furuso]
+* Update building (with SAref) on SLES10 / SLES11 / Opensuse [Shinichi Furuso]
+* KLIPS: backported 2.6.19 CryptoAPI for SuSe kernels [Shinichi Furuso]
 * IKEv2: We always sent the openswan VID instead of using #ifdef [Avesh/Paul]
 * IKEv2: ikev2_get_dcookie used SHA1Update() with pointer size [Avesh]
 * TESTING: Added some more consistent logging in prerunsetup() [Paul]
