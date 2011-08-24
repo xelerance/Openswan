@@ -1,7 +1,5 @@
 # needsrootforbuild
 
-# for sles11+ and opensuse 11.4
-# for sles10, use sles10.spec
 
 Summary: Openswan IPSEC implementation
 Name: openswan
@@ -29,11 +27,12 @@ License: GPLv2
 Url: http://www.openswan.org/
 Source: openswan-%{srcpkgver}.tar.gz
 Patch1: rc.patch
+Patch2: kernelsrc.patch
 Group: Productivity/Networking/Security
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 PreReq: %insserv_prereq %fillup_prereq perl
-BuildRequires: gmp-devel bison flex bind-devel xmlto
+BuildRequires: gmp-devel bison flex bind-devel xmlto sgml-skel
 Requires: iproute2 >= 2.6.8
 AutoReqProv:    on
 
@@ -59,7 +58,7 @@ Summary: Openswan kernel module
 Group:  System/Kernel
 Release: %{krelver}_%{ourrelease}
 Requires: kernel-%{kflavor} = %{kversion}
-BuildRequires: kernel-%{kflavor} = %{kversion}, kernel-%{kflavor}-devel = %{kversion}, module-init-tools
+BuildRequires: kernel-%{kflavor} = %{kversion}, kernel-source = %{kversion}
 %endif
 
 %if %{buildklips}
@@ -71,6 +70,7 @@ kernels.
 %prep
 %setup -q -n openswan-%{srcpkgver}
 %patch1 -p1
+%patch2 -p1
 sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
 sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
 sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
@@ -97,7 +97,7 @@ cd packaging/suse
 %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu} \
     OPENSWANSRCDIR=$FS \
     KLIPSCOMPILE="%{optflags}" \
-    KERNELSRC=/lib/modules/%{krelease}/build \
+    KERNELDIR=/lib/modules/%{krelease}/build \
 %if %{buildxen}
     ARCH=xen \
 %else
