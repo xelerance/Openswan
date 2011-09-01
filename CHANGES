@@ -19,6 +19,7 @@ v2.6.36 (unreleased)
 * Fix closing fd in lib/libopenswan/oswconf.c [Avesh]
 * rsasigkey: configdir is always set in the NSS #ifdef part [Avesh]
 * examples: clarify hub-spoke netkey design [Tuomo]
+* NAT-T: Fixed logging for broken NAT-T keepalives [Tobias Brunner]
 * Bugtracker bugs fixed:
    #1270 malloc is being used which does not use alloc_bytes/pfree
 

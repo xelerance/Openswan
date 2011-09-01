@@ -1041,7 +1041,7 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 		     * if we know what state to blame.
 		     */
 #ifdef NAT_TRAVERSAL
-		    if ((packet_len == 1) && (buffer[0] = 0xff)
+		    if ((packet_len == 1) && (buffer[0] == 0xff)
 #ifdef DEBUG
 			&& ((cur_debugging & DBG_NATT) == 0)
 #endif
