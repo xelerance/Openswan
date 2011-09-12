@@ -227,7 +227,7 @@ klipsinterface() {
         	if test " $virt_addr" = " "
         	then
                 	# in mast mode we just create the virtual interface
-                	ipsec tncfg --create --virtual $virt
+                	ipsec tncfg --create $virt
 			ip link set $virt up
         	fi
 	fi
@@ -240,7 +240,7 @@ klipsinterface() {
 		RETVAL=$?
 	        if [ "$RETVAL" -eq 1 ];
 		then
-			ipsec tncfg --create --virtual $virt 
+			ipsec tncfg --create $virt
 		fi
 		ipsec tncfg --attach --virtual $virt --physical $phys
 		# configure all the IPv4/IPv6 addresses (including point-to-point)
