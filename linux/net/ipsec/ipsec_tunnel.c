@@ -2278,7 +2278,7 @@ ipsec_tunnel_deletenum(int vifnum)
 {
 	struct net_device *dev_ipsec;
 	
-	if(vifnum > IPSEC_NUM_IFMAX) {
+	if(vifnum >= IPSEC_NUM_IFMAX) {
 		return -ENOENT;
 	}
 
