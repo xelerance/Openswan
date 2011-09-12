@@ -2330,7 +2330,7 @@ ipsec_tunnel_cleanup_devices(void)
 	int i;
 	struct net_device *dev_ipsec;
 	
-	for(i = 0; i < IPSEC_NUM_IF; i++) {
+	for(i = 0; i <= ipsecdevices_max; i++) {
    	        dev_ipsec = ipsecdevices[i];
 		if(dev_ipsec == NULL) {
 		  continue;
