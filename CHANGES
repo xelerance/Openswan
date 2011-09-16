@@ -12,6 +12,7 @@ v2.6.36 (unreleased)
 * KLIPS: ipsecdevices index overflow [Shinichi Furuso]
 * KLIPS: cleanup off by one interface, prevented module unload [Shinichi Furuso]
 * tncfg called incorrectly for adding more ipsecX interfaces [Shinichi Furuso]
+* KLIPS: ipsec_sa_getbyid() did not work properly on IPv6 [Shinichi Furuso]
 * NAT-T: Fix delete for port floating case [Shinichi Furuso]
 * IKEv2: We always sent the openswan VID instead of using #ifdef [Avesh/Paul]
 * IKEv2: ikev2_get_dcookie used SHA1Update() with pointer size [Avesh]
