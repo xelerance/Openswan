@@ -409,7 +409,10 @@ sub tunnelchecks {
 	{
 	    errchk "@out";
 	    printfun "Checking NAT and MASQUERADEing";
-	    if( -e "/proc/net/ip_conntrack" )
+	    # This assumes KLIPS eroute information, we should add support
+	    # for NETKEY, but ip xfrm is very annoying to parse
+	    if(( -e "/proc/net/nf_conntrack" || -e "/proc/net/ip_conntrack")
+&& -e "/proc/net/ipsec_eroute" )
 	    {
 		run "iptables -t nat -L -n";
 		if(grep /(NAT|MASQ)/, @out)
@@ -457,6 +460,8 @@ sub cmdchecks {
     printfun "Checking for 'iptables' command";
     run "which iptables";
     errchk "@out";
+
+
     open("cat","$conf/ipsec.conf");
     foreach(grep /crlcheckinterval/,<cat>)
      {
