@@ -162,7 +162,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %dir %attr(700,root,root) /etc/ipsec.d/policies
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%{_localstatedir}/run/pluto
+%ghost %attr(0700,root,root) %dir %{_localstatedir}/run/pluto
 %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/rcipsec

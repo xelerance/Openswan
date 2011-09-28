@@ -171,7 +171,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0700,root,root) %dir %{_localstatedir}/log/pluto/peer
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%ghost %{_localstatedir}/run/pluto
+%ghost %attr(0700,root,root) %dir %{_localstatedir}/run/pluto
 %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec

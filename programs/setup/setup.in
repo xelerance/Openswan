@@ -84,6 +84,7 @@ test -x $IPSEC_SBINDIR/ipsec || exit $BINARY_ERROR
 umask 022
 
 mkdir -p /var/run/pluto
+chmod 700 /var/run/pluto
 
 RETVAL=0
 

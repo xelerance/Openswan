@@ -225,6 +225,7 @@ case "$1" in
 	# preliminaries
 	perform rm -f $lock
 	mkdir -p $rundir > /dev/null 2>/dev/null
+	chmod 700 $rundir > /dev/null 2>/dev/null
 	mkdir -p $subsysdir > /dev/null 2>/dev/null
 
 	for f in /dev/random /dev/urandom
