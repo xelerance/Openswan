@@ -27,6 +27,7 @@ v2.6.36 (unreleased)
 * Use iptables-save instead of iptables -L if possible (rhbz#737973) [Avesh]
 * ipsec verify: New kernels use nf_conntrack instead of ip_conntrack [Avesh]
 * LDAP/CRL needs liblber (rhbz#737975 [Avesh]
+* Prevent a local admin from opening up pluto to a Dos attack [Sony Japan]
 * Bugtracker bugs fixed:
    #1270 malloc is being used which does not use alloc_bytes/pfree
 
