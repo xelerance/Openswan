@@ -11,13 +11,11 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: version.in.c,v 1.2 2003/05/14 02:12:12 mcr Exp $
  */
 
 #define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
 static const char ipsecpolicy_number[] = V;
-static const char ipsecpolicy_string[] = "Linux FreeS/WAN policylib " V;
+static const char ipsecpolicy_string[] = "Linux Openswan policylib " V;
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string

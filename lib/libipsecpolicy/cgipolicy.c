@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: cgipolicy.c,v 1.2 2005/07/26 01:12:23 mcr Exp $
  */
 
 #include <stddef.h>

@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.5 2005/09/17 21:57:45 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
@@ -91,8 +89,8 @@ cleanall:
 	rm -f $(LIB) *.o try* core *.core $(EXTHDRS) $(EXTLIBS) version.c
 
 
-tar:	clean
-	tar -cvf /tmp/lib.tar Makefile [a-z]*
+#tar:	clean
+#	tar -cvf /tmp/lib.tar Makefile [a-z]*
 
 check:
 	echo no checks in lib right now.
