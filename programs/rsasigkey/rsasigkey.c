@@ -564,7 +564,7 @@ rsasigkey(int nbits, char *configdir, char *password)
     mpz_init(n);
     mpz_init(e);
 
-    pwdata.source = password ? PW_PLAINTEXT : PW_NONE;
+    pwdata.source = password ? (strcmp(password, "/etc/ipsec.d/nsspassword")? PW_PLAINTEXT: PW_FROMFILE) : PW_NONE;
     pwdata.data = password ? password : NULL;
 
     do {
