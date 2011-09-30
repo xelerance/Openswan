@@ -264,7 +264,7 @@ fi
 
 cd $OPENSWANSRCDIR || exit 1
 
-make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true programs
+make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true USE_IPSECPOLICY=true programs
 
 # now, execute the Makefile that we have created!
 cd $POOLSPACE && make $OPENSWANHOSTS 
