@@ -35,12 +35,12 @@ diff --git a/include/net/ip.h b/include/net/ip.h
 index 503994a..1acfb18 100644
 --- a/include/net/ip.h
 +++ b/include/net/ip.h
-@@ -54,6 +54,9 @@ struct ipcm_cookie {
+@@ -54,6 +54,9 @@
  	int			oif;
  	struct ip_options	*opt;
- 	union skb_shared_tx	shtx;
+ 	__u8			tx_flags;
 +#ifdef CONFIG_INET_IPSEC_SAREF
-+	struct sec_path         *sp;
++	struct sec_path		*sp;
 +#endif
  };
  
