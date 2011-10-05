@@ -11,7 +11,7 @@ v2.6.36 (October 5th, 2011)
 * Update building (with SAref) on SLES10 / SLES11 / Opensuse [Shinichi Furuso]
 * KLIPS: backported 2.6.19 CryptoAPI for SuSe kernels [Shinichi Furuso]
 * KLIPS: ipsecdevices index overflow [Shinichi Furuso]
-* KLIPS: cleanup off by one interface, prevented module unload [Shinichi Furuso]
+* KLIPS: cleanup off by one interface,prevented module unload [Shinichi Furuso]
 * tncfg called incorrectly for adding more ipsecX interfaces [Shinichi Furuso]
 * KLIPS: ipsec_sa_getbyid() did not work properly on IPv6 [Shinichi Furuso]
 * NAT-T: Fix delete for port floating case [Shinichi Furuso]
@@ -19,8 +19,8 @@ v2.6.36 (October 5th, 2011)
 * IKEv2: ikev2_get_dcookie used SHA1Update() with pointer size [Avesh]
 * TESTING: Added some more consistent logging in prerunsetup() [Paul]
 * pcr_init() should memset the request helper size, not pointer size [Avesh]
-* Prevent deferencing ctx->trans_cur  using passert() in db_trans_add() [Avesh/Paul]
-* XAUTH: whack_get_value() never decremeanted "tries" so asked indefinitely [Avesh]
+* Prevent deferencing ctx->trans_cur in db_trans_add() [Avesh/Paul]
+* XAUTH: whack_get_value() never decremeanted "tries" [Avesh]
 * Fix closing fd in lib/libopenswan/oswconf.c [Avesh]
 * rsasigkey: configdir is always set in the NSS #ifdef part [Avesh]
 * examples: clarify hub-spoke netkey design [Tuomo]
@@ -30,11 +30,11 @@ v2.6.36 (October 5th, 2011)
 * LDAP/CRL needs liblber (rhbz#737975 [Avesh]
 * SAREF: kernel patch added for Linux 2.6.36 and 2.6.38 [Paul]
 * SAREF: Remap IP_IPSEC_REFINFO/BINDREF from 22/23 to 30/31 [Sony Japan]
-* Disable USE_IPSECPOLICY per default - there is current no consumer for it [Paul]
+* Disable USE_IPSECPOLICY per default, was only proof of concept code [Paul]
   (local user could cause pluto to stop responding if /var/run is a tmpfs
    mount and /var/run/pluto was manually deleted, Found by Sony Japan)
 * Bugtracker bugs fixed:
-   #1270 malloc is being used which does not use alloc_bytes/pfree
+   #1270 malloc is being used which does not use alloc_bytes/pfree [Paul]
 
 v2.6.35 (July 23, 2011)
 * OCF: Fix accidental 'always' setting of large resources [Sony Japan]
