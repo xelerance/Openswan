@@ -318,16 +318,12 @@ _________________________ ip6tables
 if test -r /sbin/ip6tables-save
 then
 	ip6tables-save
-	_________________________ ip6tables-nat
-	ip6tables-save -t nat
 	_________________________ ip6tables-mangle
 	ip6tables-save -t mangle
 else
 	if test -r /sbin/ip6tables
 	then
 		ip6tables -L -v -n
-		_________________________ ip6tables-nat
-		ip6tables -t nat -L -v -n
 		_________________________ ip6tables-mangle
 		ip6tables -t mangle -L -v -n
 	fi
