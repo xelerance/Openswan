@@ -4,7 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.36 (unreleased)
+v2.6.36 (October 5th, 2011)
+* CVE-2011-3380 Openswan IKE invalid key length fix [Paul/Hugh]
 * auto: Add --checkpubkeys option for checking expiry of X.509 certs
         [Mika Ilmaranta]
 * Update building (with SAref) on SLES10 / SLES11 / Opensuse [Shinichi Furuso]
