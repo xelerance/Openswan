@@ -360,8 +360,10 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
     if (!c->spd.that.virt) return NULL;
 
     if (c->spd.that.virt->flags & F_VIRTUAL_HOST) {
-	if (!subnetishost(peer_net))
-	    return NULL;
+	if (!subnetishost(peer_net)) {
+	    why = "only virtual host IPs are allowed";
+	    return why;
+	}
     }
 
     if (c->spd.that.virt->flags & F_VIRTUAL_NO) {
