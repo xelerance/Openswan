@@ -299,7 +299,8 @@ release_dead_interfaces(void)
 		     * move it to the unoriented_connections list.
 		     */
 		    passert(p == *pp);
-
+		    
+		    terminate_connection(p->name);
 		    p->interface = NULL;
 
 		    *pp = p->hp_next;	/* advance *pp */
