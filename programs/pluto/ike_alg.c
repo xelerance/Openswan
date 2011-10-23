@@ -84,7 +84,7 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		/* failure: encrypt algo must be present */
 		snprintf(ugh_buf, ugh_buf_len, "encrypt algo not found");
 		ret = FALSE;
-	} if ((key_len) && ((key_len < enc_desc->keyminlen) ||
+	} else if ((key_len) && ((key_len < enc_desc->keyminlen) ||
 			 (key_len > enc_desc->keymaxlen))) {
 		/* failure: if key_len specified, it must be in range */
 		snprintf(ugh_buf, ugh_buf_len,
