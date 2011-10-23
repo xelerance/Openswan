@@ -5,6 +5,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
 v2.6.37 (unreleased)
+* Fix for ike_alg_get_encrypter() possibly returning NULL [Steve Grubb]
+  (this is rhbz#747852)
 * Bugtracker bugs fixed:
    #1241 vhost allows connections with subnets proposed and ignores
          virtual_privat [Wolfgang Nothdurft]
