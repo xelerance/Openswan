@@ -193,9 +193,11 @@ BISONOSFLAGS=
 GCC_LINT ?= -DGCC_LINT 
 USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
-# for AMD64 use 
-#USERCOMPILE?=-g -O3 -m64
-
+# Additional debugging for developers (warning: can crash openswan!)
+#USERCOMPILE?=-g -DLEAK_DETECTVE -lefence
+# You can also run this before starting openswan on glibc systems:
+#export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
+ 
 # extra link flags
 USERLINK?=-Wl,-z,relro
 
