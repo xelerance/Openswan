@@ -484,7 +484,6 @@ RSA_check_signature_gen(struct state *st
 	int pathlen;
 
 	pp = &pluto_pubkeys;
-	pathlen = pathlen;      /* make sure it used even with !X509 */
 
 	{
 	  
