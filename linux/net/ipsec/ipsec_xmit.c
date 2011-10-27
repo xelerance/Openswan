@@ -1390,14 +1390,24 @@ void ipsec_extract_ports(struct sk_buff *skb, unsigned char nexthdr,
 		 */
 		udp = skb_header_pointer(skb, nexthdroff, sizeof(*udp), &_udp);
 		if (udp) {
-		    er->sen_sport = udp->source;
-		    er->sen_dport = udp->dest;
+			if (SENT_IP4 == er->sen_type) {
+				er->sen_sport = udp->source;                           
+				er->sen_dport = udp->dest;                             
+			} else if (SENT_IP6 == er->sen_type) {
+				er->sen_sport6 = udp->source;                           
+				er->sen_dport6 = udp->dest;                             
+			}
 		    break;
 		}
 		/* FALL THROUGH */
 	default:
-		er->sen_sport = 0;
-		er->sen_dport = 0;
+		if (SENT_IP4 == er->sen_type) {
+			er->sen_sport = 0;                           
+			er->sen_dport = 0;                             
+		} else if (SENT_IP6 == er->sen_type) {
+			er->sen_sport6 = 0;                           
+			er->sen_dport6 = 0;                             
+		}
 		break;
 	}
 }
