@@ -381,7 +381,13 @@ klips_rebuild_header(struct sk_buff *skb)
 	return ret;
 }
 
-int klips_header_cache(const struct neighbour *neigh, struct hh_cache *hh)
+int klips_header_cache(
+	const struct neighbour *neigh,
+	struct hh_cache *hh
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,1,0)
+	, __be16 type
+#endif
+	)
 {
 	const struct net_device *dev = neigh->dev;
 	struct ipsecpriv *prv = netdev_to_ipsecpriv(dev);
@@ -412,7 +418,11 @@ int klips_header_cache(const struct neighbour *neigh, struct hh_cache *hh)
 	KLIPS_PRINT(debug_tunnel & DB_TN_REVEC,
 		    "klips_debug:ipsec_tunnel: "
 		    "Revectored cache_update\n");
-	return prv->dev->header_ops->cache(neigh, hh);
+	return prv->dev->header_ops->cache(neigh, hh
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,1,0)
+									, type
+#endif
+									);
 }
 
 DEBUG_NO_STATIC void
