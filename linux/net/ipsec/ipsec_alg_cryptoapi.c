@@ -79,7 +79,11 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_cryptoapi_init )
 	return -EINVAL;
 }
 #else
+#if LINUX_VERSION_CODE > KERNEL_VERSION(3,0,0)
+#include <linux/scatterlist.h>
+#else
 #include <asm/scatterlist.h>
+#endif
 #include <asm/pgtable.h>
 #include <linux/mm.h>
 
