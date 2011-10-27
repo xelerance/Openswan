@@ -19,7 +19,7 @@
 #define	PERBYTE	4		/* three digits plus a dot or NUL */
 #define	BUFLEN	(NBYTES*PERBYTE)
 
-#if BUFLEN != ADDRTOA_BUF
+#if ADDRTOA_BUF < BUFLEN
 #error	"ADDRTOA_BUF in openswan.h inconsistent with addrtoa() code"
 #endif
 
