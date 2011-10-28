@@ -677,7 +677,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		  case ENOENT:
 		    loglog(RC_LOG_SERIOUS, "requested algorithm is not available in the kernel");
 		    success=FALSE;
-		    break;
+		    /* fall through to get error message */
 		    
 		  default:
 		  logerr:
