@@ -4,7 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.37 (unreleased)
+v2.6.37 (October 28th, 2011)
+* Fix for CVE-2011-4073 crypto helper crash [Paul/dhr]
 * KLIPS: Fixes to run on Linux 3.1 [David McCullough / Greg Ungerer]
 * KLIPS: Fix sending icmpv6 packets in an ipv6 ipsec tunnel [David McCullough]
 * Fix for ike_alg_get_encrypter() possibly returning NULL [Steve Grubb]
