@@ -701,7 +701,8 @@ init_phase2_iv(struct state *st, const msgid_t *msgid)
 
 static stf_status
 quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		 , struct pluto_crypto_req *r);
+		 , struct pluto_crypto_req *r
+		 , struct state *st);
 
 static void
 quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
@@ -709,7 +710,7 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
 		     , err_t ugh)
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
-    struct state *const st = qke->st;
+    struct state *const st = state_with_serialno(qke->qke_pcrc.pcrc_serialno);
     stf_status e;
 
     DBG(DBG_CONTROLMORE
@@ -732,10 +733,9 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
 
     set_cur_state(st);	/* we must reset before exit */
     set_suspended(st, NULL);
-    e = quick_outI1_tail(pcrc, r);
-    if (e != STF_OK) {
-	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() returned STF_INTERNAL_ERROR", __FUNCTION__);
-    }
+    e = quick_outI1_tail(pcrc, r, st);
+    if (e == STF_INTERNAL_ERROR)
+	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
 
     reset_globals();
 }
@@ -818,8 +818,6 @@ quick_outI1(int whack_sock
 		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
     }
 
-    qke->st = st;
-    qke->isakmp_sa = isakmp_sa;
     qke->replacing = replacing;
     pcrc_init(&qke->qke_pcrc);
     qke->qke_pcrc.pcrc_func = quick_outI1_continue;
@@ -837,12 +835,12 @@ quick_outI1(int whack_sock
     
 static stf_status
 quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		 , struct pluto_crypto_req *r)
+		 , struct pluto_crypto_req *r
+		 , struct state *st)
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
-    struct state *st = qke->st;
+    struct state *isakmp_sa = state_with_serialno(st->st_clonedfrom);
     struct connection *c = st->st_connection;
-    struct state *isakmp_sa = qke->isakmp_sa;
     pb_stream rbody;
     u_char	/* set by START_HASH_PAYLOAD: */
 	*r_hashval,	/* where in reply to jam hash value */
@@ -851,7 +849,11 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 		      c->spd.this.protocol || c->spd.that.protocol ||
 		      c->spd.this.port || c->spd.that.port;
 
-    st->st_connection = c;
+    if(isakmp_sa == NULL) {
+	/* phase1 state got deleted while cryptohelper was working */
+	loglog(RC_LOG_SERIOUS,"phase2 initiation failed because parent ISAKMP #%lu is gone", st->st_clonedfrom);
+	return STF_FATAL;
+    }
 
 #ifdef NAT_TRAVERSAL
     if (isakmp_sa->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
@@ -1987,8 +1989,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    ci = pcim_ongoing_crypto;
 	    if(ci < st->st_import) ci = st->st_import;
 
-	    qke->st = st;
-	    qke->isakmp_sa = p1st;
 	    qke->md = md;
 	    pcrc_init(&qke->qke_pcrc);
 	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue1;
@@ -2013,7 +2013,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
     struct msg_digest *md = qke->md;
-    struct state *const st = qke->st;
+    struct state *const st = state_with_serialno(qke->qke_pcrc.pcrc_serialno);
     stf_status e;
 
     DBG(DBG_CONTROLMORE

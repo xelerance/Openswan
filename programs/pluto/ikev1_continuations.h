@@ -7,8 +7,6 @@
 
 struct qke_continuation {
     struct pluto_crypto_req_cont qke_pcrc;
-    struct state                *st;            /* need to use abstract # */
-    struct state                *isakmp_sa;     /* used in initiator */
     so_serial_t                  replacing;
     struct msg_digest           *md;            /* used in responder */
 };
