@@ -240,7 +240,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
      *  to when there are multiple SAs and one is much less active.
      *
      */
-    last = (p1st->st_last_dpd > st->st_last_dpd
+    last = (p1st->st_last_dpd < st->st_last_dpd
 	    ? st->st_last_dpd : p1st->st_last_dpd );
 
     nextdelay = last + delay - tm;
