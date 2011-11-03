@@ -8,7 +8,7 @@ v2.6.38 (unreleased)
 * DPD: seq_no logged after hton() call [Shinichi Furuso]
 * DPD: With multiple phase 2 SAs, we sent too many R_U_THERE's [Shinichi Furuso]
 * barf: iptables-save on suse is in /usr/sbin, not /sbin [Paul/Shinichi]
-
+* SUSE: Package compliant with Kernel Module Package Manual [Shinichi Furuso]
 
 v2.6.37 (October 28th, 2011)
 * Fix for CVE-2011-4073 crypto helper crash [Paul/dhr]
