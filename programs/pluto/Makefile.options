@@ -176,6 +176,7 @@ X509_DEFS=-DX509_PLUTO
 # dynamic LDAP CRL fetching requires OpenLDAP library
 ifeq ($(USE_LDAP),true)
 X509_LLIBS+= -lldap -llber
+PLUTOMINUSL+= -llber
 ifdef LDAP_VERSION
 X509_DEFS+= -DLDAP_VER=$(LDAP_VERSION)
 endif
