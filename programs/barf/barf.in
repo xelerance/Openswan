@@ -300,10 +300,6 @@ _________________________ iptables
 if test -r /sbin/iptables-save -o /usr/sbin/iptables-save
 then
 	iptables-save
-	_________________________ iptables-nat
-	iptables-save -t nat
-	_________________________ iptables-mangle
-	iptables-save -t mangle
 else
 	if test -r /sbin/iptables
 	then
@@ -318,8 +314,6 @@ _________________________ ip6tables
 if test -r /sbin/ip6tables-save
 then
 	ip6tables-save
-	_________________________ ip6tables-mangle
-	ip6tables-save -t mangle
 else
 	if test -r /sbin/ip6tables
 	then
