@@ -138,7 +138,7 @@ void calc_ke(struct pluto_crypto_req *r)
 
     privk = PK11_GenerateKeyPair(slot, CKM_DH_PKCS_KEY_PAIR_GEN, &dhp, &pubk, PR_FALSE, PR_TRUE, osw_return_nss_password_file_info());
     if(!privk) {
-	loglog(RC_LOG_SERIOUS, "NSS: DH private key creation failed");
+	loglog(RC_LOG_SERIOUS, "NSS: DH private key creation failed (err %d)", PR_GetError());
     }
     PR_ASSERT(privk!=NULL);
     pluto_crypto_allocchunk(&kn->thespace, &kn->secret, sizeof(SECKEYPrivateKey*));
