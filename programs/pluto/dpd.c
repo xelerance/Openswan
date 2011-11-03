@@ -315,7 +315,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     dpd_sched_timeout(p1st, tm, timeout);
 
     DBG(DBG_DPD, DBG_log("DPD: sending R_U_THERE %u to %s:%d (state #%lu)"
-			 , seqno
+			 , p1st->st_dpd_seqno
 			 , ip_str(&p1st->st_remoteaddr)
 			 , p1st->st_remoteport
 			 , p1st->st_serialno));
