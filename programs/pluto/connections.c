@@ -303,8 +303,7 @@ delete_connection(struct connection *c, bool relations)
 	 * and we haven't even made an initial contact, let's delete
 	 * this guy in case we were created by an attempted DOS attack.
 	 */
-	if (hp->connections == NULL
-	&& !hp->initial_connection_sent)
+	if (hp->connections == NULL)
 	{
 	    passert(hp->pending == NULL);	/* ??? must deal with this! */
 	    remove_host_pair(hp);

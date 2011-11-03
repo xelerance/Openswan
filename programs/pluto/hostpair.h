@@ -4,7 +4,6 @@ struct host_pair {
 	u_int16_t  host_port;	        /* IKE port */
 	bool       host_port_specific;	/* if above is interesting */
     } me, him;
-    bool initial_connection_sent;
     struct connection *connections;	/* connections with this pair */
     struct pending *pending;	/* awaiting Keying Channel */
     struct host_pair *next;
