@@ -2129,7 +2129,7 @@ stf_status xauth_client_resp(struct state *st
 
 		    /*
 		     * Do not store the password read from the prompt. The password
-		     * could have be read from a one-time token device (like SecureID)
+		     * could have been read from a one-time token device (like SecureID)
 		     * or the password could have been entereted wrong,
 		     */
 		    if (password_read_from_prompt) {
