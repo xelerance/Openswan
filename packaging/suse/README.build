@@ -1,12 +1,10 @@
 openswan.spec is a spec file for sles11 and opensuse 11.4.  I also use
-'build' package and invoke it on opensuse 11.4 as follows:
-build --dist sl11.4 --define 'buildklips 1' \
- --define 'kflavor default' \
- --define 'krelease 2.6.37.6-0.7-default' \
- --define 'kversion 2.6.37.6-0.7.1' openswan.spec
-If rpmbuild is used directly, just "rpmbuild --define 'buildklips 1'
-openswan.spec" is enough, and kernel versions are automatically read
-from running system.
+'build' package and invoke "build --dist sl11.4 --define 'buildklips 1'
+--debug openswan.spec" on opensuse 11.4 and kernel modules for all
+flavors are built.
+
+If rpmbuild is used directly, install kernel-syms package and do "rpmbuild
+--define 'buildklips 1' openswan.spec".
 
 sles10.spec is a spec file for sles10.  It needs an additional patch
 kernelsrc.patch.  There are same problems on other projects.
