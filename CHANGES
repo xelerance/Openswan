@@ -10,6 +10,10 @@ v2.6.38 (unreleased)
 * barf: iptables-save on suse is in /usr/sbin, not /sbin [Paul/Shinichi]
 * SUSE: Package compliant with Kernel Module Package Manual [Shinichi Furuso]
 * verify: fix false positive on IP forwarding (perl dependant) [Steve Delaney]
+* IKEv2: Fix for multiple SAs to the same peer with different ports [Avesh]
+* hostpair: initial_connection_sent was never set to not FALSE - removed [Avesh]
+* Add PLUTO_IS_PEER_CISCO= to updown scripts [Avesh]
+* update userland copies of Kernel changes to netlink.h rtnetlink.h xfrm.h [Avesh]
 
 v2.6.37 (October 28th, 2011)
 * Fix for CVE-2011-4073 crypto helper crash [Paul/dhr]
