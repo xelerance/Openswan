@@ -297,7 +297,7 @@ else
 	fi
 fi
 _________________________ iptables
-if test -r /sbin/iptables-save
+if test -r /sbin/iptables-save -o /usr/sbin/iptables-save
 then
 	iptables-save
 	_________________________ iptables-nat
