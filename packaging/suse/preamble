@@ -1,0 +1,2 @@
+Requires: kernel-%1
+Obsoletes: openswan-klips
