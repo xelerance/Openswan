@@ -151,6 +151,15 @@ static struct vid_struct _vid_tab[] = {
 
 	{ VID_MS_NT5, VID_MD5HASH | VID_SUBSTRING_DUMPHEXA,
 		"MS NT5 ISAKMPOAKLEY", NULL, NULL, 0 },
+	/* http://msdn.microsoft.com/en-us/library/cc233476%28v=prot.10%29.aspx 
+	Windows 2000 00 00 00 02
+	Windows XP 00 00 00 03
+	Windows Server 2003 00 00 00 04
+	Windows Vista 00 00 00 05
+	Windows Server 2008 00 00 00 06
+	Windows 7 00 00 00 07
+	Windows Server 2008 R2 00 00 00 08
+	*/
 
 	DEC_MD5_VID(SSH_SENTINEL, "SSH Sentinel")
 	DEC_MD5_VID(SSH_SENTINEL_1_1, "SSH Sentinel 1.1")
