@@ -21,7 +21,7 @@ the client will just use its IP address for the inner IP setting.
 This parameter may eventually become per-connection. See also <emphasis remap='B'>leftsubnet=</emphasis>
 </para>
 <para>Note: It seems that T-Mobile in the US and Rogers/Fido in Canada have
-started using 25.0.0.0/8 as their pre-NAT range. This range technically belows
+started using 25.0.0.0/8 as their pre-NAT range. This range technically belongs
 to the Defence Interoperable Network Services Authority (DINSA), an agency of
 the Ministry of Defence of the United Kingdom. The network range seems to not
 have been announced for decades, which is probably why these organisasions
