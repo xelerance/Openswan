@@ -54,7 +54,7 @@ PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
 PFKEYV2_SRCS+=pfkey_v2_debug.c 
 endif
 
-# We now always add SHA2 support
+CFLAGS+=-DUSE_SHA2
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libcrypto/libsha2
 
 LOGSRCS=oswlog.c oswid.c
