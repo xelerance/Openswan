@@ -144,6 +144,9 @@ static sparse_names aalg_list = {
 	{ SADB_AALG_MD5HMAC, "md5" },
 	{ SADB_AALG_SHA1HMAC, "sha1" },
 	{ SADB_X_AALG_SHA2_256HMAC, "sha256" },
+	{ SADB_X_AALG_SHA2_256HMAC, "hmac(sha256)" },
+	{ SADB_X_AALG_SHA2_384HMAC, "hmac(sha384)" },
+	{ SADB_X_AALG_SHA2_512HMAC, "hmac(sha512)" },
 	{ SADB_X_AALG_RIPEMD160HMAC, "ripemd160" },
 	{ 0, sparse_end }
 };
