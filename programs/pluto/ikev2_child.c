@@ -158,8 +158,8 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
      */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
-    its1.isat1_startport = htons(ts->startport);      /* ports as per local policy*/
-    its1.isat1_endport = htons(ts->endport);  
+    its1.isat1_startport = ts->startport;      /* ports as per local policy*/
+    its1.isat1_endport = ts->endport;  
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
 	return STF_INTERNAL_ERROR;
     
@@ -298,8 +298,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 
 	    array[i].ipprotoid = ts1.isat1_ipprotoid;
 	    /*should be converted to host byte order for local processing*/
-	    array[i].startport = ntohs(ts1.isat1_startport);
-	    array[i].endport   = ntohs(ts1.isat1_endport);
+	    array[i].startport = ts1.isat1_startport;
+	    array[i].endport   = ts1.isat1_endport;
 	}
     }
     
@@ -387,6 +387,19 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		int fitbits2  = maskbits2 + ts_range2;
 		int fitbits = (fitbits1 << 8) + fitbits2;
 
+		/*
+		 * comparing for ports
+		 * for finding better local polcy
+		 */
+
+		if( ei->port && (tsi[tsi_ni].startport == ei->port && tsi[tsi_ni].endport == ei->port)) {
+		fitbits = fitbits << 1;
+		}
+
+		if( er->port && (tsr[tsr_ni].startport == er->port && tsr[tsr_ni].endport == er->port)) {
+		fitbits = fitbits << 1;
+		}
+
 		DBG(DBG_CONTROLMORE,
 		{
 		    DBG_log("      has ts_range1=%u maskbits1=%u ts_range2=%u maskbits2=%u fitbits=%d <> %d"
@@ -426,27 +439,6 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     unsigned int tsi_n, tsr_n;
 
     st1 = duplicate_state(st);
-    insert_state(st1);
-    md->st = st1;
-    md->pst= st;
-
-    /* start of SA out */
-    {
-	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
-	pb_stream r_sa_pbs;
-
-	r_sa.isasa_np = ISAKMP_NEXT_v2TSi;  
-	if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
-	    return STF_INTERNAL_ERROR;
-
-	/* SA body in and out */
-	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				       &r_sa_pbs, st1, FALSE);
-	
-	if (rn != NOTHING_WRONG)
-	    return STF_FAIL + rn;
-    }
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -462,10 +454,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
      * similar to find_client_connection/fc_try.
      */
     {
-/* b is not used? */
-#if 0
 	struct connection *b = c;
-#endif
 	struct connection *d;
 	int bestfit, newfit;
 	struct spd_route *sra, *bsr;
@@ -479,10 +468,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 						   ,tsi,tsr,tsi_n,tsr_n);
 	    if(bfit > bestfit) {
 		bestfit = bfit;
-/* b is not used ? */
-#if 0
 		b = c;
-#endif
 		bsr = sra;
 	    }
 	}
@@ -491,7 +477,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	{
 	    hp = find_host_pair(&sra->this.host_addr
 				, sra->this.host_port
-				, NULL
+				, &sra->that.host_addr
 				, sra->that.host_port);
 
 #ifdef DEBUG
@@ -529,16 +515,16 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 							 ,tsi,tsr,tsi_n,tsr_n);
 		    if(newfit > bestfit) {
 			bestfit = newfit;
-/* not used? */
-#if 0
 			b=d;
-#endif
 			bsr = sr;
 		    }
 		}
 	    }
 	}
 	
+	/* found better connection */
+	c=b;
+
 	/*
 	 * now that we have found the best connection, copy the data into
 	 * the state structure as the tsi/tsr
@@ -550,6 +536,32 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		st1->st_ts_that = ikev2_subnettots(&bsr->that);
 	}
     }
+
+
+    st1->st_connection = c;
+    insert_state(st1);
+    md->st = st1;
+    md->pst= st;
+
+    /* start of SA out */
+    {
+	struct isakmp_sa r_sa = sa_pd->payload.sa;
+	notification_t rn;
+	pb_stream r_sa_pbs;
+
+	r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
+	if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
+	    return STF_INTERNAL_ERROR;
+
+	/* SA body in and out */
+	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+				       &r_sa_pbs, st1, FALSE);
+
+	if (rn != NOTHING_WRONG)
+	    return STF_FAIL + rn;
+    }
+
+
     ret = ikev2_calc_emit_ts(md, outpbs, role
 			     , c, c->policy);
     if(ret != STF_OK) return ret;
