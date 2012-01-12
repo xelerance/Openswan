@@ -6,5 +6,5 @@ Abstract: This is a comprehensive document which describes what IPSEC
 Section: System/Security
 
 Format: HTML
-Index: /usr/share/doc/openswan-doc/doc/index.html
-Files: /usr/share/doc/openswan-doc/doc/*.html
+Index: /usr/share/doc/openswan-doc/docs/html-old-need-merge-with-wiki/intro.html
+Files: /usr/share/doc/openswan-doc/docs/html-old-need-merge-with-wiki/*.html

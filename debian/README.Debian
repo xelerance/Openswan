@@ -1,5 +1,5 @@
-  This package is NOT an official Debian paket from the Debian openswan
-  developers.
+  This package is NOT an official Debian package from the Debian openswan
+  maintainers.
 
 openswan for Debian
 ----------------------
@@ -129,12 +129,12 @@ can be used:
 
 5) Using Openswan with SAref
 
-In order to use the SAref feature which allows to connect multiple clients
+In order to use the SAref feature allowing users to connect multiple clients
 from behind the same NAT device and multiple clients using the same internal IP
 behind different NAT devices, the Linux kernel needs to be patched. At the time
 of this writing there are patches available for kernel version 2.6.32 from 
-Lenny/Sid and 2.6.34 which are shipped in the openswan-modules.tar.bz2 file
-from openswan-modules-source.
+Lenny/Sid and 2.6.35-rc6 from experimental which are shipped in the
+openswan-modules.tar.bz2 file from openswan-modules-source.
 The recommended method for creating a patched kernel is using the make-kpkg
 approach which is documented in the above section. After extracting the linux
 and the openswan source in /usr/src change to the to the kernel source
