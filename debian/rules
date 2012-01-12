@@ -21,6 +21,8 @@ patch:
 unpatch:
 	dpatch deapply-all
 
+build-arch: build
+build-indep: build
 build: build-stamp
 build-stamp: patch
 	# create a dummy ipsec.secrets file before building the package so
@@ -34,8 +36,8 @@ build-stamp: patch
 			 PUBDIR=/usr/sbin \
 			 MANTREE=/usr/share/man \
 			 CONFDIR=$(CURDIR)/debian \
-			 USE_LDAP=false USE_LIBCURL=false HAVE_THREADS=false \
-			 USE_XAUTH=true USE_XAUTHPAM=false
+			 USE_LDAP=true USE_LIBCURL=true \
+			 USE_XAUTHPAM=true
 	# remove the temporary file, it will be created during install
 	rm -f $(CURDIR)/debian/ipsec.secrets
 
@@ -89,6 +91,9 @@ install-openswan: build
 
 	rm -f $(CURDIR)/debian/openswan/etc/init.d/ipsec?*
 	rm -f $(CURDIR)/debian/openswan/usr/lib/ipsec/_plutorun?*
+
+	# this is handled by update-rc.d
+	rm -rf $(CURDIR)/debian/openswan/etc/rc?.d
 
 	# delete var/lock/subsys and var/run to satisfy lintian
 	rm -rf $(CURDIR)/debian/openswan/var/lock
@@ -168,6 +173,8 @@ install-openswan-doc: build
 		    rm $$f.old; \
 		fi; \
 	  done )
+	# but remove the doc/src dir, which just duplicates the HTML files
+	rm -rf $(CURDIR)/debian/openswan-doc/usr/share/doc/openswan-doc/doc/src
 
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan-doc -name ".gitignore" | xargs --no-run-if-empty rm -f
@@ -211,7 +218,7 @@ install-openswan-modules-source: patch
 	dh_installchangelogs CHANGES
 
 	# more lintian cleanups
-	find $(PKGDIR) -o -name ".gitignore" | xargs --no-run-if-empty rm -f
+	find $(PKGDIR) -name ".gitignore" | xargs --no-run-if-empty rm -f
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
 install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version: ' | cut -d: -f3 | cut -d- -f1)
