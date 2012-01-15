@@ -1433,7 +1433,7 @@ in_struct(void *struct_ptr, struct_desc *sd
     }
 
     /* some failure got us here: report it */
-    openswan_loglog(RC_LOG_SERIOUS, ugh);
+    openswan_loglog(RC_LOG_SERIOUS, "%s", ugh);
     return FALSE;
 }
 
@@ -1653,7 +1653,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
     }
 
     /* some failure got us here: report it */
-    loglog(RC_LOG_SERIOUS, ugh);	/* ??? serious, but errno not relevant */
+    loglog(RC_LOG_SERIOUS, "%s", ugh);	/* ??? serious, but errno not relevant */
     return FALSE;
 }
 
