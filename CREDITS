@@ -1,6 +1,6 @@
 The following people have contributed major resources and/or significant patches
 to Openswan 2.x. There are many more unlisted contributors. If you feel you or
-your company are missing, please contact paul@xelerance.com
+your company are missing, please contact paul@nohats.ca.
 
 	Michael Richardson <mcr@xelerance.com> - KLIPS, OCF, IKEv2, testing
 	Paul Wouters <paul@nohats.ca> - IKEv2, packaging, porting, support
