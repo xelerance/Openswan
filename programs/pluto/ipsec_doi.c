@@ -584,8 +584,8 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     if (!(id->isaid_doi_specific_a == 0 && id->isaid_doi_specific_b == 0)
     && !(id->isaid_doi_specific_a == IPPROTO_UDP && id->isaid_doi_specific_b == IKE_UDP_PORT))
     {
-	loglog(RC_LOG_SERIOUS, "protocol/port in Phase 1 ID Payload must be 0/0 or %d/%d"
-	    " but are %d/%d"
+	loglog(RC_LOG_SERIOUS, "protocol/port in Phase 1 ID Payload MUST be 0/0 or %d/%d"
+	    " but are %d/%d (attempting to continue)"
 	    , IPPROTO_UDP, IKE_UDP_PORT
 	    , id->isaid_doi_specific_a, id->isaid_doi_specific_b);
 	/* we have turned this into a warning because of bugs in other vendors
