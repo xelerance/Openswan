@@ -971,7 +971,10 @@ int do_pam_authentication(void *varg)
  *
  * can be made with, htpasswd:
  *
- * htpasswd -c -m -b /etc/ipsec.d/passwd road roadpass
+ * htpasswd -c -m -b /etc/ipsec.d/passwd road roadpass (for crypt)
+ * htpasswd -c -d -b /etc/ipsec.d/passwd road roadpass (for des)
+ *                   (des is the old format used in /etc/passwd)
+ * you can optionally add ":<connection name>\n" to the file.
  *
  * @return int Return Code
  */
