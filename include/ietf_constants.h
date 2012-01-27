@@ -505,11 +505,12 @@ extern const char *const sit_bit_names[];
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
 
-
+/* See http://tools.ietf.org/html/rfc5996#section-3.2 */
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
+/* These are followed by 7 more bits, currently RESERVED */
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1
