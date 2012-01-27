@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: rnd.h,v 1.7 2002/04/24 07:35:58 mcr Exp $
  */
 
 extern u_char    secret_of_the_day[SHA1_DIGEST_SIZE];

@@ -13,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: pfkey_debug.h,v 1.3 2004/04/05 19:55:07 mcr Exp $
  */
 
 #ifndef _FREESWAN_PFKEY_DEBUG_H

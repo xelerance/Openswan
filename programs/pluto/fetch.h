@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: fetch.h,v 1.5 2004/06/14 02:01:32 mcr Exp $
  */
 
 extern void wake_fetch_thread(const char *who);

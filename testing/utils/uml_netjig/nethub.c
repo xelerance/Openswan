@@ -13,8 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nethub.c,v 1.10 2002/08/30 01:37:35 mcr Exp $
- *
  * @(#) based upon uml_router from User-Mode-Linux tools package by Jeff Dike.
  *
  */

@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: errcheck,v 1.16 2004/10/18 17:08:48 ken Exp $
 
 # the errors.[och] stuff is for math emulation
 # the HiSax nonsense is due to a Red Hat 5.2 botch

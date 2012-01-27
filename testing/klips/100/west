@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# RCSID $Id: west,v 1.7 2002/04/24 07:36:12 mcr Exp $
-#
 
 
 hmask=255.255.255.255
@@ -424,13 +422,3 @@ case "$1" in
 	;;
 esac
 
-#
-# $Log: west,v $
-# Revision 1.7  2002/04/24 07:36:12  mcr
-# Moved from ./klips/test/100/west,v
-#
-# Revision 1.6  1999/04/06 04:54:32  rgb
-# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-# patch shell fixes.
-#
-#

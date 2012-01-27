@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: cookie.h,v 1.14 2004/03/08 01:48:21 ken Exp $
  */
 
 #include <openswan.h>

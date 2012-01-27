@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ikev1_quick.h,v 1.1 2005/03/20 02:27:50 mcr Exp $
  */
 
 extern stf_status quick_outI1(int whack_sock

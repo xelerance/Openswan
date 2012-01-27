@@ -3,8 +3,6 @@
 # fill in most pluto flags for debugging
 # Only argument is east or west
 # Actually, extra args are passed on to pluto, so --nofork might be useful
-#
-# RCSID $Id: dopluto,v 1.15 2005/08/19 04:05:01 mcr Exp $
 
 cd /tmp
 

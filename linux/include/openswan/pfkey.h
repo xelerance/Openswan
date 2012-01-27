@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pfkey.h,v 1.52 2005/11/09 00:30:37 mcr Exp $
  */
 
 #ifndef __NET_IPSEC_PF_KEY_H

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: virtual.h,v 1.2 2004/05/08 11:05:38 ken Exp $
  */
 
 #ifndef _VIRTUAL_IP_H

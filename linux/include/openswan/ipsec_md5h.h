@@ -1,8 +1,4 @@
 /*
- * RCSID $Id: ipsec_md5h.h,v 1.10 2004/09/08 17:21:35 ken Exp $
- */
-
-/*
  * The rest of this file is Copyright RSA DSI. See the following comments
  * for the full Copyright notice.
  */
@@ -81,63 +77,3 @@ void osMD5Update PROTO_LIST
 void osMD5Final PROTO_LIST ((unsigned char [16], void *));
  
 #endif /* _IPSEC_MD5H_H_ */
-
-/*
- * $Log: ipsec_md5h.h,v $
- * Revision 1.10  2004/09/08 17:21:35  ken
- * Rename MD5* -> osMD5 functions to prevent clashes with other symbols exported by kernel modules (CIFS in 2.6 initiated this)
- *
- * Revision 1.9  2004/04/05 19:55:05  mcr
- * Moved from linux/include/freeswan/ipsec_md5h.h,v
- *
- * Revision 1.8  2002/09/10 01:45:09  mcr
- * 	changed type of MD5_CTX and SHA1_CTX to void * so that
- * 	the function prototypes would match, and could be placed
- * 	into a pointer to a function.
- *
- * Revision 1.7  2002/04/24 07:36:46  mcr
- * Moved from ./klips/net/ipsec/ipsec_md5h.h,v
- *
- * Revision 1.6  1999/12/13 13:59:13  rgb
- * Quick fix to argument size to Update bugs.
- *
- * Revision 1.5  1999/12/07 18:16:23  rgb
- * Fixed comments at end of #endif lines.
- *
- * Revision 1.4  1999/04/06 04:54:26  rgb
- * Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
- * patch shell fixes.
- *
- * Revision 1.3  1999/01/22 06:19:58  rgb
- * 64-bit clean-up.
- *
- * Revision 1.2  1998/11/30 13:22:54  rgb
- * Rationalised all the klips kernel file headers.  They are much shorter
- * now and won't conflict under RH5.2.
- *
- * Revision 1.1  1998/06/18 21:27:48  henry
- * move sources from klips/src to klips/net/ipsec, to keep stupid
- * kernel-build scripts happier in the presence of symlinks
- *
- * Revision 1.2  1998/04/23 20:54:03  rgb
- * Fixed md5 and sha1 include file nesting issues, to be cleaned up when
- * verified.
- *
- * Revision 1.1  1998/04/09 03:04:21  henry
- * sources moved up from linux/net/ipsec
- * these two include files modified not to include others except in kernel
- *
- * Revision 1.1.1.1  1998/04/08 05:35:03  henry
- * RGB's ipsec-0.8pre2.tar.gz ipsec-0.8
- *
- * Revision 0.4  1997/01/15 01:28:15  ji
- * No changes.
- *
- * Revision 0.3  1996/11/20 14:48:53  ji
- * Release update only.
- *
- * Revision 0.2  1996/11/02 00:18:33  ji
- * First limited release.
- *
- *
- */

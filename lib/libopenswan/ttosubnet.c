@@ -11,9 +11,8 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: ttosubnet.c,v 1.14 2005/08/05 08:59:36 mcr Exp $
  */
+
 #include "internal.h"
 #include "openswan.h"
 

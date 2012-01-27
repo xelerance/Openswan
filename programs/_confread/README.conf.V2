@@ -1,5 +1,4 @@
 Subject: [Design] changes to ipsec.conf
-# RCSID $Id: README.conf.V2,v 1.1 2002/09/15 22:45:14 dhr Exp $
 
 We are changing ipsec.conf for the 2.0 series of FreeS/WAN.
 

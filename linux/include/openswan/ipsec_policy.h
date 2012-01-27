@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: ipsec_policy.h,v 1.8 2005/07/26 01:12:38 mcr Exp $
  */
 #define	_IPSEC_POLICY_H 	/* seen it, no need to see it again */
 

@@ -1,6 +1,4 @@
 #!/bin/bash
-#
-# RCSID $Id: kernel.patch.gen.sh,v 1.6 2002/04/25 17:04:16 mcr Exp $
 
 patchdir=`pwd`
 kernelsrc=/usr/src/linux
@@ -36,14 +34,3 @@ echo "RCSID \$Id: kernel.patch.gen.sh,v 1.6 2002/04/25 17:04:16 mcr Exp $" >$pat
 diff -u $i $j >>$patchdir/$l
 
 done
-
-#
-# $Log: kernel.patch.gen.sh,v $
-# Revision 1.6  2002/04/25 17:04:16  mcr
-# 	resurrected kernel.patch.gen.sh
-#
-# Revision 1.4  1999/04/06 04:54:30  rgb
-# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-# patch shell fixes.
-#
-#

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pkcs.h,v 1.3 2004/06/14 01:46:03 mcr Exp $
  */
 
 extern bool parse_pkcs1_private_key(chunk_t blob, rsa_privkey_t *key);

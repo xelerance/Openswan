@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: rcv_whack.h,v 1.8 2002/04/27 00:17:51 mcr Exp $
  */
 
 extern void whack_process(int whackfd, struct whack_message msg);

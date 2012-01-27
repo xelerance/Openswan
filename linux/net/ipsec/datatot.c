@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: datatot.c,v 1.9 2005/08/30 21:15:26 mcr Exp $
  */
 #include "openswan.h"
 

@@ -3,8 +3,6 @@
 #  What:        FreeS/WAN-1 VPN configuration
 #
 #  Author:      Hugh Daniel <hugh@toad.com> 2001/03/14
-#  RCSID:       $Id: adams--mrcharlie.vpn,v 1.1 2002/01/05 01:02:52 mcr Exp mcr $
-#
 
 
 conn adams--mrcharlie-net

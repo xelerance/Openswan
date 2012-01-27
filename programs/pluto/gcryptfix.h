@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: gcryptfix.h,v 1.5 2002/04/24 07:35:49 mcr Exp $
  */
 
 #define DBG_CIPHER  1	/* some day we'll do this right */

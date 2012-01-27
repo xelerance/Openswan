@@ -1,8 +1,4 @@
 /*
- * RCSID $Id: ipsec_md5c.c,v 1.10 2005/04/15 01:25:57 mcr Exp $
- */
-
-/*
  * The rest of the code is derived from MD5C.C by RSADSI. Minor cosmetic
  * changes to accomodate it in the kernel by ji.
  */

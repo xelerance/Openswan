@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.7 2004/12/18 18:13:42 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -22,33 +20,3 @@ EXTRA5PROC:=version.5 trap_count.5 trap_sendcount.5
 LIBS:=${FREESWANLIB}
 
 include ${srcdir}../Makefile.program
-
-#
-# $Log: Makefile,v $
-# Revision 1.7  2004/12/18 18:13:42  mcr
-# 	adjusted Makefiles so that ${OBJDIR} builds work.
-#
-# Revision 1.6  2004/04/03 19:44:47  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.5  2003/06/20 02:56:20  mcr
-# 	added documentation for /proc/net/ipsec/stats/trap_* and
-# 	amendments to test cases.
-#
-# Revision 1.4  2002/06/03 20:25:31  mcr
-# 	man page for files actually existant in /proc/net changed back to
-# 	ipsec_foo via new EXTRA5PROC process.
-#
-# Revision 1.3  2002/06/02 21:51:41  mcr
-# 	changed TOPDIR->FREESWANSRCDIR in all Makefiles.
-# 	(note that linux/net/ipsec/Makefile uses TOPDIR because this is the
-# 	kernel sense.)
-#
-# Revision 1.2  2002/05/05 23:09:49  mcr
-# 	EXTRA35MAN should have the extensions on it.
-#
-# Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
-#
-#
-#

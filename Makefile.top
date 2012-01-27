@@ -11,9 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile.top,v 1.4 2005/07/18 03:46:13 mcr Exp $
-
 
 PATCHES=linux
 # where KLIPS goes in the kernel

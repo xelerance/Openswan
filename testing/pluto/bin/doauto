@@ -4,8 +4,6 @@
 # Note: the name of a test affects processing.
 #  *-rsa|*-rsa-*: keys get loaded
 #  *-pl|*-pl-*: extracts of Pluto Logs are added to the whack log
-#
-# RCSID $Id: doauto,v 1.36 2005/08/19 04:05:01 mcr Exp $
 
 . CONFIG
 

@@ -1,7 +1,4 @@
 #!/bin/sh
-#
-# RCSID $Id: 100,v 1.21 2002/04/24 07:36:14 mcr Exp $
-#
 
 net1=192.168.4.0
 net2=192.168.5.0
@@ -809,27 +806,3 @@ case "$1" in
 		cat /proc/net/ipsec_*
 		;;
 esac
-
-
-#
-# $Log: 100,v $
-# Revision 1.21  2002/04/24 07:36:14  mcr
-# Moved from ./klips/test/110/100,v
-#
-# Revision 1.20  1999/06/13 07:25:21  rgb
-# Change spis to avoid collision between tests.
-#
-# Revision 1.19  1999/06/10 16:37:48  rgb
-# Ditch IVs.
-#
-# Revision 1.18  1999/06/10 16:09:00  rgb
-# Change spis to avoid clash between trah and tresp.
-#
-# Revision 1.17  1999/05/25 21:27:06  rgb
-# Fix test subnet numbers that have moved.
-#
-# Revision 1.16  1999/04/06 04:54:34  rgb
-# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-# patch shell fixes.
-#
-#

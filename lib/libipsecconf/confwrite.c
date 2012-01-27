@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: confwrite.c,v 1.5 2004/12/07 00:28:18 ken Exp $
  */
 
 #include <stdlib.h>

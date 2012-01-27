@@ -1,7 +1,4 @@
 # sample connections
-# This file is RCSID $Id: examples,v 1.5 1999/12/13 02:38:16 henry Exp $
-
-
 
 # basic configuration
 config setup

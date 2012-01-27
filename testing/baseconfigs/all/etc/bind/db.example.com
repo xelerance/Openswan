@@ -1,6 +1,5 @@
 ; example.com zone for FreeS/WAN testing
 ; This file belongs in /var/named/test.zone
-; RCSID $Id: db.example.com,v 1.2 2003/10/31 04:50:40 dhr Exp $
 
 ; add to /etc/named.conf:
 

@@ -1,6 +1,5 @@
 Pluto TODO list
 ===============
-RCSID $Id: TODO,v 1.9 2005/08/24 22:40:03 mcr Exp $
 
 - make final diffie-hellman step asynchronous
 - make RSA operations asynchronous

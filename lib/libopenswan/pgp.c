@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pgp.c,v 1.9 2005/08/05 19:13:47 mcr Exp $
  */
 
 #include <stdlib.h>

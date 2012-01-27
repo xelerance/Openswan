@@ -13,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: sanitizestring.c,v 1.3 2004/10/17 23:57:06 mcr Exp $
  */
 
 #include <ctype.h>

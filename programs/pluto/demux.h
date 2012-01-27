@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: demux.h,v 1.36 2005/08/31 03:36:53 mcr Exp $
  */
 
 #ifndef _DEMUX_H

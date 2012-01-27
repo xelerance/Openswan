@@ -13,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: passert.h,v 1.7.8.1 2007/09/05 02:32:24 paul Exp $
  */
 
 #include "openswan.h"

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: dnskey.h,v 1.25 2005/08/05 19:21:38 mcr Exp $
  */
 
 #ifndef _DNSKEY_H_

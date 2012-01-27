@@ -14,8 +14,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: x509more.h,v 1.1 2003/10/31 02:45:23 mcr Exp $
  */
 
 #ifndef _X509MORE_H

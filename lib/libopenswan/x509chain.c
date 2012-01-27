@@ -15,8 +15,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: x509.c,v 1.26 2005/09/13 19:43:19 mcr Exp $
  */
 
 #include <stdlib.h>

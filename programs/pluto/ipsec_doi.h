@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ipsec_doi.h,v 1.41 2005/03/20 02:27:50 mcr Exp $
  */
 
 extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);

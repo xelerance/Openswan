@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: cmp.h,v 1.1 2004/01/06 21:43:47 mcr Exp $
  */
 
 #ifndef _STARTER_CMP_H_

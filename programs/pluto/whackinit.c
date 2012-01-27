@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: whackinit.c,v 1.1 2004/12/16 01:24:45 mcr Exp $
  */
 
 #include <stdio.h>
