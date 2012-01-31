@@ -12,8 +12,13 @@ v2.6.38 (unreleased)
 * SUSE: Package compliant with Kernel Module Package Manual [Shinichi Furuso]
 * verify: fix false positive on IP forwarding (perl dependant) [Steve Delaney]
 * IKEv2: Fix for multiple SAs to the same peer with different ports [Avesh]
-* hostpair: initial_connection_sent was never set to not FALSE - [Avesh]
-  removed 
+* IKEv2: IKE-SA_INIT with INVALID_KE_PAYLOAD Notify Payload should
+         continue [Avesh]
+* IKEv2: incorrecty sent PAYLOAD_MALFORMED on unknown minor version [Avesh]
+* IKEv2 should ignore unknown RESERVED bits in payload [Avesh]
+* IKEv2: Implement sending higher IKEv2 major and minor versions [Paul]
+* hostpair: initial_connection_sent was never set to not FALSE [Avesh]
+* Handle leading zeroes in DH keys [Avesh]
 * Add PLUTO_IS_PEER_CISCO= to updown scripts [Avesh]
 * update userland copies of Kernel changes to netlink.h rtnetlink.h [Avesh]
   xfrm.h
