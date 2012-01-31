@@ -471,6 +471,14 @@ umlplutotest	ikev2-algo-01-modp2048-initiator	good
 umlplutotest	ikev2-algo-02-modp2048-responder	good
 umlplutotest	ikev2-algo-03-aes-ccm			good
 
+# Various corner case tests for IKEv2
+
+umlplutotest	ikev2-major-version-initiator		good
+umlplutotest	ikev2-major-version-responder		good
+umlplutotest	ikev2-minor-version-initiator		good
+umlplutotest	ikev2-minor-version-responder		good
+umlplutotest	ikev2-allow-narrow-01			good
+
 #################################################################
 # Interop tests
 #################################################################
