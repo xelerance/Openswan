@@ -18,6 +18,8 @@ v2.6.38 (unreleased)
 * update userland copies of Kernel changes to netlink.h rtnetlink.h [Avesh]
   xfrm.h
 * Fix SHA2 when pluto is compiled without USE_EXTRACRYPTO [Paul/Tuomo]
+* Fix two format string buglets [Moritz Muehlenhoff]
+* Implement sending higher IKEv2 major and minor versions [Paul]
 * Bugracker bugs fixed:
    #1263 /usr/lib/ipsec/_startnetkey selects wrong default gateway if there
          are multiple [Petr Tichy]
