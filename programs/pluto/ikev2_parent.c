@@ -4,7 +4,7 @@
  * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010-2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
@@ -756,9 +756,23 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_FAIL + rn;
     }
 
+    {
+	notification_t rn;
+	chunk_t dc;
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
     /* KE in */
-    RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
+	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
+	if(rn != NOTHING_WRONG) {
+		/* char group_number[2]; */
+		u_int16_t group_number = htons(st->st_oakley.group->group);
+		dc.ptr = (char *)&group_number;
+		dc.len = 2;
+		SEND_NOTIFICATION_AA(INVALID_KE_PAYLOAD, &dc);
+		delete_state(st);
+		return STF_FAIL + rn;
+	}
+
+    }
 
     /* Ni in */
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_ni, "Ni"));
@@ -2020,38 +2034,42 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-	struct payload_digest *p;	
+	struct payload_digest *p;
 
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 	{
+	   /* RFC 5996 */
+	   /* Types in the range 0 - 16383 are intended for reporting errors.  An
+	    * implementation receiving a Notify payload with one of these types
+	    * that it does not recognize in a response MUST assume that the
+	    * corresponding request has failed entirely.  Unrecognized error types
+	    * in a request and status types in a request or response MUST be
+	    * ignored, and they should be logged.*/
+
+	    if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
+		if(p->payload.v2n.isan_type < INITIAL_CONTACT) {
+		return STF_FAIL + p->payload.v2n.isan_type;
+		}
+	    }
+
 	    if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
 		if ( st->st_connection->policy & POLICY_TUNNEL) {
 		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
 			DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is tunnel, responder sends USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-		}
-		else {
+		} else {
 			DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is transport, responder sends USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
 			if (st->st_esp.present == TRUE) { 
-			/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+			   /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+			   st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
 			}
 		}
-	    break;
 	    }
-	}
+	} /* for */
 
-        if (!p) {
-                if ( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                /*This means we sent USE_TRANSPORT, however responder did not send it or did not agree with that*/
-                        DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is transport, responder did not send USE_TRANSPORT_MODE, so falling back to tunnel mode (rfc 4306)"));
-                }
-        }
-    }
+    } /* notification block */
 
-	
     ikev2_derive_child_keys(st, md->role);
 
     c->newest_ipsec_sa = st->st_serialno;
