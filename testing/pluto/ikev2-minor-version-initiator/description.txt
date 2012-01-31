@@ -1,0 +1,23 @@
+Basic pluto with IKEv2 on the initiator (west), and on the responder.
+
+This test enables --impair-minor-version-bump that will send a higher
+minor version number on the initiator. The connection should still
+establish fine.
+
+See: http://tools.ietf.org/html/rfc5996#section-2.5
+
+   The major version number should be incremented only if the packet
+   formats or required actions have changed so dramatically that an
+   older version node would not be able to interoperate with a newer
+   version node if it simply ignored the fields it did not understand
+   and took the actions specified in the older specification.  The minor
+   version number indicates new capabilities, and MUST be ignored by a
+   node with a smaller minor version number, but used for informational
+   purposes by the node with the larger minor version number.  For
+   example, it might indicate the ability to process a newly defined
+   Notify message type.  The node with the larger minor version number
+   would simply note that its correspondent would not be able to
+   understand that message and therefore would not send it.
+
+
+

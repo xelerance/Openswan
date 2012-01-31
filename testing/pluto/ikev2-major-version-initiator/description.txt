@@ -1,0 +1,33 @@
+Basic pluto with IKEv2 on the initiator (west), and on the responder.
+
+This test enables --impair-major-version-bump that will send a higher
+major version number on the initiator. The connection should fail .
+
+See: http://tools.ietf.org/html/rfc5996#section-2.5
+
+   If an endpoint receives a message with a higher major version number,
+   it MUST drop the message and SHOULD send an unauthenticated Notify
+   message of type INVALID_MAJOR_VERSION containing the highest
+   (closest) version number it supports.  If an endpoint supports major
+   version n, and major version m, it MUST support all versions between
+   n and m.  If it receives a message with a major version that it
+   supports, it MUST respond with that version number.  In order to
+   prevent two nodes from being tricked into corresponding with a lower
+   major version number than the maximum that they both support, IKE has
+   a flag that indicates that the node is capable of speaking a higher
+   major version number.
+
+   Thus, the major version number in the IKE header indicates the
+   version number of the message, not the highest version number that
+   the transmitter supports.  If the initiator is capable of speaking
+   versions n, n+1, and n+2, and the responder is capable of speaking
+   versions n and n+1, then they will negotiate speaking n+1, where the
+   initiator will set a flag indicating its ability to speak a higher
+   version.  If they mistakenly (perhaps through an active attacker
+   sending error messages) negotiate to version n, then both will notice
+   that the other side can support a higher version number, and they
+   MUST break the connection and reconnect using version n+1.
+
+openswan note: openswan sends a CAN_IKEv2 vendorid in IKEv1 to detect
+biddown attacks, see testcase ikev2-07-biddown
+
