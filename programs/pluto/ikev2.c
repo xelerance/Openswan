@@ -6,6 +6,7 @@
  * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Simon Deziel <simon@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -218,16 +219,12 @@ ikev2_process_payloads(struct msg_digest *md,
 	    unknown_payload = TRUE;
 	    sd = &ikev2_generic_desc;
 	}
-	
-	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
-	{
-	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
-	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-	    return STF_FAIL;
-	}
 
+	/* why to process an unknown payload*/
+	/* critical bit in RFC 4306/5996 is just 1 bit not a byte*/
+	/* As per RFC other 7 bits are RESERVED and should be ignored*/
 	if(unknown_payload) {
-	    if(pd->payload.v2gen.isag_critical) {
+	    if(pd->payload.v2gen.isag_critical & ISAKMP_PAYLOAD_CRITICAL) {
 		/* it was critical */
 		loglog(RC_LOG_SERIOUS, "critical payload (%s) was not understood. Message dropped."
 		       , enum_show(&payload_names, thisp));
@@ -238,7 +235,13 @@ ikev2_process_payloads(struct msg_digest *md,
 		   , enum_show(&payload_names, thisp));
 	}
 		
-	
+	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
+	{
+	    loglog(RC_LOG_SERIOUS, "%s malformed payload in packet", excuse);
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
+	    return STF_FAIL;
+	}
+
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
 		      , enum_show(&payload_names, thisp)

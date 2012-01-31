@@ -1,5 +1,6 @@
 /* manifest constants
  *
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1997 Angelos D. Keromytis.
@@ -511,6 +512,7 @@ extern const char *const sit_bit_names[];
 /* See http://tools.ietf.org/html/rfc5996#section-3.2 */
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */
+extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 /* These are followed by 7 more bits, currently RESERVED */

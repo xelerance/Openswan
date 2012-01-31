@@ -1,6 +1,7 @@
 /* parsing packets: formats and tools
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -610,7 +611,7 @@ struct_desc isakmp_nat_oa = { "ISAKMP NAT-OA Payload", isanat_oa_fields, sizeof(
  */
 static field_desc ikev2generic_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names},
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_end,  0, NULL, NULL }
 };
@@ -752,7 +753,7 @@ struct_desc ikev2_trans_attr_desc = {
  */
 static field_desc ikev2ke_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
     { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
@@ -795,7 +796,7 @@ struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
 
 static field_desc ikev2id_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
     { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
@@ -823,7 +824,7 @@ struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
  */
 static field_desc ikev2_cert_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
+  { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
@@ -850,7 +851,7 @@ struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_f
 
 static field_desc ikev2_cert_req_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
+  { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
@@ -878,7 +879,7 @@ struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", 
  */
 static field_desc ikev2a_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
     { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
@@ -937,7 +938,7 @@ struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
  */ 
 static field_desc ikev2_notify_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
+  { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &protocol_names },
   /* names used are v1 names may be we should use 4306 3.3.1 names */
@@ -993,7 +994,7 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
  */
 static field_desc ikev2ts_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},
     { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
