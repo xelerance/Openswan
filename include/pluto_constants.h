@@ -1,6 +1,7 @@
 /* manifest constants
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -185,6 +186,8 @@ typedef enum {
 #define IMPAIR_DIE_ONINFO  LELEM(IMPAIR0+5)     /* cause state to be deleted upon receipt of information payload */
 #define IMPAIR_JACOB_TWO_TWO LELEM(IMPAIR0+6)   /* cause pluto to send all messages twice. */
                                                 /* cause pluto to send all messages twice. */
+#define IMPAIR_MAJOR_VERSION_BUMP LELEM(IMPAIR0+7)   /* cause pluto to send an IKE major version that's higher then we support. */
+#define IMPAIR_MINOR_VERSION_BUMP LELEM(IMPAIR0+8)   /* cause pluto to send an IKE minor version that's higher then we support. */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */

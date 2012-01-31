@@ -6,6 +6,7 @@
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -350,7 +351,13 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	struct isakmp_hdr hdr;
 
 	zero(&hdr);	/* default to 0 */
-	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
+		hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
+		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
+	else /* normal production case with real version */
+		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+
 	if(st->st_dcookie.ptr)
 		hdr.isa_np   = ISAKMP_NEXT_v2N; 
 	else 
@@ -2151,7 +2158,12 @@ send_v2_notification(struct state *p1st, u_int16_t type
     {
 	struct isakmp_hdr n_hdr ;
 	zero(&n_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
-	n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
+		n_hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
+		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
+	else /* normal production case with real version */
+		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
 	memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
 	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  

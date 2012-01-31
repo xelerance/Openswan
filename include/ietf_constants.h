@@ -1,6 +1,7 @@
 /* manifest constants
  *
- * Copyright (C) 2004       Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -306,6 +307,9 @@
 #define IKEv2_MAJOR_VERSION    0x2
 #define IKEv2_MINOR_VERSION    0x0
 
+/* bumped versions for testing with --impair-major-version-bump and --impair-minor-version-bump */
+#define IKEv2_MAJOR_BUMP       0x3
+#define IKEv2_MINOR_BUMP       0x1
 
 /* Domain of Interpretation */
 #define ISAKMP_DOI_ISAKMP          0

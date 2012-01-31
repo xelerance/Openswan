@@ -7,6 +7,7 @@
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009-2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -436,6 +437,8 @@ main(int argc, char **argv)
 	    { "impair-sa-creation", no_argument, NULL, IMPAIR_SA_CREATION + DBG_OFFSET },
 	    { "impair-die-oninfo", no_argument, NULL, IMPAIR_DIE_ONINFO + DBG_OFFSET },
 	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
+	    { "impair-major-version-bump", no_argument, NULL, IMPAIR_MAJOR_VERSION_BUMP + DBG_OFFSET },
+	    { "impair-minor-version-bump", no_argument, NULL, IMPAIR_MINOR_VERSION_BUMP + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
 	    };
@@ -999,6 +1002,10 @@ main(int argc, char **argv)
 	openswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
     if(DBGP(IMPAIR_DIE_ONINFO))
 	openswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
+    if(DBGP(IMPAIR_MAJOR_VERSION_BUMP))
+	openswan_log("Warning: IMPAIR_MAJOR_VERSION_BUMP enabled");
+    if(DBGP(IMPAIR_MINOR_VERSION_BUMP))
+	openswan_log("Warning: IMPAIR_MINOR_VERSION_BUMP enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
 	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))
