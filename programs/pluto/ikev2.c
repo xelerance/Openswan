@@ -116,7 +116,7 @@ enum smf2_flags {
  * etc.
  * 
  * Like IKEv1, IKEv2 can have multiple child SAs.  Like IKEv1, each one of
- * the child SAs ("Phase 2") will get their own state. Unlikely IKEv2,
+ * the child SAs ("Phase 2") will get their own state. Unlikely IKEv1,
  * an implementation may negotiate multiple CHILD_SAs at the same time
  * using different MessageIDs.  This is enabled by an option (a notify)
  * that the responder sends to the initiator.  The initiator may only
