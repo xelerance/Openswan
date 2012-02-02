@@ -414,7 +414,7 @@ process_v2_packet(struct msg_digest **mdp)
 	if(svm->state != from_state) continue;
 	if(svm->recv_type != ix) continue;
 
-	/* I1 receiving NO_PROPOSAL ened up picking the wrong STATE_UNDEFINED state
+	/* I1 receiving NO_PROPOSAL ended up picking the wrong STATE_UNDEFINED state
  	   Since the wrong state is a responder, we just add a check for initiator,
 	   so we hit STATE_IKEv2_ROOF
 	 */
@@ -689,8 +689,9 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    addrtot(&st->st_ts_that.low,  0, tsubl, sizeof(tsubl));
 	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
 	    
-	    openswan_log("negotiated tunnel [%s,%s] -> [%s,%s]"
-			 , usubl, usubh, tsubl, tsubh);
+	    openswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
+		, usubl, usubh, st->st_ts_this.startport, st->st_ts_this.endport, st->st_ts_this.ipprotoid
+		, tsubl, tsubh, st->st_ts_that.startport, st->st_ts_that.endport, st->st_ts_that.ipprotoid);
 
 	    fmt_ipsec_sa_established(st,  sadetails,sizeof(sadetails));
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
