@@ -1230,11 +1230,13 @@ add_connection(const struct whack_message *wm)
 		if( (c->policy & POLICY_AUTHENTICATE)
 		    && (c->policy & POLICY_ENCRYPT)) {
 		    loglog(RC_NOALGO, "Can only do AH, or ESP, not AH+ESP\n");
+		    pfree(c);
 		    return;
 		}
 		if( !(c->policy & POLICY_AUTHENTICATE)
 		    && !(c->policy & POLICY_ENCRYPT)) {
 		    loglog(RC_NOALGO, "Must do at AH or ESP, not neither.\n");
+		    pfree(c);
 		    return;
 		}
 
@@ -1258,12 +1260,14 @@ add_connection(const struct whack_message *wm)
 				loglog(RC_NOALGO
 					, "got 0 transforms for esp=\"%s\""
 					, wm->esp);
+				pfree(c);
 				return;
 			}
 		} else {
 			loglog(RC_NOALGO
 				, "esp string error: %s"
 				, ugh? ugh : "Unknown");
+			pfree(c);
 			return;
 		}
 	}
@@ -1286,12 +1290,14 @@ add_connection(const struct whack_message *wm)
 		    loglog(RC_NOALGO
 			   , "got 0 transforms for ike=\"%s\""
 			   , wm->ike);
+		    pfree(c);
 		    return;
 		}
 	    } else {
 		loglog(RC_NOALGO
 		       , "ike string error: %s"
 		       , ugh? ugh : "Unknown");
+		pfree(c);
 		return;
 	    }
 	}
