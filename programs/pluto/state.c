@@ -843,7 +843,10 @@ delete_states_by_peer(ip_address *peer)
     }
 }
 
-/* Duplicate a Phase 1 state object, to create a Phase 2 object.
+/*
+ * IKEv1: Duplicate a Phase 1 state object, to create a Phase 2 object.
+ * IKEv2: Duplicate a Parent SA state object, to create a Child SA object
+ *
  * Caller must schedule an event for this object so that it doesn't leak.
  * Caller must insert_state().
  */
