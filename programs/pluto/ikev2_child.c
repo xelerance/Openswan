@@ -428,16 +428,26 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
 		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
 		
-		DBG_log("    tsi[%u]=%s/%s tsr[%u]=%s/%s "
+		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsi_ni, lbi, hbi
-			, tsr_ni, lbr, hbr);
+			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
+			, tsr_ni, lbr, hbr
+			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
 	    }
 	    );
 	    /* do addresses fit into the policy? */
+
+	    /* 
+	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
+	     *       for now we really support/limit ourselves to a CIDR 
+	     */
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
 	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
-	       && addrinsubnet(&tsr[tsr_ni].high, &er->client))
+	       && addrinsubnet(&tsr[tsr_ni].high, &er->client)
+	       && (tsi[tsi_ni].ipprotoid == ei->protocol)
+	       && (tsr[tsr_ni].ipprotoid == er->protocol)
+	      )
 	    {
 		/*
 		 * now, how good a fit is it? --- sum of bits gives
