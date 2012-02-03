@@ -247,7 +247,7 @@ bool pending_check_timeout(struct connection *c)
     for (pp = host_pair_first_pending(c); (p = *pp) != NULL; )
     {
 	DBG(DBG_DPD,
-	    DBG_log("checking connection \"%s\" for stuck phase 2s %lu+%lu <= %lu"
+	    DBG_log("checking connection \"%s\" for stuck phase 2s (%lu+ 3*%lu) <= %lu"
 		    , c->name
 		    , (unsigned long)p->pend_time
 		    , (unsigned long)c->dpd_timeout
