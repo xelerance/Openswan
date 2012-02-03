@@ -300,12 +300,6 @@ process_v2_packet(struct msg_digest **mdp)
 
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
-	/* TODO: this code allows a packet to both set ISAKMP_FLAGS_I and ISAKMP_FLAGS_R */
-
-    if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
-	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
-}
-
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
