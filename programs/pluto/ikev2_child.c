@@ -3,6 +3,7 @@
  * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -109,7 +110,6 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 
     /*if port is %any or 0*/
     if(e->port == 0 || e->has_port_wildcard) {
-	/* Paul: TODO 0 might have to mean "any single 1 port" - check the IKEv2 RFC */
 	ts.startport = 0;
 	ts.endport = 65535;
     } else {
@@ -154,7 +154,6 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
      * the local policy specified. if local policy states a specific 
      * protocol and port, then send that protocol value and port to 
      * other end  -- Avesh
-     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
      */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/

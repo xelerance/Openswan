@@ -616,6 +616,15 @@ enum ikev2_trans_attr_type {
 	IKEv2_KEY_LENGTH = 14,
 };
 
+/* RFC 5966 Section 3.13.1 */
+enum ikev2_ts_type {
+	/* 0-6 RESERVED */
+	IKEv2_TS_IPV4_ADDR_RANGE = 7, 
+	IKEv2_TS_IPV6_ADDR_RANGE = 8,
+	IKEv2_TS_FC_ADDR_RANGE = 9, /* RFC4595, not implemented */
+	/* 10-240 Unassigned */
+	/* 241-255 Private use */
+};
 
 /* many transform values are moved to openswan/ipsec_policy.h
  * including all of the following, which are here so that
