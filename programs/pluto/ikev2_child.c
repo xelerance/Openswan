@@ -613,6 +613,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	if (bsr != NULL) {
 		st1->st_ts_this = ikev2_subnettots(&bsr->this);
 		st1->st_ts_that = ikev2_subnettots(&bsr->that);
+		st1->st_ts_this.ipprotoid = bsr->this.protocol;
+		st1->st_ts_that.ipprotoid = bsr->that.protocol;
+ 
 	}
     }
 
