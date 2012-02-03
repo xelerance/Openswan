@@ -1420,9 +1420,17 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
-	    
+
 	    st->st_ts_this = ikev2_subnettots(&c0->spd.this);
 	    st->st_ts_that = ikev2_subnettots(&c0->spd.that);
+	    /* We only support symmetrical protocol */
+	    st->st_ts_this.ipprotoid = c0->spd.this.protocol;
+	    st->st_ts_that.ipprotoid = c0->spd.that.protocol;
+	    /* We only support a single port or all ports */
+	    if(c0->spd.this.port != 0) {
+		st->st_ts_this.startport = c0->spd.this.port;
+		st->st_ts_that.ipprotoid = c0->spd.this.port;
+	    }
 	    
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
@@ -2163,11 +2171,15 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
+#if 0
+ /* Empty notification data section should be fine? */
+
     if(n_data == NULL) { 
     DBG(DBG_CONTROLMORE
     	,DBG_log("don't send packet when notification data empty"));  
 		return; 
 	}
+#endif
 
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
@@ -2241,11 +2253,13 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 
    		}
     }
-   	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
-   	{
+	/* Notify could be empty */
+	if(n_data != NULL) {
+	   if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
 		openswan_log("error writing notify payload for notify message");
-   		return FALSE;
-    }
+		return FALSE;
+	   }
+	}
     close_output_pbs(&n_pbs);
 	return TRUE;
 }

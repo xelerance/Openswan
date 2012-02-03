@@ -3,6 +3,7 @@
  * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -109,7 +110,6 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 
     /*if port is %any or 0*/
     if(e->port == 0 || e->has_port_wildcard) {
-	/* Paul: TODO 0 might have to mean "any single 1 port" - check the IKEv2 RFC */
 	ts.startport = 0;
 	ts.endport = 65535;
     } else {
@@ -118,6 +118,25 @@ struct traffic_selector ikev2_subnettots(struct end *e)
     }
 	
     return ts;
+}
+
+/*
+ * Does our local port fit within the ts range received?
+ * our local 0 means "all"
+ * 0-65535 or 0-0 means their "all"
+ */
+static int ikev2_port_in_range(int our_port, int their_low, int their_high) {
+	if( (their_low == 0) && ((their_high == 0) || (their_high == 65535)))
+		return 1;
+	if(our_port == 0) {
+	   if(their_low !=0) return 0;
+	   if( (their_high !=0) && (their_high != 65535) ) return 0;
+	   return 1;
+	} else {
+	   if(our_port < their_low) return 0;
+	   if(our_port > their_high) return 0;
+	   return 1;
+	}
 }
 
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
@@ -154,7 +173,6 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
      * the local policy specified. if local policy states a specific 
      * protocol and port, then send that protocol value and port to 
      * other end  -- Avesh
-     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
      */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
@@ -203,6 +221,55 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
+
+	/* we need to fill the traffic_selector with local policy to notify the
+	 * initiator of possible narrowing of protocol and ports */
+
+	if( ((ts_i->ipprotoid != 0) && (ts_i->ipprotoid != c0->spd.that.protocol)) ||
+	    ((ts_r->ipprotoid != 0) && (ts_r->ipprotoid != c0->spd.this.protocol)) )  {
+		DBG_log("FATAL: Received TSi/TSr transport protocol of %d/%d cannot be narrowed to local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol);
+		return STF_FAIL;
+	}
+	DBG(DBG_CONTROLMORE, DBG_log("Received TSi/TSr transport protocol of %d/%d with local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol));
+
+	ts_i->ipprotoid =  c0->spd.that.protocol;
+	ts_r->ipprotoid =  c0->spd.this.protocol;
+
+        /*
+	 * We currently do not support a range of ports, only single ports 
+	 * But the range 0-65535 maps to our 'port = 0' variable. Older versions used
+	 * to send the range 0-0 to mean everything.
+	 */
+
+	/* log warning on limited port range support */
+	if( (ts_i->startport !=0) || ((ts_i->endport !=0) && (ts_i->endport != 65535)))
+	   if(ts_i->startport != ts_i->endport)
+		DBG_log("FATAL: Received TSi port range (%d-%d) not yet supported",
+			ts_i->startport, ts_i->endport);
+	if( (ts_r->startport !=0) || ((ts_r->endport !=0) && (ts_r->endport != 65535)))
+	   if(ts_r->startport != ts_r->endport)
+		DBG_log("FATAL: Received TSr port range (%d-%d) not yet supported",
+			ts_r->startport, ts_r->endport);
+
+	if(!ikev2_port_in_range(c0->spd.that.port, ts_i->startport, ts_i->endport)) {
+	   DBG_log("FATAL: Received TSi(%d-%d) but local policy only allows port %d",
+		   ts_i->startport, ts_i->endport, c0->spd.that.port);
+	   return STF_FAIL;
+	}
+	if(!ikev2_port_in_range(c0->spd.this.port, ts_r->startport, ts_r->endport)) {
+	   DBG_log("FATAL: Received TSr(%d-%d) but local policy only allows port %d",
+		   ts_r->startport, ts_r->endport, c0->spd.this.port);
+	   return STF_FAIL;
+	}
+
+
+
+	ts_i->startport = c0->spd.that.port;
+	ts_i->endport = c0->spd.that.port;
+	ts_r->startport = c0->spd.this.port;
+	ts_r->endport = c0->spd.this.port;
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
@@ -337,8 +404,8 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	char er3[SUBNETTOT_BUF];
 	subnettot(&ei->client,  0, ei3, sizeof(ei3));
 	subnettot(&er->client,  0, er3, sizeof(er3));
-	DBG_log("  ikev2_eval_conn evaluating "
-		"I=%s:%s:%d/%d R=%s:%d/%d %s"
+	DBG_log("  ikev2_eval_conn evaluating our "
+		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
 		, er3, er->protocol, er->port
 		, is_virtual_connection(d) ? "(virt)" : "");
@@ -361,16 +428,26 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
 		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
 		
-		DBG_log("    tsi[%u]=%s/%s tsr[%u]=%s/%s "
+		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsi_ni, lbi, hbi
-			, tsr_ni, lbr, hbr);
+			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
+			, tsr_ni, lbr, hbr
+			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
 	    }
 	    );
 	    /* do addresses fit into the policy? */
+
+	    /* 
+	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
+	     *       for now we really support/limit ourselves to a CIDR 
+	     */
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
 	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
-	       && addrinsubnet(&tsr[tsr_ni].high, &er->client))
+	       && addrinsubnet(&tsr[tsr_ni].high, &er->client)
+	       && (tsi[tsi_ni].ipprotoid == ei->protocol)
+	       && (tsr[tsr_ni].ipprotoid == er->protocol)
+	      )
 	    {
 		/*
 		 * now, how good a fit is it? --- sum of bits gives
@@ -467,6 +544,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    int bfit=ikev2_evaluate_connection_fit(c,sra,role
 						   ,tsi,tsr,tsi_n,tsr_n);
 	    if(bfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit c %s", c->name));
 		bestfit = bfit;
 		b = c;
 		bsr = sra;
@@ -514,6 +592,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		    newfit=ikev2_evaluate_connection_fit(d,sr,role
 							 ,tsi,tsr,tsi_n,tsr_n);
 		    if(newfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
 			bestfit = newfit;
 			b=d;
 			bsr = sr;
@@ -534,6 +613,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	if (bsr != NULL) {
 		st1->st_ts_this = ikev2_subnettots(&bsr->this);
 		st1->st_ts_that = ikev2_subnettots(&bsr->that);
+		st1->st_ts_this.ipprotoid = bsr->this.protocol;
+		st1->st_ts_that.ipprotoid = bsr->that.protocol;
+ 
 	}
     }
 

@@ -2,6 +2,7 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1001,7 +1002,7 @@ static field_desc ikev2ts_fields[] = {
     { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
     { ft_end,  0, NULL, NULL }
 };
-struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selectors",
+struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selector Payload",
 			     ikev2ts_fields, sizeof(struct ikev2_ts) };
 
 
@@ -1027,7 +1028,7 @@ struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selectors",
  *                Figure 20: Traffic Selector
  */
 static field_desc ikev2ts1_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "TS type", &ident_names },
+    { ft_enum, 8/BITS_PER_BYTE, "TS type", &ikev2_ts_type_names},
     { ft_nat,  8/BITS_PER_BYTE, "IP Protocol ID", NULL}, 
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "start port", NULL},

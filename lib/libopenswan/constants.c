@@ -1,4 +1,5 @@
 /* tables of names for values defined in constants.h
+ * Copyright (C) 2012 Paul Wouteirs <pwouters@redhat.com>
  * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -997,13 +998,25 @@ static const char *const ikev2_notify_name[] = {
 	   "v2N_FAILED_CP_REQUIRED",
 	   "v2N_TS_UNACCEPTABLE",
 	   "v2N_INVALID_SELECTORS",
- 	}; 
+	}; 
 
 enum_names ikev2_notify_names_16384 = 
     { INITIAL_CONTACT, NON_FIRST_FRAGMENTS_ALSO, ikev2_notify_name_16384, NULL};
 
 enum_names ikev2_notify_names = 
     { 0, INVALID_SELECTORS, ikev2_notify_name, &ikev2_notify_names_16384};
+
+/* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-19 */
+static const char *const ikev2_ts_type_name[] = {
+	   "IKEv2_TS_IPV4_ADDR_RANGE",
+	   "IKEv2_TS_IPV6_ADDR_RANGE",
+	   "IKEv2_TS_FC_ADDR_RANGE", /* not implemented */
+	};
+
+enum_names ikev2_ts_type_names =
+    { IKEv2_TS_IPV4_ADDR_RANGE, IKEv2_TS_FC_ADDR_RANGE, &ikev2_ts_type_name, NULL };
+
+
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
