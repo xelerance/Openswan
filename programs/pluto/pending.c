@@ -242,7 +242,6 @@ bool pending_check_timeout(struct connection *c)
 {
     struct pending **pp, *p;
     time_t n = time(NULL);
-    bool restart = FALSE;
 
     for (pp = host_pair_first_pending(c); (p = *pp) != NULL; )
     {
@@ -255,12 +254,13 @@ bool pending_check_timeout(struct connection *c)
 		    
 	if(c->dpd_timeout > 0) {
 	    if((p->pend_time + c->dpd_timeout*3) <= n) {
-		restart = TRUE;
+		DBG(DBG_DPD, DBG_log("connection \"%s\" stuck, restarting", c->name));
+		return TRUE;
 	    }
 	}
 	pp = &p->next;
     }
-    return restart;
+    return FALSE;
 }
 
 /* a Main Mode negotiation has been replaced; update any pending */
