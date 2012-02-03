@@ -683,8 +683,10 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    addrtot(&st->st_ts_that.low,  0, tsubl, sizeof(tsubl));
 	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
 	    
-	    openswan_log("negotiated tunnel [%s,%s] -> [%s,%s]"
-			 , usubl, usubh, tsubl, tsubh);
+	    openswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
+			 , usubl, usubh, st->st_ts_this.startport, st->st_ts_this.endport, st->st_ts_this.ipprotoid
+			 , tsubl, tsubh, st->st_ts_that.startport, st->st_ts_that.endport, st->st_ts_that.ipprotoid
+			);
 
 	    fmt_ipsec_sa_established(st,  sadetails,sizeof(sadetails));
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
