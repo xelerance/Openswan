@@ -120,6 +120,25 @@ struct traffic_selector ikev2_subnettots(struct end *e)
     return ts;
 }
 
+/*
+ * Does our local port fit within the ts range received?
+ * our local 0 means "all"
+ * 0-65535 or 0-0 means their "all"
+ */
+static int ikev2_port_in_range(int our_port, int their_low, int their_high) {
+	if( (their_low == 0) && ((their_high == 0) || (their_high == 65535)))
+		return 1;
+	if(our_port == 0) {
+	   if(their_low !=0) return 0;
+	   if( (their_high !=0) && (their_high != 65535) ) return 0;
+	   return 1;
+	} else {
+	   if(our_port < their_low) return 0;
+	   if(our_port > their_high) return 0;
+	   return 1;
+	}
+}
+
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 			 , pb_stream *outpbs   
 			 , unsigned int np
@@ -202,6 +221,55 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
+
+	/* we need to fill the traffic_selector with local policy to notify the
+	 * initiator of possible narrowing of protocol and ports */
+
+	if( ((ts_i->ipprotoid != 0) && (ts_i->ipprotoid != c0->spd.that.protocol)) ||
+	    ((ts_r->ipprotoid != 0) && (ts_r->ipprotoid != c0->spd.this.protocol)) )  {
+		DBG_log("FATAL: Received TSi/TSr transport protocol of %d/%d cannot be narrowed to local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol);
+		return STF_FAIL;
+	}
+	DBG(DBG_CONTROLMORE, DBG_log("Received TSi/TSr transport protocol of %d/%d with local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol));
+
+	ts_i->ipprotoid =  c0->spd.that.protocol;
+	ts_r->ipprotoid =  c0->spd.this.protocol;
+
+        /*
+	 * We currently do not support a range of ports, only single ports 
+	 * But the range 0-65535 maps to our 'port = 0' variable. Older versions used
+	 * to send the range 0-0 to mean everything.
+	 */
+
+	/* log warning on limited port range support */
+	if( (ts_i->startport !=0) || ((ts_i->endport !=0) && (ts_i->endport != 65535)))
+	   if(ts_i->startport != ts_i->endport)
+		DBG_log("FATAL: Received TSi port range (%d-%d) not yet supported",
+			ts_i->startport, ts_i->endport);
+	if( (ts_r->startport !=0) || ((ts_r->endport !=0) && (ts_r->endport != 65535)))
+	   if(ts_r->startport != ts_r->endport)
+		DBG_log("FATAL: Received TSr port range (%d-%d) not yet supported",
+			ts_r->startport, ts_r->endport);
+
+	if(!ikev2_port_in_range(c0->spd.that.port, ts_i->startport, ts_i->endport)) {
+	   DBG_log("FATAL: Received TSi(%d-%d) but local policy only allows port %d",
+		   ts_i->startport, ts_i->endport, c0->spd.that.port);
+	   return STF_FAIL;
+	}
+	if(!ikev2_port_in_range(c0->spd.this.port, ts_r->startport, ts_r->endport)) {
+	   DBG_log("FATAL: Received TSr(%d-%d) but local policy only allows port %d",
+		   ts_r->startport, ts_r->endport, c0->spd.this.port);
+	   return STF_FAIL;
+	}
+
+
+
+	ts_i->startport = c0->spd.that.port;
+	ts_i->endport = c0->spd.that.port;
+	ts_r->startport = c0->spd.this.port;
+	ts_r->endport = c0->spd.this.port;
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
@@ -336,8 +404,8 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	char er3[SUBNETTOT_BUF];
 	subnettot(&ei->client,  0, ei3, sizeof(ei3));
 	subnettot(&er->client,  0, er3, sizeof(er3));
-	DBG_log("  ikev2_eval_conn evaluating "
-		"I=%s:%s:%d/%d R=%s:%d/%d %s"
+	DBG_log("  ikev2_eval_conn evaluating our "
+		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
 		, er3, er->protocol, er->port
 		, is_virtual_connection(d) ? "(virt)" : "");
@@ -466,6 +534,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    int bfit=ikev2_evaluate_connection_fit(c,sra,role
 						   ,tsi,tsr,tsi_n,tsr_n);
 	    if(bfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit c %s", c->name));
 		bestfit = bfit;
 		b = c;
 		bsr = sra;
@@ -513,6 +582,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		    newfit=ikev2_evaluate_connection_fit(d,sr,role
 							 ,tsi,tsr,tsi_n,tsr_n);
 		    if(newfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
 			bestfit = newfit;
 			b=d;
 			bsr = sr;
