@@ -296,11 +296,6 @@ enum phase1_role {
 #define PHASE1_INITIATOR_STATES	 (LELEM(STATE_MAIN_I1) | LELEM(STATE_MAIN_I2) \
 				  |LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4)\
 				  |LELEM(STATE_AGGR_I1) | LELEM(STATE_AGGR_I2))
-#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | \
-				       LELEM(STATE_MAIN_I4) | \
-				       LELEM(STATE_AGGR_I2) | \
-				       LELEM(STATE_AGGR_R2))
-
 #define IS_PHASE1_INIT(s)         ((s) == STATE_MAIN_I1 \
 				   || (s) == STATE_MAIN_I2 \
 				   || (s) == STATE_MAIN_I3 \
@@ -319,6 +314,18 @@ enum phase1_role {
 				  || (s) == STATE_MODE_CFG_R0 || (s) == STATE_MODE_CFG_R1 \
 				  || (s) == STATE_MODE_CFG_R2 \
                                   || (s) == STATE_XAUTH_I0 || (s) == STATE_XAUTH_I1)
+#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | \
+				       LELEM(STATE_MAIN_I4) | \
+				       LELEM(STATE_AGGR_I2) | \
+				       LELEM(STATE_AGGR_R2) | \
+				       LELEM(STATE_XAUTH_R0) | \
+				       LELEM(STATE_XAUTH_R1) | \
+				       LELEM(STATE_MODE_CFG_R0) | \
+				       LELEM(STATE_MODE_CFG_R1) | \
+				       LELEM(STATE_MODE_CFG_R2) | \
+				       LELEM(STATE_XAUTH_I0) | \
+				       LELEM(STATE_XAUTH_I1))
+
 #define IS_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_I2 || (s) == STATE_QUICK_R2)
 #define IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_R1)
 #ifdef MODECFG
