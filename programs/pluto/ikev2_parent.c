@@ -2163,11 +2163,15 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
+#if 0
+ /* Empty notification data section should be fine? */
+
     if(n_data == NULL) { 
     DBG(DBG_CONTROLMORE
     	,DBG_log("don't send packet when notification data empty"));  
 		return; 
 	}
+#endif
 
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
