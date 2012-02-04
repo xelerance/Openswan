@@ -7,6 +7,7 @@
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com> 
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -250,8 +251,10 @@ unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
 	*p++ = 0;
 	*p++ = (elen>>8) & 0xff;
 	*p++ = elen & 0xff;
-    } else
+    } else {
+	pfree(buf);
 	return 0;	/* unrepresentable exponent length */
+    }
 
     memcpy(p, e.ptr, e.len);
     p+=e.len;
