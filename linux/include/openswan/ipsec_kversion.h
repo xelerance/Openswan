@@ -5,6 +5,7 @@
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
  * Copyright (C) 2003 - 2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 - 2011 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2012 David McCullough <david_mccullough@mcafee.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -597,6 +598,14 @@
 #define	HAVE_NET_DEVICE_OPS
 #define	HAVE_NETIF_QUEUE
 #endif
+
+/*
+ * try and handle time wraps in a nicer manner
+ */
+#define ipsec_jiffies_elapsed(now, last) \
+	((last) <= (now) ? ((now) - (last)) : (((typeof(jiffies))~0) - (last) + (now)))
+#define ipsec_jiffieshz_elapsed(now, last) \
+	((last) <= (now) ? ((now) - (last)) : ((((typeof(jiffies))~0)/HZ) - (last) + (now)))
 
 #endif /* _OPENSWAN_KVERSIONS_H */
 

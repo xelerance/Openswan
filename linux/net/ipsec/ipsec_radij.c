@@ -2,6 +2,11 @@
  * Interface between the IPSEC code and the radix (radij) tree code
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs.
+ * Copyright (C) 2005 Michael Richardson <mcr@sandelman.ca>
+ * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006-2008 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2006-2011 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2009-2012 David McCullough <david_mccullough@mcafee.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -369,7 +374,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 			    "%-18s -> %-18s => %s\n",
 			    retrt->er_pid,
 			    retrt->er_count,
-			    (int)(jiffies/HZ - retrt->er_lasttime),
+			    (int)(ipsec_jiffieshz_elapsed(jiffies/HZ, retrt->er_lasttime)),
 			    buf1,
 			    buf2,
 			    sa_len ? sa : " (error)");

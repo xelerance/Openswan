@@ -4,6 +4,11 @@
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
  *                                 2001  Michael Richardson <mcr@freeswan.org>
+ * Copyright (C) 2005 Michael Richardson <mcr@sandelman.ca>
+ * Copyright (C) 2005-2008  Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006-2012 David McCullough <david_mccullough@mcafee.com>
+ * Copyright (C) 2006-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2011 Bart Trojanowski <bart@jukie.net>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -346,10 +351,9 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 	if(sa_p->ips_life.ipl_usetime.ipl_last) { /* XXX-MCR should be last? */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)
 		len += ipsec_snprintf(buffer+len, length-len, " idle=%Ld",
-			       jiffies / HZ - sa_p->ips_life.ipl_usetime.ipl_last);
+			       ipsec_jiffieshz_elapsed(jiffies/HZ, sa_p->ips_life.ipl_usetime.ipl_last));
 #else
-		len += ipsec_snprintf(buffer+len, length-len, " idle=%lu",
-			       jiffies / HZ - (unsigned long)sa_p->ips_life.ipl_usetime.ipl_last);
+		len += ipsec_snprintf(buffer+len, length-len, " idle=%lu", ipsec_jiffieshz_elapsed(jiffies/HZ, (unsigned long)sa_p->ips_life.ipl_usetime.ipl_last));
 #endif
 	}
 

@@ -3,6 +3,10 @@
  *
  * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
  *                 and Michael Richardson  <mcr@freeswan.org>
+ * Copyright (C) 2005-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
+ * Copyright (C) 2012 David McCullough <david_mccullough@mcafee.com>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,7 +17,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
  *
  */
 
@@ -90,7 +93,7 @@ ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 		
 
 	if(ilt == ipsec_life_timebased) {
-		count = jiffies/HZ - il64->ipl_count;
+		count = ipsec_jiffieshz_elapsed(jiffies/HZ, il64->ipl_count);
 	} else {
 		count = il64->ipl_count;
 	}
@@ -151,7 +154,7 @@ ipsec_lifetime_format(char *buffer,
 	__u64 count;
 
 	if(timebaselife == ipsec_life_timebased) {
-		count = jiffies/HZ - lifetime->ipl_count;
+		count = ipsec_jiffieshz_elapsed(jiffies/HZ, lifetime->ipl_count);
 	} else {
 		count = lifetime->ipl_count;
 	}
