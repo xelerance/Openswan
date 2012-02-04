@@ -461,8 +461,8 @@ load_crls(void)
 		}
 		free(filelist[n]);
 	    }
-	    free(filelist);
 	}
+	free(filelist);
     }
     /* restore directory path */
     if(chdir(save_dir) == -1) {
