@@ -113,6 +113,7 @@ void osw_conf_setdefault(void)
     
     if((env = getenv("IPSEC_CONFFILE")) != NULL) {
 	pfree(conffile);
+	pfree(ipsec_conf_dir);
 	conffile = clone_str(env, "ipsec.conf");
     }
     
