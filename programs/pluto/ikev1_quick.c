@@ -749,8 +749,7 @@ quick_outI1(int whack_sock
 	    , so_serial_t replacing)
 {
     struct state *st = duplicate_state(isakmp_sa);
-    struct qke_continuation *qke = alloc_thing(struct qke_continuation
-					       , "quick_outI1 KE");
+    struct qke_continuation *qke;
     stf_status e;
     const char *pfsgroupname;
     char p2alg[256];
@@ -818,6 +817,7 @@ quick_outI1(int whack_sock
 		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
     }
 
+    qke = alloc_thing(struct qke_continuation , "quick_outI1 KE");
     qke->replacing = replacing;
     pcrc_init(&qke->qke_pcrc);
     qke->qke_pcrc.pcrc_func = quick_outI1_continue;
