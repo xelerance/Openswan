@@ -948,6 +948,37 @@ static field_desc ikev2_notify_fields[] = {
   { ft_end,  0, NULL, NULL }
 };
 
+/* IKEv2 Delete Payload
+ * layout from RFC 5996 Section 3.11 
+ * This is followed by a variable length SPI.
+ *
+ *                      1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !C| RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !  Protocol ID  !   SPI Size    !           Num of SPIs         !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                                                               !
+ * ~               Security Parameter Index(es) (SPI)              ~
+ * !                                                               !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+
+static field_desc ikev2_delete_fields[] = {
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },  
+    { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_nat, 8/BITS_PER_BYTE, "protocol ID", NULL },
+    { ft_nat, 8/BITS_PER_BYTE, "SPI size", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "number of SPIs", NULL },
+    { ft_end, 0, NULL, NULL }
+};
+
+struct_desc ikev2_delete_desc = { "IKEv2 Delete Payload",
+                            ikev2_delete_fields, sizeof(struct ikev2_delete) };
+
+
 struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
 			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
 
@@ -1109,7 +1140,7 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_a_desc,                      /* 39 */
     &ikev2_nonce_desc,                  /* 40 */
     &ikev2_notify_desc,                 /* 41 */
-    NULL,                               /* 42 */
+    &ikev2_delete_desc,                 /* 42 */
     &ikev2_vendor_id_desc,              /* 43 */
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
