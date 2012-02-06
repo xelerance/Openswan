@@ -966,7 +966,7 @@ static field_desc ikev2_notify_fields[] = {
  */
 
 static field_desc ikev2_delete_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },  
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "protocol ID", NULL },
