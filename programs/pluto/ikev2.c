@@ -264,6 +264,12 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
+	case ISAKMP_NEXT_v2TSr:
+	    DBG_log("PAUL: check TSr/TSi payloads within?");
+	    break;
+	case ISAKMP_NEXT_v2TSi:
+	    DBG_log("PAUL: check TSr/TSi payloads within?");
+	    break;
 	default:   /* nothing special */
 	    break;
 	}
