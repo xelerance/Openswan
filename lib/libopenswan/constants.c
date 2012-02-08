@@ -944,8 +944,9 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
+/* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-13 */
 static const char *const ikev2_notify_name_16384[] = {
-	   "v2N_INITIAL_CONTACT",
+	   "v2N_INITIAL_CONTACT", /* 16384 */
 	   "v2N_SET_WINDOW_SIZE", 
 	   "v2N_ADDITIONAL_TS_POSSIBLE",
 	   "v2N_IPCOMP_SUPPORTED",
@@ -957,56 +958,90 @@ static const char *const ikev2_notify_name_16384[] = {
 	   "v2N_REKEY_SA",
 	   "v2N_ESP_TFC_PADDING_NOT_SUPPORTED",
 	   "v2N_NON_FIRST_FRAGMENTS_ALSO",
+	   "v2N_MOBIKE_SUPPORTED",
+	   "v2N_ADDITIONAL_IP4_ADDRESS",
+	   "v2N_ADDITIONAL_IP6_ADDRESS",
+	   "v2N_NO_ADDITIONAL_ADDRESSES",
+	   "v2N_UPDATE_SA_ADDRESSES",
+	   "v2N_COOKIE2",
+	   "v2N_NO_NATS_ALLOWED",
+	   "v2N_AUTH_LIFETIME",
+	   "v2N_MULTIPLE_AUTH_SUPPORTED",
+	   "v2N_ANOTHER_AUTH_FOLLOWS",
+	   "v2N_REDIRECT_SUPPORTED",
+	   "v2N_REDIRECT",
+	   "v2N_REDIRECTED_FROM",
+	   "v2N_TICKET_LT_OPAQUE",
+	   "v2N_TICKET_REQUEST",
+	   "v2N_TICKET_ACK",
+	   "v2N_TICKET_NACK",
+	   "v2N_TICKET_OPAQUE",
+	   "v2N_LINK_ID",
+	   "v2N_USE_WESP_MODE",
+	   "v2N_ROHC_SUPPORTED",
+	   "v2N_EAP_ONLY_AUTHENTICATION",
+	   "v2N_CHILDLESS_IKEV2_SUPPORTED",
+	   "v2N_QUICK_CRASH_DETECTION",
+	   "v2N_IKEV2_MESSAGE_ID_SYNC_SUPPORTED",
+	   "v2N_IPSEC_REPLAY_COUNTER_SYNC_SUPPORTED",
+	   "v2N_IKEV2_MESSAGE_ID_SYNC",
+	   "v2N_IPSEC_REPLAY_COUNTER_SYNC",
+	   "v2N_SECURE_PASSWORD_METHODS", /* 16423 */
  	}; 
 
 static const char *const ikev2_notify_name[] = {
-	   "v2N_RESERVED",
+	   "v2N_RESERVED", /* unofficial "OK" */
 	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_2",
+	   "v2N_UNUSED_3",
 	   "v2N_INVALID_IKE_SPI",
 	   "v2N_INVALID_MAJOR_VERSION",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_6",
 	   "v2N_INVALID_SYNTAX",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_8",
 	   "v2N_INVALID_MESSAGE_ID",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_10",
 	   "v2N_INVALID_SPI",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_12",
+	   "v2N_UNUSED_13",
 	   "v2N_NO_PROPOSAL_CHOSEN",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_15",
+	   "v2N_UNUSED_16",
 	   "v2N_INVALID_KE_PAYLOAD",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_18",
+	   "v2N_UNUSED_19",
+	   "v2N_UNUSED_20",
+	   "v2N_UNUSED_21",
+	   "v2N_UNUSED_22",
+	   "v2N_UNUSED_23",
 	   "v2N_AUTHENTICATION_FAILED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_25",
+	   "v2N_UNUSED_26",
+	   "v2N_UNUSED_27",
+	   "v2N_UNUSED_28",
+	   "v2N_UNUSED_29",
+	   "v2N_UNUSED_30",
+	   "v2N_UNUSED_31",
+	   "v2N_UNUSED_32",
+	   "v2N_UNUSED_33",
 	   "v2N_SINGLE_PAIR_REQUIRED",
 	   "v2N_NO_ADDITIONAL_SAS",
 	   "v2N_INTERNAL_ADDRESS_FAILURE",
 	   "v2N_FAILED_CP_REQUIRED",
 	   "v2N_TS_UNACCEPTABLE",
 	   "v2N_INVALID_SELECTORS",
+	   "v2N_UNACCEPTABLE_ADDRESSES",
+	   "v2N_UNEXPECTED_NAT_DETECTED",
+	   "v2N_USE_ASSIGNED_HoA",
+	   "v2N_TEMPORARY_FAILURE",
+	   "v2N_CHILD_SA_NOT_FOUND", /* 45 */
 	}; 
 
 enum_names ikev2_notify_names_16384 = 
-    { INITIAL_CONTACT, NON_FIRST_FRAGMENTS_ALSO, ikev2_notify_name_16384, NULL};
+    { v2N_INITIAL_CONTACT, v2N_SECURE_PASSWORD_METHODS, ikev2_notify_name_16384, NULL};
 
 enum_names ikev2_notify_names = 
-    { 0, INVALID_SELECTORS, ikev2_notify_name, &ikev2_notify_names_16384};
+    { 0, v2N_CHILD_SA_NOT_FOUND, ikev2_notify_name, &ikev2_notify_names_16384};
 
 /* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-19 */
 static const char *const ikev2_ts_type_name[] = {

@@ -285,8 +285,8 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 		struct payload_digest *p;
 		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 		{
-			if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
-			DBG_log("Received USE_TRANSPORT_MODE from the other end, next payload is USE_TRANSPORT_MODE notification");
+			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+			DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
 			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
 						, ts_r, RESPONDER);
 			break;
@@ -668,7 +668,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     /* start of SA out */
     {
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
+	v2_notification_t rn;
 	pb_stream r_sa_pbs;
 
 	r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
@@ -679,7 +679,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				       &r_sa_pbs, st1, FALSE);
 
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
@@ -693,22 +693,22 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	struct payload_digest *p;
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 	{
-	   if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
+	   if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
 	   if(st1->st_connection->policy & POLICY_TUNNEL) {
-		DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-		DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+		DBG_log("Although local policy is tunnel, received v2N_USE_TRANSPORT_MODE");
+		DBG_log("So switching to transport mode, and responding with v2N_USE_TRANSPORT_MODE notify");
 	   }
 	   else {
-		DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-		DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+		DBG_log("Local policy is transport, received v2N_USE_TRANSPORT_MODE");
+		DBG_log("Now responding with v2N_USE_TRANSPORT_MODE notify");
 	   }
 
 	   memset(&child_spi, 0, sizeof(child_spi));
 	   memset(&notifiy_data, 0, sizeof(notifiy_data));
 	   ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
 			&child_spi,
-			USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+			v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
 
 	   if (st1->st_esp.present == TRUE) {
 		/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
