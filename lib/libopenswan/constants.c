@@ -98,6 +98,8 @@ const char *const debug_bit_names[] = {
 	"impair-sa-creation", /* 25 */
 	"impair-die-oninfo",  /* 26 */
 	"impair-jacob-two-two",  /* 27 */
+	"impair-major-version-bump", /* 28 */
+	"impair-minor-version-bump", /* 29 */
 
 	NULL
     };
