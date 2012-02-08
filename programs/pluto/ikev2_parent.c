@@ -765,7 +765,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	if(rn != NOTHING_WRONG) {
 		/* char group_number[2]; */
 		u_int16_t group_number = htons(st->st_oakley.group->group);
-		dc.ptr = (char *)&group_number;
+		dc.ptr = (u_char *)&group_number;
 		dc.len = 2;
 		SEND_NOTIFICATION_AA(INVALID_KE_PAYLOAD, &dc);
 		delete_state(st);
