@@ -943,10 +943,11 @@ enum ike_trans_type_dh {
  * See RFC2408 ISAKMP 3.14.1
  */
 
-/* extern enum_names notification_names;
-   extern enum_names ipsec_notification_names;
-*/
-
+/*
+ * IKEv1 RFC2408 http://www.iana.org/assignments/ipsec-registry 
+ * extern enum_names notification_names;
+ * extern enum_names ipsec_notification_names;
+ */
 typedef enum {
     NOTHING_WRONG =             0,  /* unofficial! */
 
@@ -980,10 +981,12 @@ typedef enum {
     CERTIFICATE_UNAVAILABLE =   28,
     UNSUPPORTED_EXCHANGE_TYPE = 29,
     UNEQUAL_PAYLOAD_LENGTHS =   30,
+    /* 31-8191 RESERVED (Future Use) */
 
-    /* ISAKMP status type */
-    CONNECTED =              16384,
-
+    /*
+     * Sub-Registry: Notify Messages - Status Types (16384-24575)
+     */
+    CONNECTED                    =16384, /* INITIAL_CONTACT */
 
     /* IPSEC DOI additions; status types (RFC2407 IPSEC DOI 4.6.3)
      * These must be sent under the protection of an ISAKMP SA.
@@ -1011,37 +1014,95 @@ typedef enum {
     /* Netscreen / Juniper private use  - notification contains internal ip */
     NETSCREEN_NHTB_INFORM = 40001,
 
-    /* IKEv2 */
-    UNSUPPORTED_CRITICAL_PAYLOAD = 1,
-    INVALID_IKE_SPI              = 4,
-    /*INVALID_MAJOR_VERSION      = 5, */ /* same as ikev1 */
-    INVALID_SYNTAX               = 7,
-    /*INVALID_MESSAGE_ID         = 9, */ /* same as ikev1 */
-    /*INVALID_SPI                =11, */ /* same as ikev1 */
-    /*NO_PROPOSAL_CHOSEN         =14, */ /* same as ikev1 */
-    INVALID_KE_PAYLOAD           =17,
-    /*AUTHENTICATION_FAILED      =24, */ /* same as ikev1 */
-    SINGLE_PAIR_REQUIRED         =34,
-    NO_ADDITIONAL_SAS            =35,
-    INTERNAL_ADDRESS_FAILURE     =36,
-    FAILED_CP_REQUIRED           =37,
-    TS_UNACCEPTABLE              =38,
-    INVALID_SELECTORS            =39,
-
-    INITIAL_CONTACT              =16384,
-    SET_WINDOW_SIZE              =16385,
-    ADDITIONAL_TS_POSSIBLE       =16386,
-    IPCOMP_SUPPORTED             =16387,
-    NAT_DETECTION_SOURCE_IP      =16388,
-    NAT_DETECTION_DESTINATION_IP =16389,
-    COOKIE                       =16390,
-    USE_TRANSPORT_MODE           =16391,
-    HTTP_CERT_LOOKUP_SUPPORTED   =16392,
-    REKEY_SA                     =16393,
-    ESP_TFC_PADDING_NOT_SUPPORTED=16394,
-    NON_FIRST_FRAGMENTS_ALSO     =16395,
-
     } notification_t;
+
+/*
+ * http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-13
+ * IKEv2 is very similar, but different. Let's not re-use and confuse */
+typedef enum {
+    /* IKEv2 */
+    /* 0-8191 Reserved, ExpertReview */
+    v2N_NOTHING_WRONG                = 0,  /* unofficial! */
+    v2N_UNSUPPORTED_CRITICAL_PAYLOAD = 1,
+    /* Reserved                  = 2, */
+    /* Reserved                  = 3, */
+    v2N_INVALID_IKE_SPI              = 4,
+    v2N_INVALID_MAJOR_VERSION        = 5, /* same as ikev1 */
+    /* Reserved                  = 6, */
+    v2N_INVALID_SYNTAX               = 7,
+    /* Reserved                  = 8, */
+    v2N_INVALID_MESSAGE_ID           = 9, /* same as ikev1 */
+    /* Reserved                  =10, */
+    V2_INVALID_SPI                  =11,  /* same as ikev1 */
+    /* Reserved                  =12, */
+    /* Reserved                  =13, */
+    v2N_NO_PROPOSAL_CHOSEN           =14, /* same as ikev1 */
+    /* Reserved                  =15, */
+    /* Reserved                  =16, */
+    v2N_INVALID_KE_PAYLOAD           =17,
+    /* Reserved                  = 18 to 23, */
+    v2N_AUTHENTICATION_FAILED        =24, /* same as ikev1 */
+    /* Reserved                  = 25 to 33, */
+    v2N_SINGLE_PAIR_REQUIRED         =34,
+    v2N_NO_ADDITIONAL_SAS            =35,
+    v2N_INTERNAL_ADDRESS_FAILURE     =36,
+    v2N_FAILED_CP_REQUIRED           =37,
+    v2N_TS_UNACCEPTABLE              =38,
+    v2N_INVALID_SELECTORS            =39,
+    v2N_UNACCEPTABLE_ADDRESSES       =40,
+    v2N_UNEXPECTED_NAT_DETECTED      =41,
+    v2N_USE_ASSIGNED_HoA             =42, /* RFC 5026 */
+    v2N_TEMPORARY_FAILURE            =43,
+    v2N_CHILD_SA_NOT_FOUND           =44,
+
+    /* old IKEv1 entries - might be in private use for IKEv2N */
+    v2N_INITIAL_CONTACT              =16384,
+    v2N_SET_WINDOW_SIZE              =16385,
+    v2N_ADDITIONAL_TS_POSSIBLE       =16386,
+    v2N_IPCOMP_SUPPORTED             =16387,
+    v2N_NAT_DETECTION_SOURCE_IP      =16388,
+    v2N_NAT_DETECTION_DESTINATION_IP =16389,
+    v2N_COOKIE                       =16390,
+    v2N_USE_TRANSPORT_MODE           =16391,
+    v2N_HTTP_CERT_LOOKUP_SUPPORTED   =16392,
+    v2N_REKEY_SA                     =16393,
+    v2N_ESP_TFC_PADDING_NOT_SUPPORTED=16394,
+    v2N_NON_FIRST_FRAGMENTS_ALSO     =16395,
+
+    /* IKEv2N extensions */
+    v2N_MOBIKE_SUPPORTED             =16396, /* RFC-4555 */
+    v2N_ADDITIONAL_IP4_ADDRESS       =16397, /* RFC-4555 */
+    v2N_ADDITIONAL_IP6_ADDRESS       =16398, /* RFC-4555 */
+    v2N_NO_ADDITIONAL_ADDRESSES      =16399, /* RFC-4555 */
+    v2N_UPDATE_SA_ADDRESSES          =16400, /* RFC-4555 */
+    v2N_COOKIE2                      =16401, /* RFC-4555 */
+    v2N_NO_NATS_ALLOWED              =16402, /* RFC-4555 */
+    v2N_AUTH_LIFETIME                =16403, /* RFC-4478 */
+    v2N_MULTIPLE_AUTH_SUPPORTED      =16404, /* RFC-4739 */
+    v2N_ANOTHER_AUTH_FOLLOWS         =16405, /* RFC-4739 */
+    v2N_REDIRECT_SUPPORTED           =16406, /* RFC-5685 */
+    v2N_REDIRECT                     =16407, /* RFC-5685 */
+    v2N_REDIRECTED_FROM              =16408, /* RFC-5685 */
+    v2N_TICKET_LT_OPAQUE             =16409, /* RFC-5723 */
+    v2N_TICKET_REQUEST               =16410, /* RFC-5723 */
+    v2N_TICKET_ACK                   =16411, /* RFC-5723 */
+    v2N_TICKET_NACK                  =16412, /* RFC-5723 */
+    v2N_TICKET_OPAQUE                =16413, /* RFC-5723 */
+    v2N_LINK_ID                      =16414, /* RFC-5739 */
+    v2N_USE_WESP_MODE                =16415, /* RFC-5840 */
+    v2N_ROHC_SUPPORTED               =16416, /* RFC-5857 */
+    v2N_EAP_ONLY_AUTHENTICATION      =16417, /* RFC-5998 */
+    v2N_CHILDLESS_IKEV2_SUPPORTED    =16418, /* RFC-6023 */
+    v2N_QUICK_CRASH_DETECTION               =16419, /* RFC-6290 */
+    v2N_IKEV2_MESSAGE_ID_SYNC_SUPPORTED     =16420, /* RFC-6311 */
+    v2N_IPSEC_REPLAY_COUNTER_SYNC_SUPPORTED =16421, /* RFC-6311 */
+    v2N_IKEV2_MESSAGE_ID_SYNC               =16422, /* RFC-6311 */
+    v2N_IPSEC_REPLAY_COUNTER_SYNC           =16423, /* RFC-6311 */
+    v2N_SECURE_PASSWORD_METHODS             =16424, /* RFC-6467 */
+
+    /* 16425 - 40969 Unassigned */
+    /* 40960 - 65535 Private Use */
+    } v2_notification_t;
 
 
 /* Public key algorithm number

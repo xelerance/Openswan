@@ -809,7 +809,7 @@ struct ikev2_notify
     u_int16_t isan_length;	/* Payload length */
     u_int8_t  isan_protoid;	/* Protocol ID: noSA=0,IKE=1,AH=2,ESP=3 */
     u_int8_t  isan_spisize;	/* SPI size: 0 for IKE_SA */
-    u_int16_t isan_type;	/* Notification type, see notification_t */
+    u_int16_t isan_type;	/* Notification type, see v2_notification_t */
 };
 extern struct_desc ikev2_notify_desc;
 

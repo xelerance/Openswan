@@ -383,7 +383,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 		memset(&child_spi, 0, sizeof(child_spi));
 		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
-					COOKIE, &st->st_dcookie, &md->rbody);
+					v2N_COOKIE, &st->st_dcookie, &md->rbody);
     }
     /* SA out */
     {
@@ -565,7 +565,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
    		/* check if I1 packet contian KE and a v2N payload with type COOKIE */
        	if ( md->chain[ISAKMP_NEXT_v2KE] &&   md->chain[ISAKMP_NEXT_v2N] &&
-       	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == COOKIE))
+       	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == v2N_COOKIE))
 		{
 			u_int8_t spisize;
 	        const pb_stream *dc_pbs;
@@ -582,8 +582,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 				DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE)); 
 
 			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
-				openswan_log("mismatch in DOS COOKIE,send a new one");
-				SEND_NOTIFICATION_AA(COOKIE, &dc); 
+				openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
+				SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
 				return STF_FAIL + INVALID_COOKIE;
 			}
 			DBG(DBG_CONTROLMORE
@@ -595,7 +595,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 			DBG(DBG_CONTROLMORE
 	            ,DBG_log("busy mode on. receieved I1 without a valid dcookie");
 	            DBG_log("send a dcookie and forget this state"));
-			SEND_NOTIFICATION_AA(COOKIE, &dc); 
+			SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
 			return STF_FAIL;
 		}
 	}
@@ -623,7 +623,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	    addrtot(&md->sender, 0, fromname, ADDRTOT_BUF);
 	    openswan_log("rejecting I1 from %s:%u, invalid DH group=%u"
 			 ,fromname, md->sender_port, ke->isak_group);
-	    return INVALID_KE_PAYLOAD;
+	    return v2N_INVALID_KE_PAYLOAD;
 	}
     }
 
@@ -741,7 +741,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* start of SA out */
     {
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
+	v2_notification_t rn;
 	pb_stream r_sa_pbs;
 
 	r_sa.isasa_np = ISAKMP_NEXT_v2KE;  /* XXX */
@@ -752,22 +752,22 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				 &r_sa_pbs, st, FALSE);
 	
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
     {
-	notification_t rn;
+	v2_notification_t rn;
 	chunk_t dc;
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
     /* KE in */
 	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
-	if(rn != NOTHING_WRONG) {
+	if(rn != v2N_NOTHING_WRONG) {
 		/* char group_number[2]; */
 		u_int16_t group_number = htons(st->st_oakley.group->group);
 		dc.ptr = (u_char *)&group_number;
 		dc.len = 2;
-		SEND_NOTIFICATION_AA(INVALID_KE_PAYLOAD, &dc);
+		SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
 		delete_state(st);
 		return STF_FAIL + rn;
 	}
@@ -856,12 +856,12 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N]
-		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
+		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  v2N_COOKIE)
     {
 		u_int8_t spisize;
 	    const pb_stream *dc_pbs;
 		DBG(DBG_CONTROLMORE 
-			,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
+			,DBG_log("inR1OutI2 received a DOS v2N_COOKIE from the responder");
     	    DBG_log("resend the I1 with a cookie payload"));
 		spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
 	    dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
@@ -921,13 +921,13 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* process and confirm the SA selected */
     {
 	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-	notification_t rn;
+	v2_notification_t rn;
 
 	/* SA body in and out */
 	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 					NULL, st, FALSE);
 	
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
@@ -1413,7 +1413,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/*
 	 * now, find an eligible child SA from the pending list, and emit
-	 * SA2i, TSi and TSr and (USE_TRANSPORT_MODE notification in transport mode) for it .
+	 * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
 	if(c0) {
 		chunk_t child_spi, notifiy_data;
@@ -1435,12 +1435,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-		DBG_log("Initiator child policy is transport mode, sending USE_TRANSPORT_MODE");
+		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
 		memset(&notifiy_data, 0, sizeof(notifiy_data));
 		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
 				&child_spi,
-				USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+				v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
 	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
@@ -2037,13 +2037,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-	notification_t rn;
+	v2_notification_t rn;
 	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
 	
 	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				       NULL, st, FALSE);
 	
-	if(rn != NOTHING_WRONG)
+	if(rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
@@ -2061,19 +2061,19 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	    * ignored, and they should be logged.*/
 
 	    if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
-		if(p->payload.v2n.isan_type < INITIAL_CONTACT) {
+		if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
 		return STF_FAIL + p->payload.v2n.isan_type;
 		}
 	    }
 
-	    if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
+	    if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 		if ( st->st_connection->policy & POLICY_TUNNEL) {
 		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
 			DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is tunnel, responder sends USE_TRANSPORT_MODE notification in inR2, ignoring it"));
+			DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
 		} else {
 			DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is transport, responder sends USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
+			DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
 			if (st->st_esp.present == TRUE) { 
 			   /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
 			   st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
