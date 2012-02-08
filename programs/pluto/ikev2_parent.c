@@ -35,7 +35,7 @@
 #include "defs.h"
 #include "state.h"
 #include "id.h"
-#include "connections.h"	
+#include "connections.h"
 
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -1467,7 +1467,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 				authstart,
 				iv, encstart, authloc,
 				&e_pbs, &e_pbs_cipher);
-	if(ret != STF_OK) return ret;
+	if(ret != STF_OK) {
+	   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+	   return ret;
+	}
     }
 
 
@@ -1874,7 +1877,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 				    authstart, 
 				    iv, encstart, authloc, 
 				    &e_pbs, &e_pbs_cipher);
-	    if(ret != STF_OK) return ret;
+	    if(ret != STF_OK) {
+		openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+		return ret;
+	    }
 	}
     }
 
@@ -2284,4 +2290,3 @@ void ikev2_delete_out(struct state *st UNUSED)
  * c-style: pluto
  * End:
  */
- 
