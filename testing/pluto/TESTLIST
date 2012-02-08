@@ -472,6 +472,7 @@ umlplutotest	ikev2-x509-02		good
 umlplutotest	ikev2-algo-01-modp2048-initiator	good
 umlplutotest	ikev2-algo-02-modp2048-responder	good
 umlplutotest	ikev2-algo-03-aes-ccm			good
+umlplutotest	ikev2-algo-04-aes-gcm			good
 
 # Various corner case tests for IKEv2
 
