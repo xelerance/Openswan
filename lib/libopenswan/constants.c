@@ -1016,7 +1016,7 @@ static const char *const ikev2_ts_type_name[] = {
 	};
 
 enum_names ikev2_ts_type_names =
-    { IKEv2_TS_IPV4_ADDR_RANGE, IKEv2_TS_FC_ADDR_RANGE, &ikev2_ts_type_name, NULL };
+    { IKEv2_TS_IPV4_ADDR_RANGE, IKEv2_TS_FC_ADDR_RANGE, ikev2_ts_type_name, NULL };
 
 
 /* MODECFG */
