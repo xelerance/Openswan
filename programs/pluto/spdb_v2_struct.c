@@ -123,6 +123,11 @@ ikev2_out_sa(pb_stream *outs
 	memset(&sa, 0, sizeof(sa));
 	sa.isasa_np       = np;
 	sa.isasa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   sa.isasa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
+
 	/* no ipsec_doi on IKEv2 */
 
 	if (!out_struct(&sa, &ikev2_sa_desc, outs, &sa_pbs))

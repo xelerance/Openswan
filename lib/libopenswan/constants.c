@@ -101,7 +101,7 @@ const char *const debug_bit_names[] = {
 	"impair-major-version-bump", /* 28 */
 	"impair-minor-version-bump", /* 29 */
 	"impair-retransmits", /* 30 */
-
+	"impair-send-bogus-isakmp-flag", /* 31 */
 	NULL
     };
 
