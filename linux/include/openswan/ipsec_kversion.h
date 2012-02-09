@@ -6,6 +6,7 @@
  * Copyright (C) 2003 - 2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 - 2011 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2012 David McCullough <david_mccullough@mcafee.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  * 
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
@@ -40,20 +41,44 @@
 # error "KLIPS is no longer supported on Linux 2.0. Sorry"
 #endif
 
+#if __KERNEL__
+# if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
+#  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
+#   include "openswan/ipsec_kern24.h"
+#  else
+#   error "kernels before 2.4 are not supported at this time"
+#  endif
+# else
+#   define KLIPS_INC_USE /* nothing */
+#   define KLIPS_DEC_USE /* nothing */
+# endif
+#endif
 /*
  * We use a lot of config defines,  on older kernels that means we
  * need to include config.h
  */
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && !defined(AUTOCONF_INCLUDED)
-#include <linux/config.h>
+# include <linux/config.h>
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,0)
-/* Only enable IPv6 support on newer kernels with IPv6 enabled */
-# if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
-#  define CONFIG_KLIPS_IPV6 1
-# endif
+#if !defined(RHEL_RELEASE_CODE) 
+# define RHEL_RELEASE_CODE 0
+# define RHEL_RELEASE_VERSION(x,y) 10
 #endif
+
+/*
+ * try and handle time wraps in a nicer manner
+ */
+#define ipsec_jiffies_elapsed(now, last) \
+	((last) <= (now) ? ((now) - (last)) : (((typeof(jiffies))~0) - (last) + (now)))
+#define ipsec_jiffieshz_elapsed(now, last) \
+	((last) <= (now) ? ((now) - (last)) : ((((typeof(jiffies))~0)/HZ) - (last) + (now)))
+
+/* 
+ * Kernel version specific defines, in order from oldest to newest kernel 
+ * If possible, use the latest native writing, and write macro's to port back
+ * the new code to older kernels.
+ */
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,1,0)
 # define SPINLOCK
@@ -121,14 +146,29 @@
 # define NET_26
 # define NETDEV_25
 # define NEED_SPINLOCK_TYPES
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
-# define HAVE_NETDEV_HEADER_OPS 1
+/* Only enable IPv6 support on newer kernels with IPv6 enabled */
+# if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE)
+#  define CONFIG_KLIPS_IPV6 1
+# endif
+#else
+/*
+   The obsolete MODULE_PARM() macro is gone forevermore [in 2.6.17+]
+    It was introduced in 2.6.0
+   Zero-filled memory can now be allocated from slab caches with
+    kmem_cache_zalloc(). There is also a new slab debugging option
+    to produce a /proc/slab_allocators file with detailed allocation
+    information.
+ */
+# ifndef module_param
+#  define module_param(a,b,c)  MODULE_PARM(#a,"i")
+# endif
+/* note below is only true for our current calls to module_param_array */
+# define module_param_array(a,b,c,d)  MODULE_PARM(#a,"1-2i")
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,8)
 # define NEED_INET_PROTOCOL
+
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
@@ -150,19 +190,6 @@
 # define ipsec_nf_debug_reset(skb)
 #endif
 
-/* how to reset an skb we are reusing after encrpytion/decryption etc */
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,17)
-# define ipsec_nf_reset(skb)	nf_reset((skb))
-#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,50) && defined(CONFIG_NETFILTER)
-# define ipsec_nf_reset(skb)	do { \
-									nf_conntrack_put((skb)->nfct); \
-									(skb)->nfct=NULL; \
-									ipsec_nf_debug_reset(skb); \
-								} while(0)
-#else
-# define ipsec_nf_reset(skb)	/**/
-#endif
-
 /* skb->stamp changed to skb->tstamp in 2.6.14 */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14)
 # define HAVE_TSTAMP
@@ -178,20 +205,17 @@
 # define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl                      
 #endif
 
-/*
-   The obsolete MODULE_PARM() macro is gone forevermore [in 2.6.17+]
-    It was introduced in 2.6.0
-   Zero-filled memory can now be allocated from slab caches with
-    kmem_cache_zalloc(). There is also a new slab debugging option
-    to produce a /proc/slab_allocators file with detailed allocation
-    information.
- */
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
-# ifndef module_param
-#  define module_param(a,b,c)  MODULE_PARM(#a,"i")
-# endif
-/* note below is only true for our current calls to module_param_array */
-# define module_param_array(a,b,c,d)  MODULE_PARM(#a,"1-2i")
+/* how to reset an skb we are reusing after encrpytion/decryption etc */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,17)
+# define ipsec_nf_reset(skb)	nf_reset((skb))
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,50) && defined(CONFIG_NETFILTER)
+# define ipsec_nf_reset(skb)	do { \
+									nf_conntrack_put((skb)->nfct); \
+									(skb)->nfct=NULL; \
+									ipsec_nf_debug_reset(skb); \
+								} while(0)
+#else
+# define ipsec_nf_reset(skb)	/**/
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,18)
@@ -214,19 +238,15 @@
 */
 
 # define HAVE_NEW_SKB_LINEARIZE
-#endif
-
-/* this is the best we can do to detect XEN, which makes
- * patches to linux/skbuff.h, making it look like 2.6.18 version 
- */
-#ifdef CONFIG_XEN
+#elif defined(CONFIG_XEN)
+  /* this is the best we can do to detect XEN, which makes
+   * patches to linux/skbuff.h, making it look like 2.6.18+ version 
+   */
 # define HAVE_NEW_SKB_LINEARIZE
-#endif
-
-/* And the same for SuSe kernels who have it before it got into the
- * linus kernel.
- */
-#ifdef SLE_VERSION_CODE
+#elif defined(SLE_VERSION_CODE)
+  /* And the same for SuSe kernels who have it before it got into the
+   * linus kernel.
+   */
 # if SLE_VERSION_CODE >= 655616
 #  define HAVE_NEW_SKB_LINEARIZE
 # else
@@ -271,12 +291,6 @@
 #  define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
 #endif
 
-/* needs to be defined for the next line */
-#if !defined(RHEL_RELEASE_CODE) 
-#define RHEL_RELEASE_CODE 0
-#define RHEL_RELEASE_VERSION(x,y) 10
-#endif
-	
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2)) 
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
@@ -326,6 +340,7 @@
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
+# define HAVE_NETDEV_HEADER_OPS 1
 /*
  * We can switch on earlier kernels, but from here on we have no choice
  * but to abandon the old style proc_net and use seq_file
@@ -546,6 +561,15 @@
 #define HAVE_SOCKET_WQ
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)
+# define	ipsec_route_dst(x)	(x)->dst
+#else
+# define	ipsec_route_dst(x)	(x)->u.dst
+#endif
+#if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP >= 3)
+# define HAVE_BACKPORTED_NEW_CRYPTOAPI 1
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,37)
 # define PRIVATE_ARP_BROKEN_OPS
 #endif
@@ -566,46 +590,20 @@
 # define ip6_u ip6
 #endif
 
-#ifndef DEFINE_RWLOCK
-#define DEFINE_RWLOCK(x) rwlock_t x = RW_LOCK_UNLOCKED
-#endif
-
-#if __KERNEL__
-# if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
-#  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
-#   include "openswan/ipsec_kern24.h"
-#  else
-#   error "kernels before 2.4 are not supported at this time"
-#  endif
-# else
-#   define KLIPS_INC_USE /* nothing */
-#   define KLIPS_DEC_USE /* nothing */
-# endif
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)
-#define	ipsec_route_dst(x)	(x)->dst
-#else
-#define	ipsec_route_dst(x)	(x)->u.dst
-#endif
-
-# if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP >= 3)
-# define HAVE_BACKPORTED_NEW_CRYPTOAPI 1
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,1,0)
-#define	HAVE_NETDEV_PRIV
-#define	HAVE_NET_DEVICE_OPS
-#define	HAVE_NETIF_QUEUE
-#endif
-
 /*
- * try and handle time wraps in a nicer manner
+ * Note that kernel 3.x maps to 2.6.40+x with the UNAME26 patch
  */
-#define ipsec_jiffies_elapsed(now, last) \
-	((last) <= (now) ? ((now) - (last)) : (((typeof(jiffies))~0) - (last) + (now)))
-#define ipsec_jiffieshz_elapsed(now, last) \
-	((last) <= (now) ? ((now) - (last)) : ((((typeof(jiffies))~0)/HZ) - (last) + (now)))
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,1,0) || (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,41))
+# define	HAVE_NETDEV_PRIV
+# define	HAVE_NET_DEVICE_OPS
+# define	HAVE_NETIF_QUEUE
+#endif
+
+#if !defined(DEFINE_RWLOCK)
+# define DEFINE_RWLOCK(x) rwlock_t x = RW_LOCK_UNLOCKED
+#endif
+
 
 #endif /* _OPENSWAN_KVERSIONS_H */
 
