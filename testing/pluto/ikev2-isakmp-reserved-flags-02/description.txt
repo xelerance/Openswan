@@ -1,0 +1,9 @@
+Basic pluto with IKEv2 using PSK on the initiator (west), and on the responder.
+
+This test adds a bogus ISAKMP RESERVED flag to the payload on the responder
+
+RFC 5996 Section 2.5:
+
+   Also, for forward compatibility, all fields marked RESERVED MUST be
+   set to zero by an implementation running version 2.0, and their
+   content MUST be ignored by an implementation running version 2.0
