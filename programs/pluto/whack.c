@@ -539,8 +539,9 @@ enum option_enums {
     DBGOPT_IMPAIR_JACOB_TWO_TWO, /* cause pluto to send all messages twice */
     DBGOPT_IMPAIR_MAJOR_VERSION_BUMP, /* cause pluto to send IKE major version higher then we support */
     DBGOPT_IMPAIR_MINOR_VERSION_BUMP, /* cause pluto to send IKE minor version higher then we support */
+    DBGOPT_IMPAIR_RETRANSMITS, /* cause pluto to never retransmit packets */
 
-#   define DBGOPT_LAST DBGOPT_IMPAIR_MINOR_VERSION_BUMP
+#   define DBGOPT_LAST DBGOPT_IMPAIR_RETRANSMITS
 #endif
 
 };
@@ -751,6 +752,7 @@ static const struct option long_opts[] = {
     { "impair-jacob-two-two", no_argument, NULL, DBGOPT_IMPAIR_JACOB_TWO_TWO + OO },
     { "impair-major-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MAJOR_VERSION_BUMP + OO },
     { "impair-minor-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MINOR_VERSION_BUMP + OO },
+    { "impair-retransmits", no_argument, NULL, DBGOPT_IMPAIR_RETRANSMITS + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
     { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
@@ -1746,6 +1748,7 @@ main(int argc, char **argv)
 	case DBGOPT_IMPAIR_JACOB_TWO_TWO: /* --impair-jacob-two-two */
 	case DBGOPT_IMPAIR_MAJOR_VERSION_BUMP: /* --impair-major-version-bump */
 	case DBGOPT_IMPAIR_MINOR_VERSION_BUMP: /* --impair-minor-version-bump */
+	case DBGOPT_IMPAIR_RETRANSMITS: /* --impair-retransmits */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif

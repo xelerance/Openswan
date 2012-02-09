@@ -181,6 +181,12 @@ retransmit_v1_msg(struct state *st)
     else if (st->st_state == STATE_QUICK_R1
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
+
+    if(DBGP(IMPAIR_RETRANSMITS)) {
+	DBG(DBG_CONTROL,
+		DBG_log("supressing retransmit because IMPAIR_RETRANSMITS is set"));
+        delay=0;
+    }
     
     if (delay != 0)
     {
@@ -286,7 +292,7 @@ retransmit_v2_msg(struct state *st)
     DBG(DBG_CONTROL, 
 	DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&c->spd.that.host_addr), c->name, st->st_serialno));
-    
+
     if (st->st_retransmit < maximum_retransmissions)
 	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
 
@@ -299,6 +305,12 @@ retransmit_v2_msg(struct state *st)
 	      || st->st_state == STATE_PARENT_I3)
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
+
+    if(DBGP(IMPAIR_RETRANSMITS)) {
+	DBG(DBG_CONTROL,
+		DBG_log("supressing retransmit because IMPAIR_RETRANSMITS is set"));
+        delay=0;
+    }
     
     if (delay != 0)
     {
