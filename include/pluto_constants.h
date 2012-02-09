@@ -388,7 +388,7 @@ enum certpolicy {
 };
 
 /* this is the default setting. */
-#define cert_defaultcertpolicy cert_sendifasked
+#define cert_defaultcertpolicy cert_alwayssend
 
 
 enum four_options {
