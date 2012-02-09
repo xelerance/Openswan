@@ -11,9 +11,8 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: sameaddr.c,v 1.10.14.1 2005/11/17 01:44:12 mcr Exp $
  */
+
 #include "internal.h"
 #include "openswan.h"
 #include "constants.h"

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: defs.c,v 1.31 2005/08/05 17:39:56 mcr Exp $
  */
 
 #include <stdlib.h>
@@ -101,4 +99,3 @@ cmp_chunk(chunk_t a, chunk_t b)
  * c-style: pluto
  * End:
  */
-

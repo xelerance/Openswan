@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: spdb.h,v 1.18 2005/05/12 03:03:36 mcr Exp $
  */
 
 #ifndef _SPDB_H_

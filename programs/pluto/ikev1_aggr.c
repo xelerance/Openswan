@@ -795,6 +795,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
     if (!encrypt_message(&md->rbody, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
+#ifdef XAUTH
     /* It seems as per Cisco implementation, XAUTH and MODECFG 
     * are not supposed to be performed again during rekey */
     if(c->newest_isakmp_sa != SOS_NOBODY && 
@@ -810,6 +811,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 	st->hidden_variables.st_modecfg_started = TRUE;
 	}
     }
+#endif
 
     c->newest_isakmp_sa = st->st_serialno;
 
@@ -899,6 +901,7 @@ aggr_inI2_tail(struct msg_digest *md
 
     /**************** done input ****************/
 
+#ifdef XAUTH
     /* It seems as per Cisco implementation, XAUTH and MODECFG 
      * are not supposed to be performed again during rekey */
     if(c->newest_isakmp_sa != SOS_NOBODY && 
@@ -914,6 +917,7 @@ aggr_inI2_tail(struct msg_digest *md
 		st->hidden_variables.st_modecfg_started = TRUE; 
 	   }
     }
+#endif
 
     c->newest_isakmp_sa = st->st_serialno;
 

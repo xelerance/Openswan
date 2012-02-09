@@ -12,8 +12,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.9 2004/12/18 18:13:43 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 srcdir?=${OPENSWANSRCDIR}/programs/spi/

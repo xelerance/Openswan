@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ranbits.c,v 1.12 2004/04/04 01:50:56 ken Exp $
  */
 
 #include <sys/types.h>

@@ -1,5 +1,6 @@
 /*
  * Copyright 2005 (C) Michael Richardson <mcr@xelerance.com>
+ * Copyright 2011-2012 (C) David McCullough <david_mccullough@mcafee.com>
  *
  * This is a file of functions which are present in 2.6 kernels,
  * but are not available by default in the 2.4 series.
@@ -16,8 +17,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * $Id: ipsec_kern24.c,v 1.2 2005/05/20 03:19:18 mcr Exp $
  *
  */
 
@@ -44,7 +43,7 @@ int __printk_ratelimit(int ratelimit_jiffies, int ratelimit_burst)
 	unsigned long now = jiffies;
 
 	spin_lock_irqsave(&ratelimit_lock, flags);
-	toks += now - last_msg;
+	toks += ipsec_jiffies_elapsed(now, last_msg);
 	last_msg = now;
 	if (toks > (ratelimit_burst * ratelimit_jiffies))
 		toks = ratelimit_burst * ratelimit_jiffies;

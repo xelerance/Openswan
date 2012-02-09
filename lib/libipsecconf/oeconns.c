@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: confread.c,v 1.11 2004/04/11 15:17:30 ken Exp $
  */
 
 #include <stdlib.h>

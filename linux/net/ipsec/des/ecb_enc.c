@@ -62,50 +62,6 @@
 char *libdes_version="libdes v 3.24 - 20-Apr-1996 - eay";
 char *DES_version="DES part of SSLeay 0.8.2b 08-Jan-1998";
 
-/* RCSID $Id: ecb_enc.c,v 1.8 2004/08/04 15:57:22 mcr Exp $ */
-/* This function ifdef'ed out for FreeS/WAN project. */
-#ifdef notdef
-char *des_options()
-	{
-	static int init=1;
-	static char buf[32];
-
-	if (init)
-		{
-		char *ptr,*unroll,*risc,*size;
-
-		init=0;
-#ifdef DES_PTR
-		ptr="ptr";
-#else
-		ptr="idx";
-#endif
-#if defined(DES_RISC1) || defined(DES_RISC2)
-#ifdef DES_RISC1
-		risc="risc1";
-#endif
-#ifdef DES_RISC2
-		risc="risc2";
-#endif
-#else
-		risc="cisc";
-#endif
-#ifdef DES_UNROLL
-		unroll="16";
-#else
-		unroll="4";
-#endif
-		if (sizeof(DES_LONG) != sizeof(long))
-			size="int";
-		else
-			size="long";
-		sprintf(buf,"des(%s,%s,%s,%s)",ptr,risc,unroll,size);
-		}
-	return(buf);
-	}
-#endif
-		
-
 void des_ecb_encrypt(input, output, ks, enc)
 des_cblock (*input);
 des_cblock (*output);

@@ -1211,6 +1211,7 @@ process_v1_packet(struct msg_digest **mdp)
 		/* XXX check if we are being a mode config server here */
 		openswan_log("received MODECFG message when in state %s, and we aren't xauth client"
 		     , enum_name(&state_names, st->st_state));
+		SEND_NOTIFICATION(UNSUPPORTED_EXCHANGE_TYPE);
 		return;
 	    }
 	}

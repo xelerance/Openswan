@@ -798,7 +798,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 }
 
 
-static notification_t
+static v2_notification_t
 ikev2_emit_winning_sa(
     struct state *st
     , pb_stream *r_sa_pbs
@@ -907,7 +907,7 @@ ikev2_emit_winning_sa(
     return NOTHING_WRONG;
 }
 
-notification_t
+v2_notification_t
 ikev2_parse_parent_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
@@ -1210,7 +1210,7 @@ ikev2_match_transform_list_child(struct db_sa *sadb
     return FALSE;
 }
 
-notification_t
+v2_notification_t
 ikev2_parse_child_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */

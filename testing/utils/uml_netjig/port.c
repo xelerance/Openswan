@@ -14,8 +14,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: port.c,v 1.16 2003/04/07 02:43:22 mcr Exp $
- *
  * @(#) based upon uml_router from User-Mode-Linux tools package by Jeff Dike.
  *
  */

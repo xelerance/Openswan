@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: sysdep_linux.c,v 1.3 2005/08/05 19:18:47 mcr Exp $
  */
 
 #include "sysdep_bsd.c"

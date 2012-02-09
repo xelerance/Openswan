@@ -5,6 +5,7 @@
  * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Gilles Espinasse <g.esp@free.fr>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -769,8 +770,8 @@ load_acerts(void)
 		}
 		free(filelist[n]);
 	    }
-	    free(filelist);
 	}
+	free(filelist);
     }
     /* restore directory path */
     if(chdir(save_dir) == -1) {

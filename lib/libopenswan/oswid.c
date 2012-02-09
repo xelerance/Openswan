@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: id.c,v 1.47 2005/08/05 19:10:43 mcr Exp $
  */
 
 #include "oswalloc.h"

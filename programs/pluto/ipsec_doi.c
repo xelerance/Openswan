@@ -401,7 +401,7 @@ ipsecdoi_replace(struct state *st
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
 
-    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state))
+    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state) || (st->st_state == STATE_PARENT_I2))
     {
 	struct connection *c = st->st_connection;
 	policy = c->policy & ~POLICY_IPSEC_MASK;
@@ -584,8 +584,8 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
     if (!(id->isaid_doi_specific_a == 0 && id->isaid_doi_specific_b == 0)
     && !(id->isaid_doi_specific_a == IPPROTO_UDP && id->isaid_doi_specific_b == IKE_UDP_PORT))
     {
-	loglog(RC_LOG_SERIOUS, "protocol/port in Phase 1 ID Payload must be 0/0 or %d/%d"
-	    " but are %d/%d"
+	loglog(RC_LOG_SERIOUS, "protocol/port in Phase 1 ID Payload MUST be 0/0 or %d/%d"
+	    " but are %d/%d (attempting to continue)"
 	    , IPPROTO_UDP, IKE_UDP_PORT
 	    , id->isaid_doi_specific_a, id->isaid_doi_specific_b);
 	/* we have turned this into a warning because of bugs in other vendors

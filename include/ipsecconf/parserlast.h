@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: parserlast.h,v 1.1 2004/01/15 18:48:56 mcr Exp $
  */
 
 #ifndef _IPSEC_PARSERLAST_H_

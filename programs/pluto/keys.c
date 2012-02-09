@@ -949,7 +949,7 @@ void list_public_keys(bool utc, bool check_pub_keys)
 	    char id_buf[IDTOA_BUF];
 	    char expires_buf[TIMETOA_BUF];
 	    char installed_buf[TIMETOA_BUF];
-	    char *check_expiry_msg = NULL;
+	    const char *check_expiry_msg = NULL;
 
 	    check_expiry_msg = check_expiry(key->until_time
 					    , PUBKEY_WARNING_INTERVAL

@@ -1,9 +1,5 @@
 
 #
-# RCSID $Id: defconfig,v 1.30 2005/09/15 02:31:12 paul Exp $
-#
-
-#
 # Openswan IPSec implementation, KLIPS kernel config defaults
 #
 

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pluto_endian.h,v 1.3 2005/08/05 19:13:47 mcr Exp $
  */
 
 /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */

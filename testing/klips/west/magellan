@@ -1,7 +1,4 @@
 #!/bin/sh
-#
-# RCSID $Id: magellan,v 1.8 2002/04/24 07:36:18 mcr Exp $
-#
 
 hmask=255.255.255.255
 nmask0=0.0.0.0
@@ -379,13 +376,3 @@ case "$1" in
 	;;
 esac
 
-#
-# $Log: magellan,v $
-# Revision 1.8  2002/04/24 07:36:18  mcr
-# Moved from ./klips/test/west/magellan,v
-#
-# Revision 1.7  1999/04/06 04:54:36  rgb
-# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-# patch shell fixes.
-#
-#

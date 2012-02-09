@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: lex.h,v 1.2 2004/04/27 12:43:27 ken Exp $
  */
 
 #define MAX_TOK_LEN 2048    /* includes terminal '\0' */

@@ -13,9 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ipsec_stats.h,v 1.7 2005/04/14 01:17:45 mcr Exp $
- *
  */
 
 /* 
@@ -36,39 +33,6 @@ struct ipsec_stats {
 #endif /* _IPSEC_STATS_H_ */
 
 /*
- * $Log: ipsec_stats.h,v $
- * Revision 1.7  2005/04/14 01:17:45  mcr
- * 	add prototypes for snprintf.
- *
- * Revision 1.6  2004/04/05 19:55:07  mcr
- * Moved from linux/include/freeswan/ipsec_stats.h,v
- *
- * Revision 1.5  2004/04/05 19:41:05  mcr
- * 	merged alg-branch code.
- *
- * Revision 1.4  2004/03/28 20:27:19  paul
- * Included tested and confirmed fixes mcr made and dhr verified for
- * snprint statements. Changed one other snprintf to use ipsec_snprintf
- * so it wouldnt break compatibility with 2.0/2.2 kernels. Verified with
- * dhr. (thanks dhr!)
- *
- * Revision 1.4  2004/03/24 01:58:31  mcr
- *     sprintf->snprintf for formatting into proc buffer.
- *
- * Revision 1.3.34.1  2004/04/05 04:30:46  mcr
- * 	patches for alg-branch to compile/work with 2.x openswan
- *
- * Revision 1.3  2002/04/24 07:36:47  mcr
- * Moved from ./klips/net/ipsec/ipsec_stats.h,v
- *
- * Revision 1.2  2001/11/26 09:16:16  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.1.2.1  2001/09/25 02:27:00  mcr
- * 	statistics moved to seperate structure.
- *
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * End:

@@ -13,8 +13,6 @@
  * for more details.
  *
  * This code was developed with the support of IXIA communications.
- *
- * RCSID $Id: crypt_utils.c,v 1.2 2005/08/05 17:39:56 mcr Exp $
  */
 
 #include <stdlib.h>

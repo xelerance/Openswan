@@ -1,8 +1,4 @@
 /*
- * RCSID $Id: ipsec_sha1.c,v 1.9 2004/04/06 02:49:26 mcr Exp $
- */
-
-/*
  * The rest of the code is derived from sha1.c by Steve Reid, which is
  * public domain.
  * Minor cosmetic changes to accomodate it in the Linux kernel by ji.

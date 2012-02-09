@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: confread.h,v 1.14 2004/12/01 07:33:14 ken Exp $
  */
 
 #ifndef _IPSEC_CONFREAD_H_

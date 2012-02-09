@@ -1,11 +1,8 @@
 #!/bin/sh
 #
-# RCSID $Id: 110,v 1.5 2002/04/24 07:36:14 mcr Exp $
-#
-#
 # These are setup examples for OpenBSD.  So far there are only transport
 # mode examples because this SparcStation only has one ethernet I/F.
-#
+
 gw1=192.168.2.105
 gw2=192.168.2.110
 hostmask=255.255.255.255
@@ -189,14 +186,3 @@ trespdessha1del)
 ;;
 
 esac
-
-#
-# $Log: 110,v $
-# Revision 1.5  2002/04/24 07:36:14  mcr
-# Moved from ./klips/test/105/110,v
-#
-# Revision 1.4  1999/04/06 04:54:33  rgb
-# Fix/Add RCSID Id: and Log: bits to make PHMDs happy.  This includes
-# patch shell fixes.
-#
-#

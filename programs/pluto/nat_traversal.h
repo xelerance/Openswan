@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: nat_traversal.h,v 1.5 2005/09/26 23:35:28 mcr Exp $
  */
 
 #ifndef _NAT_TRAVERSAL_H_

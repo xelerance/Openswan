@@ -194,7 +194,7 @@ GCC_LINT ?= -DGCC_LINT
 USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
-#USERCOMPILE?=-g -DLEAK_DETECTVE -lefence
+#USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
  

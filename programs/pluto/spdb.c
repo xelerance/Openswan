@@ -693,32 +693,32 @@ struct db_sa oakley_sadb[] = {
  * we must actually just agree on what we are going to use.
  */
 
-#if !defined(XAUTH) && defined(AGGRESSIVE)
-#error there is no point in compiling aggressive mode without XAUTH
-#endif
-
 /* tables of transforms, in preference order (select based on AUTH) */
 static struct db_trans oakley_am_trans_psk[] = {
 	{ AD_TR(KEY_IKE, otpsk1536des3sha1) },
     };
 
+#if defined(XAUTH)
 static struct db_trans oakley_am_trans_psk_xauthc[] = {
 	{ AD_TR(KEY_IKE, otpsk1536des3sha1_xauthc) },
     };
 static struct db_trans oakley_am_trans_psk_xauths[] = {
 	{ AD_TR(KEY_IKE, otpsk1536des3sha1_xauths) },
     };
+#endif
 
 static struct db_trans oakley_am_trans_rsasig[] = {
 	{ AD_TR(KEY_IKE, otrsasig1536des3sha1) },
     };
 
+#ifdef XAUTH
 static struct db_trans oakley_am_trans_rsasig_xauthc[] = {
 	{ AD_TR(KEY_IKE, otrsasig1536des3sha1_xauthc) },
     };
 static struct db_trans oakley_am_trans_rsasig_xauths[] = {
 	{ AD_TR(KEY_IKE, otrsasig1536des3sha1_xauths) },
     };
+#endif
 
 /* array of proposals to be conjoined (can only be one for Oakley) */
 static struct db_prop oakley_am_pc_psk[] =
@@ -727,6 +727,7 @@ static struct db_prop oakley_am_pc_psk[] =
 static struct db_prop oakley_am_pc_rsasig[] =
     { { AD_PR(PROTO_ISAKMP, oakley_am_trans_rsasig) } };
 
+#ifdef XAUTH
 static struct db_prop oakley_am_pc_psk_xauths[] =
     { { AD_PR(PROTO_ISAKMP, oakley_am_trans_psk_xauths) } };
 
@@ -738,6 +739,7 @@ static struct db_prop oakley_am_pc_psk_xauthc[] =
 
 static struct db_prop oakley_am_pc_rsasig_xauthc[] =
     { { AD_PR(PROTO_ISAKMP, oakley_am_trans_rsasig_xauthc) } };
+#endif
 
 /* array of proposal conjuncts (can only be one) */
 static struct db_prop_conj oakley_am_props_psk[] =
@@ -746,6 +748,7 @@ static struct db_prop_conj oakley_am_props_psk[] =
 static struct db_prop_conj oakley_am_props_rsasig[] =
     { { AD_PC(oakley_am_pc_rsasig) } };
 
+#ifdef XAUTH
 static struct db_prop_conj oakley_am_props_psk_xauthc[] =
     { { AD_PC(oakley_am_pc_psk_xauthc) } };
 
@@ -757,6 +760,7 @@ static struct db_prop_conj oakley_am_props_psk_xauths[] =
 
 static struct db_prop_conj oakley_am_props_rsasig_xauths[] =
     { { AD_PC(oakley_am_pc_rsasig_xauths) } };
+#endif
 
 /*
  * the sadb entry, subscripted
@@ -769,12 +773,22 @@ struct db_sa oakley_am_sadb[] = {
     { AD_SAp(oakley_am_props_rsasig) },	/* POLICY_RSASIG */
     { AD_NULL }, 	                /* PSK + RSASIG => invalid in AM */
     { AD_NULL },                        /* POLICY_XAUTHSERVER + none */
+#ifdef XAUTH
     { AD_SAp(oakley_am_props_psk_xauths) },    /* POLICY_XAUTHSERVER + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauths) }, /* POLICY_XAUTHSERVER + RSA */
+#else
+    { AD_NULL },                               /* POLICY_XAUTHSERVER + PSK */
+    { AD_NULL },                               /* POLICY_XAUTHSERVER + RSA */
+#endif
     { AD_NULL },                        /* XAUTHSERVER + RSA+PSK=>invalid */
     { AD_NULL },                        /* POLICY_XAUTHCLIENT + none */
+#ifdef XAUTH
     { AD_SAp(oakley_am_props_psk_xauthc) },    /* POLICY_XAUTHCLIENT + PSK */
     { AD_SAp(oakley_am_props_rsasig_xauthc)},  /* POLICY_XAUTHCLIENT + RSA */
+#else
+    { AD_NULL },                               /* POLICY_XAUTHCLIENT + PSK */
+    { AD_NULL },                               /* POLICY_XAUTHCLIENT + RSA */
+#endif
     { AD_NULL },                        /* XAUTHCLIENT + RSA+PSK=>invalid */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + none */
     { AD_NULL },                        /* XAUTHCLIENT+XAUTHSERVER + PSK */

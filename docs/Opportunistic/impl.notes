@@ -3,8 +3,6 @@ Introduction
 This document is some quick notes to sophisticated implementors, on topics
 which are a bit too arcane to be mentioned in the install instructions.
 Beware that it is not updated very often, and may be behind the times.
-This file is RCSID $Id: impl.notes,v 1.15 2001/06/08 16:22:16 henry Exp $
-
 
 
 Where are things?

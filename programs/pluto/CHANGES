@@ -1,8 +1,6 @@
 Changes to Pluto
 ================
 
-RCSID $Id: CHANGES,v 1.198 2003/06/14 18:51:01 dhr Exp $
-
 - [MCR] changes to support co-terminal connections of the near kind.
 
 - --dontrekey is now a misnomer: the IPsec SA will be rekeyed if we

@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: _keycensor.in,v 1.9 2002/04/24 07:36:05 mcr Exp $
 
 usage="Usage: $0 [file ...]"
 me="ipsec _keycensor"

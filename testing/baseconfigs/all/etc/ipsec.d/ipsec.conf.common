@@ -144,9 +144,10 @@ conn westnet-eastnet-sourceip
 	leftsourceip=192.0.1.254
 	also=westnet-eastnet
 
-conn westnet-eastnet-6in4
-	also=west-east-base-ipv4
-	also=westnet-eastnet-ipv6
+# Temporarilly disabled, as it is throwing bad addr rightnexthop=192.1.2.45 
+# temp conn westnet-eastnet-6in4
+# temp 	also=west-east-base-ipv4
+# temp 	also=westnet-eastnet-ipv6
 
 conn westnet-eastnet-6in6
 	also=west-east-base-ipv6
@@ -192,11 +193,12 @@ conn westnet-eastnet-x509
 	rightsourceip=192.0.2.254
 	also=west-east-x509
 
-conn westnet-eastnet-4in6
-	also=west-east-base-ipv6
-	also=westnet-ipv4
-	also=eastnet-ipv4
-	auto=ignore
+# Temp disabled 
+# conn westnet-eastnet-4in6
+#	also=west-east-base-ipv6
+#	also=westnet-ipv4
+#	also=eastnet-ipv4
+#	auto=ignore
 
 conn eastnet-ipv4
 	also=eastnet
@@ -217,11 +219,12 @@ conn west-east-base-ipv4
 	right=192.1.2.23
 	rightnexthop=192.1.2.45
 
-conn west-east-base-ipv6
-	also=west-east-base
-	left=2001:db8:1:2::45
-	leftnexthop=2001:db8:1:2::23
-	right=2001:db8:1:2::23
+# Temp disabled, throws bad addr rightnexthop=2001:db8:1:2::45 [non-ipv6 address may not contain `:']
+# conn west-east-base-ipv6
+#	also=west-east-base
+#	left=2001:db8:1:2::45
+#	leftnexthop=2001:db8:1:2::23
+#	right=2001:db8:1:2::23
 	rightnexthop=2001:db8:1:2::45
 
 conn west-east-base

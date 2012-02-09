@@ -1,6 +1,5 @@
 ; example.com reverse zone for Openswan testing
 ; This file belongs in /var/named/test.rev.zone
-; RCSID $Id: test.rev.zone,v 1.4 2003/05/29 02:39:02 mcr Exp $
 
 ; add to /etc/named.conf:
 

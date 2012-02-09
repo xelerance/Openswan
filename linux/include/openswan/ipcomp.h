@@ -12,9 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
-
- RCSID $Id: ipcomp.h,v 1.14 2004/07/10 19:08:41 mcr Exp $
-
  */
 
 /* SSS */

@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
- *
- * RCSID $Id: subnetof.c,v 1.8 2004/07/10 07:48:37 mcr Exp $
  */
 #include "openswan.h"
 

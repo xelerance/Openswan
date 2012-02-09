@@ -13,8 +13,6 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 #
-# RCSID $Id: Makefile.fs2_6,v 1.2 2005/08/12 14:13:58 mcr Exp $
-#
 # Note! Dependencies are done automagically by 'make dep', which also
 # removes any old dependencies. DON'T put your own dependencies here
 # unless it's something special (ie not a .c file).
@@ -39,16 +37,6 @@ obj-$(CONFIG_KLIPS_ENC_AES) += aes.o
 #endif
 
 
-#
-# $Log: Makefile.fs2_6,v $
-# Revision 1.2  2005/08/12 14:13:58  mcr
-# 	do not use assembly code with there are no frame pointers,
-# 	as it does not have the right linkages.
-#
-# Revision 1.1  2004/08/17 03:31:34  mcr
-# 	klips 2.6 edits.
-#
-#
 # Local Variables:
 # compile-command: "(cd ../../.. && source umlsetup.sh && make -C ${POOLSPACE} module/ipsec.o)"
 # End Variables:

@@ -15,8 +15,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_eroute.h,v 1.5 2004/04/05 19:55:05 mcr Exp $
- *
  * derived from ipsec_encap.h 1.15 on 2001/9/18 by mcr.
  *
  */
@@ -82,29 +80,6 @@ struct eroute
 #endif /* _IPSEC_EROUTE_H_ */
 
 /*
- * $Log: ipsec_eroute.h,v $
- * Revision 1.5  2004/04/05 19:55:05  mcr
- * Moved from linux/include/freeswan/ipsec_eroute.h,v
- *
- * Revision 1.4  2003/10/31 02:27:05  mcr
- * 	pulled up port-selector patches and sa_id elimination.
- *
- * Revision 1.3.30.2  2003/10/29 01:10:19  mcr
- * 	elimited "struct sa_id"
- *
- * Revision 1.3.30.1  2003/09/21 13:59:38  mcr
- * 	pre-liminary X.509 patch - does not yet pass tests.
- *
- * Revision 1.3  2002/04/24 07:36:46  mcr
- * Moved from ./klips/net/ipsec/ipsec_eroute.h,v
- *
- * Revision 1.2  2001/11/26 09:16:13  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.1.2.1  2001/09/25 02:18:54  mcr
- * 	struct eroute moved to ipsec_eroute.h
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * End:

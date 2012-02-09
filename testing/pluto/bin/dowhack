@@ -8,8 +8,6 @@
 #  *-rsa|*-rsa-*: keys get loaded
 #  *-dnsrsa*: keys are loaded via --dnskeyondemand
 #  *-pl|*-pl-*: extracts of Pluto Logs are added to the whack log
-#
-# RCSID $Id: dowhack,v 1.28 2005/08/19 04:05:01 mcr Exp $
 
 set -u
 

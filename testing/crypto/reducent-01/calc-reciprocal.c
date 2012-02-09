@@ -14,8 +14,6 @@
  * for more details.
  *
  * This code was developed with the support of IXIA communications.
- *
- * RCSID $Id: crypt_dh.c,v 1.11 2005/08/14 21:47:29 mcr Exp $
  */
 
 #include "../../../programs/pluto/hmac.c"

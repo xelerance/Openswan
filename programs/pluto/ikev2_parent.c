@@ -4,8 +4,9 @@
  * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010-2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -34,7 +35,7 @@
 #include "defs.h"
 #include "state.h"
 #include "id.h"
-#include "connections.h"	
+#include "connections.h"
 
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -350,7 +351,13 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	struct isakmp_hdr hdr;
 
 	zero(&hdr);	/* default to 0 */
-	hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
+		hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
+		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
+	else /* normal production case with real version */
+		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+
 	if(st->st_dcookie.ptr)
 		hdr.isa_np   = ISAKMP_NEXT_v2N; 
 	else 
@@ -376,7 +383,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 		memset(&child_spi, 0, sizeof(child_spi));
 		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
-					COOKIE, &st->st_dcookie, &md->rbody);
+					v2N_COOKIE, &st->st_dcookie, &md->rbody);
     }
     /* SA out */
     {
@@ -558,7 +565,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
    		/* check if I1 packet contian KE and a v2N payload with type COOKIE */
        	if ( md->chain[ISAKMP_NEXT_v2KE] &&   md->chain[ISAKMP_NEXT_v2N] &&
-       	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == COOKIE))
+       	     (md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type == v2N_COOKIE))
 		{
 			u_int8_t spisize;
 	        const pb_stream *dc_pbs;
@@ -575,8 +582,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 				DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE)); 
 
 			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
-				openswan_log("mismatch in DOS COOKIE,send a new one");
-				SEND_NOTIFICATION_AA(COOKIE, &dc); 
+				openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
+				SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
 				return STF_FAIL + INVALID_COOKIE;
 			}
 			DBG(DBG_CONTROLMORE
@@ -588,7 +595,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 			DBG(DBG_CONTROLMORE
 	            ,DBG_log("busy mode on. receieved I1 without a valid dcookie");
 	            DBG_log("send a dcookie and forget this state"));
-			SEND_NOTIFICATION_AA(COOKIE, &dc); 
+			SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
 			return STF_FAIL;
 		}
 	}
@@ -616,7 +623,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	    addrtot(&md->sender, 0, fromname, ADDRTOT_BUF);
 	    openswan_log("rejecting I1 from %s:%u, invalid DH group=%u"
 			 ,fromname, md->sender_port, ke->isak_group);
-	    return INVALID_KE_PAYLOAD;
+	    return v2N_INVALID_KE_PAYLOAD;
 	}
     }
 
@@ -734,7 +741,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* start of SA out */
     {
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
+	v2_notification_t rn;
 	pb_stream r_sa_pbs;
 
 	r_sa.isasa_np = ISAKMP_NEXT_v2KE;  /* XXX */
@@ -745,13 +752,27 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				 &r_sa_pbs, st, FALSE);
 	
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
+    {
+	v2_notification_t rn;
+	chunk_t dc;
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
     /* KE in */
-    RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
+	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
+	if(rn != v2N_NOTHING_WRONG) {
+		/* char group_number[2]; */
+		u_int16_t group_number = htons(st->st_oakley.group->group);
+		dc.ptr = (u_char *)&group_number;
+		dc.len = 2;
+		SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
+		delete_state(st);
+		return STF_FAIL + rn;
+	}
+
+    }
 
     /* Ni in */
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_ni, "Ni"));
@@ -835,12 +856,12 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N]
-		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  COOKIE)
+		&& md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  v2N_COOKIE)
     {
 		u_int8_t spisize;
 	    const pb_stream *dc_pbs;
 		DBG(DBG_CONTROLMORE 
-			,DBG_log("inR1OutI2 received a DOS COOKIE from the responder");
+			,DBG_log("inR1OutI2 received a DOS v2N_COOKIE from the responder");
     	    DBG_log("resend the I1 with a cookie payload"));
 		spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
 	    dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
@@ -900,13 +921,13 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* process and confirm the SA selected */
     {
 	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-	notification_t rn;
+	v2_notification_t rn;
 
 	/* SA body in and out */
 	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 					NULL, st, FALSE);
 	
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
@@ -1392,26 +1413,34 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	/*
 	 * now, find an eligible child SA from the pending list, and emit
-	 * SA2i, TSi and TSr and (USE_TRANSPORT_MODE notification in transport mode) for it .
+	 * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
 	if(c0) {
 		chunk_t child_spi, notifiy_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
-	    
+
 	    st->st_ts_this = ikev2_subnettots(&c0->spd.this);
 	    st->st_ts_that = ikev2_subnettots(&c0->spd.that);
+	    /* We only support symmetrical protocol */
+	    st->st_ts_this.ipprotoid = c0->spd.this.protocol;
+	    st->st_ts_that.ipprotoid = c0->spd.that.protocol;
+	    /* We only support a single port or all ports */
+	    if(c0->spd.this.port != 0) {
+		st->st_ts_this.startport = c0->spd.this.port;
+		st->st_ts_that.ipprotoid = c0->spd.this.port;
+	    }
 	    
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-		DBG_log("Initiator child policy is transport mode, sending USE_TRANSPORT_MODE");
+		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
 		memset(&notifiy_data, 0, sizeof(notifiy_data));
 		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
 				&child_spi,
-				USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+				v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
 	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
@@ -1438,7 +1467,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 				authstart,
 				iv, encstart, authloc,
 				&e_pbs, &e_pbs_cipher);
-	if(ret != STF_OK) return ret;
+	if(ret != STF_OK) {
+	   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+	   return ret;
+	}
     }
 
 
@@ -1845,7 +1877,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 				    authstart, 
 				    iv, encstart, authloc, 
 				    &e_pbs, &e_pbs_cipher);
-	    if(ret != STF_OK) return ret;
+	    if(ret != STF_OK) {
+		openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+		return ret;
+	    }
 	}
     }
 
@@ -2002,49 +2037,53 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-	notification_t rn;
+	v2_notification_t rn;
 	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
 	
 	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				       NULL, st, FALSE);
 	
-	if(rn != NOTHING_WRONG)
+	if(rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
     {
-	struct payload_digest *p;	
+	struct payload_digest *p;
 
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 	{
-	    if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
+	   /* RFC 5996 */
+	   /* Types in the range 0 - 16383 are intended for reporting errors.  An
+	    * implementation receiving a Notify payload with one of these types
+	    * that it does not recognize in a response MUST assume that the
+	    * corresponding request has failed entirely.  Unrecognized error types
+	    * in a request and status types in a request or response MUST be
+	    * ignored, and they should be logged.*/
+
+	    if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
+		if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
+		return STF_FAIL + p->payload.v2n.isan_type;
+		}
+	    }
+
+	    if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 		if ( st->st_connection->policy & POLICY_TUNNEL) {
 		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
 			DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is tunnel, responder sends USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-		}
-		else {
+			DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
+		} else {
 			DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is transport, responder sends USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
+			DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
 			if (st->st_esp.present == TRUE) { 
-			/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+			   /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+			   st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
 			}
 		}
-	    break;
 	    }
-	}
+	} /* for */
 
-        if (!p) {
-                if ( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                /*This means we sent USE_TRANSPORT, however responder did not send it or did not agree with that*/
-                        DBG(DBG_CONTROLMORE,
-			DBG_log("Initiator policy is transport, responder did not send USE_TRANSPORT_MODE, so falling back to tunnel mode (rfc 4306)"));
-                }
-        }
-    }
+    } /* notification block */
 
-	
     ikev2_derive_child_keys(st, md->role);
 
     c->newest_ipsec_sa = st->st_serialno;
@@ -2138,11 +2177,15 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
+#if 0
+ /* Empty notification data section should be fine? */
+
     if(n_data == NULL) { 
     DBG(DBG_CONTROLMORE
     	,DBG_log("don't send packet when notification data empty"));  
 		return; 
 	}
+#endif
 
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
@@ -2151,7 +2194,12 @@ send_v2_notification(struct state *p1st, u_int16_t type
     {
 	struct isakmp_hdr n_hdr ;
 	zero(&n_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
-	n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
+		n_hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
+		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
+	else /* normal production case with real version */
+		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
 	memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
 	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  
@@ -2211,11 +2259,13 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 
    		}
     }
-   	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
-   	{
+	/* Notify could be empty */
+	if(n_data != NULL) {
+	   if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
 		openswan_log("error writing notify payload for notify message");
-   		return FALSE;
-    }
+		return FALSE;
+	   }
+	}
     close_output_pbs(&n_pbs);
 	return TRUE;
 }
@@ -2240,4 +2290,3 @@ void ikev2_delete_out(struct state *st UNUSED)
  * c-style: pluto
  * End:
  */
- 

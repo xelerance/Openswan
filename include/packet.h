@@ -1,6 +1,11 @@
 /* parsing packets: formats and tools
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
+ * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2011-2012 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -11,8 +16,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: packet.h,v 1.29 2004/10/16 22:38:37 mcr Exp $
  */
 
 #ifndef _PACKET_H
@@ -806,9 +809,38 @@ struct ikev2_notify
     u_int16_t isan_length;	/* Payload length */
     u_int8_t  isan_protoid;	/* Protocol ID: noSA=0,IKE=1,AH=2,ESP=3 */
     u_int8_t  isan_spisize;	/* SPI size: 0 for IKE_SA */
-    u_int16_t isan_type;	/* Notification type, see notification_t */
+    u_int16_t isan_type;	/* Notification type, see v2_notification_t */
 };
 extern struct_desc ikev2_notify_desc;
+
+
+/* IKEv2 Delete Payload
+ * layout from RFC 5996 Section 3.11 
+ * This is followed by a variable length SPI.
+ *
+ *                      1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !C| RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !  Protocol ID  !   SPI Size    !           Num of SPIs         !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                                                               !
+ * ~               Security Parameter Index(es) (SPI)              ~
+ * !                                                               !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+struct ikev2_delete
+{
+    u_int8_t    isad_np;
+    u_int8_t    isad_reserved;
+    u_int16_t   isad_length;
+    u_int8_t    isad_protoid;
+    u_int8_t    isad_spisize;
+    u_int16_t   isad_nrspi;
+};
+
+extern struct_desc ikev2_delete_desc;
 
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
@@ -863,6 +895,7 @@ union payload {
     struct ikev2_cert       v2cert;
     struct ikev2_certreq    v2certreq;
     struct ikev2_notify     v2n;
+    struct ikev2_delete     v2delete;
 };
 
 
