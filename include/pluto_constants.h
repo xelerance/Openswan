@@ -188,6 +188,7 @@ typedef enum {
                                                 /* cause pluto to send all messages twice. */
 #define IMPAIR_MAJOR_VERSION_BUMP LELEM(IMPAIR0+7)   /* cause pluto to send an IKE major version that's higher then we support. */
 #define IMPAIR_MINOR_VERSION_BUMP LELEM(IMPAIR0+8)   /* cause pluto to send an IKE minor version that's higher then we support. */
+#define IMPAIR_RETRANSMITS LELEM(IMPAIR0+9)   /* cause pluto to never retransmit */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */
