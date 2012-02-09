@@ -171,6 +171,39 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_I2,
+      .next_state = STATE_PARENT_I2,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_R1,
+      .next_state = STATE_PARENT_R1,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_I3,
+      .next_state = STATE_PARENT_I3,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_R2,
+      .next_state = STATE_PARENT_R2,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
     /* last entry */
     { .state      = STATE_IKEv2_ROOF }
 };
@@ -301,7 +334,7 @@ process_v2_packet(struct msg_digest **mdp)
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
-	/* then I am the responder */
+	/* This message might require a response  */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
 	if (!rcookiezero) {
 		openswan_log("received packet that claimed to be (I)nitiator, but rcookie is not zero?");
@@ -331,11 +364,8 @@ process_v2_packet(struct msg_digest **mdp)
 	    }
 	    /* update lastrecv later on */
 	}
-    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
-	
     } else {
-        /* then I am the initiator, and this is a reply */
+        /* This message is an answer to a request we sent */
 	
 	md->role = INITIATOR;
 	
