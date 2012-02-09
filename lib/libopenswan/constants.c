@@ -100,6 +100,7 @@ const char *const debug_bit_names[] = {
 	"impair-jacob-two-two",  /* 27 */
 	"impair-major-version-bump", /* 28 */
 	"impair-minor-version-bump", /* 29 */
+	"impair-retransmits", /* 30 */
 
 	NULL
     };
