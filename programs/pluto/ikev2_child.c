@@ -73,7 +73,7 @@ struct traffic_selector ikev2_subnettots(struct end *e)
     
     switch(e->client.addr.u.v4.sin_family) {
     case AF_INET:
-	ts.sin_family = AF_INET;
+	ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 	ts.low   = e->client.addr;
 	ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
 	ts.high  = e->client.addr;
@@ -81,7 +81,7 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 	break;
 
     case AF_INET6:
-	ts.sin_family = AF_INET6;
+	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
 	v6mask = bitstomask6(e->client.maskbits);
 
 	ts.low   = e->client.addr;
@@ -96,6 +96,8 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 	ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
 	ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
 	break;
+
+    /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
     }
 
     /* 
@@ -157,13 +159,13 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))
 	return STF_INTERNAL_ERROR;
 
-    switch(ts->sin_family) {
+    switch(ts->ts_type) {
     case AF_INET:
-	its1.isat1_type = ID_IPV4_ADDR_RANGE;
+	its1.isat1_type = IKEv2_TS_IPV4_ADDR_RANGE;
 	its1.isat1_sellen = 16;
 	break;
     case AF_INET6:
-	its1.isat1_type = ID_IPV6_ADDR_RANGE;
+	its1.isat1_type = IKEv2_TS_IPV6_ADDR_RANGE;
 	its1.isat1_sellen = 40;
 	break;
     }
@@ -182,17 +184,22 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 	return STF_INTERNAL_ERROR;
     
     /* now do IP addresses */
-    switch(ts->sin_family) {
-    case AF_INET:
+    switch(ts->ts_type) {
+    case IKEv2_TS_IPV4_ADDR_RANGE:
 	if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
 	   ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
-    case AF_INET6:
+    case IKEv2_TS_IPV6_ADDR_RANGE:
 	if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
 	   ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
+    case IKEv2_TS_FC_ADDR_RANGE:
+	openswan_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
+    default:
+	openswan_log("Failed to create IKEv2 Traffic Selector payload");
+	return STF_INTERNAL_ERROR;
     }
 
     close_output_pbs(&ts_pbs2);
@@ -321,8 +328,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	if(i < array_max) {
 	    memset(&array[i], 0, sizeof(*array));
 	    switch(ts1.isat1_type) {
-	    case ID_IPV4_ADDR_RANGE:
-		array[i].sin_family = AF_INET;
+	    case IKEv2_TS_IPV4_ADDR_RANGE:
+		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 
 		array[i].low.u.v4.sin_family  = AF_INET;
 #ifdef NEED_SIN_LEN
@@ -340,8 +347,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		    return -1;
 		break;
 
-	    case ID_IPV6_ADDR_RANGE:
-		array[i].sin_family = AF_INET;
+	    case IKEv2_TS_IPV6_ADDR_RANGE:
+		array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
 		array[i].low.u.v6.sin6_family  = AF_INET6;
 #ifdef NEED_SIN_LEN
 		array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
@@ -359,7 +366,12 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		    return -1;
 		break;
 		
+	    case IKEv2_TS_FC_ADDR_RANGE:
+		DBG_log("  received unsupported IKEv2 Traffic Selector type TS_FC_ADDR_RANGE (RFC-4595)");
+		return -1;
+
 	    default:
+		DBG_log("  received unsupported IKEv2 Traffic Selector '%d'", ts1.isat1_type );
 		return -1;
 	    }
 
@@ -619,7 +631,14 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		st1->st_ts_that = ikev2_subnettots(&bsr->that);
 		st1->st_ts_this.ipprotoid = bsr->this.protocol;
 		st1->st_ts_that.ipprotoid = bsr->that.protocol;
- 
+		switch(bsr->this.protocol) {
+			case AF_INET:
+				st1->st_ts_this.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+				st1->st_ts_that.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+			case AF_INET6:
+				st1->st_ts_this.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+				st1->st_ts_that.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+		}
 	}
     }
 
