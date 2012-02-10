@@ -171,14 +171,9 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
    case IKEv2_TS_FC_ADDR_RANGE:
 	DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
 	return STF_INTERNAL_ERROR;
+   default:
+	DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
     }
-
-    /* 
-     * The IKEv2 code used to send 0-65535 as port regardless of
-     * the local policy specified. if local policy states a specific 
-     * protocol and port, then send that protocol value and port to 
-     * other end  -- Avesh
-     */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
     its1.isat1_startport = ts->startport;      /* ports as per local policy*/
@@ -243,6 +238,24 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 	}
 	DBG(DBG_CONTROLMORE, DBG_log("Received TSi/TSr transport protocol of %d/%d with local policy %d/%d",
 			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol));
+
+	switch(st->st_childsa->tunnel_addr_family) {
+	    case AF_INET:
+		ts_i->ts_type =  IKEv2_TS_IPV4_ADDR_RANGE;
+		break;
+	    case AF_INET6:
+		ts_i->ts_type =  IKEv2_TS_IPV6_ADDR_RANGE;
+		break;
+#if 0
+	    case NOT_IMPLEMENTED_YET:
+		ts_i->ts_type =  IKEv2_TS_FC_ADDR_RANGE;
+		break;
+#endif
+	    default:
+		DBG_log("Unknown tunnel_addr_family '%d' in connection", st->st_childsa->tunnel_addr_family);
+	   return STF_FAIL;
+	}
+	
 
 	ts_i->ipprotoid =  c0->spd.that.protocol;
 	ts_r->ipprotoid =  c0->spd.this.protocol;
