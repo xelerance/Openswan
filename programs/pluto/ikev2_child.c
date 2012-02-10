@@ -226,7 +226,7 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
-
+    }
 	/* we need to fill the traffic_selector with local policy to notify the
 	 * initiator of possible narrowing of protocol and ports */
 
@@ -293,10 +293,14 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 
 
 	ts_i->startport = c0->spd.that.port;
-	ts_i->endport = c0->spd.that.port;
 	ts_r->startport = c0->spd.this.port;
-	ts_r->endport = c0->spd.this.port;
-    }
+	if(c0->spd.that.port == 0) {
+	   ts_i->endport = 65535;
+	   ts_r->endport = 65535;
+	} else {
+	   ts_i->endport = c0->spd.that.port;
+	   ts_r->endport = c0->spd.this.port;
+	}
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
 	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
