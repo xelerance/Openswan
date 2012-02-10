@@ -1,0 +1,5 @@
+Basic pluto with IKEv2 using PSK on the initiator (west), and on the responder.
+
+This test uses nhelpers=0 to perform crypto operations inline. This is a
+testcase for the issue fixed with commit eabf83639b where we failed to
+establish an SA when crypto helpers were disabled.

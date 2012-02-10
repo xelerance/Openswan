@@ -481,6 +481,7 @@ umlplutotest	ikev2-major-version-responder		good
 umlplutotest	ikev2-minor-version-initiator		good
 umlplutotest	ikev2-minor-version-responder		good
 umlplutotest	ikev2-allow-narrow-01			good
+umlplutotest	ikev2-no-nhelpers-01			good
 
 #################################################################
 # Interop tests
