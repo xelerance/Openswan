@@ -884,12 +884,8 @@ void complete_v2_state_transition(struct msg_digest **mdp
 			      * state transition, so the MD has already
 			      * been freed.
 			      0				  */
-			     /* Paul: that is not true for nhelpers=0 - disabling */ /*
-	*mdp = NULL;
-	break;
-			      */
-			      DBG(DBG_CONTROL,
-				DBG_log("  STF_INLINE (nhelpers=0?) falling through STF_OK"));
+			     *mdp = NULL;
+			    /* fall through to STF_OK */
     case STF_OK:
 	/* advance the state */
 	success_v2_state_transition(mdp);
