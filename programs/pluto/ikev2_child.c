@@ -242,13 +242,16 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 	switch(st->st_childsa->tunnel_addr_family) {
 	    case AF_INET:
 		ts_i->ts_type =  IKEv2_TS_IPV4_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_IPV4_ADDR_RANGE;
 		break;
 	    case AF_INET6:
 		ts_i->ts_type =  IKEv2_TS_IPV6_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_IPV6_ADDR_RANGE;
 		break;
 #if 0
 	    case NOT_IMPLEMENTED_YET:
 		ts_i->ts_type =  IKEv2_TS_FC_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_FC_ADDR_RANGE;
 		break;
 #endif
 	    default:
