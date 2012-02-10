@@ -295,7 +295,6 @@ process_v2_packet(struct msg_digest **mdp)
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
     enum isakmp_xchg_types ix;
-    bool rcookiezero;
 
     /* Look for an state which matches the various things we know */
     /*
@@ -308,11 +307,6 @@ process_v2_packet(struct msg_digest **mdp)
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
-	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
-	if (!rcookiezero) {
-		openswan_log("received packet that claimed to be (I)nitiator, but rcookie is not zero?");
-	}
-
 	md->role = RESPONDER;
 
 	st = find_state_ikev2_parent(md->hdr.isa_icookie
@@ -338,7 +332,8 @@ process_v2_packet(struct msg_digest **mdp)
 	    /* update lastrecv later on */
 	}
     } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
+	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u - dropping", md->msgid_received);
+	return;
 	
     } else {
         /* then I am the initiator, and this is a reply */
