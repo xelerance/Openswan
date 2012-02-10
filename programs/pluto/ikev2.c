@@ -870,13 +870,6 @@ void complete_v2_state_transition(struct msg_digest **mdp
     case STF_IGNORE:
 	break;
 
-    case STF_INLINE:         /* this is second time through complete
-			      * state transition, so the MD has already
-			      * been freed.
-			      0				  */
-	*mdp = NULL;
-	break;
-
     case STF_SUSPEND:
 	/* update the previous packet history */
 	/* IKEv2 XXX */ /* update_retransmit_history(st, md); */
@@ -885,6 +878,16 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	*mdp = NULL;
 	break;
 
+    case STF_INLINE:         /* mcr: this is second time through complete
+			      * state transition, so the MD has already
+			      * been freed.
+			      0				  */
+			     /* Paul: that is not true for nhelpers=0 - disabling */ /*
+	*mdp = NULL;
+	break;
+			      */
+			      DBG(DBG_CONTROL,
+				DBG_log("  STF_INLINE (nhelpers=0?) falling through STF_OK"));
     case STF_OK:
 	/* advance the state */
 	success_v2_state_transition(mdp);
