@@ -226,7 +226,7 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
-    }
+
 	/* we need to fill the traffic_selector with local policy to notify the
 	 * initiator of possible narrowing of protocol and ports */
 
@@ -236,6 +236,8 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol);
 		return STF_FAIL;
 	}
+   }
+
 	DBG(DBG_CONTROLMORE, DBG_log("Received TSi/TSr transport protocol of %d/%d with local policy %d/%d",
 			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol));
 
