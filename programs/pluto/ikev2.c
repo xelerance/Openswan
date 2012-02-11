@@ -265,9 +265,14 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
+#if 0
 	case ISAKMP_NEXT_v2TSr:
 	    {
-		struct ikev2_ts1 *ts1 = thisp;
+		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_left(&pd->pbs)));
+
+
+
+		struct ikev2_ts1 *ts1 = pd;
 	    if(md->role == INITIATOR) {
 		/* We might need to instantiate for *each* TSr if we receive more then one */
 		DBG_log("  checking if responder sent narrowed TSr payload");
@@ -322,6 +327,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	    }
 
 	    break;
+#endif
 	default:   /* nothing special */
 	    break;
 	}
