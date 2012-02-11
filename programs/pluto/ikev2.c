@@ -194,7 +194,6 @@ ikev2_process_payloads(struct msg_digest *md,
     struct payload_digest *pd = md->digest_roof;
     struct state *st = md->st;
     err_t excuse = "not sure";
-    bool must_instantiate = FALSE;
     
     /* lset_t needed = smc->req_payloads; */
 
@@ -265,69 +264,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
-#if 0
-	case ISAKMP_NEXT_v2TSr:
-	    {
-		DBG(DBG_PARSING, DBG_dump("     obj: ", pd->pbs.cur, pbs_left(&pd->pbs)));
 
-
-
-		struct ikev2_ts1 *ts1 = pd;
-	    if(md->role == INITIATOR) {
-		/* We might need to instantiate for *each* TSr if we receive more then one */
-		DBG_log("  checking if responder sent narrowed TSr payload");
-
-		if(ts1->isat1_type != st->st_ts_that.ts_type) {
-		   loglog(RC_LOG_SERIOUS, "  TSr TS type mismatch");
-		   return STF_FAIL;
-		}
-		if(ts1->isat1_ipprotoid != st->st_ts_that.ipprotoid) {
-		   if(st->st_ts_that.ipprotoid == 0) {
-			DBG_log("  TODO: TSr protocol needs narrowing from 0 to %u", ts1->isat1_ipprotoid);
-			must_instantiate = TRUE;
-			// TODO Set our protocol so it survives instantiation
-		   } else {
-			loglog(RC_LOG_SERIOUS, "  TSr protcol cannot be narrowed from %u to %u",
-				st->st_ts_that.ipprotoid, ts1->isat1_ipprotoid);
-			return STF_FAIL;
-		   }
-		}
-
-		/* Now check the port(s) , remember we still only support 1 port or all ports */
-		if( (ts1->isat1_startport != st->st_ts_that.startport) ||
-		    (ts1->isat1_endport != st->st_ts_that.endport))
-		  {
-		    DBG_log("  TODO: TSr ports needs narrowing from %u/%u to %u/%u",
-				st->st_ts_that.startport, st->st_ts_that.endport,
-				ts1->isat1_startport, ts1->isat1_endport);
-		    if( (ts1->isat1_startport == ts1->isat1_endport) &&
-			((st->st_ts_that.startport == 0) && (st->st_ts_that.endport = 65535)) )
-		      {
-			DBG_log("  TODO: TSr port can be narrowed to %u", ts1->isat1_startport);
-			// TODO Set our ports so they survives instantiation
-		      }
-		  }
-
-		/* Now check the subnet AKA low/high addresses , remember we still only support CIDR subnets */
-		/* we need to get the right offset for ip address based on family */
-		DBG_log(" TODO: TSr subnet narrowing");
-
-	    } else { /* we are RESPONDER */
-		DBG_log(" TODO: I guess check if they rewrote our TSr ?");
-	    }
-		
-	    break;
-	    }
-	case ISAKMP_NEXT_v2TSi:
-	    if(md->role == INITIATOR) {
-	    	DBG_log(" TODO: I guess check if they rewrote our TSi ?");
-	    } else {
-		/* we are RESPONDER, support for instantiation needed if we receive multiple TSi's */
-			DBG_log("  TODO: responding to multiple TSr, need instantiation");
-	    }
-
-	    break;
-#endif
 	default:   /* nothing special */
 	    break;
 	}
