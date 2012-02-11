@@ -475,8 +475,6 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	    );
 	    /* do addresses fit into the policy? */
 
-		DBG_log("   PAUL: going to check (tsi[tsi_ni].ipprotoid (%d) is ei->protocol (%d)",
-			tsi[tsi_ni].ipprotoid, ei->protocol);
 	    /* 
 	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
 	     *       for now we really support/limit ourselves to a CIDR 
@@ -668,44 +666,67 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	}
     }
 
-#ifdef PAUL
-    /* We are an instantiated state. If we are a responder,
+    /* If we are a initiator,
      * then we might need to narrow down the proposal, as per
      * http://tools.ietf.org/html/rfc5996#section-2.9
      */
     DBG_log("PAUL: Starting narrowing TSi/TSr check");
-    if( role == RESPONDER ) {
-    	DBG_log("PAUL: We are responder, checking TSi/TSr");
-    /* This implies CIDR ranges, because that's the only ranges we allow in the parser */
-	struct end *ei, *er;
+    if( role == INITIATOR ) {
+    	DBG_log("PAUL: We are initiator, checking TSi/TSr");
+   
+	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
 	ip_subnet tsi_subnet, tsr_subnet;
 	const char *oops;
 	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
 	if(oops != NULL) {
 	   DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	} else {
-	   oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
-	   if(oops != NULL) {
-		DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	   } else {
-		/* So we have low/high being a valid CIDR, if low and high fall within our CIDR, narrow it */
-		//PAULX addrinsubnet(address,subnet)
-		DBG_log("PAUL: TODO: try and compare tsi_subnet/tsr_subnet with that->client and this->client\n");
-		//ei = &bsr->that;
-		//er = &bsr->this;
-		//
-		// if the new TSi/TSr is narrowing, update our traffic_selectors
-		st1->st_ts_this = *tsr;
-		st1->st_ts_that = *tsi;
-		DBG_log("PAUL: traffic selectors updated\n");
-	   }
+	   return STF_IGNORE; /* prob tell them something? */
+	} 
+	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+	if(oops != NULL) {
+	   DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
+	   return STF_IGNORE; /* prob tell them something? */
 	}
-    } else {
-    	DBG_log("PAUL: We are initiator, no TSi/TSr narrowing");
-    }
-#endif
 
-    st1->st_connection = c;
+
+	/* So we have low/high being a valid CIDR, if low and high fall within our CIDR, narrow it */
+	//PAULX addrinsubnet(address,subnet)
+	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
+	DBG_log("PAUL: CHEAT, let's always override for now - will write subnet_in_subnet test later");
+	if(1) /* if valid narrowing */ {
+		/* instantiate the connection since it changed from template, then update */
+		// st1->st_connection = ikev2_ts_instantiate(c);
+#if 0
+ikev2_ts_instantiate(struct connection *c
+                 , const ip_address *him
+                 , const struct id *his_id
+                 , struct gw_info *gw
+                 , const ip_address *our_client USED_BY_DEBUG
+                 , const ip_address *peer_client)
+#else
+		st1->st_connection = c;
+#endif
+		st1->st_connection->spd.this.client = tsi_subnet;
+		st1->st_connection->spd.that.client = tsr_subnet;
+
+		// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+		// st1->st_ts_this = *tsr;
+		// st1->st_ts_that = *tsi;
+		// DBG_log("PAUL: traffic selectors updated\n");
+	
+	} else {
+		st1->st_connection = c;
+	}
+
+
+    } else {
+	/* We are RESPONDER, do as before with nothing changed */
+	DBG_log("PAUL: we are responder, not narrowing down");
+	st1->st_connection = c;
+    }
+
+
+
     insert_state(st1);
     md->st = st1;
     md->pst= st;
