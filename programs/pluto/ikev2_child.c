@@ -153,8 +153,8 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
      * value and port to other end */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
-    its1.isat1_startport = htons(ts->startport);      /* ports as per local policy*/
-    its1.isat1_endport = htons(ts->endport);  
+    its1.isat1_startport = ts->startport;      /* ports as per local policy*/
+    its1.isat1_endport = ts->endport;  
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
 	return STF_INTERNAL_ERROR;
     
@@ -293,8 +293,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 
 	    array[i].ipprotoid = ts1.isat1_ipprotoid;
 	    /*should be converted to host byte order for local processing*/
-	    array[i].startport = ntohs(ts1.isat1_startport);
-	    array[i].endport   = ntohs(ts1.isat1_endport);
+	    array[i].startport = ts1.isat1_startport;
+	    array[i].endport   = ts1.isat1_endport;
 	}
     }
     
