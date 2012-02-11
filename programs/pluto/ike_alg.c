@@ -115,7 +115,7 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 				ealg, key_len);
 		}
 	);
-	if (!ret && *errp)
+	if (!ret && errp)
 		*errp = ugh_buf;
 	return ret;
 }
