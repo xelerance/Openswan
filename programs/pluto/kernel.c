@@ -132,6 +132,9 @@ void
 record_and_initiate_opportunistic(const ip_subnet *ours
                                   , const ip_subnet *his
                                   , int transport_proto
+#ifdef HAVE_LABELED_IPSEC
+                                  , struct xfrm_user_sec_ctx_ike *uctx 
+#endif
                                   , const char *why)
 {
     passert(samesubnettype(ours, his));
@@ -168,7 +171,11 @@ record_and_initiate_opportunistic(const ip_subnet *ours
         networkof(ours, &src);
         networkof(his, &dst);
         if (initiate_ondemand(&src, &dst, transport_proto
-				, TRUE, NULL_FD, "acquire") == 0) {
+				, TRUE, NULL_FD,
+#ifdef HAVE_LABELED_IPSEC
+				uctx,
+#endif
+				"acquire") == 0) {
 			/* if we didn't do any ondemand stuff the shunt is not needed */
 			struct bare_shunt **bspp = bare_shunt_ptr(ours,his,transport_proto);
 			if (bspp) {
@@ -891,7 +898,11 @@ raw_eroute(const ip_address *this_host
            , const struct pfkey_proto_info *proto_info
            , time_t use_lifetime
            , enum pluto_sadb_operations op
-           , const char *opname USED_BY_DEBUG)
+           , const char *opname USED_BY_DEBUG
+#ifdef HAVE_LABELED_IPSEC
+	   , char *policy_label
+#endif
+	   )
 {
     char text_said[SATOT_BUF];
     bool result;
@@ -910,6 +921,11 @@ raw_eroute(const ip_address *this_host
             DBG_log("%s eroute %s:%d --%d-> %s:%d => %s (raw_eroute)"
                     , opname, mybuf, sport, transport_proto, peerbuf, dport
                     , text_said);
+#ifdef HAVE_LABELED_IPSEC
+		if(policy_label) {
+		DBG_log("policy security label %s", policy_label);
+		}
+#endif
         });
 
     result = kernel_ops->raw_eroute(this_host, this_client
@@ -917,7 +933,11 @@ raw_eroute(const ip_address *this_host
                                   , spi, proto
                                   , transport_proto
                                   , esatype, proto_info
-                                  , use_lifetime, op, text_said);
+                                  , use_lifetime, op, text_said
+#ifdef HAVE_LABELED_IPSEC
+				  , policy_label
+#endif
+				  );
     
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
 	   DBG_log("raw_eroute result=%u\n", result);
@@ -1039,7 +1059,11 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , htonl(shunt_spi), SA_INT
                                        , transport_proto
                                        , ET_INT, null_proto_info
-                                       , SHUNT_PATIENCE, ERO_REPLACE, why))
+                                       , SHUNT_PATIENCE, ERO_REPLACE, why
+#ifdef HAVE_LABELED_IPSEC
+				       , NULL
+#endif
+				       ))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
                                 
@@ -1067,7 +1091,11 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , SA_INT
                        , transport_proto
                        , ET_INT, null_proto_info
-                       , SHUNT_PATIENCE, ERO_ADD, why))
+                       , SHUNT_PATIENCE, ERO_ADD, why
+#ifdef HAVE_LABELED_IPSEC
+		       , NULL
+#endif
+		       ))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
                                                            , transport_proto);
@@ -1090,7 +1118,11 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
                        , ET_INT, null_proto_info
-                       , SHUNT_PATIENCE, op, why))
+                       , SHUNT_PATIENCE, op, why
+#ifdef HAVE_LABELED_IPSEC
+		       , NULL
+#endif
+		       ))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
                                                            , &that_client, 0);
@@ -1132,7 +1164,11 @@ bool eroute_connection(struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
 		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
-		       , unsigned int op, const char *opname)
+		       , unsigned int op, const char *opname
+#ifdef HAVE_LABELED_IPSEC
+		       , char *policy_label
+#endif
+		       )
 {
     const ip_address *peer = &sr->that.host_addr;
     char buf2[256];
@@ -1150,7 +1186,11 @@ bool eroute_connection(struct spd_route *sr
                       , proto
                       , sr->this.protocol
                       , esatype
-                      , proto_info, 0, op, buf2);
+                      , proto_info, 0, op, buf2
+#ifdef HAVE_LABELED_IPSEC
+		      , policy_label
+#endif
+		      );
 }
 
 /* assign a bare hold to a connection */
@@ -1222,7 +1262,11 @@ assign_hold(struct connection *c USED_BY_DEBUG
 				  , SA_INT, ET_INT
 				  , null_proto_info
 				  , op
-				  , reason)) {
+				  , reason
+#ifdef HAVE_LABELED_IPSEC
+				  , c->policy_label
+#endif
+				  )) {
                 return FALSE;
             }
         }
@@ -1391,6 +1435,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
 	said_next->outif   = -1;
 
+#ifdef HAVE_LABELED_IPSEC
+	said_next->sec_ctx = st->sec_ctx;
+#endif
+
 	if(inbound) {
 	    /*
 	     * set corresponding outbound SA. We can do this on
@@ -1481,6 +1529,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
 	said_next->outif   = -1;
+
+#ifdef HAVE_LABELED_IPSEC
+        said_next->sec_ctx = st->sec_ctx;
+#endif
 
 	if(inbound) {
 	    /*
@@ -1705,6 +1757,11 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->enckey = esp_dst_keymat;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 1;
+
+#ifdef HAVE_LABELED_IPSEC
+        said_next->sec_ctx = st->sec_ctx;
+#endif
+
 #ifdef NAT_TRAVERSAL
         said_next->natt_sport = natt_sport;
         said_next->natt_dport = natt_dport;
@@ -1828,6 +1885,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->text_said = text_said;
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 	said_next->outif   = -1;
+
+#ifdef HAVE_LABELED_IPSEC
+        said_next->sec_ctx = st->sec_ctx;
+#endif
 
 	if(inbound) {
 	    /*
@@ -1954,7 +2015,11 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                               , proto_info             /* " */
 			      , 0                      /* lifetime */
                               , ERO_ADD_INBOUND        /* op */
-			      , "add inbound");        /* opname */
+			      , "add inbound"        /* opname */
+#ifdef HAVE_LABELED_IPSEC
+			      , st->st_connection->policy_label
+#endif
+			      );
         }
     }
 
@@ -2047,7 +2112,11 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
                           , c->spd.this.protocol
                           , ET_UNSPEC
                           , null_proto_info, 0
-                          , ERO_DEL_INBOUND, "delete inbound");
+                          , ERO_DEL_INBOUND, "delete inbound"
+#ifdef HAVE_LABELED_IPSEC
+			  , c->policy_label
+#endif
+			  );
     }
 
     if (!kernel_ops->grp_sa)
@@ -2359,17 +2428,43 @@ install_inbound_ipsec_sa(struct state *st)
      * we can refer to it in the incoming SA.
      */
     if(st->st_refhim == IPSEC_SAREF_NULL && !st->st_outbound_done) {
+
+#ifdef HAVE_LABELED_IPSEC
+	if(!st->st_connection->loopback) {
+#endif
+
 	DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    DBG_log("failed to install outgoing SA: %u", st->st_refhim);
 	    return FALSE;
 	}
+#ifdef HAVE_LABELED_IPSEC
+	} 
+	else {
+	DBG(DBG_CONTROL,
+	DBG_log("in case of loopback, the state that initiated this quick mode exchange will install outgoing SAs, so skipping this"));
+	}
+#endif
+
 	st->st_outbound_done = TRUE;
     }
     DBG(DBG_CONTROL, DBG_log("outgoing SA has refhim=%u", st->st_refhim));
 
     /* (attempt to) actually set up the SAs */
+
+#ifdef HAVE_LABELED_IPSEC
+	if(!st->st_connection->loopback) {
+#endif 
+
     return setup_half_ipsec_sa(st, TRUE);
+
+#ifdef HAVE_LABELED_IPSEC
+	}
+	else {
+	DBG(DBG_CONTROL, DBG_log("in case of loopback, the state that initiated this quick mode exchange will install incoming SAs, so skipping this"));
+	return TRUE;
+	}
+#endif
 }
 
 /* Install a route and then a prospective shunt eroute or an SA group eroute.
@@ -2639,7 +2734,11 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , ET_INT
                     , null_proto_info
                     , SHUNT_PATIENCE
-                    , ERO_REPLACE, "restore");
+                    , ERO_REPLACE, "restore"
+#ifdef HAVE_LABELED_IPSEC
+		    , NULL             /* bare shunt are not associated with any connection so no security label*/
+#endif
+		    );
             }
             else if (ero != NULL)
             {
@@ -2690,6 +2789,11 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
                              , st->st_serialno
                              , inbound_also?
                              "inbound and outbound" : "outbound only"));
+#ifdef HAVE_LABELED_IPSEC
+    if(st->st_connection->loopback && st->st_state == STATE_QUICK_R1) {
+	return TRUE;
+    }
+#endif
 
     rb = could_route(st->st_connection);
     switch (rb)
@@ -2706,7 +2810,11 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     /* (attempt to) actually set up the SA group */
 
     /* setup outgoing SA if we haven't already */
-    if(!st->st_outbound_done) {
+    if(!st->st_outbound_done
+#ifdef HAVE_LABELED_IPSEC
+	&& !st->st_connection->loopback
+#endif
+	) {
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
@@ -2841,9 +2949,21 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 #endif
 		}
 	    }
+#ifdef HAVE_LABELED_IPSEC
+	    if(!st->st_connection->loopback) {
+#endif
 	    (void) teardown_half_ipsec_sa(st, FALSE);
+#ifdef HAVE_LABELED_IPSEC
+	    }
+#endif
 	}
+#ifdef HAVE_LABELED_IPSEC
+	if(!st->st_connection->loopback || st->st_state == STATE_QUICK_I2) {
+#endif
 	(void) teardown_half_ipsec_sa(st, TRUE);
+#ifdef HAVE_LABELED_IPSEC
+            }
+#endif
 
 	if (st->st_connection->remotepeertype == CISCO && st->st_serialno == st->st_connection->newest_ipsec_sa) {
 		if(!do_command(st->st_connection, &st->st_connection->spd, "restoreresolvconf", st)) {
@@ -2894,6 +3014,9 @@ static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
         sa.natt_sport = natt_sport;
         sa.natt_dport = natt_dport;
         sa.transid = st->st_esp.attrs.transattrs.encrypt;
+#ifdef HAVE_LABELED_IPSEC
+	sa.sec_ctx = st->sec_ctx;
+#endif
 
         return kernel_ops->add_sa(&sa, TRUE);
 

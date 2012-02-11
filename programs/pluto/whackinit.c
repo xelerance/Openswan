@@ -406,6 +406,10 @@ main(int argc, char **argv)
     msg.ike = NULL;
     msg.pfsgroup = NULL;
 
+#ifdef HAVE_LABELED_IPSEC
+   msg.policy_label=NULL;
+#endif
+
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;
     msg.sa_rekey_margin = SA_REPLACEMENT_MARGIN_DEFAULT;

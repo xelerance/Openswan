@@ -362,6 +362,9 @@ ifeq ($(USE_FIPSCHECK),true)
 USE_LIBNSS?=true
 endif
 
+#Enable Labeled IPSec Functionality
+USE_LABELED_IPSEC?=false
+
 # Support for LIBCAP-NG to drop unneeded capabilities for the pluto daemon
 USE_LIBCAP_NG?=false
 

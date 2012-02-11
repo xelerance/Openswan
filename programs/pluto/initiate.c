@@ -106,6 +106,17 @@ orient(struct connection *c)
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
+
+#ifdef HAVE_LABELED_IPSEC
+		if (c->loopback && sameaddr(&sr->this.host_addr, &p->ip_addr)) {
+		DBG(DBG_CONTROLMORE,
+			DBG_log("loopback connections \"%s\" with interface %s!"
+			 , c->name, p->ip_dev->id_rname));
+			c->interface = p;
+			break;
+		}
+#endif
+
 		for (;;)
 		{
 		    /* check if this interface matches this end */
@@ -223,7 +234,11 @@ initiate_a_connection(struct connection *c
 	{
 	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
-			      , SOS_NOBODY, importance);
+			      , SOS_NOBODY, importance
+#ifdef HAVE_LABELED_IPSEC
+                                        , NULL 
+#endif
+			     );
 	    success = 1;
 	}
     }
@@ -498,7 +513,11 @@ cannot_oppo(struct connection *c
 }
 
 static int initiate_ondemand_body(struct find_oppo_bundle *b
-    , struct adns_continuation *ac, err_t ac_ugh);	/* forward */
+    , struct adns_continuation *ac, err_t ac_ugh
+#ifdef HAVE_LABELED_IPSEC
+    , struct xfrm_user_sec_ctx_ike *uctx
+#endif
+    );	/* forward */
 
 int
 initiate_ondemand(const ip_address *our_client
@@ -506,6 +525,9 @@ initiate_ondemand(const ip_address *our_client
 , int transport_proto
 , bool held
 , int whackfd
+#ifdef HAVE_LABELED_IPSEC
+, struct xfrm_user_sec_ctx_ike *uctx
+#endif
 , err_t why)
 {
     struct find_oppo_bundle b;
@@ -520,7 +542,11 @@ initiate_ondemand(const ip_address *our_client
     b.failure_shunt = 0;
     b.whackfd = whackfd;
     b.step = fos_start;
-    return initiate_ondemand_body(&b, NULL, NULL);
+    return initiate_ondemand_body(&b, NULL, NULL
+#ifdef HAVE_LABELED_IPSEC
+				 , uctx
+#endif
+				 );
 }
 
 static void
@@ -589,7 +615,11 @@ continue_oppo(struct adns_continuation *acr, err_t ugh)
     }
     else
     {
-	(void)initiate_ondemand_body(&cr->b, &cr->ac, ugh);
+	(void)initiate_ondemand_body(&cr->b, &cr->ac, ugh
+#ifdef HAVE_LABELED_IPSEC
+				     , NULL
+#endif
+				    );
 	whackfd = NULL_FD;	/* was handed off */
     }
 
@@ -715,7 +745,11 @@ check_txt_recs(enum myid_state try_state
 static int
 initiate_ondemand_body(struct find_oppo_bundle *b
 , struct adns_continuation *ac
-, err_t ac_ugh)
+, err_t ac_ugh
+#ifdef HAVE_LABELED_IPSEC
+    , struct xfrm_user_sec_ctx_ike *uctx
+#endif
+)
 {
     struct connection *c;
     struct spd_route *sr;
@@ -739,9 +773,21 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     ourport = ntohs(portof(&b->our_client));
     hisport = ntohs(portof(&b->peer_client));
 
+
+#ifdef HAVE_LABELED_IPSEC
+    char sec_ctx_value[256];
+    memset(sec_ctx_value, 0, sizeof(sec_ctx_value)); 
+    if(uctx != NULL) {
+    memcpy(sec_ctx_value, uctx->sec_ctx_value, uctx->ctx_len);
+    }
+    snprintf(demandbuf, 256, "initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s with security context %s"
+             , ours, ourport, his, hisport, b->transport_proto
+             , oppo_step_name[b->step], b->want, sec_ctx_value);
+#else
     snprintf(demandbuf, 256, "initiate on demand from %s:%d to %s:%d proto=%d state: %s because: %s"
 	     , ours, ourport, his, hisport, b->transport_proto
 	     , oppo_step_name[b->step], b->want);
+#endif
     
     if(DBGP(DBG_OPPOINFO)) {
 	openswan_log("%s", demandbuf);
@@ -817,7 +863,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
-			  , SOS_NOBODY, pcim_local_crypto);
+			  , SOS_NOBODY, pcim_local_crypto
+#ifdef HAVE_LABELED_IPSEC
+			  , uctx 
+#endif
+			);
 	b->whackfd = NULL_FD;	/* protect from close */
     }
     else
@@ -1240,7 +1290,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 				, oppo_step_name[b->step], b->want));
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
-				      , SOS_NOBODY, pcim_local_crypto);
+				      , SOS_NOBODY, pcim_local_crypto 
+#ifdef HAVE_LABELED_IPSEC
+					, NULL /*shall we pass uctx for opportunistic connections?*/
+#endif
+				     );
 		    b->whackfd = NULL_FD;	/* protect from close */
 		}
 	    }

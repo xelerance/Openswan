@@ -324,6 +324,7 @@ case "$1" in
 			--crlcheckinterval "\"$IPSECcrlcheckinterval\"" \
                         --ocspuri "\"$IPSECocspuri\"" \
 			--nhelpers "\"$IPSECnhelpers\"" \
+			--secctx_attr_value "\"$IPSECsecctx_attr_value\"" \
 			--dump "\"$IPSECdumpdir\"" \
 			--opts "\"$IPSECplutoopts\"" \
 			--stderrlog "\"$IPSECplutostderrlog\"" \

@@ -55,6 +55,7 @@ do
 	--log)	                 wherelog="$2" ; shift	;;
 	--pid)	                 pidfile="$2" ; shift	;;
 	--nhelpers)              nhelpers="$2"; shift   ;;
+	--secctx_attr_value)     secctx_attr_value="$2"; shift   ;;
 	--)	                 shift ; break	;;
 	-*)	                 echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
 	*)	                 break	;;
@@ -143,7 +144,10 @@ then
         popts="$popts --nhelpers $nhelpers"
 fi
 
-
+if test -n "$secctx_attr_value"
+then
+        popts="$popts --secctx_attr_value $secctx_attr_value"
+fi
 
 if test -n "$stderrlog"
 then

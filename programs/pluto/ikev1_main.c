@@ -109,7 +109,11 @@ main_outI1(int whack_sock
 	   , struct state *predecessor
 	   , lset_t policy
 	   , unsigned long try
-	   , enum crypto_importance importance)
+	   , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+	   , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	   )
 {
     struct state *st = new_state();
     struct msg_digest md;   /* use reply/rbody found inside */
@@ -136,7 +140,16 @@ main_outI1(int whack_sock
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
+#ifdef HAVE_LABELED_IPSEC
+	    , uctx
+#endif
+		   );
+
+#ifdef HAVE_LABELED_IPSEC
+    /*For main modes states, sec ctx is always null*/
+    st->sec_ctx = NULL;
+#endif
 
     if (predecessor == NULL)
 	openswan_log("initiating Main Mode");

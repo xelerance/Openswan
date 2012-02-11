@@ -107,6 +107,7 @@ struct starter_conn {
 
 	char *esp;
 	char *ike;
+	char *policy_label;
 };
 
 struct starter_config {

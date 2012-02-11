@@ -343,3 +343,9 @@ endif
 ifeq ($(USE_NM),true)
 DEFINES+=-DHAVE_NM
 endif
+
+# LABELED IPSEC support
+ifeq ($(USE_LABELED_IPSEC),true)
+DEFINES+=-DHAVE_LABELED_IPSEC
+LIBSPLUTO+= -lselinux
+endif

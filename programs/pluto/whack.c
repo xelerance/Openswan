@@ -491,6 +491,9 @@ enum option_enums {
     CD_PFSGROUP,
     CD_REMOTEPEERTYPE,
     CD_NMCONFIGURED,
+    CD_LOOPBACK,
+    CD_LABELED_IPSEC,
+    CD_POLICY_LABEL,
     CD_ESP	
 #   define CD_LAST CD_ESP	/* last connection description */
 
@@ -708,6 +711,11 @@ static const struct option long_opts[] = {
 #ifdef HAVE_NM
     { "nm_configured", no_argument, NULL, CD_NMCONFIGURED + OO},
 #endif
+#ifdef HAVE_LABELED_IPSEC
+    { "loopback", no_argument, NULL, CD_LOOPBACK + OO},
+    { "labeledipsec", no_argument, NULL, CD_LABELED_IPSEC + OO},
+    { "policylabel", required_argument, NULL, CD_POLICY_LABEL + OO },
+#endif
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
     { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
@@ -919,6 +927,12 @@ main(int argc, char **argv)
     /*Network Manager support*/
 #ifdef HAVE_NM
     msg.nmconfigured = NO;
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+    msg.loopback = LB_NO;
+    msg.labeled_ipsec = LI_NO;
+    msg.policy_label = NULL;
 #endif
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
@@ -1540,6 +1554,20 @@ main(int argc, char **argv)
 		msg.nmconfigured = NO;
 	    }
 		continue;
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+	case CD_LOOPBACK:
+		msg.loopback = LB_YES;
+		continue;
+
+        case CD_LABELED_IPSEC:
+                msg.labeled_ipsec = LI_YES;
+                continue;
+
+        case CD_POLICY_LABEL:
+                msg.policy_label = optarg;
+                continue;
 #endif
 
 	case CD_CONNIPV4:

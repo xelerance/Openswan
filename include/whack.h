@@ -135,6 +135,10 @@ struct whack_message {
     /*Checking if this connection is configured by Network Manager*/
     enum keyword_nmconfigured nmconfigured;
 
+    enum keyword_loopback loopback;
+    enum keyword_labeled_ipsec labeled_ipsec;
+    char *policy_label;
+
     /*  note that each end contains string 2/5.id, string 3/6 cert,
      *  and string 4/7 updown
      */

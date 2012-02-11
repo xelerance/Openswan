@@ -336,7 +336,11 @@ ipsecdoi_initiate(int whack_sock
 		  , lset_t policy
 		  , unsigned long try
 		  , so_serial_t replacing
-		  , enum crypto_importance importance)
+		  , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+		  , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+		  )
 {
     /* If there's already an ISAKMP SA established, use that and
      * go directly to Quick Mode.  We are even willing to use one
@@ -353,7 +357,11 @@ ipsecdoi_initiate(int whack_sock
 	initiator_function *initiator = pick_initiator(c, policy);
 	
 	if(initiator) {
-	    (void) initiator(whack_sock, c, NULL, policy, try, importance);
+	    (void) initiator(whack_sock, c, NULL, policy, try, importance
+#ifdef HAVE_LABELED_IPSEC
+				, uctx
+#endif
+			    );
 	    return;
 	}
     }
@@ -365,7 +373,11 @@ ipsecdoi_initiate(int whack_sock
       if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state)) {
 	/* leave our Phase 2 negotiation pending */
 	add_pending(whack_sock, st, c, policy, try
-		    , replacing);
+		    , replacing
+#ifdef HAVE_LABELED_IPSEC
+		    , uctx
+#endif
+		   );
 	return;
       }
       else {
@@ -374,7 +386,11 @@ ipsecdoi_initiate(int whack_sock
 	 * It isn't clear what to do with the error return.
 	 */
 	(void) quick_outI1(whack_sock, st, c, policy, try
-			   , replacing);
+			   , replacing
+#ifdef HAVE_LABELED_IPSEC
+			   , uctx
+#endif
+			  );
 	return;
       }
     }
@@ -412,7 +428,11 @@ ipsecdoi_replace(struct state *st
 	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
 	    (void) initiator(whack_sock, st->st_connection, st, policy
-			     , try, st->st_import);
+			     , try, st->st_import
+#ifdef HAVE_LABELED_IPSEC
+			     , st->sec_ctx
+#endif
+			    );
 	}
     }
     else
@@ -443,7 +463,11 @@ ipsecdoi_replace(struct state *st
 	}
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock, st->st_connection, policy, try
-			  , st->st_serialno, st->st_import);
+			  , st->st_serialno, st->st_import 
+#ifdef HAVE_LABELED_IPSEC
+			  , st->sec_ctx
+#endif
+			 );
     }
 }
 

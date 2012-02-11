@@ -477,7 +477,11 @@ bsdkame_raw_eroute(const ip_address *this_host
 		   , const struct pfkey_proto_info *proto_info UNUSED
 		   , time_t use_lifetime UNUSED
 		   , enum pluto_sadb_operations op
-		   , const char *text_said UNUSED)
+		   , const char *text_said UNUSED
+#ifdef HAVE_LABELED_IPSEC
+		   , char *policy_label UNUSED
+#endif
+		   )
 {
     const struct sockaddr *saddr = (const struct sockaddr *)&this_client->addr;
     const struct sockaddr *daddr = (const struct sockaddr *)&that_client->addr;
@@ -921,7 +925,11 @@ bsdkame_sag_eroute(struct state *st
 			      , NULL /* proto_info unused */
 			      , 0    /* use lifetime unused */
 			      , op
-			      , NULL /* said unused */);
+			      , NULL /* said unused */
+#ifdef HAVE_LABELED_IPSEC
+			      , NULL /*unused*/
+#endif
+			      );
 }
 
 static bool

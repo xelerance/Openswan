@@ -209,6 +209,12 @@ struct connection {
 #ifdef HAVE_NM
     enum keyword_nmconfigured nmconfigured;
 #endif
+
+#ifdef HAVE_LABELED_IPSEC
+   enum keyword_loopback loopback;
+   enum keyword_labeled_ipsec labeled_ipsec;
+   char *policy_label;
+#endif
     
     bool               forceencaps;         /* always use NAT-T encap */
     
@@ -298,11 +304,20 @@ extern void initiate_connection(const char *name
 				, lset_t moredebug
 				, enum crypto_importance importance);
 extern void restart_connections_by_peer(struct connection *c);
+
+#ifdef HAVE_LABELED_IPSEC
+struct xfrm_user_sec_ctx_ike; /* forward declaration */
+#endif
+
 extern int initiate_ondemand(const ip_address *our_client
-			      , const ip_address *peer_client
-			      , int transport_proto
-			      , bool held
-			      , int whackfd, err_t why);
+                              , const ip_address *peer_client
+                              , int transport_proto
+                              , bool held
+                              , int whackfd
+#ifdef HAVE_LABELED_IPSEC
+                              , struct xfrm_user_sec_ctx_ike *uctx
+#endif
+                              , err_t why);
 extern void terminate_connection(const char *nm);
 extern void release_connection(struct connection *c, bool relations);
 extern void delete_connection(struct connection *c, bool relations);
@@ -395,7 +410,11 @@ extern void add_pending(int whack_sock
     , struct connection *c
     , lset_t policy
     , unsigned long try
-    , so_serial_t replacing);
+    , so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+    );
 
 extern void release_pending_whacks(struct state *st, err_t story);
 extern void unpend(struct state *st);

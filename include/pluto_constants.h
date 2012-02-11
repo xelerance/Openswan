@@ -54,6 +54,16 @@ enum keyword_nmconfigured {
     YES = 1,
 };
 
+enum keyword_loopback {
+    LB_NO = 0,
+    LB_YES = 1,
+};
+
+enum keyword_labeled_ipsec {
+    LI_NO = 0,
+    LI_YES = 1,
+};
+
 /* Timer events */
 
 enum event_type {
@@ -526,6 +536,7 @@ enum pluto_policy {
 #define KEY_ROUNDS               7
 #define COMPRESS_DICT_SIZE       8
 #define COMPRESS_PRIVATE_ALG     9	/* B/V */
+#define SECCTX                   32001     /* B/V */
 
 /* for each IPsec attribute, which enum_names describes its values? */
 

@@ -20,7 +20,11 @@ extern stf_status quick_outI1(int whack_sock
     , struct connection *c
     , lset_t policy
     , unsigned long try
-    , so_serial_t replacing);
+    , so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+    );
 
 extern state_transition_fn
     quick_inI1_outR1,

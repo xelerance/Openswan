@@ -324,6 +324,9 @@ delete_connection(struct connection *c, bool relations)
     pfreeany(c->cisco_domain_info);
     pfreeany(c->cisco_banner);
 #endif
+#ifdef HAVE_LABELED_IPSEC
+    pfreeany(c->policy_label);
+#endif
 #ifdef DYNAMICDNS
     pfreeany(c->dnshostname);
 #endif /* DYNAMICDNS */
@@ -1335,6 +1338,16 @@ add_connection(const struct whack_message *wm)
         /* Network Manager support */
 #ifdef HAVE_NM
 	c->nmconfigured=wm->nmconfigured;
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+	c->loopback  = wm->loopback;
+	c->labeled_ipsec = wm->labeled_ipsec;
+	c->policy_label = NULL;
+	if(wm->policy_label) {
+	c->policy_label = clone_str(wm->policy_label, "security label");
+	}
+	DBG(DBG_CONTROL, DBG_log("loopback=%d labeled_ipsec=%d, policy_label=%s", c->loopback, c->labeled_ipsec, c->policy_label));
 #endif
 
 	c->metric = wm->metric;

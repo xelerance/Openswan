@@ -57,6 +57,10 @@ ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
 endif
 
+ifeq ($(USE_LABELED_IPSEC),true)
+CFLAGS+= -DHAVE_LABELED_IPSEC
+endif
+
 ifeq ($(USE_DYNAMICDNS),true)
 CFLAGS+= -DDYNAMICDNS
 endif

@@ -981,7 +981,11 @@ aggr_outI1(int whack_sock,
 	   struct state *predecessor,
 	   lset_t policy,
 	   unsigned long try
-	   , enum crypto_importance importance)
+	   , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+           , struct xfrm_user_sec_ctx_ike * uctx
+#endif	   
+	   )
 {
     struct state *st;
     struct spd_route *sr;
@@ -989,6 +993,9 @@ aggr_outI1(int whack_sock,
     /* set up new state */
     cur_state = st = new_state();
     st->st_connection = c;
+#ifdef HAVE_LABELED_IPSEC
+    st->sec_ctx = NULL;
+#endif
     set_state_ike_endpoints(st, c);
 
 #ifdef DEBUG
@@ -1028,7 +1035,11 @@ aggr_outI1(int whack_sock,
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
+#ifdef HAVE_LABELED_IPSEC
+	     , uctx
+#endif
+		   );
 
     if (predecessor == NULL) {
 	openswan_log("initiating Aggressive Mode #%lu, connection \"%s\""
