@@ -38,6 +38,9 @@ doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LI
 	# install and link everything
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
+# Paul: patch not applied, it breaks /usr/local installs
+#-       @ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
+#+       @ln -s $(RELFINALRCDIR)/ipsec $(BINDIR)/setup
 
 install_file_list::
 	@echo $(RCDIR)/ipsec

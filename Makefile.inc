@@ -123,6 +123,8 @@ FINALRCDIR?=$(shell for d in $(INC_RCDIRS) ; \
 		do if test -d $(DESTDIR)/$$d ; \
 		then echo $$d ; exit 0 ; \
 		fi ; done ; echo $(INC_RCDEFAULT) )
+# Paul: patch not applied because it breaks /usr/local installs
+#+$(FINALRCDIR)/ipsec $(BINDIR)/setup
 RCDIR?=$(DESTDIR)$(FINALRCDIR)
 
 
