@@ -297,13 +297,22 @@ else
 	fi
 fi
 _________________________ iptables
-if test -r /sbin/iptables
+if test -r /sbin/iptables-save
 then
-	iptables -L -v -n
-_________________________ iptables-nat
-	iptables -t nat -L -v -n
-_________________________ iptables-mangle
-	iptables -t mangle -L -v -n
+	iptables-save
+	_________________________ iptables-nat
+	iptables-save -t nat
+	_________________________ iptables-mangle
+	iptables-save -t mangle
+else
+	if test -r /sbin/iptables
+	then
+		iptables -L -v -n
+		_________________________ iptables-nat
+		iptables -t nat -L -v -n
+		_________________________ iptables-mangle
+		iptables -t mangle -L -v -n
+	fi
 fi
 _________________________ /proc/modules
 if test -f /proc/modules

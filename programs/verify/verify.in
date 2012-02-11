@@ -401,7 +401,9 @@ sub tunnelchecks {
 	{
 	    errchk "@out";
 	    printfun "Checking NAT and MASQUERADEing";
-	    if( -e "/proc/net/ip_conntrack" )
+	    # The following check is not relevent to NETKEY
+	    # Newer kernel have nf_conntrack not ip_conntrack
+	    if(( -e "/proc/net/nf_conntrack" || -e "/proc/net/ip_conntrack") && -e "/proc/net/ipsec_eroute" )
 	    {
 		run "iptables -t nat -L -n";
 		if(grep /(NAT|MASQ)/, @out)
@@ -421,7 +423,7 @@ sub tunnelchecks {
 	    }
 	    else
 	    { 
-		errchk "","N/A";
+		errchk "OK";
 	    }
 	}
     }
