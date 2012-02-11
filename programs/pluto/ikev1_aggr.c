@@ -795,6 +795,18 @@ aggr_inR1_outI2_tail(struct msg_digest *md
     if (!encrypt_message(&md->rbody, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
+    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
+    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
+    st->hidden_variables.st_xauth_client_done = TRUE;
+    st->st_oakley.xauth = 0; 
+
+	if(st->st_connection->spd.this.modecfg_client) {
+	DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
+	st->hidden_variables.st_modecfg_vars_set = TRUE;
+        st->hidden_variables.st_modecfg_started = TRUE;
+	}
+    }
+
     c->newest_isakmp_sa = st->st_serialno;
 
     /* save last IV from phase 1 so it can be restored later so anything 
@@ -882,6 +894,18 @@ aggr_inI2_tail(struct msg_digest *md
     md->chain[ISAKMP_NEXT_ID] = NULL;
 
     /**************** done input ****************/
+
+    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
+    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
+    st->hidden_variables.st_xauth_client_done = TRUE;
+    st->st_oakley.xauth = 0; 
+
+        if(st->st_connection->spd.this.modecfg_client) {
+        DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
+        st->hidden_variables.st_modecfg_vars_set = TRUE;
+        st->hidden_variables.st_modecfg_started = TRUE; 
+        }
+   }
 
     c->newest_isakmp_sa = st->st_serialno;
 
@@ -1151,7 +1175,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	}
 #endif
 	
-	if (!nat_traversal_insert_vid(np, &md->rbody)) {
+	if (!nat_traversal_insert_vid(np, &md->rbody, st)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
