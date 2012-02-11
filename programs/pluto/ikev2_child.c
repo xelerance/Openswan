@@ -672,6 +672,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
      */
     DBG_log("PAUL: Starting narrowing TSi/TSr check");
     if( role == INITIATOR ) {
+	int instantiate = FALSE;
     	DBG_log("PAUL: We are initiator, checking TSi/TSr");
    
 	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
@@ -689,23 +690,34 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	}
 
 
-	/* So we have low/high being a valid CIDR, if low and high fall within our CIDR, narrow it */
+	/* Can we narrow, if so we instantiate */
 	//PAULX addrinsubnet(address,subnet)
 	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
 	DBG_log("PAUL: CHEAT, let's always override for now - will write subnet_in_subnet test later");
-	if(1) /* if valid narrowing */ {
+	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
+		DBG_log("Our subnet is not the same as the TSI subnet");
+		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
+			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE; /* prob send something back? */
+		}
+	}
+	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
+		DBG_log("Our subnet is not the same as the TSR subnet");
+		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
+			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE; /* prob send something back? */
+		}
+	}
+	if(instantiate == TRUE) {
 		/* instantiate the connection since it changed from template, then update */
-		// st1->st_connection = ikev2_ts_instantiate(c);
-#if 0
-ikev2_ts_instantiate(struct connection *c
-                 , const ip_address *him
-                 , const struct id *his_id
-                 , struct gw_info *gw
-                 , const ip_address *our_client USED_BY_DEBUG
-                 , const ip_address *peer_client)
-#else
+		// FIXME st1->st_connection = ikev2_ts_instantiate(c);
 		st1->st_connection = c;
-#endif
 		st1->st_connection->spd.this.client = tsi_subnet;
 		st1->st_connection->spd.that.client = tsr_subnet;
 
