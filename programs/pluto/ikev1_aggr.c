@@ -795,15 +795,19 @@ aggr_inR1_outI2_tail(struct msg_digest *md
     if (!encrypt_message(&md->rbody, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
+    /* It seems as per Cisco implementation, XAUTH and MODECFG 
+    * are not supposed to be performed again during rekey */
+    if(c->newest_isakmp_sa != SOS_NOBODY && 
+	st->st_connection->spd.this.xauth_client && 
+	st->st_connection->remotepeertype == CISCO) {
+    DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
     st->hidden_variables.st_xauth_client_done = TRUE;
     st->st_oakley.xauth = 0; 
 
 	if(st->st_connection->spd.this.modecfg_client) {
-	DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
+	DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
 	st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE;
+	st->hidden_variables.st_modecfg_started = TRUE;
 	}
     }
 
@@ -895,17 +899,21 @@ aggr_inI2_tail(struct msg_digest *md
 
     /**************** done input ****************/
 
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
+    /* It seems as per Cisco implementation, XAUTH and MODECFG 
+     * are not supposed to be performed again during rekey */
+    if(c->newest_isakmp_sa != SOS_NOBODY && 
+	st->st_connection->spd.this.xauth_client && 
+	st->st_connection->remotepeertype == CISCO) {
+	   DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
+	   st->hidden_variables.st_xauth_client_done = TRUE;
+	   st->st_oakley.xauth = 0; 
 
-        if(st->st_connection->spd.this.modecfg_client) {
-        DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
-        st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE; 
-        }
-   }
+	   if(st->st_connection->spd.this.modecfg_client) {
+		DBG(DBG_CONTROL, DBG_log("Skipping ModeCFG for rekey for Cisco Peer compatibility."));
+		st->hidden_variables.st_modecfg_vars_set = TRUE;
+		st->hidden_variables.st_modecfg_started = TRUE; 
+	   }
+    }
 
     c->newest_isakmp_sa = st->st_serialno;
 

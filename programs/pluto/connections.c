@@ -223,7 +223,7 @@ delete_end(struct connection *c UNUSED, struct spd_route *sr UNUSED, struct end 
     pfreeany(e->host_addr_name);
 }
 
-static void
+void
 delete_sr(struct connection *c, struct spd_route *sr)
 {
     delete_end(c, sr, &sr->this);

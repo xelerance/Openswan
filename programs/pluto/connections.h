@@ -323,6 +323,7 @@ extern void release_connection(struct connection *c, bool relations);
 extern void delete_connection(struct connection *c, bool relations);
 extern void delete_connections_by_name(const char *name, bool strict);
 extern void delete_every_connection(void);
+extern void delete_sr(struct connection *c, struct spd_route *sr);
 extern char *add_group_instance(struct connection *group, const ip_subnet *target);
 extern void remove_group_instance(const struct connection *group, const char *name);
 extern void release_dead_interfaces(void);

@@ -436,6 +436,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    "%s "           /* PLUTO_MY_SRCIP - if any */
 #ifdef XAUTH
+		    "PLUTO_IS_PEER_CISCO='%u' "
 		    "PLUTO_CISCO_DNS_INFO='%s' "
 		    "PLUTO_CISCO_DOMAIN_INFO='%s' "
 		    "PLUTO_PEER_BANNER='%s' "
@@ -470,6 +471,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 #endif
 		    , srcip_str
 #ifdef XAUTH
+		    , c->remotepeertype
 		    , c->cisco_dns_info ? c->cisco_dns_info : ""
 		    , c->cisco_domain_info ? c->cisco_domain_info : ""
 		    , c->cisco_banner ? c->cisco_banner : ""
@@ -485,7 +487,6 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	return ((result>=blen) || (result<0))? -1 : result;
 }
 
-//static bool
 bool
 do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st)
 {
