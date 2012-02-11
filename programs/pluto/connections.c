@@ -987,11 +987,16 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
      */
     {
 	err_t er;
+	int port;
 	
 	switch(dst->host_type) {
 	case KH_IPHOSTNAME:
 	    er = ttoaddr(dst->host_addr_name, 0, 0, &dst->host_addr);
-	    
+
+	    /*The above call wipes out the port, put it again*/
+	    port = htons(dst->port);
+	    setportof(port, &dst->host_addr);
+		
 	    if(er) {
 		loglog(RC_COMMENT, "failed to convert '%s' at load time: %s"
 		       , dst->host_addr_name, er);
