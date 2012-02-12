@@ -187,9 +187,14 @@ conn westnet-eastnet-4in6
 	rightsubnet=192.0.2.0/24
 	auto=ignore
 
+# and this one
 conn westnet-eastnet-6in6
 	also=west-east-base-id
-	also=west-east-base-ipv6
+	#also=west-east-base-ipv6
+	left=2001:db8:1:2::45
+	leftnexthop=2001:db8:1:2::23
+	right=2001:db8:1:2::23
+	rightnexthop=2001:db8:1:2::45
 	also=westnet-eastnet-ipv6
 
 conn westnet-eastnet-ipv4
