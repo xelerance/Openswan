@@ -680,12 +680,12 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
 	if(oops != NULL) {
 	      DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	      return STF_IGNORE; /* prob tell them something? */
+	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	} 
 	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
 	if(oops != NULL) {
 	      DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	      return STF_IGNORE; /* prob tell them something? */
+	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	}
    
 	/* Can we narrow, if so we instantiate */
@@ -693,27 +693,27 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
 	   DBG_log("Our subnet is not the same as the TSI subnet");
 	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-		return STF_IGNORE; /* prob tell them something? */
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	   if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
 		DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
 			instantiate = TRUE;
 	   } else {
 		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
-		return STF_IGNORE; /* prob send something back? */
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	}
 	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
 	   DBG_log("Their subnet is not the same as the TSR subnet");
 	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-		return STF_IGNORE; /* prob tell them something? */
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	   if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
 		   DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
 		   instantiate = TRUE;
 	   } else {
 		   DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
-		   return STF_IGNORE; /* prob send something back? */
+		   return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	}
 

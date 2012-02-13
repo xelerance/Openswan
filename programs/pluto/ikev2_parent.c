@@ -1607,6 +1607,9 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_calculating = FALSE;
 
     e = ikev2_parent_inI2outR2_tail(pcrc, r);
+    if( e != STF_OK) {
+	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_name, e));
+    }
   
     if(dh->md != NULL) {
 	complete_v2_state_transition(&dh->md, e);
@@ -1860,6 +1863,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    openswan_log("No CHILD SA proposals received.");
 	    np = ISAKMP_NEXT_NONE;
 	} else {
+	    DBG_log("CHILD SA proposals received");
 	    np = ISAKMP_NEXT_v2SA;
 	}
 
@@ -1877,7 +1881,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(np == ISAKMP_NEXT_v2SA) {
 	    /* must have enough to build an CHILD_SA */
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
-	    if(ret != STF_OK) return ret;
+	    if(ret != STF_OK) {
+		 DBG_log("PAUL: ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+		return ret;
+	    }
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
