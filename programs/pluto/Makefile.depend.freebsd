@@ -1137,7 +1137,7 @@ plutomain.o: plutomain.c \
   ../../include/mpzfuncs.h vendor.h \
   pluto_crypt.h \
   ../../include/dev/hifn/vulcanpk_funcs.h \
-  virtual.h nat_traversal.h
+  virtual.h nat_traversal.h security_selinux.h
 primegen.o: primegen.c \
   ../../linux/include/openswan.h \
   ../../include/constants.h \
@@ -1712,3 +1712,4 @@ xauth.o: xauth.c \
   ../../include/mpzfuncs.h ike_alg.h \
   xauth.h virtual.h
 parser.tab.o: parser.tab.c
+security_selinux.o: security_selinux.c

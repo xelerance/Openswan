@@ -746,7 +746,11 @@ quick_outI1(int whack_sock
 	    , struct connection *c
 	    , lset_t policy
 	    , unsigned long try
-	    , so_serial_t replacing)
+	    , so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+	    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	    )
 {
     struct state *st = duplicate_state(isakmp_sa);
     struct qke_continuation *qke;
@@ -765,6 +769,14 @@ quick_outI1(int whack_sock
     set_cur_state(st);	/* we must reset before exit */
     st->st_policy = policy;
     st->st_try = try;
+
+#ifdef HAVE_LABELED_IPSEC
+    st->sec_ctx=NULL;
+    if(uctx != NULL) {
+    st->sec_ctx = clone_thing(*uctx, "sec ctx structure");
+    DBG(DBG_CONTROL, DBG_log("pending phase 2 with security context %s, %d", st->sec_ctx->sec_ctx_value, st->sec_ctx->ctx_len));
+    }
+#endif
 
     st->st_myuserprotoid = c->spd.this.protocol;
     st->st_peeruserprotoid = c->spd.that.protocol;

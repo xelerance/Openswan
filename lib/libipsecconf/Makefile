@@ -40,6 +40,10 @@ ifeq ($(USE_NM),true)
 CFLAGS+=-DHAVE_NM
 endif
 
+ifeq ($(USE_LABELED_IPSEC),true)
+CFLAGS+=-DHAVE_LABELED_IPSEC
+endif
+
 ifeq ($(USE_KLIPS),true)
 SRCS+=virtif.c
 endif

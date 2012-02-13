@@ -1023,7 +1023,7 @@ plutomain.o: plutomain.c ../../include/arpa/nameser.h \
   ../../include/oswtime.h ../../include/sha1.h \
   ../../include/md5.h crypto.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
-  vendor.h pluto_crypt.h virtual.h nat_traversal.h
+  vendor.h pluto_crypt.h virtual.h nat_traversal.h security_selinux.h
 primegen.o: primegen.c ../../linux/include/openswan.h \
   ../../include/constants.h ../../include/biglset.h \
   ../../linux/include/openswan/passert.h \
@@ -1218,7 +1218,7 @@ spdb_v1_struct.o: spdb_v1_struct.c ../../linux/include/openswan.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
   ../../include/alg_info.h ../../include/kernel_alg.h \
   ../../linux/include/openswan/pfkeyv2.h ike_alg.h db_ops.h \
-  nat_traversal.h demux.h server.h
+  nat_traversal.h demux.h server.h security_selinux.h
 spdb_v2_struct.o: spdb_v2_struct.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_policy.h \
   ../../linux/include/openswan/pfkeyv2.h \
@@ -1469,3 +1469,4 @@ xauth.o: xauth.c ../../linux/include/openswan.h \
   ../../lib/libcrypto/libsha2/sha2.h ../../include/mpzfuncs.h \
   ike_alg.h xauth.h virtual.h
 parser.tab.o: parser.tab.c
+security_selinux.o: security_selinux.c

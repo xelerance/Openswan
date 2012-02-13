@@ -102,6 +102,9 @@ struct kernel_sa {
 	ip_address *natt_oa;
 #endif
 	const char *text_said;
+#ifdef HAVE_LABELED_IPSEC
+	struct xfrm_user_sec_ctx_ike *sec_ctx;
+#endif
   
     unsigned long sa_lifetime;   /* number of seconds until SA expires */
 };
@@ -148,7 +151,11 @@ struct kernel_ops {
 		       const struct pfkey_proto_info *proto_info,
 		       time_t use_lifetime,
 		       enum pluto_sadb_operations op,
-		       const char *text_said);
+		       const char *text_said
+#ifdef HAVE_LABELED_IPSEC
+		      , char *policy_label
+#endif
+		       );
     bool (*shunt_eroute)(struct connection *c
 			 , struct spd_route *sr
 			 , enum routing_t rt_kind
@@ -298,11 +305,16 @@ struct bare_shunt **bare_shunt_ptr(const ip_subnet *ours
 # define EM_MAXRELSPIS 4	/* AH ESP IPCOMP IPIP */
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+struct xfrm_user_sec_ctx_ike; /* forward declaration of tag */
+#endif
 extern void record_and_initiate_opportunistic(const ip_subnet *
-					      , const ip_subnet *
-					      , int transport_proto
-					      , const char *why);
-
+                                              , const ip_subnet *
+                                              , int transport_proto
+#ifdef HAVE_LABELED_IPSEC
+                                              , struct xfrm_user_sec_ctx_ike *
+#endif
+                                              , const char *why);
 extern void init_kernel(void);
 
 extern void scan_proc_shunts(void);
@@ -354,7 +366,11 @@ extern bool eroute_connection(struct spd_route *sr
 			      , ipsec_spi_t spi, unsigned int proto
 			      , enum eroute_type esatype
 			      , const struct pfkey_proto_info *proto_info
-			      , unsigned int op, const char *opname);
+			      , unsigned int op, const char *opname
+#ifdef HAVE_LABELED_IPSEC
+			      , char *policy_label
+#endif
+			      );
 
 static inline bool
 compatible_overlapping_connections(struct connection *a, struct connection *b)

@@ -212,6 +212,25 @@ struct keyword_enum_values kw_nm_configured=
     { kw_nm_configured_list, sizeof(kw_nm_configured_list)/sizeof(struct keyword_enum_value)};
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+struct keyword_enum_value kw_loopback_list[]={
+    { "yes",         LB_YES },
+    { "no",         LB_NO },
+};
+
+struct keyword_enum_values kw_loopback=
+    { kw_loopback_list, sizeof(kw_loopback_list)/sizeof(struct keyword_enum_value)};
+
+
+struct keyword_enum_value kw_labeled_ipsec_list[]={
+    { "yes",         LI_YES },
+    { "no",         LI_NO },
+};
+
+struct keyword_enum_values kw_labeled_ipsec=
+    { kw_labeled_ipsec_list, sizeof(kw_labeled_ipsec_list)/sizeof(struct keyword_enum_value)};
+#endif
+
 /*
  * Values for right= and left=
  */
@@ -338,7 +357,9 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"listen",     kv_config, kt_string, KSF_LISTEN,NOT_ENUM},
     {"protostack",     kv_config, kt_string,    KSF_PROTOSTACK, &kw_proto_stack},
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
-
+#ifdef HAVE_LABELED_IPSEC
+    {"secctx_attr_value",kv_config,kt_number, KBF_SECCTX, NOT_ENUM},
+#endif
     /* these two options are obsoleted. Don't die on them */
     {"forwardcontrol", kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
     {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
@@ -380,6 +401,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"salifetime",     kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
+#ifdef HAVE_LABELED_IPSEC
+    {"loopback",       kv_conn|kv_auto, kt_enum, KBF_LOOPBACK, &kw_loopback},
+    {"labeled_ipsec",   kv_conn|kv_auto, kt_enum, KBF_LABELED_IPSEC, &kw_labeled_ipsec},
+    {"policy_label",    kv_conn|kv_auto,         kt_string, KSF_POLICY_LABEL, NOT_ENUM},
+#endif
 
     /* Cisco interop: remote peer type*/
     {"remote_peer_type", kv_conn|kv_auto, kt_enum, KBF_REMOTEPEERTYPE, &kw_remote_peer_type},

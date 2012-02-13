@@ -889,6 +889,21 @@ process_v1_packet(struct msg_digest **mdp)
 	    st = find_state_ikev1(md->hdr.isa_icookie, md->hdr.isa_rcookie
 		, &md->sender, md->hdr.isa_msgid);
 
+#ifdef HAVE_LABELED_IPSEC
+	    if(st != NULL && st->st_connection->loopback) {
+		DBG(DBG_CONTROL, DBG_log("loopback scenario: verifying if this is really a correct state, if not, find the correct state"));
+		
+		st = find_state_ikev1_loopback(md->hdr.isa_icookie, md->hdr.isa_rcookie
+						, &md->sender, md->hdr.isa_msgid, md);
+		if (st != NULL) {
+		DBG(DBG_CONTROL, DBG_log("loopback scenario: found a correct state for the received message"));
+		}
+		else {
+		DBG(DBG_CONTROL, DBG_log("loopback scenario: did not found any state, perhaps a first message from the responder"));
+		}
+	    }
+#endif
+
 	    if (st == NULL)
 	    {
 		/* perhaps this is a first message from the responder
@@ -1014,6 +1029,21 @@ process_v1_packet(struct msg_digest **mdp)
 	st = find_state_ikev1(md->hdr.isa_icookie, md->hdr.isa_rcookie
 	    , &md->sender, md->hdr.isa_msgid);
 
+#ifdef HAVE_LABELED_IPSEC
+	if(st != NULL && st->st_connection->loopback) {
+	   DBG(DBG_CONTROL,  DBG_log("loopback scenario: verifying if this is really a correct state, if not, find the correct state"));
+
+	   st = find_state_ikev1_loopback(md->hdr.isa_icookie, md->hdr.isa_rcookie
+                , &md->sender, md->hdr.isa_msgid, md);
+
+		if (st != NULL) {
+		DBG(DBG_CONTROL, DBG_log("loopback scenario: found a correct state for the received message"));
+		}
+		else {
+		DBG(DBG_CONTROL, DBG_log("loopback scenario: did not found any state, perhaps a first message from the responder"));
+		}
+            }
+#endif
 	if (st == NULL)
 	{
 	    /* No appropriate Quick Mode state.
@@ -2263,7 +2293,11 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    {
 		change_state(st, STATE_MAIN_R3);    /* ISAKMP is up... */
 	        set_cur_state(st);
-	        quick_outI1(st->st_whack_sock, st, st->st_connection, st->st_connection->policy, 1, SOS_NOBODY);
+	        quick_outI1(st->st_whack_sock, st, st->st_connection, st->st_connection->policy, 1, SOS_NOBODY
+#ifdef HAVE_LABELED_IPSEC
+                               , NULL /* Setting NULL as this is responder and will not have sec ctx from a flow*/
+#endif
+			   );
 		break;
 	    }	    
 
