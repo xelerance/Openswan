@@ -83,6 +83,23 @@ static stf_status ikev2_parent_outI1_common(struct msg_digest *md
 					    , struct state *st);
 
 /*
+ * Increment the msgid for our new header based on the one we should use next
+ * TODO: if we wrap (u_int32), we need to rekey the parent sa 
+ */
+static void
+ increment_msgid_nextuse(struct state *st)
+{
+   passert(st != NULL);
+   st->st_msgid_nextuse = st->st_msgid_nextuse + 1;
+   if(st->st_msgid_nextuse == 0) {
+       openswan_log("  st_msgid_nextuse wrapped - we should rekey!");
+   }
+   st->st_msgid = htonl(st->st_msgid_nextuse);
+}   
+
+
+
+/*
  *
  ***************************************************************
  *****                   PARENT_OUTI1                      *****
@@ -740,6 +757,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np = ISAKMP_NEXT_v2SA;
 	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+	increment_msgid_nextuse(st);
+	r_hdr.isa_msgid = st->st_msgid;
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
@@ -2204,6 +2223,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
+    increment_msgid_nextuse(p1st);
     openswan_log("sending %snotification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
@@ -2238,6 +2258,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
 	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+	n_hdr.isa_msgid = p1st->st_msgid;
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
