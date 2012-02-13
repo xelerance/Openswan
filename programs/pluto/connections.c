@@ -322,6 +322,9 @@ delete_connection(struct connection *c, bool relations)
     pfreeany(c->cisco_domain_info);
     pfreeany(c->cisco_banner);
 #endif
+#ifdef HAVE_LABELED_IPSEC
+    pfreeany(c->policy_label);
+#endif
 #ifdef DYNAMICDNS
     pfreeany(c->dnshostname);
 #endif /* DYNAMICDNS */
@@ -1334,6 +1337,16 @@ add_connection(const struct whack_message *wm)
 	c->nmconfigured=wm->nmconfigured;
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+	c->loopback  = wm->loopback;
+	c->labeled_ipsec = wm->labeled_ipsec;
+	c->policy_label = NULL;
+	if(wm->policy_label) {
+	c->policy_label = clone_str(wm->policy_label, "security label");
+	}
+	DBG(DBG_CONTROL, DBG_log("loopback=%d labeled_ipsec=%d, policy_label=%s", c->loopback, c->labeled_ipsec, c->policy_label));
+#endif
+
 	c->metric = wm->metric;
 	c->connmtu = wm->connmtu;
 
@@ -1457,6 +1470,41 @@ add_connection(const struct whack_message *wm)
 
 	    DBG_log("%s", topo);
 	);
+
+#ifdef HAVE_LABELED_IPSEC
+	if(c->loopback 
+	   && portof(&c->spd.this.client.addr)!=portof(&c->spd.that.client.addr) ) {
+	   struct spd_route *tmp_spd;
+	   u_int16_t tmp_this_port, tmp_that_port;
+
+	   tmp_spd = clone_thing(c->spd, "loopback asymmetrical policies");
+	   tmp_spd->this.id.name.ptr = NULL;
+	   tmp_spd->this.id.name.len = 0;
+	   tmp_spd->that.id.name.ptr = NULL;
+	   tmp_spd->that.id.name.len = 0;
+	   tmp_spd->this.host_addr_name = NULL;
+	   tmp_spd->that.host_addr_name = NULL;
+	   tmp_spd->this.updown = clone_str(tmp_spd->this.updown, "updown");
+	   tmp_spd->that.updown = clone_str(tmp_spd->that.updown, "updown");
+	   tmp_spd->this.cert_filename = NULL;
+	   tmp_spd->that.cert_filename = NULL;
+	   tmp_spd->this.cert.type = 0;
+	   tmp_spd->that.cert.type = 0;
+	   tmp_spd->this.ca.ptr = NULL;
+	   tmp_spd->that.ca.ptr = NULL;
+	   tmp_spd->this.groups = NULL;
+	   tmp_spd->that.groups = NULL;
+	   tmp_spd->this.virt = NULL;
+	   tmp_spd->that.virt = NULL;
+	   tmp_spd->next = NULL;
+	   c->spd.next=tmp_spd;
+	  
+	   tmp_this_port= portof(&tmp_spd->this.client.addr);
+	   tmp_that_port= portof(&tmp_spd->that.client.addr);
+	   setportof(tmp_this_port, &tmp_spd->that.client.addr);
+	   setportof(tmp_that_port, &tmp_spd->this.client.addr);
+	} 
+#endif
 
 #if 0
 	    /* Make sure that address families can be correctly inferred

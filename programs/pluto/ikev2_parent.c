@@ -118,7 +118,11 @@ ikev2parent_outI1(int whack_sock
 	       , struct state *predecessor
 	       , lset_t policy
 	       , unsigned long try
-	       , enum crypto_importance importance)
+	       , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+	       , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	       )
 {
     struct state *st = new_state();
     struct db_sa *sadb;
@@ -138,8 +142,19 @@ ikev2parent_outI1(int whack_sock
     st->st_try   = try;
 
     if (HAS_IPSEC_POLICY(policy))
+#ifdef HAVE_LABELED_IPSEC
+	st->sec_ctx = NULL;
+	if( uctx != NULL) {
+	openswan_log("Labeled ipsec is not supported with ikev2 yet");
+	}
+#endif
+
 	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
+#ifdef HAVE_LABELED_IPSEC
+	    , st->sec_ctx
+#endif
+		   );
 
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");

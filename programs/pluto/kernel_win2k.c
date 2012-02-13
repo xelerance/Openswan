@@ -75,7 +75,11 @@ win2k_raw_eroute(const ip_address *this_host UNUSED
 		   , const struct pfkey_proto_info *proto_info UNUSED
 		   , time_t use_lifetime UNUSED 
 		   , unsigned int op UNUSED
-		   , const char *text_said UNUSED)
+		   , const char *text_said UNUSED
+#ifdef HAVE_LABELED_IPSEC
+		   , char *policy_label UNSUSED
+#endif
+		   )
 {
     return FALSE;
 }

@@ -139,6 +139,10 @@ struct whack_message {
     /* Force the MTU for this connection */
     int connmtu;
 
+    enum keyword_loopback loopback;
+    enum keyword_labeled_ipsec labeled_ipsec;
+    char *policy_label;
+
     /*  note that each end contains string 2/5.id, string 3/6 cert,
      *  and string 4/7 updown
      */
