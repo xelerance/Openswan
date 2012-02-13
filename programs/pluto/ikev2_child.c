@@ -555,6 +555,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct traffic_selector tsi[16], tsr[16];
     unsigned int tsi_n, tsr_n;
 
+    DBG_log("PAUL: Starting ikev2_child_sa_respond");
     st1 = duplicate_state(st); /* PAUL: shouldn't we duplicate state per tsi/tsr match? */
 
     /*
@@ -645,11 +646,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	c=b;
 
 	/*
-	 * now that we have found the best connection, copy the data into
+	 * If we found a better connection, copy the ts data into
 	 * the state structure as the tsi/tsr
 	 *
 	 */
-	/* Paul: should we STF_FAIL here instead of checking for NULL */
 	if (bsr != NULL) {
 		st1->st_ts_this = ikev2_subnettots(&bsr->this);
 		st1->st_ts_that = ikev2_subnettots(&bsr->that);
@@ -666,78 +666,78 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	}
     }
 
-    /* If we are a initiator,
-     * then we might need to narrow down the proposal, as per
-     * http://tools.ietf.org/html/rfc5996#section-2.9
+    /* 
+     * We might need to narrow down the proposal, as perhttp://tools.ietf.org/html/rfc5996#section-2.9
      */
     DBG_log("PAUL: Starting narrowing TSi/TSr check");
     if( role == INITIATOR ) {
 	int instantiate = FALSE;
-    	DBG_log("PAUL: We are initiator, checking TSi/TSr");
+	DBG_log("PAUL: We are initiator, checking TSi/TSr");
    
 	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
 	ip_subnet tsi_subnet, tsr_subnet;
 	const char *oops;
 	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
 	if(oops != NULL) {
-	   DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	   return STF_IGNORE; /* prob tell them something? */
+	      DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down\n",oops);
+	      return STF_IGNORE; /* prob tell them something? */
 	} 
 	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
 	if(oops != NULL) {
-	   DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
-	   return STF_IGNORE; /* prob tell them something? */
+	      DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
+	      return STF_IGNORE; /* prob tell them something? */
 	}
-
-
+   
 	/* Can we narrow, if so we instantiate */
-	//PAULX addrinsubnet(address,subnet)
 	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
-	DBG_log("PAUL: CHEAT, let's always override for now - will write subnet_in_subnet test later");
 	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
-		DBG_log("Our subnet is not the same as the TSI subnet");
-		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
-			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+	   DBG_log("Our subnet is not the same as the TSI subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_IGNORE; /* prob tell them something? */
+	   }
+	   if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
+		DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
 			instantiate = TRUE;
-		} else {
-			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
-			return STF_IGNORE; /* prob send something back? */
-		}
+	   } else {
+		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+		return STF_IGNORE; /* prob send something back? */
+	   }
 	}
 	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
-		DBG_log("Our subnet is not the same as the TSR subnet");
-		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
-			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
-			instantiate = TRUE;
-		} else {
-			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
-			return STF_IGNORE; /* prob send something back? */
-		}
+	   DBG_log("Their subnet is not the same as the TSR subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_IGNORE; /* prob tell them something? */
+	   }
+	   if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
+		   DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+		   instantiate = TRUE;
+	   } else {
+		   DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+		   return STF_IGNORE; /* prob send something back? */
+	   }
 	}
-	if(instantiate == TRUE) {
-		/* instantiate the connection since it changed from template, then update */
-		// FIXME st1->st_connection = ikev2_ts_instantiate(c);
-		st1->st_connection = c;
-		st1->st_connection->spd.this.client = tsi_subnet;
-		st1->st_connection->spd.that.client = tsr_subnet;
 
-		// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
-		// st1->st_ts_this = *tsr;
-		// st1->st_ts_that = *tsi;
-		// DBG_log("PAUL: traffic selectors updated\n");
-	
+	if(instantiate == TRUE) {
+	   /* instantiate the connection since it changed from template, then update */
+	   // FIXME st1->st_connection = ikev2_ts_instantiate(c);
+	   st1->st_connection = c;
+	   st1->st_connection->spd.this.client = tsi_subnet;
+	   st1->st_connection->spd.that.client = tsr_subnet;
+   
+	   // since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+	   // st1->st_ts_this = *tsr;
+	   // st1->st_ts_that = *tsi;
+	   // DBG_log("PAUL: traffic selectors updated\n");
 	} else {
 		st1->st_connection = c;
 	}
-
-
+   
+   
     } else {
 	/* We are RESPONDER, do as before with nothing changed */
 	DBG_log("PAUL: we are responder, not narrowing down");
 	st1->st_connection = c;
     }
-
-
 
     insert_state(st1);
     md->st = st1;

@@ -1415,6 +1415,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 * now, find an eligible child SA from the pending list, and emit
 	 * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
+	openswan_log("PAUL:  now, find an eligible child SA from the pending list, and emit TSi and TSr");
 	if(c0) {
 		chunk_t child_spi, notifiy_data;
 	    st->st_connection = c0;
@@ -2035,6 +2036,86 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	delete_event(st);
 	return STF_OK;
     }
+
+    {
+	/* http://tools.ietf.org/html/rfc5996#section-2.9 */
+	openswan_log("PAUL:check narrowing - we are responding to I2");
+
+#if 0
+	We need to check TSr/TSi for better leftsubnet/rightsubnet as well as better
+	 protoport= settings
+       Do we need to check the md directly? Or did we already read th traffic_selectors
+	into the state at st->st_ts_this and st->st_ts_that ?
+	IF not, then how do we select the best TSi/TSr from the entire TSi/TSr payload?
+ 	  or do we allow all of the ones that can?
+#endif
+
+
+		struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+		struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+		struct traffic_selector tsi[16], tsr[16];
+		int instantiate = FALSE;
+		ip_subnet tsi_subnet, tsr_subnet;
+		const char *oops;
+		tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+		tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+
+
+    		DBG_log("PAUL: We are initiator, checking TSi/TSr");
+		/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
+		oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
+		if(oops != NULL) {
+			DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
+		} 
+		oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+		if(oops != NULL) {
+			DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
+		}
+
+		/* Can we narrow, if so we instantiate */
+	//PAULX addrinsubnet(address,subnet)
+	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
+	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
+		DBG_log("Our subnet is not the same as the TSI subnet");
+		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+			return STF_IGNORE ; /* prob say something back? */
+		}
+		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
+			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE ; /* prob say something back? */
+		}
+	}
+	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
+		DBG_log("Our subnet is not the same as the TSR subnet");
+		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+			return STF_IGNORE ; /* prob say something back? */
+		}
+		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
+			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE ; /* prob say something back? */
+		}
+	}
+	if(instantiate == TRUE) {
+		/* instantiate the connection since it changed from template, then update */
+		// CHEAT: for now modify our template as a proof of concept
+
+		c->spd.this.client = tsi_subnet;
+		c->spd.that.client = tsr_subnet;
+		// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+		// st1->st_ts_this = *tsr;
+		// st1->st_ts_that = *tsi;
+		// DBG_log("PAUL: traffic selectors updated\n");
+	}
+
+
+    }
+
 
     {
 	v2_notification_t rn;
