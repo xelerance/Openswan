@@ -440,6 +440,7 @@ main(int argc, char **argv)
 	    { "impair-major-version-bump", no_argument, NULL, IMPAIR_MAJOR_VERSION_BUMP + DBG_OFFSET },
 	    { "impair-minor-version-bump", no_argument, NULL, IMPAIR_MINOR_VERSION_BUMP + DBG_OFFSET },
 	    { "impair-retransmits", no_argument, NULL, IMPAIR_RETRANSMITS + DBG_OFFSET },
+	    { "impair-send-bogus-isakmp-flag", no_argument, NULL, IMPAIR_SEND_BOGUS_ISAKMP_FLAG + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
 	    };
@@ -1009,6 +1010,8 @@ main(int argc, char **argv)
 	openswan_log("Warning: IMPAIR_MINOR_VERSION_BUMP enabled");
     if(DBGP(IMPAIR_RETRANSMITS))
 	openswan_log("Warning: IMPAIR_RETRANSMITS enabled");
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG))
+	openswan_log("Warning: IMPAIR_SEND_BOGUS_ISAKMP_FLAG enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
 	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))

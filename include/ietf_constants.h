@@ -516,6 +516,8 @@ extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 /* These are followed by 7 more bits, currently RESERVED */
+/* Note we use 1 of those bits for IMPAIR-SEND-BOGUS-ISAKMP-FLAG */
+#define ISAKMP_PAYLOAD_OPENSWAN_BOGUS  0x01
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1

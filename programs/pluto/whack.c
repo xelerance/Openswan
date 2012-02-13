@@ -540,8 +540,9 @@ enum option_enums {
     DBGOPT_IMPAIR_MAJOR_VERSION_BUMP, /* cause pluto to send IKE major version higher then we support */
     DBGOPT_IMPAIR_MINOR_VERSION_BUMP, /* cause pluto to send IKE minor version higher then we support */
     DBGOPT_IMPAIR_RETRANSMITS, /* cause pluto to never retransmit packets */
+    DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG, /* cause pluto to never retransmit packets */
 
-#   define DBGOPT_LAST DBGOPT_IMPAIR_RETRANSMITS
+#   define DBGOPT_LAST DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG
 #endif
 
 };
@@ -753,6 +754,7 @@ static const struct option long_opts[] = {
     { "impair-major-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MAJOR_VERSION_BUMP + OO },
     { "impair-minor-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MINOR_VERSION_BUMP + OO },
     { "impair-retransmits", no_argument, NULL, DBGOPT_IMPAIR_RETRANSMITS + OO },
+    { "impair-send-bogus-isakmp-flag", no_argument, NULL, DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
     { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
@@ -1749,6 +1751,7 @@ main(int argc, char **argv)
 	case DBGOPT_IMPAIR_MAJOR_VERSION_BUMP: /* --impair-major-version-bump */
 	case DBGOPT_IMPAIR_MINOR_VERSION_BUMP: /* --impair-minor-version-bump */
 	case DBGOPT_IMPAIR_RETRANSMITS: /* --impair-retransmits */
+	case DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG: /* --impair-send-bogus-isakmp-flag */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif
