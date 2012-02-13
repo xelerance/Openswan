@@ -2057,6 +2057,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 		int instantiate = FALSE;
 		ip_subnet tsi_subnet, tsr_subnet;
 		const char *oops;
+		unsigned int tsi_n, tsr_n;
 		tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
 		tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 

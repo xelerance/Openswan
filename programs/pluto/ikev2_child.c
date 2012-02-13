@@ -338,7 +338,7 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 }
 
 /* return number of traffic selectors found */
-static int 
+int 
 ikev2_parse_ts(struct payload_digest *const ts_pd
 	       , struct traffic_selector *array
 	       , unsigned int array_max)
