@@ -2537,6 +2537,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 				  /*
 				   * Unrecongnized protocol
 				   */
+				   openswan_log(" Information exchange delete payload should have protoid = PROTO_ISAKMP, not '%d' - ignored", v2del->isad_protoid);
 				   return STF_IGNORE;
 				}
 			}
