@@ -33,6 +33,7 @@ extern bool ikev2_out_sa(pb_stream *outs
 extern void complete_v2_state_transition(struct msg_digest **mdp
 					 , stf_status result);
 
+extern stf_status process_informational_ikev2(struct msg_digest *md);
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);

@@ -2431,7 +2431,220 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
     close_output_pbs(&n_pbs);
 	return TRUE;
 }
-	     
+
+/*
+ *
+ ***************************************************************
+ *                       INFORMATIONAL                     *****
+ ***************************************************************
+ *
+ *
+ *
+ */
+stf_status process_informational_ikev2(struct msg_digest *md)
+{
+    /* verify that there is in fact an encrypted payload */
+    if(!md->chain[ISAKMP_NEXT_v2E]) {
+       openswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
+       return STF_IGNORE;
+    }
+
+    /* decrypt things. */
+    {
+	stf_status ret;
+
+	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("received informational exchange request from INITIATOR"));
+	   ret = ikev2_decrypt_msg(md, RESPONDER);
+	} else {
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("received informational exchange request from RESPONDER"));
+	   ret = ikev2_decrypt_msg(md, INITIATOR);
+	}
+
+	if(ret != STF_OK) return ret;
+    }
+
+    {
+	struct payload_digest *p;
+	struct ikev2_delete *v2del=NULL;
+	stf_status ret;
+	struct state *const st = md->st;
+
+	/* Only send response if it is request*/
+	if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+	   unsigned char *authstart;
+	   pb_stream      e_pbs, e_pbs_cipher;
+	   struct ikev2_generic e;
+	   unsigned char *iv;
+	   int            ivsize;
+	   unsigned char *encstart;
+	   struct isakmp_hdr r_hdr ;
+
+	   /* beginning of data going out */
+	   authstart = reply_stream.cur;
+
+	   /* make sure HDR is at start of a clean buffer */
+	   zero(reply_buffer);
+	   init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange reply packet");
+
+	   /* HDR out */
+	   zero(&r_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
+	   r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	   memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+	   memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+	   r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
+	   r_hdr.isa_np = ISAKMP_NEXT_v2E;
+	   increment_msgid_nextuse(st);
+	   r_hdr.isa_msgid = st->st_msgid;
+
+	   /*set initiator bit if we are initiator*/
+	   if(md->role == INITIATOR) {
+		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+	   } /* PAUL: shouldn't this be an else? */
+	   r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+
+	   if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody)) {
+		openswan_log("error initializing hdr for notify message");
+		return STF_INTERNAL_ERROR;
+	   }
+	   /*HDR Done*/
+
+	   /* insert an Encryption payload header */
+	   e.isag_np = ISAKMP_NEXT_NONE;
+	   e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+	   if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+		openswan_log("error initializing encryption payload header for notify message");
+		return STF_INTERNAL_ERROR;
+	   }
+
+	   /* insert IV */
+	   iv     = e_pbs.cur;
+	   ivsize = st->st_oakley.encrypter->iv_size;
+	   if(!out_zero(ivsize, &e_pbs, "iv")) {
+		return STF_INTERNAL_ERROR;
+	   }
+	   get_rnd_bytes(iv, ivsize);
+
+	   /* note where cleartext starts */
+	   init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	   e_pbs_cipher.container = &e_pbs;
+	   e_pbs_cipher.desc = NULL;
+	   e_pbs_cipher.cur = e_pbs.cur;
+	   encstart = e_pbs_cipher.cur;
+
+	   if(md->chain[ISAKMP_NEXT_v2D]) {
+		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+		    v2del = &p->payload.v2delete;
+		    switch (v2del->isad_protoid)
+		    {
+			/*
+			 * Avesh: My understanding is that delete payload for IKE SA
+			 *  should be the only payload in the informational
+			*/
+			case PROTO_ISAKMP:
+				break;
+                       default:
+				/*Unrecongnized protocol */
+				openswan_log("Ignoring Informational Exchange delete payload protoid of '%d' in Delete IKE_SA message",
+					v2del->isad_protoid);
+				return STF_IGNORE;
+		   }
+
+		   /* this will break from for loop */
+		   if(v2del->isad_protoid == PROTO_ISAKMP) {
+			break;
+		   }
+		}
+	   }
+
+	   /*
+	    * If there are no payloads in the request that means this INFORMATIONAL Exchange
+	    * is check for liveliness (eg IKEv2's version of DPD), so we need to send back
+	    * an empty INFORMATIONAL Exchange message with no payloads inside.
+	    */
+
+	   ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+	   close_output_pbs(&e_pbs_cipher);
+
+	   {
+		unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+		if(authloc == NULL) return STF_INTERNAL_ERROR;
+		close_output_pbs(&e_pbs);
+		close_output_pbs(&md->rbody);
+		close_output_pbs(&reply_stream);
+
+		ret = ikev2_encrypt_msg(md, RESPONDER, authstart,
+				iv, encstart, authloc, &e_pbs, &e_pbs_cipher);
+		if(ret != STF_OK) {
+		   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+		   return ret;
+		}
+	   }
+
+	   /* let TCL hack it before we mark the length. */
+	   TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+	   /* keep it for a retransmit if necessary */
+	   freeanychunk(st->st_tpacket);
+	   clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+		, "reply packet for informational exchange");
+
+	   send_packet(st, __FUNCTION__, TRUE);
+	} else {
+	   /* informational was an answer, not a request. So we MUST NOT reply */
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("  not sending a response, because we are not the responder"));
+	}
+
+	/*
+	 * Now carry out the actualy task, we can not carry the actual task since
+	 * we need to send informational responde using existig SAs
+	 */
+	{
+
+	   if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		if(md->chain[ISAKMP_NEXT_v2D]) {
+		   for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+			v2del = &p->payload.v2delete;
+			switch (v2del->isad_protoid)
+			{
+			   case PROTO_ISAKMP:
+				{
+				  /*
+				   * Avesh: My understanding is that delete payload for IKE SA
+				   * should be the only payload in the informational
+				   * Now delete the IKE SAstate
+				   */
+				   delete_state(st);
+				   break;
+				}
+			   default:
+				{
+				  /*
+				   * Unrecongnized protocol
+				   */
+				   openswan_log(" Information exchange delete payload should have protoid = PROTO_ISAKMP, not '%d' - ignored", v2del->isad_protoid);
+				   return STF_IGNORE;
+				}
+			}
+
+			/* this will break from for loop*/
+			if(v2del->isad_protoid == PROTO_ISAKMP) {
+			   break;
+			}
+
+		   } /* for */
+
+		} /* if*/
+	   }
+	} /* end task block */
+    }
+
+    return STF_OK;
+}
 
 /*
  *
