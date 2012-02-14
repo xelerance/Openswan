@@ -64,7 +64,7 @@
 #include "hostpair.h"
 
 /* rewrite me with addrbytesptr() */
-struct traffic_selector ikev2_subnettots(struct end *e)
+struct traffic_selector ikev2_end_to_ts(struct end *e)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
@@ -100,17 +100,9 @@ struct traffic_selector ikev2_subnettots(struct end *e)
     /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
     }
 
-    /* 
-     * The IKEv2 code used to send 0-65535 as port regardless of
-     * the local policy specified. if local policy states a specific 
-     * protocol and port, then send that protocol value and port to 
-     * other end  -- Avesh
-     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
-     */
-
     ts.ipprotoid = e->protocol;
 
-    /*if port is %any or 0*/
+    /* if port is %any or 0 we mean all ports */
     if(e->port == 0 || e->has_port_wildcard) {
 	ts.startport = 0;
 	ts.endport = 65535;
@@ -651,18 +643,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	 *
 	 */
 	if (bsr != NULL) {
-		st1->st_ts_this = ikev2_subnettots(&bsr->this);
-		st1->st_ts_that = ikev2_subnettots(&bsr->that);
-		st1->st_ts_this.ipprotoid = bsr->this.protocol;
-		st1->st_ts_that.ipprotoid = bsr->that.protocol;
-		switch(bsr->this.protocol) {
-			case AF_INET:
-				st1->st_ts_this.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-				st1->st_ts_that.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-			case AF_INET6:
-				st1->st_ts_this.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-				st1->st_ts_that.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-		}
+		st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
+		st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
 	}
     }
 
