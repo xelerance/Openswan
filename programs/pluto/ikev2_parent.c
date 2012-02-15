@@ -941,8 +941,10 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 					, from_state_name 
 					, enum_name(&ikev2_notify_names , isan_type));
 		return STF_FAIL + isan_type;
-	}
+	} else if( md->chain[ISAKMP_NEXT_v2N]) {
 
+		openswan_log("PAUL: we received a notify..");
+	}
     /*
      * the responder sent us back KE, Gr, Nr, and it's our time to calculate
      * the shared key values.
@@ -1775,6 +1777,14 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		     , enum_name(&ikev2_auth_names
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
 	return STF_FATAL;
+    }
+
+    /* Is there a notify about an error ? */
+    if(md->chain[ISAKMP_NEXT_v2N] != NULL) {
+	openswan_log("PAUL: Hmm, a notify, we should process that");
+	return STF_FATAL;
+    } else {
+	openswan_log("PAUL: Hmm, we did not get a notify?");
     }
 
     /* good. now create child state */
