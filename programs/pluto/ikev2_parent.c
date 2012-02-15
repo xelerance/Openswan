@@ -1932,9 +1932,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
 		SEND_NOTIFICATION(v2_notify_num);
 		return ret;
-	    } else if(ret != STF_OK){
+	    } else if(ret != STF_OK) {
 		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&ikev2_notify_names, ret));
 		return ret;
+	    }
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
