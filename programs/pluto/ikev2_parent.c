@@ -1925,7 +1925,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    /* must have enough to build an CHILD_SA */
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
 	    if(ret != STF_OK) {
-		 DBG_log("PAUL: ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+		int v2_notify_num = e - STF_FAIL;
+		e = STF_FAIL;
+		DBG_log("ikev2_child_sa_respond  returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
+		// send notification!
 		return ret;
 	    }
 	}
