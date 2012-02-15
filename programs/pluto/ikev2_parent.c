@@ -1640,7 +1640,10 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
 
     e = ikev2_parent_inI2outR2_tail(pcrc, r);
     if( e != STF_OK) {
-	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_name, e));
+	int v2_notify_num = e - STF_FAIL;
+	e = STF_FAIL;
+	DBG_log("ikev2_parent_inI2outR2_tail returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
+	// send notification!
     }
   
     if(dh->md != NULL) {
