@@ -434,7 +434,7 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	char er3[SUBNETTOT_BUF];
 	subnettot(&ei->client,  0, ei3, sizeof(ei3));
 	subnettot(&er->client,  0, er3, sizeof(er3));
-	DBG_log("  ikev2_eval_conn evaluating our "
+	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
 		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
 		, er3, er->protocol, er->port
@@ -649,62 +649,83 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     }
 
     /* 
+     * We now found the best TSi/TSr combination, which got copied to st1
+     * If we do not allow narrowing, does the TSiTSr we found provide an excact match?
      * We might need to narrow down the proposal, as perhttp://tools.ietf.org/html/rfc5996#section-2.9
      */
+    {
     DBG_log("PAUL: Starting narrowing TSi/TSr check");
-    if( role == INITIATOR ) {
+	
 	int instantiate = FALSE;
-	DBG_log("PAUL: We are initiator, checking TSi/TSr");
    
 	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
 	ip_subnet tsi_subnet, tsr_subnet;
 	const char *oops;
 	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
 	if(oops != NULL) {
-	      DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down\n",oops);
+	      DBG_log("Received TSi was not in CIDR format (%s), cannot determine narrowing\n",oops);
 	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	} 
 	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
 	if(oops != NULL) {
-	      DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n",oops);
+	      DBG_log("Received TSr was not in CIDR format (%s), cannot determine narrowing\n",oops);
 	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	}
    
 	/* Can we narrow, if so we instantiate */
 	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
-	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
+	/* check our subnet */
+	if(!samesubnet(  ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
 	   DBG_log("Our subnet is not the same as the TSI subnet");
 	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
 		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
-	   if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
-		DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+	   if(subnetinsubnet( ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
+		DBG_log("Their TSI subnet lies within our subnet, narrowing possible");
 			instantiate = TRUE;
 	   } else {
-		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing not possible");
 		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	}
-	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
+	/* check their subnet */
+	if(!samesubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet) , &c->spd.that.client)) {
 	   DBG_log("Their subnet is not the same as the TSR subnet");
 	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
 		return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
-	   if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
-		   DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+	   if(subnetinsubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet), &c->spd.that.client)) {
+		   DBG_log("Their TSR subnet lies within our subnet, narrowing possible");
 		   instantiate = TRUE;
 	   } else {
-		   DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+		   DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing not possible");
 		   return STF_FAIL + v2N_TS_UNACCEPTABLE;
 	   }
 	}
+	/* check protocol */
+	if((st1->st_ts_this.ipprotoid == c->spd.this.protocol) && (st1->st_ts_that.ipprotoid == c->spd.that.protocol)) {
+	   DBG_log("The TSi/Tsr protocol matches our connection");
+	} else {
+	   DBG_log("The TSi/Tsr protocol does not exactly match  our connection");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   } else {
+	   DBG_log("  though narrowing is allowed");
+	   if( ((c->spd.this.protocol != 0) && (st1->st_ts_this.ipprotoid != c->spd.this.protocol)) ||
+	       ((c->spd.that.protocol != 0) && (st1->st_ts_that.ipprotoid != c->spd.that.protocol)) ) {
+	       DBG_log("  narrowing of protocol from their TSi/TSr proposal failed");
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	 }
+	}
 
+#if 0
 	if(instantiate == TRUE) {
 	   /* instantiate the connection since it changed from template, then update */
 	   // FIXME st1->st_connection = ikev2_ts_instantiate(c);
-	   st1->st_connection = c;
-	   st1->st_connection->spd.this.client = tsi_subnet;
-	   st1->st_connection->spd.that.client = tsr_subnet;
+	   // st1->st_connection = c;
+	   st1->st_connection->c.spd.this.client = tsi_subnet;
+	   st1->st_connection->c.spd.that.client = tsr_subnet;
    
 	   // since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
 	   // st1->st_ts_this = *tsr;
@@ -713,13 +734,15 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	} else {
 		st1->st_connection = c;
 	}
-   
-   
-    } else {
-	/* We are RESPONDER, do as before with nothing changed */
-	DBG_log("PAUL: we are responder, not narrowing down");
-	st1->st_connection = c;
-    }
+#endif   
+
+    st1->st_connection = c;   
+    } 
+
+
+
+
+
 
     insert_state(st1);
     md->st = st1;
