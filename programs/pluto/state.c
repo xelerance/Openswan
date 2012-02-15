@@ -358,8 +358,60 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
-    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
+    if(st->st_ikev2 && st->st_state != STATE_PARENT_R1 && st->st_state != STATE_PARENT_R2)
+    {
+    /* child sa*/
+    if(st->st_clonedfrom != 0) 
+    {
+	DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+	if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+	}
+	else
+	{
+		/* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */ 
+		if(IS_CHILD_SA_ESTABLISHED(st)) 
+		{
+		DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+		//change_state(st, STATE_CHILDSA_DEL);
+		send_delete(st);
+		change_state(st, STATE_CHILDSA_DEL);
+		/* actual deletion when we receive peer response*/
+		goto delete_state_end;
+		}
+	}
+    }
+    else 
+    {
+	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
+	/* parent sa */
+	if(st->st_state == STATE_IKESA_DEL)
+	{
+		DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+	}
+	else
+	{
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not 
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr 
+			&& st->st_skey_er.ptr && st->st_skey_ar.ptr)
+		{
+		DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+		//change_state(st, STATE_IKESA_DEL);
+		send_delete(st);
+		change_state(st, STATE_IKESA_DEL);
+		/* actual deletion when we receive peer response*/
+                goto delete_state_end;
+		}
+	}
 
+    }
+    }
+
+    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
@@ -510,6 +562,9 @@ delete_state(struct state *st)
     pfreeany(st->sec_ctx);
 #endif
     pfree(st);
+
+delete_state_end:;
+
 }
 
 /*
@@ -600,6 +655,9 @@ static void delete_state_function(struct state *this
 		 , enum_show(&state_names, this->st_state));
 
     if(this->st_event != NULL) delete_event(this);
+    if(this->st_ikev2) {
+	this->st_state = this->st_clonedfrom ? STATE_CHILDSA_DEL : STATE_IKESA_DEL;
+    }
     delete_state(this);
 }
 
@@ -1117,6 +1175,50 @@ find_state_ikev2_child(const u_char *icookie
 	    DBG_log("v2 state object not found");
 	else
 	    DBG_log("v2 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+
+/*
+ * Find a state object for an IKEv2 child state to delete.
+ * In IKEv2, child states can only be distingusihed based on protocols and SPIs
+ */
+struct state *
+find_state_ikev2_child_to_delete(const u_char *icookie
+		       , const u_char *rcookie
+		       , u_int8_t protoid
+		       , ipsec_spi_t spi)
+{
+    struct state *st = *state_hash(icookie, rcookie, NULL);
+
+    while (st != (struct state *) NULL)
+    {
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == TRUE)
+	{
+                struct ipsec_proto_info *pr = protoid == PROTO_IPSEC_AH
+                    ? &st->st_ah : &st->st_esp;
+
+                if (pr->present)
+                {
+                    if (pr->attrs.spi == spi)
+                        break;
+                    if (pr->our_spi == spi)
+                        break;
+                }
+
+	}
+	st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+	if (st == NULL)
+	    DBG_log("v2 child state object not found");
+	else
+	    DBG_log("v2 child state object #%lu found, in %s"
 		, st->st_serialno
 		, enum_show(&state_names, st->st_state)));
 

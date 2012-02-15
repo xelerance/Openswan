@@ -125,6 +125,9 @@ void calc_ke(struct pluto_crypto_req *r)
 #endif
     prime = mpz_to_n2(group->modulus);
 
+    DBG(DBG_CRYPT,DBG_dump_chunk("NSS: Value of Prime:\n", prime));
+    DBG(DBG_CRYPT,DBG_dump_chunk("NSS: Value of base:\n", base));
+
     dhp.prime.data=prime.ptr;
     dhp.prime.len=prime.len;
     dhp.base.data=base.ptr;
@@ -136,11 +139,23 @@ void calc_ke(struct pluto_crypto_req *r)
     }
     PR_ASSERT(slot!=NULL);
 
+    while(1) {
     privk = PK11_GenerateKeyPair(slot, CKM_DH_PKCS_KEY_PAIR_GEN, &dhp, &pubk, PR_FALSE, PR_TRUE, osw_return_nss_password_file_info());
     if(!privk) {
 	loglog(RC_LOG_SERIOUS, "NSS: DH private key creation failed");
     }
     PR_ASSERT(privk!=NULL);
+
+    if( group-> bytes == pubk->u.dh.publicValue.len ) {
+	DBG(DBG_CRYPT, DBG_log("NSS: generated dh priv and pub keys: %d\n", pubk->u.dh.publicValue.len));
+	break;     
+    } else {
+	DBG(DBG_CRYPT, DBG_log("NSS: generating dh priv and pub keys"));
+	if (privk){SECKEY_DestroyPrivateKey(privk);}
+	if (pubk){SECKEY_DestroyPublicKey(pubk);}
+    }
+    }
+
     pluto_crypto_allocchunk(&kn->thespace, &kn->secret, sizeof(SECKEYPrivateKey*));
     {
 	char *gip = wire_chunk_ptr(kn, &(kn->secret));

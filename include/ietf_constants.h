@@ -508,6 +508,7 @@ extern const char *const sit_bit_names[];
 
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */
+extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 

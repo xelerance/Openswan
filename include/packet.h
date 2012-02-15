@@ -810,6 +810,35 @@ struct ikev2_notify
 };
 extern struct_desc ikev2_notify_desc;
 
+
+/* IKEv2 Delete Payload
+ * layout from RFC 5996 Section 3.11 
+ * This is followed by a variable length SPI.
+ *
+ *                      1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * ! Next Payload  !C| RESERVED    !         Payload Length        !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !  Protocol ID  !   SPI Size    !           Num of SPIs         !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * !                                                               !
+ * ~               Security Parameter Index(es) (SPI)              ~
+ * !                                                               !
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ */
+struct ikev2_delete
+{
+    u_int8_t    isad_np;
+    u_int8_t    isad_reserved;
+    u_int16_t   isad_length;
+    u_int8_t    isad_protoid;
+    u_int8_t    isad_spisize;
+    u_int16_t   isad_nospi;
+};
+
+extern struct_desc ikev2_delete_desc;
+
 /* rfc4306, section 3.12, vendor ID, uses generic header */
 extern struct_desc ikev2_vendor_id_desc;
 
@@ -863,6 +892,7 @@ union payload {
     struct ikev2_cert       v2cert;
     struct ikev2_certreq    v2certreq;
     struct ikev2_notify     v2n;
+    struct ikev2_delete     v2delete; 
 };
 
 

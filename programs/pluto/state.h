@@ -440,6 +440,11 @@ extern struct state *find_state_ikev2_child(const u_char *icookie
 					    , const u_char *rcookie
 					    , msgid_t msgid);
 
+extern struct state *find_state_ikev2_child_to_delete(const u_char *icookie
+					    , const u_char *rcookie
+					    , u_int8_t protoid
+					    , ipsec_spi_t spi);
+
 extern struct state *find_info_state(const u_char *icookie
 				     , const u_char *rcookie
 				     , const ip_address *peer
