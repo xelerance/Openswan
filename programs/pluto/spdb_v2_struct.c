@@ -1258,12 +1258,12 @@ ikev2_parse_child_sa_body(
 	 */
 	
 	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
-	    return PAYLOAD_MALFORMED;
+	    return v2N_INVALID_SYNTAX;
 
 	switch(proposal.isap_protoid) {
 	case PROTO_ISAKMP:
 	    loglog(RC_LOG_SERIOUS, "unexpected PARENT_SA, expected child");
-	    return PAYLOAD_MALFORMED;
+	    return v2N_INVALID_SYNTAX;
 	    break;
 
 	case PROTO_IPSEC_ESP:
@@ -1272,7 +1272,7 @@ ikev2_parse_child_sa_body(
 		unsigned int spival;
 		if(!in_raw(&spival, proposal.isap_spisize
 			   , &proposal_pbs, "CHILD SA SPI"))
-		    return PAYLOAD_MALFORMED;
+		    return v2N_INVALID_SYNTAX;
 
 		DBG(DBG_PARSING
 		    , DBG_log("SPI received: %08x", ntohl(spival)));
@@ -1282,14 +1282,14 @@ ikev2_parse_child_sa_body(
 	    {
 		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in CHILD_SA Proposal"
 		       , (unsigned)proposal.isap_spisize);
-		return INVALID_SPI;
+		return V2_INVALID_SPI;
 	    }
 	    break;
 
 	default:
 	    loglog(RC_LOG_SERIOUS, "unexpected Protocol ID (%s) found in PARENT_SA Proposal"
 		   , enum_show(&protocol_names, proposal.isap_protoid));
-	    return INVALID_PROTOCOL_ID;
+	    return v2N_INVALID_SELECTORS;
 	}
 
 	if(proposal.isap_propnum == lastpropnum) {
@@ -1317,7 +1317,7 @@ ikev2_parse_child_sa_body(
 
 	{ stf_status ret = ikev2_process_transforms(&proposal
 						    , &proposal_pbs, itl);
-	    if(ret != STF_OK) return ret;
+	    if(ret != STF_OK) return v2N_TS_UNACCEPTABLE;
 	}
 
 	np = proposal.isap_np;
@@ -1331,7 +1331,7 @@ ikev2_parse_child_sa_body(
 
 	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
 		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
-		return NO_PROPOSAL_CHOSEN;
+		return v2N_NO_PROPOSAL_CHOSEN;
 	    }
 	}
     }
@@ -1341,7 +1341,7 @@ ikev2_parse_child_sa_body(
      * out: gotmatch == FALSE, means nothing selected.
      */
     if(!gotmatch) {
-	return NO_PROPOSAL_CHOSEN;
+	return v2N_NO_PROPOSAL_CHOSEN;
     }
 
     /* there might be some work to do here if there was a conjunction,
@@ -1391,7 +1391,7 @@ ikev2_parse_child_sa_body(
 				     , winning_prop);
     }
 
-    return NOTHING_WRONG;
+    return v2N_NOTHING_WRONG;
 }
 	
 
