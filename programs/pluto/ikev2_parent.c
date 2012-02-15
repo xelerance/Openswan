@@ -1639,11 +1639,13 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_calculating = FALSE;
 
     e = ikev2_parent_inI2outR2_tail(pcrc, r);
-    if( e != STF_OK) {
+    if( e >= STF_FAIL) {
+	/* we do not send a notify because we are the initiator that could be responding to an error notification */
 	int v2_notify_num = e - STF_FAIL;
 	e = STF_FAIL;
 	DBG_log("ikev2_parent_inI2outR2_tail returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
-	// send notification!
+    } else if( e != STF_OK) {
+	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&ikev2_notify_names, e));
     }
   
     if(dh->md != NULL) {
@@ -1924,13 +1926,15 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(np == ISAKMP_NEXT_v2SA) {
 	    /* must have enough to build an CHILD_SA */
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
-	    if(ret != STF_OK) {
+	    if(ret >= STF_FAIL) {
 		int v2_notify_num = ret - STF_FAIL;
 		ret = STF_FAIL;
-		DBG_log("ikev2_child_sa_respond  returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
-		// send notification!
+		DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
+		SEND_NOTIFICATION(v2_notify_num);
 		return ret;
-	    }
+	    } else if(ret != STF_OK){
+		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&ikev2_notify_names, ret));
+		return ret;
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
