@@ -2514,7 +2514,10 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 		memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 		r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
 		r_hdr.isa_np = ISAKMP_NEXT_v2E;
-		r_hdr.isa_msgid = htonl(md->msgid_received);
+		// PAUL: msgid_received should only be used to check for retransmits?
+		// r_hdr.isa_msgid = htonl(md->msgid_received);
+		increment_msgid_nextuse(st);
+		r_hdr.isa_msgid = st->st_msgid;
 
 		/*set initiator bit if we are initiator*/
 		if(md->role == INITIATOR) {
