@@ -2349,7 +2349,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
-#if 1
+#if 0
  /* Empty notification data section should be fine? */
 
     if(n_data == NULL) { 
