@@ -1473,7 +1473,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 */
 	openswan_log("PAUL:  now, find an eligible child SA from the pending list, and emit TSi and TSr");
 	if(c0) {
-		chunk_t child_spi, notifiy_data;
+		chunk_t child_spi, notify_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
@@ -1486,10 +1486,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
 		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
-		memset(&notifiy_data, 0, sizeof(notifiy_data));
+		memset(&notify_data, 0, sizeof(notify_data));
 		ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
 				(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) : ISAKMP_PAYLOAD_NONCRITICAL,
-				 0, &child_spi, v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+				 0, &child_spi, v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
 	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
@@ -2390,6 +2390,9 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	child_spi.len = 0;
 
 	/* build and add v2N payload to the packet */
+
+	memset(&child_spi, 0, sizeof(child_spi));
+	memset(&notify_data, 0, sizeof(notify_data));
 	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
 		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
 		    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP, &child_spi, 

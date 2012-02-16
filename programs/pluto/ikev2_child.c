@@ -772,7 +772,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     if(ret != STF_OK) return ret;
 
     if( role == RESPONDER ) {
-	chunk_t child_spi, notifiy_data;
+	chunk_t child_spi, notify_data;
 	struct payload_digest *p;
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 	{
@@ -788,10 +788,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	   }
 
 	   memset(&child_spi, 0, sizeof(child_spi));
-	   memset(&notifiy_data, 0, sizeof(notifiy_data));
+	   memset(&notify_data, 0, sizeof(notify_data));
 	   ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
 			&child_spi,
-			v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+			v2N_USE_TRANSPORT_MODE, &notify_data, outpbs);
 
 	   if (st1->st_esp.present == TRUE) {
 		/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
