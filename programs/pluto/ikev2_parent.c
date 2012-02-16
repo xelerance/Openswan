@@ -2386,14 +2386,17 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	}
 		
     } 
-	/* build and add v2N payload to the packet */
 	child_spi.ptr = NULL;
 	child_spi.len = 0;
+
+	/* build and add v2N payload to the packet */
+
 	memset(&child_spi, 0, sizeof(child_spi));
+	memset(&notify_data, 0, sizeof(notify_data));
 	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
 		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
 		    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP, &child_spi, 
-					type, &n_data, &rbody);
+					type, n_data, &rbody);
 
    close_message(&rbody);
    close_output_pbs(&reply); 
