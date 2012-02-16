@@ -237,7 +237,9 @@ ikev2_process_payloads(struct msg_digest *md,
 	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
 	int thisp = np;
 	bool unknown_payload = FALSE;
-	
+
+	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%)",enum_show(&payload_names, thisp)));
+
 	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
@@ -304,7 +306,8 @@ ikev2_process_payloads(struct msg_digest *md,
 	
 	pd++;
     }
-    
+
+    DBG(DBG_CONTROL, DBG_log("Finished and now at the end of ikev2_process_payload"));
     md->digest_roof = pd;
     return STF_OK;
 }
@@ -337,6 +340,8 @@ process_v2_packet(struct msg_digest **mdp)
 	/* This message might require a response  */
 	md->role = RESPONDER;
 
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
+
 	st = find_state_ikev2_parent(md->hdr.isa_icookie
 				     , md->hdr.isa_rcookie);
 
@@ -368,6 +373,8 @@ process_v2_packet(struct msg_digest **mdp)
 	
 	md->role = INITIATOR;
 	
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
+
 	if(md->msgid_received==MAINMODE_MSGID) {
 	    st = find_state_ikev2_parent(md->hdr.isa_icookie
 					 , md->hdr.isa_rcookie);
@@ -425,6 +432,7 @@ process_v2_packet(struct msg_digest **mdp)
     ix = md->hdr.isa_xchg;
     if(st) {
 	from_state = st->st_state;
+	DBG(DBG_CONTROL, DBG_log("state %s found", enum_show(&state_names, from_state)));
     }
 
     for(svm = state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
@@ -449,6 +457,8 @@ process_v2_packet(struct msg_digest **mdp)
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
+	DBG(DBG_CONTROL, DBG_log("ended up with STATE_IKEv2_ROOF"));
+
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	    /* must be an initiator message, so we are the responder */
@@ -463,7 +473,9 @@ process_v2_packet(struct msg_digest **mdp)
 	stf_status stf;
 	stf = ikev2_process_payloads(md, &md->message_pbs
 				     , from_state, md->hdr.isa_np);
-	
+
+	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
+
 	if(stf != STF_OK) {
 	    complete_v2_state_transition(mdp, stf);
 	    return;
