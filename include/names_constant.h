@@ -61,7 +61,6 @@ extern enum_names notification_names;
 extern enum_names ipsec_notification_names;
 
 /* IKEv2 */
-//extern enum_names critical_names;
 extern enum_names ikev2_auth_names;
 extern enum_names trans_type_names;
 extern enum_names trans_type_encr_names;
@@ -74,6 +73,7 @@ extern enum_names *ikev2_transid_val_descs[];
 extern const unsigned int ikev2_transid_val_descs_size;
 extern enum_names ikev2_cert_type_names;
 extern enum_names ikev2_notify_names;
+extern enum_names ikev2_ts_type_names;
 
 #ifdef HAVE_LABELED_IPSEC
 extern u_int16_t secctx_attr_value;

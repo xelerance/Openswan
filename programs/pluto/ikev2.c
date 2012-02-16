@@ -6,6 +6,7 @@
  * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Simon Deziel <simon@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -116,7 +117,7 @@ enum smf2_flags {
  * etc.
  * 
  * Like IKEv1, IKEv2 can have multiple child SAs.  Like IKEv1, each one of
- * the child SAs ("Phase 2") will get their own state. Unlikely IKEv2,
+ * the child SAs ("Phase 2") will get their own state. Unlikely IKEv1,
  * an implementation may negotiate multiple CHILD_SAs at the same time
  * using different MessageIDs.  This is enabled by an option (a notify)
  * that the responder sends to the initiator.  The initiator may only
@@ -246,7 +247,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	int thisp = np;
 	bool unknown_payload = FALSE;
 
-	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%)",enum_show(&payload_names, thisp)));	
+	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%s)",enum_show(&payload_names, thisp)));	
 	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
@@ -279,12 +280,11 @@ ikev2_process_payloads(struct msg_digest *md,
 		
 	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
 	{
-	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
+	    loglog(RC_LOG_SERIOUS, "%s malformed payload in packet", excuse);
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return STF_FAIL;
 	}
-	
-	
+
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
 		      , enum_show(&payload_names, thisp)
@@ -333,7 +333,6 @@ process_v2_packet(struct msg_digest **mdp)
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
     enum isakmp_xchg_types ix;
-    bool rcookiezero;
 
     /* Look for an state which matches the various things we know */
     /*
@@ -352,7 +351,6 @@ process_v2_packet(struct msg_digest **mdp)
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
-	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
 
 	md->role = RESPONDER;
 
@@ -380,15 +378,14 @@ process_v2_packet(struct msg_digest **mdp)
 	    }
 	    /* update lastrecv later on */
 	}
-    //} else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	//openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
+    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u - dropping", md->msgid_received);
+	return;
 	
     } else {
-        /* then I am the initiator, and this is a reply */
+        /* This message is an answer to a request we sent */
 	
 	md->role = INITIATOR;
-
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
 	
 	if(md->msgid_received==MAINMODE_MSGID) {
 	    st = find_state_ikev2_parent(md->hdr.isa_icookie
@@ -513,6 +510,7 @@ process_v2_packet(struct msg_digest **mdp)
 	       , bitnamesof(payload_name, needed));
 	SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	return;
+    }
 #endif
 
     md->svm = svm;
@@ -740,8 +738,9 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    addrtot(&st->st_ts_that.low,  0, tsubl, sizeof(tsubl));
 	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
 	    
-	    openswan_log("negotiated tunnel [%s,%s] -> [%s,%s]"
-			 , usubl, usubh, tsubl, tsubh);
+	    openswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
+		, usubl, usubh, st->st_ts_this.startport, st->st_ts_this.endport, st->st_ts_this.ipprotoid
+		, tsubl, tsubh, st->st_ts_that.startport, st->st_ts_that.endport, st->st_ts_that.ipprotoid);
 
 	    fmt_ipsec_sa_established(st,  sadetails,sizeof(sadetails));
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
@@ -926,13 +925,6 @@ void complete_v2_state_transition(struct msg_digest **mdp
     case STF_IGNORE:
 	break;
 
-    case STF_INLINE:         /* this is second time through complete
-			      * state transition, so the MD has already
-			      * been freed.
-			      0				  */
-	*mdp = NULL;
-	break;
-
     case STF_SUSPEND:
 	/* update the previous packet history */
 	/* IKEv2 XXX */ /* update_retransmit_history(st, md); */
@@ -941,6 +933,12 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	*mdp = NULL;
 	break;
 
+    case STF_INLINE:         /* mcr: this is second time through complete
+			      * state transition, so the MD has already
+			      * been freed.
+			      0				  */
+			     *mdp = NULL;
+			    /* fall through to STF_OK */
     case STF_OK:
 	/* advance the state */
 	success_v2_state_transition(mdp);
@@ -1012,12 +1010,11 @@ void complete_v2_state_transition(struct msg_digest **mdp
     }
 }
 
-notification_t
+v2_notification_t
 accept_v2_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
 {
     return accept_nonce(md, dest, name, ISAKMP_NEXT_v2Ni);
 }
-
 
 
 /*

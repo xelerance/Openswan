@@ -396,6 +396,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
     {"ikev2",          kv_conn|kv_auto|kv_processed,kt_enum,KBF_IKEv2,&kw_fourvalued_list},
+    {"narrowing",      kv_conn|kv_auto, kt_bool,   KBF_IKEv2_ALLOW_NARROWING, NOT_ENUM},
     {"sareftrack",     kv_conn|kv_auto|kv_processed,kt_enum,KBF_SAREFTRACK,&kw_sareftrack_list},
     {"pfs",            kv_conn|kv_auto, kt_bool,   KBF_PFS,          NOT_ENUM},
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},

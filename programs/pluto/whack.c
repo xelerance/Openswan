@@ -5,6 +5,7 @@
  * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 Shingo Yamawaki
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -534,8 +535,12 @@ enum option_enums {
     DBGOPT_IMPAIR_SA_CREATION,  /* make all SA creation fail */
     DBGOPT_IMPAIR_DIE_ONINFO,   /* cause state to be deleted upon receipt of information payload */
     DBGOPT_IMPAIR_JACOB_TWO_TWO, /* cause pluto to send all messages twice */
+    DBGOPT_IMPAIR_MAJOR_VERSION_BUMP, /* cause pluto to send IKE major version higher then we support */
+    DBGOPT_IMPAIR_MINOR_VERSION_BUMP, /* cause pluto to send IKE minor version higher then we support */
+    DBGOPT_IMPAIR_RETRANSMITS, /* cause pluto to never retransmit packets */
+    DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG, /* cause pluto to never retransmit packets */
 
-#   define DBGOPT_LAST DBGOPT_IMPAIR_DIE_ONINFO
+#   define DBGOPT_LAST DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG
 #endif
 
 };
@@ -718,7 +723,7 @@ static const struct option long_opts[] = {
 #endif
 #ifdef DEBUG
     { "debug-none", no_argument, NULL, DBGOPT_NONE + OO },
-    { "debug-all]", no_argument, NULL, DBGOPT_ALL + OO },
+    { "debug-all", no_argument, NULL, DBGOPT_ALL + OO },
     { "debug-raw", no_argument, NULL, DBGOPT_RAW + OO },
     { "debug-crypt", no_argument, NULL, DBGOPT_CRYPT + OO },
     { "debug-parsing", no_argument, NULL, DBGOPT_PARSING + OO },
@@ -747,6 +752,10 @@ static const struct option long_opts[] = {
     { "impair-sa-fail",    no_argument, NULL, DBGOPT_IMPAIR_SA_CREATION + OO },
     { "impair-die-oninfo", no_argument, NULL, DBGOPT_IMPAIR_DIE_ONINFO  + OO },
     { "impair-jacob-two-two", no_argument, NULL, DBGOPT_IMPAIR_JACOB_TWO_TWO + OO },
+    { "impair-major-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MAJOR_VERSION_BUMP + OO },
+    { "impair-minor-version-bump", no_argument, NULL, DBGOPT_IMPAIR_MINOR_VERSION_BUMP + OO },
+    { "impair-retransmits", no_argument, NULL, DBGOPT_IMPAIR_RETRANSMITS + OO },
+    { "impair-send-bogus-isakmp-flag", no_argument, NULL, DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
     { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
@@ -1751,6 +1760,10 @@ main(int argc, char **argv)
 	case DBGOPT_IMPAIR_SA_CREATION:	/* --impair-sa-creation */
 	case DBGOPT_IMPAIR_DIE_ONINFO:	/* --impair-die-oninfo */
 	case DBGOPT_IMPAIR_JACOB_TWO_TWO: /* --impair-jacob-two-two */
+	case DBGOPT_IMPAIR_MAJOR_VERSION_BUMP: /* --impair-major-version-bump */
+	case DBGOPT_IMPAIR_MINOR_VERSION_BUMP: /* --impair-minor-version-bump */
+	case DBGOPT_IMPAIR_RETRANSMITS: /* --impair-retransmits */
+	case DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG: /* --impair-send-bogus-isakmp-flag */
 	    msg.debugging |= LELEM(c-DBGOPT_RAW);
 	    continue;
 #endif

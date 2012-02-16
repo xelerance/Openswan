@@ -1,7 +1,7 @@
 /* 
  * Cryptographic helper function - calculate KE and nonce
  * Copyright (C) 2004 Michael C. Richardson <mcr@xelerance.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009 - 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it

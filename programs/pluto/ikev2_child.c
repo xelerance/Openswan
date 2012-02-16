@@ -3,6 +3,7 @@
  * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -63,7 +64,7 @@
 #include "hostpair.h"
 
 /* rewrite me with addrbytesptr() */
-struct traffic_selector ikev2_subnettots(struct end *e)
+struct traffic_selector ikev2_end_to_ts(struct end *e)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
@@ -72,7 +73,7 @@ struct traffic_selector ikev2_subnettots(struct end *e)
     
     switch(e->client.addr.u.v4.sin_family) {
     case AF_INET:
-	ts.sin_family = AF_INET;
+	ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 	ts.low   = e->client.addr;
 	ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
 	ts.high  = e->client.addr;
@@ -80,7 +81,7 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 	break;
 
     case AF_INET6:
-	ts.sin_family = AF_INET6;
+	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
 	v6mask = bitstomask6(e->client.maskbits);
 
 	ts.low   = e->client.addr;
@@ -95,26 +96,41 @@ struct traffic_selector ikev2_subnettots(struct end *e)
 	ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
 	ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
 	break;
-    }
 
-    /* IKEv2 code always sent 0-65535 as port regardless of 
-     * what local policy is. if local policy states a specific 
-     * protocol and port, then send that protocol 
-     * value and port to other end */
+    /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
+    }
 
     ts.ipprotoid = e->protocol;
 
-    /*if port is %any or 0*/
+    /* if port is %any or 0 we mean all ports */
     if(e->port == 0 || e->has_port_wildcard) {
-    ts.startport = 0;
-    ts.endport = 65535;
-    }
-    else {
-    ts.startport = e->port;
-    ts.endport = e->port;
+	ts.startport = 0;
+	ts.endport = 65535;
+    } else {
+	ts.startport = e->port;
+	ts.endport = e->port;
     }
 	
     return ts;
+}
+
+/*
+ * Does our local port fit within the ts range received?
+ * our local 0 means "all"
+ * 0-65535 or 0-0 means their "all"
+ */
+static int ikev2_port_in_range(int our_port, int their_low, int their_high) {
+	if( (their_low == 0) && ((their_high == 0) || (their_high == 65535)))
+		return 1;
+	if(our_port == 0) {
+	   if(their_low !=0) return 0;
+	   if( (their_high !=0) && (their_high != 65535) ) return 0;
+	   return 1;
+	} else {
+	   if(our_port < their_low) return 0;
+	   if(our_port > their_high) return 0;
+	   return 1;
+	}
 }
 
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
@@ -135,22 +151,21 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))
 	return STF_INTERNAL_ERROR;
 
-    switch(ts->sin_family) {
-    case AF_INET:
-	its1.isat1_type = ID_IPV4_ADDR_RANGE;
-	its1.isat1_sellen = 16;
+    switch(ts->ts_type) {
+    case IKEv2_TS_IPV4_ADDR_RANGE:
+	its1.isat1_type = IKEv2_TS_IPV4_ADDR_RANGE;
+	its1.isat1_sellen = 2*4 + 8; /* See RFC 5669 SEction 13.3.1, 8 octet header plus 2 ip addresses */
 	break;
-    case AF_INET6:
-	its1.isat1_type = ID_IPV6_ADDR_RANGE;
-	its1.isat1_sellen = 40;
+    case IKEv2_TS_IPV6_ADDR_RANGE:
+	its1.isat1_type = IKEv2_TS_IPV6_ADDR_RANGE;
+	its1.isat1_sellen = 2*16 + 8; /* See RFC 5669 SEction 13.3.1, 8 octet header plus 2 ip addresses */
 	break;
+   case IKEv2_TS_FC_ADDR_RANGE:
+	DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
+	return STF_INTERNAL_ERROR;
+   default:
+	DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
     }
-
-
-    /* IKEv2 code always sent 0-65535 as port regardless of 
-     * what local policy is. if local policy states a specific 
-     * protocol and port, then send that protocol 
-     * value and port to other end */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
     its1.isat1_startport = ts->startport;      /* ports as per local policy*/
@@ -159,17 +174,22 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 	return STF_INTERNAL_ERROR;
     
     /* now do IP addresses */
-    switch(ts->sin_family) {
-    case AF_INET:
+    switch(ts->ts_type) {
+    case IKEv2_TS_IPV4_ADDR_RANGE:
 	if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
 	   ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
-    case AF_INET6:
+    case IKEv2_TS_IPV6_ADDR_RANGE:
 	if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
 	   ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
 	    return STF_INTERNAL_ERROR;
 	break;
+    case IKEv2_TS_FC_ADDR_RANGE:
+	openswan_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
+    default:
+	openswan_log("Failed to create IKEv2 Traffic Selector payload");
+	return STF_INTERNAL_ERROR;
     }
 
     close_output_pbs(&ts_pbs2);
@@ -198,7 +218,84 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     } else {
 	ts_i = &st->st_ts_that;
 	ts_r = &st->st_ts_this;
-    }
+
+	/* we need to fill the traffic_selector with local policy to notify the
+	 * initiator of possible narrowing of protocol and ports */
+
+	if( ((ts_i->ipprotoid != 0) && (ts_i->ipprotoid != c0->spd.that.protocol)) ||
+	    ((ts_r->ipprotoid != 0) && (ts_r->ipprotoid != c0->spd.this.protocol)) )  {
+		DBG_log("FATAL: Received TSi/TSr transport protocol of %d/%d cannot be narrowed to local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol);
+		return STF_FAIL;
+	}
+   }
+
+	DBG(DBG_CONTROLMORE, DBG_log("Received TSi/TSr transport protocol of %d/%d with local policy %d/%d",
+			ts_i->ipprotoid, ts_r->ipprotoid, c0->spd.that.protocol, c0->spd.this.protocol));
+
+	switch(st->st_childsa->tunnel_addr_family) {
+	    case AF_INET:
+		ts_i->ts_type =  IKEv2_TS_IPV4_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_IPV4_ADDR_RANGE;
+		break;
+	    case AF_INET6:
+		ts_i->ts_type =  IKEv2_TS_IPV6_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_IPV6_ADDR_RANGE;
+		break;
+#if 0
+	    case NOT_IMPLEMENTED_YET:
+		ts_i->ts_type =  IKEv2_TS_FC_ADDR_RANGE;
+		ts_r->ts_type =  IKEv2_TS_FC_ADDR_RANGE;
+		break;
+#endif
+	    default:
+		DBG_log("Unknown tunnel_addr_family '%d' in connection", st->st_childsa->tunnel_addr_family);
+	   return STF_FAIL;
+	}
+	
+
+
+	ts_i->ipprotoid =  c0->spd.that.protocol;
+	ts_r->ipprotoid =  c0->spd.this.protocol;
+
+        /*
+	 * We currently do not support a range of ports, only single ports 
+	 * But the range 0-65535 maps to our 'port = 0' variable. Older versions used
+	 * to send the range 0-0 to mean everything.
+	 */
+
+	/* log warning on limited port range support */
+	if( (ts_i->startport !=0) || ((ts_i->endport !=0) && (ts_i->endport != 65535)))
+	   if(ts_i->startport != ts_i->endport)
+		DBG_log("FATAL: Received TSi port range (%d-%d) not yet supported",
+			ts_i->startport, ts_i->endport);
+	if( (ts_r->startport !=0) || ((ts_r->endport !=0) && (ts_r->endport != 65535)))
+	   if(ts_r->startport != ts_r->endport)
+		DBG_log("FATAL: Received TSr port range (%d-%d) not yet supported",
+			ts_r->startport, ts_r->endport);
+
+	if(!ikev2_port_in_range(c0->spd.that.port, ts_i->startport, ts_i->endport)) {
+	   DBG_log("FATAL: Received TSi(%d-%d) but local policy only allows port %d",
+		   ts_i->startport, ts_i->endport, c0->spd.that.port);
+	   return STF_FAIL;
+	}
+	if(!ikev2_port_in_range(c0->spd.this.port, ts_r->startport, ts_r->endport)) {
+	   DBG_log("FATAL: Received TSr(%d-%d) but local policy only allows port %d",
+		   ts_r->startport, ts_r->endport, c0->spd.this.port);
+	   return STF_FAIL;
+	}
+
+
+
+	ts_i->startport = c0->spd.that.port;
+	ts_r->startport = c0->spd.this.port;
+	if(c0->spd.that.port == 0) {
+	   ts_i->endport = 65535;
+	   ts_r->endport = 65535;
+	} else {
+	   ts_i->endport = c0->spd.that.port;
+	   ts_r->endport = c0->spd.this.port;
+	}
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
 	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
@@ -213,8 +310,8 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 		struct payload_digest *p;
 		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 		{
-			if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
-			DBG_log("Received USE_TRANSPORT_MODE from the other end, next payload is USE_TRANSPORT_MODE notification");
+			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+			DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
 			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
 						, ts_r, RESPONDER);
 			break;
@@ -233,7 +330,7 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 }
 
 /* return number of traffic selectors found */
-static int 
+int 
 ikev2_parse_ts(struct payload_digest *const ts_pd
 	       , struct traffic_selector *array
 	       , unsigned int array_max)
@@ -249,8 +346,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	if(i < array_max) {
 	    memset(&array[i], 0, sizeof(*array));
 	    switch(ts1.isat1_type) {
-	    case ID_IPV4_ADDR_RANGE:
-		array[i].sin_family = AF_INET;
+	    case IKEv2_TS_IPV4_ADDR_RANGE:
+		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 
 		array[i].low.u.v4.sin_family  = AF_INET;
 #ifdef NEED_SIN_LEN
@@ -268,8 +365,8 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		    return -1;
 		break;
 
-	    case ID_IPV6_ADDR_RANGE:
-		array[i].sin_family = AF_INET;
+	    case IKEv2_TS_IPV6_ADDR_RANGE:
+		array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
 		array[i].low.u.v6.sin6_family  = AF_INET6;
 #ifdef NEED_SIN_LEN
 		array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
@@ -287,7 +384,12 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		    return -1;
 		break;
 		
+	    case IKEv2_TS_FC_ADDR_RANGE:
+		DBG_log("  received unsupported IKEv2 Traffic Selector type TS_FC_ADDR_RANGE (RFC-4595)");
+		return -1;
+
 	    default:
+		DBG_log("  received unsupported IKEv2 Traffic Selector '%d'", ts1.isat1_type );
 		return -1;
 	    }
 
@@ -312,7 +414,10 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 {
     unsigned int tsi_ni, tsr_ni;
     int bestfit = -1;
+/* not used? */
+#if 0
     int best_tsr, best_tsi; 
+#endif
     struct end *ei, *er;
     
     if(role == INITIATOR) {
@@ -329,8 +434,8 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 	char er3[SUBNETTOT_BUF];
 	subnettot(&ei->client,  0, ei3, sizeof(ei3));
 	subnettot(&er->client,  0, er3, sizeof(er3));
-	DBG_log("  ikev2_eval_conn evaluating "
-		"I=%s:%s:%d/%d R=%s:%d/%d %s"
+	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
+		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
 		, er3, er->protocol, er->port
 		, is_virtual_connection(d) ? "(virt)" : "");
@@ -353,17 +458,29 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
 		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
 		
-		DBG_log("    tsi[%u]=%s/%s tsr[%u]=%s/%s "
+		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsi_ni, lbi, hbi
-			, tsr_ni, lbr, hbr);
+			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
+			, tsr_ni, lbr, hbr
+			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
 	    }
 	    );
 	    /* do addresses fit into the policy? */
+
+	    /* 
+	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
+	     *       for now we really support/limit ourselves to a CIDR 
+	     */
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
 	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
-	       && addrinsubnet(&tsr[tsr_ni].high, &er->client))
+	       && addrinsubnet(&tsr[tsr_ni].high, &er->client)
+	       && (tsi[tsi_ni].ipprotoid == ei->protocol)
+	       && (tsr[tsr_ni].ipprotoid == er->protocol)
+	      )
 	    {
+		DBG_log("   PAUL:inside checking to see how good a fit we are");
+		
 		/*
 		 * now, how good a fit is it? --- sum of bits gives
 		 * how good a fit this is.
@@ -401,8 +518,11 @@ static int ikev2_evaluate_connection_fit(struct connection *d
 		);
 
 		if(fitbits > bestfit) {
+/* not used ? */
+#if 0
 		    best_tsi = tsi_ni;
 		    best_tsr = tsr_ni;
+#endif
 		    bestfit = fitbits;
 		}
 	    }
@@ -427,7 +547,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct traffic_selector tsi[16], tsr[16];
     unsigned int tsi_n, tsr_n;
 
-    st1 = duplicate_state(st);
+    DBG_log("PAUL: Starting ikev2_child_sa_respond");
+    st1 = duplicate_state(st); /* PAUL: shouldn't we duplicate state per tsi/tsr match? */
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -456,6 +577,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    int bfit=ikev2_evaluate_connection_fit(c,sra,role
 						   ,tsi,tsr,tsi_n,tsr_n);
 	    if(bfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit c %s", c->name));
 		bestfit = bfit;
 		b = c;
 		bsr = sra;
@@ -503,6 +625,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 		    newfit=ikev2_evaluate_connection_fit(d,sr,role
 							 ,tsi,tsr,tsi_n,tsr_n);
 		    if(newfit > bestfit) {
+	        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
 			bestfit = newfit;
 			b=d;
 			bsr = sr;
@@ -511,23 +634,116 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	    }
 	}
 	
+	/* found better connection */
+	c=b;
+
 	/*
-	 * now that we have found the best connection, copy the data into
+	 * If we found a better connection, copy the ts data into
 	 * the state structure as the tsi/tsr
 	 *
 	 */
-
-	/*better connection*/
-	c=b;
-
-	/* Paul: should we STF_FAIL here instead of checking for NULL */
 	if (bsr != NULL) {
-		st1->st_ts_this = ikev2_subnettots(&bsr->this);
-		st1->st_ts_that = ikev2_subnettots(&bsr->that);
+		st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
+		st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
 	}
     }
 
-    st1->st_connection = c;
+    /* 
+     * We now found the best TSi/TSr combination, which got copied to st1
+     * If we do not allow narrowing, does the TSiTSr we found provide an excact match?
+     * We might need to narrow down the proposal, as perhttp://tools.ietf.org/html/rfc5996#section-2.9
+     */
+    {
+    DBG_log("PAUL: Starting narrowing TSi/TSr check");
+	
+	int instantiate = FALSE;
+   
+	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
+	ip_subnet tsi_subnet, tsr_subnet;
+	const char *oops;
+	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
+	if(oops != NULL) {
+	      DBG_log("Received TSi was not in CIDR format (%s), cannot determine narrowing\n",oops);
+	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	} 
+	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+	if(oops != NULL) {
+	      DBG_log("Received TSr was not in CIDR format (%s), cannot determine narrowing\n",oops);
+	      return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	}
+   
+	/* Can we narrow, if so we instantiate */
+	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
+	/* check our subnet */
+	if(!samesubnet(  ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
+	   DBG_log("Our subnet is not the same as the TSI subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	   if(subnetinsubnet( ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
+		DBG_log("Their TSI subnet lies within our subnet, narrowing possible");
+			instantiate = TRUE;
+	   } else {
+		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing not possible");
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	}
+	/* check their subnet */
+	if(!samesubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet) , &c->spd.that.client)) {
+	   DBG_log("Their subnet is not the same as the TSR subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	   if(subnetinsubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet), &c->spd.that.client)) {
+		   DBG_log("Their TSR subnet lies within our subnet, narrowing possible");
+		   instantiate = TRUE;
+	   } else {
+		   DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing not possible");
+		   return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	}
+	/* check protocol */
+	if((st1->st_ts_this.ipprotoid == c->spd.this.protocol) && (st1->st_ts_that.ipprotoid == c->spd.that.protocol)) {
+	   DBG_log("The TSi/Tsr protocol matches our connection");
+	} else {
+	   DBG_log("The TSi/Tsr protocol does not exactly match  our connection");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   } else {
+	   DBG_log("  though narrowing is allowed");
+	   if( ((c->spd.this.protocol != 0) && (st1->st_ts_this.ipprotoid != c->spd.this.protocol)) ||
+	       ((c->spd.that.protocol != 0) && (st1->st_ts_that.ipprotoid != c->spd.that.protocol)) ) {
+	       DBG_log("  narrowing of protocol from their TSi/TSr proposal failed");
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	   }
+	 }
+	}
+
+#if 0
+	if(instantiate == TRUE) {
+	   /* instantiate the connection since it changed from template, then update */
+	   // FIXME st1->st_connection = ikev2_ts_instantiate(c);
+	   // st1->st_connection = c;
+	   st1->st_connection->c.spd.this.client = tsi_subnet;
+	   st1->st_connection->c.spd.that.client = tsr_subnet;
+   
+	   // since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+	   // st1->st_ts_this = *tsr;
+	   // st1->st_ts_that = *tsi;
+	   // DBG_log("PAUL: traffic selectors updated\n");
+	} else {
+		st1->st_connection = c;
+	}
+#endif   
+
+    st1->st_connection = c;   
+    } 
+
+
+
+
+
+
     insert_state(st1);
     md->st = st1;
     md->pst= st;
@@ -535,20 +751,21 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     /* start of SA out */
     {
 	struct isakmp_sa r_sa = sa_pd->payload.sa;
-	notification_t rn;
+	v2_notification_t rn;
 	pb_stream r_sa_pbs;
 
-	r_sa.isasa_np = ISAKMP_NEXT_v2TSi;  
+	r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
 	if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
 	    return STF_INTERNAL_ERROR;
 
 	/* SA body in and out */
 	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				       &r_sa_pbs, st1, FALSE);
-	
-	if (rn != NOTHING_WRONG)
+
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
+
 
     ret = ikev2_calc_emit_ts(md, outpbs, role
 			     , c, c->policy);
@@ -559,22 +776,22 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	struct payload_digest *p;
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
 	{
-	   if ( p->payload.v2n.isan_type == USE_TRANSPORT_MODE ) {
+	   if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
 	   if(st1->st_connection->policy & POLICY_TUNNEL) {
-		DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-		DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+		DBG_log("Although local policy is tunnel, received v2N_USE_TRANSPORT_MODE");
+		DBG_log("So switching to transport mode, and responding with v2N_USE_TRANSPORT_MODE notify");
 	   }
 	   else {
-		DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-		DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+		DBG_log("Local policy is transport, received v2N_USE_TRANSPORT_MODE");
+		DBG_log("Now responding with v2N_USE_TRANSPORT_MODE notify");
 	   }
 
 	   memset(&child_spi, 0, sizeof(child_spi));
 	   memset(&notifiy_data, 0, sizeof(notifiy_data));
 	   ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
 			&child_spi,
-			USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+			v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
 
 	   if (st1->st_esp.present == TRUE) {
 		/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/

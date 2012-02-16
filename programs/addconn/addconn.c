@@ -260,8 +260,10 @@ main(int argc, char *argv[])
 		configfile, err);
 	exit(3);
     }
-    else if(checkconfig)
+    else if(checkconfig) {
+	confread_free(cfg);
 	exit(0);
+    }
 
     if(defaultroute) {
 	err_t e;
@@ -343,6 +345,7 @@ main(int argc, char *argv[])
 	char *sep="";
 	if((argc-optind) < 2 ) {
 	    printf("%s_confreadstatus=failed\n", varprefix);
+	    confread_free(cfg);
 	    exit(3);
 	}
 
@@ -364,6 +367,7 @@ main(int argc, char *argv[])
 	    }
 	}
 	printf("\"\n");
+	confread_free(cfg);
 	exit(0);
 
     } else if(typeexport) {
@@ -412,6 +416,7 @@ main(int argc, char *argv[])
 	    }
 	}
 
+	confread_free(cfg);
 	exit(0);
 
     } else {
@@ -480,7 +485,8 @@ main(int argc, char *argv[])
 	}
 	if(verbose) printf("\n");
     }
-    
+
+    confread_free(cfg);    
     exit(exit_status);
 }
 

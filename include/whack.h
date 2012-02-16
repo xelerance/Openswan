@@ -1,5 +1,6 @@
 /* Structure of messages from whack to Pluto proper.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -35,7 +36,7 @@
  * Otherwise certain version mismatches will not be detected.
  */
 
-#define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 24)
+#define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 25)
 #define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38)
 
 /* struct whack_end is a lot like connection.h's struct end

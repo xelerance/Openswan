@@ -42,10 +42,10 @@ extern stf_status ikev2parent_inR2(struct msg_digest *md);
 
 extern const struct state_v2_microcode *ikev2_parent_firststate(void);
 
-extern notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
+extern v2_notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
 				      , const char *name);
 
-/* MAGIC: perform f, a function that returns notification_t
+/* MAGIC: perform f, a function that returns v2_notification_t
  * and return from the ENCLOSING stf_status returning function if it fails.
  */
 #define RETURN_STF_FAILURE2(f, xf)					\
@@ -55,7 +55,7 @@ extern notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
 
 #define RETURN_STF_FAILURE(f) RETURN_STF_FAILURE2(f, NULL)
 
-extern notification_t ikev2_parse_parent_sa_body(
+extern v2_notification_t ikev2_parse_parent_sa_body(
 	pb_stream *sa_pbs,              /* body of input SA Payload */
 	const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
 	pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
@@ -64,7 +64,7 @@ extern notification_t ikev2_parse_parent_sa_body(
 					* tranform can appear. */
 	);
 
-extern notification_t ikev2_parse_child_sa_body(
+extern v2_notification_t ikev2_parse_child_sa_body(
 	pb_stream *sa_pbs,              /* body of input SA Payload */
 	const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
 	pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
@@ -74,7 +74,7 @@ extern notification_t ikev2_parse_child_sa_body(
 	);
 
 #if 0
-extern notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
+extern v2_notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , const struct ikev2_sa *sa
 					  , pb_stream *r_sa_pbs
 					  , struct state *st
@@ -144,7 +144,7 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
-extern struct traffic_selector ikev2_subnettots(struct end *e);
+extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
 
 extern void send_v2_notification(struct state *p1st, u_int16_t type

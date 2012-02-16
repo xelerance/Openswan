@@ -523,7 +523,7 @@ static int validate_end(struct starter_conn *conn_st
 	    end->has_client = TRUE;
 	    end->has_client_wildcard = FALSE;
 	}
-    } 
+    }
 
     /* copy certificate path name */
     if(end->strings_set[KSCF_CERT]) {
@@ -1033,6 +1033,8 @@ static int load_conn (struct starter_config *cfg
 
     KW_POLICY_FLAG(KBF_OVERLAPIP, POLICY_OVERLAPIP);
 
+    KW_POLICY_FLAG(KBF_IKEv2_ALLOW_NARROWING, POLICY_IKEV2_ALLOW_NARROWING);
+
     if(conn->strings_set[KSF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSF_ESP]);
     }
@@ -1099,6 +1101,17 @@ static int load_conn (struct starter_config *cfg
 
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
+    /*
+     * TODO:
+     * verify both ends are using the same inet family, if one end
+     * is "%any" or "%defaultroute", then perhaps adjust it.
+     * ensource this for left,leftnexthop,right,rightnexthop
+     * Ideally, phase out connaddrfamily= which now wrongly assumes
+     * left,leftnextop,leftsubnet are the same inet family
+     * Currently, these tests are implicitely done, and wrongly
+     * in case of 6in4 and 4in6 tunnels
+     */
+
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
@@ -1163,12 +1176,12 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
     struct starter_conn *conn;
     
     conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
-    memset(conn, 0, sizeof(struct starter_conn));
     if (!conn) {
 	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
 	return NULL;
     }
 
+    memset(conn, 0, sizeof(struct starter_conn));
     conn_default(name, conn, &cfg->conn_default);
     conn->name = xstrdup(name);
     conn->desired_state = STARTUP_NO;
@@ -1252,7 +1265,11 @@ struct starter_config *confread_load(const char *file
 	 */
 	err += load_setup(cfg, cfgp, perr);
 
-	if(err) {return NULL;}
+	if(err) {
+		parser_free_conf(cfgp);
+		confread_free(cfg);
+		return NULL;
+	}
 
 	if(!setuponly) {
 	   /**
