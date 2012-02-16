@@ -1792,7 +1792,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      * new state now */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
-    
+
+    delete_event(st);
+    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
+ 
     authstart = reply_stream.cur;
     /* send response */
     {
