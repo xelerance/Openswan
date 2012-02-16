@@ -1642,7 +1642,7 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
 	e = STF_FAIL;
 	DBG_log("ikev2_parent_inI2outR2_tail returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
     } else if( e != STF_OK) {
-	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&ikev2_notify_names, e));
+	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_names, e));
     }
   
     if(dh->md != NULL) {
@@ -1941,7 +1941,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		SEND_NOTIFICATION(v2_notify_num);
 		return ret;
 	    } else if(ret != STF_OK) {
-		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&ikev2_notify_names, ret));
+		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_names,, ret));
 		return ret;
 	    }
 	}
