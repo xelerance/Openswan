@@ -238,7 +238,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	int thisp = np;
 	bool unknown_payload = FALSE;
 
-	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%)",enum_show(&payload_names, thisp)));
+	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%s)",enum_show(&payload_names, thisp)));
 
 	memset(pd, 0, sizeof(*pd));
 	
