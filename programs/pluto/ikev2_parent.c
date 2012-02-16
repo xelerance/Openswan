@@ -2440,11 +2440,10 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 
    		}
     }
-	if(n_data != NULL) {
-	   if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
+   	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
+   	{
 		openswan_log("error writing notify payload for notify message");
-		return FALSE;
-	   }
+   		return FALSE;
     }
     close_output_pbs(&n_pbs);
 	return TRUE;
