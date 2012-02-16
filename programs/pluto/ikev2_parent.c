@@ -2344,12 +2344,12 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 */
 
     increment_msgid_nextuse(p1st);
-    openswan_log("sending %snotification %s to %s:%u"
+    openswan_log("sending %s notification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
-#if 0
+#if 1
  /* Empty notification data section should be fine? */
 
     if(n_data == NULL) { 
@@ -2440,11 +2440,12 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
 
    		}
     }
-   	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notifiy data"))
-   	{
-		openswan_log("error writing notify payload for notify message");
-   		return FALSE;
-    }
+	if(n_data != NULL) { /* notification payload can be nothing (in fact is nothing for most notification types) */
+   		if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
+			openswan_log("error writing notify payload for notify message");
+   			return FALSE;
+    		}
+	}
     close_output_pbs(&n_pbs);
 	return TRUE;
 }
