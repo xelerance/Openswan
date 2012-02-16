@@ -141,11 +141,11 @@ ikev2parent_outI1(int whack_sock
     st->st_msgid_nextuse = 0;
     st->st_try   = try;
 
-    if (HAS_IPSEC_POLICY(policy))
+    if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
 	st->sec_ctx = NULL;
 	if( uctx != NULL) {
-	openswan_log("Labeled ipsec is not supported with ikev2 yet");
+	   openswan_log("Labeled ipsec is not supported with ikev2 yet");
 	}
 #endif
 
@@ -155,7 +155,7 @@ ikev2parent_outI1(int whack_sock
 	    , st->sec_ctx
 #endif
 		   );
-
+    }
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");
     else
