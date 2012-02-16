@@ -1941,7 +1941,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		SEND_NOTIFICATION(v2_notify_num);
 		return ret;
 	    } else if(ret != STF_OK) {
-		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name,, ret));
+		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
 		return ret;
 	    }
 	}
@@ -2332,7 +2332,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
     u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
-	chunk_t child_spi;
+    chunk_t child_spi, notify_data;
 	/* this function is not generic enough yet just enough for 6msg 
 	 * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
 	 * TBD when there is a child SA use that SPI in the notify paylod.
