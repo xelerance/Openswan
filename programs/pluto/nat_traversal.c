@@ -75,9 +75,6 @@
 #include "natt_defines.h"
 #include "nat_traversal.h"
 
-#define NAT_D_DEBUG
-#define NAT_T_SUPPORT_LAST_DRAFTS
-
 #define DEFAULT_KEEP_ALIVE_PERIOD  20
 
 bool nat_traversal_enabled = FALSE;
@@ -93,13 +90,11 @@ void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 {
 	nat_traversal_enabled = activate;
 	nat_traversal_support_non_ike = activate;
-#ifdef NAT_T_SUPPORT_LAST_DRAFTS
 	nat_traversal_support_port_floating = activate ? spf : FALSE;
 	openswan_log("Setting NAT-Traversal port-4500 floating to %s"
 		     , nat_traversal_support_port_floating ? "on" : "off");
 	openswan_log("   port floating activation criteria nat_t=%d/port_float=%d"
 		     , activate, spf);
-#endif
 	{ 
 	  FILE *f = fopen("/proc/net/ipsec/natt", "r");
 	  char n;
@@ -177,7 +172,6 @@ static void _natd_hash(const struct hash_desc *hasher, unsigned char *hash
 	}
 	hasher->hash_update(&ctx, (const u_char *)&port, sizeof(u_int16_t));
 	hasher->hash_final(hash, &ctx);
-#ifdef NAT_D_DEBUG
 	DBG(DBG_NATT,
 		DBG_log("_natd_hash: hasher=%p(%d)", hasher, (int)hasher->hash_digest_len);
 		DBG_dump("_natd_hash: icookie=", icookie, COOKIE_SIZE);
@@ -191,7 +185,6 @@ static void _natd_hash(const struct hash_desc *hasher, unsigned char *hash
 		DBG_log("_natd_hash: port=%d", ntohs(port));
 		DBG_dump("_natd_hash: hash=", hash, hasher->hash_digest_len);
 	);
-#endif
 }
 
 /**
@@ -209,7 +202,6 @@ bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs)
 		      
 	if (nat_traversal_support_port_floating) {
 	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_RFC);
-	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_05);
 	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_03);
 	    if (r) r = out_vid(ISAKMP_NEXT_VID, outs, VID_NATT_IETF_02_N);
 	    if (r)
@@ -232,13 +224,13 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid)
 		case VID_NATT_IETF_02_N:
 		case VID_NATT_IETF_03:
 			return LELEM(NAT_TRAVERSAL_IETF_02_03);
-
-		case VID_NATT_IETF_05:
+#if 0
 			return LELEM(NAT_TRAVERSAL_IETF_05);
-
 		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 			return LELEM(NAT_TRAVERSAL_OSX);
-
+#endif
+		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
+			DBG(DBG_NATT, DBG_log("VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE assumed as VID_NATT_RFC"));
 		case VID_NATT_RFC:
 			return LELEM(NAT_TRAVERSAL_RFC);
 	}
@@ -255,11 +247,9 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	bool found_him= FALSE;
 	int i;
 
-	if (!st || !md->iface || !st->st_oakley.prf_hasher) {
-		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
-			__FILE__, __LINE__);
-		return;
-	}
+	passert(st);
+	passert(md->iface);
+	passert(st->st_oakley.prf_hasher);
 
 	/** Count NAT-D **/
 	for (p = md->chain[ISAKMP_NEXT_NATD_RFC], i=0;
@@ -295,7 +285,6 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 	     p != NULL && (!found_me || !found_him);
 	     p = p->next)
 	  {
-#ifdef NAT_D_DEBUG
 	    DBG(DBG_NATT,
 		DBG_log("NAT_TRAVERSAL hash=%d (me:%d) (him:%d)"
 			, i, found_me, found_him);
@@ -305,7 +294,7 @@ void nat_traversal_natd_lookup(struct msg_digest *md)
 			 st->st_oakley.prf_hasher->hash_digest_len);
 		DBG_dump("received NAT-D:", p->pbs.cur, pbs_left(&p->pbs));
 		);
-#endif
+
 	    if ( (pbs_left(&p->pbs) == st->st_oakley.prf_hasher->hash_digest_len)
 		 && (memcmp(p->pbs.cur, hash_me
 			    , st->st_oakley.prf_hasher->hash_digest_len)==0))
@@ -360,13 +349,9 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	const ip_address *first, *second;
 	unsigned short firstport, secondport;
 
-	if (!st || !st->st_oakley.prf_hasher) {
-		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
-			__FILE__, __LINE__);
-		return FALSE;
-	}
+	passert(st->st_oakley.prf_hasher);
 
-	DBG(DBG_EMITTING, DBG_log("sending NATD payloads"));
+	DBG(DBG_EMITTING|DBG_NATT, DBG_log("sending NAT-D payloads"));
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
 		  ? ISAKMP_NEXT_NATD_RFC
@@ -396,6 +381,7 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 
 
 	if(st->st_connection->forceencaps) {
+		DBG(DBG_NATT, DBG_log("NAT-T: forceencaps=yes, so mangling hash to force NAT-T detection"));
 		firstport=secondport=0;
 	}
 
@@ -515,7 +501,7 @@ void nat_traversal_natoa_lookup(struct msg_digest *md, struct hidden_variables *
 
 	if (isanyaddr(&ip)) {
 		loglog(RC_LOG_SERIOUS
-		       , "NAT-Traversal: received %%any NAT-OA...");
+		       , "NAT-Traversal: received 0.0.0.0 NAT-OA...");
 	}
 	else {
 		hv->st_nat_oa = ip;
@@ -539,11 +525,7 @@ bool nat_traversal_add_natoa(u_int8_t np, pb_stream *outs,
 		ipinit = &(st->st_remoteaddr);
 	}
 
-	if ((!st) || (!st->st_connection)) {
-		loglog(RC_LOG_SERIOUS, "NAT-Traversal: assert failed %s:%d",
-			__FILE__, __LINE__);
-		return FALSE;
-	}
+	passert(st->st_connection);
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
 		  ? ISAKMP_NEXT_NATOA_RFC : ISAKMP_NEXT_NATOA_DRAFTS);
