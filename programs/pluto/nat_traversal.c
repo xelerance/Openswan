@@ -224,11 +224,6 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid)
 		case VID_NATT_IETF_02_N:
 		case VID_NATT_IETF_03:
 			return LELEM(NAT_TRAVERSAL_IETF_02_03);
-#if 0
-			return LELEM(NAT_TRAVERSAL_IETF_05);
-		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
-			return LELEM(NAT_TRAVERSAL_OSX);
-#endif
 		case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 			DBG(DBG_NATT, DBG_log("VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE assumed as VID_NATT_RFC"));
 		case VID_NATT_RFC:
@@ -354,9 +349,7 @@ bool nat_traversal_add_natd(u_int8_t np, pb_stream *outs,
 	DBG(DBG_EMITTING|DBG_NATT, DBG_log("sending NAT-D payloads"));
 
 	nat_np = (st->hidden_variables.st_nat_traversal & NAT_T_WITH_RFC_VALUES
-		  ? ISAKMP_NEXT_NATD_RFC
-		  : (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES
-		     ? ISAKMP_NEXT_NATD_BADDRAFTS : ISAKMP_NEXT_NATD_DRAFTS));
+		  ? ISAKMP_NEXT_NATD_RFC : ISAKMP_NEXT_NATD_DRAFTS);
 	if (!out_modify_previous_np(nat_np, outs)) {
 		return FALSE;
 	}
@@ -619,11 +612,8 @@ void nat_traversal_show_result (u_int32_t nt, u_int16_t sport)
 	case LELEM(NAT_TRAVERSAL_IETF_05):
 	    mth = natt_type_bitnames[2];
 	    break;
-	case LELEM(NAT_TRAVERSAL_OSX):
-	    mth = natt_type_bitnames[3];
-	    break;
 	case LELEM(NAT_TRAVERSAL_RFC):
-	    mth = natt_type_bitnames[4];
+	    mth = natt_type_bitnames[3];
 	    break;
 	}
 	switch (nt & NAT_T_DETECTED) {

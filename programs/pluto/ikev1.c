@@ -1611,17 +1611,6 @@ void process_packet_tail(struct msg_digest **mdp)
 		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
 		    sd = payload_descs[np];
 		    break;
-
-		case ISAKMP_NEXT_NATD_BADDRAFTS:
-			if (st && (st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATD_BADDRAFT_VALUES)) {
-			    /*
-			     * Only accept this value if we're in compatibility mode with
-			     * the bad drafts of the RFC
-			     */
-		        np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
-		        sd = payload_descs[np];
-		        break;
-		    }
 #endif
 		default:
 		    loglog(RC_LOG_SERIOUS, "%smessage ignored because it contains an unknown or"

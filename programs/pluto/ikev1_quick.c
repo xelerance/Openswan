@@ -1203,21 +1203,6 @@ quick_inI1_outR1(struct msg_digest *md)
 	}
 	/* End Hack for MS 818043 NAT-T Update */
 
-#ifdef NAT_TRAVERSAL
-	/* Hack for MacOS/iPhone see bug #1204 */
-	if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	    (p1st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_OSX))){
-		struct hidden_variables hv; 
-		hv = p1st->hidden_variables; 
-		nat_traversal_natoa_lookup(md, &hv); 
-		if(isanyaddr(&hv.st_nat_oa)){
-		   happy(addrtosubnet(&p1st->st_remoteaddr, &b.his.net));
-		   loglog(RC_LOG_SERIOUS, "Applying workaround for Mac OS X NAT-OA bug, ignoring proposed subnet");
-		}
-	}
-	/* End Hack for MacOS/iPhone */
-#endif
-
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
 	b.his.port = id_pd->payload.ipsec_id.isaiid_port;
 	b.his.net.addr.u.v4.sin_port = htons(b.his.port);
