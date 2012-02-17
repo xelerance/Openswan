@@ -11,6 +11,8 @@ v2.6.38 (unreleased)
 * barf: iptables-save on suse is in /usr/sbin, not /sbin [Paul/Shinichi]
 * SUSE: Package compliant with Kernel Module Package Manual [Shinichi Furuso]
 * verify: fix false positive on IP forwarding (perl dependant) [Steve Delaney]
+* IKEv2: Introduced new keyword narrowing=yes|no [Paul]
+* IKEv2: Send TS_UNACCEPTABLE when narrowing would violate local policy [Paul]
 * IKEv2: Fix for multiple SAs to the same peer with different ports [Avesh]
 * IKEv2: IKE-SA_INIT with INVALID_KE_PAYLOAD Notify Payload should
          continue [Avesh]
@@ -24,7 +26,8 @@ v2.6.38 (unreleased)
   xfrm.h
 * Fix SHA2 when pluto is compiled without USE_EXTRACRYPTO [Paul/Tuomo]
 * Fix two format string buglets [Moritz Muehlenhoff]
-* Implement sending higher IKEv2 major and minor versions [Paul]
+* XAUTH: Support unbound as local resolver in remote_peer_type=cisco [Paul]
+* NATT: Fix iphone/iOS by removing outdated OSX NAT-T workarounds [Paul]
 * Bugracker bugs fixed:
    #1263 /usr/lib/ipsec/_startnetkey selects wrong default gateway if there
          are multiple [Petr Tichy]
