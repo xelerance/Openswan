@@ -118,7 +118,7 @@ int udp_recv_loop(int udpsock)
 	
 	do {
 		struct sockaddr_in from, to;
-		size_t fromlen, tolen;
+		size_t fromlen;
 		struct msghdr msgh;
 		struct iovec iov;
 		char cbuf[256];
@@ -131,7 +131,6 @@ int udp_recv_loop(int udpsock)
 		memset(&to,   0, sizeof(to));
 
 		fromlen = sizeof(struct sockaddr_in);
-		tolen   = sizeof(struct sockaddr_in);
 
 		memset(&msgh, 0, sizeof(struct msghdr));
 		iov.iov_base = buf;
