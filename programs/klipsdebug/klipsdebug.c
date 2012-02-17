@@ -112,9 +112,8 @@ main(int argc, char **argv)
 {
 /*	int fd; */
 	unsigned char action = 0;
-	int c, previous = -1;
+	int c;
 	
-	int debug = 0;
 	int error = 0;
 	int argcount = argc;
 	int em_db_tn, em_db_nl, em_db_xf, em_db_er, em_db_sp;
@@ -134,7 +133,6 @@ main(int argc, char **argv)
 	while((c = getopt_long(argc, argv, ""/*"s:c:anhvl:+:d"*/, longopts, 0)) != EOF) {
 		switch(c) {
 		case 'd':
-			debug = 1;
 			pfkey_lib_debug = PF_KEY_DEBUG_PARSE_MAX;
 			argcount--;
 			break;
@@ -288,7 +286,6 @@ main(int argc, char **argv)
 					program_name, argv[optind]);
 			break;
 		}
-		previous = c;
 	}
 
 	if(argcount == 1) {
