@@ -138,7 +138,7 @@ main(int argc, char **argv)
 /*	int fd; */
 	char *endptr;
 /*	int ret; */
-	int c, previous = -1;
+	int c;
 	const char* error_s;
 
 	int error = 0;
@@ -457,7 +457,6 @@ main(int argc, char **argv)
 		default:
 			break;
 		}
-		previous = c;
 	}
 
 	if(debug) {

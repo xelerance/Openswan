@@ -497,10 +497,9 @@ main(int argc, char *argv[])
 {
 	char *endptr;
 	__u32 spi = 0;
-	int c, previous = -1;
+	int c;
 /*	int ret; */
 	ip_said said;
-	size_t sa_len;
 	const char* error_s;
 	char ipaddr_txt[ADDRTOT_BUF];
 	char ipsaid_txt[SATOT_BUF];
@@ -515,7 +514,7 @@ main(int argc, char *argv[])
 	unsigned char authalg, encryptalg;
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
-	char *iv_opt, *akey_opt, *ekey_opt, *alg_opt, *edst_opt, *spi_opt, *proto_opt, *af_opt, *said_opt, *dst_opt, *src_opt;
+	char *edst_opt, *spi_opt, *proto_opt, *af_opt, *said_opt, *dst_opt, *src_opt;
 #if 0
 	ip_address pfkey_address_p_ska;
 	ip_address pfkey_ident_s_ska;
@@ -537,7 +536,7 @@ main(int argc, char *argv[])
 	tool_init_log();
 
 	memset(&said, 0, sizeof(said));
-	iv_opt = akey_opt = ekey_opt = alg_opt = edst_opt = spi_opt = proto_opt = af_opt = said_opt = dst_opt = src_opt = NULL;
+	edst_opt = spi_opt = proto_opt = af_opt = said_opt = dst_opt = src_opt = NULL;
 	{
 		int i,j;
 		for(i = 0; i < life_maxsever; i++) {
@@ -633,7 +632,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case 'P':
 			if(alg) {
@@ -649,7 +647,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case 'Z':
 			if(alg) {
@@ -671,7 +668,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case '4':
 			if(alg) {
@@ -686,7 +682,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case '6':
 			if(alg) {
@@ -701,7 +696,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case 'd':
 			if(alg) {
@@ -715,7 +709,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case 'c':
 			if(alg) {
@@ -729,7 +722,6 @@ main(int argc, char *argv[])
 					progname,
 					alg);
 			}
-			alg_opt = optarg;
 			break;
 		case 'e':
 			if(said_opt) {
@@ -912,7 +904,6 @@ main(int argc, char *argv[])
 			}
 			memset(authkey, 0, authkeylen);
 			authkeylen = atodata(optarg, 0, (char *)authkey, authkeylen);
-			akey_opt = optarg;
 			break;
 		case 'E':
 			if(optarg[0] == '0') {
@@ -940,7 +931,6 @@ main(int argc, char *argv[])
 			}
 			memset(enckey, 0, enckeylen);
 			enckeylen = atodata(optarg, 0, (char *)enckey, enckeylen);
-			ekey_opt = optarg;
 			break;
 		case 'w':
 			replay_window = strtoul(optarg, &endptr, 0);
@@ -981,7 +971,6 @@ main(int argc, char *argv[])
 			}
 			memset(iv, 0, ivlen);
 			ivlen = atodata(optarg, 0, (char *)iv, ivlen);
-			iv_opt = optarg;
 			break;
 		case 'D':
 			if(dst_opt) {
@@ -1092,7 +1081,6 @@ main(int argc, char *argv[])
 				progname, c);
 			exit(1);
 		}
-		previous = c;
 	}
 	if(debug) {
 		fprintf(stdout, "%s: All options processed.\n",
@@ -1211,7 +1199,6 @@ main(int argc, char *argv[])
 				progname);
 			exit(1);
 		}
-		sa_len = satot(&said, 0, sa, sizeof(sa));
 
 		if(debug) {
 			fprintf(stdout, "%s: SA valid.\n",
