@@ -724,11 +724,14 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     e = ikev2_parent_inI1outR1_tail(pcrc, r);
 
     DBG(DBG_CONTROLMORE, DBG_log("ikev2_parent_inI1outR1_tail returned %s"
-	 , (e <= STF_FAIL) ? e : (e - STF_FAIL)
 	 , enum_name(&stfstatus_name
 	      ,(e <= STF_FAIL) ? e : (e - STF_FAIL))
                ));
-  
+    if(e > STF_FAIL) {
+	DBG(DBG_CONTROLMORE, DBG_log(" with reason %s"
+	, enum_name(&ikev2_notify_names, e - STF_FAIL)));
+    }
+
     if(ke->md != NULL) {
 	complete_v2_state_transition(&ke->md, e);
 	if(ke->md) release_md(ke->md);
