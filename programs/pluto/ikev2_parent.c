@@ -563,8 +563,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	 * are under DOS
 	 */
 	DBG_log("no connection found\n");
-	/* SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN); */
-	return STF_FAIL + NO_PROPOSAL_CHOSEN;
+	return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN;
     }
 	
 
@@ -723,6 +722,12 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     st->st_calculating = FALSE;
 
     e = ikev2_parent_inI1outR1_tail(pcrc, r);
+
+    DBG(DBG_CONTROLMORE, DBG_log("ikev2_parent_inI1outR1_tail returned %s"
+	 , (e <= STF_FAIL) ? e : (e - STF_FAIL)
+	 , enum_name(&stfstatus_name
+	      ,(e <= STF_FAIL) ? e : (e - STF_FAIL))
+               ));
   
     if(ke->md != NULL) {
 	complete_v2_state_transition(&ke->md, e);
@@ -786,8 +791,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				 &r_sa_pbs, st, FALSE);
 	
-	if (rn != v2N_NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG) {
+	    DBG(DBG_CONTROLMORE,DBG_log("  ikev2_parse_parent_sa_body returned failure %s",
+		enum_name(&ikev2_notify_names, rn)));
 	    return STF_FAIL + rn;
+	}
     }
 
     {
@@ -1576,6 +1584,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
 	openswan_log("R2 state should receive an encrypted payload");
+	reset_globals();
 	return STF_FATAL;
     }
 
@@ -1936,9 +1945,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
 	    if(ret > STF_FAIL) {
 		int v2_notify_num = ret - STF_FAIL;
-		ret = STF_FAIL;
 		DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
-		SEND_NOTIFICATION(v2_notify_num);
 		return ret;
 	    } else if(ret != STF_OK) {
 		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
@@ -2142,9 +2149,11 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 		int instantiate = FALSE;
 		ip_subnet tsi_subnet, tsr_subnet;
 		const char *oops;
+#if 0
 		unsigned int tsi_n, tsr_n;
 		tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
 		tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+#endif
 
 
     		DBG_log("PAUL: We are initiator, checking TSi/TSr");
@@ -2152,10 +2161,12 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 		oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
 		if(oops != NULL) {
 			DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		} 
 		oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
 		if(oops != NULL) {
 			DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		}
 
 		/* Can we narrow, if so we instantiate */
@@ -2164,31 +2175,27 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
 		DBG_log("Our subnet is not the same as the TSI subnet");
 		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-			SEND_NOTIFICATION(v2N_TS_UNACCEPTABLE);
-			return STF_FAIL;
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		}
 		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
 			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
 			instantiate = TRUE;
 		} else {
 			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
-			SEND_NOTIFICATION(v2N_TS_UNACCEPTABLE);
-			return STF_FAIL;
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		}
 	}
 	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
 		DBG_log("Our subnet is not the same as the TSR subnet");
 		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-			SEND_NOTIFICATION(v2N_TS_UNACCEPTABLE);
-			return STF_FAIL;
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		}
 		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
 			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
 			instantiate = TRUE;
 		} else {
 			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
-			SEND_NOTIFICATION(v2N_TS_UNACCEPTABLE);
-			return STF_FAIL;
+			return STF_FAIL + v2N_TS_UNACCEPTABLE;
 		}
 	}
 	if(instantiate == TRUE) {
@@ -2606,7 +2613,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 				pb_stream del_pbs;
 				struct ikev2_delete v2del_tmp;
 				u_int16_t i, j=0;
-				bool bogus;
+				// bool bogus;
 				u_char *spi;
 
 				for(i = 0; i < v2del->isad_nrspi; i++ ) 
@@ -2784,7 +2791,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 				//pb_stream del_pbs;
 				struct ikev2_delete v2del_tmp;
 				u_int16_t i;
-				bool bogus;
+				// bool bogus;
 				u_char *spi;
 
 				for(i = 0; i < v2del->isad_nrspi; i++ ) 

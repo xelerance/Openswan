@@ -1118,6 +1118,11 @@ send_packet(struct state *st, const char *where, bool verbose)
 	len = (unsigned long) st->st_tpacket.len;
     }
 
+    if(len == 0) {
+	DBG_log("send_packet(): not sending zero length packet");
+	return FALSE;
+    }
+
     DBG(DBG_CONTROL|DBG_RAW
 	, DBG_log("sending %lu bytes for %s through %s:%d to %s:%u (using #%lu)"
 		  , (unsigned long) st->st_tpacket.len

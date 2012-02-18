@@ -489,6 +489,8 @@ process_v2_packet(struct msg_digest **mdp)
 	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
 	
 	if(stf != STF_OK) {
+	    DBG(DBG_CONTROL, DBG_log(" payload processing indicated an error %s"
+		, enum_name(&stfstatus_name, stf)));
 	    complete_v2_state_transition(mdp, stf);
 	    return;
 	}
@@ -520,6 +522,10 @@ process_v2_packet(struct msg_digest **mdp)
     {
 	stf_status stf;
 	stf = (svm->processor)(md);
+	DBG(DBG_CONTROL, DBG_log("state processor returned %s",
+	    enum_name(&stfstatus_name, 
+	       (stf>STF_FAIL) ? STF_FAIL : (stf - STF_FAIL)
+			)));
 	complete_v2_state_transition(mdp, stf);
     }
 }
@@ -917,9 +923,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
     result = md->result;
 
     /* advance the state */
-    DBG(DBG_CONTROL
-	, DBG_log("complete v2 state transition with %s"
-		  , enum_name(&stfstatus_name, result)));
+    DBG(DBG_CONTROL , DBG_log("complete v2 state transition with %s"
+		, enum_name(&stfstatus_name, (result <= STF_FAIL) ? result : STF_FAIL)
+		));
 
     switch(result) {
     case STF_IGNORE:
@@ -995,9 +1001,10 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	whack_log(RC_NOTIFICATION + md->note
 		  , "%s: %s"
 		  , from_state_name
-		  , enum_name(&ipsec_notification_names, md->note));
+		  , enum_name(&ikev2_notify_names, md->note));
 
-#if 0
+/* some back-off method needed */
+#if 1
 	if(md->note > 0) {
 	    SEND_NOTIFICATION(md->note);
 	}
@@ -1006,7 +1013,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	DBG(DBG_CONTROL,
 	    DBG_log("state transition function for %s failed: %s"
 		    , from_state_name
-		    , enum_name(&ipsec_notification_names, md->note)));
+		    , enum_name(&ikev2_notify_names,, md->note)));
     }
 }
 
