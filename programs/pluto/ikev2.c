@@ -926,6 +926,10 @@ void complete_v2_state_transition(struct msg_digest **mdp
     DBG(DBG_CONTROL , DBG_log("complete v2 state transition with %s"
 		, enum_name(&stfstatus_name, (result <= STF_FAIL) ? result : STF_FAIL)
 		));
+    if(result > STF_FAIL){
+	DBG(DBG_CONTROL , DBG_log("  error for notify: %s",
+		enum_name(&ikev2_notify_names, result - STF_FAIL)));
+    }
 
     switch(result) {
     case STF_IGNORE:
