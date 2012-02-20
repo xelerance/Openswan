@@ -83,23 +83,6 @@ static stf_status ikev2_parent_outI1_common(struct msg_digest *md
 					    , struct state *st);
 
 /*
- * Increment the msgid for our new header based on the one we should use next
- * TODO: if we wrap (u_int32), we need to rekey the parent sa 
- */
-static void
- increment_msgid_nextuse(struct state *st)
-{
-   passert(st != NULL);
-   st->st_msgid_nextuse = st->st_msgid_nextuse + 1;
-   if(st->st_msgid_nextuse == 0) {
-       openswan_log("  st_msgid_nextuse wrapped - we should rekey!");
-   }
-   st->st_msgid = htonl(st->st_msgid_nextuse);
-}   
-
-
-
-/*
  *
  ***************************************************************
  *****                   PARENT_OUTI1                      *****
