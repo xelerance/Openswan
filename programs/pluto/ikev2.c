@@ -1057,7 +1057,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	whack_log(RC_NOTIFICATION + md->note
 		  , "%s: %s"
 		  , from_state_name
-		  , enum_name(&ikev2_notify_names, md->note));
+		  , (md->note > 0) ?  enum_name(&ikev2_notify_names, md->note) :
+			enum_name(&stfstatus_name, STF_FAIL)
+			);
 
 /* some back-off method needed */
 #if 1
@@ -1069,7 +1071,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	DBG(DBG_CONTROL,
 	    DBG_log("state transition function for %s failed: %s"
 		    , from_state_name
-		    , enum_name(&ikev2_notify_names, md->note)));
+		  , (md->note > 0) ?  enum_name(&ikev2_notify_names, md->note) :
+			enum_name(&stfstatus_name, STF_FAIL)
+			));
     }
 }
 
