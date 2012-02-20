@@ -573,6 +573,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	st = new_state();
 	/* set up new state */
 	memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
+	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
+	/* initialize_new_state calls insert_state which expects valid st_rcookie! not the case */
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
 	change_state(st, STATE_PARENT_R1);
@@ -750,8 +752,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     int    numvidtosend=1;
 
     /* note that we don't update the state here yet */
-    memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
-    get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
+    // memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE); /* PAUL: isn't this already set in the state??? */
+    // moved get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 
     /* record first packet for later checking of signature */
     clonetochunk(st->st_firstpacket_him, md->message_pbs.start
@@ -1697,11 +1699,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         return STF_FAIL;
     }
 
-
-    /* if it decrypted okay, then things are good, this packet is
-     * well received, and we should change state.
-     */
-    rehash_state(st);
 
     if(!ikev2_decode_peer_id(md, RESPONDER)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
