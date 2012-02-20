@@ -1282,7 +1282,7 @@ ikev2_parse_child_sa_body(
 	    {
 		loglog(RC_LOG_SERIOUS, "invalid SPI size (%u) in CHILD_SA Proposal"
 		       , (unsigned)proposal.isap_spisize);
-		return V2_INVALID_SPI;
+		return v2N_INVALID_SPI;
 	    }
 	    break;
 
