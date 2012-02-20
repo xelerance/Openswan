@@ -709,11 +709,14 @@ ikev2_parent_inI1outR1_continue(struct pluto_crypto_req_cont *pcrc
     e = ikev2_parent_inI1outR1_tail(pcrc, r);
 
     DBG(DBG_CONTROLMORE, DBG_log("ikev2_parent_inI1outR1_tail returned %s"
-	 , (e <= STF_FAIL) ? e : (e - STF_FAIL)
 	 , enum_name(&stfstatus_name
 	      ,(e <= STF_FAIL) ? e : (e - STF_FAIL))
                ));
-  
+    if(e > STF_FAIL) {
+	DBG(DBG_CONTROLMORE, DBG_log(" with reason %s"
+	, enum_name(&ikev2_notify_names, e - STF_FAIL)));
+    }
+
     if(ke->md != NULL) {
 	complete_v2_state_transition(&ke->md, e);
 	if(ke->md) release_md(ke->md);
@@ -755,9 +758,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np = ISAKMP_NEXT_v2SA;
 	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
-	// Responses always contain the same Message ID as the corresponding request.
-	// increment_msgid_nextuse(st);
-	r_hdr.isa_msgid = st->st_msgid;
+	r_hdr.isa_msgid = htonl(st->st_msgid);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
@@ -999,7 +1000,7 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     stf_status e;
     
     DBG(DBG_CONTROLMORE
-	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
+	, DBG_log("ikev2 parent inR1outI2: calculating g^{xy}, sending I2"));
   
     if (st == NULL) {
 	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
@@ -1325,7 +1326,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     pst = st;
     st = duplicate_state(pst);
-    st->st_msgid = htonl(pst->st_msgid_nextuse);
+    st->st_msgid = pst->st_msgid_nextuse;
     insert_state(st);
     md->st = st;
     md->pst= pst;
@@ -1355,7 +1356,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	r_hdr.isa_flags = ISAKMP_FLAGS_I;
-	r_hdr.isa_msgid = st->st_msgid;  
+	r_hdr.isa_msgid = htonl(st->st_msgid);  /* PAUL: this was changed from htonl(pst->st_msgid_nextuse); ??? */
 	memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
@@ -1633,7 +1634,6 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     if( e > STF_FAIL) {
 	/* we do not send a notify because we are the initiator that could be responding to an error notification */
 	int v2_notify_num = e - STF_FAIL;
-	e = STF_FAIL;
 	DBG_log("ikev2_parent_inI2outR2_tail returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
     } else if( e != STF_OK) {
 	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_name, e));
@@ -2330,7 +2330,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
-    increment_msgid_nextuse(p1st);
     openswan_log("sending %s notification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
@@ -2365,7 +2364,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
 	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
-	n_hdr.isa_msgid = p1st->st_msgid;
+	n_hdr.isa_msgid = htonl(p1st->st_msgid);
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
@@ -2504,18 +2503,14 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 		memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 		r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
 		r_hdr.isa_np = ISAKMP_NEXT_v2E;
-		// PAUL: msgid_received should only be used to check for retransmits?
-		// r_hdr.isa_msgid = htonl(md->msgid_received);
-		increment_msgid_nextuse(st);
-		r_hdr.isa_msgid = st->st_msgid;
+		r_hdr.isa_msgid = htonl(md->msgid_received);
 
 		/*set initiator bit if we are initiator*/
 		if(md->role == INITIATOR) {
-		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+		   r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+		} else {
+		   r_hdr.isa_flags |= ISAKMP_FLAGS_R;
 		}
-
-		r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
-
 
 		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 		{
@@ -2927,14 +2922,12 @@ void ikev2_delete_out(struct state *st)
 
 		/*set initiator bit if we are initiator*/
 		if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
-		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
-		role = INITIATOR;
+		   role = INITIATOR;
+		   r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+		} else {
+		   role = RESPONDER;
+		   r_hdr.isa_flags |= ISAKMP_FLAGS_R;
 		}
-		else {
-		role = RESPONDER;
-		}
-
-		//r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
 
 		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
 		{
