@@ -1683,7 +1683,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		    case SA_LIFE_TYPE_SECONDS:
 			/* silently limit duration to our maximum */
 			attrs->life_seconds = val <= SA_LIFE_DURATION_MAXIMUM
-			    ? val : SA_LIFE_DURATION_MAXIMUM;
+			    ? (val < st->st_connection->sa_ipsec_life_seconds ? val : st->st_connection->sa_ipsec_life_seconds) : SA_LIFE_DURATION_MAXIMUM;
 			break;
 		    case SA_LIFE_TYPE_KBYTES:
 			attrs->life_kilobytes = val;
@@ -1749,7 +1749,13 @@ parse_ipsec_transform(struct isakmp_transform *trans
 					loglog(RC_LOG_SERIOUS,
 						"%s must only be used with old IETF drafts",
 						enum_name(&enc_mode_names, val));
+					if(st->st_connection->remotepeertype == CISCO) {
+					DBG_log( "Allowing, as this may be due to rekey");
+					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS + ENCAPSULATION_MODE_TUNNEL;
+					}
+					else {
 					return FALSE;
+					}
 				}
 				else if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
 					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS + ENCAPSULATION_MODE_TUNNEL;

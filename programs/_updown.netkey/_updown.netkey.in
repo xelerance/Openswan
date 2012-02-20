@@ -341,6 +341,40 @@ addsource() {
     return $st
 }
 
+delsource() {
+    st=0
+    # check if given sourceip is local and add as alias if not
+    if  ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local; then
+        #it="ip addr del ${PLUTO_MY_SOURCEIP%/*}/32 label ${PLUTO_INTERFACE%:*}:1 dev ${PLUTO_INTERFACE%:*}"
+
+                saddr=${PLUTO_MY_SOURCEIP%/*}/32
+                if test "${PLUTO_PEER_CLIENT##*/}" != 32
+                then
+                saddr=${PLUTO_MY_SOURCEIP%/*}/"${PLUTO_PEER_CLIENT##*/}"
+                fi
+
+        it="ip addr del ${saddr} dev ${PLUTO_INTERFACE%:*}"
+
+        oops="`eval $it 2>&1`"
+        st=$?
+        if [ " $oops" = " " -a " $st" != " 0" ]; then
+            oops="silent error, exit status $st"
+        fi
+        case "$oops" in
+            'RTNETLINK answers: File exists'*)
+                # should not happen, but ... ignore if the
+                # address was already assigned on interface
+                oops=""
+                st=0
+                ;;
+        esac
+        if [ " $oops" != " " -o " $st" != " 0" ]; then
+            echo "$0: addsource \`$it' failed ($oops)" >&2
+        fi
+    fi
+    return $st
+}
+
 
 doroute() {
     if [ -z "$PLUTO_MY_SOURCEIP" ] && [ -n "$DEFAULTSOURCE" ]
@@ -378,6 +412,10 @@ doroute() {
 	addsource
 	# use sourceip as route default source
 	parms2="$parms2 src ${PLUTO_MY_SOURCEIP%/*}"
+    fi
+
+    if [ "$1" = "del" -a -n "$PLUTO_MY_SOURCEIP" -a "$PLUTO_IS_PEER_CISCO" = "1" ]; then
+        delsource
     fi
 
     case "$PLUTO_PEER_CLIENT" in

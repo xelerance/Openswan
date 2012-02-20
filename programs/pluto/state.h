@@ -157,8 +157,9 @@ struct hidden_variables {
                                   st->st_suspended_md_func=__FUNCTION__; \
                                   st->st_suspended_md_line=__LINE__; } while(0)
 
+/* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
-    u_int8_t  sin_family;
+    u_int8_t  ts_type;
     u_int8_t  ipprotoid;
     u_int16_t startport;
     u_int16_t endport;

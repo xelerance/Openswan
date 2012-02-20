@@ -1033,6 +1033,8 @@ static int load_conn (struct starter_config *cfg
 
     KW_POLICY_FLAG(KBF_OVERLAPIP, POLICY_OVERLAPIP);
 
+    KW_POLICY_FLAG(KBF_IKEv2_ALLOW_NARROWING, POLICY_IKEV2_ALLOW_NARROWING);
+
     if(conn->strings_set[KSF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSF_ESP]);
     }

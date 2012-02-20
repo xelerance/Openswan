@@ -229,7 +229,7 @@ main_outI1(int whack_sock
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	
 	/* Add supported NAT-Traversal VID */
-	if (!nat_traversal_insert_vid(np, &md.rbody)) {
+	if (!nat_traversal_insert_vid(np, &md.rbody, st)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}

@@ -861,7 +861,7 @@ duplicate_state(struct state *st)
     DBG(DBG_CONTROL, DBG_log("duplicating state object #%lu",
 	st->st_serialno));
 
-    /* record use of the Phase 1 state */
+    /* record use of the Phase 1 / Parent state */
     st->st_outbound_count++;
     st->st_outbound_time = now();
 

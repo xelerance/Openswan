@@ -1708,6 +1708,84 @@ rw_instantiate(struct connection *c
     return d;
 }
 
+#if 0
+/*
+ * IKEv2 instantiation
+ * We needed to instantiate because we are updating our traffic selectors and subnets
+ * taken frmo oppo_instantiate
+ */
+struct connection *
+ikev2_ts_instantiate(struct connection *c
+, const ip_address *our_client
+, const u_int16_t our_port
+, const ip_address *peer_client
+, const u_int16_t peer_port
+, const u_int8_t protocol)
+{
+    struct connection *d = instantiate(c, him, his_id);
+
+    DBG(DBG_CONTROL,
+	DBG_log("ikev2_ts instantiate d=%s from c=%s with c->routing %s, d->routing %s"
+		, d->name, c->name
+		, enum_name(&routing_story, c->spd.routing)
+		, enum_name(&routing_story, d->spd.routing)));
+    DBG(DBG_CONTROL,
+	char instbuf[512];
+	DBG_log("new ikev2_ts instance: %s"
+		, (format_connection(instbuf, sizeof(instbuf), d, &d->spd), instbuf)));
+
+    passert(d->spd.next == NULL);
+
+    /* fill in our client side */
+    if (d->spd.this.has_client)
+    {
+	/* there was a client in the abstract connection
+	 * so we demand that the required client is within that subnet.
+	 */
+	passert(addrinsubnet(our_client, &d->spd.this.client));
+	happy(addrtosubnet(our_client, &d->spd.this.client));
+    }
+    else
+    {
+	/* there was no client in the abstract connection
+	 * so we demand that the required client be the host
+	 */
+	passert(sameaddr(our_client, &d->spd.this.host_addr));
+    }
+
+    /*
+     * fill in peer's client side.
+     * If the client is the peer, excise the client from the connection.
+     */
+    passert(addrinsubnet(peer_client, &d->spd.that.client));
+    happy(addrtosubnet(peer_client, &d->spd.that.client));
+
+    if (sameaddr(peer_client, &d->spd.that.host_addr))
+	d->spd.that.has_client = FALSE;
+
+    passert(d->gw_info == NULL);
+    gw_addref(gw);
+    d->gw_info = gw;
+
+#if 0
+    /* Remember if the template is routed:
+     * if so, this instance applies for initiation
+     * even if it is created for responding.
+     */
+    if (routed(c->spd.routing))
+	d->instance_initiation_ok = TRUE;
+#endif
+
+    DBG(DBG_CONTROL,
+	char topo[CONN_BUF_LEN];
+
+	(void) format_connection(topo, sizeof(topo), d, &d->spd);
+	DBG_log("instantiated \"%s\": %s", d->name, topo);
+    );
+    return d;
+}
+#endif
+
 struct connection *
 oppo_instantiate(struct connection *c
 		 , const ip_address *him

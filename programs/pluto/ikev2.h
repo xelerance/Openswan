@@ -144,7 +144,7 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
-extern struct traffic_selector ikev2_subnettots(struct end *e);
+extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
 
 extern void send_v2_notification(struct state *p1st, u_int16_t type
