@@ -123,7 +123,6 @@ ikev2_out_sa(pb_stream *outs
 	memset(&sa, 0, sizeof(sa));
 	sa.isasa_np       = np;
 	sa.isasa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-
 	/* no ipsec_doi on IKEv2 */
 
 	if (!out_struct(&sa, &ikev2_sa_desc, outs, &sa_pbs))

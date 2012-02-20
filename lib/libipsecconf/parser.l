@@ -45,9 +45,9 @@ int parser_y_eof(void);
 #define ECHO 
 
 /* do not define this function, as it is not used, and fails -Werror */
-#if 0
+/*
 #define YY_NO_INPUT
-#endif
+*/
 
 extern void yyerror(const char *);
 

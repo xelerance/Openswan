@@ -754,6 +754,7 @@ struct_desc ikev2_trans_attr_desc = {
  */
 static field_desc ikev2ke_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    //{ ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
@@ -797,6 +798,7 @@ struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
 
 static field_desc ikev2id_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    //{ ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
@@ -825,6 +827,7 @@ struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
  */
 static field_desc ikev2_cert_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  //{ ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
@@ -852,6 +855,7 @@ struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_f
 
 static field_desc ikev2_cert_req_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  //{ ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
@@ -880,6 +884,7 @@ struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", 
  */
 static field_desc ikev2a_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    //{ ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
@@ -939,6 +944,7 @@ struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
  */ 
 static field_desc ikev2_notify_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  //{ ft_enum, 8/BITS_PER_BYTE, "critical bit", &critical_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &protocol_names },
@@ -966,7 +972,7 @@ static field_desc ikev2_notify_fields[] = {
  */
 
 static field_desc ikev2_delete_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },  
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "protocol ID", NULL },
@@ -1026,6 +1032,7 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
  */
 static field_desc ikev2ts_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    //{ ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},

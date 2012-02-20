@@ -112,7 +112,6 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	    	      DBG_log(" we reached an unexpected state - a bad day? I don't feel like sending a certificate request (CERTREQ)"));}
         }
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-
     cert.isac_enc = mycert.type;
     
     if(send_certreq){

@@ -137,7 +137,7 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	 DBG_log("keypad used \"%s\", length %d", psk_key_pad_str
 	 	  ,psk_key_pad_str_len));
      DBG(DBG_CRYPT
-    	,DBG_dump("inner prf output", prf_psk, hash_len));
+    	,DBG_dump("inner prf ouput", prf_psk, hash_len));
     
     /* decide nonce based on the role */
     if(role == INITIATOR) {

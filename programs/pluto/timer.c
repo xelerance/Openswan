@@ -181,7 +181,7 @@ retransmit_v1_msg(struct state *st)
     else if (st->st_state == STATE_QUICK_R1
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
-
+    
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -299,7 +299,7 @@ retransmit_v2_msg(struct state *st)
 	      || st->st_state == STATE_PARENT_I3)
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
-
+    
     if (delay != 0)
     {
 	st->st_retransmit++;

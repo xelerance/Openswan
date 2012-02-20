@@ -16,6 +16,8 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
+ *
+ * RCSID $Id: packet.h,v 1.29 2004/10/16 22:38:37 mcr Exp $
  */
 
 #ifndef _PACKET_H
@@ -895,7 +897,7 @@ union payload {
     struct ikev2_cert       v2cert;
     struct ikev2_certreq    v2certreq;
     struct ikev2_notify     v2n;
-    struct ikev2_delete     v2delete;
+    struct ikev2_delete     v2delete; 
 };
 
 

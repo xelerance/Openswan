@@ -1,8 +1,6 @@
 /* manifest constants
  *
- * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
- * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
- * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004       Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -16,6 +14,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
+ * RCSID $Id: ietf_constants.h,v 1.18 2005/10/03 19:58:12 mcr Exp $
  */
 
 /* Group parameters from draft-ietf-ike-01.txt section 6 */
@@ -308,6 +307,7 @@
 #define IKEv2_MAJOR_VERSION    0x2
 #define IKEv2_MINOR_VERSION    0x0
 
+
 /* Domain of Interpretation */
 #define ISAKMP_DOI_ISAKMP          0
 #define ISAKMP_DOI_IPSEC           1
@@ -504,6 +504,7 @@ extern const char *const sit_bit_names[];
 #define SIT_IDENTITY_ONLY        0x01
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
+
 
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */

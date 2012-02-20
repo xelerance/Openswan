@@ -7,7 +7,6 @@
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009-2010 Tuomo Soini <tis@foobar.fi>
- * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -36,7 +35,6 @@
 #include <sys/un.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <netinet/in.h>
 #include <resolv.h>
 
 #include <openswan.h>
@@ -449,8 +447,6 @@ main(int argc, char **argv)
 	    { "impair-delay-adns-txt-answer", no_argument, NULL, IMPAIR_DELAY_ADNS_TXT_ANSWER + DBG_OFFSET },
 	    { "impair-bust-mi2", no_argument, NULL, IMPAIR_BUST_MI2 + DBG_OFFSET },
 	    { "impair-bust-mr2", no_argument, NULL, IMPAIR_BUST_MR2 + DBG_OFFSET },
-	    { "impair-sa-creation", no_argument, NULL, IMPAIR_SA_CREATION + DBG_OFFSET },
-	    { "impair-die-oninfo", no_argument, NULL, IMPAIR_DIE_ONINFO + DBG_OFFSET },
 	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
@@ -1013,24 +1009,6 @@ main(int argc, char **argv)
 #else
 	openswan_log("HAVE_STATSD notification support not compiled in");
 #endif
-
-
-/** Log various impair-* functions if they were enabled */
-
-    if(DBGP(IMPAIR_BUST_MI2))
-	openswan_log("Warning: IMPAIR_BUST_MI2 enabled");
-    if(DBGP(IMPAIR_BUST_MR2))
-	openswan_log("Warning: IMPAIR_BUST_MR2 enabled");
-    if(DBGP(IMPAIR_SA_CREATION))
-	openswan_log("Warning: IMPAIR_SA_CREATION enabled");
-    if(DBGP(IMPAIR_JACOB_TWO_TWO))
-	openswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
-    if(DBGP(IMPAIR_DIE_ONINFO))
-	openswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
-    if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
-	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
-    if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))
-	openswan_log("Warning: IMPAIR_DELAY_ADNS_TXT_ANSWER enabled");
 
 /** Initialize all of the various features */
 
