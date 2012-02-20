@@ -343,11 +343,15 @@ process_v2_packet(struct msg_digest **mdp)
 
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
-	/* TODO: this code allows a packet to both set ISAKMP_FLAGS_I and ISAKMP_FLAGS_R */
-
-    //if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
-    //	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
-    //}
+    /* Each IKEv2 packet sets either initiator or response flag */
+    if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
+    	openswan_log("received packet that claimed to be both (I)nitiator and (R)esponder, msgid=%u, dropped", md->msgid_received);
+	return;
+    }
+    if( (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) && (!(md->hdr.isa_flags & ISAKMP_FLAGS_I)) ) {
+    	openswan_log("received packet that claimed to be neither (I)nitiator or (R)esponder, msgid=%u, dropped", md->msgid_received);
+	return;
+    }
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
@@ -361,10 +365,19 @@ process_v2_packet(struct msg_digest **mdp)
 
 	if(st == NULL) {
 	    /* first time for this cookie, it's a new state! */
-	    st = find_state_ikev2_parent_init(md->hdr.isa_icookie);
-	}
 
-	if(st) {
+	    if(md->hdr.isa_xchg != ISAKMP_v2_SA_INIT) {
+		/* RFC5996 Section 2.2 */
+		openswan_log(" non-initial packet for which we have no state, but exchange not of type ISAKMP_v2_SA_INIT (deleted SA?)");
+		return;
+	    }
+	    DBG(DBG_CONTROL, DBG_log("  responding to a new initial packet"));
+	    st = find_state_ikev2_parent_init(md->hdr.isa_icookie); /* isn't this redundant to the above find_state_ikev2_parent() call? */
+	    if(st == NULL){
+		DBG(DBG_CONTROL, DBG_log("  did not find state with find_state_ikev2_parent_init"));
+	    }
+
+	} else { /* we have a state, is this a retransmit? */
 	    if(st->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
 		openswan_log("received too old retransmit: %u < %u"
@@ -377,70 +390,110 @@ process_v2_packet(struct msg_digest **mdp)
 		return;
 	    }
 	    /* update lastrecv later on */
-	}
-    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u - dropping", md->msgid_received);
-	return;
-	
+	} 
+
+
     } else {
-        /* This message is an answer to a request we sent */
+        /* This is a response packet to our initiator request */
 	
 	md->role = INITIATOR;
 	
-	if(md->msgid_received==MAINMODE_MSGID) {
+	if(md->msgid_received==MAINMODE_MSGID) { /* msgid == 0 */
+	    if(md->hdr.isa_xchg != ISAKMP_v2_SA_INIT) {
+		/* RFC5996 Section 2.2 */
+		openswan_log(" packet contained msgid=0 but is not of type ISAKMP_v2_SA_INIT, dropped");
+		return;
+	    }
+
+	    if(is_zero_cookie(md->hdr.isa_rcookie)) {
+	    	openswan_log(" We should not receive a ISAKMP_v2_SA_INIT response with zero rcookie, dropped");
+		return;
+	    }
+
 	    st = find_state_ikev2_parent(md->hdr.isa_icookie
 					 , md->hdr.isa_rcookie);
 	    if(st == NULL) {
+		DBG(DBG_CONTROLMORE,DBG_log("  did not find state on icookie/rcookie set, initial response?"));
 		st = find_state_ikev2_parent(md->hdr.isa_icookie, zero_cookie);
 		if(st) {
 		    /* responder inserted its cookie, record it */
+		    DBG(DBG_CONTROLMORE,DBG_log("  found state with our icookie and msgid=0, updating state with received rcookie "));
 		    unhash_state(st);
 		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
 		    insert_state(st);
+		} else {
+		    openswan_log("  did not find state with our icookie and new rcookie with msgid=0 , dropping");
+		    return;
 		}
+	    } else {
+		/*
+		 * we normally dont expect a matching icookie/rcookie on initial answer packet.
+		 * The remote responder probably failed state change and sent us a notify
+		 */
+		DBG(DBG_CONTROLMORE,DBG_log("  found state belonging icookie/rcookie set and msgid=0"));
 	    }
-	} else {
+
+	} else { /* msgid != 0, so are past ISAKMP_v2_SA_INIT */
+	    if(md->hdr.isa_xchg == ISAKMP_v2_SA_INIT) {
+		/* RFC5996 Section 2.2 */
+		openswan_log(" packet contained msgid != 0 but is of type ISAKMP_v2_SA_INIT, dropped");
+		return;
+	    }
+
 	    st = find_state_ikev2_child(md->hdr.isa_icookie
 					, md->hdr.isa_rcookie
-					, md->hdr.isa_msgid);
+					, md->msgid_received);
 	    
 	    if(st) {
+		DBG(DBG_CONTROLMORE,DBG_log("  found state belonging to this icookie/rcookie/msgid set"));
 		/* found this child state, so we'll use it */
 		/* note we update the st->st_msgid_lastack *AFTER* decryption*/
 	    } else {
+		DBG(DBG_CONTROLMORE,DBG_log("  did not find state belonging to this icookie/rcookie/msgid set"));
 		/*
 		 * didn't find something with the msgid, so maybe it's
 		 * not valid?
 		 */
 		st = find_state_ikev2_parent(md->hdr.isa_icookie
 					     , md->hdr.isa_rcookie);
-	    }
-	}
 
-	if(st) {
-	    /*
-	     * then there is something wrong with the msgid, so
-	     * maybe they retransmitted for some reason. 
-	     * Check if it's an old packet being returned, and
-	     * if so, drop it.
-	     * NOTE: in_struct() changed the byte order.
-	     */
-	    if(st->st_msgid_lastack != INVALID_MSGID
-	       && md->msgid_received <= st->st_msgid_lastack) {
-		/* it's fine, it's just a retransmit */
-		DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
-					 , md->msgid_received));
-		return;
-	    }
-#if 0
-	    openswan_log("last msgid ack is %u, received: %u"
-			 , st->st_msgid_lastack
-			 , md->msgid_received);
-	    return;
-#endif
-	}
+		if(st) {
+		   DBG(DBG_CONTROLMORE,DBG_log("  found state by icookie/rcookie but no matching msgid"));
+		   /*
+		    * then there is something wrong with the msgid, so
+		    * maybe they retransmitted for some reason. 
+		    * Check if it's an old packet being returned, and
+		    * if so, drop it.
+		    * NOTE: in_struct() changed the byte order.
+		    */
+		   if( (st->st_msgid_lastack != INVALID_MSGID) &&
+		       (md->msgid_received <= st->st_msgid_lastack) ){
+		       /* it's fine, it's just a retransmit */
+		       DBG(DBG_CONTROL, DBG_log("responding peer retransmitted previously received msgid %u, ignoring"
+			   , md->msgid_received));
+		       return;
+		   }
+
+		}
+	   }
+	} /* msg != 0 */
+    } /* else we were initiator */
+
+    if(st != NULL) {
+    	/* We found the packet somewhat valid, matched it up with a state, continue */
+	DBG(DBG_CONTROLMORE,DBG_log("  we have a state with matching packet that is not a retransmit or unknown state"));
+	DBG(DBG_CONTROLMORE,DBG_log("last msgid ack is %u, received: %u"
+		, st->st_msgid_lastack
+		, md->msgid_received));
+    } else {
+	DBG(DBG_CONTROLMORE,DBG_log("  we have no state, could only happen if responding to new packet"));
     }
-	
+
+
+
+    /* PAUL: If we do not have a state here it is of a very unknown exchange, and we probably should have aborted? */
+    /* perhaps we should add a passert(st!=NULL); here ? */
+
     ix = md->hdr.isa_xchg;
     if(st) {
 
@@ -450,7 +503,7 @@ process_v2_packet(struct msg_digest **mdp)
 
     for(svm = state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
 	if(svm->flags & SMF2_STATENEEDED) {
-	    if(st==NULL) continue;
+	    if(st==NULL) continue; /* can this even happen? */
 	}
 	if((svm->flags&SMF2_STATENEEDED)==0) {
 	    if(st!=NULL) continue;
@@ -523,10 +576,9 @@ process_v2_packet(struct msg_digest **mdp)
 	stf_status stf;
 	stf = (svm->processor)(md);
 	DBG(DBG_CONTROL, DBG_log("state processor returned %s",
-	    enum_name(&stfstatus_name, 
-	       (stf>STF_FAIL) ? STF_FAIL : (stf - STF_FAIL)
-			)));
-	complete_v2_state_transition(mdp, stf);
+	    (stf > STF_FAIL) ? enum_name(&ikev2_notify_names, stf - STF_FAIL) :
+	    	enum_name(&stfstatus_name, stf)));
+	complete_v2_state_transition(mdp, (stf > STF_FAIL) ? STF_FAIL : stf);
     }
 }
 
