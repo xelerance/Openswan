@@ -308,10 +308,6 @@
 #define IKEv2_MAJOR_VERSION    0x2
 #define IKEv2_MINOR_VERSION    0x0
 
-/* bumped versions for testing with --impair-major-version-bump and --impair-minor-version-bump */
-#define IKEv2_MAJOR_BUMP       0x3
-#define IKEv2_MINOR_BUMP       0x1
-
 /* Domain of Interpretation */
 #define ISAKMP_DOI_ISAKMP          0
 #define ISAKMP_DOI_IPSEC           1
@@ -509,15 +505,11 @@ extern const char *const sit_bit_names[];
 #define SIT_SECRECY              0x02
 #define SIT_INTEGRITY            0x04
 
-/* See http://tools.ietf.org/html/rfc5996#section-3.2 */
 /* Critical bit in each payload */
 /* extern enum_names critical_names; */
 extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
-/* These are followed by 7 more bits, currently RESERVED */
-/* Note we use 1 of those bits for IMPAIR-SEND-BOGUS-ISAKMP-FLAG */
-#define ISAKMP_PAYLOAD_OPENSWAN_BOGUS  0x01
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1

@@ -182,12 +182,6 @@ retransmit_v1_msg(struct state *st)
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
 
-    if(DBGP(IMPAIR_RETRANSMITS)) {
-	openswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
-        delay = 0;
-	try   = 0;
-    }
-    
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -306,12 +300,6 @@ retransmit_v2_msg(struct state *st)
 	     && st->st_retransmit < maximum_retransmissions_quick_r1)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
 
-    if(DBGP(IMPAIR_RETRANSMITS)) {
-	openswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
-        delay = 0;
-	try   = 0;
-    }
-    
     if (delay != 0)
     {
 	st->st_retransmit++;

@@ -364,11 +364,6 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	struct isakmp_hdr hdr;
 
 	zero(&hdr);	/* default to 0 */
-	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
-		hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
-		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
-	else /* normal production case with real version */
 		hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
 
 	if(st->st_dcookie.ptr)
@@ -394,8 +389,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	{
 		chunk_t child_spi;
 		memset(&child_spi, 0, sizeof(child_spi));
-		ship_v2N (ISAKMP_NEXT_v2SA, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-                (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+		ship_v2N (ISAKMP_NEXT_v2SA, 
                     ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					v2N_COOKIE, &st->st_dcookie, &md->rbody);
@@ -443,10 +437,6 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
@@ -454,7 +444,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	close_output_pbs(&pb);
     }
 
-    /* Send DPD VID */
+    /* Send vendor VID */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 
@@ -819,10 +809,6 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
@@ -1264,10 +1250,6 @@ static stf_status ikev2_send_auth(struct connection *c
 
     
     a.isaa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	a.isaa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-    }
 
     a.isaa_np = np;
     
@@ -1366,10 +1348,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* insert an Encryption payload header */
     e.isag_np = ISAKMP_NEXT_v2IDi;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-    }
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	return STF_INTERNAL_ERROR;
@@ -1402,10 +1380,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
 
 	{  /* decide to send CERT payload */
 	    send_cert = doi_send_ikev2_cert_thinking(st);
@@ -1481,8 +1455,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
 		memset(&notify_data, 0, sizeof(notify_data));
-		ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
-				(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) : ISAKMP_PAYLOAD_NONCRITICAL,
+		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,
 				 0, &child_spi, v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
 	    }
 	} else {
@@ -1811,10 +1784,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	/* insert an Encryption payload header */
 	e.isag_np = ISAKMP_NEXT_v2IDr;
 	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
 
 	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	    return STF_INTERNAL_ERROR;
@@ -1852,10 +1821,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-		r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	    }
 
 	    if(send_cert) 
 		r_id.isai_np = ISAKMP_NEXT_v2CERT;
@@ -2352,12 +2317,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
     {
 	struct isakmp_hdr n_hdr ;
 	zero(&n_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
-	if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
-		n_hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
-		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
-	else /* normal production case with real version */
-		n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
 	memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
 	memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
 	n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;  
@@ -2379,9 +2339,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 
 	memset(&child_spi, 0, sizeof(child_spi));
 	memset(&notify_data, 0, sizeof(notify_data));
-	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
-		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-		    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP, &child_spi, 
+	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,  PROTO_ISAKMP, &child_spi,
 					type, n_data, &rbody);
 
    close_message(&rbody);
@@ -2403,10 +2361,6 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
    		,DBG_log("Adding a v2N Payload"));  
    	n.isan_np =  np;
    	n.isan_critical = critical;
-   	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-		n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-   	}
    	n.isan_protoid =  protoid;
    	n.isan_spisize = spi->len;
    	n.isan_type = type;
