@@ -189,18 +189,14 @@ downroute() {
 }
 
 updateresolvconf() {
-pidof unbound > /dev/null
-RETVAL=$?
-if [ $RETVAL -eq 0 ] ; then
-    echo "updating local nameserver with $PLUTO_CISCO_DOMAIN_INFO"
-    /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
-    if [ -n "$PLUTO_CISCO_DNS_INFO" ]; then
-	for i in $PLUTO_CISCO_DNS_INFO; do
-		echo "Not yet implemented by unbound - soon"
-		# /usr/sbin/unbound-control forward_zone $PLUTO_CISCO_DOMAIN_INFO $i
-	done
+updateresolvconf() {
+if [ -n "`pidof unbound`" ]; then
+    if [ -n "$PLUTO_CISCO_DNS_INFO" -a -n "$PLUTO_CISCO_DOMAIN_INFO" ]; then
+       echo "updating local nameserver for $PLUTO_CISCO_DOMAIN_INFO with $PLUTO_CISCO_DNS_INFO"
+       /usr/sbin/unbound-control forward_add $PLUTO_CISCO_DOMAIN_INFO $PLUTO_CISCO_DOMAIN_INFO
+       /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
     fi
-    return 1
+    return
 fi
 
 if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
@@ -265,12 +261,12 @@ fi
 }
 
 restoreresolvconf() {
-pidof unbound > /dev/null
-RETVAL=$?
-if [ $RETVAL -eq 0 ] ; then
-    echo "flushing local nameserver of $PLUTO_CISCO_DOMAIN_INFO"
-    /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
-    return 1
+if [ -n "`pidof unbound`" ]; then
+    if [ -n "$PLUTO_CISCO_DNS_INFO" ]
+        echo "flushing local nameserver of $PLUTO_CISCO_DOMAIN_INFO"
+        /usr/sbin/unbound-control forward_remove $PLUTO_CISCO_DOMAIN_INFO
+        /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
+    return
 fi
 
 if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then
