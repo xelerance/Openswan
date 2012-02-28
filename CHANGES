@@ -28,6 +28,7 @@ v2.6.38 (unreleased)
 * Fix two format string buglets [Moritz Muehlenhoff]
 * XAUTH: Support unbound as local resolver in remote_peer_type=cisco [Paul]
 * NATT: Fix iphone/iOS by removing outdated OSX NAT-T workarounds [Paul]
+* SAREF: kernel patches updated to linux 3.0.0 [Jonathon Padfield]
 * Bugracker bugs fixed:
    #1263 /usr/lib/ipsec/_startnetkey selects wrong default gateway if there
          are multiple [Petr Tichy]
