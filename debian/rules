@@ -199,6 +199,8 @@ install-openswan-modules-source: patch
 	cp -r patches/kernel/2.6.32 "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	cp -r patches/kernel/2.6.34 "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	cp -r patches/kernel/2.6.35 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/2.6.38 "$(BUILDDIR)/modules/openswan/patches/kernel/"
+	cp -r patches/kernel/3.0.0  "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
 	install --mode=755 debian/openswan-modules-source.rules "$(BUILDDIR)/modules/openswan/debian/rules"
