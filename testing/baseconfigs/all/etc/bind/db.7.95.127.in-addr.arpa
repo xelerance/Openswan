@@ -1,6 +1,5 @@
 ; example.com reverse zone for FreeS/WAN testing
 ; This file belongs in /var/named/test.rev.zone
-; RCSID $Id: db.7.95.127.in-addr.arpa,v 1.2 2003/06/01 17:17:43 mcr Exp $
 
 ; add to /etc/named.conf:
 

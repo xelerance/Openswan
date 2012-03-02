@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: adns.h,v 1.6 2002/12/17 14:26:54 dhr Exp $
  */
 
 #ifndef _ADNS_H

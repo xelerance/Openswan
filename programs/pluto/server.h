@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: server.h,v 1.32 2005/09/19 00:40:48 mcr Exp $
  */
 
 #ifndef _SERVER_H

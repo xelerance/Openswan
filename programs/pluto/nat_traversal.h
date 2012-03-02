@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: nat_traversal.h,v 1.5 2005/09/26 23:35:28 mcr Exp $
  */
 
 #ifndef _NAT_TRAVERSAL_H_
@@ -23,8 +21,7 @@
 #define NAT_TRAVERSAL_IETF_00_01     1
 #define NAT_TRAVERSAL_IETF_02_03     2
 #define NAT_TRAVERSAL_IETF_05        3
-#define NAT_TRAVERSAL_OSX            4
-#define NAT_TRAVERSAL_RFC            5
+#define NAT_TRAVERSAL_RFC            4
 
 #define NAT_TRAVERSAL_NAT_BHND_ME    30
 #define NAT_TRAVERSAL_NAT_BHND_PEER  31
@@ -36,7 +33,7 @@
  */
 #define NAT_T_WITH_NATD \
 	( LELEM(NAT_TRAVERSAL_IETF_00_01) | LELEM(NAT_TRAVERSAL_IETF_02_03) | \
-	LELEM(NAT_TRAVERSAL_IETF_05) | LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
+	LELEM(NAT_TRAVERSAL_IETF_05) | LELEM(NAT_TRAVERSAL_RFC) )
 /**
  * NAT-Traversal methods which need NAT-OA
  */
@@ -48,20 +45,13 @@
  */
 #define NAT_T_WITH_KA \
 	( LELEM(NAT_TRAVERSAL_IETF_00_01) | LELEM(NAT_TRAVERSAL_IETF_02_03) | \
-	LELEM(NAT_TRAVERSAL_IETF_05) | LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
+	LELEM(NAT_TRAVERSAL_IETF_05) | LELEM(NAT_TRAVERSAL_RFC) )
 /**
  * NAT-Traversal methods which use floating port
  */
 #define NAT_T_WITH_PORT_FLOATING \
-	( LELEM(NAT_TRAVERSAL_IETF_02_03) | LELEM(NAT_TRAVERSAL_OSX) | \
+	( LELEM(NAT_TRAVERSAL_IETF_02_03) | \
 	LELEM(NAT_TRAVERSAL_IETF_05) | LELEM(NAT_TRAVERSAL_RFC) )
-
-/**
- * NAT-Traversal methods which use a value for NAT-D from draft versions of the
- * RFC which conflict with values from RFC 3547
- */
-#define NAT_T_WITH_NATD_BADDRAFT_VALUES \
-	( LELEM(NAT_TRAVERSAL_OSX) )
 
 /**
  * NAT-Traversal methods which use officials values (RFC)
@@ -73,7 +63,7 @@
  * NAT-Traversal methods which use officials values (RFC) for encapsulation
  */
 #define NAT_T_WITH_ENCAPSULATION_RFC_VALUES \
-	( LELEM(NAT_TRAVERSAL_OSX) | LELEM(NAT_TRAVERSAL_RFC) )
+	( LELEM(NAT_TRAVERSAL_RFC) )
 
 /**
  * NAT-Traversal detected
@@ -129,7 +119,7 @@ extern int nat_traversal_espinudp_socket (int sk
  */
 #ifndef PB_STREAM_UNDEFINED
 bool nat_traversal_add_vid(u_int8_t np, pb_stream *outs);
-bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs);
+bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs, struct state *st);
 #endif
 u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid);
 

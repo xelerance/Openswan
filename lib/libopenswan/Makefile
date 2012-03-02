@@ -54,10 +54,8 @@ PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
 PFKEYV2_SRCS+=pfkey_v2_debug.c 
 endif
 
-ifeq ($(USE_EXTRACRYPTO),true)
 CFLAGS+=-DUSE_SHA2
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libcrypto/libsha2
-endif
 
 LOGSRCS=oswlog.c oswid.c
 
@@ -110,6 +108,10 @@ endif
 
 ifeq ($(USE_MODP_RFC5114),true)
 CFLAGS+=-DUSE_MODP_RFC5114
+endif
+
+ifeq ($(USE_LABELED_IPSEC),true)
+CFLAGS+=-DHAVE_LABELED_IPSEC
 endif
 
 CFLAGS+=-DFINALCONFDIR=\"${FINALCONFDIR}\"

@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ipsec_doi.h,v 1.41 2005/03/20 02:27:50 mcr Exp $
  */
 
 extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);
@@ -19,7 +17,11 @@ extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);
 extern void ipsecdoi_initiate(int whack_sock, struct connection *c
 			      , lset_t policy, unsigned long try
 			      , so_serial_t replacing
-			      , enum crypto_importance importance);
+			      , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+			     , struct xfrm_user_sec_ctx_ike *
+#endif
+			      );
 
 extern void ipsecdoi_replace(struct state *st
 			     , lset_t policy_add, lset_t policy_del

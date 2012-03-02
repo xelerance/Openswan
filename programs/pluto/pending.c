@@ -62,6 +62,9 @@ struct pending {
     unsigned long try;
     so_serial_t   replacing;
     time_t        pend_time;
+#ifdef HAVE_LABELED_IPSEC
+    struct xfrm_user_sec_ctx_ike * uctx;
+#endif
 
     struct pending *next;
 };
@@ -73,7 +76,11 @@ add_pending(int whack_sock
 , struct connection *c
 , lset_t policy
 , unsigned long try
-, so_serial_t replacing)
+, so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+, struct xfrm_user_sec_ctx_ike * uctx
+#endif
+)
 {
     struct pending *p, **pp;
 
@@ -102,6 +109,14 @@ add_pending(int whack_sock
     p->try = try;
     p->replacing = replacing;
     p->pend_time = time(NULL);
+#ifdef HAVE_LABELED_IPSEC
+    p->uctx = NULL;
+    if(uctx!=NULL) {
+    p->uctx = clone_thing(*uctx, "pending security context");
+    DBG(DBG_CONTROL, DBG_log("pending phase 2 with security context %s, %d"
+	, p->uctx->sec_ctx_value, p->uctx->ctx_len));
+    }
+#endif
 
     host_pair_enqueue_pending(c, p, &p->next);
 }
@@ -162,6 +177,10 @@ delete_pending(struct pending **pp)
 	DBG_log("removing pending policy for \"%s\" {%p}",
 		p->connection ? p->connection->name : "none", p));
 
+#ifdef HAVE_LABELED_IPSEC
+   pfreeany(p->uctx);
+#endif
+
     pfree(p);
 }
 
@@ -195,7 +214,11 @@ unpend(struct state *st)
 
 	    p->pend_time = time(NULL);
 	    (void) quick_outI1(p->whack_sock, st, p->connection, p->policy
-			       , p->try, p->replacing);
+			       , p->try, p->replacing
+#ifdef HAVE_LABELED_IPSEC
+			       , p->uctx
+#endif
+			      );
 	    p->whack_sock = NULL_FD;	/* ownership transferred */
 	    p->connection = NULL;	/* ownership transferred */
 	    delete_pending(pp);
@@ -242,12 +265,11 @@ bool pending_check_timeout(struct connection *c)
 {
     struct pending **pp, *p;
     time_t n = time(NULL);
-    bool restart = FALSE;
 
     for (pp = host_pair_first_pending(c); (p = *pp) != NULL; )
     {
 	DBG(DBG_DPD,
-	    DBG_log("checking connection \"%s\" for stuck phase 2s %lu+%lu <= %lu"
+	    DBG_log("checking connection \"%s\" for stuck phase 2s (%lu+ 3*%lu) <= %lu"
 		    , c->name
 		    , (unsigned long)p->pend_time
 		    , (unsigned long)c->dpd_timeout
@@ -255,12 +277,13 @@ bool pending_check_timeout(struct connection *c)
 		    
 	if(c->dpd_timeout > 0) {
 	    if((p->pend_time + c->dpd_timeout*3) <= n) {
-		restart = TRUE;
+		DBG(DBG_DPD, DBG_log("connection \"%s\" stuck, restarting", c->name));
+		return TRUE;
 	    }
 	}
 	pp = &p->next;
     }
-    return restart;
+    return FALSE;
 }
 
 /* a Main Mode negotiation has been replaced; update any pending */

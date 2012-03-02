@@ -13,9 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: pf_key.c,v 1.18 2004/04/04 01:50:56 ken Exp $
- *
  */
 
 /* 
@@ -302,89 +299,6 @@ main(int argc, char *argv[])
 }
 	
 /*
- * $Log: pf_key.c,v $
- * Revision 1.18  2004/04/04 01:50:56  ken
- * Use openswan includes
- *
- * Revision 1.17  2003/11/07 01:36:55  ken
- * Cast to (int) for readlen
- *
- * Revision 1.16  2003/10/31 02:33:00  mcr
- * 	new printing routines for pf_key.
- *
- * Revision 1.15.2.1  2003/10/29 01:38:21  mcr
- * 	use new pfkey printer.
- *
- * Revision 1.15  2003/09/10 00:01:30  mcr
- * 	fixes for gcc 3.3 from Matthias Bethke <Matthias.Bethke@gmx.net>
- *
- * Revision 1.14  2002/10/09 03:12:05  dhr
- *
- * [kenb+dhr] 64-bit fixes
- *
- * Revision 1.13  2002/09/20 05:02:15  rgb
- * Cleaned up pfkey_lib_debug usage.
- *
- * Revision 1.12  2002/09/13 23:02:23  rgb
- * Type fiddling to tame ia64 compiler.
- * Added text labels to elucidate numeric values presented.
- *
- * Revision 1.11  2002/08/26 03:05:25  mcr
- * 	duh, pf_key much catch SIGTERM as well as SIGINT...
- *
- * Revision 1.10  2002/08/13 19:01:27  mcr
- * 	patches from kenb to permit compilation of FreeSWAN on ia64.
- * 	des library patched to use proper DES_LONG type for ia64.
- *
- * Revision 1.9  2002/07/16 02:53:42  mcr
- * 	added --daemon <pidfile> to "ipsec pf_key" command.
- * 	this is used in *-trap-* tests to avoid race conditions between
- * 	registration of PF_KEY listeners and arrival of first test packet.
- *
- * Revision 1.8  2002/06/17 04:32:55  mcr
- * 	exit nicely from pf_key when SIGINT (^C) is sent.
- * 	This is needed so that the stdout will flush properly.
- *
- * Revision 1.7  2002/04/24 07:55:32  mcr
- * 	#include patches and Makefiles for post-reorg compilation.
- *
- * Revision 1.6  2002/04/24 07:35:39  mcr
- * Moved from ./klips/utils/pf_key.c,v
- *
- * Revision 1.5  2002/03/08 21:44:04  rgb
- * Update for all GNU-compliant --version strings.
- *
- * Revision 1.4  2001/11/27 05:19:06  mcr
- * 	added extra newline between packets.
- * 	set pfkey_lib_debug to enum rather than just to "1".
- *
- * Revision 1.3  2001/11/27 03:35:29  rgb
- * Added stdlib *again*.
- *
- * Revision 1.2  2001/11/23 07:23:14  mcr
- * 	pulled up klips2 Makefile and pf_key code.
- *
- * Revision 1.1.2.5  2001/10/23 18:49:12  mcr
- * 	renamed man page to section 8.
- * 	added --ah, --esp, --ipcomp and --ipip to control which
- * 	protocols are printed.
- * 	incomplete messages which include at least an sadb header are printed.
- *
- * Revision 1.1.2.4  2001/10/22 21:50:51  rgb
- * Added pfkey register for AH, ESP, IPIP and COMP.
- *
- * Revision 1.1.2.3  2001/10/21 21:51:06  rgb
- * Bug fixes to get working.
- *
- * Revision 1.1.2.2  2001/10/20 22:45:31  rgb
- * Added check for exact length and a call to message parser to get some
- * idea of the contents of each extension.
- *
- * Revision 1.1.2.1  2001/10/17 23:25:37  mcr
- * 	added "pk_key" program to dump raw kernel pf messages.
- * 	(program is still skeletal)
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * End:

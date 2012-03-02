@@ -106,31 +106,37 @@ conn block
 
 # VPN connection
 conn west-east
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	#auto=start
 
 conn west-eastnet
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=eastnet-ipv4
 	#auto=start
 
 conn westnet-east
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=westnet-ipv4
 	#auto=start
 
 conn west-east-pass
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	type=passthrough
 	#auto=start
 
 conn westnet-east-pass
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=westnet-ipv4
 	type=passthrough
 	#auto=start
 
 conn west-eastnet-pass
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=eastnet-ipv4
 	type=passthrough
@@ -144,25 +150,58 @@ conn westnet-eastnet-sourceip
 	leftsourceip=192.0.1.254
 	also=westnet-eastnet
 
+# also processing split in two parts messes up with connaddrfamily checking
+# rewrite this now as work around as to not break ALL test cases :)
+#conn westnet-eastnet-6in4
+#   also=west-east-base-ipv4
+#   also=westnet-eastnet-ipv6
+
 conn westnet-eastnet-6in4
-	also=west-east-base-ipv4
-	also=westnet-eastnet-ipv6
+	also=west-east-base-id
+	left=192.1.2.45
+	#leftnexthop=192.1.2.23
+	right=192.1.2.23
+	#rightnexthop=192.1.2.45
+        leftsubnet=2001:db8:0:1::/64
+        rightsubnet=2001:db8:0:2::/64
+        connaddrfamily=ipv6
 
+# Same issue for this conn
+#conn westnet-eastnet-4in6
+#	also=west-east-base-id
+#	also=west-east-base-ipv6
+#	#connaddrfamily=ipv6
+#	also=westnet-ipv4
+#	also=eastnet-ipv4
+#	auto=ignore
+
+conn westnet-eastnet-4in6
+	also=west-east-base-id
+	#also=west-east-base-ipv6
+	left=2001:db8:1:2::45
+	#leftnexthop=2001:db8:1:2::23
+	right=2001:db8:1:2::23
+	#rightnexthop=2001:db8:1:2::45
+	#connaddrfamily=ipv6
+	leftsubnet=192.0.1.0/24
+	rightsubnet=192.0.2.0/24
+	auto=ignore
+
+# and this one
 conn westnet-eastnet-6in6
-	also=west-east-base-ipv6
+	also=west-east-base-id
+	#also=west-east-base-ipv6
+	left=2001:db8:1:2::45
+	leftnexthop=2001:db8:1:2::23
+	right=2001:db8:1:2::23
+	rightnexthop=2001:db8:1:2::45
 	also=westnet-eastnet-ipv6
 
-# this has no base because it is included with a base of 6 or 4
 conn westnet-eastnet-ipv4
-	also=westnet-ipv4
-	also=eastnet-ipv4
-
-# choose not to rename this westnet-eastnet-ipv4 as to not screw up all tests using this - alias made above
-conn westnet-eastnet
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=westnet-ipv4
 	also=eastnet-ipv4
-	#auto=start
 
 # this has no base because it is included with a base of 6 or 4
 conn westnet-eastnet-ipv6
@@ -172,6 +211,7 @@ conn westnet-eastnet-ipv6
 	#auto=start
 
 conn westnet-eastnet-pass
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=westnet-ipv4
 	also=eastnet-ipv4
@@ -179,6 +219,7 @@ conn westnet-eastnet-pass
 	#auto=start
 
 conn westnet-eastnet-drop
+	also=west-east-base-id
 	also=west-east-base-ipv4
 	also=westnet-ipv4
 	also=eastnet-ipv4
@@ -192,39 +233,26 @@ conn westnet-eastnet-x509
 	rightsourceip=192.0.2.254
 	also=west-east-x509
 
-conn westnet-eastnet-4in6
-	also=west-east-base-ipv6
-	also=westnet-ipv4
-	also=eastnet-ipv4
-	auto=ignore
-
 conn eastnet-ipv4
-	also=eastnet
-
-conn eastnet
 	rightsubnet=192.0.2.0/24
 
 conn westnet-ipv4
-	also=westnet
-
-conn westnet
 	leftsubnet=192.0.1.0/24
 
 conn west-east-base-ipv4
-	also=west-east-base
 	left=192.1.2.45
 	leftnexthop=192.1.2.23
 	right=192.1.2.23
 	rightnexthop=192.1.2.45
 
 conn west-east-base-ipv6
-	also=west-east-base
+	connaddrfamily=ipv6
 	left=2001:db8:1:2::45
 	leftnexthop=2001:db8:1:2::23
 	right=2001:db8:1:2::23
 	rightnexthop=2001:db8:1:2::45
 
-conn west-east-base
+conn west-east-base-id
 	# Left security gateway, subnet behind it, next hop toward right.
 	leftid=@west
 	leftrsasigkey=0sAQNzGEFs18VKT00sA+4p+GUKn9C55PYuPQca6C+9Qhj0jfMdQnTRTDLeI+lp9TnidHH7fVpq+PkfiF2LHlZtDwMurLlwzbNOghlEYKfQ080WlOTTUAmOLhAzH28MF70q3hzq0m5fCaVZWtxcV+LfHWdxceCkjBUSaTFtR2W12urFCBz+SB3+OM33aeIbfHxmck2yzhJ8xyMods5kF3ek/RZlFvgN8VqBdcFVrZwTh0mXDCGN12HNFixL6FzQ1jQKerKBbjb0m/IPqugvpVPWVIUajUpLMEmi1FAXc1mFZE9x1SFuSr0NzYIu2ZaHfvsAZY5oN+I+R2oC67fUCjgxY+t7

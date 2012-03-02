@@ -13,8 +13,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: x509.h,v 1.6 2004/07/22 18:56:36 ken Exp $
  */
 
 #ifndef _X509_H

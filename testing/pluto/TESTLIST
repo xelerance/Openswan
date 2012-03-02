@@ -462,6 +462,8 @@ umlplutotest	ikev2-03-basic-rawrsa			good
 umlplutotest	ikev2-04-basic-x509			good
 umlplutotest	ikev2-05-basic-psk			good
 umlplutotest	ikev2-06-6msg				good
+umlplutotest	ikev2-07-biddown			good
+umlplutotest	ikev2-08-delete-notify			good
 
 umlplutotest	ikev2-x509-01		good
 umlplutotest	ikev2-x509-02		good
@@ -470,6 +472,17 @@ umlplutotest	ikev2-x509-02		good
 umlplutotest	ikev2-algo-01-modp2048-initiator	good
 umlplutotest	ikev2-algo-02-modp2048-responder	good
 umlplutotest	ikev2-algo-03-aes-ccm			good
+umlplutotest	ikev2-algo-04-aes-gcm			good
+
+# Various corner case tests for IKEv2
+umlplutotest	ikev2-major-version-initiator		good
+umlplutotest	ikev2-major-version-responder		good
+umlplutotest	ikev2-minor-version-initiator		good
+umlplutotest	ikev2-minor-version-responder		good
+umlplutotest	ikev2-isakmp-reserved-flags-01		good
+umlplutotest	ikev2-isakmp-reserved-flags-02		good
+umlplutotest	ikev2-allow-narrow-01			good
+umlplutotest	ikev2-no-nhelpers-01			good
 
 #################################################################
 # Interop tests

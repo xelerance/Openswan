@@ -13,8 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: nethub.h,v 1.7 2003/04/02 20:25:53 mcr Exp $
- *
  * @(#) based upon uml_router from User-Mode-Linux tools package
  *
  */
@@ -197,36 +195,6 @@ extern int tcpdump_print;
 #endif /* _NETHUB_H_ */
 
 /*
- * $Log: nethub.h,v $
- * Revision 1.7  2003/04/02 20:25:53  mcr
- * 	quiet down uml_netjig unless -v or $NETJIGVERBOSE is set.
- *
- * Revision 1.6  2003/04/02 02:15:59  mcr
- * 	added option to set packet replay rate.
- *
- * Revision 1.5  2002/11/07 22:18:09  mcr
- * 	use proper #define for ethernet length.
- *
- * Revision 1.4  2002/08/30 01:37:35  mcr
- * 	double buffered the poll(2) structures so that changes during
- * 	use would not affect the system.
- * 	changed fd_array to be indirect references so that the poll(2)
- * 	loop could more easily double buffer the structures.
- *
- * Revision 1.3  2002/07/21 16:40:34  mcr
- * 	clean pid file upon exit, so that directories can be removed
- * 	properly. Free up memory that was allocated for the hub.
- * 	switch to using mkstemp instead of tmpname for directory
- * 	creation - append .d to the generated name. (still not race safe!)
- * 	when freeing the hubs, take care not to reference free'ed memory.
- *
- * Revision 1.2  2002/07/17 03:59:46  mcr
- * 	debugged uml_switch - added "-name" option.
- *
- * Revision 1.1  2002/07/14 02:48:48  mcr
- * 	first version of merged uml_switch/uml_netjig that compiles.
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * c-basic-offset: 8

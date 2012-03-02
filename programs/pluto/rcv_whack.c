@@ -633,7 +633,11 @@ void whack_process(int whackfd, struct whack_message msg)
 	else
 	    (void)initiate_ondemand(&msg.oppo_my_client, &msg.oppo_peer_client, 0
 		, FALSE
-		, msg.whack_async? NULL_FD : dup_any(whackfd), "whack");
+		, msg.whack_async? NULL_FD : dup_any(whackfd)
+#ifdef HAVE_LABELED_IPSEC 
+		, NULL 
+#endif
+		, "whack");
     }
 
     if (msg.whack_terminate)

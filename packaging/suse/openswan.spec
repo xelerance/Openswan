@@ -8,18 +8,6 @@ Name: openswan
 Version: IPSECBASEVERSION
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
-%{!?buildxen: %{expand: %%define buildxen 0}}
-
-# The default kernel version to build for is the latest of
-# the installed binary kernel
-# This can be overridden by "--define 'kversion x.x.x-y.y.y'"
-%define defkflavor %(uname -r | cut -d- -f 3)
-%define defkrelease %(uname -r)
-%define defkversion %(rpm -q --queryformat '%%{VERSION}-%%{RELEASE}' kernel-%{defkflavor})
-%{!?kflavor: %{expand: %%define kflavor %defkflavor}}
-%{!?krelease: %{expand: %%define krelease %defkrelease}}
-%{!?kversion: %{expand: %%define kversion %defkversion}}
-%define krelver %(echo %{krelease} | tr -s '-' '_')
 
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
@@ -36,6 +24,10 @@ PreReq: %insserv_prereq %fillup_prereq perl
 BuildRequires: gmp-devel bison flex bind-devel xmlto
 Requires: iproute2 >= 2.6.8
 AutoReqProv:    on
+%if %{buildklips}
+%kernel_module_package -p preamble
+BuildRequires: %kernel_module_package_buildreqs
+%endif
 
 Prefix:         /usr
 
@@ -54,17 +46,14 @@ Openswan KLIPS IPsec stack that is an alternative for the NETKEY/XFRM
 IPsec stack that exists in the default Linux kernel.
 
 %if %{buildklips}
-%package klips
+%package KMP
 Summary: Openswan kernel module
 Group:  System/Kernel
-Release: %{krelver}_%{ourrelease}
-Requires: kernel-%{kflavor} = %{kversion}
-BuildRequires: kernel-%{kflavor} = %{kversion}, kernel-%{kflavor}-devel = %{kversion}, module-init-tools
 %endif
 
 %if %{buildklips}
-%description klips
-This package contains only the ipsec module for the RedHat/Fedora series of
+%description KMP
+This package contains only the ipsec module for the SuSE series of
 kernels.
 %endif
 
@@ -88,22 +77,15 @@ sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
   INC_RCDIRS='/etc/init.d /etc/rc.d/init.d /etc/rc.d /sbin/init.d' \
   INC_DOCDIR=share/doc/packages \
   programs
-FS=$(pwd)
 %if %{buildklips}
-mkdir -p BUILD.%{_target_cpu}
-
-cd packaging/suse
-# rpm doesn't know we're compiling kernel code. optflags will give us -m64
-%{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu} \
-    OPENSWANSRCDIR=$FS \
-    KLIPSCOMPILE="%{optflags}" \
-    KERNELSRC=/lib/modules/%{krelease}/build \
-%if %{buildxen}
-    ARCH=xen \
-%else
-    ARCH=%{_arch} \
-%endif
-    include module
+FS=$(pwd)
+for flavor in %flavors_to_build; do
+    %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu}.$flavor \
+        OPENSWANSRCDIR=$FS \
+        KERNELSRC=%{kernel_source $flavor} \
+        ARCH=%{_arch} \
+        include module
+done
 %endif
 
 %install
@@ -124,7 +106,7 @@ find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
 install -d %{buildroot}%{_sbindir}
 #suse specific
-ln -sf /etc/init.d/ipsec ${RPM_BUILD_ROOT}%{prefix}/sbin/rcipsec
+ln -sf /etc/init.d/ipsec ${RPM_BUILD_ROOT}%{_prefix}/sbin/rcipsec
 #echo "# see man ipsec.secrets" >  $RPM_BUILD_ROOT/etc/ipsec.secrets
 install -d -m 755 %{buildroot}/etc/sysconfig/network/{scripts,if-up.d,if-down.d}
 install -m 755 packaging/suse/sysconfig.network.scripts.openswan %{buildroot}/etc/sysconfig/network/scripts/freeswan
@@ -139,13 +121,10 @@ ln -s ../ip-up.d/freeswan %{buildroot}/etc/ppp/ip-down.d/freeswan
 rm -f %{buildroot}/etc/rc?.d/[KS]*ipsec
 
 %if %{buildklips}
-mkdir -p %{buildroot}/lib/modules/%{krelease}/kernel/net/ipsec
-for i in $FS/BUILD.%{_target_cpu}/ipsec.ko  $FS/modobj/ipsec.o
-do
-  if [ -f $i ]
-  then
-    cp $i %{buildroot}/lib/modules/%{krelease}/kernel/net/ipsec 
-  fi
+export INSTALL_MOD_PATH=$RPM_BUILD_ROOT
+export INSTALL_MOD_DIR=updates
+for flavor in %flavors_to_build; do
+    make -C %{kernel_source $flavor} modules_install M=$FS/BUILD.%{_target_cpu}.$flavor
 done
 %endif
 
@@ -175,12 +154,6 @@ rm -rf ${RPM_BUILD_ROOT}
 /etc/ppp/ip-down.d/freeswan
 %dir %attr(700,root,root) /etc/ipsec.d/private
 
-%if %{buildklips}
-%files klips
-%defattr (-,root,root)
-/lib/modules/%{krelease}/kernel/net/ipsec
-%endif
-
 %preun
 %{stop_on_removal ipsec}
 # Some people expect to not loose their secrets even after multiple rpm -e.
@@ -192,13 +165,6 @@ exit 0
 %postun
 %{restart_on_update ipsec}
 %{insserv_cleanup}
-
-%if %{buildklips}
-%postun klips
-/sbin/depmod -a -e -F /boot/System.map-%{krelease} %{krelease}
-%post klips
-/sbin/depmod -a -e -F /boot/System.map-%{krelease} %{krelease}
-%endif
 
 %post 
 %{fillup_and_insserv ipsec}

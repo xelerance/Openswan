@@ -13,8 +13,6 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: uml_netjig.c,v 1.27 2003/04/02 20:25:53 mcr Exp $
- *
  * @(#) based upon uml_router from User-Mode-Linux tools package
  *
  */
@@ -661,125 +659,6 @@ int main(int argc, char **argv)
 }
 
 /*
- * $Log: uml_netjig.c,v $
- * Revision 1.27  2003/04/02 20:25:53  mcr
- * 	quiet down uml_netjig unless -v or $NETJIGVERBOSE is set.
- *
- * Revision 1.26  2003/04/02 02:15:59  mcr
- * 	added option to set packet replay rate.
- *
- * Revision 1.25  2002/11/11 17:07:59  mcr
- * 	add new line for new libnetdissect - but this code
- * 	isn't ready yet.
- *
- * Revision 1.24  2002/09/05 17:01:42  mcr
- * 	make sure that the netdissect system is properly initialized.
- *
- * Revision 1.23  2002/09/02 19:33:47  mcr
- * 	the WAITPLAY command did work - it signaled end of
- * 	packet stream, but then forgot this fact, and didn't
- * 	actually exit.
- * 	The netjig.tcl will now log to stderr any problems talking
- * 	to uml_netjig, so this problem will be more obvious in
- * 	the future.
- *
- * Revision 1.22  2002/08/30 01:37:35  mcr
- * 	double buffered the poll(2) structures so that changes during
- * 	use would not affect the system.
- * 	changed fd_array to be indirect references so that the poll(2)
- * 	loop could more easily double buffer the structures.
- *
- * Revision 1.21  2002/08/13 00:50:19  mcr
- * 	when using poll(2), the invalid timeout value is -1,
- * 	not 0 as with select.
- *
- * Revision 1.20  2002/07/21 16:40:34  mcr
- * 	clean pid file upon exit, so that directories can be removed
- * 	properly. Free up memory that was allocated for the hub.
- * 	switch to using mkstemp instead of tmpname for directory
- * 	creation - append .d to the generated name. (still not race safe!)
- * 	when freeing the hubs, take care not to reference free'ed memory.
- *
- * Revision 1.19  2002/07/20 02:12:02  mcr
- * 	create a new function, insert_data() that calls send_dst
- * 	directly rather than using handle_data() which logs the data.
- * 	This avoids having input packets in the packet capture.
- *
- * Revision 1.18  2002/07/19 20:49:09  mcr
- * 	all incidental messages moved from stdout to stderr since
- * 	stdout is often attacked to a pipe in uml_netjig, and writing
- * 	to the pipe after it closes causes problems.
- * 	cleanup_nh() now properly closes the pcap file before exiting.
- * 	host-test.tcl now waits for eof from netjig - this may not work.
- * 	netjig does not output anything when told to "QUIT"
- *
- * Revision 1.17  2002/07/17 23:52:31  mcr
- * 	on some systems, the poll generates an POLLHUP for stdin
- * 	which must be dealt with in some way.
- *
- * Revision 1.16  2002/07/16 03:48:47  mcr
- * 	handle SIGPIPE cleanly.
- *
- * Revision 1.15  2002/07/15 09:58:38  mcr
- * 	debugging of uml_netjig with new network backend.
- *
- * Revision 1.14  2002/07/14 02:48:48  mcr
- * 	first version of merged uml_switch/uml_netjig that compiles.
- *
- * Revision 1.13  2002/06/17 05:17:01  mcr
- * 	when not in cmdproto mode, run the packets as possible.
- *
- * Revision 1.12  2002/06/16 23:51:16  mcr
- * 	revised uml_netjig - cmd mode has vastly improved, and it
- * 	now can run a single UML in cmd mode.
- * 	man page still missing.
- *
- * Revision 1.11  2002/06/03 01:24:11  mcr
- * 	uml_netjig now tries to cleanup (remove) the directories in
- * 	/tmp that it made.
- *
- * Revision 1.10  2002/05/30 07:06:55  dhr
- *
- * spelling
- *
- * Revision 1.9  2002/05/08 20:24:28  mcr
- * 	this is now uml_netjig version 2.
- * 	It has a command protocol (--cmdproto) which permits one to
- * 	invoke some functions as desired.
- * 	Without this option, it acts like version 1.
- *
- * Revision 1.8  2002/01/21 01:08:41  mcr
- * 	do not die if -t option is provided, but tcpdump compiled out.
- *
- * Revision 1.7  2002/01/12 04:01:36  mcr
- * 	another #ifdef NETDISSET for tcpdump_print access.
- *
- * Revision 1.6  2002/01/12 03:40:56  mcr
- * 	missing #ifdef for on NETDISSECT call.
- *
- * Revision 1.5  2002/01/12 02:52:46  mcr
- * 	added --debug option to replace #if 0.
- *
- * Revision 1.4  2001/10/23 16:34:12  mcr
- * 	use "progname" instead of "prog"
- * 	fixed public/private confused variables in printf().
- * 	fixed bug in termination logic.
- *
- * Revision 1.3  2001/10/14 00:27:10  mcr
- * 	added code to play pcap files to both public and private sides.
- * 	updated usage.
- *
- * Revision 1.2  2001/10/12 20:54:02  mcr
- * 	documented environment variables
- * 	added arp replies
- * 	added --help and fixed Usage().
- *
- * Revision 1.1  2001/10/08 22:54:05  mcr
- * 	uml_net program that handles two interfaces.
- * 	no support for pcap yet.
- *
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * c-basic-offset: 2

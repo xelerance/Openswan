@@ -1,4 +1,3 @@
-RCSID $Id: af_inet.c.fs2_4.patch,v 1.9 2004/11/29 17:53:20 mcr Exp $
 --- linux/net/ipv4/af_inet.c.preipsec	Wed Apr 26 15:13:17 2000
 +++ linux/net/ipv4/af_inet.c	Fri Jun 30 15:01:27 2000
 @@ -1019,6 +1019,17 @@

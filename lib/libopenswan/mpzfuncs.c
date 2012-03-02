@@ -15,8 +15,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: keys.c,v 1.104 2005/08/19 04:03:02 mcr Exp $
  */
 
 #include <stddef.h>

@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: oswalloc.h,v 1.3 2004/10/16 23:42:13 mcr Exp $
  */
 
 #ifndef _OSW_ALLOC_H_

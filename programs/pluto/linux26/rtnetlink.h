@@ -51,7 +51,7 @@
 #define	RTM_MAX		(RTM_BASE+31)
 
 /* 
-   Generic structure for encapsulation optional route information.
+   Generic structure for encapsulation of optional route information.
    It is reminiscent of sockaddr, but with sa_family replaced
    with attribute type.
  */
@@ -66,7 +66,8 @@ struct rtattr
 
 #define RTA_ALIGNTO	4
 #define RTA_ALIGN(len) ( ((len)+RTA_ALIGNTO-1) & ~(RTA_ALIGNTO-1) )
-#define RTA_OK(rta,len) ((len) > 0 && (rta)->rta_len >= sizeof(struct rtattr) && \
+#define RTA_OK(rta,len) ((len) >= (int)sizeof(struct rtattr) && \
+			 (rta)->rta_len >= sizeof(struct rtattr) && \
 			 (rta)->rta_len <= (len))
 #define RTA_NEXT(rta,attrlen)	((attrlen) -= RTA_ALIGN((rta)->rta_len), \
 				 (struct rtattr*)(((char*)(rta)) + RTA_ALIGN((rta)->rta_len)))
@@ -79,7 +80,7 @@ struct rtattr
 
 
 /******************************************************************************
- *		Definitions used in routing table administation.
+ *		Definitions used in routing table administration.
  ****/
 
 struct rtmsg
@@ -115,9 +116,10 @@ enum
 	RTN_THROW,		/* Not in this table		*/
 	RTN_NAT,		/* Translate this address	*/
 	RTN_XRESOLVE,		/* Use external resolver	*/
+	__RTN_MAX
 };
 
-#define RTN_MAX RTN_XRESOLVE
+#define RTN_MAX (__RTN_MAX - 1)
 
 
 /* rtm_protocol */
@@ -130,18 +132,21 @@ enum
 #define RTPROT_STATIC	4	/* Route installed by administrator	*/
 
 /* Values of protocol >= RTPROT_STATIC are not interpreted by kernel;
-   they just passed from user and back as is.
+   they are just passed from user and back as is.
    It will be used by hypothetical multiple routing daemons.
    Note that protocol values should be standardized in order to
    avoid conflicts.
  */
 
 #define RTPROT_GATED	8	/* Apparently, GateD */
-#define RTPROT_RA	9	/* RDISC/ND router advertisments */
+#define RTPROT_RA	9	/* RDISC/ND router advertisements */
 #define RTPROT_MRT	10	/* Merit MRT */
 #define RTPROT_ZEBRA	11	/* Zebra */
 #define RTPROT_BIRD	12	/* BIRD */
 #define RTPROT_DNROUTED	13	/* DECnet routing daemon */
+#define RTPROT_XORP	14	/* XORP */
+#define RTPROT_NTK	15	/* Netsukuku */
+#define RTPROT_DHCP	16      /* DHCP client */
 
 /* rtm_scope
 
@@ -169,6 +174,7 @@ enum rt_scope_t
 #define RTM_F_NOTIFY		0x100	/* Notify user of route change	*/
 #define RTM_F_CLONED		0x200	/* This route is cloned		*/
 #define RTM_F_EQUALIZE		0x400	/* Multipath equalizer: NI	*/
+#define RTM_F_PREFIX		0x800	/* Prefix addresses		*/
 
 /* Reserved table identifiers */
 
@@ -198,21 +204,25 @@ enum rtattr_type_t
 	RTA_PREFSRC,
 	RTA_METRICS,
 	RTA_MULTIPATH,
-	RTA_PROTOINFO,
+	RTA_PROTOINFO, /* no longer used */
 	RTA_FLOW,
 	RTA_CACHEINFO,
-	RTA_SESSION,
+	RTA_SESSION, /* no longer used */
+	RTA_MP_ALGO, /* no longer used */
+	RTA_TABLE,
+	RTA_MARK,
+	__RTA_MAX
 };
 
-#define RTA_MAX RTA_SESSION
+#define RTA_MAX (__RTA_MAX - 1)
 
 #define RTM_RTA(r)  ((struct rtattr*)(((char*)(r)) + NLMSG_ALIGN(sizeof(struct rtmsg))))
 #define RTM_PAYLOAD(n) NLMSG_PAYLOAD(n,sizeof(struct rtmsg))
 
 /* RTM_MULTIPATH --- array of struct rtnexthop.
  *
- * "struct rtnexthop" describres all necessary nexthop information,
- * i.e. parameters of path to a destination via this nextop.
+ * "struct rtnexthop" describes all necessary nexthop information,
+ * i.e. parameters of path to a destination via this nexthop.
  *
  * At the moment it is impossible to set different prefsrc, mtu, window
  * and rtt for different paths from multipath.
@@ -283,9 +293,20 @@ enum
 #define RTAX_ADVMSS RTAX_ADVMSS
 	RTAX_REORDERING,
 #define RTAX_REORDERING RTAX_REORDERING
+	RTAX_HOPLIMIT,
+#define RTAX_HOPLIMIT RTAX_HOPLIMIT
+	RTAX_INITCWND,
+#define RTAX_INITCWND RTAX_INITCWND
+	RTAX_FEATURES,
+#define RTAX_FEATURES RTAX_FEATURES
+	RTAX_RTO_MIN,
+#define RTAX_RTO_MIN RTAX_RTO_MIN
+	RTAX_INITRWND,
+#define RTAX_INITRWND RTAX_INITRWND
+	__RTAX_MAX
 };
 
-#define RTAX_MAX RTAX_REORDERING
+#define RTAX_MAX (__RTAX_MAX - 1)
 
 struct rta_session
 {

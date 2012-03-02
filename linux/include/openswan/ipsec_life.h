@@ -13,10 +13,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  *
- * RCSID $Id: ipsec_life.h,v 1.4 2004/04/05 19:55:05 mcr Exp $
- *
  * This file derived from ipsec_xform.h on 2001/9/18 by mcr.
- *
  */
 
 /* 
@@ -91,20 +88,6 @@ enum ipsec_life_type {
 
 
 /*
- * $Log: ipsec_life.h,v $
- * Revision 1.4  2004/04/05 19:55:05  mcr
- * Moved from linux/include/freeswan/ipsec_life.h,v
- *
- * Revision 1.3  2002/04/24 07:36:46  mcr
- * Moved from ./klips/net/ipsec/ipsec_life.h,v
- *
- * Revision 1.2  2001/11/26 09:16:14  rgb
- * Merge MCR's ipsec_sa, eroute, proc and struct lifetime changes.
- *
- * Revision 1.1.2.1  2001/09/25 02:25:58  mcr
- * 	lifetime structure created and common functions created.
- *
- *
  * Local variables:
  * c-file-style: "linux"
  * End:

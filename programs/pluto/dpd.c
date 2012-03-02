@@ -130,6 +130,12 @@ dpd_init(struct state *st)
     /**
      * Used to store the 1st state 
      */
+#ifdef HAVE_LABELED_IPSEC
+	if(st->st_connection->loopback){
+	openswan_log("dpd is not required for ipsec connections over loopback");
+	return STF_OK;
+	}
+#endif
     struct state *p1st;
 
     /* find the related Phase 1 state */
@@ -240,7 +246,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
      *  to when there are multiple SAs and one is much less active.
      *
      */
-    last = (p1st->st_last_dpd > st->st_last_dpd
+    last = (p1st->st_last_dpd < st->st_last_dpd
 	    ? st->st_last_dpd : p1st->st_last_dpd );
 
     nextdelay = last + delay - tm;
@@ -315,7 +321,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     dpd_sched_timeout(p1st, tm, timeout);
 
     DBG(DBG_DPD, DBG_log("DPD: sending R_U_THERE %u to %s:%d (state #%lu)"
-			 , seqno
+			 , p1st->st_dpd_seqno
 			 , ip_str(&p1st->st_remoteaddr)
 			 , p1st->st_remoteport
 			 , p1st->st_serialno));

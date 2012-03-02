@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.5 2004/12/18 18:13:42 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -20,26 +18,3 @@ PROGRAM=ranbits
 LIBS=${OPENSWANLIB}
 
 include ${srcdir}../Makefile.program
-
-#
-# $Log: Makefile,v $
-# Revision 1.5  2004/12/18 18:13:42  mcr
-# 	adjusted Makefiles so that ${OBJDIR} builds work.
-#
-# Revision 1.4  2004/04/12 12:05:52  ken
-# Use OPENSWANLIBs
-#
-# Revision 1.3  2004/04/03 19:44:47  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.2  2002/06/02 21:51:41  mcr
-# 	changed TOPDIR->FREESWANSRCDIR in all Makefiles.
-# 	(note that linux/net/ipsec/Makefile uses TOPDIR because this is the
-# 	kernel sense.)
-#
-# Revision 1.1  2002/04/24 07:55:32  mcr
-# 	#include ${srcdir}..tches and Makefiles for post-reorg compilation.
-#
-#
-#
-

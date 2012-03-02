@@ -7,6 +7,7 @@
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009-2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -111,6 +112,10 @@
 #include <cap-ng.h>
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+#include "security_selinux.h"
+#endif
+
 const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
 
@@ -163,6 +168,10 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--adns <pathname>]"
 	    "[--nhelpers <number>]"
+#ifdef HAVE_LABELED_IPSEC
+	    " \\\n\t"
+	    "[--secctx_attr_value <number>]"
+#endif
 #ifdef DEBUG
 	    " \\\n\t"
 	    "[--debug-none]"
@@ -298,6 +307,10 @@ char **global_argv;
 int    global_argc;
 bool   log_to_stderr_desired = FALSE;
 
+#ifdef HAVE_LABELED_IPSEC
+u_int16_t secctx_attr_value=SECCTX;
+#endif
+
 int
 main(int argc, char **argv)
 {
@@ -407,6 +420,9 @@ main(int argc, char **argv)
 #endif
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
+#ifdef HAVE_LABELED_IPSEC
+	    { "secctx_attr_value", required_argument, NULL, 'w' },
+#endif
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all", no_argument, NULL, 'A' },
@@ -436,6 +452,10 @@ main(int argc, char **argv)
 	    { "impair-sa-creation", no_argument, NULL, IMPAIR_SA_CREATION + DBG_OFFSET },
 	    { "impair-die-oninfo", no_argument, NULL, IMPAIR_DIE_ONINFO + DBG_OFFSET },
 	    { "impair-jacob-two-two", no_argument, NULL, IMPAIR_JACOB_TWO_TWO + DBG_OFFSET },
+	    { "impair-major-version-bump", no_argument, NULL, IMPAIR_MAJOR_VERSION_BUMP + DBG_OFFSET },
+	    { "impair-minor-version-bump", no_argument, NULL, IMPAIR_MINOR_VERSION_BUMP + DBG_OFFSET },
+	    { "impair-retransmits", no_argument, NULL, IMPAIR_RETRANSMITS + DBG_OFFSET },
+	    { "impair-send-bogus-isakmp-flag", no_argument, NULL, IMPAIR_SEND_BOGUS_ISAKMP_FLAG + DBG_OFFSET },
 #endif
 	    { 0,0,0,0 }
 	    };
@@ -498,6 +518,23 @@ main(int argc, char **argv)
                 nhelpers = count;
             }
 	    continue;
+
+#ifdef HAVE_LABELED_IPSEC
+	case 'w':	/* --secctx_attr_value*/
+	    if (optarg == NULL || !isdigit(optarg[0]))
+		usage("missing (positive integer) value of secctx_attr_value (needed only if using labeled ipsec)");
+
+	   {
+                char *endptr;
+                long value = strtol(optarg, &endptr, 0);
+
+                if (*endptr != '\0' || endptr == optarg
+                    || (value != SECCTX && value !=10) )
+                    usage("<secctx_attr_value> must be a positive number (32001 by default, 10 for backward compatibility, or any other future number assigned by IANA)");
+                 secctx_attr_value = (u_int16_t)value;
+	   }
+	   continue;
+#endif
 
 	case 'd':	/* --nofork*/
 	    fork_desired = FALSE;
@@ -999,6 +1036,14 @@ main(int argc, char **argv)
 	openswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
     if(DBGP(IMPAIR_DIE_ONINFO))
 	openswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
+    if(DBGP(IMPAIR_MAJOR_VERSION_BUMP))
+	openswan_log("Warning: IMPAIR_MAJOR_VERSION_BUMP enabled");
+    if(DBGP(IMPAIR_MINOR_VERSION_BUMP))
+	openswan_log("Warning: IMPAIR_MINOR_VERSION_BUMP enabled");
+    if(DBGP(IMPAIR_RETRANSMITS))
+	openswan_log("Warning: IMPAIR_RETRANSMITS enabled");
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG))
+	openswan_log("Warning: IMPAIR_SEND_BOGUS_ISAKMP_FLAG enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
 	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))
@@ -1049,6 +1094,10 @@ main(int argc, char **argv)
 #ifdef HAVE_LIBNSS
     /*Loading CA certs from NSS DB*/
     load_authcerts_from_nss("CA cert",  AUTH_CA);
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+    init_avc();
 #endif
 
     daily_log_event();

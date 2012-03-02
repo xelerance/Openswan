@@ -1,6 +1,3 @@
-*
-* RCSID $Id: README.openswan-2,v 1.1 2003/12/10 01:07:49 mcr Exp $
-*
 
                ****************************************
                * IPSEC for Linux, Release 2.xx series *
@@ -104,9 +101,3 @@ The test scripts are locate in testing/ and and documentation is found
 at doc/src/umltesting.html. Automated testing via "make check" is available
 provided that the User-Mode-Linux patches are available.
 
-*
-* $Log: README.openswan-2,v $
-* Revision 1.1  2003/12/10 01:07:49  mcr
-* 	documentation for additions.
-*
-*

@@ -795,6 +795,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
     if (!encrypt_message(&md->rbody, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
+#ifdef XAUTH
     /* It seems as per Cisco implementation, XAUTH and MODECFG 
     * are not supposed to be performed again during rekey */
     if(c->newest_isakmp_sa != SOS_NOBODY && 
@@ -808,6 +809,19 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 	DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
 	st->hidden_variables.st_modecfg_vars_set = TRUE;
 	st->hidden_variables.st_modecfg_started = TRUE;
+	}
+    }
+#endif
+
+    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
+    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
+    st->hidden_variables.st_xauth_client_done = TRUE;
+    st->st_oakley.xauth = 0; 
+
+	if(st->st_connection->spd.this.modecfg_client) {
+	DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
+	st->hidden_variables.st_modecfg_vars_set = TRUE;
+        st->hidden_variables.st_modecfg_started = TRUE;
 	}
     }
 
@@ -899,6 +913,7 @@ aggr_inI2_tail(struct msg_digest *md
 
     /**************** done input ****************/
 
+#ifdef XAUTH
     /* It seems as per Cisco implementation, XAUTH and MODECFG 
      * are not supposed to be performed again during rekey */
     if(c->newest_isakmp_sa != SOS_NOBODY && 
@@ -914,6 +929,19 @@ aggr_inI2_tail(struct msg_digest *md
 		st->hidden_variables.st_modecfg_started = TRUE; 
 	   }
     }
+#endif
+
+    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
+    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
+    st->hidden_variables.st_xauth_client_done = TRUE;
+    st->st_oakley.xauth = 0; 
+
+        if(st->st_connection->spd.this.modecfg_client) {
+        DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
+        st->hidden_variables.st_modecfg_vars_set = TRUE;
+        st->hidden_variables.st_modecfg_started = TRUE; 
+        }
+   }
 
     c->newest_isakmp_sa = st->st_serialno;
 
@@ -989,7 +1017,11 @@ aggr_outI1(int whack_sock,
 	   struct state *predecessor,
 	   lset_t policy,
 	   unsigned long try
-	   , enum crypto_importance importance)
+	   , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+           , struct xfrm_user_sec_ctx_ike * uctx
+#endif	   
+	   )
 {
     struct state *st;
     struct spd_route *sr;
@@ -997,6 +1029,9 @@ aggr_outI1(int whack_sock,
     /* set up new state */
     cur_state = st = new_state();
     st->st_connection = c;
+#ifdef HAVE_LABELED_IPSEC
+    st->sec_ctx = NULL;
+#endif
     set_state_ike_endpoints(st, c);
 
 #ifdef DEBUG
@@ -1036,7 +1071,11 @@ aggr_outI1(int whack_sock,
 
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
+#ifdef HAVE_LABELED_IPSEC
+	     , uctx
+#endif
+		   );
 
     if (predecessor == NULL) {
 	openswan_log("initiating Aggressive Mode #%lu, connection \"%s\""
@@ -1183,7 +1222,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	}
 #endif
 	
-	if (!nat_traversal_insert_vid(np, &md->rbody)) {
+	if (!nat_traversal_insert_vid(np, &md->rbody, st)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}

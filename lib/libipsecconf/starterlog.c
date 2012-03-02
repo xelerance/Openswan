@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: starterlog.c,v 1.3 2004/04/18 03:09:27 mcr Exp $
  */
 
 #include <stdlib.h>

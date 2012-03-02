@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ipsec_ipcomp.h,v 1.4 2004/07/10 19:08:41 mcr Exp $
  */
 
 #ifndef IPSEC_IPCOMP_H
@@ -61,35 +59,3 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 extern struct xform_functions ipcomp_xform_funcs[];
 
 #endif /* IPSEC_IPCOMP_H */
-
-/*
- * $Log: ipsec_ipcomp.h,v $
- * Revision 1.4  2004/07/10 19:08:41  mcr
- * 	CONFIG_IPSEC -> CONFIG_KLIPS.
- *
- * Revision 1.3  2004/04/06 02:49:08  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.2  2004/04/05 19:55:05  mcr
- * Moved from linux/include/freeswan/ipsec_ipcomp.h,v
- *
- * Revision 1.1  2003/12/13 19:10:16  mcr
- * 	refactored rcv and xmit code - same as FS 2.05.
- *
- * Revision 1.2  2003/12/11 20:14:58  mcr
- * 	refactored the xmit code, to move all encapsulation
- * 	code into protocol functions. Note that all functions
- * 	are essentially done by a single function, which is probably
- * 	wrong.
- * 	the rcv_functions structures are renamed xform_functions.
- *
- * Revision 1.1  2003/12/06 21:21:19  mcr
- * 	split up receive path into per-transform files, for
- * 	easier later removal.
- *
- *
- *
- */
-
-
-

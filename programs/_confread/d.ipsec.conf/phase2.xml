@@ -2,8 +2,11 @@
   <term><emphasis remap='B'>phase2</emphasis></term>
   <listitem>
 <para>Sets the type of SA that will be produced. Valid options are:
-<emphasis remap='B'>esp</emphasis> for encryption (the default), and
-<emphasis remap='B'>ah</emphasis> for authentication only.
+<emphasis remap='B'>esp</emphasis> for encryption (the default), 
+<emphasis remap='B'>ah</emphasis> for authentication only, and
+<emphasis remap='B'>ah+esp</emphasis> for nested AH+ESP. Note that ESP already includes
+AH - the ah+esp option is for double ah headers, and should only be used when connecting
+to some racoon configurations that do this.
 </para>
   </listitem>
   </varlistentry>

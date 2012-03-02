@@ -3,7 +3,7 @@
  * Copyright (C) 2007-2008 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2009-2010 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009-2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
  *
@@ -123,6 +123,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
     PK11SymKey *dhshared;
     PRArenaPool *arena;
     SECStatus status;
+    unsigned int dhshared_len;
 
     memcpy(&local_pubk,pubk.ptr,pubk.len);
     memcpy(&privk,secret.ptr,secret.len);
@@ -161,6 +162,31 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
                          , CKA_DERIVE, group->bytes
                          , osw_return_nss_password_file_info());
     PR_ASSERT(dhshared!=NULL);
+
+    dhshared_len = PK11_GetKeyLength(dhshared); 
+    if( group->bytes > dhshared_len ) {
+	DBG(DBG_CRYPT, DBG_log("Dropped %d leading zeros", group->bytes-dhshared_len));
+	chunk_t zeros;
+	PK11SymKey *newdhshared = NULL;
+	CK_KEY_DERIVATION_STRING_DATA string_params;
+	SECItem  params;
+
+	zeros = hmac_pads(0x00, group->bytes-dhshared_len);
+	params.data = (unsigned char *)&string_params;
+	params.len = sizeof(string_params);
+	string_params.pData = zeros.ptr;
+	string_params.ulLen = zeros.len;
+
+	newdhshared = PK11_Derive(dhshared, CKM_CONCATENATE_DATA_AND_BASE, &params, CKM_CONCATENATE_DATA_AND_BASE, CKA_DERIVE, 0);
+	PR_ASSERT(newdhshared!=NULL);
+	PK11_FreeSymKey(dhshared);
+	dhshared = newdhshared;
+	freeanychunk(zeros);
+    } else {
+	DBG(DBG_CRYPT, DBG_log("Dropped no leading zeros %d", dhshared_len));
+    }
+
+    /* nss_symkey_log(dhshared, "dhshared"); */
 
     shared->len=sizeof(PK11SymKey *);
     shared->ptr = alloc_bytes(shared->len, "calculated shared secret");
@@ -216,7 +242,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
     gettimeofday(&tv1, NULL);
     tv_diff=(tv1.tv_sec  - tv0.tv_sec) * 1000000 + (tv1.tv_usec - tv0.tv_usec);
     DBG(DBG_CRYPT, 
-    	DBG_log("calc_dh_shared(): time elapsed (%s): %ld usec"
+	DBG_log("calc_dh_shared(): time elapsed (%s): %ld usec"
 		, enum_show(&oakley_group_names, group->group)
 		, tv_diff);
        );
@@ -563,6 +589,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     keyhandle=PK11_GetSymKeyHandle(shared);
     param.data=(unsigned char *) &keyhandle;
     param.len=sizeof(keyhandle);
+    DBG(DBG_CRYPT, DBG_log("NSS: dh shared param len=%d\n",param.len));
 
     PK11SymKey *tkey3 = PK11_Derive_osw(tkey2, CKM_CONCATENATE_BASE_AND_KEY, &param, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     PR_ASSERT(tkey3!=NULL);
@@ -598,7 +625,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     skeyid_d = PK11_Derive_osw(tkey9, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     PR_ASSERT(skeyid_d!=NULL);
-    nss_symkey_log(skeyid_d, "skeyid_d");
+    /* nss_symkey_log(skeyid_d, "skeyid_d"); */
      /*****End of SKEYID_d derivation***************************************/
 
 
@@ -641,7 +668,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     skeyid_a = PK11_Derive_osw(tkey16, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     PR_ASSERT(skeyid_a!=NULL);
-    nss_symkey_log(skeyid_a, "skeyid_a");
+    /* nss_symkey_log(skeyid_a, "skeyid_a"); */
     /*****End of SKEYID_a derivation***************************************/
 
 
@@ -696,13 +723,13 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
        if(keysize <= hasher->hash_digest_len){
        skeyid_e = PK11_Derive_osw(tkey23, nss_key_derivation_mech(hasher), NULL, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
        PR_ASSERT(skeyid_e!=NULL);
-
+       /* nss_symkey_log(skeyid_e, "skeyid_e"); */
 
        enc_key = PK11_DeriveWithFlags(skeyid_e, CKM_EXTRACT_KEY_FROM_KEY, &param1
                                       , nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, keysize, CKF_ENCRYPT|CKF_DECRYPT);
        PR_ASSERT(enc_key!=NULL);
 
-       nss_symkey_log(enc_key, "enc_key");
+       /* nss_symkey_log(enc_key, "enc_key"); */
        }
        else
        {
@@ -712,6 +739,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
         skeyid_e = PK11_Derive_osw(tkey23, nss_key_derivation_mech(hasher), NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
         PR_ASSERT(skeyid_e!=NULL);
+        /* nss_symkey_log(skeyid_e, "skeyid_e"); */
 
         PK11SymKey *tkey25 = pk11_derive_wrapper_osw(skeyid_e, CKM_CONCATENATE_BASE_AND_DATA
                                                 , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
@@ -797,7 +825,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
                        enc_key = PK11_DeriveWithFlags(tkey39, CKM_EXTRACT_KEY_FROM_KEY, &param1
                                               , nss_encryption_mech(encrypter), CKA_FLAGS_ONLY, /*0*/ keysize, CKF_ENCRYPT|CKF_DECRYPT);
 
-                        nss_symkey_log(enc_key, "enc_key");
+                        /* nss_symkey_log(enc_key, "enc_key"); */
                        PR_ASSERT(enc_key!=NULL);
 
                        PK11_FreeSymKey(tkey25);

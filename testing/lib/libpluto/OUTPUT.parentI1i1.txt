@@ -119,8 +119,8 @@ sending 668 bytes for ikev2_parent_outI1_common through eth0:500 to 192.1.2.23:5
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    Notify Message Type: v2N_COOKIE
-| emitting 20 raw bytes of Notifiy data into IKEv2 Notify Payload
-| Notifiy data  1e f3 91 b5  a5 e2 49 40  b9 31 35 70  9f a1 19 3d
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  1e f3 91 b5  a5 e2 49 40  b9 31 35 70  9f a1 19 3d
 |   44 2d 0a bc
 | emitting length of IKEv2 Notify Payload: 28
 | ***emit IKEv2 Security Association Payload:

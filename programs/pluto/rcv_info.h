@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: rcv_info.h,v 1.4 2004/03/08 01:48:21 ken Exp $
  */
 
 #include "openswan/ipsec_policy.h"

@@ -11,9 +11,8 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
  * License for more details.
- *
- * RCSID $Id: config-rh-alpha.h,v 1.2 2005/08/26 13:55:12 ken Exp $
  */
+
 #define	_CONFIG_RH_I586_H_	/* seen it, no need to see it again */
 
 #define CONFIG_IPSEC 1

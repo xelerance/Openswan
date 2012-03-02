@@ -1,5 +1,6 @@
 /* demultiplex incoming IKE messages
- * 
+ *
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
@@ -135,9 +136,16 @@ process_packet(struct msg_digest **mdp)
 		SEND_NOTIFICATION(INVALID_MINOR_VERSION);
 		return;
 	    }
-	}
+	} 
+	else {
+        /* Although the comments above says that all IKEv2 minor version are acceptable */
+        /* but it does not take of it, and in case a peer sends a different minor version */
+        /* other than 0, it still sends PAYLOAD_MALFORMED packet, so fixing it here */
+        /* it checks if the in_struct failure is due to minor version with ikev2 */
+        /* As per RFC 4306/5996, ignore minor version numbers */
 	SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	return;
+	}
     }
 
     if (md->packet_pbs.roof != md->message_pbs.roof)

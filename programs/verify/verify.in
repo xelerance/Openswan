@@ -399,21 +399,21 @@ sub tunnelchecks {
     if((grep !/(ipsec|lo:|Inter|packets)/, <dev>) > 1) 
     {
 	printfun "Two or more interfaces found, checking IP forwarding";
-        open("cat", "/proc/sys/net/ipv4/ip_forward");
-	if(<cat> == "0") 
+        my ($data, $n);
+	open FILE, "/proc/sys/net/ipv4/ip_forward" or die $!;
+	$n = read FILE, $data, 1;
+	if($data == 1)
 	{ 
 	    $reterr = 1;
-	    errchk ""; 
+	    errchk "0"; 
 	} 
-	else 
-	{
-	    errchk "@out";
-	    printfun "Checking NAT and MASQUERADEing";
-	    # This assumes KLIPS eroute information, we should add support
-	    # for NETKEY, but ip xfrm is very annoying to parse
-	    if(( -e "/proc/net/nf_conntrack" || -e "/proc/net/ip_conntrack")
+
+	printfun "Checking NAT and MASQUERADEing";
+	# This assumes KLIPS eroute information, we should add support
+	# for NETKEY, but ip xfrm is very annoying to parse
+	if(( -e "/proc/net/nf_conntrack" || -e "/proc/net/ip_conntrack")
 && -e "/proc/net/ipsec_eroute" )
-	    {
+	{
 		run "iptables -t nat -L -n";
 		if(grep /(NAT|MASQ)/, @out)
 		{
@@ -429,11 +429,10 @@ sub tunnelchecks {
 		{
 		    errchk "1";
 		}
-	    }
+	}
 	    else
-	    { 
+	{ 
 		errchk "OK";
-	    }
 	}
     }
 }

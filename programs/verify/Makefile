@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.3 2004/12/18 18:13:44 mcr Exp $
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
@@ -19,22 +17,3 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 PROGRAM=verify
 
 include ${srcdir}../Makefile.program
-
-#
-# $Log: Makefile,v $
-# Revision 1.3  2004/12/18 18:13:44  mcr
-# 	adjusted Makefiles so that ${OBJDIR} builds work.
-#
-# Revision 1.2  2004/04/03 19:44:50  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
-#
-# Revision 1.1  2002/06/10 00:19:44  mcr
-# 	rename "ipsec check" to "ipsec verify"
-#
-# Revision 1.1  2002/06/08 17:01:25  mcr
-# 	added new program "ipsec check" to do rudamentary testing
-# 	on a newly installed system to see if it is OE ready.
-#
-#
-#
-

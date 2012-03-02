@@ -1,6 +1,7 @@
 /* manifest constants
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -52,6 +53,16 @@ enum keyword_remotepeertype {
 enum keyword_nmconfigured {
     NO = 0,
     YES = 1,
+};
+
+enum keyword_loopback {
+    LB_NO = 0,
+    LB_YES = 1,
+};
+
+enum keyword_labeled_ipsec {
+    LI_NO = 0,
+    LI_YES = 1,
 };
 
 /* Timer events */
@@ -185,6 +196,10 @@ typedef enum {
 #define IMPAIR_DIE_ONINFO  LELEM(IMPAIR0+5)     /* cause state to be deleted upon receipt of information payload */
 #define IMPAIR_JACOB_TWO_TWO LELEM(IMPAIR0+6)   /* cause pluto to send all messages twice. */
                                                 /* cause pluto to send all messages twice. */
+#define IMPAIR_MAJOR_VERSION_BUMP LELEM(IMPAIR0+7)   /* cause pluto to send an IKE major version that's higher then we support. */
+#define IMPAIR_MINOR_VERSION_BUMP LELEM(IMPAIR0+8)   /* cause pluto to send an IKE minor version that's higher then we support. */
+#define IMPAIR_RETRANSMITS LELEM(IMPAIR0+9)   /* cause pluto to never retransmit */
+#define IMPAIR_SEND_BOGUS_ISAKMP_FLAG LELEM(IMPAIR0+10)   /* causes pluto to set a RESERVED ISAKMP flag to test ignoring/zeroing it */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */
@@ -291,31 +306,43 @@ enum phase1_role {
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
 
 #define PHASE1_INITIATOR_STATES	 (LELEM(STATE_MAIN_I1) | LELEM(STATE_MAIN_I2) \
-				  |LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4)\
-				  |LELEM(STATE_AGGR_I1) | LELEM(STATE_AGGR_I2))
-#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | \
-				       LELEM(STATE_MAIN_I4) | \
-				       LELEM(STATE_AGGR_I2) | \
-				       LELEM(STATE_AGGR_R2))
-
+				  |LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4) \
+				  |LELEM(STATE_AGGR_I1) | LELEM(STATE_AGGR_I2) \
+				  |LELEM(STATE_XAUTH_I0) | LELEM(STATE_XAUTH_I1) \
+				  | LELEM(STATE_MODE_CFG_I1))
 #define IS_PHASE1_INIT(s)         ((s) == STATE_MAIN_I1 \
 				   || (s) == STATE_MAIN_I2 \
 				   || (s) == STATE_MAIN_I3 \
 				   || (s) == STATE_MAIN_I4 \
 				   || (s) == STATE_AGGR_I1 \
 				   || (s) == STATE_AGGR_I2 \
-				   || (s) == STATE_AGGR_R2)
+				   || (s) == STATE_XAUTH_I0 \
+				   || (s) == STATE_XAUTH_I1 \
+				   || (s) == STATE_MODE_CFG_I1)
 #define IS_PHASE1(s) (STATE_MAIN_R0 <= (s) && (s) <= STATE_AGGR_R2)
 #define IS_PHASE15(s) (STATE_XAUTH_R0 <= (s) && (s) <= STATE_XAUTH_I1)
 #define IS_QUICK(s) (STATE_QUICK_R0 <= (s) && (s) <= STATE_QUICK_R2)
 #define IS_ISAKMP_ENCRYPTED(s)     (STATE_MAIN_R2 <= (s) && STATE_AGGR_R0!=(s) && STATE_AGGR_I1 != (s) && STATE_INFO != (s))
-#define IS_ISAKMP_AUTHENTICATED(s) (STATE_MAIN_R3 <= (s))
+#define IS_ISAKMP_AUTHENTICATED(s) (STATE_MAIN_R3 <= (s) && STATE_AGGR_R0!=(s) && STATE_AGGR_I1 != (s))
 #define IS_ISAKMP_SA_ESTABLISHED(s) ((s) == STATE_MAIN_R3 || (s) == STATE_MAIN_I4 \
 				  || (s) == STATE_AGGR_I2 || (s) == STATE_AGGR_R2 \
 				  || (s) == STATE_XAUTH_R0 || (s) == STATE_XAUTH_R1 \
 				  || (s) == STATE_MODE_CFG_R0 || (s) == STATE_MODE_CFG_R1 \
-				  || (s) == STATE_MODE_CFG_R2 \
+				  || (s) == STATE_MODE_CFG_R2 || (s) == STATE_MODE_CFG_I1 \
                                   || (s) == STATE_XAUTH_I0 || (s) == STATE_XAUTH_I1)
+#define ISAKMP_SA_ESTABLISHED_STATES  (LELEM(STATE_MAIN_R3) | \
+				       LELEM(STATE_MAIN_I4) | \
+				       LELEM(STATE_AGGR_I2) | \
+				       LELEM(STATE_AGGR_R2) | \
+				       LELEM(STATE_XAUTH_R0) | \
+				       LELEM(STATE_XAUTH_R1) | \
+				       LELEM(STATE_MODE_CFG_R0) | \
+				       LELEM(STATE_MODE_CFG_R1) | \
+				       LELEM(STATE_MODE_CFG_R2) | \
+				       LELEM(STATE_MODE_CFG_I1) | \
+				       LELEM(STATE_XAUTH_I0) | \
+				       LELEM(STATE_XAUTH_I1))
+
 #define IS_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_I2 || (s) == STATE_QUICK_R2)
 #define IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(s) ((s) == STATE_QUICK_R1)
 #ifdef MODECFG
@@ -373,7 +400,7 @@ enum certpolicy {
 };
 
 /* this is the default setting. */
-#define cert_defaultcertpolicy cert_sendifasked
+#define cert_defaultcertpolicy cert_alwayssend
 
 
 enum four_options {
@@ -470,14 +497,15 @@ enum pluto_policy {
 	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
 	POLICY_IKEV2_PROPOSE = LELEM(26), /* propose IKEv2?  0x0400 0000 */
 	POLICY_IKEV2_MASK = POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE,
+	POLICY_IKEV2_ALLOW_NARROWING = LELEM(27), /* Allow RFC-5669 section 2.9? 0x0800 0000 */
 
-	POLICY_MODECFGDNS1  = LELEM(27),   /* should we offer a DNS server IP */
-	POLICY_MODECFGDNS2  = LELEM(28),   /* should we offer another DNS server IP */
-	POLICY_MODECFGWINS1 = LELEM(29),   /* should we offer a WINS server IP */
-	POLICY_MODECFGWINS2 = LELEM(30),   /* should we offer another WINS server IP */
+	POLICY_MODECFGDNS1  = LELEM(28),   /* should we offer a DNS server IP */
+	POLICY_MODECFGDNS2  = LELEM(29),   /* should we offer another DNS server IP */
+	POLICY_MODECFGWINS1 = LELEM(30),   /* should we offer a WINS server IP */
+	POLICY_MODECFGWINS2 = LELEM(31),   /* should we offer another WINS server IP */
 
-	POLICY_SAREF_TRACK    = LELEM(31), /* Saref tracking via _updown */
-	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(32), /* use conntrack optimization */
+	POLICY_SAREF_TRACK    = LELEM(32), /* Saref tracking via _updown */
+	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(33), /* use conntrack optimization */
 };
 
 /* Any IPsec policy?  If not, a connection description
@@ -526,6 +554,7 @@ enum pluto_policy {
 #define KEY_ROUNDS               7
 #define COMPRESS_DICT_SIZE       8
 #define COMPRESS_PRIVATE_ALG     9	/* B/V */
+#define SECCTX                   32001     /* B/V */
 
 /* for each IPsec attribute, which enum_names describes its values? */
 

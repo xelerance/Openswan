@@ -10,8 +10,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: confwrite.h,v 1.1 2004/11/29 20:35:32 ken Exp $
  */
 
 #ifndef _IPSEC_CONFWRITE_H_

@@ -121,7 +121,7 @@ defaultinterface() {
 	  if test `echo "$iproutedefault" | wc -l` -gt 1
 	  then
 	    multidefault=1
-	    iproutedefault=`echo $iproutedefault | head -1`
+	    iproutedefault=`echo "$iproutedefault" | head -1`
 	  fi
 	  eval `getphysdev $iproutedefault`
 	  if test -z "$next" -o -z "$addr" -a -n "$phys"

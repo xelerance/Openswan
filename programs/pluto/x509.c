@@ -436,9 +436,7 @@ load_crls(void)
 	openswan_log("Changing to directory '%s'", oco->crls_dir);
 	n = scandir(oco->crls_dir, &filelist, (void *) file_select, alphasort);
 
-	if (n <= 0)
-	    openswan_log("  Warning: empty directory");
-	else
+	if (n > 0)
 	{
 	    while (n--)
 	    {
@@ -463,8 +461,8 @@ load_crls(void)
 		}
 		free(filelist[n]);
 	    }
-	    free(filelist);
 	}
+	free(filelist);
     }
     /* restore directory path */
     if(chdir(save_dir) == -1) {

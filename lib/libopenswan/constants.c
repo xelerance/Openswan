@@ -1,4 +1,6 @@
 /* tables of names for values defined in constants.h
+ * Copyright (C) 2012 Paul Wouteirs <pwouters@redhat.com>
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -37,7 +39,7 @@ static const char *const version_name_1[] = {
 	"ISAKMP Version 1.0 (rfc2407)",
 };
 static const char *const version_name_2[] = {
-	"IKEv2 version 2.0 (rfc4306)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
 };
 
 enum_names version_names_1 =
@@ -96,7 +98,10 @@ const char *const debug_bit_names[] = {
 	"impair-sa-creation", /* 25 */
 	"impair-die-oninfo",  /* 26 */
 	"impair-jacob-two-two",  /* 27 */
-
+	"impair-major-version-bump", /* 28 */
+	"impair-minor-version-bump", /* 29 */
+	"impair-retransmits", /* 30 */
+	"impair-send-bogus-isakmp-flag", /* 31 */
 	NULL
     };
 
@@ -489,6 +494,9 @@ static const char *const ipsec_attr_name[] = {
 	"KEY_ROUNDS",
 	"COMPRESS_DICT_SIZE",
 	"COMPRESS_PRIVATE_ALG",
+#ifdef HAVE_LABELED_IPSEC
+	"ECN_TUNNEL",
+#endif
     };
 
 static const char *const ipsec_var_attr_name[] = {
@@ -500,16 +508,54 @@ static const char *const ipsec_var_attr_name[] = {
 	NULL,
 	NULL,
 	"COMPRESS_PRIVATE_ALG (variable length)",
+#ifdef HAVE_LABELED_IPSEC
+	"NULL", /*ECN TUNNEL*/
+#endif
     };
+
+#ifdef HAVE_LABELED_IPSEC
+static const char *const ipsec_private_attr_name[] = {
+	"SECCTX" /*32001*/
+};
+
+enum_names ipsec_private_attr_names_tv = {
+  SECCTX + ISAKMP_ATTR_AF_TV, SECCTX + ISAKMP_ATTR_AF_TV, ipsec_private_attr_name, NULL};
+
+enum_names ipsec_private_attr_names = {
+  SECCTX, SECCTX, ipsec_private_attr_name, &ipsec_private_attr_names_tv};
+#endif
 
 static enum_names ipsec_attr_desc_tv = {
     SA_LIFE_TYPE + ISAKMP_ATTR_AF_TV,
+#ifdef HAVE_LABELED_IPSEC
+    ECN_TUNNEL + ISAKMP_ATTR_AF_TV,
+#else
     COMPRESS_PRIVATE_ALG + ISAKMP_ATTR_AF_TV,
-    ipsec_attr_name, NULL };
+#endif
+    ipsec_attr_name,
+#ifdef HAVE_LABELED_IPSEC
+    &ipsec_private_attr_names};
+#else
+    NULL };
+#endif
 
 enum_names ipsec_attr_names = {
-    SA_LIFE_DURATION, COMPRESS_PRIVATE_ALG,
-    ipsec_var_attr_name, &ipsec_attr_desc_tv };
+#ifdef HAVE_LABELED_IPSEC
+    SA_LIFE_TYPE,
+#else
+    SA_LIFE_DURATION,
+#endif
+#ifdef HAVE_LABELED_IPSEC
+    ECN_TUNNEL,
+#else
+    COMPRESS_PRIVATE_ALG,
+#endif
+#ifdef HAVE_LABELED_IPSEC
+    ipsec_attr_name,
+#else
+     ipsec_var_attr_name,
+#endif
+      &ipsec_attr_desc_tv };
 
 /* for each IPsec attribute, which enum_names describes its values? */
 enum_names *ipsec_attr_val_descs[] = {
@@ -523,6 +569,9 @@ enum_names *ipsec_attr_val_descs[] = {
 	NULL,			/* KEY_ROUNDS */
 	NULL,			/* COMPRESS_DICT_SIZE */
 	NULL,			/* COMPRESS_PRIVATE_ALG */
+#ifdef HAVE_LABELED_IPSEC
+	NULL,			/*ECN_TUNNEL*/
+#endif
     };
 const unsigned int ipsec_attr_val_descs_size=elemsof(ipsec_attr_val_descs);
 
@@ -940,8 +989,9 @@ enum_names ipsec_notification_names =
     { IPSEC_RESPONDER_LIFETIME, IPSEC_INITIAL_CONTACT,
 	ipsec_notification_name, &notification_status_names };
 
+/* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-13 */
 static const char *const ikev2_notify_name_16384[] = {
-	   "v2N_INITIAL_CONTACT",
+	   "v2N_INITIAL_CONTACT", /* 16384 */
 	   "v2N_SET_WINDOW_SIZE", 
 	   "v2N_ADDITIONAL_TS_POSSIBLE",
 	   "v2N_IPCOMP_SUPPORTED",
@@ -953,56 +1003,102 @@ static const char *const ikev2_notify_name_16384[] = {
 	   "v2N_REKEY_SA",
 	   "v2N_ESP_TFC_PADDING_NOT_SUPPORTED",
 	   "v2N_NON_FIRST_FRAGMENTS_ALSO",
+	   "v2N_MOBIKE_SUPPORTED",
+	   "v2N_ADDITIONAL_IP4_ADDRESS",
+	   "v2N_ADDITIONAL_IP6_ADDRESS",
+	   "v2N_NO_ADDITIONAL_ADDRESSES",
+	   "v2N_UPDATE_SA_ADDRESSES",
+	   "v2N_COOKIE2",
+	   "v2N_NO_NATS_ALLOWED",
+	   "v2N_AUTH_LIFETIME",
+	   "v2N_MULTIPLE_AUTH_SUPPORTED",
+	   "v2N_ANOTHER_AUTH_FOLLOWS",
+	   "v2N_REDIRECT_SUPPORTED",
+	   "v2N_REDIRECT",
+	   "v2N_REDIRECTED_FROM",
+	   "v2N_TICKET_LT_OPAQUE",
+	   "v2N_TICKET_REQUEST",
+	   "v2N_TICKET_ACK",
+	   "v2N_TICKET_NACK",
+	   "v2N_TICKET_OPAQUE",
+	   "v2N_LINK_ID",
+	   "v2N_USE_WESP_MODE",
+	   "v2N_ROHC_SUPPORTED",
+	   "v2N_EAP_ONLY_AUTHENTICATION",
+	   "v2N_CHILDLESS_IKEV2_SUPPORTED",
+	   "v2N_QUICK_CRASH_DETECTION",
+	   "v2N_IKEV2_MESSAGE_ID_SYNC_SUPPORTED",
+	   "v2N_IPSEC_REPLAY_COUNTER_SYNC_SUPPORTED",
+	   "v2N_IKEV2_MESSAGE_ID_SYNC",
+	   "v2N_IPSEC_REPLAY_COUNTER_SYNC",
+	   "v2N_SECURE_PASSWORD_METHODS", /* 16423 */
  	}; 
 
 static const char *const ikev2_notify_name[] = {
-	   "v2N_RESERVED",
+	   "v2N_RESERVED", /* unofficial "OK" */
 	   "v2N_UNSUPPORTED_CRITICAL_PAYLOAD",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_2",
+	   "v2N_UNUSED_3",
 	   "v2N_INVALID_IKE_SPI",
 	   "v2N_INVALID_MAJOR_VERSION",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_6",
 	   "v2N_INVALID_SYNTAX",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_8",
 	   "v2N_INVALID_MESSAGE_ID",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_10",
 	   "v2N_INVALID_SPI",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_12",
+	   "v2N_UNUSED_13",
 	   "v2N_NO_PROPOSAL_CHOSEN",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_15",
+	   "v2N_UNUSED_16",
 	   "v2N_INVALID_KE_PAYLOAD",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_18",
+	   "v2N_UNUSED_19",
+	   "v2N_UNUSED_20",
+	   "v2N_UNUSED_21",
+	   "v2N_UNUSED_22",
+	   "v2N_UNUSED_23",
 	   "v2N_AUTHENTICATION_FAILED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
-	   "v2N_UNUSED",
+	   "v2N_UNUSED_25",
+	   "v2N_UNUSED_26",
+	   "v2N_UNUSED_27",
+	   "v2N_UNUSED_28",
+	   "v2N_UNUSED_29",
+	   "v2N_UNUSED_30",
+	   "v2N_UNUSED_31",
+	   "v2N_UNUSED_32",
+	   "v2N_UNUSED_33",
 	   "v2N_SINGLE_PAIR_REQUIRED",
 	   "v2N_NO_ADDITIONAL_SAS",
 	   "v2N_INTERNAL_ADDRESS_FAILURE",
 	   "v2N_FAILED_CP_REQUIRED",
 	   "v2N_TS_UNACCEPTABLE",
 	   "v2N_INVALID_SELECTORS",
- 	}; 
+	   "v2N_UNACCEPTABLE_ADDRESSES",
+	   "v2N_UNEXPECTED_NAT_DETECTED",
+	   "v2N_USE_ASSIGNED_HoA",
+	   "v2N_TEMPORARY_FAILURE",
+	   "v2N_CHILD_SA_NOT_FOUND", /* 45 */
+	}; 
 
 enum_names ikev2_notify_names_16384 = 
-    { INITIAL_CONTACT, NON_FIRST_FRAGMENTS_ALSO, ikev2_notify_name_16384, NULL};
+    { v2N_INITIAL_CONTACT, v2N_SECURE_PASSWORD_METHODS, ikev2_notify_name_16384, NULL};
 
 enum_names ikev2_notify_names = 
-    { 0, INVALID_SELECTORS, ikev2_notify_name, &ikev2_notify_names_16384};
+    { 0, v2N_CHILD_SA_NOT_FOUND, ikev2_notify_name, &ikev2_notify_names_16384};
+
+/* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-19 */
+static const char *const ikev2_ts_type_name[] = {
+	   "IKEv2_TS_IPV4_ADDR_RANGE",
+	   "IKEv2_TS_IPV6_ADDR_RANGE",
+	   "IKEv2_TS_FC_ADDR_RANGE", /* not implemented */
+	};
+
+enum_names ikev2_ts_type_names =
+    { IKEv2_TS_IPV4_ADDR_RANGE, IKEv2_TS_FC_ADDR_RANGE, ikev2_ts_type_name, NULL };
+
+
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
@@ -1020,16 +1116,18 @@ enum_names attr_msg_type_names =
     { 0 , ISAKMP_CFG_ACK, attr_msg_type_name , NULL };
 
 /*
- * IKEv2 CRITICAL BYTE "enum"
- */
-const char *const critical_name[]=    { "Payload-Critical", NULL };
-const char *const no_critical_name[]= { "Payload-Non-Critical", NULL };
-enum_names no_crit_names ={ ISAKMP_PAYLOAD_NONCRITICAL,
-			    ISAKMP_PAYLOAD_NONCRITICAL,
-			    no_critical_name, NULL};
-enum_names critical_names = 
-{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL,
-  critical_name, &no_crit_names};
+ * IKEv2 Critical bit and RESERVED (7) bits
+ */ 
+const char *const critical_names[] = {
+    "RESERVED",         /* bit 0 */
+    "RESERVED",         /* bit 1 */
+    "RESERVED",         /* bit 2 */
+    "RESERVED",         /* bit 3 */
+    "RESERVED",         /* bit 4 */
+    "RESERVED",         /* bit 5 */
+    "RESERVED",         /* bit 6 */
+    "PAYLOAD_CRITICAL",      /* bit 7*/
+    };
 
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={

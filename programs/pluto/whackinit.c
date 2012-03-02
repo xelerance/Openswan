@@ -12,8 +12,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: whackinit.c,v 1.1 2004/12/16 01:24:45 mcr Exp $
  */
 
 #include <stdio.h>
@@ -405,6 +403,10 @@ main(int argc, char **argv)
     msg.esp = NULL;
     msg.ike = NULL;
     msg.pfsgroup = NULL;
+
+#ifdef HAVE_LABELED_IPSEC
+   msg.policy_label=NULL;
+#endif
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;

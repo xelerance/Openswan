@@ -506,6 +506,9 @@ delete_state(struct state *st)
     pfreeany(st->st_esp.our_keymat);
     pfreeany(st->st_esp.peer_keymat);
     freeanychunk(st->st_xauth_password);
+#ifdef HAVE_LABELED_IPSEC
+    pfreeany(st->sec_ctx);
+#endif
     pfree(st);
 }
 
@@ -843,7 +846,10 @@ delete_states_by_peer(ip_address *peer)
     }
 }
 
-/* Duplicate a Phase 1 state object, to create a Phase 2 object.
+/*
+ * IKEv1: Duplicate a Phase 1 state object, to create a Phase 2 object.
+ * IKEv2: Duplicate a Parent SA state object, to create a Child SA object
+ *
  * Caller must schedule an event for this object so that it doesn't leak.
  * Caller must insert_state().
  */
@@ -855,7 +861,7 @@ duplicate_state(struct state *st)
     DBG(DBG_CONTROL, DBG_log("duplicating state object #%lu",
 	st->st_serialno));
 
-    /* record use of the Phase 1 state */
+    /* record use of the Phase 1 / Parent state */
     st->st_outbound_count++;
     st->st_outbound_time = now();
 
@@ -974,6 +980,45 @@ find_state_ikev1(const u_char *icookie
 
     return st;
 }
+
+#ifdef HAVE_LABELED_IPSEC
+struct state *
+find_state_ikev1_loopback(const u_char *icookie
+                 , const u_char *rcookie
+                 , const ip_address *peer UNUSED
+                 , msgid_t /*network order*/ msgid
+		 , struct msg_digest *md)
+{
+    struct state *st = *state_hash(icookie, rcookie, NULL);
+
+    while (st != (struct state *) NULL)
+    {
+        if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+            && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+            && st->st_ikev2 == FALSE)
+        {
+            DBG(DBG_CONTROL,
+                DBG_log("loopback: v1 peer and cookies match on #%ld, provided msgid %08lx vs %08lx"
+                        , st->st_serialno
+                        , (long unsigned)ntohl(msgid)
+                        , (long unsigned)ntohl(st->st_msgid)));
+            if(msgid == st->st_msgid && !(st->st_tpacket.ptr && memcmp(st->st_tpacket.ptr, md->packet_pbs.start, pbs_room(&md->packet_pbs)) ==0))
+                break;
+        }
+        st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+        if (st == NULL)
+            DBG_log("loopback: v1 state object not found");
+        else
+            DBG_log("loopback: v1 state object #%lu found, in %s"
+                , st->st_serialno
+                , enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+#endif
 
 /*
  * Find a state object for an IKEv2 state.

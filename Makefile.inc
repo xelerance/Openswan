@@ -194,7 +194,7 @@ GCC_LINT ?= -DGCC_LINT
 USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
-#USERCOMPILE?=-g -DLEAK_DETECTVE -lefence
+#USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
  
@@ -377,6 +377,9 @@ USE_LIBNSS?=false
 ifeq ($(USE_FIPSCHECK),true)
 USE_LIBNSS?=true
 endif
+
+#Enable Labeled IPSec Functionality (requires SElinux)
+USE_LABELED_IPSEC?=false
 
 # Support for LIBCAP-NG to drop unneeded capabilities for the pluto daemon
 USE_LIBCAP_NG?=false

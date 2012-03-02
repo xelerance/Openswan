@@ -254,7 +254,6 @@ connect_to_host_pair(struct connection *c)
 	    hp->me.host_port = c->spd.this.host_port;
  	    hp->him.host_port = c->spd.that.host_port;
 #endif
-	    hp->initial_connection_sent = FALSE;
 	    hp->connections = NULL;
 	    hp->pending = NULL;
 	    hp->next = host_pairs;

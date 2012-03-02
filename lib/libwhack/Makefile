@@ -11,8 +11,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.20 2005/09/17 21:57:45 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
@@ -55,6 +53,10 @@ CFLAGS+= -Wbad-function-cast
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
+endif
+
+ifeq ($(USE_LABELED_IPSEC),true)
+CFLAGS+= -DHAVE_LABELED_IPSEC
 endif
 
 ifeq ($(USE_DYNAMICDNS),true)

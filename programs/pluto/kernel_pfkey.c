@@ -453,7 +453,11 @@ process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX
 	&& !(ugh = addrtypeof(src) == addrtypeof(dst)? NULL : "conflicting address types")
 	&& !(ugh = addrtosubnet(src, &ours))
 	&& !(ugh = addrtosubnet(dst, &his)))
-      record_and_initiate_opportunistic(&ours, &his, 0, "%acquire-pfkey");
+      record_and_initiate_opportunistic(&ours, &his, 0, 
+#ifdef HAVE_LABELED_IPSEC
+						NULL,
+#endif
+						"%acquire-pfkey");
 
     if (ugh != NULL)
 	plog("K_SADB_ACQUIRE message from KLIPS malformed: %s", ugh);
@@ -537,6 +541,9 @@ void pfkey_dequeue(void)
       record_and_initiate_opportunistic(&orphaned_holds->ours
 					, &orphaned_holds->his
 					, orphaned_holds->transport_proto
+#ifdef HAVE_LABELED_IPSEC
+                                        , NULL
+#endif
 					, "%hold found-pfkey");
 
     if (limit <= 0) {
@@ -869,7 +876,11 @@ pfkey_raw_eroute(const ip_address *this_host
 		 , const struct pfkey_proto_info *proto_info UNUSED
 		 , time_t use_lifetime UNUSED
 		 , enum pluto_sadb_operations op
-		 , const char *text_said)
+		 , const char *text_said
+#ifdef HAVE_LABELED_IPSEC
+		 , char *policy_label UNUSED
+#endif
+		 )
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
     ip_address
@@ -1331,7 +1342,11 @@ pfkey_shunt_eroute(struct connection *c
 			      , SA_INT
 			      , sr->this.protocol
 			      , ET_INT
-			      , null_proto_info, 0, op, buf2);
+			      , null_proto_info, 0, op, buf2
+#ifdef HAVE_LABELED_IPSEC
+			      , c->policy_label
+#endif
+			      );
     }
 }
 
@@ -1421,7 +1436,11 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
     return eroute_connection(sr
 			     , inner_spi, inner_proto
 			     , inner_esatype, proto_info + i
-			     , op, opname);
+			     , op, opname
+#ifdef HAVE_LABELED_IPSEC
+			     , NULL
+#endif
+			     );
 }
 
 /*

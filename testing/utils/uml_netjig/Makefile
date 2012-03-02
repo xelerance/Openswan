@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.22 2004/04/03 19:44:52 ken Exp $
 
 OPENSWANSRCDIR=../../..
 OBJS = nethub.o cmdmode.o port.o hash.o tuntap.o

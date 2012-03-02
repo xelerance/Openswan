@@ -123,6 +123,11 @@ ikev2_out_sa(pb_stream *outs
 	memset(&sa, 0, sizeof(sa));
 	sa.isasa_np       = np;
 	sa.isasa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   sa.isasa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
+
 	/* no ipsec_doi on IKEv2 */
 
 	if (!out_struct(&sa, &ikev2_sa_desc, outs, &sa_pbs))
@@ -798,7 +803,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 }
 
 
-static notification_t
+static v2_notification_t
 ikev2_emit_winning_sa(
     struct state *st
     , pb_stream *r_sa_pbs
@@ -907,7 +912,7 @@ ikev2_emit_winning_sa(
     return NOTHING_WRONG;
 }
 
-notification_t
+v2_notification_t
 ikev2_parse_parent_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
@@ -1210,7 +1215,7 @@ ikev2_match_transform_list_child(struct db_sa *sadb
     return FALSE;
 }
 
-notification_t
+v2_notification_t
 ikev2_parse_child_sa_body(
     pb_stream *sa_pbs,              /* body of input SA Payload */
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */

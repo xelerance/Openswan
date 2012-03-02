@@ -476,13 +476,21 @@ mast_raw_eroute(const ip_address *this_host UNUSED
                , const struct pfkey_proto_info *proto_info UNUSED
                , time_t use_lifetime UNUSED
                , enum pluto_sadb_operations op UNUSED
-               , const char *text_said UNUSED)
+               , const char *text_said UNUSED
+#ifdef HAVE_LABELED_IPSEC
+	       , char *policy_label UNUSED
+#endif
+	       )
 {
     /* actually, we did all the work with iptables in _updown */
     DBG_log("mast_raw_eroute called op=%u said=%s", op, text_said);
     return pfkey_raw_eroute(this_host, this_client, that_host, that_client,
 		    spi, proto, transport_proto, satype,
-		    proto_info, use_lifetime, op, text_said);
+		    proto_info, use_lifetime, op, text_said
+#ifdef HAVE_LABELED_IPSEC
+		    , policy_label
+#endif
+		    );
 }
 
 /* Add/replace/delete a shunt eroute.

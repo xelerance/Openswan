@@ -701,7 +701,8 @@ init_phase2_iv(struct state *st, const msgid_t *msgid)
 
 static stf_status
 quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		 , struct pluto_crypto_req *r);
+		 , struct pluto_crypto_req *r
+		 , struct state *st);
 
 static void
 quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
@@ -709,7 +710,7 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
 		     , err_t ugh)
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
-    struct state *const st = qke->st;
+    struct state *const st = state_with_serialno(qke->qke_pcrc.pcrc_serialno);
     stf_status e;
 
     DBG(DBG_CONTROLMORE
@@ -732,10 +733,9 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
 
     set_cur_state(st);	/* we must reset before exit */
     set_suspended(st, NULL);
-    e = quick_outI1_tail(pcrc, r);
-    if (e != STF_OK) {
-	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() returned STF_INTERNAL_ERROR", __FUNCTION__);
-    }
+    e = quick_outI1_tail(pcrc, r, st);
+    if (e == STF_INTERNAL_ERROR)
+	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
 
     reset_globals();
 }
@@ -746,11 +746,14 @@ quick_outI1(int whack_sock
 	    , struct connection *c
 	    , lset_t policy
 	    , unsigned long try
-	    , so_serial_t replacing)
+	    , so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+	    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	    )
 {
     struct state *st = duplicate_state(isakmp_sa);
-    struct qke_continuation *qke = alloc_thing(struct qke_continuation
-					       , "quick_outI1 KE");
+    struct qke_continuation *qke;
     stf_status e;
     const char *pfsgroupname;
     char p2alg[256];
@@ -766,6 +769,14 @@ quick_outI1(int whack_sock
     set_cur_state(st);	/* we must reset before exit */
     st->st_policy = policy;
     st->st_try = try;
+
+#ifdef HAVE_LABELED_IPSEC
+    st->sec_ctx=NULL;
+    if(uctx != NULL) {
+    st->sec_ctx = clone_thing(*uctx, "sec ctx structure");
+    DBG(DBG_CONTROL, DBG_log("pending phase 2 with security context %s, %d", st->sec_ctx->sec_ctx_value, st->sec_ctx->ctx_len));
+    }
+#endif
 
     st->st_myuserprotoid = c->spd.this.protocol;
     st->st_peeruserprotoid = c->spd.that.protocol;
@@ -818,8 +829,7 @@ quick_outI1(int whack_sock
 		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
     }
 
-    qke->st = st;
-    qke->isakmp_sa = isakmp_sa;
+    qke = alloc_thing(struct qke_continuation , "quick_outI1 KE");
     qke->replacing = replacing;
     pcrc_init(&qke->qke_pcrc);
     qke->qke_pcrc.pcrc_func = quick_outI1_continue;
@@ -837,12 +847,12 @@ quick_outI1(int whack_sock
     
 static stf_status
 quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
-		 , struct pluto_crypto_req *r)
+		 , struct pluto_crypto_req *r
+		 , struct state *st)
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
-    struct state *st = qke->st;
+    struct state *isakmp_sa = state_with_serialno(st->st_clonedfrom);
     struct connection *c = st->st_connection;
-    struct state *isakmp_sa = qke->isakmp_sa;
     pb_stream rbody;
     u_char	/* set by START_HASH_PAYLOAD: */
 	*r_hashval,	/* where in reply to jam hash value */
@@ -851,7 +861,11 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 		      c->spd.this.protocol || c->spd.that.protocol ||
 		      c->spd.this.port || c->spd.that.port;
 
-    st->st_connection = c;
+    if(isakmp_sa == NULL) {
+	/* phase1 state got deleted while cryptohelper was working */
+	loglog(RC_LOG_SERIOUS,"phase2 initiation failed because parent ISAKMP #%lu is gone", st->st_clonedfrom);
+	return STF_FATAL;
+    }
 
 #ifdef NAT_TRAVERSAL
     if (isakmp_sa->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
@@ -1188,21 +1202,6 @@ quick_inI1_outR1(struct msg_digest *md)
 	    happy(addrtosubnet(&c->spd.that.host_addr, &b.his.net));
 	}
 	/* End Hack for MS 818043 NAT-T Update */
-
-#ifdef NAT_TRAVERSAL
-	/* Hack for MacOS/iPhone see bug #1204 */
-	if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	    (p1st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_OSX))){
-		struct hidden_variables hv; 
-		hv = p1st->hidden_variables; 
-		nat_traversal_natoa_lookup(md, &hv); 
-		if(isanyaddr(&hv.st_nat_oa)){
-		   happy(addrtosubnet(&p1st->st_remoteaddr, &b.his.net));
-		   loglog(RC_LOG_SERIOUS, "Applying workaround for Mac OS X NAT-OA bug, ignoring proposed subnet");
-		}
-	}
-	/* End Hack for MacOS/iPhone */
-#endif
 
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
 	b.his.port = id_pd->payload.ipsec_id.isaiid_port;
@@ -1987,8 +1986,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    ci = pcim_ongoing_crypto;
 	    if(ci < st->st_import) ci = st->st_import;
 
-	    qke->st = st;
-	    qke->isakmp_sa = p1st;
 	    qke->md = md;
 	    pcrc_init(&qke->qke_pcrc);
 	    qke->qke_pcrc.pcrc_func = quick_inI1_outR1_cryptocontinue1;
@@ -2013,7 +2010,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 {
     struct qke_continuation *qke = (struct qke_continuation *)pcrc;
     struct msg_digest *md = qke->md;
-    struct state *const st = qke->st;
+    struct state *const st = state_with_serialno(qke->qke_pcrc.pcrc_serialno);
     stf_status e;
 
     DBG(DBG_CONTROLMORE

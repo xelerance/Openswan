@@ -10,8 +10,6 @@
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
-#
-# RCSID $Id: Makefile,v 1.7 2005/08/04 18:54:57 mcr Exp $
 
 
 OPENSWANSRCDIR?=$(shell cd ../../..; pwd)

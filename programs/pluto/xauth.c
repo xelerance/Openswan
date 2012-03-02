@@ -971,7 +971,10 @@ int do_pam_authentication(void *varg)
  *
  * can be made with, htpasswd:
  *
- * htpasswd -c -m -b /etc/ipsec.d/passwd road roadpass
+ * htpasswd -c -m -b /etc/ipsec.d/passwd road roadpass (for crypt)
+ * htpasswd -c -d -b /etc/ipsec.d/passwd road roadpass (for des)
+ *                   (des is the old format used in /etc/passwd)
+ * you can optionally add ":<connection name>\n" to the file.
  *
  * @return int Return Code
  */
@@ -1932,13 +1935,13 @@ modecfg_inR1(struct msg_digest *md)
                     tmp_spd->that.cert.type = 0;
 
                     tmp_spd->this.ca.ptr = NULL;
-                    tmp_spd->this.ca.ptr = NULL;
+                    tmp_spd->that.ca.ptr = NULL;
 
                     tmp_spd->this.groups = NULL;
-                    tmp_spd->this.groups = NULL;
+                    tmp_spd->that.groups = NULL;
 
                     tmp_spd->this.virt = NULL;
-                    tmp_spd->this.virt = NULL;
+                    tmp_spd->that.virt = NULL;
 
                     tmp_spd->next = NULL;
                     tmp_spd2->next = tmp_spd;
@@ -2129,7 +2132,7 @@ stf_status xauth_client_resp(struct state *st
 
 		    /*
 		     * Do not store the password read from the prompt. The password
-		     * could have be read from a one-time token device (like SecureID)
+		     * could have been read from a one-time token device (like SecureID)
 		     * or the password could have been entereted wrong,
 		     */
 		    if (password_read_from_prompt) {

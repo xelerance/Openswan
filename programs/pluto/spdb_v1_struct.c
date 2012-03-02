@@ -60,6 +60,119 @@
 #include "nat_traversal.h"
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+#include "security_selinux.h"
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+static bool
+parse_secctx_attr (pb_stream *pbs, struct state *st)
+{
+		/*supported length is 256 bytes (257 including \0)*/
+		char sec_ctx_value[MAX_SECCTX_LEN];
+		u_int8_t  ctx_doi;
+		u_int8_t  ctx_alg;
+		u_int16_t net_ctx_len, ctx_len;
+		int i=0;
+
+		DBG(DBG_PARSING, DBG_log("received sec ctx"));
+		
+		/*doing sanity check*/
+		if(pbs_left(pbs) < (sizeof(ctx_doi) + sizeof(ctx_alg) + sizeof(ctx_len) + 1) ) {
+			DBG(DBG_PARSING, DBG_log("received perhaps corrupted security ctx (should not happen really)"));
+			return FALSE;
+		}
+
+		/*reading ctx doi*/
+		memcpy (&ctx_doi, pbs->cur, sizeof(ctx_doi));
+		pbs->cur += sizeof(ctx_doi);
+		
+		/*reading ctx alg*/
+		memcpy (&ctx_alg, pbs->cur, sizeof(ctx_alg));
+		pbs->cur += sizeof(ctx_alg);
+
+		/*reading ctx length*/
+		memcpy (&net_ctx_len, pbs->cur, sizeof(ctx_len));
+		pbs->cur += sizeof(ctx_len);
+		ctx_len = ntohs(net_ctx_len);
+
+		DBG(DBG_PARSING, DBG_log("   received ctx_doi = %d, ctx_alg = %d, ctx_len = %d", ctx_doi , ctx_alg, ctx_len));
+
+		/* verifying remaining buffer length and ctx length matches or not (checking for any corruption)*/
+		if(ctx_len != pbs_left(pbs) ) {
+			DBG(DBG_PARSING, DBG_log("received ctx length seems to be different than the length of string present in the buffer"));
+			DBG(DBG_PARSING, DBG_log("received ctx_len = %d, buffer left = %lu", ctx_len, pbs_left(pbs)));
+			return FALSE;
+		}
+
+		/* reading security label*/
+		memcpy(sec_ctx_value, pbs->cur, pbs_left(pbs) <= MAX_SECCTX_LEN ? pbs_left(pbs) : MAX_SECCTX_LEN);
+		i = pbs_left(pbs) <= MAX_SECCTX_LEN ? pbs_left(pbs) : MAX_SECCTX_LEN;
+
+		/* checking if the received security label contains \0 */
+		if( sec_ctx_value[i-1] != '\0') {
+			/*check if we have space left and then append \0*/
+			if (i < MAX_SECCTX_LEN) {
+			sec_ctx_value[i] = '\0';
+			i=i+1;
+			} else {
+			/*there is no space left*/
+			DBG(DBG_PARSING, DBG_log("received security label > MAX_SECCTX_LEN (should not happen really)"));
+			return FALSE;
+			}
+		}
+		
+		/*while (pbs_left(pbs) != 0){
+		sec_ctx_value[i++]= *pbs->cur++;
+		    if(i == MAX_SECCTX_LEN){
+		    DBG(DBG_PARSING, DBG_log("security label reached maximum length (MAX_SECCTX_LEN) allowed"));
+		    break;
+		    }	
+		}*/
+
+		//sec_ctx_value[i]='\0';
+		DBG(DBG_PARSING, DBG_log("   sec ctx value: %s, len=%d", sec_ctx_value, i));
+
+		if(st->sec_ctx == NULL && st->st_state==STATE_QUICK_R0) {
+		    DBG_log("Receievd sec ctx in responder state");
+		    st->sec_ctx = alloc_thing(struct xfrm_user_sec_ctx_ike , "struct xfrm_user_sec_ctx_ike");
+		    memcpy (st->sec_ctx->sec_ctx_value, sec_ctx_value, i);
+		    st->sec_ctx->ctx_len = i;
+		    st->sec_ctx->ctx_alg = ctx_alg;
+		    st->sec_ctx->ctx_doi = ctx_doi;
+
+	/* lets verify if the received security label is within range of this connection's policy's security label*/
+	   if(!st->st_connection->labeled_ipsec) {
+		DBG_log("This state (connection) is not labeled ipsec enabled, so can not proceed");
+		return FALSE;
+	   }
+	   else if( st->st_connection->policy_label != NULL && within_range(st->sec_ctx->sec_ctx_value, st->st_connection->policy_label)) {
+		DBG_log("security context verification succedded");
+	   }
+	   else {
+		DBG_log("security context verification failed (perhaps policy_label is not confgured for this connection)");
+		return FALSE;
+	   }
+
+	}
+	else if (st->st_state==STATE_QUICK_I1 ) {
+	DBG(DBG_PARSING, DBG_log("Initiator state received security context from responder state, now verifying if both are same"));
+	   if(!strcmp(st->sec_ctx->sec_ctx_value, sec_ctx_value)) {
+		DBG_log("security contexts are verified in the initiator state");
+	   }
+	   else {
+		DBG_log("security context verification failed in the initiator state" 
+				"(shouldnt reach here unless responder (or something in between) is modifying the security context");
+		return FALSE;
+	   }	
+	}
+	else if (st->st_state==STATE_QUICK_R0) {
+		DBG_log("Receievd sec ctx in responder state again, already stored it so doing nothing now");
+	}
+	return TRUE;
+}
+#endif
+
 /** output an attribute (within an SA) */
 bool
 out_attr(int type
@@ -474,6 +587,29 @@ out_sa(pb_stream *outs
 			, st->st_connection->sa_ipsec_life_seconds
 			, attr_desc, attr_val_descs
 			, &trans_pbs);
+#ifdef HAVE_LABELED_IPSEC
+		    if(st->sec_ctx != NULL && st->st_connection->labeled_ipsec) {
+			struct isakmp_attribute attr;
+			pb_stream val_pbs;
+			attr.isaat_af_type = secctx_attr_value | ISAKMP_ATTR_AF_TLV;
+			DBG(DBG_EMITTING, DBG_log("secctx_attr_value=%d, type=%d", secctx_attr_value, attr.isaat_af_type));
+			out_struct(&attr, attr_desc, &trans_pbs, &val_pbs); 
+			DBG(DBG_EMITTING, DBG_log("placing security context attribute in the out going structure"));
+			DBG(DBG_EMITTING, DBG_log("sending ctx_doi"));
+			out_raw(&st->sec_ctx->ctx_doi, sizeof(st->sec_ctx->ctx_doi),  &val_pbs, " variable length sec ctx: ctx_doi");
+			DBG(DBG_EMITTING, DBG_log("sending ctx_alg"));
+			out_raw(&st->sec_ctx->ctx_alg, sizeof(st->sec_ctx->ctx_alg),  &val_pbs, " variable length sec ctx: ctx_alg");
+			DBG(DBG_EMITTING, DBG_log("sending ctx_len after conversion to network byte order"));
+			u_int16_t net_ctx_len = htons(st->sec_ctx->ctx_len);
+			out_raw(&net_ctx_len, sizeof(st->sec_ctx->ctx_len),  &val_pbs, " variable length sec ctx: ctx_len");
+			/*Sending '\0'  with sec ctx as we get it from kernel*/
+			out_raw(st->sec_ctx->sec_ctx_value, st->sec_ctx->ctx_len, &val_pbs, " variable length sec ctx");
+			DBG(DBG_EMITTING, DBG_log("placed security context attribute in the out going structure"));
+        		close_output_pbs(&val_pbs);
+			DBG(DBG_EMITTING, DBG_log("end of security context attribute in the out going structure"));
+		    }
+#endif
+
 		}
 
 		/* spit out attributes from table */
@@ -1468,7 +1604,10 @@ parse_ipsec_transform(struct isakmp_transform *trans
 	if (!in_struct(&a, &isakmp_ipsec_attribute_desc, trans_pbs, &attr_pbs))
 	    return FALSE;
 
+#ifndef HAVE_LABELED_IPSEC
+	/*This check is no longer valid when using security labels as SECCTX attribute is in private range and has value of 32001*/
 	passert((a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK) < 32);
+#endif
 
 	if (LHAS(seen_attrs, a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK))
 	{
@@ -1482,7 +1621,14 @@ parse_ipsec_transform(struct isakmp_transform *trans
 
 	val = a.isaat_lv;
 
-	vdesc  = ipsec_attr_val_descs[a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK];
+	vdesc  = ipsec_attr_val_descs[a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK
+#ifdef HAVE_LABELED_IPSEC
+	/* The original code (without labeled ipsec) assumes a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK) < 32, */
+	/* so for retaining the same behavior when this is < 32 and if more than >= 32 setting it to 0, */
+	/* which is NULL in ipsec_attr_val_desc*/
+					>= 32 ? 0 : a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK
+#endif
+				     ];
 	if (vdesc != NULL)
 	{
 	    if (enum_name(vdesc, val) == NULL)
@@ -1499,6 +1645,16 @@ parse_ipsec_transform(struct isakmp_transform *trans
 
 	switch (a.isaat_af_type)
 	{
+#ifdef HAVE_LABELED_IPSEC
+	   case SECCTX | ISAKMP_ATTR_AF_TLV:
+		{
+                    pb_stream *   pbs=&attr_pbs;
+                        if (!parse_secctx_attr (pbs, st)) {
+                        return FALSE;
+                        }
+                }
+		break;
+#endif
 	    case SA_LIFE_TYPE | ISAKMP_ATTR_AF_TV:
 		ipcomp_inappropriate = FALSE;
 		if (LHAS(seen_durations, val))
@@ -1527,7 +1683,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		    case SA_LIFE_TYPE_SECONDS:
 			/* silently limit duration to our maximum */
 			attrs->life_seconds = val <= SA_LIFE_DURATION_MAXIMUM
-			    ? val : SA_LIFE_DURATION_MAXIMUM;
+			    ? (val < st->st_connection->sa_ipsec_life_seconds ? val : st->st_connection->sa_ipsec_life_seconds) : SA_LIFE_DURATION_MAXIMUM;
 			break;
 		    case SA_LIFE_TYPE_KBYTES:
 			attrs->life_kilobytes = val;
@@ -1593,7 +1749,13 @@ parse_ipsec_transform(struct isakmp_transform *trans
 					loglog(RC_LOG_SERIOUS,
 						"%s must only be used with old IETF drafts",
 						enum_name(&enc_mode_names, val));
+					if(st->st_connection->remotepeertype == CISCO) {
+					DBG_log( "Allowing, as this may be due to rekey");
+					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS + ENCAPSULATION_MODE_TUNNEL;
+					}
+					else {
 					return FALSE;
+					}
 				}
 				else if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
 					attrs->encapsulation = val - ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS + ENCAPSULATION_MODE_TUNNEL;
@@ -1668,10 +1830,23 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		break;
 #endif
 	    default:
+#ifdef HAVE_LABELED_IPSEC
+		if(a.isaat_af_type == (secctx_attr_value | ISAKMP_ATTR_AF_TLV) ) {
+		    pb_stream *   pbs=&attr_pbs;
+			if (!parse_secctx_attr (pbs, st)) {
+			return FALSE;
+			}
+		}
+		else {
+#endif
 		loglog(RC_LOG_SERIOUS, "unsupported IPsec attribute %s"
 		    , enum_show(&ipsec_attr_names, a.isaat_af_type));
 		return FALSE;
+#ifdef HAVE_LABELED_IPSEC
+		}
+#endif
 	}
+		
 	if (ipcomp_inappropriate)
 	{
 	    loglog(RC_LOG_SERIOUS, "IPsec attribute %s inappropriate for IPCOMP"
@@ -2422,7 +2597,6 @@ parse_ipsec_sa_body(
     loglog(RC_LOG_SERIOUS, "no acceptable Proposal in IPsec SA");
     return NO_PROPOSAL_CHOSEN;
 }
-
 
 /*
  * Local Variables:

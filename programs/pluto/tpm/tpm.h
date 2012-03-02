@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: tpm.h,v 1.11 2005/10/12 15:26:13 mcr Exp $
  */
 
 #include "constants.h"

@@ -11,8 +11,6 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * RCSID $Id: ipsec_auth.h,v 1.3 2004/04/06 02:49:08 mcr Exp $
  */
 
 #include "ipsec_md5h.h"
@@ -80,21 +78,3 @@ struct options;
 
 #endif /* __KERNEL__ */
 #endif /* IPSEC_AUTH_H */
-
-/*
- * $Log: ipsec_auth.h,v $
- * Revision 1.3  2004/04/06 02:49:08  mcr
- * 	pullup of algo code from alg-branch.
- *
- * Revision 1.2  2004/04/05 19:55:04  mcr
- * Moved from linux/include/freeswan/ipsec_auth.h,v
- *
- * Revision 1.1  2003/12/13 19:10:16  mcr
- * 	refactored rcv and xmit code - same as FS 2.05.
- *
- * Revision 1.1  2003/12/06 21:21:19  mcr
- * 	split up receive path into per-transform files, for
- * 	easier later removal.
- *
- *
- */

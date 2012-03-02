@@ -94,12 +94,6 @@ void osw_conf_setdefault(void)
     ipsecd_dir = clone_str(ipsecd_dir, "default conf ipsecd_dir");
     conffile   = clone_str(conffile, "default conf conffile");
     var_dir    = clone_str(var_dir, "default conf var_dir");
-#if 0
-    /* unused and were not freed */
-    exec_dir   = clone_str(exec_dir, "default conf exec_dir");
-    lib_dir    = clone_str(lib_dir, "default conf lib_dir");
-    unused sbin_dir   = clone_str(sbin_dir, "default conf sbin_dir");
-#endif
     
     /* figure out what we are doing, look for variables in the environment */
     if((env = getenv("IPSEC_CONFS")) != NULL) {
@@ -119,6 +113,7 @@ void osw_conf_setdefault(void)
     
     if((env = getenv("IPSEC_CONFFILE")) != NULL) {
 	pfree(conffile);
+	pfree(ipsec_conf_dir);
 	conffile = clone_str(env, "ipsec.conf");
     }
     

@@ -51,7 +51,11 @@ extern bool pfkey_raw_eroute(const ip_address *this_host
 			     , const struct pfkey_proto_info *proto_info UNUSED
 			     , time_t use_lifetime UNUSED
 			     , enum pluto_sadb_operations op
-			     , const char *text_said);
+			     , const char *text_said
+#ifdef HAVE_LABELED_IPSEC
+			    , char *policy_label
+#endif
+			     );
 
 extern bool pfkey_shunt_eroute(struct connection *c
 			       , struct spd_route *sr
