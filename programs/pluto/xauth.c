@@ -1935,13 +1935,13 @@ modecfg_inR1(struct msg_digest *md)
                     tmp_spd->that.cert.type = 0;
 
                     tmp_spd->this.ca.ptr = NULL;
-                    tmp_spd->this.ca.ptr = NULL;
+                    tmp_spd->that.ca.ptr = NULL;
 
                     tmp_spd->this.groups = NULL;
-                    tmp_spd->this.groups = NULL;
+                    tmp_spd->that.groups = NULL;
 
                     tmp_spd->this.virt = NULL;
-                    tmp_spd->this.virt = NULL;
+                    tmp_spd->that.virt = NULL;
 
                     tmp_spd->next = NULL;
                     tmp_spd2->next = tmp_spd;

@@ -80,6 +80,11 @@ void ipsecconf_default_values(struct starter_config *cfg)
 #ifdef HAVE_NM
 	cfg->conn_default.options[KBF_NMCONFIGURED] = NO;
 #endif
+
+#ifdef HAVE_LABELED_IPSEC
+	cfg->conn_default.options[KBF_LOOPBACK] = LB_NO;
+	cfg->conn_default.options[KBF_LABELED_IPSEC] = LI_NO;
+#endif
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW; /* ikev2=yes */
 	cfg->conn_default.policy |= POLICY_SAREF_TRACK;  /* sareftrack=yes */
@@ -1028,9 +1033,18 @@ static int load_conn (struct starter_config *cfg
 
     KW_POLICY_FLAG(KBF_OVERLAPIP, POLICY_OVERLAPIP);
 
+    KW_POLICY_FLAG(KBF_IKEv2_ALLOW_NARROWING, POLICY_IKEV2_ALLOW_NARROWING);
+
     if(conn->strings_set[KSF_ESP]) {
 	conn->esp = xstrdup(conn->strings[KSF_ESP]);
     }
+
+#ifdef HAVE_LABELED_IPSEC
+    if(conn->strings_set[KSF_POLICY_LABEL]) {
+        conn->policy_label = xstrdup(conn->strings[KSF_POLICY_LABEL]);
+    }
+    starter_log(LOG_LEVEL_DEBUG,"connection's  policy label: %s", conn->policy_label);
+#endif
 
     if(conn->strings_set[KSF_IKE]) {
 	conn->ike = xstrdup(conn->strings[KSF_IKE]);
@@ -1150,7 +1164,9 @@ void conn_default (char *n, struct starter_conn *conn,
     
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
-
+#ifdef HAVE_LABELED_IPSEC
+    CONN_STR(conn->policy_label);
+#endif
     conn->policy = def->policy;
 #undef CONN_STR
 }

@@ -53,6 +53,7 @@ enum keyword_string_config_field {
     KSF_ACCELERATION,
     KSF_CONNALIAS,
     KSF_LISTEN,
+    KSF_POLICY_LABEL,
     KSF_MAX
 };
 
@@ -100,13 +101,17 @@ enum keyword_numeric_config_field {
     KBF_MODECONFIGPULL,
     KBF_FORCEENCAP,
     KBF_IKEv2,
+    KBF_IKEv2_ALLOW_NARROWING,
     KBF_CONNADDRFAMILY,
-    KBF_FORCEBUSY, /* 40 */
+    KBF_FORCEBUSY, 
     KBF_OVERLAPIP,
     KBF_REMOTEPEERTYPE, /*Cisco interop: remote peer type*/
     KBF_NMCONFIGURED, /*Network Manager support*/
+    KBF_LOOPBACK,
+    KBF_LABELED_IPSEC,
     KBF_SAREFTRACK, /* saref tracking paramter for _updown */
     KBF_WARNIGNORE, /* to ignore obsoleted keywords */
+    KBF_SECCTX, /*security context attribute value for labeled ipsec*/
     KBF_MAX         
 };
 

@@ -83,6 +83,23 @@ static stf_status ikev2_parent_outI1_common(struct msg_digest *md
 					    , struct state *st);
 
 /*
+ * Increment the msgid for our new header based on the one we should use next
+ * TODO: if we wrap (u_int32), we need to rekey the parent sa 
+ */
+static void
+ increment_msgid_nextuse(struct state *st)
+{
+   passert(st != NULL);
+   st->st_msgid_nextuse = st->st_msgid_nextuse + 1;
+   if(st->st_msgid_nextuse == 0) {
+       openswan_log("  st_msgid_nextuse wrapped - we should rekey!");
+   }
+   st->st_msgid = htonl(st->st_msgid_nextuse);
+}   
+
+
+
+/*
  *
  ***************************************************************
  *****                   PARENT_OUTI1                      *****
@@ -101,7 +118,11 @@ ikev2parent_outI1(int whack_sock
 	       , struct state *predecessor
 	       , lset_t policy
 	       , unsigned long try
-	       , enum crypto_importance importance)
+	       , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+	       , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	       )
 {
     struct state *st = new_state();
     struct db_sa *sadb;
@@ -121,8 +142,19 @@ ikev2parent_outI1(int whack_sock
     st->st_try   = try;
 
     if (HAS_IPSEC_POLICY(policy))
+#ifdef HAVE_LABELED_IPSEC
+	st->sec_ctx = NULL;
+	if( uctx != NULL) {
+	openswan_log("Labeled ipsec is not supported with ikev2 yet");
+	}
+#endif
+
 	add_pending(dup_any(whack_sock), st, c, policy, 1
-	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno);
+	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
+#ifdef HAVE_LABELED_IPSEC
+	    , st->sec_ctx
+#endif
+		   );
 
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");
@@ -381,7 +413,9 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	{
 		chunk_t child_spi;
 		memset(&child_spi, 0, sizeof(child_spi));
-		ship_v2N (ISAKMP_NEXT_v2SA, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+		ship_v2N (ISAKMP_NEXT_v2SA, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
+                (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+                    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					v2N_COOKIE, &st->st_dcookie, &md->rbody);
     }
@@ -428,6 +462,10 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
@@ -734,6 +772,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np = ISAKMP_NEXT_v2SA;
 	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+	increment_msgid_nextuse(st);
+	r_hdr.isa_msgid = st->st_msgid;
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
@@ -791,6 +831,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	memset(&in, 0, sizeof(in));
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
 	   !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
@@ -1228,6 +1272,11 @@ static stf_status ikev2_send_auth(struct connection *c
 
     
     a.isaa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	a.isaa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+    }
+
     a.isaa_np = np;
     
     if(c->policy & POLICY_RSASIG) {
@@ -1325,6 +1374,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* insert an Encryption payload header */
     e.isag_np = ISAKMP_NEXT_v2IDi;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+    }
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	return STF_INTERNAL_ERROR;
@@ -1357,6 +1410,11 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
+
 	{  /* decide to send CERT payload */
 	    send_cert = doi_send_ikev2_cert_thinking(st);
 	    
@@ -1415,32 +1473,25 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 * now, find an eligible child SA from the pending list, and emit
 	 * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
+	openswan_log("PAUL:  now, find an eligible child SA from the pending list, and emit TSi and TSr");
 	if(c0) {
 		chunk_t child_spi, notifiy_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
-	    st->st_ts_this = ikev2_subnettots(&c0->spd.this);
-	    st->st_ts_that = ikev2_subnettots(&c0->spd.that);
-	    /* We only support symmetrical protocol */
-	    st->st_ts_this.ipprotoid = c0->spd.this.protocol;
-	    st->st_ts_that.ipprotoid = c0->spd.that.protocol;
-	    /* We only support a single port or all ports */
-	    if(c0->spd.this.port != 0) {
-		st->st_ts_this.startport = c0->spd.this.port;
-		st->st_ts_that.ipprotoid = c0->spd.this.port;
-	    }
-	    
+	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this);
+	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that);
+
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
 		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
 		memset(&notifiy_data, 0, sizeof(notifiy_data));
-		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
-				&child_spi,
-				v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+		ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
+				(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) : ISAKMP_PAYLOAD_NONCRITICAL,
+				 0, &child_spi, v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
 	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
@@ -1587,6 +1638,9 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_calculating = FALSE;
 
     e = ikev2_parent_inI2outR2_tail(pcrc, r);
+    if( e != STF_OK) {
+	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_name, e));
+    }
   
     if(dh->md != NULL) {
 	complete_v2_state_transition(&dh->md, e);
@@ -1754,6 +1808,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	/* insert an Encryption payload header */
 	e.isag_np = ISAKMP_NEXT_v2IDr;
 	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
 
 	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	    return STF_INTERNAL_ERROR;
@@ -1791,6 +1849,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+	    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+		r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	    }
 
 	    if(send_cert) 
 		r_id.isai_np = ISAKMP_NEXT_v2CERT;
@@ -1840,6 +1902,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    openswan_log("No CHILD SA proposals received.");
 	    np = ISAKMP_NEXT_NONE;
 	} else {
+	    DBG_log("CHILD SA proposals received");
 	    np = ISAKMP_NEXT_v2SA;
 	}
 
@@ -1857,7 +1920,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	if(np == ISAKMP_NEXT_v2SA) {
 	    /* must have enough to build an CHILD_SA */
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
-	    if(ret != STF_OK) return ret;
+	    if(ret != STF_OK) {
+		 DBG_log("PAUL: ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+		return ret;
+	    }
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
@@ -2037,6 +2103,87 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
+	/* http://tools.ietf.org/html/rfc5996#section-2.9 */
+	openswan_log("PAUL:check narrowing - we are responding to I2");
+
+#if 0
+	We need to check TSr/TSi for better leftsubnet/rightsubnet as well as better
+	 protoport= settings
+       Do we need to check the md directly? Or did we already read th traffic_selectors
+	into the state at st->st_ts_this and st->st_ts_that ?
+	IF not, then how do we select the best TSi/TSr from the entire TSi/TSr payload?
+ 	  or do we allow all of the ones that can?
+#endif
+
+
+		struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+		struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+		struct traffic_selector tsi[16], tsr[16];
+		int instantiate = FALSE;
+		ip_subnet tsi_subnet, tsr_subnet;
+		const char *oops;
+		unsigned int tsi_n, tsr_n;
+		tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+		tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+
+
+    		DBG_log("PAUL: We are initiator, checking TSi/TSr");
+		/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
+		oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
+		if(oops != NULL) {
+			DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
+		} 
+		oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+		if(oops != NULL) {
+			DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
+		}
+
+		/* Can we narrow, if so we instantiate */
+	//PAULX addrinsubnet(address,subnet)
+	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
+	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
+		DBG_log("Our subnet is not the same as the TSI subnet");
+		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+			return STF_IGNORE ; /* prob say something back? */
+		}
+		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
+			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE ; /* prob say something back? */
+		}
+	}
+	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
+		DBG_log("Our subnet is not the same as the TSR subnet");
+		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+			return STF_IGNORE ; /* prob say something back? */
+		}
+		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
+			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+			instantiate = TRUE;
+		} else {
+			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+			return STF_IGNORE ; /* prob say something back? */
+		}
+	}
+	if(instantiate == TRUE) {
+		/* instantiate the connection since it changed from template, then update */
+		// CHEAT: for now modify our template as a proof of concept
+
+		c->spd.this.client = tsi_subnet;
+		c->spd.that.client = tsr_subnet;
+		// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+		// st1->st_ts_this = *tsr;
+		// st1->st_ts_that = *tsi;
+		// DBG_log("PAUL: traffic selectors updated\n");
+	}
+
+
+    }
+
+
+    {
 	v2_notification_t rn;
 	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
 	
@@ -2172,6 +2319,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
+    increment_msgid_nextuse(p1st);
     openswan_log("sending %snotification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
@@ -2206,6 +2354,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
 	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+	n_hdr.isa_msgid = p1st->st_msgid;
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
@@ -2217,8 +2366,9 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	child_spi.len = 0;
 
 	/* build and add v2N payload to the packet */
-	ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-				    &child_spi, 
+	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
+		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+		    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP, &child_spi, 
 					type, n_data, &rbody);
 
    close_message(&rbody);
@@ -2240,6 +2390,10 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
    		,DBG_log("Adding a v2N Payload"));  
    	n.isan_np =  np;
    	n.isan_critical = critical;
+   	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+		n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+   	}
    	n.isan_protoid =  protoid;
    	n.isan_spisize = spi->len;
    	n.isan_type = type;
@@ -2269,7 +2423,220 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
     close_output_pbs(&n_pbs);
 	return TRUE;
 }
-	     
+
+/*
+ *
+ ***************************************************************
+ *                       INFORMATIONAL                     *****
+ ***************************************************************
+ *
+ *
+ *
+ */
+stf_status process_informational_ikev2(struct msg_digest *md)
+{
+    /* verify that there is in fact an encrypted payload */
+    if(!md->chain[ISAKMP_NEXT_v2E]) {
+       openswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
+       return STF_IGNORE;
+    }
+
+    /* decrypt things. */
+    {
+	stf_status ret;
+
+	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("received informational exchange request from INITIATOR"));
+	   ret = ikev2_decrypt_msg(md, RESPONDER);
+	} else {
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("received informational exchange request from RESPONDER"));
+	   ret = ikev2_decrypt_msg(md, INITIATOR);
+	}
+
+	if(ret != STF_OK) return ret;
+    }
+
+    {
+	struct payload_digest *p;
+	struct ikev2_delete *v2del=NULL;
+	stf_status ret;
+	struct state *const st = md->st;
+
+	/* Only send response if it is request*/
+	if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+	   unsigned char *authstart;
+	   pb_stream      e_pbs, e_pbs_cipher;
+	   struct ikev2_generic e;
+	   unsigned char *iv;
+	   int            ivsize;
+	   unsigned char *encstart;
+	   struct isakmp_hdr r_hdr ;
+
+	   /* beginning of data going out */
+	   authstart = reply_stream.cur;
+
+	   /* make sure HDR is at start of a clean buffer */
+	   zero(reply_buffer);
+	   init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange reply packet");
+
+	   /* HDR out */
+	   zero(&r_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
+	   r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+	   memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+	   memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+	   r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
+	   r_hdr.isa_np = ISAKMP_NEXT_v2E;
+	   increment_msgid_nextuse(st);
+	   r_hdr.isa_msgid = st->st_msgid;
+
+	   /*set initiator bit if we are initiator*/
+	   if(md->role == INITIATOR) {
+		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+	   } /* PAUL: shouldn't this be an else? */
+	   r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+
+	   if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody)) {
+		openswan_log("error initializing hdr for notify message");
+		return STF_INTERNAL_ERROR;
+	   }
+	   /*HDR Done*/
+
+	   /* insert an Encryption payload header */
+	   e.isag_np = ISAKMP_NEXT_NONE;
+	   e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+	   if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+		openswan_log("error initializing encryption payload header for notify message");
+		return STF_INTERNAL_ERROR;
+	   }
+
+	   /* insert IV */
+	   iv     = e_pbs.cur;
+	   ivsize = st->st_oakley.encrypter->iv_size;
+	   if(!out_zero(ivsize, &e_pbs, "iv")) {
+		return STF_INTERNAL_ERROR;
+	   }
+	   get_rnd_bytes(iv, ivsize);
+
+	   /* note where cleartext starts */
+	   init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	   e_pbs_cipher.container = &e_pbs;
+	   e_pbs_cipher.desc = NULL;
+	   e_pbs_cipher.cur = e_pbs.cur;
+	   encstart = e_pbs_cipher.cur;
+
+	   if(md->chain[ISAKMP_NEXT_v2D]) {
+		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+		    v2del = &p->payload.v2delete;
+		    switch (v2del->isad_protoid)
+		    {
+			/*
+			 * Avesh: My understanding is that delete payload for IKE SA
+			 *  should be the only payload in the informational
+			*/
+			case PROTO_ISAKMP:
+				break;
+                       default:
+				/*Unrecongnized protocol */
+				openswan_log("Ignoring Informational Exchange delete payload protoid of '%d' in Delete IKE_SA message",
+					v2del->isad_protoid);
+				return STF_IGNORE;
+		   }
+
+		   /* this will break from for loop */
+		   if(v2del->isad_protoid == PROTO_ISAKMP) {
+			break;
+		   }
+		}
+	   }
+
+	   /*
+	    * If there are no payloads in the request that means this INFORMATIONAL Exchange
+	    * is check for liveliness (eg IKEv2's version of DPD), so we need to send back
+	    * an empty INFORMATIONAL Exchange message with no payloads inside.
+	    */
+
+	   ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+	   close_output_pbs(&e_pbs_cipher);
+
+	   {
+		unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+		if(authloc == NULL) return STF_INTERNAL_ERROR;
+		close_output_pbs(&e_pbs);
+		close_output_pbs(&md->rbody);
+		close_output_pbs(&reply_stream);
+
+		ret = ikev2_encrypt_msg(md, RESPONDER, authstart,
+				iv, encstart, authloc, &e_pbs, &e_pbs_cipher);
+		if(ret != STF_OK) {
+		   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
+		   return ret;
+		}
+	   }
+
+	   /* let TCL hack it before we mark the length. */
+	   TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+	   /* keep it for a retransmit if necessary */
+	   freeanychunk(st->st_tpacket);
+	   clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+		, "reply packet for informational exchange");
+
+	   send_packet(st, __FUNCTION__, TRUE);
+	} else {
+	   /* informational was an answer, not a request. So we MUST NOT reply */
+	   DBG(DBG_CONTROLMORE
+		, DBG_log("  not sending a response, because we are not the responder"));
+	}
+
+	/*
+	 * Now carry out the actualy task, we can not carry the actual task since
+	 * we need to send informational responde using existig SAs
+	 */
+	{
+
+	   if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		if(md->chain[ISAKMP_NEXT_v2D]) {
+		   for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+			v2del = &p->payload.v2delete;
+			switch (v2del->isad_protoid)
+			{
+			   case PROTO_ISAKMP:
+				{
+				  /*
+				   * Avesh: My understanding is that delete payload for IKE SA
+				   * should be the only payload in the informational
+				   * Now delete the IKE SAstate
+				   */
+				   delete_state(st);
+				   break;
+				}
+			   default:
+				{
+				  /*
+				   * Unrecongnized protocol
+				   */
+				   openswan_log(" Information exchange delete payload should have protoid = PROTO_ISAKMP, not '%d' - ignored", v2del->isad_protoid);
+				   return STF_IGNORE;
+				}
+			}
+
+			/* this will break from for loop*/
+			if(v2del->isad_protoid == PROTO_ISAKMP) {
+			   break;
+			}
+
+		   } /* for */
+
+		} /* if*/
+	   }
+	} /* end task block */
+    }
+
+    return STF_OK;
+}
 
 /*
  *

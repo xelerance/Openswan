@@ -1,7 +1,7 @@
 
-A latest IPsec roadmap is released as RFC 6071
+An IPsec roadmap is released as RFC 6071, which lists a lot of relevant RFCs
 
-http://datatracker.ietf.org/doc/rfc6071/
+http://tools.ietf.org/html/rfc6071/
 
 To search for IPsec related RFCs and drafts, see:
 
@@ -39,6 +39,8 @@ RFC 4109	Algorithms for Internet Key Exchange version 1 (IKEv1)
 RFC 4210	Internet X.509 Public Key Infrastructure Certificate Management Protocol (CMP)
 RFC 4304	Extended Sequence Number (ESN) Addendum to IPsec Domain of Interpretation (DOI) for Internet Security Association and Key Management Protocol (ISAKMP)
 RFC 4306	Internet Key Exchange (IKEv2) Protocol
+RFC 4718	IKEv2 Clarifications and Implementation Guidelines
+RFC 5996	Internet Key Exchange Protocol Version 2 (IKEv2)
 
 Procedural and Operational RFC's
 

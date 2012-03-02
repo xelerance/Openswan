@@ -429,7 +429,7 @@ addrtoa(
 	char *dst,
 	size_t dstlen
 );
-#define	ADDRTOA_BUF	16	/* just large enough for largest result */
+#define	ADDRTOA_BUF	ADDRTOT_BUF
 
 /* subnets */
 const char *			/* NULL for success, else string literal */
@@ -455,7 +455,7 @@ subnet6toa(
 	char *dst,
 	size_t dstlen
 );
-#define	SUBNETTOA_BUF	32	/* large enough for worst case result */
+#define	SUBNETTOA_BUF SUBNETTOT_BUF	/* large enough for worst case result */
 
 /* ranges */
 const char *			/* NULL for success, else string literal */

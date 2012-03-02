@@ -55,6 +55,16 @@ enum keyword_nmconfigured {
     YES = 1,
 };
 
+enum keyword_loopback {
+    LB_NO = 0,
+    LB_YES = 1,
+};
+
+enum keyword_labeled_ipsec {
+    LI_NO = 0,
+    LI_YES = 1,
+};
+
 /* Timer events */
 
 enum event_type {
@@ -189,6 +199,7 @@ typedef enum {
 #define IMPAIR_MAJOR_VERSION_BUMP LELEM(IMPAIR0+7)   /* cause pluto to send an IKE major version that's higher then we support. */
 #define IMPAIR_MINOR_VERSION_BUMP LELEM(IMPAIR0+8)   /* cause pluto to send an IKE minor version that's higher then we support. */
 #define IMPAIR_RETRANSMITS LELEM(IMPAIR0+9)   /* cause pluto to never retransmit */
+#define IMPAIR_SEND_BOGUS_ISAKMP_FLAG LELEM(IMPAIR0+10)   /* causes pluto to set a RESERVED ISAKMP flag to test ignoring/zeroing it */
 
 #define DBG_NONE	0	/* no options on, including impairments */
 #define DBG_ALL		LRANGES(DBG_RAW, DBG_OPPOINFO)  /* all logging options on EXCEPT DBG_PRIVATE and DBG_WHACKWATCH */
@@ -486,14 +497,15 @@ enum pluto_policy {
 	POLICY_IKEV2_ALLOW   = LELEM(25), /* accept IKEv2?   0x0200 0000 */
 	POLICY_IKEV2_PROPOSE = LELEM(26), /* propose IKEv2?  0x0400 0000 */
 	POLICY_IKEV2_MASK = POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE,
+	POLICY_IKEV2_ALLOW_NARROWING = LELEM(27), /* Allow RFC-5669 section 2.9? 0x0800 0000 */
 
-	POLICY_MODECFGDNS1  = LELEM(27),   /* should we offer a DNS server IP */
-	POLICY_MODECFGDNS2  = LELEM(28),   /* should we offer another DNS server IP */
-	POLICY_MODECFGWINS1 = LELEM(29),   /* should we offer a WINS server IP */
-	POLICY_MODECFGWINS2 = LELEM(30),   /* should we offer another WINS server IP */
+	POLICY_MODECFGDNS1  = LELEM(28),   /* should we offer a DNS server IP */
+	POLICY_MODECFGDNS2  = LELEM(29),   /* should we offer another DNS server IP */
+	POLICY_MODECFGWINS1 = LELEM(30),   /* should we offer a WINS server IP */
+	POLICY_MODECFGWINS2 = LELEM(31),   /* should we offer another WINS server IP */
 
-	POLICY_SAREF_TRACK    = LELEM(31), /* Saref tracking via _updown */
-	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(32), /* use conntrack optimization */
+	POLICY_SAREF_TRACK    = LELEM(32), /* Saref tracking via _updown */
+	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(33), /* use conntrack optimization */
 };
 
 /* Any IPsec policy?  If not, a connection description
@@ -542,6 +554,7 @@ enum pluto_policy {
 #define KEY_ROUNDS               7
 #define COMPRESS_DICT_SIZE       8
 #define COMPRESS_PRIVATE_ALG     9	/* B/V */
+#define SECCTX                   32001     /* B/V */
 
 /* for each IPsec attribute, which enum_names describes its values? */
 

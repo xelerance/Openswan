@@ -74,9 +74,13 @@ enum known_vendorid {
   VID_NATT_IETF_02_N         =106,
   VID_NATT_IETF_02           =107,
   VID_NATT_IETF_03           =108,
-  VID_NATT_RFC               =109,               
-  VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE =110,
-  VID_NATT_IETF_05           =111,
+  VID_NATT_IETF_04           =109,
+  VID_NATT_IETF_05           =110,
+  VID_NATT_IETF_06           =111,
+  VID_NATT_IETF_07           =112,
+  VID_NATT_IETF_08           =113,
+  VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE =114,
+  VID_NATT_RFC               =115,
 
 /* 125 - 200 Strongswan */
 

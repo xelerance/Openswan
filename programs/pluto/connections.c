@@ -322,6 +322,9 @@ delete_connection(struct connection *c, bool relations)
     pfreeany(c->cisco_domain_info);
     pfreeany(c->cisco_banner);
 #endif
+#ifdef HAVE_LABELED_IPSEC
+    pfreeany(c->policy_label);
+#endif
 #ifdef DYNAMICDNS
     pfreeany(c->dnshostname);
 #endif /* DYNAMICDNS */
@@ -1334,6 +1337,16 @@ add_connection(const struct whack_message *wm)
 	c->nmconfigured=wm->nmconfigured;
 #endif
 
+#ifdef HAVE_LABELED_IPSEC
+	c->loopback  = wm->loopback;
+	c->labeled_ipsec = wm->labeled_ipsec;
+	c->policy_label = NULL;
+	if(wm->policy_label) {
+	c->policy_label = clone_str(wm->policy_label, "security label");
+	}
+	DBG(DBG_CONTROL, DBG_log("loopback=%d labeled_ipsec=%d, policy_label=%s", c->loopback, c->labeled_ipsec, c->policy_label));
+#endif
+
 	c->metric = wm->metric;
 	c->connmtu = wm->connmtu;
 
@@ -1457,6 +1470,41 @@ add_connection(const struct whack_message *wm)
 
 	    DBG_log("%s", topo);
 	);
+
+#ifdef HAVE_LABELED_IPSEC
+	if(c->loopback 
+	   && portof(&c->spd.this.client.addr)!=portof(&c->spd.that.client.addr) ) {
+	   struct spd_route *tmp_spd;
+	   u_int16_t tmp_this_port, tmp_that_port;
+
+	   tmp_spd = clone_thing(c->spd, "loopback asymmetrical policies");
+	   tmp_spd->this.id.name.ptr = NULL;
+	   tmp_spd->this.id.name.len = 0;
+	   tmp_spd->that.id.name.ptr = NULL;
+	   tmp_spd->that.id.name.len = 0;
+	   tmp_spd->this.host_addr_name = NULL;
+	   tmp_spd->that.host_addr_name = NULL;
+	   tmp_spd->this.updown = clone_str(tmp_spd->this.updown, "updown");
+	   tmp_spd->that.updown = clone_str(tmp_spd->that.updown, "updown");
+	   tmp_spd->this.cert_filename = NULL;
+	   tmp_spd->that.cert_filename = NULL;
+	   tmp_spd->this.cert.type = 0;
+	   tmp_spd->that.cert.type = 0;
+	   tmp_spd->this.ca.ptr = NULL;
+	   tmp_spd->that.ca.ptr = NULL;
+	   tmp_spd->this.groups = NULL;
+	   tmp_spd->that.groups = NULL;
+	   tmp_spd->this.virt = NULL;
+	   tmp_spd->that.virt = NULL;
+	   tmp_spd->next = NULL;
+	   c->spd.next=tmp_spd;
+	  
+	   tmp_this_port= portof(&tmp_spd->this.client.addr);
+	   tmp_that_port= portof(&tmp_spd->that.client.addr);
+	   setportof(tmp_this_port, &tmp_spd->that.client.addr);
+	   setportof(tmp_that_port, &tmp_spd->this.client.addr);
+	} 
+#endif
 
 #if 0
 	    /* Make sure that address families can be correctly inferred
@@ -1659,6 +1707,84 @@ rw_instantiate(struct connection *c
 	, DBG_log("instantiated \"%s\" for %s" , d->name, ip_str(him)));
     return d;
 }
+
+#if 0
+/*
+ * IKEv2 instantiation
+ * We needed to instantiate because we are updating our traffic selectors and subnets
+ * taken frmo oppo_instantiate
+ */
+struct connection *
+ikev2_ts_instantiate(struct connection *c
+, const ip_address *our_client
+, const u_int16_t our_port
+, const ip_address *peer_client
+, const u_int16_t peer_port
+, const u_int8_t protocol)
+{
+    struct connection *d = instantiate(c, him, his_id);
+
+    DBG(DBG_CONTROL,
+	DBG_log("ikev2_ts instantiate d=%s from c=%s with c->routing %s, d->routing %s"
+		, d->name, c->name
+		, enum_name(&routing_story, c->spd.routing)
+		, enum_name(&routing_story, d->spd.routing)));
+    DBG(DBG_CONTROL,
+	char instbuf[512];
+	DBG_log("new ikev2_ts instance: %s"
+		, (format_connection(instbuf, sizeof(instbuf), d, &d->spd), instbuf)));
+
+    passert(d->spd.next == NULL);
+
+    /* fill in our client side */
+    if (d->spd.this.has_client)
+    {
+	/* there was a client in the abstract connection
+	 * so we demand that the required client is within that subnet.
+	 */
+	passert(addrinsubnet(our_client, &d->spd.this.client));
+	happy(addrtosubnet(our_client, &d->spd.this.client));
+    }
+    else
+    {
+	/* there was no client in the abstract connection
+	 * so we demand that the required client be the host
+	 */
+	passert(sameaddr(our_client, &d->spd.this.host_addr));
+    }
+
+    /*
+     * fill in peer's client side.
+     * If the client is the peer, excise the client from the connection.
+     */
+    passert(addrinsubnet(peer_client, &d->spd.that.client));
+    happy(addrtosubnet(peer_client, &d->spd.that.client));
+
+    if (sameaddr(peer_client, &d->spd.that.host_addr))
+	d->spd.that.has_client = FALSE;
+
+    passert(d->gw_info == NULL);
+    gw_addref(gw);
+    d->gw_info = gw;
+
+#if 0
+    /* Remember if the template is routed:
+     * if so, this instance applies for initiation
+     * even if it is created for responding.
+     */
+    if (routed(c->spd.routing))
+	d->instance_initiation_ok = TRUE;
+#endif
+
+    DBG(DBG_CONTROL,
+	char topo[CONN_BUF_LEN];
+
+	(void) format_connection(topo, sizeof(topo), d, &d->spd);
+	DBG_log("instantiated \"%s\": %s", d->name, topo);
+    );
+    return d;
+}
+#endif
 
 struct connection *
 oppo_instantiate(struct connection *c

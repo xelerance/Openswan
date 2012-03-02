@@ -7,7 +7,11 @@ extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct state *predecessor
 				    , lset_t policy
 				    , unsigned long try
-				    , enum crypto_importance importance);
+				    , enum crypto_importance importance
+#ifdef HAVE_LABELED_IPSEC
+				    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+				    );
 
 
 
@@ -29,6 +33,7 @@ extern bool ikev2_out_sa(pb_stream *outs
 extern void complete_v2_state_transition(struct msg_digest **mdp
 					 , stf_status result);
 
+extern stf_status process_informational_ikev2(struct msg_digest *md);
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
@@ -139,7 +144,7 @@ extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
-extern struct traffic_selector ikev2_subnettots(struct end *e);
+extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern void ikev2_update_counters(struct msg_digest *md);
 
 extern void send_v2_notification(struct state *p1st, u_int16_t type

@@ -157,14 +157,30 @@ struct hidden_variables {
                                   st->st_suspended_md_func=__FUNCTION__; \
                                   st->st_suspended_md_line=__LINE__; } while(0)
 
+/* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
-    u_int8_t  sin_family;
+    u_int8_t  ts_type;
     u_int8_t  ipprotoid;
     u_int16_t startport;
     u_int16_t endport;
     ip_address low;
     ip_address high;
 };
+
+#ifdef HAVE_LABELED_IPSEC
+/* security label length should not exceed 256 in most cases,
+ * (discussed with kernel and selinux people).
+ */
+#define MAX_SECCTX_LEN    257 /* including '\0'*/
+struct xfrm_user_sec_ctx_ike {
+    u_int16_t len;
+    u_int16_t exttype;
+    u_int8_t  ctx_alg;  /* LSMs: e.g., selinux == 1 */
+    u_int8_t  ctx_doi;
+    u_int16_t ctx_len;
+    char sec_ctx_value[MAX_SECCTX_LEN];
+};
+#endif
 
 /* state object: record the state of a (possibly nascent) SA
  *
@@ -259,6 +275,10 @@ struct state
     chunk_t            st_tpacket;             /* Transmitted packet */
     chunk_t            st_firstpacket_me;      /* copy of my message 1 */
     chunk_t            st_firstpacket_him;     /* copy of his message 1 */
+
+#ifdef HAVE_LABELED_IPSEC
+     struct xfrm_user_sec_ctx_ike *sec_ctx;
+#endif
 
     /* Phase 2 ID payload info about my user */
     u_int8_t           st_myuserprotoid;       /* IDcx.protoid */
@@ -405,6 +425,13 @@ extern struct state
     *find_phase1_state(const struct connection *c, lset_t ok_states),
     *find_sender(size_t packet_len, u_char *packet);
 
+#ifdef HAVE_LABELED_IPSEC
+extern struct state *find_state_ikev1_loopback(const u_char *icookie
+                 , const u_char *rcookie
+                 , const ip_address *peer UNUSED
+                 , msgid_t msgid
+                 , struct msg_digest *md);
+#endif
 extern struct state *find_state_ikev2_parent(const u_char *icookie
 					     , const u_char *rcookie);
 

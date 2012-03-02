@@ -746,7 +746,11 @@ quick_outI1(int whack_sock
 	    , struct connection *c
 	    , lset_t policy
 	    , unsigned long try
-	    , so_serial_t replacing)
+	    , so_serial_t replacing
+#ifdef HAVE_LABELED_IPSEC
+	    , struct xfrm_user_sec_ctx_ike * uctx
+#endif
+	    )
 {
     struct state *st = duplicate_state(isakmp_sa);
     struct qke_continuation *qke;
@@ -765,6 +769,14 @@ quick_outI1(int whack_sock
     set_cur_state(st);	/* we must reset before exit */
     st->st_policy = policy;
     st->st_try = try;
+
+#ifdef HAVE_LABELED_IPSEC
+    st->sec_ctx=NULL;
+    if(uctx != NULL) {
+    st->sec_ctx = clone_thing(*uctx, "sec ctx structure");
+    DBG(DBG_CONTROL, DBG_log("pending phase 2 with security context %s, %d", st->sec_ctx->sec_ctx_value, st->sec_ctx->ctx_len));
+    }
+#endif
 
     st->st_myuserprotoid = c->spd.this.protocol;
     st->st_peeruserprotoid = c->spd.that.protocol;
@@ -1190,21 +1202,6 @@ quick_inI1_outR1(struct msg_digest *md)
 	    happy(addrtosubnet(&c->spd.that.host_addr, &b.his.net));
 	}
 	/* End Hack for MS 818043 NAT-T Update */
-
-#ifdef NAT_TRAVERSAL
-	/* Hack for MacOS/iPhone see bug #1204 */
-	if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
-	    (p1st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_OSX))){
-		struct hidden_variables hv; 
-		hv = p1st->hidden_variables; 
-		nat_traversal_natoa_lookup(md, &hv); 
-		if(isanyaddr(&hv.st_nat_oa)){
-		   happy(addrtosubnet(&p1st->st_remoteaddr, &b.his.net));
-		   loglog(RC_LOG_SERIOUS, "Applying workaround for Mac OS X NAT-OA bug, ignoring proposed subnet");
-		}
-	}
-	/* End Hack for MacOS/iPhone */
-#endif
 
 	b.his.proto = id_pd->payload.ipsec_id.isaiid_protoid;
 	b.his.port = id_pd->payload.ipsec_id.isaiid_port;

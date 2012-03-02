@@ -469,7 +469,11 @@ netlink_raw_eroute(const ip_address *this_host
 		   , const struct pfkey_proto_info *proto_info
 		   , time_t use_lifetime UNUSED
 		   , enum pluto_sadb_operations sadb_op
-		   , const char *text_said)
+		   , const char *text_said
+#ifdef HAVE_LABELED_IPSEC
+		   , char *policy_label
+#endif
+		   )
 {
     struct {
 	struct nlmsghdr n;
@@ -713,6 +717,28 @@ netlink_raw_eroute(const ip_address *this_host
 	req.n.nlmsg_len += attr->rta_len;
     }
 
+#ifdef HAVE_LABELED_IPSEC
+    {
+	if(policy_label) {
+	struct rtattr *attr;
+	struct xfrm_user_sec_ctx *uctx;
+	attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
+	attr->rta_type = XFRMA_SEC_CTX;
+	/*Passing null terminated sec label (strlen + '\0')*/
+	DBG_log("passing security label %s (len=%d) to kernel", policy_label, strlen(policy_label));
+	attr->rta_len = RTA_LENGTH(sizeof(struct xfrm_user_sec_ctx) + strlen(policy_label) +1);
+        uctx = RTA_DATA(attr);
+        uctx->exttype = XFRMA_SEC_CTX;
+        uctx->len = sizeof(struct xfrm_user_sec_ctx) + strlen(policy_label) +1;
+        uctx->ctx_doi = 1;
+        uctx->ctx_alg = 1;
+        uctx->ctx_len = strlen(policy_label) +1;
+	memcpy(uctx + 1, policy_label, uctx->ctx_len);
+	req.n.nlmsg_len += attr->rta_len;
+	}
+    }
+#endif
+
     enoent_ok = FALSE;
     if (sadb_op == ERO_DEL_INBOUND)
     {
@@ -915,6 +941,29 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
     }
+#endif
+
+#ifdef HAVE_LABELED_IPSEC
+   if (sa->sec_ctx != NULL) 
+   {
+	struct xfrm_user_sec_ctx xuctx;
+
+	xuctx.len = sizeof(struct xfrm_user_sec_ctx) + sa->sec_ctx->ctx_len;
+	xuctx.exttype = XFRMA_SEC_CTX;
+	xuctx.ctx_alg = 1;
+	xuctx.ctx_doi = 1;
+	xuctx.ctx_len = sa->sec_ctx->ctx_len;
+
+	attr->rta_type = XFRMA_SEC_CTX;
+	attr->rta_len = RTA_LENGTH(xuctx.len);
+	
+        memcpy(RTA_DATA(attr), &xuctx, sizeof(xuctx));
+        memcpy((char *)RTA_DATA(attr) + sizeof(xuctx), sa->sec_ctx->sec_ctx_value
+            , sa->sec_ctx->ctx_len);
+
+        req.n.nlmsg_len += attr->rta_len;
+        attr = (struct rtattr *)((char *)attr + attr->rta_len);
+   }
 #endif
 
     return send_netlink_msg(&req.n, NULL, 0, "Add SA", sa->text_said);
@@ -1134,6 +1183,17 @@ netlink_acquire(struct nlmsghdr *n)
     unsigned family;
     unsigned transport_proto;
     err_t ugh = NULL;
+#ifdef HAVE_LABELED_IPSEC
+    char *tmp;
+    struct rtattr *attr;
+    int remaining;
+    struct xfrm_user_sec_ctx *xuctx=NULL;
+    char sec_context_value[MAX_SECCTX_LEN];
+    struct xfrm_user_sec_ctx_ike *uctx=NULL;
+    bool found_sec_ctx= FALSE;
+
+    DBG(DBG_NETKEY, DBG_log("xfrm netlink msg len %lu", (unsigned long) n->nlmsg_len));
+#endif
 
     if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*acquire)))
     {
@@ -1142,6 +1202,12 @@ netlink_acquire(struct nlmsghdr *n)
 	    , (unsigned long) sizeof(*acquire));
 	return;
     }
+
+#ifdef HAVE_LABELED_IPSEC
+    DBG(DBG_NETKEY, DBG_log("xfrm:nlmsghdr= %lu", sizeof(struct nlmsghdr)));
+    DBG(DBG_NETKEY, DBG_log("xfrm:acquire= %lu", sizeof(struct xfrm_user_acquire)));
+    DBG(DBG_NETKEY, DBG_log("xfrm:rtattr= %lu", sizeof(struct rtattr)));
+#endif
 
     /* to get rid of complaints about strict alignment: */
     /* structure copy it first */
@@ -1152,6 +1218,82 @@ netlink_acquire(struct nlmsghdr *n)
     dstx = &acquire->sel.daddr;
     family = acquire->policy.sel.family;
     transport_proto = acquire->sel.proto;
+
+#ifdef HAVE_LABELED_IPSEC
+    tmp = (char*) acquire;
+    tmp = tmp + NLMSG_ALIGN (sizeof(struct xfrm_user_acquire));
+    attr = (struct rtattr *)tmp;
+
+   DBG(DBG_NETKEY, DBG_log("rtattr len= %lu", attr->rta_len));
+
+   if ( attr->rta_type == XFRMA_TMPL ) {
+   DBG(DBG_NETKEY, DBG_log("xfrm: found XFRMA_TMPL"));
+   }
+   else {
+   DBG(DBG_NETKEY, DBG_log("xfrm: not found XFRMA_TMPL"));
+	if (attr->rta_type == XFRMA_SEC_CTX ) {
+	DBG(DBG_NETKEY, DBG_log("xfrm: found XFRMA_SEC_CTX"));
+	found_sec_ctx=TRUE;
+	}
+   }
+
+   if(!found_sec_ctx) {
+	DBG(DBG_NETKEY, DBG_log("xfrm: did not found XFRMA_SEC_CTX, trying next one"));
+	DBG(DBG_NETKEY, DBG_log("xfrm: rta->len=%lu", attr->rta_len));
+
+	remaining = n->nlmsg_len - NLMSG_SPACE(sizeof(struct xfrm_user_acquire));
+	attr = RTA_NEXT(attr, remaining);
+
+	DBG(DBG_NETKEY, DBG_log("xfrm: remaining=%d , rta->len = %lu", remaining, attr->rta_len));
+		if (attr->rta_type == XFRMA_SEC_CTX ) {
+		DBG(DBG_NETKEY, DBG_log("xfrm: found XFRMA_SEC_CTX now"));
+		found_sec_ctx=TRUE;
+		}
+		else {
+			if (attr->rta_type == XFRMA_POLICY_TYPE ) {
+			DBG(DBG_NETKEY, DBG_log("xfrm: found XFRMA_POLICY_TYPE"));
+			}
+			else {
+			DBG(DBG_NETKEY, DBG_log("xfrm: not found anything, seems wierd"));
+			DBG(DBG_NETKEY, DBG_log("xfrm: not found sec ctx still, perhaps not a labeled ipsec connection"));
+			}
+		}
+   }
+	
+   if(found_sec_ctx) {
+	xuctx = (struct xfrm_user_sec_ctx *) RTA_DATA(attr);
+	DBG(DBG_NETKEY, DBG_log("xfrm xuctx: exttype=%d, len=%d, ctx_doi=%d, ctx_alg=%d, ctx_len=%d"
+				, xuctx->exttype, xuctx->len, xuctx->ctx_doi, xuctx->ctx_alg, xuctx->ctx_len));
+	DBG(DBG_NETKEY, DBG_log("xfrm xuctx security context: ", (xuctx+1), xuctx->ctx_len));
+
+	if(xuctx->ctx_len <= MAX_SECCTX_LEN) {
+	memcpy(sec_context_value, (xuctx+1), xuctx->ctx_len);
+
+	DBG(DBG_NETKEY, DBG_log("xfrm: xuctx security context value: %s", sec_context_value));
+   
+	uctx = alloc_thing(struct xfrm_user_sec_ctx_ike , "struct xfrm_user_sec_ctx_ike");
+
+	if(uctx != NULL) {	
+	uctx->len = xuctx->len;
+	uctx->exttype = xuctx->exttype;
+	uctx->ctx_alg = xuctx->ctx_alg;
+	uctx->ctx_doi = xuctx->ctx_doi;
+	uctx->ctx_len = xuctx->ctx_len; /*Length includes '\0'*/
+
+	memcpy(uctx->sec_ctx_value, (xuctx+1), xuctx->ctx_len);
+	} 
+	else {
+	DBG(DBG_NETKEY, DBG_log("not enough memory for struct xfrm_user_sec_ctx_ike")); 
+	}
+	}
+	else {
+	DBG(DBG_NETKEY, DBG_log("(should not reach here really) received security length=%d > MAX_SECCTX_LEN", xuctx->ctx_len));
+	DBG(DBG_NETKEY, DBG_log("ignoring ACQUIRE messages"));
+	goto ignore_acquire;
+	}
+   }
+
+#endif
 
     src_proto = 0;   /* XXX-MCR where to get protocol from? */
     dst_proto = 0;   /* ditto */
@@ -1169,8 +1311,16 @@ netlink_acquire(struct nlmsghdr *n)
 	&& !(ugh = addrtosubnet(&src, &ours))
 	&& !(ugh = addrtosubnet(&dst, &his)))
       record_and_initiate_opportunistic(&ours, &his, transport_proto
+#ifdef HAVE_LABELED_IPSEC
+					  , uctx
+#endif
 					  , "%acquire-netlink");
 
+#ifdef HAVE_LABELED_IPSEC
+    pfreeany(uctx);
+
+ignore_acquire:
+#endif
 
     if (ugh != NULL)
 	openswan_log("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
@@ -1515,7 +1665,11 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
     return eroute_connection(sr
         , inner_spi, inner_proto
 	, inner_esatype, proto_info + i
-        , op, opname);
+        , op, opname
+#ifdef HAVE_LABELED_IPSEC
+	, st->st_connection->policy_label
+#endif
+	);
 }
 
 /* Check if there was traffic on given SA during the last idle_max
@@ -1640,7 +1794,11 @@ netlink_shunt_eroute(struct connection *c
 			      , SA_INT
 			      , sr->this.protocol
 			      , ET_INT
-			      , null_proto_info, 0, op, buf2) )
+			      , null_proto_info, 0, op, buf2 
+#ifdef HAVE_LABELED_IPSEC
+			      , c->policy_label
+#endif
+			      ) )
       { return FALSE; }
 
       switch (op)
@@ -1665,7 +1823,11 @@ netlink_shunt_eroute(struct connection *c
 			      , SA_INT
 			      , sr->this.protocol
 			      , ET_INT
-			      , null_proto_info, 0, op, buf2);
+			      , null_proto_info, 0, op, buf2
+#ifdef HAVE_LABELED_IPSEC
+                              , c->policy_label
+#endif
+			      );
     }
 }
 

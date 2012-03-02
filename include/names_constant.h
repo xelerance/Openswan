@@ -75,6 +75,10 @@ extern enum_names ikev2_cert_type_names;
 extern enum_names ikev2_notify_names;
 extern enum_names ikev2_ts_type_names;
 
+#ifdef HAVE_LABELED_IPSEC
+extern u_int16_t secctx_attr_value;
+#endif
+
 /* socket address family info */
 
 struct af_info

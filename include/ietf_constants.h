@@ -516,6 +516,8 @@ extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_NONCRITICAL  0x00
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 /* These are followed by 7 more bits, currently RESERVED */
+/* Note we use 1 of those bits for IMPAIR-SEND-BOGUS-ISAKMP-FLAG */
+#define ISAKMP_PAYLOAD_OPENSWAN_BOGUS  0x01
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1
@@ -725,6 +727,8 @@ enum ikev1_ipsec_attr {
 	KEY_ROUNDS              =7,
 	COMPRESS_DICT_SIZE      =8,
 	COMPRESS_PRIVATE_ALG    =9,	/* B/V */
+	ECN_TUNNEL              =10,	/*B*/ /*RFC 3168*/  /* Originally mistakenly grabbed for SECCTX */
+	SECCTX                  =32001,    /* B/V */ /*chosen from private range as in RFC 2407*/
 };
 
 /* for each IPsec attribute, which enum_names describes its values? */

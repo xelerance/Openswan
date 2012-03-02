@@ -1066,7 +1066,7 @@ static field_desc ikev2ts1_fields[] = {
     { ft_nat, 16/BITS_PER_BYTE, "end port", NULL},
     { ft_end,  0, NULL, NULL }
 };
-struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selectors",
+struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selector",
 			       ikev2ts1_fields, sizeof(struct ikev2_ts1) };
 
 

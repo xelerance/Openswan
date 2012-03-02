@@ -253,9 +253,14 @@ static struct vid_struct _vid_tab[] = {
 	/* hash in draft-ietf-ipsec-nat-t-ike-02 contains '\n'... Accept both */
 	DEC_MD5_VID_D(NATT_IETF_02_N, "draft-ietf-ipsec-nat-t-ike-02\n", "draft-ietf-ipsec-nat-t-ike-02_n")
 	DEC_MD5_VID(NATT_IETF_03, "draft-ietf-ipsec-nat-t-ike-03")
+	DEC_MD5_VID(NATT_IETF_04, "draft-ietf-ipsec-nat-t-ike-04")
+	DEC_MD5_VID(NATT_IETF_05, "draft-ietf-ipsec-nat-t-ike-05")
+	DEC_MD5_VID(NATT_IETF_06, "draft-ietf-ipsec-nat-t-ike-06")
+	DEC_MD5_VID(NATT_IETF_07, "draft-ietf-ipsec-nat-t-ike-07")
+	DEC_MD5_VID(NATT_IETF_08, "draft-ietf-ipsec-nat-t-ike-08")
+	DEC_MD5_VID(NATT_DRAFT_IETF_IPSEC_NAT_T_IKE,"draft-ietf-ipsec-nat-t-ike")
 	DEC_MD5_VID(NATT_RFC, "RFC 3947")
 
-	DEC_MD5_VID(NATT_DRAFT_IETF_IPSEC_NAT_T_IKE,"draft-ietf-ipsec-nat-t-ike")
 
 
 	/* SonicWall */
@@ -519,7 +524,11 @@ static void handle_known_vendorid (struct msg_digest *md
 	case VID_NATT_IETF_02:
 	case VID_NATT_IETF_02_N:
 	case VID_NATT_IETF_03:
+	case VID_NATT_IETF_04:
 	case VID_NATT_IETF_05:
+	case VID_NATT_IETF_06:
+	case VID_NATT_IETF_07:
+	case VID_NATT_IETF_08:
 	case VID_NATT_DRAFT_IETF_IPSEC_NAT_T_IKE:
 	case VID_NATT_RFC:
 	    vid_usefull = 1;
