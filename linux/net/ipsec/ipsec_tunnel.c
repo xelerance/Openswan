@@ -289,7 +289,7 @@ int klips_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 			    "no physical device associated with dev=%s",
 			    skb->dev->name ? skb->dev->name : "NULL");
 		stats->tx_dropped++;
-		return -ENODEV;
+		return 0;
 	}
 
 	if(prv->dev->header_ops == NULL ||
@@ -301,7 +301,7 @@ int klips_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 				prv->dev->header_ops, prv->dev->header_ops ?
 				prv->dev->header_ops->parse : 0);
 		stats->tx_dropped++;
-		return -ENODEV;
+		return 0;
 	}
 
 	
