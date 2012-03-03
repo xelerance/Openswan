@@ -52,8 +52,8 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		    return AH_MD5;
 		case AUTH_ALGORITHM_HMAC_SHA1:
 		    return AH_SHA;
-
 		case AUTH_ALGORITHM_HMAC_SHA2_256:
+		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC:
 		    return AH_SHA2_256;
 		case AUTH_ALGORITHM_HMAC_SHA2_384:
 		    return AH_SHA2_384;
@@ -84,6 +84,8 @@ alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 	return AUTH_ALGORITHM_HMAC_MD5;
     case IKEv2_AUTH_HMAC_SHA1_96:
 	return AUTH_ALGORITHM_HMAC_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128_TRUNC:
+	return AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC;
     case IKEv2_AUTH_HMAC_SHA2_256_128: 
 	return AUTH_ALGORITHM_HMAC_SHA2_256;
     case IKEv2_AUTH_HMAC_SHA2_384_192: 
@@ -118,6 +120,7 @@ alg_info_esp_sadb2aa(int sadb_aalg)
 			break;
 			/* since they are the same ...  :)  */
 		case AUTH_ALGORITHM_HMAC_SHA2_256:
+		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC:
 		case AUTH_ALGORITHM_HMAC_SHA2_384:
 		case AUTH_ALGORITHM_HMAC_SHA2_512:
 		case AUTH_ALGORITHM_HMAC_RIPEMD:

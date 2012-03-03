@@ -622,11 +622,15 @@ out_sa(pb_stream *outs
 				 , attr_desc, attr_val_descs
 				 , &trans_pbs);
 		    } else {
-			out_attr(a->type.ipsec,  a->val
-				 , attr_desc, attr_val_descs
-				 , &trans_pbs);
-		    }
+			if((a->type.ipsec == AUTH_ALGORITHM) && (a->val == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC)){
+				DBG(DBG_PARSING, DBG_log("  changed private AUTH_ALGORITHM SHA2_256_TRUNC value to SHA2_256 for outgoing proposal"));
+				out_attr(a->type.ipsec, AUTH_ALGORITHM_HMAC_SHA2_256, attr_desc, attr_val_descs, &trans_pbs);
+			} else {
+				out_attr(a->type.ipsec,  a->val , attr_desc, attr_val_descs , &trans_pbs);
+			}
 			
+		    }
+
 		}
 
 		close_output_pbs(&trans_pbs);
@@ -2031,6 +2035,7 @@ parse_ipsec_sa_body(
 	int inner_proto = 0;
 	bool tunnel_mode = FALSE;
 	u_int16_t well_known_cpi = 0;
+	int ok_and_trunc = 0;
 
 	pb_stream ah_trans_pbs, esp_trans_pbs, ipcomp_trans_pbs;
 	struct isakmp_transform ah_trans, esp_trans, ipcomp_trans;
@@ -2416,10 +2421,15 @@ parse_ipsec_sa_body(
 	     *     (ALG_INFO_F_STRICT flag)
 	     *
 	     */
-	    if (c->alg_info_esp!=NULL
-		&& !kernel_alg_esp_ok_final(esp_attrs.transattrs.encrypt, esp_attrs.transattrs.enckeylen,
-					    esp_attrs.transattrs.integ_hash, c->alg_info_esp))
-		    continue;
+	    if (c->alg_info_esp!=NULL) {
+		ok_and_trunc = kernel_alg_esp_ok_final(esp_attrs.transattrs.encrypt, esp_attrs.transattrs.enckeylen,
+					    esp_attrs.transattrs.integ_hash, c->alg_info_esp);
+		if(ok_and_trunc == 0) continue;
+		if(ok_and_trunc == 1) DBG(DBG_PARSING,DBG_log("ESP okay, no sha2 truncation handling needed"));
+		/* magic value from kernel_alg_esp_ok_final signifying rewrite to pseudo proposal */
+		if(ok_and_trunc == 2) DBG(DBG_PARSING,DBG_log("ESP okay, but sha2 truncation handling is needed"));
+
+	    }
 #endif
 	    esp_attrs.spi = esp_spi;
 	    inner_proto = IPPROTO_ESP;
@@ -2584,8 +2594,13 @@ parse_ipsec_sa_body(
 	    st->st_ah.attrs = ah_attrs;
 
 	st->st_esp.present = esp_seen;
-	if (esp_seen)
+	if (esp_seen){
 	    st->st_esp.attrs = esp_attrs;
+	    if (ok_and_trunc == 2) {
+		st->st_esp.attrs.transattrs.integ_hash = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC; /* tell kernel to trunc hash with fake proposal */
+		DBG(DBG_PARSING,DBG_log(" updated st->st_esp.attrs.transattrs.integ_hash to AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC"));
+		}
+	}
 
 	st->st_ipcomp.present = ipcomp_seen;
 	if (ipcomp_seen)
