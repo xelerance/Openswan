@@ -2,8 +2,6 @@
  * Algorithm info parsing and creation functions
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  *
- * alg_info.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
- *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -114,6 +112,7 @@ alg_info_esp_sadb2aa(int sadb_aalg)
 {
 	int auth=0;
 	switch(sadb_aalg) {
+		/* Paul: why is this using a mix of SADB_AALG_* and AUTH_ALGORITHM_* */
 		case SADB_AALG_MD5HMAC:
 		case SADB_AALG_SHA1HMAC:
 			auth=sadb_aalg-1;
