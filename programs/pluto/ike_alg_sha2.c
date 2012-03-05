@@ -77,7 +77,7 @@ struct hash_desc integ_desc_sha2_256 = {
 };
 
 struct hash_desc hash_desc_sha2_256_trunc = {
-	common:{officname:  "sha256",
+	common:{officname:  "sha256_trunc",
 		algo_type: IKE_ALG_HASH,
 		algo_id:   OAKLEY_SHA2_256,
 		algo_v2id: IKEv2_PRF_HMAC_SHA2_256,
@@ -92,7 +92,7 @@ struct hash_desc hash_desc_sha2_256_trunc = {
 };
 
 struct hash_desc integ_desc_sha2_256_trunc = {
-        common:{officname:  "sha256",
+        common:{officname:  "sha256_trunc",
                 algo_type: IKE_ALG_INTEG,
                 algo_id:   OAKLEY_SHA2_256,
                 algo_v2id: IKEv2_AUTH_HMAC_SHA2_256_128,

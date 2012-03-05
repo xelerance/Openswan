@@ -42,6 +42,7 @@
 struct oakley_group_desc;
 
 /* sadb/ESP aa attrib converters */
+/* Paul: but aa is two octets, is sadb? */
 enum ipsec_authentication_algo
 alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 {
@@ -51,8 +52,9 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		case AUTH_ALGORITHM_HMAC_SHA1:
 		    return AH_SHA;
 		case AUTH_ALGORITHM_HMAC_SHA2_256:
-		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC:
 		    return AH_SHA2_256;
+		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC:
+		    return AH_SHA2_256_TRUNC;
 		case AUTH_ALGORITHM_HMAC_SHA2_384:
 		    return AH_SHA2_384;
 		case AUTH_ALGORITHM_HMAC_SHA2_512:
@@ -712,8 +714,18 @@ alg_info_parse_str (struct alg_info *alg_info
 
 	    case ST_END:
 	    case ST_EOF:
+		/*
+		 * If we detect sha2_256 with key size 96, we know they really meant
+		 * to configure sha2_256_trunc 256 bit with a hash truncation of 96
+		 */
+		if( !strncmp( ctx.aalg_buf, sha2_256, 8) && (ctx.eklen==0) && (ctx.aklen==96)) {
+		   DBG(DBG_CRYPT,DBG_log(" converting sha2_256-96 to sha2_256_trunc-256"));
+		   strncpy(ctx.aalg_buf, "sha2_256_trunc", sizeof("sha2_256_trunc"));
+		   ctx.aklen = 256;
+		}
+
 		DBG(DBG_CRYPT, DBG_log("alg_info_parse_str() "
-				       "ealg_buf=%s aalg_buf=%s"
+				       "ealg_buf=%s aalg_buf=%s "
 				       "eklen=%d  aklen=%d",
 				       ctx.ealg_buf, ctx.aalg_buf,
 				       ctx.eklen, ctx.aklen));

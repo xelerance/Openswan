@@ -841,8 +841,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	    return FALSE;
 	}
 
-/* use the old broken stuff of kernels that don't have the fix */
-#ifdef XFRMA_ALG_AUTH_TRUNC
 	/*
 	 * According to RFC-4868 the hash should be nnn/2, so 128 bits for SHA256 and 256
 	 * for SHA512. The XFRM/NETKEY kernel uses a default of 96, which was the value in
@@ -852,6 +850,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	if( (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) ||
 	    (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC) ) {
 	struct xfrm_algo_auth algo;
+	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256"));
 	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
 	algo.alg_trunc_len = (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC) ? 96 : 128;
 	attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
@@ -865,11 +864,9 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-	} else
-#endif
-	{
-	loglog(RC_LOG_SERIOUS,"PAUL: not using sha2 will be truncated to 96");
+	} else {
 	struct xfrm_algo algo;
+	DBG(DBG_NETKEY, DBG_log("  using old struct xfrm_algo for XFRM message"));
 	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
 	attr->rta_type = XFRMA_ALG_AUTH;
 	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);

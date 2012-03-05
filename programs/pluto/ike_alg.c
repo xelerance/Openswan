@@ -2,8 +2,6 @@
  * IKE modular algorithm handling interface
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  * 
- * ike_alg.c,v 1.1.2.18 2002/05/29 04:13:04 jjo Exp
- *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -199,12 +197,12 @@ int
 	const char *ugh="No error";
 	if (a->algo_type > IKE_ALG_MAX)
 	{
-		ugh="Invalid algo_type";
+		ugh="Invalid algo_type is larger then IKE_ALG_MAX";
 		return_on(ret,-EINVAL);
 	}
 	if (ike_alg_find(a->algo_type, a->algo_id, 0))
 	{
-		ugh="Algorithm already exists";
+		ugh="Algorithm type already exists";
 		return_on(ret,-EEXIST);
 	}
 	if (ret==0) {
@@ -213,7 +211,7 @@ int
 	}
 return_out:
 	if (ret) 
-		openswan_log("ike_alg_add(): ERROR: %s", ugh);
+		openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
 	return ret;
 }
 

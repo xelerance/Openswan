@@ -266,8 +266,9 @@ enum sadb_sastate {
 #define SADB_X_AALG_SHA2_384HMAC	6
 #define SADB_X_AALG_SHA2_512HMAC	7
 #define SADB_X_AALG_RIPEMD160HMAC	8
-#define SADB_X_AALG_SHA2_256HMAC_TRUNC	61440 /* used internally to signal for broken linux kernel behaviour */
 #define SADB_X_AALG_NULL		251	/* kame */
+#define SADB_X_AALG_SHA2_256HMAC_TRUNC	252 /* used internally to signal for broken linux kernel behaviour */
+
 enum sadb_aalg {
 	K_SADB_AALG_NONE=          SADB_AALG_NONE,           	
 	K_SADB_AALG_MD5HMAC=       SADB_AALG_MD5HMAC,        	
@@ -277,8 +278,11 @@ enum sadb_aalg {
 	K_SADB_X_AALG_SHA2_384HMAC=SADB_X_AALG_SHA2_384HMAC,
 	K_SADB_X_AALG_SHA2_512HMAC=SADB_X_AALG_SHA2_512HMAC,
 	K_SADB_X_AALG_RIPEMD160HMAC=SADB_X_AALG_RIPEMD160HMAC,
+	K_SADB_X_AALG_NULL=SADB_X_AALG_NULL,
+	K_SADB_X_AALG_SHA2_256HMAC_TRUNC=SADB_X_AALG_SHA2_256HMAC_TRUNC,
 };
-#define K_SADB_AALG_MAX			65535
+#define K_SADB_AALG_MAX			255 /* Is this really one octets, not two? */
+					    /* gets mapped into AUTH_ALGORITHM which is two octets */
 
 #define SADB_EALG_NONE                  0
 #define SADB_EALG_DESCBC                2

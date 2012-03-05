@@ -17,10 +17,13 @@ instance, "3des-md5" or "aes256-sha1;modp2048" or  "aes-sha1,aes-md5".
 instance, "md5" or "sha1;modp1536".
 </para>
 <para>A special case is AES CCM, which uses the syntax of "phase2alg=aes_ccm_a-152-null"</para>
+<para>A special case is phase2=sha2_256-96 which does not mean 96 bits, but means truncating the
+sha2_256 hash to 96 bit. This is the same as specifying the internal value of sha2_256_trunc.</para>
 <para>The special <emphasis remap='I'>sha2_256_trunc</emphasis> authentication algorithm
 is used for sha2-256 truncation at 96 bits (instead of the normal 128 bits), as that is
 the (broken) default on Linux kernels. This option is available (but broken) on 2.6.32, and
 properly implemented on 2.6.33 and newer. Some kernels, such as RHEL, backported this code. Per default,
-Openswan will use sha2-256 with 128 trunction when <emphasis remap='I'>sha2_256</emphasis> is used</para>
+Openswan will use sha2-256 with proper 128 trunction when <emphasis remap='I'>sha2_256</emphasis> is used.</para>
+
   </listitem>
   </varlistentry>

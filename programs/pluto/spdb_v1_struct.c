@@ -623,7 +623,7 @@ out_sa(pb_stream *outs
 				 , &trans_pbs);
 		    } else {
 			if((a->type.ipsec == AUTH_ALGORITHM) && (a->val == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC)){
-				DBG(DBG_PARSING, DBG_log("  changed private AUTH_ALGORITHM SHA2_256_TRUNC value to SHA2_256 for outgoing proposal"));
+				DBG(DBG_PARSING, DBG_log("  changed private AUTH_ALGORITHM_SHA2_256_TRUNC value to AUTH_ALGORITHM_SHA2_256 for outgoing proposal"));
 				out_attr(a->type.ipsec, AUTH_ALGORITHM_HMAC_SHA2_256, attr_desc, attr_val_descs, &trans_pbs);
 			} else {
 				out_attr(a->type.ipsec,  a->val , attr_desc, attr_val_descs , &trans_pbs);
@@ -2427,7 +2427,7 @@ parse_ipsec_sa_body(
 		if(ok_and_trunc == 0) continue;
 		if(ok_and_trunc == 1) DBG(DBG_PARSING,DBG_log("ESP okay, no sha2 truncation handling needed"));
 		/* magic value from kernel_alg_esp_ok_final signifying rewrite to pseudo proposal */
-		if(ok_and_trunc == 2) DBG(DBG_PARSING,DBG_log("ESP okay, but sha2 truncation handling is needed"));
+		if(ok_and_trunc == 2) DBG(DBG_PARSING,DBG_log("ESP okay, detected sha2 truncation handling is needed"));
 
 	    }
 #endif
