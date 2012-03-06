@@ -76,36 +76,6 @@ struct hash_desc integ_desc_sha2_256 = {
         hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
 
-struct hash_desc hash_desc_sha2_256_trunc = {
-	common:{officname:  "sha256_trunc",
-		algo_type: IKE_ALG_HASH,
-		algo_id:   OAKLEY_SHA2_256,
-		algo_v2id: IKEv2_PRF_HMAC_SHA2_256,
-		algo_next: NULL, },
-	hash_ctx_size: sizeof(sha256_context),
-	hash_key_size: SHA2_256_DIGEST_SIZE,
-	hash_digest_len: SHA2_256_DIGEST_SIZE,
-	hash_integ_len: 0,	/*Not applicable*/
-	hash_init: (void (*)(void *))sha256_init,
-	hash_update: (void (*)(void *, const u_char *, size_t ))sha256_write,
-	hash_final:(void (*)(u_char *, void *))sha256_hash_final,
-};
-
-struct hash_desc integ_desc_sha2_256_trunc = {
-        common:{officname:  "sha256_trunc",
-                algo_type: IKE_ALG_INTEG,
-                algo_id:   OAKLEY_SHA2_256,
-                algo_v2id: IKEv2_AUTH_HMAC_SHA2_256_128,
-                algo_next: NULL, },
-        hash_ctx_size: sizeof(sha256_context),
-        hash_key_size: SHA2_256_DIGEST_SIZE,
-        hash_digest_len: SHA2_256_DIGEST_SIZE,
-        hash_integ_len: BYTES_FOR_BITS(96), /* work around for broken linux kernel default */
-        hash_init: (void (*)(void *))sha256_init,
-        hash_update: (void (*)(void *, const u_char *, size_t ))sha256_write,
-        hash_final:(void (*)(u_char *, void *))sha256_hash_final,
-};
-
 struct hash_desc hash_desc_sha2_512 = {
 	common:{officname: "sha512",
 		algo_type: IKE_ALG_HASH,
@@ -125,16 +95,11 @@ ike_alg_sha2_init(void)
 {
 	int ret;
 	ret = ike_alg_register_hash(&hash_desc_sha2_512);
-	if (ret)
-		goto out;
-	ret = ike_alg_register_hash(&hash_desc_sha2_256);
-	if (ret)
-		goto out;
-	ret = ike_alg_register_hash(&hash_desc_sha2_256_trunc);
+	if (!ret){
+	    ret = ike_alg_register_hash(&hash_desc_sha2_256);
+	    ike_alg_add((struct ike_alg *) &integ_desc_sha2_256);
+	}
 
-	ike_alg_add((struct ike_alg *) &integ_desc_sha2_256);
-	ike_alg_add((struct ike_alg *) &integ_desc_sha2_256_trunc);
-out:
 	return ret;
 }
 /*

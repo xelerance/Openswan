@@ -1501,6 +1501,10 @@ main(int argc, char **argv)
 		| ((lset_t)aux << POLICY_FAIL_SHIFT);
 	    continue;
 
+	case CD_IKELIFETIME:    /* --ikelifetime <seconds> */
+	    msg.sa_ike_life_seconds = opt_whole;
+	    continue;
+
 	case CD_IPSECLIFETIME:	/* --ipseclifetime <seconds> */
 	    msg.sa_ipsec_life_seconds = opt_whole;
 	    continue;

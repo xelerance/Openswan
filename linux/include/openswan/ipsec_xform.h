@@ -60,7 +60,6 @@
 #define AH_AES_192_GMAC		12 /* RFC4543 [Errata1821] */
 #define AH_AES_256_GMAC		13 /* RFC4543 [Errata1821] */
 #define AH_NULL			251
-#define AH_SHA2_256_TRUNC	252
 #define AH_MAX			255 /* note Authentication Algorithm (Value 5) Reference: [RFC2407] has
 				     * two octets but IPSEC AH Transform Identifiers has one octet! */
 
