@@ -144,7 +144,7 @@ static sparse_names aalg_list = {
 	{ SADB_AALG_MD5HMAC, "md5" },
 	{ SADB_AALG_SHA1HMAC, "sha1" },
 	{ SADB_X_AALG_SHA2_256HMAC, "sha256" },
-	{ SADB_X_AALG_SHA2_256HMAC_TRUNC, "hmac(sha256)" },
+	{ SADB_X_AALG_SHA2_256HMAC_TRUNCBUG, "hmac(sha256)" },
 	{ SADB_X_AALG_SHA2_256HMAC, "hmac(sha256)" },
 	{ SADB_X_AALG_SHA2_384HMAC, "hmac(sha384)" },
 	{ SADB_X_AALG_SHA2_512HMAC, "hmac(sha512)" },
@@ -2227,7 +2227,8 @@ const struct kernel_ops netkey_kernel_ops = {
      * if netlink  specific changes are needed.
      */
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    .overlap_supported = FALSE
+    overlap_supported: FALSE,
+    sha2_truncbug_support: TRUE,
 };
 #endif /* linux && NETKEY_SUPPORT */
 

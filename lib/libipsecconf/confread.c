@@ -76,9 +76,11 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/*Cisco interop: remote peer type*/
 	cfg->conn_default.options[KBF_REMOTEPEERTYPE] = NON_CISCO;
 
+	cfg->conn_default.options[KBF_SHA2_TRUNCBUG] = SHA2_TRUNCBUG_NO;
+
 	/*Network Manager support*/
 #ifdef HAVE_NM
-	cfg->conn_default.options[KBF_NMCONFIGURED] = NO;
+	cfg->conn_default.options[KBF_NMCONFIGURED] = NM_NO;
 #endif
 
 #ifdef HAVE_LABELED_IPSEC

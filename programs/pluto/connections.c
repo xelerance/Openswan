@@ -1332,6 +1332,8 @@ add_connection(const struct whack_message *wm)
         /* Cisco interop: remote peer type */
         c->remotepeertype=wm->remotepeertype;
 
+	c->sha2_truncbug=wm->sha2_truncbug;
+
         /* Network Manager support */
 #ifdef HAVE_NM
 	c->nmconfigured=wm->nmconfigured;
@@ -3354,14 +3356,16 @@ show_one_connection(struct connection *c)
     
     whack_log(RC_COMMENT
 	      , "\"%s\"%s:   ike_life: %lus; ipsec_life: %lus;"
-	      " rekey_margin: %lus; rekey_fuzz: %lu%%; keyingtries: %lu"
+	      " rekey_margin: %lus; rekey_fuzz: %lu%%; keyingtries: %lu%s "
 	      , c->name
 	      , instance
 	      , (unsigned long) c->sa_ike_life_seconds
 	      , (unsigned long) c->sa_ipsec_life_seconds
 	      , (unsigned long) c->sa_rekey_margin
 	      , (unsigned long) c->sa_rekey_fuzz
-	      , (unsigned long) c->sa_keying_tries);
+	      , (unsigned long) c->sa_keying_tries
+	      , (c->sha2_truncbug) ? "; sha2_truncbug: yes" : ""
+	     );
 
     if (c->policy_next)
     {
@@ -3394,7 +3398,7 @@ show_one_connection(struct connection *c)
     /* slightly complicated stuff to avoid extra crap */
     if(c->dpd_timeout > 0 || DBGP(DBG_DPD)) {
 	whack_log(RC_COMMENT
-		  , "\"%s\"%s:   dpd: %s; delay:%lu; timeout:%lu; "
+		  , "\"%s\"%s:   dpd: %s; delay:%lu; timeout:%lu;  "
 		  , c->name
 		  , instance
 		  , enum_name(&dpd_action_names, c->dpd_action)

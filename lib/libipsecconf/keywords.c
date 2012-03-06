@@ -200,12 +200,20 @@ struct keyword_enum_value kw_remote_peer_type_list[]={
 struct keyword_enum_values kw_remote_peer_type=
     { kw_remote_peer_type_list, sizeof(kw_remote_peer_type_list)/sizeof(struct keyword_enum_value)};
 
+struct keyword_enum_value kw_sha2_truncbug_list[]={
+    { "yes",         SHA2_TRUNCBUG_YES },
+    { "no",         SHA2_TRUNCBUG_NO },
+};
+
+struct keyword_enum_values kw_sha2_truncbug=
+    { kw_sha2_truncbug_list, sizeof(kw_sha2_truncbug_list)/sizeof(struct keyword_enum_value)};
+
  /*
   *  Network Manager support
   */ 
 #ifdef HAVE_NM
 struct keyword_enum_value kw_nm_configured_list[]={
-    { "yes",         YES },
+    { "yes",         NM_YES },
 };
 
 struct keyword_enum_values kw_nm_configured=
@@ -399,6 +407,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"narrowing",      kv_conn|kv_auto, kt_bool,   KBF_IKEv2_ALLOW_NARROWING, NOT_ENUM},
     {"sareftrack",     kv_conn|kv_auto|kv_processed,kt_enum,KBF_SAREFTRACK,&kw_sareftrack_list},
     {"pfs",            kv_conn|kv_auto, kt_bool,   KBF_PFS,          NOT_ENUM},
+    {"sha2_truncbug",  kv_conn|kv_auto, kt_enum,   KBF_SHA2_TRUNCBUG,          &kw_sha2_truncbug},
     {"keylife",        kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"lifetime",       kv_conn|kv_auto|kv_alias, kt_time,   KBF_SALIFETIME,NOT_ENUM},
     {"salifetime",     kv_conn|kv_auto, kt_time,   KBF_SALIFETIME,NOT_ENUM},
@@ -415,7 +424,6 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 #ifdef HAVE_NM
     {"nm_configured", kv_conn|kv_auto, kt_enum, KBF_NMCONFIGURED, &kw_nm_configured},
 #endif
-
 
 #ifdef NAT_TRAVERSAL
     {"forceencaps",    kv_conn|kv_auto, kt_bool,   KBF_FORCEENCAP, NOT_ENUM},

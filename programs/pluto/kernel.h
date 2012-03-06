@@ -129,6 +129,7 @@ struct kernel_ops {
     bool inbound_eroute;
     bool policy_lifetime;
     bool overlap_supported;
+    bool sha2_truncbug_support;
     int  replay_window;
     int *async_fdp;
     

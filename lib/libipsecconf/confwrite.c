@@ -481,7 +481,7 @@ void confwrite_conn(FILE *out,
 	    } else {
 		fprintf(out, "\tpfs=no\n");
 	    }
-	    
+
 	    if(conn->policy & POLICY_DONT_REKEY) {
 		fprintf(out, "\trekey=no  #duplicate?\n");
 	    } else {

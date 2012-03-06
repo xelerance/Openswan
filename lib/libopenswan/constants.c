@@ -297,6 +297,24 @@ enum_names ah_transformid_names =
 
 /* IPsec ESP transform values */
 
+/*
+ * ipsec drafts suggest "high" ESP ids values for testing,
+ * assign generic ESP_ID<num> if not officially defined 
+ */
+static const char *const esp_transform_name_private_use[] = {
+	/* id=249 */
+	"ESP_MARS",
+	"ESP_RC6",
+	"ESP_KAME_NULL",
+	"ESP_SERPENT",
+	"ESP_TWOFISH",
+	"ESP_ID254",
+	"ESP_ID255",
+    };
+
+enum_names esp_transformid_names_private_use =
+    { ESP_MARS, ESP_ID255, esp_transform_name_private_use, NULL };
+
 static const char *const esp_transform_name[] = {
         "ESP_DES_IV64",              /* old DES */
 	"ESP_DES",
@@ -320,25 +338,14 @@ static const char *const esp_transform_name[] = {
 	"ESP_AES_GCM_C",
 	"ESP_SEED_CBC",
 	"ESP_CAMELLIA",
-	"ESP_NULL_AUTH_AES-GMAC", /* RFC4543 [Errata1821] */
+	"ESP_NULL_AUTH_AES_GMAC", /* RFC4543 [Errata1821] */
 	/* 24-248    Unassigned */
 	/* 249-255   Reserved for private use */
 };
 
-/*
- * ipsec drafts suggest "high" ESP ids values for testing,
- * assign generic ESP_ID<num> if not officially defined 
- */
-static const char *const esp_transform_name_private_use[] = {
-	/* id=249 */	"ESP_ID249","ESP_MARS","ESP_RC6","ESP_KAME_NULL",
-	/* id=252 */	"ESP_SERPENT", "ESP_TWOFISH", "ESP_ID254", "ESP_ID255",
-    };
-
-enum_names esp_transformid_names_private_use =
-    { ESP_ID249, ESP_ID255, esp_transform_private_use, NULL };
 
 enum_names esp_transformid_names =
-    { ESP_DES_IV64, ESP_NULL_AUTH_AES-GMAC, esp_transform_name, &esp_transformid_names_private_use };
+    { ESP_DES_IV64, ESP_NULL_AUTH_AES_GMAC, esp_transform_name, &esp_transformid_names_private_use };
 
 /* IPCOMP transform values */
 
@@ -629,7 +636,7 @@ enum_names enc_mode_names =
 /* Auth Algorithm attribute */
 
 static const char *const auth_alg_name_stolen_use[] = {
-	"AUTH_ALGORITHM_KAME_NULL", /* according to our source code comments from jjo, needs verification */
+	"AUTH_ALGORITHM_NULL_KAME", /* according to our source code comments from jjo, needs verification */
 	"AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC",	/* we stole a private number to avoid some 1 vs 2 octets with
 						 * sadb vs aalg values
 						 */
@@ -637,7 +644,7 @@ static const char *const auth_alg_name_stolen_use[] = {
 
 enum_names
     auth_alg_names_stolen_use =
-       { AUTH_ALGORITHM_KAME_NULL, AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC , auth_alg_name_stolen_use, NULL };
+       { AUTH_ALGORITHM_NULL_KAME, AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC , auth_alg_name_stolen_use, NULL };
 
 
 static const char *const auth_alg_name[] = {

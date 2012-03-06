@@ -391,7 +391,8 @@ const struct kernel_ops klips_kernel_ops = {
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     process_ifaces: klips_process_raw_ifaces,
     kern_name: "klips",
-    .overlap_supported = FALSE
+    overlap_supported: FALSE,
+    sha2_truncbug_support: FALSE,
 };
 #endif /* KLIPS */
 

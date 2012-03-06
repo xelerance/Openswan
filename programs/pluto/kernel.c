@@ -1693,13 +1693,13 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 			  , ei->transid, ei->enckeylen, ei->auth));
 		    
             if (st->st_esp.attrs.transattrs.encrypt == ei->transid
-		&& (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen*8)
+		&& (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
 		&& st->st_esp.attrs.transattrs.integ_hash == ei->auth)
                 break;
         }
 
 	if (st->st_esp.attrs.transattrs.encrypt != ei->transid
-	    && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen*8  
+	    && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE 
 	    && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
 	    loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
 		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
@@ -1707,7 +1707,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	    goto fail;
 	}
 
-        key_len = st->st_esp.attrs.transattrs.enckeylen/8;
+        key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
         if (key_len) {
                 /* XXX: must change to check valid _range_ key_len */
                 if (key_len > ei->enckeylen) {
@@ -1746,6 +1746,16 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->esatype = ET_ESP;
         said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = ei->authalg;
+	if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) && (st->st_connection->sha2_truncbug)) {
+		if(kernel_ops->sha2_truncbug_support){
+		   DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
+		   /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
+		   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC;
+		} else {
+                   loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
+		   goto fail;
+		}
+	}
         said_next->authkeylen = ei->authkeylen;
         /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
         said_next->authkey = esp_dst_keymat + key_len;

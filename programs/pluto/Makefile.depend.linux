@@ -1092,7 +1092,7 @@ rnd.o: rnd.c ../../linux/include/openswan.h \
 server.o: server.c ../../include/arpa/nameser.h \
   ../../linux/include/openswan.h \
   ../../ports/linux/include/sysdep.h ../../include/sysqueue.h \
-  ../../include/constants.h ../../include/biglset.h 
+  ../../include/constants.h ../../include/biglset.h kernel.h
 smallprime.o: smallprime.c ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
