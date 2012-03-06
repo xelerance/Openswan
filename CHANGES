@@ -20,15 +20,23 @@ v2.6.38 (unreleased)
 * IKEv2 should ignore unknown RESERVED bits in payload [Avesh]
 * IKEv2: Implement sending higher IKEv2 major and minor versions [Paul]
 * hostpair: initial_connection_sent was never set to not FALSE [Avesh]
-* Handle leading zeroes in DH keys [Avesh]
+* Crypto: handle leading zeroes in DH keys [Avesh]
 * Add PLUTO_IS_PEER_CISCO= to updown scripts [Avesh]
-* update userland copies of Kernel changes to netlink.h rtnetlink.h [Avesh]
-  xfrm.h
-* Fix SHA2 when pluto is compiled without USE_EXTRACRYPTO [Paul/Tuomo]
+* XFRM: update userland copies of xfrm.h netlink.h rtnetlink.h [Paul/Avesh]
+* SHA2 fix when pluto is compiled without USE_EXTRACRYPTO [Paul/Tuomo]
+* SHA2: Fix for Linux kernel using bad sha2_256 truncation (96 instead of 128)
+  (to get the old behaviour for interop, specify sha2_truncbug=yes) [Paul]
 * Fix two format string buglets [Moritz Muehlenhoff]
 * XAUTH: Support unbound as local resolver in remote_peer_type=cisco [Paul]
 * NATT: Fix iphone/iOS by removing outdated OSX NAT-T workarounds [Paul]
 * SAREF: kernel patches updated to linux 3.0.0 [Jonathon Padfield]
+* SAREF: fix all patch versions to use new numbers for SAREF [Paul]
+* Fix various compiler warnings in lib, pluto and ikeping [dhr]
+* Various ESP_* and AH_* fixes/updates from IANA [Paul]
+* Fix authalg in esp_info to be u_int16_t, not u_int8_t [Paul]
+* Debian: Various debiacn packaging fixes [Simon]
+* KLIPS: Fix crasher on returning -ENODEV from ppp devices [David]
+* XAUTH: Support dynamic config update for unbound DNSSEC resolver [Paul/Tuomo]
 * Bugracker bugs fixed:
    #1263 /usr/lib/ipsec/_startnetkey selects wrong default gateway if there
          are multiple [Petr Tichy]
