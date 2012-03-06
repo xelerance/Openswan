@@ -1,10 +1,8 @@
 /*
  * Kernel runtime algorithm handling interface definitions
  * Originally by: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- *
  * Reworked into openswan 2.x by Michael Richardson <mcr@xelerance.com>
- *
- * kernel_alg.h,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
+ * (C)opyright 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -594,7 +592,7 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 /* 
  * ML: make F_STRICT logic consider enc,auth algorithms 
  */
-bool
+int
 kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_info_esp *alg_info)
 {
 	int ealg_insecure;
@@ -618,16 +616,25 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 		struct esp_info *esp_info;
 		if (alg_info) {
 			ALG_INFO_ESP_FOREACH(alg_info, esp_info, i) {
+				DBG(DBG_PARSING,DBG_log(" esp_info->esp_aalg_id='%d', aalg='%d'", esp_info->esp_aalg_id , aalg));
 				if ((esp_info->esp_ealg_id == ealg) &&
 						((esp_info->esp_ealg_keylen==0) || (key_len==0) ||
 						 (esp_info->esp_ealg_keylen==key_len)) &&
-						(esp_info->esp_aalg_id == aalg)) {
+						/* we need to match real HMAC_SHA2_256 against our fake HMAC_SHA2_256_TRUNC proposal */
+						(esp_info->esp_aalg_id == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC) ?
+							(AUTH_ALGORITHM_HMAC_SHA2_256 == aalg) :
+							(esp_info->esp_aalg_id == aalg)
+					) {
+						if(esp_info->esp_aalg_id == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC){
+							DBG(DBG_PARSING,DBG_log("Detected special SHA2/TRUNC proposal match"));
+							return 2; /* special value to signify trunc change needed */
+						}
 #ifndef USE_1DES
 					if (ealg_insecure) 
 						loglog(RC_LOG_SERIOUS, "You should NOT use insecure ESP algorithms [%s (%d)]!"
 								, enum_name(&esp_transformid_names, ealg), key_len);
 #endif
-					return TRUE;
+					return 1;
 				}
 			}
 		}
@@ -635,9 +642,9 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 			      enum_name(&esp_transformid_names, ealg), key_len,
 			      enum_name(&auth_alg_names, aalg),
 			      ealg_insecure ? "insecure key_len and enc. alg. not listed in \"esp\" string" : "strict flag");
-		return FALSE;
+		return 0;
 	}
-	return TRUE;
+	return 1;
 }
 
 void kernel_alg_show_status(void)

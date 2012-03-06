@@ -605,6 +605,7 @@ enum ikev2_trans_type_integ {
 	IKEv2_AUTH_HMAC_SHA2_512_256 = 14, /* RFC4306 */
 	/* 15 - 1023 Reserved to IANA         RFC4306 */
 	/* 1024 - 65535 Private Use           RFC4306 */
+	IKEv2_AUTH_HMAC_SHA2_256_128_TRUNC = 61440, /* our own value */
 	IKEv2_AUTH_INVALID     =65536
 };
 
@@ -792,6 +793,8 @@ enum ikev1_auth_attribute {
 	AUTH_ALGORITHM_HMAC_SHA2_512=7,
 	AUTH_ALGORITHM_HMAC_RIPEMD=8,
 	AUTH_ALGORITHM_AES_CBC=9,
+	AUTH_ALGORITHM_NULL_KAME=251, /* why do we load this ? */
+	AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC=61440,
 };
 
 typedef u_int16_t ipsec_auth_t;

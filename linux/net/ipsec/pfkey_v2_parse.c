@@ -172,7 +172,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 		SENDERR(EINVAL);
 	}
 
-#if K_SADB_EALG_MAX < 255	
+#if K_SADB_EALG_MAX < 255	/* this is either true or not, why the #if? */
 	if(pfkey_sa->sadb_sa_encrypt > K_SADB_EALG_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
@@ -183,7 +183,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	}
 #endif
 	
-#if K_SADB_AALG_MAX < 255	
+#if K_SADB_AALG_MAX < 255	/* this is either true or not, why the #if? */
 	if(pfkey_sa->sadb_sa_auth > K_SADB_AALG_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "
@@ -194,7 +194,7 @@ pfkey_sa_parse(struct sadb_ext *pfkey_ext)
 	}
 #endif
 	
-#if K_SADB_SASTATE_MAX < 255	
+#if K_SADB_SASTATE_MAX < 255	/* this is either true or not, why the #if? */
 	if(pfkey_sa->sadb_sa_state > K_SADB_SASTATE_MAX) {
 		ERROR(
 			  "pfkey_sa_parse: "

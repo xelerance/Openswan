@@ -69,7 +69,9 @@ struct esp_info {
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 	u_int8_t encryptalg;	/* normally  encryptalg=transid */
-	u_int8_t authalg;	/* normally  authalg=auth+1 */
+	u_int16_t authalg;	/* normally  authalg=auth+1
+				 * Paul: apparently related to magic at
+				 * lib/libopenswan/alg_info.c alg_info_esp_aa2sadb() */
 };
 
 struct ike_info {

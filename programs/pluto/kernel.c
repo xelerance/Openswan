@@ -2070,6 +2070,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
 fail:
     {
+	DBG_log("setup_half_ipsec_sa() hit fail:");
         /* undo the done SPIs */
         while (said_next-- != said) {
 	    if(said_next->proto) {

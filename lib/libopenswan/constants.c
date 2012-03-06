@@ -265,17 +265,35 @@ enum_names isakmp_transformid_names =
 
 /* IPsec AH transform values */
 
+static const char *const ah_transform_name_private_use[] = {
+	"AH_NULL", /* verify with kame source? 251 */
+	"AH_SHA2_256_TRUNC", /* we picked 252 for now, should never make it to the wire */
+    };
+
+enum_names ah_transformid_names_private_use =
+    { AH_NULL, AH_SHA2_256_TRUNC, ah_transform_name_private_use, NULL };
+
+
 static const char *const ah_transform_name[] = {
+	/* 0-1 RESERVED */
 	"AH_MD5",
 	"AH_SHA",
 	"AH_DES",
 	"AH_SHA2_256",
 	"AH_SHA2_384",
 	"AH_SHA2_512",
+	"AH_RIPEMD",
+	"AH_AES_XCBC_MAC",
+	"AH_RSA",
+	"AH_AES_128_GMAC", /* RFC4543 Errata1821  */
+	"AH_AES_192_GMAC", /* RFC4543 Errata1821  */
+	"AH_AES_256_GMAC", /* RFC4543 Errata1821  */
+	/* 14-248 Unassigned */
+	/* 249-255 Reserved for private use */
     };
 
 enum_names ah_transformid_names =
-    { AH_MD5, AH_SHA2_512, ah_transform_name, NULL };
+    { AH_MD5, AH_AES_256_GMAC, ah_transform_name, &ah_transformid_names_private_use};
 
 /* IPsec ESP transform values */
 
@@ -302,24 +320,25 @@ static const char *const esp_transform_name[] = {
 	"ESP_AES_GCM_C",
 	"ESP_SEED_CBC",
 	"ESP_CAMELLIA",
-
+	"ESP_NULL_AUTH_AES-GMAC", /* RFC4543 [Errata1821] */
+	/* 24-248    Unassigned */
+	/* 249-255   Reserved for private use */
 };
 
 /*
  * ipsec drafts suggest "high" ESP ids values for testing,
  * assign generic ESP_ID<num> if not officially defined 
  */
-static const char *const esp_transform_name_high[] = {
-	/* id=248 */	"ESP_ID248","ESP_MARS","ESP_RC6","ESP_ID251",
+static const char *const esp_transform_name_private_use[] = {
+	/* id=249 */	"ESP_ID249","ESP_MARS","ESP_RC6","ESP_KAME_NULL",
 	/* id=252 */	"ESP_SERPENT", "ESP_TWOFISH", "ESP_ID254", "ESP_ID255",
-	/* id=256 */	"ESP_ID256"
     };
 
-enum_names esp_transformid_names_high =
-    { 248, 256, esp_transform_name_high, NULL };
+enum_names esp_transformid_names_private_use =
+    { ESP_ID249, ESP_ID255, esp_transform_private_use, NULL };
 
 enum_names esp_transformid_names =
-    { ESP_DES_IV64, ESP_CAMELLIA, esp_transform_name, &esp_transformid_names_high };
+    { ESP_DES_IV64, ESP_NULL_AUTH_AES-GMAC, esp_transform_name, &esp_transformid_names_private_use };
 
 /* IPCOMP transform values */
 
@@ -609,6 +628,18 @@ enum_names enc_mode_names =
 
 /* Auth Algorithm attribute */
 
+static const char *const auth_alg_name_stolen_use[] = {
+	"AUTH_ALGORITHM_KAME_NULL", /* according to our source code comments from jjo, needs verification */
+	"AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC",	/* we stole a private number to avoid some 1 vs 2 octets with
+						 * sadb vs aalg values
+						 */
+};
+
+enum_names
+    auth_alg_names_stolen_use =
+       { AUTH_ALGORITHM_KAME_NULL, AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC , auth_alg_name_stolen_use, NULL };
+
+
 static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_NONE", /* our own value, not standard */
 	"AUTH_ALGORITHM_HMAC_MD5",
@@ -620,11 +651,17 @@ static const char *const auth_alg_name[] = {
 	"AUTH_ALGORITHM_HMAC_SHA2_512",
 	"AUTH_ALGORITHM_HMAC_RIPEMD",
 	"AUTH_ALGORITHM_AES_CBC",
+	"AUTH_ALGORITHM_SIG_RSA", /* RFC4359 */
+	"AUTH_ALGORITHM_AES_128_GMAC", /* RFC4543 [Errata1821] */
+	"AUTH_ALGORITHM_AES_192_GMAC", /* RFC4543 [Errata1821] */
+	"AUTH_ALGORITHM_AES_256_GMAC", /* RFC4543 [Errata1821] */
+	/* 14-61439      Unassigned */
+	/* 61440-65535   Reserved for private use */
     };
 
 enum_names
     auth_alg_names =
-	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, NULL };
+	{ AUTH_ALGORITHM_NONE, AUTH_ALGORITHM_AES_CBC , auth_alg_name, &auth_alg_names_stolen_use };
 
 const char *const modecfg_cisco_attr_name[] = {
         "CISCO_BANNER",

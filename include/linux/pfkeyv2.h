@@ -278,7 +278,8 @@ struct sadb_x_nat_t_port {
 #define SADB_X_AALG_SHA2_512HMAC	7
 #define SADB_X_AALG_RIPEMD160HMAC	8
 #define SADB_X_AALG_NULL		251	/* kame */
-#define SADB_AALG_MAX			251
+#define SADB_X_AALG_SHA2_256HMAC_TRUNC	252
+#define SADB_AALG_MAX			65536 /* while the AUTH_ALGORITHM is two octets, what is the SADB_AALG? */
 
 /* Encryption algorithms */
 #define SADB_EALG_NONE			0
@@ -299,7 +300,7 @@ struct sadb_x_nat_t_port {
 #define SADB_X_EALG_NULL_AUTH_AES_GMAC	21
 #define SADB_X_EALG_CAMELLIACBC		22
 
-#define SADB_EALG_MAX                   253 /* last EALG */
+#define SADB_EALG_MAX                   255 /* last EALG */
 /* private allocations should use 249-255 (RFC2407) */
 /* but private allocations should use 1024-65535 (RFC4306) */
 #define SADB_X_EALG_SERPENTCBC  252     /* draft-ietf-ipsec-ciph-aes-cbc-00 */

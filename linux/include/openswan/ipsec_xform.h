@@ -55,8 +55,14 @@
 #define AH_SHA2_512		7
 #define AH_RIPEMD		8
 #define AH_AES			9
+#define AH_RSA			10 /* RFC4359 */
+#define AH_AES_128_GMAC		11 /* RFC4543 [Errata1821] */
+#define AH_AES_192_GMAC		12 /* RFC4543 [Errata1821] */
+#define AH_AES_256_GMAC		13 /* RFC4543 [Errata1821] */
 #define AH_NULL			251
-#define AH_MAX			251
+#define AH_SHA2_256_TRUNC	252
+#define AH_MAX			255 /* note Authentication Algorithm (Value 5) Reference: [RFC2407] has
+				     * two octets but IPSEC AH Transform Identifiers has one octet! */
 
 /* IPsec ESP transform values */
 
@@ -72,7 +78,7 @@
 #define ESP_DES_IV32		9
 #define ESP_RC4			10
 #define ESP_NULL		11
-#define ESP_AES			12
+#define ESP_AES			12 /* was draft-ietf-ipsec-ciph-aes-cbc-02.txt, now RFC-3602 */
 #define ESP_AES_CTR		13
 #define ESP_AES_CCM_A		14
 #define ESP_AES_CCM_B		15
@@ -85,12 +91,13 @@
 #define ESP_CAMELLIA		22
 #define ESP_NULL_AUTH_AES_GMAC  23 /* [RFC4543][Errata1821] */
 
-/* as draft-ietf-ipsec-ciph-aes-cbc-02.txt */
 #define ESP_MARS		249
-#define	ESP_RC6			250
+#define ESP_RC6			250
 #define ESP_SERPENT		252
 #define ESP_TWOFISH		253
-			 
+
+#define ESP_MAX			255 /* one octet, not two */
+
 /* IPCOMP transform values */
 
 #define IPCOMP_NONE		0
