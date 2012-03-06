@@ -20,7 +20,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/linux/in.h linux-2.6.16.54-0.2.5.osw2.5
  #define IP_FREEBIND	15
  #define IP_IPSEC_POLICY	16
  #define IP_XFRM_POLICY	17
-+#define IP_IPSEC_REFINFO 22
++#define IP_IPSEC_REFINFO 30
  
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS

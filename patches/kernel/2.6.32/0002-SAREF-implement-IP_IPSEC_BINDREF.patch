@@ -23,8 +23,8 @@ index b29c2fc..39da2c5 100644
 @@ -77,6 +77,7 @@ struct in_addr {
  #define IP_PASSSEC	18
  #define IP_TRANSPARENT	19
- #define IP_IPSEC_REFINFO 22     /* used with CONFIG_INET_IPSEC_SAREF */
-+#define IP_IPSEC_BINDREF 23
+ #define IP_IPSEC_REFINFO 30     /* used with CONFIG_INET_IPSEC_SAREF */
++#define IP_IPSEC_BINDREF 31
  
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS

@@ -5,7 +5,7 @@ diff -Naur linux-2.6.23/include/linux/in.h linux-2.6.23-saref/include/linux/in.h
  #define IP_IPSEC_POLICY	16
  #define IP_XFRM_POLICY	17
  #define IP_PASSSEC	18
-+#define IP_IPSEC_REFINFO 22
++#define IP_IPSEC_REFINFO 30
  
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS

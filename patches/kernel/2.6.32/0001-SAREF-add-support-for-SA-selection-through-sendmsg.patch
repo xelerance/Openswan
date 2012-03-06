@@ -27,7 +27,7 @@ index cf196da..b29c2fc 100644
  #define IP_XFRM_POLICY	17
  #define IP_PASSSEC	18
  #define IP_TRANSPARENT	19
-+#define IP_IPSEC_REFINFO 22     /* used with CONFIG_INET_IPSEC_SAREF */
++#define IP_IPSEC_REFINFO 30     /* used with CONFIG_INET_IPSEC_SAREF */
  
  /* BSD compatibility */
  #define IP_RECVRETOPTS	IP_RETOPTS
