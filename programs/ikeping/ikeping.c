@@ -194,7 +194,7 @@ receive_ping(int afamily, int s, int reply, int natt)
 	unsigned int sendlen;
 	const char *xchg_name;
 	int xchg;
-	u_int32_t tmp_ic, tmp_rc;
+	u_int32_t tmp_ic[2], tmp_rc[2];
 
 	rport = 500;
 	xchg  = 0;
@@ -254,13 +254,14 @@ receive_ping(int afamily, int s, int reply, int natt)
 	printf("received %d(%s) packet from %s/%d of len: %d\n",
 	       ih.isa_xchg, xchg_name, buf, ntohs(rport), n);
 
-	memcpy(&tmp_ic, ih.isa_icookie, sizeof(u_int32_t));
-	memcpy(&tmp_rc, ih.isa_rcookie, sizeof(u_int32_t));
+	/* questionable: printing each cookie as if it were two uint32 values in host order */
+	memcpy(&tmp_ic, ih.isa_icookie, 2 * sizeof(u_int32_t));
+	memcpy(&tmp_rc, ih.isa_rcookie, 2 * sizeof(u_int32_t));
 	printf("\trcookie=%08x_%08x icookie=%08x_%08x msgid=%08x\n",
-	       tmp_ic,
-	       *(u_int32_t *)(ih.isa_icookie+4), 
-	       tmp_rc,
-	       *(u_int32_t *)(ih.isa_rcookie+4),
+	       tmp_ic[0],
+	       tmp_ic[1],
+	       tmp_rc[0],
+	       tmp_rc[1],
 	       ih.isa_msgid);
 	printf("\tnp=%03d  version=%d.%d    xchg=%s(%d)\n",
 	       ih.isa_np,
