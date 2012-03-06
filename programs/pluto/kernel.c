@@ -1750,7 +1750,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 		if(kernel_ops->sha2_truncbug_support){
 		   DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
 		   /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
-		   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC;
+		   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
 		} else {
                    loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
 		   goto fail;

@@ -267,11 +267,10 @@ enum_names isakmp_transformid_names =
 
 static const char *const ah_transform_name_private_use[] = {
 	"AH_NULL", /* verify with kame source? 251 */
-	"AH_SHA2_256_TRUNC", /* we picked 252 for now, should never make it to the wire */
     };
 
 enum_names ah_transformid_names_private_use =
-    { AH_NULL, AH_SHA2_256_TRUNC, ah_transform_name_private_use, NULL };
+    { AH_NULL, AH_NULL, ah_transform_name_private_use, NULL };
 
 
 static const char *const ah_transform_name[] = {
@@ -637,14 +636,11 @@ enum_names enc_mode_names =
 
 static const char *const auth_alg_name_stolen_use[] = {
 	"AUTH_ALGORITHM_NULL_KAME", /* according to our source code comments from jjo, needs verification */
-	"AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC",	/* we stole a private number to avoid some 1 vs 2 octets with
-						 * sadb vs aalg values
-						 */
 };
 
 enum_names
     auth_alg_names_stolen_use =
-       { AUTH_ALGORITHM_NULL_KAME, AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC , auth_alg_name_stolen_use, NULL };
+       { AUTH_ALGORITHM_NULL_KAME, AUTH_ALGORITHM_NULL_KAME , auth_alg_name_stolen_use, NULL };
 
 
 static const char *const auth_alg_name[] = {

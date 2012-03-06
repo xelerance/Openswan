@@ -848,11 +848,11 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	 * replace struct xfrm_algo to deal with this 
 	 */
 	if( (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) ||
-	    (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC) ) {
+	    (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) ) {
 	struct xfrm_algo_auth algo;
 	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256"));
 	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
-	algo.alg_trunc_len = (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNC) ? 96 : 128;
+	algo.alg_trunc_len = (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) ? 96 : 128;
 	attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
 	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
 	sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256; /* fixup to the real number, not our private number */
