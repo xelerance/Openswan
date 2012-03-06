@@ -83,8 +83,13 @@ enum ipsec_authentication_algo {
   AH_SHA2_384=6,
   AH_SHA2_512=7,
   AH_RIPEMD=8,
-  AH__AES_XCBC_MAC=9,
-  AH_RSA=10
+  AH_AES_XCBC_MAC=9,
+  AH_RSA=10,
+  AH_AES_128_GMAC=11, /* RFC4543 [Errata1821] */
+  AH_AES_192_GMAC=12, /* RFC4543 [Errata1821] */
+  AH_AES_256_GMAC=13, /* RFC4543 [Errata1821] */
+  AH_NULL=251, /* comes from kame? */
+  AH_SHA2_256_TRUNC=252, /* our own stolen value */
 };
 
 /* IPsec ESP transform values

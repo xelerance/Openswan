@@ -88,6 +88,7 @@ enum keyword_numeric_config_field {
     KBF_KEYEXCHANGE,
     KBF_AUTO,
     KBF_PFS,
+    KBF_SHA2_TRUNCBUG,
     KBF_SALIFETIME,
     KBF_REKEY,
     KBF_REKEYMARGIN,

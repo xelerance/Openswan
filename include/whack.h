@@ -133,6 +133,9 @@ struct whack_message {
     /* Force the use of NAT-T on a connection */
     bool forceencaps;
 
+    /* Enables broken Linux kernel sha2_256 truncation for interop */
+    enum keyword_sha2_truncbug sha2_truncbug;
+
     /*Checking if this connection is configured by Network Manager*/
     enum keyword_nmconfigured nmconfigured;
 

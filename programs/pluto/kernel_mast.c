@@ -637,6 +637,7 @@ const struct kernel_ops mast_kernel_ops = {
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
     process_ifaces: mast_process_raw_ifaces,
     kern_name: "mast",
-    .overlap_supported = TRUE
+    overlap_supported: TRUE,
+    sha2_truncbug_support: FALSE,
 };
 #endif /* KLIPS */

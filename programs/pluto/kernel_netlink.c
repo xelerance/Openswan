@@ -144,6 +144,7 @@ static sparse_names aalg_list = {
 	{ SADB_AALG_MD5HMAC, "md5" },
 	{ SADB_AALG_SHA1HMAC, "sha1" },
 	{ SADB_X_AALG_SHA2_256HMAC, "sha256" },
+	{ SADB_X_AALG_SHA2_256HMAC_TRUNCBUG, "hmac(sha256)" },
 	{ SADB_X_AALG_RIPEMD160HMAC, "ripemd160" },
 	{ 0, sparse_end }
 };
@@ -828,7 +829,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
     if (sa->authkeylen)
     {
-	struct xfrm_algo algo;
 	const char *name;
 
 	name = sparse_name(aalg_list, sa->authalg);
@@ -838,18 +838,43 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	    return FALSE;
 	}
 
-	strcpy(algo.alg_name, name);
+	/*
+	 * According to RFC-4868 the hash should be nnn/2, so 128 bits for SHA256 and 256
+	 * for SHA512. The XFRM/NETKEY kernel uses a default of 96, which was the value in
+	 * an earlier draft. The kernel then introduced a new struct xfrm_algo_auth to
+	 * replace struct xfrm_algo to deal with this 
+	 */
+	if( (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) ||
+	    (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) ) {
+	struct xfrm_algo_auth algo;
+	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256"));
 	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
-
-	attr->rta_type = XFRMA_ALG_AUTH;
+	algo.alg_trunc_len = (sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) ? 96 : 128;
+	attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
 	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
+	sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256; /* fixup to the real number, not our private number */
 
+	strcpy(algo.alg_name, name);
 	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->authkey
 	    , sa->authkeylen);
 
 	req.n.nlmsg_len += attr->rta_len;
 	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	} else {
+	struct xfrm_algo algo;
+	DBG(DBG_NETKEY, DBG_log("  using old struct xfrm_algo for XFRM message"));
+	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
+	attr->rta_type = XFRMA_ALG_AUTH;
+	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
+	strcpy(algo.alg_name, name);
+	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->authkey
+	    , sa->authkeylen);
+
+	req.n.nlmsg_len += attr->rta_len;
+	attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	}
     }
 
     aead = get_aead_alg(sa->encalg);
@@ -2194,6 +2219,7 @@ const struct kernel_ops netkey_kernel_ops = {
      * if netlink  specific changes are needed.
      */
     remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    .overlap_supported = FALSE
+    overlap_supported: FALSE,
+    sha2_truncbug_support: TRUE,
 };
 #endif /* linux && NETKEY_SUPPORT */

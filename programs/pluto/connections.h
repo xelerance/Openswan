@@ -205,6 +205,8 @@ struct connection {
     /*Cisco interop: remote peer type*/
     enum keyword_remotepeertype remotepeertype;
 
+    enum keyword_sha2_truncbug sha2_truncbug;
+
     /*Network Manager support*/
 #ifdef HAVE_NM
     enum keyword_nmconfigured nmconfigured;

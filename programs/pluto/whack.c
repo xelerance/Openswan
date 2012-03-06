@@ -491,6 +491,7 @@ enum option_enums {
     CD_IKE,
     CD_PFSGROUP,
     CD_REMOTEPEERTYPE,
+    CD_SHA2_TRUNCBUG,
     CD_NMCONFIGURED,
     CD_LOOPBACK,
     CD_LABELED_IPSEC,
@@ -651,6 +652,7 @@ static const struct option long_opts[] = {
     { "tunnelipv4", no_argument, NULL, CD_TUNNELIPV4 + OO },
     { "tunnelipv6", no_argument, NULL, CD_TUNNELIPV6 + OO },
     { "pfs", no_argument, NULL, CD_PFS + OO },
+    { "sha2_truncbug", no_argument, NULL, CD_SHA2_TRUNCBUG + OO },
     { "aggrmode", no_argument, NULL, CD_AGGRESSIVE + OO },
     { "disablearrivalcheck", no_argument, NULL, CD_DISABLEARRIVALCHECK + OO },
     { "initiateontraffic", no_argument, NULL
@@ -925,9 +927,11 @@ main(int argc, char **argv)
 
     msg.remotepeertype = NON_CISCO;
 
+    msg.sha2_truncbug = SHA2_TRUNCBUG_NO;
+
     /*Network Manager support*/
 #ifdef HAVE_NM
-    msg.nmconfigured = NO;
+    msg.nmconfigured = NM_NO;
 #endif
 
 #ifdef HAVE_LABELED_IPSEC
@@ -1546,13 +1550,22 @@ main(int argc, char **argv)
 	    }
 	    continue;
 
+	case CD_SHA2_TRUNCBUG: /* --sha2_truncbug */
+	    if ( strcmp(optarg, "yes" ) == 0) {
+		msg.sha2_truncbug = SHA2_TRUNCBUG_YES;
+	    }
+	    else {
+		msg.sha2_truncbug = SHA2_TRUNCBUG_NO;
+	    }
+		continue;
+
 #ifdef HAVE_NM
 	case CD_NMCONFIGURED: /* --nm_configured */
 	    if ( strcmp(optarg, "yes" ) == 0) {
-		msg.nmconfigured = YES;
+		msg.nmconfigured = NM_YES;
 	    }
 	    else {
-		msg.nmconfigured = NO;
+		msg.nmconfigured = NM_NO;
 	    }
 		continue;
 #endif

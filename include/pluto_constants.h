@@ -49,10 +49,15 @@ enum keyword_remotepeertype {
     CISCO  = 1,
 };
 
+enum keyword_sha2_truncbug {
+    SHA2_TRUNCBUG_NO = 0,
+    SHA2_TRUNCBUG_YES = 1,
+};
+
 /* Network Manager support */
 enum keyword_nmconfigured {
-    NO = 0,
-    YES = 1,
+    NM_NO = 0,
+    NM_YES = 1,
 };
 
 enum keyword_loopback {
