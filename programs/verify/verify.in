@@ -351,18 +351,6 @@ sub installstartcheck {
 	    }
 	else { errchk "1"; } 
 	}
-        if ( -e "/selinux/enforce") {
-        printfun "Testing against enforced SElinux mode";
-        open("cat", "/selinux/enforce");
-        if(<cat> == "1")
-            {
-                errchk "";
-                print "\n  SElinux is running in 'enforced' mode.\n  If you encounter network related SElinux errors, especially when using KLIPS,\n  try disabling SElinux using:\n";
-		print "\n  echo \"0\" > /selinux/enforce (or edit /etc/sysconfig/selinux)\n\n";
-	        $reterr = 1;
-            }
-        else { errchk "1"; }
-        }
 
         if ( -c "/dev/hw_random" || -c "/dev/hwrng" ) {
         printfun "Hardware RNG detected, testing if used properly";
