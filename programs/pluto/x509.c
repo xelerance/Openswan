@@ -429,11 +429,11 @@ load_crls(void)
     save_dir = getcwd(buf, PATH_MAX);
     if (chdir(oco->crls_dir) == -1)
     {
-	openswan_log("Could not change to directory '%s'", oco->crls_dir);
+	openswan_log("Could not change to directory '%s': %d %s", oco->crls_dir, errno, strerror(errno));
     }
     else
     {
-	openswan_log("Changing to directory '%s'", oco->crls_dir);
+	DBG(DBG_CONTROL, DBG_log("Changing to directory '%s'", oco->crls_dir));
 	n = scandir(oco->crls_dir, &filelist, (void *) file_select, alphasort);
 
 	if (n > 0)
