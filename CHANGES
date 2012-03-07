@@ -37,9 +37,14 @@ v2.6.38 (unreleased)
 * Debian: Various debiacn packaging fixes [Simon]
 * KLIPS: Fix crasher on returning -ENODEV from ppp devices [David]
 * XAUTH: Support dynamic config update for unbound DNSSEC resolver [Paul/Tuomo]
+* Remove non-iproute2 version of _updown.klips and its USE_IPROUTE2 [Paul]
 * Bugracker bugs fixed:
    #1263 /usr/lib/ipsec/_startnetkey selects wrong default gateway if there
          are multiple [Petr Tichy]
+   #1314 update the updateresolvconf routines to be able to reconfigure
+         locally running unbound [Paul]
+   #1322 get rid of unused bucketno argument in state_hash [Paul]
+   #1326 0001-SAREF patch not compiling on 3.0.0 [Jonathon Padfield]
 
 v2.6.37 (October 28th, 2011)
 * Fix for CVE-2011-4073 crypto helper crash [Paul/dhr]

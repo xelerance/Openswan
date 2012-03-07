@@ -160,11 +160,9 @@ generate_msgid(struct state *isakmp_sa)
 static struct state *statetable[STATE_TABLE_SIZE];
 
 static struct state **
-state_hash(const u_char *icookie, const u_char *rcookie, int *bucketp)
+state_hash(const u_char *icookie, const u_char *rcookie)
 {
     u_int i = 0, j;
-
-    if(bucketp) *bucketp = -1;
 
     DBG(DBG_RAW | DBG_CONTROL,
 	DBG_dump("ICOOKIE:", icookie, COOKIE_SIZE);
@@ -178,7 +176,6 @@ state_hash(const u_char *icookie, const u_char *rcookie, int *bucketp)
     i = i % STATE_TABLE_SIZE;
 
     DBG(DBG_CONTROL, DBG_log("state hash entry %d", i));
-    if(bucketp) *bucketp = i;
 
     return &statetable[i];
 }
@@ -249,14 +246,13 @@ state_with_serialno(so_serial_t sn)
 void
 insert_state(struct state *st)
 {
-    int bucketno;
-    struct state **p = state_hash(st->st_icookie, st->st_rcookie, &bucketno);
+    struct state **p = state_hash(st->st_icookie, st->st_rcookie);
 
     passert(st->st_hashchain_prev == NULL && st->st_hashchain_next == NULL);
 
     DBG(DBG_CONTROL
-	, DBG_log("inserting state object #%lu on chain %u"
-		  , st->st_serialno, bucketno));
+	, DBG_log("inserting state object #%lu"
+		  , st->st_serialno));
 
     if (*p != NULL)
     {
@@ -285,14 +281,13 @@ void
 rehash_state(struct state *st)
 {
     /* unlink from forward chain */
-    int bucketno = -1;
     struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, zero_cookie, &bucketno)
+	? state_hash(st->st_icookie, zero_cookie)
 	: &st->st_hashchain_prev->st_hashchain_next;
 
     DBG(DBG_CONTROL
-	, DBG_log("rehashing state object #%lu, removed from chain %d"
-			     , st->st_serialno, bucketno));
+	, DBG_log("rehashing state object #%lu"
+			     , st->st_serialno));
 
     /* unlink from forward chain */
     passert(*p == st);
@@ -320,9 +315,9 @@ unhash_state(struct state *st)
     struct state **p;
 
     if(st->st_hashchain_prev == NULL) {
-	p = state_hash(st->st_icookie, st->st_rcookie, NULL);
+	p = state_hash(st->st_icookie, st->st_rcookie);
 	if(*p != st) {
-	    p = state_hash(st->st_icookie, zero_cookie, NULL);
+	    p = state_hash(st->st_icookie, zero_cookie);
 	}
     } else {
 	p = &st->st_hashchain_prev->st_hashchain_next;
@@ -951,7 +946,7 @@ find_state_ikev1(const u_char *icookie
 		 , const ip_address *peer UNUSED
 		 , msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, NULL);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
@@ -989,7 +984,7 @@ find_state_ikev1_loopback(const u_char *icookie
                  , msgid_t /*network order*/ msgid
 		 , struct msg_digest *md)
 {
-    struct state *st = *state_hash(icookie, rcookie, NULL);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
@@ -1028,7 +1023,7 @@ struct state *
 find_state_ikev2_parent(const u_char *icookie
 			, const u_char *rcookie)
 {
-    struct state *st = *state_hash(icookie, rcookie, NULL);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
@@ -1063,7 +1058,7 @@ find_state_ikev2_parent(const u_char *icookie
 struct state *
 find_state_ikev2_parent_init(const u_char *icookie)
 {
-    struct state *st = *state_hash(icookie, zero_cookie, NULL);
+    struct state *st = *state_hash(icookie, zero_cookie);
 
     while (st != (struct state *) NULL)
     {
@@ -1098,7 +1093,7 @@ find_state_ikev2_child(const u_char *icookie
 		       , const u_char *rcookie
 		       , msgid_t msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, NULL);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {
@@ -1135,7 +1130,7 @@ find_info_state(const u_char *icookie
 		, const ip_address *peer UNUSED
 		, msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie, NULL);
+    struct state *st = *state_hash(icookie, rcookie);
 
     while (st != (struct state *) NULL)
     {

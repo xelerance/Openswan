@@ -299,13 +299,13 @@ downrule() {
 }
 
 updateresolvconf() {
-if [ -n "`pidof unbound`" ]; then
-    if [ -n "$PLUTO_CISCO_DNS_INFO" -a -n "$PLUTO_CISCO_DOMAIN_INFO" ]; then
-       echo "updating local nameserver for $PLUTO_CISCO_DOMAIN_INFO with $PLUTO_CISCO_DNS_INFO"
-       /usr/sbin/unbound-control forward_add $PLUTO_CISCO_DOMAIN_INFO $PLUTO_CISCO_DOMAIN_INFO
-       /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
+    if [ -n "$PLUTO_CISCO_DNS_INFO" ]; then
+        if [ -n "`pidof unbound`" -a -n "$PLUTO_CISCO_DOMAIN_INFO"  ]; then
+          echo "updating local nameserver for $PLUTO_CISCO_DOMAIN_INFO with $PLUTO_CISCO_DNS_INFO"
+          /usr/sbin/unbound-control forward_add $PLUTO_CISCO_DOMAIN_INFO $PLUTO_CISCO_DNS_INFO
+          /usr/sbin/unbound-control flush_zone $PLUTO_CISCO_DOMAIN_INFO
+          return
     fi
-    return
 fi
 
 if [ -z "$PLUTO_NM_CONFIGURED" -o "$PLUTO_NM_CONFIGURED" = 0 ]; then

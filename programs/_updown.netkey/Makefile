@@ -22,14 +22,6 @@ include ${srcdir}../Makefile.program
 cleanall::
 	rm -f ${PROGRAM}
 
-ifeq ($(USE_IPROUTE2),false)
 programs: ${PROGRAM}
-	echo "Cannot build _updown.netkey without USE_IPROUTE2, aborted"
-	exit 1
-else
-
-programs: ${PROGRAM}
-
-endif
 
 

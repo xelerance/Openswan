@@ -218,7 +218,6 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@MODULE_GOO_LIST@:$(MODULE_GOO_LIST):" \
 			-e "s:@IPSEC_CONFS@:$(FINALCONFDIR):" \
 			-e "s:@IPSEC_CONFDDIR@:$(FINALCONFDDIR):" \
-			-e "s:@USE_IPROUTE2@:$(USE_IPROUTE2):" \
 			-e "s:@USE_DEFAULT_CONNS@:$(USE_DEFAULT_CONNS):" \
                         -e "s:@MODPROBE@:$(MODPROBE):" \
 
