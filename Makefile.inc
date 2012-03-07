@@ -336,9 +336,6 @@ USE_PFKEYv2=true
 endif
 endif
 
-# These days, this must always be true on Linux systems, false otherwise.
-USE_IPROUTE2?=true
-
 # include support for BSD/KAME IPsec in pluto (on *BSD and OSX)
 USE_BSDKAME?=false
 ifeq ($(USE_BSDKAME),true)
