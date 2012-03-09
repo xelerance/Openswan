@@ -32,19 +32,7 @@
 #define CTL_SUFFIX      ".ctl"
 #define PID_SUFFIX      ".pid"
 
-#define MY_PID_FILE     "/var/run/pluto/ipsec-starter.pid"
-
-#define DEV_RANDOM      "/dev/random"
-#define DEV_URANDOM     "/dev/urandom"
-
-#define PROC_IPSECVERSION   "/proc/net/ipsec_version"
-#define PROC_NETKEY         "/proc/net/pfkey"
-#define PROC_MODULES        "/proc/modules"
-#define PROC_SYSFLAGS       "/proc/sys/net/ipsec"
-
-#define PLUTO_CMD       IPSEC_EXECDIR"/pluto"
 #define CTL_FILE        DEFAULT_CTLBASE CTL_SUFFIX
-#define PID_FILE        DEFAULT_CTLBASE PID_SUFFIX
 
 #define DYNIP_DIR       "/var/run/pluto/dynip"
 

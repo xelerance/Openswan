@@ -201,13 +201,11 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 
     if (chdir(path))
     {
-	char buff[256];
-	strerror_r(errno, buff, 256 );
-	openswan_log("Could not change to directory '%s': %s", path, buf);
+	openswan_log("Could not change to directory '%s': %s", path, strerror(errno));
     }
     else
     {
-	openswan_log("Changed path to directory '%s'", path);
+	DBG(DBG_CONTROL, DBG_log("Changed path to directory '%s'", path));
 	n = scandir(".", &filelist, (void *) file_select, alphasort);
 
 	if (n < 0){
