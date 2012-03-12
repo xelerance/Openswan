@@ -19,6 +19,8 @@ v2.6.38 (unreleased)
 * IKEv2: incorrecty sent PAYLOAD_MALFORMED on unknown minor version [Avesh]
 * IKEv2 should ignore unknown RESERVED bits in payload [Avesh]
 * IKEv2: Implement sending higher IKEv2 major and minor versions [Paul]
+* IKEv2: Delete SA states added to state machine [Avesh]
+* IKEv2: Informational Exchange added [Avesh]
 * hostpair: initial_connection_sent was never set to not FALSE [Avesh]
 * Crypto: handle leading zeroes in DH keys [Avesh]
 * Add PLUTO_IS_PEER_CISCO= to updown scripts [Avesh]
