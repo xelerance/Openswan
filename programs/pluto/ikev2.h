@@ -135,10 +135,14 @@ extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, enum phase1_role role);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
-				     , pb_stream *outpbs
-				     , enum phase1_role role
-				     , struct connection *c0
-				     , lset_t policy);
+				, pb_stream *outpbs
+				, enum phase1_role role
+				, struct connection *c0
+				, lset_t policy);
+
+extern int ikev2_parse_ts(struct payload_digest *ts_pd
+				, struct traffic_selector *array
+				, unsigned int array_max);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role

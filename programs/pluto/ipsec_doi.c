@@ -2,8 +2,10 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2003-2006  Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2003-2011 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010-2011 Tuomo Soini <tis@foobar.fi>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -781,7 +783,8 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
     char *b = sadetails;
     const char *ini = " {";
     const char *fin = "";
-    
+
+    passert(st->st_connection != NULL);
     strcpy(sadetails,
 	   (st->st_connection->policy & POLICY_TUNNEL ?
 	    " tunnel mode" : " transport mode"));

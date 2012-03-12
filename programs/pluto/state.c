@@ -2,9 +2,10 @@
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009,2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -1115,6 +1116,50 @@ find_state_ikev2_child(const u_char *icookie
 	    DBG_log("v2 state object not found");
 	else
 	    DBG_log("v2 state object #%lu found, in %s"
+		, st->st_serialno
+		, enum_show(&state_names, st->st_state)));
+
+    return st;
+}
+
+/*
+ * Find a state object for an IKEv2 child state to delete.
+ * In IKEv2, child states can only be distingusihed based on protocols and SPIs
+ */
+struct state *
+find_state_ikev2_child_to_delete(const u_char *icookie
+		       , const u_char *rcookie
+		       , u_int8_t protoid
+		       , ipsec_spi_t spi)
+{
+    struct state *st = *state_hash(icookie, rcookie);
+
+    while (st != (struct state *) NULL)
+    {
+	if (memcmp(icookie, st->st_icookie, COOKIE_SIZE) == 0
+	    && memcmp(rcookie, st->st_rcookie, COOKIE_SIZE) == 0
+	    && st->st_ikev2 == TRUE)
+	{
+                struct ipsec_proto_info *pr = protoid == PROTO_IPSEC_AH
+                    ? &st->st_ah : &st->st_esp;
+
+                if (pr->present)
+                {
+                    if (pr->attrs.spi == spi)
+                        break;
+                    if (pr->our_spi == spi)
+                        break;
+                }
+
+	}
+	st = st->st_hashchain_next;
+    }
+
+    DBG(DBG_CONTROL,
+	if (st == NULL)
+	    DBG_log("v2 child state object not found");
+	else
+	    DBG_log("v2 child state object #%lu found, in %s"
 		, st->st_serialno
 		, enum_show(&state_names, st->st_state)));
 

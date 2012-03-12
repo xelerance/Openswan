@@ -3,10 +3,11 @@
  * Copyright (C) 1998-2010  D. Hugh Redelmeier.
  * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Simon Deziel <simon@xelerance.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
- * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2011-2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -117,7 +118,7 @@ enum smf2_flags {
  * etc.
  * 
  * Like IKEv1, IKEv2 can have multiple child SAs.  Like IKEv1, each one of
- * the child SAs ("Phase 2") will get their own state. Unlikely IKEv1,
+ * the child SAs ("Phase 2") will get their own state. Unlike IKEv1,
  * an implementation may negotiate multiple CHILD_SAs at the same time
  * using different MessageIDs.  This is enabled by an option (a notify)
  * that the responder sends to the initiator.  The initiator may only
@@ -204,6 +205,15 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
+    /* Informational Exchange*/
+    { .state      = STATE_IKESA_DEL,
+      .next_state = STATE_IKESA_DEL,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+
     /* last entry */
     { .state      = STATE_IKEv2_ROOF }
 };
@@ -237,7 +247,8 @@ ikev2_process_payloads(struct msg_digest *md,
 	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
 	int thisp = np;
 	bool unknown_payload = FALSE;
-	
+
+	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%s)",enum_show(&payload_names, thisp)));	
 	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
@@ -274,7 +285,8 @@ ikev2_process_payloads(struct msg_digest *md,
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return STF_FAIL;
 	}
-
+	
+	
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
 		      , enum_show(&payload_names, thisp)
@@ -297,7 +309,6 @@ ikev2_process_payloads(struct msg_digest *md,
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
-
 	default:   /* nothing special */
 	    break;
 	}
@@ -305,6 +316,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	pd++;
     }
     
+    DBG(DBG_CONTROL, DBG_log("Finished and now at the end of ikev2_process_payload"));
     md->digest_roof = pd;
     return STF_OK;
 }
@@ -334,8 +346,11 @@ process_v2_packet(struct msg_digest **mdp)
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
-	/* This message might require a response  */
+	/* then I am the responder */
+
 	md->role = RESPONDER;
+
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
 
 	st = find_state_ikev2_parent(md->hdr.isa_icookie
 				     , md->hdr.isa_rcookie);
@@ -359,14 +374,13 @@ process_v2_packet(struct msg_digest **mdp)
 	    }
 	    /* update lastrecv later on */
 	}
-    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u - dropping", md->msgid_received);
-	return;
 	
     } else {
-        /* This message is an answer to a request we sent */
+        /* then I am the initiator, and this is a reply */
 	
 	md->role = INITIATOR;
+
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
 	
 	if(md->msgid_received==MAINMODE_MSGID) {
 	    st = find_state_ikev2_parent(md->hdr.isa_icookie
@@ -383,7 +397,7 @@ process_v2_packet(struct msg_digest **mdp)
 	} else {
 	    st = find_state_ikev2_child(md->hdr.isa_icookie
 					, md->hdr.isa_rcookie
-					, md->hdr.isa_msgid);
+					, md->hdr.isa_msgid); /* PAUL: really? not md->msgid_received */
 	    
 	    if(st) {
 		/* found this child state, so we'll use it */
@@ -424,7 +438,9 @@ process_v2_packet(struct msg_digest **mdp)
 	
     ix = md->hdr.isa_xchg;
     if(st) {
+
 	from_state = st->st_state;
+	DBG(DBG_CONTROL, DBG_log("state found and its state is (%s)", enum_show(&state_names, from_state)));
     }
 
     for(svm = state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
@@ -437,18 +453,20 @@ process_v2_packet(struct msg_digest **mdp)
 	if(svm->state != from_state) continue;
 	if(svm->recv_type != ix) continue;
 
-	/* I1 receiving NO_PROPOSAL ended up picking the wrong STATE_UNDEFINED state
+	/* I1 receiving NO_PROPOSAL ened up picking the wrong STATE_UNDEFINED state
  	   Since the wrong state is a responder, we just add a check for initiator,
 	   so we hit STATE_IKEv2_ROOF
 	 */
-	if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
-                continue;
+	//if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
+        //        continue;
 	
 	/* must be the right state */
 	break;
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
+	DBG(DBG_CONTROL, DBG_log("ended up with STATE_IKEv2_ROOF"));
+
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	    /* must be an initiator message, so we are the responder */
@@ -463,14 +481,15 @@ process_v2_packet(struct msg_digest **mdp)
 	stf_status stf;
 	stf = ikev2_process_payloads(md, &md->message_pbs
 				     , from_state, md->hdr.isa_np);
+	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
 	
 	if(stf != STF_OK) {
-	    complete_v2_state_transition(mdp, stf);
+	    complete_v2_state_transition(mdp, (stf > STF_FAIL) ? STF_FAIL : stf );
 	    return;
 	}
     }
 
-
+    DBG(DBG_CONTROL, DBG_log("Now lets proceed with state specific processing"));
     DBG(DBG_PARSING,
 	if (pbs_left(&md->message_pbs) != 0)
 	    DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
@@ -486,7 +505,6 @@ process_v2_packet(struct msg_digest **mdp)
 	       , bitnamesof(payload_name, needed));
 	SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	return;
-    }
 #endif
 
     md->svm = svm;
@@ -496,7 +514,7 @@ process_v2_packet(struct msg_digest **mdp)
     {
 	stf_status stf;
 	stf = (svm->processor)(md);
-	complete_v2_state_transition(mdp, stf);
+	complete_v2_state_transition(mdp, (stf > STF_FAIL) ? STF_FAIL : stf);
     }
 }
 
@@ -686,6 +704,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
+
     change_state(st, svm->next_state);
     w = RC_NEW_STATE + st->st_state;    
 
@@ -712,7 +731,8 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    addrtot(&st->st_ts_this.high, 0, usubh, sizeof(usubh));
 	    addrtot(&st->st_ts_that.low,  0, tsubl, sizeof(tsubl));
 	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
-	    
+
+	    /* but if this is the parent st, this information is not set! you need to check the child sa! */
 	    openswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
 		, usubl, usubh, st->st_ts_this.startport, st->st_ts_this.endport, st->st_ts_this.ipprotoid
 		, tsubl, tsubh, st->st_ts_that.startport, st->st_ts_that.endport, st->st_ts_that.ipprotoid);
@@ -721,7 +741,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	} else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 	}
-	
+
 	if (IS_CHILD_SA_ESTABLISHED(st))
 	{
 	    /* log our success */
@@ -782,7 +802,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
 	/* XXX should call unpend again on parent SA */
 	if(st->st_clonedfrom != 0) {
-	    pst = state_with_serialno(st->st_clonedfrom);
+	    pst = state_with_serialno(st->st_clonedfrom); /* with failed child sa, we end up here with an orphan?? */
 	    DBG_log("releasing whack for #%lu (sock=%d)"
 		    , pst->st_serialno, pst->st_whack_sock);
 	    release_whack(pst);
@@ -882,10 +902,12 @@ void complete_v2_state_transition(struct msg_digest **mdp
     struct msg_digest *md = *mdp;
     /* const struct state_v2_microcode *svm=md->svm; */
     struct state *st;
-    enum state_kind from_state;
+    enum state_kind from_state = STATE_UNDEFINED;
     const char *from_state_name;
 
     cur_state = st = md->st;	/* might have changed */
+
+    passert(st); /* apparently on STF_TOOMUCH_CRYPTO we have no state? Needs fixing */
 
     md->result = result;
     TCLCALLOUT("v2AdjustFailure", st, (st ? st->st_connection : NULL), md);
@@ -894,7 +916,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
     /* advance the state */
     DBG(DBG_CONTROL
 	, DBG_log("complete v2 state transition with %s"
-		  , enum_name(&stfstatus_name, result)));
+		  , enum_name(&stfstatus_name, (result > STF_FAIL) ? STF_FAIL : result)));
 
     switch(result) {
     case STF_IGNORE:
@@ -912,8 +934,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 			      * state transition, so the MD has already
 			      * been freed.
 			      0				  */
-			     *mdp = NULL;
-			    /* fall through to STF_OK */
+			      *mdp = NULL;
+			      /* fall through to STF_OK */
+
     case STF_OK:
 	/* advance the state */
 	success_v2_state_transition(mdp);
@@ -972,16 +995,17 @@ void complete_v2_state_transition(struct msg_digest **mdp
 		  , from_state_name
 		  , enum_name(&ipsec_notification_names, md->note));
 
-#if 0
 	if(md->note > 0) {
-	    SEND_NOTIFICATION(md->note);
+		/* only send a notify is this packet was a question, not if it was an answer */
+		if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		     SEND_NOTIFICATION(md->note);
+		}
 	}
-#endif
 	
 	DBG(DBG_CONTROL,
 	    DBG_log("state transition function for %s failed: %s"
 		    , from_state_name
-		    , enum_name(&ipsec_notification_names, md->note)));
+		    , (md->note) ? enum_name(&ipsec_notification_names, md->note) : "<no reason given>" )); 
     }
 }
 
@@ -990,6 +1014,7 @@ accept_v2_nonce(struct msg_digest *md, chunk_t *dest, const char *name)
 {
     return accept_nonce(md, dest, name, ISAKMP_NEXT_v2Ni);
 }
+
 
 
 /*

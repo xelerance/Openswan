@@ -1,7 +1,7 @@
 /* hmac interface for pluto ciphers.
  * 
  * Copyright (C) 2006  Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009-2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
 *
  * This program is free software; you can redistribute it and/or modify it
@@ -158,9 +158,13 @@ hmac_update(struct hmac_ctx *ctx,
     const u_char *data, size_t data_len)
 {
 #ifdef HAVE_LIBNSS
+    DBG(DBG_CRYPT, DBG_dump("hmac_update data value: ", data, data_len));
     if(data_len > 0) {
+	DBG(DBG_CRYPT, DBG_log("hmac_update: inside if"));
 	SECStatus status = PK11_DigestOp(ctx->ctx_nss, data, data_len);
+	DBG(DBG_CRYPT, DBG_log("hmac_update: after digest"));
 	PR_ASSERT(status == SECSuccess);
+	DBG(DBG_CRYPT, DBG_log("hmac_update: after assert"));
     }
 #else
     ctx->h->hash_update(&ctx->hash_ctx, data, data_len);

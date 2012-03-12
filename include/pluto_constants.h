@@ -298,6 +298,10 @@ enum state_kind {
      * for all work states. */
     STATE_PARENT_R1,
     STATE_PARENT_R2,
+
+    /* IKEv2 Delete States */
+    STATE_IKESA_DEL,
+    STATE_CHILDSA_DEL,
     
     STATE_IKEv2_ROOF,
 };

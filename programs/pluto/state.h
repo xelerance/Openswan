@@ -4,7 +4,7 @@
  * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
  * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2009,2012 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -440,6 +440,11 @@ extern struct state *find_state_ikev2_parent_init(const u_char *icookie);
 extern struct state *find_state_ikev2_child(const u_char *icookie
 					    , const u_char *rcookie
 					    , msgid_t msgid);
+
+extern struct state *find_state_ikev2_child_to_delete(const u_char *icookie
+					    , const u_char *rcookie
+					    , u_int8_t protoid
+					    , ipsec_spi_t spi);
 
 extern struct state *find_info_state(const u_char *icookie
 				     , const u_char *rcookie

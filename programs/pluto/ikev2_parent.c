@@ -1,10 +1,10 @@
 /* 
  * IKEv2 parent SA creation routines
  * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
- * Copyright (C) 2010-2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2010,2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
@@ -35,7 +35,7 @@
 #include "defs.h"
 #include "state.h"
 #include "id.h"
-#include "connections.h"
+#include "connections.h"	
 
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -83,23 +83,6 @@ static stf_status ikev2_parent_outI1_common(struct msg_digest *md
 					    , struct state *st);
 
 /*
- * Increment the msgid for our new header based on the one we should use next
- * TODO: if we wrap (u_int32), we need to rekey the parent sa 
- */
-static void
- increment_msgid_nextuse(struct state *st)
-{
-   passert(st != NULL);
-   st->st_msgid_nextuse = st->st_msgid_nextuse + 1;
-   if(st->st_msgid_nextuse == 0) {
-       openswan_log("  st_msgid_nextuse wrapped - we should rekey!");
-   }
-   st->st_msgid = htonl(st->st_msgid_nextuse);
-}   
-
-
-
-/*
  *
  ***************************************************************
  *****                   PARENT_OUTI1                      *****
@@ -141,7 +124,7 @@ ikev2parent_outI1(int whack_sock
     st->st_msgid_nextuse = 0;
     st->st_try   = try;
 
-    if (HAS_IPSEC_POLICY(policy))
+    if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
 	st->sec_ctx = NULL;
 	if( uctx != NULL) {
@@ -155,6 +138,7 @@ ikev2parent_outI1(int whack_sock
 	    , st->sec_ctx
 #endif
 		   );
+     }
 
     if (predecessor == NULL)
 	openswan_log("initiating v2 parent SA");
@@ -372,7 +356,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
     /* struct connection *c = st->st_connection; */
     int numvidtosend = 0; 
 #ifdef PLUTO_SENDS_VENDORID
-    numvidtosend++;  /* we send Openswan VID */
+	numvidtosend++;  /* if we need to send Openswan VID */
 #endif
 
     /* set up reply */
@@ -414,8 +398,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 		chunk_t child_spi;
 		memset(&child_spi, 0, sizeof(child_spi));
 		ship_v2N (ISAKMP_NEXT_v2SA, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-                (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-                    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+			(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+			 ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					v2N_COOKIE, &st->st_dcookie, &md->rbody);
     }
@@ -463,8 +447,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+		in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
 	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
@@ -473,8 +457,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	close_output_pbs(&pb);
     }
 
-#ifdef PLUTO_SENDS_VENDORID
-    /* Send VendorID VID */
+    /* Send Vendor VID if needed */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 
@@ -482,7 +465,6 @@ ikev2_parent_outI1_common(struct msg_digest *md
 			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
-#endif
 
     close_message(&md->rbody);
     close_output_pbs(&reply_stream);
@@ -578,7 +560,9 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	st = new_state();
 	/* set up new state */
 	memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
-	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
+	/* initialize_new_state expects valid icookie/rcookie values, so create it now */
+	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
+	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto); 
 	st->st_ikev2 = TRUE;
 	change_state(st, STATE_PARENT_R1);
 	st->st_msgid_lastack = INVALID_MSGID;
@@ -622,7 +606,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
 				openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
 				SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
-				return STF_FAIL + INVALID_COOKIE;
+				return STF_FAIL + v2N_INVALID_IKE_SPI;
 			}
 			DBG(DBG_CONTROLMORE
 	            ,DBG_log("dcookie received match with computed one"));
@@ -746,14 +730,12 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
     pb_stream *keyex_pbs;
-    int    numvidtosend = 0;
+    int    numvidtosend=0;
 #ifdef PLUTO_SENDS_VENDORID
     numvidtosend++;  /* we send Openswan VID */
 #endif
 
     /* note that we don't update the state here yet */
-    memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
-    get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 
     /* record first packet for later checking of signature */
     clonetochunk(st->st_firstpacket_him, md->message_pbs.start
@@ -772,8 +754,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	r_hdr.isa_np = ISAKMP_NEXT_v2SA;
 	r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
-	increment_msgid_nextuse(st);
-	r_hdr.isa_msgid = st->st_msgid;
+	// PAUL shouldn't we set r_hdr.isa_msgid = [htonl](st->st_msgid);  here?
 	if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 	    return STF_INTERNAL_ERROR;
     }
@@ -799,20 +780,18 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     {
 	v2_notification_t rn;
 	chunk_t dc;
-    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
-    /* KE in */
+	keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
+	/* KE in */
 	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
 	if(rn != v2N_NOTHING_WRONG) {
-		/* char group_number[2]; */
-		u_int16_t group_number = htons(st->st_oakley.group->group);
-		dc.ptr = (u_char *)&group_number;
-		dc.len = 2;
-		SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
-		delete_state(st);
-		return STF_FAIL + rn;
+	   u_int16_t group_number = htons(st->st_oakley.group->group);
+	   dc.ptr = (char *)&group_number;
+	   dc.len = 2;
+	   SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
+	   delete_state(st);
+	   return STF_FAIL + rn;
 	}
-
-    }
+    } 
 
     /* Ni in */
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_ni, "Ni"));
@@ -842,8 +821,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	close_output_pbs(&pb);
     }
 
-#ifdef PLUTO_SENDS_VENDORID
-    /* Send VendorID VID */
+    /* Send VendrID if needed VID */
     {
 	int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
 
@@ -851,7 +829,6 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 			     , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
 	    return STF_INTERNAL_ERROR;
     }
-#endif
 
     close_message(&md->rbody);
     close_output_pbs(&reply_stream);
@@ -940,6 +917,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 					, from_state_name 
 					, enum_name(&ikev2_notify_names , isan_type));
 		return STF_FAIL + isan_type;
+	} else if( md->chain[ISAKMP_NEXT_v2N]) {
+		DBG(DBG_CONTROL,DBG_log("received a notify.."));
 	}
 
     /*
@@ -1012,7 +991,7 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     stf_status e;
     
     DBG(DBG_CONTROLMORE
-	, DBG_log("ikev2 parent inR1outI1: calculating g^{xy}, sending I2"));
+	, DBG_log("ikev2 parent inR1outI2: calculating g^{xy}, sending I2"));
   
     if (st == NULL) {
 	loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
@@ -1141,10 +1120,14 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
     /* okay, authenticate from beginning of IV */
     {
 	struct hmac_ctx ctx;
-	
+	DBG(DBG_PARSING, DBG_log("Inside authloc"));
+	DBG(DBG_CRYPT, DBG_dump("authkey value: ", authkey->ptr, authkey->len));
 	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
+	DBG(DBG_PARSING, DBG_log("Inside authloc after init"));
 	hmac_update(&ctx, authstart, authloc-authstart);
+	DBG(DBG_PARSING, DBG_log("Inside authloc after update"));
 	hmac_final(authloc, &ctx);
+	DBG(DBG_PARSING, DBG_log("Inside authloc after final"));
 
 	DBG(DBG_PARSING,
 	    DBG_dump("data being hmac:", authstart, authloc-authstart);
@@ -1334,7 +1317,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     pst = st;
     st = duplicate_state(pst);
-    st->st_msgid = htonl(pst->st_msgid_nextuse);
+    st->st_msgid = htonl(pst->st_msgid_nextuse); /* PAUL: note ordering */
     insert_state(st);
     md->st = st;
     md->pst= pst;
@@ -1410,7 +1393,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
 	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
 	   r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
 	}
@@ -1463,6 +1446,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	lset_t policy;
 	struct connection *c0= first_pending(pst, &policy,&st->st_whack_sock);
 	unsigned int np = (c0 ? ISAKMP_NEXT_v2SA : ISAKMP_NEXT_NONE);
+	DBG(DBG_CONTROL,DBG_log(" payload after AUTH will be %s", (c0) ? "ISAKMP_NEXT_v2SA" : "ISAKMP_NEXT_NONE/NOTIFY"));
+
 	stf_status authstat = ikev2_send_auth(c, st
 					      , INITIATOR
 					      , np
@@ -1473,25 +1458,24 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 * now, find an eligible child SA from the pending list, and emit
 	 * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
-	openswan_log("PAUL:  now, find an eligible child SA from the pending list, and emit TSi and TSr");
 	if(c0) {
-		chunk_t child_spi, notifiy_data;
+		chunk_t child_spi, notify_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
-
+	    
 	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this);
 	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that);
-
+	    
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
 	    if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
 		DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
 		memset(&child_spi, 0, sizeof(child_spi));
-		memset(&notifiy_data, 0, sizeof(notifiy_data));
-		ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
-				(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) : ISAKMP_PAYLOAD_NONCRITICAL,
-				 0, &child_spi, v2N_USE_TRANSPORT_MODE, &notifiy_data, &e_pbs_cipher);
+		memset(&notify_data, 0, sizeof(notify_data));
+		ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
+				&child_spi,
+				v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
 	    }
 	} else {
 	    openswan_log("no pending SAs found, PARENT SA keyed only");
@@ -1518,10 +1502,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 				authstart,
 				iv, encstart, authloc,
 				&e_pbs, &e_pbs_cipher);
-	if(ret != STF_OK) {
-	   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
-	   return ret;
-	}
+	if(ret != STF_OK) return ret;
     }
 
 
@@ -1578,6 +1559,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
 	openswan_log("R2 state should receive an encrypted payload");
+	reset_globals();
 	return STF_FATAL;
     }
 
@@ -1638,10 +1620,14 @@ ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
     st->st_calculating = FALSE;
 
     e = ikev2_parent_inI2outR2_tail(pcrc, r);
-    if( e != STF_OK) {
+    if( e > STF_FAIL) {
+	/* we do not send a notify because we are the initiator that could be responding to an error notification */
+	int v2_notify_num = e - STF_FAIL;
+	DBG_log("ikev2_parent_inI2outR2_tail returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num));
+    } else if( e != STF_OK) {
 	DBG_log("ikev2_parent_inI2outR2_tail returned %s", enum_name(&stfstatus_name, e));
     }
-  
+
     if(dh->md != NULL) {
 	complete_v2_state_transition(&dh->md, e);
 	if(dh->md) release_md(dh->md);
@@ -1662,6 +1648,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *idhash_in, *idhash_out;
     unsigned char *authstart;
     unsigned int np;
+    int v2_notify_num = 0;
 
     /* extract calculated values from r */
     finish_dh_v2(st, r);
@@ -1684,12 +1671,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         openswan_log("no authentication payload found");
         return STF_FAIL;
     }
-
-
-    /* if it decrypted okay, then things are good, this packet is
-     * well received, and we should change state.
-     */
-    rehash_state(st);
 
     if(!ikev2_decode_peer_id(md, RESPONDER)) {
 	return STF_FAIL + INVALID_ID_INFORMATION;
@@ -1759,7 +1740,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
 	    openswan_log("PSK authentication failed AUTH mismatch!");
-	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+	    SEND_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
 	    return STF_FATAL;
 	}
 	break;
@@ -1771,11 +1752,19 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	return STF_FATAL;
     }
 
+    /* Is there a notify about an error ? */
+    if(md->chain[ISAKMP_NEXT_v2N] != NULL) {
+	DBG(DBG_CONTROL,DBG_log(" notify payload detected, should be processed...."));
+    }
+
     /* good. now create child state */
     /* note: as we will switch to child state, we force the parent to the
      * new state now */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
+
+    delete_event(st);
+    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
     
     authstart = reply_stream.cur;
     /* send response */
@@ -1808,10 +1797,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	/* insert an Encryption payload header */
 	e.isag_np = ISAKMP_NEXT_v2IDr;
 	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	}
 
 	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
 	    return STF_INTERNAL_ERROR;
@@ -1849,10 +1834,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
 			     &c->spd.this);
 	    r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-	    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-		r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-	    }
 
 	    if(send_cert) 
 		r_id.isai_np = ISAKMP_NEXT_v2CERT;
@@ -1903,7 +1884,21 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    np = ISAKMP_NEXT_NONE;
 	} else {
 	    DBG_log("CHILD SA proposals received");
+	    openswan_log("PAUL: this is where we have to check the TSi/TSr");
 	    np = ISAKMP_NEXT_v2SA;
+	}
+
+	if(np == ISAKMP_NEXT_v2SA) {
+	    /* must have enough to build an CHILD_SA */
+	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
+	    if(ret > STF_FAIL) {
+		v2_notify_num = ret - STF_FAIL;
+		DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
+		np = ISAKMP_NEXT_NONE;
+	    } else if(ret != STF_OK) {
+		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+		np = ISAKMP_NEXT_NONE;
+	    }
 	}
 
 	DBG(DBG_CONTROLMORE
@@ -1915,15 +1910,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						  , RESPONDER, np
 						  , idhash_out, &e_pbs_cipher);
 	    if(authstat != STF_OK) return authstat;
-	}
-
-	if(np == ISAKMP_NEXT_v2SA) {
-	    /* must have enough to build an CHILD_SA */
-	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
-	    if(ret != STF_OK) {
-		 DBG_log("PAUL: ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
-		return ret;
-	    }
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
@@ -1943,10 +1929,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 				    authstart, 
 				    iv, encstart, authloc, 
 				    &e_pbs, &e_pbs_cipher);
-	    if(ret != STF_OK) {
-		openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
-		return ret;
-	    }
+	    if(ret != STF_OK) return ret;
 	}
     }
 
@@ -1961,6 +1944,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* note: retransimission is driven by initiator */
 
+    /* if the child failed, delete its state here - we sent the packet */
+    /* PAUL */
     return STF_OK;
     
 }
@@ -1981,6 +1966,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct connection *c = st->st_connection;
     unsigned char *idhash_in;
     struct state *pst = st;
+    bool received_ts_ok = FALSE;
 
     if(st->st_clonedfrom != 0) {
 	pst = state_with_serialno(st->st_clonedfrom);
@@ -2094,7 +2080,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	|| md->chain[ISAKMP_NEXT_v2TSi] == NULL
 	|| md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
 	/* not really anything to here... but it would be worth unpending again */
-
+	DBG(DBG_CONTROLMORE, DBG_log("no v2SA, v2TSi or v2TSr received, not attempting to setup child SA"));
+	DBG(DBG_CONTROLMORE, DBG_log("  Should we check for some notify?"));
 	/*
 	 * Delete previous retransmission event.
 	 */
@@ -2103,84 +2090,110 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-	/* http://tools.ietf.org/html/rfc5996#section-2.9 */
-	openswan_log("PAUL:check narrowing - we are responding to I2");
+    /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
+    DBG(DBG_CONTROLMORE,DBG_log(" check narrowing - we are responding to I2"));
 
+    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+    struct traffic_selector tsi[16], tsr[16];
 #if 0
-	We need to check TSr/TSi for better leftsubnet/rightsubnet as well as better
-	 protoport= settings
-       Do we need to check the md directly? Or did we already read th traffic_selectors
-	into the state at st->st_ts_this and st->st_ts_that ?
-	IF not, then how do we select the best TSi/TSr from the entire TSi/TSr payload?
- 	  or do we allow all of the ones that can?
+    bool instantiate = FALSE;
+    ip_subnet tsi_subnet, tsr_subnet;
+    const char *oops;
 #endif
 
-
-		struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-		struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-		struct traffic_selector tsi[16], tsr[16];
-		int instantiate = FALSE;
-		ip_subnet tsi_subnet, tsr_subnet;
-		const char *oops;
-		unsigned int tsi_n, tsr_n;
-		tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-		tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+    unsigned int tsi_n, tsr_n;
+    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 
 
-    		DBG_log("PAUL: We are initiator, checking TSi/TSr");
-		/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
-		oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
-		if(oops != NULL) {
-			DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
-		} 
-		oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
-		if(oops != NULL) {
-			DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
-		}
-
-		/* Can we narrow, if so we instantiate */
-	//PAULX addrinsubnet(address,subnet)
-	DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
-	if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
-		DBG_log("Our subnet is not the same as the TSI subnet");
-		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-			return STF_IGNORE ; /* prob say something back? */
-		}
-		if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
-			DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
-			instantiate = TRUE;
-		} else {
-			DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
-			return STF_IGNORE ; /* prob say something back? */
-		}
-	}
-	if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
-		DBG_log("Our subnet is not the same as the TSR subnet");
-		if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-			return STF_IGNORE ; /* prob say something back? */
-		}
-		if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
-			DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
-			instantiate = TRUE;
-		} else {
-			DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
-			return STF_IGNORE ; /* prob say something back? */
-		}
-	}
-	if(instantiate == TRUE) {
-		/* instantiate the connection since it changed from template, then update */
-		// CHEAT: for now modify our template as a proof of concept
-
-		c->spd.this.client = tsi_subnet;
-		c->spd.that.client = tsr_subnet;
-		// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
-		// st1->st_ts_this = *tsr;
-		// st1->st_ts_that = *tsi;
-		// DBG_log("PAUL: traffic selectors updated\n");
+    /* Do the easy case first, if narrowing=no, we need an exact match of TSi/TSr */
+    if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+	int tsc=0;
+	DBG_log("Checking TSi(%d)/TSr(%d) selectors- narrowing not allowed, looking for exact match", tsi_n,tsr_n);
+	for(tsc=0;tsc<16;tsc++)
+	{
+	 if(	(tsi[tsc].ts_type == st->st_ts_this.ts_type) && (tsr[tsc].ts_type == st->st_ts_that.ts_type) &&
+		(tsi[tsc].ipprotoid == st->st_ts_this.ipprotoid) && (tsr[tsc].ipprotoid == st->st_ts_that.ipprotoid) &&
+		(tsi[tsc].startport == st->st_ts_this.startport) && (tsr[tsc].startport == st->st_ts_that.startport) &&
+		(tsi[tsc].endport == st->st_ts_this.endport) && (tsr[tsc].endport == st->st_ts_that.endport) &&
+		sameaddr(&tsi[tsc].low, &st->st_ts_this.low) && sameaddr(&tsr[tsc].low, &st->st_ts_that.low) &&
+		sameaddr(&tsi[tsc].high, &st->st_ts_this.high) && sameaddr(&tsr[tsc].high, &st->st_ts_that.high)
+	   ){
+		DBG(DBG_CONTROLMORE, DBG_log(" TSi/TSr #%d matches our state Traffic Selectors", tsc));
+		received_ts_ok = TRUE;
+		break;
+	    }
 	}
 
+    } else {
+	openswan_log(" Narrowing accepted but code needs to be written");
+	received_ts_ok = FALSE;
+    }
+
+    if(!received_ts_ok) {
+	openswan_log(" Failed to find matching TSi/TSr Traffic Selector");
+	// prevents parent from going to I3
+	// return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
+
+    } /* end of TS check block */
+
+#if 0
+    {
+    DBG_log("PAUL: We are initiator, checking TSi/TSr");
+    /* This implies CIDR ranges, because that's the only ranges we allow in the parser */
+    oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
+    if(oops != NULL) {
+	DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
+	return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    } 
+    oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+    if(oops != NULL) {
+	DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
+	return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
+    /* Can we narrow, if so we instantiate */
+    DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
+    if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
+	DBG_log("Our subnet is not the same as the TSI subnet");
+	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	}
+	if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
+	   DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
+	   instantiate = TRUE;
+	} else {
+	   DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
+	   return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	}
+    }
+    if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
+	DBG_log("Our subnet is not the same as the TSR subnet");
+	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	}
+	if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
+		DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
+		instantiate = TRUE;
+	} else {
+		DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
+		return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	}
+    }
+    if(instantiate == TRUE) {
+	/* instantiate the connection since it changed from template, then update */
+	// CHEAT: for now modify our template as a proof of concept
+	c->spd.this.client = tsi_subnet;
+	c->spd.that.client = tsr_subnet;
+	// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
+	// st1->st_ts_this = *tsr;
+	// st1->st_ts_that = *tsi;
+	// DBG_log("PAUL: traffic selectors updated\n");
+    }
 
     }
+#endif
 
 
     {
@@ -2198,9 +2211,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	struct payload_digest *p;
 
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-	{
+	{   
 	   /* RFC 5996 */
-	   /* Types in the range 0 - 16383 are intended for reporting errors.  An
+	   /*Types in the range 0 - 16383 are intended for reporting errors.  An
 	    * implementation receiving a Notify payload with one of these types
 	    * that it does not recognize in a response MUST assume that the
 	    * corresponding request has failed entirely.  Unrecognized error types
@@ -2215,15 +2228,16 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 
 	    if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 		if ( st->st_connection->policy & POLICY_TUNNEL) {
-		/*This means we did not send USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
+		/*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
 			DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-		} else {
+		}
+		else {
 			DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
 			if (st->st_esp.present == TRUE) { 
-			   /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-			   st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+			/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
 			}
 		}
 	    }
@@ -2231,21 +2245,29 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 
     } /* notification block */
 
+	
     ikev2_derive_child_keys(st, md->role);
 
-    c->newest_ipsec_sa = st->st_serialno;
+    if(received_ts_ok == TRUE){
+	c->newest_ipsec_sa = st->st_serialno;
 
-    /* now install child SAs */
-    if(!install_ipsec_sa(st, TRUE))
-	return STF_FATAL;
+	/* now install child SAs */
+	if(!install_ipsec_sa(st, TRUE))
+	   return STF_FATAL;
 
-    /*
-     * Delete previous retransmission event.
-     */
-    delete_event(st);
+	/*
+	 * Delete previous retransmission event.
+	 */
+	delete_event(st);
 
-    return STF_OK;
+	return STF_OK;
+    } else {
+	/* cleanup our failed partial child state */
+	DBG(DBG_CONTROL,DBG_log("ikev2parent_inR2: deleting partial child SA"));
+	delete_state(st);
+    }
     
+    return STF_OK;
 }
 
 /*
@@ -2308,7 +2330,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
     u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
-	chunk_t child_spi;
+	chunk_t child_spi, notify_data;
 	/* this function is not generic enough yet just enough for 6msg 
 	 * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
 	 * TBD when there is a child SA use that SPI in the notify paylod.
@@ -2319,15 +2341,13 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
-    increment_msgid_nextuse(p1st);
-    openswan_log("sending %snotification %s to %s:%u"
+    openswan_log("sending %s notification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
 		 , p1st->st_remoteport);
 #if 0
- /* Empty notification data section should be fine? */
-
+/* Empty notification data section should be fine? */
     if(n_data == NULL) { 
     DBG(DBG_CONTROLMORE
     	,DBG_log("don't send packet when notification data empty"));  
@@ -2354,7 +2374,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	n_hdr.isa_np = ISAKMP_NEXT_v2N;
 	n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
 	n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
-	n_hdr.isa_msgid = p1st->st_msgid;
+#warning check msgid code here
+	// PAUL: shouldn't we set n_hdr.isa_msgid = [htonl](p1st->st_msgid);
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
     	    openswan_log("error initializing hdr for notify message");
@@ -2366,9 +2387,12 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	child_spi.len = 0;
 
 	/* build and add v2N payload to the packet */
+	memset(&child_spi, 0, sizeof(child_spi));
+	memset(&notify_data, 0, sizeof(notify_data));
 	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
 		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-		    ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP, &child_spi, 
+		ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+				    &child_spi, 
 					type, n_data, &rbody);
 
    close_message(&rbody);
@@ -2390,73 +2414,72 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
    		,DBG_log("Adding a v2N Payload"));  
    	n.isan_np =  np;
    	n.isan_critical = critical;
-   	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-		n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-   	}
+	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+	   n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	}
+
    	n.isan_protoid =  protoid;
    	n.isan_spisize = spi->len;
    	n.isan_type = type;
 
-    if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs))
-    {
-		openswan_log("error initializing notify payload for notify message");
-   		return FALSE;
+    if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs)) {
+	openswan_log("error initializing notify payload for notify message");
+	return FALSE;
     }
 	
-	if(spi->len > 0)
-	{
-   		if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI "))
-   		{
-			openswan_log("error writing SPI to notify payload");
-   			return FALSE;
-
-   		}
-    }
-	/* Notify could be empty */
-	if(n_data != NULL) {
-	   if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
-		openswan_log("error writing notify payload for notify message");
-		return FALSE;
-	   }
+    if(spi->len > 0) {
+	if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI ")) {
+	   openswan_log("error writing SPI to notify payload");
+	   return FALSE;
 	}
-    close_output_pbs(&n_pbs);
-	return TRUE;
-}
+    }
+    if(n_data != NULL) {
+	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
+	   openswan_log("error writing notify payload for notify message");
+	   return FALSE;
+	}
+    }
 
+    close_output_pbs(&n_pbs);
+    return TRUE;
+}
+	     
 /*
  *
  ***************************************************************
  *                       INFORMATIONAL                     *****
  ***************************************************************
- *
- *
+ *  - 
+ *  
  *
  */
 stf_status process_informational_ikev2(struct msg_digest *md)
 {
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
-       openswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
-       return STF_IGNORE;
+	openswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
+	return STF_IGNORE;
     }
 
     /* decrypt things. */
     {
-	stf_status ret;
+	stf_status ret; 
 
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
-	   DBG(DBG_CONTROLMORE
+	DBG(DBG_CONTROLMORE
 		, DBG_log("received informational exchange request from INITIATOR"));
-	   ret = ikev2_decrypt_msg(md, RESPONDER);
-	} else {
-	   DBG(DBG_CONTROLMORE
+	ret = ikev2_decrypt_msg(md, RESPONDER);
+	}
+	else {
+	DBG(DBG_CONTROLMORE
 		, DBG_log("received informational exchange request from RESPONDER"));
-	   ret = ikev2_decrypt_msg(md, INITIATOR);
+	ret = ikev2_decrypt_msg(md, INITIATOR);
 	}
 
 	if(ret != STF_OK) return ret;
     }
+
 
     {
 	struct payload_digest *p;
@@ -2466,173 +2489,379 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 
 	/* Only send response if it is request*/
 	if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	   unsigned char *authstart;
-	   pb_stream      e_pbs, e_pbs_cipher;
-	   struct ikev2_generic e;
-	   unsigned char *iv;
-	   int            ivsize;
-	   unsigned char *encstart;
-	   struct isakmp_hdr r_hdr ;
+	unsigned char *authstart;
+	pb_stream      e_pbs, e_pbs_cipher;
+	struct ikev2_generic e;
+	unsigned char *iv;
+	int            ivsize;
+	unsigned char *encstart;
 
-	   /* beginning of data going out */
-	   authstart = reply_stream.cur;
+	/* beginning of data going out */
+	authstart = reply_stream.cur;
 
-	   /* make sure HDR is at start of a clean buffer */
-	   zero(reply_buffer);
-	   init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange reply packet");
+	/* make sure HDR is at start of a clean buffer */
+	zero(reply_buffer);
+	init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange reply packet");
 
-	   /* HDR out */
-	   zero(&r_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
-	   r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-	   memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
-	   memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
-	   r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
-	   r_hdr.isa_np = ISAKMP_NEXT_v2E;
-	   increment_msgid_nextuse(st);
-	   r_hdr.isa_msgid = st->st_msgid;
+	/* HDR out */
+	{
+		struct isakmp_hdr r_hdr ;
+		zero(&r_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
+		r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+		memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+		memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+		r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
+		r_hdr.isa_np = ISAKMP_NEXT_v2E;
+		r_hdr.isa_msgid = htonl(md->msgid_received);
 
-	   /*set initiator bit if we are initiator*/
-	   if(md->role == INITIATOR) {
+		/*set initiator bit if we are initiator*/
+		if(md->role == INITIATOR) {
 		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
-	   } /* PAUL: shouldn't this be an else? */
-	   r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+		}
 
-	   if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody)) {
-		openswan_log("error initializing hdr for notify message");
-		return STF_INTERNAL_ERROR;
-	   }
-	   /*HDR Done*/
+		r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
 
-	   /* insert an Encryption payload header */
-	   e.isag_np = ISAKMP_NEXT_NONE;
-	   e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
-	   if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
-		openswan_log("error initializing encryption payload header for notify message");
-		return STF_INTERNAL_ERROR;
-	   }
+		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
+		{
+			openswan_log("error initializing hdr for informational message");
+			return STF_INTERNAL_ERROR;
+		}
 
-	   /* insert IV */
-	   iv     = e_pbs.cur;
-	   ivsize = st->st_oakley.encrypter->iv_size;
-	   if(!out_zero(ivsize, &e_pbs, "iv")) {
-		return STF_INTERNAL_ERROR;
-	   }
-	   get_rnd_bytes(iv, ivsize);
+	}/*HDR Done*/
 
-	   /* note where cleartext starts */
-	   init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-	   e_pbs_cipher.container = &e_pbs;
-	   e_pbs_cipher.desc = NULL;
-	   e_pbs_cipher.cur = e_pbs.cur;
-	   encstart = e_pbs_cipher.cur;
 
-	   if(md->chain[ISAKMP_NEXT_v2D]) {
+	/* insert an Encryption payload header */
+	if(md->chain[ISAKMP_NEXT_v2D]) 
+	{
+		bool ikesa_flag = FALSE;
+		/* Search if there is a IKE SA delete payload*/
 		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
-		    v2del = &p->payload.v2delete;
-		    switch (v2del->isad_protoid)
-		    {
-			/*
-			 * Avesh: My understanding is that delete payload for IKE SA
-			 *  should be the only payload in the informational
-			*/
-			case PROTO_ISAKMP:
-				break;
-                       default:
-				/*Unrecongnized protocol */
-				openswan_log("Ignoring Informational Exchange delete payload protoid of '%d' in Delete IKE_SA message",
-					v2del->isad_protoid);
-				return STF_IGNORE;
-		   }
-
-		   /* this will break from for loop */
-		   if(v2del->isad_protoid == PROTO_ISAKMP) {
+			if(p->payload.v2delete.isad_protoid == PROTO_ISAKMP) 
+			{
+			e.isag_np = ISAKMP_NEXT_NONE;
+			ikesa_flag = TRUE; 
 			break;
-		   }
+			}
 		}
-	   }
-
-	   /*
-	    * If there are no payloads in the request that means this INFORMATIONAL Exchange
-	    * is check for liveliness (eg IKEv2's version of DPD), so we need to send back
-	    * an empty INFORMATIONAL Exchange message with no payloads inside.
-	    */
-
-	   ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
-	   close_output_pbs(&e_pbs_cipher);
-
-	   {
-		unsigned char *authloc = ikev2_authloc(md, &e_pbs);
-		if(authloc == NULL) return STF_INTERNAL_ERROR;
-		close_output_pbs(&e_pbs);
-		close_output_pbs(&md->rbody);
-		close_output_pbs(&reply_stream);
-
-		ret = ikev2_encrypt_msg(md, RESPONDER, authstart,
-				iv, encstart, authloc, &e_pbs, &e_pbs_cipher);
-		if(ret != STF_OK) {
-		   openswan_log("ikev2_encrypt_msg() did not return STF_OK - impossible");
-		   return ret;
+		/* if there is no IKE SA DELETE PAYLOAD*/
+		/* That means, there are AH OR ESP*/
+		if(!ikesa_flag) { 
+			e.isag_np = ISAKMP_NEXT_v2D;
 		}
-	   }
+	
 
-	   /* let TCL hack it before we mark the length. */
-	   TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
-
-	   /* keep it for a retransmit if necessary */
-	   freeanychunk(st->st_tpacket);
-	   clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
-		, "reply packet for informational exchange");
-
-	   send_packet(st, __FUNCTION__, TRUE);
-	} else {
-	   /* informational was an answer, not a request. So we MUST NOT reply */
-	   DBG(DBG_CONTROLMORE
-		, DBG_log("  not sending a response, because we are not the responder"));
+	}
+	else 
+	{
+		e.isag_np = ISAKMP_NEXT_NONE;
 	}
 
-	/*
-	 * Now carry out the actualy task, we can not carry the actual task since
-	 * we need to send informational responde using existig SAs
-	 */
-	{
+	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
-	   if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-		if(md->chain[ISAKMP_NEXT_v2D]) {
-		   for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
-			v2del = &p->payload.v2delete;
-			switch (v2del->isad_protoid)
+	if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+		return STF_INTERNAL_ERROR;
+	}
+
+	/* insert IV */
+	iv     = e_pbs.cur;
+	ivsize = st->st_oakley.encrypter->iv_size;
+	if(!out_zero(ivsize, &e_pbs, "iv")) {
+		return STF_INTERNAL_ERROR;
+	}
+	get_rnd_bytes(iv, ivsize);
+
+	/* note where cleartext starts */
+	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	e_pbs_cipher.container = &e_pbs;
+	e_pbs_cipher.desc = NULL;
+	e_pbs_cipher.cur = e_pbs.cur;
+	encstart = e_pbs_cipher.cur;
+
+	if(md->chain[ISAKMP_NEXT_v2D]) {
+
+		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+		v2del = &p->payload.v2delete;
+
+			switch (v2del->isad_protoid) 
 			{
-			   case PROTO_ISAKMP:
+			case PROTO_ISAKMP: 
+				/* My understanding is that delete payload for IKE SA 
+				 *  should be the only payload in the informational exchange
+				 */ 
+				break;
+
+			case PROTO_IPSEC_AH:
+			case PROTO_IPSEC_ESP:
 				{
-				  /*
-				   * Avesh: My understanding is that delete payload for IKE SA
-				   * should be the only payload in the informational
-				   * Now delete the IKE SAstate
-				   */
-				   delete_state(st);
-				   break;
-				}
-			   default:
+				char spi_buf[1024];
+				pb_stream del_pbs;
+				struct ikev2_delete v2del_tmp;
+				u_int16_t i, j=0;
+				u_char *spi;
+
+				for(i = 0; i < v2del->isad_nrspi; i++ ) 
 				{
-				  /*
-				   * Unrecongnized protocol
-				   */
-				   openswan_log(" Information exchange delete payload should have protoid = PROTO_ISAKMP, not '%d' - ignored", v2del->isad_protoid);
-				   return STF_IGNORE;
+					spi = p->pbs.cur + (i * v2del->isad_spisize);
+					DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s SA(0x%08lx)"
+								, enum_show(&protocol_names, v2del->isad_protoid)
+								, (unsigned long)ntohl((unsigned long)*(ipsec_spi_t *)spi)));
+
+					struct state *dst = find_state_ikev2_child_to_delete (st->st_icookie
+										, st->st_rcookie
+										, v2del->isad_protoid
+										, *(ipsec_spi_t *)spi);
+
+					if(dst != NULL) 
+					{
+						struct ipsec_proto_info *pr = v2del->isad_protoid == PROTO_IPSEC_AH? &dst->st_ah : &dst->st_esp;
+						DBG(DBG_CONTROLMORE, DBG_log("our side spi that needs to be sent: %s SA(0x%08lx)"
+                                                                , enum_show(&protocol_names, v2del->isad_protoid)
+                                                                , (unsigned long)ntohl(pr->our_spi)));
+						
+						memcpy(spi_buf + (j * v2del->isad_spisize), (u_char *)&pr->our_spi, v2del->isad_spisize);
+						j++;
+					}
+					else 
+					{
+						DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s SA(0x%08lx) but local state is not found"
+								, enum_show(&protocol_names, v2del->isad_protoid)
+								, (unsigned long)ntohl((unsigned long)*(ipsec_spi_t *)spi)));
+					}
 				}
+
+				if( !j ) 
+				{
+					DBG(DBG_CONTROLMORE, DBG_log("This delete payload does not contain a single spi that has any local state, ignoring"));
+					return STF_IGNORE;		
+				}
+				else 
+				{
+					DBG(DBG_CONTROLMORE, DBG_log("No. of SPIs to be sent %d", j);
+						DBG_dump(" Emit SPIs", spi_buf, j*v2del->isad_spisize));
+				}
+
+				zero(&v2del_tmp);
+
+				if(p->next != NULL) 
+				{
+				v2del_tmp.isad_np = ISAKMP_NEXT_v2D;
+				}
+				else 
+				{
+				v2del_tmp.isad_np = ISAKMP_NEXT_NONE;
+				}
+
+				v2del_tmp.isad_protoid = v2del->isad_protoid;
+				v2del_tmp.isad_spisize = v2del->isad_spisize;
+				v2del_tmp.isad_nrspi = j;
+
+				/* Emit delete payload header out*/
+				if (!out_struct(&v2del_tmp, &ikev2_delete_desc, &e_pbs_cipher, &del_pbs))
+				{
+					openswan_log("error initializing hdr for delete payload");
+					return STF_INTERNAL_ERROR;
+				}		
+
+				/* Emit values of spi to be sent to the peer*/
+				if (!out_raw(spi_buf, j* v2del->isad_spisize, &del_pbs, "local spis"))
+				{
+					openswan_log("error sending spi values in delete payload");
+					return STF_INTERNAL_ERROR;
+				}
+				
+				close_output_pbs(&del_pbs);
+
+				}
+				break;
+			default:
+				/*Unrecongnized protocol */
+				return STF_IGNORE;
 			}
 
 			/* this will break from for loop*/
 			if(v2del->isad_protoid == PROTO_ISAKMP) {
-			   break;
+			break;
 			}
 
-		   } /* for */
+		}
+	}
+
+	/*If there are no payloads or in other words empty payload in request
+	 * that means it is check for liveliness, so send an empty payload message
+	 * this will end up sending an empty payload
+	 */
+
+	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+	close_output_pbs(&e_pbs_cipher);
+
+	{
+	unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+	if(authloc == NULL) return STF_INTERNAL_ERROR;
+	close_output_pbs(&e_pbs);
+	close_output_pbs(&md->rbody);
+	close_output_pbs(&reply_stream);
+
+	ret = ikev2_encrypt_msg(md, RESPONDER,
+                                    authstart,
+                                    iv, encstart, authloc,
+                                    &e_pbs, &e_pbs_cipher);
+	if(ret != STF_OK) return ret;
+        }
+
+
+	/* let TCL hack it before we mark the length. */
+	TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+	/* keep it for a retransmit if necessary */
+	freeanychunk(st->st_tpacket);
+	clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+			, "reply packet for informational exchange");
+
+	send_packet(st, __FUNCTION__, TRUE);
+	}
+
+	/* Now carry out the actualy task, we can not carry the actual task since 
+ 	* we need to send informational responde using existig SAs
+ 	*/
+
+	{
+		if(md->chain[ISAKMP_NEXT_v2D] && st->st_state != STATE_IKESA_DEL) {
+
+		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
+		v2del = &p->payload.v2delete;
+
+			switch (v2del->isad_protoid) 
+			{
+			case PROTO_ISAKMP: 
+				{
+				/* My understanding is that delete payload for IKE SA 
+				 *  should be the only payload in the informational
+				 * Now delete the IKE SA state and all its child states
+				 */
+				struct state *current_st = st;
+				struct state *next_st = NULL;
+				struct state *first_st = NULL;
+
+				/* Find the first state in the hash chain*/
+				while(current_st != (struct state *) NULL) 
+				{
+				first_st = current_st;
+				current_st = first_st->st_hashchain_prev;
+				}
+				
+				current_st = first_st;
+				while (current_st != (struct state *) NULL) 
+				{
+				next_st = current_st->st_hashchain_next;
+					if(current_st->st_clonedfrom !=0 )
+					{
+						change_state(current_st, STATE_CHILDSA_DEL);
+					}
+					else
+					{
+						change_state(current_st, STATE_IKESA_DEL);
+					}
+        			delete_state(current_st);
+				current_st = next_st;
+				}
+				}
+				break;
+
+			case PROTO_IPSEC_AH:
+			case PROTO_IPSEC_ESP:
+				{				
+				//pb_stream del_pbs;
+				struct ikev2_delete;
+				u_int16_t i;
+				u_char *spi;
+
+				for(i = 0; i < v2del->isad_nrspi; i++ ) 
+				{
+					spi = p->pbs.cur + (i * v2del->isad_spisize);
+					DBG(DBG_CONTROLMORE, DBG_log("Now doing actual deletion for request: %s SA(0x%08lx)"
+								, enum_show(&protocol_names, v2del->isad_protoid)
+								, (unsigned long)ntohl((unsigned long)*(ipsec_spi_t *)spi)));
+
+					struct state *dst = find_state_ikev2_child_to_delete (st->st_icookie
+										, st->st_rcookie
+										, v2del->isad_protoid
+										, *(ipsec_spi_t *)spi);
+
+					if(dst != NULL) 
+					{
+						struct ipsec_proto_info *pr = v2del->isad_protoid == PROTO_IPSEC_AH? &dst->st_ah : &dst->st_esp;
+						DBG(DBG_CONTROLMORE, DBG_log("our side spi that needs to be deleted: %s SA(0x%08lx)"
+                                                                , enum_show(&protocol_names, v2del->isad_protoid)
+                                                                , (unsigned long)ntohl(pr->our_spi)));
+						
+						/* now delete the state*/
+						change_state(dst, STATE_CHILDSA_DEL);
+						delete_state(dst);
+					}
+					else 
+					{
+						DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s SA(0x%08lx) but local state is not found"
+								, enum_show(&protocol_names, v2del->isad_protoid)
+								, (unsigned long)ntohl((unsigned long)*(ipsec_spi_t *)spi)));
+					}
+				}
+				}
+				break;
+
+			default:
+				/*Unrecongnized protocol */
+				return STF_IGNORE;
+			}
+
+			/* this will break from for loop*/
+			if(v2del->isad_protoid == PROTO_ISAKMP) {
+			break;
+			}
+
+		} /* for */ 
 
 		} /* if*/
-	   }
-	} /* end task block */
+		else 
+		{
+			/* empty response to our IKESA delete request*/
+			if((md->hdr.isa_flags & ISAKMP_FLAGS_R) && st->st_state == STATE_IKESA_DEL)
+			{
+				/* My understanding is that delete payload for IKE SA 
+				 *  should be the only payload in the informational
+				 * Now delete the IKE SA state and all its child states
+				 */
+				struct state *current_st = st;
+				struct state *next_st = NULL;
+				struct state *first_st = NULL;
+
+				/* Find the first state in the hash chain*/
+				while(current_st != (struct state *) NULL) 
+				{
+				first_st = current_st;
+				current_st = first_st->st_hashchain_prev;
+				}
+				
+				current_st = first_st;
+				while (current_st != (struct state *) NULL) 
+				{
+				next_st = current_st->st_hashchain_next;
+					if(current_st->st_clonedfrom !=0 )
+					{
+						change_state(current_st, STATE_CHILDSA_DEL);
+					}
+					else
+					{
+						change_state(current_st, STATE_IKESA_DEL);
+					}
+        			delete_state(current_st);
+				current_st = next_st;
+				}
+				
+			}
+		}
+	}
+
     }
 
     return STF_OK;
@@ -2645,9 +2874,217 @@ stf_status process_informational_ikev2(struct msg_digest *md)
  ***************************************************************
  *
  */
-void ikev2_delete_out(struct state *st UNUSED)
+void ikev2_delete_out(struct state *st)
 {
-    /* XXX */
+	struct state *pst = NULL;
+
+	if(st->st_clonedfrom != 0)
+	{
+		/*child SA*/
+		pst = state_with_serialno(st->st_clonedfrom);
+
+		if(!pst) {
+		DBG(DBG_CONTROL, DBG_log("IKE SA does not exist for this child SA"));
+		DBG(DBG_CONTROL, DBG_log("INFORMATIONAL exchange can not be sent, deleting state"));
+		goto end;
+		}
+	}
+	else
+	{
+		/* Parent SA*/
+		pst = st;
+
+	}
+
+	{
+	unsigned char *authstart;
+	pb_stream      e_pbs, e_pbs_cipher;
+	pb_stream rbody;
+	struct ikev2_generic e;
+	unsigned char *iv;
+	int            ivsize;
+	unsigned char *encstart;
+	struct msg_digest md;
+	enum phase1_role role;
+
+	md.st = st;
+	md.pst= pst;
+	/* beginning of data going out */
+	authstart = reply_stream.cur;
+
+	/* make sure HDR is at start of a clean buffer */
+	zero(reply_buffer);
+	init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange request packet");
+
+	/* HDR out */
+	{
+		struct isakmp_hdr r_hdr ;
+		zero(&r_hdr);     /* default to 0 */  /* AAA should we copy from MD? */
+		r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+		memcpy(r_hdr.isa_rcookie, pst->st_rcookie, COOKIE_SIZE);
+		memcpy(r_hdr.isa_icookie, pst->st_icookie, COOKIE_SIZE);
+		r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
+		r_hdr.isa_np = ISAKMP_NEXT_v2E;
+		r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
+
+		/*set initiator bit if we are initiator*/
+		if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
+		r_hdr.isa_flags |= ISAKMP_FLAGS_I;
+		role = INITIATOR;
+		}
+		else {
+		role = RESPONDER;
+		}
+
+		//r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+
+		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
+		{
+			openswan_log("error initializing hdr for informational message");
+			goto end;
+		}
+
+	}/*HDR Done*/
+
+
+	/* insert an Encryption payload header */
+	e.isag_np = ISAKMP_NEXT_v2D;
+	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+	if(!out_struct(&e, &ikev2_e_desc, &rbody, &e_pbs)) {
+		goto end;
+	}
+
+	/* insert IV */
+	iv     = e_pbs.cur;
+	ivsize = pst->st_oakley.encrypter->iv_size;
+	if(!out_zero(ivsize, &e_pbs, "iv")) {
+		goto end;
+	}
+	get_rnd_bytes(iv, ivsize);
+
+	/* note where cleartext starts */
+	init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+	e_pbs_cipher.container = &e_pbs;
+	e_pbs_cipher.desc = NULL;
+	e_pbs_cipher.cur = e_pbs.cur;
+	encstart = e_pbs_cipher.cur;
+
+				{
+				pb_stream del_pbs;
+				struct ikev2_delete v2del_tmp;
+				//u_int16_t i, j=0;
+				//u_char *spi;
+				//char spi_buf[1024];
+
+				zero(&v2del_tmp);
+				v2del_tmp.isad_np = ISAKMP_NEXT_NONE;
+
+				if(st->st_clonedfrom != 0 ) {
+				v2del_tmp.isad_protoid = PROTO_IPSEC_ESP;
+				v2del_tmp.isad_spisize = sizeof(ipsec_spi_t);
+				v2del_tmp.isad_nrspi = 1;
+				}
+				else {
+				v2del_tmp.isad_protoid = PROTO_ISAKMP;
+				v2del_tmp.isad_spisize = 0;
+				v2del_tmp.isad_nrspi = 0;
+				}
+
+				/* Emit delete payload header out*/
+				if (!out_struct(&v2del_tmp, &ikev2_delete_desc, &e_pbs_cipher, &del_pbs))
+				{
+					openswan_log("error initializing hdr for delete payload");
+					goto end;
+				}		
+
+				/* Emit values of spi to be sent to the peer*/
+				if(st->st_clonedfrom != 0){
+				if (!out_raw( (u_char *)&st->st_esp.our_spi ,sizeof(ipsec_spi_t), &del_pbs, "local spis"))
+				{
+					openswan_log("error sending spi values in delete payload");
+					goto end;
+				}
+				}
+				
+				close_output_pbs(&del_pbs);
+
+				}
+
+	ikev2_padup_pre_encrypt(&md, &e_pbs_cipher);
+	close_output_pbs(&e_pbs_cipher);
+
+	{
+	stf_status ret;
+	unsigned char *authloc = ikev2_authloc(&md, &e_pbs);
+	if(authloc == NULL) goto end;
+	close_output_pbs(&e_pbs);
+	close_output_pbs(&rbody);
+	close_output_pbs(&reply_stream);
+
+	ret = ikev2_encrypt_msg(&md, role,
+                                    authstart,
+                                    iv, encstart, authloc,
+                                    &e_pbs, &e_pbs_cipher);
+	if(ret != STF_OK) goto end;
+        }
+
+
+	/* let TCL hack it before we mark the length. */
+	TCLCALLOUT("v2_avoidEmitting", pst, pst->st_connection, &md);
+
+	/* keep it for a retransmit if necessary */
+	freeanychunk(pst->st_tpacket);
+	clonetochunk(pst->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+			, "request packet for informational exchange");
+
+	send_packet(pst, __FUNCTION__, TRUE);
+
+	/* update state */
+	ikev2_update_counters(&md);
+
+	}
+	
+	/* If everything is fine, and we sent packet, goto real_end*/
+	goto real_end;
+
+end:
+	/* If some error occurs above that prevents us sending a request packet*/
+	/* delete the states right now*/
+
+	if(st->st_clonedfrom != SOS_NOBODY) {
+		change_state(st, STATE_CHILDSA_DEL);
+		delete_state(st);
+	}
+	else
+	{
+
+		struct state *current_st = pst;
+		struct state *next_st = NULL;
+		struct state *first_st = NULL;
+
+		/* Find the first state in the hash chain*/
+		while(current_st != (struct state *) NULL) {
+		first_st = current_st;
+		current_st = first_st->st_hashchain_prev;
+		}
+
+		current_st = first_st;
+		while (current_st != (struct state *) NULL) {
+		next_st = current_st->st_hashchain_next;
+			if(current_st->st_clonedfrom !=0 ){
+				change_state(current_st, STATE_CHILDSA_DEL);
+			}
+			else
+			{
+				change_state(current_st, STATE_IKESA_DEL);
+			}
+		delete_state(current_st);
+		current_st = next_st;
+		}
+	}
+
+real_end:;
 }
 
 
@@ -2657,3 +3094,4 @@ void ikev2_delete_out(struct state *st UNUSED)
  * c-style: pluto
  * End:
  */
+ 
