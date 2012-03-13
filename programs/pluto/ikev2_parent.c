@@ -785,7 +785,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
 	if(rn != v2N_NOTHING_WRONG) {
 	   u_int16_t group_number = htons(st->st_oakley.group->group);
-	   dc.ptr = (char *)&group_number;
+	   dc.ptr = (unsigned char *)&group_number;
 	   dc.len = 2;
 	   SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
 	   delete_state(st);
