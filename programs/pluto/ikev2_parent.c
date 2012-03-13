@@ -1888,6 +1888,17 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    np = ISAKMP_NEXT_v2SA;
 	}
 
+	DBG(DBG_CONTROLMORE
+	    , DBG_log("going to assemble AUTH payload"));	  
+
+	/* now send AUTH payload */
+	{
+	    stf_status authstat = ikev2_send_auth(c, st
+						  , RESPONDER, np
+						  , idhash_out, &e_pbs_cipher);
+	    if(authstat != STF_OK) return authstat;
+	}
+
 	if(np == ISAKMP_NEXT_v2SA) {
 	    /* must have enough to build an CHILD_SA */
 	    ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
@@ -1899,17 +1910,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 		DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
 		np = ISAKMP_NEXT_NONE;
 	    }
-	}
-
-	DBG(DBG_CONTROLMORE
-	    , DBG_log("going to assemble AUTH payload"));	  
-
-	/* now send AUTH payload */
-	{
-	    stf_status authstat = ikev2_send_auth(c, st
-						  , RESPONDER, np
-						  , idhash_out, &e_pbs_cipher);
-	    if(authstat != STF_OK) return authstat;
 	}
 
 	ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
