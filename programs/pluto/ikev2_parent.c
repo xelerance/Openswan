@@ -45,8 +45,8 @@
 #include "plutoalg.h"
 #include "pluto_crypt.h"
 #include "packet.h"
-#include "ikev2.h"
 #include "demux.h"
+#include "ikev2.h"
 #include "log.h"
 #include "spdb.h"          /* for out_sa */
 #include "ipsec_doi.h"
