@@ -483,7 +483,7 @@ process_v2_packet(struct msg_digest **mdp)
 	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
 	
 	if(stf != STF_OK) {
-	    complete_v2_state_transition(mdp, (stf > STF_FAIL) ? STF_FAIL : stf );
+	    complete_v2_state_transition(mdp, stf);
 	    return;
 	}
     }
@@ -513,7 +513,7 @@ process_v2_packet(struct msg_digest **mdp)
     {
 	stf_status stf;
 	stf = (svm->processor)(md);
-	complete_v2_state_transition(mdp, (stf > STF_FAIL) ? STF_FAIL : stf);
+	complete_v2_state_transition(mdp, stf);
     }
 }
 
