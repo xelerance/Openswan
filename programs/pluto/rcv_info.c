@@ -191,7 +191,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	    break;
 	default:
 		DBG_log("unsupported/unhandled ESP transform '%s' (%d)",
-			enum_names(&esp_transformid_name, p2st->st_esp.attrs.transattrs.encrypt),
+			enum_name(&esp_transformid_name, p2st->st_esp.attrs.transattrs.encrypt),
 			p2st->st_esp.attrs.transattrs.encrypt);
 	}
 	ipcq->esp_detail = p2st->st_esp.attrs.transattrs.encrypt;
