@@ -236,7 +236,6 @@ ikev2_process_payloads(struct msg_digest *md,
 {
     struct payload_digest *pd = md->digest_roof;
     struct state *st = md->st;
-    err_t excuse = "not sure";
     
     /* lset_t needed = smc->req_payloads; */
 
@@ -281,7 +280,7 @@ ikev2_process_payloads(struct msg_digest *md,
 		
 	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
 	{
-	    loglog(RC_LOG_SERIOUS, "%s malformed payload in packet", excuse);
+	    loglog(RC_LOG_SERIOUS, "malformed payload in packet");
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
 	    return STF_FAIL;
 	}
