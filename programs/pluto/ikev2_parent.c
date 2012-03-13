@@ -2096,6 +2096,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
     struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
     struct traffic_selector tsi[16], tsr[16];
+    int tsc=0;
 #if 0
     bool instantiate = FALSE;
     ip_subnet tsi_subnet, tsr_subnet;
@@ -2106,11 +2107,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
     tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 
-
     /* Do the easy case first, if narrowing=no, we need an exact match of TSi/TSr */
-    if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-	int tsc=0;
-	DBG_log("Checking TSi(%d)/TSr(%d) selectors- narrowing not allowed, looking for exact match", tsi_n,tsr_n);
+	DBG_log("Checking TSi(%d)/TSr(%d) selectors, looking for exact match", tsi_n,tsr_n);
 	for(tsc=0;tsc<16;tsc++)
 	{
 	 if(	(tsi[tsc].ts_type == st->st_ts_this.ts_type) && (tsr[tsc].ts_type == st->st_ts_that.ts_type) &&
@@ -2125,10 +2123,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 		break;
 	    }
 	}
-
+	if(received_ts_ok){
+	   openswan_log("TSi/TSr exaxct match");
     } else {
-	openswan_log(" Narrowing accepted but code needs to be written");
-	received_ts_ok = FALSE;
+	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+	   openswan_log(" Narrowing accepted but code needs to be written");
+	   received_ts_ok = FALSE;
+	}
     }
 
     if(!received_ts_ok) {
