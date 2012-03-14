@@ -114,7 +114,6 @@ main(int argc, char *argv[])
 {
 	ip_address high;
 	ip_address low;
-	ip_subnet sub;
 	char bh[100],bl[100];
 	const char *oops;
 	int n;
@@ -194,8 +193,6 @@ regress()
 	int status = 0;
 	ip_address high;
 	ip_address low;
-	ip_subnet sub;
-	char buf[100];
 	const char *oops;
 	int n;
 	int af;
