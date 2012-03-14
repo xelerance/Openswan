@@ -64,6 +64,22 @@
 #include "virtual.h"
 #include "hostpair.h"
 
+static void print_ikev2_ts(struct traffic_selector *ts){
+        char lbx[ADDRTOT_BUF];
+        char hbx[ADDRTOT_BUF];
+
+	DBG_log("PAUL marker ------------------------");
+        DBG_log("ts_type: %s", enum_name(&ikev2_ts_type_names, ts->ts_type));
+        DBG_log("ipprotoid: %d", ts->ipprotoid);
+        DBG_log("startport: %d", ts->startport);
+        DBG_log("endport: %d", ts->endport);
+        addrtot(&ts->low,  0, lbx, sizeof(lbx));
+        addrtot(&ts->high, 0, hbx, sizeof(hbx));
+        DBG_log("ip low: %s", lbx);
+        DBG_log("ip high: %s", hbx);
+	DBG_log("PAUL marker ------------------------");
+}
+
 /* rewrite me with addrbytesptr() */
 struct traffic_selector ikev2_end_to_ts(struct end *e)
 {
@@ -652,16 +668,118 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	if (bsr != NULL) {
 		st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
 		st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
+	} else {
+		DBG(DBG_CONTROL,DBG_log("copying c-> ends to traffic selector st1->st_this/that - what about role ??"));		      if(role==INITIATOR) {
+			st1->st_ts_this = ikev2_end_to_ts(&c->spd.this);
+			st1->st_ts_that = ikev2_end_to_ts(&c->spd.that);
+		} else {
+			st1->st_ts_this = ikev2_end_to_ts(&c->spd.that);
+			st1->st_ts_that = ikev2_end_to_ts(&c->spd.this);
+		}
+	
 	}
     }
 
-    /*
-     * The TS might need narrowing which might not be allowed by local policy
-     * but if we want to send v2N_TS_UNACCEPTABLE, we want to send it encrypted,
+    st1->st_connection = c;   
+
+    /* 
+     * We now found the best TSi/TSr combination, which got copied to st1->st_ts_this/that
+     * If we do not allow narrowing, does the TSiTSr we found must provide an excact match.
+     * We might need to narrow down the proposal, as perhttp://tools.ietf.org/html/rfc5996#section-2.9
+     *
+     * If we want to send TS_UNACCEPTABLE, we want to send it encrypted,
      * so we need to finish building this answer packet and then add the
      * notify payload afterwards
+     *
+     * Ideally, we would instantiate per matching TSi/TSr, but the current code only allows
+     * us one child sa with one st->st_ts_this/that, so we already left all other candidates
+     * behind - so we do not instantiate for now.
      */
+    {
+    DBG(DBG_CONTROL,DBG_log("Starting narrowing TSi/TSr check"));
 
+    print_ikev2_ts(&st1->st_ts_this);
+    print_ikev2_ts(&st1->st_ts_that);
+
+#warning redo me
+	/* we use &tsi and %tsr, which only works because it points to the first entry and
+           we only send/receive one TSi/TSr ourselves. These checks really need to check what
+           we put in st->st_ts_this/that
+          */
+	
+	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
+	ip_subnet tsi_subnet, tsr_subnet;
+	const char *oops;
+	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
+	if(oops != NULL) {
+	      DBG_log("Received TSi was not in CIDR format (%s), cannot determine narrowing\n",oops);
+	      send_ts_unacceptable = TRUE;
+	} 
+	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
+	if(oops != NULL) {
+	      DBG_log("Received TSr was not in CIDR format (%s), cannot determine narrowing\n",oops);
+	      send_ts_unacceptable = TRUE;
+	}
+   
+	/* Can we narrow */
+	DBG(DBG_CONTROL,DBG_log(" compare tsi_subnet/tsr_subnet with that->client and this->client\n"));
+	/* check our subnet */
+	if(!samesubnet(  ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
+	   DBG_log("Our subnet is not the same as the TSI subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+	      send_ts_unacceptable = TRUE;
+	   }
+	   if(subnetinsubnet( ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
+		DBG_log("Their TSI subnet lies within our subnet");
+	   } else {
+		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing not possible");
+		send_ts_unacceptable = TRUE;
+	   }
+	}
+	/* check their subnet */
+	if(!samesubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet) , &c->spd.that.client)) {
+	   DBG_log("Their subnet is not the same as the TSR subnet");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+	      send_ts_unacceptable = TRUE;
+	   }
+	   if(subnetinsubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet), &c->spd.that.client)) {
+		   DBG_log("Their TSR subnet lies within our subnet");
+	   } else {
+	      DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing not possible");
+	      send_ts_unacceptable = TRUE;
+	   }
+	}
+	/* check protocol */
+	if( ((role==INITIATOR) ? st1->st_ts_this.ipprotoid : st1->st_ts_that.ipprotoid == c->spd.this.protocol) &&
+	    ((role==INITIATOR) ? st1->st_ts_that.ipprotoid : st1->st_ts_this.ipprotoid == c->spd.that.protocol)){
+	   DBG_log("The TSi/Tsr protocol matches our connection");
+	} else {
+	   DBG_log("The TSi/Tsr protocol does not exactly match our connection");
+	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
+	      send_ts_unacceptable = TRUE;
+	   } else {
+	   DBG_log("  though narrowing is allowed");
+	   if( ((c->spd.this.protocol != 0) && 
+	       (((role==INITIATOR) ? st1->st_ts_this.ipprotoid : st1->st_ts_that.ipprotoid) != c->spd.this.protocol)) ||
+	       ((c->spd.that.protocol != 0) &&
+	       (((role==INITIATOR) ? st1->st_ts_that.ipprotoid : st1->st_ts_this.ipprotoid) != c->spd.that.protocol)))
+		  DBG_log("  narrowing of protocol from their TSi/TSr proposal failed");
+		  send_ts_unacceptable = TRUE;
+	   }
+	 }
+
+	/* check ports */
+	openswan_log("PAUL: check ports still to do");
+
+
+    if(send_ts_unacceptable){
+	openswan_log(" traffic selector narrowing failed");
+	insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
+	delete_state(st1);
+	return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
+
+    }
 
     DBG(DBG_CONTROL,DBG_log(" inserting child sa duplicated from parent of connection: \"%s\"", st1->st_connection->name));
     st1->st_connection = c;
@@ -683,7 +801,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
 				       &r_sa_pbs, st1, FALSE);
 	
-	if (rn != NOTHING_WRONG)
+	if (rn != v2N_NOTHING_WRONG)
 	    return STF_FAIL + rn;
     }
 
@@ -700,96 +818,6 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	memset(&child_spi, 0, sizeof(child_spi));
 	memset(&notify_data, 0, sizeof(notify_data));
 
-    /* 
-     * We now found the best TSi/TSr combination, which got copied to st1
-     * If we do not allow narrowing, does the TSiTSr we found provide an excact match?
-     * We might need to narrow down the proposal, as perhttp://tools.ietf.org/html/rfc5996#section-2.9
-     */
-    {
-    DBG(DBG_CONTROL,DBG_log("Starting narrowing TSi/TSr check"));
-	
-	int instantiate = FALSE;
-   
-	/* This implies CIDR ranges, because that's the only ranges we allow in the parser */
-	ip_subnet tsi_subnet, tsr_subnet;
-	const char *oops;
-	oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
-	if(oops != NULL) {
-	      DBG_log("Received TSi was not in CIDR format (%s), cannot determine narrowing\n",oops);
-	      send_ts_unacceptable = TRUE;
-	} 
-	oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
-	if(oops != NULL) {
-	      DBG_log("Received TSr was not in CIDR format (%s), cannot determine narrowing\n",oops);
-	      send_ts_unacceptable = TRUE;
-	}
-   
-	/* Can we narrow, if so we instantiate */
-	DBG(DBG_CONTROL,DBG_log(" compare tsi_subnet/tsr_subnet with that->client and this->client\n"));
-	/* check our subnet */
-	if(!samesubnet(  ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
-	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-	      DBG_log("Our subnet is not the same as the TSI subnet");
-	      send_ts_unacceptable = TRUE;
-	   }
-	   if(subnetinsubnet( ((role==INITIATOR) ?  &tsi_subnet : &tsr_subnet) , &c->spd.this.client)) {
-		DBG_log("Their TSI subnet lies within our subnet, narrowing possible and accepted");
-		instantiate = TRUE;
-	   } else {
-		DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing not possible");
-		send_ts_unacceptable = TRUE;
-	   }
-	}
-	/* check their subnet */
-	if(!samesubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet) , &c->spd.that.client)) {
-	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-	      DBG_log("Their subnet is not the same as the TSR subnet");
-	      send_ts_unacceptable = TRUE;
-	   }
-	   if(subnetinsubnet( ((role==INITIATOR) ? &tsr_subnet : &tsi_subnet), &c->spd.that.client)) {
-		   DBG_log("Their TSR subnet lies within our subnet, narrowing possible and accepted");
-		   instantiate = TRUE;
-	   } else {
-	      DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing not possible");
-	      send_ts_unacceptable = TRUE;
-	   }
-	}
-	/* check protocol */
-	if((st1->st_ts_this.ipprotoid == c->spd.this.protocol) && (st1->st_ts_that.ipprotoid == c->spd.that.protocol)) {
-	   DBG_log("The TSi/Tsr protocol matches our connection");
-	} else {
-	   DBG_log("The TSi/Tsr protocol does not exactly match  our connection");
-	   if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-	      send_ts_unacceptable = TRUE;
-	   } else {
-	   DBG_log("  though narrowing is allowed");
-	   if( ((c->spd.this.protocol != 0) && (st1->st_ts_this.ipprotoid != c->spd.this.protocol)) ||
-	       ((c->spd.that.protocol != 0) && (st1->st_ts_that.ipprotoid != c->spd.that.protocol)) ) {
-	       DBG_log("  narrowing of protocol from their TSi/TSr proposal failed");
-	      send_ts_unacceptable = TRUE;
-	   }
-	 }
-	}
-
-#if 0
-	if(instantiate == TRUE) {
-	   /* instantiate the connection since it changed from template, then update */
-	   // FIXME st1->st_connection = ikev2_ts_instantiate(c);
-	   // st1->st_connection = c;
-	   st1->st_connection->c.spd.this.client = tsi_subnet;
-	   st1->st_connection->c.spd.that.client = tsr_subnet;
-   
-	   // since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
-	   // st1->st_ts_this = *tsr;
-	   // st1->st_ts_that = *tsi;
-	   // DBG_log("PAUL: traffic selectors updated\n");
-	} else {
-		st1->st_connection = c;
-	}
-#endif   
-
-    st1->st_connection = c;   
-    } 
 
 	/* continue with items to do as RESPONDER */
 	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
