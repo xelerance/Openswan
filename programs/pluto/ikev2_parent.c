@@ -2135,7 +2135,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     if(!received_ts_ok) {
 	openswan_log(" Failed to find matching TSi/TSr Traffic Selector");
 	// prevents parent from going to I3
-	// return STF_FAIL + v2N_TS_UNACCEPTABLE;
+	return STF_FAIL + v2N_TS_UNACCEPTABLE;
     }
 
     } /* end of TS check block */
