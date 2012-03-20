@@ -1966,7 +1966,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct connection *c = st->st_connection;
     unsigned char *idhash_in;
     struct state *pst = st;
-    bool received_ts_ok = FALSE;
 
     if(st->st_clonedfrom != 0) {
 	pst = state_with_serialno(st->st_clonedfrom);
@@ -2090,123 +2089,74 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     {
-    /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
-    DBG(DBG_CONTROLMORE,DBG_log(" check narrowing - we are responding to I2"));
+			int bestfit_n, bestfit_p;
+			unsigned int best_tsi_i ,  best_tsr_i;
+			bestfit_n = -1;
+			bestfit_p = -1;
 
-    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-    struct traffic_selector tsi[16], tsr[16];
-    int tsc=0;
+			/* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
+			DBG(DBG_CONTROLMORE,DBG_log(" check narrowing - we are responding to I2"));
+
+			struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+			struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+			struct traffic_selector tsi[16], tsr[16];
+			int tsc=0;
 #if 0
-    bool instantiate = FALSE;
-    ip_subnet tsi_subnet, tsr_subnet;
-    const char *oops;
+			bool instantiate = FALSE;
+			ip_subnet tsi_subnet, tsr_subnet;
+			const char *oops;
 #endif
 
-    unsigned int tsi_n, tsr_n;
-    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+			unsigned int tsi_n, tsr_n;
+			tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+			tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 
-    /* Do the easy case first, if narrowing=no, we need an exact match of TSi/TSr */
-	DBG_log("Checking TSi(%d)/TSr(%d) selectors, looking for exact match", tsi_n,tsr_n);
-	for(tsc=0;tsc<16;tsc++)
-	{
-	 if(	(tsi[tsc].ts_type == st->st_ts_this.ts_type) && (tsr[tsc].ts_type == st->st_ts_that.ts_type) &&
-		(tsi[tsc].ipprotoid == st->st_ts_this.ipprotoid) && (tsr[tsc].ipprotoid == st->st_ts_that.ipprotoid) &&
-		(tsi[tsc].startport == st->st_ts_this.startport) && (tsr[tsc].startport == st->st_ts_that.startport) &&
-		(tsi[tsc].endport == st->st_ts_this.endport) && (tsr[tsc].endport == st->st_ts_that.endport) &&
-		sameaddr(&tsi[tsc].low, &st->st_ts_this.low) && sameaddr(&tsr[tsc].low, &st->st_ts_that.low) &&
-		sameaddr(&tsi[tsc].high, &st->st_ts_this.high) && sameaddr(&tsr[tsc].high, &st->st_ts_that.high)
-	   ){
-		DBG(DBG_CONTROLMORE, DBG_log(" TSi/TSr #%d matches our state Traffic Selectors", tsc));
-		received_ts_ok = TRUE;
-		break;
-	    }
-	}
-	if(received_ts_ok){
-	   openswan_log("TSi/TSr exaxct match");
-    } else {
-	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-	   openswan_log(" Narrowing accepted but code needs to be written");
-	   received_ts_ok = FALSE;
-	}
-    }
+			DBG_log("Checking TSi(%d)/TSr(%d) selectors, looking for exact match", tsi_n,tsr_n); 
+			{
+				struct spd_route *sra ;
+				sra = &c->spd; 
+				int bfit_n=ikev2_evaluate_connection_fit(c,sra,INITIATOR,tsi,tsr,tsi_n, tsr_n);
+				if (bfit_n > bestfit_n)
+				{
+					DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
+					int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,INITIATOR,tsi,tsr,
+							tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+					if (bfit_p > bestfit_p) {
+						DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
+									, c->name, best_tsi_i, best_tsr_i));
+						bestfit_p = bfit_p;
+						bestfit_n = bfit_n;
+					}
+				}
+				else
+					DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
+								, c->name));
+			}
 
-    if(!received_ts_ok) {
-	openswan_log(" Failed to find matching TSi/TSr Traffic Selector");
-	// prevents parent from going to I3
-	return STF_FAIL + v2N_TS_UNACCEPTABLE;
-    }
-
+			if ( ( bestfit_n > 0 )  && (bestfit_p > 0))  {
+				DBG(DBG_CONTROLMORE, DBG_log(("found an acceptable TSi/TSr Traffic Selector")));
+				memcpy (&st->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
+				memcpy (&st->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
+				ikev2_print_ts(&st->st_ts_this);
+				ikev2_print_ts(&st->st_ts_that);
+			}
+			else {
+				DBG(DBG_CONTROLMORE, DBG_log(("reject responder TSi/TSr Traffic Selector")));
+				// prevents parent from going to I3
+				return STF_FAIL + v2N_TS_UNACCEPTABLE;
+			}
     } /* end of TS check block */
 
-#if 0
-    {
-    DBG_log("PAUL: We are initiator, checking TSi/TSr");
-    /* This implies CIDR ranges, because that's the only ranges we allow in the parser */
-    oops = rangetosubnet(&tsi->low, &tsi->high, &tsi_subnet);
-    if(oops != NULL) {
-	DBG_log("Received TSi was not in CIDR format (%s), cannot narrow proposal down - ignoring",oops);
-	return STF_FAIL + v2N_TS_UNACCEPTABLE;
-    } 
-    oops = rangetosubnet(&tsr->low, &tsr->high, &tsr_subnet);
-    if(oops != NULL) {
-	DBG_log("Received TSr was not in CIDR format (%s), cannot narrow proposal down\n - ignoring",oops);
-	return STF_FAIL + v2N_TS_UNACCEPTABLE;
-    }
-    /* Can we narrow, if so we instantiate */
-    DBG_log("PAUL: compare tsi_subnet/tsr_subnet with that->client and this->client\n");
-    if(!samesubnet(&tsi_subnet, &c->spd.this.client)) {
-	DBG_log("Our subnet is not the same as the TSI subnet");
-	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-		return STF_FAIL + v2N_TS_UNACCEPTABLE;
-	}
-	if(subnetinsubnet(&tsi_subnet, &c->spd.this.client)) {
-	   DBG_log("Their TSI subnet lies within our subnet, narrowing accepted");
-	   instantiate = TRUE;
-	} else {
-	   DBG_log("Their TSI subnet lies OUTSIDE our subnet, narrowing rejected");
-	   return STF_FAIL + v2N_TS_UNACCEPTABLE;
-	}
-    }
-    if(!samesubnet(&tsr_subnet, &c->spd.that.client)) {
-	DBG_log("Our subnet is not the same as the TSR subnet");
-	if(!(c->policy & POLICY_IKEV2_ALLOW_NARROWING)) {
-		return STF_FAIL + v2N_TS_UNACCEPTABLE;
-	}
-	if(subnetinsubnet(&tsr_subnet, &c->spd.that.client)) {
-		DBG_log("Their TSR subnet lies within our subnet, narrowing accepted");
-		instantiate = TRUE;
-	} else {
-		DBG_log("Their TSR subnet lies OUTSIDE our subnet, narrowing rejected");
-		return STF_FAIL + v2N_TS_UNACCEPTABLE;
-	}
-    }
-    if(instantiate == TRUE) {
-	/* instantiate the connection since it changed from template, then update */
-	// CHEAT: for now modify our template as a proof of concept
-	c->spd.this.client = tsi_subnet;
-	c->spd.that.client = tsr_subnet;
-	// since the new TSi/TSr is narrowed, update our traffic_selectors just in case something uses it
-	// st1->st_ts_this = *tsr;
-	// st1->st_ts_that = *tsi;
-	// DBG_log("PAUL: traffic selectors updated\n");
-    }
+		{
+			v2_notification_t rn;
+			struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
 
-    }
-#endif
+			rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+					NULL, st, FALSE);
 
-
-    {
-	v2_notification_t rn;
-	struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-	
-	rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				       NULL, st, FALSE);
-	
-	if(rn != v2N_NOTHING_WRONG)
-	    return STF_FAIL + rn;
-    }
+			if(rn != v2N_NOTHING_WRONG)
+				return STF_FAIL + rn;
+		}
 
     {
 	struct payload_digest *p;
@@ -2249,7 +2199,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	
     ikev2_derive_child_keys(st, md->role);
 
-    if(received_ts_ok == TRUE){
 	c->newest_ipsec_sa = st->st_serialno;
 
 	/* now install child SAs */
@@ -2262,13 +2211,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	delete_event(st);
 
 	return STF_OK;
-    } else {
-	/* cleanup our failed partial child state */
-	DBG(DBG_CONTROL,DBG_log("ikev2parent_inR2: deleting partial child SA"));
-	delete_state(st);
-    }
-    
-    return STF_OK;
 }
 
 /*
