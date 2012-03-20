@@ -482,6 +482,9 @@ umlplutotest	ikev2-minor-version-responder		good
 umlplutotest	ikev2-isakmp-reserved-flags-01		good
 umlplutotest	ikev2-isakmp-reserved-flags-02		good
 umlplutotest	ikev2-allow-narrow-01			good
+umlplutotest	ikev2-allow-narrow-02			good
+umlplutotest	ikev2-allow-narrow-03			good
+umlplutotest	ikev2-allow-narrow-04			good
 umlplutotest	ikev2-no-nhelpers-01			good
 
 #################################################################

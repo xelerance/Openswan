@@ -6,5 +6,6 @@ narrowed down proposal as per http://tools.ietf.org/html/rfc5996#section-2.9
 The initiator asks for all protocols and ports. The responder only allows
 all protocols and port 1234.
 
-Because narrowing=no, this should be rejected.
+Because narrowing=yes on the responder, it will allow and suggest its
+narrowed proposal. Because the initiator has narrowing=no, it should reject it.
 
