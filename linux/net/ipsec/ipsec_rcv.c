@@ -592,9 +592,12 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 #ifdef CONFIG_KLIPS_IPV6
 		ipp6 = (struct ipv6hdr *) ipp;
 		if (ipp->version == 6) {
+			IPSEC_FRAG_OFF_DECL(frag_off)
 			unsigned char nexthdr = ipp6->nexthdr;
 			int nexthdroff;
-			nexthdroff = ipv6_skip_exthdr(skb, ipsec_skb_offset(skb, ipp6+1), &nexthdr);
+			nexthdroff = ipsec_ipv6_skip_exthdr(skb,
+				ipsec_skb_offset(skb, ipp6+1),
+				&nexthdr, &frag_off);
 			skb_set_transport_header(skb, ipsec_skb_offset(skb, (void*)skb->data + nexthdroff));
 			irs->iphlen = nexthdroff - ipsec_skb_offset(skb, ipp6);
 		} else
@@ -900,11 +903,12 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		irs->proto = osw_ip6_hdr(irs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(irs->skb,
+		nexthdroff = ipsec_ipv6_skip_exthdr(irs->skb,
 			((void *)(osw_ip6_hdr(irs)+1)) - (void*)irs->skb->data,
-			&irs->proto);
+			&irs->proto, &frag_off);
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
 	} else
 #endif /* CONFIG_KLIPS_IPV6 */
@@ -1638,10 +1642,11 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 	irs->iph = (void *) ip_hdr(skb);
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(irs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		unsigned char nexthdr = osw_ip6_hdr(irs)->nexthdr;
 		int nexthdroff;
-		nexthdroff = ipv6_skip_exthdr(irs->skb, ((void *)(osw_ip6_hdr(irs)+1))-
-				(void*)irs->skb->data, &nexthdr);
+		nexthdroff = ipsec_ipv6_skip_exthdr(irs->skb, ((void *)(osw_ip6_hdr(irs)+1))-
+				(void*)irs->skb->data, &nexthdr, &frag_off);
 		irs->iphlen = nexthdroff - (irs->iph - (void*)irs->skb->data);
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
 	} else

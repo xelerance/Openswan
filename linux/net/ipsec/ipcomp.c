@@ -155,10 +155,11 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (iph->version == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		nexthdr = iph6->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(skb,
-			((void *)(iph6+1)) - (void*)skb->data, &nexthdr);
+		nexthdroff = ipsec_ipv6_skip_exthdr(skb,
+			((void *)(iph6+1)) - (void*)skb->data, &nexthdr, &frag_off);
 		iphlen = nexthdroff - ((void *)iph6 - (void*)skb->data);
 		pyldsz = ntohs(iph6->payload_len) + sizeof(struct ipv6hdr) - iphlen;
 	} else
@@ -406,10 +407,11 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 	
 #ifdef CONFIG_KLIPS_IPV6
 	if (oiph->version == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		nexthdr = oiph6->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(skb,
-			((void *)(oiph6+1)) - (void*)skb->data, &nexthdr);
+		nexthdroff = ipsec_ipv6_skip_exthdr(skb,
+			((void *)(oiph6+1)) - (void*)skb->data, &nexthdr, &frag_off);
 		iphlen = nexthdroff - ((void *)oiph6 - (void*)skb->data);
 		tot_len = ntohs(oiph6->payload_len) + sizeof(struct ipv6hdr);
 	} else

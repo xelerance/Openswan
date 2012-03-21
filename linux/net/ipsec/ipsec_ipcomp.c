@@ -216,11 +216,12 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   
 #ifdef CONFIG_KLIPS_IPV6
   if (osw_ip_hdr_version(ixs) == 6) {
+	IPSEC_FRAG_OFF_DECL(frag_off)
 	int nexthdroff;
 	unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-	nexthdroff = ipv6_skip_exthdr(ixs->skb,
+	nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 		((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-		&nexthdr);
+		&nexthdr, &frag_off);
 	ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
     tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
   } else

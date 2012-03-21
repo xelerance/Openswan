@@ -556,9 +556,11 @@ ipsec_tunnel_SAlookup(struct ipsec_xmit_state *ixs)
 	ixs->matcher.sen_family = AF_ENCAP;
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
-			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, 
+			&nexthdr, &frag_off);
 		ixs->matcher.sen_type = SENT_IP6;
 		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
 		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;
@@ -922,9 +924,11 @@ ipsec_tunnel_xsm_complete(
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
-			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
+			&nexthdr, &frag_off);
 		ixs->matcher.sen_type = SENT_IP6;
 		ixs->matcher.sen_ip6_src = osw_ip6_hdr(ixs)->saddr;
 		ixs->matcher.sen_ip6_dst = osw_ip6_hdr(ixs)->daddr;

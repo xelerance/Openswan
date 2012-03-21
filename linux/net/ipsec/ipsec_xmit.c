@@ -670,11 +670,12 @@ ipsec_xmit_encap_init(struct ipsec_xmit_state *ixs)
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-			&nexthdr);
+			&nexthdr, &frag_off);
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len) +
 				sizeof(struct ipv6hdr) - ixs->iphlen;
@@ -924,10 +925,11 @@ ipsec_xmit_esp(struct ipsec_xmit_state *ixs)
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+	    IPSEC_FRAG_OFF_DECL(frag_off)
 	    nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-	    i = ipv6_skip_exthdr(ixs->skb,
+	    i = ipsec_ipv6_skip_exthdr(ixs->skb,
 		    ((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-		    &nexthdr);
+		    &nexthdr, &frag_off);
 	} else
 #endif /* CONFIG_KLIPS_IPV6 */
 	{
@@ -1276,11 +1278,12 @@ ipsec_xmit_ipcomp(struct ipsec_xmit_state *ixs)
 
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 				((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-				&nexthdr);
+				&nexthdr, &frag_off);
 		tot_len = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr);
 	} else
 #endif
@@ -1483,9 +1486,11 @@ static int create_hold_eroute(struct ipsec_xmit_state *ixs)
 
 #ifdef CONFIG_KLIPS_IPV6
 	  if (osw_ip_hdr_version(ixs) == 6) {
+	    IPSEC_FRAG_OFF_DECL(frag_off)
 	    nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-	    nexthdroff = ipv6_skip_exthdr(ixs->skb,
-			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data, &nexthdr);
+	    nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
+			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
+			&nexthdr, &frag_off);
 
 	    hold_eroute.er_eaddr.sen_proto6 = nexthdr;
 	  } else
@@ -1614,11 +1619,12 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 	ixs->max_headroom = ixs->max_tailroom = 0;
 #ifdef CONFIG_KLIPS_IPV6
 	if (osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-			&nexthdr);
+			&nexthdr, &frag_off);
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len);
 	} else
@@ -1685,6 +1691,7 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			char bufsrc[ADDRTOA_BUF], bufdst[ADDRTOA_BUF];
 			unsigned char nexthdr;
 			int nexthdroff;
+			IPSEC_FRAG_OFF_DECL(frag_off)
 
 			/* Signal all listening KMds with a PF_KEY ACQUIRE */
 
@@ -1700,9 +1707,9 @@ ipsec_xmit_init1(struct ipsec_xmit_state *ixs)
 			dst.sin6_port = 0;
 
 			nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-			nexthdroff = ipv6_skip_exthdr(ixs->skb,
+			nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 				((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-				&nexthdr);
+				&nexthdr, &frag_off);
 			if (nexthdroff == 0) {
 				printk("KLIPS: broken ipv6 header\n");
 				nexthdr = -1;
@@ -2235,11 +2242,12 @@ ipsec_xmit_init2(struct ipsec_xmit_state *ixs)
 	    }
 #ifdef CONFIG_KLIPS_IPV6
 		else if (ixs->cur_mtu < tot_len && osw_ip_hdr_version(ixs) == 6) {
+		IPSEC_FRAG_OFF_DECL(frag_off)
 		int nexthdroff;
 		unsigned char nexthdr = osw_ip6_hdr(ixs)->nexthdr;
-		nexthdroff = ipv6_skip_exthdr(ixs->skb,
+		nexthdroff = ipsec_ipv6_skip_exthdr(ixs->skb,
 			((void *)(osw_ip6_hdr(ixs)+1)) - (void*)ixs->skb->data,
-			&nexthdr);
+			&nexthdr, &frag_off);
 		ixs->iphlen = nexthdroff - (ixs->iph - (void*)ixs->skb->data);
 		ixs->pyldsz = ntohs(osw_ip6_hdr(ixs)->payload_len) + sizeof(struct ipv6hdr) - ixs->iphlen;
 

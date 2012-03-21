@@ -66,6 +66,14 @@
 # define RHEL_RELEASE_VERSION(x,y) 10
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)
+#define ipsec_ipv6_skip_exthdr ipv6_skip_exthdr
+#define IPSEC_FRAG_OFF_DECL(x) __be16 x;
+#else
+#define ipsec_ipv6_skip_exthdr(a,b,c,d) ipv6_skip_exthdr(a,b,c)
+#define IPSEC_FRAG_OFF_DECL(x)
+#endif
+
 /*
  * try and handle time wraps in a nicer manner
  */
