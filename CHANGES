@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS and http://bugs.openswan.org/
 
-v2.6.38 (unreleased)
+v2.6.38 (March 23, 2012)
 * DPD: seq_no logged after hton() call [Shinichi Furuso]
 * DPD: With multiple phase 2 SAs, we sent too many [Shinichi Furuso]
   R_U_THERE's
