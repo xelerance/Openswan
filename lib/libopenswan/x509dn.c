@@ -1067,7 +1067,9 @@ select_x509cert_id(x509cert_t *cert, struct id *end_id)
 
     if (copy_subject_dn)
     {
-	if (end_id->kind != ID_NONE && end_id->kind != ID_DER_ASN1_DN)
+	if (end_id->kind != ID_NONE &&
+	    end_id->kind != ID_DER_ASN1_DN &&
+	    end_id->kind != ID_FROMCERT)
 	{
 	     char buf[IDTOA_BUF];
 
