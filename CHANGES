@@ -8,6 +8,8 @@ v2.6.39 (unreleased)
 * Bugtracker bugs fixed:
    #1349 pluto logging no subjectAltName matches ID '%fromcert', replaced
          by subject DN [Tuomo]
+   #1308 forceencaps= setting does now show up in "ipsec auto --status"
+         [Matt Rogers]
 
 v2.6.38 (March 23, 2012)
 * DPD: seq_no logged after hton() call [Shinichi Furuso]
