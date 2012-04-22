@@ -28,7 +28,7 @@
 #include <string.h>
 #include <assert.h>
 #include <getopt.h>
-#include <openswan.h>
+#include <libreswan.h>
 #include <gmp.h>
 
 #ifdef HAVE_LIBNSS
@@ -149,7 +149,7 @@ void SECItemToHex(const SECItem * item, char * dst)
 
 /*
  * hexOut - prepare hex output, guaranteeing even number of digits
- * The current OpenSWAN conversion routines expect an even digit count,
+ * The current Libreswan conversion routines expect an even digit count,
  * but the is no guarantee the data will have such length.
  * hexOut is like hexout but takes a SECItem *.
  */

@@ -36,7 +36,7 @@
 #  include <sys/uio.h>	/* struct iovec */
 #endif
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -150,7 +150,7 @@ process_packet(struct msg_digest **mdp)
 
     if (md->packet_pbs.roof != md->message_pbs.roof)
     {
-	openswan_log("size (%u) differs from size specified in ISAKMP HDR (%u)"
+	libreswan_log("size (%u) differs from size specified in ISAKMP HDR (%u)"
 	    , (unsigned) pbs_room(&md->packet_pbs), md->hdr.isa_length);
 	return;
     }
@@ -334,7 +334,7 @@ read_packet(struct msg_digest *md)
 	     * We get "connection refused" in response to some
 	     * datagram we sent, but we cannot tell which one.
 	     */
-	    openswan_log("some IKE message we sent has been rejected with ECONNREFUSED (kernel supplied no details)");
+	    libreswan_log("some IKE message we sent has been rejected with ECONNREFUSED (kernel supplied no details)");
 	}
 	else if (from_ugh != NULL)
 	{
@@ -352,7 +352,7 @@ read_packet(struct msg_digest *md)
     }
     else if (from_ugh != NULL)
     {
-	openswan_log("recvfrom on %s returned malformed source sockaddr: %s"
+	libreswan_log("recvfrom on %s returned malformed source sockaddr: %s"
 	    , ifp->ip_dev->id_rname, from_ugh);
 	return FALSE;
     }
@@ -363,13 +363,13 @@ read_packet(struct msg_digest *md)
     if (ifp->ike_float == TRUE) {
 	u_int32_t non_esp;
 	if (packet_len < (int)sizeof(u_int32_t)) {
-	    openswan_log("recvfrom %s:%u too small packet (%d)"
+	    libreswan_log("recvfrom %s:%u too small packet (%d)"
 		, ip_str(cur_from), (unsigned) cur_from_port, packet_len);
 	    return FALSE;
 	}
 	memcpy(&non_esp, _buffer, sizeof(u_int32_t));
 	if (non_esp != 0) {
-	    openswan_log("recvfrom %s:%u has no Non-ESP marker"
+	    libreswan_log("recvfrom %s:%u has no Non-ESP marker"
 		, ip_str(cur_from), (unsigned) cur_from_port);
 	    return FALSE;
 	}

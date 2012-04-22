@@ -23,13 +23,13 @@ else
 	echo 'VPATH+=${srcdir}' 		>>${OBJDIRTOP}/Makefile
 	echo 'OSDEP='${OSDEP}                   >>${OBJDIRTOP}/Makefile
 	echo 'BUILDENV='${BUILDENV}             >>${OBJDIRTOP}/Makefile
-	echo 'OPENSWANSRCDIR='${srcdir}         >>${OBJDIRTOP}/Makefile
+	echo 'LIBRESWANSRCDIR='${srcdir}         >>${OBJDIRTOP}/Makefile
 	echo 'include ${srcdir}Makefile.top'   >>${OBJDIRTOP}/Makefile
 
 	echo 'programs install clean checkprograms:: ' >>${OBJDIRTOP}/Makefile
 	echo '	@for d in $(SUBDIRS) ; \'                                >>${OBJDIRTOP}/Makefile
 	echo '	do \'                                                    >>${OBJDIRTOP}/Makefile
-	echo '		(cd $$d && $(MAKE) OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \'  >>${OBJDIRTOP}/Makefile
+	echo '		(cd $$d && $(MAKE) LIBRESWANSRCDIR=${LIBRESWANSRCDIR} $@ ) || exit 1; \'  >>${OBJDIRTOP}/Makefile
 	echo '	done; '                                                  >>${OBJDIRTOP}/Makefile
 fi
 
@@ -50,7 +50,7 @@ do
 		echo 'OSDEP='${OSDEP}                   >>${dirname}/Makefile
 		echo 'BUILDENV='${BUILDENV}             >>${dirname}/Makefile
 		echo 'VPATH+=${srcdir}' 		>>${dirname}/Makefile
-		echo 'OPENSWANSRCDIR='${srcdir}         >>${dirname}/Makefile
+		echo 'LIBRESWANSRCDIR='${srcdir}         >>${dirname}/Makefile
 		echo 'include ${srcdir}Makefile'       >>${dirname}/Makefile
 	fi
 done

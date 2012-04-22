@@ -139,8 +139,8 @@ struct kernel_ops {
     void (*process_queue)(void);
     void (*process_msg)(void);
     void (*set_debug)(int
-		      , openswan_keying_debug_func_t debug_func
-		      , openswan_keying_debug_func_t error_func);
+		      , libreswan_keying_debug_func_t debug_func
+		      , libreswan_keying_debug_func_t error_func);
     bool (*raw_eroute)(const ip_address *this_host,
 		       const ip_subnet *this_client,
 		       const ip_address *that_host,

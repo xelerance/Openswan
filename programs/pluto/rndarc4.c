@@ -50,7 +50,7 @@
 #include <sys/time.h>
 #include <fcntl.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sha1.h"
 #include "constants.h"

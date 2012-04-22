@@ -1,20 +1,20 @@
 
-Openswan can be compiled using HAVE_STATSD=true
+Libreswan can be compiled using HAVE_STATSD=true
 
-This will cause openswan to log all state changes by calling a
-binary, currently hardcoded to /bin/openswan-statsd
+This will cause libreswan to log all state changes by calling a
+binary, currently hardcoded to /bin/libreswan-statsd
 
 It will log the state changes as arguments to that binary which is called
 using system()
 
 As an example, to log these to a file called /tmp/stats.out you can do:
 
-cat > /bin/openswan-statsd < EOF
+cat > /bin/libreswan-statsd < EOF
 #!/bin/sh
 
 echo "$*" >> /tmp/stats.out
 EOF
-chmod 755 /bin/openswan-statsd
+chmod 755 /bin/libreswan-statsd
 
 
 Example output (where we have a conn l2tp-psk)

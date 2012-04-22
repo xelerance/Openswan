@@ -23,7 +23,7 @@ west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --add westnet-eastnet-twofish
 west:~#

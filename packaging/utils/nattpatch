@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# wander through an OpenSWAN nat-t directory, creating a patch file (to stdout)
+# wander through an Libreswan nat-t directory, creating a patch file (to stdout)
 # that will apply the code to a kernel source directory.
 #
 # $Id: nattpatch,v 1.3 2005/09/26 02:37:58 mcr Exp $

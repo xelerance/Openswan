@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 SUBDIRS=uml_netjig pcap2skb
 
@@ -25,6 +25,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ LIBRESWANSRCDIR=$(LIBRESWANSRCDIR) $@ ) || exit 1;\
 	done; 
 

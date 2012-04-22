@@ -22,7 +22,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -37,7 +37,7 @@
 #include <linux/etherdevice.h>	/* eth_type_trans */
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
-#include <openswan.h>
+#include <libreswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -49,24 +49,24 @@
 #include <net/ip.h>
 #include <net/protocol.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_xmit.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_xmit.h"
 
-#include "openswan/ipsec_auth.h"
+#include "libreswan/ipsec_auth.h"
 
 #ifdef CONFIG_KLIPS_ESP
-#include "openswan/ipsec_esp.h"
+#include "libreswan/ipsec_esp.h"
 #endif /* CONFIG_KLIPS_ESP */
 
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_alg.h"
 #ifdef CONFIG_KLIPS_OCF
 # include "ipsec_ocf.h"
 #endif

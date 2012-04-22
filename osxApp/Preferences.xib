@@ -232,7 +232,7 @@
 			</object>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
-		<string key="IBDocument.LastKnownRelativeProjectPath">Openswan.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">Libreswan.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 	</data>
 </archive>

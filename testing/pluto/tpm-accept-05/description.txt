@@ -13,9 +13,9 @@ Tcl Test Script #5 - "Check response to expired IKE negotiation":
       negotiations with IKE tool 
 
       NOTE: not all DUT's will be able to refresh the IKE phase I.
-	    Openswan does not do this, as it could be a Denial of Service.
+	    Libreswan does not do this, as it could be a Denial of Service.
 
-      NOTE that DUT will attempt to delete the phase I, so Openswan
+      NOTE that DUT will attempt to delete the phase I, so Libreswan
 	   must ignore this message.
 
 

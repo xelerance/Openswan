@@ -59,7 +59,7 @@
 #define NO_CRYPTOAPI_SUPPORT
 #endif
 /*	Low freeswan header coupling	*/
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_alg.h"
 
 #include <linux/crypto.h>
 #ifdef CRYPTO_API_VERSION_CODE

@@ -1,0 +1,53 @@
+The following people have contributed major resources and/or significant patches
+to Openswan 2.x. There are many more unlisted contributors. If you feel you or
+your company are missing, please contact paul@nohats.ca.
+
+	Michael Richardson <mcr@xelerance.com> - KLIPS, OCF, IKEv2, testing
+	Paul Wouters <paul@nohats.ca> - IKEv2, packaging, porting, support
+	Antony Antony <antony@xelerance.com> - IKEv2, testing
+	Ken Bantoft <ken@xelerance.com> - DPD, cross compiling, integration
+	Bart Trojanowski <bart@xelerance.com> - OCF, KLIPS
+	Herbert Xu <herbert@gondor.apana.org.au> - NETKEY / XFRM, IKEv2, NAT-T
+	David McCullough <David_Mccullough@securecomputing.com> - KLIPS, OCF
+	D. Hugh Redelmeier <hugh@mimosa.com> - Bug fixer extraordinaire
+	Andreas Steffen <andreas.steffen@strongsec.com> - X.509 Certificates
+	Dr{Who} on Freenode - Porting NAT-T + XAUTH to Openswan 2.x 
+	Jacco de Leeuw <jacco2@dds.nl> - Fixes for MS Interop
+	Mathieu Lafon <mlafon@arkoon.net> - NAT-T Support
+	Nate Carlson - Force NAT-T framework, KLIPS for 2.6, etc...
+	Stephen Bevan <stephen@dino.dnsalias.com> - RFC2409 port selectors
+	Tuomo Soini <tis@foobar.fi> - NETKEY, KLIPS, _updown scripts and more
+	Matthew Galgoci <mgalgoci@redhat.com> 
+	Miloslav Trmac <mitr@redhat.com>
+	Avesh Agarwal <avagarwa@redhat.com>, USE_LIBNSS, SElinux
+	Hiren Joshi Cyberoam [www.cyberoam.com] - Various fixes
+	Shingo Yamawaki <Shingo.Yamawaki@jp.sony.com> - Various KLIPS patches
+	willy@w.ods.org
+
+Openswan is a fork of the FreeS/WAN 2.04 codebase.
+Please see the doc/CREDITS.freeswan file from FreeS/WAN for details on
+original work.
+
+Xelerance (http://www.xelerance.com) has sponsored the continued development
+of Openswan since version 1.0
+
+RedHat (http://www.redhat.com/) sponsored the development of IKEv2, USE_LIBNSS
+and various fixes related to NETKEY.
+
+Secure Computing / Snapgear contributed OCF integration, DYNDNS support and many
+other KLIPS and userland related fixes.
+
+IXIA Communications (http://www.ixiacom.com/) sponsored the cryptographic
+refit in pluto, which permitted Aggressive mode to be incorporated safely.
+
+Sony Japan contributed many fixes to KLIPS, and sponsored IPsec/L2TP development
+
+Siemens Germany sponsored IPsec/L2TP development
+
+Emagister sponsored IPsec/L2TP development
+
+Astaro (http://www.astaro.de/) contributed patches and hardware
+
+HP (http://www.hp.com/) donated hardware
+
+Cyberoam (http://www.cyberoam.com/) contributed various patches

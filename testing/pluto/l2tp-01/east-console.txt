@@ -9,10 +9,10 @@ east:~#
  if [ -f /var/run/l2tpd.pid ]; then kill `cat /var/run/l2tpd.pid`; fi
 east:~#
  ipsec setup restart
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add any--east-l2tp
 east:~#

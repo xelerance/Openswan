@@ -1,15 +1,15 @@
 
-How to use UML testing with Openswan
+How to use UML testing with Libreswan
 
-- wget  http://www.openswan.org/download/uml-vm/64bit/centos-hda.img.bz2
+- wget  http://www.libreswan.org/download/uml-vm/64bit/centos-hda.img.bz2
 - bunzip centos-hda.img.bz2
 - configure your VM technology to boot this disk image as a x86_64 machine.
    eg: qemu-system-x86_64 -m 1024 -hda centos-hda.img
    or write a xen HVM config file
    or use virt-install
-- Boot the machine and login as "build" with password "openswan"
+- Boot the machine and login as "build" with password "libreswan"
   (if for some reason you want to login as root, it uses the same password)
-- cd openswan-2.6
+- cd libreswan-2.6
 
 To run ALL testsm use:
 
@@ -22,7 +22,7 @@ To run a single test (eg basic-pluto-01), use:
 
 To start uml VM's individually:
 
-- cd openswan-2.6/UMLPOOL/hostname/
+- cd libreswan-2.6/UMLPOOL/hostname/
 - to run with netkey: ./start-netkey.sh single
 - to run with klips: ./start.sh single
 

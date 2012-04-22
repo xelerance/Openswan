@@ -13,7 +13,7 @@ are provided.
 
 The adjustFailure routine examines the state structure to determine if the
 keying material has been derived yet, and if so, it logs it using
-openswan_DBG_dump(). 
+libreswan_DBG_dump(). 
 
 Note that in test cases, the logs are directed to stderr, so "puts stderr"
 is essentially equivalent to writing to the logs. 

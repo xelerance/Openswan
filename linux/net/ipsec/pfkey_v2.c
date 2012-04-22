@@ -27,7 +27,7 @@
 #endif
 #include <linux/kernel.h>
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #include <linux/major.h>
 #include <linux/signal.h>
@@ -67,20 +67,20 @@
 
 #include <linux/types.h>
 
-#include "openswan/ipsec_param2.h"
+#include "libreswan/ipsec_param2.h"
  
-#include <openswan.h>
+#include <libreswan.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_sa.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_kversion.h"
-#include "openswan/ipsec_sysctl.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_kversion.h"
+#include "libreswan/ipsec_sysctl.h"
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 

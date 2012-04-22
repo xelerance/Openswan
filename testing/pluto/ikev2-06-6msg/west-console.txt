@@ -6,7 +6,7 @@ west:~#
  iptables -A INPUT -i eth1 -s 192.0.2.0/24 -j DROP
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~#

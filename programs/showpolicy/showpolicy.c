@@ -21,8 +21,8 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <getopt.h>
-#include "openswan.h"
-#include "openswan/ipsec_policy.h"
+#include "libreswan.h"
+#include "libreswan/ipsec_policy.h"
 #include "sysdep.h"
 #include "socketwrapper.h"
 #include "ipsec_saref.h"
@@ -46,7 +46,7 @@ help(void)
 	    " [--privacytext X]  string to dump if just plain DNS OE\n"
 	    " [--dnssectext X]   string to dump if just DNSSEC OE\n"
             "\n\n"
-	"Openswan %s\n",
+	"Libreswan %s\n",
 	ipsec_version_code());
 }
 
@@ -303,7 +303,7 @@ int main(int argc, char *argv[])
       return 0;	/* GNU coding standards say to stop here */
       
     case 'V':               /* --version */
-      fprintf(stderr, "Openswan %s\n", ipsec_version_code());
+      fprintf(stderr, "Libreswan %s\n", ipsec_version_code());
       return 0;	/* GNU coding standards say to stop here */
       
     case 'i':
@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 /*
  * $Log: showpolicy.c,v $
  * Revision 1.5  2004/04/04 01:50:56  ken
- * Use openswan includes
+ * Use libreswan includes
  *
  * Revision 1.4  2003/05/14 15:46:44  mcr
  * 	switch statement was missing break statements and was running on.

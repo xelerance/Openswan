@@ -16,11 +16,11 @@ setup_make() {
 	i?86) SUBARCH=i386;;
     esac
 
-    echo "IPSECDIR=${OPENSWANSRCDIR}/linux/net/ipsec"
+    echo "IPSECDIR=${LIBRESWANSRCDIR}/linux/net/ipsec"
     echo "USE_OBJDIR=${USE_OBJDIR}"
-    echo "OPENSWANSRCDIR=${OPENSWANSRCDIR}"
-    echo "include ${OPENSWANSRCDIR}/Makefile.inc"
-    echo "include ${OPENSWANSRCDIR}/Makefile.ver"
+    echo "LIBRESWANSRCDIR=${LIBRESWANSRCDIR}"
+    echo "include ${LIBRESWANSRCDIR}/Makefile.inc"
+    echo "include ${LIBRESWANSRCDIR}/Makefile.ver"
     echo 
     
     echo "all: "
@@ -30,20 +30,20 @@ setup_make() {
 
     if $domodules
     then
-	echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
+	echo "module/ipsec.o: ${LIBRESWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
 	echo "$TAB mkdir -p module"
-	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
+	echo "$TAB ${MAKE:-make} -C ${LIBRESWANSRCDIR} ${MAKE_DEBUG} LIBRESWANSRCDIR=${LIBRESWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
 	echo
 
-	echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
+	echo "module26/ipsec.ko: ${LIBRESWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
 	echo "$TAB mkdir -p module26"
-	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
+	echo "$TAB ${MAKE:-make} -C ${LIBRESWANSRCDIR} ${MAKE_DEBUG} LIBRESWANSRCDIR=${LIBRESWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
 	echo
     fi
 
     # now describe how to build the initrd.
-    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list"
-    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list ${OPENSWANSRCDIR} ${BASICROOT}" 
+    echo "initrd.uml: ${LIBRESWANSRCDIR}/testing/utils/initrd-`uname -m`.list"
+    echo "$TAB fakeroot ${LIBRESWANSRCDIR}/testing/utils/buildinitrd ${LIBRESWANSRCDIR}/testing/utils/initrd-`uname -m`.list ${LIBRESWANSRCDIR} ${BASICROOT}" 
 }
 
 # output should directed to a Makefile
@@ -168,7 +168,7 @@ setup_host_make() {
     echo "$TAB cp ${TESTINGROOT}/baseconfigs/$host/etc/fstab $hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /testing		     hostfs   defaults,ro,${TESTINGROOT} 0 0 >>$hostroot/etc/fstab"
-    echo "$TAB echo none	   /usr/src		     hostfs   defaults,ro,${OPENSWANSRCDIR} 0 0 >>$hostroot/etc/fstab"
+    echo "$TAB echo none	   /usr/src		     hostfs   defaults,ro,${LIBRESWANSRCDIR} 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/obj		     hostfs   defaults,ro,\${OBJDIRTOP} 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/local		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/usr/local 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /var/tmp		     hostfs   defaults,rw,${POOLSPACE}/${hostroot}/var/tmp 0 0 >>$hostroot/etc/fstab"
@@ -182,12 +182,12 @@ setup_host_make() {
     echo
     depends="$depends $hostroot/etc/sysconfig/network-scripts/ifcfg-eth0"
 
-    if [ "X$HOSTTYPE" == "Xopenswan" ]
+    if [ "X$HOSTTYPE" == "Xlibreswan" ]
     then
 	# install FreeSWAN if appropriate.
         
-	echo "$hostroot/usr/local/sbin/ipsec : ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver"
-	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} DESTDIR=$POOLSPACE/$hostroot USE_OBJDIR=true install"
+	echo "$hostroot/usr/local/sbin/ipsec : ${LIBRESWANSRCDIR}/Makefile.inc ${LIBRESWANSRCDIR}/Makefile.ver"
+	echo "$TAB ${MAKE:-make} -C ${LIBRESWANSRCDIR} ${MAKE_DEBUG} DESTDIR=$POOLSPACE/$hostroot USE_OBJDIR=true install"
 	echo
 	depends="$depends $hostroot/usr/local/sbin/ipsec"
 
@@ -206,7 +206,7 @@ setup_host_make() {
 
 	    # make module startup script
 	    startscript=$POOLSPACE/$host/startmodule.sh
-	    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh $hostroot/ipsec.o initrd.cpio"
+	    echo "$startscript : $LIBRESWANSRCDIR/umlsetup.sh $hostroot/ipsec.o initrd.cpio"
 	    echo "$TAB echo '#!/bin/bash' >$startscript"
 	    echo "$TAB echo ''          >>$startscript"
 	    echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
@@ -225,7 +225,7 @@ setup_host_make() {
     then 
      # make startup script for NETKEY uml (no modules)
      startscript=$POOLSPACE/$host/start-netkey.sh
-     echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
+     echo "$startscript : $LIBRESWANSRCDIR/umlsetup.sh initrd.uml"
      echo "$TAB echo '#!/bin/bash' >$startscript"
      echo "$TAB echo ''          >>$startscript"
      echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
@@ -241,7 +241,7 @@ setup_host_make() {
     fi
     # make startup script for KLIPS uml (no modules)
     startscript=$POOLSPACE/$host/start.sh
-    echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.cpio"
+    echo "$startscript : $LIBRESWANSRCDIR/umlsetup.sh initrd.cpio"
     echo "$TAB echo '#!/bin/bash' >$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
@@ -393,7 +393,7 @@ applypatches() {
 	    if [ ! -d arch/um/.NATPATCHAPPLIED ] 
 	    then
 		echo Applying the NAT-Traversal patch
-		( cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
+		( cd $LIBRESWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
 		mkdir -p arch/um/.NATPATCHAPPLIED
 	    else
 		echo "NAT-Traversal patch already applied"
@@ -407,7 +407,7 @@ applypatches() {
 	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ] 
 	    then
 		echo Applying the SAref patches
-		( cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1
+		( cd $LIBRESWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1
 		mkdir -p arch/um/.SAREFPATCHAPPLIED
 	    else
 		echo "SAref patch already applied"

@@ -12,15 +12,15 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-# All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
+# All of the USE_ and HAVE_ variables are controlled from libreswan/Makefile.inc
 
 
-# relative path to top directory of Openswan source
-# Note: referenced in ${OPENSWANSRCDIR}/Makefile.inc
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+# relative path to top directory of Libreswan source
+# Note: referenced in ${LIBRESWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 srcdir?=./
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 include ${srcdir}Makefile.options
 -include ${srcdir}Makefile.extra
 include ${srcdir}../Makefile.manpages
@@ -62,11 +62,11 @@ ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
 
-LIBSADNS = $(OPENSWANLIB)
+LIBSADNS = $(LIBRESWANLIB)
 LIBSADNS += -lresolv # -lefence
 
 # Solaris needs -lsocket -lnsl
-LIBSWHACK = ${WHACKLIB} ${OPENSWANLIB} 
+LIBSWHACK = ${WHACKLIB} ${LIBRESWANLIB} 
 
 
 RM = /bin/rm
@@ -175,7 +175,7 @@ OBJSWHACKINIT = whackinit.o
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard plutomain.c)
 ifeq ($(SHOULDWERESTART),trueplutomain.c)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && $(MAKE) $@
+	cd ${LIBRESWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && $(MAKE) $@
 else
 all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT) 
 programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) $(BINNAMEWHACK) #$(BINNAMEWHACKINIT)
@@ -197,13 +197,13 @@ doinstall: all
 	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
 	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}pluto.8 $(PMANDIR)/ipsec_pluto.8
-	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
+	sh ${LIBRESWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
 		while read from to ; \
 		do \
 			ln -s -f ipsec_$$from $(PMANDIR)/$$to; \
 		done
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}ipsec.secrets.5 $(FMANDIR)
-	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}ipsec.secrets.5 | \
+	sh ${LIBRESWANSRCDIR}/packaging/utils/manlink ${srcdir}ipsec.secrets.5 | \
 		while read from to ; \
 		do \
 		 ln -s -f $$from $(FMANDIR)/$$to; \
@@ -214,25 +214,25 @@ install_file_list:
 	@if $(USE_ADNS) ; then echo $(LIBDIR)/$(BINNAMEADNS) ; fi
 	@echo $(LIBEXECDIR)/$(BINNAMEWHACK)
 	@echo $(PMANDIR)/ipsec_pluto.8
-	@sh ${OPENSWANSRCDIR}/packaging/utils/manlink pluto.8 | \
+	@sh ${LIBRESWANSRCDIR}/packaging/utils/manlink pluto.8 | \
 		while read from to; \
 		do\
 			 echo $(PMANDIR)/$$to; \
 		done
 	@echo $(FMANDIR)/ipsec.secrets.5
-	@sh ${OPENSWANSRCDIR}/packaging/utils/manlink ipsec.secrets.5 | \
+	@sh ${LIBRESWANSRCDIR}/packaging/utils/manlink ipsec.secrets.5 | \
 		while read from to; \
 		do \
 			echo $(FMANDIR)/$$to; \
 		done
 
-alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(OPENSWANLIB)
+alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(LIBRESWANLIB)
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
 
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(LIBRESWANLIB) ${LIBTPM}
 	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
 $(BINNAMEADNS): $(OBJSADNS)
@@ -273,7 +273,7 @@ checkprograms:
 
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${COPTS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${COPTS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${LIBRESWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
 
 -include ${srcdir}Makefile.depend.${OSDEP}
 

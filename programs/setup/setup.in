@@ -7,7 +7,7 @@
 # Required-Stop:     $syslog $remote_fs
 # Default-Start:
 # Default-Stop:      0 1 6
-# Short-Description: Start Openswan IPsec at boot time
+# Short-Description: Start Libreswan IPsec at boot time
 # Description:       Enable automatic key management for IPsec (KLIPS and NETKEY)
 ### END INIT INFO
 #
@@ -95,7 +95,7 @@ verify_config() {
     RETVAL=$?
     if [ $RETVAL != 0 ]
     then
-        echo "failed to start openswan IKE daemon - the following error occured:"
+        echo "failed to start libreswan IKE daemon - the following error occured:"
         echo $config_error
         exit $RETVAL
     fi

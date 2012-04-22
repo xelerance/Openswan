@@ -28,7 +28,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"

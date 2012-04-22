@@ -55,7 +55,7 @@ west:~#
  klogd -c 4 -x -f /tmp/klog.log
 west:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 west:~#
@@ -96,7 +96,7 @@ west:~#
 SIOCDELRT: No such process
 west:~#
  ipsec setup --config /testing/pluto/co-terminal-02/wavesec.conf start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --config /testing/pluto/co-terminal-02/wavesec.conf --add japan--wavesec
 west:~#
@@ -120,7 +120,7 @@ west:~#
 Stopping domain name service: named.
 Stopping internet superserver: inetd.
 Stopping portmap daemon: portmap.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 IPSEC EVENT: KLIPS device ipsec1 shut down.
 

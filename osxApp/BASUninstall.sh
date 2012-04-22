@@ -46,7 +46,7 @@
 # This uninstalls everything installed by the sample.  It's useful 
 # when testing to ensure that you start from scratch.
 
-sudo launchctl unload -w /Library/LaunchDaemons/com.xelerance.Openswan.plist
-sudo rm /Library/LaunchDaemons/com.xelerance.Openswan.plist
-sudo rm /Library/PrivilegedHelperTools/com.xelerance.Openswan
-sudo rm /var/run/com.xelerance.Openswan.socket
+sudo launchctl unload -w /Library/LaunchDaemons/com.xelerance.Libreswan.plist
+sudo rm /Library/LaunchDaemons/com.xelerance.Libreswan.plist
+sudo rm /Library/PrivilegedHelperTools/com.xelerance.Libreswan
+sudo rm /var/run/com.xelerance.Libreswan.socket

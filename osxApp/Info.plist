@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>APPL</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.xelerance.Openswan</string>
+	<string>com.xelerance.Libreswan</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

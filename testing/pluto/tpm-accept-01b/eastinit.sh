@@ -30,7 +30,7 @@ export PATH
 
 rm -f /var/run/pluto/pluto.pid 
 
-echo "Starting Openswan IPsec pluto"
+echo "Starting Libreswan IPsec pluto"
 
 /usr/local/libexec/ipsec/pluto --interface 205.150.200.251 \
 		--secretsfile /tmp/$TESTNAME/ipsec.secrets \

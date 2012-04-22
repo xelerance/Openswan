@@ -1,4 +1,4 @@
-/* Openswan ISAKMP Quirks handling
+/* Libreswan ISAKMP Quirks handling
  * Copyright (C) 2003 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it

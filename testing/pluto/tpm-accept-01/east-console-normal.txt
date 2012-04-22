@@ -27,8 +27,8 @@ east:~#
 east:~#
  rm -f /var/run/pluto/pluto.pid 
 east:~#
- echo "Starting Openswan IPsec pluto"
-Starting Openswan IPsec pluto
+ echo "Starting Libreswan IPsec pluto"
+Starting Libreswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
 [1] 832
@@ -79,7 +79,7 @@ east:~#
  ipsec whack --name west--east-psk-3des --initiate
 002 "west--east-psk-3des" #2: initiating Main Mode
 104 "west--east-psk-3des" #2: STATE_MAIN_I1: initiate
-003 "west--east-psk-3des" #2: received Vendor ID payload [Openswan 
+003 "west--east-psk-3des" #2: received Vendor ID payload [Libreswan 
 003 "west--east-psk-3des" #2: received Vendor ID payload [Dead Peer Detection]
 002 "west--east-psk-3des" #2: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 106 "west--east-psk-3des" #2: STATE_MAIN_I2: sent MI2, expecting MR2
@@ -99,7 +99,7 @@ east:~#
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version cvs2005Nov02_14:08:00 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEkk{aJYsmTs)
+Starting Pluto (Libreswan Version cvs2005Nov02_14:08:00 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEkk{aJYsmTs)
 @(#) built on DATE by PERSON
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -140,7 +140,7 @@ added connection description "west--east-psk-3des"
 md: _POINTER_p_msg_digest
 tcl says packet from: 192.1.2.23
 recvMessage _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest
-"west--east-psk-3des" #2: received Vendor ID payload [Openswan (this version) cvs2005Nov02_14:08:00  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk-3des" #2: received Vendor ID payload [Libreswan (this version) cvs2005Nov02_14:08:00  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk-3des" #2: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk-3des" #2: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 avoidEmitting _POINTER_p_state _POINTER_p_connection _POINTER_p_msg_digest

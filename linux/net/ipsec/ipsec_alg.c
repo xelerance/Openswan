@@ -45,30 +45,30 @@
 # endif /* SPINLOCK_23 */
 #endif /* SPINLOCK */
 
-#include "openswan/ipsec_param.h"
-#include <openswan.h>
-#include "openswan/ipsec_sa.h"
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_rcv.h"
+#include "libreswan/ipsec_param.h"
+#include <libreswan.h>
+#include "libreswan/ipsec_sa.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_rcv.h"
 #if defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH)
-# include "openswan/ipsec_ah.h"
+# include "libreswan/ipsec_ah.h"
 #endif /* defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH) */
 #ifdef CONFIG_KLIPS_ESP
-# include "openswan/ipsec_esp.h"
+# include "libreswan/ipsec_esp.h"
 #endif /* !CONFIG_KLIPS_ESP */
 #ifdef CONFIG_KLIPS_IPCOMP
-# include "openswan/ipcomp.h"
+# include "libreswan/ipcomp.h"
 #endif /* CONFIG_KLIPS_COMP */
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_alg.h"
-#include "openswan/ipsec_proto.h"
+#include "libreswan/ipsec_alg.h"
+#include "libreswan/ipsec_proto.h"
 
 #if K_SADB_EALG_MAX < 255
 #warning Compiling with limited ESP support ( K_SADB_EALG_MAX < 256 )

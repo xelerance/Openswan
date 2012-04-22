@@ -12,12 +12,12 @@
 # for more details.
 #
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM=showpolicy
 
-LIBS=${POLICYLIB} ${OPENSWANLIB} 
+LIBS=${POLICYLIB} ${LIBRESWANLIB} 
 
 include ${srcdir}../Makefile.program
 

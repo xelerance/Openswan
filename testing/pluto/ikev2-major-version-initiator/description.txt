@@ -28,6 +28,6 @@ See: http://tools.ietf.org/html/rfc5996#section-2.5
    that the other side can support a higher version number, and they
    MUST break the connection and reconnect using version n+1.
 
-openswan note: openswan sends a CAN_IKEv2 vendorid in IKEv1 to detect
+libreswan note: libreswan sends a CAN_IKEv2 vendorid in IKEv1 to detect
 biddown attacks, see testcase ikev2-07-biddown
 

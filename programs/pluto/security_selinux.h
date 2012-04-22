@@ -1,4 +1,4 @@
-/* Openswan Selinux APIs
+/* Libreswan Selinux APIs
  * Copyright (C) 2011 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it

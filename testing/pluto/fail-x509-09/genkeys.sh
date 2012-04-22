@@ -8,13 +8,13 @@ openssl genrsa -out keyB-priv.pem 512
 
 # now turn A into self-signed certificate
 echo "Generating certificate request."
-echo "Please set CN=fakea.openswan.org and E=fakea@openswan.org"
+echo "Please set CN=fakea.libreswan.org and E=fakea@libreswan.org"
 openssl req -config ./openssl.cnf -new -key keyA-priv.pem -out keyA.req
 openssl x509 -days 3650 -req -signkey keyA-priv.pem -in keyA.req -out keyA.crt
 
 # now turn B into self-signed certificate
 echo "Generating certificate request."
-echo "Please set CN=fakeb.openswan.org and E=fakeb@openswan.org"
+echo "Please set CN=fakeb.libreswan.org and E=fakeb@libreswan.org"
 openssl req -config ./openssl.cnf -new -key keyB-priv.pem -out keyB.req
 openssl x509 -days 3650 -req -signkey keyB-priv.pem -in keyB.req -out keyB.crt
 

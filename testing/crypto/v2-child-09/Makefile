@@ -1,11 +1,11 @@
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
 UNITTEST=v2-child
 CFLAGS=-DUSE_3DES
-INCLUDES=-I${srcdir}${OPENSWANSRCDIR}/programs/pluto
-INCLUDES+=-I${srcdir}${OPENSWANSRCDIR}/testing/lib/libpluto
+INCLUDES=-I${srcdir}${LIBRESWANSRCDIR}/programs/pluto
+INCLUDES+=-I${srcdir}${LIBRESWANSRCDIR}/testing/lib/libpluto
 VPATH += ${srcdir}
-OPENSWANSRCDIRREL=../../..
+LIBRESWANSRCDIRREL=../../..
 
 SOURCES=v2-child.c
 
@@ -37,7 +37,7 @@ PROGRAM=v2-child
 programs checkprograms: ${UNITTEST}
 	@true
 
-include ${OPENSWANSRCDIR}/programs/Makefile.program
+include ${LIBRESWANSRCDIR}/programs/Makefile.program
 
 #rsa-v2.o: ${SOURCES}
 

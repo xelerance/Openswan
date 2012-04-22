@@ -4,7 +4,7 @@ east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add westnet-eastnet
 	                                    loading conn: westnet-eastnet
@@ -161,7 +161,7 @@ east:~# : ==== start ====
 east:~# TESTNAME=netkey-pluto-02
 east:~# source /testing/pluto/bin/eastlocal.sh
 east:~# ipsec setup start
-ipsec_setup: Starting Openswan IPsec U2.5.testing-g21680e0d-dirty/K2.6.18.6...
+ipsec_setup: Starting Libreswan IPsec U2.5.testing-g21680e0d-dirty/K2.6.18.6...
 ipsec_setup: Trying hardware random, this may fail, which is okay.
 ipsec_setup: Trying to load all NETKEY modules:xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key 
 ipsec_setup: Trying VIA padlock driver, this may fail, which is okay.
@@ -226,7 +226,7 @@ east:~# ipsec auto --status
 000  
 east:~# cat /tmp/pluto.log
 Plutorun started on Thu Feb 14 00:12:26 GMT 2008
-Starting Pluto (Openswan Version 2.5.testing-g21680e0d-dirty; Vendor ID OEGJMMweP{pQ) pid:920
+Starting Pluto (Libreswan Version 2.5.testing-g21680e0d-dirty; Vendor ID OEGJMMweP{pQ) pid:920
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
    including NAT-Traversal patch (Version 0.6c) [disabled]
@@ -641,7 +641,7 @@ loaded private key for keyid: PPK_RSA:AQN3cn11F
 |  
 | *received 404 bytes from 192.1.2.45:500 on eth1 (port=500)
 |  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2)
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.testing-g21680e0d-dirty ]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) 2.5.testing-g21680e0d-dirty ]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 | find_host_connection called from main_inI1_outR1, me=192.1.2.23:500 him=192.1.2.45:500 policy=none
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
@@ -1214,7 +1214,7 @@ east:~# : ==== tuc ====
 east:~# if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 east:~# : ==== end ====
 east:~# ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 east:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <5>Linux version 2.6.18.6 (antony@sal) (gcc version 4.2.3 20080114 (prerelease) (Debian 4.2.2-7)) #6 Wed Feb 13 11:18:26 EST 2008

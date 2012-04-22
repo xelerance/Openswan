@@ -16,7 +16,7 @@
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>_startnetkey</emphasis>
-brings up the Openswan kernel component. This involves loading any
+brings up the Libreswan kernel component. This involves loading any
 required modules.</para>
 </refsect1>
 
@@ -31,7 +31,7 @@ and <emphasis remap='I'>ip xfrm policy help</emphasis> for the magic words.</par
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Man page written for the Linux Openswan project &lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
+<para>Man page written for the Linux Libreswan project &lt;<ulink url='http://www.libreswan.org/'>http://www.libreswan.org/</ulink>&gt;
 by Michael Richardson. </para>
 
 

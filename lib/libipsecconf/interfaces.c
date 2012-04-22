@@ -21,11 +21,11 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h"
-#include "openswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_tunnel.h"
 
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/exec.h"

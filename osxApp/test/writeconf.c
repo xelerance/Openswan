@@ -1,19 +1,19 @@
-//Stuff from Openswan
+//Stuff from Libreswan
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-//#define OPENSWAN_COCOA_APP 1
+//#define LIBRESWAN_COCOA_APP 1
 #import <sys/queue.h>
 #import "ipsecconf/confread.h"
-#import "openswan/passert.h"
+#import "libreswan/passert.h"
 #import "oswlog.h"
 #import "programs/pluto/log.h"
 void exit_tool(int x)
 {
 	exit(x);
 }
-char* progname = "openswan\0";
+char* progname = "libreswan\0";
 int verbose=0;
 int warningsarefatal = 0;
 #import "ipsecconf/confwrite.h"
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	/*
 	NSString *origFileName = [conn connName];
 	NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
-	NSString *origPath = @"~/Library/Application Support/Openswan";
+	NSString *origPath = @"~/Library/Application Support/Libreswan";
 	NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
 	NSString *path = [filePath stringByStandardizingPath];
 	char cPath[100];

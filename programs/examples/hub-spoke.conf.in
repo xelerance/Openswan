@@ -29,7 +29,7 @@ conn netkey-exclude
         auto=route
 
 Note that due to https://bugs.xelerance.com/issues/907, you will need
-to use either openswan 2.4.x or openswan 2.6.23 or higher if you need
+to use either libreswan 2.4.x or libreswan 2.6.23 or higher if you need
 such a passthrough route.
 
 KLIPS does a longest prefix match first, and does not run into this problem.
@@ -40,7 +40,7 @@ spokes, which is an administrative burden.
 Note that for multiple local LAN ranges, you will need multiple passthrough
 routes.
 
-If you have a lan that's local but the openswan server is not in it, but
+If you have a lan that's local but the libreswan server is not in it, but
 needs to route to it, then you need a different hack, contributed by
 Harald Scharf:
 

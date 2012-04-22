@@ -7,7 +7,7 @@
 #include <asm/byteorder.h>
 #include <linux/string.h>
 
-#include "openswan/ipsec_sha1.h"
+#include "libreswan/ipsec_sha1.h"
 
 #if defined(rol)
 #undef rol

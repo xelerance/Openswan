@@ -12,8 +12,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM:=tncfg
 EXTRA5PROC=${PROGRAM}.5

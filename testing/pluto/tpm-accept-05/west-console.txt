@@ -4,7 +4,7 @@ west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --add west--east-psk
 west:~#
@@ -14,7 +14,7 @@ west:~#
 west:~#
  ipsec auto --up west--east-psk
 104 "west--east-psk" #1: STATE_MAIN_I1: initiate
-003 "west--east-psk" #1: received Vendor ID payload [Openswan 
+003 "west--east-psk" #1: received Vendor ID payload [Libreswan 
 003 "west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 106 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "west--east-psk" #1: STATE_MAIN_I3: sent MI3, expecting MR3
@@ -29,7 +29,7 @@ west:~#
 west:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
+Starting Pluto (Libreswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -72,7 +72,7 @@ loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
 "west--east-psk": deleting connection
 added connection description "west--east-psk"
 "west--east-psk" #1: initiating Main Mode
-"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #1: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2

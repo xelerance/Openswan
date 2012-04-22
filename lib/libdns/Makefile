@@ -15,8 +15,8 @@
 
 # $Id: Makefile,v 1.4 2005/09/17 21:57:45 mcr Exp $
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 srcdir?=./
 
 HOSTCINCLUDES =	-I${srcdir}${ISCHOSTARCH}/include \
@@ -35,7 +35,7 @@ CWARNINGS = -Werror
 
 CFLAGS+=${CINCLUDES} ${CDEFINES} ${CWARNINGS}
 
-VERSION="@(\#) openswan-hacking-9.3-for-osw2"
+VERSION="@(\#) libreswan-hacking-9.3-for-osw2"
 LIBINTERFACE=2
 LIBREVISION=0
 LIBAGE=1

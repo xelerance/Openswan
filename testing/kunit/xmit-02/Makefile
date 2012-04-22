@@ -4,15 +4,15 @@
 # see module26.sh in packaging/makefiles
 #
 
-OPENSWANSRCDIR?=$(shell cd ../../..;pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..;pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
-UMLPLAIN=$(shell . ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
-KLIPS_TOP=${OPENSWANSRCDIR}/linux
+UMLPLAIN=$(shell . ${LIBRESWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+KLIPS_TOP=${LIBRESWANSRCDIR}/linux
 
 INPUTS=${srcdir}icmpin.pcap
-PCAP2SKB=${OPENSWANSRCDIR}/testing/utils/pcap2skb/pcap2skb
+PCAP2SKB=${LIBRESWANSRCDIR}/testing/utils/pcap2skb/pcap2skb
 
 CC=gcc 
 TESTCASE=xmit02main

@@ -5,7 +5,7 @@
 <refsect1 id='description'><title>TRANSPORT MODE</title>
 
 <para>
-Openswan's pluto supports use of transport mode connection between two hosts.
+Libreswan's pluto supports use of transport mode connection between two hosts.
 </para>
 
 <para>

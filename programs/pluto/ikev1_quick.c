@@ -30,8 +30,8 @@
 #include <sys/time.h>		/* for gettimeofday */
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -823,7 +823,7 @@ quick_outI1(int whack_sock
 	if(replacing != SOS_NOBODY)
 	    snprintf(replacestr, 32, " to replace #%lu", replacing);
 	
-	openswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid:%08x proposal=%s pfsgroup=%s}"
+	libreswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid:%08x proposal=%s pfsgroup=%s}"
 		     , prettypolicy(policy)
 		     , replacestr
 		     , isakmp_sa->st_serialno, st->st_msgid, p2alg, pfsgroupname);
@@ -1676,7 +1676,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	subnettot(our_net, 0, s1, sizeof(s1));
 	subnettot(his_net, 0, d1, sizeof(d1));
 	
-	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
+	libreswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
 		     , s1, c->spd.this.protocol, c->spd.this.port
 		     , d1, c->spd.that.protocol, c->spd.that.port);
     }
@@ -1728,7 +1728,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    l = format_end(buf, sizeof(buf), &me, NULL, TRUE, LEMPTY);
 	    l += snprintf(buf + l, sizeof(buf) - l, "...");
 	    (void)format_end(buf + l, sizeof(buf) - l, &he, NULL, FALSE, LEMPTY);
-	    openswan_log("cannot respond to IPsec SA request"
+	    libreswan_log("cannot respond to IPsec SA request"
 		" because no connection is known for %s"
 		, buf);
 	    return STF_FAIL + INVALID_ID_INFORMATION;
@@ -2182,16 +2182,16 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	return STF_FAIL + NO_PROPOSAL_CHOSEN;	/* ??? */
     }
 
-    openswan_log("responding to Quick Mode proposal {msgid:%08x}", st->st_msgid);
+    libreswan_log("responding to Quick Mode proposal {msgid:%08x}", st->st_msgid);
     {
 	char instbuf[END_BUF];
 	struct connection *c = st->st_connection;
 	struct spd_route *sr = &c->spd;
 
 	format_end(instbuf, sizeof(instbuf),&sr->this,&sr->that,TRUE, LEMPTY);
-	openswan_log("    us: %s", instbuf);
+	libreswan_log("    us: %s", instbuf);
 	
-	format_end(instbuf, sizeof(instbuf),&sr->that,&sr->this,FALSE, LEMPTY);	openswan_log("  them: %s", instbuf);
+	format_end(instbuf, sizeof(instbuf),&sr->that,&sr->this,FALSE, LEMPTY);	libreswan_log("  them: %s", instbuf);
     }
 
     /**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
@@ -2224,7 +2224,7 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    int padsize;
 	    padsize = strtoul(padstr, NULL, 0);
 	    
-	    openswan_log("inserting fake VID payload of %u size", padsize);
+	    libreswan_log("inserting fake VID payload of %u size", padsize);
 	    
 	    if(st->st_pfs_group != NULL) {
 		np = ISAKMP_NEXT_KE;
@@ -2525,7 +2525,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 		int padsize;
 		padsize = strtoul(padstr, NULL, 0);
 		
-		openswan_log("inserting fake VID payload of %u size", padsize);
+		libreswan_log("inserting fake VID payload of %u size", padsize);
 		START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_VID);
 		
 		if (!out_generic(ISAKMP_NEXT_NONE,

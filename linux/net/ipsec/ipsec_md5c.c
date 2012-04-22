@@ -6,7 +6,7 @@
 #include <asm/byteorder.h>
 #include <linux/string.h>
 
-#include "openswan/ipsec_md5h.h"
+#include "libreswan/ipsec_md5h.h"
 
 /* MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
  */

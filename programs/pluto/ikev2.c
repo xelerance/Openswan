@@ -32,7 +32,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -362,7 +362,7 @@ process_v2_packet(struct msg_digest **mdp)
 	if(st) {
 	    if(st->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
-		openswan_log("received too old retransmit: %u < %u"
+		libreswan_log("received too old retransmit: %u < %u"
 			     , md->msgid_received, st->st_msgid_lastrecv);
 		return;
 	    }
@@ -427,7 +427,7 @@ process_v2_packet(struct msg_digest **mdp)
 		return;
 	    }
 #if 0
-	    openswan_log("last msgid ack is %u, received: %u"
+	    libreswan_log("last msgid ack is %u, received: %u"
 			 , st->st_msgid_lastack
 			 , md->msgid_received);
 	    return;
@@ -532,7 +532,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     struct id peer;
 
     if(!id_him) {
-	openswan_log("IKEv2 mode no peer ID (hisID)");
+	libreswan_log("IKEv2 mode no peer ID (hisID)");
 	return FALSE;
     }
 
@@ -541,7 +541,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     peer.kind = id->isai_type;
 
     if(!extract_peer_id(&peer, id_pbs)) {
-	openswan_log("IKEv2 mode peer ID extraction failed");
+	libreswan_log("IKEv2 mode peer ID extraction failed");
 	return FALSE;
     }
     
@@ -549,7 +549,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 	char buf[IDTOA_BUF];
 
 	idtoa(&peer, buf, sizeof(buf));
-	openswan_log("IKEv2 mode peer ID is %s: '%s'"
+	libreswan_log("IKEv2 mode peer ID is %s: '%s'"
 		     , enum_show(&ident_names, id->isai_type), buf);
     }
     
@@ -700,7 +700,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     struct state *st = md->st;
     enum rc_type w;
 
-    openswan_log("transition from state %s to state %s"
+    libreswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
 
@@ -732,7 +732,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    addrtot(&st->st_ts_that.high, 0, tsubh, sizeof(tsubh));
 
 	    /* but if this is the parent st, this information is not set! you need to check the child sa! */
-	    openswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
+	    libreswan_log("negotiated tunnel [%s,%s:%d-%d %d] -> [%s,%s:%d-%d %d]"
 		, usubl, usubh, st->st_ts_this.startport, st->st_ts_this.endport, st->st_ts_this.ipprotoid
 		, tsubl, tsubh, st->st_ts_that.startport, st->st_ts_that.endport, st->st_ts_that.ipprotoid);
 
@@ -952,7 +952,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	set_suspended(st, NULL);
 	pexpect(st->st_calculating == FALSE);
     	from_state   = st->st_state;
-	openswan_log("message in state %s ignored due to cryptographic overload"
+	libreswan_log("message in state %s ignored due to cryptographic overload"
 		     , enum_name(&state_names, from_state));
 	break;
 

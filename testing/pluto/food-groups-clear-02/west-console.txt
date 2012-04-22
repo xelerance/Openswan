@@ -28,7 +28,7 @@ PING 192.1.2.23 (192.1.2.23): 56 data bytes
 round-trip min/avg/max = 3.1/4.5/9.26 ms
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  /testing/pluto/bin/wait-until-pluto-started
 west:~#

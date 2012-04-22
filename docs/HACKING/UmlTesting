@@ -40,7 +40,7 @@ Preliminary Notes on BIND
 Steps to Install UML for FreeS/WAN
 
     1. Get the following files:
-         a. from rsync://anoncvs.openswan.org/rootfstar/
+         a. from rsync://anoncvs.libreswan.org/rootfstar/
             umlswanroot-26.tar.gz (or highest numbered one). This is
             originally a debian potato root file system, but has many
             upgrades and should work on any recent (debian sarge, FC4,
@@ -82,11 +82,11 @@ Steps to Install UML for FreeS/WAN
            cd /c2/user-mode-linux/basic-root
            tar xzvf ../download/umlswanroot-15.1.tar.gz
 
-         c. Openswan itself (or checkout "openswan-2" from CVS)
+         c. Libreswan itself (or checkout "libreswan-2" from CVS)
 
-           mkdir -p /c2/openswan/sandbox
-           cd /c2/openswan/sandbox
-           tar xzvf ../download/openswan-2.4.2dr2.tar.gz
+           mkdir -p /c2/libreswan/sandbox
+           cd /c2/libreswan/sandbox
+           tar xzvf ../download/libreswan-2.4.2dr2.tar.gz
 
     3. If you need to build a newer tcpdump:
           + Make sure you have OpenSSL installed -- it is needed for
@@ -118,7 +118,7 @@ Steps to Install UML for FreeS/WAN
         su -c "make install BIN_DIR=/usr/local/bin"
 
     5. set up the configuration file
-          + cd /c2/freeswan/sandbox/openswanswan-2.4.2dr2/testing/utils
+          + cd /c2/freeswan/sandbox/libreswanswan-2.4.2dr2/testing/utils
           + copy umlsetup-sample.sh to ../../umlsetup.sh: cp
             umlsetup-sample.sh ../../umlsetup.sh
           + open up ../../umlsetup.sh in your favorite editor.

@@ -1,4 +1,4 @@
-# Openswan library for parsing configuration files
+# Libreswan library for parsing configuration files
 # Copyright (C) 2005 Michael Richardson <mcr@xelerance.com> Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -12,10 +12,10 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 LIBRARY=ipsecconf
 LIB=lib${LIBRARY}.a

@@ -36,8 +36,8 @@
 #include <crypt.h> 
 #endif
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "oswalloc.h"
 
@@ -456,7 +456,7 @@ stf_status modecfg_resp(struct state *st
  				break;
 
 		default:
-		    openswan_log("attempt to send unsupported mode cfg attribute %s."
+		    libreswan_log("attempt to send unsupported mode cfg attribute %s."
 			 , enum_show(&modecfg_attr_names, attr_type));
 		    break;
 		}
@@ -518,7 +518,7 @@ stf_status modecfg_send_set(struct state *st)
 	/* see: http://popoludnica.pl/?id=10100110 */
 	/* should become a conn option */
 	/* client-side is not yet implemented for this - only works with SoftRemote clients */
-        /* SoftRemote takes the IV for XAUTH from phase2, where Openswan takes it from phase1 */
+        /* SoftRemote takes the IV for XAUTH from phase2, where Libreswan takes it from phase1 */
 	init_phase2_iv(st, &st->st_msgid_phase15);
 #endif
 
@@ -579,7 +579,7 @@ stf_status xauth_send_request(struct state *st)
     /* set up reply */
     init_pbs(&reply, buf, sizeof(buf), "xauth_buf");
 
-    openswan_log("XAUTH: Sending Username/Password request (XAUTH_R0)");
+    libreswan_log("XAUTH: Sending Username/Password request (XAUTH_R0)");
 
 
     /* this is the beginning of a new exchange */
@@ -670,7 +670,7 @@ stf_status modecfg_send_request(struct state *st)
     /* set up reply */
     init_pbs(&reply, buf, sizeof(buf), "xauth_buf");
 
-    openswan_log("modecfg: Sending IP request (MODECFG_I1)");
+    libreswan_log("modecfg: Sending IP request (MODECFG_I1)");
 
     /* this is the beginning of a new exchange */
     st->st_msgid_phase15 = generate_msgid(st);
@@ -997,11 +997,11 @@ int do_md5_authentication(void *varg)
     if( fp == (FILE *)0)
     {
         /* unable to open the password file */
-        openswan_log("XAUTH: unable to open password file (%s) for verification", pwdfile);
+        libreswan_log("XAUTH: unable to open password file (%s) for verification", pwdfile);
         return FALSE;
     }
 
-    openswan_log("XAUTH: password file (%s) open.", pwdfile);
+    libreswan_log("XAUTH: password file (%s) open.", pwdfile);
     /** simple stuff read in a line then go through positioning
      * szuser ,szpass and szconnid at the begining of each of the
      * memory locations of our real data and replace the ':' with '\0'
@@ -1067,7 +1067,7 @@ int do_md5_authentication(void *varg)
 	    }
 	    else
 	    {
-		openswan_log("XAUTH: checking user(%s:%s) " , szuser, szconnid);
+		libreswan_log("XAUTH: checking user(%s:%s) " , szuser, szconnid);
 	    }
 
            /* Ok then now password check */
@@ -1077,7 +1077,7 @@ int do_md5_authentication(void *varg)
              fclose( fp );
              return TRUE;
            }
-	   openswan_log("XAUTH: nope");
+	   libreswan_log("XAUTH: nope");
         }
     }
     fclose( fp );
@@ -1094,20 +1094,20 @@ static void * do_authentication(void *varg)
     struct thread_arg	*arg = varg;
     struct state *st = arg->st;
     int results=FALSE;
-    openswan_log("XAUTH: User %s: Attempting to login" , arg->name.ptr);
+    libreswan_log("XAUTH: User %s: Attempting to login" , arg->name.ptr);
     
     
 
 #ifdef XAUTH_USEPAM
-    openswan_log("XAUTH: pam authentication being called to authenticate user %s",arg->name.ptr);
+    libreswan_log("XAUTH: pam authentication being called to authenticate user %s",arg->name.ptr);
     results=do_pam_authentication(varg);
 #else
-    openswan_log("XAUTH: md5 authentication being called to authenticate user %s",arg->name.ptr);
+    libreswan_log("XAUTH: md5 authentication being called to authenticate user %s",arg->name.ptr);
     results=do_md5_authentication(varg);
 #endif
     if(results)
     {
-        openswan_log("XAUTH: User %s: Authentication Successful", arg->name.ptr);
+        libreswan_log("XAUTH: User %s: Authentication Successful", arg->name.ptr);
         xauth_send_status(st,1);
 
         if(st->quirks.xauth_ack_msgid) {
@@ -1119,7 +1119,7 @@ static void * do_authentication(void *varg)
     {
 	/** Login attempt failed, display error, send XAUTH status to client
          *  and reset state to XAUTH_R0 */
-        openswan_log("XAUTH: User %s: Authentication Failed: Incorrect Username or Password", arg->name.ptr);
+        libreswan_log("XAUTH: User %s: Authentication Failed: Incorrect Username or Password", arg->name.ptr);
         xauth_send_status(st,0);	
         change_state(st, STATE_XAUTH_R0);
     }   
@@ -1199,7 +1199,7 @@ xauth_inR0(struct msg_digest *md)
 	if ( (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_REPLY) &&
 	     (md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type != ISAKMP_CFG_ACK) )
 	{
-	    openswan_log("Expecting MODE_CFG_REPLY, got %s instead."
+	    libreswan_log("Expecting MODE_CFG_REPLY, got %s instead."
 		 , enum_name(&attr_msg_type_names, md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type));
 	    return STF_IGNORE;
 	}
@@ -1223,7 +1223,7 @@ xauth_inR0(struct msg_digest *md)
 
 		if(len < 4)
 		{
-		    openswan_log("Attribute was too short: %d", len);
+		    libreswan_log("Attribute was too short: %d", len);
 		    return STF_FAIL;
 		}
 
@@ -1260,7 +1260,7 @@ xauth_inR0(struct msg_digest *md)
 		break;
 		
 	    default:
-		openswan_log("XAUTH:  Unsupported XAUTH parameter %s received."
+		libreswan_log("XAUTH:  Unsupported XAUTH parameter %s received."
 		     , enum_show(&modecfg_attr_names, attr.isaat_af_type));
 		break;
 	    }
@@ -1269,7 +1269,7 @@ xauth_inR0(struct msg_digest *md)
 
     /** we must get a username and a password value */
     if(!gotname || !gotpassword) {
-      openswan_log("Expected MODE_CFG_REPLY did not contain %s%s%s attribute"
+      libreswan_log("Expected MODE_CFG_REPLY did not contain %s%s%s attribute"
 	   , (!gotname ? "username" : "")
 	   , ((!gotname && !gotpassword) ? " or " : "")
 	   , (!gotpassword ? "password" : ""));
@@ -1277,7 +1277,7 @@ xauth_inR0(struct msg_digest *md)
       {
 	  stf_status stat = xauth_send_request(st);
 
-	  openswan_log("XAUTH: User %s: Authentication Failed (retry %d)"
+	  libreswan_log("XAUTH: User %s: Authentication Failed (retry %d)"
 	       , (!gotname ? "<unknown>" : (char *)name.ptr)
 	       , st->hidden_variables.st_xauth_client_attempt);
 	  /**
@@ -1293,7 +1293,7 @@ xauth_inR0(struct msg_digest *md)
       } else {
 	  stf_status stat = xauth_send_status(st, FALSE);
 
-	  openswan_log("XAUTH: User %s: Authentication Failed (Retried %d times)"
+	  libreswan_log("XAUTH: User %s: Authentication Failed (Retried %d times)"
 	       , (!gotname ? "<unknown>" : (char *)name.ptr)
 	       , st->hidden_variables.st_xauth_client_attempt);
 
@@ -1329,7 +1329,7 @@ stf_status
 xauth_inR1(struct msg_digest *md)
 {
     struct state *const st = md->st;
-    openswan_log("XAUTH: xauth_inR1(STF_OK)");
+    libreswan_log("XAUTH: xauth_inR1(STF_OK)");
     /* Back to where we were */ 
     st->st_oakley.xauth = 0;
 
@@ -1399,7 +1399,7 @@ modecfg_inR0(struct msg_digest *md)
 	switch(p->payload.attribute.isama_type)
 	{
 	default:
-	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
+	    libreswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
 			 , enum_name(&attr_msg_type_names
 				     , p->payload.attribute.isama_type));
 
@@ -1416,14 +1416,14 @@ modecfg_inR0(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			openswan_log("Attribute was too short: %d", len);
+			libreswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
 		    attrs->cur += len;
 		}
 		
-		openswan_log("ignored mode cfg attribute %s."
+		libreswan_log("ignored mode cfg attribute %s."
 		     , enum_show(&modecfg_attr_names
 				 , (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 	    }
@@ -1443,7 +1443,7 @@ modecfg_inR0(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			openswan_log("Attribute was too short: %d", len);
+			libreswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -1460,7 +1460,7 @@ modecfg_inR0(struct msg_digest *md)
 		    break;
 
 		default:
-		    openswan_log("unsupported mode cfg attribute %s received."
+		    libreswan_log("unsupported mode cfg attribute %s received."
 			 , enum_show(&modecfg_attr_names
 				     , (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
@@ -1484,7 +1484,7 @@ modecfg_inR0(struct msg_digest *md)
 	}
     }
 
-    openswan_log("modecfg_inR0(STF_OK)");
+    libreswan_log("modecfg_inR0(STF_OK)");
     return STF_OK;
 }
 
@@ -1525,7 +1525,7 @@ modecfg_inI2(struct msg_digest *md)
 
 	if (p->payload.attribute.isama_type != ISAKMP_CFG_SET)
 	{
-	    openswan_log("Expecting MODE_CFG_SET, got %x instead."
+	    libreswan_log("Expecting MODE_CFG_SET, got %x instead."
 			 ,md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
 	    return STF_IGNORE;
 	}
@@ -1546,7 +1546,7 @@ modecfg_inI2(struct msg_digest *md)
 
 		if(len < 4)
 		{
-		    openswan_log("Attribute was too short: %d", len);
+		    libreswan_log("Attribute was too short: %d", len);
 		    return STF_FAIL;
 		}
 
@@ -1573,11 +1573,11 @@ modecfg_inI2(struct msg_digest *md)
 			c->spd.this.has_client = TRUE;
 			subnettot(&c->spd.this.client, 0
 				  , caddr, sizeof(caddr));
-			openswan_log("setting client address to %s", caddr);
+			libreswan_log("setting client address to %s", caddr);
 			
 			if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
 			   || isanyaddr(&c->spd.this.host_srcip)) {
-			  openswan_log("setting ip source address to %s"
+			  libreswan_log("setting ip source address to %s"
 				       , caddr);
 			  c->spd.this.host_srcip = a;
 			}
@@ -1592,7 +1592,7 @@ modecfg_inI2(struct msg_digest *md)
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
 		default:
-		    openswan_log("unsupported mode cfg attribute %s received."
+		    libreswan_log("unsupported mode cfg attribute %s received."
 				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
 	    }
@@ -1674,7 +1674,7 @@ modecfg_inR1(struct msg_digest *md)
     struct payload_digest *p;
 
     DBG(DBG_CONTROL, DBG_log("modecfg_inR1"));
-    openswan_log("received mode cfg reply");
+    libreswan_log("received mode cfg reply");
 
     st->st_msgid_phase15 = md->hdr.isa_msgid;
     CHECK_QUICK_HASH(md,xauth_mode_cfg_hash(hash_val,hash_pbs->roof, md->message_pbs.roof, st)
@@ -1693,7 +1693,7 @@ modecfg_inR1(struct msg_digest *md)
 	{
 	default:
 	{
-	    openswan_log("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
+	    libreswan_log("Expecting MODE_CFG_ACK, got %x instead.",md->chain[ISAKMP_NEXT_ATTR]->payload.attribute.isama_type);
 	    return STF_IGNORE;
 	}
 	break;
@@ -1715,7 +1715,7 @@ modecfg_inR1(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			openswan_log("Attribute was too short: %d", len);
+			libreswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -1732,7 +1732,7 @@ modecfg_inR1(struct msg_digest *md)
 		    resp |= LELEM(attr.isaat_af_type);
 		    break;
 		default:
-		    openswan_log("unsupported mode cfg attribute %s received."
+		    libreswan_log("unsupported mode cfg attribute %s received."
 				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
 		}
@@ -1754,7 +1754,7 @@ modecfg_inR1(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			openswan_log("Attribute was too short: %d", len);
+			libreswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -1781,12 +1781,12 @@ modecfg_inR1(struct msg_digest *md)
 		    c->spd.this.has_client = TRUE;
 		    subnettot(&c->spd.this.client, 0
 			      , caddr, sizeof(caddr));
-		    openswan_log("setting client address to %s"
+		    libreswan_log("setting client address to %s"
 				 , caddr);
 		    
 		    if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
 		       || isanyaddr(&c->spd.this.host_srcip)) {
-			openswan_log("setting ip source address to %s"
+			libreswan_log("setting ip source address to %s"
 				     , caddr);
 			c->spd.this.host_srcip = a;
 		    }
@@ -1805,7 +1805,7 @@ modecfg_inR1(struct msg_digest *md)
 			, sizeof(a.u.v4.sin_addr.s_addr));
 
 		    addrtot(&a, 0, caddr, sizeof(caddr));
-		    openswan_log("Received IP4 NETMASK %s", caddr);
+		    libreswan_log("Received IP4 NETMASK %s", caddr);
 		}
 		resp |= LELEM(attr.isaat_af_type);
 		break;
@@ -1821,7 +1821,7 @@ modecfg_inR1(struct msg_digest *md)
                         , sizeof(a.u.v4.sin_addr.s_addr));
                     
                     addrtot(&a, 0, caddr, sizeof(caddr));
-                    openswan_log("Received DNS %s, len=%zd", caddr, strlen(caddr));
+                    libreswan_log("Received DNS %s, len=%zd", caddr, strlen(caddr));
 
 		    {
 			struct connection *c = st->st_connection;
@@ -1923,7 +1923,7 @@ modecfg_inR1(struct msg_digest *md)
                     subnettot(&tmp_spd->that.client, 0
                               , caddr, sizeof(caddr));
 
-                    openswan_log("Received subnet %s, maskbits %d", caddr, tmp_spd->that.client.maskbits);
+                    libreswan_log("Received subnet %s, maskbits %d", caddr, tmp_spd->that.client.maskbits);
 
                     tmp_spd->this.updown = clone_str(tmp_spd->this.updown, "updown");
                     tmp_spd->that.updown = clone_str(tmp_spd->that.updown, "updown");
@@ -1953,7 +1953,7 @@ modecfg_inR1(struct msg_digest *md)
                 break;
 
 		default:
-		    openswan_log("unsupported mode cfg attribute %s received."
+		    libreswan_log("unsupported mode cfg attribute %s received."
 				 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK )));
 		    break;
 		}
@@ -2144,7 +2144,7 @@ stf_status xauth_client_resp(struct state *st
 		    break;
 
 		default:
-		    openswan_log("trying to send XAUTH reply, sending %s instead."
+		    libreswan_log("trying to send XAUTH reply, sending %s instead."
 			 , enum_show(&modecfg_attr_names, attr_type));
 		    break;
 		}
@@ -2160,7 +2160,7 @@ stf_status xauth_client_resp(struct state *st
 	close_output_pbs(&strattr);
     }
 
-    openswan_log("XAUTH: Answering XAUTH challenge with user='%s'"
+    libreswan_log("XAUTH: Answering XAUTH challenge with user='%s'"
 		 , st->st_xauth_username);
 
     xauth_mode_cfg_hash(r_hashval, r_hash_start, rbody->cur, st);
@@ -2229,7 +2229,7 @@ xauth_inI0(struct msg_digest *md)
 	switch(p->payload.attribute.isama_type)
 	{
 	default:
-	    openswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
+	    libreswan_log("Expecting ISAKMP_CFG_REQUEST, got %s instead (ignored)."
 			 , enum_name(&attr_msg_type_names
 				     , p->payload.attribute.isama_type));
 	case ISAKMP_CFG_SET:
@@ -2257,7 +2257,7 @@ xauth_inI0(struct msg_digest *md)
 		
 		if(alen < 4)
 		{
-		    openswan_log("Attribute was too short: %d", alen);
+		    libreswan_log("Attribute was too short: %d", alen);
 		    return STF_FAIL;
 		}
 		
@@ -2294,7 +2294,7 @@ xauth_inI0(struct msg_digest *md)
 		type = val;
 		if(type != XAUTH_TYPE_GENERIC)
 		{
-		    openswan_log("XAUTH: Unsupported type: %d", type);
+		    libreswan_log("XAUTH: Unsupported type: %d", type);
 		    return STF_IGNORE;
 		}
 		xauth_resp |= XAUTHLELEM(attr.isaat_af_type);
@@ -2314,7 +2314,7 @@ xauth_inI0(struct msg_digest *md)
 		break;
 
 	    default:
-		openswan_log("XAUTH: Unsupported attribute: %s"
+		libreswan_log("XAUTH: Unsupported attribute: %s"
 		     , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)));
 		break;
 	    }
@@ -2330,7 +2330,7 @@ xauth_inI0(struct msg_digest *md)
 	    if(status && stat == STF_OK)
 	    {
 		st->hidden_variables.st_xauth_client_done = TRUE;
-		openswan_log("XAUTH: Successfully Authenticated");
+		libreswan_log("XAUTH: Successfully Authenticated");
 		st->st_oakley.xauth = 0;
 
 		return STF_OK;
@@ -2352,7 +2352,7 @@ xauth_inI0(struct msg_digest *md)
 	       && (xauth_resp &( XAUTHLELEM(XAUTH_USER_NAME)
 				 | XAUTHLELEM(XAUTH_USER_PASSWORD)))==0)
 	    {
-		openswan_log("XAUTH: No username/password request was received.");
+		libreswan_log("XAUTH: No username/password request was received.");
 		return STF_IGNORE;
 	    }
 
@@ -2361,7 +2361,7 @@ xauth_inI0(struct msg_digest *md)
 	       && (xauth_resp & (XAUTHLELEM(XAUTH_USER_NAME)
 				 |XAUTHLELEM(XAUTH_USER_PASSWORD)))!=0)
 	    {
-		openswan_log("XAUTH: Username/password request was received, but XAUTH client mode not enabled.");
+		libreswan_log("XAUTH: Username/password request was received, but XAUTH client mode not enabled.");
 		return STF_IGNORE;
 	    }
 	    
@@ -2485,7 +2485,7 @@ xauth_inI1(struct msg_digest *md)
 	
 	switch(p->payload.attribute.isama_type)	{
 	default:
-	    openswan_log("Expecting MODE_CFG_SET, got %x instead."
+	    libreswan_log("Expecting MODE_CFG_SET, got %x instead."
 			 , p->payload.attribute.isama_type);
 	    return STF_IGNORE;
 	    
@@ -2507,7 +2507,7 @@ xauth_inI1(struct msg_digest *md)
 		    
 		    if(len < 4)
 		    {
-			openswan_log("Attribute was too short: %d", len);
+			libreswan_log("Attribute was too short: %d", len);
 			return STF_FAIL;
 		    }
 		    
@@ -2523,7 +2523,7 @@ xauth_inI1(struct msg_digest *md)
 		    break;
 		    
 		default:
-		    openswan_log("while waiting for XAUTH_STATUS, got %s instead."
+		    libreswan_log("while waiting for XAUTH_STATUS, got %s instead."
 			 , enum_show(&modecfg_attr_names, (attr.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)));
 		    break;
 		}
@@ -2536,7 +2536,7 @@ xauth_inI1(struct msg_digest *md)
     if(!got_status || status==FALSE)
     {
 	/* oops, something seriously wrong */
-	openswan_log("did not get status attribute in xauth_inI1, looking for new challenge.");
+	libreswan_log("did not get status attribute in xauth_inI1, looking for new challenge.");
 	change_state(st, STATE_XAUTH_I0);
 	return xauth_inI0(md);
     }
@@ -2549,7 +2549,7 @@ xauth_inI1(struct msg_digest *md)
     if(status && stat == STF_OK)
     {
 	st->hidden_variables.st_xauth_client_done = TRUE;
-	openswan_log("successfully logged in");
+	libreswan_log("successfully logged in");
 	st->st_oakley.xauth = 0;
 
 	return STF_OK;

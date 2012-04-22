@@ -10,7 +10,7 @@ east:~#
  route add -net default gw 192.1.2.1
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add northnet--eastnet-nat
 east:~#

@@ -10,13 +10,13 @@
 #include "skb_fake.h"
 #include "slab_fake.h"
 
-#include "openswan.h"
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_sa.h"
-#include "openswan/ipsec_policy.h"
-#include "openswan/ipsec_proto.h"
-#include "openswan/pfkeyv2.h"
-#include "openswan/pfkey.h"
+#include "libreswan.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_sa.h"
+#include "libreswan/ipsec_policy.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/pfkeyv2.h"
+#include "libreswan/pfkey.h"
 
 extern int debug_rcv;
 

@@ -4,8 +4,8 @@
 # $Id: localswitches.tcl,v 1.5 2004/04/03 19:44:52 ken Exp $
 #
 
-source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
-source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/GetOpts.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/netjig.tcl
 
 set netjig_prog $env(OBJDIRTOP)/testing/utils/uml_netjig/uml_netjig
 

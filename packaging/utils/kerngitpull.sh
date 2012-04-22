@@ -1,8 +1,8 @@
 #!/bin/sh
 
 klips_git=/mara1/git/klips
-openswan_git=`pwd`
-patchdir=$openswan_git/linux/patches
+libreswan_git=`pwd`
+patchdir=$libreswan_git/linux/patches
 
 
 
@@ -13,12 +13,12 @@ rm -rf $patchdir
 cd $klips_git
 
 mkdir -p $patchdir
-git-format-patch -o $openswan_git/linux/patches --mbox openswan_klips
+git-format-patch -o $libreswan_git/linux/patches --mbox libreswan_klips
 
 SIGNOFF="Michael Richardson <mcr@xelerance.com>"
 mkdir .dotest
 
-cd $openswan_git/linux
+cd $libreswan_git/linux
 for p in patches/0*.txt
 do
     rm -rf .dotest && mkdir -p .dotest
@@ -33,14 +33,14 @@ do
 	git-stripspace <.dotest/msg >.dotest/msg-clean
 	sed -e 's|^\+\+\+ b/|+++ b/linux/|' -e 's|^--- a/|--- a/linux/|' <.dotest/patch >.dotest/patch-osw
 	#cat .dotest/patch-osw
-	(cd $openswan_git && git-applypatch linux/.dotest/msg-clean linux/.dotest/patch-osw linux/.dotest/info "$SIGNOFF" )
+	(cd $libreswan_git && git-applypatch linux/.dotest/msg-clean linux/.dotest/patch-osw linux/.dotest/info "$SIGNOFF" )
 	read ans
 	shift
     done
 done
 
 cd $klips_git
-cg-switch openswan_klips
+cg-switch libreswan_klips
 cg-update klipsNG
 cg-switch klipsNG
 

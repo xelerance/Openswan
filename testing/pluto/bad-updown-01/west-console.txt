@@ -1,6 +1,6 @@
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --config /testing/pluto/bad-updown-01/ipsec.conf.bad-updown --add westnet-eastnet-bad-updown
 west:~#

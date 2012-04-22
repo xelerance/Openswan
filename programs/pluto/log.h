@@ -13,7 +13,7 @@
  * for more details.
  */
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "oswlog.h"
 
@@ -22,7 +22,7 @@
 #endif
 
 /* moved common code to library file */
-#include "openswan/passert.h"
+#include "libreswan/passert.h"
 
 extern bool
     log_to_stderr,	/* should log go to stderr? */

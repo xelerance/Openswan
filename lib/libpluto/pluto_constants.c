@@ -23,9 +23,9 @@
 #include <stdio.h>
 #include <netinet/in.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include <openswan/passert.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include <libreswan/passert.h>
 
 #include "constants.h"
 #include "enum_names.h"

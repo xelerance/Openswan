@@ -26,8 +26,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -433,7 +433,7 @@ verify_by_ocsp(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 #ifdef HAVE_THREADS
     if (status == CERT_UNDEFINED || nextUpdate < time(NULL))
     {
-	openswan_log("ocsp status is stale or not in cache");
+	libreswan_log("ocsp status is stale or not in cache");
 	add_ocsp_fetch_request(&location, cert->serialNumber);
 
 	/* inititate fetching of ocsp status */

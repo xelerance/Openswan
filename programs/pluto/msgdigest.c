@@ -33,7 +33,7 @@
 #  include <sys/uio.h>	/* struct iovec */
 #endif
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"

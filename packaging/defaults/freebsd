@@ -2,7 +2,7 @@
 # preprhkern4module. Only needed if you are going to be created RPMs
 # outside of a distribution (as the FS team does for RedHat).
 
-PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/freebsd/include -isystem /usr/local/include
+PORTINCLUDE+=-I${LIBRESWANSRCDIR}/ports/freebsd/include -isystem /usr/local/include
 PORTDEFINE+=-DHAS_SUN_LEN -DNEED_SIN_LEN
 
 TCLLIB=-ltcl8.4

@@ -17,7 +17,7 @@ then
 fi
 
 # source it so that we get the settings for $TODAY
-source $HOME/openswan-2-regress-env.sh
+source $HOME/libreswan-2-regress-env.sh
 
 BRANCH=HEAD export BRANCH
 

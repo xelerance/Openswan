@@ -26,9 +26,9 @@
 #include <sys/time.h>		/* for gettimeofday */
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -313,7 +313,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_doi = ISAKMP_DOI_IPSEC;
     st->st_situation = SIT_IDENTITY_ONLY; /* We only support this */
 
-    openswan_log("responding to Aggressive Mode, state #%lu, connection \"%s\""
+    libreswan_log("responding to Aggressive Mode, state #%lu, connection \"%s\""
 	" from %s"
 	, st->st_serialno, st->st_connection->name
 	, ip_str(&c->spd.that.host_addr));
@@ -325,7 +325,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     if (md->quirks.nat_traversal_vid && nat_traversal_enabled) {
 	/* reply if NAT-Traversal draft is supported */
 	st->hidden_variables.st_nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
-	openswan_log("enabling possible NAT-traversal with method %s"
+	libreswan_log("enabling possible NAT-traversal with method %s"
 	     , bitnamesof(natt_type_bitnames, st->hidden_variables.st_nat_traversal));
     }
 #endif
@@ -1078,12 +1078,12 @@ aggr_outI1(int whack_sock,
 		   );
 
     if (predecessor == NULL) {
-	openswan_log("initiating Aggressive Mode #%lu, connection \"%s\""
+	libreswan_log("initiating Aggressive Mode #%lu, connection \"%s\""
 		     , st->st_serialno, st->st_connection->name);
     }
     else {
 	update_pending(predecessor, st);
-	openswan_log("initiating Aggressive Mode #%lu to replace #%lu, connection \"%s\""
+	libreswan_log("initiating Aggressive Mode #%lu to replace #%lu, connection \"%s\""
 		     , st->st_serialno, predecessor->st_serialno
 		     , st->st_connection->name);
     }

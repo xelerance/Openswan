@@ -44,8 +44,8 @@
 
 #include <signal.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -370,7 +370,7 @@ static bool crypto_write_request(struct pluto_crypto_worker *w
 	cnt = write(w->pcw_pipe, wdat, wlen);
 	
 	if(cnt <= 0) {
-	    openswan_log("write to helper failed: cnt=%d err=%s\n",
+	    libreswan_log("write to helper failed: cnt=%d err=%s\n",
 			 cnt, strerror(errno));
 	    return FALSE;
 	}
@@ -531,7 +531,7 @@ err_t send_crypto_helper_request(struct pluto_crypto_req *r
 		, pbs_offset(&reply_stream), "saved reply buffer");
     
     if(!crypto_write_request(w, r)) {
-	openswan_log("failed to write crypto request: %s\n",
+	libreswan_log("failed to write crypto request: %s\n",
 		     strerror(errno));
 	if (pbs_offset(&cn->pcrc_reply_stream))
 	    pfree(cn->pcrc_reply_buffer);
@@ -893,7 +893,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	return;  
     }
     else{
-	openswan_log("started helper (thread) pid=%ld (fd:%d)", w->pcw_pid,  w->pcw_pipe);
+	libreswan_log("started helper (thread) pid=%ld (fd:%d)", w->pcw_pid,  w->pcw_pipe);
     }
 #else
     w->pcw_pid = fork();
@@ -947,7 +947,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	load_oswcrypto();
 	free_preshared_secrets();
 #ifdef DEBUG
-	openswan_passert_fail = helper_passert_fail;
+	libreswan_passert_fail = helper_passert_fail;
 	debug_prefix='!';
 #endif
 
@@ -970,7 +970,7 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
     }
 
     /* PARENT */
-    openswan_log("started helper pid=%d (fd:%d)", w->pcw_pid,  w->pcw_pipe);
+    libreswan_log("started helper pid=%d (fd:%d)", w->pcw_pid,  w->pcw_pipe);
     
     /* close client side of socket pair in parent */
     close(fds[1]);
@@ -1052,7 +1052,7 @@ void init_crypto_helpers(int nhelpers)
     }
 
     if(nhelpers > 0) {
-	openswan_log("starting up %d cryptographic helpers", nhelpers);
+	libreswan_log("starting up %d cryptographic helpers", nhelpers);
 	pc_workers = alloc_bytes(sizeof(*pc_workers)*nhelpers
 				 , "pluto helpers");
 	pc_workers_cnt = nhelpers;
@@ -1061,7 +1061,7 @@ void init_crypto_helpers(int nhelpers)
 	    init_crypto_helper(&pc_workers[i], i);
 	}
     } else {
-	openswan_log("no helpers will be started, all cryptographic operations will be done inline");
+	libreswan_log("no helpers will be started, all cryptographic operations will be done inline");
     }
 	
     pc_worker_num = 0;

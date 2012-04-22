@@ -28,7 +28,7 @@
 #include <time.h>
 #include <sys/types.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "oswconf.h"
@@ -442,7 +442,7 @@ parse_ac(chunk_t blob, x509acert_t *ac)
 	    )
 	    if (ac->version != 2)
 	    {
-		openswan_log("v%d attribute certificates are not supported"
+		libreswan_log("v%d attribute certificates are not supported"
 		    , ac->version);
 		return FALSE;
 	    }
@@ -740,7 +740,7 @@ load_acerts(void)
 	struct dirent **filelist;
 	int n;
 
-	openswan_log("Changing to directory '%s'", oco->acerts_dir);
+	libreswan_log("Changing to directory '%s'", oco->acerts_dir);
 	n = scandir(oco->acerts_dir, &filelist, (void *) file_select, alphasort);
 
 	if (n > 0)
@@ -776,7 +776,7 @@ load_acerts(void)
     /* restore directory path */
     if(chdir(save_dir) == -1) {
 	int e = errno;
-	openswan_log("Changing back to directory '%s' failed - (%d %s)",
+	libreswan_log("Changing back to directory '%s' failed - (%d %s)",
 		save_dir, e, strerror(e));
     }
 }

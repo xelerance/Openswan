@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	copydatlen(rcookie, tc2_rcookie, tc2_rcookie_len);
 
 #define dumpdat(field) \
-	openswan_DBG_dump(#field,	\
+	libreswan_DBG_dump(#field,	\
 			  wire_chunk_ptr(skq, &skq->field), \
 			  skq->field.len);
 
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 	fflush(stderr);
 
 #define dumpskr(FOO) { void *FOO = wire_chunk_ptr(skr, &skr->FOO);\
-		openswan_DBG_dump(#FOO, FOO, skr->FOO.len); \
+		libreswan_DBG_dump(#FOO, FOO, skr->FOO.len); \
 	}
 
 	dumpskr(shared);

@@ -4,7 +4,7 @@ west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --add west--east-psk
 west:~#
@@ -17,7 +17,7 @@ west:~#
 west:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version cvs2005Nov02_14:08:00 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEkk{aJYsmTs)
+Starting Pluto (Libreswan Version cvs2005Nov02_14:08:00 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEkk{aJYsmTs)
 @(#) built on DATE by PERSON
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -49,7 +49,7 @@ listening for IKE messages
 adding interface ipsec0/eth1 192.1.2.45:500
 loading secrets from "/tmp/tpm-accept-01/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/west.pem' (963 bytes)
-packet from 192.1.2.23:500: received Vendor ID payload [Openswan (this version) cvs2005Nov02_14:08:00  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.23:500: received Vendor ID payload [Libreswan (this version) cvs2005Nov02_14:08:00  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.23:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: responding to Main Mode
 "west--east-psk" #1: transition from state STATE_MAIN_R0 to state STATE_MAIN_R1

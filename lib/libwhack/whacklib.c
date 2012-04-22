@@ -1,4 +1,4 @@
-/* Openswan command interface to Pluto
+/* Libreswan command interface to Pluto
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2004-2006  Michael Richardson <mcr@xelerance.com>
@@ -30,7 +30,7 @@
 #include <getopt.h>
 #include <assert.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <stdarg.h>
 
 #include "sysdep.h"

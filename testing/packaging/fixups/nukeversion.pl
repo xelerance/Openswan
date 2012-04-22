@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 
-$OPENSWANSRCDIR=$ENV{'OPENSWANSRCDIR'};
+$LIBRESWANSRCDIR=$ENV{'LIBRESWANSRCDIR'};
 
-if ( ! -f "${OPENSWANSRCDIR}/Makefile.ver" ) {
+if ( ! -f "${LIBRESWANSRCDIR}/Makefile.ver" ) {
   print STDERR "NUKEversion.pl can not determine version number, \n";
-  print STDERR "\t${OPENSWANSRCDIR}/Makefile.ver can not be found\n";
-  print STDERR "Perhaps OPENSWANSRCDIR=$OPENSWANSRCDIR is wrong?\n";
+  print STDERR "\t${LIBRESWANSRCDIR}/Makefile.ver can not be found\n";
+  print STDERR "Perhaps LIBRESWANSRCDIR=$LIBRESWANSRCDIR is wrong?\n";
   exit 1;
 }
 
-open(VERSION, "${OPENSWANSRCDIR}/Makefile.ver") ||
-  die "Can not open ${OPENSWANSRCDIR}/Makefile.ver\n";
+open(VERSION, "${LIBRESWANSRCDIR}/Makefile.ver") ||
+  die "Can not open ${LIBRESWANSRCDIR}/Makefile.ver\n";
 
 $version=undef;
 while(<VERSION>) {
@@ -22,7 +22,7 @@ while(<VERSION>) {
 }
 close(VERSION);
 if(!defined($version)) {
-  die "nukeversion.pl: Makefile.ver did not have version string defined!\nPerhaps OPENSWANSRCDIR=$OPENSWANSRCDIR is wrong?\n";
+  die "nukeversion.pl: Makefile.ver did not have version string defined!\nPerhaps LIBRESWANSRCDIR=$LIBRESWANSRCDIR is wrong?\n";
 }
 
 # now process the file looking for the version string.

@@ -176,8 +176,8 @@ These are important for the RSA key to survive DNS processing.
 
 
 
-Opportunistic Encryption (OE) is the result of ongoing effort by the Openswan
-project (www.openswan.org). It allows for the creation of dynamic IPSec 
+Opportunistic Encryption (OE) is the result of ongoing effort by the Libreswan
+project (www.libreswan.org). It allows for the creation of dynamic IPSec 
 connections between hosts without pre-arrangement, authenticated via RSA keys 
 stored in DNS records.
 
@@ -186,9 +186,9 @@ Technical information on OE can be found in RFC 4322:
 http://www.ietf.org/rfc/rfc4322.txt
 
 If you have any questions about these TXT records, or about OE in general, 
-please direct them to the Openswan support lists: 
+please direct them to the Libreswan support lists: 
 
-users@lists.openswan.org
+users@lists.libreswan.org
 "
 
 # If we managed to find a hostmaster, make the appropriate modifications to the mail's body and 

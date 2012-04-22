@@ -1,11 +1,11 @@
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
 UNITTEST=psk-v2
 CFLAGS=-DUSE_3DES
-INCLUDES=-I${srcdir}${OPENSWANSRCDIR}/programs/pluto
-INCLUDES+=-I${srcdir}${OPENSWANSRCDIR}/testing/lib/libpluto
+INCLUDES=-I${srcdir}${LIBRESWANSRCDIR}/programs/pluto
+INCLUDES+=-I${srcdir}${LIBRESWANSRCDIR}/testing/lib/libpluto
 VPATH += ${srcdir}
-OPENSWANSRCDIRREL=../../..
+LIBRESWANSRCDIRREL=../../..
 
 SOURCES=psk-v2.c packetsI1psk.c 
 
@@ -51,7 +51,7 @@ PROGRAM=psk-v2
 programs checkprograms: ${UNITTEST}
 	@true
 
-include ${OPENSWANSRCDIR}/programs/Makefile.program
+include ${LIBRESWANSRCDIR}/programs/Makefile.program
 
 packetsI1psk.c: ../../lib/libpluto/lib-parentI1psk/parentI1psk.pcap
 

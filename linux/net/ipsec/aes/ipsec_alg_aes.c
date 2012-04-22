@@ -49,8 +49,8 @@
 #endif
 
 /*	Low freeswan header coupling	*/
-#include <openswan.h>
-#include "openswan/ipsec_alg.h"
+#include <libreswan.h>
+#include "libreswan/ipsec_alg.h"
 #include "klips-crypto/aes_cbc.h"
 
 #define CONFIG_KLIPS_ENC_AES_MAC 1

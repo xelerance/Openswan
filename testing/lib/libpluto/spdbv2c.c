@@ -3,7 +3,7 @@
 #define XAUTH 1
 #define PRINT_SA_DEBUG 1
 #include <stdlib.h>
-#include "openswan.h"
+#include "libreswan.h"
 #include "constants.h"
 #include "defs.h"
 #include "state.h"

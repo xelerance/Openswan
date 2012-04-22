@@ -35,7 +35,7 @@ s/^VFS: Disk.*/VFS: Diskquotas version dquot_6.4.0 initialized/
 /^zone(.): .* pages./d
 /^Initializing stdio console driver/d
 /^cp: .etc.nologin: No such file or directory/d
-/Openswan KLIPS IPsec stack version: .*/d
+/Libreswan KLIPS IPsec stack version: .*/d
 /Kernel logging (proc) stopped/d
 /Kernel log daemon terminating/d
 s/\(Dentry\).\(cache hash table entries:\).*/\1-\2 NUMBERS/

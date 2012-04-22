@@ -1,4 +1,4 @@
-# Openswan testing makefile
+# Libreswan testing makefile
 # Copyright (C) 2002 Michael Richardson <mcr@freeswan.org>
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -11,23 +11,23 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 srcdir:=./
-export OPENSWANSRCDIR
-include $(OPENSWANSRCDIR)/Makefile.inc
+export LIBRESWANSRCDIR
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
-UTILS=${OPENSWANSRCDIR}/testing/utils
+UTILS=${LIBRESWANSRCDIR}/testing/utils
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false
 
-check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	. ${OPENSWANSRCDIR}/umlsetup.sh; . ./setup.sh; . ${UTILS}/functions.sh; . ./TESTLIST
+check: 	${LIBRESWANSRCDIR}/umlsetup.sh
+	. ${LIBRESWANSRCDIR}/umlsetup.sh; . ./setup.sh; . ${UTILS}/functions.sh; . ./TESTLIST
 
 spotcheck:
-	@. ${OPENSWANSRCDIR}/umlsetup.sh; . ./setup.sh; . $${UTILS}/functions.sh; eval `sed -e '/^#/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@. ${LIBRESWANSRCDIR}/umlsetup.sh; . ./setup.sh; . $${UTILS}/functions.sh; eval `sed -e '/^#/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 install install_file_list checkprograms programs:
 	@true
@@ -58,7 +58,7 @@ realclean: clean
 # 	adjusted Makefiles so that ${OBJDIR} builds work.
 #
 # Revision 1.6  2004/04/03 19:44:51  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+# FREESWANSRCDIR -> LIBRESWANSRCDIR (patch by folken)
 #
 # Revision 1.5  2003/02/17 02:34:38  mcr
 # 	adjusted "make clean" target in Makefiles.

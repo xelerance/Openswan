@@ -1,10 +1,10 @@
-ifndef OPENSWANSRCDIR
-OPENSWANSRCDIR=$(shell cd ../../..; pwd)
+ifndef LIBRESWANSRCDIR
+LIBRESWANSRCDIR=$(shell cd ../../..; pwd)
 endif
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
-DESSRC=${OPENSWANSRCDIR}/linux/net/ipsec/des
+DESSRC=${LIBRESWANSRCDIR}/linux/net/ipsec/des
 
 VPATH+=${DESSRC}
 

@@ -21,7 +21,7 @@ fi
 ( cd .. && $TEST_TYPE $TESTNAME good )
 # FIXUP: test return value from above?
 
-perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} notest
+perl ${LIBRESWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} notest
 
 
 # $Log: runme.sh,v $

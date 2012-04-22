@@ -31,7 +31,7 @@ init_avc(void)
 		DBG_log("selinux support is enabled.\n");
 	}
 
-        if (avc_init("openswan", NULL, NULL, NULL, NULL) == 0) {
+        if (avc_init("libreswan", NULL, NULL, NULL, NULL) == 0) {
                 selinux_ready = 1;
 	}
         else {

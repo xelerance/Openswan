@@ -21,11 +21,11 @@
 #
 
 ifeq ($(strip $(KLIPSMODULE)),)
-OPENSWANSRCDIR=.
+LIBRESWANSRCDIR=.
 else
-OPENSWANSRCDIR=../../..
+LIBRESWANSRCDIR=../../..
 endif
--include ${OPENSWANSRCDIR}/Makefile.ver
+-include ${LIBRESWANSRCDIR}/Makefile.ver
 
 ifeq ($(strip $(KLIPS_TOP)),)
 KLIPS_TOP=../..

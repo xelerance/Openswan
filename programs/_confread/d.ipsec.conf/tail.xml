@@ -37,7 +37,7 @@ by Henry Spencer.</para>
 
 <refsect1 id='bugs'><title>BUGS</title>
 <para>Before reporting new bugs, please ensure you are using the latest
-version of Openswan, and if not using KLIPS, please ensure you are using
+version of Libreswan, and if not using KLIPS, please ensure you are using
 the latest kernel code for your IPsec stack.</para>
 
 <para>When
@@ -48,8 +48,8 @@ is set to
 <emphasis remap='B'>drop</emphasis>
 or
 <emphasis remap='B'>reject,</emphasis>
-Openswan blocks outbound packets using eroutes, but assumes inbound
-blocking is handled by the firewall. Openswan offers firewall hooks 
+Libreswan blocks outbound packets using eroutes, but assumes inbound
+blocking is handled by the firewall. Libreswan offers firewall hooks 
 via an &ldquo;updown&rdquo; script.  However, the default 
 <emphasis remap='B'>ipsec _updown</emphasis>
 provides no help in controlling a modern firewall.</para>
@@ -70,7 +70,7 @@ separate these two cases.</para>
 
 <para><emphasis remap='I'>ipsec_manual</emphasis>
 is not nearly as generous about the syntax of subnets,
-addresses, etc. as the usual Openswan user interfaces.
+addresses, etc. as the usual Libreswan user interfaces.
 Four-component dotted-decimal must be used for all addresses.
 It
 <emphasis remap='I'>is</emphasis>

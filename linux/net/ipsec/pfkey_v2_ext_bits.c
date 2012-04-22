@@ -27,7 +27,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "openswan/ipsec_kversion.h" /* for malloc switch */
+# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -51,11 +51,11 @@
 # include <stdio.h>
 #endif
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/pfkey_debug.h"
+#include "libreswan/pfkey_debug.h"
 
 
 pfkey_ext_track extensions_bitmaps[2/*in/out*/][2/*perm/req*/][K_SADB_MAX+1]={

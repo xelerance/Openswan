@@ -24,9 +24,9 @@ ifneq ($(wildcard ${PROGRAM_PL}),)
 MAN_SECTION     ?= 8
 PROGRAM_MAN     =  ${PROGRAM}.${MAN_SECTION}
 all: ${PROGRAM_MAN}
-${PROGRAM_MAN}: ${PROGRAM_PL} ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver ${OPENSWANSRCDIR}/programs/Makefile.manpages
+${PROGRAM_MAN}: ${PROGRAM_PL} ${LIBRESWANSRCDIR}/Makefile.inc ${LIBRESWANSRCDIR}/Makefile.ver ${LIBRESWANSRCDIR}/programs/Makefile.manpages
 	${POD2MAN} \
-		--center='Openswan IPSec' \
+		--center='Libreswan IPSec' \
 		--name="ipsec_${PROGRAM}" \
 		--section="${MAN_SECTION}" \
 		--release="${IPSECBASEVERSION}" \

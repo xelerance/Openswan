@@ -31,7 +31,7 @@ then
 fi
 
 # message patterns that start relevant parts of logs
-fstart='Starting Openswan'
+fstart='Starting Libreswan'
 pstart='Starting Pluto subsystem'
 
 case "$1" in
@@ -103,7 +103,7 @@ findlog() {		# findlog string fallbackstring possiblefile ...
 findlog "$fstart" "klips" messages syslog auth.log daemon.log
 if test " $findlog_file" = " /dev/null" 
 then
-echo "Unable to find KLIPS messages, typically found in /var/log/messages or equivalent. You may need to run Openswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
+echo "Unable to find KLIPS messages, typically found in /var/log/messages or equivalent. You may need to run Libreswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
 fi
 klog=$findlog_file
 kline=$findlog_startline
@@ -111,7 +111,7 @@ kline=$findlog_startline
 findlog "$pstart" "Pluto" secure auth.log daemon.log debug
 if test " $findlog_file" = " /dev/null" 
 then
-echo "Unable to find Pluto messages, typically found in /var/log/secure or equivalent. You may need to run Openswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
+echo "Unable to find Pluto messages, typically found in /var/log/secure or equivalent. You may need to run Libreswan for the first time; alternatively, your log files have been emptied (ie, logwatch) or we do not understand your logging configuration."
 fi 
 plog=$findlog_file
 pline=$findlog_startline

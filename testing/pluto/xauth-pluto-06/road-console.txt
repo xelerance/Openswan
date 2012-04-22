@@ -1,6 +1,6 @@
 road:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 road:~#
@@ -28,7 +28,7 @@ road:~#
  source /testing/pluto/bin/roadlocal.sh
 road:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 road:~#
  echo done
 done

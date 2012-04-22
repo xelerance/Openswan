@@ -27,8 +27,8 @@ east:~#
 east:~#
  rm -f /var/run/pluto/pluto.pid 
 east:~#
- echo "Starting Openswan IPsec pluto"
-Starting Openswan IPsec pluto
+ echo "Starting Libreswan IPsec pluto"
+Starting Libreswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
 [1] 9999
@@ -66,7 +66,7 @@ east:~#
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
+Starting Pluto (Libreswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -96,7 +96,7 @@ adding interface virtual192.0.2.254/eth0 192.0.2.254:500
 loading secrets from "/tmp/tpm-accept-05/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/east.pem' (963 bytes)
 added connection description "west--east-psk"
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: responding to Main Mode
 "west--east-psk" #1: transition from state STATE_MAIN_R0 to state STATE_MAIN_R1

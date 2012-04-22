@@ -22,7 +22,7 @@
 #include <time.h>
 #include <sys/types.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "oswconf.h"

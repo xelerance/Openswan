@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 #ifndef ABITS
 #define	ABITS	32	/* bits in an IPv4 address */

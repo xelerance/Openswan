@@ -20,9 +20,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -124,8 +124,8 @@ ikev2_out_sa(pb_stream *outs
 	sa.isasa_np       = np;
 	sa.isasa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   sa.isasa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	   libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	   sa.isasa_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 
 	/* no ipsec_doi on IKEv2 */
@@ -379,7 +379,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 			    break;
 			    
 			default:
-				openswan_log("sa_v2_convert(): Ignored unknown IKEv2 transform attribute type: %d",attr->type.oakley);
+				libreswan_log("sa_v2_convert(): Ignored unknown IKEv2 transform attribute type: %d",attr->type.oakley);
 			    break;
 			}
 		    } else {
@@ -685,22 +685,22 @@ ikev2_match_transform_list_parent(struct db_sa *sadb
 				  , struct ikev2_transform_list *itl)
 {
     if(itl->encr_trans_next < 1) {
-	openswan_log("ignored proposal %u with no cipher transforms",
+	libreswan_log("ignored proposal %u with no cipher transforms",
 		     propnum);
 	return FALSE;
     }
     if(itl->integ_trans_next < 1) {
-	openswan_log("ignored proposal %u with no integrity transforms",
+	libreswan_log("ignored proposal %u with no integrity transforms",
 		     propnum);
 	return FALSE;
     }
     if(itl->prf_trans_next < 1) {
-	openswan_log("ignored proposal %u with no prf transforms",
+	libreswan_log("ignored proposal %u with no prf transforms",
 		     propnum);
 	return FALSE;
     }
     if(itl->dh_trans_next < 1) {
-	openswan_log("ignored proposal %u with no diffie-hellman transforms",
+	libreswan_log("ignored proposal %u with no diffie-hellman transforms",
 		     propnum);
 	return FALSE;
     }
@@ -758,7 +758,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 				keylen = attr.isatr_lv;
 				break;
 			default:
-				openswan_log("ikev2_process_transforms(): Ignored unknown IKEv2 Transform Attribute: %d",attr.isatr_type);
+				libreswan_log("ikev2_process_transforms(): Ignored unknown IKEv2 Transform Attribute: %d",attr.isatr_type);
 		break;
 		}
 	}
@@ -1028,7 +1028,7 @@ ikev2_parse_parent_sa_body(
 	    gotmatch = TRUE;
 
 	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		libreswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
 		return NO_PROPOSAL_CHOSEN;
 	    }
 	}
@@ -1180,12 +1180,12 @@ ikev2_match_transform_list_child(struct db_sa *sadb
 				 , struct ikev2_transform_list *itl)
 {
     if(itl->encr_trans_next < 1) {
-	openswan_log("ignored proposal %u with no cipher transforms",
+	libreswan_log("ignored proposal %u with no cipher transforms",
 		     propnum);
 	return FALSE;
     }
     if(itl->integ_trans_next < 1) {
-	openswan_log("ignored proposal %u with no integrity transforms",
+	libreswan_log("ignored proposal %u with no integrity transforms",
 		     propnum);
 	return FALSE;
     }
@@ -1330,7 +1330,7 @@ ikev2_parse_child_sa_body(
 	    winning_prop = proposal;
 
 	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		libreswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
 		return NO_PROPOSAL_CHOSEN;
 	    }
 	}

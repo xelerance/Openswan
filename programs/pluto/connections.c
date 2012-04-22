@@ -28,9 +28,9 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 #include "kameipsec.h"
 
 #include "sysdep.h"
@@ -265,7 +265,7 @@ delete_connection(struct connection *c, bool relations)
     passert(c->kind != CK_GOING_AWAY);
     if (c->kind == CK_INSTANCE)
     {
-	openswan_log("deleting connection \"%s\" instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
+	libreswan_log("deleting connection \"%s\" instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
 	     , c->name
 	     , ip_str(&c->spd.that.host_addr)
 	     , c->newest_isakmp_sa, c->newest_ipsec_sa);
@@ -273,7 +273,7 @@ delete_connection(struct connection *c, bool relations)
     }
     else
     {
-	openswan_log("deleting connection");
+	libreswan_log("deleting connection");
     }
     release_connection(c, relations);	/* won't delete c */
 
@@ -812,7 +812,7 @@ load_end_certificate(const char *filename, struct end *dst)
 	return;
     }
 
-    openswan_log("loading certificate from %s\n", filename);
+    libreswan_log("loading certificate from %s\n", filename);
     dst->cert_filename = clone_str(filename, "certificate filename");
     
 	{
@@ -854,7 +854,7 @@ load_end_certificate(const char *filename, struct end *dst)
 	ugh = check_validity(cert.u.x509, &valid_until);
 	if (ugh != NULL)
 	{
-	    openswan_log("  %s", ugh);
+	    libreswan_log("  %s", ugh);
 	    free_x509cert(cert.u.x509);
 	}
 	else
@@ -913,7 +913,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 	    ugh = atodn(src->ca, &dst->ca);
 	    if (ugh != NULL)
 	    {
-		openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
+		libreswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
 		dst->ca = empty_chunk;
 	    }
 	}
@@ -1316,7 +1316,7 @@ add_connection(const struct whack_message *wm)
 
 		new_rkm = c->sa_ipsec_life_seconds / 2;
 
-		openswan_log("conn: %s, rekeymargin (%lus) > salifetime (%lus); "
+		libreswan_log("conn: %s, rekeymargin (%lus) > salifetime (%lus); "
 				"reducing rekeymargin to %lu seconds", c->name,
 				c->sa_rekey_margin, c->sa_ipsec_life_seconds,
 				new_rkm);
@@ -1464,7 +1464,7 @@ add_connection(const struct whack_message *wm)
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
-	openswan_log("added connection description \"%s\"", c->name);
+	libreswan_log("added connection description \"%s\"", c->name);
 	DBG(DBG_CONTROL,
 	    char topo[CONN_BUF_LEN];
 
@@ -2706,20 +2706,20 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 		    subnettot(peer_net, 0, client, sizeof(client));
 		    idtoa(&d->spd.that.id, buf, sizeof(buf));
 
-		    openswan_log("Virtual IP %s overlaps with connection %s\"%s\" (kind=%s) '%s'"
+		    libreswan_log("Virtual IP %s overlaps with connection %s\"%s\" (kind=%s) '%s'"
 				 , client
 				 , d->name, fmt_conn_instance(d, cbuf)
 				 , enum_name(&connection_kind_names, d->kind)
 				 , buf);
 
 		    if(!kernel_overlap_supported()) {
-			openswan_log("Kernel method '%s' does not support overlapping IP ranges"
+			libreswan_log("Kernel method '%s' does not support overlapping IP ranges"
 				     , kernel_if_name());
 			return TRUE;
 
 		    } else if(LIN(POLICY_OVERLAPIP, c->policy)
 			      && LIN(POLICY_OVERLAPIP, d->policy)) {
-			openswan_log("overlap is okay by mutual consent");
+			libreswan_log("overlap is okay by mutual consent");
 			
 			/* look for another overlap to report on */
 			break;
@@ -2740,14 +2740,14 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 			cname="neither";
 		    }
 
-		    openswan_log("overlap is forbidden (%s%s%s agree%s to overlap)"
+		    libreswan_log("overlap is forbidden (%s%s%s agree%s to overlap)"
 				 , cname
 				 , cbuf
 				 , doesnot
 				 , esses);
 
 		    idtoa(peer_id, buf, sizeof(buf));
-		    openswan_log("Your ID is '%s'", buf);
+		    libreswan_log("Your ID is '%s'", buf);
 
 		    return TRUE; /* already used by another one */
 		}
@@ -2934,8 +2934,8 @@ fc_try(const struct connection *c
 
     if(best == NULL) {
 	if(virtualwhy != NULL) {
-	    openswan_log("peer proposal was reject in a virtual connection policy because:");
-	    openswan_log("  %s", virtualwhy);
+	    libreswan_log("peer proposal was reject in a virtual connection policy because:");
+	    libreswan_log("  %s", virtualwhy);
 	}
     }
 

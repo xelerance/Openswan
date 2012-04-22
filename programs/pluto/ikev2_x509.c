@@ -28,7 +28,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -113,8 +113,8 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
         }
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	cert.isac_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
     }
 
     cert.isac_enc = mycert.type;
@@ -122,8 +122,8 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     if(send_certreq){
         cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	   libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	   cert.isac_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;	
     }

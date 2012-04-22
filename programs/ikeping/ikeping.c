@@ -30,9 +30,9 @@
 #include <assert.h>
 #include <poll.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include "socketwrapper.h"
-#include "openswan/pfkeyv2.h"
+#include "libreswan/pfkeyv2.h"
 
 #include "constants.h"
 #include "packet.h"
@@ -59,7 +59,7 @@ help(void)
 	    " [--exchangenum num]    use num instead of 244 for the exchange type.\n"
 	    " [--wait seconds]    time to wait for replies, defaults to 3 seconds.\n"
 	    " host/port ...\n\n"
-	"Openswan %s\n",
+	"Libreswan %s\n",
 	ipsec_version_code());
 }
 
@@ -327,7 +327,7 @@ main(int argc, char **argv)
 	  return 0;	/* GNU coding standards say to stop here */
 	  
       case 'V':               /* --version */
-	  fprintf(stderr, "Openswan %s\n", ipsec_version_code());
+	  fprintf(stderr, "Libreswan %s\n", ipsec_version_code());
 	  return 0;	/* GNU coding standards say to stop here */
 	  
       case 'v':	/* --label <string> */

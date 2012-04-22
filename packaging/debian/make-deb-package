@@ -34,7 +34,7 @@ fi
 VERSION="`grep -m1 "^v" CHANGES | cut -dv -f2 | cut -d" " -f1`"
 
 # Update debian/changelog to make debuild/dpkg-buildpackage happy
-sed -i -e "s/$STRING/$VERSION/g" -e "/^openswan/ s/-.*xelerance.*)/~1git`date +%Y%m%d`)/" debian/changelog debian/NEWS
+sed -i -e "s/$STRING/$VERSION/g" -e "/^libreswan/ s/-.*xelerance.*)/~1git`date +%Y%m%d`)/" debian/changelog debian/NEWS
 
-echo "Building Openswan version $(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)"
+echo "Building Libreswan version $(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)"
 $BUILD_CMD

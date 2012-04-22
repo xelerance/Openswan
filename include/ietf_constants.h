@@ -326,7 +326,7 @@
  * ESP: RFC 2402 2.4; AH: RFC 2406 2.1
  * IPComp RFC 2393 substitutes a CPI in the place of an SPI.
  * see also draft-shacham-ippcp-rfc2393bis-05.txt.
- * We (Openswan) reserve 0x100 to 0xFFF for manual keying, so
+ * We (Libreswan) reserve 0x100 to 0xFFF for manual keying, so
  * Pluto won't generate these values.
  */
 #define IPSEC_DOI_SPI_MIN          0x100
@@ -517,7 +517,7 @@ extern const char *const critical_names[];
 #define ISAKMP_PAYLOAD_CRITICAL     0x80
 /* These are followed by 7 more bits, currently RESERVED */
 /* Note we use 1 of those bits for IMPAIR-SEND-BOGUS-ISAKMP-FLAG */
-#define ISAKMP_PAYLOAD_OPENSWAN_BOGUS  0x01
+#define ISAKMP_PAYLOAD_LIBRESWAN_BOGUS  0x01
 
 /* Protocol IDs
  * RFC2407 The Internet IP security Domain of Interpretation for ISAKMP 4.4.1
@@ -629,7 +629,7 @@ enum ikev2_ts_type {
 	/* 241-255 Private use */
 };
 
-/* many transform values are moved to openswan/ipsec_policy.h
+/* many transform values are moved to libreswan/ipsec_policy.h
  * including all of the following, which are here so that
  * they will get caught by grep:
  */
@@ -674,7 +674,7 @@ typedef u_int16_t cpi_t;
   extern enum_names ident_names;
 */
 
-/* actual enum for ipsec_cert_type, e.g. CERT_NONE is in openswan/ipsec_policy.h */
+/* actual enum for ipsec_cert_type, e.g. CERT_NONE is in libreswan/ipsec_policy.h */
 /*
   extern enum_names cert_type_names;
 */
@@ -1154,7 +1154,7 @@ enum pubkey_alg
 #define ISAKMP_ATTR_RTYPE_MASK 0x7FFF
 
 /* NOTE:
- * ID_IPV4_ADDR, ID_FQDN, etc. are defined in openswan/ipsec_policy.h
+ * ID_IPV4_ADDR, ID_FQDN, etc. are defined in libreswan/ipsec_policy.h
  * AND: enum_names ident_names is in constants.c
  */
 

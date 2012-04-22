@@ -8,7 +8,7 @@ s/data:[0-9A-Fa-f ][0-9A-Fa-f]:.*$/data:/
 /klips_debug:ipsec_sadb_cleanup: removing all SArefFreeList entries from circulation./d
 /klips_debug:ipsec_sadb_init: initialising main table./d
 /^012345$/d
-/klips_info:ipsec_init: KLIPS startup, Openswan IPsec version: .*/d
+/klips_info:ipsec_init: KLIPS startup, Libreswan IPsec version: .*/d
 /klips_info:pfkey_cleanup: shutting down PF_KEY domain sockets./d
 /klips_info:cleanup_module: ipsec module unloaded./d
 /klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0.*/d

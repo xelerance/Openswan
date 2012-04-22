@@ -11,7 +11,7 @@ set it up for the first. You might need to change these defines on
 Fedora systems.  Currently we use three defines that might require manual
 tweaking. They are located in:
 
-	openswan-2/linux/include/openswan/ipsec_kversion.h
+	libreswan-2/linux/include/libreswan/ipsec_kversion.h
 
 
 HAVE_SOCK_ZAPPED

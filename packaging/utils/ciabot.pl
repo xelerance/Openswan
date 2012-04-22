@@ -50,13 +50,13 @@ use vars qw ($project $from_email $dest_email $noisy $rpc_uri $sendmail
 ### Configuration
 
 # Project name (as known to CIA).
-$project = 'Openswan';
+$project = 'Libreswan';
 
 # The from address in generated mails.
 $from_email = 'nightly@xelerance.com';
 
 # Mail all reports to this address.
-$dest_email = 'nightly@lists.openswan.org';
+$dest_email = 'nightly@lists.libreswan.org';
 
 # If using XML-RPC, connect to this URI.
 $rpc_uri = 'http://cia.navi.cx/RPC2';

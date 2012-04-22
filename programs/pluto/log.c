@@ -31,8 +31,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -410,7 +410,7 @@ peerlog(const char *prefix, const char *m)
 
 
 int
-openswan_log(const char *message, ...)
+libreswan_log(const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -456,7 +456,7 @@ loglog(int mess_no, const char *message, ...)
 }
 
 void
-openswan_log_errno_routine(int e, const char *message, ...)
+libreswan_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -505,7 +505,7 @@ exit_log(const char *message, ...)
 }
 
 void
-openswan_exit_log_errno_routine(int e, const char *message, ...)
+libreswan_exit_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
@@ -530,7 +530,7 @@ openswan_exit_log_errno_routine(int e, const char *message, ...)
 }
 
 void
-openswan_log_abort(const char *file_str, int line_no)
+libreswan_log_abort(const char *file_str, int line_no)
 {
 	loglog(RC_LOG_SERIOUS, "ABORT at %s:%d", file_str, line_no);
 	abort();
@@ -613,7 +613,7 @@ whack_log(int mess_no, const char *message, ...)
 
 #ifdef DEBUG
 void
-openswan_switch_fail(int n, const char *file_str, unsigned long line_no)
+libreswan_switch_fail(int n, const char *file_str, unsigned long line_no)
 {
     char buf[30];
 
@@ -633,7 +633,7 @@ passert_fail(const char *pred_str, const char *file_str, unsigned long line_no)
 	show_status();
     }
     /* exiting correctly doesn't always work */
-    openswan_log_abort(file_str, line_no);
+    libreswan_log_abort(file_str, line_no);
 }
 
 void
@@ -658,7 +658,7 @@ extra_debugging(const struct connection *c)
 
     if (c!= NULL && c->extra_debugging != 0)
     {
-	openswan_log("extra debugging enabled for connection: %s"
+	libreswan_log("extra debugging enabled for connection: %s"
 	    , bitnamesof(debug_bit_names, c->extra_debugging & ~cur_debugging));
 	set_debugging(cur_debugging | c->extra_debugging);
     }
@@ -682,7 +682,7 @@ set_debugging(lset_t deb)
     cur_debugging = deb;
 
     if(kernel_ops!=NULL && kernel_ops->set_debug!=NULL) {
-	(*kernel_ops->set_debug)(cur_debugging, DBG_log, openswan_log);
+	(*kernel_ops->set_debug)(cur_debugging, DBG_log, libreswan_log);
     }
 }
 
@@ -719,7 +719,7 @@ DBG_log(const char *message, ...)
 /* dump raw bytes in hex to stderr (for lack of any better destination) */
 
 void
-openswan_DBG_dump(const char *label, const void *p, size_t len)
+libreswan_DBG_dump(const char *label, const void *p, size_t len)
 {
 #   define DUMP_LABEL_WIDTH 20	/* arbitrary modest boundary */
 #   define DUMP_WIDTH	(4 * (1 + 4 * 3) + 1)
@@ -1019,9 +1019,9 @@ log_state(struct state *st, enum state_kind new_state)
 	case p2_up:       p2 = "up";       break;
 	default:          p2 = "down";     break;
 	}
-	DBG(DBG_CONTROLMORE, DBG_log("log_state calling openswan-statsd for connection %s with tunnel(%s) phase1(%s) phase2(%s)", conn->name, tun, p1, p2));
+	DBG(DBG_CONTROLMORE, DBG_log("log_state calling libreswan-statsd for connection %s with tunnel(%s) phase1(%s) phase2(%s)", conn->name, tun, p1, p2));
 
-	snprintf(buf, sizeof(buf), "/bin/openswan-statsd "
+	snprintf(buf, sizeof(buf), "/bin/libreswan-statsd "
 			"%s ipsec-tunnel-%s if_stats /proc/net/dev/%s \\; "
 			"%s ipsec-tunnel-%s tunnel %s \\; "
 			"%s ipsec-tunnel-%s phase1 %s \\; "

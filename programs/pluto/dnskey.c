@@ -27,8 +27,8 @@
 #include <netdb.h>	/* ??? for h_errno */
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -236,18 +236,18 @@ stop_adns(void)
 	else if (WIFEXITED(status))
 	{
 	    if (WEXITSTATUS(status) != 0)
-		openswan_log("ADNS process exited with status %d"
+		libreswan_log("ADNS process exited with status %d"
 		    , (int) WEXITSTATUS(status));
 	    adns_pid = 0;
 	}
 	else if (WIFSIGNALED(status))
 	{
-	    openswan_log("ADNS process terminated by signal %d", (int)WTERMSIG(status));
+	    libreswan_log("ADNS process terminated by signal %d", (int)WTERMSIG(status));
 	    adns_pid = 0;
 	}
 	else
 	{
-	    openswan_log("wait for end of ADNS process returned odd status 0x%x\n"
+	    libreswan_log("wait for end of ADNS process returned odd status 0x%x\n"
 		, status);
 	    adns_pid = 0;
 	}
@@ -1507,7 +1507,7 @@ start_adns_query(const struct id *id	/* domain to query */
     if(adns_pid == 0
     && adns_restart_count < ADNS_RESTART_MAX)
     {
-	openswan_log("ADNS helper was not running. Restarting attempt %d",adns_restart_count);
+	libreswan_log("ADNS helper was not running. Restarting attempt %d",adns_restart_count);
 	init_adns();
     }
 
@@ -1926,13 +1926,13 @@ handle_adns_answer(void)
 	/* EOF */
 	if (adns_in_flight != 0)
 	{
-	    openswan_log("EOF from ADNS with %d queries outstanding (restarts %d)"
+	    libreswan_log("EOF from ADNS with %d queries outstanding (restarts %d)"
 		 , adns_in_flight, adns_restart_count);
 	    recover_adns_die();
 	}
 	if (buflen != 0)
 	{
-	    openswan_log("EOF from ADNS with %lu bytes of a partial answer outstanding"
+	    libreswan_log("EOF from ADNS with %lu bytes of a partial answer outstanding"
 		 "(restarts %d)"
 		 , (unsigned long)buflen
 		 ,  adns_restart_count);
@@ -2032,7 +2032,7 @@ handle_adns_answer(void)
 
 	ugh = process_lwdnsq_answer(buf_copy);
 	if (ugh != NULL)
-	    openswan_log("failure processing lwdnsq output: %s; record: %s"
+	    libreswan_log("failure processing lwdnsq output: %s; record: %s"
 		 , ugh, buf);
 
 	passert(GLOBALS_ARE_RESET());

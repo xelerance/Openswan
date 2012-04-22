@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <limits.h> /* PATH_MAX */
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -155,7 +155,7 @@ read_foodgroup(struct fg_groups *g)
     }
     else
     {
-	openswan_log("loading group \"%s\"", fg_path);
+	libreswan_log("loading group \"%s\"", fg_path);
 	for (;;)
 	{
 	    switch (flp->bdry)

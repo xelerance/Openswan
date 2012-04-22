@@ -4,9 +4,9 @@
 # see module26.sh in packaging/makefiles
 #
 
-OPENSWANSRCDIR?=$(shell cd ../../..;pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..;pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 TESTCASE=eroute01
 

@@ -1,5 +1,5 @@
 /*
- * Openswan config file writer (confwrite.c)
+ * Libreswan config file writer (confwrite.c)
  * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it

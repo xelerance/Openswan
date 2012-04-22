@@ -1,4 +1,4 @@
-Openswan tries its best to not include any restricted patented software,
+Libreswan tries its best to not include any restricted patented software,
 even though it is likely not bound by US patent law, since it is released
 and distributed in The Netherlands.
 

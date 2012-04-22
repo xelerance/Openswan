@@ -12,7 +12,7 @@
 
 <refnamediv id='name'>
 <refname>ipsec livetest</refname>
-<refpurpose>see if Openswan has been installed correctly, interacting with a test target</refpurpose>
+<refpurpose>see if Libreswan has been installed correctly, interacting with a test target</refpurpose>
 </refnamediv>
 
 <!-- body begins here -->
@@ -41,8 +41,8 @@ then configures a connection using a random ID, using a a custom HTTP-based prot
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Written for the Openswan project
-&lt;<ulink url='http://www.openswan.org'>http://www.openswan.org</ulink>&gt;
+<para>Written for the Libreswan project
+&lt;<ulink url='http://www.libreswan.org'>http://www.libreswan.org</ulink>&gt;
 by Daniel Snider as part of the Google Summer of Code 2009</para>
 </refsect1>
 

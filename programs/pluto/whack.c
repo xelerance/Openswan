@@ -33,7 +33,7 @@
 #include <getopt.h>
 #include <assert.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h"
@@ -272,7 +272,7 @@ help(void)
 	    " --tpmeval string"
 	    "\n\n"
 #endif
-	"Openswan %s\n"
+	"Libreswan %s\n"
 	, ipsec_version_code());
 }
 

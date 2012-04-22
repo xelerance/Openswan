@@ -1,0 +1,8 @@
+Package: libreswan
+Priority: optional
+Section: Communications
+Version: VERSION
+Architecture: ARCH
+Maintainer: Libreswan <users@lists.libreswan.org>
+Depends: gawk libgmp
+Description: Libreswan IPsec IKE daemon and related tools

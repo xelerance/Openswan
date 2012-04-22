@@ -14,15 +14,15 @@
 #
 
 config KLIPS
-	tristate "Openswan IPsec (KLIPS)"
+	tristate "Libreswan IPsec (KLIPS)"
 	default n
 #	depends on NF_CONNTRACK && NETFILTER
 	help
-	  KLIPS is the Openswan (www.openswan.org) Kernel Level IP Security
+	  KLIPS is the Libreswan (www.libreswan.org) Kernel Level IP Security
 	  system. It is extensively tested, and has interoperated with
 	  many other systems. 
 	  It provides "ipsecX" devices on which one can do firewalling.
-	  The Openswan userland, is compatible with both KLIPS and NETKEY
+	  The Libreswan userland, is compatible with both KLIPS and NETKEY
 	  You cannot build KLIPS and NETKEY inline into the kernel.
 
 menu "KLIPS options"

@@ -23,7 +23,7 @@ west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  /testing/pluto/basic-pluto-01/eroutewait.sh trap
 west:~#

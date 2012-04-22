@@ -1,10 +1,10 @@
-Known issues with Openswan on a 2.6 kernel when using Opportunistic Encryption
+Known issues with Libreswan on a 2.6 kernel when using Opportunistic Encryption
 -------------------------------------------
 
-The Openswan userland can now use either KLIPS/MAST or NETKEY as the kernel
+The Libreswan userland can now use either KLIPS/MAST or NETKEY as the kernel
 level IPsec stack.
 
-This is an overview of known issues with Openswan on the 2.6 kernel codebase
+This is an overview of known issues with Libreswan on the 2.6 kernel codebase
 which includes NETKEY (CONFIG_NET_KEY).
 
 DESIGN-RELATED ISSUES

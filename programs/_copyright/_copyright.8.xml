@@ -10,13 +10,13 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec _copyright</refname>
-<refpurpose>prints Openswan copyright</refpurpose>
+<refpurpose>prints Libreswan copyright</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>_copyright</emphasis>
-outputs the Openswan copyright, and version numbers for "ipsec --copyright"</para>
+outputs the Libreswan copyright, and version numbers for "ipsec --copyright"</para>
 </refsect1>
 
 <refsect1 id='see_also'><title>SEE ALSO</title>

@@ -29,9 +29,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "constants.h"

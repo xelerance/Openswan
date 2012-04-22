@@ -19,7 +19,7 @@ road:~#
  source /testing/pluto/bin/roadlocal.sh
 road:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 road:~#
  echo done
 done

@@ -19,7 +19,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "constants.h"
 #include "defs.h"

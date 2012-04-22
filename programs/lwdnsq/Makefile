@@ -12,8 +12,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM:=lwdnsq
 
@@ -21,7 +21,7 @@ OBJS:=cmds.o lookup.o
 
 LWRESINCL=${LWRESDIR}/include
 
-LIBS:=${OPENSWANLIB} ${LIBLWRES} ${LIBDNS} ${LIBISC}
+LIBS:=${LIBRESWANLIB} ${LIBLWRES} ${LIBDNS} ${LIBISC}
 
 ifdef BIND9INCDIR
 CFLAGS+=-I${BIND9INCDIR}

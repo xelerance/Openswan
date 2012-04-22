@@ -27,8 +27,8 @@ east:~#
 east:~#
  rm -f /var/run/pluto/pluto.pid 
 east:~#
- echo "Starting Openswan IPsec pluto"
-Starting Openswan IPsec pluto
+ echo "Starting Libreswan IPsec pluto"
+Starting Libreswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
 [1] 9999
@@ -91,7 +91,7 @@ east:~#
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
+Starting Pluto (Libreswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -124,7 +124,7 @@ added connection description "west--east-psk"
 TPM evaluating 'set test_stage "t03a"' 
 tcl says packet from: 192.1.2.23
 recvMessage NULL NULL _POINTER_p_msg_digest
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #1: responding to Main Mode
@@ -186,7 +186,7 @@ stage: t03b state: 22 MR1: 5 MQ0: 16
 packet from 192.1.2.45:500: received and ignored informational message
 tcl says packet from: 192.1.2.23
 recvMessage NULL NULL _POINTER_p_msg_digest
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #3: extra debugging enabled for connection: impair-die-oninfo
 "west--east-psk" #3: responding to Main Mode

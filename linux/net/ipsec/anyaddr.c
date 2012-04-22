@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 /* these are mostly fallbacks for the no-IPv6-support-in-library case */
 #ifndef IN6ADDR_ANY_INIT

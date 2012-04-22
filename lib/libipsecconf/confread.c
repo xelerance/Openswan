@@ -1,4 +1,4 @@
-/* Openswan config file parser (confread.c)
+/* Libreswan config file parser (confread.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004 Xelerance Corporation
  *

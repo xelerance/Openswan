@@ -1,7 +1,7 @@
 east:~# D=/testing/scripts/ipsec.conf-alsoflip-01
 east:~# export IPSEC_CONFS="$D/etc-alsoflip"
 east:~# ipsec setup start ; i=0 ; while i=`expr $i + 1`; [ $i -lt 20 ] && ! { ipsec auto --status | grep 'prospective erouted' >/dev/null ; } ; do sleep 1 ; done
-pluto[PID]: Starting Pluto (Openswan Version VERSION)
+pluto[PID]: Starting Pluto (Libreswan Version VERSION)
 pluto[PID]: Setting port floating to off
 pluto[PID]: port floating activate 0/1
 pluto[PID]:   including NAT-Traversal patch (Version 0.6c) [disabled]
@@ -77,6 +77,6 @@ pluto[PID]: "flip-base-net": deleting connection
 pluto[PID]: "packetdefault": deleting connection
 pluto[PID]: shutting down interface ipsec0/eth1 192.1.2.23:500
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: Unknown HZ value! (9) Assume 100.
 

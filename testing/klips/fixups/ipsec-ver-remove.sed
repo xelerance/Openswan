@@ -1,2 +1,2 @@
-/ipsec_setup: Starting Openswan/d
+/ipsec_setup: Starting Libreswan/d
 /started helper pid=/d

@@ -1,6 +1,6 @@
 //
 //  main.m
-//  Openswan
+//  Libreswan
 //
 //  Created by Jose Quaresma on 15/4/09.
 //  Copyright __MyCompanyName__ 2009. All rights reserved.

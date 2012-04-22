@@ -525,10 +525,10 @@ module_compile paramaters
 References
 
    1. http://user-mode-linux.sourceforge.net/
-   2. file://localhost/syssrc/openswan-2.4-branch/doc/src/umltesting.html
-   3. file://localhost/syssrc/openswan-2.4-branch/doc/src/nightly.html
-   4. file://localhost/syssrc/openswan-2.4-branch/doc/src/makecheck.html#umlplutotest
-   5. file://localhost/syssrc/openswan-2.4-branch/doc/src/makecheck.html#umlXhost
+   2. file://localhost/syssrc/libreswan-2.4-branch/doc/src/umltesting.html
+   3. file://localhost/syssrc/libreswan-2.4-branch/doc/src/nightly.html
+   4. file://localhost/syssrc/libreswan-2.4-branch/doc/src/makecheck.html#umlplutotest
+   5. file://localhost/syssrc/libreswan-2.4-branch/doc/src/makecheck.html#umlXhost
    6. http://expect.nist.gov/
    7. http://www.tcpdump.org/
    8. http://www.tcpdump.org/

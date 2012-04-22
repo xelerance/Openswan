@@ -1,4 +1,4 @@
-/* Openswan NAT-Traversal
+/* Libreswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2005 Ken Bantoft <ken@xelerance.com>
@@ -36,12 +36,12 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
-#include <openswan/ipsec_tunnel.h>
-#include <openswan/ipsec_param.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
+#include <libreswan/ipsec_tunnel.h>
+#include <libreswan/ipsec_param.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -91,9 +91,9 @@ void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 	nat_traversal_enabled = activate;
 	nat_traversal_support_non_ike = activate;
 	nat_traversal_support_port_floating = activate ? spf : FALSE;
-	openswan_log("Setting NAT-Traversal port-4500 floating to %s"
+	libreswan_log("Setting NAT-Traversal port-4500 floating to %s"
 		     , nat_traversal_support_port_floating ? "on" : "off");
-	openswan_log("   port floating activation criteria nat_t=%d/port_float=%d"
+	libreswan_log("   port floating activation criteria nat_t=%d/port_float=%d"
 		     , activate, spf);
 	{ 
 	  FILE *f = fopen("/proc/net/ipsec/natt", "r");
@@ -104,7 +104,7 @@ void init_nat_traversal (bool activate, unsigned int keep_alive_period,
 	      nat_traversal_enabled = FALSE;
 	      nat_traversal_support_non_ike=FALSE;
 	      nat_traversal_support_port_floating=FALSE;
-	      openswan_log("  KLIPS does not have NAT-Traversal built in (see /proc/net/ipsec/natt)\n");
+	      libreswan_log("  KLIPS does not have NAT-Traversal built in (see /proc/net/ipsec/natt)\n");
 	    }
 	    fclose(f);
 	  }
@@ -124,13 +124,13 @@ static void disable_nat_traversal(int type)
 	if (type == ESPINUDP_WITH_NON_IKE)
 		nat_traversal_support_non_ike = FALSE;
 	else {
-	  openswan_log("NAT-Traversal port floating turned off");
+	  libreswan_log("NAT-Traversal port floating turned off");
 	  nat_traversal_support_port_floating = FALSE;
 	}
 
 	if (!nat_traversal_support_non_ike &&
 	    !nat_traversal_support_port_floating) {
-	    openswan_log("NAT-Traversal is turned OFF due to lack of KERNEL support: %d/%d"
+	    libreswan_log("NAT-Traversal is turned OFF due to lack of KERNEL support: %d/%d"
 			 , nat_traversal_support_non_ike
 			 , nat_traversal_support_port_floating);
 	    nat_traversal_enabled = FALSE;
@@ -865,7 +865,7 @@ static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
 		addrtot(&st->st_remoteaddr, 0, b1, ADDRTOT_BUF);
 		addrtot(&nfo->addr,         0, b2, ADDRTOT_BUF);
 
-		openswan_log("new NAT mapping for #%u, was %s:%d, now %s:%d"
+		libreswan_log("new NAT mapping for #%u, was %s:%d, now %s:%d"
 			     , (unsigned int)st->st_serialno
 			     , b1, st->st_remoteport
 			     , b2, nfo->port);
@@ -1047,7 +1047,7 @@ void process_pfkey_nat_t_new_mapping(
 	nfo.sa = (void *) extensions[K_SADB_EXT_SA];
 
 	if ((!nfo.sa) || (!srcx) || (!dstx)) {
-		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
+		libreswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: "
 			"got NULL params");
 		return;
 	}
@@ -1086,7 +1086,7 @@ void process_pfkey_nat_t_new_mapping(
 	}
 
 	if (ugh != NULL)
-		openswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
+		libreswan_log("K_SADB_X_NAT_T_NEW_MAPPING message from KLIPS malformed: %s", ugh);
 }
 
 #endif

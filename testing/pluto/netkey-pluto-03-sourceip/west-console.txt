@@ -161,7 +161,7 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 --- 192.0.2.254 ping statistics ---
 4 packets transmitted, 0 packets received, 100% packet loss
 west:~# ipsec setup start
-ipsec_setup: Starting Openswan IPsec U2.5.testing-g21680e0d-dirty/K2.6.18.6...
+ipsec_setup: Starting Libreswan IPsec U2.5.testing-g21680e0d-dirty/K2.6.18.6...
 ipsec_setup: Trying hardware random, this may fail, which is okay.
 ipsec_setup: Trying to load all NETKEY modules:xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 ipcomp ipcomp6 af_key 
 ipsec_setup: Trying VIA padlock driver, this may fail, which is okay.
@@ -175,7 +175,7 @@ done
 west:~# : === NETJIG start of WEST westrun.sh 
 west:~# ipsec auto --up  westnet-eastnet
 104 "westnet-eastnet" #1: STATE_MAIN_I1: initiate
-003 "westnet-eastnet" #1: received Vendor ID payload [Openswan (this version) 2.5.testing-g21680e0d-dirty ]
+003 "westnet-eastnet" #1: received Vendor ID payload [Libreswan (this version) 2.5.testing-g21680e0d-dirty ]
 003 "westnet-eastnet" #1: received Vendor ID payload [Dead Peer Detection]
 106 "westnet-eastnet" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 108 "westnet-eastnet" #1: STATE_MAIN_I3: sent MI3, expecting MR3
@@ -322,7 +322,7 @@ west:~# ipsec auto --status
 000  
 west:~# cat /tmp/pluto.log
 Plutorun started on Thu Feb 14 00:12:49 GMT 2008
-Starting Pluto (Openswan Version 2.5.testing-g21680e0d-dirty; Vendor ID OEGJMMweP{pQ) pid:923
+Starting Pluto (Libreswan Version 2.5.testing-g21680e0d-dirty; Vendor ID OEGJMMweP{pQ) pid:923
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
    including NAT-Traversal patch (Version 0.6c) [disabled]
@@ -754,7 +754,7 @@ loaded private key for keyid: PPK_RSA:AQNzGEFs1
 | ***parse ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    length: 20
-"westnet-eastnet" #1: received Vendor ID payload [Openswan (this version) 2.5.testing-g21680e0d-dirty ]
+"westnet-eastnet" #1: received Vendor ID payload [Libreswan (this version) 2.5.testing-g21680e0d-dirty ]
 "westnet-eastnet" #1: received Vendor ID payload [Dead Peer Detection]
 | ****parse IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
@@ -1440,7 +1440,7 @@ west:~# : ==== tuc ====
 west:~# if [ -f /tmp/core ]; then echo CORE FOUND; mv /tmp/core /var/tmp; fi
 west:~# : ==== end ====
 west:~# ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 west:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <5>Linux version 2.6.18.6 (antony@sal) (gcc version 4.2.3 20080114 (prerelease) (Debian 4.2.2-7)) #6 Wed Feb 13 11:18:26 EST 2008

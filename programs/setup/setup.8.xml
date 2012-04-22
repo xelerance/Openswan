@@ -37,7 +37,7 @@
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Setup</emphasis>
-controls the Openswan IPsec subsystem,
+controls the Libreswan IPsec subsystem,
 including both the Klips or Netkey (XFRM) kernel code and the Pluto
 key-negotiation daemon.
 (It is a synonym for the &ldquo;rc&rdquo; script for the subsystem;
@@ -165,8 +165,8 @@ Selected additional information is logged only to
 <para>Written for the FreeS/WAN project
 &lt;<ulink url='http://www.freeswan.org'>http://www.freeswan.org</ulink>&gt;
 by Henry Spencer.</para>
-<para>Modified for Openswan
-&lt;<ulink url='http://www.openswan.org'>http://www.openswan.org</ulink>&gt;
+<para>Modified for Libreswan
+&lt;<ulink url='http://www.libreswan.org'>http://www.libreswan.org</ulink>&gt;
 by Tuomo Soini.</para>
 </refsect1>
 

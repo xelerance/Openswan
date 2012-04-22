@@ -61,7 +61,7 @@ west:~#
  source /testing/pluto/bin/westlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --add westnet-eastnet-aggr
 west:~#
@@ -145,7 +145,7 @@ west:~#
 west:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 [1]   Exit 10                 ipsec whack --name westnet-bogus01 --initiate >/dev/null
 [2]   Exit 10                 ipsec whack --name westnet-bogus02 --initiate >/dev/null
 [3]   Exit 10                 ipsec whack --name westnet-bogus03 --initiate >/dev/null

@@ -6,8 +6,8 @@
    prefix=/xelerance rather than $HOME.
 
 2. From public repository
-   git clone git://git.openswan.org/public/scm/openswan.public openswan-2
-   cd openswan-2
+   git clone git://git.libreswan.org/public/scm/libreswan.public libreswan-2
+   cd libreswan-2
    git branch ikev2 origin/ikev2
    git checkout ikev2
 

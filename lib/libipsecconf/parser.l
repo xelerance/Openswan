@@ -2,7 +2,7 @@
 %option nounput
 %option noinput
 %{ 
-/* Openswan config file parser (parser.l)
+/* Libreswan config file parser (parser.l)
  * Copyright (C) 2001 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 D. Hugh Redelmeier <hugh@mimosa.com>

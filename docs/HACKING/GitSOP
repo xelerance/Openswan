@@ -1,6 +1,6 @@
 -*- emacs-wiki -*-
 
-For a number of months the Openswan project will move from GIT to CVS.
+For a number of months the Libreswan project will move from GIT to CVS.
 
 See [[HowToGit]]
 
@@ -9,11 +9,11 @@ This is the operating proceedure for working with the two trees.
 First, the GIT tree is the master tree.
 
 The CVS tree is the public release tree. The CVS tree is duplicated via rsync
-to anoncvs.openswan.org. Anything committed to that tree will become public 
+to anoncvs.libreswan.org. Anything committed to that tree will become public 
 without 30 minutes.
 
 The GIT tree has a branch called "public" which is pushed to 
-	http://git.openswan.org/public/scm/openswan.git/
+	http://git.libreswan.org/public/scm/libreswan.git/
 
 Anything placed on that branch will be made public.
 

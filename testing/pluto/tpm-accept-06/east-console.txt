@@ -27,8 +27,8 @@ east:~#
 east:~#
  rm -f /var/run/pluto/pluto.pid 
 east:~#
- echo "Starting Openswan IPsec pluto"
-Starting Openswan IPsec pluto
+ echo "Starting Libreswan IPsec pluto"
+Starting Libreswan IPsec pluto
 east:~#
  (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
 [1] 9999
@@ -55,7 +55,7 @@ east:~#
  ipsec whack --name west--east-psk --initiate
 002 "west--east-psk" #1: initiating Main Mode
 104 "west--east-psk" #1: STATE_MAIN_I1: initiate
-003 "west--east-psk" #1: received Vendor ID payload [Openswan 
+003 "west--east-psk" #1: received Vendor ID payload [Libreswan 
 003 "west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 002 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 106 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2
@@ -80,7 +80,7 @@ east:~#
  ipsec whack --name west--east-psk --initiate
 002 "west--east-psk" #3: initiating Main Mode
 104 "west--east-psk" #3: STATE_MAIN_I1: initiate
-003 "west--east-psk" #3: received Vendor ID payload [Openswan 
+003 "west--east-psk" #3: received Vendor ID payload [Libreswan 
 003 "west--east-psk" #3: received Vendor ID payload [Dead Peer Detection]
 002 "west--east-psk" #3: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 106 "west--east-psk" #3: STATE_MAIN_I2: sent MI2, expecting MR2
@@ -103,7 +103,7 @@ east:~#
 east:~#
 east:~#
  cat /tmp/pluto.log
-Starting Pluto (Openswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
+Starting Pluto (Libreswan Version 2.5.0cl8 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEQAUNTmsT]Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -134,7 +134,7 @@ loading secrets from "/tmp/tpm-accept-06/ipsec.secrets"
   loaded private key file '/etc/ipsec.d/private/east.pem' (963 bytes)
 added connection description "west--east-psk"
 "west--east-psk" #1: initiating Main Mode
-"west--east-psk" #1: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #1: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk" #1: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #1: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 "west--east-psk" #1: STATE_MAIN_I2: sent MI2, expecting MR2
@@ -154,7 +154,7 @@ not sending any delete notification
 not sending any delete notification
 "west--east-psk" #1: TPM result: stf_ignore
 "west--east-psk" #3: initiating Main Mode
-"west--east-psk" #3: received Vendor ID payload [Openswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"west--east-psk" #3: received Vendor ID payload [Libreswan (this version) 2.5.0cl8  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "west--east-psk" #3: received Vendor ID payload [Dead Peer Detection]
 "west--east-psk" #3: transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
 "west--east-psk" #3: STATE_MAIN_I2: sent MI2, expecting MR2

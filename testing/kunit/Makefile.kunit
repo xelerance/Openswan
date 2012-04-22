@@ -1,7 +1,7 @@
 include ${srcdir}../Makefile.unit-settings
 
 ${TESTCASE}:	${TESTCASE}.o ${IPSEC_OBJS} Makefile
-	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${OPENSWANLIB} -lefence
+	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${LIBRESWANLIB} -lefence
 
 ${TESTCASE}.o: ${srcdir}${TESTCASE}.c 
 	${CC} ${UCFLAGS} -c -o ${TESTCASE}.o ${srcdir}${TESTCASE}.c
@@ -19,7 +19,7 @@ ${TESTCASE}.o: ${srcdir}${TESTCASE}.c
 	${CC} ${KCFLAGS} -DKBUILD_BASENAME=$* -c -o $*.o $< 
 
 # build version.c using version number from Makefile.ver
-version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+version.c:	${KLIPSSRC}/version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
 ifneq (${PACKFILE},)

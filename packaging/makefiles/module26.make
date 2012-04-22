@@ -5,13 +5,13 @@
 #
 
 
-ifndef OPENSWANSRCDIR
-$(error You Must set OPENSWANSRCDIR)
+ifndef LIBRESWANSRCDIR
+$(error You Must set LIBRESWANSRCDIR)
 endif
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
-KLIPS_TOP := ${OPENSWANSRCDIR}/linux
+KLIPS_TOP := ${LIBRESWANSRCDIR}/linux
 
 # include file with .h-style macros that would otherwise be created by
 # config. Must occur before other includes.
@@ -30,7 +30,7 @@ EXTRA_CFLAGS += -I${KLIPS_TOP}/include
 EXTRA_CFLAGS += -I${KLIPSSRC}/.
 
 # build version.c using version number from Makefile.ver
-${BUILDDIR}/version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+${BUILDDIR}/version.c:	${KLIPSSRC}/version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
 ${BUILDDIR}/%.c : ${KLIPSSRC}/%.c
@@ -63,7 +63,7 @@ ${BUILDDIR}/inftrees.c: ${BUILDDIR}/inffixed.h
 ${BUILDDIR}/trees.c: ${BUILDDIR}/trees.h
 
 MODULE26=true
-include ${OPENSWANSRCDIR}/packaging/makefiles/module.defs 
+include ${LIBRESWANSRCDIR}/packaging/makefiles/module.defs 
 ifneq ($(strip $(MODULE_DEFCONFIG)),)
 include ${MODULE_DEFCONFIG}
 endif

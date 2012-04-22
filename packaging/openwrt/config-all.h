@@ -13,7 +13,7 @@
  * License for more details.
  *
  * This version is specific for openwrt. It requires OCF support in the kernel
- * so that openswan's kernel module can use the broadcom based OCF crypto
+ * so that libreswan's kernel module can use the broadcom based OCF crypto
  * hardware offload (via kmod-ocf-ubsec_ssb)
  * I also plan to add SAref patches to the kernel for better L2TP support
  */

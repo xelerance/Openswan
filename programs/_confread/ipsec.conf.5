@@ -33,7 +33,7 @@ ipsec.conf \- IPsec configuration and connections
 .PP
 The optional
 \fIipsec\&.conf\fR
-file specifies most configuration and control information for the Openswan IPsec subsystem\&. (The major exception is secrets for authentication; see
+file specifies most configuration and control information for the Libreswan IPsec subsystem\&. (The major exception is secrets for authentication; see
 \fBipsec.secrets\fR(5)\&.) Its contents are not security\-sensitive
 \fIunless\fR
 manual keying is being done for more than just testing, in which case the encryption/authentication keys in the descriptions for the manually\-keyed connections are very sensitive (and those connection descriptions are probably best kept in a separate file, via the include facility described below)\&.
@@ -214,7 +214,7 @@ the connection addrress family of the connection; currently the accepted values 
 (the default); or
 \fBipv6\fR\&. This option is confusing, especially when doing IPv4\-in\-IPv6 or IPv6\-in\-IPv4 tunnels\&. The developers hope to remove this option in the near future for proper auto\-detection\&. For now, set connaddrfamily= to the family of the *subnet= options, and if those are not defined, to the family of the left=/right= options\&.
 .sp
-IPv6 is supported with NETKEY since openswan 2\&.4 and with KLIPS since Openswan 2\&.6\&.33
+IPv6 is supported with NETKEY since libreswan 2\&.4 and with KLIPS since Libreswan 2\&.6\&.33
 .RE
 .PP
 \fBtype\fR
@@ -465,9 +465,9 @@ option\&. The default is to use IKE, and to allow all combinations of:
 .RE
 .\}
 .sp
-If Openswan was compiled with extra INSECURE and BROKEN options, then the des (1des) and null cipher, as well as modp768 are available\&. This turns your VPN into a joke\&. Do not enable these options\&.
+If Libreswan was compiled with extra INSECURE and BROKEN options, then the des (1des) and null cipher, as well as modp768 are available\&. This turns your VPN into a joke\&. Do not enable these options\&.
 .sp
-If openswan was compiled with USE_MODP_RFC5114 support, then Diffie\-Hellman groups 22, 23 and 24 are also implemented as per RFC\-5114\&. Instead of the modp key syntax, use the "dh" keyword, for example
+If libreswan was compiled with USE_MODP_RFC5114 support, then Diffie\-Hellman groups 22, 23 and 24 are also implemented as per RFC\-5114\&. Instead of the modp key syntax, use the "dh" keyword, for example
 \fIike=3des\-sha1;dh23\fR
 .RE
 .PP
@@ -529,7 +529,7 @@ signifying that we permit IKEv2, and also use it as the default to initiate;
 If the ikev2= setting is set to
 \fBpermit\fR
 or
-\fBpropose\fR, Openswan will try and detect a "bid down" attack from IKEv2 to IKEv1\&. Since there is no standard for transmitting the IKEv2 capability with IKEv1, Openswan uses a special Vendor ID "CAN\-IKEv2"\&. If a fall back from IKEv2 to IKEv1 was detected, and the IKEv1 negotiation contains Vendor ID "CAN\-IKEv2", Openswan will immediately attempt and IKEv2 rekey and refuse to use the IKEv1 connection\&. With an ikev2= setting of
+\fBpropose\fR, Libreswan will try and detect a "bid down" attack from IKEv2 to IKEv1\&. Since there is no standard for transmitting the IKEv2 capability with IKEv1, Libreswan uses a special Vendor ID "CAN\-IKEv2"\&. If a fall back from IKEv2 to IKEv1 was detected, and the IKEv1 negotiation contains Vendor ID "CAN\-IKEv2", Libreswan will immediately attempt and IKEv2 rekey and refuse to use the IKEv1 connection\&. With an ikev2= setting of
 \fBinsist\fR, no IKEv1 negotiation is allowed, and no bid down attack is possible\&.
 .RE
 .PP
@@ -612,8 +612,8 @@ if present, a second public key\&. Either key can authenticate the signature, al
 .RS 4
 If you are using
 \fBleftrsasigkey=%cert\fR
-this defines the certificate you would like to use\&. It should point to a X\&.509 encoded certificate file\&. If you do not specify a full pathname, by default it will look in /etc/ipsec\&.d/certs\&. If openswan has been compiled with
-\fBUSE_LIBNSS=true\fR, then openswan will also check the NSS database for RSA keys\&. These can be software or hardware\&.
+this defines the certificate you would like to use\&. It should point to a X\&.509 encoded certificate file\&. If you do not specify a full pathname, by default it will look in /etc/ipsec\&.d/certs\&. If libreswan has been compiled with
+\fBUSE_LIBNSS=true\fR, then libreswan will also check the NSS database for RSA keys\&. These can be software or hardware\&.
 .RE
 .PP
 \fBleftca\fR
@@ -628,7 +628,7 @@ and means that only peers with certificates signed by the same CA as the leftca 
 .PP
 \fBleftsendcert\fR
 .RS 4
-This option configures when Openswan will send X\&.509 certificates to the remote host\&. Acceptable values are
+This option configures when Libreswan will send X\&.509 certificates to the remote host\&. Acceptable values are
 \fByes|always\fR
 (signifying that we should always send a certificate),
 \fBifasked\fR
@@ -725,7 +725,7 @@ Mark this connection as controlled by Network Manager\&. Acceptable values are
 \fByes\fR
 or
 \fBno\fR
-(the default)\&. Currently, setting this to yes will cause openswan to skip reconfiguring resolv\&.conf when used with XAUTH and ModeConfig\&.
+(the default)\&. Currently, setting this to yes will cause libreswan to skip reconfiguring resolv\&.conf when used with XAUTH and ModeConfig\&.
 .RE
 .PP
 \fBforceencaps\fR
@@ -786,7 +786,7 @@ is really only useful on the server of a Road Warrior config\&.
 .PP
 \fBpfs\fR
 .RS 4
-whether Perfect Forward Secrecy of keys is desired on the connection\*(Aqs keying channel (with PFS, penetration of the key\-exchange protocol does not compromise keys negotiated earlier); Since there is no reason to ever refuse PFS, Openswan will allow a connection defined with
+whether Perfect Forward Secrecy of keys is desired on the connection\*(Aqs keying channel (with PFS, penetration of the key\-exchange protocol does not compromise keys negotiated earlier); Since there is no reason to ever refuse PFS, Libreswan will allow a connection defined with
 \fBpfs=no\fR
 to use PFS anyway\&. Acceptable values are
 \fByes\fR
@@ -814,7 +814,7 @@ or
 \fBno\fR
 (the default)\&.
 .sp
-The ISAKMP SA is created in exchange 1 in aggressive mode\&. Openswan has to send the exponent during that exchange, so it has to know what DH group to use before starting\&. This is why you can not have multiple DH groups in aggressive mode\&. In IKEv2, which uses a similar method to IKEv1 Aggressive Mode, there is a message to convey the DH group is wrong, and so an IKEv2 connection can actually recover from picking the wrong DH group by restarting its negotiation\&.
+The ISAKMP SA is created in exchange 1 in aggressive mode\&. Libreswan has to send the exponent during that exchange, so it has to know what DH group to use before starting\&. This is why you can not have multiple DH groups in aggressive mode\&. In IKEv2, which uses a similar method to IKEv1 Aggressive Mode, there is a message to convey the DH group is wrong, and so an IKEv2 connection can actually recover from picking the wrong DH group by restarting its negotiation\&.
 .RE
 .PP
 \fBsalifetime\fR
@@ -1396,7 +1396,7 @@ This connection inherits all details from
 \fBprivate\fR, except that its right client is 192\&.0\&.2\&.3\&.
 .SH "DEFAULT POLICY GROUPS"
 .PP
-The standard Openswan install includes several policy groups which provide a way of classifying possible peers into IPsec security classes:
+The standard Libreswan install includes several policy groups which provide a way of classifying possible peers into IPsec security classes:
 \fBprivate\fR
 (talk encrypted only),
 \fBprivate\-or\-clear\fR
@@ -1443,7 +1443,7 @@ When choosing a connection to use to respond to a negotiation which doesn\*(Aqt 
 Designed for the FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org\fR\m[]> by Henry Spencer\&.
 .SH "BUGS"
 .PP
-Before reporting new bugs, please ensure you are using the latest version of Openswan, and if not using KLIPS, please ensure you are using the latest kernel code for your IPsec stack\&.
+Before reporting new bugs, please ensure you are using the latest version of Libreswan, and if not using KLIPS, please ensure you are using the latest kernel code for your IPsec stack\&.
 .PP
 When
 \fBtype\fR
@@ -1453,7 +1453,7 @@ is set to
 \fBdrop\fR
 or
 \fBreject,\fR
-Openswan blocks outbound packets using eroutes, but assumes inbound blocking is handled by the firewall\&. Openswan offers firewall hooks via an \(lqupdown\(rq script\&. However, the default
+Libreswan blocks outbound packets using eroutes, but assumes inbound blocking is handled by the firewall\&. Libreswan offers firewall hooks via an \(lqupdown\(rq script\&. However, the default
 \fBipsec _updown\fR
 provides no help in controlling a modern firewall\&.
 .PP
@@ -1469,7 +1469,7 @@ option is ambiguous\&. Should the SA permits any port through or should the SA n
 may be introduced in the future to separate these two cases\&.
 .PP
 \fIipsec_manual\fR
-is not nearly as generous about the syntax of subnets, addresses, etc\&. as the usual Openswan user interfaces\&. Four\-component dotted\-decimal must be used for all addresses\&. It
+is not nearly as generous about the syntax of subnets, addresses, etc\&. as the usual Libreswan user interfaces\&. Four\-component dotted\-decimal must be used for all addresses\&. It
 \fIis\fR
 smart enough to translate bit\-count netmasks to dotted\-decimal form\&.
 .PP

@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 #EXTRALIBS=-lefence
@@ -20,11 +20,11 @@ PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 PROGRAM=readwriteconf
 
 # reach into pluto for now.
-INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
+INCLUDES=-I${LIBRESWANSRCDIR}/programs/pluto
 INCLUDES+=-I${srcdir}
 
 include ${srcdir}../Makefile.program
 
 TAGS:	$(DISTSRC)
-	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
+	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBLIBRESWANDIR)/*.[ch]
 

@@ -31,7 +31,7 @@
 
 
 #include <unistd.h>
-#include <openswan.h>
+#include <libreswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
@@ -41,11 +41,11 @@
 #include <getopt.h>
 
 #include <signal.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
 #include "oswlog.h"
 #include "pfkey_help.h"
 
@@ -927,7 +927,7 @@ main(int argc, char **argv)
  * Renamed the stack names consistently to KLIPS and NETKEY
  *
  * Revision 1.60  2004/04/06 02:58:43  mcr
- * 	freeswan->openswan changes.
+ * 	freeswan->libreswan changes.
  *
  * Revision 1.59  2004/02/09 23:07:35  paul
  * better error for native 2.6 pfk_key for 'ipsec eroute'

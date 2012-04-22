@@ -1,6 +1,6 @@
 /*
  *  Common.h
- *  Openswan
+ *  Libreswan
  *
  *  Created by Jose Quaresma on 8/7/09.
  *  Copyright 2009 __MyCompanyName__. All rights reserved.
@@ -23,7 +23,7 @@
 
 // authorization right name
 
-#define	kConnectRightName	"com.xelerance.openswan.Connect"
+#define	kConnectRightName	"com.xelerance.libreswan.Connect"
 
 // request keys
 

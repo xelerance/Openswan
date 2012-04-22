@@ -29,7 +29,7 @@
 
 #ifdef PLUTO
 #include <gmp.h>
-#include <openswan.h>
+#include <libreswan.h>
 #include "constants.h"
 #include "defs.h"
 #include "log.h"

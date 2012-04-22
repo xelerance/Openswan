@@ -9,7 +9,7 @@ then
 fi
 source ${MYBOX}/umlsetup.sh
 
-for host in ${OPENSWANHOSTS}
+for host in ${LIBRESWANHOSTS}
 do
     make DESTDIR=$POOLSPACE/$host/root install
 done

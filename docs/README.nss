@@ -1,4 +1,4 @@
-Title: Using NSS crypto library with Pluto (Openswan)
+Title: Using NSS crypto library with Pluto (Libreswan)
 Author: Avesh Agarwal email: avagarwa@redhat.com
 
 About NSS crypto library
@@ -9,13 +9,13 @@ NSS crypto library is user space library. It is only used with Pluto (user
 space IKE daemon) for cryptographic operations. When using NSS, it does not
 impact the way IPSEC kernel (KLIPS or NETKEY) works. The usefulness of using
 NSS lies in the fact that the secret information (like private keys or
-anything else) never comes out of NSS database. Openswan with NSS supports
+anything else) never comes out of NSS database. Libreswan with NSS supports
 IKEV1, IKEv2, authentication using PSK, Raw RSA Sig key, and Digital Certs.
 
 
-How to enable NSS crypto library with Openswan
+How to enable NSS crypto library with Libreswan
 -----------------------------------------------
-Change the flag USE_LIBNSS in openswan/Makefile.inc to "true" before
+Change the flag USE_LIBNSS in libreswan/Makefile.inc to "true" before
 compilation.
 
 
@@ -33,7 +33,7 @@ modutil: To put NSS into FIPS mode.
 http://www.mozilla.org/projects/security/pki/nss/tools/modutil.html
 
 
-Creating database before using NSS with Pluto (Openswan)
+Creating database before using NSS with Pluto (Libreswan)
 --------------------------------------------------------
 You must create a NSS db before running pluto with NSS enabled. NSS db can be
 created as follows.
@@ -183,7 +183,7 @@ certificate. If you leve it empty the following nss utils will pick one from
 the data in certificate.
 
 export NSS_DEFAULT_DB_TYPE="sql"
-# To use sql format of nss db which fedora's openswan expects.
+# To use sql format of nss db which fedora's libreswan expects.
 
 certutil -N -d /etc/ipsec.d
 # Use empty passwords.

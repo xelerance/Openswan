@@ -35,8 +35,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h
@@ -156,7 +156,7 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 
                 if (e > resp && e[-1] == '\n')
                     e[-1] = '\0';       /* trim trailing '\n' */
-                openswan_log("%s%s output: %s", verb, verb_suffix, resp);
+                libreswan_log("%s%s output: %s", verb, verb_suffix, resp);
             }
         }
 

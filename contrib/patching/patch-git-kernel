@@ -25,7 +25,7 @@ do_help() {
         local out=1
         [[ -n "$err" && "$err" -eq 0 ]] || out=2
         cat >&$out <<END
-This is a tool that applies openswan patches to a kernel git tree.
+This is a tool that applies libreswan patches to a kernel git tree.
 
 Syntax
 
@@ -57,7 +57,7 @@ cleen_up=true
 arg_kernel=
 arg_quiet=
 arg_tmpdir=/tmp
-openswan_rev=
+libreswan_rev=
 kernel_ver=
 
 # this will queue a patch if it looks like it would apply
@@ -109,7 +109,7 @@ generate_saref_patch() {
         for src in patches/kernel/$kernel_ver/0*.patch ; do
                 count=$(($count + 1))
                 local patch="$workdir/saref$count.patch"
-                local desc="Applied saref patch #$count from Openswan $openswan_rev"
+                local desc="Applied saref patch #$count from Libreswan $libreswan_rev"
                 local pnum=1
 
                 say "Reading ${src##*/}..."
@@ -125,7 +125,7 @@ generate_natt_patch() {
         local workdir="$1"
         local series="$2"
         local patch="$workdir/natt.patch"
-        local desc="Applied NATT patch from Openswan $openswan_rev"
+        local desc="Applied NATT patch from Libreswan $libreswan_rev"
         local pnum=1
 
         say "Generating ${patch##*/}..."
@@ -139,7 +139,7 @@ generate_klips_patch() {
         local workdir="$1"
         local series="$2"
         local patch="$workdir/klips.patch"
-        local desc="Applied klips patch from Openswan $openswan_rev"
+        local desc="Applied klips patch from Libreswan $libreswan_rev"
         local pnum=1
 
         say "Generating ${patch##*/}..."
@@ -230,9 +230,9 @@ done
 
 ( $do_saref || $do_natt || $do_klips ) || die "need to specify at least one of --saref, --natt, or --klips"
 
-is_git_dir ".git" && openswan_rev=$(git describe)
-[[ "${openswan_rev:0:1}" = "v" ]] || die "run this script from the top of the openswan git tree"
-echo "Openswan revision $openswan_rev"
+is_git_dir ".git" && libreswan_rev=$(git describe)
+[[ "${libreswan_rev:0:1}" = "v" ]] || die "run this script from the top of the libreswan git tree"
+echo "Libreswan revision $libreswan_rev"
 
 [[ -n "$arg_kernel" ]] || die "missing kernel directory; see $prog --help"
 is_git_dir "$arg_kernel/.git" && kernel_ver=$(git --git-dir="$arg_kernel/.git" describe | sed -ne's/v\(2\.6\.[0-9]\+\).*/\1/p')

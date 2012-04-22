@@ -16,7 +16,7 @@
 #define _IPSEC_PARSER_H_
 
 #include "constants.h"
-#include "openswan.h"
+#include "libreswan.h"
 
 struct config_parsed *parser_load_conf (const char *file, err_t *perr);
 void parser_free_conf (struct config_parsed *cfg);

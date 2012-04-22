@@ -1,7 +1,7 @@
 #ifndef _BIGLSET_H
 #define _BIGLSET_H 
 
-#include <openswan/passert.h>
+#include <libreswan/passert.h>
 /* set type with room for at least 64*8 = 512 options */
 #define BLMULTI 8
 typedef struct { lset_t lsts[BLMULTI]; } biglset_t;

@@ -9,7 +9,7 @@ but to start anew.  Well, sort of. The group actually imported a lot of BSD
 KAME code, but also rewrote a lot.
 
 As the code was US "tainted", the FreeS/WAN project could not just adopt it.
-In the meantime, Xelerance and the Openswan fork was formed, and the US taint
+In the meantime, Xelerance and the Libreswan fork was formed, and the US taint
 issue was not relevant. Many people asked why we bothered to maintain the
 KLIPS code.
 

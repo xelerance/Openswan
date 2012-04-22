@@ -23,7 +23,7 @@ export PATH
 
 rm -f /var/run/pluto/pluto.pid 
 
-echo "Starting Openswan IPsec pluto"
+echo "Starting Libreswan IPsec pluto"
 
 (cd /tmp && /usr/local/libexec/ipsec/pluto --nofork --secretsfile /tmp/$TESTNAME/ipsec.secrets --ipsecdir /tmp/$TESTNAME/ipsec.d --use-nostack --uniqueids --nhelpers 0 --stderrlog 2>/tmp/pluto.log ) &
 

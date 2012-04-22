@@ -35,9 +35,9 @@
 #include <gmp.h>
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -323,7 +323,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
 	return ikev2parent_outI1;
 
     } else {
-	openswan_log("Neither IKEv1 nor IKEv2 allowed");
+	libreswan_log("Neither IKEv1 nor IKEv2 allowed");
 	/*
 	 * tried IKEv2, if allowed, and failed,
 	 * and tried IKEv1, if allowed, and got nowhere.
@@ -636,7 +636,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	char buf[IDTOA_BUF];
 
 	idtoa(&peer, buf, sizeof(buf));
-	openswan_log("%s mode peer ID is %s: '%s'"
+	libreswan_log("%s mode peer ID is %s: '%s'"
 		     , aggrmode ? "Aggressive" : "Main"
 		     , enum_show(&ident_names, id->isaid_idtype), buf);
     }
@@ -701,7 +701,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	{
 	    /* apparently, r is an improvement on c -- replace */
 
-	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
+	    libreswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
 	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
 	    {
 		/* instantiate it, filling in peer's ID */

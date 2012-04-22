@@ -3,11 +3,11 @@ Certificate:
         Version: 3 (0x2)
         Serial Number: 18 (0x12)
         Signature Algorithm: md5WithRSAEncryption
-        Issuer: C=CA, ST=Ontario, O=Openswan, CN=ca.openswan.org/emailAddress=ca@openswan.org
+        Issuer: C=CA, ST=Ontario, O=Libreswan, CN=ca.libreswan.org/emailAddress=ca@libreswan.org
         Validity
             Not Before: Dec 18 22:00:59 2007 GMT
             Not After : Dec 17 22:00:59 2008 GMT
-        Subject: C=CA, ST=Ontario, O=Openswan, L=Toronto, CN=west.uml.freeswan.org/emailAddress=west@openswan.org
+        Subject: C=CA, ST=Ontario, O=Libreswan, L=Toronto, CN=west.uml.freeswan.org/emailAddress=west@libreswan.org
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
             RSA Public Key: (1024 bit)
@@ -31,7 +31,7 @@ Certificate:
                 E3:0B:BA:24:50:5B:5B:8C:BB:33:59:22:38:B9:39:46:0F:5A:A7:89
             X509v3 Authority Key Identifier: 
                 keyid:19:60:BC:92:E1:E1:3D:2C:7A:8F:EA:C0:DB:50:03:08:01:32:F0:27
-                DirName:/C=CA/ST=Ontario/O=Openswan/CN=ca.openswan.org/emailAddress=ca@openswan.org
+                DirName:/C=CA/ST=Ontario/O=Libreswan/CN=ca.libreswan.org/emailAddress=ca@libreswan.org
                 serial:05
 
     Signature Algorithm: md5WithRSAEncryption

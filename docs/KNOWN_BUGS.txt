@@ -1,5 +1,5 @@
 
-0)	This file needs updating, see also https://www.openswan.org/
+0)	This file needs updating, see also https://www.libreswan.org/
 
 1)	There is some regression with the new parser and recognising
 	"time values" (eg 3600, 1h, 10m) when they are just integers.

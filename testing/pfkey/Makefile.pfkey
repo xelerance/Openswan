@@ -1,18 +1,18 @@
 include ${srcdir}../Makefile.unit-settings
 
-INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
+INCLUDES+=-I${LIBRESWANSRCDIR} -I${KLIPSINC} -I${LIBRESWANSRCDIR}/include
 UCFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES}
 
 all:	check
 
 ${TESTCASE}:	${TESTCASE}.o ${IPSEC_OBJS} Makefile
-	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${OPENSWANLIB} ${OSWLOGLIB} ${OPENSWANLIB} -lefence
+	${CC} -g -o ${TESTCASE} ${TESTCASE}.o ${IPSEC_OBJS} ${KUTILLIB} ${LIBRESWANLIB} ${OSWLOGLIB} ${LIBRESWANLIB} -lefence
 
 ${TESTCASE}.o: ${srcdir}${TESTCASE}.c 
 	${CC} ${UCFLAGS} -c -o ${TESTCASE}.o ${srcdir}${TESTCASE}.c
 
 # build version.c using version number from Makefile.ver
-version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+version.c:	${KLIPSSRC}/version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRC}/version.in.c >$@
 
 ifneq (${PACKFILE},)

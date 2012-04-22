@@ -4,13 +4,13 @@
 # $Id: Xhost-test.tcl,v 1.19 2005/10/20 21:11:45 mcr Exp $
 #
 
-if {! [info exists env(OPENSWANSRCDIR)]} {
-    puts stderr "Error: Please point \$OPENSWANSRCDIR to ../testing/utils/ (OPENSWANSRDIR=\"$OPENSWANSRCDIR\";)"
+if {! [info exists env(LIBRESWANSRCDIR)]} {
+    puts stderr "Error: Please point \$LIBRESWANSRCDIR to ../testing/utils/ (LIBRESWANSRDIR=\"$LIBRESWANSRCDIR\";)"
     exit 24
 }
 
-source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
-source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/GetOpts.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/netjig.tcl
 
 proc usage {} {
     puts stderr "Usage: Xhost-test [args]"
@@ -282,7 +282,7 @@ expect {
 # 	added a sleep to permit UMLs to finish and drain.
 #
 # Revision 1.17  2004/04/03 19:44:52  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+# FREESWANSRCDIR -> LIBRESWANSRCDIR (patch by folken)
 #
 # Revision 1.16  2004/03/21 04:36:16  mcr
 # 	1) local switches now reads testparams.sh file.

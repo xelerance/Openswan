@@ -32,9 +32,9 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 #include "kameipsec.h"
 
 #include "sysdep.h"
@@ -406,7 +406,7 @@ cannot_oppo(struct connection *c
     addrtot(&b->our_client, 0, ocb, sizeof(ocb));
 
     DBG(DBG_OPPO,
-	openswan_log("Can not opportunistically initiate for %s to %s: %s"
+	libreswan_log("Can not opportunistically initiate for %s to %s: %s"
 		     , ocb, pcb, ughmsg));
 
     whack_log(RC_OPPOFAILURE
@@ -790,7 +790,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 #endif
     
     if(DBGP(DBG_OPPOINFO)) {
-	openswan_log("%s", demandbuf);
+	libreswan_log("%s", demandbuf);
 	loggedit = TRUE;
     } else if(whack_log_fd != NULL_FD) {
 	whack_log(RC_COMMENT, "%s", demandbuf);
@@ -811,13 +811,13 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	 * are no Opportunistic connections -- whine and give up.
 	 * The failure policy cannot be gotten from a connection; we pick %pass.
 	 */
-	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
+	if(!loggedit) { libreswan_log("%s", demandbuf); loggedit=TRUE; }
 	cannot_oppo(NULL, b, "no routed template covers this pair");
 	work = 0;
     }
     else if (c->kind == CK_TEMPLATE && (c->policy & POLICY_OPPO)==0)
     {
-	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
+	if(!loggedit) { libreswan_log("%s", demandbuf); loggedit=TRUE; }
 	loglog(RC_NOPEERIP, "cannot initiate connection for packet %s:%d -> %s:%d proto=%d - template conn"
 	       , ours, ourport, his, hisport, b->transport_proto);
 	work = 0;
@@ -839,7 +839,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	{
 	    char cib[CONN_INST_BUF];
 	    /* there is already an instance being negotiated, do nothing */
-	    openswan_log("rekeying existing instance \"%s\"%s, due to acquire"
+	    libreswan_log("rekeying existing instance \"%s\"%s, due to acquire"
 			 , c->name
 			 , (fmt_conn_instance(c, cib), cib));
 
@@ -861,7 +861,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	}
 #endif
 
-	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
+	if(!loggedit) { libreswan_log("%s", demandbuf); loggedit=TRUE; }
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto
 #ifdef HAVE_LABELED_IPSEC
@@ -1773,7 +1773,7 @@ void connection_check_phase2(void)
 	
 	if(pending_check_timeout(c)) {
 	    struct state *p1st;
-	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1" 
+	    libreswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1" 
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
 

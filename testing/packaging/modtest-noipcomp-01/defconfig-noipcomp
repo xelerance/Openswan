@@ -1,6 +1,6 @@
 
 #
-# Openswan IPSec implementation, KLIPS kernel config defaults
+# Libreswan IPSec implementation, KLIPS kernel config defaults
 #
 
 #
@@ -19,7 +19,7 @@ CONFIG_IP_FORWARD=y
 CONFIG_IP_MASQUERADE_KLIPS=n
 
 #
-# Next, lets set the recommended Openswann configuration.
+# Next, lets set the recommended Libreswann configuration.
 #
 
 # To config as static (preferred), 'y'.  To config as module, 'm'.

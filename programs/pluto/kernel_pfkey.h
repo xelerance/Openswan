@@ -34,8 +34,8 @@ extern bool pfkey_sag_eroute(struct state *st, struct spd_route *sr
 			     , unsigned op, const char *opname);
 extern bool pfkey_was_eroute_idle(struct state *st, time_t idle_max);
 extern void pfkey_set_debug(int cur_debug
-			    , openswan_keying_debug_func_t debug_func
-			    , openswan_keying_debug_func_t error_func);
+			    , libreswan_keying_debug_func_t debug_func
+			    , libreswan_keying_debug_func_t error_func);
 extern void pfkey_remove_orphaned_holds(int transport_proto
 					, const ip_subnet *ours
 					, const ip_subnet *his);

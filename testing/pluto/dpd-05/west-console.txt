@@ -8,7 +8,7 @@ west:~#
  iptables -F OUTPUT
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  sleep 5
 west:~#

@@ -1,5 +1,5 @@
 ROOTDIR?=../../..
-OPENSWANSRCDIR?=${ROOTDIR}
+LIBRESWANSRCDIR?=${ROOTDIR}
 
 checkprograms:	permuteconf
 

@@ -41,7 +41,7 @@
 				<int key="NSWindowBacking">2</int>
 				<string key="NSWindowRect">{{0, 445}, {773, 311}}</string>
 				<int key="NSWTFlags">1946157056</int>
-				<string key="NSWindowTitle">Openswan</string>
+				<string key="NSWindowTitle">Libreswan</string>
 				<string key="NSWindowClass">NSWindow</string>
 				<nil key="NSViewClass"/>
 				<string key="NSWindowContentMaxSize">{3.40282e+38, 3.40282e+38}</string>
@@ -9293,7 +9293,7 @@
 			</object>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
-		<string key="IBDocument.LastKnownRelativeProjectPath">Openswan.xcodeproj</string>
+		<string key="IBDocument.LastKnownRelativeProjectPath">Libreswan.xcodeproj</string>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 	</data>
 </archive>

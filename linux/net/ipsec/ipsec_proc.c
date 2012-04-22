@@ -35,8 +35,8 @@
 #include <linux/kernel.h> /* printk() */
 #include <linux/ip.h>          /* struct iphdr */
 
-#include "openswan/ipsec_kversion.h"
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_kversion.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -52,7 +52,7 @@
 #include <linux/in.h>          /* struct sockaddr_in */
 #include <linux/skbuff.h>
 #include <asm/uaccess.h>       /* copy_from_user */
-#include <openswan.h>
+#include <libreswan.h>
 #ifdef SPINLOCK
 #ifdef SPINLOCK_23
 #include <linux/spinlock.h> /* *lock* */
@@ -71,30 +71,30 @@
 #include <net/netlink.h>
 #endif
 
-#include "openswan/radij.h"
+#include "libreswan/radij.h"
 
-#include "openswan/ipsec_life.h"
-#include "openswan/ipsec_stats.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/ipsec_life.h"
+#include "libreswan/ipsec_stats.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_xmit.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_xmit.h"
 
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipsec_esp.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipsec_esp.h"
 
 #ifdef CONFIG_KLIPS_IPCOMP
-#include "openswan/ipcomp.h"
+#include "libreswan/ipcomp.h"
 #endif /* CONFIG_KLIPS_IPCOMP */
 
-#include "openswan/ipsec_proto.h"
+#include "libreswan/ipsec_proto.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include <linux/in.h>
 #if defined(IP_IPSEC_REFINFO) || defined(IP_IPSEC_BINDREF)
@@ -708,7 +708,7 @@ ipsec_version_get_info(char *buffer,
 		    (int)offset,
 		    length);
 
-	len += ipsec_snprintf(buffer + len,length-len, "Openswan version: %s\n",
+	len += ipsec_snprintf(buffer + len,length-len, "Libreswan version: %s\n",
 		       ipsec_version_code());
 #if 0
 	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,

@@ -26,7 +26,7 @@
 #include <curl/curl.h>
 #endif
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #ifdef LDAP_VER
 #define LDAP_DEPRECATED 1

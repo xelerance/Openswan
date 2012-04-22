@@ -12,10 +12,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ..; pwd)
-srcdir?=${OPENSWANSRCDIR}/programs/
+LIBRESWANSRCDIR?=$(shell cd ..; pwd)
+srcdir?=${LIBRESWANSRCDIR}/programs/
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 SUBDIRS=
 
@@ -58,7 +58,7 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ LIBRESWANSRCDIR=$(LIBRESWANSRCDIR) $@ ) || exit 1;\
 	done; \
 
 check:

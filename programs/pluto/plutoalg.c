@@ -1,7 +1,7 @@
 /*
  * Kernel runtime algorithm handling interface definitions
  * Originally by: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- * Reworked into openswan 2.x by Michael Richardson <mcr@xelerance.com>
+ * Reworked into libreswan 2.x by Michael Richardson <mcr@xelerance.com>
  * (C)opyright 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,10 +17,10 @@
 
 #include <sys/types.h>
 #include <stdlib.h>
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/passert.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/passert.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -438,7 +438,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    ealg_i=esp_info->esp_ealg_id;
 	    if (!ESP_EALG_PRESENT(ealg_i)) {
 		if(logit) {
-		    openswan_loglog(RC_LOG_SERIOUS
+		    libreswan_loglog(RC_LOG_SERIOUS
 				    , "requested kernel enc ealg_id=%d not present"
 				    , ealg_i);
 		} else {
@@ -629,7 +629,7 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 				}
 			}
 		}
-		openswan_log("IPsec Transform [%s (%d), %s] refused due to %s",
+		libreswan_log("IPsec Transform [%s (%d), %s] refused due to %s",
 			      enum_name(&esp_transformid_names, ealg), key_len,
 			      enum_name(&auth_alg_names, aalg),
 			      ealg_insecure ? "insecure key_len and enc. alg. not listed in \"esp\" string" : "strict flag");

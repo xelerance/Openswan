@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM=ranbits
-LIBS=${OPENSWANLIB}
+LIBS=${LIBRESWANLIB}
 
 include ${srcdir}../Makefile.program

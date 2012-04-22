@@ -1,4 +1,4 @@
-# Openswan TCL/Pluto Mix (TPM)
+# Libreswan TCL/Pluto Mix (TPM)
 # Pronounced, "TaProoM"
 #
 # Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
@@ -13,10 +13,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 
 SRCS=tpm.c state.i pbs.c stock.c
@@ -30,7 +30,7 @@ include ${srcdir}../Makefile.options
 # Original flags
 CFLAGS+=${DEFINES} -I${srcdir}.. -I${srcdir}
 CFLAGS+=${USERCOMPILE} 
-GENINC=${PORTINCLUDE} -I${OPENSWANSRCDIR}/include -I${OPENSWANSRCDIR}/linux/include 
+GENINC=${PORTINCLUDE} -I${LIBRESWANSRCDIR}/include -I${LIBRESWANSRCDIR}/linux/include 
 CFLAGS+=${GENINC} 
 
 ARFLAGS=crvs
@@ -42,7 +42,7 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard tpm.c)
 ifeq ($(SHOULDWERESTART),truetpm.c)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto/tpm && make $@
+	cd ${LIBRESWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto/tpm && make $@
 else
 all:	$(LIBA) ${LIBL}
 programs: $(LIBA) ${LIBL}
@@ -85,7 +85,7 @@ check:
 	echo no checks in tpm right now.
 
 depend:
-	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${COPTS} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${COPTS} ${ALLFLAGS} ) | sed -e 's,${LIBRESWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend
 

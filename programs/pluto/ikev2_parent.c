@@ -27,8 +27,8 @@
 #include <unistd.h>
 #include <gmp.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -128,7 +128,7 @@ ikev2parent_outI1(int whack_sock
 #ifdef HAVE_LABELED_IPSEC
 	st->sec_ctx = NULL;
 	if( uctx != NULL) {
-	openswan_log("Labeled ipsec is not supported with ikev2 yet");
+	libreswan_log("Labeled ipsec is not supported with ikev2 yet");
 	}
 #endif
 
@@ -141,9 +141,9 @@ ikev2parent_outI1(int whack_sock
      }
 
     if (predecessor == NULL)
-	openswan_log("initiating v2 parent SA");
+	libreswan_log("initiating v2 parent SA");
     else
-	openswan_log("initiating v2 parent SA to replace #%lu", predecessor->st_serialno);
+	libreswan_log("initiating v2 parent SA to replace #%lu", predecessor->st_serialno);
 
     if (predecessor != NULL)
     {
@@ -356,7 +356,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
     /* struct connection *c = st->st_connection; */
     int numvidtosend = 0; 
 #ifdef PLUTO_SENDS_VENDORID
-	numvidtosend++;  /* if we need to send Openswan VID */
+	numvidtosend++;  /* if we need to send Libreswan VID */
 #endif
 
     /* set up reply */
@@ -398,7 +398,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 		chunk_t child_spi;
 		memset(&child_spi, 0, sizeof(child_spi));
 		ship_v2N (ISAKMP_NEXT_v2SA, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-			(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+			(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_LIBRESWAN_BOGUS) :
 			 ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					v2N_COOKIE, &st->st_dcookie, &md->rbody);
@@ -420,7 +420,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 			  , st, TRUE /* parentSA */
 			  , ISAKMP_NEXT_v2KE))
 	{
-	    openswan_log("outsa fail");
+	    libreswan_log("outsa fail");
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -447,8 +447,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-		openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-		in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+		libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+		in.isag_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
@@ -604,7 +604,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 				DBG_dump("dcookie computed", dcookie, SHA1_DIGEST_SIZE)); 
 
 			if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
-				openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
+				libreswan_log("mismatch in DOS v2N_COOKIE,send a new one");
 				SEND_NOTIFICATION_AA(v2N_COOKIE, &dc); 
 				return STF_FAIL + v2N_INVALID_IKE_SPI;
 			}
@@ -643,7 +643,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	    char fromname[ADDRTOT_BUF];
 	    
 	    addrtot(&md->sender, 0, fromname, ADDRTOT_BUF);
-	    openswan_log("rejecting I1 from %s:%u, invalid DH group=%u"
+	    libreswan_log("rejecting I1 from %s:%u, invalid DH group=%u"
 			 ,fromname, md->sender_port, ke->isak_group);
 	    return v2N_INVALID_KE_PAYLOAD;
 	}
@@ -732,7 +732,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     pb_stream *keyex_pbs;
     int    numvidtosend=0;
 #ifdef PLUTO_SENDS_VENDORID
-    numvidtosend++;  /* we send Openswan VID */
+    numvidtosend++;  /* we send Libreswan VID */
 #endif
 
     /* note that we don't update the state here yet */
@@ -811,8 +811,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	in.isag_np = np;
 	in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	   libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	   in.isag_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 
 	if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
@@ -913,7 +913,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	{
 		const char *from_state_name = enum_name(&state_names, st->st_state);
 		const u_int16_t isan_type =  md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type;
-		openswan_log("%s: received %s"
+		libreswan_log("%s: received %s"
 					, from_state_name 
 					, enum_name(&ikev2_notify_names , isan_type));
 		return STF_FAIL + isan_type;
@@ -937,7 +937,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_nr, "Ni"));
 
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL) {
-	openswan_log("No responder SA proposal found");
+	libreswan_log("No responder SA proposal found");
 	return PAYLOAD_MALFORMED;
     }
 
@@ -1188,7 +1188,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	/* compare first 96 bits == 12 bytes */
 	/* It is not always 96 bytes, it depends upon which integ algo is used*/
 	if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
-	    openswan_log("R2 failed to match authenticator");
+	    libreswan_log("R2 failed to match authenticator");
 	    return STF_FAIL;
 	}
     }
@@ -1216,7 +1216,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 	encend = encend - padlen+1;
 	
 	if(encend < encstart) {
-	    openswan_log("invalid pad length: %u", padlen);
+	    libreswan_log("invalid pad length: %u", padlen);
 	    return STF_FAIL;
 	}
 	
@@ -1256,8 +1256,8 @@ static stf_status ikev2_send_auth(struct connection *c
     
     a.isaa_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	a.isaa_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	a.isaa_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
     }
 
     a.isaa_np = np;
@@ -1358,8 +1358,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     e.isag_np = ISAKMP_NEXT_v2IDi;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	e.isag_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
     }
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
@@ -1394,8 +1394,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
 	r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
         if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	   libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	   r_id.isai_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 
 	{  /* decide to send CERT payload */
@@ -1478,7 +1478,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 				v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
 	    }
 	} else {
-	    openswan_log("no pending SAs found, PARENT SA keyed only");
+	    libreswan_log("no pending SAs found, PARENT SA keyed only");
 	}
     }
 
@@ -1558,7 +1558,7 @@ stf_status ikev2parent_inI2outR2(struct msg_digest *md)
     
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
-	openswan_log("R2 state should receive an encrypted payload");
+	libreswan_log("R2 state should receive an encrypted payload");
 	reset_globals();
 	return STF_FATAL;
     }
@@ -1668,7 +1668,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /*Once the message has been decrypted, then only we can check for auth payload*/
     /*check the presense of auth payload now so that it does not crash in rehash_state if auth payload has not been received*/
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
-        openswan_log("no authentication payload found");
+        libreswan_log("no authentication payload found");
         return STF_FAIL;
     }
 
@@ -1726,7 +1726,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , NULL /* gateways from DNS */
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("RSA authentication failed");
+	    libreswan_log("RSA authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FATAL;
 	}
@@ -1739,14 +1739,14 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 						    , idhash_in
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("PSK authentication failed AUTH mismatch!");
+	    libreswan_log("PSK authentication failed AUTH mismatch!");
 	    SEND_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
 	    return STF_FATAL;
 	}
 	break;
     }
     default:
-	openswan_log("authentication method: %s not supported"
+	libreswan_log("authentication method: %s not supported"
 		     , enum_name(&ikev2_auth_names
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
 	return STF_FATAL;
@@ -1880,11 +1880,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    
 	    /* initiator didn't propose anything. Weird. Try unpending out end. */
 	    /* UNPEND XXX */
-	    openswan_log("No CHILD SA proposals received.");
+	    libreswan_log("No CHILD SA proposals received.");
 	    np = ISAKMP_NEXT_NONE;
 	} else {
 	    DBG_log("CHILD SA proposals received");
-	    openswan_log("PAUL: this is where we have to check the TSi/TSr");
+	    libreswan_log("PAUL: this is where we have to check the TSi/TSr");
 	    np = ISAKMP_NEXT_v2SA;
 	}
 
@@ -1981,7 +1981,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
-	openswan_log("R2 state should receive an encrypted payload");
+	libreswan_log("R2 state should receive an encrypted payload");
 	return STF_FATAL;
     }
 
@@ -2024,7 +2024,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 
     /* process AUTH payload */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
-	openswan_log("no authentication payload found");
+	libreswan_log("no authentication payload found");
 	return STF_FAIL;
     }
 
@@ -2040,7 +2040,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 						    , NULL /* gateways from DNS */
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("authentication failed");
+	    libreswan_log("authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FAIL;
 	}
@@ -2053,7 +2053,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 						    , idhash_in
 						    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
 	if(authstat != STF_OK) {
-	    openswan_log("PSK authentication failed");
+	    libreswan_log("PSK authentication failed");
 	    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
 	    return STF_FAIL;
 	}
@@ -2061,7 +2061,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
     
     default:
-	openswan_log("authentication method: %s not supported"
+	libreswan_log("authentication method: %s not supported"
 		     , enum_name(&ikev2_auth_names
 				 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
 	return STF_FAIL;
@@ -2187,7 +2187,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 			DBG(DBG_CONTROLMORE,
 			DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
 			if (st->st_esp.present == TRUE) { 
-			/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+			/*libreswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
 			st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
 			}
 		}
@@ -2284,7 +2284,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	 * do we need to support more Protocol ID? more than PROTO_ISAKMP
 	 */
 
-    openswan_log("sending %s notification %s to %s:%u"
+    libreswan_log("sending %s notification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ikev2_notify_names, type)
 		 , ip_str(&p1st->st_remoteaddr)
@@ -2321,7 +2321,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	// PAUL: shouldn't we set n_hdr.isa_msgid = [htonl](p1st->st_msgid);
 	if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) 
 	{
-    	    openswan_log("error initializing hdr for notify message");
+    	    libreswan_log("error initializing hdr for notify message");
 	    return;
 	}
 		
@@ -2333,7 +2333,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 	memset(&child_spi, 0, sizeof(child_spi));
 	memset(&notify_data, 0, sizeof(notify_data));
 	ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ? 
-		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+		(ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_LIBRESWAN_BOGUS) :
 		ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
 				    &child_spi, 
 					type, n_data, &rbody);
@@ -2358,8 +2358,8 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
    	n.isan_np =  np;
    	n.isan_critical = critical;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-	   n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+	   libreswan_log(" setting bogus ISAKMP_PAYLOAD_LIBRESWAN_BOGUS flag in ISAKMP payload");
+	   n.isan_critical |= ISAKMP_PAYLOAD_LIBRESWAN_BOGUS;
 	}
 
    	n.isan_protoid =  protoid;
@@ -2367,19 +2367,19 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
    	n.isan_type = type;
 
     if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs)) {
-	openswan_log("error initializing notify payload for notify message");
+	libreswan_log("error initializing notify payload for notify message");
 	return FALSE;
     }
 	
     if(spi->len > 0) {
 	if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI ")) {
-	   openswan_log("error writing SPI to notify payload");
+	   libreswan_log("error writing SPI to notify payload");
 	   return FALSE;
 	}
     }
     if(n_data != NULL) {
 	if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
-	   openswan_log("error writing notify payload for notify message");
+	   libreswan_log("error writing notify payload for notify message");
 	   return FALSE;
 	}
     }
@@ -2401,7 +2401,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 {
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
-	openswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
+	libreswan_log("Ignoring informational exchange outside encrypted payload (rfc5996 section 1.4)");
 	return STF_IGNORE;
     }
 
@@ -2467,7 +2467,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 
 		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
 		{
-			openswan_log("error initializing hdr for informational message");
+			libreswan_log("error initializing hdr for informational message");
 			return STF_INTERNAL_ERROR;
 		}
 
@@ -2602,14 +2602,14 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 				/* Emit delete payload header out*/
 				if (!out_struct(&v2del_tmp, &ikev2_delete_desc, &e_pbs_cipher, &del_pbs))
 				{
-					openswan_log("error initializing hdr for delete payload");
+					libreswan_log("error initializing hdr for delete payload");
 					return STF_INTERNAL_ERROR;
 				}		
 
 				/* Emit values of spi to be sent to the peer*/
 				if (!out_raw(spi_buf, j* v2del->isad_spisize, &del_pbs, "local spis"))
 				{
-					openswan_log("error sending spi values in delete payload");
+					libreswan_log("error sending spi values in delete payload");
 					return STF_INTERNAL_ERROR;
 				}
 				
@@ -2883,7 +2883,7 @@ void ikev2_delete_out(struct state *st)
 
 		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
 		{
-			openswan_log("error initializing hdr for informational message");
+			libreswan_log("error initializing hdr for informational message");
 			goto end;
 		}
 
@@ -2937,7 +2937,7 @@ void ikev2_delete_out(struct state *st)
 				/* Emit delete payload header out*/
 				if (!out_struct(&v2del_tmp, &ikev2_delete_desc, &e_pbs_cipher, &del_pbs))
 				{
-					openswan_log("error initializing hdr for delete payload");
+					libreswan_log("error initializing hdr for delete payload");
 					goto end;
 				}		
 
@@ -2945,7 +2945,7 @@ void ikev2_delete_out(struct state *st)
 				if(st->st_clonedfrom != 0){
 				if (!out_raw( (u_char *)&st->st_esp.our_spi ,sizeof(ipsec_spi_t), &del_pbs, "local spis"))
 				{
-					openswan_log("error sending spi values in delete payload");
+					libreswan_log("error sending spi values in delete payload");
 					goto end;
 				}
 				}

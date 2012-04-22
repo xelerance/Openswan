@@ -61,7 +61,7 @@ east:~#
  route add -net default gw 192.1.2.45
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  /testing/pluto/basic-pluto-01/whackwait.sh
 east:~#
@@ -108,7 +108,7 @@ east:~#
 Stopping domain name service: named.
 Stopping internet superserver: inetd.
 Stopping portmap daemon: portmap.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 
 Stopping system log daemon: klogd syslogd.

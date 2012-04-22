@@ -22,7 +22,7 @@
 # include <stdlib.h>
 #endif
 
-#include "openswan.h"
+#include "libreswan.h"
 
 #define	IP4BYTES	4	/* bytes in an IPv4 address */
 #define	PERBYTE		4	/* three digits plus a dot or NUL */

@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <syslog.h>
 
-#include "openswan.h"
+#include "libreswan.h"
 #include "constants.h"
 
 #include "ipsecconf/starterlog.h"

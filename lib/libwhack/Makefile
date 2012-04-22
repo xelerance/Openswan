@@ -1,4 +1,4 @@
-# Openswan library
+# Libreswan library
 # Copyright (C) 1998-2001  Henry Spencer.
 # Copyright (C) 2003, 2004 Xelerance Corporation
 # 
@@ -13,10 +13,10 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 
 MANDIR=$(MANTREE)/man3
@@ -25,17 +25,17 @@ SRCS=whacklib.c aliascomp.c
 
 OBJS=${SRCS:.c=.o} 
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
-MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
+KLIPSD=${LIBRESWANSRCDIR}/linux/include
+KLIPSSRCDIR=${LIBRESWANSRCDIR}/linux/net/ipsec
+MANSRCDIR=${LIBRESWANSRCDIR}/lib/liblibreswan
 
 VPATH+= ${KLIPSSRCDIR}
 
 LIB=libwhack.a
 
 # Original flags
-INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
-INCLUDES+=-I${OPENSWANSRCDIR}/include 
+INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${LIBRESWANSRCDIR}
+INCLUDES+=-I${LIBRESWANSRCDIR}/include 
 CFLAGS+=${PORTINCLUDE} ${INCLUDES} 
 CFLAGS+=-DDEBUG
 CFLAGS+= $(USERCOMPILE)
@@ -72,7 +72,7 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard whacklib.c)
 ifeq ($(SHOULDWERESTART),truewhacklib.c)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libwhack && make $@
+	cd ${LIBRESWANSRCDIR} && cd ${OBJDIRTOP}/lib/libwhack && make $@
 else
 all:	$(LIB) ${LIBL}
 programs: $(LIB) ${LIBL}
@@ -87,7 +87,7 @@ doinstall:
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
 	done
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
+	@$(LIBRESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
@@ -99,7 +99,7 @@ install_file_list:
 	do \
 		echo $(MANDIR)/ipsec_$$f;\
 	done;
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
+	@$(LIBRESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		echo $(MANDIR)/$$to; \
@@ -115,7 +115,7 @@ cleanall:
 
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}
-	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${LIBRESWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend
 

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stddef.h>
 #include <sys/types.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "constants.h"
 #include "defs.h"
@@ -45,7 +45,7 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
     int                outlen;
 
     DBG(DBG_CRYPT, DBG_log("NSS do_aes: enter"));
-    ciphermech = CKM_AES_CBC; /*openswan provides padding*/
+    ciphermech = CKM_AES_CBC; /*libreswan provides padding*/
 
     memcpy(&symkey, key, key_size);
 

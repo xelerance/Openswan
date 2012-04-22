@@ -35,7 +35,7 @@ TCP established hash table entries: 1024 (order: 0, 4096 bytes)
 TCP bind hash table entries: 512 (order: -1, 2048 bytes)
 TCP: Hash tables configured (established 1024 bind 512)
 TCP reno registered
-klips_info:ipsec_init: KLIPS startup, Openswan KLIPS IPsec stack version: 2.5.15-dirty
+klips_info:ipsec_init: KLIPS startup, Libreswan KLIPS IPsec stack version: 2.5.15-dirty
 NET: Registered protocol family 15
 klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
@@ -159,7 +159,7 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 --- 192.0.2.254 ping statistics ---
 4 packets transmitted, 0 packets received, 100% packet loss
 west:~# ipsec setup start
-ipsec_setup: Starting Openswan IPsec U2.5.testing-gb7af6e85-dirty/K2.5.15-dirty...
+ipsec_setup: Starting Libreswan IPsec U2.5.testing-gb7af6e85-dirty/K2.5.15-dirty...
 west:~# ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~# ipsec auto --add ikev2-westnet-eastnet-x509-cr
 west:~# ipsec auto --status
@@ -278,7 +278,7 @@ west:~# ipsec auto --status
 000  
 west:~# cat /tmp/pluto.log
 Plutorun started on Fri Feb 1 23:09:53 GMT 2008
-Starting Pluto (Openswan Version 2.5.testing-gb7af6e85-dirty; Vendor ID OEQ`SiBrkpNp) pid:914
+Starting Pluto (Libreswan Version 2.5.testing-gb7af6e85-dirty; Vendor ID OEQ`SiBrkpNp) pid:914
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
    including NAT-Traversal patch (Version 0.6c) [disabled]
@@ -745,7 +745,7 @@ crl issuer cacert not found for (file:///tmp/ikev2-x509-01/ipsec.d/crls/othercac
 |   61 2e 6f 70  65 6e 73 77  61 6e 2e 6f  72 67 31 1e
 |   30 1c 06 09  2a 86 48 86  f7 0d 01 09  01 16 0f 63
 |   61 40 6f 70  65 6e 73 77  61 6e 2e 6f  72 67
-|   'C=CA, ST=Ontario, O=Openswan, CN=ca.openswan.org, E=ca@openswan.org'
+|   'C=CA, ST=Ontario, O=Libreswan, CN=ca.libreswan.org, E=ca@libreswan.org'
 | L2 - thisUpdate:
 | L3 - utcTime:
 |   'May 28 16:29:22 UTC 2004'
@@ -5345,7 +5345,7 @@ west:~# : ==== tuc ====
 west:~# : ==== end ====
 west:~# ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 west:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <5>Linux version 2.6.18.6 (antony@sal) (gcc version 4.2.3 20071123 (prerelease) (Debian 4.2.2-4)) #1 Sun Jan 20 14:47:03 EST 2008
@@ -5373,7 +5373,7 @@ klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <4>TCP bind hash table entries: 512 (order: -1, 2048 bytes)
 <6>TCP: Hash tables configured (established 1024 bind 512)
 <6>TCP reno registered
-<6>klips_info:ipsec_init: KLIPS startup, Openswan KLIPS IPsec stack version: 2.5.15-dirty
+<6>klips_info:ipsec_init: KLIPS startup, Libreswan KLIPS IPsec stack version: 2.5.15-dirty
 <6>NET: Registered protocol family 15
 <6>klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 <6>klips_info:ipsec_alg_init: calling ipsec_alg_static_init()

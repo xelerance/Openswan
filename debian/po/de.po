@@ -1,14 +1,14 @@
-# German translation of openswan debconf templates
+# German translation of libreswan debconf templates
 # Copyright (C) 2007, Matthias Julius
-# This file is distributed under the same license as the openswan package.
+# This file is distributed under the same license as the libreswan package.
 #
 # Matthias Julius <mdeb@julius-net.net>, 2007.
 # Martin Eberhard Schauer <Martin.E.Schauer@gmx.de>, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: openswan 1:2.6.26+dfsg-1\n"
-"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"Project-Id-Version: libreswan 1:2.6.26+dfsg-1\n"
+"Report-Msgid-Bugs-To: libreswan@packages.debian.org\n"
 "POT-Creation-Date: 2010-08-06 00:50+0200\n"
 "PO-Revision-Date: 2010-07-19 11:33+0200\n"
 "Last-Translator: Martin Eberhard Schauer <Martin.E.Schauer@gmx.de>\n"
@@ -20,68 +20,68 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../openswan.templates:1001
+#: ../libreswan.templates:1001
 msgid "Old runlevel management superseded"
 msgstr "Alte Verwaltung der Runlevel abgelöst"
 
 # (mes) sync 1 Im letzten Satz:
 # Helge: setup -> Installation  Martin: setup -> Setup
-# strongswan :2001              openswan: 1001
+# strongswan :2001              libreswan: 1001
 #. Type: note
 #. Description
-#: ../openswan.templates:1001
+#: ../libreswan.templates:1001
 msgid ""
-"Previous versions of the Openswan package gave a choice between three "
+"Previous versions of the Libreswan package gave a choice between three "
 "different Start/Stop-Levels. Due to changes in the standard system startup "
 "procedure, this is no longer necessary or useful. For all new installations "
 "as well as old ones running in any of the predefined modes, sane default "
 "levels will now be set. If you are upgrading from a previous version and "
-"changed your Openswan startup parameters, then please take a look at NEWS."
+"changed your Libreswan startup parameters, then please take a look at NEWS."
 "Debian for instructions on how to modify your setup accordingly."
 msgstr ""
-"Frühere Versionen von Openswan ermöglichten eine Wahl zwischen drei "
+"Frühere Versionen von Libreswan ermöglichten eine Wahl zwischen drei "
 "verschiedenen Start/Stopp-Modi. Aufgrund von Änderungen des standardmäßigen "
 "Systemstarts ist dies nicht mehr notwendig oder nützlich. Sowohl für alle "
 "neuen als auch bestehende Installationen, die in einem der vordefinierten "
 "Modi betrieben wurden, werden jetzt vernünftige Standardwerte gesetzt. Wenn "
 "Sie jetzt ein Upgrade von einer früheren Version durchführen und Sie die "
-"Openswan-Startparameter angepasst haben, werfen Sie bitte einen Blick auf "
+"Libreswan-Startparameter angepasst haben, werfen Sie bitte einen Blick auf "
 "NEWS.Debian. Die Datei enthält Anweisungen, wie Sie Ihre Installation "
 "entsprechend ändern."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:2001
-msgid "Restart Openswan now?"
-msgstr "Openswan jetzt neu starten?"
+#: ../libreswan.templates:2001
+msgid "Restart Libreswan now?"
+msgstr "Libreswan jetzt neu starten?"
 
 # (mes) sync 2 Gemeinsame Formulierung erforderlich
 #. Type: boolean
 #. Description
-#: ../openswan.templates:2001
+#: ../libreswan.templates:2001
 msgid ""
-"Restarting Openswan is recommended, since if there is a security fix, it "
+"Restarting Libreswan is recommended, since if there is a security fix, it "
 "will not be applied until the daemon restarts. Most people expect the daemon "
 "to restart, so this is generally a good idea. However, this might take down "
 "existing connections and then bring them back up, so if you are using such "
-"an Openswan tunnel to connect for this update, restarting is not recommended."
+"an Libreswan tunnel to connect for this update, restarting is not recommended."
 msgstr ""
-"Es wird empfohlen, Openswan neu zu starten, da eine Sicherheitskorrektur "
+"Es wird empfohlen, Libreswan neu zu starten, da eine Sicherheitskorrektur "
 "erst nach dem Neustart des Daemons greift. Weil meisten Anwender einen "
 "Neustart des Daemons erwarten, ist dies grundsätzlich eine gute Idee. Der "
 "Neustart kann aber bestehende Verbindungen beenden und erneut aufbauen. Wenn "
-"Sie einen solchen Openswan-Tunnel für die Verbindung bei dieser "
+"Sie einen solchen Libreswan-Tunnel für die Verbindung bei dieser "
 "Aktualisierung verwenden, wird der Neustart nicht empfohlen."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid "Use an X.509 certificate for this host?"
 msgstr "Für diesen Rechner ein X.509-Zertifikat verwenden?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid ""
 "An X.509 certificate for this host can be automatically created or imported. "
 "It can be used to authenticate IPsec connections to other hosts and is the "
@@ -102,29 +102,29 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid ""
 "Alternatively you can reject this option and later use the command \"dpkg-"
-"reconfigure openswan\" to come back."
+"reconfigure libreswan\" to come back."
 msgstr ""
 "Alternativ können Sie diese Option ablehnen und später mit dem Befehl »dpkg-"
-"reconfigure openswan« zurückkehren."
+"reconfigure libreswan« zurückkehren."
 
 #. Type: select
 #. Choices
-#: ../openswan.templates:4001
+#: ../libreswan.templates:4001
 msgid "create"
 msgstr "erstellen"
 
 #. Type: select
 #. Choices
-#: ../openswan.templates:4001
+#: ../libreswan.templates:4001
 msgid "import"
 msgstr "importieren"
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid "Methods for using a X.509 certificate to authenticate this host:"
 msgstr ""
 "Methoden für die Authentifizierung dieses Rechners mittels eines X.509-"
@@ -132,7 +132,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "It is possible to create a new X.509 certificate with user-defined settings "
 "or to import an existing public and private key stored in PEM file(s) for "
@@ -145,7 +145,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "If you choose to create a new X.509 certificate you will first be asked a "
 "number of questions which must be answered before the creation can start. "
@@ -166,7 +166,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "If you want to import an existing public and private key you will be "
 "prompted for their filenames (which may be identical if both parts are "
@@ -188,13 +188,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:5001
+#: ../libreswan.templates:5001
 msgid "File name of your PEM format X.509 certificate:"
 msgstr "Dateiname Ihres X.509-Zertifikats im PEM-Format:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:5001
+#: ../libreswan.templates:5001
 msgid ""
 "Please enter the location of the file containing your X.509 certificate in "
 "PEM format."
@@ -204,13 +204,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:6001
+#: ../libreswan.templates:6001
 msgid "File name of your PEM format X.509 private key:"
 msgstr "Dateiname des privaten X.509-Schlüssels im PEM-Format:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:6001
+#: ../libreswan.templates:6001
 msgid ""
 "Please enter the location of the file containing the private RSA key "
 "matching your X.509 certificate in PEM format. This can be the same file "
@@ -222,13 +222,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:7001
+#: ../libreswan.templates:7001
 msgid "File name of your PEM format X.509 RootCA:"
 msgstr "Dateiname Ihrer PEM-Format-X.509-RootCA:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:7001
+#: ../libreswan.templates:7001
 msgid ""
 "Optionally you can now enter the location of the file containing the X.509 "
 "Certificate Authority root used to sign your certificate in PEM format. If "
@@ -245,13 +245,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:8001
+#: ../libreswan.templates:8001
 msgid "Length of RSA key to be created:"
 msgstr "Länge des zu erstellenden RSA-Schlüssels:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:8001
+#: ../libreswan.templates:8001
 msgid ""
 "Please enter the required RSA key-length. Anything under 1024 bits should be "
 "considered insecure; anything more than 4096 bits slows down the "
@@ -264,19 +264,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid "Create a self-signed X.509 certificate?"
 msgstr "Selbstsigniertes X.509-Zertifikat erstellen?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid ""
 "Only self-signed X.509 certificates can be created automatically, because "
 "otherwise a Certificate Authority is needed to sign the certificate request. "
 "If you choose to create a self-signed certificate, you can use it "
 "immediately to connect to other IPsec hosts that support X.509 certificate "
-"for authentication of IPsec connections. However, using Openswan's PKI "
+"for authentication of IPsec connections. However, using Libreswan's PKI "
 "features requires all certificates to be signed by a single Certificate "
 "Authority to create a trust path."
 msgstr ""
@@ -285,13 +285,13 @@ msgstr ""
 "benötigt wird. Falls Sie sich entscheiden, ein selbstsigniertes Zertifikat "
 "zu erstellen, können Sie es sofort zur Verbindung mit anderen IPSec-Rechnern "
 "verwenden, die X.509-Zertifikate zur Authentifizierung von IPSec-"
-"Verbindungen verwenden. Falls Sie jedoch die PKI-Funktionen von Openswan "
+"Verbindungen verwenden. Falls Sie jedoch die PKI-Funktionen von Libreswan "
 "verwenden möchten, müssen alle X.509-Zertifikate von einer einzigen "
 "Zertifizierungsstelle signiert sein, um einen Vertrauenspfad zu schaffen."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid ""
 "If you do not choose to create a self-signed certificate, only the RSA "
 "private key and the certificate request will be created, and you will have "
@@ -304,13 +304,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid "Country code for the X.509 certificate request:"
 msgstr "Ländercode für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid ""
 "Please enter the two-letter code for the country the server resides in (such "
 "as \"AT\" for Austria)."
@@ -320,7 +320,7 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid ""
 "OpenSSL will refuse to generate a certificate unless this is a valid "
 "ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
@@ -332,13 +332,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:11001
+#: ../libreswan.templates:11001
 msgid "State or province name for the X.509 certificate request:"
 msgstr "Name des Landes oder der Provinz für diese X.509-Zertifikatsanfrage:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:11001
+#: ../libreswan.templates:11001
 msgid ""
 "Please enter the full name of the state or province the server resides in "
 "(such as \"Upper Austria\")."
@@ -348,13 +348,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:12001
+#: ../libreswan.templates:12001
 msgid "Locality name for the X.509 certificate request:"
 msgstr "Ort für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:12001
+#: ../libreswan.templates:12001
 msgid ""
 "Please enter the locality the server resides in (often a city, such as "
 "\"Vienna\")."
@@ -364,13 +364,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:13001
+#: ../libreswan.templates:13001
 msgid "Organization name for the X.509 certificate request:"
 msgstr "Organisationsname für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:13001
+#: ../libreswan.templates:13001
 msgid ""
 "Please enter the organization the server belongs to (such as \"Debian\")."
 msgstr ""
@@ -379,13 +379,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:14001
+#: ../libreswan.templates:14001
 msgid "Organizational unit for the X.509 certificate request:"
 msgstr "Organisationseinheit für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:14001
+#: ../libreswan.templates:14001
 msgid ""
 "Please enter the organizational unit the server belongs to (such as "
 "\"security group\")."
@@ -395,13 +395,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:15001
+#: ../libreswan.templates:15001
 msgid "Common Name for the X.509 certificate request:"
 msgstr "Common Name für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:15001
+#: ../libreswan.templates:15001
 msgid ""
 "Please enter the Common Name for this host (such as \"gateway.example.org\")."
 msgstr ""
@@ -410,13 +410,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:16001
+#: ../libreswan.templates:16001
 msgid "Email address for the X.509 certificate request:"
 msgstr "E-Mail-Adresse für die X.509-Zertifikatsanforderung:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:16001
+#: ../libreswan.templates:16001
 msgid ""
 "Please enter the email address of the person or organization responsible for "
 "the X.509 certificate."
@@ -426,23 +426,23 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../openswan.templates:17001
+#: ../libreswan.templates:17001
 msgid "Modification of /etc/ipsec.conf"
 msgstr "Veränderung von /etc/ipsec.conf"
 
 #. Type: note
 #. Description
-#: ../openswan.templates:17001
+#: ../libreswan.templates:17001
 msgid ""
-"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"Due to a change in upstream Libreswan, opportunistic encryption is no longer "
 "enabled by default. The no_oe.conf file that was shipped in earlier versions "
 "to explicitly disable it can therefore no longer be included by ipsec.conf. "
 "Any such include paragraph will now be automatically removed to ensure that "
-"Openswan can start correctly."
+"Libreswan can start correctly."
 msgstr ""
-"Aufgrund einer Änderung im Quelltext von Openswan ist opportunistische "
+"Aufgrund einer Änderung im Quelltext von Libreswan ist opportunistische "
 "Verschlüsselung nicht mehr standardmäßig aktiviert. Ältere Versionen von "
-"Openswan enthielten die Datei no_oe.conf, die zur expliziten Deaktivierung "
+"Libreswan enthielten die Datei no_oe.conf, die zur expliziten Deaktivierung "
 "der opportunistischen Verschlüsselung diente. Diese kann jetzt nicht mehr "
 "mittels ipsec.conf aufgenommen werden. Jeder entsprechende Absatz wird jetzt "
-"automatisch entfernt, um einen korrekten Start von Openswan sicherzustellen."
+"automatisch entfernt, um einen korrekten Start von Libreswan sicherzustellen."

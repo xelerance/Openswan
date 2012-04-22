@@ -103,7 +103,7 @@ To properly use <emphasis remap='I'>/dev/hw_random</emphasis>, the
 <emphasis remap='I'>rngd</emphasis> daemon should be used to read from
 <emphasis remap='I'>/dev/hw_random</emphasis> and write to
 <emphasis remap='I'>/dev/random</emphasis>, while performing a FIPS test on the
-hardware random read. No changes to Openswan are required for this
+hardware random read. No changes to Libreswan are required for this
 support - just a running <emphasis remap='I'>rngd</emphasis>.</para>
 
 </refsect1>

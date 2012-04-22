@@ -26,8 +26,8 @@
 #include <resolv.h>
 #include <sys/time.h>		/* for gettimeofday */
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -132,7 +132,7 @@ dpd_init(struct state *st)
      */
 #ifdef HAVE_LABELED_IPSEC
 	if(st->st_connection->loopback){
-	openswan_log("dpd is not required for ipsec connections over loopback");
+	libreswan_log("dpd is not required for ipsec connections over loopback");
 	return STF_OK;
 	}
 #endif
@@ -161,7 +161,7 @@ dpd_init(struct state *st)
     /* if it was enabled, and we haven't turned it on already */
     if (p1st->hidden_variables.st_dpd) {
 	time_t n = now();
-	openswan_log("Dead Peer Detection (RFC 3706): enabled");
+	libreswan_log("Dead Peer Detection (RFC 3706): enabled");
 
 	if(st->st_dpd_event == NULL
 	   || (st->st_connection->dpd_delay + n) < st->st_dpd_event->ev_time) {
@@ -170,7 +170,7 @@ dpd_init(struct state *st)
 	}
 
     } else {
-      openswan_log("Dead Peer Detection (RFC 3706): not enabled because peer did not advertise it");
+      libreswan_log("Dead Peer Detection (RFC 3706): not enabled because peer did not advertise it");
     }
 
     if(p1st != st) {
@@ -564,14 +564,14 @@ dpd_timeout(struct state *st)
     /** delete the state, which is probably in phase 2 */
     set_cur_connection(c);
 
-    openswan_log("DPD: No response from peer - declaring peer dead");
+    libreswan_log("DPD: No response from peer - declaring peer dead");
 
     switch(action) {
     case DPD_ACTION_HOLD:
 	/** dpdaction=hold - Wipe the SA's but %trap the eroute so we don't
 	    leak traffic.  Also, being in %trap means new packets will
 	    force an initiation of the conn again.  */
-	openswan_log("DPD: Putting connection into %%trap");
+	libreswan_log("DPD: Putting connection into %%trap");
 	if (c->kind == CK_INSTANCE) {
 	    DBG(DBG_DPD, DBG_log("DPD: warning dpdaction=hold on instance futile - will be deleted"));
 	}
@@ -581,7 +581,7 @@ dpd_timeout(struct state *st)
     case DPD_ACTION_CLEAR:
         /** dpdaction=clear - Wipe the SA & eroute - everything */
     
-        openswan_log("DPD: Clearing Connection");
+        libreswan_log("DPD: Clearing Connection");
 	/* 
 	 * For CK_INSTANCE, delete_states_by_connection() will clear 
 	 * Note that delete_states_by_connection changes c->kind but we need
@@ -599,7 +599,7 @@ dpd_timeout(struct state *st)
 
     case DPD_ACTION_RESTART:
 	/** dpdaction=restart - immediate renegotiate the connection. */
-        openswan_log("DPD: Restarting Connection");
+        libreswan_log("DPD: Restarting Connection");
 
 	/*
 	 * unlike the other kinds, we do not delete any states,
@@ -625,7 +625,7 @@ dpd_timeout(struct state *st)
 
     case DPD_ACTION_RESTART_BY_PEER:
 	/* dpdaction=restart_by_peer - immediately renegotiate connections to the same peer. */
-	openswan_log("DPD: Restarting all connections that share this peer");
+	libreswan_log("DPD: Restarting all connections that share this peer");
 	restart_connections_by_peer(c);
 	break;
 

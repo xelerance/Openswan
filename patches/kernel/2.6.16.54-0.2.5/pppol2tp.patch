@@ -5,7 +5,7 @@
  #include <asm/atomic.h>
  
 +#ifdef CONFIG_KLIPS
-+#include <openswan.h>
++#include <libreswan.h>
 +#endif
  
  #define PPPOL2TP_DRV_VERSION	"V0.17"

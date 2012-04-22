@@ -5,7 +5,7 @@ refname=${1#refs/heads/}
 oldhead=$2
 newhead=$3
 for merged in $(git-rev-list $newhead ^$oldhead | tac); do
-	/public/scm/openswan.public/.git/ciabot.pl $merged $refname
+	/public/scm/libreswan.public/.git/ciabot.pl $merged $refname
 done
 
-touch /public/scm/openswan.public/.git/last-update
+touch /public/scm/libreswan.public/.git/last-update

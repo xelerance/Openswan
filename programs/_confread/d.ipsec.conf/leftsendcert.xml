@@ -1,7 +1,7 @@
   <varlistentry>
   <term><emphasis remap='B'>leftsendcert</emphasis></term>
   <listitem>
-<para>This option configures when Openswan will send X.509 certificates to the remote
+<para>This option configures when Libreswan will send X.509 certificates to the remote
 host. Acceptable values are 
 <emphasis remap='B'>yes|always</emphasis>
 (signifying that we should always send a certificate),

@@ -13,14 +13,14 @@
  * License for more details.
  *
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 #define	NBYTES	4		/* bytes in an address */
 #define	PERBYTE	4		/* three digits plus a dot or NUL */
 #define	BUFLEN	(NBYTES*PERBYTE)
 
 #if ADDRTOA_BUF < BUFLEN
-#error	"ADDRTOA_BUF in openswan.h inconsistent with addrtoa() code"
+#error	"ADDRTOA_BUF in libreswan.h inconsistent with addrtoa() code"
 #endif
 
 /*

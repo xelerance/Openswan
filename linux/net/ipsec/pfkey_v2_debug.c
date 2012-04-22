@@ -1,8 +1,8 @@
 /*
  * @(#) pfkey version 2 debugging messages
  *
- * Copyright (C) 2001  Richard Guy Briggs  <rgb@openswan.org>
- *                 and Michael Richardson  <mcr@openswan.org>
+ * Copyright (C) 2001  Richard Guy Briggs  <rgb@libreswan.org>
+ *                 and Michael Richardson  <mcr@libreswan.org>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,7 +20,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "openswan/ipsec_kversion.h" /* for malloc switch */
+# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -45,9 +45,9 @@ extern int debug_pfkey;
 
 #endif /* __KERNEL__ */
 
-#include "openswan.h"
-#include "openswan/pfkeyv2.h"
-#include "openswan/pfkey.h"
+#include "libreswan.h"
+#include "libreswan/pfkeyv2.h"
+#include "libreswan/pfkey.h"
 
 /* 
  * This file provides ASCII translations of PF_KEY magic numbers.

@@ -37,9 +37,9 @@
 #include <gmp.h>
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -152,9 +152,9 @@ main_outI1(int whack_sock
 #endif
 
     if (predecessor == NULL)
-	openswan_log("initiating Main Mode");
+	libreswan_log("initiating Main Mode");
     else
-	openswan_log("initiating Main Mode to replace #%lu", predecessor->st_serialno);
+	libreswan_log("initiating Main Mode to replace #%lu", predecessor->st_serialno);
 
     /* set up reply */
     zero(reply_buffer);
@@ -192,7 +192,7 @@ main_outI1(int whack_sock
 	if (!out_sa(&md.rbody
 		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
 	{
-	    openswan_log("outsa fail");
+	    libreswan_log("outsa fail");
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
@@ -249,7 +249,7 @@ main_outI1(int whack_sock
 #ifdef DEBUG
     /* if we are not 0 then something went very wrong above */    
     if(numvidtosend != 0) {
-	openswan_log("payload alignment problem please check the code in main_inR1_outR2 (num=%d)", numvidtosend);
+	libreswan_log("payload alignment problem please check the code in main_inR1_outR2 (num=%d)", numvidtosend);
     }
 #endif
 
@@ -878,17 +878,17 @@ main_inI1_outR1(struct msg_digest *md)
 
     if ((c->kind == CK_INSTANCE) && (c->spd.that.host_port_specific))
     {
-       openswan_log("responding to Main Mode from unknown peer %s:%u"
+       libreswan_log("responding to Main Mode from unknown peer %s:%u"
 	    , ip_str(&c->spd.that.host_addr), c->spd.that.host_port);
     }
     else if (c->kind == CK_INSTANCE)
     {
-	openswan_log("responding to Main Mode from unknown peer %s"
+	libreswan_log("responding to Main Mode from unknown peer %s"
 	    , ip_str(&c->spd.that.host_addr));
     }
     else
     {
-	openswan_log("responding to Main Mode");
+	libreswan_log("responding to Main Mode");
     }
 
     /* parse_isakmp_sa also spits out a winning SA into our reply,
@@ -975,7 +975,7 @@ main_inI1_outR1(struct msg_digest *md)
 #ifdef DEBUG
     /* if we are not 0 then something went very wrong above */    
     if(numvidtosend != 0) {
-	openswan_log("payload alignment problem please check the code in main_inI1_outR1 (num=%d)", numvidtosend);
+	libreswan_log("payload alignment problem please check the code in main_inI1_outR1 (num=%d)", numvidtosend);
     }
 #endif
 
@@ -1065,7 +1065,7 @@ main_inR1_outI2(struct msg_digest *md)
 
     if (nat_traversal_enabled && md->quirks.nat_traversal_vid) {
 	st->hidden_variables.st_nat_traversal = nat_traversal_vid_to_method(md->quirks.nat_traversal_vid);
-	openswan_log("enabling possible NAT-traversal with method %s"
+	libreswan_log("enabling possible NAT-traversal with method %s"
 	     , bitnamesof(natt_type_bitnames, st->hidden_variables.st_nat_traversal));
     }
 #endif
@@ -1306,7 +1306,7 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
   
     st = state_with_serialno(dh->serialno);
     if(st == NULL) {
-	openswan_log("state %ld disappeared during crypto\n", dh->serialno);
+	libreswan_log("state %ld disappeared during crypto\n", dh->serialno);
 	return;
     }
     
@@ -1658,7 +1658,7 @@ main_inR2_outI3_continue(struct msg_digest *md
 	cert_hd.isacert_np = (send_cr)? ISAKMP_NEXT_CR : ISAKMP_NEXT_SIG;
 	cert_hd.isacert_type = mycert.type;
 
-	openswan_log("I am sending my cert");
+	libreswan_log("I am sending my cert");
 
 	if (!out_struct(&cert_hd
 			, &isakmp_ipsec_certificate_desc
@@ -1679,7 +1679,7 @@ main_inR2_outI3_continue(struct msg_digest *md
     /* CR out */
     if (send_cr)
     {
-	openswan_log("I am sending a certificate request");
+	libreswan_log("I am sending a certificate request");
 	if (!build_and_ship_CR(mycert.type
 			       , st->st_connection->spd.that.ca
 			       , &md->rbody, ISAKMP_NEXT_SIG))
@@ -2155,7 +2155,7 @@ main_inI3_outR3_tail(struct msg_digest *md
 	cert_hd.isacert_np = ISAKMP_NEXT_SIG;
 	cert_hd.isacert_type = mycert.type;
 
-	openswan_log("I am sending my cert");
+	libreswan_log("I am sending my cert");
 
 	if (!out_struct(&cert_hd, &isakmp_ipsec_certificate_desc, &md->rbody, &cert_pbs))
 	return STF_INTERNAL_ERROR;
@@ -2320,7 +2320,7 @@ main_inR3_tail(struct msg_digest *md
 	 * if(st->st_connection->policy & POLICY_IKEV2_ALLOW) {
 	 */
 	if(st->st_connection->policy & POLICY_IKEV2_PROPOSE) {
-	    openswan_log("Bid-down to IKEv1 attack detected, attempting to rekey connection with IKEv2");
+	    libreswan_log("Bid-down to IKEv1 attack detected, attempting to rekey connection with IKEv2");
 	    st->st_connection->failed_ikev2 = FALSE;
 	    
 	    /* schedule an event to do this as soon as possible */
@@ -2468,13 +2468,13 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	last_malformed = n;
 	sndst->hidden_variables.st_malformed_sent++;
 	if(sndst->hidden_variables.st_malformed_sent > MAXIMUM_MALFORMED_NOTIFY) {
-	    openswan_log("too many (%d) malformed payloads. Deleting state"
+	    libreswan_log("too many (%d) malformed payloads. Deleting state"
 			 , sndst->hidden_variables.st_malformed_sent);
 	    delete_state(sndst);
 	    return;
 	}
 
-	openswan_DBG_dump("payload malformed after IV", sndst->st_iv, sndst->st_iv_len);
+	libreswan_DBG_dump("payload malformed after IV", sndst->st_iv, sndst->st_iv_len);
 
 	/*
 	 * do not encrypt notification, since #1 reason for malformed
@@ -2496,7 +2496,7 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 	encst = NULL;
     }
 
-    openswan_log("sending %snotification %s to %s:%u"
+    libreswan_log("sending %snotification %s to %s:%u"
 		 , encst ? "encrypted " : ""
 		 , enum_name(&ipsec_notification_names, type)
 		 , ip_str(&sndst->st_remoteaddr)
@@ -2549,13 +2549,13 @@ send_notification(struct state *sndst, u_int16_t type, struct state *encst,
 
 	if(!out_struct(&isan, &isakmp_notification_desc
 		       , &r_hdr_pbs, &not_pbs))  {
-	    openswan_log("failed to build notification in send_notification\n");
+	    libreswan_log("failed to build notification in send_notification\n");
 	    return;
 	}
 
 	if(spisize > 0) {
 	    if(!out_raw(spi, spisize, &not_pbs, "spi")) {
-		openswan_log("failed to build notification for spisize=%d\n", (int)spisize);
+		libreswan_log("failed to build notification for spisize=%d\n", (int)spisize);
 		return;
 	    }
 	}

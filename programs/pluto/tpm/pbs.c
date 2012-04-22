@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <errno.h>
 
 #include <tcl.h>
@@ -47,7 +47,7 @@ void pbs_poke(pb_stream *pbs, int offset, int value)
 	    pbs->cur = pbs->start + offset;
 	}
     } else {
-	openswan_log("pbs_peek offset:%d < pbs_room(pbs):%d", offset, pbs_room(pbs));
+	libreswan_log("pbs_peek offset:%d < pbs_room(pbs):%d", offset, pbs_room(pbs));
 	pexpect(offset < pbs_room(pbs));
     }
 }

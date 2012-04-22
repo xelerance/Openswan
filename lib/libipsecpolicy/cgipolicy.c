@@ -25,8 +25,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "libipsecpolicy.h"
 

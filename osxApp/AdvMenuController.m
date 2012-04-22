@@ -1,6 +1,6 @@
 //
 //  AdvMenuController.m
-//  Openswan
+//  Libreswan
 //
 //  Created by Jose Quaresma on 11/6/09.
 //  Copyright 2009 __MyCompanyName__. All rights reserved.

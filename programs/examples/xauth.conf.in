@@ -28,7 +28,7 @@ conn xauthclient
 	rightmodecfgclient=yes
 	#
 	auto=add
-	# you probably can not rekey, it requires xauth password, and openswan does not
-	# cache it for you. Other clients might cache it and rekey to an openswan server
+	# you probably can not rekey, it requires xauth password, and libreswan does not
+	# cache it for you. Other clients might cache it and rekey to an libreswan server
 	rekey=no
 	modecfgpull=yes

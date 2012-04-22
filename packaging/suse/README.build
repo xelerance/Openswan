@@ -1,15 +1,15 @@
-openswan.spec is a spec file for sles11 and opensuse 11.4.  I also use
+libreswan.spec is a spec file for sles11 and opensuse 11.4.  I also use
 'build' package and invoke "build --dist sl11.4 --define 'buildklips 1'
---debug openswan.spec" on opensuse 11.4 and kernel modules for all
+--debug libreswan.spec" on opensuse 11.4 and kernel modules for all
 flavors are built.
 
 If rpmbuild is used directly, install kernel-syms package and do "rpmbuild
---define 'buildklips 1' openswan.spec".
+--define 'buildklips 1' libreswan.spec".
 
 sles10.spec is a spec file for sles10.  It needs an additional patch
 kernelsrc.patch.  There are same problems on other projects.
 ex. http://osdir.com/ml/linux.iscsi.iscsi-target.devel/2006-02/msg00049.html
-openswan uses a KERNELSRC variable in Makefile, and it conflicts the
+libreswan uses a KERNELSRC variable in Makefile, and it conflicts the
 same variable in /lib/modules/.../build/Makefile.  Without this patch,
 make process gets into infinite loop.  It is the case for older kernels,
 and it's not the case for RHEL5 though it has older 2.6.18 kernel, it

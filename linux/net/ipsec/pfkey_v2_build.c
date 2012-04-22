@@ -26,7 +26,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "openswan/ipsec_kversion.h" /* for malloc switch */
+# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
 # else /* MALLOC_SLAB */
@@ -45,7 +45,7 @@
 
 # define MALLOC(size) kmalloc(size, GFP_ATOMIC)
 # define FREE(obj) kfree(obj)
-# include <openswan.h>
+# include <libreswan.h>
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
@@ -55,21 +55,21 @@
 # include <stdio.h>
 # include <string.h> /* memset */
 
-# include <openswan.h>
+# include <libreswan.h>
 
 #endif /* __KERNEL__ */
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #ifdef __KERNEL__
-#include "openswan/radij.h"  /* rd_nodes */
-#include "openswan/ipsec_encap.h"  /* sockaddr_encap */
+#include "libreswan/radij.h"  /* rd_nodes */
+#include "libreswan/ipsec_encap.h"  /* sockaddr_encap */
 #endif /* __KERNEL__ */
 
 
-#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
-#include "openswan/pfkey_debug.h"
+#include "libreswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
+#include "libreswan/pfkey_debug.h"
 
 
 #define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)

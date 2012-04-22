@@ -1,8 +1,8 @@
-ifndef OPENSWANSRCDIR
-$(error You Must set OPENSWANSRCDIR)
+ifndef LIBRESWANSRCDIR
+$(error You Must set LIBRESWANSRCDIR)
 endif
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 export TOPDIR
 
@@ -11,7 +11,7 @@ export CONFIG_SHELL
 
 CONFIG_MODULES=true
 
-KLIPS_TOP=${OPENSWANSRCDIR}/linux
+KLIPS_TOP=${LIBRESWANSRCDIR}/linux
 VPATH+=${KLIPSSRC}
 
 # include file with .h-style macros that would otherwise be created by
@@ -42,7 +42,7 @@ EXTRA_CFLAGS += -I${KLIPSSRC}/.
 EXTRA_CFLAGS += -I${TOPDIR}/include 
 EXTRA_CFLAGS += -I${LIBZLIBSRCDIR}
 
-version.c:	${KLIPSSRC}/version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+version.c:	${KLIPSSRC}/version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' $< >$@
 
 include ${KLIPSSRC}/Makefile.fs2_4

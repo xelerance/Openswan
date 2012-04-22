@@ -29,7 +29,7 @@
 #include <getopt.h>
 #include <assert.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include "socketwrapper.h"
 #include "constants.h"
 #include "oswlog.h"
@@ -66,7 +66,7 @@ help(void)
 	"status: whack"
 	    " --status"
 	    "\n\n"
-	"Openswan %s\n"
+	"Libreswan %s\n"
 	, ipsec_version_code());
 }
 

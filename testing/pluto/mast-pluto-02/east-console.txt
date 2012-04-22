@@ -12,7 +12,7 @@ east:~#
  iptables -I INPUT 1 -i eth1 -p udp --dport 4500 -j ACCEPT
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add west-east
 east:~#

@@ -12,8 +12,8 @@
 # for more details.
 #
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 ifeq ($(USE_LIBNSS),true)
 CFLAGS+=-DHAVE_LIBNSS
 INCLUDES+=-I/usr/include/nspr4 -I/usr/include/nss3

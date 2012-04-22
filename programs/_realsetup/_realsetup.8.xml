@@ -10,13 +10,13 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec _realsetup</refname>
-<refpurpose>internal routine to start Openswan.</refpurpose>
+<refpurpose>internal routine to start Libreswan.</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>_realsetup</emphasis>
-is called by the system init scripts to start the Openswan
+is called by the system init scripts to start the Libreswan
 system. It starts the appropriate kernel stack, such as
 <emphasis remap='B'>KLIPS</emphasis> or
 <emphasis remap='B'>NETKEY</emphasis>

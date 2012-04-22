@@ -1,15 +1,15 @@
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
 UNITTEST=pk-dh
-CFLAGS=-DUSE_3DES -I${OPENSWANSRCDIR}/programs/pluto
+CFLAGS=-DUSE_3DES -I${LIBRESWANSRCDIR}/programs/pluto
 
-SOURCES=pk-dh.c ${OPENSWANSRCDIR}/programs/pluto/hmac.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypto.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/ike_alg.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/rnd.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_utils.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_dh.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/ikev2_prfplus.c
+SOURCES=pk-dh.c ${LIBRESWANSRCDIR}/programs/pluto/hmac.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypto.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/ike_alg.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/rnd.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypt_utils.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypt_dh.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/ikev2_prfplus.c
 
 PROGRAM=pk-dh
 
@@ -21,6 +21,6 @@ programs checkprograms: ${UNITTEST}
 check:
 	../../utils/runme.sh
 
-include ${OPENSWANSRCDIR}/programs/Makefile.program
+include ${LIBRESWANSRCDIR}/programs/Makefile.program
 
 

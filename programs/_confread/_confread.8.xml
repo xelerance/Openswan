@@ -21,7 +21,7 @@ is an internal script used for parsing /etc/ipsec.conf into a canonical format.<
 
 <refsect1 id='obsolete'><title>OBSOLETE</title>
 <para><emphasis remap='I'>_confread</emphasis>
-is going to be obsoleted in the next major release of Openswan in favour of the
+is going to be obsoleted in the next major release of Libreswan in favour of the
 <emphasis remap='I'>addcon</emphasis> code. The new code will load all the connections
 much faster then the current scripts that can takes minutes to load a few hunderd
 conns, and requires awk and sed commands not always available in their full versions,

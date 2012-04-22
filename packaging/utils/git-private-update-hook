@@ -10,7 +10,7 @@
 
 exec 1>&2
 
-recipient="commits@lists.openswan.org"
+recipient="commits@lists.libreswan.org"
 
 if expr "$2" : '0*$' >/dev/null
 then

@@ -63,8 +63,8 @@ proc adjustFailure {state conn md} {
 	set peer_keymat_ptr [ipsec_proto_info_peer_keymat_get $ipi]
 	set our_keymat  [cdata $our_keymat_ptr  $keymat_len]
 	set peer_keymat [cdata $peer_keymat_ptr $keymat_len]
-	openswan_DBG_dump [format "outspi: 0x%08x" $ourspi] $our_keymat
-	openswan_DBG_dump [format " inspi: 0x%08x" $hisspi] $peer_keymat
+	libreswan_DBG_dump [format "outspi: 0x%08x" $ourspi] $our_keymat
+	libreswan_DBG_dump [format " inspi: 0x%08x" $hisspi] $peer_keymat
     }
     
 }

@@ -33,8 +33,8 @@
 #include <limits.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "oswconf.h"
@@ -242,7 +242,7 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 	    /* we don't accept self-signed CA certs */
 	    if (same_dn(cert->issuer, cert->subject))
 	    {
-		openswan_log("self-signed cacert rejected");
+		libreswan_log("self-signed cacert rejected");
 		free_x509cert(cert);
 	    }
 	    else
@@ -295,7 +295,7 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 	}
 	else
 	{
-	    openswan_log("X.509 certificate rejected");
+	    libreswan_log("X.509 certificate rejected");
 	}
 	*pp = cert->next;
 	free_x509cert(cert);
@@ -340,7 +340,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 		    (crl->distributionPoints->name.len < PATH_MAX ?
 		     crl->distributionPoints->name.len : PATH_MAX));
 	    
-	    openswan_log("crl issuer cacert not found for (%s)",
+	    libreswan_log("crl issuer cacert not found for (%s)",
 			 distpoint);;
 
 	    free_crl(crl);
@@ -407,7 +407,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
     }
     else
     {
-	openswan_log("  error in X.509 crl %s", (char *)crl_uri.ptr);
+	libreswan_log("  error in X.509 crl %s", (char *)crl_uri.ptr);
 	free_crl(crl);
 	return FALSE;
     }
@@ -429,7 +429,7 @@ load_crls(void)
     save_dir = getcwd(buf, PATH_MAX);
     if (chdir(oco->crls_dir) == -1)
     {
-	openswan_log("Could not change to directory '%s': %d %s", oco->crls_dir, errno, strerror(errno));
+	libreswan_log("Could not change to directory '%s': %d %s", oco->crls_dir, errno, strerror(errno));
     }
     else
     {
@@ -467,7 +467,7 @@ load_crls(void)
     /* restore directory path */
     if(chdir(save_dir) == -1) {
         int e = errno;
-        openswan_log("Changing back to directory '%s' failed - (%d %s)",
+        libreswan_log("Changing back to directory '%s' failed - (%d %s)",
                 save_dir, e, strerror(e));
     }
 }
@@ -489,7 +489,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
     if (crl == NULL)
     {
 	unlock_crl_list("verify_by_crl");
-	openswan_log("no crl from issuer \"%s\" found (strict=%s)", ibuf
+	libreswan_log("no crl from issuer \"%s\" found (strict=%s)", ibuf
 		     , strict ? "yes" : "no");
 
 #ifdef HAVE_THREADS
@@ -551,7 +551,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	    if (expired_crl)
 	    {
 	        char tbuf[TIMETOA_BUF];
-		openswan_log("crl update for \"%s\" is overdue since %s"
+		libreswan_log("crl update for \"%s\" is overdue since %s"
 			     , cbuf
 			     , timetoa(&crl->nextUpdate, TRUE, tbuf, sizeof(tbuf)));
 
@@ -582,7 +582,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	else
 	{
 	    unlock_crl_list("verify_by_crl");
-	    openswan_log("invalid crl signature on \"%s\"", cbuf);
+	    libreswan_log("invalid crl signature on \"%s\"", cbuf);
 	    if (strict)
 		return FALSE;
 	}
@@ -602,7 +602,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 
     if (same_dn(cert->issuer, cert->subject))
     {
-	openswan_log("end certificate with identical subject and issuer not accepted");
+	libreswan_log("end certificate with identical subject and issuer not accepted");
 	return FALSE;
     }
 
@@ -634,7 +634,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 
 	if (ugh != NULL)
 	{
-	    openswan_log("checking validity of \"%s\": %s", sbuf, ugh);
+	    libreswan_log("checking validity of \"%s\": %s", sbuf, ugh);
 	    return FALSE;
 	}
 
@@ -648,7 +648,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 
 	if (issuer_cert == NULL)
 	{
-	    openswan_log("issuer cacert not found");
+	    libreswan_log("issuer cacert not found");
 	    unlock_authcert_list("verify_x509cert");
 	    return FALSE;
 	}
@@ -659,7 +659,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	if (!check_signature(cert->tbsCertificate, cert->signature,
 			     cert->algorithm, issuer_cert))
 	{
-	    openswan_log("invalid certificate signature from \"%s\" on \"%s\""
+	    libreswan_log("invalid certificate signature from \"%s\" on \"%s\""
 			 , ibuf, sbuf);
 	    unlock_authcert_list("verify_x509cert");
 	    return FALSE;
@@ -691,7 +691,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	cert = issuer_cert;
     }
 
-    openswan_log("maximum ca path length of %d levels exceeded", MAX_CA_PATH_LEN);
+    libreswan_log("maximum ca path length of %d levels exceeded", MAX_CA_PATH_LEN);
     return FALSE;
 }
 
@@ -873,7 +873,7 @@ add_pgp_public_key(pgpcert_t *cert , time_t until
     /* we support RSA only */
     if (cert->pubkeyAlg != PUBKEY_ALG_RSA)
     {
-	openswan_log("  RSA public keys supported only");
+	libreswan_log("  RSA public keys supported only");
 	return;
     }
 

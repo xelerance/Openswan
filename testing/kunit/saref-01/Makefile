@@ -2,14 +2,14 @@
 # Kunit tests for KLIPS -- SA reference allocation
 #
 
-OPENSWANSRCDIR?=$(shell cd ../../..;pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..;pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
-UMLPLAIN=$(shell . ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
-KLIPS_TOP=${OPENSWANSRCDIR}/linux
+UMLPLAIN=$(shell . ${LIBRESWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+KLIPS_TOP=${LIBRESWANSRCDIR}/linux
 
-#INPUTS=${OPENSWANSRCDIR}/testing/klips/inputs/02-sunrise-sunset-esp.pcap
+#INPUTS=${LIBRESWANSRCDIR}/testing/klips/inputs/02-sunrise-sunset-esp.pcap
 #INPUTS+=${srcdir}cleartext.pcap
 
 CC=gcc 

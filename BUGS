@@ -1,7 +1,7 @@
 This code is still less than perfect and undoubtedly has bugs.  As of this
 release, the following are considered known bugs.
 
-For a detailed list, see http://bugs.openswan.org/
+For a detailed list, see http://bugs.libreswan.org/
 
 * It was our intent for Opportunistic Encryption to work with 4096 bit keys.
   Currently, there is a buffer limitation that prevents this; the additional 
@@ -15,9 +15,9 @@ For a detailed list, see http://bugs.openswan.org/
 
 * Pluto will not retry if it can not find its key in DNS when it starts.
 
-* Openswan on OSX/FreeBSD does not properly install all the SA's into the kernel.
+* Libreswan on OSX/FreeBSD does not properly install all the SA's into the kernel.
 
-* Installing a new Openswan on top of an old one doesn't update kernel
+* Installing a new Libreswan on top of an old one doesn't update kernel
   configuration options, so if new options are added, you need to start
   with a virgin kernel instead, or 'make oldconfig'
 

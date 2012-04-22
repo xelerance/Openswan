@@ -38,27 +38,27 @@ presented in a less terse form.
 
 =item --detect-stack
 
-Only display the stack that Openswan is using.  Possible results are.
+Only display the stack that Libreswan is using.  Possible results are.
 
 =over 4
 
 =item klips
 
-KLIPS is the Openswan ipsec kernel module.  This stack type indicates that
+KLIPS is the Libreswan ipsec kernel module.  This stack type indicates that
 KLIPS is not running in I<mast> mode (see next option), but rather in the 
 default mode.  In this mode, KLIPS outgoing packet policy is dicated by
 I<eroutes>.  See the B<ipsec_eroute> man page for further details.
 
 =item mast
 
-This is a mode of the Openswan ipsec kernel module, KLIPS.  In this mode
+This is a mode of the Libreswan ipsec kernel module, KLIPS.  In this mode
 outgoing packet routing policies are dictated by iptalbles, and Linux kernel
 policy routing.  This mode is selected by using C<protostack=mast> setting in
 I<ipsec.conf>.
 
 =item netkey
 
-This stack indicates that Openswan is controlling the Linux kernel built-in
+This stack indicates that Libreswan is controlling the Linux kernel built-in
 ipsec functionally.
 
 =back
@@ -114,7 +114,7 @@ B<ipsec>(8), B<ipsec_eroute>(8), B<ipsec_manual>(8)
 
 =head1 HISTORY
 
-Designed for the Openswan project <http://www.openswan.org> by Bart
+Designed for the Libreswan project <http://www.libreswan.org> by Bart
 Trojanowski.
 
 =head1 BUGS
@@ -159,7 +159,7 @@ sub detect_ipsec_stack
 
         assert_root "to detect the ipsec stack; try --stack= and --read=.";
 
-        my $os_mode = Stack::Klips->detect_openswan_stack_mode();
+        my $os_mode = Stack::Klips->detect_libreswan_stack_mode();
         return $os_mode if (defined $os_mode);
 
         die "We don't support netkey yet.\n";
@@ -272,13 +272,13 @@ use subs qw(dbg assert_root);
 my $klips_proc_version='/proc/net/ipsec/version';
 my $klips_proc_spi_all='/proc/net/ipsec/spi/all';
 
-sub have_openswan
+sub have_libreswan
 {
         my $class = shift;
 
         return 0 if system('which ipsec >/dev/null 2>&1');
         return 0 if system('ipsec version >/dev/null 2>&1');
-        dbg "detected openswan binaries";
+        dbg "detected libreswan binaries";
         return 1;
 }
 
@@ -288,16 +288,16 @@ sub have_klips_module
 
         return 0 if not -e $klips_proc_spi_all;
         return 0 if not -e $klips_proc_version;
-        return 0 if system("cat $klips_proc_version 2>/dev/null | grep -q '^Openswan'");
-        dbg "detected openswan module";
+        return 0 if system("cat $klips_proc_version 2>/dev/null | grep -q '^Libreswan'");
+        dbg "detected libreswan module";
         return 1;
 }
 
-sub detect_openswan_stack_mode
+sub detect_libreswan_stack_mode
 {
         my $class = shift;
 
-        return () if not have_openswan;
+        return () if not have_libreswan;
         return () if not have_klips_module;
 
         return () if not open(IN, 'ipsec auto --status |');
@@ -307,7 +307,7 @@ sub detect_openswan_stack_mode
 
         return () if not $ifline =~ m/using kernel interface: (\w+)$/;
         return () if $1 ne 'klips' and $1 ne 'mast';
-        dbg "detected openswan in $1 mode";
+        dbg "detected libreswan in $1 mode";
         return $1;
 }
 

@@ -5,7 +5,7 @@ Connection closed by foreign host.
      30
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add west--east-port3
 east:~#

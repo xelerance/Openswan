@@ -118,7 +118,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -679,14 +679,14 @@ informational(struct msg_digest *md)
 	    if(st) {
 		st->hidden_variables.st_malformed_received++;
 
-		openswan_log("received %u malformed payload notifies"
+		libreswan_log("received %u malformed payload notifies"
 			     , st->hidden_variables.st_malformed_received);
 
 		if(st->hidden_variables.st_malformed_sent > MAXIMUM_MALFORMED_NOTIFY/2
 		   && ((st->hidden_variables.st_malformed_sent
 			+ st->hidden_variables.st_malformed_received)
 		       > MAXIMUM_MALFORMED_NOTIFY)) {
-		    openswan_log("too many malformed payloads (we sent %u and received %u"
+		    libreswan_log("too many malformed payloads (we sent %u and received %u"
 				 , st->hidden_variables.st_malformed_sent
 				 , st->hidden_variables.st_malformed_received);
 		    delete_state(st);
@@ -852,7 +852,7 @@ process_v1_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_IDPROT:	/* part of a Main Mode exchange */
 	if (md->hdr.isa_msgid != MAINMODE_MSGID)
 	{
-	    openswan_log("Message ID was 0x%08lx but should be zero in phase 1",
+	    libreswan_log("Message ID was 0x%08lx but should be zero in phase 1",
 		(unsigned long) md->hdr.isa_msgid);
 	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 	    return;
@@ -860,7 +860,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    openswan_log("Initiator Cookie must not be zero in phase 1 message");
+	    libreswan_log("Initiator Cookie must not be zero in phase 1 message");
 	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
 	}
@@ -872,7 +872,7 @@ process_v1_packet(struct msg_digest **mdp)
 	     */
 	    if (md->hdr.isa_flags & ISAKMP_FLAG_ENCRYPTION)
 	    {
-		openswan_log("initial phase 1 message is invalid:"
+		libreswan_log("initial phase 1 message is invalid:"
 		    " its Encrypted Flag is on");
 		SEND_NOTIFICATION(INVALID_FLAGS);
 		return;
@@ -914,7 +914,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 		if (st == NULL)
 		{
-		    openswan_log("phase 1 message is part of an unknown exchange");
+		    libreswan_log("phase 1 message is part of an unknown exchange");
 		    /* XXX Could send notification back */
 		    return;
 		}
@@ -945,7 +945,7 @@ process_v1_packet(struct msg_digest **mdp)
 	{
 	    if (st == NULL)
 	    {
-		openswan_log("Informational Exchange is for an unknown (expired?) SA with MSGID:0x%08lx",
+		libreswan_log("Informational Exchange is for an unknown (expired?) SA with MSGID:0x%08lx",
 			     (unsigned long)md->hdr.isa_msgid);
 		/* Let's try and log some info about these to track them down */
 		DBG(DBG_PARSING ,
@@ -1004,7 +1004,7 @@ process_v1_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_QUICK:	/* part of a Quick Mode exchange */
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    openswan_log("Quick Mode message is invalid because"
+	    libreswan_log("Quick Mode message is invalid because"
 		" it has an Initiator Cookie of 0");
 	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
@@ -1012,7 +1012,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	if (is_zero_cookie(md->hdr.isa_rcookie))
 	{
-	    openswan_log("Quick Mode message is invalid because"
+	    libreswan_log("Quick Mode message is invalid because"
 		" it has a Responder Cookie of 0");
 	    SEND_NOTIFICATION(INVALID_COOKIE);
 	    return;
@@ -1020,7 +1020,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	if (md->hdr.isa_msgid == MAINMODE_MSGID)
 	{
-	    openswan_log("Quick Mode message is invalid because"
+	    libreswan_log("Quick Mode message is invalid because"
 		" it has a Message ID of 0");
 	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 	    return;
@@ -1055,7 +1055,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	    if (st == NULL)
 	    {
-		openswan_log("Quick Mode message is for a non-existent (expired?)"
+		libreswan_log("Quick Mode message is for a non-existent (expired?)"
 		    " ISAKMP SA");
 		/* XXX Could send notification back */
 		return;
@@ -1064,7 +1064,7 @@ process_v1_packet(struct msg_digest **mdp)
 #ifdef XAUTH
 	    if(st->st_oakley.xauth != 0)
 	    {
-		openswan_log("Cannot do Quick Mode until XAUTH done.");
+		libreswan_log("Cannot do Quick Mode until XAUTH done.");
 		return;
 	    }
 #endif 
@@ -1078,7 +1078,7 @@ process_v1_packet(struct msg_digest **mdp)
 	    /* See: http://popoludnica.pl/?id=10100110 */
 	    if(st->st_state == STATE_MODE_CFG_R1)
 	    {
-		openswan_log("SoftRemote workaround: Cannot do Quick Mode until MODECFG done.");
+		libreswan_log("SoftRemote workaround: Cannot do Quick Mode until MODECFG done.");
 		return;
 	    }
 #endif
@@ -1118,7 +1118,7 @@ process_v1_packet(struct msg_digest **mdp)
 #ifdef XAUTH
 	    if(st->st_oakley.xauth != 0)
 	    {
-		openswan_log("Cannot do Quick Mode until XAUTH done.");
+		libreswan_log("Cannot do Quick Mode until XAUTH done.");
 		return;
 	    }
 #endif
@@ -1132,7 +1132,7 @@ process_v1_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_MODE_CFG:
 	if (is_zero_cookie(md->hdr.isa_icookie))
 	{
-	    openswan_log("Mode Config message is invalid because"
+	    libreswan_log("Mode Config message is invalid because"
 		" it has an Initiator Cookie of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1140,7 +1140,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	if (is_zero_cookie(md->hdr.isa_rcookie))
 	{
-	    openswan_log("Mode Config message is invalid because"
+	    libreswan_log("Mode Config message is invalid because"
 		" it has a Responder Cookie of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1148,7 +1148,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	if (md->hdr.isa_msgid == 0)
 	{
-	    openswan_log("Mode Config message is invalid because"
+	    libreswan_log("Mode Config message is invalid because"
 		" it has a Message ID of 0");
 	    /* XXX Could send notification back */
 	    return;
@@ -1168,7 +1168,7 @@ process_v1_packet(struct msg_digest **mdp)
 
 	    if (st == NULL)
 	    {
-		openswan_log("Mode Config message is for a non-existent (expired?)"
+		libreswan_log("Mode Config message is for a non-existent (expired?)"
 		    " ISAKMP SA");
 		/* XXX Could send notification back */
 		return;
@@ -1239,7 +1239,7 @@ process_v1_packet(struct msg_digest **mdp)
 	    }
 	    else {
 		/* XXX check if we are being a mode config server here */
-		openswan_log("received MODECFG message when in state %s, and we aren't xauth client"
+		libreswan_log("received MODECFG message when in state %s, and we aren't xauth client"
 		     , enum_name(&state_names, st->st_state));
 		SEND_NOTIFICATION(UNSUPPORTED_EXCHANGE_TYPE);
 		return;
@@ -1250,7 +1250,7 @@ process_v1_packet(struct msg_digest **mdp)
 	    if(st->st_connection->spd.this.xauth_server
 	       && IS_PHASE1(st->st_state))	/* Switch from Phase1 to Mode Config */
 	    {
-		openswan_log("We were in phase 1, with no state, so we went to XAUTH_R0");
+		libreswan_log("We were in phase 1, with no state, so we went to XAUTH_R0");
 		change_state(st, STATE_XAUTH_R0);
 	    }
 
@@ -1280,7 +1280,7 @@ process_v1_packet(struct msg_digest **mdp)
 #endif
 
     default:
-	openswan_log("unsupported exchange type %s in message"
+	libreswan_log("unsupported exchange type %s in message"
 	    , enum_show(&exchange_names, md->hdr.isa_xchg));
 	SEND_NOTIFICATION(UNSUPPORTED_EXCHANGE_TYPE);
 	return;
@@ -1301,7 +1301,7 @@ process_v1_packet(struct msg_digest **mdp)
      */
     if (md->hdr.isa_flags & ISAKMP_FLAG_COMMIT)
     {
-	openswan_log("IKE message has the Commit Flag set but Pluto doesn't implement this feature; ignoring flag");
+	libreswan_log("IKE message has the Commit Flag set but Pluto doesn't implement this feature; ignoring flag");
     }
 
     /* Set smc to describe this state's properties.
@@ -1343,7 +1343,7 @@ process_v1_packet(struct msg_digest **mdp)
      * packet, as there is nothing we can do right now.
      */
     if(st!=NULL && st->st_calculating) {
-	openswan_log("message received while calculating. Ignored.");
+	libreswan_log("message received while calculating. Ignored.");
 	return;
     }
 
@@ -1444,7 +1444,7 @@ void process_packet_tail(struct msg_digest **mdp)
 
 	if (st == NULL)
 	{
-	    openswan_log("discarding encrypted message for an unknown ISAKMP SA");
+	    libreswan_log("discarding encrypted message for an unknown ISAKMP SA");
 	    SEND_NOTIFICATION(PAYLOAD_MALFORMED /* XXX ? */);
 	    return;
 	}
@@ -1970,7 +1970,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	case STF_OK:
 	    /* advance the state */
 
-	    openswan_log("transition from state %s to state %s"
+	    libreswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, smc->next_state));
 	    
@@ -2215,7 +2215,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	      if((st->st_oakley.xauth != 0)
 		 && IS_ISAKMP_SA_ESTABLISHED(st->st_state))
 		{
-		  openswan_log("XAUTH: Sending XAUTH Login/Password Request");
+		  libreswan_log("XAUTH: Sending XAUTH Login/Password Request");
 		  xauth_send_request(st);
 		  break;
 		}
@@ -2269,7 +2269,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    {
 		    change_state(st, STATE_MODE_CFG_R1);
 		    set_cur_state(st);
-		    openswan_log("Sending MODE CONFIG set");
+		    libreswan_log("Sending MODE CONFIG set");
 		    modecfg_start_set(st);
 		    break;
 	    }
@@ -2358,7 +2358,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	     */
 	    set_suspended(st, NULL);
 	    pexpect(st->st_calculating == FALSE);
-	    openswan_log("message in state %s ignored due to cryptographic overload"
+	    libreswan_log("message in state %s ignored due to cryptographic overload"
 			 , enum_name(&state_names, from_state));
 	    break;
 

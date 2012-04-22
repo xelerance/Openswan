@@ -1,6 +1,6 @@
-OPENSWANSRCDIR=../..
--include ${OPENSWANSRCDIR}/Makefile.inc
-CFLAGS += -I${OPENSWANSRCDIR}/include
+LIBRESWANSRCDIR=../..
+-include ${LIBRESWANSRCDIR}/Makefile.inc
+CFLAGS += -I${LIBRESWANSRCDIR}/include
 
 SOURCE=saref.c
 TARGET=libsaref.so

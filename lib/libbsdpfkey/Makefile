@@ -1,7 +1,7 @@
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 CFLAGS+=-DIPSEC_DEBUG -DIPSEC
 CFLAGS+=-DINET6

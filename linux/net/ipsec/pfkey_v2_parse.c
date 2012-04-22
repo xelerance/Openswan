@@ -27,7 +27,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-#include "openswan/ipsec_kversion.h" /* for malloc switch */
+#include "libreswan/ipsec_kversion.h" /* for malloc switch */
 
 # ifdef MALLOC_SLAB
 #  include <linux/slab.h> /* kmalloc() */
@@ -46,9 +46,9 @@
 # endif /* if defined(CONFIG_KLIPS_IPV6) */
 extern int debug_pfkey;
 
-# include <openswan.h>
+# include <libreswan.h>
 
-#include "openswan/ipsec_encap.h"
+#include "libreswan/ipsec_encap.h"
 
 #else /* __KERNEL__ */
 
@@ -56,21 +56,21 @@ extern int debug_pfkey;
 # include <sys/errno.h>
 # include <stdio.h>
 
-# include <openswan.h>
+# include <libreswan.h>
 # include "constants.h" 
 
 #endif /* __KERNEL__ */
 
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
+#include "libreswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
 
 /* 
  * how to handle debugging for pfkey.
  */
-#include <openswan/pfkey_debug.h>
+#include <libreswan/pfkey_debug.h>
 
 unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
 int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);

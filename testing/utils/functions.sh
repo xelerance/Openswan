@@ -29,7 +29,7 @@ WESTHOST=${WESTHOST-}
 EASTHOST=${EASTHOST:-east}
 TEST_GOAL_ITEM=${TEST_GOAL_ITEM-0}
 TEST_PROB_REPORT=${TEST_PROB_REPORT-0}
-TEST_EXPLOIT_URL=${TEST_EXPLOIT_URL-http://www.openswan.org/vuln/}
+TEST_EXPLOIT_URL=${TEST_EXPLOIT_URL-http://www.libreswan.org/vuln/}
 MAKE=${MAKE-make}
 
 #
@@ -331,7 +331,7 @@ prerunsetup() {
     # export variables that are common.
     export PACKETRATE KERNVER
 
-    perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} ${TESTNAME}${KLIPS_MODULE}
+    perl ${LIBRESWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESULTS} ${TESTNAME}${KLIPS_MODULE}
 }
 
 #
@@ -868,31 +868,31 @@ do_make_install_test() {
     if [ -n "${INSTALL_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
     fi
 
     if [ -n "${POSTINSTALL_SCRIPT-}" ]
     then
-	$POSTINSTALL_SCRIPT $OPENSWANSRCDIR $instdir || exit 1
+	$POSTINSTALL_SCRIPT $LIBRESWANSRCDIR $instdir || exit 1
     fi
 
     if [ -n "${INSTALL2_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
     fi
 
     if [ -n "${UNINSTALL_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
     fi
 
     if [ -n "${REF_MAKE_DOC_OUTPUT-}" ]
     then
       rm -f OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
 
-      (cd $OPENSWANSRCDIR/doc && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR clean --no-print-directory && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
+      (cd $LIBRESWANSRCDIR/doc && eval make LIBRESWANSRCDIR=$LIBRESWANSRCDIR clean --no-print-directory && eval make LIBRESWANSRCDIR=$LIBRESWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
       if diff -u -w -b -B $REF_MAKE_DOC_OUTPUT.txt OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.diff
       then
 	 echo "make doc output matched"
@@ -945,7 +945,7 @@ mkinsttest() {
 
     echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
+    LIBRESWANSRCDIR=`cd $LIBRESWANSRCDIR && pwd` export LIBRESWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir mkinsttest && do_make_install_test )
@@ -982,11 +982,11 @@ do_rpm_install_test() {
     then
 	echo "Building with kernel source $RPM_KERNEL_SOURCE";
 
-	(cd $OPENSWANSRCDIR/packaging/redhat && make clean --no-print-directory && make --no-print-directory RH_KERNELSRC=$RPM_KERNEL_SOURCE OPENSWANSRCDIR=$OPENSWANSRCDIR rpm )
+	(cd $LIBRESWANSRCDIR/packaging/redhat && make clean --no-print-directory && make --no-print-directory RH_KERNELSRC=$RPM_KERNEL_SOURCE LIBRESWANSRCDIR=$LIBRESWANSRCDIR rpm )
     fi
 
     mkdir OUTPUT${KLIPS_MODULE}/rpm
-    cp $OPENSWANSRCDIR/packaging/redhat/rpms/RPMS/i386/*.rpm OUTPUT${KLIPS_MODULE}/rpm
+    cp $LIBRESWANSRCDIR/packaging/redhat/rpms/RPMS/i386/*.rpm OUTPUT${KLIPS_MODULE}/rpm
 
     # while loop below winds up in sub-shell. Argh.
     successfile=OUTPUT${KLIPS_MODULE}/success
@@ -1034,7 +1034,7 @@ rpm_build_install_test() {
 
     echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
+    LIBRESWANSRCDIR=`cd $LIBRESWANSRCDIR && pwd` export LIBRESWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir rpm_build_install_test && do_rpm_install_test )
@@ -1077,11 +1077,11 @@ do_ipkg_install_test() {
     then
 	echo "Building with kernel source $KERNEL_SOURCE";
 
-	(cd $OPENSWANSRCDIR && make clean --no-print-directory && make --no-print-directory KERNELSRC=$KERNEL_SOURCE OPENSWANSRCDIR=$OPENSWANSRCDIR DESTDIR=/tmp/ipkg ipkg )
+	(cd $LIBRESWANSRCDIR && make clean --no-print-directory && make --no-print-directory KERNELSRC=$KERNEL_SOURCE LIBRESWANSRCDIR=$LIBRESWANSRCDIR DESTDIR=/tmp/ipkg ipkg )
     fi
 
     mkdir OUTPUT${KLIPS_MODULE}/ipkg
-    cp $OPENSWANSRCDIR/packaging/ipkg/ipkg/*.ipk  OUTPUT${KLIPS_MODULE}/ipkg
+    cp $LIBRESWANSRCDIR/packaging/ipkg/ipkg/*.ipk  OUTPUT${KLIPS_MODULE}/ipkg
 
     # while loop below winds up in sub-shell. Argh.
     successfile=OUTPUT${KLIPS_MODULE}/success
@@ -1129,7 +1129,7 @@ ipkg_build_install_test() {
 
     echo '**** Make Install RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
+    LIBRESWANSRCDIR=`cd $LIBRESWANSRCDIR && pwd` export LIBRESWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir ipkg_build_install_test && do_ipkg_install_test )
@@ -1167,27 +1167,27 @@ complibtest() {
     if [ -f ${SRCDIR}$testsrc ] 
     then
 	FILE=${SRCDIR}$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
+    elif [ -f ${LIBRESWANSRCDIR}/lib/libopenwan/$testsrc ]
     then
-	FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/lib/libopenswan/$testsrc ]
+	FILE=${LIBRESWANSRCDIR}/lib/liblibreswan/$testsrc
+    elif [ -f ${LIBRESWANSRCDIR}/lib/liblibreswan/$testsrc ]
     then
-        FILE=${OPENSWANSRCDIR}/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/net/klips/$testsrc ]
+        FILE=${LIBRESWANSRCDIR}/lib/liblibreswan/$testsrc
+    elif [ -f ${LIBRESWANSRCDIR}/linux/net/klips/$testsrc ]
     then
-        FILE=${OPENSWANSRCDIR}/linux/net/klips/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc ]
+        FILE=${LIBRESWANSRCDIR}/linux/net/klips/$testsrc
+    elif [ -f ${LIBRESWANSRCDIR}/linux/lib/liblibreswan/$testsrc ]
     then
-        FILE=${OPENSWANSRCDIR}/linux/lib/libopenswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc ]
+        FILE=${LIBRESWANSRCDIR}/linux/lib/liblibreswan/$testsrc
+    elif [ -f ${LIBRESWANSRCDIR}/linux/lib/libfreeswan/$testsrc ]
     then
-        FILE=${OPENSWANSRCDIR}/linux/lib/libfreeswan/$testsrc
-    elif [ -f ${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc ]
+        FILE=${LIBRESWANSRCDIR}/linux/lib/libfreeswan/$testsrc
+    elif [ -f ${LIBRESWANSRCDIR}/linux/net/ipsec/$testsrc ]
     then
-        FILE=${OPENSWANSRCDIR}/linux/net/ipsec/$testsrc
+        FILE=${LIBRESWANSRCDIR}/linux/net/ipsec/$testsrc
     fi
 
-    eval $(cd ${OPENSWANSRCDIR} && OPENSWANSRCDIR=$(pwd) ${MAKE} --no-print-directory env )
+    eval $(cd ${LIBRESWANSRCDIR} && LIBRESWANSRCDIR=$(pwd) ${MAKE} --no-print-directory env )
 
     EXTRAFLAGS=
     EXTRALIBS=
@@ -1207,8 +1207,8 @@ complibtest() {
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
-	    ${ECHO} "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB} 
-	    ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
+	    ${ECHO} "   "CC -g -o $testobj -D$symbol ${FILE} ${LIBRESWANLIB} 
+	    ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${LIBRESWANSRCDIR}/linux/include -I${LIBRESWANSRCDIR} -I${LIBRESWANSRCDIR}/include ${FILE} ${LIBRESWANLIB} ${EXTRALIBS}
 	    rm -rf lib-$testobj/OUTPUT
 	    mkdir -p lib-$testobj/OUTPUT
     fi
@@ -1402,9 +1402,9 @@ do_kernel_patch_test() {
     # now patch it. (set +x turns off any debugging there might have been)
     set -x
     set -v
-    # the environment variable OPENSWANSRCDIR should be correct
-    # but the make macro OPENSWANSRCDIR may be relative, and hence wrong
-    (cd ${OPENSWANSRCDIR} && make OPENSWANSRCDIR=`pwd` kernelpatch${KERNEL_VERSION} ) | tee OUTPUT${KLIPS_MODULE}/patchfile.patch | (cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && patch -p1 2>&1 ) >OUTPUT${KLIPS_MODULE}/patch-output.txt
+    # the environment variable LIBRESWANSRCDIR should be correct
+    # but the make macro LIBRESWANSRCDIR may be relative, and hence wrong
+    (cd ${LIBRESWANSRCDIR} && make LIBRESWANSRCDIR=`pwd` kernelpatch${KERNEL_VERSION} ) | tee OUTPUT${KLIPS_MODULE}/patchfile.patch | (cd OUTPUT${KLIPS_MODULE}/$kernel_var_name && patch -p1 2>&1 ) >OUTPUT${KLIPS_MODULE}/patch-output.txt
 
     # compare the patch.
     if [ -n "${REF_PATCH_OUTPUT}" ]
@@ -1551,7 +1551,7 @@ do_module_compile_test() {
 
     rm -f OUTPUT${KLIPS_MODULE}/module/ipsec.o
 
-    cmd="(cd $OPENSWANSRCDIR && make KERNELSRC=$KERNEL_SRC MOD${KERNVER}BUILDDIR=$moddir OPENSWANSRCDIR=$OPENSWANSRCDIR MODULE_DEFCONFIG=${MODULE_DEFCONFIG} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} SUBARCH=${SUBARCH} module${KERNVER} )"
+    cmd="(cd $LIBRESWANSRCDIR && make KERNELSRC=$KERNEL_SRC MOD${KERNVER}BUILDDIR=$moddir LIBRESWANSRCDIR=$LIBRESWANSRCDIR MODULE_DEFCONFIG=${MODULE_DEFCONFIG} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} ARCH=${ARCH} SUBARCH=${SUBARCH} module${KERNVER} )"
     echo "# run as" >OUTPUT${KLIPS_MODULE}/doit.sh
     echo "$cmd" >>OUTPUT${KLIPS_MODULE}/doit.sh
     . OUTPUT${KLIPS_MODULE}/doit.sh
@@ -1801,31 +1801,31 @@ do_build_test() {
     if [ -n "${INSTALL_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/install1.txt 2>&1 || exit 1
     fi
 
     if [ -n "${POSTINSTALL_SCRIPT-}" ]
     then
-	$POSTINSTALL_SCRIPT $OPENSWANSRCDIR $instdir || exit 1
+	$POSTINSTALL_SCRIPT $LIBRESWANSRCDIR $instdir || exit 1
     fi
 
     if [ -n "${INSTALL2_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $INSTALL2_FLAGS ) >OUTPUT${KLIPS_MODULE}/install2.txt 2>&1 || exit 1
     fi
 
     if [ -n "${UNINSTALL_FLAGS-}" ]
     then
 	$MAKE_INSTALL_TEST_DEBUG && echo make --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS
-	(cd $OPENSWANSRCDIR && eval make OPENSWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
+	(cd $LIBRESWANSRCDIR && eval make LIBRESWANSRCDIR=`pwd` --no-print-directory DESTDIR=$instdir $UNINSTALL_FLAGS ) >OUTPUT${KLIPS_MODULE}/uninstall.txt 2>&1 || exit 1
     fi
 
     if [ -n "${REF_MAKE_DOC_OUTPUT-}" ]
     then
       rm -f OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
 
-      (cd $OPENSWANSRCDIR/doc && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR clean --no-print-directory && eval make OPENSWANSRCDIR=$OPENSWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
+      (cd $LIBRESWANSRCDIR/doc && eval make LIBRESWANSRCDIR=$LIBRESWANSRCDIR clean --no-print-directory && eval make LIBRESWANSRCDIR=$LIBRESWANSRCDIR --no-print-directory ) | sort >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt
       if diff -u -w -b -B $REF_MAKE_DOC_OUTPUT.txt OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.txt >OUTPUT${KLIPS_MODULE}/$REF_MAKE_DOC_OUTPUT.diff
       then
 	 echo "make doc output matched"
@@ -1878,7 +1878,7 @@ buildtest() {
 
     echo '**** Make BUILD RUNNING' $testdir${KLIPS_MODULE} '****'
 
-    OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd` export OPENSWANSRCDIR
+    LIBRESWANSRCDIR=`cd $LIBRESWANSRCDIR && pwd` export LIBRESWANSRCDIR
 
     export UML_BRAND="$$"
     ( preptest $testdir buildtest && do_build_test )
@@ -1916,7 +1916,7 @@ buildtest() {
 
 do_unittest() {
 
-    export ROOTDIR=${OPENSWANSRCDIR}
+    export ROOTDIR=${LIBRESWANSRCDIR}
     eval `(cd $ROOTDIR; make --no-print-directory env )`
     failnum=1
 

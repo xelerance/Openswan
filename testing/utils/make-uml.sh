@@ -8,7 +8,7 @@ set -x
 set -e
 
 case $# in
-    1) OPENSWANSRCDIR=$1; shift;;
+    1) LIBRESWANSRCDIR=$1; shift;;
 esac
 
 CC=${CC-cc}
@@ -24,24 +24,24 @@ export USE_OBJDIR=true
 
 # include this dir, in particular so that we can get the local "touch"
 # program.
-export PATH=$OPENSWANSRCDIR/testing/utils:$PATH 
+export PATH=$LIBRESWANSRCDIR/testing/utils:$PATH 
 
 
 #
-# configuration for this file has moved to $OPENSWANSRCDIR/umlsetup.sh
+# configuration for this file has moved to $LIBRESWANSRCDIR/umlsetup.sh
 # By default, that file does not exist. A sample is at umlsetup-sample.sh
-# in this directory. Copy it to $OPENSWANSRCDIR and edit it.
+# in this directory. Copy it to $LIBRESWANSRCDIR and edit it.
 #
-OPENSWANSRCDIR=${OPENSWANSRCDIR-../..}
-if [ ! -f ${OPENSWANSRCDIR}/umlsetup.sh ]
+LIBRESWANSRCDIR=${LIBRESWANSRCDIR-../..}
+if [ ! -f ${LIBRESWANSRCDIR}/umlsetup.sh ]
 then
-    echo >&2 "make-uml.sh: Error: No umlsetup.sh configuration file in OPENSWANSRCDIR=\"${OPENSWANSRCDIR}\"."
+    echo >&2 "make-uml.sh: Error: No umlsetup.sh configuration file in LIBRESWANSRCDIR=\"${LIBRESWANSRCDIR}\"."
     echo >&2 "    Please read instructions in doc/umltesting.html and testing/utils/umlsetup-sample.sh."
     exit 1
 fi
 
-. ${OPENSWANSRCDIR}/umlsetup.sh
-. ${OPENSWANSRCDIR}/testing/utils/uml-functions.sh
+. ${LIBRESWANSRCDIR}/umlsetup.sh
+. ${LIBRESWANSRCDIR}/testing/utils/uml-functions.sh
 
 KERNVER=${KERNVER-}    
 
@@ -58,15 +58,15 @@ NATTPATCH=${NATTPATCH:-false}
 SAREFPATCH=${SAREFPATCH:-false}
 
 # make absolute so that we can reference it from POOLSPACE
-OPENSWANSRCDIR=`cd $OPENSWANSRCDIR && pwd`;export OPENSWANSRCDIR
+LIBRESWANSRCDIR=`cd $LIBRESWANSRCDIR && pwd`;export LIBRESWANSRCDIR
 
 # what this script does is create some Makefile
 #  (if they do not already exist)
 # that will copy everything where it needs to go.
 
-if [ -d $OPENSWANSRCDIR/testing/kernelconfigs ]
+if [ -d $LIBRESWANSRCDIR/testing/kernelconfigs ]
 then
-    TESTINGROOT=$OPENSWANSRCDIR/testing
+    TESTINGROOT=$LIBRESWANSRCDIR/testing
 fi
 TESTINGROOT=${TESTINGROOT-/c2/freeswan/sandbox/testing}
 
@@ -91,7 +91,7 @@ UMLVERSION=`basename $UMLPATCH .bz2 | sed -e 's/uml-patch-//'`
 EXTRAPATCH=${TESTINGROOT}/kernelconfigs/extras.$UMLVERSION.patch
 
 # dig the kernel revision out.
-KERNEL_MAJ_VERSION=`${OPENSWANSRCDIR}/packaging/utils/kernelversion-short $KERNPOOL/Makefile`
+KERNEL_MAJ_VERSION=`${LIBRESWANSRCDIR}/packaging/utils/kernelversion-short $KERNPOOL/Makefile`
 
 
 echo -n Looking for Extra patch at $EXTRAPATCH..
@@ -110,7 +110,7 @@ if test ${retval} -ne 0 ; then
 	exit ${retval}
 fi
 
-if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
+if [ ! -d ${LIBRESWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${LIBRESWANSRCDIR}/UMLPOOL; fi
 
 UMLMAKE=$POOLSPACE/Makefile
 NOW=`date`
@@ -196,16 +196,16 @@ MAKE_DEBUG="--debug=b";
 ${MAKE:-make} ${MAKE_DEBUG} -C ${POOLSPACE}   ${REGULARHOSTS}
 
 # now, copy the kernel, apply the UML patches.
-# then, make Openswan patches as well.
+# then, make Libreswan patches as well.
 #
 UMLSWAN=$POOLSPACE/swan${KERNVER}
 
 # we could copy the UMLPLAIN to make this tree. This would be faster, as we
-# already built most everything. We could also just use a Openswan-enabled
+# already built most everything. We could also just use a Libreswan-enabled
 # kernel on sunrise/sunset. We avoid this as we actually want them to always
 # work.
 
-# where to install Openswan tools
+# where to install Libreswan tools
 DESTDIR=$POOLSPACE/root
 
 # do not generate .depend by default
@@ -218,7 +218,7 @@ NEED_swan=false
 
 # go through each regular host and see what kernel to use, and
 # see if we have to build the local plain kernel.
-for host in $OPENSWANHOSTS
+for host in $LIBRESWANHOSTS
 do
     kernelvar=UML_swan${KERNVER}_KERNEL
     UMLKERNEL=${!kernelvar}
@@ -235,7 +235,7 @@ do
     fi
     echo Using kernel: $UMLKERNEL for $host
 
-    setup_host_make $host $UMLKERNEL openswan ${KERNVER} $NEED_plain $NETKEYKERNEL  >>$UMLMAKE
+    setup_host_make $host $UMLKERNEL libreswan ${KERNVER} $NEED_plain $NETKEYKERNEL  >>$UMLMAKE
 done
 
 if $NEED_swan && [ ! -x $UMLSWAN/linux ]
@@ -247,7 +247,7 @@ then
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile 
 
     # looks like applypatches does not patch in klips - make line changed from the old one in commit b195c03ff554 as it built kernel and modules too
-    cd $OPENSWANSRCDIR || exit 1
+    cd $LIBRESWANSRCDIR || exit 1
     (make KERNMAKEOPTS='ARCH=um' KERNELSRC=$UMLSWAN KERNCLEAN='' KERNDEP=$KERNDEP KERNEL=linux DESTDIR=$DESTDIR NONINTCONFIG=${NONINTCONFIG} verset kpatch rcf) || exit 1
     cd $UMLSWAN || exit 1
 
@@ -262,12 +262,12 @@ then
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
 fi
 
-cd $OPENSWANSRCDIR || exit 1
+cd $LIBRESWANSRCDIR || exit 1
 
 make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true USE_IPSECPOLICY=true programs
 
 # now, execute the Makefile that we have created!
-cd $POOLSPACE && make $OPENSWANHOSTS 
+cd $POOLSPACE && make $LIBRESWANHOSTS 
 
 echo "###  bottom exiting make-umls.sh running at pwd: `pwd`"
 

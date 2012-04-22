@@ -7,55 +7,55 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
-PKG_NAME:=openswan
+PKG_NAME:=libreswan
 PKG_VERSION:IPSECBASEVERSION
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=http://www.openswan.org/download
+PKG_SOURCE_URL:=http://www.libreswan.org/download
 PKG_MD5SUM:=calculate_me
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/openswan/Default
-  TITLE:=Openswan
-  URL:=http://www.openswan.org/
+define Package/libreswan/Default
+  TITLE:=Libreswan
+  URL:=http://www.libreswan.org/
   DEPENDS:=@LINUX_2_6
 endef
 
-define Package/openswan/Default/description
- Openswan is an IPsec implementation for Linux.
+define Package/libreswan/Default/description
+ Libreswan is an IPsec implementation for Linux.
 endef
 
-define Package/openswan
-$(call Package/openswan/Default)
+define Package/libreswan
+$(call Package/libreswan/Default)
   SUBMENU:=VPN
   SECTION:=net
   CATEGORY:=Network
-  DEPENDS:=+kmod-openswan +libgmp +ip
+  DEPENDS:=+kmod-libreswan +libgmp +ip
   TITLE+= (daemon)
 endef
 
-define Package/openswan/description
-$(call Package/openswan/Default/description)
- This package contains the Openswan user-land daemon.
+define Package/libreswan/description
+$(call Package/libreswan/Default/description)
+ This package contains the Libreswan user-land daemon.
 endef
 
-define KernelPackage/openswan
-$(call Package/openswan/Default)
+define KernelPackage/libreswan
+$(call Package/libreswan/Default)
   SUBMENU:=Network Support
   TITLE+= (kernel module)
   FILES:=$(PKG_BUILD_DIR)/modobj*/ipsec.$(LINUX_KMOD_SUFFIX)
 endef
 
-define KernelPackage/openswan/description
-$(call Package/openswan/Default/description)
- This package contains the Openswan kernel module.
+define KernelPackage/libreswan/description
+$(call Package/libreswan/Default/description)
+ This package contains the Libreswan kernel module.
 endef
 
 TARGET_CPPFLAGS += -I$(LINUX_DIR)/include
 
-OPENSWAN_MAKE := $(MAKE) -C $(PKG_BUILD_DIR) \
+LIBRESWAN_MAKE := $(MAKE) -C $(PKG_BUILD_DIR) \
 	$(TARGET_CONFIGURE_OPTS) \
 	LINUX_RELEASE="$(LINUX_RELEASE)" \
 	KERNELSRC="$(LINUX_DIR)" \
@@ -70,11 +70,11 @@ OPENSWAN_MAKE := $(MAKE) -C $(PKG_BUILD_DIR) \
 	DESTDIR="$(PKG_INSTALL_DIR)"
 
 define Build/Compile
-	$(OPENSWAN_MAKE) \
+	$(LIBRESWAN_MAKE) \
 		programs module install
 endef
 
-define Package/openswan/install
+define Package/libreswan/install
 	$(CP) $(PKG_INSTALL_DIR)/* $(1)
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(CP) ./files/ipsec.init $(1)/etc/init.d/ipsec
@@ -85,5 +85,5 @@ define Package/openswan/install
 	find $(1) -name \*.old | xargs rm -rf
 endef
 
-$(eval $(call BuildPackage,openswan))
-$(eval $(call KernelPackage,openswan))
+$(eval $(call BuildPackage,libreswan))
+$(eval $(call KernelPackage,libreswan))

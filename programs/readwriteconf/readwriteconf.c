@@ -16,7 +16,7 @@
  * for more details.
  */
 
-char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
+char readwriteconf_c_version[] = "@(#) Xelerance Libreswan readwriteconf";
 
 #include <asm/types.h>
 #include <sys/types.h>
@@ -42,7 +42,7 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 #include <stdio.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"

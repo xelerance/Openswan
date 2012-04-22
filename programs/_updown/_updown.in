@@ -16,11 +16,11 @@
 # for more details.
 #
 
-# CAUTION:  Installing a new version of Openswan will install a new
+# CAUTION:  Installing a new version of Libreswan will install a new
 # copy of this script, wiping out any custom changes you make.  If
 # you need changes, make a copy of this under another name, and customize
 # that, and use the (left/right)updown parameters in ipsec.conf to make
-# Openswan use yours instead of this default one.
+# Libreswan use yours instead of this default one.
 
 test $IPSEC_INIT_SCRIPT_DEBUG && set -v -x
 

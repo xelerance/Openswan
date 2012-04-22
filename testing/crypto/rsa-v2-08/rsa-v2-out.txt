@@ -20,7 +20,7 @@ Pre-amble: #!-pluto-whack-file- recorded on west on 2007-10-07 01:40:12
 ./rsa-v2 forgetting secrets
 ./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Libreswan, CN=east.uml.freeswan.org, E=east@libreswan.org
 | id type added to secret(0xADDRESS) 1: %any
 ./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
 |   file content is not binary ASN.1
@@ -49,7 +49,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./rsa-v2 forgetting secrets
 ./rsa-v2 loading secrets from "../../baseconfigs/east/etc/ipsec.secrets"
 ./rsa-v2 loaded private key for keyid: PPK_RSA:AQN3cn11F
-| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org
+| id type added to secret(0xADDRESS) 1: C=CA, ST=Ontario, O=Libreswan, CN=east.uml.freeswan.org, E=east@libreswan.org
 | id type added to secret(0xADDRESS) 1: %any
 ./rsa-v2   loaded private key file '../../baseconfigs/east/etc/ipsec.d/private/east.pem' (963 bytes)
 |   file content is not binary ASN.1
@@ -74,7 +74,7 @@ RC=0 "westnet--eastnet-ikev2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | actually looking for secret for @east->@west of kind PPK_RSA
 | line 25: key type PPK_RSA(@east) to type PPK_RSA 
 | 1: compared key %any to @east / @west -> 0
-| 2: compared key C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org to @east / @west -> 0
+| 2: compared key C=CA, ST=Ontario, O=Libreswan, CN=east.uml.freeswan.org, E=east@libreswan.org to @east / @west -> 0
 | line 25: match=0 
 | line 8: key type PPK_RSA(@east) to type PPK_RSA 
 | 1: compared key (none) to @east / @west -> 6

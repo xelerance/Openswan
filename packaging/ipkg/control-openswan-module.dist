@@ -1,8 +1,0 @@
-Package: openswan-module
-Priority: optional
-Section: Communications
-Version: VERSION
-Architecture: ARCH
-Maintainer: Openswan <users@lists.openswan.org>
-Depends: openswan
-Description: Openswan ipsec.[k]o binary IPsec Kernel module

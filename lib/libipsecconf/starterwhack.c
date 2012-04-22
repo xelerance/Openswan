@@ -1,4 +1,4 @@
-/* Openswan whack functions to communicate with pluto (whack.c)
+/* Libreswan whack functions to communicate with pluto (whack.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
  *
@@ -31,8 +31,8 @@
 
 #include "socketwrapper.h"
 
-#ifndef _OPENSWAN_H
-#include <openswan.h>  /** FIXME: ugly include lines **/
+#ifndef _LIBRESWAN_H
+#include <libreswan.h>  /** FIXME: ugly include lines **/
 #include "constants.h"
 #endif
 

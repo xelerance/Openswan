@@ -2,7 +2,7 @@
 #
 # (C) 2004 Ken Bantoft <ken@xelerance.com>
 #
-# This script converts most Cisco VPN client .pcf files to Openswan's
+# This script converts most Cisco VPN client .pcf files to Libreswan's
 # ipsec.conf and ipsec.secrets format
 #
 

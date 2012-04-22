@@ -8,7 +8,7 @@ east:~#
  named
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#

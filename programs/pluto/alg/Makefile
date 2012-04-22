@@ -19,7 +19,7 @@ Make.common: ../Makefile
 -include Make.common
 include Config.ike_alg
 
-ALLFLAGS=$(CPPFLAGS) $(CFLAGS) -I..  -I${OPENSWANDIR}/linux/include
+ALLFLAGS=$(CPPFLAGS) $(CFLAGS) -I..  -I${LIBRESWANDIR}/linux/include
 LIBALG := libalg.o
 
 all : $(LIBALG)

@@ -55,8 +55,8 @@
 #include "freeswan/ipsec_ah.h"
 #include "freeswan/ipsec_esp.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 /*
  *

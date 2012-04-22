@@ -21,5 +21,5 @@ index 44d99b1..21b1bdd 100755
 -# Default-Start:
 +# Default-Start:     2 3 4 5
  # Default-Stop:      0 1 6
- # Short-Description: Start Openswan IPsec at boot time
+ # Short-Description: Start Libreswan IPsec at boot time
  # Description:       Enable automatic key management for IPsec (KLIPS and NETKEY)

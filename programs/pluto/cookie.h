@@ -12,7 +12,7 @@
  * for more details.
  */
 
-#include <openswan.h>
+#include <libreswan.h>
 
 extern const u_char zero_cookie[COOKIE_SIZE];	/* guaranteed 0 */
 

@@ -14,7 +14,7 @@
 
 %module state
 %{
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -87,7 +87,7 @@ Tcl_Obj *tpm_IntPToInstanceObj(int *ip)
 %include "cstring.i"
 %include "mycdata.i"
 %include "cpointer.i"
-%include "openswantypes.i"
+%include "libreswantypes.i"
 %include "ietf_constants.h"
 %include "pluto_constants.h"
 %typedef u_int32_t msgid_t;	
@@ -100,7 +100,7 @@ Tcl_Obj *tpm_IntPToInstanceObj(int *ip)
 size_t addrtot(const ip_address *src, int format, char *addrbuf, size_t buflen);
 
 %apply (char *STRING, int LENGTH) { (char *data, size_t datalen) };
-void openswan_DBG_dump(char *label, char *data, size_t datalen);
+void libreswan_DBG_dump(char *label, char *data, size_t datalen);
 
 
 struct chunk {

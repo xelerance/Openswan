@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 include ${srcdir}Makefile.unit-settings
 
 srcdir?=$(shell pwd)/
@@ -23,10 +23,10 @@ def:	check
 
 # programs
 
-include/openswan.h:
-	@mkdir -p include/openswan
-	@(cd ${OPENSWANSRCDIR}/linux && find include -type d -print ) | while read dir; do mkdir -p $$dir; echo making $$dir; done
-	@(cd ${OPENSWANSRCDIR}/linux && find include -type f -name '*.h' -print ) | while read file; do ln -f -s ${KLIPS_TOP}/$$file $$file; echo making $$file; done
+include/libreswan.h:
+	@mkdir -p include/libreswan
+	@(cd ${LIBRESWANSRCDIR}/linux && find include -type d -print ) | while read dir; do mkdir -p $$dir; echo making $$dir; done
+	@(cd ${LIBRESWANSRCDIR}/linux && find include -type f -name '*.h' -print ) | while read file; do ln -f -s ${KLIPS_TOP}/$$file $$file; echo making $$file; done
 
 include/linux/madelinks: include/linux/files.txt
 	@(cd include/linux && make links )
@@ -37,12 +37,12 @@ include/net/madelinks: include/net/files.txt
 include/asm/madelinks: include/asm/files.txt
 	@(cd include/asm && make links )
 
-check:	include/openswan.h include/linux/madelinks include/net/madelinks include/asm/madelinks
+check:	include/libreswan.h include/linux/madelinks include/net/madelinks include/asm/madelinks
 
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ LIBRESWANSRCDIR=$(LIBRESWANSRCDIR) $@ ) || exit 1;\
 	done; 
 
 # 

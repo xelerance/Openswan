@@ -25,7 +25,7 @@
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><filename>/proc/net/ipsec_klipsdebug</filename>
 lists flags that control various parts of the debugging output of KLIPS and
-MAST, two of the IPsec stacks supported by Openswan.
+MAST, two of the IPsec stacks supported by Libreswan.
 At this point it is a read-only file.</para>
 
 <para>A table entry consists of:</para>

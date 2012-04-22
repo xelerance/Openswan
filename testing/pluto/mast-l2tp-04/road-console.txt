@@ -52,7 +52,7 @@ TCP established hash table entries: 2048 (order: 1, 8192 bytes)
 TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
 TCP: Hash tables configured (established 2048 bind 2048)
 TCP reno registered
-klips_info:ipsec_init: KLIPS startup, Openswan KLIPS IPsec stack version: 2.git
+klips_info:ipsec_init: KLIPS startup, Libreswan KLIPS IPsec stack version: 2.git
 NET: Registered protocol family 15
 klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
@@ -94,9 +94,9 @@ devpts on /dev/pts type devpts (rw,gid=5,mode=620)
 /dev/shm on /tmp type tmpfs (rw)
 /dev/shm on /var/run type tmpfs (rw)
 none on /usr/share type hostfs (ro)
-none on /testing type hostfs (ro,/mara6/openswan/klipsng.git/testing)
-none on /usr/src type hostfs (ro,/mara6/openswan/klipsng.git)
-none on /usr/obj type hostfs (ro,/mara6/openswan/klipsng.git/OBJ.linux.i386)
+none on /testing type hostfs (ro,/mara6/libreswan/klipsng.git/testing)
+none on /usr/src type hostfs (ro,/mara6/libreswan/klipsng.git)
+none on /usr/obj type hostfs (ro,/mara6/libreswan/klipsng.git/OBJ.linux.i386)
 none on /usr/local type hostfs (rw,/mara6/sandboxes/UMLPOOL/klipsng/road/root/usr/local)
 none on /var/tmp type hostfs (rw,/mara6/sandboxes/UMLPOOL/klipsng/road/root/var/tmp)
 /testing/pluto/l2tp-01 on /etc/ppp type none (rw,bind)
@@ -112,9 +112,9 @@ mount: devpts already mounted on /dev/pts
 /dev/shm on /tmp type tmpfs (rw)
 /dev/shm on /var/run type tmpfs (rw)
 none on /usr/share type hostfs (ro)
-none on /testing type hostfs (ro,/mara6/openswan/klipsng.git/testing)
-none on /usr/src type hostfs (ro,/mara6/openswan/klipsng.git)
-none on /usr/obj type hostfs (ro,/mara6/openswan/klipsng.git/OBJ.linux.i386)
+none on /testing type hostfs (ro,/mara6/libreswan/klipsng.git/testing)
+none on /usr/src type hostfs (ro,/mara6/libreswan/klipsng.git)
+none on /usr/obj type hostfs (ro,/mara6/libreswan/klipsng.git/OBJ.linux.i386)
 none on /usr/local type hostfs (rw,/mara6/sandboxes/UMLPOOL/klipsng/road/root/usr/local)
 none on /var/tmp type hostfs (rw,/mara6/sandboxes/UMLPOOL/klipsng/road/root/var/tmp)
 Enabling packet forwarding: done.
@@ -138,16 +138,16 @@ road:~# if [ -f /var/run/l2tpd.pid ]; then kill `cat /var/run/l2tpd.pid`; fi
 road:~# iptables -F INPUT
 road:~# iptables -F OUTPUT
 road:~# ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 road:~# iptables -A INPUT -i eth1 -s 192.1.2.23 -p udp --sport 1701 -j REJECT
 road:~# iptables -A OUTPUT -o eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
 road:~# ipsec setup restart
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
-ipsec_setup: Starting Openswan IPsec U2.klipsng-g416ec5f3-dirty/K2.git...
+ipsec_setup: Starting Libreswan IPsec U2.klipsng-g416ec5f3-dirty/K2.git...
 road:~# ipsec auto --add road--east-l2tp
 road:~# /testing/pluto/bin/wait-until-pluto-started
 road:~# ipsec whack --debug-control --debug-controlmore --debug-natt
@@ -162,7 +162,7 @@ road:~# : === NETJIG start of ROAD ../l2tp-03/roadrun.sh
 road:~# ipsec auto --replace road--east-l2tp
 road:~# ipsec auto --up road--east-l2tp
 104 "road--east-l2tp" #1: STATE_MAIN_I1: initiate
-003 "road--east-l2tp" #1: received Vendor ID payload [Openswan (this version) 2.klipsng-g416ec5f3-dirty  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+003 "road--east-l2tp" #1: received Vendor ID payload [Libreswan (this version) 2.klipsng-g416ec5f3-dirty  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 003 "road--east-l2tp" #1: received Vendor ID payload [Dead Peer Detection]
 003 "road--east-l2tp" #1: received Vendor ID payload [RFC 3947] method set to=109 
 106 "road--east-l2tp" #1: STATE_MAIN_I2: sent MI2, expecting MR2
@@ -246,7 +246,7 @@ road:~# ipsec auto --status
 000  
 road:~# cat /tmp/pluto.log
 Plutorun started on Tue Feb 28 20:57:11 GMT 2006
-Starting Pluto (Openswan Version 2.klipsng-g416ec5f3-dirty X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEfKI^HvvF~Y)
+Starting Pluto (Libreswan Version 2.klipsng-g416ec5f3-dirty X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEfKI^HvvF~Y)
 WARNING: 1DES is enabled
 Setting NAT-Traversal port-4500 floating to on
    port floating activation criteria nat_t=1/port_float=1
@@ -368,7 +368,7 @@ added connection description "road--east-l2tp"
 | peer and cookies match on #1, provided msgid 00000000 vs 00000000
 | state object #1 found, in STATE_MAIN_I1
 | processing connection road--east-l2tp
-"road--east-l2tp" #1: received Vendor ID payload [Openswan (this version) 2.klipsng-g416ec5f3-dirty  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"road--east-l2tp" #1: received Vendor ID payload [Libreswan (this version) 2.klipsng-g416ec5f3-dirty  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "road--east-l2tp" #1: received Vendor ID payload [Dead Peer Detection]
 "road--east-l2tp" #1: received Vendor ID payload [RFC 3947] method set to=109 
 | sender checking NAT-t: 1 and 109
@@ -590,7 +590,7 @@ road:~# grep 'Result using RFC 3947' /tmp/pluto.log
 "road--east-l2tp" #1: NAT-Traversal: Result using RFC 3947 (NAT-Traversal): both are NATed
 road:~# : ==== end ====
 road:~# ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 road:~# kill `cat /var/run/klogd.pid`; cat /tmp/klog.log
 klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <4>Checking that ptrace can change system call numbers...OK
@@ -645,7 +645,7 @@ klogd 1.3-3#33.1, log source = /proc/kmsg started.
 <4>TCP bind hash table entries: 2048 (order: 1, 8192 bytes)
 <6>TCP: Hash tables configured (established 2048 bind 2048)
 <6>TCP reno registered
-<6>klips_info:ipsec_init: KLIPS startup, Openswan KLIPS IPsec stack version: 2.git
+<6>klips_info:ipsec_init: KLIPS startup, Libreswan KLIPS IPsec stack version: 2.git
 <6>NET: Registered protocol family 15
 <6>klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 <6>klips_info:ipsec_alg_init: calling ipsec_alg_static_init()

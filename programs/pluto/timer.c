@@ -26,7 +26,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -183,7 +183,7 @@ retransmit_v1_msg(struct state *st)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
 
     if(DBGP(IMPAIR_RETRANSMITS)) {
-	openswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
+	libreswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
         delay = 0;
 	try   = 0;
     }
@@ -255,7 +255,7 @@ retransmit_v1_msg(struct state *st)
 		else
 		{
 		    /* no whack: just log to syslog */
-		    openswan_log("%s", story);
+		    libreswan_log("%s", story);
 		}
 	    } else {
 		loglog(RC_COMMENT, "%s", story);
@@ -307,7 +307,7 @@ retransmit_v2_msg(struct state *st)
 	delay = event_retransmit_delay_0 << maximum_retransmissions;
 
     if(DBGP(IMPAIR_RETRANSMITS)) {
-	openswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
+	libreswan_log("supressing retransmit because IMPAIR_RETRANSMITS is set");
         delay = 0;
 	try   = 0;
     }
@@ -373,7 +373,7 @@ retransmit_v2_msg(struct state *st)
 	    else
 	    {
 		/* no whack: just log to syslog */
-		openswan_log("%s", story);
+		libreswan_log("%s", story);
 	    }
 	} else {
 	    loglog(RC_COMMENT, "%s", story);
@@ -547,7 +547,7 @@ handle_next_timer_event(void)
 		{
 		    /* not very interesting: no need to replace */
 		    DBG(DBG_LIFECYCLE
-			, openswan_log("not replacing stale %s SA: #%lu will do"
+			, libreswan_log("not replacing stale %s SA: #%lu will do"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
 			    , newest));
 		}
@@ -572,14 +572,14 @@ handle_next_timer_event(void)
 		     * normal log output.
 		     */
 		    DBG(DBG_LIFECYCLE
-			, openswan_log("not replacing stale %s SA: inactive for %lus"
+			, libreswan_log("not replacing stale %s SA: inactive for %lus"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
 			    , (unsigned long)(tm - st->st_outbound_time)));
 		}
 		else
 		{
 		    DBG(DBG_LIFECYCLE
-			, openswan_log("replacing stale %s SA"
+			, libreswan_log("replacing stale %s SA"
 			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"));
 		    ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
 		}
@@ -612,12 +612,12 @@ handle_next_timer_event(void)
 		{
 		    /* not very interesting: already superseded */
 		    DBG(DBG_LIFECYCLE
-			, openswan_log("%s SA expired (superseded by #%lu)"
+			, libreswan_log("%s SA expired (superseded by #%lu)"
 			    , satype, latest));
 		}
 		else
 		{
-		    openswan_log("%s SA expired (%s)", satype
+		    libreswan_log("%s SA expired (%s)", satype
 			, (c->policy & POLICY_DONT_REKEY)
 			    ? "--dontrekey"
 			    : "LATEST!"

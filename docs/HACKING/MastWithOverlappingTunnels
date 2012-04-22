@@ -4,7 +4,7 @@ This document describes how to initiate connections back into
 overlapping IP address ranges of multiple clients when using mast mode
 with `IP_IPSEC_BINDREF`.
 
-Openswan comes with two SAref patches.  One adds support for setting
+Libreswan comes with two SAref patches.  One adds support for setting
 SAref on a packet as it's sent, and retrieving it from a packet when
 it's received.  This works fine for UDP when using `sendmsg()` and
 `recvmsg()`.
@@ -57,9 +57,9 @@ Incoming packets are relatively easy to match up with SAs, because the
 ESP header carries this information.  Outgoing packets requires a table
 that maps the original packet header fields to the SA to use for IPsec.
 In non-mast mode, klips uses an eroute table, while in mast-mode
-openswan uses iptables to manage this list.
+libreswan uses iptables to manage this list.
 
-When a packet is sent out, it will pass through iptables.  Openswan
+When a packet is sent out, it will pass through iptables.  Libreswan
 maintains an IPSEC chain in the mangle table.  This allows it to tag
 packets using xmark (previously nfmark).  When klips, in mast mode, sees
 a packet that's marked with an nfmark, it will use that information to
@@ -70,7 +70,7 @@ lookup the SA that will be used to tunnel/transport this packet.
 
 Servers, such as xl2tpd, which accept UDP connections from many peers
 use a single connectionless datagram socket, and address packets using
-`sendmsg()`.  As described in the openswan `MastRework` document, mast
+`sendmsg()`.  As described in the libreswan `MastRework` document, mast
 mode allows for each packet sent via `sendmsg()` to be tagged with a
 SAref by using the `IP_IPSEC_REFINFO` option of `msghdr`.
 
@@ -144,7 +144,7 @@ would call `connect()` to connect to a listening port in the private
 network through the tunnel selected by the SAref.  Finally, `read()` and
 `write()` would be used to receive and send data.
 
-Openswan comes with two examples under `contrib` that use this feature.
+Libreswan comes with two examples under `contrib` that use this feature.
 
  - `sarefnc` - netcat modified to use a `-S <saref>` option
  - `ldsaref` - an `LD_PRELOAD` library that can be used to wrap unmodified applications
@@ -153,7 +153,7 @@ Openswan comes with two examples under `contrib` that use this feature.
 # Optimizations
 
 As described in the `MastRework2` document, to reduce the overhead of
-traversing the iptables `IPSEC` chain openswan uses conntrack to assign
+traversing the iptables `IPSEC` chain libreswan uses conntrack to assign
 SAref numbers to packets that belong to connections.  This is an
 improvement most notable on long connections.  For short connections
 it's still expensive for iptables to traverse (potentially) thousands of

@@ -1,4 +1,4 @@
-# /etc/ipsec.conf - Openswan IPsec configuration file
+# /etc/ipsec.conf - Libreswan IPsec configuration file
 
 # This file:  @FINALEXAMPLECONFDIR@/ipsec.conf-sample
 #

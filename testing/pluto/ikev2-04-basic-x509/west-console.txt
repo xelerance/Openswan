@@ -4,7 +4,7 @@ west:~#
  source /testing/pluto/bin/westnlocal.sh
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~#

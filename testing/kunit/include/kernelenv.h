@@ -3,7 +3,7 @@
  This file is part of nfsim.
 
  It has been modified by Michael Richardson <mcr@xelerance.com>
- to be used by the Openswan KLIPS unit testing.
+ to be used by the Libreswan KLIPS unit testing.
  Based upon SVN revision 3615 as released in 20050423 tarball.
  $Id: kernelenv.h,v 1.4 2005/04/28 21:18:36 mcr Exp $
 

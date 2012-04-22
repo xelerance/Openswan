@@ -53,7 +53,7 @@
 #define CALLOC(size, cast) (cast)calloc(1, (size))
 
 unsigned int bsdpfkey_lib_debug = 0;
-openswan_keying_debug_func_t pfkey_debug_func;
+libreswan_keying_debug_func_t pfkey_debug_func;
 #define PFKEY_DEBUG if(bsdpfkey_lib_debug) (*pfkey_debug_func)
 
 static int findsupportedmap(int);

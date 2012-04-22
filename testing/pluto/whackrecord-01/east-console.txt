@@ -4,7 +4,7 @@ east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec whack --whackrecord /var/tmp/east.record
 east:~#
@@ -18,7 +18,7 @@ east:~#
 east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 east:~#
 east:~#
  halt
@@ -28,7 +28,7 @@ east:~#
  : === echo === 
 east:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec appears to be already stopped!
 ipsec_setup: doing cleanup anyway...
 east:~#

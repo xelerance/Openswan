@@ -13,9 +13,9 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/programs/spi/
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+srcdir?=${LIBRESWANSRCDIR}/programs/spi/
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM=spi
 EXTRA5PROC=${PROGRAM}.5

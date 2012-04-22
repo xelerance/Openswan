@@ -10,7 +10,7 @@ japan:~#
  iptables -F OUTPUT
 japan:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
 japan:~#
@@ -19,10 +19,10 @@ japan:~#
  iptables -A OUTPUT -o eth1 -d 192.1.2.23 -p udp --dport 1701 -j REJECT
 japan:~#
  ipsec setup restart
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 ipsec_setup: stop ordered, but IPsec does not appear to be running!
 ipsec_setup: doing cleanup anyway...
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 japan:~#
  ipsec auto --add japan--east-l2tp
 japan:~#
@@ -42,7 +42,7 @@ done
 japan:~#
  ipsec auto --up japan--east-l2tp
 104 "japan--east-l2tp" #1: STATE_MAIN_I1: initiate
-003 "japan--east-l2tp" #1: received Vendor ID payload [Openswan 
+003 "japan--east-l2tp" #1: received Vendor ID payload [Libreswan 
 003 "japan--east-l2tp" #1: received Vendor ID payload [Dead Peer Detection]
 003 "japan--east-l2tp" #1: received Vendor ID payload [RFC 3947] method set to=109 
 106 "japan--east-l2tp" #1: STATE_MAIN_I2: sent MI2, expecting MR2

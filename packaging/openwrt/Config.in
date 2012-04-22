@@ -1,5 +1,5 @@
-config BR2_PACKAGE_OPENSWAN
-	tristate "Openswan"
+config BR2_PACKAGE_LIBRESWAN
+	tristate "Libreswan"
 	default m
 	help
-	  Openswan is an implementation of IPsec for Linux.
+	  Libreswan is an implementation of IPsec for Linux.

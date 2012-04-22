@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 $(info info: at .../programs/_include/Makefile OBJDIR="$(OBJDIR)" USE_OBJDIR="$(USE_OBJDIR)" MAKECMDGOALS="$(MAKECMDGOALS)" pwd:"$(shell pwd)")
 

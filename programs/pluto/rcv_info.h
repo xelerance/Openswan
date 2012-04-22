@@ -12,5 +12,5 @@
  * for more details.
  */
 
-#include "openswan/ipsec_policy.h"
+#include "libreswan/ipsec_policy.h"
 extern void info_handle(int infoctlfd);

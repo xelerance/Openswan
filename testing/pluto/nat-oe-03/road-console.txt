@@ -59,7 +59,7 @@ road:~#
  source /testing/pluto/bin/roadlocal.sh
 road:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 road:~#
  /testing/pluto/bin/wait-until-pluto-started
 road:~#
@@ -110,7 +110,7 @@ Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 road:~#
 road:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 road:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log

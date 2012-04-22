@@ -1028,7 +1028,7 @@
       NAT router from closing its port when there is not enough traffic on the
       IPsec connection. The <option>--keep_alive</option> sets the delay (in
       seconds) of these keep-alive packets. The newer NAT-T standards support
-      <emphasis remap="I">port floating</emphasis>, and Openswan enables this
+      <emphasis remap="I">port floating</emphasis>, and Libreswan enables this
       per default. It can be disabled using the
       <option>--disable_port_floating</option> option.</para>
 
@@ -3715,7 +3715,7 @@
   <refsect1 id="see_also">
     <title>SEE ALSO</title>
 
-    <para>The rest of the Openswan distribution, in particular <citerefentry>
+    <para>The rest of the Libreswan distribution, in particular <citerefentry>
         <refentrytitle>ipsec</refentrytitle>
 
         <manvolnum>8</manvolnum>
@@ -3738,12 +3738,12 @@
         <refentrytitle>ipsec_atoaddr</refentrytitle>
 
         <manvolnum>3</manvolnum>
-      </citerefentry>, part of the Openswan distribution, describes the forms
+      </citerefentry>, part of the Libreswan distribution, describes the forms
     that IP addresses may take. <citerefentry>
         <refentrytitle>ipsec_atosubnet</refentrytitle>
 
         <manvolnum>3</manvolnum>
-      </citerefentry>, part of the Openswan distribution, describes the forms
+      </citerefentry>, part of the Libreswan distribution, describes the forms
     that subnet specifications.</para>
 
     <para>For more information on IPsec, the mailing list, and the relevant
@@ -3766,7 +3766,7 @@
     <para>RFC2407 The Internet IP Security Domain of Interpretation for
     ISAKMP</para>
 
-    <para>The Openswan web site &lt;htp://www.openswan.org&gt; and the mailing
+    <para>The Libreswan web site &lt;htp://www.libreswan.org&gt; and the mailing
     lists described there.</para>
   </refsect1>
 
@@ -3786,7 +3786,7 @@
     Greece. Thanks go to John Ioannidis for his help.</para>
 
     <para>It is currently maintained and extended by Xelerance Corporation, in
-    Canada under the Openswan name. See CHANGES for details.</para>
+    Canada under the Libreswan name. See CHANGES for details.</para>
 
     <para>FreeS/WAN was developed/maintained from 2000-2004 by D. Hugh
     Redelmeier (hugh@mimosa.com), in Canada. The regulations of Greece and
@@ -3848,7 +3848,7 @@
     Unfortunately, the protocol has no mechanism for authenticating the Phase
     2 identities.</para>
 
-    <para>Bugs should be reported to the &lt;users@lists.openswan.org&gt;
+    <para>Bugs should be reported to the &lt;users@lists.libreswan.org&gt;
     mailing list.</para>
   </refsect1>
 </refentry>

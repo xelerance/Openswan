@@ -1,4 +1,4 @@
-/* Openswan Virtual IP Management
+/* Libreswan Virtual IP Management
  * Copyright (C) 2002 Mathieu Lafon - Arkoon Network Security
  *
  * This program is free software; you can redistribute it and/or modify it

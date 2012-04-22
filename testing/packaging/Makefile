@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../.. && pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../.. && pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 
@@ -43,13 +43,13 @@ realclean: clean
 #
 # $Log: Makefile,v $
 # Revision 1.7  2005/10/02 21:43:50  mcr
-# 	make sure that OPENSWANSRCDIR is set right.
+# 	make sure that LIBRESWANSRCDIR is set right.
 #
 # Revision 1.6  2004/12/18 18:13:45  mcr
 # 	adjusted Makefiles so that ${OBJDIR} builds work.
 #
 # Revision 1.5  2004/04/03 19:44:51  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+# FREESWANSRCDIR -> LIBRESWANSRCDIR (patch by folken)
 #
 # Revision 1.4  2002/06/02 21:51:56  mcr
 # 	changed TOPDIR->FREESWANSRCDIR in all Makefiles.

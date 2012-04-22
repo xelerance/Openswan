@@ -15,7 +15,7 @@
 
 #define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
 static const char ipsecpolicy_number[] = V;
-static const char ipsecpolicy_string[] = "Linux Openswan policylib " V;
+static const char ipsecpolicy_string[] = "Linux Libreswan policylib " V;
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string

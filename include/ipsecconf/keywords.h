@@ -1,4 +1,4 @@
-/* Openswan config file parser (parser.h)
+/* Libreswan config file parser (parser.h)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2003-2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2008 Paul Wouters <paul@xelerance.com>
@@ -18,8 +18,8 @@
 #ifndef _KEYWORDS_H_
 #define _KEYWORDS_H_
 
-#ifndef _OPENSWAN_H
-#include "openswan.h"
+#ifndef _LIBRESWAN_H
+#include "libreswan.h"
 #include "constants.h"
 #endif
 

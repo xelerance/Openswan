@@ -25,7 +25,7 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -46,7 +46,7 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "server.h"
 
-#include "openswan/ipsec_policy.h"
+#include "libreswan/ipsec_policy.h"
 #include "rcv_info.h"
 
 /* global */

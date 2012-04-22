@@ -4,8 +4,8 @@
 # $Id: host-test.tcl,v 1.39 2005/10/20 21:11:45 mcr Exp $
 #
 
-source $env(OPENSWANSRCDIR)/testing/utils/GetOpts.tcl
-source $env(OPENSWANSRCDIR)/testing/utils/netjig.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/GetOpts.tcl
+source $env(LIBRESWANSRCDIR)/testing/utils/netjig.tcl
 
 proc usage {} {
     global argv0
@@ -232,7 +232,7 @@ system "sleep 4"
 # 	create "admin" network for "eth2" use.
 #
 # Revision 1.36  2004/04/03 19:44:52  ken
-# FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
+# FREESWANSRCDIR -> LIBRESWANSRCDIR (patch by folken)
 #
 # Revision 1.35  2003/10/31 02:43:34  mcr
 # 	pull up of port-selector tests

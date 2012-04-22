@@ -8,7 +8,7 @@ west:~#
  route add -net default gw 192.1.2.23
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec auto --add us-to-anyone
 west:~#

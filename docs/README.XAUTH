@@ -2,13 +2,13 @@
 XAUTH Server Support
 
 Based on FlexS/WAN code from Colubris Networks (www.colubris.com)
-Ported to Openswan by Xelerance (www.xelerance.com)
+Ported to Libreswan by Xelerance (www.xelerance.com)
 
 Sponsored by Astaro AG (www.astaro.com)
 Ported to OpenSwan by Sean Mathews Nu Tech Software (www.nutech.com)
    Also added MD5/DES password file support and reworked the PAM code.
 
-XAUTH server code rewritten for Openswan 2.1.0 to permit both client
+XAUTH server code rewritten for Libreswan 2.1.0 to permit both client
 and server side code. Many changes, most visible to user.
 
 Installation:

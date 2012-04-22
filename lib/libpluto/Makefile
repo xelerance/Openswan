@@ -1,7 +1,7 @@
-# Openswan library for pluto
+# Libreswan library for pluto
 #
 # mostly contains minor support items that are placed here to make unit testing
-# of pluto easier. Generally, this code can depend upon -lopenswan, and -loswlog,
+# of pluto easier. Generally, this code can depend upon -llibreswan, and -loswlog,
 # it should not depend upon anything else (ideally, including other code in this
 # this library)
 #
@@ -18,12 +18,12 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
-srcdir?=${OPENSWANSRCDIR}/lib/libpluto/
+srcdir?=${LIBRESWANSRCDIR}/lib/libpluto/
 
 LIBRARY=pluto
 LIB=lib${LIBRARY}.a

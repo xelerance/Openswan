@@ -347,9 +347,9 @@ sub openpiecefile {
       print HTMLPART "<META http-equiv=\"Refresh\" content=\"$slowrate,$file\">\n";
     }
     
-    print HTMLPART "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
+    print HTMLPART "<TITLE>Libreswan nightly testing results for $runtime</TITLE>\n";
     print HTMLPART "</HEAD>  <BODY>\n";
-    print HTMLPART "<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n";
+    print HTMLPART "<H1>Libreswan nightly testing results for $runtime on $hostname</H1>\n";
     
     if(defined($runningtest)) {
       print HTMLPART "Currently running $runningtest<P>\n";
@@ -377,9 +377,9 @@ if(defined($runningtest)) {
   &printit("<META http-equiv=\"Refresh\" content=\"$slowrate,testresults.html\">\n");
 }
 
-&printit("<TITLE>Openswan nightly testing results for $runtime</TITLE>\n");
+&printit("<TITLE>Libreswan nightly testing results for $runtime</TITLE>\n");
 &printit("</HEAD>  <BODY>\n");
-&printit("<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n");
+&printit("<H1>Libreswan nightly testing results for $runtime on $hostname</H1>\n");
 
 if(defined($runningtest)) {
   &printit("Currently running $runningtest<P>\n");

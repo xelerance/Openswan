@@ -36,7 +36,7 @@ doversion() {
     lines=$1
     
     # get IPSECVERSION
-    eval $(cd ${OPENSWANSRCDIR} && make env | grep IPSECVERSION)
+    eval $(cd ${LIBRESWANSRCDIR} && make env | grep IPSECVERSION)
 
     echo "diff -ruN a/${target#*/} b/${target#*/}"
     echo '--- /dev/null   Tue Mar 11 13:02:56 2003'

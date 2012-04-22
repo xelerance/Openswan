@@ -1,6 +1,6 @@
 TESTING:
 
-1) we have adapted the code such that openswan 2.x can operate
+1) we have adapted the code such that libreswan 2.x can operate
    as both a client and a server.
 
 2) we have made the client and server components interoperate with
@@ -17,7 +17,7 @@ the inner IP address or policy with Mode-Configuration.
 
 There are some limitations at present, whic are beyond our control.
 
-Openswan 2.x (as of 2.3.x) supports aggressive mode, using aggrmode=yes
+Libreswan 2.x (as of 2.3.x) supports aggressive mode, using aggrmode=yes
 Special code has been written to avoid a trivial distributed denial
 of service attack on Aggressive Mode to take down the rest of the
 non-aggressive mode tunnels with it, by offloading the aggressive mode
@@ -44,7 +44,7 @@ we have not yet received.
 
 If one were to use RSA keys, no limitation would occur.
 
-When interoperating Openswan clients with an Openswan server, we recommend
+When interoperating Libreswan clients with an Libreswan server, we recommend
 use of RSA keys (stored in DNS) for phase 1 authentcation, with
 username/password in XAUTH to "upgrade" the connection from Opportunistic
 Encryption, to VPN-Road-Warrior. We will be documenting this mode of

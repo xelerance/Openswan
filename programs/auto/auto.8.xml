@@ -84,7 +84,7 @@ connection</replaceable></arg>
 </refsect1>
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Auto</emphasis>
-manipulates automatically-keyed Openswan IPsec connections,
+manipulates automatically-keyed Libreswan IPsec connections,
 setting them up and shutting them down
 based on the information in the IPsec configuration file.
 In the normal usage,

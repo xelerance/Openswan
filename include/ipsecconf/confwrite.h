@@ -1,4 +1,4 @@
-/* Openswan config file writer (confwrite.h)
+/* Libreswan config file writer (confwrite.h)
  * Copyright (C) 2004 Xelerance Corporation
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -17,8 +17,8 @@
 
 #include "keywords.h"
 
-#ifndef _OPENSWAN_H
-#include "openswan.h"
+#ifndef _LIBRESWAN_H
+#include "libreswan.h"
 #include "constants.h"
 #endif
 

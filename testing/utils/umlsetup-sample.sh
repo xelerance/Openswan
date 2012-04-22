@@ -86,7 +86,7 @@ SHAREDIR=/usr/share
 
 # note that "nic" and "sec" are the same host in different configurations
 REGULARHOSTS='sunrise sunset nic carrot beet sec pole'
-OPENSWANHOSTS='east west japan road north'
+LIBRESWANHOSTS='east west japan road north'
 
 # tell system location of special tcpdump, if any
 #export TCPDUMP="/usr/local/sbin/tcpdump"

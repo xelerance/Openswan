@@ -1,4 +1,4 @@
-/* Openswan Virtual IP Management
+/* Libreswan Virtual IP Management
  * Copyright (C) 2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004 Xelerance Corporation
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
@@ -16,7 +16,7 @@
  */
 
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -71,7 +71,7 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
 {
     bool ok;
     int af;
-    /* workaround for typo "%4:" instead of "%v4:" introduced in old openswan release*/
+    /* workaround for typo "%4:" instead of "%v4:" introduced in old libreswan release*/
     int offset=0;
    
     if ((len > 4) && (strncmp(src, "%v4:", 4)==0)) {
@@ -280,7 +280,7 @@ struct virtual_t
     return v;
 
 fail:
-    openswan_log("invalid virtual string [%s] - "
+    libreswan_log("invalid virtual string [%s] - "
 	"virtual selection disabled for connection '%s'", string, c->name);
     return NULL;
 }

@@ -17,7 +17,7 @@ interop with very weird kinds of peers. It will also get use in prototyping
 of Me-Tarzan-You-Jane.
 
 {left}certtype= numbers are taken from the IKEv1 IANA registry. A copy of
-them can be found in linux/include/openswan/ipsec_policy.h as the
+them can be found in linux/include/libreswan/ipsec_policy.h as the
 "ipsec_cert_type" enum. It is reproduced below:
 
 /* Certificate type values

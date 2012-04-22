@@ -35,24 +35,24 @@
 
 
 #include <unistd.h>
-#include <openswan.h>
+#include <libreswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
 
 /* permanently turn it on since netlink support has been disabled */
 #include <signal.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "socketwrapper.h"
 #include "oswlog.h"
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
 #ifndef CONFIG_KLIPS_DEBUG
 #define CONFIG_KLIPS_DEBUG
 #endif /* CONFIG_KLIPS_DEBUG */
-#include "openswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_tunnel.h"
 
 #include <stdio.h>
 #include <getopt.h>
@@ -264,7 +264,7 @@ main(int argc, char **argv)
 			usage(program_name);
 			exit(1);
 		case 'v':
-			fprintf(stdout, "klipsdebug (Openswan %s) \n",
+			fprintf(stdout, "klipsdebug (Libreswan %s) \n",
 				ipsec_version_code());
 			fputs(copyright, stdout);
 			exit(0);

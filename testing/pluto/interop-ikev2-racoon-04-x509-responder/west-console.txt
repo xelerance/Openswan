@@ -40,7 +40,7 @@ TCP established hash table entries: 1024 (order: 0, 4096 bytes)
 TCP bind hash table entries: 512 (order: -1, 2048 bytes)
 TCP: Hash tables configured (established 1024 bind 512)
 TCP reno registered
-klips_info:ipsec_init: KLIPS startup, Openswan KLIPS IPsec stack version: 2.5.testing-g70d71a2f-dirty
+klips_info:ipsec_init: KLIPS startup, Libreswan KLIPS IPsec stack version: 2.5.testing-g70d71a2f-dirty
 NET: Registered protocol family 15
 klips_info:ipsec_alg_init: KLIPS alg v=0.8.1-0 (EALG_MAX=255, AALG_MAX=251)
 klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
@@ -161,7 +161,7 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 --- 192.0.2.254 ping statistics ---
 1 packets transmitted, 0 packets received, 100% packet loss
 west:~# ipsec setup start
-ipsec_setup: Starting Openswan IPsec U2.5.testing-g21680e0d-dirty/K2.5.testing-g70d71a2f-dirty...
+ipsec_setup: Starting Libreswan IPsec U2.5.testing-g21680e0d-dirty/K2.5.testing-g70d71a2f-dirty...
 west:~# ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~# ipsec auto --add west--east-ikev2
 037 can not load certificate file /testing/baseconfigs/all/etc/ipsec.d/certs/east.crt 

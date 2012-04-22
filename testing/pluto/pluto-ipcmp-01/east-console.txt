@@ -1,6 +1,6 @@
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add westnet-eastnet-ipcomp
 east:~#
@@ -30,5 +30,5 @@ default via 192.1.2.254 dev eth1
 east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 

@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
 >> I discussed this subject here:
 >>
-> http://lists.openswan.org/pipermail/users/2008-February/014030.html
+> http://lists.libreswan.org/pipermail/users/2008-February/014030.html
 > based on
 >> what I could capture under Windows, the relevant part
 > of it is:
@@ -236,7 +236,7 @@ int main(int argc, char **argv)
 >> going to be able to configure something else, such as
 > DNS or things like that.
 >
-> Openswan does support DNS/WINS via XAUTH/ModeConfig. Though
+> Libreswan does support DNS/WINS via XAUTH/ModeConfig. Though
 > as a client, we
 > might be ignoring it, since we have no structured way of
 > modifying resolv.conf
@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 >>>> and this one from pluto's debug:
 >>>>  3) "Intranet" #1: XAUTH:
 > Unsupported attribute: INTERNAL_ADDRESS_EXPIRY
->>> You can also ignore this. Openswan does not
+>>> You can also ignore this. Libreswan does not
 > support INTERNAL_ADDRESS_EXPIRY,
 >>> so it wont drop the IP address or ask for a new
 > one.
@@ -266,7 +266,7 @@ int main(int argc, char **argv)
 >> above?
 >
 > Yes. the remote is telling us how long they will keep the
-> SA around. Openswan
+> SA around. Libreswan
 > does not really care what the remote does. If the remote
 > wants to rekey, it
 > will and can do it anytime. We do enforce our own SA life

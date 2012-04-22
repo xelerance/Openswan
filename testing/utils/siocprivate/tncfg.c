@@ -21,11 +21,11 @@
 #include <linux/types.h>
 #include <sys/ioctl.h> /* ioctl() */
 
-#include <openswan.h>
-#ifdef NET_21 /* from openswan.h */
+#include <libreswan.h>
+#ifdef NET_21 /* from libreswan.h */
 #include <linux/sockios.h>
 #include <sys/socket.h>
-#endif /* NET_21 */ /* from openswan.h */
+#endif /* NET_21 */ /* from libreswan.h */
 
 #if 0
 #include <linux/if.h>
@@ -36,7 +36,7 @@
 #include <errno.h>
 #include <getopt.h>
 #include "socketwrapper.h"
-#include "openswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_tunnel.h"
 
 static void
 usage(char *name)

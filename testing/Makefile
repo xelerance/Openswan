@@ -11,10 +11,10 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ..; pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
-srcdir?=${OPENSWANSRCDIR}/testing/
+srcdir?=${LIBRESWANSRCDIR}/testing/
 
 SUBDIRS=lib utils 
 SUBDIRS+=klips 
@@ -33,6 +33,6 @@ def:
 prerequisites cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		 ${MAKE} -C $$d srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ;\
+		 ${MAKE} -C $$d srcdir=${srcdir}$$d/ LIBRESWANSRCDIR=$(LIBRESWANSRCDIR) $@ ;\
 	done; 
 

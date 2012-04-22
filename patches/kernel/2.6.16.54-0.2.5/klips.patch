@@ -1,9 +1,9 @@
-diff -Naur linux-2.6.16.54-0.2.5/README.openswan-2 linux-2.6.16.54-0.2.5.osw2.5.60s/README.openswan-2
---- linux-2.6.16.54-0.2.5/README.openswan-2	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/README.openswan-2	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/README.libreswan-2 linux-2.6.16.54-0.2.5.osw2.5.60s/README.libreswan-2
+--- linux-2.6.16.54-0.2.5/README.libreswan-2	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/README.libreswan-2	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,112 @@
 +*
-+* RCSID $Id: README.openswan-2,v 1.1 2003/12/10 01:07:49 mcr Exp $
++* RCSID $Id: README.libreswan-2,v 1.1 2003/12/10 01:07:49 mcr Exp $
 +*
 +
 +               ****************************************
@@ -109,7 +109,7 @@ diff -Naur linux-2.6.16.54-0.2.5/README.openswan-2 linux-2.6.16.54-0.2.5.osw2.5.
 +provided that the User-Mode-Linux patches are available.
 +
 +*
-+* $Log: README.openswan-2,v $
++* $Log: README.libreswan-2,v $
 +* Revision 1.1  2003/12/10 01:07:49  mcr
 +* 	documentation for additions.
 +*
@@ -127,7 +127,7 @@ diff -Naur linux-2.6.16.54-0.2.5/arch/x86_64/defconfig linux-2.6.16.54-0.2.5.osw
 +#
 +
 +#
-+# Openswan IPSec implementation, KLIPS kernel config defaults
++# Libreswan IPSec implementation, KLIPS kernel config defaults
 +#
 +
 +#
@@ -185,7 +185,7 @@ diff -Naur linux-2.6.16.54-0.2.5/arch/x86_64/defconfig linux-2.6.16.54-0.2.5.osw
 +#
 +# $Log: defconfig,v $
 +# Revision 1.30  2005/09/15 02:31:12  paul
-+# Changed a FreeS/WAN occurance to Openswan
++# Changed a FreeS/WAN occurance to Libreswan
 +#
 +# Revision 1.29  2005/08/24 22:10:05  mcr
 +# 	do not list NAT_TRAVERSAL as a default for KLIPS,
@@ -208,7 +208,7 @@ diff -Naur linux-2.6.16.54-0.2.5/arch/x86_64/defconfig linux-2.6.16.54-0.2.5.osw
 +# 	pullup of algo code from alg-branch.
 +#
 +# Revision 1.23.2.2  2004/04/05 04:30:46  mcr
-+# 	patches for alg-branch to compile/work with 2.x openswan
++# 	patches for alg-branch to compile/work with 2.x libreswan
 +#
 +# Revision 1.23.2.1  2003/12/22 15:25:52  jjo
 +# . Merged algo-0.8.1-rc11-test1 into alg-branch
@@ -1933,9 +1933,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/des/spr.h linux-2.6.16.54-0.2.5.osw2.5.
 +0x00000080L, 0x20820000L, 0x00820080L, 0x00000000L,
 +0x20000000L, 0x20800080L, 0x00020000L, 0x00820080L,
 +}};
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipcomp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipcomp.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipcomp.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipcomp.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipcomp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipcomp.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipcomp.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipcomp.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,58 @@
 +/*
 + * IPCOMP zlib interface code.
@@ -1970,7 +1970,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipcomp.h linux-2.6.16.54-0.2.5
 +#define IPPROTO_COMP 108
 +#endif /* IPPROTO_COMP */
 +
-+#include "openswan/ipsec_sysctl.h"
++#include "libreswan/ipsec_sysctl.h"
 +
 +struct ipcomphdr {			/* IPCOMP header */
 +    __u8    ipcomp_nh;		/* Next header (protocol) */
@@ -1995,9 +1995,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipcomp.h linux-2.6.16.54-0.2.5
 +struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned int *flags);
 +
 +#endif /* _IPCOMP_H */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ah.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ah.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_ah.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ah.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ah.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ah.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ah.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ah.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,201 @@
 +/*
 + * Authentication Header declarations
@@ -2049,7 +2049,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ah.h linux-2.6.16.54-0.2
 +
 +extern struct xform_functions ah_xform_funcs[];
 +
-+#include "openswan/ipsec_sysctl.h"
++#include "libreswan/ipsec_sysctl.h"
 +
 +#endif /* __KERNEL__ */
 +
@@ -2200,9 +2200,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ah.h linux-2.6.16.54-0.2
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_alg.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_alg.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_alg.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_alg.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_alg.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_alg.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,248 @@
 +/*
 + * Modular extensions service and registration functions interface
@@ -2243,7 +2243,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg.h linux-2.6.16.54-0.
 +#include <linux/types.h>
 +#include <linux/list.h>
 +#include <asm/atomic.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkey.h>
 +
 +/*	
 + *	The following structs are used via pointers in ipsec_alg object to
@@ -2452,9 +2452,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg.h linux-2.6.16.54-0.
 +#endif
 +
 +#endif /* IPSEC_ALG_H */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg_3des.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_alg_3des.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg_3des.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_alg_3des.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_alg_3des.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_alg_3des.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_alg_3des.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_alg_3des.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,12 @@
 +struct TripleDES_context {
 +  des_key_schedule s1;
@@ -2468,9 +2468,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_alg_3des.h linux-2.6.16.
 +
 +
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_auth.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_auth.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_auth.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_auth.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_auth.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_auth.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_auth.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_auth.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,100 @@
 +/*
 + * Authentication Header declarations
@@ -2572,9 +2572,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_auth.h linux-2.6.16.54-0
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_encap.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_encap.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_encap.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_encap.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_encap.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_encap.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_encap.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_encap.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,149 @@
 +/*
 + * declarations relevant to encapsulation-like operations
@@ -2725,9 +2725,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_encap.h linux-2.6.16.54-
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_eroute.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_eroute.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_eroute.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_eroute.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_eroute.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_eroute.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_eroute.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_eroute.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,112 @@
 +/*
 + * @(#) declarations of eroute structures
@@ -2841,9 +2841,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_eroute.h linux-2.6.16.54
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_errs.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_errs.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_errs.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_errs.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_errs.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_errs.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_errs.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_errs.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,53 @@
 +/*
 + * @(#) definition of ipsec_errs structure
@@ -2898,9 +2898,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_errs.h linux-2.6.16.54-0
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_esp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_esp.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_esp.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_esp.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_esp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_esp.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_esp.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_esp.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,159 @@
 +/*
 + * Copyright (C) 1996, 1997  John Ioannidis.
@@ -2919,8 +2919,8 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_esp.h linux-2.6.16.54-0.
 + * RCSID $Id: ipsec_esp.h,v 1.28 2004/09/13 02:22:10 mcr Exp $
 + */
 +
-+#include "openswan/ipsec_md5h.h"
-+#include "openswan/ipsec_sha1.h"
++#include "libreswan/ipsec_md5h.h"
++#include "libreswan/ipsec_sha1.h"
 +
 +#include "crypto/des.h"
 +
@@ -3061,9 +3061,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_esp.h linux-2.6.16.54-0.
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipcomp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipcomp.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipcomp.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipcomp.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipcomp.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipcomp.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipcomp.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipcomp.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,97 @@
 +/*
 + * IP compression header declations
@@ -3086,7 +3086,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipcomp.h linux-2.6.16.54
 +#ifndef IPSEC_IPCOMP_H
 +#define IPSEC_IPCOMP_H
 +
-+#include "openswan/ipsec_auth.h"
++#include "libreswan/ipsec_auth.h"
 +
 +/* Prefix all global deflate symbols with "ipcomp_" to avoid collisions with ppp_deflate & ext2comp */
 +#ifndef IPCOMP_PREFIX
@@ -3162,9 +3162,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipcomp.h linux-2.6.16.54
 +
 +
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipe4.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipe4.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipe4.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipe4.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipe4.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipe4.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipe4.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipe4.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,68 @@
 +/*
 + * IP-in-IP Header declarations
@@ -3234,9 +3234,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipe4.h linux-2.6.16.54-0
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipip.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipip.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipip.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_ipip.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipip.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipip.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_ipip.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_ipip.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,45 @@
 +/*
 + * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
@@ -3283,9 +3283,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_ipip.h linux-2.6.16.54-0
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_kern24.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_kern24.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_kern24.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_kern24.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_kern24.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_kern24.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_kern24.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_kern24.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,152 @@
 +/*
 + * @(#) routines to makes kernel 2.4 compatible with 2.6 usage.
@@ -3439,13 +3439,13 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_kern24.h linux-2.6.16.54
 +
 +#endif /* _IPSEC_KERN24_H */
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_kversion.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_kversion.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_kversion.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_kversion.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_kversion.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_kversion.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_kversion.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_kversion.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,247 @@
-+#ifndef _OPENSWAN_KVERSIONS_H
++#ifndef _LIBRESWAN_KVERSIONS_H
 +/*
-+ * header file for Openswan library functions
++ * header file for Libreswan library functions
 + * Copyright (C) 1998, 1999, 2000  Henry Spencer.
 + * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
 + * Copyright (C) 2003 - 2008 Paul Wouters <paul@xelerance.com>
@@ -3461,7 +3461,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_kversion.h linux-2.6.16.
 + * License for more details.
 + *
 + */
-+#define	_OPENSWAN_KVERSIONS_H	/* seen it, no need to see it again */
++#define	_LIBRESWAN_KVERSIONS_H	/* seen it, no need to see it again */
 +
 +/*
 + * this file contains a series of atomic defines that depend upon
@@ -3681,18 +3681,18 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_kversion.h linux-2.6.16.
 +#if __KERNEL__
 +#if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
 +#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_kern24.h"
 +#else
 +#error "kernels before 2.4 are not supported at this time"
 +#endif
 +#endif
 +#endif
 +
-+#endif /* _OPENSWAN_KVERSIONS_H */
++#endif /* _LIBRESWAN_KVERSIONS_H */
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_life.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_life.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_life.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_life.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_life.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_life.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_life.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_life.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,112 @@
 +/*
 + * Definitions relevant to IPSEC lifetimes
@@ -3806,9 +3806,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_life.h linux-2.6.16.54-0
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_mast.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_mast.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_mast.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_mast.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_mast.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_mast.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_mast.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_mast.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,59 @@
 +#ifndef _IPSEC_MAST_H
 +#define _IPSEC_MAST_H
@@ -3869,9 +3869,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_mast.h linux-2.6.16.54-0
 +
 +
 +#endif
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_md5h.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_md5h.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_md5h.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_md5h.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_md5h.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_md5h.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_md5h.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_md5h.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,143 @@
 +/*
 + * RCSID $Id: ipsec_md5h.h,v 1.10 2004/09/08 17:21:35 ken Exp $
@@ -4016,12 +4016,12 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_md5h.h linux-2.6.16.54-0
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_param.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_param.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_param.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_param.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_param.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_param.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_param.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_param.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,268 @@
 +/*
-+ * @(#) Openswan tunable paramaters
++ * @(#) Libreswan tunable paramaters
 + *
 + * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
 + *                 and Michael Richardson  <mcr@freeswan.org>
@@ -4052,7 +4052,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_param.h linux-2.6.16.54-
 +
 +#ifdef __KERNEL__
 +
-+#include "openswan/ipsec_kversion.h"
++#include "libreswan/ipsec_kversion.h"
 +
 +/* Set number of ipsecX virtual devices here. */
 +/* This must be < exp(field width of IPSEC_DEV_FORMAT) */
@@ -4288,9 +4288,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_param.h linux-2.6.16.54-
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_policy.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_policy.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_policy.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_policy.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_policy.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_policy.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_policy.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_policy.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,217 @@
 +#ifndef _IPSEC_POLICY_H
 +/*
@@ -4509,9 +4509,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_policy.h linux-2.6.16.54
 +extern const char *ipsec_policy_version_string(void);
 +
 +#endif /* _IPSEC_POLICY_H */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_proto.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_proto.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_proto.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_proto.h	2008-08-17 23:53:20.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_proto.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_proto.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_proto.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_proto.h	2008-08-17 23:53:20.000000000 -0400
 @@ -0,0 +1,147 @@
 +/*
 + * @(#) prototypes for FreeSWAN functions 
@@ -4660,9 +4660,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_proto.h linux-2.6.16.54-
 + *
 + */
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_radij.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_radij.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_radij.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_radij.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_radij.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_radij.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_radij.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_radij.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,179 @@
 +/*
 + * @(#) Definitions relevant to the IPSEC <> radij tree interfacing
@@ -4684,7 +4684,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_radij.h linux-2.6.16.54-
 +
 +#ifndef _IPSEC_RADIJ_H
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +int ipsec_walk(char *);
 +
@@ -4843,9 +4843,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_radij.h linux-2.6.16.54-
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_rcv.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_rcv.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_rcv.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_rcv.h	2008-10-07 16:44:00.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_rcv.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_rcv.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_rcv.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_rcv.h	2008-10-07 16:44:00.000000000 -0400
 @@ -0,0 +1,158 @@
 +/*
 + * 
@@ -4867,7 +4867,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_rcv.h linux-2.6.16.54-0.
 +#ifndef IPSEC_RCV_H
 +#define IPSEC_RCV_H
 +
-+#include "openswan/ipsec_auth.h"
++#include "libreswan/ipsec_auth.h"
 +
 +#define DB_RX_PKTRX	0x0001
 +#define DB_RX_PKTRX2	0x0002
@@ -4892,7 +4892,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_rcv.h linux-2.6.16.54-0.
 +#include <linux/module.h>
 +#endif
 +#include <linux/version.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#define IPSEC_BIRTH_TEMPLATE_MAXLEN 256
 +
@@ -5005,9 +5005,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_rcv.h linux-2.6.16.54-0.
 + */
 +
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sa.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sa.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_sa.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sa.h	2008-08-17 22:57:21.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sa.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sa.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sa.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sa.h	2008-08-17 22:57:21.000000000 -0400
 @@ -0,0 +1,277 @@
 +/*
 + * @(#) Definitions of IPsec Security Association (ipsec_sa)
@@ -5048,13 +5048,13 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sa.h linux-2.6.16.54-0.2
 +#ifndef _IPSEC_SA_H_
 +
 +#ifdef __KERNEL__
-+#include "openswan/ipsec_stats.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_eroute.h"
++#include "libreswan/ipsec_stats.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_eroute.h"
 +#endif /* __KERNEL__ */
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
-+#include "openswan/pfkeyv2.h"
++#include "libreswan/pfkeyv2.h"
 +
 +
 +/* SAs are held in a table.
@@ -5286,9 +5286,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sa.h linux-2.6.16.54-0.2
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sha1.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sha1.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_sha1.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sha1.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sha1.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sha1.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sha1.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sha1.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,79 @@
 +/*
 + * RCSID $Id: ipsec_sha1.h,v 1.8 2004/04/05 19:55:07 mcr Exp $
@@ -5369,9 +5369,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sha1.h linux-2.6.16.54-0
 + * New transform
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_stats.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_stats.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_stats.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_stats.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_stats.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_stats.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_stats.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_stats.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,76 @@
 +/*
 + * @(#) definition of ipsec_stats structure
@@ -5431,7 +5431,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_stats.h linux-2.6.16.54-
 + *     sprintf->snprintf for formatting into proc buffer.
 + *
 + * Revision 1.3.34.1  2004/04/05 04:30:46  mcr
-+ * 	patches for alg-branch to compile/work with 2.x openswan
++ * 	patches for alg-branch to compile/work with 2.x libreswan
 + *
 + * Revision 1.3  2002/04/24 07:36:47  mcr
 + * Moved from ./klips/net/ipsec/ipsec_stats.h,v
@@ -5449,12 +5449,12 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_stats.h linux-2.6.16.54-
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sysctl.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sysctl.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_sysctl.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_sysctl.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sysctl.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sysctl.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_sysctl.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_sysctl.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,20 @@
-+#ifndef OPENSWAN_SYSCTL_H
-+#define OPENSWAN_SYSCTL_H
++#ifndef LIBRESWAN_SYSCTL_H
++#define LIBRESWAN_SYSCTL_H
 +
 +extern int debug_ah;
 +extern int debug_esp;
@@ -5473,9 +5473,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_sysctl.h linux-2.6.16.54
 +extern int sysctl_ipsec_debug_ipcomp;
 +extern int sysctl_ipsec_debug_verbose;
 +#endif
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_tunnel.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_tunnel.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_tunnel.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_tunnel.h	2008-08-18 00:01:08.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_tunnel.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_tunnel.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_tunnel.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_tunnel.h	2008-08-18 00:01:08.000000000 -0400
 @@ -0,0 +1,282 @@
 +/*
 + * IPSEC tunneling code
@@ -5759,9 +5759,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_tunnel.h linux-2.6.16.54
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xform.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_xform.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_xform.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_xform.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_xform.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_xform.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_xform.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_xform.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,264 @@
 +/*
 + * Definitions relevant to IPSEC transformations
@@ -5784,7 +5784,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xform.h linux-2.6.16.54-
 +
 +#ifndef _IPSEC_XFORM_H_
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#define XF_NONE			0	/* No transform set */
 +#define XF_IP4			1	/* IPv4 inside IPv4 */
@@ -6027,9 +6027,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xform.h linux-2.6.16.54-
 + * End:
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xmit.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_xmit.h
---- linux-2.6.16.54-0.2.5/include/openswan/ipsec_xmit.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/ipsec_xmit.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/ipsec_xmit.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_xmit.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/ipsec_xmit.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/ipsec_xmit.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,211 @@
 +/*
 + * IPSEC tunneling code
@@ -6049,7 +6049,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xmit.h linux-2.6.16.54-0
 + * RCSID $Id: ipsec_xmit.h,v 1.14 2005/05/11 01:00:26 mcr Exp $
 + */
 +
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_sa.h"
 +
 +enum ipsec_xmit_value
 +{
@@ -6242,9 +6242,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/ipsec_xmit.h linux-2.6.16.54-0
 + * Refactored from ipsec_tunnel.c
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/mast.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/mast.h
---- linux-2.6.16.54-0.2.5/include/openswan/mast.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/mast.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/mast.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/mast.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/mast.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/mast.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,33 @@
 +struct mast_callbacks {
 +  int (*packet_encap)(struct device *mast, void *context,
@@ -6279,9 +6279,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/mast.h linux-2.6.16.54-0.2.5.o
 +		      int flowref);
 +
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/passert.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/passert.h
---- linux-2.6.16.54-0.2.5/include/openswan/passert.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/passert.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/passert.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/passert.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/passert.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/passert.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,75 @@
 +/*
 + * sanitize a string into a printable format.
@@ -6302,37 +6302,37 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/passert.h linux-2.6.16.54-0.2.
 + * RCSID $Id: passert.h,v 1.7.8.1 2007/09/05 02:32:24 paul Exp $
 + */
 +
-+#include "openswan.h"
++#include "libreswan.h"
 +
-+#ifndef _OPENSWAN_PASSERT_H
-+#define _OPENSWAN_PASSERT_H
++#ifndef _LIBRESWAN_PASSERT_H
++#define _LIBRESWAN_PASSERT_H
 +/* our versions of assert: log result */
 +
 +#ifdef DEBUG
 +
-+typedef void (*openswan_passert_fail_t)(const char *pred_str,
++typedef void (*libreswan_passert_fail_t)(const char *pred_str,
 +					const char *file_str,
 +					unsigned long line_no) NEVER_RETURNS;
 +
-+extern openswan_passert_fail_t openswan_passert_fail;
++extern libreswan_passert_fail_t libreswan_passert_fail;
 +
 +extern void pexpect_log(const char *pred_str
 +			, const char *file_str, unsigned long line_no);
 +
 +# define impossible() do { \
-+    if(openswan_passert_fail) {					\
-+      (*openswan_passert_fail)("impossible", __FILE__, __LINE__); \
++    if(libreswan_passert_fail) {					\
++      (*libreswan_passert_fail)("impossible", __FILE__, __LINE__); \
 +    }} while(0)
 +
-+extern void openswan_switch_fail(int n
++extern void libreswan_switch_fail(int n
 +    , const char *file_str, unsigned long line_no) NEVER_RETURNS;
 +
-+# define bad_case(n) openswan_switch_fail((int) n, __FILE__, __LINE__)
++# define bad_case(n) libreswan_switch_fail((int) n, __FILE__, __LINE__)
 +
 +# define passert(pred) do { \
 +	if (!(pred)) \
-+	  if(openswan_passert_fail) { \
-+	    (*openswan_passert_fail)(#pred, __FILE__, __LINE__);	\
++	  if(libreswan_passert_fail) { \
++	    (*libreswan_passert_fail)(#pred, __FILE__, __LINE__);	\
 +	  } \
 +  } while(0)
 +
@@ -6345,7 +6345,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/passert.h linux-2.6.16.54-0.2.
 +# define happy(x) { \
 +	err_t ugh = x; \
 +	if (ugh != NULL) \
-+	  if(openswan_passert_fail) { (*openswan_passert_fail)(ugh, __FILE__, __LINE__); }  \
++	  if(libreswan_passert_fail) { (*libreswan_passert_fail)(ugh, __FILE__, __LINE__); }  \
 +    }
 +
 +#else /*!DEBUG*/
@@ -6357,13 +6357,13 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/passert.h linux-2.6.16.54-0.2.
 +
 +#endif /*!DEBUG*/
 +
-+#endif /* _OPENSWAN_PASSERT_H */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkey.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkey.h
---- linux-2.6.16.54-0.2.5/include/openswan/pfkey.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkey.h	2008-07-03 00:49:29.000000000 -0400
++#endif /* _LIBRESWAN_PASSERT_H */
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/pfkey.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkey.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/pfkey.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkey.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,384 @@
 +/*
-+ * Openswan specific PF_KEY headers
++ * Libreswan specific PF_KEY headers
 + * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
 + * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
 + * 
@@ -6503,8 +6503,8 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkey.h linux-2.6.16.54-0.2.5.
 +extern int pfkey_acquire(struct ipsec_sa *);
 +#else /* ! __KERNEL__ */
 +
-+extern openswan_keying_debug_func_t pfkey_debug_func;
-+extern openswan_keying_debug_func_t pfkey_error_func;
++extern libreswan_keying_debug_func_t pfkey_debug_func;
++extern libreswan_keying_debug_func_t pfkey_error_func;
 +extern void pfkey_print(struct sadb_msg *msg, FILE *out);
 +
 +
@@ -6746,9 +6746,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkey.h linux-2.6.16.54-0.2.5.
 +
 +#endif /* __NET_IPSEC_PF_KEY_H */
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkey_debug.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkey_debug.h
---- linux-2.6.16.54-0.2.5/include/openswan/pfkey_debug.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkey_debug.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/pfkey_debug.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkey_debug.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/pfkey_debug.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkey_debug.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,54 @@
 +/*
 + * sanitize a string into a printable format.
@@ -6804,9 +6804,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkey_debug.h linux-2.6.16.54-
 +#endif
 +
 +#endif
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkeyv2.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkeyv2.h
---- linux-2.6.16.54-0.2.5/include/openswan/pfkeyv2.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/pfkeyv2.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/pfkeyv2.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkeyv2.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/pfkeyv2.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/pfkeyv2.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,331 @@
 +/*
 + * RCSID $Id: pfkeyv2.h,v 1.31 2005/04/14 01:14:54 mcr Exp $
@@ -7139,9 +7139,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/pfkeyv2.h linux-2.6.16.54-0.2.
 +#define K_SADB_KEY_FLAGS_MAX     0
 +#endif /* __PFKEY_V2_H */
 +
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan/radij.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/radij.h
---- linux-2.6.16.54-0.2.5/include/openswan/radij.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan/radij.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan/radij.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/radij.h
+--- linux-2.6.16.54-0.2.5/include/libreswan/radij.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan/radij.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,280 @@
 +/*
 + * RCSID $Id: radij.h,v 1.13 2004/04/05 19:55:08 mcr Exp $
@@ -7423,11 +7423,11 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan/radij.h linux-2.6.16.54-0.2.5.
 + *
 + *
 + */
-diff -Naur linux-2.6.16.54-0.2.5/include/openswan.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan.h
---- linux-2.6.16.54-0.2.5/include/openswan.h	1969-12-31 19:00:00.000000000 -0500
-+++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/openswan.h	2008-07-03 00:49:29.000000000 -0400
+diff -Naur linux-2.6.16.54-0.2.5/include/libreswan.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan.h
+--- linux-2.6.16.54-0.2.5/include/libreswan.h	1969-12-31 19:00:00.000000000 -0500
++++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/libreswan.h	2008-07-03 00:49:29.000000000 -0400
 @@ -0,0 +1,563 @@
-+#ifndef _OPENSWAN_H
++#ifndef _LIBRESWAN_H
 +/*
 + * header file for FreeS/WAN library functions
 + * Copyright (C) 1998, 1999, 2000  Henry Spencer.
@@ -7443,9 +7443,9 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan.h linux-2.6.16.54-0.2.5.osw2.5
 + * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
 + * License for more details.
 + *
-+ * RCSID $Id: openswan.h,v 1.95 2005/08/25 01:24:40 paul Exp $
++ * RCSID $Id: libreswan.h,v 1.95 2005/08/25 01:24:40 paul Exp $
 + */
-+#define	_OPENSWAN_H	/* seen it, no need to see it again */
++#define	_LIBRESWAN_H	/* seen it, no need to see it again */
 +
 +/* you'd think this should be builtin to compiler... */
 +#ifndef TRUE
@@ -7471,8 +7471,8 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan.h linux-2.6.16.54-0.2.5.osw2.5
 +#include <linux/in6.h>
 +#include <linux/string.h>
 +#include <linux/ctype.h>
-+#include <openswan/ipsec_kversion.h>
-+#include <openswan/ipsec_param.h>
++#include <libreswan/ipsec_kversion.h>
++#include <libreswan/ipsec_param.h>
 +#define user_assert(foo)  /*nothing*/
 +
 +#else /* NOT in kernel */
@@ -7678,7 +7678,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan.h linux-2.6.16.54-0.2.5.osw2.5
 + * function to log stuff from libraries that may be used in multiple
 + * places.
 + */
-+typedef int (*openswan_keying_debug_func_t)(const char *message, ...);
++typedef int (*libreswan_keying_debug_func_t)(const char *message, ...);
 +
 +
 +
@@ -7989,7 +7989,7 @@ diff -Naur linux-2.6.16.54-0.2.5/include/openswan.h linux-2.6.16.54-0.2.5.osw2.5
 +
 +
 +
-+#endif /* _OPENSWAN_H */
++#endif /* _LIBRESWAN_H */
 diff -Naur linux-2.6.16.54-0.2.5/include/zlib/zconf.h linux-2.6.16.54-0.2.5.osw2.5.60s/include/zlib/zconf.h
 --- linux-2.6.16.54-0.2.5/include/zlib/zconf.h	1969-12-31 19:00:00.000000000 -0500
 +++ linux-2.6.16.54-0.2.5.osw2.5.60s/include/zlib/zconf.h	2008-07-03 00:49:29.000000000 -0400
@@ -9474,14 +9474,14 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/Kconfig linux-2.6.16.54-0.2.5.osw2.5.
 +# RCSID $Id: Kconfig,v 1.6.2.1 2006/04/20 16:33:06 mcr Exp $
 +
 +config KLIPS
-+	tristate "Openswan IPsec (KLIPS)"
++	tristate "Libreswan IPsec (KLIPS)"
 +	default n
 +	help
-+	  KLIPS is the Openswan (www.openswan.org) Kernel Level IP Security
++	  KLIPS is the Libreswan (www.libreswan.org) Kernel Level IP Security
 +	  system. It is extensively tested, and has interoperated with
 +	  many other systems. 
 +	  It provides "ipsecX" devices on which one can do firewalling.
-+	  The Openswan userland, is compatible with both KLIPS and NETKEY
++	  The Libreswan userland, is compatible with both KLIPS and NETKEY
 +	  You cannot build KLIPS and NETKEY inline into the kernel.
 +
 +menu "KLIPS options"
@@ -9644,10 +9644,10 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/Makefile linux-2.6.16.54-0.2.5.osw2.5
 +# unless it's something special (ie not a .c file).
 +#
 +
-+OPENSWANSRCDIR?=.
++LIBRESWANSRCDIR?=.
 +KLIPS_TOP?=.
 +
-+-include ${OPENSWANSRCDIR}/Makefile.ver
++-include ${LIBRESWANSRCDIR}/Makefile.ver
 +
 +base-klips-objs := 
 +
@@ -9790,7 +9790,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/Makefile linux-2.6.16.54-0.2.5.osw2.5
 +# 	removed duplicate definition of dx86unix.o
 +#
 +# Revision 1.2  2004/08/03 18:21:09  mcr
-+# 	only set KLIPS_TOP and OPENSWANSRCDIR if not already set.
++# 	only set KLIPS_TOP and LIBRESWANSRCDIR if not already set.
 +#
 +# Revision 1.1  2004/07/26 15:02:22  mcr
 +# 	makefile for KLIPS module for 2.6.
@@ -10004,14 +10004,14 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/addrtoa.c linux-2.6.16.54-0.2.5.osw2.
 + *
 + * RCSID $Id: addrtoa.c,v 1.10 2004/07/10 07:43:47 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +#define	NBYTES	4		/* bytes in an address */
 +#define	PERBYTE	4		/* three digits plus a dot or NUL */
 +#define	BUFLEN	(NBYTES*PERBYTE)
 +
 +#if BUFLEN != ADDRTOA_BUF
-+#error	"ADDRTOA_BUF in openswan.h inconsistent with addrtoa() code"
++#error	"ADDRTOA_BUF in libreswan.h inconsistent with addrtoa() code"
 +#endif
 +
 +/*
@@ -10079,7 +10079,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/addrtot.c linux-2.6.16.54-0.2.5.osw2.
 +#include <linux/string.h>
 +#endif
 +
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +#define	IP4BYTES	4	/* bytes in an IPv4 address */
 +#define	PERBYTE		4	/* three digits plus a dot or NUL */
@@ -10424,7 +10424,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/addrtypeof.c linux-2.6.16.54-0.2.5.os
 + *
 + * RCSID $Id: addrtypeof.c,v 1.10 2004/07/10 07:43:47 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - addrtypeof - get the type of an ip_address
@@ -13104,8 +13104,8 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/aes/ipsec_alg_aes.c linux-2.6.16.54-0
 +#endif
 +
 +/*	Low freeswan header coupling	*/
-+#include <openswan.h>
-+#include "openswan/ipsec_alg.h"
++#include <libreswan.h>
++#include "libreswan/ipsec_alg.h"
 +#include "crypto/aes_cbc.h"
 +
 +#define CONFIG_KLIPS_ENC_AES_MAC 1
@@ -13469,7 +13469,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/alg/ipsec_alg_cryptoapi.c linux-2.6.1
 +#define NO_CRYPTOAPI_SUPPORT
 +#endif
 +/*	Low freeswan header coupling	*/
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_alg.h"
 +
 +#include <linux/crypto.h>
 +#ifdef CRYPTO_API_VERSION_CODE
@@ -13873,7 +13873,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/anyaddr.c linux-2.6.16.54-0.2.5.osw2.
 + *
 + * RCSID $Id: anyaddr.c,v 1.10 2004/07/10 07:43:47 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/* these are mostly fallbacks for the no-IPv6-support-in-library case */
 +#ifndef IN6ADDR_ANY_INIT
@@ -14027,7 +14027,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/datatot.c linux-2.6.16.54-0.2.5.osw2.
 + *
 + * RCSID $Id: datatot.c,v 1.9 2005/08/30 21:15:26 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +static void convert(const char *src, size_t nreal, int format, char *out);
 +
@@ -14255,7 +14255,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/defconfig linux-2.6.16.54-0.2.5.osw2.
 +#
 +
 +#
-+# Openswan IPSec implementation, KLIPS kernel config defaults
++# Libreswan IPSec implementation, KLIPS kernel config defaults
 +#
 +
 +#
@@ -14313,7 +14313,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/defconfig linux-2.6.16.54-0.2.5.osw2.
 +#
 +# $Log: defconfig,v $
 +# Revision 1.30  2005/09/15 02:31:12  paul
-+# Changed a FreeS/WAN occurance to Openswan
++# Changed a FreeS/WAN occurance to Libreswan
 +#
 +# Revision 1.29  2005/08/24 22:10:05  mcr
 +# 	do not list NAT_TRAVERSAL as a default for KLIPS,
@@ -14336,7 +14336,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/defconfig linux-2.6.16.54-0.2.5.osw2.
 +# 	pullup of algo code from alg-branch.
 +#
 +# Revision 1.23.2.2  2004/04/05 04:30:46  mcr
-+# 	patches for alg-branch to compile/work with 2.x openswan
++# 	patches for alg-branch to compile/work with 2.x libreswan
 +#
 +# Revision 1.23.2.1  2003/12/22 15:25:52  jjo
 +# . Merged algo-0.8.1-rc11-test1 into alg-branch
@@ -22596,10 +22596,10 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/des/ipsec_alg_3des.c linux-2.6.16.54-
 +#include <linux/string.h>
 +
 +/*	Low freeswan header coupling	*/
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_alg.h"
 +#include "crypto/des.h"
-+#include "openswan/ipsec_alg_3des.h"
++#include "libreswan/ipsec_alg_3des.h"
 +
 +#define AES_CONTEXT_T aes_context
 +static int debug_3des=0;
@@ -23000,7 +23000,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/goodmask.c linux-2.6.16.54-0.2.5.osw2
 + *
 + * RCSID $Id: goodmask.c,v 1.12 2004/07/10 07:43:47 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +#ifndef ABITS
 +#define	ABITS	32	/* bits in an IPv4 address */
@@ -25302,7 +25302,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/initaddr.c linux-2.6.16.54-0.2.5.osw2
 + *
 + * RCSID $Id: initaddr.c,v 1.6 2004/07/10 07:43:47 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +err_t
 +add_port(af, addr, port)
@@ -25404,7 +25404,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipcomp.c linux-2.6.16.54-0.2.5.osw2.5
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -25424,24 +25424,24 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipcomp.c linux-2.6.16.54-0.2.5.osw2.5
 +#include <asm/uaccess.h>
 +#include <asm/checksum.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#include <net/ip.h>
 +
-+#include "openswan/ipsec_kern24.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_kern24.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipcomp.h"
 +#include "zlib/zlib.h"
 +#include "zlib/zutil.h"
 +
-+#include <openswan/pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
++#include <libreswan/pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
 +
 +static
 +struct sk_buff *skb_copy_ipcomp(struct sk_buff *skb, int data_growth, int gfp_mask);
@@ -26097,7 +26097,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ah.c linux-2.6.16.54-0.2.5.osw2
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -26112,7 +26112,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ah.c linux-2.6.16.54-0.2.5.osw2
 +#include <linux/etherdevice.h>	/* eth_type_trans */
 +#include <linux/ip.h>		/* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -26124,19 +26124,19 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ah.c linux-2.6.16.54-0.2.5.osw2
 +#include <net/ip.h>
 +#include <net/protocol.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h" 
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h" 
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_auth.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_auth.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_proto.h"
 +
 +__u32 zeroes[AH_AMAX];
 +
@@ -26484,30 +26484,30 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_alg.c linux-2.6.16.54-0.2.5.osw
 +# endif /* SPINLOCK_23 */
 +#endif /* SPINLOCK */
 +
-+#include "openswan/ipsec_param.h"
-+#include <openswan.h>
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h"
++#include "libreswan/ipsec_param.h"
++#include <libreswan.h>
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h"
 +#if defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH)
-+# include "openswan/ipsec_ah.h"
++# include "libreswan/ipsec_ah.h"
 +#endif /* defined(CONFIG_KLIPS_ESP) || defined(CONFIG_KLIPS_AH) */
 +#ifdef CONFIG_KLIPS_ESP
-+# include "openswan/ipsec_esp.h"
++# include "libreswan/ipsec_esp.h"
 +#endif /* !CONFIG_KLIPS_ESP */
 +#ifdef CONFIG_KLIPS_IPCOMP
-+# include "openswan/ipcomp.h"
++# include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_COMP */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_alg.h"
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
 +
 +#if K_SADB_EALG_MAX < 255
 +#warning Compiling with limited ESP support ( K_SADB_EALG_MAX < 256 )
@@ -27547,9 +27547,9 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_alg_cryptoapi.c linux-2.6.16.54
 +#define NO_CRYPTOAPI_SUPPORT
 +#endif
 +
-+#include "openswan.h"
-+#include "openswan/ipsec_alg.h"
-+#include "openswan/ipsec_policy.h"
++#include "libreswan.h"
++#include "libreswan/ipsec_alg.h"
++#include "libreswan/ipsec_policy.h"
 +
 +#include <linux/crypto.h>
 +#ifdef CRYPTO_API_VERSION_CODE
@@ -27946,7 +27946,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_esp.c linux-2.6.16.54-0.2.5.osw
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -27961,7 +27961,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_esp.c linux-2.6.16.54-0.2.5.osw
 +#include <linux/etherdevice.h>	/* eth_type_trans */
 +#include <linux/ip.h>		/* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -27973,24 +27973,24 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_esp.c linux-2.6.16.54-0.2.5.osw
 +#include <net/ip.h>
 +#include <net/protocol.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_auth.h"
++#include "libreswan/ipsec_auth.h"
 +
 +#ifdef CONFIG_KLIPS_ESP
-+#include "openswan/ipsec_esp.h"
++#include "libreswan/ipsec_esp.h"
 +#endif /* CONFIG_KLIPS_ESP */
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
 +#ifdef CONFIG_KLIPS_DEBUG
 +#define ESP_DMP(_x,_y,_z) if(debug_rcv && sysctl_ipsec_debug_verbose) ipsec_dmp_block(_x,_y,_z)
@@ -28497,7 +28497,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -28516,7 +28516,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +#include <linux/random.h>       /* get_random_bytes() */
 +#include <net/protocol.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
@@ -28538,32 +28538,32 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +# include <net/netlink.h>
 +#endif
 +
-+#include "openswan/radij.h"
++#include "libreswan/radij.h"
 +
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_stats.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_stats.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_mast.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_mast.h"
 +
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_xmit.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_xmit.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+# include "openswan/ipcomp.h"
++# include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
 +#if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 +#include <net/xfrmudp.h>
@@ -28618,7 +28618,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +*/
 +#ifdef NET_26
 +static inline int
-+openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *protstr)
++libreswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *protstr)
 +{
 +	int err = inet_add_protocol(prot, protocol);
 +	if (err)
@@ -28627,21 +28627,21 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +}
 +
 +static inline int
-+openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
++libreswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 +{
 +	return inet_del_protocol(prot, protocol);
 +}
 +
 +#else
 +static inline int
-+openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
++libreswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol)
 +{
 +	inet_add_protocol(prot);
 +	return 0;
 +}
 +
 +static inline int
-+openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
++libreswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 +{
 +	inet_del_protocol(prot);
 +	return 0;
@@ -28663,7 +28663,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +#endif /* CONFIG_KLIPS_ENC_3DES */
 +
 +	KLIPS_PRINT(1, "klips_info:ipsec_init: "
-+		    "KLIPS startup, Openswan KLIPS IPsec stack version: %s\n",
++		    "KLIPS startup, Libreswan KLIPS IPsec stack version: %s\n",
 +		    ipsec_version_code());
 +
 +        error = ipsec_xmit_state_cache_init ();
@@ -28713,24 +28713,24 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +#else // CONFIG_XFRM_ALTERNATE_STACK
 +
 +#ifdef CONFIG_KLIPS_ESP
-+	error |= openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
++	error |= libreswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
 +	if (error)
-+		goto error_openswan_inet_add_protocol_esp;
++		goto error_libreswan_inet_add_protocol_esp;
 +
 +#endif /* CONFIG_KLIPS_ESP */
 +
 +#ifdef CONFIG_KLIPS_AH
-+	error |= openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH,"AH");
++	error |= libreswan_inet_add_protocol(&ah_protocol, IPPROTO_AH,"AH");
 +	if (error)
-+		goto error_openswan_inet_add_protocol_ah;
++		goto error_libreswan_inet_add_protocol_ah;
 +#endif /* CONFIG_KLIPS_AH */
 +
 +/* we never actually link IPCOMP to the stack */
 +#ifdef IPCOMP_USED_ALONE
 +#ifdef CONFIG_KLIPS_IPCOMP
-+ 	error |= openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP,"IPCOMP");
++ 	error |= libreswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP,"IPCOMP");
 +	if (error)
-+		goto error_openswan_inet_add_protocol_comp;
++		goto error_libreswan_inet_add_protocol_comp;
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +#endif
 +
@@ -28775,17 +28775,17 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +#else // CONFIG_XFRM_ALTERNATE_STACK
 +#ifdef IPCOMP_USED_ALONE
 +#ifdef CONFIG_KLIPS_IPCOMP
-+error_openswan_inet_add_protocol_comp:
-+	openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
++error_libreswan_inet_add_protocol_comp:
++	libreswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +#endif
 +#ifdef CONFIG_KLIPS_AH
-+error_openswan_inet_add_protocol_ah:
-+	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
++error_libreswan_inet_add_protocol_ah:
++	libreswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
 +#endif
 +#ifdef CONFIG_KLIPS_ESP
-+error_openswan_inet_add_protocol_esp:
-+	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
++error_libreswan_inet_add_protocol_esp:
++	libreswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
 +#endif
 +#endif
 +	unregister_netdevice_notifier(&ipsec_dev_notifier);
@@ -28840,20 +28840,20 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_init.c linux-2.6.16.54-0.2.5.os
 +/* we never actually link IPCOMP to the stack */
 +#ifdef IPCOMP_USED_ALONE
 +#ifdef CONFIG_KLIPS_IPCOMP
-+ 	if (openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
++ 	if (libreswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
 +		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 +		       "comp close: can't remove protocol\n");
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +#endif /* IPCOMP_USED_ALONE */
 +
 +#ifdef CONFIG_KLIPS_AH
-+ 	if (openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
++ 	if (libreswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
 +		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 +		       "ah close: can't remove protocol\n");
 +#endif /* CONFIG_KLIPS_AH */
 +
 +#ifdef CONFIG_KLIPS_ESP
-+ 	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
++ 	if (libreswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 +		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 +		       "esp close: can't remove protocol\n");
 +#endif /* CONFIG_KLIPS_ESP */
@@ -28951,7 +28951,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipcomp.c linux-2.6.16.54-0.2.5.
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -28966,7 +28966,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipcomp.c linux-2.6.16.54-0.2.5.
 +#include <linux/etherdevice.h>	/* eth_type_trans */
 +#include <linux/ip.h>		/* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -28977,23 +28977,23 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipcomp.c linux-2.6.16.54-0.2.5.
 +
 +#include <net/ip.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_auth.h"
++#include "libreswan/ipsec_auth.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipsec_ipcomp.h"
++#include "libreswan/ipsec_ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
 +enum ipsec_rcv_value
@@ -29208,7 +29208,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipip.c linux-2.6.16.54-0.2.5.os
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -29223,7 +29223,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipip.c linux-2.6.16.54-0.2.5.os
 +#include <linux/etherdevice.h>	/* eth_type_trans */
 +#include <linux/ip.h>		/* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -29234,21 +29234,21 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_ipip.c linux-2.6.16.54-0.2.5.os
 +
 +#include <net/ip.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_auth.h"
-+#include "openswan/ipsec_ipip.h"
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_auth.h"
++#include "libreswan/ipsec_ipip.h"
++#include "libreswan/ipsec_param.h"
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
 +enum ipsec_xmit_value
 +ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
@@ -29426,35 +29426,35 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_life.c linux-2.6.16.54-0.2.5.os
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#include <linux/netdevice.h>   /* struct device, struct net_device_stats and other headers */
 +#include <linux/etherdevice.h> /* eth_type_trans */
 +#include <linux/skbuff.h>
 +#include <linux/ip.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_eroute.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_eroute.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
 +
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_ipe4.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_ipe4.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
 +
 +enum ipsec_life_alive
@@ -29638,7 +29638,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_mast.c linux-2.6.16.54-0.2.5.os
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -29660,7 +29660,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_mast.c linux-2.6.16.54-0.2.5.os
 +#include <linux/skbuff.h>
 +#include <net/xfrm.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#include <net/icmp.h>		/* icmp_send() */
 +#include <net/ip.h>
@@ -29677,26 +29677,26 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_mast.c linux-2.6.16.54-0.2.5.os
 +
 +#include <linux/if_arp.h>
 +
-+#include "openswan/ipsec_kversion.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_eroute.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/ipsec_xmit.h"
-+#include "openswan/ipsec_mast.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_ipe4.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_kversion.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_eroute.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/ipsec_xmit.h"
++#include "libreswan/ipsec_mast.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_ipe4.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_kern24.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 +#include <linux/udp.h>
 +#endif
@@ -30477,7 +30477,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_md5c.c linux-2.6.16.54-0.2.5.os
 +#include <asm/byteorder.h>
 +#include <linux/string.h>
 +
-+#include "openswan/ipsec_md5h.h"
++#include "libreswan/ipsec_md5h.h"
 +
 +/* MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
 + */
@@ -30904,8 +30904,8 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_proc.c linux-2.6.16.54-0.2.5.os
 +#include <linux/kernel.h> /* printk() */
 +#include <linux/ip.h>          /* struct iphdr */
 +
-+#include "openswan/ipsec_kversion.h"
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_kversion.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -30921,7 +30921,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_proc.c linux-2.6.16.54-0.2.5.os
 +#include <linux/in.h>          /* struct sockaddr_in */
 +#include <linux/skbuff.h>
 +#include <asm/uaccess.h>       /* copy_from_user */
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +#ifdef SPINLOCK_23
 +#include <linux/spinlock.h> /* *lock* */
@@ -30940,31 +30940,31 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_proc.c linux-2.6.16.54-0.2.5.os
 +#include <net/netlink.h>
 +#endif
 +
-+#include "openswan/radij.h"
++#include "libreswan/radij.h"
 +
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_stats.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_stats.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_kern24.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
 +#ifdef CONFIG_PROC_FS
 +
@@ -31474,7 +31474,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_proc.c linux-2.6.16.54-0.2.5.os
 +		    (int)offset,
 +		    length);
 +
-+	len += ipsec_snprintf(buffer + len,length-len, "Openswan version: %s\n",
++	len += ipsec_snprintf(buffer + len,length-len, "Libreswan version: %s\n",
 +		       ipsec_version_code());
 +#if 0
 +	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
@@ -31944,7 +31944,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_radij.c linux-2.6.16.54-0.2.5.o
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -31959,7 +31959,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_radij.c linux-2.6.16.54-0.2.5.o
 +#include <linux/etherdevice.h> /* eth_type_trans */
 +#include <linux/ip.h>          /* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -31970,21 +31970,21 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_radij.c linux-2.6.16.54-0.2.5.o
 +
 +#include <net/ip.h>
 +
-+#include "openswan/ipsec_eroute.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_eroute.h"
++#include "libreswan/ipsec_sa.h"
 + 
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_tunnel.h"	/* struct ipsecpriv */
-+#include "openswan/ipsec_xform.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_tunnel.h"	/* struct ipsecpriv */
++#include "libreswan/ipsec_xform.h"
 + 
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
 +struct radij_node_head *rnh = NULL;
 +#ifdef SPINLOCK
@@ -32506,7 +32506,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_rcv.c linux-2.6.16.54-0.2.5.osw
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -32525,7 +32525,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_rcv.c linux-2.6.16.54-0.2.5.osw
 +#include <net/udp.h>
 +#include <net/xfrm.h>
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +# ifdef SPINLOCK_23
 +#  include <linux/spinlock.h> /* *lock* */
@@ -32536,35 +32536,35 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_rcv.c linux-2.6.16.54-0.2.5.osw
 +
 +#include <net/ip.h>
 +
-+#include "openswan/ipsec_kern24.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_kern24.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_mast.h"
-+#include "openswan/ipsec_rcv.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_mast.h"
++#include "libreswan/ipsec_rcv.h"
 +
-+#include "openswan/ipsec_auth.h"
++#include "libreswan/ipsec_auth.h"
 +
-+#include "openswan/ipsec_esp.h"
++#include "libreswan/ipsec_esp.h"
 +
 +#ifdef CONFIG_KLIPS_AH
-+#include "openswan/ipsec_ah.h"
++#include "libreswan/ipsec_ah.h"
 +#endif /* CONFIG_KLIPS_AH */
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipsec_ipcomp.h"
++#include "libreswan/ipsec_ipcomp.h"
 +#endif /* CONFIG_KLIPS_COMP */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
++#include "libreswan/ipsec_kern24.h"
 +
 +#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 +#include <linux/udp.h>
@@ -34400,7 +34400,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_sa.c linux-2.6.16.54-0.2.5.osw2
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -34416,7 +34416,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_sa.c linux-2.6.16.54-0.2.5.osw2
 +#include <linux/etherdevice.h> /* eth_type_trans */
 +#include <linux/ip.h>          /* struct iphdr */
 +#include <linux/skbuff.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef SPINLOCK
 +#ifdef SPINLOCK_23
 +#include <linux/spinlock.h> /* *lock* */
@@ -34427,29 +34427,29 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_sa.c linux-2.6.16.54-0.2.5.osw2
 +
 +#include <net/ip.h>
 +
-+#include "openswan/radij.h"
++#include "libreswan/radij.h"
 +
-+#include "openswan/ipsec_stats.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/ipsec_xform.h"
++#include "libreswan/ipsec_stats.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/ipsec_xform.h"
 +
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_ipe4.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_ipip.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_ipe4.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_ipip.h"
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipsec_ipcomp.h"
++#include "libreswan/ipsec_ipcomp.h"
 +#endif /* CONFIG_KLIPS_COMP */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
 +
 +#define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -35908,7 +35908,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_sha1.c linux-2.6.16.54-0.2.5.os
 +#include <asm/byteorder.h>
 +#include <linux/string.h>
 +
-+#include "openswan/ipsec_sha1.h"
++#include "libreswan/ipsec_sha1.h"
 +
 +#if defined(rol)
 +#undef rol
@@ -36104,36 +36104,36 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_snprintf.c linux-2.6.16.54-0.2.
 +#include <linux/module.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_kversion.h"
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_kversion.h"
++#include "libreswan/ipsec_param.h"
 +
 +#include <net/ip.h>
 +
-+#include "openswan/radij.h"
++#include "libreswan/radij.h"
 +
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_stats.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_stats.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_xmit.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_xmit.h"
 +
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_kern24.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
 +/* ipsec_snprintf: like snprintf except
 + * - size is signed and a negative value is treated as if it were 0
@@ -36225,7 +36225,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_tunnel.c linux-2.6.16.54-0.2.5.
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -36246,7 +36246,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_tunnel.c linux-2.6.16.54-0.2.5.
 +#include <net/arp.h>
 +#include <linux/skbuff.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#ifdef NET_21
 +# include <linux/in6.h>
@@ -36267,25 +36267,25 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_tunnel.c linux-2.6.16.54-0.2.5.
 +#include <linux/if_arp.h>
 +#include <net/arp.h>
 +
-+#include "openswan/ipsec_kversion.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_eroute.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_xmit.h"
-+#include "openswan/ipsec_ipe4.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_kversion.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_eroute.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_xmit.h"
++#include "libreswan/ipsec_ipe4.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_kern24.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
++#include "libreswan/ipsec_proto.h"
 +#ifdef CONFIG_IPSEC_NAT_TRAVERSAL
 +#include <linux/udp.h>
 +#endif
@@ -38146,8 +38146,8 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_xform.c linux-2.6.16.54-0.2.5.o
 +#include "freeswan/ipsec_ah.h"
 +#include "freeswan/ipsec_esp.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
 +#ifdef SPINLOCK
 +spinlock_t tdb_lock = SPIN_LOCK_UNLOCKED;
@@ -38191,7 +38191,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_xmit.c linux-2.6.16.54-0.2.5.os
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -38212,7 +38212,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_xmit.c linux-2.6.16.54-0.2.5.os
 +
 +#include <asm/uaccess.h>
 +#include <asm/checksum.h>
-+#include <openswan.h>
++#include <libreswan.h>
 +#ifdef NET_21
 +# define MSS_HACK_		/* experimental */
 +# include <linux/in6.h>
@@ -38231,29 +38231,29 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ipsec_xmit.c linux-2.6.16.54-0.2.5.os
 +# include <net/tcp.h>		/* TCP options */
 +#endif	/* MSS_HACK */
 +
-+#include "openswan/ipsec_kern24.h"
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_life.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_eroute.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xmit.h"
-+#include "openswan/ipsec_sa.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_ipe4.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
++#include "libreswan/ipsec_kern24.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_life.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_eroute.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xmit.h"
++#include "libreswan/ipsec_sa.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_ipe4.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
 +
 +#ifdef CONFIG_KLIPS_IPCOMP
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipcomp.h"
 +#endif /* CONFIG_KLIPS_IPCOMP */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
 +/* 
 + * Stupid kernel API differences in APIs. Not only do some
@@ -40840,7 +40840,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2.c linux-2.6.16.54-0.2.5.osw2
 +#endif
 +#include <linux/kernel.h>
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#include <linux/major.h>
 +#include <linux/signal.h>
@@ -40875,18 +40875,18 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2.c linux-2.6.16.54-0.2.5.osw2
 +
 +#include <linux/types.h>
 + 
-+#include <openswan.h>
++#include <libreswan.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_kern24.h"
-+#include "openswan/ipsec_sysctl.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_kern24.h"
++#include "libreswan/ipsec_sysctl.h"
 +
 +#define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 +
@@ -42411,7 +42411,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_build.c linux-2.6.16.54-0.2.
 +
 +# include <linux/kernel.h>  /* for printk */
 +
-+# include "openswan/ipsec_kversion.h" /* for malloc switch */
++# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 +# ifdef MALLOC_SLAB
 +#  include <linux/slab.h> /* kmalloc() */
 +# else /* MALLOC_SLAB */
@@ -42430,7 +42430,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_build.c linux-2.6.16.54-0.2.
 +
 +# define MALLOC(size) kmalloc(size, GFP_ATOMIC)
 +# define FREE(obj) kfree(obj)
-+# include <openswan.h>
++# include <libreswan.h>
 +#else /* __KERNEL__ */
 +
 +# include <sys/types.h>
@@ -42440,21 +42440,21 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_build.c linux-2.6.16.54-0.2.
 +# include <stdio.h>
 +# include <string.h> /* memset */
 +
-+# include <openswan.h>
++# include <libreswan.h>
 +
 +#endif /* __KERNEL__ */
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
 +#ifdef __KERNEL__
-+#include "openswan/radij.h"  /* rd_nodes */
-+#include "openswan/ipsec_encap.h"  /* sockaddr_encap */
++#include "libreswan/radij.h"  /* rd_nodes */
++#include "libreswan/ipsec_encap.h"  /* sockaddr_encap */
 +#endif /* __KERNEL__ */
 +
 +
-+#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
-+#include "openswan/pfkey_debug.h"
++#include "libreswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
++#include "libreswan/pfkey_debug.h"
 +
 +
 +#define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
@@ -43832,8 +43832,8 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_debug.c linux-2.6.16.54-0.2.
 +/*
 + * @(#) pfkey version 2 debugging messages
 + *
-+ * Copyright (C) 2001  Richard Guy Briggs  <rgb@openswan.org>
-+ *                 and Michael Richardson  <mcr@openswan.org>
++ * Copyright (C) 2001  Richard Guy Briggs  <rgb@libreswan.org>
++ *                 and Michael Richardson  <mcr@libreswan.org>
 + * 
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms of the GNU General Public License as published by the
@@ -43853,7 +43853,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_debug.c linux-2.6.16.54-0.2.
 +
 +# include <linux/kernel.h>  /* for printk */
 +
-+# include "openswan/ipsec_kversion.h" /* for malloc switch */
++# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 +# ifdef MALLOC_SLAB
 +#  include <linux/slab.h> /* kmalloc() */
 +# else /* MALLOC_SLAB */
@@ -43879,9 +43879,9 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_debug.c linux-2.6.16.54-0.2.
 +
 +#endif /* __KERNEL__ */
 +
-+#include "openswan.h"
-+#include "openswan/pfkeyv2.h"
-+#include "openswan/pfkey.h"
++#include "libreswan.h"
++#include "libreswan/pfkeyv2.h"
++#include "libreswan/pfkey.h"
 +
 +/* 
 + * This file provides ASCII translations of PF_KEY magic numbers.
@@ -44009,7 +44009,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_ext_bits.c linux-2.6.16.54-0
 +
 +# include <linux/kernel.h>  /* for printk */
 +
-+# include "openswan/ipsec_kversion.h" /* for malloc switch */
++# include "libreswan/ipsec_kversion.h" /* for malloc switch */
 +# ifdef MALLOC_SLAB
 +#  include <linux/slab.h> /* kmalloc() */
 +# else /* MALLOC_SLAB */
@@ -44033,11 +44033,11 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_ext_bits.c linux-2.6.16.54-0
 +# include <stdio.h>
 +#endif
 +
-+#include <openswan.h>
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/pfkey_debug.h"
++#include "libreswan/pfkey_debug.h"
 +
 +
 +pfkey_ext_track extensions_bitmaps[2/*in/out*/][2/*perm/req*/][K_SADB_MAX+1]={
@@ -44822,7 +44822,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_ext_process.c linux-2.6.16.5
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -44838,7 +44838,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_ext_process.c linux-2.6.16.5
 +#include <linux/ip.h>          /* struct iphdr */
 +#include <linux/skbuff.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#include <crypto/des.h>
 +
@@ -44864,23 +44864,23 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_ext_process.c linux-2.6.16.5
 +
 +#include <linux/random.h>	/* get_random_bytes() */
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipcomp.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
 +#define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 +
@@ -45698,7 +45698,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parse.c linux-2.6.16.54-0.2.
 +
 +# include <linux/kernel.h>  /* for printk */
 +
-+#include "openswan/ipsec_kversion.h" /* for malloc switch */
++#include "libreswan/ipsec_kversion.h" /* for malloc switch */
 +
 +# ifdef MALLOC_SLAB
 +#  include <linux/slab.h> /* kmalloc() */
@@ -45717,9 +45717,9 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parse.c linux-2.6.16.54-0.2.
 +# endif /* if defined(CONFIG_IPV6) || defined(CONFIG_IPV6_MODULE) */
 +extern int debug_pfkey;
 +
-+# include <openswan.h>
++# include <libreswan.h>
 +
-+#include "openswan/ipsec_encap.h"
++#include "libreswan/ipsec_encap.h"
 +
 +#else /* __KERNEL__ */
 +
@@ -45727,21 +45727,21 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parse.c linux-2.6.16.54-0.2.
 +# include <sys/errno.h>
 +# include <stdio.h>
 +
-+# include <openswan.h>
++# include <libreswan.h>
 +# include "constants.h" 
 +
 +#endif /* __KERNEL__ */
 +
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
++#include "libreswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL, IPSEC_SA_REF_TABLE_IDX_WIDTH */
 +
 +/* 
 + * how to handle debugging for pfkey.
 + */
-+#include <openswan/pfkey_debug.h>
++#include <libreswan/pfkey_debug.h>
 +
 +unsigned int pfkey_lib_debug = PF_KEY_DEBUG_PARSE_NONE;
 +int (*pfkey_debug_func)(const char *message, ...) PRINTF_LIKE(1);
@@ -47294,7 +47294,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parser.c linux-2.6.16.54-0.2
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -47310,7 +47310,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parser.c linux-2.6.16.54-0.2
 +#include <linux/ip.h>          /* struct iphdr */
 +#include <linux/skbuff.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
 +#include <crypto/des.h>
 +
@@ -47337,26 +47337,26 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/pfkey_v2_parser.c linux-2.6.16.54-0.2
 +
 +#include <linux/random.h>	/* get_random_bytes() */
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_sa.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_sa.h"
 +
-+#include "openswan/ipsec_radij.h"
-+#include "openswan/ipsec_xform.h"
-+#include "openswan/ipsec_ah.h"
-+#include "openswan/ipsec_esp.h"
-+#include "openswan/ipsec_tunnel.h"
-+#include "openswan/ipsec_mast.h"
-+#include "openswan/ipsec_rcv.h"
-+#include "openswan/ipcomp.h"
++#include "libreswan/ipsec_radij.h"
++#include "libreswan/ipsec_xform.h"
++#include "libreswan/ipsec_ah.h"
++#include "libreswan/ipsec_esp.h"
++#include "libreswan/ipsec_tunnel.h"
++#include "libreswan/ipsec_mast.h"
++#include "libreswan/ipsec_rcv.h"
++#include "libreswan/ipcomp.h"
 +
-+#include <openswan/pfkeyv2.h>
-+#include <openswan/pfkey.h>
++#include <libreswan/pfkeyv2.h>
++#include <libreswan/pfkey.h>
 +
-+#include "openswan/ipsec_proto.h"
-+#include "openswan/ipsec_alg.h"
++#include "libreswan/ipsec_proto.h"
++#include "libreswan/ipsec_alg.h"
 +
-+#include "openswan/ipsec_kern24.h"
++#include "libreswan/ipsec_kern24.h"
 +
 +#define SENDERR(_x) do { error = -(_x); goto errlab; } while (0)
 +
@@ -50383,7 +50383,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/prng.c linux-2.6.16.54-0.2.5.osw2.5.6
 + *
 + * RCSID $Id: prng.c,v 1.8 2005/08/25 01:20:21 paul Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - prng_init - initialize PRNG from a key
@@ -50635,7 +50635,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/radij.c linux-2.6.16.54-0.2.5.osw2.5.
 +#include <linux/version.h>
 +#include <linux/kernel.h> /* printk() */
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef MALLOC_SLAB
 +# include <linux/slab.h> /* kmalloc() */
@@ -50656,11 +50656,11 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/radij.c linux-2.6.16.54-0.2.5.osw2.5.
 +
 +#include <net/ip.h>
 +
-+#include <openswan.h>
++#include <libreswan.h>
 +
-+#include "openswan/radij.h"
-+#include "openswan/ipsec_encap.h"
-+#include "openswan/ipsec_radij.h"
++#include "libreswan/radij.h"
++#include "libreswan/ipsec_encap.h"
++#include "libreswan/ipsec_radij.h"
 +
 +int	maj_keylen;
 +struct radij_mask *rj_mkfreelist;
@@ -51605,7 +51605,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/rangetoa.c linux-2.6.16.54-0.2.5.osw2
 + *
 + * RCSID $Id: rangetoa.c,v 1.9 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - rangetoa - convert address range to ASCII
@@ -51669,7 +51669,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/satot.c linux-2.6.16.54-0.2.5.osw2.5.
 + *
 + * RCSID $Id: satot.c,v 1.13 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +static struct typename {
 +	char type;
@@ -51807,7 +51807,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/subnetof.c linux-2.6.16.54-0.2.5.osw2
 + *
 + * RCSID $Id: subnetof.c,v 1.8 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - subnetof - given address and mask, return subnet part
@@ -51870,7 +51870,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/subnettoa.c linux-2.6.16.54-0.2.5.osw
 + *
 + * RCSID $Id: subnettoa.c,v 1.11 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - subnettoa - convert address and mask to ASCII "addr/mask"
@@ -51945,7 +51945,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/sysctl_net_ipsec.c linux-2.6.16.54-0.
 +#include <linux/mm.h>
 +#include <linux/sysctl.h>
 +
-+#include "openswan/ipsec_param.h"
++#include "libreswan/ipsec_param.h"
 +
 +#ifdef CONFIG_SYSCTL
 +
@@ -53652,7 +53652,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ultoa.c linux-2.6.16.54-0.2.5.osw2.5.
 + *
 + * RCSID $Id: ultoa.c,v 1.10 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - ultoa - convert unsigned long to decimal ASCII
@@ -53722,7 +53722,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/ultot.c linux-2.6.16.54-0.2.5.osw2.5.
 + *
 + * RCSID $Id: ultot.c,v 1.5 2004/07/10 07:48:37 mcr Exp $
 + */
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +/*
 + - ultot - convert unsigned long to text
@@ -53813,11 +53813,11 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/version.c linux-2.6.16.54-0.2.5.osw2.
 +#include <linux/netdevice.h>
 +#endif
 +
-+#include "openswan.h"
++#include "libreswan.h"
 +
 +#define	V	"2.5.61s"		/* substituted in by Makefile */
-+static const char openswan_number[] = V;
-+static const char openswan_string[] = "Openswan " V;
++static const char libreswan_number[] = V;
++static const char libreswan_string[] = "Libreswan " V;
 +
 +/*
 + - ipsec_version_code - return IPsec version number/code, as string
@@ -53825,7 +53825,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/version.c linux-2.6.16.54-0.2.5.osw2.
 +const char *
 +ipsec_version_code()
 +{
-+	return openswan_number;
++	return libreswan_number;
 +}
 +
 +/*
@@ -53834,7 +53834,7 @@ diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/version.c linux-2.6.16.54-0.2.5.osw2.
 +const char *
 +ipsec_version_string()
 +{
-+	return openswan_string;
++	return libreswan_string;
 +}
 diff -Naur linux-2.6.16.54-0.2.5/net/ipsec/zutil.c linux-2.6.16.54-0.2.5.osw2.5.60s/net/ipsec/zutil.c
 --- linux-2.6.16.54-0.2.5/net/ipsec/zutil.c	1969-12-31 19:00:00.000000000 -0500

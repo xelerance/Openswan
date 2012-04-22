@@ -12,8 +12,8 @@
 # for more details.
 #
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 CONFDSUBDIR=examples
 CONFDFILES=l2tp-cert.conf l2tp-psk.conf linux-linux.conf sysctl.conf xauth.conf ipv6.conf hub-spoke.conf oe-exclude-dns.conf mast-l2tp-psk.conf

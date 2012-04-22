@@ -3,7 +3,7 @@
 <emphasis remap='I'>ipsec.conf</emphasis>
 file
 specifies most configuration and control information for the
-Openswan IPsec subsystem.
+Libreswan IPsec subsystem.
 (The major exception is secrets for authentication;
 see
 <citerefentry><refentrytitle>ipsec.secrets</refentrytitle><manvolnum>5</manvolnum></citerefentry>.)

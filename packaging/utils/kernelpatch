@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# wander through an Openswan linux directory, creating a patch file (to stdout)
+# wander through an Libreswan linux directory, creating a patch file (to stdout)
 # that will apply the code to a kernel source directory.
 #
 # $Id: kernelpatch,v 1.14 2005/09/26 02:37:53 mcr Exp $
@@ -66,7 +66,7 @@ echo '--- /dev/null   Fri May 10 13:59:54 2002'
 echo '+++ linux/net/ipsec/Makefile.ver  Sun Jul 28 22:10:40 2002'
 echo '@@ -0,0 +1 @@'
 echo -n '+'
-(cd ${OPENSWANSRCDIR} && make env ) | grep IPSECVERSION
+(cd ${LIBRESWANSRCDIR} && make env ) | grep IPSECVERSION
 
 exit 0
 

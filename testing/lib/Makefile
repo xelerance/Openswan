@@ -11,12 +11,12 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
-srcdir?=${OPENSWANSRCDIR}/testing/lib/
+srcdir?=${LIBRESWANSRCDIR}/testing/lib/
 
-SUBDIRS=libopenswan libpluto
+SUBDIRS=liblibreswan libpluto
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
@@ -27,6 +27,6 @@ def:
 cleanall distclean mostlyclean realclean install programs checkprograms check clean spotless install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1; \
+		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ LIBRESWANSRCDIR=$(LIBRESWANSRCDIR) $@ ) || exit 1; \
 	done; \
 

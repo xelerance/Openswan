@@ -1,12 +1,12 @@
 
-include ${OPENSWANSRCDIR}/Makefile.ver
-include ${OPENSWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 LEX=flex
 BISON=bison
 RM=rm
 
-INCLUDES+=-I${OPENSWANSRCDIR} -I${KLIPSINC} -I${OPENSWANSRCDIR}/include
+INCLUDES+=-I${LIBRESWANSRCDIR} -I${KLIPSINC} -I${LIBRESWANSRCDIR}/include
 CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${INCLUDES} ${CROSSFLAGS}
 
 ifneq ($(BUILDENV),darwin)
@@ -36,7 +36,7 @@ NAT_DEFS=-DNAT_TRAVERSAL
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS} 
+LIBS?=${PROGLIBS} ${OSWLOGLIB} ${LIBRESWANLIB} ${CRYPTOLIBS} 
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -87,7 +87,7 @@ endif
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ../Makefile.program)
 ifeq ($(SHOULDWERESTART),true../Makefile.program)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${SOURCEDIR} && $(MAKE) $@
+	cd ${LIBRESWANSRCDIR} && cd ${OBJDIRTOP}/programs/${SOURCEDIR} && $(MAKE) $@
 else
 all: ${PROGRAM}
 programs: all
@@ -199,7 +199,7 @@ endif
 %.o: ${srcdir}%.c
 	${CC} -c ${CFLAGS} $<
 
-include ${OPENSWANSRCDIR}/programs/Makefile.manpages
+include ${LIBRESWANSRCDIR}/programs/Makefile.manpages
 
 %.i: %.c 
 	$(CC) $(CFLAGS) -E -o $@ $< 
@@ -222,13 +222,13 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
                         -e "s:@MODPROBE@:$(MODPROBE):" \
 
 
-%: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
+%: ${srcdir}%.in ${LIBRESWANSRCDIR}/Makefile.inc ${LIBRESWANSRCDIR}/Makefile.ver
 	@echo  'IN' $< '->' $@
 	${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
 
-%: ${srcdir}%.pl ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
+%: ${srcdir}%.pl ${LIBRESWANSRCDIR}/Makefile.inc ${LIBRESWANSRCDIR}/Makefile.ver
 	@echo  'PL' $< '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
@@ -251,11 +251,11 @@ endif
 
 checkprograms:
 
-OPENSWANSRCDIRREL?=../..
+LIBRESWANSRCDIRREL?=../..
 
 # Gather dependencies caused by explicit #includes within .c files
 depend: ${DISTSRC}
-	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${LIBRESWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend
 

@@ -1,6 +1,6 @@
 How to debug connections with tcpdump.
 
-This write up assumes that you have two openswan systems connected.
+This write up assumes that you have two libreswan systems connected.
 If you have another system at one end, then likely it provides no useful
 debugging. (This is particularly true to windows and cisco boxes)
 
@@ -17,7 +17,7 @@ the external interface. If PPPoE is involved, then one should dump on the
 selection expressions to work. Tcpdump can decode PPPoE packets, but can not
 select based upon the encapsulated UDP port numbers in that situation.
 
-If you have never built an openswan to openswan tunnel, you should do so
+If you have never built an libreswan to libreswan tunnel, you should do so
 using raw RSA keys to confirm that you can configure both ends properly.
 
 The network should look like:

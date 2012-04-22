@@ -14,7 +14,7 @@
  * License for more details.
  *
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 err_t
 add_port(af, addr, port)

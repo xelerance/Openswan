@@ -21,12 +21,12 @@ index 462bd77..1973524 100644
 +	@echo " make KERNELDIR=/usr/src/linux-2.6.36 module minstall programs install"
  	@echo
  	@echo "When using KLIPS with OCF:"
--	@echo " make KERNELSRC=/usr/src/linux-2.6.36-ocf/ MODULE_DEF_INCLUDE=$${OPENSWANSRCDIR}/packaging/ocf/config-all.hmodules module minstall programs install"
-+	@echo " make KERNELDIR=/usr/src/linux-2.6.36-ocf/ MODULE_DEF_INCLUDE=$${OPENSWANSRCDIR}/packaging/ocf/config-all.hmodules module minstall programs install"
+-	@echo " make KERNELSRC=/usr/src/linux-2.6.36-ocf/ MODULE_DEF_INCLUDE=$${LIBRESWANSRCDIR}/packaging/ocf/config-all.hmodules module minstall programs install"
++	@echo " make KERNELDIR=/usr/src/linux-2.6.36-ocf/ MODULE_DEF_INCLUDE=$${LIBRESWANSRCDIR}/packaging/ocf/config-all.hmodules module minstall programs install"
  	@echo
  	@echo "When using NETKEY:"
  	@echo " make programs install"
-@@ -47,7 +47,7 @@ include ${OPENSWANSRCDIR}/Makefile.top
+@@ -47,7 +47,7 @@ include ${LIBRESWANSRCDIR}/Makefile.top
  
  # kernel details
  # what variant of our patches should we use, and where is it
@@ -40,18 +40,18 @@ index 462bd77..1973524 100644
  
  unapplypatch:
 -	@echo "info: making unapplypatch in `pwd` and KERNELSRC=\"${KERNELSRC}\";"
--	-@if [ -f ${KERNELSRC}/openswan.patch ]; then \
+-	-@if [ -f ${KERNELSRC}/libreswan.patch ]; then \
 +	@echo "info: making unapplypatch in `pwd` and KERNELDIR=\"${KERNELDIR}\";"
-+	-@if [ -f ${KERNELDIR}/openswan.patch ]; then \
++	-@if [ -f ${KERNELDIR}/libreswan.patch ]; then \
  		echo Undoing previous patches; \
--		cat ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
-+		cat ${KERNELDIR}/openswan.patch | (cd ${KERNELDIR} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
+-		cat ${KERNELSRC}/libreswan.patch | (cd ${KERNELSRC} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
++		cat ${KERNELDIR}/libreswan.patch | (cd ${KERNELDIR} && patch -p1 -R --force -E -z .preipsec --reverse --ignore-whitespace ); \
  	fi
  
  applypatch:
  	@echo "info: Now performing forward patches in `pwd`";
--	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELSRC}/openswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
-+	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELDIR}/openswan.patch | (cd ${KERNELDIR} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
+-	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELSRC}/libreswan.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
++	${MAKE} kernelpatch${KERNELREL} | tee ${KERNELDIR}/libreswan.patch | (cd ${KERNELDIR} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
  
  unapplynpatch:
  	@echo "info: making unapplynpatch (note the second N) in `pwd`";
@@ -200,19 +200,19 @@ index 462bd77..1973524 100644
  		$(MAKE) $(KERNMAKEOPTS) modules 2>&1 ) | tee -a out.kbuild ; \
  	fi
  	${ERRCHECK} out.kbuild
-@@ -347,33 +347,33 @@ ${MODBUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module.make
- 	cp ${OPENSWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
+@@ -347,33 +347,33 @@ ${MODBUILDDIR}/Makefile : ${LIBRESWANSRCDIR}/packaging/makefiles/module.make
+ 	cp ${LIBRESWANSRCDIR}/packaging/makefiles/module.make ${MODBUILDDIR}/Makefile
  	echo "# "                        >> ${MODBUILDDIR}/Makefile
  	echo "# Local Variables: "       >> ${MODBUILDDIR}/Makefile
--	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
-+	echo "# compile-command: \"${MAKE} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELDIR} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
+-	echo "# compile-command: \"${MAKE} LIBRESWANSRCDIR=${LIBRESWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELSRC} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
++	echo "# compile-command: \"${MAKE} LIBRESWANSRCDIR=${LIBRESWANSRCDIR} ARCH=${ARCH} TOPDIR=${KERNELDIR} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG} -f Makefile ipsec.o\""         >> ${MODBUILDDIR}/Makefile
  	echo "# End: "       >> ${MODBUILDDIR}/Makefile
  
  module:
--	@if [ -f ${KERNELSRC}/README.openswan-2 ] ; then \
--                echo "WARNING: Kernel source ${KERNELSRC} has already been patched with openswan-2, out of tree build might fail!"; \
-+	@if [ -f ${KERNELDIR}/README.openswan-2 ] ; then \
-+                echo "WARNING: Kernel source ${KERNELDIR} has already been patched with openswan-2, out of tree build might fail!"; \
+-	@if [ -f ${KERNELSRC}/README.libreswan-2 ] ; then \
+-                echo "WARNING: Kernel source ${KERNELSRC} has already been patched with libreswan-2, out of tree build might fail!"; \
++	@if [ -f ${KERNELDIR}/README.libreswan-2 ] ; then \
++                echo "WARNING: Kernel source ${KERNELDIR} has already been patched with libreswan-2, out of tree build might fail!"; \
          fi;
 -	@if [ -f ${KERNELSRC}/README.freeswan ] ; then \
 -                echo "ERROR: Kernel source ${KERNELSRC} has already been patched with freeswan, out of tree build will fail!"; \
@@ -238,8 +238,8 @@ index 462bd77..1973524 100644
                  echo "Warning: Building for a 2.4 kernel in what looks like a 2.6 tree"; \
          fi ; \
          ${MAKE} ${MODBUILDDIR}/Makefile
--	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
-+	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELDIR} -f Makefile ipsec.o
+-	${MAKE} -C ${MODBUILDDIR}  LIBRESWANSRCDIR=${LIBRESWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
++	${MAKE} -C ${MODBUILDDIR}  LIBRESWANSRCDIR=${LIBRESWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELDIR} -f Makefile ipsec.o
  	@echo 
  	@echo '========================================================='
  	@echo 
@@ -262,14 +262,14 @@ index 462bd77..1973524 100644
  	fi ; \
  	if [ -z "$$OSMODLIB" ] ; then \
  		echo "No known place to install module. Aborting." ; \
-@@ -441,15 +441,15 @@ ${MOD26BUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module26.make
- 	cp ${OPENSWANSRCDIR}/packaging/makefiles/module26.make ${MOD26BUILDDIR}/Makefile
+@@ -441,15 +441,15 @@ ${MOD26BUILDDIR}/Makefile : ${LIBRESWANSRCDIR}/packaging/makefiles/module26.make
+ 	cp ${LIBRESWANSRCDIR}/packaging/makefiles/module26.make ${MOD26BUILDDIR}/Makefile
  	echo "# "                        >> ${MOD26BUILDDIR}/Makefile
  	echo "# Local Variables: "       >> ${MOD26BUILDDIR}/Makefile
--	echo "# compile-command: \"${MAKE} -C ${OPENSWANSRCDIR} ARCH=${ARCH} KERNELSRC=${KERNELSRC} MOD26BUILDDIR=${MOD26BUILDDIR} module26\""         >> ${MOD26BUILDDIR}/Makefile
-+	echo "# compile-command: \"${MAKE} -C ${OPENSWANSRCDIR} ARCH=${ARCH} KERNELDIR=${KERNELDIR} MOD26BUILDDIR=${MOD26BUILDDIR} module26\""         >> ${MOD26BUILDDIR}/Makefile
+-	echo "# compile-command: \"${MAKE} -C ${LIBRESWANSRCDIR} ARCH=${ARCH} KERNELSRC=${KERNELSRC} MOD26BUILDDIR=${MOD26BUILDDIR} module26\""         >> ${MOD26BUILDDIR}/Makefile
++	echo "# compile-command: \"${MAKE} -C ${LIBRESWANSRCDIR} ARCH=${ARCH} KERNELDIR=${KERNELDIR} MOD26BUILDDIR=${MOD26BUILDDIR} module26\""         >> ${MOD26BUILDDIR}/Makefile
  	echo "# End: "       >> ${MOD26BUILDDIR}/Makefile
- 	ln -s -f ${OPENSWANSRCDIR}/linux/net/ipsec/match*.S ${MOD26BUILDDIR}
+ 	ln -s -f ${LIBRESWANSRCDIR}/linux/net/ipsec/match*.S ${MOD26BUILDDIR}
  
  module26:
 -	@if [ -f ${KERNELSRC}/Rules.make ] ; then \                 echo "Warning: Building for a 2.6 kernel in what looks like a 2.4 tree"; \
@@ -333,15 +333,15 @@ index 462bd77..1973524 100644
  	@echo "Moving ipsec.o into temporary location..."
 -	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 +	KV=$(shell ${KVUTIL} ${KERNELDIR}/Makefile) && \
- 	mkdir -p $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
+ 	mkdir -p $(LIBRESWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec
 -	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile) && \
 +	KV=$(shell ${KVUTIL} ${KERNELDIR}/Makefile) && \
- 	cp ${OPENSWANSRCDIR}/modobj*/ipsec.[k]o $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
+ 	cp ${LIBRESWANSRCDIR}/modobj*/ipsec.[k]o $(LIBRESWANSRCDIR)/packaging/ipkg/kernel-module/lib/modules/$$KV/net/ipsec/
 -	KV=$(shell ${KVUTIL} ${KERNELSRC}/Makefile)
 +	KV=$(shell ${KVUTIL} ${KERNELDIR}/Makefile)
  
  ipkg_clean:
- 	rm -rf $(OPENSWANSRCDIR)/packaging/ipkg/kernel-module/
+ 	rm -rf $(LIBRESWANSRCDIR)/packaging/ipkg/kernel-module/
 diff --git a/Makefile.inc b/Makefile.inc
 index 5ceb09d..19c797e 100644
 --- a/Makefile.inc

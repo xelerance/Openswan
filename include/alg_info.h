@@ -71,7 +71,7 @@ struct esp_info {
 	u_int8_t encryptalg;	/* normally  encryptalg=transid */
 	u_int16_t authalg;	/* normally  authalg=auth+1
 				 * Paul: apparently related to magic at
-				 * lib/libopenswan/alg_info.c alg_info_esp_aa2sadb() */
+				 * lib/liblibreswan/alg_info.c alg_info_esp_aa2sadb() */
 };
 
 struct ike_info {

@@ -1,7 +1,7 @@
 conn linux-to-linux
 	#
 	# Simple use raw RSA keys
-	# After starting openswan, run: ipsec showhostkey --left (or --right)
+	# After starting libreswan, run: ipsec showhostkey --left (or --right)
 	# and fill in the connection similarly to the example below.
 	#
 	left=1.2.3.4

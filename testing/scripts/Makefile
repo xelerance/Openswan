@@ -11,23 +11,23 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-export OPENSWANSRCDIR
-include $(OPENSWANSRCDIR)/Makefile.inc
-srcdir?=${OPENSWANSRCDIR}/testing/scripts/
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
+export LIBRESWANSRCDIR
+include $(LIBRESWANSRCDIR)/Makefile.inc
+srcdir?=${LIBRESWANSRCDIR}/testing/scripts/
 
 SUBDIRS=
-UTILS=${OPENSWANSRCDIR}/testing/utils
+UTILS=${LIBRESWANSRCDIR}/testing/utils
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"
 	@false
 
-check: 	${OPENSWANSRCDIR}/umlsetup.sh
-	. ${OPENSWANSRCDIR}/umlsetup.sh; . ${srcdir}setup.sh; . ${UTILS}/functions.sh; . ${srcdir}TESTLIST
+check: 	${LIBRESWANSRCDIR}/umlsetup.sh
+	. ${LIBRESWANSRCDIR}/umlsetup.sh; . ${srcdir}setup.sh; . ${UTILS}/functions.sh; . ${srcdir}TESTLIST
 
 one:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+	export LIBRESWANLIB=${LIBRESWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
 install install_file_list checkprograms programs:
 	@true

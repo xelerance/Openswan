@@ -38,7 +38,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"

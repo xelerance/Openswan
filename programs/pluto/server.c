@@ -52,7 +52,7 @@
 #  include <sys/uio.h>	/* struct iovec */
 #endif
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h"
@@ -82,8 +82,8 @@
 #include "pluto_crypt.h" /* cryptographic helper functions */
 #include "udpfromto.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 #include "kameipsec.h"
 
 #ifdef NAT_TRAVERSAL
@@ -268,7 +268,7 @@ free_dead_ifaces(void)
     {
 	if (p->change == IFN_DELETE)
 	{
-	    openswan_log("shutting down interface %s/%s %s:%d"
+	    libreswan_log("shutting down interface %s/%s %s:%d"
 			 , p->ip_dev->id_vname
 			 , p->ip_dev->id_rname
 			 , ip_str(&p->ip_addr), p->port);
@@ -538,11 +538,11 @@ reapchildren(void)
 #ifndef HAVE_LIBNSS
 	if(pluto_crypt_handle_dead_child(child, status)) continue;
 #endif
-	openswan_log("child pid=%d (status=%d) is not my child!", child, status);
+	libreswan_log("child pid=%d (status=%d) is not my child!", child, status);
     }
     
     if(child == -1) {
-	openswan_log("reapchild failed with errno=%d %s",
+	libreswan_log("reapchild failed with errno=%d %s",
 		     errno, strerror(errno));
     }
 }
@@ -600,7 +600,7 @@ call_server(void)
 		 * This sticking happens sometimes -- kernel bug?
 		 */
 		sighupflag = FALSE;
-		openswan_log("Pluto ignores SIGHUP -- perhaps you want \"whack --listen\"");
+		libreswan_log("Pluto ignores SIGHUP -- perhaps you want \"whack --listen\"");
 	    }
 
 	    if(sigchildflag) {
@@ -913,7 +913,7 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 	}
 	else if (packet_len == sizeof(buffer))
 	{
-	    openswan_log("MSG_ERRQUEUE message longer than %lu bytes; truncated"
+	    libreswan_log("MSG_ERRQUEUE message longer than %lu bytes; truncated"
 		, (unsigned long) sizeof(buffer));
 	}
 	else
@@ -1052,7 +1052,7 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 		    }
 		    else
 #endif
-		    openswan_log((sender != NULL) + "~"
+		    libreswan_log((sender != NULL) + "~"
 			"ERROR: asynchronous network error report on %s (sport=%d)"
 			"%s"
 			", complainant %s"
@@ -1082,7 +1082,7 @@ check_msg_errqueue(const struct iface_port *ifp, short interest)
 		/* .cmsg_len is a kernel_size_t(!), but the value
 		 * certainly ought to fit in an unsigned long.
 		 */
-		openswan_log("unknown cmsg: level %d, type %d, len %lu"
+		libreswan_log("unknown cmsg: level %d, type %d, len %lu"
 		    , cm->cmsg_level, cm->cmsg_type
 		    , (unsigned long) cm->cmsg_len);
 	    }

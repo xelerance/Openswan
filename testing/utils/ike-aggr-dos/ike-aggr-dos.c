@@ -30,10 +30,10 @@
 #include <assert.h>
 #include <poll.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <pcap.h>
 
-#include "openswan/pfkeyv2.h"
+#include "libreswan/pfkeyv2.h"
 
 #include "constants.h"
 #include "packet.h"
@@ -99,7 +99,7 @@ static void usage(void)
 	"Usage:\n\n"
 	"ike-aggr-dos input.pcap output.pcap"
 	    "\n"
-	"Openswan %s\n",
+	"Libreswan %s\n",
 	ipsec_version_code());
 }
 

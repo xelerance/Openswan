@@ -22,11 +22,11 @@
 #ifndef _CONSTANTS_H_
 
 /*
- * This file was split into internal contants (Openswan/pluto related),
+ * This file was split into internal contants (Libreswan/pluto related),
  * and external constants (defined by IETF, etc.)
  *
  * Constants which are kernel/IPsec related are in appropriate
- * openswan / *.h files. 
+ * libreswan / *.h files. 
  *
  */
 
@@ -44,10 +44,10 @@
  * The fact that the string is a constant is limiting, but it
  * avoids storage management issues: the recipient is allowed to assume
  * that the string will live "long enough" (usually forever).
- * <openswan.h> defines err_t for this return type.
+ * <libreswan.h> defines err_t for this return type.
  */
 
-#ifndef OPENSWAN_COCOA_APP
+#ifndef LIBRESWAN_COCOA_APP
 typedef int bool;
 #endif
 

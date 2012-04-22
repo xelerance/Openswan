@@ -35,8 +35,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -2218,25 +2218,25 @@ init_kernel(void)
 	if(stat("/proc/net/pfkey", &buf) == 0 &&
 	   stat("/proc/net/pf_key", &buf) == 0) {
 	    /* we don't die, we just log and go to sleep */
-	    openswan_log("Can not run with both NETKEY and KLIPS in the kernel");
-	    openswan_log("Please check your kernel configuration, or specify a stack");
-	    openswan_log("using protostack={klips,netkey,mast}");
+	    libreswan_log("Can not run with both NETKEY and KLIPS in the kernel");
+	    libreswan_log("Please check your kernel configuration, or specify a stack");
+	    libreswan_log("using protostack={klips,netkey,mast}");
 	    exit_pluto(0);
 	}
 #endif
-	openswan_log("Kernel interface auto-pick");
+	libreswan_log("Kernel interface auto-pick");
 	/* FALL THROUGH */
 
 #if defined(NETKEY_SUPPORT)
     case USE_NETKEY:
 	if (stat("/proc/net/pfkey", &buf) == 0) {
 	    kern_interface = USE_NETKEY;
-	    openswan_log("Using Linux 2.6 IPsec interface code on %s (experimental code)"
+	    libreswan_log("Using Linux 2.6 IPsec interface code on %s (experimental code)"
 			 , kversion);
 	    kernel_ops = &netkey_kernel_ops;
 	    break;
 	} else
-	    openswan_log("No Kernel NETKEY interface detected");
+	    libreswan_log("No Kernel NETKEY interface detected");
 	/* FALL THROUGH */
 #endif
 
@@ -2244,12 +2244,12 @@ init_kernel(void)
     case USE_KLIPS:
 	if (stat("/proc/net/pf_key", &buf) == 0) {
 	    kern_interface = USE_KLIPS;
-	    openswan_log("Using KLIPS IPsec interface code on %s"
+	    libreswan_log("Using KLIPS IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &klips_kernel_ops;
 	    break;
 	} else
-	    openswan_log("No Kernel KLIPS interface detected");
+	    libreswan_log("No Kernel KLIPS interface detected");
 	/* FALL THROUGH */
 #endif
 
@@ -2257,19 +2257,19 @@ init_kernel(void)
     case USE_MASTKLIPS:
         if (stat("/proc/sys/net/ipsec/debug_mast", &buf) == 0) {
 	    kern_interface = USE_MASTKLIPS;
-	    openswan_log("Using KLIPSng (mast) IPsec interface code on %s"
+	    libreswan_log("Using KLIPSng (mast) IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &mast_kernel_ops;
 	    break;
 	} else
-	    openswan_log("No Kernel MASTKLIPS interface detected");
+	    libreswan_log("No Kernel MASTKLIPS interface detected");
 	/* FALL THROUGH */
 #endif
 
 #if defined(BSD_KAME) 
     case USE_BSDKAME:
 	kern_interface = USE_BSDKAME;
-	openswan_log("Using BSD/KAME IPsec interface code on %s"
+	libreswan_log("Using BSD/KAME IPsec interface code on %s"
 			, kversion);
 	kernel_ops = &bsdkame_kernel_ops;
 	break;
@@ -2278,7 +2278,7 @@ init_kernel(void)
 #if defined(WIN32) && defined(WIN32_NATIVE) 
     case USE_WIN32_NATIVE:
 	kern_interface = USE_WIN32_NATIVE;
-	openswan_log("Using Win2K native IPsec interface code on %s"
+	libreswan_log("Using Win2K native IPsec interface code on %s"
 		     , kversion);
 	kernel_ops = &win2k_kernel_ops;
 	break;
@@ -2286,16 +2286,16 @@ init_kernel(void)
 
     case NO_KERNEL:
 	kern_interface = NO_KERNEL;
-	openswan_log("Using 'no_kernel' interface code on %s"
+	libreswan_log("Using 'no_kernel' interface code on %s"
 		     , kversion);
 	kernel_ops = &noklips_kernel_ops;
 	break;
 
     default:
 	if(kern_interface == AUTO_PICK)
-		openswan_log("kernel interface auto-pick failed - no suitable kernel stack found");
+		libreswan_log("kernel interface auto-pick failed - no suitable kernel stack found");
 	else
-		openswan_log("kernel interface '%s' not available"
+		libreswan_log("kernel interface '%s' not available"
 		     , enum_name(&kern_interface_names, kern_interface));
 	exit_pluto(5);
     }
@@ -2347,7 +2347,7 @@ static void look_for_replacement_state(struct state *st)
 	 * then there is an old state associated, and it is
 	 * different then the new one.
 	 */
-	openswan_log("keeping refhim=%lu during rekey"
+	libreswan_log("keeping refhim=%lu during rekey"
 		     , (unsigned long)ost->st_refhim);
 	st->st_refhim = ost->st_refhim;
     }

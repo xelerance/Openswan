@@ -14,8 +14,8 @@
  *
  */
 
-#include "openswan/ipsec_kversion.h"
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_kversion.h"
+#include "libreswan/ipsec_param.h"
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,24)
 #include <net/net_namespace.h>
 #endif

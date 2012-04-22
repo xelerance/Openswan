@@ -1,19 +1,19 @@
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
 UNITTEST=calc-reciprocal
-CFLAGS=-DUSE_3DES -I${OPENSWANSRCDIR}/programs/pluto
+CFLAGS=-DUSE_3DES -I${LIBRESWANSRCDIR}/programs/pluto
 
-SOURCES=calc-reciprocal.c ${OPENSWANSRCDIR}/programs/pluto/hmac.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypto.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/ike_alg.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_utils.c
-SOURCES+=${OPENSWANSRCDIR}/programs/pluto/crypt_dh.c
+SOURCES=calc-reciprocal.c ${LIBRESWANSRCDIR}/programs/pluto/hmac.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypto.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/ike_alg.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypt_utils.c
+SOURCES+=${LIBRESWANSRCDIR}/programs/pluto/crypt_dh.c
 
 calc-reciprocal: ${SOURCES}
 
 programs checkprograms: ${UNITTEST}
 	@true
 
-include ${OPENSWANSRCDIR}/programs/Makefile.program
+include ${LIBRESWANSRCDIR}/programs/Makefile.program
 
 

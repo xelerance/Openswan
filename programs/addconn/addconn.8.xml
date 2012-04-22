@@ -122,7 +122,7 @@
 <para><emphasis remap='I'>ipsec addconn</emphasis>
 takes a config file (or stdin) containing the format of ipsec.conf, or the format of individual
 "conn" sections, and uses that information to load named or all connections defined in that
-configuration file into the running openswan pluto IKE daemon. If no configuration file is
+configuration file into the running libreswan pluto IKE daemon. If no configuration file is
 specified, the default configuration file is used. If no pluto socket is specified, the
 default socket location will be used.
 </para>
@@ -150,7 +150,7 @@ which connections the addcon command would act upon, without actually performing
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Man page written for the Xelerance Openswan project &lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
+<para>Man page written for the Xelerance Libreswan project &lt;<ulink url='http://www.libreswan.org/'>http://www.libreswan.org/</ulink>&gt;
 by Paul Wouters</para>
 
 </refsect1>

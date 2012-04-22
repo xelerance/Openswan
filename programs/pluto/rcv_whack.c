@@ -34,8 +34,8 @@
 #include <resolv.h>
 #include <fcntl.h>
 
-#include <openswan.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "oswconf.h"
@@ -189,7 +189,7 @@ static bool openwhackrecordfile(char *file)
     strncpy(whackrecordname, file, sizeof(whackrecordname));
     whackrecordfile = fopen(whackrecordname, "w");
     if(whackrecordfile==NULL) {
-	openswan_log("Failed to open whack record file: '%s'\n"
+	libreswan_log("Failed to open whack record file: '%s'\n"
 		     , whackrecordname);
 	return FALSE;
     }
@@ -429,7 +429,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	fflush(stderr);
 	fflush(stdout);
 	close_peerlog();    /* close any open per-peer logs */
-	openswan_log("listening for IKE messages");
+	libreswan_log("listening for IKE messages");
 	listening = TRUE;
 	daily_log_reset();
 	reset_adns_restart_count();
@@ -440,7 +440,7 @@ void whack_process(int whackfd, struct whack_message msg)
     }
     if (msg.whack_unlisten)
     {
-	openswan_log("no longer listening for IKE messages");
+	libreswan_log("no longer listening for IKE messages");
 	listening = FALSE;
     }
 
@@ -490,7 +490,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	passert(msg.tpmeval != NULL);
 	tpm_eval(msg.tpmeval);
 #else
-	openswan_log("Pluto not built with TAPROOM");
+	libreswan_log("Pluto not built with TAPROOM");
 #endif	
     }
 
@@ -648,7 +648,7 @@ void whack_process(int whackfd, struct whack_message msg)
 
     if (msg.whack_shutdown)
     {
-	openswan_log("shutting down");
+	libreswan_log("shutting down");
 	exit_pluto(0);	/* delete lock and leave, with 0 status */
     }
 
@@ -721,7 +721,7 @@ whack_handle(int whackctlfd)
 
 		if (msg.whack_shutdown)
 		{
-		    openswan_log("shutting down");
+		    libreswan_log("shutting down");
 		    exit_pluto(0);	/* delete lock and leave, with 0 status */
 		}
 		ugh = "";	/* bail early, but without complaint */

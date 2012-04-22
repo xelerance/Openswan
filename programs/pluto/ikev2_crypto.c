@@ -26,12 +26,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
-#include "libopenswan.h"
+#include "liblibreswan.h"
 
 #include "defs.h"
 #include "cookie.h"

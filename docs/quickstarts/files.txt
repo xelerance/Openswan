@@ -1,11 +1,11 @@
 
-- Overview of the Openswan commands and configuration files
+- Overview of the Libreswan commands and configuration files
 
 Implementation
 
-Openswan consists of two subsystems. The userland subsystem consists of the
+Libreswan consists of two subsystems. The userland subsystem consists of the
 IKE keying daemon, called pluto, and various helper applications. The actual
-encryption is done in kernel mode. The Openswan implementation of the kernel
+encryption is done in kernel mode. The Libreswan implementation of the kernel
 code is called KLIPS. This can be a kernel loadable module called ipsec.o.
 
 As of kernel 2.6, Linux comes with its own kernel implementation. This is a
@@ -16,12 +16,12 @@ consists of various kernel modules that all need to get loaded to get a
 functional kernel mode implementation. af_key.ko, xfrm_user.ko, esp4.ko
 and ah4.ko.
 
-The Openswan userland tools can both use KLIPS or the Kame code, but you can't
+The Libreswan userland tools can both use KLIPS or the Kame code, but you can't
 use both at the same time.
 
 Configuration files
 
-Openswan puts all the sensitive information, such as private keys, or
+Libreswan puts all the sensitive information, such as private keys, or
 pre-shared secrets, in a single file: /etc/ipsec.secrets.
 
 All the other configuration options go into /etc/ipsec.conf. This file can
@@ -30,7 +30,7 @@ directory structure /etc/ipsec.d/
 
 Commands
 
-Normally, Openswan is started through the system startup scripts, for example
+Normally, Libreswan is started through the system startup scripts, for example
 in /etc/init.d/ipsec. Once it is running, you can use the "ipsec" command to
 to send or receive commands about the current state. These commands all talk
 to the IKE daemon called pluto. "ipsec --help" will give you some information.

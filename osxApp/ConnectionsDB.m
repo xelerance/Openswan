@@ -1,6 +1,6 @@
 //
 //  ConnectionsDB.m
-//  Openswan
+//  Libreswan
 //
 //  Created by Jose Quaresma on 19/6/09.
 //  Copyright 2009 __MyCompanyName__. All rights reserved.

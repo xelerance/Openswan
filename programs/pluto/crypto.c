@@ -21,7 +21,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #define HEADER_DES_LOCL_H   /* stupid trick to force prototype decl in <des.h> */
 #include <klips-crypto/des.h>
 

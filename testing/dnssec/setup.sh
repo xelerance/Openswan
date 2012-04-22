@@ -1,32 +1,32 @@
 
-if [ -z "$OPENSWANSRCDIR" ]
+if [ -z "$LIBRESWANSRCDIR" ]
 then
 	if [ -f ../../umlsetup.sh ]
 	then
-	  OPENSWANSRCDIR=`cd ../.. && pwd`
+	  LIBRESWANSRCDIR=`cd ../.. && pwd`
 	else 
 	  if [ -f ../../../umlsetup.sh ]
 	  then 
-	    OPENSWANSRCDIR=`cd ../../.. && pwd`
+	    LIBRESWANSRCDIR=`cd ../../.. && pwd`
 	  fi
         fi  	
 fi
 
-if [ ! -f $OPENSWANSRCDIR/umlsetup.sh ]
+if [ ! -f $LIBRESWANSRCDIR/umlsetup.sh ]
 then
-	echo Umlsetup not found at OPENSWANSRCDIR=$OPENSWANSRCDIR.
-	echo Is OPENSWANSRCDIR set correctly'?'
+	echo Umlsetup not found at LIBRESWANSRCDIR=$LIBRESWANSRCDIR.
+	echo Is LIBRESWANSRCDIR set correctly'?'
 	exit 5
 fi
 
-OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
-export OPENSWANSRCDIR
+LIBRESWANSRCDIR=`cd ${LIBRESWANSRCDIR}; pwd`
+export LIBRESWANSRCDIR
 
-TESTINGROOT=${OPENSWANSRCDIR}/testing
+TESTINGROOT=${LIBRESWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
 NJ=${UTILS}/uml_netjig/uml_netjig
-KLIPSTOP=${OPENSWANSRCDIR}/linux
-FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/klips/fixups && pwd`
+KLIPSTOP=${LIBRESWANSRCDIR}/linux
+FIXUPDIR=`cd ${LIBRESWANSRCDIR}/testing/klips/fixups && pwd`
 CONSOLEDIFFDEBUG=${CONSOLEDIFFDEBUG-false}
 NETJIGDEBUG=${NETJIGDEBUG-false}
 

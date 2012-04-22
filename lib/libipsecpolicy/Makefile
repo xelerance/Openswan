@@ -12,10 +12,10 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 
 MANDIR=$(MANTREE)/man3
@@ -24,11 +24,11 @@ SRCS=policyquery.c cgipolicy.c
 
 OBJS=${SRCS:.c=.o} version.o
 
-KLIPSD=${OPENSWANSRCDIR}/linux/include
+KLIPSD=${LIBRESWANSRCDIR}/linux/include
 
 LIB=libipsecpolicy.a
 # Original flags
-CFLAGS+=-I. -I${KLIPSD} -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include $(USERCOMPILE) ${PORTINCLUDE}
+CFLAGS+=-I. -I${KLIPSD} -I${LIBRESWANSRCDIR} -I${LIBRESWANSRCDIR}/include $(USERCOMPILE) ${PORTINCLUDE}
 CFLAGS+= -Wall
 CFLAGS+= -Wpointer-arith
 CFLAGS+= -Wcast-qual
@@ -43,7 +43,7 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard policyquery.c)
 ifeq ($(SHOULDWERESTART),truepolicyquery.c)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libipsecpolicy && make $@
+	cd ${LIBRESWANSRCDIR} && cd ${OBJDIRTOP}/lib/libipsecpolicy && make $@
 else
 all:	$(LIB) 
 programs: $(LIB) 
@@ -58,7 +58,7 @@ doinstall:
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(SRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
 	done
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(LIBRESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
@@ -70,7 +70,7 @@ install_file_list:
 	do \
 		echo $(MANDIR)/ipsec_$$f;\
 	done;
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
+	@$(LIBRESWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${SRCDIR}/$(man)) | \
 	while read from to; \
 	do \
 		echo $(MANDIR)/$$to; \
@@ -82,7 +82,7 @@ $(LIB):	$(OBJS)
 $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
-version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+version.c:	version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
 cleanall:

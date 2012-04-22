@@ -27,7 +27,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <net/pfkeyv2.h>
 #include <netipsec/keydb.h>
 #include <netinet/in.h>
@@ -176,7 +176,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d"
+		    libreswan_log("adding interface %s/%s %s:%d"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
@@ -208,7 +208,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d"
+			libreswan_log("adding interface %s/%s %s:%d"
 				     , q->ip_dev->id_vname, q->ip_dev->id_rname
 				     , ip_str(&q->ip_addr)
 				     , q->port);
@@ -970,7 +970,7 @@ bsdkame_add_sa(const struct kernel_sa *sa, bool replace)
     }
 
     if((sa->enckeylen + sa->authkeylen) > sizeof(keymat)) {
-	openswan_log("Key material is too big for kernel interface: %d>%d\n"
+	libreswan_log("Key material is too big for kernel interface: %d>%d\n"
 		     , (sa->enckeylen + sa->authkeylen)
 		     , sizeof(keymat));
 	return FALSE;
@@ -1010,7 +1010,7 @@ bsdkame_add_sa(const struct kernel_sa *sa, bool replace)
 
     if(ret < 0) {
 	extern int __ipsec_errcode;
-	openswan_log("ret = %d from add_sa: %d (%s) seq=%d", ret
+	libreswan_log("ret = %d from add_sa: %d (%s) seq=%d", ret
 		     , __ipsec_errcode, ipsec_strerror(), pfkey_seq);
 	return FALSE;
     }
@@ -1040,8 +1040,8 @@ bsdkame_was_eroute_idle(struct state *st UNUSED
 
 static void
 bsdkame_set_debug(int cur_debug
-		  , openswan_keying_debug_func_t debug_func
-		  , openswan_keying_debug_func_t error_func UNUSED)
+		  , libreswan_keying_debug_func_t debug_func
+		  , libreswan_keying_debug_func_t error_func UNUSED)
 {
 	bsdpfkey_lib_debug = (cur_debug&DBG_PFKEY ? 1 : 0);
 	pfkey_debug_func = debug_func;
@@ -1073,7 +1073,7 @@ bsdkame_except_socket(int socketfd, int family)
 		break;
 #endif
 	default:
-		openswan_log("unsupported address family (%d)\n", family);
+		libreswan_log("unsupported address family (%d)\n", family);
 		return FALSE;
 	}
 
@@ -1083,12 +1083,12 @@ bsdkame_except_socket(int socketfd, int family)
 	policy.sadb_x_policy_type = IPSEC_POLICY_BYPASS;
 	policy.sadb_x_policy_dir = IPSEC_DIR_INBOUND;
 	if (setsockopt(socketfd, level, optname, &policy, sizeof(policy)) == -1) {
-	    openswan_log("bsdkame except socket setsockopt: %s\n", strerror(errno));
+	    libreswan_log("bsdkame except socket setsockopt: %s\n", strerror(errno));
 	    return FALSE;
 	}
 	policy.sadb_x_policy_dir = IPSEC_DIR_OUTBOUND;
 	if (setsockopt(socketfd, level, optname, &policy, sizeof(policy)) == -1) {
-	    openswan_log("bsdkame except socket setsockopt: %s\n", strerror(errno));
+	    libreswan_log("bsdkame except socket setsockopt: %s\n", strerror(errno));
 	    return FALSE;
 	}
 	return TRUE;

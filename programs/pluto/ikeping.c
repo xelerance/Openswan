@@ -32,7 +32,7 @@
 #  include <sys/uio.h>	/* struct iovec */
 #endif
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -55,7 +55,7 @@ void receive_ike_echo_request(struct msg_digest *md)
 
     addrtot(&md->sender, 0, b1, sizeof(b1));
 
-    openswan_log("received ike-echo-request-%d packet from %s/%d\n",
+    libreswan_log("received ike-echo-request-%d packet from %s/%d\n",
 		 md->hdr.isa_xchg, b1, md->sender_port);
 
 #if 0
@@ -74,7 +74,7 @@ void receive_ike_echo_reply(struct msg_digest *md)
 
     addrtot(&md->sender, 0, b1, sizeof(b1));
 
-    openswan_log("received ike-echo-reply-%d packet from %s/%d\n",
+    libreswan_log("received ike-echo-reply-%d packet from %s/%d\n",
 		 md->hdr.isa_xchg, b1, md->sender_port);
 
 #if 0

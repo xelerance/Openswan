@@ -6,7 +6,7 @@ east:~#
  echo 1 >/proc/sys/net/ipv4/conf/eth0/proxy_arp 
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#

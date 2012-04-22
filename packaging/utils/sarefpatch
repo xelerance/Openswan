@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# wander through an OpenSWAN ng-patch directory,
+# wander through an Libreswan ng-patch directory,
 # creating a patch file (to stdout)
 # that will apply the code to a kernel source directory.
 #

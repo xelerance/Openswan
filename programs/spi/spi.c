@@ -41,22 +41,22 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <stdlib.h>
-#include <openswan.h>
+#include <libreswan.h>
 #if 0
 #include <linux/autoconf.h>    /* CONFIG_IPSEC_PFKEYv2 */
 #endif
 #include <signal.h>
 #include <sys/socket.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_ipe4.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL */
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_ipe4.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipsec_esp.h"
+#include "libreswan/ipsec_sa.h"  /* IPSEC_SAREF_NULL */
 
 #include "constants.h"
 #include "oswlog.h"
@@ -1684,7 +1684,7 @@ main(int argc, char *argv[])
 			fprintf(stderr, "SA already in use.  Delete old one first.\n");
 			break;
 		case ENOENT:
-			fprintf(stderr, "device does not exist.  See Openswan installation procedure.\n");
+			fprintf(stderr, "device does not exist.  See Libreswan installation procedure.\n");
 			break;
 		case ENXIO:
 		case ESRCH:

@@ -1,7 +1,7 @@
 Date: Tue, 30 Oct 2007 10:32:26 -0500
 From: Venkat Yekkirala <vyekkirala@TrustedCS.com>
-To:  <dev@openswan.org>
-Subject: [Openswan dev] [RFC 1/1] Labeled IPsec communication
+To:  <dev@libreswan.org>
+Subject: [Libreswan dev] [RFC 1/1] Labeled IPsec communication
 
 Hello,
 
@@ -21,8 +21,8 @@ Thanks,
 venkat
 
 ---
---- openswan-2.4.9.orig/programs/pluto/whack.h	2004-12-15 19:22:44.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/whack.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/whack.h	2004-12-15 19:22:44.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/whack.h	2007-10-30 08:40:08.000000000 -0500
 @@ -127,6 +127,7 @@ struct whack_message {
      char *ike;		/* ike algo string (separated by commas) */
      char *pfsgroup;	/* pfsgroup will be "encapsulated" in esp string for pluto */
@@ -31,8 +31,8 @@ venkat
  
      /* for WHACK_KEY: */
      bool whack_key;
---- openswan-2.4.9.orig/programs/pluto/whack.c	2006-10-27 15:05:09.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/whack.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/whack.c	2006-10-27 15:05:09.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/whack.c	2007-10-30 08:40:08.000000000 -0500
 @@ -465,7 +465,8 @@ enum option_enums {
      CD_FORCEENCAPS,
      CD_IKE,
@@ -78,8 +78,8 @@ venkat
      || str_roof - next_str < (ptrdiff_t)msg.keyval.len)    /* chunk (sort of string 5) */
  	diag("too many bytes of strings to fit in message to pluto");
  
---- openswan-2.4.9.orig/programs/pluto/whacklib.c	2004-12-15 19:21:59.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/whacklib.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/whacklib.c	2004-12-15 19:21:59.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/whacklib.c	2007-10-30 08:40:08.000000000 -0500
 @@ -181,6 +181,7 @@ err_t unpack_whack_msg (struct whackpack
  	|| !unpack_str(wp, &wp->msg->myid)        /* string 15 */
      	|| !unpack_str(wp, &wp->msg->ike)         /* string 16 */
@@ -88,8 +88,8 @@ venkat
  
         || wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
      {
---- openswan-2.4.9.orig/programs/pluto/connections.h	2005-11-16 19:44:12.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/connections.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/connections.h	2005-11-16 19:44:12.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/connections.h	2007-10-30 08:40:08.000000000 -0500
 @@ -176,6 +176,7 @@ struct spd_route {
      so_serial_t eroute_owner;
      enum routing_t routing;	/* level of routing in place */
@@ -118,8 +118,8 @@ venkat
  			    
  
  /* instantiating routines
---- openswan-2.4.9.orig/programs/pluto/connections.c	2007-06-05 11:48:58.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/connections.c	2007-10-30 08:42:24.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/connections.c	2007-06-05 11:48:58.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/connections.c	2007-10-30 08:42:24.000000000 -0500
 @@ -67,6 +67,7 @@
  #include "kernel_alg.h"
  #include "plutoalg.h"
@@ -158,8 +158,8 @@ venkat
  	connect_to_host_pair(c);
  
  	/* log all about this connection */
--	openswan_log("added connection description \"%s\"", c->name);
-+	openswan_log("added connection description \"%s\""
+-	libreswan_log("added connection description \"%s\"", c->name);
++	libreswan_log("added connection description \"%s\""
 +			" with context \"%s\"", c->name, c->spd.ctx?:"");
  	DBG(DBG_CONTROL,
  	    char topo[CONNECTION_BUF];
@@ -295,7 +295,7 @@ venkat
  #endif
  
 +	    /* what should we do on failure? */
- 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
+ 	if(!loggedit) { libreswan_log("%s", demandbuf); loggedit=TRUE; }
  	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 -			  , SOS_NOBODY, pcim_local_crypto);
 +			  , SOS_NOBODY, pcim_local_crypto, ctx);
@@ -339,8 +339,8 @@ venkat
  	});
  
  	if (ugh != NULL)
---- openswan-2.4.9.orig/programs/pluto/kernel.h	2005-07-25 21:11:23.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/kernel.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/kernel.h	2005-07-25 21:11:23.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/kernel.h	2007-10-30 08:40:08.000000000 -0500
 @@ -99,8 +99,15 @@ struct kernel_ops {
  			   const struct pfkey_proto_info *proto_info,
  			   time_t use_lifetime,
@@ -377,8 +377,8 @@ venkat
  
  extern bool assign_hold(struct connection *c
  			, struct spd_route *sr
---- openswan-2.4.9.orig/programs/pluto/kernel.c	2006-10-02 20:16:11.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/kernel.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/kernel.c	2006-10-02 20:16:11.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/kernel.c	2007-10-30 08:40:08.000000000 -0500
 @@ -187,6 +187,7 @@ void
  record_and_initiate_opportunistic(const ip_subnet *ours
                                    , const ip_subnet *his
@@ -620,8 +620,8 @@ venkat
  }
  #endif
  
---- openswan-2.4.9.orig/programs/pluto/kernel_netlink.c	2006-10-03 00:32:55.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/kernel_netlink.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/kernel_netlink.c	2006-10-03 00:32:55.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/kernel_netlink.c	2007-10-30 08:40:08.000000000 -0500
 @@ -347,6 +347,11 @@ netlink_policy(struct nlmsghdr *hdr, boo
  	return TRUE;
      }
@@ -800,7 +800,7 @@ venkat
 +
      if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*upe)))
      {
- 	openswan_log("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
+ 	libreswan_log("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
 @@ -949,6 +1050,8 @@ netlink_policy_expire(struct nlmsghdr *n
      switch (upe->pol.dir)
      {
@@ -810,8 +810,8 @@ venkat
  	netlink_shunt_expire(&rsp.pol);
  	break;
      }
---- openswan-2.4.9.orig/programs/pluto/kernel_noklips.c	2005-07-08 12:55:28.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/kernel_noklips.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/kernel_noklips.c	2005-07-08 12:55:28.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/kernel_noklips.c	2007-10-30 08:40:08.000000000 -0500
 @@ -83,14 +83,21 @@ noklips_raw_eroute(const ip_address *thi
  		   , const struct pfkey_proto_info *proto_info UNUSED
  		   , time_t use_lifetime UNUSED
@@ -836,8 +836,8 @@ venkat
  {
    return TRUE;
  }
---- openswan-2.4.9.orig/programs/pluto/linux26/xfrm.h	2003-09-01 20:14:07.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/linux26/xfrm.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/linux26/xfrm.h	2003-09-01 20:14:07.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/linux26/xfrm.h	2007-10-30 08:40:08.000000000 -0500
 @@ -1,7 +1,7 @@
  #ifndef _LINUX_XFRM_H
  #define _LINUX_XFRM_H
@@ -1252,8 +1252,8 @@ venkat
 +#define XFRMNLGRP_MAX	(__XFRMNLGRP_MAX - 1)
  
  #endif /* _LINUX_XFRM_H */
---- openswan-2.4.9.orig/programs/pluto/linux26/netlink.h	2003-07-31 18:49:00.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/linux26/netlink.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/linux26/netlink.h	2003-07-31 18:49:00.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/linux26/netlink.h	2007-10-30 08:40:08.000000000 -0500
 @@ -1,21 +1,28 @@
  #ifndef __LINUX_NETLINK_H
  #define __LINUX_NETLINK_H
@@ -1381,8 +1381,8 @@ venkat
 +
 +
  #endif	/* __LINUX_NETLINK_H */
---- openswan-2.4.9.orig/programs/pluto/linux26/rtnetlink.h	2003-07-31 18:49:00.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/linux26/rtnetlink.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/linux26/rtnetlink.h	2003-07-31 18:49:00.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/linux26/rtnetlink.h	2007-10-30 08:40:08.000000000 -0500
 @@ -1,11 +1,7 @@
  #ifndef __LINUX_RTNETLINK_H
  #define __LINUX_RTNETLINK_H
@@ -2145,8 +2145,8 @@ venkat
 +
 +
  #endif	/* __LINUX_RTNETLINK_H */
---- openswan-2.4.9.orig/programs/_confread/_confread.in	2006-04-12 14:55:42.000000000 -0500
-+++ openswan-2.4.9/programs/_confread/_confread.in	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/_confread/_confread.in	2006-04-12 14:55:42.000000000 -0500
++++ libreswan-2.4.9/programs/_confread/_confread.in	2007-10-30 08:40:08.000000000 -0500
 @@ -133,6 +133,7 @@ awk 'BEGIN {
  	good = "also alsoflip type auto authby _plutodevel"
  	good = good " connaddrfamily forceencaps"
@@ -2155,8 +2155,8 @@ venkat
  	left = " left leftsubnet leftnexthop leftupdown"
  	akey = " keyexchange auth pfs pfsgroup keylife rekey rekeymargin"
          akey = akey " rekeyfuzz dpddelay dpdtimeout dpdaction"
---- openswan-2.4.9.orig/programs/auto/auto.in	2006-01-05 16:50:45.000000000 -0600
-+++ openswan-2.4.9/programs/auto/auto.in	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/auto/auto.in	2006-01-05 16:50:45.000000000 -0600
++++ libreswan-2.4.9/programs/auto/auto.in	2007-10-30 08:40:08.000000000 -0500
 @@ -538,6 +538,9 @@ awk '	BEGIN {
  		rid = ""
  		if ("rightid" in s)
@@ -2176,8 +2176,8 @@ venkat
  		print "\t|| exit $?"
  	}
  	END {
---- openswan-2.4.9.orig/programs/pluto/demux.c	2007-07-09 18:08:47.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/demux.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/demux.c	2007-07-09 18:08:47.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/demux.c	2007-10-30 08:40:08.000000000 -0500
 @@ -2848,7 +2848,7 @@ complete_state_transition(struct msg_dig
  	    {
  		st->st_state = STATE_MAIN_R3;	    /* ISAKMP is up... */
@@ -2187,8 +2187,8 @@ venkat
  		break;
  	    }	    
  
---- openswan-2.4.9.orig/programs/pluto/rcv_whack.c	2005-05-19 09:58:55.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/rcv_whack.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/rcv_whack.c	2005-05-19 09:58:55.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/rcv_whack.c	2007-10-30 08:40:08.000000000 -0500
 @@ -576,7 +576,7 @@ whack_handle(int whackctlfd)
  	else
  	    initiate_opportunistic(&msg.oppo_my_client, &msg.oppo_peer_client, 0
@@ -2198,8 +2198,8 @@ venkat
      }
  
      if (msg.whack_terminate)
---- openswan-2.4.9.orig/programs/pluto/ipsec_doi.c	2007-01-22 15:05:12.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/ipsec_doi.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/ipsec_doi.c	2007-01-22 15:05:12.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/ipsec_doi.c	2007-10-30 08:40:08.000000000 -0500
 @@ -1039,7 +1039,8 @@ ipsecdoi_initiate(int whack_sock
  		  , lset_t policy
  		  , unsigned long try
@@ -2228,8 +2228,8 @@ venkat
      }
  }
  
---- openswan-2.4.9.orig/programs/pluto/ikev1_quick.h	2005-03-19 20:27:50.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/ikev1_quick.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/ikev1_quick.h	2005-03-19 20:27:50.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/ikev1_quick.h	2007-10-30 08:40:08.000000000 -0500
 @@ -20,7 +20,8 @@ extern stf_status quick_outI1(int whack_
      , struct connection *c
      , lset_t policy
@@ -2240,8 +2240,8 @@ venkat
  
  extern state_transition_fn
      quick_inI1_outR1,
---- openswan-2.4.9.orig/programs/pluto/state.h	2006-11-23 22:21:42.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/state.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/state.h	2006-11-23 22:21:42.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/state.h	2007-10-30 08:40:08.000000000 -0500
 @@ -270,7 +270,7 @@ struct state
      u_int32_t	      st_seen_vendorid;	  /* Bit field about recognized Vendor ID */
      struct isakmp_quirks quirks;          /* work arounds for faults in other
@@ -2251,8 +2251,8 @@ venkat
  };
  
  /* global variables */
---- openswan-2.4.9.orig/programs/pluto/ipsec_doi.h	2005-03-19 20:27:50.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/ipsec_doi.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/ipsec_doi.h	2005-03-19 20:27:50.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/ipsec_doi.h	2007-10-30 08:40:08.000000000 -0500
 @@ -19,7 +19,8 @@ extern void echo_hdr(struct msg_digest *
  extern void ipsecdoi_initiate(int whack_sock, struct connection *c
  			      , lset_t policy, unsigned long try
@@ -2263,8 +2263,8 @@ venkat
  
  extern void ipsecdoi_replace(struct state *st, unsigned long try);
  
---- openswan-2.4.9.orig/programs/pluto/ikev1_quick.c	2006-04-04 17:17:49.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/ikev1_quick.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/ikev1_quick.c	2006-04-04 17:17:49.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/ikev1_quick.c	2007-10-30 08:40:08.000000000 -0500
 @@ -676,7 +676,8 @@ quick_outI1(int whack_sock
  	    , struct connection *c
  	    , lset_t policy
@@ -2284,15 +2284,15 @@ venkat
      insert_state(st);	/* needs cookies, connection, and msgid */
  
      if (replacing == SOS_NOBODY)
--	openswan_log("initiating Quick Mode %s {using isakmp#%lu}"
-+	openswan_log("initiating Quick Mode %s {using isakmp#%lu} {ctx=%s}"
+-	libreswan_log("initiating Quick Mode %s {using isakmp#%lu}"
++	libreswan_log("initiating Quick Mode %s {using isakmp#%lu} {ctx=%s}"
  		     , prettypolicy(policy)
 -		     , isakmp_sa->st_serialno);
 +		     , isakmp_sa->st_serialno
 +		     , ctx?:"");
      else
--	openswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu}"
-+	openswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu} {ctx=%s}"
+-	libreswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu}"
++	libreswan_log("initiating Quick Mode %s to replace #%lu {using isakmp#%lu} {ctx=%s}"
  		     , prettypolicy(policy)
  		     , replacing
 -		     , isakmp_sa->st_serialno);
@@ -2305,14 +2305,14 @@ venkat
  	return STF_FAIL + NO_PROPOSAL_CHOSEN;	/* ??? */
      }
      
--    openswan_log("responding to Quick Mode {msgid:%08x}", st->st_msgid);
-+    openswan_log("responding to Quick Mode {msgid:%08x} {ctx=%s}", st->st_msgid,
+-    libreswan_log("responding to Quick Mode {msgid:%08x}", st->st_msgid);
++    libreswan_log("responding to Quick Mode {msgid:%08x} {ctx=%s}", st->st_msgid,
 +			st->ctx?:"");
  
      /**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
      
---- openswan-2.4.9.orig/programs/pluto/kernel_pfkey.c	2005-07-08 12:55:28.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/kernel_pfkey.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/kernel_pfkey.c	2005-07-08 12:55:28.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/kernel_pfkey.c	2007-10-30 08:40:08.000000000 -0500
 @@ -398,7 +398,7 @@ process_pfkey_acquire(pfkey_buf *buf, st
  	&& !(ugh = addrtypeof(src) == addrtypeof(dst)? NULL : "conflicting address types")
  	&& !(ugh = addrtosubnet(src, &ours))
@@ -2355,8 +2355,8 @@ venkat
  {
      struct sadb_ext *extensions[SADB_EXT_MAX + 1];
      bool success = FALSE;
---- openswan-2.4.9.orig/programs/pluto/spdb_struct.c	2007-05-13 16:56:48.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/spdb_struct.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/spdb_struct.c	2007-05-13 16:56:48.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/spdb_struct.c	2007-10-30 08:40:08.000000000 -0500
 @@ -452,6 +452,25 @@ out_sa(pb_stream *outs
  			, st->st_connection->sa_ipsec_life_seconds
  			, attr_desc, attr_val_descs
@@ -2406,8 +2406,8 @@ venkat
  	    case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TLV:
  		val = decode_long_duration(&attr_pbs);
  		/* fall through */
---- openswan-2.4.9.orig/programs/pluto/pending.c	2007-01-23 09:37:06.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/pending.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/pending.c	2007-01-23 09:37:06.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/pending.c	2007-10-30 08:40:08.000000000 -0500
 @@ -215,7 +215,7 @@ unpend(struct state *st)
  
  	    p->pend_time = time(NULL);
@@ -2417,8 +2417,8 @@ venkat
  	    p->whack_sock = NULL_FD;	/* ownership transferred */
  	    p->connection = NULL;	/* ownership transferred */
  	    delete_pending(pp);
---- openswan-2.4.9.orig/programs/pluto/plutomain.c	2007-04-06 12:10:37.000000000 -0500
-+++ openswan-2.4.9/programs/pluto/plutomain.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/plutomain.c	2007-04-06 12:10:37.000000000 -0500
++++ libreswan-2.4.9/programs/pluto/plutomain.c	2007-10-30 08:40:08.000000000 -0500
 @@ -71,6 +71,8 @@
  #include "vendor.h"
  #include "pluto_crypt.h"
@@ -2436,8 +2436,8 @@ venkat
  
  #ifdef HAVE_THREADS
      init_fetch();
---- openswan-2.4.9.orig/programs/pluto/security.c	1969-12-31 18:00:00.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/security.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/security.c	1969-12-31 18:00:00.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/security.c	2007-10-30 08:40:08.000000000 -0500
 @@ -0,0 +1,144 @@
 +/*
 + * Copyright (C) 2005 International Business Machines Corporation
@@ -2583,14 +2583,14 @@ venkat
 +			__FUNCTION__, sa, pol));
 +	return 1;
 +}
---- openswan-2.4.9.orig/programs/pluto/security.h	1969-12-31 18:00:00.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/security.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/security.h	1969-12-31 18:00:00.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/security.h	2007-10-30 08:40:08.000000000 -0500
 @@ -0,0 +1,3 @@
 +#include <selinux/selinux.h>
 +void init_avc(void);
 +int security_polmatch(security_context_t sa, security_context_t pol);
---- openswan-2.4.9.orig/programs/pluto/Makefile	2006-11-07 09:55:52.000000000 -0600
-+++ openswan-2.4.9/programs/pluto/Makefile	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/programs/pluto/Makefile	2006-11-07 09:55:52.000000000 -0600
++++ libreswan-2.4.9/programs/pluto/Makefile	2007-10-30 08:40:08.000000000 -0500
 @@ -266,6 +266,7 @@ LIBSPLUTO+=$(HAVE_THREADS_LIBS) ${XAUTHP
  LIBSPLUTO+=${CURL_LIBS} 
  LIBSPLUTO+=${EXTRA_CRYPTO_LIBS}
@@ -2615,8 +2615,8 @@ venkat
  OBJSPLUTO += ${XAUTH_OBJS}
  OBJSPLUTO += ${AGGRESSIVE_OBJS}
  OBJSPLUTO += ${SMARTCARD_OBJS} ${X509_OBJS} ${HAVE_THREADS_OBJS}
---- openswan-2.4.9.orig/include/pluto_constants.h	2005-11-16 16:41:30.000000000 -0600
-+++ openswan-2.4.9/include/pluto_constants.h	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/include/pluto_constants.h	2005-11-16 16:41:30.000000000 -0600
++++ libreswan-2.4.9/include/pluto_constants.h	2007-10-30 08:40:08.000000000 -0500
 @@ -471,6 +471,7 @@ extern enum_names ipsec_attr_names;
  #define KEY_ROUNDS               7
  #define COMPRESS_DICT_SIZE       8
@@ -2625,8 +2625,8 @@ venkat
  
  /* for each IPsec attribute, which enum_names describes its values? */
  extern enum_names *ipsec_attr_val_descs[];
---- openswan-2.4.9.orig/lib/libopenswan/constants.c	2006-11-02 12:36:29.000000000 -0600
-+++ openswan-2.4.9/lib/libopenswan/constants.c	2007-10-30 08:40:08.000000000 -0500
+--- libreswan-2.4.9.orig/lib/liblibreswan/constants.c	2006-11-02 12:36:29.000000000 -0600
++++ libreswan-2.4.9/lib/liblibreswan/constants.c	2007-10-30 08:40:08.000000000 -0500
 @@ -392,6 +392,7 @@ static const char *const ipsec_attr_name
  	"KEY_ROUNDS",
  	"COMPRESS_DICT_SIZE",
@@ -2662,5 +2662,5 @@ venkat
  /* SA Lifetime Type attribute */
 _______________________________________________
 Dev mailing list
-Dev@openswan.org
-http://lists.openswan.org/mailman/listinfo/dev
+Dev@libreswan.org
+http://lists.libreswan.org/mailman/listinfo/dev

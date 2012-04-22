@@ -4,7 +4,7 @@ east:~#
  source /testing/pluto/bin/eastlocal.sh
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  ipsec auto --add westnet-eastnet
 east:~#
@@ -16,7 +16,7 @@ east:~#
 east:~#
  cat /tmp/pluto.log
 Plutorun started on DATE
-Starting Pluto (Openswan Version cvs2005Sep03_18:08:36 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEJy}oiKkU}r)
+Starting Pluto (Libreswan Version cvs2005Sep03_18:08:36 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OEJy}oiKkU}r)
 @(#) built on DATE by PERSON
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_fload=1
@@ -54,7 +54,7 @@ packet from 192.1.2.45:500: TPM result:
 packet from 192.1.2.45:500: tcl callout: "recvMessage" (from process_packet:2085)
 recvMessage NULL NULL _POINTER_p_msg_digest
 packet from 192.1.2.45:500: TPM result: 
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) cvs2005Sep03_18:08:36  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) cvs2005Sep03_18:08:36  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 packet from 192.1.2.45:500: tcl callout: "changeState" (from process_packet:2345)
 changeState NULL NULL _POINTER_p_msg_digest

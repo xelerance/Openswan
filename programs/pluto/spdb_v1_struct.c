@@ -20,9 +20,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -556,7 +556,7 @@ out_sa(pb_stream *outs
 				 */
 				loglog(RC_LOG_SERIOUS, "NAT-Traversal: "
 					"Transport Mode not allowed due to security concerns -- "
-					"using Tunnel mode.  Rebuild Openswan with USE_NAT_TRAVERSAL_TRANSPORT_MODE=true in Makefile.inc to support transport mode.");
+					"using Tunnel mode.  Rebuild Libreswan with USE_NAT_TRAVERSAL_TRANSPORT_MODE=true in Makefile.inc to support transport mode.");
 			}
 #endif
 #endif
@@ -1009,7 +1009,7 @@ parse_isakmp_sa_body(
 		    {
 #if defined(USE_1DES)
 		    case OAKLEY_DES_CBC:
-			openswan_log("1DES is not encryption");
+			libreswan_log("1DES is not encryption");
 			/* FALL THROUGH */
 #endif
 		    case OAKLEY_3DES_CBC:
@@ -2459,14 +2459,14 @@ parse_ipsec_sa_body(
 #endif
 	    if (!can_do_IPcomp)
 	    {
-		openswan_log("compression proposed by %s, but KLIPS is not configured with IPCOMP"
+		libreswan_log("compression proposed by %s, but KLIPS is not configured with IPCOMP"
 		    , ip_str(&c->spd.that.host_addr));
 		continue;
 	    }
 
 	    if (well_known_cpi != 0 && !ah_seen && !esp_seen)
 	    {
-		openswan_log("illegal proposal: bare IPCOMP used with well-known CPI");
+		libreswan_log("illegal proposal: bare IPCOMP used with well-known CPI");
 		return BAD_PROPOSAL_SYNTAX;
 	    }
 
@@ -2488,7 +2488,7 @@ parse_ipsec_sa_body(
 
 		if (well_known_cpi != 0 && ipcomp_attrs.transattrs.encrypt != well_known_cpi)
 		{
-		    openswan_log("illegal proposal: IPCOMP well-known CPI disagrees with transform");
+		    libreswan_log("illegal proposal: IPCOMP well-known CPI disagrees with transform");
 		    return BAD_PROPOSAL_SYNTAX;
 		}
 

@@ -4,7 +4,7 @@ east:~#
  export IPSEC_CONFS="$D/etc-nomyid"
 east:~#
  ipsec setup start 
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  sleep 4
 east:~#
@@ -47,14 +47,14 @@ east:~#
 east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 east:~#
  ipsec eroute
 east:~#
  export IPSEC_CONFS="$D/etc-myid"
 east:~#
  ipsec setup start 
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  sleep 4
 east:~#
@@ -97,5 +97,5 @@ east:~#
 east:~#
  ipsec setup stop
 IPSEC EVENT: KLIPS device ipsec0 shut down.
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 

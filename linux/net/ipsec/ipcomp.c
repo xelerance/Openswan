@@ -27,7 +27,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -47,25 +47,25 @@
 #include <asm/uaccess.h>
 #include <asm/checksum.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include <net/ip.h>
 
-#include "openswan/ipsec_kversion.h"
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/ipsec_kversion.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_rcv.h" /* sysctl_ipsec_inbound_policy_check */
 extern int sysctl_ipsec_inbound_policy_check;
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipcomp.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipcomp.h"
 #include "zlib/zlib.h"
 #include "zlib/zutil.h"
 
-#include <openswan/pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
+#include <libreswan/pfkeyv2.h> /* SADB_X_CALG_DEFLATE */
 
 static
 voidpf my_zcalloc(voidpf opaque, uInt items, uInt size)

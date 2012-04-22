@@ -1,9 +1,9 @@
-; example.com zone for Openswan testing
+; example.com zone for Libreswan testing
 ; This file belongs in /var/named/test.zone
 
 ; add to /etc/named.conf:
 
-;;;// forward for Openswan testing:
+;;;// forward for Libreswan testing:
 ;;;zone "example.com" {
 ;;;	type master;
 ;;;	file "test.zone";

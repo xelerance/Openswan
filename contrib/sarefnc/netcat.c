@@ -1928,7 +1928,7 @@ options:");
 	-r			randomize local and remote ports\n\
 	-q secs			quit after EOF on stdin and delay of secs\n\
 	-s addr			local source address\n\
-	-S saref                IPsec SAref of remote (openswan)");
+	-S saref                IPsec SAref of remote (libreswan)");
 #ifdef IP_TOS
   holler("\
 	-T tos			set Type Of Service");

@@ -25,7 +25,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -44,9 +44,9 @@
 #include <linux/random.h>       /* get_random_bytes() */
 #include <net/protocol.h>
 
-#include "openswan/ipsec_param2.h"
+#include "libreswan/ipsec_param2.h"
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
@@ -68,36 +68,36 @@
 # include <net/netlink.h>
 #endif
 
-#include "openswan/radij.h"
+#include "libreswan/radij.h"
 
-#include "openswan/ipsec_life.h"
-#include "openswan/ipsec_stats.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/ipsec_life.h"
+#include "libreswan/ipsec_stats.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_mast.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_mast.h"
 
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_xmit.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipsec_esp.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_xmit.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipsec_esp.h"
 
 #ifdef CONFIG_KLIPS_IPCOMP
-# include "openswan/ipcomp.h"
+# include "libreswan/ipcomp.h"
 #endif /* CONFIG_KLIPS_IPCOMP */
 
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_alg.h"
 
 #ifdef CONFIG_KLIPS_OCF
 #include "ipsec_ocf.h"
 #endif
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 # ifdef HAVE_UDP_ENCAP_CONVERT
@@ -152,7 +152,7 @@ extern void ipsec_sysctl_unregister(void);
 */
 #ifdef NET_26
 static inline int
-openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *protstr)
+libreswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *protstr)
 {
 	int err = inet_add_protocol(prot, protocol);
 	if (err)
@@ -162,7 +162,7 @@ openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char *
 
 #ifdef CONFIG_KLIPS_IPV6
 static inline int
-openswan_inet6_add_protocol(struct inet6_protocol *prot, unsigned protocol, char *protstr)
+libreswan_inet6_add_protocol(struct inet6_protocol *prot, unsigned protocol, char *protstr)
 {
 	int err = inet6_add_protocol(prot, protocol);
 	if (err)
@@ -172,21 +172,21 @@ openswan_inet6_add_protocol(struct inet6_protocol *prot, unsigned protocol, char
 #endif
 
 static inline int
-openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
+libreswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 	return inet_del_protocol(prot, protocol);
 }
 
 #ifdef CONFIG_KLIPS_IPV6
 static inline int
-openswan_inet6_del_protocol(struct inet6_protocol *prot, unsigned protocol)
+libreswan_inet6_del_protocol(struct inet6_protocol *prot, unsigned protocol)
 {
 	return inet6_del_protocol(prot, protocol);
 }
 #endif
 #else
 static inline int
-openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char*protstr)
+libreswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char*protstr)
 {
 #ifdef IPSKB_XFRM_TUNNEL_SIZE
 	inet_add_protocol(prot, protocol);
@@ -197,7 +197,7 @@ openswan_inet_add_protocol(struct inet_protocol *prot, unsigned protocol, char*p
 }
 
 static inline int
-openswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
+libreswan_inet_del_protocol(struct inet_protocol *prot, unsigned protocol)
 {
 #ifdef IPSKB_XFRM_TUNNEL_SIZE
 	inet_del_protocol(prot, protocol);
@@ -223,7 +223,7 @@ ipsec_klips_init(void)
 #endif /* CONFIG_KLIPS_ENC_3DES */
 
 	KLIPS_PRINT(1, "klips_info:ipsec_init: "
-		    "KLIPS startup, Openswan KLIPS IPsec stack version: %s\n",
+		    "KLIPS startup, Libreswan KLIPS IPsec stack version: %s\n",
 		    ipsec_version_code());
 
         error = ipsec_xmit_state_cache_init ();
@@ -264,29 +264,29 @@ ipsec_klips_init(void)
 #else /* CONFIG_XFRM_ALTERNATE_STACK */
 
 #ifdef CONFIG_KLIPS_ESP
-	error |= openswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
+	error |= libreswan_inet_add_protocol(&esp_protocol, IPPROTO_ESP,"ESP");
 	if (error)
-		goto error_openswan_inet_add_protocol_esp;
+		goto error_libreswan_inet_add_protocol_esp;
 
 #ifdef CONFIG_KLIPS_IPV6
-	error |= openswan_inet6_add_protocol(&esp6_protocol, IPPROTO_ESP, "ESP");
+	error |= libreswan_inet6_add_protocol(&esp6_protocol, IPPROTO_ESP, "ESP");
 	if (error)
-		goto error_openswan_inet6_add_protocol_esp;
+		goto error_libreswan_inet6_add_protocol_esp;
 #endif
 #endif /* CONFIG_KLIPS_ESP */
 
 #ifdef CONFIG_KLIPS_AH
-	error |= openswan_inet_add_protocol(&ah_protocol, IPPROTO_AH,"AH");
+	error |= libreswan_inet_add_protocol(&ah_protocol, IPPROTO_AH,"AH");
 	if (error)
-		goto error_openswan_inet_add_protocol_ah;
+		goto error_libreswan_inet_add_protocol_ah;
 #endif /* CONFIG_KLIPS_AH */
 
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
- 	error |= openswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP,"IPCOMP");
+ 	error |= libreswan_inet_add_protocol(&comp_protocol, IPPROTO_COMP,"IPCOMP");
 	if (error)
-		goto error_openswan_inet_add_protocol_comp;
+		goto error_libreswan_inet_add_protocol_comp;
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 
@@ -351,20 +351,20 @@ error_xfrm_register:
 #else /* CONFIG_XFRM_ALTERNATE_STACK */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
-error_openswan_inet_add_protocol_comp:
-	openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
+error_libreswan_inet_add_protocol_comp:
+	libreswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP);
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif
 #ifdef CONFIG_KLIPS_AH
-error_openswan_inet_add_protocol_ah:
-	openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
+error_libreswan_inet_add_protocol_ah:
+	libreswan_inet_del_protocol(&ah_protocol, IPPROTO_AH);
 #endif
 #ifdef CONFIG_KLIPS_IPV6
-error_openswan_inet6_add_protocol_esp:
-	openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP);
+error_libreswan_inet6_add_protocol_esp:
+	libreswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP);
 #endif
-error_openswan_inet_add_protocol_esp:
-	openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
+error_libreswan_inet_add_protocol_esp:
+	libreswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP);
 #endif
 	unregister_netdevice_notifier(&ipsec_dev_notifier);
 error_netdev_notifier:
@@ -406,7 +406,7 @@ ipsec_cleanup(void)
 	/* unfortunately we have two versions of this function, one with one
 	 * argument and one with two. But we cannot know which one. Let's hope
 	 * not many people use an old nat-t patch on a new kernel with
-	 * openswan klips >= 2.6.22
+	 * libreswan klips >= 2.6.22
 	 */
 	if(udp4_unregister_esp_rcvencap(klips26_rcv_encap, klips_old_encap) < 0) {
 		printk(KERN_ERR "KLIPS: can not unregister klips_rcv_encap function\n");
@@ -436,24 +436,24 @@ ipsec_cleanup(void)
 /* we never actually link IPCOMP to the stack */
 #ifdef IPCOMP_USED_ALONE
 #ifdef CONFIG_KLIPS_IPCOMP
- 	if (openswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
+ 	if (libreswan_inet_del_protocol(&comp_protocol, IPPROTO_COMP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "comp close: can't remove protocol\n");
 #endif /* CONFIG_KLIPS_IPCOMP */
 #endif /* IPCOMP_USED_ALONE */
 
 #ifdef CONFIG_KLIPS_AH
- 	if (openswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
+ 	if (libreswan_inet_del_protocol(&ah_protocol, IPPROTO_AH) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "ah close: can't remove protocol\n");
 #endif /* CONFIG_KLIPS_AH */
 
 #ifdef CONFIG_KLIPS_ESP
- 	if (openswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
+ 	if (libreswan_inet_del_protocol(&esp_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp close: can't remove protocol\n");
 #ifdef CONFIG_KLIPS_IPV6
- 	if (openswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP) < 0)
+ 	if (libreswan_inet6_del_protocol(&esp6_protocol, IPPROTO_ESP) < 0)
 		printk(KERN_INFO "klips_debug:ipsec_cleanup: "
 		       "esp6 close: can't remove protocol\n");
 #endif

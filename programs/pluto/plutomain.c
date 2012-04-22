@@ -39,10 +39,10 @@
 #include <netinet/in.h>
 #include <resolv.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -120,7 +120,7 @@ const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
 
 #ifdef DEBUG
-openswan_passert_fail_t openswan_passert_fail = passert_fail;
+libreswan_passert_fail_t libreswan_passert_fail = passert_fail;
 #endif
 
 /** usage - print help messages
@@ -205,7 +205,7 @@ usage(const char *mess)
 	   " \\\n\t"
 	   "[--virtual_private <network_list>]"
 	    "\n"
-	"Openswan %s\n"
+	"Libreswan %s\n"
 	, ipsec_version_code());
     exit(mess == NULL? 0 : 1);	/* not exit_pluto because we are not initialized yet */
 }
@@ -353,7 +353,7 @@ main(int argc, char **argv)
     global_argv = argv;
     global_argc = argc;
 #ifdef DEBUG
-    openswan_passert_fail = passert_fail;
+    libreswan_passert_fail = passert_fail;
 #endif
 
     /* see if there is an environment variable */
@@ -557,10 +557,10 @@ main(int argc, char **argv)
 	    ip_address lip;
 	     err_t e = ttoaddr(optarg,0,0,&lip);
 	    if(e) {
-		openswan_log("invalid listen argument ignored: %s\n",e);
+		libreswan_log("invalid listen argument ignored: %s\n",e);
 	    } else {
 		pluto_listen = clone_str(optarg, "pluto_listen");
-		openswan_log("bind() will be filtered for %s\n",pluto_listen);
+		libreswan_log("bind() will be filtered for %s\n",pluto_listen);
 	    }
             }
 	   continue;
@@ -740,7 +740,7 @@ main(int argc, char **argv)
     if(coredir) 
 	if(chdir(coredir) == -1) {
 	   int e = errno;
-	   openswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
+	   libreswan_log("pluto: chdir() do dumpdir failed (%d %s)\n",
                     e, strerror(e));
     }
 
@@ -929,15 +929,15 @@ main(int argc, char **argv)
 	const char *vc = ipsec_version_code();
 #ifdef PLUTO_SENDS_VENDORID
 	const char *v = init_pluto_vendorid();
-	openswan_log("Starting Pluto (Openswan Version %s%s; Vendor ID %s) pid:%u"
+	libreswan_log("Starting Pluto (Libreswan Version %s%s; Vendor ID %s) pid:%u"
 		     , vc, compile_time_interop_options, v, getpid());
 #else
-	openswan_log("Starting Pluto (Openswan Version %s%s) pid:%u"
+	libreswan_log("Starting Pluto (Libreswan Version %s%s) pid:%u"
 		     , vc, compile_time_interop_options, getpid());
 #endif
 #ifdef HAVE_LIBNSS
 	if(Pluto_IsFIPS()) {
-		openswan_log("Pluto is running in FIPS mode");
+		libreswan_log("Pluto is running in FIPS mode");
 	}
 #endif
 
@@ -950,21 +950,21 @@ main(int argc, char **argv)
 	     * so that strings the binary can or classic SCCS "what", will find
 	     * stuff too.
 	     */
-	    openswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
+	    libreswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
 	}
 #if defined(USE_1DES)
-	openswan_log("WARNING: 1DES is enabled");
+	libreswan_log("WARNING: 1DES is enabled");
 #endif
     }
 
     if(coredir) {
-	openswan_log("core dump dir: %s", coredir);
+	libreswan_log("core dump dir: %s", coredir);
     }
 
 #ifdef LEAK_DETECTIVE
-	openswan_log("LEAK_DETECTIVE support [enabled]");
+	libreswan_log("LEAK_DETECTIVE support [enabled]");
 #else
-	openswan_log("LEAK_DETECTIVE support [disabled]");
+	libreswan_log("LEAK_DETECTIVE support [disabled]");
 #endif
 
 #ifdef HAVE_OCF
@@ -973,12 +973,12 @@ main(int argc, char **argv)
 	errno=0;
 
 	if( stat("/dev/crypto",&buf) != -1) 
-		openswan_log("OCF support for IKE via /dev/crypto [enabled]");
+		libreswan_log("OCF support for IKE via /dev/crypto [enabled]");
 	else 
-		openswan_log("OCF support for IKE via /dev/crypto [failed:%s]", strerror(errno));
+		libreswan_log("OCF support for IKE via /dev/crypto [failed:%s]", strerror(errno));
        }
 #else
-	openswan_log("OCF support for IKE [disabled]");
+	libreswan_log("OCF support for IKE [disabled]");
 #endif
 
    /* Check for SAREF support */
@@ -992,18 +992,18 @@ main(int argc, char **argv)
 	sk = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_REFINFO, &saref, sizeof(saref));
 	if (e == -1 ) {
-		openswan_log("SAref support [disabled]: %s" , strerror(errno));
+		libreswan_log("SAref support [disabled]: %s" , strerror(errno));
 	}
 	else {
-		openswan_log("SAref support [enabled]");
+		libreswan_log("SAref support [enabled]");
 	}
 	errno=0;
 	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_BINDREF, &saref, sizeof(saref));
 	if (e == -1 ) {
-		openswan_log("SAbind support [disabled]: %s" , strerror(errno));
+		libreswan_log("SAbind support [disabled]: %s" , strerror(errno));
 	}
 	else {
-		openswan_log("SAbind support [enabled]");
+		libreswan_log("SAbind support [enabled]");
 	}
 
 
@@ -1012,42 +1012,42 @@ main(int argc, char **argv)
 #endif
 
 #ifdef HAVE_LIBNSS
-	openswan_log("NSS support [enabled]");
+	libreswan_log("NSS support [enabled]");
 #else
-	openswan_log("NSS support [disabled]");
+	libreswan_log("NSS support [disabled]");
 #endif
 
 #ifdef HAVE_STATSD
-	openswan_log("HAVE_STATSD notification via /bin/openswan-statsd enabled");
+	libreswan_log("HAVE_STATSD notification via /bin/libreswan-statsd enabled");
 #else
-	openswan_log("HAVE_STATSD notification support not compiled in");
+	libreswan_log("HAVE_STATSD notification support not compiled in");
 #endif
 
 
 /** Log various impair-* functions if they were enabled */
 
     if(DBGP(IMPAIR_BUST_MI2))
-	openswan_log("Warning: IMPAIR_BUST_MI2 enabled");
+	libreswan_log("Warning: IMPAIR_BUST_MI2 enabled");
     if(DBGP(IMPAIR_BUST_MR2))
-	openswan_log("Warning: IMPAIR_BUST_MR2 enabled");
+	libreswan_log("Warning: IMPAIR_BUST_MR2 enabled");
     if(DBGP(IMPAIR_SA_CREATION))
-	openswan_log("Warning: IMPAIR_SA_CREATION enabled");
+	libreswan_log("Warning: IMPAIR_SA_CREATION enabled");
     if(DBGP(IMPAIR_JACOB_TWO_TWO))
-	openswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
+	libreswan_log("Warning: IMPAIR_JACOB_TWO_TWO enabled");
     if(DBGP(IMPAIR_DIE_ONINFO))
-	openswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
+	libreswan_log("Warning: IMPAIR_DIE_ONINFO enabled");
     if(DBGP(IMPAIR_MAJOR_VERSION_BUMP))
-	openswan_log("Warning: IMPAIR_MAJOR_VERSION_BUMP enabled");
+	libreswan_log("Warning: IMPAIR_MAJOR_VERSION_BUMP enabled");
     if(DBGP(IMPAIR_MINOR_VERSION_BUMP))
-	openswan_log("Warning: IMPAIR_MINOR_VERSION_BUMP enabled");
+	libreswan_log("Warning: IMPAIR_MINOR_VERSION_BUMP enabled");
     if(DBGP(IMPAIR_RETRANSMITS))
-	openswan_log("Warning: IMPAIR_RETRANSMITS enabled");
+	libreswan_log("Warning: IMPAIR_RETRANSMITS enabled");
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG))
-	openswan_log("Warning: IMPAIR_SEND_BOGUS_ISAKMP_FLAG enabled");
+	libreswan_log("Warning: IMPAIR_SEND_BOGUS_ISAKMP_FLAG enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_KEY_ANSWER))
-	openswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
+	libreswan_log("Warning: IMPAIR_DELAY_ADNS_KEY_ANSWER enabled");
     if(DBGP(IMPAIR_DELAY_ADNS_TXT_ANSWER))
-	openswan_log("Warning: IMPAIR_DELAY_ADNS_TXT_ANSWER enabled");
+	libreswan_log("Warning: IMPAIR_DELAY_ADNS_TXT_ANSWER enabled");
 
 /** Initialize all of the various features */
 

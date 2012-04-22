@@ -28,9 +28,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -182,7 +182,7 @@ klips_process_raw_ifaces(struct raw_iface *rifaces)
 	/* ignore if --listen is specified and we do not match */
 	if (pluto_listen!=NULL) {
 	   if (!sameaddr(&lip, &ifp->addr)) {
-		openswan_log("skipping interface %s with %s"
+		libreswan_log("skipping interface %s with %s"
 			, ifp->name , ip_str(&ifp->addr));
 		continue;
 	   }
@@ -237,7 +237,7 @@ add_entry:
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d"
+		    libreswan_log("adding interface %s/%s %s:%d"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
@@ -269,7 +269,7 @@ add_entry:
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d"
+			libreswan_log("adding interface %s/%s %s:%d"
 				     , q->ip_dev->id_vname, q->ip_dev->id_rname
 				     , ip_str(&q->ip_addr)
 				     , q->port);

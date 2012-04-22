@@ -270,7 +270,7 @@ forces the sending of the
 \fIkeep\-alive packets\fR, which are send to prevent the NAT router from closing its port when there is not enough traffic on the IPsec connection\&. The
 \fB\-\-keep_alive\fR
 sets the delay (in seconds) of these keep\-alive packets\&. The newer NAT\-T standards support
-\fIport floating\fR, and Openswan enables this per default\&. It can be disabled using the
+\fIport floating\fR, and Libreswan enables this per default\&. It can be disabled using the
 \fB\-\-disable_port_floating\fR
 option\&.
 .PP
@@ -1916,7 +1916,7 @@ detects a problem, it will return an exit status of 1\&. If it received progress
 \fIPLUTO_CORE_DIR\fR
 .SH "SEE ALSO"
 .PP
-The rest of the Openswan distribution, in particular
+The rest of the Libreswan distribution, in particular
 \fBipsec\fR(8)\&.
 .PP
 \fBipsec_auto\fR(8)
@@ -1927,8 +1927,8 @@ more pleasant\&. Use it!
 \fBipsec.secrets\fR(5)
 describes the format of the secrets file\&.
 .PP
-\fBipsec_atoaddr\fR(3), part of the Openswan distribution, describes the forms that IP addresses may take\&.
-\fBipsec_atosubnet\fR(3), part of the Openswan distribution, describes the forms that subnet specifications\&.
+\fBipsec_atoaddr\fR(3), part of the Libreswan distribution, describes the forms that IP addresses may take\&.
+\fBipsec_atosubnet\fR(3), part of the Libreswan distribution, describes the forms that subnet specifications\&.
 .PP
 For more information on IPsec, the mailing list, and the relevant documents, see:
 .PP
@@ -1942,14 +1942,14 @@ RFC2408 Internet Security Association and Key Management Protocol (ISAKMP)
 .PP
 RFC2407 The Internet IP Security Domain of Interpretation for ISAKMP
 .PP
-The Openswan web site <htp://www\&.openswan\&.org> and the mailing lists described there\&.
+The Libreswan web site <htp://www\&.libreswan\&.org> and the mailing lists described there\&.
 .SH "HISTORY"
 .PP
 This code is released under the GPL terms\&. See the accompanying files COPYING and CREDITS for more details\&. The GPL does NOT apply to those pieces of code written by others which are included in this distribution, except as noted by the individual authors\&.
 .PP
 This software was originally written for the FreeS/WAN project <\m[blue]\fBhttp://www\&.freeswan\&.org\fR\m[]>, founded by John Gilmore and managed by Hugh Daniel\&. It was written by Angelos D\&. Keromytis (angelos@dsl\&.cis\&.upenn\&.edu), in May/June 1997, in Athens, Greece\&. Thanks go to John Ioannidis for his help\&.
 .PP
-It is currently maintained and extended by Xelerance Corporation, in Canada under the Openswan name\&. See CHANGES for details\&.
+It is currently maintained and extended by Xelerance Corporation, in Canada under the Libreswan name\&. See CHANGES for details\&.
 .PP
 FreeS/WAN was developed/maintained from 2000\-2004 by D\&. Hugh Redelmeier (hugh@mimosa\&.com), in Canada\&. The regulations of Greece and Canada allow the code to be freely redistributable\&.
 .PP
@@ -1986,4 +1986,4 @@ Substitute your public interface for eth0 if it is different\&.
 .PP
 The word \(lqauthenticate\(rq is used for two different features\&. We must authenticate each IKE peer to the other\&. This is an important task of Phase 1\&. Each packet must be authenticated, both in IKE and in IPsec, and the method for IPsec is negotiated as an AH SA or part of an ESP SA\&. Unfortunately, the protocol has no mechanism for authenticating the Phase 2 identities\&.
 .PP
-Bugs should be reported to the <users@lists\&.openswan\&.org> mailing list\&.
+Bugs should be reported to the <users@lists\&.libreswan\&.org> mailing list\&.

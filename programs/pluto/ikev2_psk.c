@@ -27,7 +27,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -79,7 +79,7 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     unsigned char prf_psk[hash_len];
 	
     if (pss == NULL){
-	openswan_log("No matching PSK found for connection:%s", 
+	libreswan_log("No matching PSK found for connection:%s", 
 		     st->st_connection->name);
 	return FALSE;	/* failure: no PSK to use */
     }
@@ -240,9 +240,9 @@ stf_status ikev2_verify_psk_auth(struct state *st
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
     
     if(sig_len != hash_len) {
-	openswan_log("negotiated prf: %s ", 
+	libreswan_log("negotiated prf: %s ", 
 		     st->st_oakley.prf_hasher->common.name);
-	openswan_log("I2 hash length:%lu does not match with PRF hash len %lu",
+	libreswan_log("I2 hash length:%lu does not match with PRF hash len %lu",
 		     (long unsigned) sig_len,  (long unsigned) hash_len);
 	return STF_FAIL ;
     }
@@ -256,7 +256,7 @@ stf_status ikev2_verify_psk_auth(struct state *st
 	DBG_dump("Calculated PSK auth octets", calc_hash, hash_len));
     
     if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
-	openswan_log("AUTH mismatch: Received AUTH != computed AUTH");
+	libreswan_log("AUTH mismatch: Received AUTH != computed AUTH");
 	return STF_FAIL ;
     }
     else {

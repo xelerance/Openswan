@@ -12,17 +12,17 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-include ${OPENSWANSRCDIR}/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
+include ${LIBRESWANSRCDIR}/Makefile.inc
 
 PROGRAM=ike-aggr-dos
 OBJS=checksum.o
 
-VPATH += ${OPENSWANSRCDIR}/testing/kunit/libkern
+VPATH += ${LIBRESWANSRCDIR}/testing/kunit/libkern
 
-#LIBS=${OPENSWANLIB}
+#LIBS=${LIBRESWANLIB}
 EXTRALIBS=-lpcap
 
-include ${OPENSWANSRCDIR}/programs/Makefile.program
+include ${LIBRESWANSRCDIR}/programs/Makefile.program
 
 

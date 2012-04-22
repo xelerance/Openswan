@@ -6,7 +6,7 @@
 
 #export PREFIX=/volquad/arm-4.0.2
 export PREFIX=/usr/local/arm_tools
-export DESTDIR=/tmp/openswan.arm
+export DESTDIR=/tmp/libreswan.arm
 
 export ARCH=arm
 export CC=$PREFIX/bin/arm-elf-gcc

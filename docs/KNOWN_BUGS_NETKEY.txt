@@ -1,11 +1,11 @@
-Known issues with Openswan on a NETKEY IPsec stack based kernel
+Known issues with Libreswan on a NETKEY IPsec stack based kernel
 ---------------------------------------------------------------
 
-The Openswan userland can now use either KLIPS or NETKEY as the kernel
+The Libreswan userland can now use either KLIPS or NETKEY as the kernel
 level IPsec stack. The option protostack= in config setup can be used
 to select an IPsec stack.
 
-This is an overview of known issues with Openswan using NETKEY (CONFIG_NET_KEY).
+This is an overview of known issues with Libreswan using NETKEY (CONFIG_NET_KEY).
 
 * 2.6.18 (but not 2.6.18.1+) seems to fail for NETKEY in combination with
   NAT-Traversal. 
@@ -31,15 +31,15 @@ This is an overview of known issues with Openswan using NETKEY (CONFIG_NET_KEY).
   package which is available at: http://ipsec-tools.sourceforge.net/
 
 * 'ip xfrm state' has been reported hanging in uninterruptable sleep, 
-  causing Openswan to hang (eg during shutdown)
+  causing Libreswan to hang (eg during shutdown)
 
-* Openswan-2 ships with support for NETKEY.
+* Libreswan-2 ships with support for NETKEY.
   Many thanks to Herbert Xu for the initial code patches.
 
 * setkey doesn't like spaces in PSK's from ipsec.secrets.  If you are on a recent
   distro with 'ip xfrm' support, or using KLIPS, this isn't a problem.
 
-* Use the most recent Linux Openswan-2 release from ftp.openswan.org
+* Use the most recent Linux Libreswan-2 release from ftp.libreswan.org
   to try our 2.6 kernel support. Currently, this is 2.3.1
 
 DESIGN-RELATED ISSUES
@@ -75,7 +75,7 @@ CURRENT ISSUES
   [ There is currently a bug in the rekeying code that triggers this ]
 
 * starting with 2.6.9 NETKEY needs to have xfrm4_tunnel support. You might need
-  to modprobe this on older Openswan versions.
+  to modprobe this on older Libreswan versions.
 
 * SNAT and NETKEY behaviour changed around 2.6.16. The "-t nat -A POSTROUTING"
   rules on the IPsec gateway now match before the IPSEC routes. Thus, one
@@ -129,15 +129,15 @@ None, yet.
 RELATED DOCUMENTS
 
 
-Openswan Install page        doc/install.html
+Libreswan Install page        doc/install.html
 
-Openswan Install guide           INSTALL
+Libreswan Install guide           INSTALL
 
-Openswan and FreeS/WAN mailing list posts, including:
+Libreswan and FreeS/WAN mailing list posts, including:
 
     http://lists.freeswan.org/archives/design/2003-September/msg00057.html
-    http://lists.openswan.org/
+    http://lists.libreswan.org/
 
-To sign up for our mailing lists, see http://lists.openswan.org/
+To sign up for our mailing lists, see http://lists.libreswan.org/
 
 

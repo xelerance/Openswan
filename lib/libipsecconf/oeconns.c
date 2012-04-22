@@ -1,4 +1,4 @@
-/* Openswan config parser -- create Opportunistic Encryption conns
+/* Libreswan config parser -- create Opportunistic Encryption conns
  * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it

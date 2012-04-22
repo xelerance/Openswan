@@ -16,7 +16,7 @@ west:~#
  iptables -A OUTPUT -o eth1 -p udp --dport 500 -m recent --set -j DROP
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~#
@@ -105,7 +105,7 @@ west:~#
 104 "westnet--eastnet-ikev2" #3: STATE_MAIN_I1: initiate, replacing #2
 002 "westnet--eastnet-ikev2" #2: extra debugging enabled for connection: whackwatch
 002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
-003 "westnet--eastnet-ikev2" #3: received Vendor ID payload [Openswan 
+003 "westnet--eastnet-ikev2" #3: received Vendor ID payload [Libreswan 
 003 "westnet--eastnet-ikev2" #3: received Vendor ID payload [Dead Peer Detection]
 002 "westnet--eastnet-ikev2" #3: extra debugging enabled for connection: whackwatch
 106 "westnet--eastnet-ikev2" #3: STATE_MAIN_I2: sent MI2, expecting MR2

@@ -41,9 +41,9 @@
 #include <rtnetlink.h>
 #include <xfrm.h>
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h"
@@ -326,7 +326,7 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
 	}
 	else if ((size_t) r < sizeof(rsp.n))
 	{
-	    openswan_log("netlink read truncated message: %ld bytes; ignore message"
+	    libreswan_log("netlink read truncated message: %ld bytes; ignore message"
 		, (long) r);
 	    continue;
 	}
@@ -578,7 +578,7 @@ netlink_raw_eroute(const ip_address *this_host
 	 * Bug #1101. Tuomo
 	 */
 	if(portof(&that_client->addr) != portof(that_host)) {
-	    openswan_log("%s: WARNING: that_client port %u and that_host"
+	    libreswan_log("%s: WARNING: that_client port %u and that_host"
 			 " port %u don't match. Using that_client port."
 			 , __FUNCTION__
 			 , ntohs(portof(&that_client->addr))
@@ -600,7 +600,7 @@ netlink_raw_eroute(const ip_address *this_host
 
     /* As per RFC 4301/5996, icmp type is put in the most significant 8 bits
      * and icmp code is in the least significant 8 bits of port field. 
-     * Although Openswan does not have any configuration options for 
+     * Although Libreswan does not have any configuration options for 
      * icmp type/code values, it is possible to specify icmp type and code 
      * using protoport option. For example, icmp echo request (type 8/code 0) 
      * needs to be encoded as 0x0800 in the port field and can be specified 
@@ -1222,7 +1222,7 @@ netlink_acquire(struct nlmsghdr *n)
 
     if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*acquire)))
     {
-	openswan_log("netlink_acquire got message with length %lu < %lu bytes; ignore message"
+	libreswan_log("netlink_acquire got message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) n->nlmsg_len
 	    , (unsigned long) sizeof(*acquire));
 	return;
@@ -1348,7 +1348,7 @@ ignore_acquire:
 #endif
 
     if (ugh != NULL)
-	openswan_log("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
+	libreswan_log("XFRM_MSG_ACQUIRE message from kernel malformed: %s", ugh);
 }
 
 static void
@@ -1368,7 +1368,7 @@ netlink_shunt_expire(struct xfrm_userpolicy_info *pol)
     if ((ugh = xfrm_to_ip_address(family, srcx, &src))
     || (ugh = xfrm_to_ip_address(family, dstx, &dst)))
     {
-	openswan_log("XFRM_MSG_POLEXPIRE message from kernel malformed: %s", ugh);
+	libreswan_log("XFRM_MSG_POLEXPIRE message from kernel malformed: %s", ugh);
 	return;
     }
 
@@ -1396,7 +1396,7 @@ netlink_policy_expire(struct nlmsghdr *n)
 
     if (n->nlmsg_len < NLMSG_LENGTH(sizeof(*upe)))
     {
-	openswan_log("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
+	libreswan_log("netlink_policy_expire got message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) n->nlmsg_len
 	    , (unsigned long) sizeof(*upe));
 	return;
@@ -1425,7 +1425,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
     else if (rsp.n.nlmsg_len < NLMSG_LENGTH(sizeof(rsp.pol)))
     {
-	openswan_log("netlink_policy_expire: XFRM_MSG_GETPOLICY returned message with length %lu < %lu bytes; ignore message"
+	libreswan_log("netlink_policy_expire: XFRM_MSG_GETPOLICY returned message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) rsp.n.nlmsg_len
 	    , (unsigned long) sizeof(rsp.pol));
 	return;
@@ -1480,7 +1480,7 @@ netlink_get(void)
     }
     else if ((size_t) r < sizeof(rsp.n))
     {
-	openswan_log("netlink_get read truncated message: %ld bytes; ignore message"
+	libreswan_log("netlink_get read truncated message: %ld bytes; ignore message"
 	    , (long) r);
 	return TRUE;
     }
@@ -1495,7 +1495,7 @@ netlink_get(void)
     }
     else if ((size_t) r != rsp.n.nlmsg_len)
     {
-	openswan_log("netlink_get read message with length %ld that doesn't equal nlmsg_len %lu bytes; ignore message"
+	libreswan_log("netlink_get read message with length %ld that doesn't equal nlmsg_len %lu bytes; ignore message"
 	    , (long) r
 	    , (unsigned long) rsp.n.nlmsg_len);
 	return TRUE;
@@ -1579,7 +1579,7 @@ retry:
 	if (rsp.u.e.error == -EINVAL && proto == IPPROTO_COMP && !get_cpi_bug)
 	{
 	    get_cpi_bug = 1;
-	    openswan_log("netlink_get_spi: Enabling workaround for"
+	    libreswan_log("netlink_get_spi: Enabling workaround for"
 			 " kernel CPI allocation bug");
 	    goto retry;
 	}
@@ -1593,7 +1593,7 @@ retry:
     }
     else if (rsp.n.nlmsg_len < NLMSG_LENGTH(sizeof(rsp.u.sa)))
     {
-	openswan_log("netlink_get_spi: XFRM_MSG_ALLOCSPI returned message with length %lu < %lu bytes; ignore message"
+	libreswan_log("netlink_get_spi: XFRM_MSG_ALLOCSPI returned message with length %lu < %lu bytes; ignore message"
 	    , (unsigned long) rsp.n.nlmsg_len
 	    , (unsigned long) sizeof(rsp.u.sa));
 	return 0;
@@ -1981,7 +1981,7 @@ add_entry:
 	/* ignore if --listen is specified and we do not match */
 	if (pluto_listen!=NULL) {
 	    if (!sameaddr(&lip, &ifp->addr)) {
-		openswan_log("skipping interface %s with %s"
+		libreswan_log("skipping interface %s with %s"
 		, ifp->name , ip_str(&ifp->addr));
 		continue;
 	    }
@@ -2030,7 +2030,7 @@ add_entry:
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d"
+		    libreswan_log("adding interface %s/%s %s:%d"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
@@ -2062,7 +2062,7 @@ add_entry:
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;
-			openswan_log("adding interface %s/%s %s:%d"
+			libreswan_log("adding interface %s/%s %s:%d"
 				     , q->ip_dev->id_vname, q->ip_dev->id_rname
 				     , ip_str(&q->ip_addr)
 				     , q->port);

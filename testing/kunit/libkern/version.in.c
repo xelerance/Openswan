@@ -17,11 +17,11 @@
 #include <linux/netdevice.h>
 #endif
 
-#include "openswan.h"
+#include "libreswan.h"
 
 #define	V	"@IPSECVERSION@"	/* substituted in by Makefile */
-static const char openswan_number[] = V;
-static const char openswan_string[] = "Linux Openswan testing lib " V;
+static const char libreswan_number[] = V;
+static const char libreswan_string[] = "Linux Libreswan testing lib " V;
 
 /*
  - ipsec_version_code - return IPsec version number/code, as string
@@ -29,7 +29,7 @@ static const char openswan_string[] = "Linux Openswan testing lib " V;
 const char *
 ipsec_version_code()
 {
-	return openswan_number;
+	return libreswan_number;
 }
 
 /*
@@ -38,5 +38,5 @@ ipsec_version_code()
 const char *
 ipsec_version_string()
 {
-	return openswan_string;
+	return libreswan_string;
 }

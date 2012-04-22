@@ -25,9 +25,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 #include "kameipsec.h"
 
 #include "sysdep.h"
@@ -79,7 +79,7 @@ static int
 terminate_a_connection(struct connection *c, void *arg UNUSED)
 {
     set_cur_connection(c);
-    openswan_log("terminating SAs using this connection");
+    libreswan_log("terminating SAs using this connection");
     c->policy &= ~POLICY_UP;
     flush_pending_by_connection(c);
     delete_states_by_connection(c, FALSE);

@@ -35,7 +35,7 @@ returnhelp = 0
 verbose = 0
 
 ADDRWEB = "206.248.173.87" #livetest server
-ADDRSEC = "206.248.173.86" #livetest openswan server
+ADDRSEC = "206.248.173.86" #livetest libreswan server
 configsetup = "config setup"
 nat_traversal = "nat_traversal=yes"
 
@@ -118,7 +118,7 @@ def checkPluto():
 	elif status == 768: return "OK"
 	else: return "UNKNOWN"
 
-#Check for installed openswan
+#Check for installed libreswan
 def checkInstall():
 	
 	(status,output) = commands.getstatusoutput("ipsec --version")
@@ -283,7 +283,7 @@ def checkPort(port, addr):
 		retryflag = 1	
 		return "FAILED" 
 
-#start openswan
+#start libreswan
 def startPluto():
 
 	status = timeout_command("ipsec setup start", 10)
@@ -425,17 +425,17 @@ def barfUpload():
 		file_path = "/home/daniel/livetest/client/old/barf.txt"
 
 		data = urllib.urlencode({"file" : barf})
-		f = urllib.urlopen("http://livetest.openswan.org/cgi-bin/barfload.py", data)
+		f = urllib.urlopen("http://livetest.libreswan.org/cgi-bin/barfload.py", data)
 
 		barfAnalyze()
 
-		print "To view dubugging information on your livetest tunnel as well as your ipsec barf go to /http://livetest.openswan.org/cgi-bin/debug_info.py"
+		print "To view dubugging information on your livetest tunnel as well as your ipsec barf go to /http://livetest.libreswan.org/cgi-bin/debug_info.py"
 
 
 def main():
 	
 	ADDRWEB = "206.248.173.87" #livetest server
-	ADDRSEC = "206.248.173.86" #livetest openswan server
+	ADDRSEC = "206.248.173.86" #livetest libreswan server
 	no_net = 0
 	quick = 0
 	configsetup = "config setup"
@@ -486,7 +486,7 @@ def main():
 
 	try:
 		print "Checking your system to see if IPsec will work:"	
-		output (outmsg("Checking that Openswan is installed"), checkInstall())
+		output (outmsg("Checking that Libreswan is installed"), checkInstall())
 		output (outmsg("Pluto must be stopped for this program"), checkPluto())
 		output (outmsg("Checking for SElinux"), checkSElinux())
 		output (outmsg("Check IP forwarding"), checkForwarding())
@@ -520,7 +520,7 @@ def main():
 		if retryflag: output (outmsg("Retry: Checking port 4500"), checkPort(4500, ADDRWEB))
 		if not no_net and not quick: output (outmsg("Testing port 5000"), checkPort(5000, ADDRSEC))
 		if retryflag: output (outmsg("Retry: Checking port 5000"), checkPort(5000, ADDRSEC))
-		if not no_net: output (outmsg("Starting Openswan"), startPluto())
+		if not no_net: output (outmsg("Starting Libreswan"), startPluto())
 		
 		if natflag:
 			conn = "ipsec whack --name livetest --id @client --host " + getLocalIP() + " --forceencaps --to --id @lab --host 206.248.173.86 --tunnel --encrypt --psk --pfs"	
@@ -544,7 +544,7 @@ def main():
 			if not no_net: output (outmsg("Running MTU check"), checkMTU(10))
 		except TimeExceededError:
                         pass
-		if not no_net: output (outmsg("Stopping Openswan"), stopPluto())
+		if not no_net: output (outmsg("Stopping Libreswan"), stopPluto())
 		if not no_net: barfUpload()
 
 	except KeyboardInterrupt:

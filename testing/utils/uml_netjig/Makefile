@@ -11,7 +11,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR=../../..
+LIBRESWANSRCDIR=../../..
 OBJS = nethub.o cmdmode.o port.o hash.o tuntap.o
 OBJS+=getopt_long.o
 
@@ -41,11 +41,11 @@ PCAPLIB=-lpcap
 #PCAPH=-I/home/mcr/src/libpcap
 #PCAPLIB=-L/home/mcr/src/linux/i386/libpcap -lpcap
 
-CFLAGS = -g -Wall ${PCAPH} ${NETDISSECTH} ${OPTIONS} -I${OPENSWANSRCDIR}/include
+CFLAGS = -g -Wall ${PCAPH} ${NETDISSECTH} ${OPTIONS} -I${LIBRESWANSRCDIR}/include
 LIBS = ${NETDISSECTLIB} ${PCAPLIB} ${OPENSSL}
 
 
-include $(OPENSWANSRCDIR)/Makefile.inc
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 def:
 	@echo "Please read doc/intro.html or INSTALL before running make"

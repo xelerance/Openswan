@@ -1,4 +1,4 @@
-# Openswan pathnames and other master configuration
+# Libreswan pathnames and other master configuration
 # Copyright (C) 2001, 2002  Henry Spencer.
 # Copyright (C) 2003-2006   Xelerance Corporation
 # 
@@ -21,7 +21,7 @@
 
 #
 #  If there is a "local" makfile include it, else ignore:
--include ${OPENSWANSRCDIR}/Makefile.inc.local
+-include ${LIBRESWANSRCDIR}/Makefile.inc.local
 
 
 # Variables in this file with names starting with INC_ are not for use
@@ -100,10 +100,10 @@ CONFDDIR?=$(DESTDIR)$(FINALCONFDDIR)
 
 # sample configuration files go into
 INC_DOCDIR?=share/doc
-FINALEXAMPLECONFDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
+FINALEXAMPLECONFDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/libreswan
 EXAMPLECONFDIR?=${DESTDIR}${FINALEXAMPLECONFDIR}
 
-FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/openswan
+FINALDOCDIR?=${INC_USRLOCAL}/${INC_DOCDIR}/libreswan
 DOCDIR=${DESTDIR}${FINALDOCDIR}
 
 # where per-conn pluto logs go
@@ -193,9 +193,9 @@ BISONOSFLAGS=
 GCC_LINT ?= -DGCC_LINT 
 USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
 KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
-# Additional debugging for developers (warning: can crash openswan!)
+# Additional debugging for developers (warning: can crash libreswan!)
 #USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
-# You can also run this before starting openswan on glibc systems:
+# You can also run this before starting libreswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
  
 # extra link flags
@@ -268,9 +268,9 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 ##
 
 #
-# USE_ variables determine if features are compiled into Openswan.
+# USE_ variables determine if features are compiled into Libreswan.
 #       these let you turn on/off specific features
-# HAVE_ variables let you tell Openswan what system related libraries
+# HAVE_ variables let you tell Libreswan what system related libraries
 #       you may or maynot have
 
 # LWRES is the lightweight resolver, part of BIND9
@@ -343,7 +343,7 @@ USE_NETKEY=false
 USE_KLIPS=false
 endif
 
-# Build support for sending Openswan Vendor IDs
+# Build support for sending Libreswan Vendor IDs
 USE_VENDORID?=true
 
 # Build aggressive mode authentication system code - both Server and Client.
@@ -425,7 +425,7 @@ IPSEC_CONNECTION_LIMIT?=250
 HAVE_THREADS?=false
 
 # Do we have an external stats daemon we can push state changes to?
-# Currently hardcoded to /bin/openswan-statsd
+# Currently hardcoded to /bin/libreswan-statsd
 HAVE_STATSD?=false
 
 # Do we have Openssl libraries available for BIGNUM support?
@@ -486,12 +486,12 @@ ifeq ($(OSDEP),)
 OSDEP:=$(shell uname -s | tr 'A-Z' 'a-z')
 endif
 
--include ${OPENSWANSRCDIR}/Makefile.ver
+-include ${LIBRESWANSRCDIR}/Makefile.ver
 
 # make sure we only run this once per build,  its too expensive to run
 # every time Makefile.inc is included
 ifndef IPSECVERSION
-IPSECVERSION:=$(shell ${OPENSWANSRCDIR}/packaging/utils/setlocalversion ${IPSECBASEVERSION} ${OPENSWANSRCDIR})
+IPSECVERSION:=$(shell ${LIBRESWANSRCDIR}/packaging/utils/setlocalversion ${IPSECBASEVERSION} ${LIBRESWANSRCDIR})
 export IPSECVERSION
 endif
 
@@ -504,8 +504,8 @@ BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
 endif
 export BUILDENV
 export OSDEP
-include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
--include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
+include ${LIBRESWANSRCDIR}/packaging/defaults/${BUILDENV}
+-include ${LIBRESWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
 
 # On MAC OSX , we have to use YACC and not BISON. And use different backup
 # file suffix.
@@ -517,11 +517,11 @@ endif
 
 ifeq ($(USE_OBJDIR),true)
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
-OBJDIRTOP?=${OPENSWANSRCDIR}/${OBJDIR}
+OBJDIRTOP?=${LIBRESWANSRCDIR}/${OBJDIR}
 else
 # where to place the object files which are built 
 OBJDIR?=.
-OBJDIRTOP?=${OPENSWANSRCDIR}
+OBJDIRTOP?=${LIBRESWANSRCDIR}
 endif
 
 #
@@ -532,16 +532,16 @@ export OBJDIRTOP
 
 ### paths within the source tree
 
-KLIPSINC=${OPENSWANSRCDIR}/linux/include
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
+KLIPSINC=${LIBRESWANSRCDIR}/linux/include
+KLIPSSRCDIR=${LIBRESWANSRCDIR}/linux/net/ipsec
 #KLIPSSRCDIR=/mara1/git/klips/net/ipsec
 
-LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
-OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
+LIBLIBRESWANDIR=${LIBRESWANSRCDIR}/lib/liblibreswan
+LIBRESWANLIB=${OBJDIRTOP}/lib/liblibreswan/liblibreswan.a
 PLUTOLIB=${OBJDIRTOP}/lib/libpluto/libpluto.a
-OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
+OSWLOGLIB=${OBJDIRTOP}/lib/liblibreswan/liboswlog.a
 
-LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
+LWRESDIR=${LIBRESWANSRCDIR}/lib/liblwres
 LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
 LIBDNS=${OBJDIRTOP}/lib/libdns/libdns.a
 LIBISC=${OBJDIRTOP}/lib/libisc/libisc.a
@@ -549,7 +549,7 @@ LIBBSDPFKEY=${OBJDIRTOP}/lib/libbsdpfkey/libbsdpfkey.a
 ISCARCH?=unix
 ISCHOSTARCH?=unix
 
-LIBDESSRCDIR=${OPENSWANSRCDIR}/linux/crypto/ciphers/des
+LIBDESSRCDIR=${LIBRESWANSRCDIR}/linux/crypto/ciphers/des
 LIBDESLITE:=${OBJDIRTOP}/lib/libcrypto/libdes/libdes.a
 LIBOSWCRYPTO=${OBJDIRTOP}/lib/libcrypto/liboswcrypto/liboswcrypto.a
 LIBAES=${OBJDIRTOP}/lib/libcrypto/libaes/libaes.a
@@ -571,15 +571,15 @@ ifeq ($(HAVE_OCF),true)
 CRYPTOLIBS += -lcrypto
 endif
 
-LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
+LIBPOLICYDIR=${LIBRESWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
 IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
 # export everything so that scripts can use them.
-export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE 
-export LIBOPENSWANDIR OPENSWANLIB OSWLOGLIB PLUTOLIB LWRESDIR LIBLWRES LIBDNS
+export LIBLIBRESWANDIR LIBRESWANSRCDIR ARCH PORTINCLUDE 
+export LIBLIBRESWANDIR LIBRESWANLIB OSWLOGLIB PLUTOLIB LWRESDIR LIBLWRES LIBDNS
 export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
 export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
 export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB IPSECCONFLIB

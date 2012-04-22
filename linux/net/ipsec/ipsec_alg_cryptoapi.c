@@ -60,9 +60,9 @@
 #define NO_CRYPTOAPI_SUPPORT
 #endif
 
-#include "openswan.h"
-#include "openswan/ipsec_alg.h"
-#include "openswan/ipsec_policy.h"
+#include "libreswan.h"
+#include "libreswan/ipsec_alg.h"
+#include "libreswan/ipsec_policy.h"
 
 #include <linux/crypto.h>
 #ifdef CRYPTO_API_VERSION_CODE

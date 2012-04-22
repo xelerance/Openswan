@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <errno.h>
 
 #include <tcl.h>
@@ -48,20 +48,20 @@ void init_tpm(void)
     snprintf(initfile, sizeof(initfile), "%s/tpm.tcl", ipsec_dir);
     if(access(initfile, R_OK)!=0) {
 	if(errno == ENOENT) {
-	    openswan_log("No file '%s' found, TPM disabled\n", initfile);
+	    libreswan_log("No file '%s' found, TPM disabled\n", initfile);
 	} else {
-	    openswan_log("TPM disabled: cannot open TPM file '%s':%s\n"
+	    libreswan_log("TPM disabled: cannot open TPM file '%s':%s\n"
 			 , initfile
 			 , strerror(errno));
 	}
 	return;
     }
 
-    openswan_log("Loading TPM file: '%s'\n", initfile);
+    libreswan_log("Loading TPM file: '%s'\n", initfile);
     val = Tcl_EvalFile(PlutoInterp, initfile);
     switch(val) {
     case TCL_OK:
-	openswan_log("TPM enabled\n");
+	libreswan_log("TPM enabled\n");
 	tpm_enabled = TRUE;
 	return;
 	
@@ -69,7 +69,7 @@ void init_tpm(void)
     case TCL_RETURN:
     case TCL_BREAK:
     case TCL_CONTINUE:
-	openswan_log("TPM load error: %s\n", Tcl_GetObjResult(PlutoInterp));
+	libreswan_log("TPM load error: %s\n", Tcl_GetObjResult(PlutoInterp));
 	break;
     }
     return;
@@ -88,11 +88,11 @@ void tpm_eval(const char *string)
     int val;
 
     if(PlutoInterp == NULL) {
-	openswan_log("TPM not yet initialized, can not evaluate '%s'\n", string);
+	libreswan_log("TPM not yet initialized, can not evaluate '%s'\n", string);
 	return;
     }
 
-    openswan_log("TPM evaluating '%s'\n", string);
+    libreswan_log("TPM evaluating '%s'\n", string);
     val = Tcl_Eval(PlutoInterp, string);
     
     switch(val) {
@@ -101,7 +101,7 @@ void tpm_eval(const char *string)
 	    /* likely reason is that they user called "source" to load
 	     * some new code.
 	     */
-	    openswan_log("TPM enabled\n");
+	    libreswan_log("TPM enabled\n");
 	    tpm_enabled = TRUE;
 	}
 	return;
@@ -110,7 +110,7 @@ void tpm_eval(const char *string)
     case TCL_RETURN:
     case TCL_BREAK:
     case TCL_CONTINUE:
-	openswan_log("TPM eval error: %s\n", Tcl_GetObjResult(PlutoInterp));
+	libreswan_log("TPM eval error: %s\n", Tcl_GetObjResult(PlutoInterp));
 	break;
     }
 }
@@ -146,9 +146,9 @@ stf_status tpm_call_it(Tcl_Obj **objv, int objc)
 	return STF_OK;
     }
 
-    openswan_log("TPM result: %s",res);
+    libreswan_log("TPM result: %s",res);
     if(ret != TCL_OK) {
-	openswan_log("TPM result failed");
+	libreswan_log("TPM result failed");
     }
 
     if(strcmp(res, "stf_stolen")==0) {

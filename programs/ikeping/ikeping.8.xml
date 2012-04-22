@@ -42,8 +42,8 @@ does for ICMP echo request/reply packets.</para>
 <para>
 At the time of this writing, the ISAKMP echo request/reply exchange is still
 an internet-draft (draft-richardson-ipsec-ikeping-00), and is therefore
-completely non-standard. The Openswan IKE daemon pluto does implement this
-draft, so ikeping can be used to test connectivity to an openswan ipsec
+completely non-standard. The Libreswan IKE daemon pluto does implement this
+draft, so ikeping can be used to test connectivity to an libreswan ipsec
 server.
 
 </para>

@@ -57,7 +57,7 @@
 #include <resolv.h>
 #include <netdb.h>	/* ??? for h_errno */
 
-#include <openswan.h>
+#include <libreswan.h>
 
 /* GCC magic! */
 #ifdef GCC_LINT

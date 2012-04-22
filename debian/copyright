@@ -4,16 +4,16 @@ Thu, 10 Aug 2000 10:50:33 +0200.
 The Debian package was created from scratch with some hints taken from
 previous freeswan packages by Tommi Virtanen and Aaron Johnson.
 The upstream software was originally downloaded from http://www.freeswan.org
-while newer versions use the fork from http://www.openswan.org.
+while newer versions use the fork from http://www.libreswan.org.
 Debian packaging is Copyright © 2000-2010 Rene Mayrhofer.
 
-Openswan derives its copyright from FreeS/WAN: Richard Guy Briggs
+Libreswan derives its copyright from FreeS/WAN: Richard Guy Briggs
 (KLIPS), D. Hugh Redelmeier (Pluto), Michael Richardson (technical lead,
 KLIPS, testing, etc.), Henry Spencer (past technical lead, scripts,
 libraries, packaging, etc.), Sandy Harris (documentation), Claudia
 Schmeing (support, documentation), and Sam Sgro (support, releases).
 
-After forking into Openswan, it is now Copyright © 2003-2008 Xelerance,
+After forking into Libreswan, it is now Copyright © 2003-2008 Xelerance,
 please see the file CREDITS for details. However, all of the code is DFSG-free.
 
 The contents of this LICENSE file are:
@@ -43,24 +43,24 @@ The contents of this LICENSE file are:
 Files with different copyrights/licenses:
 
  * lib/libcrypto/libserpent/serpent.c, lib/libipsecpolicy/version.in.c,
-   lib/libopenswan/atoaddr.c, lib/libopenswan/atoasr.c,
-   lib/libopenswan/atosubnet.c, lib/libopenswan/atoul.c,
-   lib/libopenswan/biglset.c, lib/libopenswan/copyright.c,
-   lib/libopenswan/initsaid.c, lib/libopenswan/initsubnet.c,
-   lib/libopenswan/internal.h, lib/libopenswan/iprange.c,
-   lib/libopenswan/keyblobtoid.c, lib/libopenswan/optionsfrom.c,
-   lib/libopenswan/pfkey_error.c, lib/libopenswan/pfkey_sock.c,
-   lib/libopenswan/portof.c, lib/libopenswan/rangetosubnet.c,
-   lib/libopenswan/sameaddr.c, lib/libopenswan/sanitizestring.c,
-   lib/libopenswan/satoa.c, lib/libopenswan/subnettot.c,
-   lib/libopenswan/subnettypeof.c, lib/libopenswan/ttoaddr.c,
-   lib/libopenswan/ttodata.c, lib/libopenswan/ttosa.c,
-   lib/libopenswan/ttosubnet.c, lib/libopenswan/ttoul.c,
-   lib/libopenswan/udpfromto.c, lib/libopenswan/version.in.c,
-   linux/include/openswan.h, linux/include/openswan/ipsec_kversion.h,
-   linux/include/openswan/ipsec_param2.h,
-   linux/include/openswan/ipsec_policy.h, linux/include/openswan/passert.h,
-   linux/include/openswan/pfkey_debug.h, linux/net/ipsec/addrtoa.c,
+   lib/liblibreswan/atoaddr.c, lib/liblibreswan/atoasr.c,
+   lib/liblibreswan/atosubnet.c, lib/liblibreswan/atoul.c,
+   lib/liblibreswan/biglset.c, lib/liblibreswan/copyright.c,
+   lib/liblibreswan/initsaid.c, lib/liblibreswan/initsubnet.c,
+   lib/liblibreswan/internal.h, lib/liblibreswan/iprange.c,
+   lib/liblibreswan/keyblobtoid.c, lib/liblibreswan/optionsfrom.c,
+   lib/liblibreswan/pfkey_error.c, lib/liblibreswan/pfkey_sock.c,
+   lib/liblibreswan/portof.c, lib/liblibreswan/rangetosubnet.c,
+   lib/liblibreswan/sameaddr.c, lib/liblibreswan/sanitizestring.c,
+   lib/liblibreswan/satoa.c, lib/liblibreswan/subnettot.c,
+   lib/liblibreswan/subnettypeof.c, lib/liblibreswan/ttoaddr.c,
+   lib/liblibreswan/ttodata.c, lib/liblibreswan/ttosa.c,
+   lib/liblibreswan/ttosubnet.c, lib/liblibreswan/ttoul.c,
+   lib/liblibreswan/udpfromto.c, lib/liblibreswan/version.in.c,
+   linux/include/libreswan.h, linux/include/libreswan/ipsec_kversion.h,
+   linux/include/libreswan/ipsec_param2.h,
+   linux/include/libreswan/ipsec_policy.h, linux/include/libreswan/passert.h,
+   linux/include/libreswan/pfkey_debug.h, linux/net/ipsec/addrtoa.c,
    linux/net/ipsec/addrtot.c, linux/net/ipsec/addrtypeof.c,
    linux/net/ipsec/anyaddr.c, linux/net/ipsec/datatot.c,
    linux/net/ipsec/goodmask.c, linux/net/ipsec/initaddr.c,
@@ -155,7 +155,7 @@ Files with different copyrights/licenses:
 
  * include/arpa/nameser.h, include/sysqueue.h, lib/libisc/inet_aton.c,
    lib/liblwres/herror.c, lib/liblwres/lwinetaton.c,
-   linux/include/openswan/radij.h, linux/net/ipsec/radij.c,
+   linux/include/libreswan/radij.h, linux/net/ipsec/radij.c,
    testing/utils/uml_netjig/getopt_long.c
    Copyright (c) 1983, 1987, 1988, 1989, 1990, 1991, 1993, 1994, 1996
       The Regents of the University of California.  All rights reserved.
@@ -376,7 +376,7 @@ Files with different copyrights/licenses:
 
    The code was developed with source from the file: hw_cryptodev.c
    in the openssl package, and the file: ipsec_doi.c from the
-   openswan package.
+   libreswan package.
 
    hw_cryptodev.c, openssl package:
    Copyright (c) 2002 Bob Beck <beck@openbsd.org>
@@ -404,7 +404,7 @@ Files with different copyrights/licenses:
    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-   ipsec_doi.c, openswan package:
+   ipsec_doi.c, libreswan package:
    Copyright (C) 1997 Angelos D. Keromytis.
    Copyright (C) 1998-2002  D. Hugh Redelmeier.
    Copyright (C) 2003 Michael Richardson <mcr@xelerance.com>
@@ -419,7 +419,7 @@ Files with different copyrights/licenses:
    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
    for more details.
 
- * linux/include/openswan/pfkeyv2.h
+ * linux/include/libreswan/pfkeyv2.h
    This file defines structures and symbols for the PF_KEY Version 2
    key management interface. It was written at the U.S. Naval Research
    Laboratory. This file is in the public domain. The authors ask that

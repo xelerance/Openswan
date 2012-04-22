@@ -32,7 +32,7 @@
 #endif
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -53,7 +53,7 @@
 # include <net/xfrm.h>
 #endif
 #include <linux/skbuff.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
@@ -68,34 +68,34 @@
 
 #include <net/ip.h>
 
-#include "openswan/ipsec_kversion.h"
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/ipsec_kversion.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_mast.h"
-#include "openswan/ipsec_rcv.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_mast.h"
+#include "libreswan/ipsec_rcv.h"
 
-#include "openswan/ipsec_auth.h"
+#include "libreswan/ipsec_auth.h"
 
-#include "openswan/ipsec_esp.h"
+#include "libreswan/ipsec_esp.h"
 
 #ifdef CONFIG_KLIPS_AH
-#include "openswan/ipsec_ah.h"
+#include "libreswan/ipsec_ah.h"
 #endif /* CONFIG_KLIPS_AH */
 
 #ifdef CONFIG_KLIPS_IPCOMP
-#include "openswan/ipsec_ipcomp.h"
+#include "libreswan/ipsec_ipcomp.h"
 #endif /* CONFIG_KLIPS_COMP */
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_alg.h"
 
 #ifdef CONFIG_KLIPS_OCF
 #include "ipsec_ocf.h"
@@ -1804,7 +1804,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
  * be used anyway.
  */
 #ifdef DISABLE_UDP_CHECKSUM
-		/* see https://bugs.openswan.org/issues/601 */
+		/* see https://bugs.libreswan.org/issues/601 */
 		if(osw_ip4_hdr(irs)->protocol == IPPROTO_UDP) {
 			udp_hdr(skb)->check = 0;
 			KLIPS_PRINT(debug_rcv, "UDP checksum for NAT packet disabled at compile time\n");

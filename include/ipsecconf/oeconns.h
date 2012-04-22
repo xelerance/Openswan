@@ -1,4 +1,4 @@
-/* Openswan config file parser (parser.h)
+/* Libreswan config file parser (parser.h)
  * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it

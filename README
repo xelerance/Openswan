@@ -1,20 +1,20 @@
 #########################################################################
-#            Openswan 2.X Release Notes
+#            Libreswan 2.X Release Notes
 #########################################################################
 ************ See docs/RELEASE-NOTES.txt for more information ************
 
-Openswan is an IPsec implementation for Linux. It has support for most 
+Libreswan is an IPsec implementation for Linux. It has support for most 
 of the extensions (RFC + IETF drafts) related to IPsec, including 
 IKEv2, X.509 Digital Certificates, NAT Traversal, and many others.
 
-Openswan was originally based on FreeS/WAN 2.04 CVS with the X.509 Patch
+Libreswan was originally based on FreeS/WAN 2.04 CVS with the X.509 Patch
 from Andreas Steffen, the NAT-T patch from Arkoon networks and some minor
 bug fixes from 2.05 and 2.06.  See CREDITS for the history.
 
 Download it from
 
-    http://www.openswan.org/code/
-    ftp://ftp.openswan.org/openswan/
+    http://www.libreswan.org/code/
+    ftp://ftp.libreswan.org/libreswan/
 
 #########################################################################
 # REQUIREMENTS
@@ -23,11 +23,11 @@ Download it from
 A recent Linux distribution based on either Kernel 2.4.x, or 2.6.x are 
 the currently supported platforms.
 
-Most recent distributions have package support for openswan.  Unless
+Most recent distributions have package support for libreswan.  Unless
 a source based build is truly needed,  it is often best to use the pre-built
 distributions packaged version.
 
-There are a few packages required for Openswan to compile from source:
+There are a few packages required for Libreswan to compile from source:
 
 1. The GNU Math Precision Library:
 
@@ -54,10 +54,10 @@ There are a few packages required for Openswan to compile from source:
 NETKEY (Native linux IPsec stack)
 ---------------------------------
 
-To use Openswan with the linux native (builtin) IPsec stack,  then the
+To use Libreswan with the linux native (builtin) IPsec stack,  then the
 following steps should be all that are needed. Please use at least kernel
 version 2.6.9, as prior versions of the kernel have serious bugs in the
-native IPsec stack.  From the openswan directory:
+native IPsec stack.  From the libreswan directory:
 
     make programs
     sudo make install
@@ -67,12 +67,12 @@ is required. For backported kernels, setkey and thus ipsec-tools might still
 be required. Run 'ipsec verify' to determine if your system has either one
 of the requirements.
 
-KLIPS/KLIPSNG (Openswan IPsec stack)
+KLIPS/KLIPSNG (Libreswan IPsec stack)
 ------------------------------------
 
-To use the Openswan KLIPS IPsec stack (ipsec0 devices) for Linux
+To use the Libreswan KLIPS IPsec stack (ipsec0 devices) for Linux
 Kernels 2.6.23 and higher, the following steps should work.  From the
-openswan directory:
+libreswan directory:
 
     make programs
     make KERNELSRC=/lib/modules/`uname -r`/build module
@@ -90,7 +90,7 @@ documentation on how to build and install a new kernel
 
     Add NAT-T support (if required).
 
-        From the Openswan source directory:
+        From the Libreswan source directory:
 
           make KERNELSRC=/usr/src/linux nattpatch | patch -d /usr/src/linux -p1
 
@@ -102,7 +102,7 @@ documentation on how to build and install a new kernel
         and doc/klips/mast.xml. To understand what SAref tracking does, see
         doc/ipsecsaref.png and the overlapip= entry in the ipsec.conf man page.
 
-        From the Openswan source directory:
+        From the Libreswan source directory:
 
           make KERNELSRC=/usr/src/linux sarefpatch | patch -d /usr/src/linux -p1
 
@@ -121,15 +121,15 @@ documentation on how to build and install a new kernel
           make dep                    - this step is ignore on 2.6 systems)
           make bzImage install
 
-    Build Openswan
+    Build Libreswan
 
-        From the Openswan source directory:
+        From the Libreswan source directory:
 
             make programs
             make KERNELSRC=/usr/src/linux module
             sudo make KERNELSRC=/usr/src/linux install minstall
 
-The Openswan configuration file can select which ipsec stack to use at
+The Libreswan configuration file can select which ipsec stack to use at
 runtime by using the "protostack=<klips|netkey|mast>" options in ipsec.conf.
 See the ipsec.conf man page for more information on configuration options.
 
@@ -137,7 +137,7 @@ See the ipsec.conf man page for more information on configuration options.
 # UPGRADING
 #########################################################################
 
-1. If you are upgrading from a 1.x product to Openswan 2.x, you will
+1. If you are upgrading from a 1.x product to Libreswan 2.x, you will
    need to adjust your config files.  See doc/upgrading.html for details
    on what has changed.
 
@@ -150,22 +150,22 @@ See the ipsec.conf man page for more information on configuration options.
 
 Mailing Lists:
 
-    http://lists.openswan.org is home of the mailing lists.  Note: these are 
+    http://lists.libreswan.org is home of the mailing lists.  Note: these are 
     closed lists - you *must* be subscribed to post.
 
 Wiki:
 
-    http://wiki.openswan.org is home to the Openswan WIKI.  It has the most
+    http://wiki.libreswan.org is home to the Libreswan WIKI.  It has the most
     up to date documentation, interop guides and other related information.
 
 IRC:
 
-    Openswan developers and users can be found on IRC, on #openswan on
+    Libreswan developers and users can be found on IRC, on #libreswan on
     irc.freenode.net.  If you need more information on our IRC channel, see
-    http://www.openswan.org/support/irc.php
+    http://www.libreswan.org/support/irc.php
 
-Commercial support for Openswan is also available - see
-http://www.xelerance.com/openswan/support.php for more information, or
+Commercial support for Libreswan is also available - see
+http://www.xelerance.com/libreswan/support.php for more information, or
 email sales@xelerance.com
 
 #########################################################################
@@ -173,7 +173,7 @@ email sales@xelerance.com
 #########################################################################
 
 Bugs with the package can be filed into our Mantis system, at
-http://bugs.openswan.org
+http://bugs.libreswan.org
 
 #########################################################################
 # SECURITY HOLES
@@ -182,25 +182,25 @@ http://bugs.openswan.org
 All security vulnerabilities found that require public disclosure will
 receive proper CVE tracking numbers (see http://mitre.org/) and co-ordinated
 via the vendor-sec mailing list. A complete list of known security
-vulnerabilities is   available at: http://www.openswan.org/security/ 
+vulnerabilities is   available at: http://www.libreswan.org/security/ 
 
 #########################################################################
 # DEVELOPMENT
 #########################################################################
 
-Those interested in the development, patches, beta releases of Openswan
-can join the development mailing list (http://lists.openswan.org -
-dev@lists.openswan.org) or join the development team on IRC in
-#openswan-dev on irc.freenode.net
+Those interested in the development, patches, beta releases of Libreswan
+can join the development mailing list (http://lists.libreswan.org -
+dev@lists.libreswan.org) or join the development team on IRC in
+#libreswan-dev on irc.freenode.net
 
 For those who want to track things a bit more closely, the
-commits@lists.openswan.org mailinglist will mail all the commit messages.
+commits@lists.libreswan.org mailinglist will mail all the commit messages.
 
 #########################################################################
 # DOCUMENTATION
 #########################################################################
 
-The most up to date docs are at http://wiki.openswan.org/
+The most up to date docs are at http://wiki.libreswan.org/
 
 Several high-level documents are in the doc directory.  Most are in HTML
 format; See doc/index.html for the top level index.  These are now

@@ -1,5 +1,5 @@
 
-Note: Starter has been fully integrated into Openswan 2.5 and up. This was
+Note: Starter has been fully integrated into Libreswan 2.5 and up. This was
       the original README, which is out of date now.
 
 
@@ -62,14 +62,14 @@ o Can be used to start FreeS/WAN and load lots of connections in a few
 INSTALL
 -------
 
-o Untar archive in openswan directory
+o Untar archive in libreswan directory
 
 o Modify DEFINES in Makefile if you have applied the X509 Patch or the
   Algo Patch.
 
 o make
 
-o cp 'starter' in your openswan dir (/usr/lib/ipsec/)
+o cp 'starter' in your libreswan dir (/usr/lib/ipsec/)
 
 o launch it with 'ipsec starter'  (see usage above)
 

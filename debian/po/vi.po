@@ -1,11 +1,11 @@
-# Vietnamese translation for Openswan.
+# Vietnamese translation for Libreswan.
 # Copyright © 2010 Free Software Foundation, Inc.
 # Clytie Siddall <clytie@riverland.net.au>, 2005, 2006, 2007, 2008, 2009, 2010.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: openswan 1:2.6.25+dfsg-1\n"
-"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"Project-Id-Version: libreswan 1:2.6.25+dfsg-1\n"
+"Report-Msgid-Bugs-To: libreswan@packages.debian.org\n"
 "POT-Creation-Date: 2010-08-06 00:50+0200\n"
 "PO-Revision-Date: 2010-05-13 19:37+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
@@ -19,62 +19,62 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../openswan.templates:1001
+#: ../libreswan.templates:1001
 msgid "Old runlevel management superseded"
 msgstr "Quản lý cấp chạy trước bị thay thế vì quá cũ"
 
 #. Type: note
 #. Description
-#: ../openswan.templates:1001
+#: ../libreswan.templates:1001
 msgid ""
-"Previous versions of the Openswan package gave a choice between three "
+"Previous versions of the Libreswan package gave a choice between three "
 "different Start/Stop-Levels. Due to changes in the standard system startup "
 "procedure, this is no longer necessary or useful. For all new installations "
 "as well as old ones running in any of the predefined modes, sane default "
 "levels will now be set. If you are upgrading from a previous version and "
-"changed your Openswan startup parameters, then please take a look at NEWS."
+"changed your Libreswan startup parameters, then please take a look at NEWS."
 "Debian for instructions on how to modify your setup accordingly."
 msgstr ""
-"Trước đây phiên bản Openswan đã cho phép người dùng chọn trong ba cấp khởi/"
+"Trước đây phiên bản Libreswan đã cho phép người dùng chọn trong ba cấp khởi/"
 "ngừng chạy khác nhau. Do thay đổi trong thủ tục khởi chạy hệ thống tiêu "
 "chuẩn, chức năng này không còn cần thiết hay có ích lại. Đối với mọi bản cài "
 "đặt mới, cũng như bản cài đặt cũ đang chạy ở bất cứ chế độ nào định sẵn, một "
 "cấp mặc định có ích sắp được lập. Nếu bạn đang nâng cấp từ một phiên bản "
-"trước và đã thay đổi tham số khởi chạy Openswan thì xem tập tin tin tức « "
+"trước và đã thay đổi tham số khởi chạy Libreswan thì xem tập tin tin tức « "
 "NEWS.Debian » để tìm hướng dẫn về cách sửa đổi thiết lập một cách thích hợp."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:2001
-msgid "Restart Openswan now?"
-msgstr "Khởi chạy lại Openswan ngay bây giờ ?"
+#: ../libreswan.templates:2001
+msgid "Restart Libreswan now?"
+msgstr "Khởi chạy lại Libreswan ngay bây giờ ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:2001
+#: ../libreswan.templates:2001
 msgid ""
-"Restarting Openswan is recommended, since if there is a security fix, it "
+"Restarting Libreswan is recommended, since if there is a security fix, it "
 "will not be applied until the daemon restarts. Most people expect the daemon "
 "to restart, so this is generally a good idea. However, this might take down "
 "existing connections and then bring them back up, so if you are using such "
-"an Openswan tunnel to connect for this update, restarting is not recommended."
+"an Libreswan tunnel to connect for this update, restarting is not recommended."
 msgstr ""
-"Khởi chạy lại Openswan là một ý kiến tốt, vì chức năng khởi chạy lại trình "
+"Khởi chạy lại Libreswan là một ý kiến tốt, vì chức năng khởi chạy lại trình "
 "nền cũng thực hiện đắp vá bảo mật bị hoãn. Phần lớn người cũng mong đợi "
 "trình nền khởi chạy lại. Tuy nhiên, chức năng khởi chạy lại có thể ngắt rồi "
-"mở lại kết nối đang chạy: do đó nếu bạn đang sử dụng một đường hầm Openswan "
+"mở lại kết nối đang chạy: do đó nếu bạn đang sử dụng một đường hầm Libreswan "
 "như vậy để kết nối cho bản cập nhật này thì không khuyên bạn khởi chạy lại "
 "vào lúc này."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid "Use an X.509 certificate for this host?"
 msgstr "Dùng một chứng nhận X.509 cho máy này ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid ""
 "An X.509 certificate for this host can be automatically created or imported. "
 "It can be used to authenticate IPsec connections to other hosts and is the "
@@ -93,35 +93,35 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:3001
+#: ../libreswan.templates:3001
 msgid ""
 "Alternatively you can reject this option and later use the command \"dpkg-"
-"reconfigure openswan\" to come back."
+"reconfigure libreswan\" to come back."
 msgstr ""
 "Hoặc bạn có thể tắt tuỳ chọn này và chạy chạy câu lệnh cấu hình lại « dpkg-"
-"reconfigure openswan » về sau."
+"reconfigure libreswan » về sau."
 
 #. Type: select
 #. Choices
-#: ../openswan.templates:4001
+#: ../libreswan.templates:4001
 msgid "create"
 msgstr "tạo"
 
 #. Type: select
 #. Choices
-#: ../openswan.templates:4001
+#: ../libreswan.templates:4001
 msgid "import"
 msgstr "nhập"
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid "Methods for using a X.509 certificate to authenticate this host:"
 msgstr "Phương pháp dùng chứng nhận X.509 để xác thực máy này:"
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "It is possible to create a new X.509 certificate with user-defined settings "
 "or to import an existing public and private key stored in PEM file(s) for "
@@ -133,7 +133,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "If you choose to create a new X.509 certificate you will first be asked a "
 "number of questions which must be answered before the creation can start. "
@@ -150,7 +150,7 @@ msgstr ""
 
 #. Type: select
 #. Description
-#: ../openswan.templates:4002
+#: ../libreswan.templates:4002
 msgid ""
 "If you want to import an existing public and private key you will be "
 "prompted for their filenames (which may be identical if both parts are "
@@ -169,13 +169,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:5001
+#: ../libreswan.templates:5001
 msgid "File name of your PEM format X.509 certificate:"
 msgstr "Tên tập tin của chứng nhận X.509 định dạng PEM:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:5001
+#: ../libreswan.templates:5001
 msgid ""
 "Please enter the location of the file containing your X.509 certificate in "
 "PEM format."
@@ -183,13 +183,13 @@ msgstr "Hãy nhập vị trí của tập tin chứa chứng nhận X.509 theo �
 
 #. Type: string
 #. Description
-#: ../openswan.templates:6001
+#: ../libreswan.templates:6001
 msgid "File name of your PEM format X.509 private key:"
 msgstr "Tên tập tin của khoá riêng X.509 định dạng PEM:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:6001
+#: ../libreswan.templates:6001
 msgid ""
 "Please enter the location of the file containing the private RSA key "
 "matching your X.509 certificate in PEM format. This can be the same file "
@@ -201,13 +201,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:7001
+#: ../libreswan.templates:7001
 msgid "File name of your PEM format X.509 RootCA:"
 msgstr "Tên tập tin của RootCA X.509 định dạng PEM:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:7001
+#: ../libreswan.templates:7001
 msgid ""
 "Optionally you can now enter the location of the file containing the X.509 "
 "Certificate Authority root used to sign your certificate in PEM format. If "
@@ -223,13 +223,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:8001
+#: ../libreswan.templates:8001
 msgid "Length of RSA key to be created:"
 msgstr "Chiều dài của khoá RSA cần tạo :"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:8001
+#: ../libreswan.templates:8001
 msgid ""
 "Please enter the required RSA key-length. Anything under 1024 bits should be "
 "considered insecure; anything more than 4096 bits slows down the "
@@ -241,19 +241,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid "Create a self-signed X.509 certificate?"
 msgstr "Tạo một chứng nhận X.509 tự ký ?"
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid ""
 "Only self-signed X.509 certificates can be created automatically, because "
 "otherwise a Certificate Authority is needed to sign the certificate request. "
 "If you choose to create a self-signed certificate, you can use it "
 "immediately to connect to other IPsec hosts that support X.509 certificate "
-"for authentication of IPsec connections. However, using Openswan's PKI "
+"for authentication of IPsec connections. However, using Libreswan's PKI "
 "features requires all certificates to be signed by a single Certificate "
 "Authority to create a trust path."
 msgstr ""
@@ -261,12 +261,12 @@ msgstr ""
 "nhận khác một nhà cầm quyền cấp chứng nhận (CA) cần thiết để ký yêu cầu "
 "chứng nhận. Một chứng nhận tự ký cho phép bạn dùng ngay lập tức để kết nối "
 "tới máy khác mà hỗ trợ sử dụng chứng nhận X.509 để xác thực kết nối IPsec. "
-"Tuy nhiên, tính năng PKI của Openswan yêu cầu mọi chứng nhận đều được ký bởi "
+"Tuy nhiên, tính năng PKI của Libreswan yêu cầu mọi chứng nhận đều được ký bởi "
 "cùng một nhà cầm quyền cấp chứng nhận (CA) để tạo một đường dẫn tin cậy."
 
 #. Type: boolean
 #. Description
-#: ../openswan.templates:9001
+#: ../libreswan.templates:9001
 msgid ""
 "If you do not choose to create a self-signed certificate, only the RSA "
 "private key and the certificate request will be created, and you will have "
@@ -278,13 +278,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid "Country code for the X.509 certificate request:"
 msgstr "Mã quốc gia cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid ""
 "Please enter the two-letter code for the country the server resides in (such "
 "as \"AT\" for Austria)."
@@ -292,7 +292,7 @@ msgstr "Hãy nhập mã hai chữ cho quốc gia máy chủ ở (v.d. « VN » c
 
 #. Type: string
 #. Description
-#: ../openswan.templates:10001
+#: ../libreswan.templates:10001
 msgid ""
 "OpenSSL will refuse to generate a certificate unless this is a valid "
 "ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
@@ -304,13 +304,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:11001
+#: ../libreswan.templates:11001
 msgid "State or province name for the X.509 certificate request:"
 msgstr "Tên bang/tỉnh cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:11001
+#: ../libreswan.templates:11001
 msgid ""
 "Please enter the full name of the state or province the server resides in "
 "(such as \"Upper Austria\")."
@@ -319,13 +319,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:12001
+#: ../libreswan.templates:12001
 msgid "Locality name for the X.509 certificate request:"
 msgstr "Tên vùng cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:12001
+#: ../libreswan.templates:12001
 msgid ""
 "Please enter the locality the server resides in (often a city, such as "
 "\"Vienna\")."
@@ -333,13 +333,13 @@ msgstr "Hãy nhập vùng máy chủ ở (thường là thành phố, v.d. « H�
 
 #. Type: string
 #. Description
-#: ../openswan.templates:13001
+#: ../libreswan.templates:13001
 msgid "Organization name for the X.509 certificate request:"
 msgstr "Tên tổ chức cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:13001
+#: ../libreswan.templates:13001
 msgid ""
 "Please enter the organization the server belongs to (such as \"Debian\")."
 msgstr ""
@@ -347,13 +347,13 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../openswan.templates:14001
+#: ../libreswan.templates:14001
 msgid "Organizational unit for the X.509 certificate request:"
 msgstr "Tên đơn vị tổ chức cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:14001
+#: ../libreswan.templates:14001
 msgid ""
 "Please enter the organizational unit the server belongs to (such as "
 "\"security group\")."
@@ -361,26 +361,26 @@ msgstr "Hãy nhập đơn vị tổ chức (v.d. « nhóm bảo mật ») sử d
 
 #. Type: string
 #. Description
-#: ../openswan.templates:15001
+#: ../libreswan.templates:15001
 msgid "Common Name for the X.509 certificate request:"
 msgstr "Tên chung cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:15001
+#: ../libreswan.templates:15001
 msgid ""
 "Please enter the Common Name for this host (such as \"gateway.example.org\")."
 msgstr "Hãy nhập tên chung cho máy này (v.d. « cổng_ra.ví_dụ.org »)."
 
 #. Type: string
 #. Description
-#: ../openswan.templates:16001
+#: ../libreswan.templates:16001
 msgid "Email address for the X.509 certificate request:"
 msgstr "Địa chỉ thư điện tử cho yêu cầu chứng nhận X.509:"
 
 #. Type: string
 #. Description
-#: ../openswan.templates:16001
+#: ../libreswan.templates:16001
 msgid ""
 "Please enter the email address of the person or organization responsible for "
 "the X.509 certificate."
@@ -390,22 +390,22 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../openswan.templates:17001
+#: ../libreswan.templates:17001
 msgid "Modification of /etc/ipsec.conf"
 msgstr "Sửa đổi « /etc/ipsec.conf »"
 
 #. Type: note
 #. Description
-#: ../openswan.templates:17001
+#: ../libreswan.templates:17001
 msgid ""
-"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"Due to a change in upstream Libreswan, opportunistic encryption is no longer "
 "enabled by default. The no_oe.conf file that was shipped in earlier versions "
 "to explicitly disable it can therefore no longer be included by ipsec.conf. "
 "Any such include paragraph will now be automatically removed to ensure that "
-"Openswan can start correctly."
+"Libreswan can start correctly."
 msgstr ""
-"Do một thay đổi được làm trong phần mềm Openswan bởi dự án gốc, chức năng "
+"Do một thay đổi được làm trong phần mềm Libreswan bởi dự án gốc, chức năng "
 "mật mã cơ hội chủ nghĩa không phải được hiệu lực theo mặc định. Tập tin « "
 "no_oe.conf » có sẵn trong phiên bản trước để tắt chức năng này thì không còn "
 "được bao gồm lại bởi « ipsec.conf ». Bất cứ đoạn văn bao gồm (include) tương "
-"ứng nào giờ được tự động gỡ bỏ để đảm bảo rằng Openswan khởi chạy đúng."
+"ứng nào giờ được tự động gỡ bỏ để đảm bảo rằng Libreswan khởi chạy đúng."

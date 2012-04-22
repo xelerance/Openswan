@@ -19,7 +19,7 @@
 #include <unistd.h>
 #include <limits.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 #include <errno.h>
 
 #include <tcl.h>
@@ -83,7 +83,7 @@ void tpm_initCallbacks(Tcl_Interp *PlutoInterp)
 	case TCL_RETURN:
 	case TCL_BREAK:
 	case TCL_CONTINUE:
-		openswan_log("tpm init callback error: %s\n", Tcl_GetObjResult(PlutoInterp));
+		libreswan_log("tpm init callback error: %s\n", Tcl_GetObjResult(PlutoInterp));
 		break;
 	}
 }

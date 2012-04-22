@@ -120,7 +120,7 @@ case "$1" in
   start|--start|_autostart)
 	# First, does it seem to be going already?
 	perform test ! -f $lock "||" "{" \
-		echo "\"Openswan IPsec apparently already running, start aborted\"" ";" \
+		echo "\"Libreswan IPsec apparently already running, start aborted\"" ";" \
 		exit 1 ";" \
 		"}"
 
@@ -128,8 +128,8 @@ case "$1" in
 	# (Warning, changes to this log message may affect barf.)
 	version="`ipsec --version | awk 'NR == 1 { print $(3) }' | sed -e 's/^U\(.*\)\/K(.*/\1/'`"
 	case "$1" in
-	start|--start)	perform echo "\"Starting Openswan IPsec $version...\""	;;
-	_autostart)	perform echo "\"Restarting Openswan IPsec $version...\""	;;
+	start|--start)	perform echo "\"Starting Libreswan IPsec $version...\""	;;
+	_autostart)	perform echo "\"Restarting Libreswan IPsec $version...\""	;;
 	esac
 
 	# preliminaries
@@ -138,7 +138,7 @@ case "$1" in
 	for f in /dev/random /dev/urandom
 	do
 		perform test -r $f "||" "{" \
-			echo "\"...unable to start Openswan IPsec, no $f!\"" ";" \
+			echo "\"...unable to start Libreswan IPsec, no $f!\"" ";" \
 			exit 1 ";" \
 			"}"
 	    done
@@ -253,12 +253,12 @@ case "$1" in
 	fi
 
 	# done!
-	perform echo "\"...Openswan IPsec started\"" "|" $LOGONLY
+	perform echo "\"...Libreswan IPsec started\"" "|" $LOGONLY
 	;;
 
   stop|--stop|_autostop)		# _autostop is same as stop
 	# Shut things down.
-	perform echo "\"Stopping Openswan IPsec...\""
+	perform echo "\"Stopping Libreswan IPsec...\""
 	perform \
 		if test -r $lock ";" \
 		then \
@@ -314,7 +314,7 @@ case "$1" in
 	perform test -d `dirname $subsyslock` "&&" rm -f $subsyslock
 
 	perform rm -f $info $lock $plutopid
-	perform echo "...Openswan IPsec stopped" "|" $LOGONLY
+	perform echo "...Libreswan IPsec stopped" "|" $LOGONLY
 	perform exit \$status
 	;;
 

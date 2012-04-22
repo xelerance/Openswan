@@ -72,9 +72,9 @@ case "$1" in
 '')
 	echo "Usage: ipsec command argument ..."
 	echo "Use --help for list of commands, or see ipsec(8) manual page"
-	echo "or the Openswan documentation for names of the common ones."
+	echo "or the Libreswan documentation for names of the common ones."
 	echo "Most have their own manual pages, e.g. ipsec_auto(8)."
-	echo "See <http://www.openswan.org> for more general info."
+	echo "See <http://www.libreswan.org> for more general info."
 	exit 0
 	;;
 --help)
@@ -94,7 +94,7 @@ case "$1" in
 	;;
 version|--version)
 	fixversion
-	echo "Linux Openswan $version"
+	echo "Linux Libreswan $version"
 	echo "See \`ipsec --copyright' for copyright information."
 	if [ -f $IPSEC_LIBDIR/distro.txt ]
 	then

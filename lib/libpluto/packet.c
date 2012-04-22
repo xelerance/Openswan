@@ -21,7 +21,7 @@
 #include <netinet/in.h>
 #include <string.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "constants.h"
 #include "oswlog.h"
@@ -1466,7 +1466,7 @@ in_struct(void *struct_ptr, struct_desc *sd
     }
 
     /* some failure got us here: report it */
-    openswan_loglog(RC_LOG_SERIOUS, "%s", ugh);
+    libreswan_loglog(RC_LOG_SERIOUS, "%s", ugh);
     return FALSE;
 }
 
@@ -1475,7 +1475,7 @@ in_raw(void *bytes, size_t len, pb_stream *ins, const char *name)
 {
     if (pbs_left(ins) < len)
     {
-	openswan_loglog(RC_LOG_SERIOUS
+	libreswan_loglog(RC_LOG_SERIOUS
 			, "not enough bytes left to get %s from %s"
 			, name, ins->name);
 	return FALSE;

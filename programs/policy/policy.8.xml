@@ -322,8 +322,8 @@ ipsec_pf_key(5), ipsec_eroute(5)</para>
 </refsect1>
 
 <refsect1 id='history'><title>HISTORY</title>
-<para>Written for the Openswan project
-&lt;<ulink url='http://www.openswan.org/'>http://www.openswan.org/</ulink>&gt;
+<para>Written for the Libreswan project
+&lt;<ulink url='http://www.libreswan.org/'>http://www.libreswan.org/</ulink>&gt;
 by Bart Trojanowski.</para>
 
 </refsect1>

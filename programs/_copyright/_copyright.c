@@ -21,7 +21,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 char usage[] = "Usage: ipsec _copyright";
 struct option opts[] = {

@@ -10,15 +10,15 @@
 # and invoked periodically. 
 #
 
-if [ -f $HOME/openswan-2-regress-env.sh ]
+if [ -f $HOME/libreswan-2-regress-env.sh ]
 then
-    . $HOME/openswan-2-regress-env.sh
+    . $HOME/libreswan-2-regress-env.sh
 fi
 
 # /btmp is a place with a bunch of space. 
 BTMP=${BTMP:-/btmp} export BTMP
 
-GITPUBLIC=${GITPUBLIC-http://git.openswan.org/public/scm/openswan.git/.git#public}
+GITPUBLIC=${GITPUBLIC-http://git.libreswan.org/public/scm/libreswan.git/.git#public}
 
 # BRANCH can also be set to test branches.
 BRANCH=${BRANCH:-HEAD} export BRANCH
@@ -48,7 +48,7 @@ regress-cleanup.pl || (echo "Disk space cleanup failed"; exit 5)
 # cvs -Q -d $CVSROOT checkout -r $BRANCH $TOPMODULE
 
 # Now we clone git from the public repo
-cg-clone $GITPUBLIC openswan-2
+cg-clone $GITPUBLIC libreswan-2
 
 if [ $? != 0 ]
 then
@@ -74,7 +74,7 @@ fi
 #
 # $Log: regress-nightly.sh,v $
 # Revision 1.10  2003/11/21 23:07:03  mcr
-# 	updates for hulk builds of openswan.
+# 	updates for hulk builds of libreswan.
 #
 # Revision 1.9  2003/02/01 20:45:58  mcr
 # 	moved regress results directory to be per year/month

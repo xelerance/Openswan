@@ -262,7 +262,7 @@
 | ***parse ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    length: 20
-"marajade--vpsn" #408: received Vendor ID payload [Openswan (this version) 2.CVSHEAD  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+"marajade--vpsn" #408: received Vendor ID payload [Libreswan (this version) 2.CVSHEAD  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 "marajade--vpsn" #408: received Vendor ID payload [Dead Peer Detection]
 "marajade--vpsn" #408: received Vendor ID payload [RFC 3947] method set to=110 
 | ****parse IPsec DOI SIT:

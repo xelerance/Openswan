@@ -1,4 +1,4 @@
-/* Openswan NAT-Traversal
+/* Libreswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
  * Copyright 2005 Michael Richardson <mcr@xelerance.com>
  *

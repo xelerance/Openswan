@@ -1,4 +1,4 @@
-/* Openswan ISAKMP VendorID Handling
+/* Libreswan ISAKMP VendorID Handling
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004 Xelerance Corporation
  *
@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -234,12 +234,12 @@ static struct vid_struct _vid_tab[] = {
 	DEC_FSWAN_VID(FSWAN_2_00_X509_1_3_1_LDAP_VID,
 		"Linux FreeS/WAN 2.00 X.509-1.3.1 LDAP PLUTO_SENDS_VENDORID",
 		"FreeS/WAN 2.00 (X.509-1.3.1 + LDAP)")
-	DEC_FSWAN_VID(OPENSWAN2,
-		"Openswan 2.2.0",
-		"Openswan 2.2.0")
+	DEC_FSWAN_VID(LIBRESWAN2,
+		"Libreswan 2.2.0",
+		"Libreswan 2.2.0")
 
 	/* always make sure to include ourself! */
-	{ VID_OPENSWANSELF,VID_SELF, "","Openswan (this version)", NULL,0},
+	{ VID_LIBRESWANSELF,VID_SELF, "","Libreswan (this version)", NULL,0},
 	
 
 	/* NAT-Traversal */
@@ -587,7 +587,7 @@ static void handle_known_vendorid (struct msg_digest *md
 	    break;
 #endif
 	    
-	case VID_OPENSWANSELF:
+	case VID_LIBRESWANSELF:
 	    vid_usefull=1;
 	    break;
 	    

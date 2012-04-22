@@ -4,7 +4,7 @@
 # Ken Bantoft <ken@xelerance.com>
 # Because I never remember all of these options.
 
-echo "Password is 'openswan'"
+echo "Password is 'libreswan'"
 
 openssl ca -config ./openssl.cnf -gencrl -crldays 3650 >crls/nic.crl
 

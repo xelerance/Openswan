@@ -8,12 +8,12 @@
 #include "skb_fake.h"
 #include "slab_fake.h"
 
-#include "openswan.h"
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_sa.h"
-#include "openswan/ipsec_policy.h"
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_sysctl.h"
+#include "libreswan.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_sa.h"
+#include "libreswan/ipsec_policy.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_sysctl.h"
 #include "pfkeyv2.h"
 #include "pfkey.h"
 

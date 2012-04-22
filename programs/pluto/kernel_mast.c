@@ -28,9 +28,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -114,10 +114,10 @@ recalculate_mast_device_list(struct raw_iface *rifaces)
 	    continue;
 	
 	if(sscanf(ifp->name, "mast%d", &mastno)==1) {
-	    openswan_log("found %s device already present", ifp->name);
+	    libreswan_log("found %s device already present", ifp->name);
 	    mastdevice[mastno]=MAST_AVAIL;
 	    if(!isunspecaddr(&ifp->addr)) {
-		openswan_log("device %s already in use", ifp->name);
+		libreswan_log("device %s already in use", ifp->name);
 		/* mark it as existing, and in use */
 		mastdevice[mastno]=MAST_INUSE;
 		if(firstmastno == -1) {
@@ -241,7 +241,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	/* ignore if --listen is specified and we do not match */
 	if (pluto_listen!=NULL) {
 	   if (!sameaddr(&lip, &ifp->addr)) {
-		openswan_log("skipping interface %s with %s"
+		libreswan_log("skipping interface %s with %s"
 			     , ifp->name , ip_str(&ifp->addr));
 		continue;
 	   }
@@ -335,7 +335,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		q->next = interfaces;
 		interfaces = q;
 		
-		openswan_log("adding interface %s/%s %s:%d (fd=%d)"
+		libreswan_log("adding interface %s/%s %s:%d (fd=%d)"
 			     , q->ip_dev->id_vname
 			     , q->ip_dev->id_rname
 			     , ip_str(&q->ip_addr)
@@ -353,7 +353,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		{
 		    fd = create_socket(ifp, q->ip_dev->id_vname, NAT_T_IKE_FLOAT_PORT);
 		    if (fd < 0) {
-			openswan_log("failed to create socket for NAT-T: %s"
+			libreswan_log("failed to create socket for NAT-T: %s"
 				     , strerror(errno));
 			/* go to next if in list */
 			break;
@@ -373,7 +373,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		    
 		    q->next = interfaces;
 		    interfaces = q;
-		    openswan_log("adding interface %s/%s %s:%d (fd=%d)"
+		    libreswan_log("adding interface %s/%s %s:%d (fd=%d)"
 				 , q->ip_dev->id_vname, q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
 				 , q->port, q->fd);

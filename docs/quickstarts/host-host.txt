@@ -1,7 +1,7 @@
 
 The most simple case: host to host tunnel.
 
-Openswan uses the notion of "left" and "right" when it is talking about the
+Libreswan uses the notion of "left" and "right" when it is talking about the
 two hosts. This is done because there is not really one "source" and one 
 "destination". Both ends talk to each other. Also, Pluto automatically
 determines whether it is "left" or "right" for each connection. This has the
@@ -9,7 +9,7 @@ added advantage that you can use the identical configuration at both hosts!
 
 We assume here that "left" is local, and "right" is remote, a handy mnemonic.
 
-The simplest way to authenticate two Openswan machines is with raw RSA keys.
+The simplest way to authenticate two Libreswan machines is with raw RSA keys.
 This is the key that was stored in /etc/ipsec.secret. To view the public
 key of your keypair, issue the command:
 
@@ -35,7 +35,7 @@ conn host-host-example
 	auto=start
 
 The last line causes the connection to immediately start. We used IP addresses
-in this example, but you can also use hostnames, such as "www.openswan.org".
+in this example, but you can also use hostnames, such as "www.libreswan.org".
 This is considered slightly less secure though, unless you are using DNSSEC.
 
 Some hardware routers that support IPsec often require using "PSK" mode. 

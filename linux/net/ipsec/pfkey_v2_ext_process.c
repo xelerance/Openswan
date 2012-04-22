@@ -25,7 +25,7 @@
 #endif
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -41,7 +41,7 @@
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include <klips-crypto/des.h>
 
@@ -66,23 +66,23 @@
 
 #include <linux/random.h>	/* get_random_bytes() */
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_sa.h"
 
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipcomp.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipsec_esp.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipcomp.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_proto.h"
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_proto.h"
+#include "libreswan/ipsec_alg.h"
 
 #ifdef CONFIG_KLIPS_OCF
 #include "ipsec_ocf.h"

@@ -73,7 +73,7 @@ fi
 #
 # $Log: regress-nightly.sh,v $
 # Revision 1.10  2003/11/21 23:07:03  mcr
-# 	updates for hulk builds of openswan.
+# 	updates for hulk builds of libreswan.
 #
 # Revision 1.9  2003/02/01 20:45:58  mcr
 # 	moved regress results directory to be per year/month

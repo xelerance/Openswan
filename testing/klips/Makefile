@@ -11,8 +11,8 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR=$(shell cd ../..; pwd)
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR=$(shell cd ../..; pwd)
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 
@@ -32,7 +32,7 @@ checkmod:
 	KLIPS_MODULE=-module ./dotests.sh
 
 spotcheck:
-	@. ${OPENSWANSRCDIR}/umlsetup.sh; . ./setup.sh; . $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
+	@. ${LIBRESWANSRCDIR}/umlsetup.sh; . ./setup.sh; . $${UTILS}/functions.sh; eval `sed -e '/^#/d' -e '/^$$/d' ${srcdir}TESTLIST | perl $${UTILS}/shuffle.pl 1`
 
 
 checkcon:

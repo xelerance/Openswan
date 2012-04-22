@@ -1,4 +1,4 @@
-# Openswan master makefile
+# Libreswan master makefile
 # Copyright (C) 1998-2002  Henry Spencer.
 # Copyright (C) 2003-2004  Xelerance Corporation
 # 
@@ -29,7 +29,7 @@ KVSHORTUTIL=${MAKEUTILS}/kernelversion-short
 SUBDIRS?=lib programs testing
 
 clean::
-	-(cd ${OPENSWANSRCDIR} && $(MAKE) modclean && $(MAKE) mod26clean)
+	-(cd ${LIBRESWANSRCDIR} && $(MAKE) modclean && $(MAKE) mod26clean)
 
 distclean:	clean
 	rm -f out.kpatch 
@@ -38,7 +38,7 @@ distclean:	clean
 install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
-		(cd $$d && $(MAKE) --no-print-directory srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} install_file_list ) || exit 1; \
+		(cd $$d && $(MAKE) --no-print-directory srcdir=${LIBRESWANSRCDIR}/$$d/ LIBRESWANSRCDIR=${LIBRESWANSRCDIR} install_file_list ) || exit 1; \
 	done; 
 
 # uninstall, as much as possible
@@ -48,7 +48,7 @@ uninstall:
 taroldinstall:
 	tar --ignore-failed-read -c -z -f oldFreeSWAN.tar.gz `$(MAKE) --no-print-directory install_file_list`
 
-TAGSFILES=$(wildcard include/*.h lib/lib*/*.c programs/*/*.c linux/include/*.h linux/include/openswan/*.h linux/net/ipsec/*.[ch])
+TAGSFILES=$(wildcard include/*.h lib/lib*/*.c programs/*/*.c linux/include/*.h linux/include/libreswan/*.h linux/net/ipsec/*.[ch])
 
 tags:	$(TAGSFILES)
 	@LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
@@ -70,7 +70,7 @@ uml:	checkprograms
 	./testing/utils/make-uml.sh `pwd`
 
 umluserland:
-	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && $(MAKE) $$OPENSWANHOSTS $$REGULARHOSTS ) 
+	(touch ${LIBRESWANSRCDIR}/Makefile.inc && source ${LIBRESWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && $(MAKE) $$LIBRESWANHOSTS $$REGULARHOSTS ) 
 
 
 # DESTDIR is normally set in Makefile.inc
@@ -96,7 +96,7 @@ ifneq ($(strip(${REGRESSRESULTS})),)
 endif
 	@echo "======== End of make check target. ========"
 
-# USE_ variables determine if features are compiled into Openswan.
+# USE_ variables determine if features are compiled into Libreswan.
 # export them so that "make env" can get at them
 export USE_LWRES USE_IPSECPOLICY USE_IKEPING
 export USE_KEYRR USE_KLIPS USE_NETKEY USE_VENDORID

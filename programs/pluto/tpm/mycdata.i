@@ -5,7 +5,7 @@
  *
  * This library file contains macros for manipulating raw C data as strings.
  *
- * $Header: /xelerance/MASTER/cvs-master/openswan-2/programs/pluto/tpm/mycdata.i,v 1.1 2005/10/06 19:36:59 mcr Exp $
+ * $Header: /xelerance/MASTER/cvs-master/libreswan-2/programs/pluto/tpm/mycdata.i,v 1.1 2005/10/06 19:36:59 mcr Exp $
  * ----------------------------------------------------------------------------- */
 
 %{

@@ -24,7 +24,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #ifndef DEVICE
 /*

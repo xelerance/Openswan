@@ -59,7 +59,7 @@
 #endif
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -80,11 +80,11 @@
 
 #include <net/ip.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
 
 int	maj_keylen;
 struct radij_mask *rj_mkfreelist;

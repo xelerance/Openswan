@@ -3,7 +3,7 @@
 # outside of a distribution (as the FS team does for RedHat).
 
 PORTINCLUDE=
-PORTINCLUDE+=-I${OPENSWANSRCDIR}/ports/netbsd/include
+PORTINCLUDE+=-I${LIBRESWANSRCDIR}/ports/netbsd/include
 
 PORTLASTINCLUDE=
 PORTLASTINCLUDE+=-isystem /usr/local/include

@@ -1,30 +1,30 @@
 
-if [ -z "$OPENSWANSRCDIR" ]
+if [ -z "$LIBRESWANSRCDIR" ]
 then
 	if [ -f ../../umlsetup.sh ]
 	then
-	  OPENSWANSRCDIR=`cd ../.. && pwd`
+	  LIBRESWANSRCDIR=`cd ../.. && pwd`
 	else 
 	  if [ -f ../../../umlsetup.sh ]
 	  then 
-	    OPENSWANSRCDIR=`cd ../../.. && pwd`
+	    LIBRESWANSRCDIR=`cd ../../.. && pwd`
 	  fi
         fi  	
 fi
 
-if [ ! -f $OPENSWANSRCDIR/umlsetup.sh ]
+if [ ! -f $LIBRESWANSRCDIR/umlsetup.sh ]
 then
-	echo Umlsetup not found at OPENSWANSRCDIR=$OPENSWANSRCDIR.
-	echo Is OPENSWANSRCDIR set correctly'?'
+	echo Umlsetup not found at LIBRESWANSRCDIR=$LIBRESWANSRCDIR.
+	echo Is LIBRESWANSRCDIR set correctly'?'
 	exit 5
 fi
 
-OPENSWANSRCDIR=`cd ${OPENSWANSRCDIR}; pwd`
-export OPENSWANSRCDIR
+LIBRESWANSRCDIR=`cd ${LIBRESWANSRCDIR}; pwd`
+export LIBRESWANSRCDIR
 
-FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/scripts/fixups && pwd`
-FIXUPDIR2=`cd ${OPENSWANSRCDIR}/testing/klips/fixups && pwd`
-TESTINGROOT=${OPENSWANSRCDIR}/testing
+FIXUPDIR=`cd ${LIBRESWANSRCDIR}/testing/scripts/fixups && pwd`
+FIXUPDIR2=`cd ${LIBRESWANSRCDIR}/testing/klips/fixups && pwd`
+TESTINGROOT=${LIBRESWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
 NJ=${UTILS}/uml_netjig/uml_netjig
 

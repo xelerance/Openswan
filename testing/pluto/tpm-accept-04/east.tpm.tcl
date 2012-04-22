@@ -47,8 +47,8 @@ proc log_key_iv {msg state} {
     # store keys for later.
     set keys($msg,key) $ike_key
     set keys($msg,iv)  $iv
-    openswan_DBG_dump "$msg IKE-key" $ike_key
-    openswan_DBG_dump "$msg  new-IV" $iv
+    libreswan_DBG_dump "$msg IKE-key" $ike_key
+    libreswan_DBG_dump "$msg  new-IV" $iv
 }
 
 proc preDecrypt {state pb off len} {
@@ -102,7 +102,7 @@ proc postEncrypt {state pb off len} {
 	set logmsg [format "t04b st:%d" $st_state] 
 
 	set ikemsg [pbs_bytes $pb 256]
-	openswan_DBG_dump $logmsg $ikemsg
+	libreswan_DBG_dump $logmsg $ikemsg
 
 	if {$st_state == $STATE_MAIN_R2 && $stage4b_count < 1} {
 
@@ -118,7 +118,7 @@ proc postEncrypt {state pb off len} {
 	}
 	set logmsg [format "t04b st:%d" $st_state] 
 	set ikemsg [pbs_bytes $pb 256]
-	openswan_DBG_dump $logmsg $ikemsg
+	libreswan_DBG_dump $logmsg $ikemsg
     }
 
     if {[string compare $test_stage "t04c"] == 0} {
@@ -126,7 +126,7 @@ proc postEncrypt {state pb off len} {
 	set ikemsg [pbs_bytes $pb 256]
 	puts stderr [format "t04c inm st:%02d (QR1:%d)" $st_state $STATE_QUICK_R0] 
 	set logmsg [format "t04c st:%d" $st_state] 
-	openswan_DBG_dump $logmsg $ikemsg
+	libreswan_DBG_dump $logmsg $ikemsg
 
 	if {$st_state == $STATE_QUICK_R0 && $stage4c_count < 1} {
 	
@@ -142,7 +142,7 @@ proc postEncrypt {state pb off len} {
 	}
 	set logmsg [format "t04c st:%d" $st_state] 
 	set ikemsg [pbs_bytes $pb 256]
-	openswan_DBG_dump $logmsg $ikemsg
+	libreswan_DBG_dump $logmsg $ikemsg
     }
 
     return "ignore"
@@ -158,7 +158,7 @@ proc postDecrypt {state pb off len} {
 
 	puts stderr [format "t04a inm st:%02d" $st_state] 
 	set logmsg [format "t04a st:%d" $st_state] 
-	openswan_DBG_dump $logmsg $ikemsg
+	libreswan_DBG_dump $logmsg $ikemsg
     }
 
     return "ignore"

@@ -1,24 +1,24 @@
 # needsrootforbuild
 
 
-Summary: Openswan IPSEC implementation
-Name: openswan
+Summary: Libreswan IPSEC implementation
+Name: libreswan
 Version: IPSECBASEVERSION
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 
-# Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
+# Libreswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
 Release: %{ourrelease}
 License: GPLv2
-Url: http://www.openswan.org/
-Source: openswan-%{srcpkgver}.tar.gz
+Url: http://www.libreswan.org/
+Source: libreswan-%{srcpkgver}.tar.gz
 Patch1: rc.patch
 Patch2: kernelsrc.patch
 Group: Productivity/Networking/Security
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Summary: Openswan - An IPsec and IKE implementation
+Summary: Libreswan - An IPsec and IKE implementation
 PreReq: %insserv_prereq %fillup_prereq perl
 BuildRequires: gmp-devel bison flex bind-devel xmlto sgml-skel
 Requires: iproute2 >= 2.6.8
@@ -31,7 +31,7 @@ BuildRequires: %kernel_module_package_buildreqs
 Prefix:         /usr
 
 %description
-Openswan is a free implementation of IPSEC & IKE for Linux.  IPSEC is 
+Libreswan is a free implementation of IPSEC & IKE for Linux.  IPSEC is 
 the Internet Protocol Security and uses strong cryptography to provide
 both authentication and encryption services.  These services allow you
 to build secure tunnels through untrusted networks.  Everything passing
@@ -40,13 +40,13 @@ decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
 This package contains the daemons and userland tools for setting up
-Openswan on a freeswan enabled kernel. It optionally also builds the
-Openswan KLIPS IPsec stack that is an alternative for the NETKEY/XFRM
+Libreswan on a freeswan enabled kernel. It optionally also builds the
+Libreswan KLIPS IPsec stack that is an alternative for the NETKEY/XFRM
 IPsec stack that exists in the default Linux kernel.
 
 %if %{buildklips}
 %package KMP
-Summary: Openswan kernel module
+Summary: Libreswan kernel module
 Group:  System/Kernel
 %endif
 
@@ -57,7 +57,7 @@ kernels.
 %endif
 
 %prep
-%setup -q -n openswan-%{srcpkgver}
+%setup -q -n libreswan-%{srcpkgver}
 %patch1 -p1
 %patch2 -p1
 sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
@@ -81,7 +81,7 @@ sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 FS=$(pwd)
 for flavor in %flavors_to_build; do
     %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu}.$flavor \
-        OPENSWANSRCDIR=$FS \
+        LIBRESWANSRCDIR=$FS \
         KERNELDIR=%{kernel_source $flavor} \
         ARCH=%{_arch} \
         include module
@@ -99,7 +99,7 @@ done
   INC_RCDEFAULT=%{_initrddir} \
   install
 FS=$(pwd)
-rm -rf %{buildroot}/usr/share/doc/openswan
+rm -rf %{buildroot}/usr/share/doc/libreswan
 rm -rf %{buildroot}/%{_initrddir}/setup
 rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
@@ -109,14 +109,14 @@ install -d %{buildroot}%{_sbindir}
 ln -sf /etc/init.d/ipsec ${RPM_BUILD_ROOT}%{_prefix}/sbin/rcipsec
 #echo "# see man ipsec.secrets" >  $RPM_BUILD_ROOT/etc/ipsec.secrets
 install -d -m 755 %{buildroot}/etc/sysconfig/network/{scripts,if-up.d,if-down.d}
-install -m 755 packaging/suse/sysconfig.network.scripts.openswan %{buildroot}/etc/sysconfig/network/scripts/freeswan
-install -m 644 packaging/suse/sysconfig.network.scripts.openswan-functions %{buildroot}/etc/sysconfig/network/scripts/freeswan-functions
+install -m 755 packaging/suse/sysconfig.network.scripts.libreswan %{buildroot}/etc/sysconfig/network/scripts/freeswan
+install -m 644 packaging/suse/sysconfig.network.scripts.libreswan-functions %{buildroot}/etc/sysconfig/network/scripts/freeswan-functions
 ln -s ../scripts/freeswan %{buildroot}/etc/sysconfig/network/if-up.d/freeswan
 ln -s ../scripts/freeswan %{buildroot}/etc/sysconfig/network/if-down.d/freeswan
 # ip-up script (#39048)
 install -d -m 750 -g dialout %{buildroot}/etc/ppp/ip-{up,down}.d
 install -d -m 750 %{buildroot}/etc/ppp/ip-{up,down}.d
-install -m 755 packaging/suse/openswan.ip-up %{buildroot}/etc/ppp/ip-up.d/freeswan
+install -m 755 packaging/suse/libreswan.ip-up %{buildroot}/etc/ppp/ip-up.d/freeswan
 ln -s ../ip-up.d/freeswan %{buildroot}/etc/ppp/ip-down.d/freeswan
 rm -f %{buildroot}/etc/rc?.d/[KS]*ipsec
 
@@ -136,7 +136,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc OBJ.linux.*/programs/examples/*.conf
 #%doc doc/manpage.d/*
-# /usr/share/doc/openswan/*
+# /usr/share/doc/libreswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %dir %attr(700,root,root) /etc/ipsec.d/policies
@@ -169,7 +169,7 @@ exit 0
 %post 
 %{fillup_and_insserv ipsec}
 # don't create host keys on install - might be no entropy!
-# openswan automatically does it on 'start' if no ipsec.secrets is found
+# libreswan automatically does it on 'start' if no ipsec.secrets is found
 
 %changelog
 * Wed May 07 2008 Paul Wouters <paul@xelerance.com> - 2.5.50-1
@@ -193,7 +193,7 @@ exit 0
 - Updated for x86_64 and klips on 2.6
 
 * Sun Sep  5 2004 Paul Wouters <paul@xelerance.com>
-- Updated for openswan
+- Updated for libreswan
 
 * Fri Aug 22 2003 Sam Sgro <sam@freeswan.org>
 - Juggling release/source package names to allow for 

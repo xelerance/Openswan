@@ -34,20 +34,20 @@
 
 #include <net/ip.h>
 
-#include <openswan.h>
-#include "openswan/ipsec_sa.h"
-#include "openswan/ipsec_rcv.h"
-#include "openswan/ipsec_xmit.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_auth.h"
-#include "openswan/ipsec_esp.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipcomp.h"
-#include "openswan/ipsec_proto.h"
+#include <libreswan.h>
+#include "libreswan/ipsec_sa.h"
+#include "libreswan/ipsec_rcv.h"
+#include "libreswan/ipsec_xmit.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_auth.h"
+#include "libreswan/ipsec_esp.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipcomp.h"
+#include "libreswan/ipsec_proto.h"
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "ipsec_ocf.h"
 
@@ -107,7 +107,7 @@ static void ipsec_ocf_queue_init(void)
 
 
 /*
- * convert openswan values to OCF values
+ * convert libreswan values to OCF values
  */
 
 static int

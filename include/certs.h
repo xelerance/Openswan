@@ -19,7 +19,7 @@
 #ifndef _CERTS_H
 #define _CERTS_H
 
-#include "openswan/ipsec_policy.h"
+#include "libreswan/ipsec_policy.h"
 
 #include "secrets.h"
 #include "x509.h"

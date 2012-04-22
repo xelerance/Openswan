@@ -1,2 +1,2 @@
-/.*\/openswan-2/d
-/\/btmp\/build.*openswan-2\//d
+/.*\/libreswan-2/d
+/\/btmp\/build.*libreswan-2\//d

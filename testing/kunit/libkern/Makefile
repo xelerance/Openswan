@@ -1,4 +1,4 @@
-# Openswan library for faking out the kernel
+# Libreswan library for faking out the kernel
 # Copyright (C) 2005 Xelerance Corporation
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -12,10 +12,10 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
@@ -31,15 +31,15 @@ KSRCS=kernelenv.c core.c
 OBJS=${SRCS:.c=.o} ${ASSRCS:.S=.o} ${KSRCS:.c=.o} version.o
 
 LIBA=libkern.a
-KLIPSSRCDIR=${OPENSWANSRCDIR}/linux
+KLIPSSRCDIR=${LIBRESWANSRCDIR}/linux
 
-UMLPLAIN=$(shell . ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+UMLPLAIN=$(shell . ${LIBRESWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
 
 # Original flags
-CFLAGS=-I. -I${KLIPSSRCDIR}/include -I${OPENSWANSRCDIR} -DDEBUG
+CFLAGS=-I. -I${KLIPSSRCDIR}/include -I${LIBRESWANSRCDIR} -DDEBUG
 CFLAGS+=-DWITH_UDPFROMTO -DHAVE_IP_PKTINFO
-CFLAGS+= -I${OPENSWANSRCDIR}/testing/kunit/include
-CFLAGS+= -I${OPENSWANSRCDIR}/include -g -O2
+CFLAGS+= -I${LIBRESWANSRCDIR}/testing/kunit/include
+CFLAGS+= -I${LIBRESWANSRCDIR}/include -g -O2
 #KLIPS_FLAGS+=-D__KERNEL__ 
 #KLIPS_FLAGS+=-O2 -U__i386__ -Ui386  -D__arch_um__ -DSUBARCH=\"i386\" 
 #KLIPS_FLAGS+=-I${UMLPLAIN}/include
@@ -82,7 +82,7 @@ $(OBJS):	$(HDRS)
 $(LOGOBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
-version.c:	${srcdir}version.in.c ${OPENSWANSRCDIR}/Makefile.ver
+version.c:	${srcdir}version.in.c ${LIBRESWANSRCDIR}/Makefile.ver
 	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${srcdir}version.in.c >$@
 
 clean:

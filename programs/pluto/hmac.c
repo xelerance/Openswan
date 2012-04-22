@@ -17,7 +17,7 @@
  */
 
 #include <sys/types.h>
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "constants.h"
 #include "defs.h"

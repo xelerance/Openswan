@@ -37,9 +37,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include <openswan.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
 #include "sysdep.h"
 #include "socketwrapper.h"
@@ -688,7 +688,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		    
 		  default:
 		  logerr:
-		    openswan_log_errno_routine(e1, "pfkey write() of %s message %u"
+		    libreswan_log_errno_routine(e1, "pfkey write() of %s message %u"
 					       " for %s %s failed"
 					       , sparse_val_show(pfkey_type_names
 								 , pfkey_msg->sadb_msg_type)
@@ -739,7 +739,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		else if (pfkey_msg->sadb_msg_type != bp->msg.sadb_msg_type)
 		{
 		    loglog(RC_LOG_SERIOUS
-			, "Openswan ERROR: response to our PF_KEY %s message for %s %s was of wrong type (%s)"
+			, "Libreswan ERROR: response to our PF_KEY %s message for %s %s was of wrong type (%s)"
 			, sparse_name(pfkey_type_names, pfkey_msg->sadb_msg_type)
 			, description, text_said
 			, sparse_val_show(pfkey_type_names, bp->msg.sadb_msg_type));
@@ -1644,7 +1644,7 @@ scan_proc_shunts(void)
 
         if (ugh != NULL)
         {
-            openswan_log("INTERNAL ERROR: %s line %d %s%s"
+            libreswan_log("INTERNAL ERROR: %s line %d %s%s"
                 , procname, lino, context, ugh);
             continue;   /* ignore rest of line */
         }
@@ -1849,8 +1849,8 @@ bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
 }
 
 void pfkey_set_debug(int cur_debug
-		     , openswan_keying_debug_func_t debug_func
-		     , openswan_keying_debug_func_t error_func)
+		     , libreswan_keying_debug_func_t debug_func
+		     , libreswan_keying_debug_func_t error_func)
 {
 #ifdef DEBUG
     pfkey_lib_debug = (cur_debug&DBG_PFKEY ?

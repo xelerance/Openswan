@@ -1,6 +1,6 @@
 //
 //  MainMenuController.m
-//  Openswan
+//  Libreswan
 //
 //  Created by Jose Quaresma on 11/6/09.
 //  Copyright 2009 __MyCompanyName__. All rights reserved.
@@ -13,18 +13,18 @@
 #import "Connection.h"
 #import <AppKit/NSCell.h>
 
-//Stuff from Openswan
-#define OPENSWAN_COCOA_APP 1
+//Stuff from Libreswan
+#define LIBRESWAN_COCOA_APP 1
 #import <sys/queue.h>
 #import "ipsecconf/confread.h"
-#import "openswan/passert.h"
+#import "libreswan/passert.h"
 #import "oswlog.h"
 #import "programs/pluto/log.h"
 void exit_tool(int x)
 {
 	exit(x);
 }
-char* progname = "openswan \0";
+char* progname = "libreswan \0";
 int verbose=0;
 int warningsarefatal = 0;
 #import "ipsecconf/confwrite.h"
@@ -93,7 +93,7 @@ int warningsarefatal = 0;
 {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
     
-	NSString *folder = @"~/Library/Application Support/Openswan/";
+	NSString *folder = @"~/Library/Application Support/Libreswan/";
 	folder = [folder stringByExpandingTildeInPath];
 	
 	if ([fileManager fileExistsAtPath: folder] == NO)
@@ -101,7 +101,7 @@ int warningsarefatal = 0;
 		[fileManager createDirectoryAtPath: folder attributes: nil];
 	}
     
-	NSString *fileName = @"Openswan.data";
+	NSString *fileName = @"Libreswan.data";
 	return [folder stringByAppendingPathComponent:fileName];
 }
 
@@ -314,7 +314,7 @@ static OSStatus DoConnect(CFStringRef reqConnName)
 		[GrowlApplicationBridge
 		 notifyWithTitle:@"Connected" 
 		 description:@"Connection was established" 
-		 notificationName:@"Openswan Growl Notification" 
+		 notificationName:@"Libreswan Growl Notification" 
 		 iconData:nil 
 		 priority:0 
 		 isSticky:NO 
@@ -329,7 +329,7 @@ static OSStatus DoConnect(CFStringRef reqConnName)
 		Connection *conn = [[[ConnectionsDB sharedInstance] connDB] objectAtIndex:[selConn indexOfSelectedItem]];
 		NSString *origFileName = [conn connName];
 		NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
-		NSString *origPath = @"~/Library/Application Support/Openswan";
+		NSString *origPath = @"~/Library/Application Support/Libreswan";
 		NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
 		NSString *path = [filePath stringByStandardizingPath];
 		
@@ -343,7 +343,7 @@ static OSStatus DoConnect(CFStringRef reqConnName)
 		[GrowlApplicationBridge
 		 notifyWithTitle:@"Disconnected" 
 		 description:@"Connection was closed" 
-		 notificationName:@"Openswan Growl Notification" 
+		 notificationName:@"Libreswan Growl Notification" 
 		 iconData:nil 
 		 priority:0 
 		 isSticky:NO 
@@ -367,7 +367,7 @@ static OSStatus DoConnect(CFStringRef reqConnName)
 - (NSDictionary*)registrationDictionaryForGrowl
 {
 	NSArray *notifications;
-	notifications = [NSArray arrayWithObject:@"Openswan Growl Notification"];
+	notifications = [NSArray arrayWithObject:@"Libreswan Growl Notification"];
 	
 	NSDictionary *dict;
 	dict = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -420,7 +420,7 @@ int main(int argc, char *argv[])
 	/*
 	 NSString *origFileName = [conn connName];
 	 NSString *fileName = [origFileName stringByAppendingFormat:@".conf"];
-	 NSString *origPath = @"~/Library/Application Support/Openswan";
+	 NSString *origPath = @"~/Library/Application Support/Libreswan";
 	 NSString *filePath = [origPath stringByAppendingPathComponent:fileName];
 	 NSString *path = [filePath stringByStandardizingPath];
 	 char cPath[100];

@@ -26,7 +26,7 @@
 #endif
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #ifdef MALLOC_SLAB
 # include <linux/slab.h> /* kmalloc() */
@@ -41,7 +41,7 @@
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
-#include <openswan.h>
+#include <libreswan.h>
 #ifdef SPINLOCK
 # ifdef SPINLOCK_23
 #  include <linux/spinlock.h> /* *lock* */
@@ -52,21 +52,21 @@
 
 #include <net/ip.h>
 
-#include "openswan/ipsec_eroute.h"
-#include "openswan/ipsec_sa.h"
+#include "libreswan/ipsec_eroute.h"
+#include "libreswan/ipsec_sa.h"
  
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
-#include "openswan/ipsec_tunnel.h"	/* struct ipsecpriv */
-#include "openswan/ipsec_xform.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
+#include "libreswan/ipsec_tunnel.h"	/* struct ipsecpriv */
+#include "libreswan/ipsec_xform.h"
  
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_proto.h"
+#include "libreswan/ipsec_proto.h"
 
 struct radij_node_head *rnh = NULL;
 DEFINE_SPINLOCK(eroute_lock);

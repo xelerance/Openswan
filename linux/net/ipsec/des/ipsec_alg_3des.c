@@ -41,10 +41,10 @@
 #include <linux/string.h>
 
 /*	Low freeswan header coupling	*/
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_alg.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_alg.h"
 #include "klips-crypto/des.h"
-#include "openswan/ipsec_alg_3des.h"
+#include "libreswan/ipsec_alg_3des.h"
 
 #define AES_CONTEXT_T aes_context
 static int debug_3des=0;

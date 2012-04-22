@@ -29,7 +29,7 @@ whackeast --listen
 whackwest --name isakmp-rsa --initiate
 002 "isakmp-rsa" #1: initiating Main Mode
 104 "isakmp-rsa" #1: STATE_MAIN_I1: initiate
-003 "isakmp-rsa" #1: received Vendor ID payload [Openswan (this version)  VERSION
+003 "isakmp-rsa" #1: received Vendor ID payload [Libreswan (this version)  VERSION
 003 "isakmp-rsa" #1: received Vendor ID payload [Dead Peer Detection]
 106 "isakmp-rsa" #1: STATE_MAIN_I2: sent MI2, expecting MR2
 002 "isakmp-rsa" #1: I did not send a certificate because I do not have one.

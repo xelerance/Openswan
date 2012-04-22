@@ -12,7 +12,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 static void convert(const char *src, size_t nreal, int format, char *out);
 

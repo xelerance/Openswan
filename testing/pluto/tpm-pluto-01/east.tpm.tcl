@@ -49,7 +49,7 @@ proc adjustFailure {state conn md} {
 	set shared_secret_bytes [chunk_ptr_get $shared_secret_chunk]
 	set shared_secret_len   [chunk_len_get $shared_secret_chunk]
 	set shared_secret [cdata $shared_secret_bytes $shared_secret_len]
-	openswan_DBG_dump "shared-secret" $shared_secret
+	libreswan_DBG_dump "shared-secret" $shared_secret
     } else {
 	puts stderr "AF: not yet encrypted"
     }

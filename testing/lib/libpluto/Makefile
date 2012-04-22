@@ -11,13 +11,13 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/testing/lib/libpluto/
-include $(OPENSWANSRCDIR)/Makefile.inc
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${LIBRESWANSRCDIR}/testing/lib/libpluto/
+include $(LIBRESWANSRCDIR)/Makefile.inc
 
 SUBDIRS=
 SRCDIR=${srcdir}
-UTILS=${OPENSWANSRCDIR}/testing/utils
+UTILS=${LIBRESWANSRCDIR}/testing/utils
 
 TESTS=$(shell awk '{print $$2;}' ${srcdir}TESTLIST)
 
@@ -25,7 +25,7 @@ all: ${TESTS}
 	echo ${TESTS}
 
 one:
-	export OPENSWANLIB=${OPENSWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
+	export LIBRESWANLIB=${LIBRESWANLIB} REGRESSRESULTS=$${REGRESSRESULTS-../results} ; . ${UTILS}/functions.sh; eval `grep ${TEST} TESTLIST`
 
 refineconnection: refineconnection.c lib-refineconnection/testlist.sh OUTPUT.refineconnection.txt FLAGS.refineconnection
 	. ${UTILS}/functions.sh; multilibtest `basename $< .c`
@@ -59,15 +59,15 @@ mostlyclean: clean
 realclean: clean
 
 depend:
-	(. ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
+	(. ${UTILS}/functions.sh; ls *.c | (while read file; do echo 'Calculating depends for '$$file >&2; ECHO=':' MOREFLAGS=-MM complibtest .Makefile.depend.$$file.${OSDEP} $$file >&2; cat .Makefile.depend.$$file.${OSDEP}; done) | sed -e 's,${LIBRESWANSRCDIR},../..,g' >Makefile.depend.${OSDEP})
 
 -include ${srcdir}Makefile.depend.${OSDEP}
 
 
-east.record: ${OPENSWANSRCDIR}/programs/pluto/rcv_whack.c
-	(cd ${OPENSWANSRCDIR}/programs/pluto && unset OPENSWANSRCDIR && pl_inst.sh)
-	(cd ${OPENSWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
-	. ${OPENSWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .
+east.record: ${LIBRESWANSRCDIR}/programs/pluto/rcv_whack.c
+	(cd ${LIBRESWANSRCDIR}/programs/pluto && unset LIBRESWANSRCDIR && pl_inst.sh)
+	(cd ${LIBRESWANSRCDIR}/testing/pluto/whackrecord-01 && ../../utils/runme.sh )
+	. ${LIBRESWANSRCDIR}/umlsetup.sh; cp $$POOLSPACE/east/root/var/tmp/east.record .
 
 updatepcaps:
 	cp lib-parentI1/parentI1.pcap lib-parentR1

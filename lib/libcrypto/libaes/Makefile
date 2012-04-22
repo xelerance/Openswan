@@ -1,4 +1,4 @@
-# openswan userland AES library
+# libreswan userland AES library
 # Copyright (C) 2004	Michael Richardson <mcr@xelerance.com>
 # 
 # This program is free software; you can redistribute it and/or modify it
@@ -12,10 +12,10 @@
 # for more details.
 
 
-OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+LIBRESWANSRCDIR?=$(shell cd ../../..; pwd)
 
-include ${OPENSWANSRCDIR}/Makefile.inc
-include ${OPENSWANSRCDIR}/Makefile.ver
+include ${LIBRESWANSRCDIR}/Makefile.inc
+include ${LIBRESWANSRCDIR}/Makefile.ver
 
 LIBRARY=crypto/libaes
 
@@ -36,7 +36,7 @@ OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
 
 HDRS=	
 
-SRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec/aes
+SRCDIR=${LIBRESWANSRCDIR}/linux/net/ipsec/aes
 VPATH += ${SRCDIR}
 
 LIB=libaes.a

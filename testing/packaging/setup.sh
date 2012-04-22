@@ -1,31 +1,31 @@
 
-if [ -z "$OPENSWANSRCDIR" ]
+if [ -z "$LIBRESWANSRCDIR" ]
 then
 	if [ -f ../../Makefile.inc ]
 	then
-	  OPENSWANSRCDIR=`cd ../.. && pwd`
+	  LIBRESWANSRCDIR=`cd ../.. && pwd`
 	else 
 	  if [ -f ../../../Makefile.inc ]
 	  then 
-	    OPENSWANSRCDIR=`cd ../../.. && pwd`
+	    LIBRESWANSRCDIR=`cd ../../.. && pwd`
 	  fi
         fi  	
 fi
 
-if [ ! -f $OPENSWANSRCDIR/Makefile.inc ]
+if [ ! -f $LIBRESWANSRCDIR/Makefile.inc ]
 then
-	echo Umlsetup not found at OPENSWANSRCDIR=$OPENSWANSRCDIR.
-	echo Is OPENSWANSRCDIR set correctly'?'
+	echo Umlsetup not found at LIBRESWANSRCDIR=$LIBRESWANSRCDIR.
+	echo Is LIBRESWANSRCDIR set correctly'?'
 	exit 5
 fi
 
-TESTINGROOT=${OPENSWANSRCDIR}/testing
+TESTINGROOT=${LIBRESWANSRCDIR}/testing
 UTILS=`cd ${TESTINGROOT}/utils && pwd`
 
 REGRESSRESULTS=${REGRESSRESULTS-results}
 MAKE_INSTALL_TEST_DEBUG=${MAKE_INSTALL_TEST_DEBUG-false}
 RPM_INSTALL_TEST_DEBUG=${RPM_INSTALL_TEST_DEBUG-false}
-FIXUPDIR=`cd ${OPENSWANSRCDIR}/testing/packaging/fixups && pwd`
+FIXUPDIR=`cd ${LIBRESWANSRCDIR}/testing/packaging/fixups && pwd`
 
 # kernel source for local UML, configured, against which one can
 # build modules.

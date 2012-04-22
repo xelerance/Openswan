@@ -19,11 +19,11 @@
 #include <time.h>
 #include <sys/types.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
-#include "openswan/ipsec_policy.h"
+#include "libreswan/ipsec_policy.h"
 #include "oswtime.h"
 #include "defs.h"
 #include "log.h"

@@ -32,19 +32,19 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <netdb.h>
-#include <openswan.h>
+#include <libreswan.h>
 #if 0
 #include <linux/autoconf.h>	/* CONFIG_IPSEC_PFKEYv2 */
 #endif
 
 #include <signal.h>
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 #include "pfkey_help.h"
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_ah.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_ah.h"
 
 #include "osw_select.h"
 

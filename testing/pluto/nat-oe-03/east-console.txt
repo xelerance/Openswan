@@ -67,7 +67,7 @@ east:~#
  echo 1 >/proc/sys/net/ipv4/conf/eth0/proxy_arp 
 east:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 east:~#
  /testing/pluto/bin/wait-until-pluto-started
 east:~#
@@ -101,7 +101,7 @@ Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
 east:~#
 east:~#
  ipsec setup stop
-ipsec_setup: Stopping Openswan IPsec...
+ipsec_setup: Stopping Libreswan IPsec...
 IPSEC EVENT: KLIPS device ipsec0 shut down.
 east:~#
  kill `cat /var/run/klogd.pid`; cat /tmp/klog.log

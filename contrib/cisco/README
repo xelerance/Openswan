@@ -1,4 +1,4 @@
-This little tool will convert a Cisco PCF file to an Openswan style
+This little tool will convert a Cisco PCF file to an Libreswan style
 ipsec.conf connection.
 
 If your PCF file contains an "encrypted" (obfuscated) password, then you

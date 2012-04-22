@@ -1,5 +1,5 @@
 Plutorun started on Sat Jul 23 16:32:37 GMT 2005
-Starting Pluto (Openswan Version cvs2005Jul22_10:11:19 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OECWKUoQJnw\134)
+Starting Pluto (Libreswan Version cvs2005Jul22_10:11:19 X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR; Vendor ID OECWKUoQJnw\134)
 Setting port floating to off
 port floating activate 0/1
   including NAT-Traversal patch (Version 0.6c) [disabled]
@@ -83,7 +83,7 @@ loading secrets from "/tmp/iv-01/ipsec.secrets"
 | next event EVENT_PENDING_PHASE2 in 111 seconds
 |  
 | *received 212 bytes from 192.1.2.45:500 on eth1 (port=500)
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) cvs2005Jul22_10:11:19  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) cvs2005Jul22_10:11:19  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 | find_host_connection called from main_inI1_outR1
 | find_host_pair: comparing to 192.1.2.23:500 0.0.0.0:500 
@@ -126,7 +126,7 @@ packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 | next event EVENT_RETRANSMIT in 10 seconds for #1
 |  
 | *received 212 bytes from 192.1.2.45:500 on eth1 (port=500)
-packet from 192.1.2.45:500: received Vendor ID payload [Openswan (this version) cvs2005Jul22_10:11:19  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
+packet from 192.1.2.45:500: received Vendor ID payload [Libreswan (this version) cvs2005Jul22_10:11:19  X.509-1.5.4 PLUTO_SENDS_VENDORID PLUTO_USES_KEYRR]
 packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 | find_host_connection called from main_inI1_outR1
 | find_host_pair: comparing to 192.1.2.23:500 192.1.2.45:500 
@@ -319,7 +319,7 @@ packet from 192.1.2.45:500: received Vendor ID payload [Dead Peer Detection]
 | started looking for secret for @east->@west of kind PPK_RSA
 | actually looking for secret for @east->@west of kind PPK_RSA
 | 1: compared PSK 0.0.0.0 to @east / @west -> 0
-| 2: compared PSK C=CA, ST=Ontario, O=Openswan, CN=east.uml.freeswan.org, E=east@openswan.org to @east / @west -> 0
+| 2: compared PSK C=CA, ST=Ontario, O=Libreswan, CN=east.uml.freeswan.org, E=east@libreswan.org to @east / @west -> 0
 | best_match 0>1 best=0x8104b58 (line=8)
 | concluding with best_match=1 best=0x8104b58 (lineno=8)
 | signing hash with RSA Key *AQN3cn11F

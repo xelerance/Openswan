@@ -1,9 +1,9 @@
-; example.com reverse zone for Openswan testing
+; example.com reverse zone for Libreswan testing
 ; This file belongs in /var/named/test.rev.zone
 
 ; add to /etc/named.conf:
 
-;;;// reverse for Openswan testing:
+;;;// reverse for Libreswan testing:
 ;;;zone "7.95.127.in-addr.arpa" IN {
 ;;;	type master;
 ;;;	file "test.rev.zone";

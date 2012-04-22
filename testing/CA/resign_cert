@@ -7,16 +7,16 @@
 # copy the certificates to the right baseconfig dirs.
 source ../../umlsetup.sh
 
-OPENSWANHOSTS=${OPENSWANHOSTS-$FREESWANHOSTS}
+LIBRESWANHOSTS=${LIBRESWANHOSTS-$FREESWANHOSTS}
 
 # first, move the private keys to the right place
-for host in $OPENSWANHOSTS
+for host in $LIBRESWANHOSTS
 do
 	req=$host.uml.freeswan.org/$host.uml.freeswan.org.req
 	cert=$host.uml.freeswan.org/$host.uml.freeswan.org.cert
 	if [ -f $req ]
 	then
-	    echo "Password is 'openswan'"
+	    echo "Password is 'libreswan'"
 	    # Sign the cert
 	    if [ -f $cert ]
 	    then

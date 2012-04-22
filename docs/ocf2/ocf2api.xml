@@ -1093,7 +1093,7 @@ struct cryptkop { TAILQ_ENTRY(cryptkop) krp_next;
     <para>The cryptographic framework first appeared in <productname>OpenBSD
     2.7</productname> and was written by <phrase role="author ">Angelos D.
     Keromytis &lt;angelos@openbsd.org&gt;</phrase>. It was ported to FreeBSD
-    by Sam Leffler. It was ported to Openswan by David McCullough.</para>
+    by Sam Leffler. It was ported to Libreswan by David McCullough.</para>
   </refsect1>
 
    

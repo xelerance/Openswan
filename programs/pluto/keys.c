@@ -1,5 +1,5 @@
 /*
- * interfaces to the secrets.c library functions in libopenswan.
+ * interfaces to the secrets.c library functions in liblibreswan.
  * for now, just stupid wrappers!
  *
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
@@ -43,8 +43,8 @@
 # define GLOB_ABORTED    GLOB_ABEND	/* fix for old versions */
 #endif
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"

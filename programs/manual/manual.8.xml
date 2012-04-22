@@ -41,7 +41,7 @@ This command was obsoleted around the same time that Al Gore invented the intern
 
 <para>
 During the jurassic period it was used to 
-manipulates manually-keyed Openswan IPsec connections,
+manipulates manually-keyed Libreswan IPsec connections,
 setting them up and shutting them down,
 based on the information in the IPsec configuration file.
 Normally, manually keyed connections should not be used - automatic

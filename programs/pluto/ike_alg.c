@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -149,7 +149,7 @@ bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, 
 				}
 			}
 		}
-		openswan_log("Oakley Transform [%s (%d), %s, %s] refused due to %s",
+		libreswan_log("Oakley Transform [%s (%d), %s, %s] refused due to %s",
 			enum_name(&oakley_enc_names, ealg), key_len,
 			enum_name(&oakley_hash_names, aalg),
 			enum_name(&oakley_group_names, group),
@@ -211,7 +211,7 @@ int
 	}
 return_out:
 	if (ret) 
-		openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
+		libreswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
 	return ret;
 }
 
@@ -260,7 +260,7 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 return_out:
 	if (ret==0)
 		ret=ike_alg_add((struct ike_alg *)hash_desc);
-	openswan_log("ike_alg_register_hash(): Activating %s: %s (ret=%d)", 
+	libreswan_log("ike_alg_register_hash(): Activating %s: %s (ret=%d)", 
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return ret;
 }
@@ -303,7 +303,7 @@ return_out:
 
 	if (ret==0)
 		ret=ike_alg_add((struct ike_alg *)enc_desc);
-	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)", 
+	libreswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)", 
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return 0;
 }

@@ -19,10 +19,10 @@
 # unless it's something special (ie not a .c file).
 #
 
-OPENSWANSRCDIR?=.
+LIBRESWANSRCDIR?=.
 KLIPS_TOP?=.
 
--include ${OPENSWANSRCDIR}/Makefile.ver
+-include ${LIBRESWANSRCDIR}/Makefile.ver
 
 base-klips-objs := 
 

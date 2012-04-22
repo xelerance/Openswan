@@ -46,7 +46,7 @@ remove the connection entirely, including both the SA and eroute.
 We recommend that "hold" be used for statically defined tunnels, and 
 "clear" be used for roadwarrior tunnels.
 
-DPD support in Openswan is based on Philip Craig [1]'s work for
+DPD support in Libreswan is based on Philip Craig [1]'s work for
 Snapgear's ucLinux [2] and Srinivasan Venkataraman's [3] implementation, 
 which were ported to Super FreeS/WAN by Pawel Krawczyk, and then hacked 
 on by Pawel, JuanJo Ciarlante and Ken Bantoft. Thanks to Daniel 
@@ -64,8 +64,8 @@ Inter-operability Test Results:
 
 Pass:
 Super FreeS/WAN 1.99.7
-Openswan 1.x
-Openswan 2.2.x
+Libreswan 1.x
+Libreswan 2.2.x
 Cisco Systems: VPN 3000 Concentrator Version 3.6.7.C
 Cisco Systems: IOS 12.2.8T 
 

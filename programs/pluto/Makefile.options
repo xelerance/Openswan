@@ -15,7 +15,7 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-# All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
+# All of the USE_ and HAVE_ variables are controlled from libreswan/Makefile.inc
 
 ifeq ($(USE_DYNAMICDNS),true)
 DYNAMICDNSDEF=-DDYNAMICDNS
@@ -52,9 +52,9 @@ ifeq ($(HAVE_OCF),true)
 CFLAGS += -DHAVE_OCF
 endif
 
-# where to find klips headers and Openswan headers
+# where to find klips headers and Libreswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
-HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC) 
+HDRDIRS = -I${LIBRESWANSRCDIR}/programs/pluto/linux26 -I${LIBRESWANSRCDIR}/include -I$(LIBRESWANSRCDIR)/lib/libcrypto -I$(KLIPSINC) 
 
 # Use LIBNSS
 ifeq ($(USE_LIBNSS),true)
@@ -301,7 +301,7 @@ DEFINES = $(EXTRA_DEFINES) \
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO =$(OBJSGCRYPT)
 LIBSPLUTO+=$(LIBOSWCRYPTO)
-LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) $(OPENSWANLIB) $(LIBPLUTO)
+LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) $(LIBRESWANLIB) $(LIBPLUTO)
 LIBSPLUTO+=${LIBSHA1} ${LIBMD5} ${LIBMD2}
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS) 
 LIBSPLUTO+=$(HAVE_THREADS_LIBS)

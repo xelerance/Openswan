@@ -1,8 +1,8 @@
-PCAP2SKB=${OPENSWANSRCDIR}/testing/utils/pcap2skb/pcap2skb
+PCAP2SKB=${LIBRESWANSRCDIR}/testing/utils/pcap2skb/pcap2skb
 KLIPS_FLAGS=-I${srcdir}../include
 KLIPS_FLAGS+=-I../include
 
-#UMLPLAIN=$(shell source ${OPENSWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
+#UMLPLAIN=$(shell source ${LIBRESWANSRCDIR}/umlsetup.sh; echo $${POOLSPACE}/plain$${KERNVER})
 #KLIPS_FLAGS+=-I${UMLPLAIN}/include
 #KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/include
 #KLIPS_FLAGS+=-I${UMLPLAIN}/arch/um/kernel/tt/include
@@ -21,10 +21,10 @@ UCFLAGS=-I. -I${srcdir} ${KLIPS_FLAGS}
 #KCFLAGS+=-nostdinc -isystem /usr/lib/gcc-lib/i486-linux/3.3.5/include
 KCFLAGS+=${KLIPS_FLAGS} 
 KCFLAGS+=-DHASH_DEBUG
-KCFLAGS+=-include ${OPENSWANSRCDIR}/packaging/linus/config-all.h
+KCFLAGS+=-include ${LIBRESWANSRCDIR}/packaging/linus/config-all.h
 KCFLAGS+=-DIPCOMP_PREFIX  -DMODULE -DKBUILD_MODNAME=rcv01test
 
-#KLIPS_TOP:= ${OPENSWANSRCDIR}/linux
+#KLIPS_TOP:= ${LIBRESWANSRCDIR}/linux
 KLIPS_TOP:=/mara1/git/klips
 KLIPSSRC=${KLIPS_TOP}/net/ipsec
 KUTILLIB=../libkern/libkern.a

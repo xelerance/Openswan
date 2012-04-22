@@ -20,7 +20,7 @@ PING 192.0.2.254 (192.0.2.254): 56 data bytes
 1 packets transmitted, 0 packets received, 100% packet loss
 west:~#
  ipsec setup start
-ipsec_setup: Starting Openswan IPsec VERSION
+ipsec_setup: Starting Libreswan IPsec VERSION
 west:~#
  ipsec whack --whackrecord /var/tmp/ikev2.record
 west:~#

@@ -6,7 +6,7 @@ OpenSClient HOWTO
    This document describes how to connect to [18]CheckPoint VPN using Hybrid
    Authentication i.e. the same way SecureClient does.
     1. Download [19]OpenSwan
-    2. Download the patch [20]openswan-2.4.0-SecureClient.diff section and
+    2. Download the patch [20]libreswan-2.4.0-SecureClient.diff section and
        apply it
     3. Compile and install software following [21]OpenSwan documentation
     4. Obtain firewall certificate using following procedure:
@@ -43,7 +43,7 @@ subject=/O=checkpoint.intranet.example.com..p9bkhs
             and for firewall one like this:
 subject=/O=checkpoint.intranet.example.com..p9bkhs/CN=rhl7 VPN Certificate
             Note the CN= part)
-         2. Now  go  to  your  openswan  source  directory then follow to
+         2. Now  go  to  your  libreswan  source  directory then follow to
             debian/fswcert and type:
 make
 make install
@@ -68,7 +68,7 @@ conn sc
         cpsc=yes
 
        Check twice for errors!!!
-    7. Now follow usual procedure to start openswan VPN.
+    7. Now follow usual procedure to start libreswan VPN.
 
    Please note, that there are certain things that don't work!:
     1. There is is a timing issue. If your CP side requests reauthentication it
@@ -87,8 +87,8 @@ References
 
    Visible links
   18. http://www.checkpoint.com/
-  19. http://www.openswan.org/
-  20. http://emsi.it.pl/auto/openswan-2.4.0-SecureClient.diff
-  21. http://www.openswan.org/
+  19. http://www.libreswan.org/
+  20. http://emsi.it.pl/auto/libreswan-2.4.0-SecureClient.diff
+  21. http://www.libreswan.org/
   22. http://emsi.it.pl/auto/
 

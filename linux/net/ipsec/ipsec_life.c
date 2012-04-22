@@ -39,35 +39,35 @@
 #endif	/* for CONFIG_IP_FORWARD */
 #include <linux/kernel.h> /* printk() */
 
-#include "openswan/ipsec_param.h"
+#include "libreswan/ipsec_param.h"
 
 #include <linux/netdevice.h>   /* struct device, struct net_device_stats and other headers */
 #include <linux/etherdevice.h> /* eth_type_trans */
 #include <linux/skbuff.h>
 #include <linux/ip.h>
-#include <openswan.h>
+#include <libreswan.h>
 
-#include "openswan/radij.h"
-#include "openswan/ipsec_life.h"
-#include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_eroute.h"
-#include "openswan/ipsec_encap.h"
-#include "openswan/ipsec_radij.h"
+#include "libreswan/radij.h"
+#include "libreswan/ipsec_life.h"
+#include "libreswan/ipsec_xform.h"
+#include "libreswan/ipsec_eroute.h"
+#include "libreswan/ipsec_encap.h"
+#include "libreswan/ipsec_radij.h"
 
-#include "openswan/ipsec_sa.h"
-#include "openswan/ipsec_tunnel.h"
-#include "openswan/ipsec_ipe4.h"
-#include "openswan/ipsec_ah.h"
-#include "openswan/ipsec_esp.h"
+#include "libreswan/ipsec_sa.h"
+#include "libreswan/ipsec_tunnel.h"
+#include "libreswan/ipsec_ipe4.h"
+#include "libreswan/ipsec_ah.h"
+#include "libreswan/ipsec_esp.h"
 
 #ifdef CONFIG_KLIPS_IPCOMP
-#include "openswan/ipcomp.h"
+#include "libreswan/ipcomp.h"
 #endif /* CONFIG_KLIPS_IPCOMP */
 
-#include <openswan/pfkeyv2.h>
-#include <openswan/pfkey.h>
+#include <libreswan/pfkeyv2.h>
+#include <libreswan/pfkey.h>
 
-#include "openswan/ipsec_proto.h"
+#include "libreswan/ipsec_proto.h"
 
 
 enum ipsec_life_alive

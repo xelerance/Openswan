@@ -26,9 +26,9 @@
 #include <arpa/inet.h>
 #include <resolv.h>
 
-#include <openswan.h>
-#include <openswan/ipsec_policy.h>
-#include "openswan/pfkeyv2.h"
+#include <libreswan.h>
+#include <libreswan/ipsec_policy.h>
+#include "libreswan/pfkeyv2.h"
 
 #include "sysdep.h"
 #include "constants.h"
@@ -80,8 +80,8 @@ stf_status aggr_not_present(int whack_sock UNUSED
 			    , unsigned long try UNUSED
 			    , enum crypto_importance importance UNUSED)
 {
-    openswan_log("An attempt to use aggressive mode was made.");
-    openswan_log("This pluto does not have aggressive mode (congradulations on your wisdom)");
+    libreswan_log("An attempt to use aggressive mode was made.");
+    libreswan_log("This pluto does not have aggressive mode (congradulations on your wisdom)");
 
     return STF_FATAL;
 }

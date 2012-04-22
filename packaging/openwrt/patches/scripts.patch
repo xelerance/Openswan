@@ -1,15 +1,15 @@
-diff -uNr openswan-2.3.0.orig/programs/loggerfix openswan-2.3.0/programs/loggerfix
---- openswan-2.3.0.orig/programs/loggerfix	1970-01-01 00:00:00.000000000 +0000
-+++ openswan-2.3.0/programs/loggerfix	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/loggerfix libreswan-2.3.0/programs/loggerfix
+--- libreswan-2.3.0.orig/programs/loggerfix	1970-01-01 00:00:00.000000000 +0000
++++ libreswan-2.3.0/programs/loggerfix	2005-02-02 20:34:54.000000000 +0000
 @@ -0,0 +1,5 @@
 +#!/bin/sh
 +# use filename instead of /dev/null to log, but dont log to flash or ram
 +# pref. log to nfs mount
 +echo "$*" >> /dev/null
 +exit 0
-diff -uNr openswan-2.3.0.orig/programs/look/look.in openswan-2.3.0/programs/look/look.in
---- openswan-2.3.0.orig/programs/look/look.in	2003-10-31 02:32:42.000000000 +0000
-+++ openswan-2.3.0/programs/look/look.in	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/look/look.in libreswan-2.3.0/programs/look/look.in
+--- libreswan-2.3.0.orig/programs/look/look.in	2003-10-31 02:32:42.000000000 +0000
++++ libreswan-2.3.0/programs/look/look.in	2005-02-02 20:34:54.000000000 +0000
 @@ -79,7 +79,7 @@
  then
  	pat="$pat|$defaultroutephys\$|$defaultroutevirt\$"
@@ -19,9 +19,9 @@ diff -uNr openswan-2.3.0.orig/programs/look/look.in openswan-2.3.0/programs/look
  	do
  		pat="$pat|$i\$"
  	done
-diff -uNr openswan-2.3.0.orig/programs/manual/manual.in openswan-2.3.0/programs/manual/manual.in
---- openswan-2.3.0.orig/programs/manual/manual.in	2004-11-01 22:49:01.000000000 +0000
-+++ openswan-2.3.0/programs/manual/manual.in	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/manual/manual.in libreswan-2.3.0/programs/manual/manual.in
+--- libreswan-2.3.0.orig/programs/manual/manual.in	2004-11-01 22:49:01.000000000 +0000
++++ libreswan-2.3.0/programs/manual/manual.in	2005-02-02 20:34:54.000000000 +0000
 @@ -104,7 +104,7 @@
  				sub(/:/, " ", $0)
  				if (interf != "")
@@ -30,9 +30,9 @@ diff -uNr openswan-2.3.0.orig/programs/manual/manual.in openswan-2.3.0/programs/
 +			 }' | sed ':a;N;$!ba;s/\n/ /g'`"
  	;;
  esac
- diff -uNr openswan-2.3.0.orig/programs/_startklips/_startklips.in openswan-2.3.0/programs/_startklips/_startklips.in
---- openswan-2.3.0.orig/programs/_startklips/_startklips.in	2004-12-10 12:38:28.000000000 +0000
-+++ openswan-2.3.0/programs/_startklips/_startklips.in	2005-02-02 20:34:54.000000000 +0000
+ diff -uNr libreswan-2.3.0.orig/programs/_startklips/_startklips.in libreswan-2.3.0/programs/_startklips/_startklips.in
+--- libreswan-2.3.0.orig/programs/_startklips/_startklips.in	2004-12-10 12:38:28.000000000 +0000
++++ libreswan-2.3.0/programs/_startklips/_startklips.in	2005-02-02 20:34:54.000000000 +0000
 @@ -292,7 +292,12 @@
  		fi
                  unset MODPATH MODULECONF        # no user overrides!
@@ -47,9 +47,9 @@ diff -uNr openswan-2.3.0.orig/programs/manual/manual.in openswan-2.3.0/programs/
          fi
          if test ! -f $ipsecversion
          then
-diff -uNr openswan-2.3.0.orig/programs/setup/setup.in openswan-2.3.0/programs/setup/setup.in
---- openswan-2.3.0.orig/programs/setup/setup.in	2004-03-22 00:24:06.000000000 +0000
-+++ openswan-2.3.0/programs/setup/setup.in	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/setup/setup.in libreswan-2.3.0/programs/setup/setup.in
+--- libreswan-2.3.0.orig/programs/setup/setup.in	2004-03-22 00:24:06.000000000 +0000
++++ libreswan-2.3.0/programs/setup/setup.in	2005-02-02 20:34:54.000000000 +0000
 @@ -110,12 +110,22 @@
  # do it
  case "$1" in
@@ -74,9 +74,9 @@ diff -uNr openswan-2.3.0.orig/programs/setup/setup.in openswan-2.3.0/programs/se
  	tmp=/var/run/pluto/ipsec_setup.st
  	outtmp=/var/run/pluto/ipsec_setup.out
  	(
-diff -uNr openswan-2.3.0.orig/programs/showhostkey/showhostkey.in openswan-2.3.0/programs/showhostkey/showhostkey.in
---- openswan-2.3.0.orig/programs/showhostkey/showhostkey.in	2004-11-14 13:40:41.000000000 +0000
-+++ openswan-2.3.0/programs/showhostkey/showhostkey.in	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/showhostkey/showhostkey.in libreswan-2.3.0/programs/showhostkey/showhostkey.in
+--- libreswan-2.3.0.orig/programs/showhostkey/showhostkey.in	2004-11-14 13:40:41.000000000 +0000
++++ libreswan-2.3.0/programs/showhostkey/showhostkey.in	2005-02-02 20:34:54.000000000 +0000
 @@ -63,7 +63,7 @@
  	exit 1
  fi
@@ -86,9 +86,9 @@ diff -uNr openswan-2.3.0.orig/programs/showhostkey/showhostkey.in openswan-2.3.0
  
  awk '	BEGIN {
 
-diff -uNr openswan-2.3.0.orig/programs/send-pr/send-pr.in openswan-2.3.0/programs/send-pr/send-pr.in
---- openswan-2.3.0.orig/programs/send-pr/send-pr.in	2003-07-14 12:26:17.000000000 +0000
-+++ openswan-2.3.0/programs/send-pr/send-pr.in	2005-02-02 20:34:54.000000000 +0000
+diff -uNr libreswan-2.3.0.orig/programs/send-pr/send-pr.in libreswan-2.3.0/programs/send-pr/send-pr.in
+--- libreswan-2.3.0.orig/programs/send-pr/send-pr.in	2003-07-14 12:26:17.000000000 +0000
++++ libreswan-2.3.0/programs/send-pr/send-pr.in	2005-02-02 20:34:54.000000000 +0000
 @@ -402,7 +402,7 @@
  		    else
  			if [ "$fieldname" != "Category" ]
@@ -125,8 +125,8 @@ diff -uNr openswan-2.3.0.orig/programs/send-pr/send-pr.in openswan-2.3.0/program
  			echo "/^>${fieldname}:/ s/${dpat}//" >> $FIXFIL
  		    fi
  		    echo "${fmtname}${desc}" >> $file
---- openswan-2.3.0.orig/programs/_plutorun/_plutorun.in	2004-11-03 20:21:08.000000000 +0000
-+++ openswan-2.3.0/programs/_plutorun/_plutorun.in	2005-02-02 20:34:54.000000000 +0000
+--- libreswan-2.3.0.orig/programs/_plutorun/_plutorun.in	2004-11-03 20:21:08.000000000 +0000
++++ libreswan-2.3.0/programs/_plutorun/_plutorun.in	2005-02-02 20:34:54.000000000 +0000
 @@ -140,7 +140,7 @@
  			exit 1
  		fi
@@ -136,9 +136,9 @@ diff -uNr openswan-2.3.0.orig/programs/send-pr/send-pr.in openswan-2.3.0/program
  		then
  			echo Cannot write to directory to create \"$stderrlog\".
  			exit 1
-diff -urN openswan-2.3.1.old/programs/_startklips/_startklips.in openswan-2.3.1/programs/_startklips/_startklips.in
---- openswan-2.3.1.old/programs/_startklips/_startklips.in	2005-04-10 23:57:51.000000000 +0200
-+++ openswan-2.3.1/programs/_startklips/_startklips.in	2005-04-11 00:00:36.000000000 +0200
+diff -urN libreswan-2.3.1.old/programs/_startklips/_startklips.in libreswan-2.3.1/programs/_startklips/_startklips.in
+--- libreswan-2.3.1.old/programs/_startklips/_startklips.in	2005-04-10 23:57:51.000000000 +0200
++++ libreswan-2.3.1/programs/_startklips/_startklips.in	2005-04-11 00:00:36.000000000 +0200
 @@ -262,15 +262,15 @@
      echo "FATAL ERROR: Both KLIPS and NETKEY IPsec code is present in kernel"
      exit

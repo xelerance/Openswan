@@ -1,5 +1,5 @@
 /*
- * Openswan config file parser (keywords.c)
+ * Libreswan config file parser (keywords.c)
  * Copyright (C) 2003-2006 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  *
@@ -22,8 +22,8 @@
 #include <stdio.h>
 #include <limits.h>
 
-#ifndef _OPENSWAN_H
-#include <openswan.h>
+#ifndef _LIBRESWAN_H
+#include <libreswan.h>
 #include "constants.h"
 #endif
 

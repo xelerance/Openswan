@@ -13,10 +13,10 @@
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
  * License for more details.
  */
-#include "openswan.h"
+#include "libreswan.h"
 
 #ifdef __KERNEL__
-#include "openswan/ipsec_proto.h"
+#include "libreswan/ipsec_proto.h"
 
 /* for local_bh_disable() on older kernels without linux/asm/softirq.h */
 #include <linux/interrupt.h>

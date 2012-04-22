@@ -10,7 +10,7 @@
 </refmeta>
 <refnamediv id='name'>
 <refname>ipsec look</refname>
-<refpurpose>get a quick summary of Openswan status</refpurpose>
+<refpurpose>get a quick summary of Libreswan status</refpurpose>
 </refnamediv>
 <!-- body begins here -->
 <refsynopsisdiv id='synopsis'>
@@ -22,7 +22,7 @@
 
 <refsect1 id='description'><title>DESCRIPTION</title>
 <para><emphasis remap='I'>Look</emphasis>
-is used to get a quick overview of what the status of Openswan is. It is
+is used to get a quick overview of what the status of Libreswan is. It is
 the equivalent to running the commands
 <emphasis remap='I'>ipsec eroute</emphasis>,
 <emphasis remap='I'>ipsec spigrp</emphasis>,

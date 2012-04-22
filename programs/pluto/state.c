@@ -29,7 +29,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
-#include <openswan.h>
+#include <libreswan.h>
 
 #include "sysdep.h"
 #include "constants.h"
@@ -145,7 +145,7 @@ generate_msgid(struct state *isakmp_sa)
 
 	if (--timeout == 0)
 	{
-	    openswan_log("gave up looking for unique msgid; using 0x%08lx"
+	    libreswan_log("gave up looking for unique msgid; using 0x%08lx"
 		, (unsigned long) msgid);
 	    break;
 	}
@@ -592,7 +592,7 @@ static void delete_state_function(struct state *this
 				  , struct connection *c UNUSED
 				  , void *arg UNUSED)
 {
-    openswan_log("deleting state (%s)"
+    libreswan_log("deleting state (%s)"
 		 , enum_show(&state_names, this->st_state));
 
     if(this->st_event != NULL) delete_event(this);
@@ -632,7 +632,7 @@ void delete_states_dead_interfaces(void)
 	    st = st->st_hashchain_next;	/* before this is deleted */
 	    if (this->st_interface && this->st_interface->change == IFN_DELETE )
 	    {
-		openswan_log("deleting lasting state #%lu on interface (%s) which is shutting down",
+		libreswan_log("deleting lasting state #%lu on interface (%s) which is shutting down",
 			this->st_serialno,
 			this->st_interface->ip_dev->id_vname);
 		delete_state(this);
@@ -754,7 +754,7 @@ static void rekey_state_function(struct state *this
 				 , struct connection *c UNUSED
 				 , void *arg UNUSED)
 {
-    openswan_log("rekeying state (%s)"
+    libreswan_log("rekeying state (%s)"
 		 , enum_show(&state_names, this->st_state));
 
     delete_event(this);
