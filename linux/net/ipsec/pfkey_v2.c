@@ -1128,9 +1128,6 @@ pfkey_recvmsg(struct socket *sock
 #ifdef CONFIG_PROC_FS
 int
 pfkey_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
@@ -1224,9 +1221,6 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 
 int
 pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
@@ -1285,9 +1279,6 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 
 int
 pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
