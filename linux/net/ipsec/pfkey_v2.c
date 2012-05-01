@@ -1505,19 +1505,23 @@ pfkey_init(void)
 
         error |= sock_register(&pfkey_family_ops);
 
-#ifdef CONFIG_PROC_FS
-        {
-                struct proc_dir_entry* entry;
+	{
+		struct proc_dir_entry* entry;
 
-                entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
-                entry->read_proc = pfkey_get_info;
-                entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
-                entry->read_proc = pfkey_supported_get_info;
-                entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
-                entry->read_proc = pfkey_registered_get_info;
+#    if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
+		proc_net_create ("pf_key", 0, pfkey_get_info);
+		proc_net_create ("pf_key_supported", 0, pfkey_supported_get_info);
+		proc_net_create ("pf_key_registered", 0, pfkey_registered_get_info);
+#    else
+		entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
+		entry->read_proc = pfkey_get_info;
+		entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
+		entry->read_proc = pfkey_supported_get_info;
+		entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+		entry->read_proc = pfkey_registered_get_info;
+#    endif
         }
 #endif /* CONFIG_PROC_FS */
-
 	return error;
 }
 
