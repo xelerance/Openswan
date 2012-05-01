@@ -27,7 +27,7 @@
 
 # include <linux/kernel.h>  /* for printk */
 
-# include "libreswan/ipsec_kversion.h" /* for malloc switch */
+# include "openswan/ipsec_kversion.h" /* for malloc switch */
 # include <linux/slab.h> /* kmalloc() */
 # include <linux/errno.h>  /* error codes */
 # include <linux/types.h>  /* size_t */
