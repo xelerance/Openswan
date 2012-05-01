@@ -89,6 +89,7 @@
  */
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,1,0)
+# define PROC_FS_21
 # define NETLINK_SOCK
 #endif
 
@@ -101,6 +102,11 @@
 # ifndef CONFIG_IP_ALIAS
 #  define CONFIG_IP_ALIAS
 # endif
+#endif
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,25)
+# define PROC_FS_2325
+# undef  PROC_FS_21
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,30)
