@@ -1,6 +1,7 @@
 /*
  * processing code for AH
  * Copyright (C) 2003-2004   Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -38,13 +39,7 @@
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 #include <net/protocol.h>
@@ -55,7 +50,7 @@
 
 #include "openswan/ipsec_radij.h"
 #include "openswan/ipsec_xform.h"
-#include "openswan/ipsec_tunnel.h" 
+#include "openswan/ipsec_tunnel.h"
 #include "openswan/ipsec_rcv.h"
 #include "openswan/ipsec_xmit.h"
 
@@ -254,14 +249,14 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
   ahp->ah_hl = (sizeof(struct ahhdr) >> 2) - sizeof(__u64)/sizeof(__u32);
   osw_ip4_hdr(ixs)->protocol = IPPROTO_AH;
   ipsec_xmit_dmp("ahp", (char*)ahp, sizeof(*ahp));
-  
+
   ipo = *osw_ip4_hdr(ixs);
   ipo.tos = 0;
   ipo.frag_off = 0;
   ipo.ttl = 0;
   ipo.check = 0;
   ipsec_xmit_dmp("ipo", (char*)&ipo, sizeof(ipo));
-  
+
   switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
   case AH_MD5:
@@ -285,9 +280,9 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     ipsec_xmit_dmp("octx+hash", (char*)&tctx.md5, sizeof(tctx.md5));
     osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("octx hash", (char*)&hash, sizeof(hash));
-    
+
     memcpy(ahp->ah_data, hash, AHHMAC_HASHLEN);
-    
+
     /* paranoid */
     memset((caddr_t)&tctx.md5, 0, sizeof(tctx.md5));
     memset((caddr_t)hash, 0, sizeof(*hash));
@@ -305,9 +300,9 @@ ipsec_xmit_ah_setup(struct ipsec_xmit_state *ixs)
     tctx.sha1 = ((struct sha1_ctx*)(ixs->ipsp->ips_key_a))->octx;
     SHA1Update(&tctx.sha1, hash, AHSHA196_ALEN);
     SHA1Final(hash, &tctx.sha1);
-    
+
     memcpy(ahp->ah_data, hash, AHHMAC_HASHLEN);
-    
+
     /* paranoid */
     memset((caddr_t)&tctx.sha1, 0, sizeof(tctx.sha1));
     memset((caddr_t)hash, 0, sizeof(*hash));
