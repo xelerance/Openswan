@@ -84,19 +84,8 @@
  * the new code to older kernels.
  */
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,1,19)
-# define net_device_stats enet_statistics
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)
-# define NETDEV_23
-# ifndef CONFIG_IP_ALIAS
-#  define CONFIG_IP_ALIAS
-# endif
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,30)
-# define PROC_NO_DUMMY
+#ifndef CONFIG_IP_ALIAS
+# define CONFIG_IP_ALIAS
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,35)
