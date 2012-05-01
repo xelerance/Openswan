@@ -1,12 +1,13 @@
 /*
  * RFC2367 PF_KEYv2 Key management API message parser
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
- * 
+ * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -28,18 +29,14 @@
 # include <linux/kernel.h>  /* for printk */
 
 # include "openswan/ipsec_kversion.h" /* for malloc switch */
-# ifdef MALLOC_SLAB
-#  include <linux/slab.h> /* kmalloc() */
-# else /* MALLOC_SLAB */
-#  include <linux/malloc.h> /* kmalloc() */
-# endif /* MALLOC_SLAB */
+# include <linux/slab.h> /* kmalloc() */
 # include <linux/errno.h>  /* error codes */
 # include <linux/types.h>  /* size_t */
 # include <linux/interrupt.h> /* mark_bh */
 
 # include <linux/netdevice.h>   /* struct device, and other headers */
 # include <linux/etherdevice.h> /* eth_type_trans */
-# include <linux/ip.h>          /* struct iphdr */ 
+# include <linux/ip.h>          /* struct iphdr */
 # if defined(CONFIG_KLIPS_IPV6)
 #  include <linux/ipv6.h>
 # endif /* defined(CONFIG_KLIPS_IPV6) */

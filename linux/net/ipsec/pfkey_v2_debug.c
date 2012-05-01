@@ -3,12 +3,13 @@
  *
  * Copyright (C) 2001  Richard Guy Briggs  <rgb@openswan.org>
  *                 and Michael Richardson  <mcr@openswan.org>
- * 
+ * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -21,11 +22,7 @@
 # include <linux/kernel.h>  /* for printk */
 
 # include "openswan/ipsec_kversion.h" /* for malloc switch */
-# ifdef MALLOC_SLAB
-#  include <linux/slab.h> /* kmalloc() */
-# else /* MALLOC_SLAB */
-#  include <linux/malloc.h> /* kmalloc() */
-# endif /* MALLOC_SLAB */
+# include <linux/slab.h> /* kmalloc() */
 # include <linux/errno.h>  /* error codes */
 # include <linux/types.h>  /* size_t */
 # include <linux/interrupt.h> /* mark_bh */
@@ -49,7 +46,7 @@ extern int debug_pfkey;
 #include "openswan/pfkeyv2.h"
 #include "openswan/pfkey.h"
 
-/* 
+/*
  * This file provides ASCII translations of PF_KEY magic numbers.
  *
  */
