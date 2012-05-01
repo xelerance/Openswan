@@ -1,6 +1,7 @@
 /*
  * processing code for IPCOMP
  * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -38,13 +39,7 @@
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 
@@ -165,7 +160,7 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 
 	/* make sure we update the pointer */
 	irs->skb = skb;
-	
+
 	irs->iph = (void *) ip_hdr(skb);
 
 	if (osw_ip_hdr_version(irs) == 6)
@@ -205,7 +200,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
   ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
   ixs->iph = (void *)ip_hdr(ixs->skb);
-  
+
 #ifdef CONFIG_KLIPS_IPV6
   if (osw_ip_hdr_version(ixs) == 6) {
 	IPSEC_FRAG_OFF_DECL(frag_off)
@@ -223,7 +218,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
     tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
   }
   ixs->ipsp->ips_comp_ratio_cbytes += tot_len;
-  
+
   if (debug_tunnel & DB_TN_CROUT)
     {
       if (old_tot_len > tot_len)

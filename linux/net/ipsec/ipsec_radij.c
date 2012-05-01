@@ -7,12 +7,13 @@
  * Copyright (C) 2006-2008 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2006-2011 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2009-2012 David McCullough <david_mccullough@mcafee.com>
- * 
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -42,19 +43,13 @@
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* 23_SPINLOCK */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* 23_SPINLOCK */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 
 #include "openswan/ipsec_eroute.h"
 #include "openswan/ipsec_sa.h"
- 
+
 #include "openswan/radij.h"
 #include "openswan/ipsec_encap.h"
 #include "openswan/radij.h"
@@ -62,7 +57,7 @@
 #include "openswan/ipsec_radij.h"
 #include "openswan/ipsec_tunnel.h"	/* struct ipsecpriv */
 #include "openswan/ipsec_xform.h"
- 
+
 #include <openswan/pfkeyv2.h>
 #include <openswan/pfkey.h>
 
@@ -77,7 +72,7 @@ ipsec_radijinit(void)
 	maj_keylen = sizeof (struct sockaddr_encap);
 
 	rj_init();
-	
+
 	if (rj_inithead((void **)&rnh, /*16*/offsetof(struct sockaddr_encap, sen_type) * sizeof(__u8)) == 0) /* 16 is bit offset of sen_type */
 		return -1;
 	return 0;
@@ -120,7 +115,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 	struct eroute *ro;
 	struct radij_node *rn;
 	int error;
-	
+
 	if (debug_eroute) {
                 char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 		subnettoa(eaddr->sen_ip_src, emask->sen_ip_src, 0, buf1, sizeof(buf1));
@@ -136,17 +131,17 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 
 	if ((error = rj_delete(eaddr, emask, rnh, &rn)) != 0) {
 		spin_unlock_bh(&eroute_lock);
-		KLIPS_PRINT(debug_eroute, 
+		KLIPS_PRINT(debug_eroute,
 			    "klips_debug:ipsec_breakroute: "
 			    "node not found, eroute delete failed.\n");
 		return error;
 	}
 
 	spin_unlock_bh(&eroute_lock);
-	
+
 	ro = (struct eroute *)rn;
-	
-	KLIPS_PRINT(debug_eroute, 
+
+	KLIPS_PRINT(debug_eroute,
 		    "klips_debug:ipsec_breakroute: "
 		    "deleted eroute=0p%p, ident=0p%p->0p%p, first=0p%p, last=0p%p\n",
 		    ro,
@@ -154,7 +149,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 		    ro->er_ident_d.data,
 		    ro->er_first,
 		    ro->er_last);
-	
+
 	if (ro->er_ident_s.data != NULL) {
 		kfree(ro->er_ident_s.data);
 	}
@@ -175,12 +170,12 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 #endif
 		*last = ro->er_last;
 	}
-	
+
 	if (rn->rj_flags & (RJF_ACTIVE | RJF_ROOT))
 		panic ("ipsec_breakroute RMT_DELEROUTE root or active node\n");
 	memset((caddr_t)rn, 0, sizeof (struct eroute));
 	kfree(rn);
-	
+
 	return 0;
 }
 
@@ -228,15 +223,15 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
                                    (ident_d ? (ident_d->data ? ident_d->data : "NULL") : "NULL"));
                }
                {
-                       char buf1[sizeof(struct sockaddr_encap)*2 + 1],   
+                       char buf1[sizeof(struct sockaddr_encap)*2 + 1],
                                buf2[sizeof(struct sockaddr_encap)*2 + 1];
                        int i;
                        unsigned char *b1 = buf1,
                                *b2 = buf2,
                                *ea = (unsigned char *)eaddr,
                                *em = (unsigned char *)emask;
-                                   
-                                   
+
+
                        for (i=0; i<sizeof(struct sockaddr_encap); i++) {
                                sprintf(b1, "%02x", ea[i]);
                                sprintf(b2, "%02x", em[i]);
@@ -268,18 +263,18 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	  /* this is because gcc 3. doesn't like cast's as lvalues */
 	  struct rjtentry *rje = (struct rjtentry *)&(retrt->er_rjt);
 	  caddr_t er = (caddr_t)&(retrt->er_eaddr);
-	  
+
 	  rje->rd_nodes->rj_key= er;
 	}
 
 	if (ident_s && ident_s->type != SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_s->len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
-		
+
 		retrt->er_ident_s.type = ident_s->type;
 		retrt->er_ident_s.id = ident_s->id;
 		retrt->er_ident_s.len = ident_s->len;
 		if(data_len) {
-			KLIPS_PRINT(debug_eroute, 
+			KLIPS_PRINT(debug_eroute,
 				    "klips_debug:ipsec_makeroute: "
 				    "attempting to allocate %u bytes for ident_s.\n",
 				    data_len);
@@ -293,15 +288,15 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 			retrt->er_ident_s.data = NULL;
 		}
 	}
-	
+
 	if (ident_d && ident_d->type != SADB_IDENTTYPE_RESERVED) {
 		int data_len = ident_d->len  * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
-		
+
 		retrt->er_ident_d.type = ident_d->type;
 		retrt->er_ident_d.id = ident_d->id;
 		retrt->er_ident_d.len = ident_d->len;
 		if(data_len) {
-			KLIPS_PRINT(debug_eroute, 
+			KLIPS_PRINT(debug_eroute,
 				    "klips_debug:ipsec_makeroute: "
 				    "attempting to allocate %u bytes for ident_d.\n",
 				    data_len);
@@ -319,21 +314,21 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 	}
 	retrt->er_first = skb;
 	retrt->er_last = NULL;
-	
-	KLIPS_PRINT(debug_eroute, 
+
+	KLIPS_PRINT(debug_eroute,
 		    "klips_debug:ipsec_makeroute: "
 		    "calling rj_addroute now\n");
 
 	spin_lock_bh(&eroute_lock);
 
-	error = rj_addroute(&(retrt->er_eaddr), &(retrt->er_emask), 
+	error = rj_addroute(&(retrt->er_eaddr), &(retrt->er_emask),
 			 rnh, retrt->er_rjt.rd_nodes);
 
 	spin_unlock_bh(&eroute_lock);
-	
+
 	if(error) {
 		sa_len = KLIPS_SATOT(debug_eroute, &said, 0, sa, sizeof(sa));
-		KLIPS_PRINT(debug_eroute, 
+		KLIPS_PRINT(debug_eroute,
 			    "klips_debug:ipsec_makeroute: "
 			    "rj_addroute not able to insert eroute for SA:%s (error:%d)\n",
 			    sa_len ? sa : " (error)", error);
@@ -341,9 +336,9 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 			kfree(retrt->er_ident_s.data);
 		if (retrt->er_ident_d.data)
 			kfree(retrt->er_ident_d.data);
-		
+
 		kfree(retrt);
-		
+
 		return error;
 	}
 
@@ -365,7 +360,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 					buf2, sizeof(buf2));
 		}
 		sa_len = satot(&retrt->er_said, 0, sa, sizeof(sa));
-		
+
 		KLIPS_PRINT(debug_eroute,
 			    "klips_debug:ipsec_makeroute: "
 			    "pid=%05d "
@@ -390,7 +385,7 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 {
 	struct radij_node *rn;
 	char buf1[ADDRTOA_BUF], buf2[ADDRTOA_BUF];
-	
+
 	if (debug_radij & DB_RJ_FINDROUTE) {
 		unsigned short *sp, *dp;
 		unsigned char *pp, *sb, *eb;
@@ -430,13 +425,13 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 	}
 	return (struct eroute *)rn;
 }
-		
+
 #ifdef CONFIG_PROC_FS
 /** ipsec_rj_walker_procprint: print one line of eroute table output.
  *
  * Theoretical BUG: if w->length is less than the length
  * of some line we should produce, that line will never
- * be finished.  In effect, the "file" will stop part way 
+ * be finished.  In effect, the "file" will stop part way
  * through that line.
  */
 int
@@ -450,7 +445,7 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 	char sa[SATOT_BUF];
 	size_t sa_len, buf_len;
 	struct sockaddr_encap *key, *mask;
-	
+
 	KLIPS_PRINT(debug_radij,
 		    "klips_debug:ipsec_rj_walker_procprint: "
 		    "rn=0p%p, w0=0p%p\n",
@@ -459,7 +454,7 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 	if (rn->rj_b >= 0) {
 		return 0;
 	}
-	
+
 	key = rd_key(rd);
 	mask = rd_mask(rd);
 
@@ -512,7 +507,7 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 				 buf2,
 				 sa_len ? sa : " (error)",
 				 buf3);
-	
+
        {
                /* snprintf can only fill the last character with NUL
                 * so the maximum useful character is w->length-1.
@@ -527,7 +522,7 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
                        return -ENOBUFS;
                } else {
                        const off_t pos = w->begin + w->len;    /* file position of end of what we've generated */
-                
+
                        if (pos <= w->offset) {
                                /* all is before first interesting character:
                                 * discard, but note where we are.
@@ -537,7 +532,7 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
                        }
                        return 0;
                }
-        }        
+        }
 }
 #endif          /* CONFIG_PROC_FS */
 
@@ -549,10 +544,10 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 	struct radij_node *rn2;
 	int error;
 	struct sockaddr_encap *key, *mask;
-	
+
 	key = rd_key(rd);
 	mask = rd_mask(rd);
-	
+
 	if(!key || !mask) {
 		return -ENODATA;
 	}
@@ -565,7 +560,7 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 		subnettoa(key->sen_ip_src, mask->sen_ip_src, 0, buf1, sizeof(buf1));
 		subnettoa(key->sen_ip_dst, mask->sen_ip_dst, 0, buf2, sizeof(buf2));
 		}
-		KLIPS_PRINT(debug_radij, 
+		KLIPS_PRINT(debug_radij,
 			    "klips_debug:ipsec_rj_walker_delete: "
 			    "deleting: %s -> %s\n",
 			    buf1,
@@ -583,17 +578,17 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 		printk("klips_debug:ipsec_rj_walker_delete: "
 		       "tried to delete a different node?!?  This should never happen!\n");
 	}
- 
+
 	ro = (struct eroute *)rn;
-	
+
 	if (ro->er_ident_s.data)
 		kfree(ro->er_ident_s.data);
 	if (ro->er_ident_d.data)
 		kfree(ro->er_ident_d.data);
-	
+
 	memset((caddr_t)rn, 0, sizeof (struct eroute));
 	kfree(rn);
-	
+
 	return 0;
 }
 

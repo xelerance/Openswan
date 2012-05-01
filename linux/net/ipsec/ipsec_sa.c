@@ -3,12 +3,13 @@
  *
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001, 2002  Richard Guy Briggs.
- * 
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -41,13 +42,7 @@
 #include <linux/ip.h>          /* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-#ifdef SPINLOCK_23
 #include <linux/spinlock.h> /* *lock* */
-#else /* SPINLOCK_23 */
-#include <asm/spinlock.h> /* *lock* */
-#endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
 
 #include <net/ip.h>
 
@@ -102,7 +97,7 @@ typedef struct {
 /* The field where the saref will be hosted in the skb must be wide enough to
    accomodate the information it needs to store. */
 typedef struct {
-	int testSizeOf_refField : 
+	int testSizeOf_refField :
 		(IPSEC_SA_REF_HOST_FIELD_WIDTH < IPSEC_SA_REF_TABLE_IDX_WIDTH ? -1 : 1 );
 } dummy2;
 
@@ -236,7 +231,7 @@ static int
 ipsec_saref_verify_slot(IPsecSAref_t ref)
 {
 	int ref_table=IPsecSAref2table(ref);
-	
+
 	if(ipsec_sadb.refTable[ref_table] == NULL) {
 		return ipsec_SArefSubTable_alloc(ref_table);
 	}
@@ -259,7 +254,7 @@ ipsec_saref_freelist_init(void)
 	ipsec_sadb.refFreeListHead = IPSEC_SAREF_NULL;
 	ipsec_sadb.refFreeListCont = IPSEC_SAREF_FIRST;
 	ipsec_sadb.refFreeListTail = IPSEC_SAREF_NULL;
-       
+
 	return 0;
 }
 
@@ -273,7 +268,7 @@ ipsec_sadb_init(void)
 		ipsec_sadb_hash[i] = NULL;
 	}
 	/* parts above are for the old style SADB hash table */
-	
+
 
 	/* initialise SA reference table */
 
@@ -340,7 +335,7 @@ ipsec_SAref_alloc(int*error) /* pass in error var by pointer */
 		    IPsecSAref2table(SAref),
 		    IPsecSAref2entry(SAref),
 		    IPSEC_SA_REF_MAINTABLE_NUM_ENTRIES * IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES);
-	
+
 	ipsec_sadb.refFreeList[ipsec_sadb.refFreeListHead] = IPSEC_SAREF_NULL;
 	ipsec_sadb.refFreeListHead++;
 	if(ipsec_sadb.refFreeListHead > ipsec_sadb.refFreeListTail) {
@@ -471,7 +466,7 @@ ipsec_sa_untern(struct ipsec_sa *ips)
 			    "ref=%u -> %p but untern'ing %p\n", ref,
 			    IPsecSAref2SA(ref), ips);
 	}
-		
+
 }
 
 int
@@ -541,7 +536,7 @@ ipsec_sa_getbyid(ip_said *said, int type)
 	}
 
 	hashval = IPS_HASH(said);
-	
+
 	sa_len = KLIPS_SATOT(debug_xform, said, 0, sa, sizeof(sa));
 	KLIPS_PRINT(debug_xform,
 		    "ipsec_sa_getbyid: "
@@ -566,7 +561,7 @@ ipsec_sa_getbyid(ip_said *said, int type)
 			return ips;
 		}
 	}
-	
+
 	KLIPS_PRINT(debug_xform,
 		    "ipsec_sa_getbyid: "
 		    "no entry in linked list for hash=%d of SA:%s.\n",
@@ -715,10 +710,10 @@ ipsec_sa_add(struct ipsec_sa *ips)
 
 	ipsec_sa_get(ips, IPSEC_REFSAADD);
 	spin_lock_bh(&tdb_lock);
-	
+
 	ips->ips_hnext = ipsec_sadb_hash[hashval];
 	ipsec_sadb_hash[hashval] = ips;
-	
+
 	spin_unlock_bh(&tdb_lock);
 
 	return error;
@@ -750,7 +745,7 @@ void ipsec_sa_rm(struct ipsec_sa *ips)
 	if(ipsec_sadb_hash[hashval] == NULL) {
 		return;
 	}
-	
+
 	if (ips == ipsec_sadb_hash[hashval]) {
 		ipsec_sadb_hash[hashval] = ipsec_sadb_hash[hashval]->ips_hnext;
 		ips->ips_hnext = NULL;
@@ -777,12 +772,12 @@ void ipsec_sa_rm(struct ipsec_sa *ips)
 		}
 	}
 }
-	
-	
+
+
 #if 0
 /*
  * The ipsec_sa table better be locked before it is handed in,
- * or races might happen. 
+ * or races might happen.
  *
  * this routine assumes the SA has a refcount==0, and we free it.
  * we also assume that the pointers are already cleaned up.
@@ -808,10 +803,10 @@ ipsec_sa_del(struct ipsec_sa *ips)
 		ips->ips_next=NULL;
 		ipsec_sa_put(in);
 	}
-	
+
 	sa_len = KLIPS_SATOT(debug_xform, &ips->ips_said, 0, sa, sizeof(sa));
 	hashval = IPS_HASH(&ips->ips_said);
-	
+
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_sa_del: "
 		    "deleting SA:%s (ref=%u), hashval=%d.\n",
@@ -831,7 +826,7 @@ ipsec_sa_del(struct ipsec_sa *ips)
 			    sa_len ? sa : " (error)");
 		return -ENOENT;
 	}
-	
+
 	if (ips == ipsec_sadb_hash[hashval]) {
 		ipsec_sadb_hash[hashval] = ipsec_sadb_hash[hashval]->ips_hnext;
 		ips->ips_hnext = NULL;
@@ -856,7 +851,7 @@ ipsec_sa_del(struct ipsec_sa *ips)
 			}
 		}
 	}
-	
+
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_sa_del: "
 		    "no entries in linked list for hash=%d of SA:%s.\n",
@@ -866,7 +861,7 @@ ipsec_sa_del(struct ipsec_sa *ips)
 }
 #endif
 
-int 
+int
 ipsec_sadb_cleanup(__u8 proto)
 {
 	unsigned i;
@@ -875,7 +870,7 @@ ipsec_sadb_cleanup(__u8 proto)
 	/* struct ipsec_sa *ipsnext, **ipsprev; */
 	/* char sa[SATOT_BUF]; */
 	/* size_t sa_len; */
-	 
+
 
 	KLIPS_PRINT(debug_xform,
 		    "klips_debug:ipsec_sadb_cleanup: "
@@ -886,7 +881,7 @@ ipsec_sadb_cleanup(__u8 proto)
 
 	for (i = 0; i < SADB_HASHMOD; i++) {
 		ips = ipsec_sadb_hash[i];
-		
+
 		while(ips) {
 			ipsec_sadb_hash[i]=ips->ips_hnext;
 			ips->ips_hnext=NULL;
@@ -937,7 +932,7 @@ ipsec_sadb_cleanup(__u8 proto)
 	return(error);
 }
 
-int 
+int
 ipsec_sadb_free(void)
 {
 	int error = 0;
@@ -993,7 +988,7 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 
 #if IPSEC_SA_REF_CODE
 	/* remove me from the SArefTable */
-	if(debug_xform) 
+	if(debug_xform)
 	{
 		char sa[SATOT_BUF];
 		size_t sa_len;
@@ -1024,7 +1019,7 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		if(ref_table < IPSEC_SA_REF_SUBTABLE_NUM_ENTRIES) {
 			subtable = ipsec_sadb.refTable[ref_table];
 			if(subtable!=NULL && subtable->entry[ref_entry] == ips) {
-			
+
 				subtable->entry[ref_entry] = NULL;
 			}
 		}
@@ -1070,7 +1065,7 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		if (ips->ips_alg_enc &&
 		    ips->ips_alg_enc->ixt_e_destroy_key)
 		{
-			ips->ips_alg_enc->ixt_e_destroy_key(ips->ips_alg_enc, 
+			ips->ips_alg_enc->ixt_e_destroy_key(ips->ips_alg_enc,
 							    ips->ips_key_e);
 		} else
 #endif
@@ -1099,7 +1094,7 @@ ipsec_sa_wipe(struct ipsec_sa *ips)
 		kfree(ips->ips_ident_s.data);
         }
 	ips->ips_ident_s.data = NULL;
-	
+
 	if(ips->ips_ident_d.data != NULL) {
 		memset((caddr_t)(ips->ips_ident_d.data),
                        0,
@@ -1192,7 +1187,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		    "ipsec_sa_init: "
 		    "calling init routine of %s%s%s\n",
 		    IPS_XFORM_NAME(ipsp));
-	
+
 	switch(ipsp->ips_said.proto) {
 #ifdef CONFIG_KLIPS_IPIP
 	case IPPROTO_IPIP: {
@@ -1227,7 +1222,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			unsigned int aks;
 			MD5_CTX *ictx;
 			MD5_CTX *octx;
-			
+
 			if(ipsp->ips_key_bits_a != (AHMD596_KLEN * 8)) {
 				KLIPS_PRINT(debug_pfkey,
 					    "ipsec_sa_init: "
@@ -1235,7 +1230,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 					    ipsp->ips_key_bits_a, AHMD596_KLEN * 8);
 				SENDERR(EINVAL);
 			}
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1245,13 +1240,13 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ntohl(*(((__u32 *)ipsp->ips_key_a)+2)),
 				    ntohl(*(((__u32 *)ipsp->ips_key_a)+3)));
 #  endif /* KLIPS_DIVULGE_HMAC_KEY */
-			
+
 			ipsp->ips_auth_bits = AHMD596_ALEN * 8;
-			
+
 			/* save the pointer to the key material */
 			akp = ipsp->ips_key_a;
 			aks = ipsp->ips_key_a_size;
-			
+
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 			           "ipsec_sa_init: "
 			           "allocating %lu bytes for md5_ctx.\n",
@@ -1281,7 +1276,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			octx = &(((struct md5_ctx*)(ipsp->ips_key_a))->octx);
 			osMD5Init(octx);
 			osMD5Update(octx, kb, AHMD596_BLKLEN);
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1295,7 +1290,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ((__u32*)octx)[2],
 				    ((__u32*)octx)[3] );
 #  endif /* KLIPS_DIVULGE_HMAC_KEY */
-			
+
 			/* zero key buffer -- paranoid */
 			memset(akp, 0, aks);
 			kfree(akp);
@@ -1308,7 +1303,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			unsigned int aks;
 			SHA1_CTX *ictx;
 			SHA1_CTX *octx;
-			
+
 			if(ipsp->ips_key_bits_a != (AHSHA196_KLEN * 8)) {
 				KLIPS_PRINT(debug_pfkey,
 					    "ipsec_sa_init: "
@@ -1316,7 +1311,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 					    ipsp->ips_key_bits_a, AHSHA196_KLEN * 8);
 				SENDERR(EINVAL);
 			}
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1326,13 +1321,13 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ntohl(*(((__u32 *)ipsp->ips_key_a)+2)),
 				    ntohl(*(((__u32 *)ipsp->ips_key_a)+3)));
 #  endif /* KLIPS_DIVULGE_HMAC_KEY */
-			
+
 			ipsp->ips_auth_bits = AHSHA196_ALEN * 8;
-			
+
 			/* save the pointer to the key material */
 			akp = ipsp->ips_key_a;
 			aks = ipsp->ips_key_a_size;
-			
+
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 			            "ipsec_sa_init: "
 			            "allocating %lu bytes for sha1_ctx.\n",
@@ -1362,11 +1357,11 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			octx = &(((struct sha1_ctx*)(ipsp->ips_key_a))->octx);
 			SHA1Init(octx);
 			SHA1Update(octx, kb, AHSHA196_BLKLEN);
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
-				    "SHA1 ictx=0x%08x %08x %08x %08x octx=0x%08x %08x %08x %08x\n", 
+				    "SHA1 ictx=0x%08x %08x %08x %08x octx=0x%08x %08x %08x %08x\n",
 				    ((__u32*)ictx)[0],
 				    ((__u32*)ictx)[1],
 				    ((__u32*)ictx)[2],
@@ -1409,9 +1404,9 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		error = ipsec_alg_auth_key_create(ipsp);
 		if ((error < 0) && (error != -EPROTO))
 			SENDERR(-error);
-		
+
 		if (error == -EPROTO) {
-			/* perform manual key generation, 
+			/* perform manual key generation,
 			   ignore this particular error */
 			error = 0;
 #endif /* CONFIG_KLIPS_ALG */
@@ -1434,7 +1429,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 					    AHMD596_KLEN * 8);
 				SENDERR(EINVAL);
 			}
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1445,11 +1440,11 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ntohl(*(((__u32 *)(ipsp->ips_key_a))+3)));
 #  endif /* KLIPS_DIVULGE_HMAC_KEY */
 			ipsp->ips_auth_bits = AHMD596_ALEN * 8;
-			
+
 			/* save the pointer to the key material */
 			akp = ipsp->ips_key_a;
 			aks = ipsp->ips_key_a_size;
-			
+
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 			            "ipsec_sa_init: "
 			            "allocating %lu bytes for md5_ctx.\n",
@@ -1479,7 +1474,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			octx = &(((struct md5_ctx*)(ipsp->ips_key_a))->octx);
 			osMD5Init(octx);
 			osMD5Update(octx, kb, AHMD596_BLKLEN);
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1512,7 +1507,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 					    AHSHA196_KLEN * 8);
 				SENDERR(EINVAL);
 			}
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1523,7 +1518,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 				    ntohl(*(((__u32 *)ipsp->ips_key_a)+3)));
 #  endif /* KLIPS_DIVULGE_HMAC_KEY */
 			ipsp->ips_auth_bits = AHSHA196_ALEN * 8;
-			
+
 			/* save the pointer to the key material */
 			akp = ipsp->ips_key_a;
 			aks = ipsp->ips_key_a_size;
@@ -1557,7 +1552,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 			octx = &((struct sha1_ctx*)(ipsp->ips_key_a))->octx;
 			SHA1Init(octx);
 			SHA1Update(octx, kb, AHSHA196_BLKLEN);
-			
+
 #  if KLIPS_DIVULGE_HMAC_KEY
 			KLIPS_PRINT(debug_pfkey && sysctl_ipsec_debug_verbose,
 				    "ipsec_sa_init: "
@@ -1594,11 +1589,11 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 
 		/* Create IV */
 		if (ipsp->ips_iv_size) {
-			if ((ipsp->ips_iv = 
+			if ((ipsp->ips_iv =
 			     (caddr_t)kmalloc(ipsp->ips_iv_size, GFP_ATOMIC)) == NULL) {
 				SENDERR(ENOMEM);
 			}
-			prng_bytes(&ipsec_prng, (char *)ipsp->ips_iv, 
+			prng_bytes(&ipsec_prng, (char *)ipsp->ips_iv,
 				   ipsp->ips_iv_size);
 			ipsp->ips_iv_bits = ipsp->ips_iv_size * 8;
 		}
@@ -1632,7 +1627,7 @@ int ipsec_sa_init(struct ipsec_sa *ipsp)
 		       ipsp->ips_said.proto);
 		SENDERR(EINVAL);
 	}
-	
+
 errlab:
 	return(error);
 }
