@@ -2589,8 +2589,8 @@ parse_ipsec_sa_body(
 
 	st->st_esp.present = esp_seen;
 	if (esp_seen) {
-		if(esp_attrs.transattrs.encrypt ==  ESP_AES_GCM_8 
-			|| esp_attrs.transattrs.encrypt == ESP_AES_GCM_12 
+		if(esp_attrs.transattrs.encrypt ==  ESP_AES_GCM_8
+			|| esp_attrs.transattrs.encrypt == ESP_AES_GCM_12
 			|| esp_attrs.transattrs.encrypt == ESP_AES_GCM_16 ) {
 			esp_attrs.transattrs.enckeylen = esp_attrs.transattrs.enckeylen + 4 * BITS_PER_BYTE;
 		}

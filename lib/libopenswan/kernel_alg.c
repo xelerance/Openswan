@@ -151,8 +151,8 @@ kernel_alg_esp_enc_ok(int alg_id, unsigned int key_len,
 
 	alg_p=&esp_ealg[alg_id];
 
-	if(alg_id == ESP_AES_GCM_8 
-		|| alg_id == ESP_AES_GCM_12 
+	if(alg_id == ESP_AES_GCM_8
+		|| alg_id == ESP_AES_GCM_12
 		|| alg_id == ESP_AES_GCM_16) {
 		if(key_len != 128 && key_len!=192 && key_len!=256 ) {
 
