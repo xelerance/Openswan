@@ -529,19 +529,19 @@ struct_desc isakmp_vendor_id_desc = { "ISAKMP Vendor ID Payload", isag_fields, s
 /* MODECFG */
 /*
  * From draft-dukes-ike-mode-cfg
-3.2. Attribute Payload 
-                           1                   2                   3 
-       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
-     ! Next Payload  !   RESERVED    !         Payload Length        ! 
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
-     !     Type      !   RESERVED    !           Identifier          ! 
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
-     !                                                               ! 
-     ~                           Attributes                          ~ 
-     !                                                               ! 
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
-*/    
+3.2. Attribute Payload
+                           1                   2                   3
+       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     ! Next Payload  !   RESERVED    !         Payload Length        !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !     Type      !   RESERVED    !           Identifier          !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     !                                                               !
+     ~                           Attributes                          ~
+     !                                                               !
+     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+*/
 static field_desc isaattr_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
@@ -555,7 +555,7 @@ static field_desc isaattr_fields[] = {
 /* MODECFG */
 /* From draft-dukes-ike-mode-cfg
 3.2. Attribute Payload
-                           1                   2                   3  
+                           1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      ! Next Payload  !   RESERVED    !         Payload Length        !
@@ -597,11 +597,10 @@ struct_desc isakmp_nat_d = { "ISAKMP NAT-D Payload", isag_fields, sizeof(struct 
  */
 static field_desc isanat_oa_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_nat, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },
-    { ft_nat, 8/BITS_PER_BYTE, NULL, NULL },
-    { ft_nat, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig, 24/BITS_PER_BYTE, NULL, NULL },
     { ft_end, 0, NULL, NULL }
 };
 
@@ -665,7 +664,7 @@ struct_desc ikev2_sa_desc = { "IKEv2 Security Association Payload",
  */
 static field_desc ikev2prop_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "prop #", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "proto ID", NULL },
@@ -696,10 +695,10 @@ struct_desc ikev2_prop_desc = { "IKEv2 Proposal Substructure Payload",
  */
 static field_desc ikev2trans_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "transform type", &trans_type_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform ID", NULL },
     { ft_end,  0, NULL, NULL }
 };
@@ -751,14 +750,14 @@ struct_desc ikev2_trans_attr_desc = {
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  *              Figure 10:  Key Exchange Payload Format
- *	
+ *
  */
 static field_desc ikev2ke_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig, 16/BITS_PER_BYTE, NULL, NULL },
     { ft_end,  0, NULL, NULL }
 };
 
@@ -835,7 +834,7 @@ static field_desc ikev2_cert_fields[] = {
 struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
 
 /* section 3.7
- * 
+ *
  * The Certificate Request Payload is defined as follows:
  *
  *                          1                   2                   3
@@ -863,7 +862,7 @@ struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", 
 
 /*
  * 3.8.  Authentication Payload
- * 
+ *
  *                         1                   2                   3
  *     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -884,8 +883,8 @@ static field_desc ikev2a_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig, 16/BITS_PER_BYTE, NULL, NULL },
     { ft_end,  0, NULL, NULL }
 };
 
@@ -893,9 +892,9 @@ struct_desc ikev2_a_desc = { "IKEv2 Authentication Payload",
 			     ikev2a_fields, sizeof(struct ikev2_a) };
 
 
-/* 
+/*
  * 3.9.  Nonce Payload
- * 
+ *
  * The Nonce Payload, denoted Ni and Nr in this memo for the initiator's
  * and responder's nonce respectively, contains random data used to
  * guarantee liveness during an exchange and protect against replay
@@ -920,7 +919,7 @@ struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
 				 sizeof(struct ikev2_generic) };
 
 
-/*    3.10 Notify Payload  
+/*    3.10 Notify Payload
  *
  *    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -937,7 +936,7 @@ struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
  *    !                                                               !
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
- */ 
+ */
 static field_desc ikev2_notify_fields[] = {
   { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
@@ -950,7 +949,7 @@ static field_desc ikev2_notify_fields[] = {
 };
 
 /* IKEv2 Delete Payload
- * layout from RFC 5996 Section 3.11 
+ * layout from RFC 5996 Section 3.11
  * This is followed by a variable length SPI.
  *
  *                      1                   2                   3
@@ -983,7 +982,7 @@ struct_desc ikev2_delete_desc = { "IKEv2 Delete Payload",
 struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
 			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
 
-/* 
+/*
  * 3.12.  Vendor ID Payload
  *
  *  The Vendor ID Payload fields are defined as follows:
@@ -1030,8 +1029,8 @@ static field_desc ikev2ts_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_zig, 16/BITS_PER_BYTE, NULL, NULL },
     { ft_end,  0, NULL, NULL }
 };
 struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selector Payload",
@@ -1061,7 +1060,7 @@ struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selector Payload",
  */
 static field_desc ikev2ts1_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "TS type", &ikev2_ts_type_names},
-    { ft_nat,  8/BITS_PER_BYTE, "IP Protocol ID", NULL}, 
+    { ft_nat,  8/BITS_PER_BYTE, "IP Protocol ID", NULL},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "start port", NULL},
     { ft_nat, 16/BITS_PER_BYTE, "end port", NULL},
@@ -1185,6 +1184,7 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	switch (fp->field_type)
 	{
 	case ft_mbz:	/* must be zero */
+	case ft_zig:
 	    inp += i;
 	    break;
 	case ft_nat:	/* natural number (may be 0) */
@@ -1348,6 +1348,21 @@ in_struct(void *struct_ptr, struct_desc *sd
 			ugh = builddiag("byte %d of %s must be zero, but is not"
 			    , (int) (cur - ins->cur), sd->name);
 			break;
+		    }
+		    *outp++ = '\0';	/* probably redundant */
+		}
+		break;
+	    case ft_zig:	/* should be zero, ignore if not */
+		for (; i != 0; i--)
+		{
+		    if (*cur++ != 0)
+		    {
+			openswan_log("byte %d of %s should have been zero, but was not"
+			    , (int) (cur - ins->cur), sd->name);
+			/*
+			 * We cannot zeroize it, it would break our hash calculation
+			 * *cur = '\0';
+			 */
 		    }
 		    *outp++ = '\0';	/* probably redundant */
 		}
@@ -1566,6 +1581,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	    switch (fp->field_type)
 	    {
 	    case ft_mbz:	/* must be zero */
+	    case ft_zig:	/* should be zero, but we'll let it go */
 		inp += i;
 		for (; i != 0; i--)
 		    *cur++ = '\0';
