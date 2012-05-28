@@ -18,7 +18,7 @@ canonicalize_kernel_config() {
 }
 
 source ../../umlsetup.sh
-for type in plain swan
+for type in plain netkey swan
 do
     for ver in "" 26
     do
