@@ -7,6 +7,8 @@
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2012 Panagiotis Tamtamis <tamtamis@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -490,7 +492,11 @@ cannot_oppo(struct connection *c
 	return;
     }
 
-    if (b->held)
+    /*
+     * NETKEY default for level param in tmpl is required, so no traffic will
+     * transmitted until an SA is fully up
+     */
+    if (b->held && kern_interface != USE_NETKEY)
     {
 	int failure_shunt = b->failure_shunt;
 
@@ -850,7 +856,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	/* otherwise, there is some kind of static conn that can handle
 	 * this connection, so we initiate it */
 
-	if (b->held)
+	if (b->held && kern_interface != USE_NETKEY)
 	{
 	    /* what should we do on failure? */
 	    (void) assign_hold(c, sr, b->transport_proto, &b->our_client, &b->peer_client);
