@@ -830,11 +830,11 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	req.p.sel.dport = portof(&sa->dst_client->addr);
 
 	/* As per RFC 4301/5996, icmp type is put in the most significant 8 bits
-	* and icmp code is in the least significant 8 bits of port field. 
-	* Although Openswan does not have any configuration options for 
-	* icmp type/code values, it is possible to specify icmp type and code 
-	* using protoport option. For example, icmp echo request (type 8/code 0) 
-	* needs to be encoded as 0x0800 in the port field and can be specified 
+	* and icmp code is in the least significant 8 bits of port field.
+	* Although Openswan does not have any configuration options for
+	* icmp type/code values, it is possible to specify icmp type and code
+	* using protoport option. For example, icmp echo request (type 8/code 0)
+	* needs to be encoded as 0x0800 in the port field and can be specified
 	* as left/rightprotoport=icmp/2048. Now with NETKEY, icmp type and code
 	* need to be passed as source and destination ports, respectively.
 	* therefore, this code extracts upper 8 bits and lower 8 bits and puts
