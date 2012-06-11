@@ -473,6 +473,7 @@ ipsecdoi_replace(struct state *st
 #endif
 			 );
     }
+    close_any(whack_sock);
 }
 
 /*
