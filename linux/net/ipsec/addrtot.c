@@ -77,6 +77,8 @@ size_t dstlen;
 	char buf[1+ADDRTOT_BUF+1];	/* :address: */
 	char *p;
 	int t = addrtypeof(src);
+
+	passert(dstlen >= sizeof("<invalid>"));
 #	define	TF(t, f)	(((t)<<8) | (f))
 
 	n = addrbytesptr(src, &b);
