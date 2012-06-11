@@ -489,14 +489,8 @@ main(int argc, char **argv)
 
 	case 'v':	/* --version */
 	    {
-		const char **sp = ipsec_copyright_notice();
-
-		printf("\nInterop Options: %s%s\n", ipsec_version_string(),
+		printf("%s%s\n", ipsec_version_string(),
 				 compile_time_interop_options);
-                printf("\tVendorID: %s\n\n",
-                       init_pluto_vendorid());
-		for (; *sp != NULL; sp++)
-		    puts(*sp);
 	    }
 	    exit(0);	/* not exit_pluto because we are not initialized yet */
 	    break;	/* not actually reached */
