@@ -140,6 +140,7 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--nofork]"
 	    " [--stderrlog]"
+	    " [--plutostderrlogtime]"
 	    " [--force_busy]"
 	    " [--nocrsend]"
 	    " [--strictcrlpolicy]"
@@ -306,6 +307,7 @@ enum kernel_interface kern_interface = AUTO_PICK;
 char **global_argv;
 int    global_argc;
 bool   log_to_stderr_desired = FALSE;
+bool   log_with_timestamp_desired = FALSE;
 
 #ifdef HAVE_LABELED_IPSEC
 u_int16_t secctx_attr_value=SECCTX;
@@ -374,6 +376,7 @@ main(int argc, char **argv)
 	    { "optionsfrom", required_argument, NULL, '+' },
 	    { "nofork", no_argument, NULL, 'd' },
 	    { "stderrlog", no_argument, NULL, 'e' },
+	    { "plutostderrlogtime", no_argument, NULL, 't' },
 	    { "noklips", no_argument, NULL, 'n' },
 	    { "use-nostack",  no_argument, NULL, 'n' },
 	    { "use-none",     no_argument, NULL, 'n' },
@@ -538,6 +541,10 @@ main(int argc, char **argv)
 
 	case 'e':	/* --stderrlog */
 	    log_to_stderr_desired = TRUE;
+	    continue;
+
+	case 't':	/* --plutostderrlogtime */
+	    log_with_timestamp_desired = TRUE;
 	    continue;
 
 	case 'G':       /* --use-auto */
@@ -745,9 +752,12 @@ main(int argc, char **argv)
 
     /* select between logging methods */
 
-    if (log_to_stderr_desired)
+    if (log_to_stderr_desired) {
 	log_to_syslog = FALSE;
-    else
+	if (log_with_timestamp_desired)
+	   log_with_timestamp = TRUE;
+    }
+    else 
 	log_to_stderr = FALSE;
 
 #ifdef DEBUG
