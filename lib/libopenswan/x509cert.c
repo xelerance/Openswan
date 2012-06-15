@@ -36,7 +36,6 @@
 #include "constants.h"
 #include "oswlog.h"
 #include "oswalloc.h"
-#include "oswlog.h"
 #include "oswtime.h"
 #include "mpzfuncs.h"
 #include "id.h"
