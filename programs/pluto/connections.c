@@ -1141,6 +1141,7 @@ gen_reqid(void)
     } while (reqid != start);
 
     exit_log("unable to allocate reqid");
+    return 0; /* never reached, here to make compiler happy */
 }
 
 void
