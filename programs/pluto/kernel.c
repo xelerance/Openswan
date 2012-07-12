@@ -2261,12 +2261,12 @@ init_kernel(void)
     case USE_NETKEY:
 	if (stat("/proc/net/pfkey", &buf) == 0) {
 	    kern_interface = USE_NETKEY;
-	    openswan_log("Using Linux 2.6 IPsec interface code on %s (experimental code)"
+	    openswan_log("Using Linux XFRM/NETKEY IPsec interface code on %s"
 			 , kversion);
 	    kernel_ops = &netkey_kernel_ops;
 	    break;
 	} else
-	    openswan_log("No Kernel NETKEY interface detected");
+	    openswan_log("No Kernel XFRM/NETKEY interface detected");
 	/* FALL THROUGH */
 #endif
 
