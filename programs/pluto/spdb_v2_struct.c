@@ -283,6 +283,10 @@ enum ikev2_trans_type_integ v1tov2_integ(int oakley)
         return IKEv2_AUTH_HMAC_SHA1_96;
     case OAKLEY_SHA2_256:
         return IKEv2_AUTH_HMAC_SHA2_256_128;
+    case OAKLEY_SHA2_384:
+        return IKEv2_AUTH_HMAC_SHA2_384_192;
+    case OAKLEY_SHA2_512:
+        return IKEv2_AUTH_HMAC_SHA2_512_256;   
     default:
         return IKEv2_AUTH_INVALID;
    }
@@ -297,6 +301,10 @@ enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth)
         return IKEv2_AUTH_HMAC_SHA1_96;
     case AUTH_ALGORITHM_HMAC_SHA2_256:
         return IKEv2_AUTH_HMAC_SHA2_256_128;
+    case AUTH_ALGORITHM_HMAC_SHA2_384:
+        return IKEv2_AUTH_HMAC_SHA2_384_192;
+    case AUTH_ALGORITHM_HMAC_SHA2_512:
+        return IKEv2_AUTH_HMAC_SHA2_512_256;
     default:
         return IKEv2_AUTH_INVALID;
    }
@@ -312,6 +320,10 @@ static enum ikev2_trans_type_prf v1tov2_prf(int oakley)
         return IKEv2_PRF_HMAC_SHA1;
     case OAKLEY_SHA2_256:
         return IKEv2_PRF_HMAC_SHA2_256;
+    case OAKLEY_SHA2_384:
+        return IKEv2_PRF_HMAC_SHA2_384;
+    case OAKLEY_SHA2_512:
+        return IKEv2_PRF_HMAC_SHA2_512;
     default:
         return IKEv2_PRF_INVALID;
     }
