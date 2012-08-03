@@ -471,8 +471,18 @@ kernel_alg_db_add(struct db_context *db_ctx
 
 	    /*	add keylegth if specified in esp= string */
 	    if (esp_info->esp_ealg_keylen) {
-		db_attr_add_values(db_ctx, 
-				   KEY_LENGTH, esp_info->esp_ealg_keylen);
+
+		if(esp_info->esp_ealg_id == ESP_AES_GCM_8
+			|| esp_info->esp_ealg_id == ESP_AES_GCM_12
+			|| esp_info->esp_ealg_id == ESP_AES_GCM_16 ) {
+
+			db_attr_add_values(db_ctx, 
+				   KEY_LENGTH, esp_info->esp_ealg_keylen - 4 * BITS_PER_BYTE);
+		}
+		else {
+			db_attr_add_values(db_ctx,
+				KEY_LENGTH, esp_info->esp_ealg_keylen );
+		}
 	    }
 
 	} else if(policy & POLICY_AUTHENTICATE) {
