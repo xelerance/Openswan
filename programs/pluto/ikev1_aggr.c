@@ -813,18 +813,6 @@ aggr_inR1_outI2_tail(struct msg_digest *md
     }
 #endif
 
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
-
-	if(st->st_connection->spd.this.modecfg_client) {
-	DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
-	st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE;
-	}
-    }
-
     c->newest_isakmp_sa = st->st_serialno;
 
     /* save last IV from phase 1 so it can be restored later so anything 
@@ -930,18 +918,6 @@ aggr_inI2_tail(struct msg_digest *md
 	   }
     }
 #endif
-
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
-
-        if(st->st_connection->spd.this.modecfg_client) {
-        DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
-        st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE; 
-        }
-   }
 
     c->newest_isakmp_sa = st->st_serialno;
 

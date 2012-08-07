@@ -1785,7 +1785,9 @@ modecfg_inR1(struct msg_digest *md)
 				 , caddr);
 		    
 		    if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
-		       || isanyaddr(&c->spd.this.host_srcip)) {
+		       || isanyaddr(&c->spd.this.host_srcip)
+			|| c->remotepeertype == CISCO ) { 
+			/*with remotepeertype == CISCO, overwrite the previous address with the new received address*/
 			openswan_log("setting ip source address to %s"
 				     , caddr);
 			c->spd.this.host_srcip = a;
@@ -1796,6 +1798,7 @@ modecfg_inR1(struct msg_digest *md)
 		
 		case INTERNAL_IP4_NETMASK:
 		{
+		    //struct connection *c = st->st_connection;	
 		    ip_address a;
 		    char caddr[SUBNETTOT_BUF];
 
@@ -1806,6 +1809,8 @@ modecfg_inR1(struct msg_digest *md)
 
 		    addrtot(&a, 0, caddr, sizeof(caddr));
 		    openswan_log("Received IP4 NETMASK %s", caddr);
+		    //c->spd.this.client.maskbits = masktocount(&a);
+		    //openswan_log("setting received mask of local client to %d", c->spd.this.client.maskbits);
 		}
 		resp |= LELEM(attr.isaat_af_type);
 		break;
@@ -1835,7 +1840,11 @@ modecfg_inR1(struct msg_digest *md)
 			{
 			    /* concatenate new IP address string on end of
 			     * existing string, separated by ' '.
+			     * concatenate only if the received DNS is not
+			     * already present in the current string.
 			     */
+ 
+			    if( !strstr(c->cisco_dns_info, caddr) ) {
 			    size_t sz_old = strlen(old);
 			    size_t sz_added = strlen(caddr) + 1;
 			    char *new = alloc_bytes(sz_old + 1 + sz_added, "cisco_dns_info+");
@@ -1845,6 +1854,7 @@ modecfg_inR1(struct msg_digest *md)
 			    memcpy(new + sz_old + 1, caddr, sz_added);
 			    c->cisco_dns_info = new;
 			    pfree(old);
+			   }
 			}
 		    }
 
@@ -1860,18 +1870,22 @@ modecfg_inR1(struct msg_digest *md)
 		    break;
 
 		case CISCO_BANNER:
+		    /*if received again, free the previous and create the new one*/
+		    pfreeany(st->st_connection->cisco_banner);
 		    st->st_connection->cisco_banner = cisco_stringify(&strattr,"Cisco Banner");
                     resp |= LELEM(attr.isaat_af_type);
                     break;
 
 		case CISCO_DEF_DOMAIN:
+		    /*if received again, free the previous one and create the new one*/
+		    pfreeany(st->st_connection->cisco_domain_info);
 		    st->st_connection->cisco_domain_info = cisco_stringify(&strattr,"Cisco Domain");
                     resp |= LELEM(attr.isaat_af_type);
                     break;
 
 		case CISCO_SPLIT_INC:
                 {
-                    struct spd_route *tmp_spd;
+                    struct spd_route *tmp_spd, *tmp_spd1;
                     ip_address a;
                     char caddr[SUBNETTOT_BUF];
                     size_t len = pbs_left(&strattr);
@@ -1883,6 +1897,18 @@ modecfg_inR1(struct msg_digest *md)
                     tmp_spd2->that.has_client = TRUE;
                     tmp_spd2->that.has_client_wildcard = FALSE;
                     }
+
+					/* receiving remote subnets information again
+					* free the previous ones before proceeding. 
+					*/
+					tmp_spd = tmp_spd2->next;
+					tmp_spd2->next = NULL;
+					while(tmp_spd ) {
+					delete_sr(c, tmp_spd);
+					tmp_spd1 = tmp_spd->next;
+					pfree(tmp_spd);
+					tmp_spd = tmp_spd1;	    	
+					}
 
                     while (len > 0) {
                     u_int32_t *ap;
