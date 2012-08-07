@@ -347,6 +347,19 @@ release_whack(struct state *st)
     close_any(st->st_whack_sock);
 }
 
+/* freeing allocated traffic selectors */
+static void delete_ts(struct traffic_selector *ts) {
+	struct traffic_selector *tmp;
+
+	/*first one is not malloced so skiping that*/
+	ts = ts-> next;
+	while(ts!=NULL) {
+		tmp = ts->next;
+		pfreeany(ts);
+		ts = tmp;
+	}
+}
+
 /* delete a state object */
 void
 delete_state(struct state *st)
@@ -354,8 +367,60 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
-    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
+    if(st->st_ikev2)
+    {
+    /* child sa*/
+    if(st->st_clonedfrom != 0) 
+    {
+	DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+	if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+	}
+	else
+	{
+		/* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */ 
+		if(IS_CHILD_SA_ESTABLISHED(st)) 
+		{
+		DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+		//change_state(st, STATE_CHILDSA_DEL);
+		send_delete(st);
+		change_state(st, STATE_CHILDSA_DEL);
+		/* actual deletion when we receive peer response*/
+		goto delete_state_end;
+		}
+	}
+    }
+    else 
+    {
+	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
+	/* parent sa */
+	if(st->st_state == STATE_IKESA_DEL)
+	{
+		DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+	}
+	else
+	{
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not 
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr 
+			&& st->st_skey_er.ptr && st->st_skey_ar.ptr)
+		{
+		DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+		//change_state(st, STATE_IKESA_DEL);
+		send_delete(st);
+		change_state(st, STATE_IKESA_DEL);
+		/* actual deletion when we receive peer response*/
+                goto delete_state_end;
+		}
+	}
 
+    }
+    }
+
+    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
@@ -455,6 +520,10 @@ delete_state(struct state *st)
 	pfreeany(st->st_sec_chunk.ptr);
     }
 
+    /*free selectors if any */
+    delete_ts(&st->st_ts_this);
+    delete_ts(&st->st_ts_that);
+
     freeanychunk(st->st_firstpacket_me);
     freeanychunk(st->st_firstpacket_him);
     freeanychunk(st->st_tpacket);
@@ -506,6 +575,9 @@ delete_state(struct state *st)
     pfreeany(st->sec_ctx);
 #endif
     pfree(st);
+
+delete_state_end:;
+
 }
 
 /*
@@ -596,6 +668,9 @@ static void delete_state_function(struct state *this
 		 , enum_show(&state_names, this->st_state));
 
     if(this->st_event != NULL) delete_event(this);
+    if(this->st_ikev2) {
+	this->st_state = this->st_clonedfrom ? STATE_CHILDSA_DEL : STATE_IKESA_DEL;
+    }
     delete_state(this);
 }
 

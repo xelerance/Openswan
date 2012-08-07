@@ -40,6 +40,21 @@ static const char *const version_name_1[] = {
 };
 static const char *const version_name_2[] = {
 	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
+	"IKEv2 version 2.0 (rfc4306/rfc5996)",
 };
 
 enum_names version_names_1 =
@@ -47,9 +62,10 @@ enum_names version_names_1 =
 	ISAKMP_MAJOR_VERSION<<ISA_MAJ_SHIFT | ISAKMP_MINOR_VERSION,
 	version_name_1, NULL };
 
+/* To ignore or (in other words, accept) all IKEv2 minor versions*/
 enum_names version_names =
-    { IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
-	IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION,
+    { IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | 0x0,
+	IKEv2_MAJOR_VERSION<<ISA_MAJ_SHIFT | 0xf,
 	version_name_2, &version_names_1 };
 
 /* Domain of Interpretation */

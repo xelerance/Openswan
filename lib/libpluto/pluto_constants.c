@@ -139,6 +139,8 @@ static const char *const state_name[] = {
 	"STATE_PARENT_I3",
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
+	"STATE_IKESA_DEL",
+	"STATE_CHILDSA_DEL",
 	"STATE_IKEv2_ROOF"
 	
     };
@@ -191,6 +193,8 @@ const char *const state_story[] = {
 	"PARENT SA established",
 	"received v2I1, sent v2R1",
 	"received v2I2, PARENT SA established",
+	"sent IKE SA delete request",
+	"sent Child SA delete request",
 	"invalid state - IKEv2 roof"
     };
 
