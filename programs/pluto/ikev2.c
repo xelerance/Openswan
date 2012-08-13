@@ -170,6 +170,48 @@ static const struct state_v2_microcode state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_I2,
+      .next_state = STATE_PARENT_I2,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_R1,
+      .next_state = STATE_PARENT_R1,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_I3,
+      .next_state = STATE_PARENT_I3,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+    /* Informational Exchange*/
+    { .state      = STATE_PARENT_R2,
+      .next_state = STATE_PARENT_R2,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+    /* Informational Exchange*/
+    { .state      = STATE_IKESA_DEL,
+      .next_state = STATE_IKESA_DEL,
+      .flags      = SMF2_STATENEEDED,
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+    },
+
+
     /* last entry */
     { .state      = STATE_IKEv2_ROOF }
 };
@@ -203,7 +245,8 @@ ikev2_process_payloads(struct msg_digest *md,
 	struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
 	int thisp = np;
 	bool unknown_payload = FALSE;
-	
+
+	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%)",enum_show(&payload_names, thisp)));	
 	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
@@ -218,16 +261,12 @@ ikev2_process_payloads(struct msg_digest *md,
 	    unknown_payload = TRUE;
 	    sd = &ikev2_generic_desc;
 	}
-	
-	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
-	{
-	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
-	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
-	    return STF_FAIL;
-	}
 
+	/* why to process an unknown payload*/
+	/* critical bit in RFC 4306/5996 is just 1 bit not a byte*/
+	/* As per RFC other 7 bits are RESERVED and should be ignored*/
 	if(unknown_payload) {
-	    if(pd->payload.v2gen.isag_critical) {
+	    if(pd->payload.v2gen.isag_critical & ISAKMP_PAYLOAD_CRITICAL) {
 		/* it was critical */
 		loglog(RC_LOG_SERIOUS, "critical payload (%s) was not understood. Message dropped."
 		       , enum_show(&payload_names, thisp));
@@ -238,6 +277,13 @@ ikev2_process_payloads(struct msg_digest *md,
 		   , enum_show(&payload_names, thisp));
 	}
 		
+	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
+	{
+	    loglog(RC_LOG_SERIOUS, "%smalformed payload in packet", excuse);
+	    SEND_NOTIFICATION(PAYLOAD_MALFORMED);
+	    return STF_FAIL;
+	}
+	
 	
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
@@ -268,6 +314,7 @@ ikev2_process_payloads(struct msg_digest *md,
 	pd++;
     }
     
+    DBG(DBG_CONTROL, DBG_log("Finished and now at the end of ikev2_process_payload"));
     md->digest_roof = pd;
     return STF_OK;
 }
@@ -299,15 +346,17 @@ process_v2_packet(struct msg_digest **mdp)
 
 	/* TODO: this code allows a packet to both set ISAKMP_FLAGS_I and ISAKMP_FLAGS_R */
 
-    if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
-	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
-}
+    //if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
+    //	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
+    //}
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
 
 	md->role = RESPONDER;
+
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
 
 	st = find_state_ikev2_parent(md->hdr.isa_icookie
 				     , md->hdr.isa_rcookie);
@@ -331,13 +380,15 @@ process_v2_packet(struct msg_digest **mdp)
 	    }
 	    /* update lastrecv later on */
 	}
-    } else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
+    //} else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+	//openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
 	
     } else {
         /* then I am the initiator, and this is a reply */
 	
 	md->role = INITIATOR;
+
+	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
 	
 	if(md->msgid_received==MAINMODE_MSGID) {
 	    st = find_state_ikev2_parent(md->hdr.isa_icookie
@@ -395,7 +446,9 @@ process_v2_packet(struct msg_digest **mdp)
 	
     ix = md->hdr.isa_xchg;
     if(st) {
+
 	from_state = st->st_state;
+	DBG(DBG_CONTROL, DBG_log("state found and its state is (%s)", enum_show(&state_names, from_state)));
     }
 
     for(svm = state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
@@ -412,14 +465,16 @@ process_v2_packet(struct msg_digest **mdp)
  	   Since the wrong state is a responder, we just add a check for initiator,
 	   so we hit STATE_IKEv2_ROOF
 	 */
-	if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
-                continue;
+	//if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
+        //        continue;
 	
 	/* must be the right state */
 	break;
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
+	DBG(DBG_CONTROL, DBG_log("ended up with STATE_IKEv2_ROOF"));
+
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	    /* must be an initiator message, so we are the responder */
@@ -434,6 +489,7 @@ process_v2_packet(struct msg_digest **mdp)
 	stf_status stf;
 	stf = ikev2_process_payloads(md, &md->message_pbs
 				     , from_state, md->hdr.isa_np);
+	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
 	
 	if(stf != STF_OK) {
 	    complete_v2_state_transition(mdp, stf);
@@ -441,7 +497,7 @@ process_v2_packet(struct msg_digest **mdp)
 	}
     }
 
-
+    DBG(DBG_CONTROL, DBG_log("Now lets proceed with state specific processing"));
     DBG(DBG_PARSING,
 	if (pbs_left(&md->message_pbs) != 0)
 	    DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
@@ -656,6 +712,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
+
     change_state(st, svm->next_state);
     w = RC_NEW_STATE + st->st_state;    
 
