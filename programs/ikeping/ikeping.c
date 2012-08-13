@@ -303,10 +303,10 @@ main(int argc, char **argv)
   int   afamily;
   int   pfamily;
   int   c;
-  int   numSenders, numReceived, noDNS;
+  int   numSenders, numReceived;
   int   natt;
   int   waitTime;
-  int   verbose, timedOut;
+  int   verbose;
   ip_address laddr, raddr;
   char *afam = "";
 
@@ -318,10 +318,9 @@ main(int argc, char **argv)
   verbose=0;
   natt=0;
   listen_only=0;
-  noDNS=0;
   bzero(&laddr, sizeof(laddr));
 
-  while((c = getopt_long(argc, argv, "hVnvsp:b:46E:w:", long_opts, 0))!=EOF) {
+  while((c = getopt_long(argc, argv, "hVvsp:b:46E:w:", long_opts, 0))!=EOF) {
       switch (c) {
       case 'h':	        /* --help */
 	  help();
@@ -334,10 +333,6 @@ main(int argc, char **argv)
       case 'v':	/* --label <string> */
 	  verbose++;
 	  continue;
-	  
-      case 'n':
-	  noDNS=1;
-	  break;
 	  
       case 'T':
 	  natt++;
@@ -483,7 +478,6 @@ main(int argc, char **argv)
 	  }
   }
 
-  timedOut = 0;
   numReceived=0;
 
   /* really should catch ^C and print stats on exit */

@@ -164,6 +164,7 @@ const struct kernel_ops win2k_kernel_ops = {
     exceptsocket: NULL,
     docommand: do_command_win2k,
     opname: "win2k",
-    .overlap_supported = FALSE
+    overlap_supported: FALSE,
+    sha2_truncbug_support: FALSE,
 };
 #endif /* WIN32_NATIVE */

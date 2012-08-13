@@ -92,10 +92,16 @@ struct xfrm_replay_state
 
 struct xfrm_algo {
 	char	alg_name[64];
-	int	alg_key_len;    /* in bits */
+	unsigned int	alg_key_len;    /* in bits */
 	char	alg_key[0];
 };
 
+struct xfrm_algo_auth {
+	char	alg_name[64];
+	unsigned int	alg_key_len; /* in bits */
+	unsigned int	alg_trunc_len; /* in bits */
+	char alg_key[0];
+};
 
 struct xfrm_algo_aead {
 	char    alg_name[64];
@@ -204,6 +210,11 @@ enum xfrm_attr_type_t {
 	XFRMA_POLICY_TYPE,      /* struct xfrm_userpolicy_type */
 	XFRMA_MIGRATE,
 	XFRMA_ALG_AEAD,         /* struct xfrm_algo_aead */
+	XFRMA_KMADDRESS,        /* struct xfrm_user_kmaddress */
+	XFRMA_ALG_AUTH_TRUNC,	/* struct xfrm_algo_auth */
+	XFRMA_MARK,		/* struct xfrm_mark */
+	XFRMA_TFCPAD,		/* __u32 */
+	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_esn */
 	__XFRMA_MAX
 
 #define XFRMA_MAX (__XFRMA_MAX - 1)

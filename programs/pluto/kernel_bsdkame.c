@@ -1122,7 +1122,8 @@ const struct kernel_ops bsdkame_kernel_ops = {
     set_debug: bsdkame_set_debug,
     remove_orphaned_holds: bsdkame_remove_orphaned_holds,
     process_ifaces: bsdkame_process_raw_ifaces,
-    .overlap_supported = FALSE
+    overlap_supported: FALSE,
+    sha2_truncbug_support: FALSE,
 };
 
 

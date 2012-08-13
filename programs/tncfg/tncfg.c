@@ -178,7 +178,7 @@ main(int argc, char *argv[])
 	struct ifreq ifr;
 	struct ipsectunnelconf shc;
 	int s;
-	int c, previous = -1;
+	int c;
 	int argcount = argc;
 	int createdelete = 0;
 	char virtname[64];
@@ -255,7 +255,6 @@ main(int argc, char *argv[])
 			usage(progname);
 			break;
 		}
-		previous = c;
 	}
 
         if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
