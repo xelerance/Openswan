@@ -768,7 +768,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
 	if(rn != NOTHING_WRONG) {
 	u_int16_t group_number = htons(st->st_oakley.group->group);
-	dc.ptr = (char *)&group_number;
+	dc.ptr = (u_char *)&group_number;
 	dc.len = 2;
 	SEND_NOTIFICATION_AA(INVALID_KE_PAYLOAD, &dc);
 	delete_state(st);
@@ -1417,7 +1417,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 	 * SA2i, TSi and TSr and (USE_TRANSPORT_MODE notification in transport mode) for it .
 	 */
 	if(c0) {
-		chunk_t child_spi, notifiy_data;
+	    chunk_t child_spi, notifiy_data;
 	    st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
@@ -1908,6 +1908,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct connection *c = st->st_connection;
     unsigned char *idhash_in;
     struct state *pst = st;
+    struct traffic_selector tsi[16], tsr[16];
+    unsigned int tsi_n=0, tsr_n=0;
 
     if(st->st_clonedfrom != 0) {
 	pst = state_with_serialno(st->st_clonedfrom);
@@ -2015,6 +2017,28 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      */
     change_state(pst, STATE_PARENT_I3);
     c->newest_isakmp_sa = pst->st_serialno;
+
+    {
+	/*check for child sa related errors */
+	/* check for TS_UNACCEPTABLE */
+	struct payload_digest *p;
+
+	for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+	{
+		if ( p->payload.v2n.isan_type == TS_UNACCEPTABLE ) {
+			/* we can proceed with successful parent SA */
+			if(st->st_clonedfrom != 0) {
+				delete_event(st);
+				pst = state_with_serialno(st->st_clonedfrom);
+				md->st = pst;
+				md->pst = pst;
+				delete_event(st);
+				delete_state(st);
+			}
+			return STF_OK;
+		}  
+	}
+    }
     
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
@@ -2025,8 +2049,37 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 	/*
 	 * Delete previous retransmission event.
 	 */
+	if(st->st_clonedfrom != 0) {
+		pst = state_with_serialno(st->st_clonedfrom);
+		md->st = pst;
+		md->pst = pst;
+		delete_event(st);
+		delete_state(st);
+	}
+	return STF_OK;
+    }
+
+    {
+	struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+	struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+
+	/* parse traffic selector */
+
+	tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+	tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+
+	/* verify if the received traffic selectors are 
+	 * really same/or a subset of what we sent 
+	 */
+	if(ikev2_verify_ts(tsi, tsr, tsi_n, tsr_n
+			, &st->st_ts_this, &st->st_ts_that
+			, md->role) == FALSE) {
+	/* mistmatch in received selectors */
+	/*only proceeding with parent SA*/
 	delete_event(st);
 	return STF_OK;
+	}
+
     }
 
     {
@@ -2078,15 +2131,100 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
 
     } /*notification block */
 
-	
-    ikev2_derive_child_keys(st, md->role);
+    {
+	/*storing received traffic selectors */
 
-    c->newest_ipsec_sa = st->st_serialno;
+	struct traffic_selector *tmp;
+	unsigned int i=0;
+
+
+	ikev2_store_ts_instate(tsi, tsr, tsi_n, tsr_n, &st->st_ts_this, &st->st_ts_that);
+
+	for(i=0; i< tsi_n; i++) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tsi[i].low,  0, lbi, sizeof(lbi));
+                addrtot(&tsi[i].high, 0, hbi, sizeof(hbi));
+
+                DBG_log("tsi=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tsi[i].startport, tsi[i].endport, tsi[i].ipprotoid);
+            }
+            );
+
+	}
+       
+	for(i=0; i< tsr_n; i++) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tsr[i].low,  0, lbi, sizeof(lbi));
+                addrtot(&tsr[i].high, 0, hbi, sizeof(hbi));
+    
+                DBG_log("tsr=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tsr[i].startport, tsr[i].endport, tsr[i].ipprotoid);
+            }
+            );
+
+	}
+
+
+	tmp = &st->st_ts_this;
+
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                DBG_log(" R2  this  tsr=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+            }
+            );
+
+        tmp=tmp->next;
+        }
+
+        tmp = &st->st_ts_that;
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                DBG_log(" R2  that  tsr=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+            }
+            );
+
+        tmp=tmp->next;
+        }
+
+	if(!ikev2_perfect_match_ts(tsi, tsr, tsi_n, tsr_n, c, md->role)) {
+		c = ikev2_create_narrowed_con(c, &st->st_ts_this, &st->st_ts_that, md->role);
+		st->st_connection = c;
+	}
+
+    }
+
+    ikev2_derive_child_keys(st, md->role);
 
     /* now install child SAs */
     if(!install_ipsec_sa(st, TRUE))
 	return STF_FATAL;
 
+    st->st_childsa = c;
+    c->newest_ipsec_sa = st->st_serialno;
     /*
      * Delete previous retransmission event.
      */
@@ -2408,7 +2546,6 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 				pb_stream del_pbs;
 				struct ikev2_delete v2del_tmp;
 				u_int16_t i, j=0;
-				bool bogus;
 				u_char *spi;
 
 				for(i = 0; i < v2del->isad_nospi; i++ ) 
@@ -2577,6 +2714,8 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 					else
 					{
 						change_state(current_st, STATE_IKESA_DEL);
+						md->st = NULL;
+						md->pst = NULL;
 					}
         			delete_state(current_st);
 				current_st = next_st;
@@ -2587,11 +2726,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 			case PROTO_IPSEC_AH:
 			case PROTO_IPSEC_ESP:
 				{				
-				char spi_buf[1024];
-				//pb_stream del_pbs;
-				struct ikev2_delete v2del_tmp;
 				u_int16_t i;
-				bool bogus;
 				u_char *spi;
 
 				for(i = 0; i < v2del->isad_nospi; i++ ) 
@@ -2671,6 +2806,8 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 					else
 					{
 						change_state(current_st, STATE_IKESA_DEL);
+						md->st = NULL;
+						md->pst = NULL;
 					}
         			delete_state(current_st);
 				current_st = next_st;
@@ -2755,8 +2892,6 @@ void ikev2_delete_out(struct state *st)
 		else {
 		role = RESPONDER;
 		}
-
-		//r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
 
 		if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
 		{

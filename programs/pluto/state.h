@@ -164,6 +164,7 @@ struct traffic_selector {
     u_int16_t endport;
     ip_address low;
     ip_address high;
+    struct traffic_selector *next;
 };
 
 #ifdef HAVE_LABELED_IPSEC

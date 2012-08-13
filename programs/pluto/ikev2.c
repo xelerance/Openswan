@@ -747,7 +747,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 	}
 	
-	if (IS_CHILD_SA_ESTABLISHED(st))
+	if (IS_CHILD_SA_ESTABLISHED(st) || IS_PARENT_SA_ESTABLISHED(st->st_state))
 	{
 	    /* log our success */
 	    w = RC_SUCCESS;
@@ -910,16 +910,22 @@ void complete_v2_state_transition(struct msg_digest **mdp
     enum state_kind from_state;
     const char *from_state_name;
 
+    /* advance the state */
+    DBG(DBG_CONTROL
+        , DBG_log("complete v2 state transition with %s"
+                  , enum_name(&stfstatus_name, result)));
+
+    /* this occur when IKE SA state is deleted already */
+    if(md->st == NULL) {
+	goto end;
+    }
+
     cur_state = st = md->st;	/* might have changed */
 
     md->result = result;
     TCLCALLOUT("v2AdjustFailure", st, (st ? st->st_connection : NULL), md);
     result = md->result;
 
-    /* advance the state */
-    DBG(DBG_CONTROL
-	, DBG_log("complete v2 state transition with %s"
-		  , enum_name(&stfstatus_name, result)));
 
     switch(result) {
     case STF_IGNORE:
@@ -1009,6 +1015,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 		    , from_state_name
 		    , enum_name(&ipsec_notification_names, md->note)));
     }
+end:;
 }
 
 notification_t

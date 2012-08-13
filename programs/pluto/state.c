@@ -351,6 +351,19 @@ release_whack(struct state *st)
     close_any(st->st_whack_sock);
 }
 
+/* freeing allocated traffic selectors */
+static void delete_ts(struct traffic_selector *ts) {
+	struct traffic_selector *tmp;
+
+	/*first one is not malloced so skiping that*/
+	ts = ts-> next;
+	while(ts!=NULL) {
+		tmp = ts->next;
+		pfreeany(ts);
+		ts = tmp;
+	}
+}
+
 /* delete a state object */
 void
 delete_state(struct state *st)
@@ -510,6 +523,10 @@ delete_state(struct state *st)
 #endif
 	pfreeany(st->st_sec_chunk.ptr);
     }
+
+    /*free selectors if any */
+    delete_ts(&st->st_ts_this);
+    delete_ts(&st->st_ts_that);
 
     freeanychunk(st->st_firstpacket_me);
     freeanychunk(st->st_firstpacket_him);

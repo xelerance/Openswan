@@ -119,26 +119,58 @@ extern stf_status ikev2_verify_psk_auth(struct state *st
 				   , unsigned char *idhash
 				   , pb_stream *sig_pbs);
 
+extern int ikev2_parse_ts(struct payload_digest *const ts_pd
+			, struct traffic_selector *array
+			, unsigned int array_max);
+
 extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 				      , pb_stream *outpbs
 				      , unsigned int np
 				      , struct connection *c
 				      , lset_t policy);
 
+extern struct connection *ikev2_create_narrowed_con(struct connection *c
+					, struct traffic_selector *narrowed_tsi
+					, struct traffic_selector *narrowed_tsr
+					, enum phase1_role role);
+
 extern void ikev2_derive_child_keys(struct state *st
 				    , enum phase1_role role);
+
+extern bool
+ikev2_perfect_match_ts(struct traffic_selector *tsi
+		,struct traffic_selector *tsr
+		, unsigned int tsi_n
+		, unsigned int tsr_n
+		, struct connection *c
+		, enum phase1_role role);
 
 extern stf_status ikev2_emit_ts(struct msg_digest *md 
 				, pb_stream *outpbs   
 				, unsigned int np
 				, struct traffic_selector *ts
 				, enum phase1_role role);
+extern void 
+ikev2_store_ts_instate(struct traffic_selector *array_tsi
+		,struct traffic_selector * array_tsr
+		, unsigned int tsi_n
+		, unsigned int tsr_n
+		, struct traffic_selector *ts_this 
+		, struct traffic_selector *ts_that);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
 				     , pb_stream *outpbs
 				     , enum phase1_role role
 				     , struct connection *c0
 				     , lset_t policy);
+
+extern bool ikev2_verify_ts(struct traffic_selector *tsi
+			, struct traffic_selector *tsr
+			, unsigned int tsi_n
+			, unsigned int tsr_n
+			, struct traffic_selector *this_ts
+			, struct traffic_selector *that_ts
+			, enum phase1_role role);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , enum phase1_role role

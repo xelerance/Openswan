@@ -2021,6 +2021,31 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 			      , st->st_connection->policy_label
 #endif
 			      );
+
+	if(st->st_ikev2) {
+	   struct spd_route *sr = &c->spd;
+	   for(sr = sr->next; sr != NULL; sr = sr->next) {
+
+            /* MCR - should be passed a spd_eroute structure here */
+            (void) raw_eroute(&sr->that.host_addr   /* this_host */
+			      , &sr->that.client    /* this_client */
+                              , &sr->this.host_addr /* that_host */
+			      , &sr->this.client    /* that_client */
+                              , inner_spi              /* spi */
+			      , proto                  /* proto */
+                              , sr->this.protocol   /* transport_proto */
+                              , esatype                /* esatype */
+                              , proto_info             /* " */
+			      , 0                      /* lifetime */
+                              , ERO_ADD_INBOUND        /* op */
+			      , "add inbound"        /* opname */
+#ifdef HAVE_LABELED_IPSEC
+			      , st->st_connection->policy_label
+#endif
+			      );
+	   }
+	}
+
         }
     }
 
@@ -2095,6 +2120,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
      * first one found.  It may or may not be the only one.
      */
     struct connection *c = st->st_connection;
+    struct spd_route *sr;
     struct {
         unsigned proto;
         struct ipsec_proto_info *info;
@@ -2103,6 +2129,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
     bool result;
 
     i = 0;
+
     if (kernel_ops->inbound_eroute && inbound
         && c->spd.eroute_owner == SOS_NOBODY)
     {
@@ -2119,6 +2146,30 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
 #endif
 			  );
     }
+
+    if(st->st_ikev2) {
+    for(sr = &c->spd.next; sr; sr =sr->next) {
+    if (kernel_ops->inbound_eroute && inbound
+        && sr->eroute_owner == SOS_NOBODY)
+    {
+        (void) raw_eroute(&sr->that.host_addr, &sr->that.client
+                          , &sr->this.host_addr, &sr->this.client
+                          , 256
+			  , IPSEC_PROTO_ANY
+                          , sr->this.protocol
+                          , ET_UNSPEC
+                          , null_proto_info, 0
+                          , ERO_DEL_INBOUND, "delete inbound"
+#ifdef HAVE_LABELED_IPSEC
+			  , c->policy_label
+#endif
+			  );
+    }
+    }
+    }
+
+
+
 
     if (!kernel_ops->grp_sa)
     {

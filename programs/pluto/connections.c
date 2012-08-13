@@ -1688,6 +1688,65 @@ instantiate(struct connection *c, const ip_address *him
 }
 
 struct connection *
+ikev2_narrow_instantiate(struct connection *c)
+{
+    struct connection *d;
+    int wildcards;
+
+    /*if(!(c->policy & POLICY_IKEV2_ALLOW) && !(c->policy & POLICY_IKEV2_PROPOSE)) {
+    passert(c->kind == CK_TEMPLATE);
+    }
+
+    passert(c->spd.next == NULL);*/
+
+    c->instance_serial++;
+    d = clone_thing(*c, "temporary connection");
+
+    /*if (his_id != NULL)
+    {
+	passert(match_id(his_id, &d->spd.that.id, &wildcards));
+	d->spd.that.id = *his_id;
+	d->spd.that.has_id_wildcards = FALSE;
+    }*/
+
+    unshare_connection_strings(d);
+    unshare_ietfAttrList(&d->spd.this.groups);
+    unshare_ietfAttrList(&d->spd.that.groups);
+
+    d->kind = CK_INSTANCE;
+
+    passert(oriented(*d));
+    /*d->spd.that.host_addr = *him;
+    setportof(htons(c->spd.that.port), &d->spd.that.host_addr);
+    default_end(&d->spd.that, &d->spd.this.host_addr);*/
+
+    /* We cannot guess what our next_hop should be, but if it was
+     * explicitly specified as 0.0.0.0, we set it to be him.
+     * (whack will not allow nexthop to be elided in RW case.)
+     */
+    /*default_end(&d->spd.this, &d->spd.that.host_addr);*/
+    d->spd.next = NULL;
+    d->spd.reqid = gen_reqid();
+
+    /* set internal fields */
+    d->ac_next = connections;
+    connections = d;
+    d->spd.routing = RT_UNROUTED;
+    d->newest_isakmp_sa = SOS_NOBODY;
+    d->newest_ipsec_sa = SOS_NOBODY;
+    d->spd.eroute_owner = SOS_NOBODY;
+
+    /* reset log file info */
+    d->log_file_name = NULL;
+    d->log_file = NULL;
+    d->log_file_err = FALSE;
+
+    connect_to_host_pair(d);
+
+    return d;
+}
+
+struct connection *
 rw_instantiate(struct connection *c
 , const ip_address *him
 , const ip_subnet *his_net

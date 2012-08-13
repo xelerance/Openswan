@@ -376,6 +376,7 @@ find_connection_for_clients(struct spd_route **srp
  */
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 struct alg_info;	/* forward declaration of tag (defined in alg_info.h) */
+extern struct connection *ikev2_narrow_instantiate(struct connection *c);
 extern struct connection *rw_instantiate(struct connection *c
 					 , const ip_address *him
 					 , const ip_subnet *his_net
