@@ -246,7 +246,6 @@ ikev2_process_payloads(struct msg_digest *md,
 	int thisp = np;
 	bool unknown_payload = FALSE;
 
-	DBG(DBG_CONTROL, DBG_log("Now lets proceed with payload (%)",enum_show(&payload_names, thisp)));	
 	memset(pd, 0, sizeof(*pd));
 	
 	if (pd == &md->digest[PAYLIMIT])
@@ -314,7 +313,6 @@ ikev2_process_payloads(struct msg_digest *md,
 	pd++;
     }
     
-    DBG(DBG_CONTROL, DBG_log("Finished and now at the end of ikev2_process_payload"));
     md->digest_roof = pd;
     return STF_OK;
 }
@@ -344,19 +342,13 @@ process_v2_packet(struct msg_digest **mdp)
 
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
-	/* TODO: this code allows a packet to both set ISAKMP_FLAGS_I and ISAKMP_FLAGS_R */
-
-    //if( (md->hdr.isa_flags & ISAKMP_FLAGS_I) && (md->hdr.isa_flags & ISAKMP_FLAGS_R) ) {
-    //	openswan_log("received packet that claimed to be  both (I)nitiator and (R)esponder, msgid=%u", md->msgid_received);
-    //}
-
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
 	/* then I am the responder */
 	rcookiezero = is_zero_cookie(md->hdr.isa_rcookie);
 
 	md->role = RESPONDER;
 
-	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
+	DBG(DBG_CONTROLMORE, DBG_log("I am IKE SA Responder"));
 
 	st = find_state_ikev2_parent(md->hdr.isa_icookie
 				     , md->hdr.isa_rcookie);
@@ -367,24 +359,35 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 
 	if(st) {
-	    if(st->st_msgid_lastrecv >  md->msgid_received){
+	    /* if it is request from Initiator*/
+	    if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		if(st->st_msgid_last_remotereq != INVALID_MSGID && st->st_msgid_last_remotereq > md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
-		openswan_log("received too old retransmit: %u < %u"
-			     , md->msgid_received, st->st_msgid_lastrecv);
+		openswan_log("received too old retransmit, ignoring: %u < %u"
+			     , md->msgid_received, st->st_msgid_last_remotereq);
 		return;
-	    }
-	    if(st->st_msgid_lastrecv == md->msgid_received){
+		}
+		if(st->st_msgid_last_remotereq != INVALID_MSGID && st->st_msgid_last_remotereq == md->msgid_received){
 		/* this is a recent retransmit. */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
 		return;
+		}
+	    }
+	    else 
+	    {
+	    /* if it is response from Initiator*/
+		/* it seems that it should not happen 
+		 * why a response will be retransmitted?
+		 */
+		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
+		openswan_log("received an old response, ignoring: %u < %u"
+                             , md->msgid_received, st->st_msgid_last_localreq_ack);
+		}
 	    }
 	    /* update lastrecv later on */
 	}
-    //} else if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-	//openswan_log("received packet that was neither (I)nitiator or (R)esponder, msgid=%u", md->msgid_received);
-	
     } else {
-        /* then I am the initiator, and this is a reply */
+        /* then I am the initiator, and this may be a reply or request */
 	
 	md->role = INITIATOR;
 
@@ -421,26 +424,31 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 
 	if(st) {
-	    /*
-	     * then there is something wrong with the msgid, so
-	     * maybe they retransmitted for some reason. 
-	     * Check if it's an old packet being returned, and
-	     * if so, drop it.
-	     * NOTE: in_struct() changed the byte order.
-	     */
-	    if(st->st_msgid_lastack != INVALID_MSGID
-	       && md->msgid_received <= st->st_msgid_lastack) {
-		/* it's fine, it's just a retransmit */
-		DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
-					 , md->msgid_received));
+	    /* if it is request from Responder*/
+	    if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		if(st->st_msgid_last_remotereq != INVALID_MSGID && st->st_msgid_last_remotereq > md->msgid_received){
+		/* this is an OLD retransmit. we can't do anything */
+		openswan_log("received too old retransmit, ignoring: %u < %u"
+			     , md->msgid_received, st->st_msgid_last_remotereq);
 		return;
+		}
+		if(st->st_msgid_last_remotereq != INVALID_MSGID && st->st_msgid_last_remotereq == md->msgid_received){
+		/* this is a recent retransmit. */
+		send_packet(st, "ikev2-responder-retransmit", FALSE);
+		return;
+		}
 	    }
-#if 0
-	    openswan_log("last msgid ack is %u, received: %u"
-			 , st->st_msgid_lastack
-			 , md->msgid_received);
-	    return;
-#endif
+	    else 
+	    {
+	    /* if it is response from Responder*/
+		/* it seems that it should not happen 
+		 * why a response will be retransmitted?
+		 */
+		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
+		openswan_log("received an old response, ignoring: %u < %u"
+                             , md->msgid_received, st->st_msgid_last_localreq_ack);
+		}
+	    }
 	}
     }
 	
@@ -448,7 +456,6 @@ process_v2_packet(struct msg_digest **mdp)
     if(st) {
 
 	from_state = st->st_state;
-	DBG(DBG_CONTROL, DBG_log("state found and its state is (%s)", enum_show(&state_names, from_state)));
     }
 
     for(svm = state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
@@ -460,20 +467,12 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 	if(svm->state != from_state) continue;
 	if(svm->recv_type != ix) continue;
-
-	/* I1 receiving NO_PROPOSAL ened up picking the wrong STATE_UNDEFINED state
- 	   Since the wrong state is a responder, we just add a check for initiator,
-	   so we hit STATE_IKEv2_ROOF
-	 */
-	//if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
-        //        continue;
 	
 	/* must be the right state */
 	break;
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
-	DBG(DBG_CONTROL, DBG_log("ended up with STATE_IKEv2_ROOF"));
 
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
@@ -489,7 +488,6 @@ process_v2_packet(struct msg_digest **mdp)
 	stf_status stf;
 	stf = ikev2_process_payloads(md, &md->message_pbs
 				     , from_state, md->hdr.isa_np);
-	DBG(DBG_CONTROL, DBG_log("Finished processing ikev2_process_payloads"));
 	
 	if(stf != STF_OK) {
 	    complete_v2_state_transition(mdp, stf);
@@ -497,7 +495,6 @@ process_v2_packet(struct msg_digest **mdp)
 	}
     }
 
-    DBG(DBG_CONTROL, DBG_log("Now lets proceed with state specific processing"));
     DBG(DBG_PARSING,
 	if (pbs_left(&md->message_pbs) != 0)
 	    DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
@@ -676,7 +673,7 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
 			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
-void ikev2_update_counters(struct msg_digest *md)
+void ikev2_update_counters(struct msg_digest *md, enum ikev2_msgtype msgtype)
 {
     struct state *pst= md->pst;
     struct state *st = md->st;
@@ -688,17 +685,21 @@ void ikev2_update_counters(struct msg_digest *md)
 	if(pst == NULL) pst = st;
     }
     
-    switch(md->role) {
-    case INITIATOR:
-	/* update lastuse values */
-	pst->st_msgid_lastack = md->msgid_received;
-	pst->st_msgid_nextuse = pst->st_msgid_lastack+1;
-	break;
-	
-    case RESPONDER:
-	pst->st_msgid_lastrecv= md->msgid_received;
-	break;
-    }
+
+	switch(msgtype) {
+	case req_sent:
+		pst->st_msgid_last_localreq = pst->st_msgid_last_localreq == INVALID_MSGID? 0 : pst->st_msgid_last_localreq + 1;
+		break;
+	case req_recd:
+		break;
+	case response_sent:
+		pst->st_msgid_last_remotereq = md->msgid_received;
+		break;
+	case response_recd:
+		pst->st_msgid_last_localreq_ack = md->msgid_received;
+		break;
+	default: break;
+	}
 }
 
 static void success_v2_state_transition(struct msg_digest **mdp)
@@ -715,8 +716,6 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
     change_state(st, svm->next_state);
     w = RC_NEW_STATE + st->st_state;    
-
-    ikev2_update_counters(md);
 
 
     /* tell whack and log of progress */

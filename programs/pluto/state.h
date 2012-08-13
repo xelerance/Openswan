@@ -249,12 +249,13 @@ struct state
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
     /* IKEv2 things */
-    /* message ID sequence for things we send (as initiator) */
-    msgid_t            st_msgid_lastack;       /* last one peer acknowledged */
-    msgid_t            st_msgid_nextuse;       /* next one to use */
+    /* message ID sequence for things we send (as request) */
+    msgid_t            st_msgid_last_localreq;       /* last one sent as request by us */
+    msgid_t            st_msgid_last_localreq_ack;       /* last one sent acked by peer */
 
-    /* message ID sequence for things we receive (as responder) */
-    msgid_t            st_msgid_lastrecv;      /* last one peer sent */
+
+    /* message ID sequence for things we receive (as response) */
+   msgid_t            st_msgid_last_remotereq;       /* last remote request sent by peer */
 
 
     /* symmetric stuff */

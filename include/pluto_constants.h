@@ -301,6 +301,13 @@ enum phase1_role {
   RESPONDER=2
 };
 
+enum ikev2_msgtype {
+  req_sent=1,
+  req_recd=2,
+  response_sent=3,
+  response_recd=4
+};
+
 
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
 
@@ -336,7 +343,7 @@ enum phase1_role {
 #define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
 #endif
 
-#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1 || (s) == STATE_IKESA_DEL)
+#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1)
 #define IS_CHILD_SA_ESTABLISHED(st) (((st->st_state) == STATE_PARENT_I3 || (st->st_state) == STATE_PARENT_R2 || (st->st_state) == STATE_CHILDSA_DEL) && (st->st_childsa != NULL))
 
 

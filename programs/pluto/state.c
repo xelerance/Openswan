@@ -358,7 +358,7 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
-    if(st->st_ikev2 && st->st_state != STATE_PARENT_R1 && st->st_state != STATE_PARENT_R2)
+    if(st->st_ikev2)
     {
     /* child sa*/
     if(st->st_clonedfrom != 0) 

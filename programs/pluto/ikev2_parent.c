@@ -119,8 +119,9 @@ ikev2parent_outI1(int whack_sock
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_ikev2 = TRUE;
     change_state(st, STATE_PARENT_I1);
-    st->st_msgid_lastack = INVALID_MSGID;
-    st->st_msgid_nextuse = 0;
+    st->st_msgid_last_localreq = INVALID_MSGID;
+    st->st_msgid_last_localreq_ack = INVALID_MSGID;
+    st->st_msgid_last_remotereq=INVALID_MSGID;	
     st->st_try   = try;
 
     if (HAS_IPSEC_POLICY(policy)) {
@@ -467,6 +468,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
 
     /* Transmit */
     send_packet(st, __FUNCTION__, TRUE);
+    ikev2_update_counters(md, req_sent);
 
     /* Set up a retransmission event, half a minute henceforth */
     TCLCALLOUT("v2_adjustTimers", st, st->st_connection, md);
@@ -547,8 +549,9 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
 	change_state(st, STATE_PARENT_R1);
-	st->st_msgid_lastack = INVALID_MSGID;
-	st->st_msgid_nextuse = 0;
+	st->st_msgid_last_localreq = INVALID_MSGID;
+	st->st_msgid_last_localreq_ack = INVALID_MSGID;
+	st->st_msgid_last_remotereq=INVALID_MSGID;
 
 	md->st = st;
 	md->from_state = STATE_IKEv2_BASE;
@@ -741,7 +744,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* start of SA out */
     {
-	struct isakmp_sa r_sa = sa_pd->payload.sa;
+	struct ikev2_sa r_sa = sa_pd->payload.v2sa;
 	notification_t rn;
 	pb_stream r_sa_pbs;
 
@@ -764,7 +767,6 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	/* KE in */
 	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
 	if(rn != NOTHING_WRONG) {
-	//char group_number[2];
 	u_int16_t group_number = htons(st->st_oakley.group->group);
 	dc.ptr = (char *)&group_number;
 	dc.len = 2;
@@ -772,7 +774,6 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	delete_state(st);
 	return STF_FAIL + rn;
 	}
-	//RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
     } 
 
     /* Ni in */
@@ -826,6 +827,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* note: retransimission is driven by initiator */
 
+   ikev2_update_counters(md, response_sent);
+
     return STF_OK;
     
 }
@@ -875,9 +878,9 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 		md->svm = ikev2_parent_firststate();
 
 		change_state(st, STATE_PARENT_I1);
-    	st->st_msgid_lastack = INVALID_MSGID;
-	md->msgid_received = INVALID_MSGID;  /* AAA hack  */
-    	st->st_msgid_nextuse = 0;
+		st->st_msgid_last_localreq = INVALID_MSGID;
+		st->st_msgid_last_localreq_ack = INVALID_MSGID;
+		st->st_msgid_last_remotereq=INVALID_MSGID;
 
 		return ikev2_parent_outI1_common(md, st);  
     }
@@ -930,8 +933,8 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 	    return STF_FAIL + rn;
     }
 
-    /* update state */
-    ikev2_update_counters(md);
+    /* update state counters */
+    ikev2_update_counters(md, response_recd);
 
     /* now. we need to go calculate the g^xy */
     {
@@ -1092,18 +1095,13 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
 	DBG(DBG_CRYPT,
 	    DBG_dump("data after encryption:", encstart, cipherlen));
     }
-    
+
     /* okay, authenticate from beginning of IV */
     {
 	struct hmac_ctx ctx;
-	DBG(DBG_PARSING, DBG_log("Inside authloc"));
-	DBG(DBG_CRYPT, DBG_dump("authkey value: ", authkey->ptr, authkey->len));
 	hmac_init_chunk(&ctx, pst->st_oakley.integ_hasher, *authkey);
-	DBG(DBG_PARSING, DBG_log("Inside authloc after init"));
 	hmac_update(&ctx, authstart, authloc-authstart);
-	DBG(DBG_PARSING, DBG_log("Inside authloc after update"));
 	hmac_final(authloc, &ctx);
-	DBG(DBG_PARSING, DBG_log("Inside authloc after final"));
 
 	DBG(DBG_PARSING,
 	    DBG_dump("data being hmac:", authstart, authloc-authstart);
@@ -1288,7 +1286,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     pst = st;
     st = duplicate_state(pst);
-    st->st_msgid = htonl(pst->st_msgid_nextuse);
+    st->st_msgid = htonl(pst->st_msgid_last_localreq == INVALID_MSGID? 0 : pst->st_msgid_last_localreq + 1);
     insert_state(st);
     md->st = st;
     md->pst= pst;
@@ -1482,6 +1480,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     delete_event(st);
     event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
+    ikev2_update_counters(md, req_sent);
     return STF_OK;
     
 }
@@ -1740,6 +1739,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 	    r_hdr.isa_np    = ISAKMP_NEXT_v2E;
 	    r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
 	    r_hdr.isa_flags = ISAKMP_FLAGS_R;
+	    r_hdr.isa_msgid = htonl(md->msgid_received);
 	    memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
 	    memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
 	    if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
@@ -1887,6 +1887,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* note: retransimission is driven by initiator */
 
+    ikev2_update_counters(md, response_sent);
     return STF_OK;
     
 }
@@ -2090,6 +2091,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      * Delete previous retransmission event.
      */
     delete_event(st);
+    ikev2_update_counters(md, response_recd);
 
     return STF_OK;
     
@@ -2274,15 +2276,15 @@ stf_status process_informational_ikev2(struct msg_digest *md)
     {
 	stf_status ret; 
 
-	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
 	DBG(DBG_CONTROLMORE
-		, DBG_log("received informational exchange request from INITIATOR"));
-	ret = ikev2_decrypt_msg(md, RESPONDER);
+		, DBG_log("received informational exchange request from %s", md->role == 1? "RESPONDER": "INITIATOR"));
+	ret = ikev2_decrypt_msg(md, md->role);
 	}
 	else {
 	DBG(DBG_CONTROLMORE
-		, DBG_log("received informational exchange request from RESPONDER"));
-	ret = ikev2_decrypt_msg(md, INITIATOR);
+		, DBG_log("received informational exchange response from %s", md->role == 1?"RESPONDER": "INITIATOR"));
+	ret = ikev2_decrypt_msg(md, md->role);
 	}
 
 	if(ret != STF_OK) return ret;
@@ -2304,12 +2306,12 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 	int            ivsize;
 	unsigned char *encstart;
 
-	/* beginning of data going out */
-	authstart = reply_stream.cur;
-
 	/* make sure HDR is at start of a clean buffer */
 	zero(reply_buffer);
 	init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange reply packet");
+
+	/* beginning of data going out */
+	authstart = reply_stream.cur;
 
 	/* HDR out */
 	{
@@ -2511,7 +2513,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 	close_output_pbs(&md->rbody);
 	close_output_pbs(&reply_stream);
 
-	ret = ikev2_encrypt_msg(md, RESPONDER,
+	ret = ikev2_encrypt_msg(md, md->role,
                                     authstart,
                                     iv, encstart, authloc,
                                     &e_pbs, &e_pbs_cipher);
@@ -2528,14 +2530,19 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 			, "reply packet for informational exchange");
 
 	send_packet(st, __FUNCTION__, TRUE);
+	ikev2_update_counters(md, response_sent);
 	}
 
 	/* Now carry out the actualy task, we can not carry the actual task since 
  	* we need to send informational responde using existig SAs
  	*/
 
+	if(md->hdr.isa_flags & ISAKMP_FLAGS_R){
+		ikev2_update_counters(md, response_recd);
+	}
+
 	{
-		if(md->chain[ISAKMP_NEXT_v2D] && st->st_state != STATE_IKESA_DEL) {
+		if(md->chain[ISAKMP_NEXT_v2D]) {
 
 		for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
 		v2del = &p->payload.v2delete;
@@ -2721,11 +2728,13 @@ void ikev2_delete_out(struct state *st)
 	md.st = st;
 	md.pst= pst;
 	/* beginning of data going out */
-	authstart = reply_stream.cur;
 
 	/* make sure HDR is at start of a clean buffer */
 	zero(reply_buffer);
 	init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange request packet");
+
+	/* beginning of data going out */
+        authstart = reply_stream.cur;
 
 	/* HDR out */
 	{
@@ -2736,7 +2745,7 @@ void ikev2_delete_out(struct state *st)
 		memcpy(r_hdr.isa_icookie, pst->st_icookie, COOKIE_SIZE);
 		r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
 		r_hdr.isa_np = ISAKMP_NEXT_v2E;
-		r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
+		r_hdr.isa_msgid = htonl(pst->st_msgid_last_localreq == INVALID_MSGID? 0 : pst->st_msgid_last_localreq + 1);
 
 		/*set initiator bit if we are initiator*/
 		if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
@@ -2759,6 +2768,7 @@ void ikev2_delete_out(struct state *st)
 
 
 	/* insert an Encryption payload header */
+	zero(&e);
 	e.isag_np = ISAKMP_NEXT_v2D;
 	e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
@@ -2784,10 +2794,6 @@ void ikev2_delete_out(struct state *st)
 				{
 				pb_stream del_pbs;
 				struct ikev2_delete v2del_tmp;
-				//u_int16_t i, j=0;
-				//bool bogus;
-				//u_char *spi;
-				//char spi_buf[1024];
 
 				zero(&v2del_tmp);
 				v2del_tmp.isad_np = ISAKMP_NEXT_NONE;
@@ -2853,7 +2859,7 @@ void ikev2_delete_out(struct state *st)
 	send_packet(pst, __FUNCTION__, TRUE);
 
 	/* update state */
-	ikev2_update_counters(&md);
+	ikev2_update_counters(&md, req_sent);
 
 	}
 	
