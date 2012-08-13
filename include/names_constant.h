@@ -61,7 +61,7 @@ extern enum_names notification_names;
 extern enum_names ipsec_notification_names;
 
 /* IKEv2 */
-extern enum_names critical_names;
+//extern enum_names critical_names;
 extern enum_names ikev2_auth_names;
 extern enum_names trans_type_names;
 extern enum_names trans_type_encr_names;

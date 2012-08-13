@@ -1066,14 +1066,28 @@ enum_names attr_msg_type_names =
 /*
  * IKEv2 CRITICAL BYTE "enum"
  */
-const char *const critical_name[]=    { "Payload-Critical", NULL };
-const char *const no_critical_name[]= { "Payload-Non-Critical", NULL };
-enum_names no_crit_names ={ ISAKMP_PAYLOAD_NONCRITICAL,
-			    ISAKMP_PAYLOAD_NONCRITICAL,
-			    no_critical_name, NULL};
-enum_names critical_names = 
-{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL,
-  critical_name, &no_crit_names};
+//const char *const critical_name[]=    { "Payload-Critical", NULL };
+//const char *const no_critical_name[]= { "Payload-Non-Critical", NULL };
+//enum_names no_crit_names ={ ISAKMP_PAYLOAD_NONCRITICAL,
+//			    ISAKMP_PAYLOAD_NONCRITICAL,
+//			    no_critical_name, NULL};
+//enum_names critical_names = 
+//{ ISAKMP_PAYLOAD_CRITICAL, ISAKMP_PAYLOAD_CRITICAL,
+//  critical_name, &no_crit_names};
+
+
+/* IKEv2 Critical bit and RESERVED (7) bits*/
+const char *const critical_names[] = {
+    "RESERVED",         /* bit 0 */
+    "RESERVED",         /* bit 1 */
+    "RESERVED",         /* bit 2 */
+    "RESERVED",         /* bit 3 */
+    "RESERVED",         /* bit 4 */
+    "RESERVED",         /* bit 5 */
+    "RESERVED",         /* bit 6 */
+    "PAYLOAD_CRITICAL",      /* bit 7*/
+    };
+
 
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={
