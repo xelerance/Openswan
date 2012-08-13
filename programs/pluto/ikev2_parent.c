@@ -757,9 +757,24 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 	    return STF_FAIL + rn;
     }
 
+    {
+	notification_t rn;
+	chunk_t dc;
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
     /* KE in */
-    RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
+	rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
+	if(rn != NOTHING_WRONG) {
+	//char group_number[2];
+	u_int16_t group_number = htons(st->st_oakley.group->group);
+	dc.ptr = (char *)&group_number;
+	dc.len = 2;
+	SEND_NOTIFICATION_AA(INVALID_KE_PAYLOAD, &dc);
+	delete_state(st);
+	return STF_FAIL + rn;
+	}
+    //RETURN_STF_FAILURE(accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs));
+
+    } 
 
     /* Ni in */
     RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_ni, "Ni"));
