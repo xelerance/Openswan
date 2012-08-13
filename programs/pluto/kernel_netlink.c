@@ -815,6 +815,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     {
 	req.p.mode = XFRM_MODE_TRANSPORT;
 
+	if(!sameaddr(sa->src, sa->dst)) {
 	req.p.sel.sport = portof(&sa->src_client->addr);
 	req.p.sel.dport = portof(&sa->dst_client->addr);
 
@@ -851,6 +852,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	req.p.sel.prefixlen_d = sa->dst_client->maskbits;
 	req.p.sel.proto = sa->transport_proto;
 	req.p.sel.family = sa->src_client->addr.u.v4.sin_family;
+	}
 
     }
 
