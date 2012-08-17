@@ -825,7 +825,7 @@ delete_states_by_peer(ip_address *peer)
 		DBG_log("comparing %s to %s\n", ra, peerstr);
 
 		if(sameaddr(&this->st_remoteaddr, peer)) {
-		    if(ph1==0 && IS_PHASE1(this->st_state)) {
+		    if(ph1==0 && (IS_PHASE1(this->st_state) || IS_PHASE15(st->st_state ))) {
 			
 			whack_log(RC_COMMENT
 				  , "peer %s for connection %s crashed, replacing"
@@ -1554,7 +1554,7 @@ show_states_status(void)
 		whack_log(RC_COMMENT, "%s", state_buf2);
 
 	  /* show any associated pending Phase 2s */
-	  if (IS_PHASE1(st->st_state))
+	  if (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))
 		show_pending_phase2(st->st_connection, st);
 	}
 
