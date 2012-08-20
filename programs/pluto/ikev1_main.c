@@ -2233,7 +2233,9 @@ main_inI3_outR3_tail(struct msg_digest *md
 
     /* It seems as per Cisco implementation, XAUTH and MODECFG
      * are not supposed to be performed again during rekey */
-    if(st->st_connection->newest_isakmp_sa != SOS_NOBODY &&
+
+    if( st->st_connection->remotepeertype == CISCO &&
+	st->st_connection->newest_isakmp_sa != SOS_NOBODY &&
         st->st_connection->spd.this.xauth_client) {
            DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
            st->hidden_variables.st_xauth_client_done = TRUE;
@@ -2306,7 +2308,8 @@ main_inR3_tail(struct msg_digest *md
 
     /* It seems as per Cisco implementation, XAUTH and MODECFG
      * are not supposed to be performed again during rekey */
-    if(st->st_connection->newest_isakmp_sa != SOS_NOBODY &&
+    if( st->st_connection->remotepeertype == CISCO &&
+	st->st_connection->newest_isakmp_sa != SOS_NOBODY &&
         st->st_connection->spd.this.xauth_client) {
            DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
            st->hidden_variables.st_xauth_client_done = TRUE;
