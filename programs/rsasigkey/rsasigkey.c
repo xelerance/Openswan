@@ -1,15 +1,15 @@
 /*
  * RSA signature key generation
  * Copyright (C) 1999, 2000, 2001  Henry Spencer.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -163,7 +163,7 @@ char *hexOut(SECItem *data)
     for (i = 0, hexp = hexbuf+3; i < data->len; i++, hexp += 2) {
 	sprintf(hexp, "%02x", data->data[i]);
     }
-    *hexp='\0';     
+    *hexp='\0';
 
     hexp = hexbuf+1;
     hexp[0] = '0';
@@ -450,7 +450,7 @@ char *filename;
 	fsin[1]='\0';
 
 	nbits = 0;
- 
+
 	if (STREQ(filename, fsin))
 		f = stdin;
 	else
@@ -516,7 +516,7 @@ char *filename;
 			}
 		}
 	}
-	
+
 	if (f != stdin)
 		fclose(f);
 
@@ -564,14 +564,15 @@ rsasigkey(int nbits, char *configdir, char *password)
     mpz_init(n);
     mpz_init(e);
 
-    pwdata.source = password ? (strcmp(password, "/etc/ipsec.d/nsspassword")? PW_PLAINTEXT: PW_FROMFILE) : PW_NONE;
-    pwdata.data = password ? password : NULL;
-
     do {
 	if (!configdir) {
 		fprintf(stderr, "%s: configdir is required\n", me);
 		return;
 	}
+
+	snprintf(buf, sizeof(buf), "%s/nsspassword",configdir);
+	pwdata.source = password ? (strcmp(password, buf)? PW_PLAINTEXT: PW_FROMFILE) : PW_NONE;
+	pwdata.data = password ? password : NULL;
 
 	PR_Init(PR_USER_THREAD, PR_PRIORITY_NORMAL, 1);
 	snprintf(buf, sizeof(buf), "%s",configdir);
@@ -584,7 +585,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 		printf("FIPS integrity verification test failed.\n");
 		exit(1);
 	}
-#endif 
+#endif
 
 	if (PK11_IsFIPS() && !password) {
 		fprintf(stderr, "%s: On FIPS mode a password is required\n", me);
@@ -632,7 +633,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 	/*privkey->wincx = &pwdata;*/
 	PORT_Assert(pubkey != NULL);
 	fprintf(stderr, "Generated RSA key pair using the NSS database\n");
-       
+
 	SECItemToHex(getModulus(pubkey), n_str);
 	assert(!mpz_set_str(n, n_str, 16));
 
@@ -663,7 +664,7 @@ rsasigkey(int nbits, char *configdir, char *password)
 	} while(0);
 
     if (privkey) SECKEY_DestroyPrivateKey(privkey);
-    if (pubkey) SECKEY_DestroyPublicKey(pubkey);    
+    if (pubkey) SECKEY_DestroyPublicKey(pubkey);
 
     if (nss_initialized) {
 	(void) NSS_Shutdown();
