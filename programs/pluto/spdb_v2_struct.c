@@ -293,13 +293,13 @@ enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth)
 {
     switch(ikev1_phase2_auth) {
     case AUTH_ALGORITHM_HMAC_MD5:
-        return IKEv2_AUTH_HMAC_MD5_96;
+	return IKEv2_AUTH_HMAC_MD5_96;
     case AUTH_ALGORITHM_HMAC_SHA1:
-        return IKEv2_AUTH_HMAC_SHA1_96;
+	return IKEv2_AUTH_HMAC_SHA1_96;
     case AUTH_ALGORITHM_HMAC_SHA2_256:
-        return IKEv2_AUTH_HMAC_SHA2_256_128;
+	return IKEv2_AUTH_HMAC_SHA2_256_128;
     default:
-        return IKEv2_AUTH_INVALID;
+	return IKEv2_AUTH_INVALID;
    }
 }
 
@@ -1249,7 +1249,7 @@ ikev2_parse_child_sa_body(
     bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
     struct db_sa *p2alg;
-    struct trans_attrs ta, ta1;
+    struct trans_attrs ta,ta1;
     struct connection *c = st->st_connection;
     struct ikev2_transform_list itl0, *itl;
 
@@ -1390,8 +1390,8 @@ ikev2_parse_child_sa_body(
      * algorithms.
      */
     ta.integ_hash  = itl->integ_transforms[itl->integ_i];
-
-    /* here we obtain auth value for esp,
+    /*
+     * here we obtain auth value for esp,
      * but loosse what is correct to be sent in the propoasl
      * so preserve the winning proposal.
      */
