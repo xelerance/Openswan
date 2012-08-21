@@ -55,6 +55,7 @@
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
+#include  <nspr.h>
 # include <pk11pub.h>
 # include <keyhi.h>
 # include "oswconf.h"

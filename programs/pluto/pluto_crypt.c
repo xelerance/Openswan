@@ -184,6 +184,7 @@ static void catchusr1(int signo UNUSED)
 }
 #endif
 
+#ifdef DEBUG
 static void
 helper_passert_fail(const char *pred_str
 		    , const char *file_str
@@ -204,7 +205,7 @@ helper_passert_fail(const char *pred_str
     }
     osw_abort();
 }
-
+#endif
 
 void pluto_crypto_helper(int fd, int helpernum)
 {

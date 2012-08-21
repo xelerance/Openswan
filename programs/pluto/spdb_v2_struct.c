@@ -1041,11 +1041,11 @@ ikev2_parse_parent_sa_body(
 
 	    winning_prop = proposal;
 	    gotmatch = TRUE;
-
-	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
-		return NO_PROPOSAL_CHOSEN;
-	    }
+	    /* gotmatch is true, so will never go inside if*/
+	    //if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
+		//openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		//return NO_PROPOSAL_CHOSEN;
+	    //}
 	}
     }
 
@@ -1345,10 +1345,11 @@ ikev2_parse_child_sa_body(
 	    gotmatch = TRUE;
 	    winning_prop = proposal;
 
-	    if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-		openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
-		return NO_PROPOSAL_CHOSEN;
-	    }
+	    /* gotmatch is true, so will never go inside if*/
+	    //if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
+		//openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
+		//return NO_PROPOSAL_CHOSEN;
+	    //}
 	}
     }
 

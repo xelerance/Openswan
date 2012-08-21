@@ -1300,7 +1300,7 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	   PRArenaPool *arena;
 	   SECStatus retVal = SECSuccess;
 	   SECItem nss_n, nss_e, dsig;
-	   SECItem signature, data;
+	   SECItem signature;
            mpz_t e;
            mpz_t n;
 	   mpz_t s;
@@ -1378,10 +1378,6 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	    signature.type = siBuffer;
 	    signature.data = sc.ptr;
 	    signature.len  = (unsigned int)sc.len;
-
-	    data.type = siBuffer;
-	    data.data = digest->ptr;
-	    data.len  = (unsigned int)digest->len;
 
 	    dsigc.len = (unsigned int)sc.len;
 	    dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
