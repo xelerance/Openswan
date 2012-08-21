@@ -1739,6 +1739,7 @@ void copy_quirks(struct isakmp_quirks *dq
     dq->xauth_ack_msgid   |= sq->xauth_ack_msgid;
     dq->modecfg_pull_mode |= sq->modecfg_pull_mode;
     dq->nat_traversal_vid |= sq->nat_traversal_vid;
+    dq->xauth_vid |= sq->xauth_vid;
 }
 
 void set_state_ike_endpoints(struct state *st

@@ -550,6 +550,10 @@ static int validate_end(struct starter_conn *conn_st
 	if (ugh) ERR_FOUND("bad %sprotoport=%s [%s]", leftright, value, ugh);
     }
 
+    if(end->options_set[KNCF_XAUTHSERVER]) {
+	conn_st->policy |= POLICY_XAUTH;
+    }
+
     /*
     KSCF_SUBNETWITHIN    --- not sure what to do with it.
     KSCF_ESPENCKEY       --- todo (manual keying)
