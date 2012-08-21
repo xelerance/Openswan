@@ -475,12 +475,11 @@ sub dnschecks {
     checkdnshost $hostname;
     
     # Check all the public IP addresses...
-    run "/sbin/ifconfig -a";
-    foreach (grep /inet addr/,@out)
+    run "ip -4 -o addr show";
+    for (@out)
     {
-	$_=~ s/^\s*//;
-        @temp=split(/[:\ ]+/, $_);
-	push(@address,$temp[2]);
+	@temp=split(/[\/\ ]+/, $_);
+	push(@address,$temp[3]);
     }
     # Purge all non-routeable IPs...
     @address=grep !/^(127.*|10.*|172.1[6789]+.*.*|172.2+.*.*|172.3[01]+.*.*|192.168.*.*|169.254.*.*)/,@address;
