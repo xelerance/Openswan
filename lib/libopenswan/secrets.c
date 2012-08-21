@@ -1258,6 +1258,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    /* expecting a list of indices and then the key info */
 	    s = alloc_thing(struct secret, "secret");
 
+	    if (s != NULL) {
 	    s->ids = NULL;
 	    s->pks.kind = PPK_PSK;	/* default */
 	    setchunk(s->pks.u.preshared_secret, NULL, 0);
@@ -1268,7 +1269,8 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    s->pks.u.RSA_private_key.pub.nssCert = NULL;
 #endif
 
-	    while(s != NULL)
+	    //while(s != NULL)
+	    while(1)
 	    {
 		struct id id;
 		err_t ugh;
@@ -1278,7 +1280,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		    /* found key part */
 		    shift();	/* discard explicit separator */
 		    process_secret(psecrets, verbose, s, pass);
-		    s = NULL;
+		    //s = NULL;
 		    break;
 		}
 
@@ -1331,8 +1333,10 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		    /* unexpected Record Boundary or EOF */
 		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
 			   , flp->filename, flp->lino);
+		    pfree(s);
 		    break;
 		}
+	    }
 	    }
 	}
     }

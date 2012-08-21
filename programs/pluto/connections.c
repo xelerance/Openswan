@@ -1686,7 +1686,7 @@ struct connection *
 ikev2_narrow_instantiate(struct connection *c)
 {
     struct connection *d;
-    int wildcards;
+    //int wildcards;
 
     /*if(!(c->policy & POLICY_IKEV2_ALLOW) && !(c->policy & POLICY_IKEV2_PROPOSE)) {
     passert(c->kind == CK_TEMPLATE);
@@ -3566,6 +3566,10 @@ eclipsed(struct connection *c, struct spd_route **esrp)
 
     ue = NULL;
 
+    /* This while is never true as ue is NULL.
+     * The flow will never go inside while.
+     * This function will return NULL.
+     */
     while (sr1 != NULL && ue != NULL)
     {
 	for (ue = connections; ue != NULL; ue = ue->ac_next)
