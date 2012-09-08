@@ -49,7 +49,7 @@ void free_list(char **list);
 char **new_list(char *value);
 
 
-/** 
+/**
  * Set up hardcoded defaults, from data in programs/pluto/constants.h
  *
  * @param cfg starter_config struct
@@ -125,24 +125,24 @@ void ipsecconf_default_values(struct starter_config *cfg)
 }
 
 /* format error, and append to string of errors */
-int error_append(char **perr, const char *fmt, ...) 
+int error_append(char **perr, const char *fmt, ...)
 {
     va_list args;
 
     if(perr) {
-	char *nerr; 
-	int len; 
-	
+	char *nerr;
+	int len;
+
 	va_start(args, fmt);
 	vsnprintf(_tmp_err, sizeof(_tmp_err)-1, fmt, args);
 	va_end(args);
-	
-	len = 1+ strlen(_tmp_err) + (*perr ? strlen(*perr) : 0);	
+
+	len = 1+ strlen(_tmp_err) + (*perr ? strlen(*perr) : 0);
 	nerr = xmalloc(len);
 	nerr[0]='\0';
-	if(*perr) strcpy(nerr, *perr); 
-	strcat(nerr, _tmp_err);			
-	
+	if(*perr) strcpy(nerr, *perr);
+	strcat(nerr, _tmp_err);
+
 	if(*perr) free(*perr);
 	*perr = nerr;
 
@@ -187,7 +187,7 @@ void free_list(char **list)
 /**
  * Create a new list of pointers
  *
- * @param value 
+ * @param value
  * @return new_list (pointer to list of pointers)
  */
 char **new_list(char *value)
@@ -214,7 +214,7 @@ char **new_list(char *value)
 		free(val);
 		return NULL;
 	}
-	
+
 	nlist = (char **)malloc((count+1) * sizeof(char *));
 	if (!nlist) {
 		free(val);
@@ -233,7 +233,7 @@ char **new_list(char *value)
 }
 
 /**
- * Load a parsed config 
+ * Load a parsed config
  *
  * @param cfg starter_config structure
  * @param cfgp config_parsed (ie: valid) struct
@@ -278,21 +278,21 @@ static int load_setup (struct starter_config *cfg
 		} else {
 		    int len;
 		    char *s;
-		    
+
 		    len = strlen(cfg->setup.strings[kw->keyword.keydef->field])+1;
 		    len += strlen(kw->string)+1;
-		    
+
 		    /* allocate the string */
 		    s = cfg->setup.strings[kw->keyword.keydef->field];
 		    s = xrealloc(s, len);
 		    strncat(s, " ", len);
 		    strncat(s, kw->string, len);
-		    
+
 		    cfg->setup.strings[kw->keyword.keydef->field] = s;
 		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
 		}
 		break;
-		
+
 	    case kt_list:
 	    case kt_bool:
 	    case kt_invertbool:
@@ -321,9 +321,9 @@ static int load_setup (struct starter_config *cfg
 		break;
 	    }
 	}
-		
+
 	/* now process some things with specific values */
-	
+
 	/* interfaces has to be chopped up */
 	if (cfg->setup.interfaces) free_list(cfg->setup.interfaces);
 	cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
@@ -333,9 +333,9 @@ static int load_setup (struct starter_config *cfg
 
 /**
  * Validate that yes in fact we are one side of the tunnel
- * 
+ *
  * The function checks that IP addresses are valid, nexthops are
- * present (if needed) as well as policies, and sets the leftID 
+ * present (if needed) as well as policies, and sets the leftID
  * from the left= if it isn't set.
  *
  * @param conn_st a connection definition
@@ -373,7 +373,7 @@ static int validate_end(struct starter_conn *conn_st
     case KH_IFACE:
 	/* generally, this doesn't show up at this stage */
 	break;
-	
+
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
@@ -392,7 +392,7 @@ static int validate_end(struct starter_conn *conn_st
 	er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
 	if(er) {
 	    /* not numeric, so set the type to the string type */
-	    end->addrtype = KH_IPHOSTNAME; 
+	    end->addrtype = KH_IPHOSTNAME;
 	}
 
         if(end->id == NULL) {
@@ -402,7 +402,7 @@ static int validate_end(struct starter_conn *conn_st
             end->id=clone_str(idbuf, "end if");
         }
 	break;
-	
+
     case KH_OPPO:
 	conn_st->policy |= POLICY_OPPO;
 	break;
@@ -414,7 +414,7 @@ static int validate_end(struct starter_conn *conn_st
     case KH_GROUP:
 	conn_st->policy |= POLICY_GROUP;
 	break;
-	
+
     case KH_IPHOSTNAME:
 	/* generally, this doesn't show up at this stage */
 	break;
@@ -474,7 +474,7 @@ static int validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_ID])
     {
 	char *value = end->strings[KSCF_ID];
-	
+
 	if (end->id) free(end->id);
 	end->id = xstrdup(value);
     }
@@ -488,21 +488,21 @@ static int validate_end(struct starter_conn *conn_st
 	case PUBKEY_DNSONDEMAND:
 	    end->key_from_DNS_on_demand = TRUE;
 	    break;
-	    
+
 	default:
 	    end->key_from_DNS_on_demand = FALSE;
 	    /* validate the KSCF_RSAKEY1/RSAKEY2 */
 	    if(end->strings[KSCF_RSAKEY1] != NULL)
 	    {
 		char *value = end->strings[KSCF_RSAKEY1];
-		
+
 		if (end->rsakey1) free(end->rsakey1);
 		end->rsakey1 = (unsigned char *)xstrdup(value);
 	    }
 	    if(end->strings[KSCF_RSAKEY2] != NULL)
 	    {
 		char *value = end->strings[KSCF_RSAKEY2];
-		
+
 		if (end->rsakey2) free(end->rsakey2);
 		end->rsakey2 = (unsigned char *)xstrdup(value);
 	    }
@@ -515,9 +515,17 @@ static int validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_SOURCEIP])
     {
 	char *value = end->strings[KSCF_SOURCEIP];
-	
-	er = ttoaddr(value, 0, family, &(end->sourceip));
-	if (er) ERR_FOUND("bad addr %ssourceip=%s [%s]", leftright, value, er);
+
+	if (tnatoaddr(value, strlen(value), AF_INET, &(end->nexthop)) != NULL
+	    && tnatoaddr(value, strlen(value), AF_INET6, &(end->nexthop)) != NULL) {
+
+	    er = ttoaddr(value, 0, family, &(end->sourceip));
+	    if (er) ERR_FOUND("bad addr %ssourceip=%s [%s]", leftright, value, er);
+
+	} else {
+		er = tnatoaddr(value, 0, family, &(end->sourceip));
+		if (er) ERR_FOUND("bad numerical addr %ssourceip=%s [%s]", leftright, value, er);
+	}
 
 	if(!end->has_client) {
 	    starter_log(LOG_LEVEL_INFO, "defaulting %ssubnet to %s\n", leftright, value);
@@ -569,7 +577,7 @@ static int validate_end(struct starter_conn *conn_st
 
 /**
  * Take keywords from ipsec.conf syntax and load into a conn struct
- * 
+ *
  *
  * @param conn a connection definition
  * @param sl a section_list
@@ -591,7 +599,7 @@ bool translate_conn (struct starter_conn *conn
     int_set *set_options;
     volatile int i;              /* just to keep it around for debugging */
     struct kw_list *kw = sl->kw;
-	
+
     err = 0;
     i = 0;
 
@@ -602,7 +610,7 @@ bool translate_conn (struct starter_conn *conn
 	set_strings = &conn->strings_set;
 	the_options = &conn->options;
 	set_options = &conn->options_set;
-	
+
 	if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
@@ -614,7 +622,7 @@ bool translate_conn (struct starter_conn *conn
 	    starter_log(LOG_LEVEL_INFO, _tmp_err);
 	    continue;
 	}
-	
+
 	if(kw->keyword.keydef->validity & kv_leftright)
 	{
 	    if(kw->keyword.keyleft)
@@ -630,7 +638,7 @@ bool translate_conn (struct starter_conn *conn
 		set_options = &conn->right.options_set;
 	    }
 	}
-	
+
 	field = kw->keyword.keydef->field;
 
 #ifdef PARSER_TYPE_DEBUG
@@ -654,13 +662,13 @@ bool translate_conn (struct starter_conn *conn
 	    if((*set_strings)[field] == k_set)
 	    {
 		*error = _tmp_err;
-		
+
 		snprintf(_tmp_err, sizeof(_tmp_err)
 			 , "duplicate key '%s' in conn %s while processing def %s"
 			 , kw->keyword.keydef->keyname
 			 , conn->name
 			 , sl->name);
-		
+
 		starter_log(LOG_LEVEL_INFO, _tmp_err);
 		if(kw->keyword.string == NULL
 		   || (*the_strings)[field] == NULL
@@ -674,11 +682,11 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		    free((*the_strings)[field]);
 	    }
-	    
-	    if(kw->string == NULL) 
+
+	    if(kw->string == NULL)
 		{
 		*error = _tmp_err;
-		
+
 		snprintf(_tmp_err, sizeof(_tmp_err)
 			 , "Invalid %s value"
 			 , kw->keyword.keydef->keyname);
@@ -689,7 +697,7 @@ bool translate_conn (struct starter_conn *conn
 	    (*the_strings)[field] = xstrdup(kw->string);
 	    (*set_strings)[field] = assigned_value;
 	    break;
-	    
+
 	case kt_appendstring:
 	case kt_appendlist:
 	    /* implicitely, this field can have multiple values */
@@ -700,26 +708,26 @@ bool translate_conn (struct starter_conn *conn
 	    } else {
 		int len;
 		char *s;
-		
+
 		len = strlen((*the_strings)[field])+1;
 		len += strlen(kw->string)+1;
-		
+
 		/* allocate the string */
 		s = (*the_strings)[field];
 		s = xrealloc(s, len);
 		strncat(s, " ", len);
 		strncat(s, kw->string, len);
-		
+
 		(*the_strings)[field] = s;
 	    }
 	    (*set_strings)[field] = TRUE;
 	    break;
-	    
+
 	case kt_rsakey:
 	case kt_loose_enum:
 	    assert(field < KEY_STRINGS_MAX);
 	    assert(field < KEY_NUMERIC_MAX);
-	    
+
 	    if((*set_options)[field] == k_set)
 	    {
 		*error = _tmp_err;
@@ -728,9 +736,9 @@ bool translate_conn (struct starter_conn *conn
 			 , kw->keyword.keydef->keyname
 			 , conn->name
 			 , sl->name);
-		
+
 		starter_log(LOG_LEVEL_INFO, _tmp_err);
-		
+
 		/* only fatal if we try to change values */
 		if((*the_options)[field] != kw->number
 		   || !((*the_options)[field] == LOOSE_ENUM_OTHER
@@ -750,10 +758,10 @@ bool translate_conn (struct starter_conn *conn
 		assert(kw->keyword.string != NULL);
 		if((*the_strings)[field]) free((*the_strings)[field]);
 		(*the_strings)[field] = xstrdup(kw->keyword.string);
-	    } 
+	    }
 	    (*set_options)[field] = assigned_value;
 	    break;
-	    
+
 	case kt_list:
 	case kt_bool:
 	case kt_invertbool:
@@ -787,7 +795,7 @@ bool translate_conn (struct starter_conn *conn
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
 	    break;
-	    
+
 	case kt_comment:
 	    break;
 	case kt_obsolete:
@@ -803,7 +811,7 @@ void move_comment_list(struct starter_comments_list *to,
 		       struct starter_comments_list *from)
 {
     struct starter_comments *sc, *scnext;
-    
+
     for(sc = from->tqh_first;
 	sc != NULL;
 	sc = scnext) {
@@ -844,7 +852,7 @@ static int load_conn (struct starter_config *cfg
     int   alsoplace;
     int   alsosize;
     struct section_list *sl1;
-	
+
     err = 0;
 
     err += load_conn_basic(conn, sl, defaultconn ? k_default : k_set, perr);
@@ -874,7 +882,7 @@ static int load_conn (struct starter_config *cfg
 	    sl1->beenhere = FALSE;
 	}
 	sl->beenhere = TRUE;
-	
+
 	/* count them */
 	alsos = conn->alsos;
 	conn->alsos = NULL;
@@ -897,7 +905,7 @@ static int load_conn (struct starter_config *cfg
 
 	    starter_log(LOG_LEVEL_DEBUG, "\twhile loading conn '%s' also including '%s'"
 			, conn->name, alsos[alsoplace]);
-			    
+
 	    /*
 	     * if we found something that matches by name, and we haven't be
 	     * there, then process it.
@@ -915,13 +923,13 @@ static int load_conn (struct starter_config *cfg
 		if(conn->strings[KSF_ALSO])
 		{
 		    /* now, check out the KSF_ALSO, and extend list if we need to */
-		    newalsos = new_list(conn->strings[KSF_ALSO]);		
-		    
+		    newalsos = new_list(conn->strings[KSF_ALSO]);
+
 		    if(newalsos && newalsos[0]!=NULL)
 		    {
 			/* count them */
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
-			
+
 			/* extend conn->alsos */
 			alsos = xrealloc(alsos, (alsosize+newalsoplace+1) * sizeof(char *));
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++)
@@ -931,18 +939,18 @@ static int load_conn (struct starter_config *cfg
 			    starter_log(LOG_LEVEL_DEBUG
 					, "\twhile processing section '%s' added also=%s"
 					, sl1->name, newalsos[newalsoplace]);
-			    
+
 			    alsos[alsosize++]=xstrdup(newalsos[newalsoplace]);
 			}
 			alsos[alsosize]=NULL;
 		    }
-		    
+
 		    free_list(newalsos);
 		}
 	    }
 	    alsoplace++;
 	}
-	
+
 	if(alsoplace >= ALSO_LIMIT)
 	{
 	    starter_log(LOG_LEVEL_INFO
@@ -952,7 +960,7 @@ static int load_conn (struct starter_config *cfg
 			, ALSO_LIMIT);
 	    return 1;
 	}
-	
+
 	if(conn->alsos != alsos && conn->alsos != NULL)
 	{
 	    free_list(conn->alsos);
@@ -978,7 +986,7 @@ static int load_conn (struct starter_config *cfg
 	    conn->policy &= ~POLICY_TUNNEL;
 	    conn->policy &= ~POLICY_SHUNT_MASK;
 	    break;
-	    
+
 	case KS_UDPENCAP:
 	    /* no way to specify this yet! */
 	    break;
@@ -1002,10 +1010,10 @@ static int load_conn (struct starter_config *cfg
 	    break;
 	}
     }
-	    
+
     KW_POLICY_FLAG(KBF_COMPRESS, POLICY_COMPRESS);
     KW_POLICY_FLAG(KBF_PFS,  POLICY_PFS);
-    
+
     /* reset authby flags */
     if(conn->options_set[KBF_AUTHBY]) {
 	conn->policy &= ~(POLICY_ID_AUTH_MASK);
@@ -1017,7 +1025,7 @@ static int load_conn (struct starter_config *cfg
 		starter_log(LOG_LEVEL_INFO
                         ,"while loading conn '%s', PSK not allowed in FIPS mode with NSS", conn->name);
 		return 1;
-		}      
+		}
 	}
 #endif
 
@@ -1031,7 +1039,7 @@ static int load_conn (struct starter_config *cfg
 		    conn->options[KBF_AUTHBY]);
 #endif
     }
-    
+
     KW_POLICY_NEGATIVE_FLAG(KBF_REKEY, POLICY_DONT_REKEY);
 
     KW_POLICY_FLAG(KBF_AGGRMODE, POLICY_AGGRESSIVE);
@@ -1071,16 +1079,16 @@ static int load_conn (struct starter_config *cfg
 	case fo_never:
 	    conn->policy &= ~POLICY_IKEV2_ALLOW;
 	    break;
-	    
+
 	case fo_permit:
 	    /* this is the default for now */
 	    conn->policy |= POLICY_IKEV2_ALLOW;
 	    break;
-	    
+
 	case fo_propose:
 	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
 	    break;
-	    
+
 	case fo_insist:
 	    conn->policy |= POLICY_IKEV1_DISABLE;
 	    conn->policy |= POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE;
@@ -1094,11 +1102,11 @@ static int load_conn (struct starter_config *cfg
 	    /* this is the default */
 	    conn->policy |= POLICY_SAREF_TRACK;
 	    break;
-	    
+
 	case sat_conntrack:
 	    conn->policy |= POLICY_SAREF_TRACK|POLICY_SAREF_TRACK_CONNTRACK;
 	    break;
-	    
+
 	case sat_no:
 	    conn->policy &= ~POLICY_SAREF_TRACK;
 	    conn->policy &= ~POLICY_SAREF_TRACK_CONNTRACK;
@@ -1123,11 +1131,11 @@ static int load_conn (struct starter_config *cfg
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
     }
-    
+
     return err;
 }
 
-    
+
 void conn_default (char *n, struct starter_conn *conn,
 		   struct starter_conn *def)
 {
@@ -1149,7 +1157,7 @@ void conn_default (char *n, struct starter_conn *conn,
     CONN_STR(conn->right.id);
     CONN_STR2(conn->right.rsakey1, unsigned char *);
     CONN_STR2(conn->right.rsakey2, unsigned char *);
-    
+
     for(i=0; i<KSCF_MAX; i++)
     {
 	CONN_STR(conn->left.strings[i]);
@@ -1168,7 +1176,7 @@ void conn_default (char *n, struct starter_conn *conn,
     {
 	conn->options[i] = def->options[i];
     }
-    
+
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
 #ifdef HAVE_LABELED_IPSEC
@@ -1181,7 +1189,7 @@ void conn_default (char *n, struct starter_conn *conn,
 struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_t *perr)
 {
     struct starter_conn *conn;
-    
+
     conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
     if (!conn) {
 	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
@@ -1195,7 +1203,7 @@ struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_
     conn->state = STATE_FAILED;
 
     TAILQ_INIT(&conn->comments);
-    
+
     TAILQ_INSERT_TAIL(&cfg->conns, conn, link);
     return conn;
 }
@@ -1216,10 +1224,10 @@ int init_load_conn(struct starter_config *cfg
     if(conn == NULL) {
 	return -1;
     }
-    
+
     connerr = load_conn (cfg, conn, cfgp, sconn, TRUE,
 			 defaultconn, resolvip, perr);
-		
+
     if(connerr != 0) {
 	starter_log(LOG_LEVEL_INFO, "while loading '%s': %s\n",
 		    sconn->name, *perr);
