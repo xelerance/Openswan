@@ -1,35 +1,35 @@
-# 
+#
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
 #    this format, e.g. by running:
 #         info -n '(gettext)PO Files'
 #         info -n '(gettext)Header Entry'
-# 
+#
 #    Some information specific to po-debconf are available at
 #            /usr/share/doc/po-debconf/README-trans
 #         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-# 
+#
 #    Developers do not need to manually edit POT or PO files.
-# 
-# 
+#
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: openswan 1:2.4.9+dfsg-3\n"
+"Project-Id-Version: openswan 1:2.6.28+dfsg-5+b1\n"
 "Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
-"POT-Creation-Date: 2010-08-06 00:50+0200\n"
-"PO-Revision-Date: 2008-01-31 06:52+0900\n"
-"Last-Translator: Hideki Yamane (Debian-JP) <henrich@debian.or.jp>\n"
+"POT-Creation-Date: 2010-07-29 19:03+0200\n"
+"PO-Revision-Date: 2011-05-03 10:52+0900\n"
+"Last-Translator: Hideki Yamane <henrich@debian.org>\n"
 "Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ja\n"
 
 #. Type: note
 #. Description
 #: ../openswan.templates:1001
 msgid "Old runlevel management superseded"
-msgstr ""
+msgstr "以前のランレベル管理は不要になりました"
 
 #. Type: note
 #. Description
@@ -43,24 +43,23 @@ msgid ""
 "changed your Openswan startup parameters, then please take a look at NEWS."
 "Debian for instructions on how to modify your setup accordingly."
 msgstr ""
+"Openswan パッケージの以前のバージョンでは、3 つの異なった Start/Stop レベルか"
+"ら選べるようになっていました。標準のシステム起動手順が変更されたことによっ"
+"て、これはもう必要ではなくなったりあるいは役立たなくなったりしています。これ"
+"まで事前定義されていたモードで動作していたのものと同様に、新規にインストール"
+"したものは適切なデフォルトのレベルが設定されるようになっています。以前のバー"
+"ジョンからのアップグレードで Openswan の起動パラメータを変更していた場合は、"
+"どのように設定を修正するかは NEWS.Debian の指示を参照してください。"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:2001
-#, fuzzy
-#| msgid "Do you wish to restart Openswan?"
 msgid "Restart Openswan now?"
-msgstr "Openswan を再起動しますか?"
+msgstr "Openswan を今すぐ再起動しますか?"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:2001
-#, fuzzy
-#| msgid ""
-#| "Restarting Openswan is a good idea, since if there is a security fix, it "
-#| "will not be fixed until the daemon restarts. Most people expect the "
-#| "daemon to restart, so this is generally a good idea. However this might "
-#| "take down existing connections and then bring them back up."
 msgid ""
 "Restarting Openswan is recommended, since if there is a security fix, it "
 "will not be applied until the daemon restarts. Most people expect the daemon "
@@ -68,33 +67,21 @@ msgid ""
 "existing connections and then bring them back up, so if you are using such "
 "an Openswan tunnel to connect for this update, restarting is not recommended."
 msgstr ""
-"セキュリティ修正があった場合にはデーモンが再起動されるまで修正が反映されませ"
-"ん。そのため、Openswan を再起動するのは良い考えです。ほとんどの人はデーモンを"
-"再起動しようとしますが、これは大抵問題ありません。しかし、この作業で現在の接"
-"続は切断され、再度繋ぎなおすことになります。"
+"セキュリティ修正があった場合、デーモンが再起動されるまでは修正が反映されない"
+"ので、Openswan の再起動をお勧めします。多くの人はデーモンが再起動するのを予期"
+"していますので、これは大抵の場合問題ありません。しかし、この作業では現在の接"
+"続が一旦切断されてから再度繋ぎなおすことになるので、今回のアップデートに "
+"Openswan のトンネルを使っているような場合は、再起動はお勧めしません。"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:3001
-#, fuzzy
-#| msgid ""
-#| "Do you have an existing X509 certificate file that you want to use for "
-#| "Openswan?"
 msgid "Use an X.509 certificate for this host?"
-msgstr "Openswan で利用したい X509 証明書ファイルがありますか?"
+msgstr "このホストに対して X.509 証明書を利用しますか?"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:3001
-#, fuzzy
-#| msgid ""
-#| "This installer can automatically create a RSA public/private keypair for "
-#| "this host. This keypair can be used to authenticate IPSec connections to "
-#| "other hosts and is the preferred way for building up secure IPSec "
-#| "connections. The other possibility would be to use shared secrets "
-#| "(passwords that are the same on both sides of the tunnel) for "
-#| "authenticating an connection, but for a larger number of connections RSA "
-#| "authentication is easier to administer and more secure."
 msgid ""
 "An X.509 certificate for this host can be automatically created or imported. "
 "It can be used to authenticate IPsec connections to other hosts and is the "
@@ -104,12 +91,11 @@ msgid ""
 "connections, key based authentication is easier to administer and more "
 "secure."
 msgstr ""
-"このインストーラはこのホストの RSA 公開鍵と秘密鍵のキーペアを自動的に生成でき"
-"ます。このキーペアは他のホストとの IPSec 通信での認証に利用可能で、セキュア"
-"な IPSec 通信を確立する方法として好まれています。他に利用可能な方法としては共"
-"通鍵 (トンネルの双方で同じパスワード) を通信の認証に利用するというのがありま"
-"すが、多数の接続に対しては、RSA 認証のほうが管理がより簡単で、よりセキュアで"
-"す。"
+"このホスト用に X.509 証明書を自動的に生成あるいはインポートできます。他のホス"
+"トとの IPSec 通信での認証に利用可能で、セキュアな IPSec 通信を確立する方法と"
+"して好まれています。他に利用可能な方法としては共通鍵 (PSK、トンネルの双方で同"
+"じパスワードを利用する) を通信の認証に利用するというのがありますが、多数の接"
+"続に対しては RSA 認証のほうが管理がより簡単でよりセキュアです。"
 
 #. Type: boolean
 #. Description
@@ -118,28 +104,26 @@ msgid ""
 "Alternatively you can reject this option and later use the command \"dpkg-"
 "reconfigure openswan\" to come back."
 msgstr ""
+"または、この選択肢を選ばないでおいて、後ほど「dpkg-reconfigure openswan」を実"
+"行して再度呼び出すこともできます。"
 
 #. Type: select
 #. Choices
 #: ../openswan.templates:4001
 msgid "create"
-msgstr ""
+msgstr "作成する"
 
 #. Type: select
 #. Choices
 #: ../openswan.templates:4001
 msgid "import"
-msgstr ""
+msgstr "インポートする"
 
 #. Type: select
 #. Description
 #: ../openswan.templates:4002
-#, fuzzy
-#| msgid ""
-#| "Do you have an existing X509 certificate file that you want to use for "
-#| "Openswan?"
 msgid "Methods for using a X.509 certificate to authenticate this host:"
-msgstr "Openswan で利用したい X509 証明書ファイルがありますか?"
+msgstr "このホストを認証するのに利用する X.509 証明書をどうするか:"
 
 #. Type: select
 #. Description
@@ -149,6 +133,9 @@ msgid ""
 "or to import an existing public and private key stored in PEM file(s) for "
 "authenticating IPsec connections."
 msgstr ""
+"ユーザが定義した設定で新規に X.509 証明書を作成することも、IPsec 接続認証用の"
+"既存の PEM ファイル形式で保存されている公開鍵および秘密鍵をインポートすること"
+"も可能です。"
 
 #. Type: select
 #. Description
@@ -161,6 +148,11 @@ msgid ""
 "certificate and all the answers given must match exactly the requirements of "
 "the CA, otherwise the certificate request may be rejected."
 msgstr ""
+"新規に X.509 証明書を作るのを選択した場合は、作成を始める前に答える必要がある"
+"質問をまず大量に尋ねられます。既存の認証局によって署名された公開鍵が必要な場"
+"合は、自己署名認証を作成するのを選んではならず、回答はすべて認証局 (CA) の要"
+"求項目に完全に一致している必要があることに留意してください。そうでない場合"
+"は、証明書要求は拒否されることになるでしょう。"
 
 #. Type: select
 #. Description
@@ -174,54 +166,49 @@ msgid ""
 "for the X.509 certificates has to be PEM and that the private key must not "
 "be encrypted or the import procedure will fail."
 msgstr ""
+"既存の公開鍵および秘密鍵をインポートしたい場合は、ファイル名を尋ねられます "
+"(両方が一つのファイルに保存されている場合は全く同じになるかもしれません)。ど"
+"こに認証局の公開鍵が保存されているかを指定することも任意で可能ですが、この"
+"ファイルは先ほどのものと同じにはできません。X.509 証明書は PEM 形式であり、秘"
+"密鍵は暗号化されていないことが必要なことにも注意ください。さもなくばインポー"
+"ト作業は失敗します。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:5001
-#, fuzzy
-#| msgid "Please enter the country code for the X509 certificate request."
 msgid "File name of your PEM format X.509 certificate:"
-msgstr "X509 証明書要求に記載する国コードを入力してください。"
+msgstr "PEM 形式の X.509 証明書のファイル名:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:5001
-#, fuzzy
-#| msgid ""
-#| "Please enter the location of the file containing your X509 certificate in "
-#| "PEM format."
 msgid ""
 "Please enter the location of the file containing your X.509 certificate in "
 "PEM format."
-msgstr "PEM 形式の X509 証明書を含んでいるファイルの場所を入力してください。"
+msgstr "PEM 形式の X.509 証明書を含んでいるファイルの場所を入力してください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:6001
 msgid "File name of your PEM format X.509 private key:"
-msgstr ""
+msgstr "PEM 形式の X.509 ルート CA のファイル名:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:6001
-#, fuzzy
-#| msgid ""
-#| "Please enter the location of the file containing the private RSA key "
-#| "matching your X509 certificate in PEM format. This can be the same file "
-#| "that contains the X509 certificate."
 msgid ""
 "Please enter the location of the file containing the private RSA key "
 "matching your X.509 certificate in PEM format. This can be the same file "
 "that contains the X.509 certificate."
 msgstr ""
-"PEM 形式の X509 証明書に対応する秘密鍵を含んでいるファイルの場所を入力してく"
-"ださい。これは X509 証明書を含んでいるファイルと同じで構いません。"
+"PEM 形式の X.509 証明書に対応する RSA 秘密鍵を含むファイルの場所を入力してく"
+"ださい。これは X.509 証明書を含んでいるファイルと同じで構いません。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:7001
 msgid "File name of your PEM format X.509 RootCA:"
-msgstr ""
+msgstr "PEM 形式の X.509 ルート CA のファイル名:"
 
 #. Type: string
 #. Description
@@ -233,52 +220,39 @@ msgid ""
 "Please note that it's not possible to store the RootCA in the same file as "
 "your X.509 certificate or private key."
 msgstr ""
+"X.509 認証局のルートが証明書に署名するのに使った PEM 形式のファイルを含んだ"
+"ファイルの場所を入力することも任意で可能です。これを持っていない、あるいは利"
+"用したくないという場合にはこの欄を空のままにしておいてください。ルート CA を "
+"X.509 証明書や秘密鍵と同じファイルに保存するのはできないことにご注意くださ"
+"い。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:8001
 msgid "Length of RSA key to be created:"
-msgstr ""
+msgstr "作成する RSA 鍵の鍵長を入力してください:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:8001
-#, fuzzy
-#| msgid ""
-#| "Please enter the length of the created RSA key. it should not be less "
-#| "than 1024 bits because this should be considered unsecure and you will "
-#| "probably not need anything more than 2048 bits because it only slows the "
-#| "authentication process down and is not needed at the moment."
 msgid ""
 "Please enter the required RSA key-length. Anything under 1024 bits should be "
 "considered insecure; anything more than 4096 bits slows down the "
 "authentication process and is not useful at present."
 msgstr ""
-"生成する RSA 鍵の長さを入力してください。安全のため、1024 ビット以下にすべき"
-"ではありません。2048 ビット以上にする必要もないでしょう。認証プロセスが遅くな"
-"りますし、現時点ではおそらく必要ありません。"
+"生成する RSA 鍵の長さを入力してください。安全のため、1024 ビット未満にすべき"
+"ではありません。4096 ビットより大きなものにする必要もないでしょう。認証プロセ"
+"スが遅くなりますし、現時点ではおそらく必要ありません。"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:9001
-#, fuzzy
-#| msgid "Do you want to create a self-signed X509 certificate?"
 msgid "Create a self-signed X.509 certificate?"
-msgstr "自己署名 X509 証明書を生成しますか?"
+msgstr "自己署名 X.509 証明書を生成しますか?"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:9001
-#, fuzzy
-#| msgid ""
-#| "This installer can only create self-signed X509 certificates "
-#| "automatically, because otherwise a certificate authority is needed to "
-#| "sign the certificate request. If you want to create a self-signed "
-#| "certificate, you can use it immediately to connect to other IPSec hosts "
-#| "that support X509 certificate for authentication of IPSec connections. "
-#| "However, if you want to use the new PKI features of Openswan >= 1.91, you "
-#| "will need to have all X509 certificates signed by a single certificate "
-#| "authority to create a trust path."
 msgid ""
 "Only self-signed X.509 certificates can be created automatically, because "
 "otherwise a Certificate Authority is needed to sign the certificate request. "
@@ -288,38 +262,29 @@ msgid ""
 "features requires all certificates to be signed by a single Certificate "
 "Authority to create a trust path."
 msgstr ""
-"証明書要求に署名するためには認証局が必要となるので、このインストーラでは自己"
-"署名 X509 証明書を自動的に生成する事だけが可能です。自己署名証明書を生成した"
-"い場合、これを使用してすぐに X509 証明書をサポートしている他の IPSec ホストに"
-"接続可能です。しかし、Openswan バージョン 1.91 以上での新しい PKI 機能を使い"
-"たい場合は、trust path を生成するために単一の認証局によってすべての X509 証明"
-"書に署名してもらう必要があります。"
+"証明書要求に署名するためには認証局が必要となるので、自動的に行うには自己署名 "
+"X.509 証明書のみが生成が可能です。自己署名証明書の作成を選んだ場合は、すぐに"
+"これを利用して、IPSec 接続の認証に X.509 証明書を利用している他の IPSec ホス"
+"トへの接続が可能になります。しかし、strongSwan の PKI 機能を使いたい場合は、"
+"trust path を生成するために単一の認証局によってすべての X.509 証明書に署名し"
+"てもらう必要があります。"
 
 #. Type: boolean
 #. Description
 #: ../openswan.templates:9001
-#, fuzzy
-#| msgid ""
-#| "If you do not want to create a self-signed certificate, then this "
-#| "installer will only create the RSA private key and the certificate "
-#| "request and you will have to sign the certificate request with your "
-#| "certificate authority."
 msgid ""
 "If you do not choose to create a self-signed certificate, only the RSA "
 "private key and the certificate request will be created, and you will have "
 "to sign the certificate request with your Certificate Authority."
 msgstr ""
-"自己署名証明書を生成したくない場合、このインストーラは RSA 秘密鍵と証明書要求"
-"のみを生成します。そして、認証局に証明書要求へ署名をしてもらう必要がありま"
-"す。"
+"自己署名証明書を作成したくない場合、RSA 秘密鍵と対応する証明書要求のみが作成"
+"されるので、認証局に対して証明書要求に署名をしてもらう必要が生じます。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:10001
-#, fuzzy
-#| msgid "Please enter the country code for the X509 certificate request."
 msgid "Country code for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載する国コードを入力してください。"
+msgstr "X.509 証明書要求に記載する国コード:"
 
 #. Type: string
 #. Description
@@ -328,54 +293,40 @@ msgid ""
 "Please enter the two-letter code for the country the server resides in (such "
 "as \"AT\" for Austria)."
 msgstr ""
+"サーバが存在する場所の二文字の国コード (例えば日本の場合は「JP」) を入力して"
+"ください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:10001
-#, fuzzy
-#| msgid ""
-#| "You really need to enter a valid country code here, because openssl will "
-#| "refuse to generate certificates without one. An empty field is allowed "
-#| "for any other field of the X.509 certificate, but not for this one."
 msgid ""
 "OpenSSL will refuse to generate a certificate unless this is a valid "
 "ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
 "certificate, but not here."
 msgstr ""
-"openssl が国コードなしでは証明書の生成を拒否するので、正しい国コードをここで"
-"入力する必要があります。X.509 証明書では、他のフィールドについては空でも構い"
-"ませんが、これについては許可されていません。"
+"OpenSSL は、正規の ISO-3166 国コードが無いと証明書の生成を拒否します。X.509 "
+"証明書において、他のフィールドについては空でも構いませんが、これについては許"
+"可されていません。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid ""
-#| "Please enter the state or province name for the X509 certificate request."
 msgid "State or province name for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載する都道府県名を入力してください。"
+msgstr "X.509 証明書要求に記載する都道府県名:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:11001
-#, fuzzy
-#| msgid ""
-#| "Please enter the full name of the state or province you live in. This "
-#| "name will be placed in the certificate request."
 msgid ""
 "Please enter the full name of the state or province the server resides in "
 "(such as \"Upper Austria\")."
-msgstr ""
-"あなたが在住している都道府県を入力してください。これは証明書要求に記載されま"
-"す。"
+msgstr "サーバ所在地の都道府県名 (例:「Tokyo」)を入力してください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:12001
-#, fuzzy
-#| msgid "Please enter the locality name for the X509 certificate request."
 msgid "Locality name for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載する土地の名前を入力してください。"
+msgstr "X.509 証明書要求に記載する地域名:"
 
 #. Type: string
 #. Description
@@ -383,50 +334,40 @@ msgstr "X509 証明書要求に記載する土地の名前を入力してくだ�
 msgid ""
 "Please enter the locality the server resides in (often a city, such as "
 "\"Vienna\")."
-msgstr ""
+msgstr "サーバ所在地 (大抵は「Shinjuku」のような市区名)を入力してください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:13001
-#, fuzzy
-#| msgid "Please enter the organization name for the X509 certificate request."
 msgid "Organization name for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載する組織名を入力してください。"
+msgstr "X.509 証明書要求に記載する組織名:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:13001
 msgid ""
 "Please enter the organization the server belongs to (such as \"Debian\")."
-msgstr ""
+msgstr "サーバが所属する組織 (「Debian」など) を入力してください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:14001
-#, fuzzy
-#| msgid ""
-#| "Please enter the organizational unit for the X509 certificate request."
 msgid "Organizational unit for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載する組織単位を入力してください。"
+msgstr "X.509 証明書要求に記載する部署名:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:14001
-#, fuzzy
-#| msgid ""
-#| "Please enter the organizational unit for the X509 certificate request."
 msgid ""
 "Please enter the organizational unit the server belongs to (such as "
 "\"security group\")."
-msgstr "X509 証明書要求に記載する組織単位を入力してください。"
+msgstr "サーバが所属する部署名 (「security group」など) を入力してください。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:15001
-#, fuzzy
-#| msgid "Please enter the common name for the X509 certificate request."
 msgid "Common Name for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載するコモンネームを入力してください。"
+msgstr "X.509 証明書要求に記載するコモンネーム:"
 
 #. Type: string
 #. Description
@@ -434,35 +375,30 @@ msgstr "X509 証明書要求に記載するコモンネームを入力してく�
 msgid ""
 "Please enter the Common Name for this host (such as \"gateway.example.org\")."
 msgstr ""
+"このホスト用の (「gateway.example.org」のような) コモンネームを入力してくださ"
+"い。"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:16001
-#, fuzzy
-#| msgid "Please enter the email address for the X509 certificate request."
 msgid "Email address for the X.509 certificate request:"
-msgstr "X509 証明書要求に記載するメールアドレスを入力してください。"
+msgstr "X.509 証明書要求に記載するメールアドレス:"
 
 #. Type: string
 #. Description
 #: ../openswan.templates:16001
-#, fuzzy
-#| msgid ""
-#| "Please enter the email address of the person or organization who is "
-#| "responsible for the X509 certificate, This address will be placed in the "
-#| "certificate request."
 msgid ""
 "Please enter the email address of the person or organization responsible for "
 "the X.509 certificate."
 msgstr ""
-"X509 証明書の責任者となる人物・団体のメールアドレスを入力してください。このア"
-"ドレスは証明書要求に記載されます。"
+"X.509 証明書についての対応を行う、個人あるいは団体のメールアドレスを入力して"
+"ください。"
 
 #. Type: note
 #. Description
 #: ../openswan.templates:17001
 msgid "Modification of /etc/ipsec.conf"
-msgstr ""
+msgstr "/etc/ipsec.conf の変更"
 
 #. Type: note
 #. Description
@@ -474,26 +410,14 @@ msgid ""
 "Any such include paragraph will now be automatically removed to ensure that "
 "Openswan can start correctly."
 msgstr ""
+"Openswan の開発元での変更により、 opportunistic encryption (OE) はデフォルト"
+"では有効にはならなくなりました。以前のバージョンで明示的に無効にするために配"
+"布されていた no_oe.conf ファイルですが、ipsec.conf で含める必要は最早なくなり"
+"ました。そのような指定を含んでいる行は、Openswan が正常に起動するのを確実にす"
+"るため、自動的に削除されます。"
 
-#, fuzzy
-#~| msgid "Please enter the location of your X509 certificate in PEM format."
-#~ msgid "Please enter the location of your X509 certificate in PEM format:"
-#~ msgstr "PEM 形式の X509 証明書の場所を入力してください。"
-
-#, fuzzy
-#~| msgid "Please enter the location of your X509 private key in PEM format."
-#~ msgid "Please enter the location of your X509 private key in PEM format:"
-#~ msgstr "PEM 形式の X509 秘密鍵の場所を入力してください。"
-
-#, fuzzy
-#~| msgid "Please enter the location of your X509 certificate in PEM format."
-#~ msgid "You may now enter the location of your X509 RootCA in PEM format:"
-#~ msgstr "PEM 形式の X509 証明書の場所を入力してください。"
-
-#, fuzzy
-#~| msgid "Which length should the created RSA key have?"
 #~ msgid "Please enter which length the created RSA key should have:"
-#~ msgstr "RSA 鍵をどの程度の長さで生成しますか?"
+#~ msgstr "生成 する RSA 鍵の長さを入力してください:"
 
 #~ msgid ""
 #~ "Please enter the 2 letter country code for your country. This code will "
@@ -518,24 +442,8 @@ msgstr ""
 #~ msgid "Example: Vienna"
 #~ msgstr "例: Shinjuku-ku"
 
-#~ msgid ""
-#~ "Please enter the organization (e.g. company) that the X509 certificate "
-#~ "should be created for. This name will be placed in the certificate "
-#~ "request."
-#~ msgstr ""
-#~ "X509 証明書の生成対象となるべき組織 (例: 会社) を入力してください。これは"
-#~ "証明書要求に記載されます。"
-
 #~ msgid "Example: Debian"
 #~ msgstr "例: Debian"
-
-#~ msgid ""
-#~ "Please enter the organizational unit (e.g. section) that the X509 "
-#~ "certificate should be created for. This name will be placed in the "
-#~ "certificate request."
-#~ msgstr ""
-#~ "X509 証明書の生成対象となるべき組織単位 (例: 部署名) を入力してください。"
-#~ "これは証明書要求に記載されます。"
 
 #~ msgid "Example: security group"
 #~ msgstr "例: security group"
@@ -561,9 +469,6 @@ msgstr ""
 #~ "新しい公開鍵と秘密鍵のキーペアを生成したくないという場合は、既存の鍵を使う"
 #~ "のを選ぶこともできます。"
 
-#~ msgid "x509"
-#~ msgstr "x509"
-
 #~ msgid "plain"
 #~ msgstr "通常のタイプ"
 
@@ -576,14 +481,6 @@ msgstr ""
 #~ "は RSA 公開鍵を (さらにはそれに対応する秘密鍵も) 含む X509 証明書ファイル"
 #~ "も同様です。"
 
-#, fuzzy
-#~| msgid ""
-#~| "If you only want to build up IPSec connections to hosts also running "
-#~| "Openswan, it might be a bit easier using plain RSA keypairs. But if you "
-#~| "want to connect to other IPSec implementations, you will need a X509 "
-#~| "certificate. It is also possible to create a X509 certificate here and "
-#~| "extract the RSA public key in plain format if the other side runs "
-#~| "Openswan without X509 certificate support."
 #~ msgid ""
 #~ "If you only want to create IPsec connections to hosts also running "
 #~ "Openswan, it might be a bit easier using plain RSA keypairs. But if you "
@@ -592,18 +489,13 @@ msgstr ""
 #~ "extract the RSA public key in plain format if the other side runs "
 #~ "Openswan without X509 certificate support."
 #~ msgstr ""
-#~ "既に Openswan を動作させているホストと IPSec 通信を確立したいだけの場合"
+#~ "既に Openswan を動作させているホストと IPSec 通信を生成したいだけの場合"
 #~ "は、通常の RSA キーペアを使用すると多少簡単になります。しかし、他の IPSec "
 #~ "実装との接続を行いたい場合は X509 証明書が必要になります。通信を行う対象の"
 #~ "ホストが Openswan を X509 証明書のサポート無しで運用していた場合、ここで "
 #~ "X509 証明書を生成して、後ほど RSA 公開鍵を通常の形式に展開することも可能で"
 #~ "す。"
 
-#, fuzzy
-#~| msgid ""
-#~| "Therefore a X509 certificate is recommended since it is more flexible "
-#~| "and this installer should be able to hide the complex creation of the "
-#~| "X509 certificate and its use in Openswan anyway."
 #~ msgid ""
 #~ "Therefore a X509 certificate is recommended since it is more flexible and "
 #~ "this installer should be able to hide the complex creation of the X509 "
@@ -613,13 +505,6 @@ msgstr ""
 #~ "トーラを使えば、X509 証明書の生成や Openswan での利用に際しての面倒さを隠"
 #~ "蔽してくれるはずです。"
 
-#, fuzzy
-#~| msgid ""
-#~| "This installer can automatically extract the needed information from an "
-#~| "existing X509 certificate with a matching RSA private key. Both parts "
-#~| "can be in one file, if it is in PEM format. Do you have such an existing "
-#~| "certificate and key file and want to use it for authenticating IPSec "
-#~| "connections?"
 #~ msgid ""
 #~ "This installer can automatically extract the needed information from an "
 #~ "existing X509 certificate with a matching RSA private key. Both parts can "
@@ -629,24 +514,15 @@ msgstr ""
 #~ msgstr ""
 #~ "このインストーラは既存の X509 証明書から RSA 秘密鍵と照らし合わせて必要な"
 #~ "情報を自動的に展開する事が可能です。 PEM 形式の場合、双方を一つのファイル"
-#~ "にまとめることも可能です。そのような証明書と鍵のファイルがあり、これらを "
-#~ "IPSec 通信での認証に使用したいですか?"
+#~ "にまとめることも可能です。そのような証明書と鍵のファイルがある場合、これら"
+#~ "を IPSec 通信での認証に使用したいのであれば、選択してください。"
 
 #~ msgid "x509, plain"
 #~ msgstr "x509, 通常のタイプ"
 
-#, fuzzy
-#~| msgid "earliest, \"after NFS\", \"after PCMCIA\""
 #~ msgid "earliest, after NFS, after PCMCIA"
-#~ msgstr "可能な限り早く, \"NFS 起動後\", \"PCMCIA 起動後\""
+#~ msgstr "可能な限り早く, NFS の起動後, PCMCIA の起動後"
 
-#, fuzzy
-#~| msgid ""
-#~| "With the current Debian startup levels (nearly everything starting in "
-#~| "level 20), it is impossible for Openswan to always start at the correct "
-#~| "time. There are three possibilities when Openswan can start: before or "
-#~| "after the NFS services and after the PCMCIA services. The correct answer "
-#~| "depends on your specific setup."
 #~ msgid ""
 #~ "With the default system startup levels (nearly everything starting in "
 #~ "level 20), it is impossible for Openswan to always start at the correct "
@@ -654,19 +530,11 @@ msgstr ""
 #~ "after the NFS services and after the PCMCIA services. The correct answer "
 #~ "depends on your specific setup."
 #~ msgstr ""
-#~ "現在の Debian での起動レベル (ほとんど全てがレベル20) のままでは、"
+#~ "デフォルトのシステムでの起動レベル (ほとんど全てがレベル20) のままでは、"
 #~ "Openswan を常には適切なタイミングで起動できません。Openswan を起動させるタ"
 #~ "イミングの選択肢としては3つが考えられます: NFS サービスの開始前・開始後・"
 #~ "PCMCIA サービスの開始後です。正解はあなたの設定次第です。"
 
-#, fuzzy
-#~| msgid ""
-#~| "If you do not have your /usr tree mounted via NFS (either you only mount "
-#~| "other, less vital trees via NFS or don't use NFS mounted trees at all) "
-#~| "and don't use a PCMCIA network card, then it's best to start Openswan at "
-#~| "the earliest possible time, thus allowing the NFS mounts to be secured "
-#~| "by IPSec. In this case (or if you don't understand or care about this "
-#~| "issue), answer \"earliest\" to this question (the default)."
 #~ msgid ""
 #~ "If the /usr tree of this system is not mounted via NFS (either you only "
 #~ "mount other, less vital trees via NFS or don't use NFS mounted trees at "
@@ -675,20 +543,14 @@ msgstr ""
 #~ "by IPSec. In this case (or if you don't understand or care about this "
 #~ "issue), answer \"earliest\" to this question (the default)."
 #~ msgstr ""
-#~ "NFS 経由で /usr をマウントせず (他のパーティションやあまり重要ではないパー"
-#~ "ティションを NFS 経由でマウントするか、または NFS マウントを全く使わな"
-#~ "い)、加えて PCMCIA ネットワークカードを利用していない場合、可能な限り早い"
-#~ "時間に Openswan を起動するのがベストです。この設定によって、NFS でのマウン"
-#~ "トは IPSec で保護されます。この場合 (またはこの問題を理解していないか特に"
-#~ "気にしない場合) 、\"可能な限り早く\"と質問に答えてください (標準) 。"
+#~ "/usr がNFS 経由でマウントされておらず (他のパーティションやあまり重要では"
+#~ "ないパーティションを NFS 経由でマウントするか、または NFS マウントを全く使"
+#~ "わない)、加えて PCMCIA ネットワークカードを利用していない場合、可能な限り"
+#~ "早い時間に Openswan を起動するのがベストです。この設定によって、NFS でのマ"
+#~ "ウントは IPSec で保護されます。この場合 (またはこの問題を理解していないか"
+#~ "特に気にしない場合) 、「可能な限り早く」と質問に答えてください (デフォル"
+#~ "ト) 。"
 
-#, fuzzy
-#~| msgid ""
-#~| "If you have your /usr tree mounted via NFS and don't use a PCMCIA "
-#~| "network card, then you will need to start Openswan after NFS so that all "
-#~| "necessary files are available. In this case, answer \"after NFS\" to "
-#~| "this question. Please note that the NFS mount of /usr can not be secured "
-#~| "by IPSec in this case."
 #~ msgid ""
 #~ "If the /usr tree is mounted via NFS and no PCMCIA network card is used, "
 #~ "then you will need to start Openswan after NFS so that all necessary "
@@ -696,11 +558,11 @@ msgstr ""
 #~ "Please note that the NFS mount of /usr can not be secured by IPSec in "
 #~ "this case."
 #~ msgstr ""
-#~ "NFS 経由で /usr をマウントしていて PCMCIA ネットワークカードを使用していな"
+#~ "/usr を NFS 経由でマウントしていて PCMCIA ネットワークカードを使用していな"
 #~ "い場合は、必要なファイルを利用可能にするために Openswan を NFS の後で起動"
-#~ "しなければなりません。この場合、\"NFS 起動後\" と答えてください。この時に "
-#~ "NFS 経由でマウントされる /usr は、IPSec によるセキュアな状態にはならないと"
-#~ "いうことに注意してください。"
+#~ "しなければなりません。この場合、「NFS の起動後」と答えてください。この時"
+#~ "に NFS 経由でマウントされる /usr は、IPSec によるセキュアな状態にはならな"
+#~ "いということに注意してください。"
 
 #~ msgid ""
 #~ "If you use a PCMCIA network card for your IPSec connections, then you "
@@ -713,15 +575,11 @@ msgstr ""
 #~ "起動後\" と答えてください。ローカルで動作している DNSSec 機能を使用してい"
 #~ "る DNS サーバから鍵を取得したい場合でも、この答えをしてください。"
 
-#, fuzzy
-#~| msgid "At which level do you wish to start Openswan?"
 #~ msgid "Please select the level at which you wish to start Openswan:"
-#~ msgstr "どの段階で Openswan を起動させますか?"
+#~ msgstr "どの段階で Openswan を起動させたいレベルを選んでください:"
 
-#, fuzzy
-#~| msgid "Which type of RSA keypair do you want to create?"
 #~ msgid "Please select which type of RSA keypair you want to create:"
-#~ msgstr "どちらのタイプの RSA キーペアを生成しますか?"
+#~ msgstr "作成したい RSA キーペアの種類を選んでください:"
 
 #~ msgid "Do you wish to enable opportunistic encryption in Openswan?"
 #~ msgstr "Openswan で opportunistic encryption を有効にしますか?"
