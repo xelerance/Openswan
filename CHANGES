@@ -2,7 +2,12 @@
 Note that listings are in chronological order of release times, not in order
 of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
-See also docs/KNOWN_BUGS and http://bugs.openswan.org/
+See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
+
+v2.6.39 (unreleased)
+* Bugtracker bugs fixed:
+   #1349 pluto logging no subjectAltName matches ID '%fromcert', replaced
+         by subject DN [Tuomo]
 
 v2.6.38 (March 23, 2012)
 * DPD: seq_no logged after hton() call [Shinichi Furuso]
