@@ -183,7 +183,7 @@ getinterfaceinfo() {
 
 # get default route info
 getdefaultrouteinfo() {
-        ip route list | awk '$1 == "default" { print "phys=" $NF; print "next=" $3; exit 0 }'
+  ip route list 0.0.0.0/0 | awk '$2 == "via" { print "phys=" $5; print "next=" $3; exit 0 } { print "phys=" $3; print "next=0.0.0.0"; exit 0 }'
 }
 
 # set up a Klips interface
