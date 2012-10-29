@@ -296,7 +296,7 @@ skeyid_preshared(const chunk_t pss
     chunk_t nir;
     unsigned int k;
     CK_MECHANISM_TYPE mechanism;
-    u_char buf1[HMAC_BUFSIZE*2], buf2[HMAC_BUFSIZE*2];
+    u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
     chunk_t buf1_chunk, buf2_chunk;
     PK11SymKey *shared, *skeyid;
 
@@ -317,9 +317,9 @@ skeyid_preshared(const chunk_t pss
     memcpy(nir.ptr, ni.ptr, ni.len);
     memcpy(nir.ptr+ ni.len, nr.ptr, nr.len);
 
-    memset(buf1, '\0', HMAC_BUFSIZE*2);
+    memset(buf1, '\0', HMAC_BUFSIZE);
 
-    if (pss.len <= hasher->hash_block_size)
+    if (pss.len <= HMAC_BUFSIZE)
     {
         memcpy(buf1, pss.ptr, pss.len);
     }
@@ -330,9 +330,9 @@ skeyid_preshared(const chunk_t pss
         hasher->hash_final(buf1, &ctx.hash_ctx);
     }
 
-    memcpy(buf2, buf1, hasher->hash_block_size);
+    memcpy(buf2, buf1, HMAC_BUFSIZE);
 
-    for (k = 0; k < hasher->hash_block_size; k++)
+    for (k = 0; k < HMAC_BUFSIZE; k++)
     {
         buf1[k] ^= HMAC_IPAD;
         buf2[k] ^= HMAC_OPAD;
@@ -342,16 +342,16 @@ skeyid_preshared(const chunk_t pss
 
     mechanism=nss_key_derivation_mech(hasher);
     buf1_chunk.ptr=buf1;
-    buf1_chunk.len=hasher->hash_block_size;
+    buf1_chunk.len=HMAC_BUFSIZE;
 
     buf2_chunk.ptr=buf2;
-    buf2_chunk.len=hasher->hash_block_size;
+    buf2_chunk.len=HMAC_BUFSIZE;
 
     PK11SymKey *tkey4 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
     /* nss_symkey_log(tkey4, "pss+ipad+shared"); */
 
     CK_EXTRACT_PARAMS bs=0;
-    PK11SymKey *tkey5 = pk11_extract_derive_wrapper_osw(tkey4, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, hasher->hash_block_size);
+    PK11SymKey *tkey5 = pk11_extract_derive_wrapper_osw(tkey4, bs, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
     /* nss_symkey_log(tkey5, "pss+ipad"); */
 
     PK11SymKey *tkey6 = pk11_derive_wrapper_osw(tkey5, CKM_CONCATENATE_BASE_AND_DATA, nir, mechanism, CKA_DERIVE, 0);
@@ -405,7 +405,7 @@ skeyid_digisig(const chunk_t ni
 #ifdef HAVE_LIBNSS
     unsigned int k;
     CK_MECHANISM_TYPE mechanism;
-    u_char buf1[HMAC_BUFSIZE*2], buf2[HMAC_BUFSIZE*2];
+    u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
     chunk_t buf1_chunk, buf2_chunk;
     PK11SymKey *shared, *skeyid;
 #endif
@@ -435,8 +435,8 @@ skeyid_digisig(const chunk_t ni
     hmac_final_chunk(*skeyid_chunk, "st_skeyid in skeyid_digisig()", &ctx);
     DBG(DBG_CRYPT, DBG_dump_chunk("keyid: ", *skeyid_chunk));
 #else
-    memset(buf1, '\0', HMAC_BUFSIZE*2);
-    if (nir.len <= hasher->hash_block_size)
+    memset(buf1, '\0', HMAC_BUFSIZE);
+    if (nir.len <= HMAC_BUFSIZE)
     {
 	memcpy(buf1, nir.ptr, nir.len);
     }
@@ -447,9 +447,9 @@ skeyid_digisig(const chunk_t ni
 	hasher->hash_final(buf1, &ctx.hash_ctx);
     }
 
-    memcpy(buf2, buf1, hasher->hash_block_size);
+    memcpy(buf2, buf1, HMAC_BUFSIZE);
 
-    for (k = 0; k < hasher->hash_block_size; k++)
+    for (k = 0; k < HMAC_BUFSIZE; k++)
     {
 	buf1[k] ^= HMAC_IPAD;
 	buf2[k] ^= HMAC_OPAD;
@@ -458,10 +458,10 @@ skeyid_digisig(const chunk_t ni
     pfree(nir.ptr);
     mechanism=nss_key_derivation_mech(hasher);
     buf1_chunk.ptr=buf1;
-    buf1_chunk.len=hasher->hash_block_size;
+    buf1_chunk.len=HMAC_BUFSIZE;
 
     buf2_chunk.ptr=buf2;
-    buf2_chunk.len=hasher->hash_block_size;
+    buf2_chunk.len=HMAC_BUFSIZE;
 
     PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, buf1_chunk, mechanism, CKA_DERIVE, 0);
     PK11SymKey *tkey2 = PK11_Derive_osw(tkey1, mechanism, NULL, CKM_CONCATENATE_DATA_AND_BASE, CKA_DERIVE, 0);
@@ -562,9 +562,9 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     CK_OBJECT_HANDLE keyhandle;
     SECItem param, param1;
 
-    hmac_opad = hmac_pads(HMAC_OPAD,hasher->hash_block_size);
-    hmac_ipad = hmac_pads(HMAC_IPAD,hasher->hash_block_size);
-    hmac_pad  = hmac_pads(0x00,hasher->hash_block_size-hasher->hash_digest_len);
+    hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
+    hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
+    hmac_pad  = hmac_pads(0x00,HMAC_BUFSIZE-hasher->hash_digest_len);
     hmac_zerobyte = hmac_pads(0x00,1);
     hmac_val1 = hmac_pads(0x01,1);
     hmac_val2 = hmac_pads(0x02,1);
@@ -573,7 +573,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
 
     /*Deriving SKEYID_d = hmac_xxx(SKEYID, g^xy | CKY-I | CKY-R | 0) */
     PK11SymKey *tkey1 = pk11_derive_wrapper_osw(skeyid, CKM_CONCATENATE_BASE_AND_DATA
-                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, hasher->hash_block_size);
+                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 
     PR_ASSERT(tkey1!=NULL);
 
@@ -742,7 +742,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
         /* nss_symkey_log(skeyid_e, "skeyid_e"); */
 
         PK11SymKey *tkey25 = pk11_derive_wrapper_osw(skeyid_e, CKM_CONCATENATE_BASE_AND_DATA
-                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, hasher->hash_block_size);
+                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
         PR_ASSERT(tkey25!=NULL);
 
         PK11SymKey *tkey26 = pk11_derive_wrapper_osw(tkey25, CKM_XOR_BASE_AND_DATA
@@ -776,7 +776,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
        i += hasher->hash_digest_len;
 
         PK11SymKey *tkey32 = pk11_derive_wrapper_osw(skeyid_e, CKM_CONCATENATE_BASE_AND_DATA
-                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, hasher->hash_block_size);
+                                                , hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
         PR_ASSERT(tkey32!=NULL);
 
         PK11SymKey *tkey33 = pk11_derive_wrapper_osw(tkey32, CKM_XOR_BASE_AND_DATA
@@ -1242,9 +1242,9 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(encrypter);
 
 
-    hmac_opad = hmac_pads(HMAC_OPAD,hasher->hash_block_size);
-    hmac_ipad = hmac_pads(HMAC_IPAD,hasher->hash_block_size);
-    hmac_pad_prf  = hmac_pads(0x00,hasher->hash_block_size-hasher->hash_digest_len);
+    hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
+    hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
+    hmac_pad_prf  = hmac_pads(0x00,HMAC_BUFSIZE-hasher->hash_digest_len);
 
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
@@ -1328,7 +1328,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 	PK11SymKey *finalkey;
 	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(skeyseed_k, CKM_CONCATENATE_BASE_AND_DATA
-		, hmac_pad_prf,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, hasher->hash_block_size);
+		, hmac_pad_prf,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 	PR_ASSERT(tkey1!=NULL);
 
 

@@ -71,11 +71,11 @@ hmac_init(struct hmac_ctx *ctx,
     memcpy(&symkey, key, key_len);
     klen =  PK11_GetKeyLength(symkey);
 
-    hmac_opad = hmac_pads(HMAC_OPAD, h->hash_block_size);
-    hmac_ipad = hmac_pads(HMAC_IPAD,h->hash_block_size);
-    hmac_pad  = hmac_pads(0x00,h->hash_block_size-klen);
+    hmac_opad = hmac_pads(HMAC_OPAD,HMAC_BUFSIZE);
+    hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
+    hmac_pad  = hmac_pads(0x00,HMAC_BUFSIZE-klen);
 
-    if(klen > h->hash_block_size) 
+    if(klen > HMAC_BUFSIZE) 
     {
 	tkey1 = PK11_Derive_osw(symkey, nss_key_derivation_mech(h)
 				, NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
@@ -86,7 +86,7 @@ hmac_init(struct hmac_ctx *ctx,
     }
 
     PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_CONCATENATE_BASE_AND_DATA
-				, hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, h->hash_block_size);
+				, hmac_pad,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 
     PR_ASSERT(tkey2!=NULL);
     ctx->ikey = pk11_derive_wrapper_osw(tkey2, CKM_XOR_BASE_AND_DATA
@@ -266,7 +266,7 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
 {
 	SECOidTag oid;
 	PK11Context *ctx;
-	unsigned char dkey[HMAC_BUFSIZE*2];
+	unsigned char dkey[HMAC_BUFSIZE];
 	SECItem dkey_param;
 	SECStatus status;
 	unsigned int len=0;

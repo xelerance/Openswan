@@ -279,8 +279,6 @@ struct sadb_x_nat_t_port {
 #define SADB_X_AALG_RIPEMD160HMAC	8
 #define SADB_X_AALG_NULL		251	/* kame */
 #define SADB_X_AALG_SHA2_256HMAC_TRUNCBUG	252
-#define SADB_X_AALG_SHA2_384HMAC_TRUNCBUG       253
-#define SADB_X_AALG_SHA2_512HMAC_TRUNCBUG       254
 #define SADB_AALG_MAX			255 /* while the AUTH_ALGORITHM is two octets, what is the SADB_AALG? */
 
 /* Encryption algorithms */

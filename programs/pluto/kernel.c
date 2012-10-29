@@ -1750,31 +1750,14 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->replay_window = kernel_ops->replay_window;
         said_next->authalg = ei->authalg;
 
-		if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256 
-			|| said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_384
-			|| said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_512 ) && (st->st_connection->sha2_truncbug)) {
-			if(kernel_ops->sha2_truncbug_support) {
+		if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) && (st->st_connection->sha2_truncbug)) {
+			if(kernel_ops->sha2_truncbug_support){
 			   DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
 			   /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
-				switch(said_next->authalg)
-				{
-				case AUTH_ALGORITHM_HMAC_SHA2_256:
-					said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
-					break;
-				case AUTH_ALGORITHM_HMAC_SHA2_384:
-					said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_384_TRUNCBUG;
-					break;
-				case AUTH_ALGORITHM_HMAC_SHA2_512:
-					said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_512_TRUNCBUG;
-					break;
-				default:
-					DBG_log("auth truncation: control should not reach here");
-					break;
-				}
-
+			   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
 			} else {
-			   loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
-		   	   goto fail;
+                   loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
+		   	goto fail;
 			}
 		}
         said_next->authkeylen = ei->authkeylen;

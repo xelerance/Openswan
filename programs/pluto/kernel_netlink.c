@@ -145,10 +145,9 @@ static sparse_names aalg_list = {
 	{ SADB_AALG_SHA1HMAC, "sha1" },
 	{ SADB_X_AALG_SHA2_256HMAC, "sha256" },
 	{ SADB_X_AALG_SHA2_256HMAC_TRUNCBUG, "hmac(sha256)" },
-	{ SADB_X_AALG_SHA2_384HMAC, "sha384" },
-	{ SADB_X_AALG_SHA2_384HMAC_TRUNCBUG, "hmac(sha384)" },
-	{ SADB_X_AALG_SHA2_512HMAC, "sha512" },
-	{ SADB_X_AALG_SHA2_512HMAC_TRUNCBUG, "hmac(sha512)" },
+	{ SADB_X_AALG_SHA2_256HMAC, "hmac(sha256)" },
+	{ SADB_X_AALG_SHA2_384HMAC, "hmac(sha384)" },
+	{ SADB_X_AALG_SHA2_512HMAC, "hmac(sha512)" },
 	{ SADB_X_AALG_RIPEMD160HMAC, "ripemd160" },
 	{ 0, sparse_end }
 };
@@ -888,34 +887,14 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	 * an earlier draft. The kernel then introduced a new struct xfrm_algo_auth to
 	 * replace struct xfrm_algo to deal with this 
 	 */
-	if(sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG
-		|| sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_384_TRUNCBUG 
-		|| sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_512_TRUNCBUG ) {
+	if(sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) {
 	struct xfrm_algo_auth algo;
-	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256/384/512"));
+	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256"));
 	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
+	algo.alg_trunc_len = 128;
 	attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
 	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
-
-		switch(sa->authalg)
-		{
-		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG:
-			algo.alg_trunc_len = 128;
-			sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256;
-			break;
-		case AUTH_ALGORITHM_HMAC_SHA2_384_TRUNCBUG:
-			algo.alg_trunc_len = 192;
-			sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_384;
-			break;
-		case AUTH_ALGORITHM_HMAC_SHA2_512_TRUNCBUG:
-			algo.alg_trunc_len = 256;
-			sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_512;
-			break;
-		default:
-			DBG_log("kernel_netlink: auth truncation control should not reach here");
-			break;
-		}
-
+	sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256; /* fixup to the real number, not our private number */
 
 	strcpy(algo.alg_name, name);
 	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
