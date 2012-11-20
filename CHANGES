@@ -4,7 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
-v2.6.39dr3 (unreleased)
+v2.6.39dr4 (unreleased)
+* SAREF: kernel patches updated to linux 3.2.0 [Simon]
 * Refresh debian/control files to point to the right git URL [Simon]
 * KLIPS: startklips-ip_route patch [Harald]
 * MAST: updown.mast-scriptfix patch [Harald]
