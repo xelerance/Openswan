@@ -1,8 +1,11 @@
-commit ad1ccdc99a7adffeb03baece176d58f2df5727da
-Author: Simon Deziel <simon@xelerance.com>
-Date:   Thu Jan 3 09:19:58 2013 -0500
+>From cc17555c99001470bddcd00e29f5a0a5a3861adf Mon Sep 17 00:00:00 2001
+From: Bart Trojanowski <bart@jukie.net>
+Date: Mon, 31 May 2010 16:19:19 -0400
+Subject: [PATCH 2/2] SAREF: implement IP_IPSEC_BINDREF
 
-    SAref patch 0002 against Ubuntu 3.2.0-36.56
+Add sockopt IP_IPSEC_BINDREF, which associates an IPsec SAref to an inet
+socket.  The ref is used to seed the skb->sp->ref for each skb on that
+connection, which will force packets out a specific klips SA.
 
 diff --git a/include/linux/in.h b/include/linux/in.h
 index 642cd85..0dd7302 100644
@@ -69,18 +72,18 @@ index 1e8a882..f295f11 100644
  				if (!data_len)
  					break;
 diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 27fa6c2..48cf7b0 100644
+index 32346f1..fd6cd05 100644
 --- a/net/ipv4/ip_sockglue.c
 +++ b/net/ipv4/ip_sockglue.c
-@@ -569,6 +569,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
- 	case IP_RECVORIGDSTADDR:
+@@ -560,6 +560,7 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+ 	    optname == IP_RECVORIGDSTADDR
  #ifdef CONFIG_INET_IPSEC_SAREF
- 	case IP_IPSEC_REFINFO:
-+	case IP_IPSEC_BINDREF:
+ 	    || optname == IP_IPSEC_REFINFO
++	    || optname == IP_IPSEC_BINDREF
  #endif
+ 	    ) {
  		if (optlen >= sizeof(int)) {
- 			if (get_user(val, (int __user *) optval))
-@@ -674,6 +675,9 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+@@ -666,6 +667,9 @@ static int do_ip_setsockopt(struct sock *sk, int level,
  		else
  			inet->cmsg_flags &= ~IP_CMSG_IPSEC_REFINFO;
  		break;
@@ -90,7 +93,7 @@ index 27fa6c2..48cf7b0 100644
  #endif
  	case IP_TOS:	/* This sets both TOS and Precedence */
  		if (sk->sk_type == SOCK_STREAM) {
-@@ -1121,6 +1125,7 @@ int ip_setsockopt(struct sock *sk, int level,
+@@ -1113,6 +1117,7 @@ int ip_setsockopt(struct sock *sk, int level,
  			optname != IP_XFRM_POLICY &&
  #ifdef CONFIG_INET_IPSEC_SAREF
  			optname != IP_IPSEC_REFINFO &&
@@ -98,7 +101,7 @@ index 27fa6c2..48cf7b0 100644
  #endif
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
-@@ -1153,6 +1158,7 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
+@@ -1145,6 +1150,7 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
  			optname != IP_XFRM_POLICY &&
  #ifdef CONFIG_INET_IPSEC_SAREF
  			optname != IP_IPSEC_REFINFO &&
@@ -106,7 +109,7 @@ index 27fa6c2..48cf7b0 100644
  #endif
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
-@@ -1241,6 +1247,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
+@@ -1233,6 +1239,9 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
  	case IP_IPSEC_REFINFO:
  		val = (inet->cmsg_flags & IP_CMSG_IPSEC_REFINFO) != 0;
  		break;
@@ -117,10 +120,10 @@ index 27fa6c2..48cf7b0 100644
  	case IP_RECVORIGDSTADDR:
  		val = (inet->cmsg_flags & IP_CMSG_ORIGDSTADDR) != 0;
 diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 52edbb8..2c572e0 100644
+index 7397ad8..ae69101 100644
 --- a/net/ipv4/tcp.c
 +++ b/net/ipv4/tcp.c
-@@ -699,6 +699,9 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp)
+@@ -701,6 +701,9 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp)
  	skb = alloc_skb_fclone(size + sk->sk_prot->max_header, gfp);
  	if (skb) {
  		if (sk_wmem_schedule(sk, skb->truesize)) {
