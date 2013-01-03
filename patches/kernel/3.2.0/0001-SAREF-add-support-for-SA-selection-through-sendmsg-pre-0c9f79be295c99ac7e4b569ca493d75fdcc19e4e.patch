@@ -1,8 +1,8 @@
-commit b4f27118cde0e7ecc4c1256dc7847e8d32fa2b98
+commit 64f11203dfb688621d125e6cba8e57c20d67c3d0
 Author: Simon Deziel <simon@xelerance.com>
-Date:   Thu Jan 3 09:16:41 2013 -0500
+Date:   Tue Nov 20 13:40:17 2012 -0500
 
-    SAref patch 0001 against Ubuntu 3.2.0-36.56
+    SAref patch 0001 against Ubuntu 3.2.0-33.52
 
 diff --git a/include/linux/in.h b/include/linux/in.h
 index 01129c0..642cd85 100644
@@ -177,7 +177,7 @@ index 0bc95f3..7a2ff67 100644
  		return;
  
 diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 0106d25..27fa6c2 100644
+index 09ff51b..32346f1 100644
 --- a/net/ipv4/ip_sockglue.c
 +++ b/net/ipv4/ip_sockglue.c
 @@ -51,6 +51,7 @@
@@ -294,17 +294,20 @@ index 0106d25..27fa6c2 100644
  
  
  /* Special input handler for packets caught by router alert option.
-@@ -489,6 +567,9 @@ static int do_ip_setsockopt(struct sock *sk, int level,
- 	case IP_MULTICAST_ALL:
- 	case IP_MULTICAST_LOOP:
- 	case IP_RECVORIGDSTADDR:
+@@ -479,7 +557,11 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+ 	    optname == IP_MULTICAST_TTL ||
+ 	    optname == IP_MULTICAST_ALL ||
+ 	    optname == IP_MULTICAST_LOOP ||
+-	    optname == IP_RECVORIGDSTADDR) {
++	    optname == IP_RECVORIGDSTADDR
 +#ifdef CONFIG_INET_IPSEC_SAREF
-+	case IP_IPSEC_REFINFO:
++	    || optname == IP_IPSEC_REFINFO
 +#endif
++	    ) {
  		if (optlen >= sizeof(int)) {
  			if (get_user(val, (int __user *) optval))
  				return -EFAULT;
-@@ -586,6 +667,14 @@ static int do_ip_setsockopt(struct sock *sk, int level,
+@@ -577,6 +659,14 @@ static int do_ip_setsockopt(struct sock *sk, int level,
  		else
  			inet->cmsg_flags &= ~IP_CMSG_ORIGDSTADDR;
  		break;
@@ -319,7 +322,7 @@ index 0106d25..27fa6c2 100644
  	case IP_TOS:	/* This sets both TOS and Precedence */
  		if (sk->sk_type == SOCK_STREAM) {
  			val &= ~INET_ECN_MASK;
-@@ -1030,6 +1119,9 @@ int ip_setsockopt(struct sock *sk, int level,
+@@ -1021,6 +1111,9 @@ int ip_setsockopt(struct sock *sk, int level,
  	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
  			optname != IP_IPSEC_POLICY &&
  			optname != IP_XFRM_POLICY &&
@@ -329,7 +332,7 @@ index 0106d25..27fa6c2 100644
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
  		err = nf_setsockopt(sk, PF_INET, optname, optval, optlen);
-@@ -1059,6 +1151,9 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
+@@ -1050,6 +1143,9 @@ int compat_ip_setsockopt(struct sock *sk, int level, int optname,
  	if (err == -ENOPROTOOPT && optname != IP_HDRINCL &&
  			optname != IP_IPSEC_POLICY &&
  			optname != IP_XFRM_POLICY &&
@@ -339,7 +342,7 @@ index 0106d25..27fa6c2 100644
  			!ip_mroute_opt(optname)) {
  		lock_sock(sk);
  		err = compat_nf_setsockopt(sk, PF_INET, optname,
-@@ -1142,6 +1237,11 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
+@@ -1133,6 +1229,11 @@ static int do_ip_getsockopt(struct sock *sk, int level, int optname,
  	case IP_PASSSEC:
  		val = (inet->cmsg_flags & IP_CMSG_PASSSEC) != 0;
  		break;

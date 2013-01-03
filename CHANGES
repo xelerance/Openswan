@@ -30,6 +30,7 @@ v2.6.39dr4 (unreleased)
 * Bugtracker bugs fixed:
    #1349 pluto logging no subjectAltName matches ID '%fromcert', replaced
          by subject DN [Tuomo]
+   #1371 SAref patches 3.2.0 [Simon]
 * Fix url to bugs system. [Tuomo]
 
 v2.6.38 (March 23, 2012)
