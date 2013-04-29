@@ -465,7 +465,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 
 	    /* add ESP auth attr (if present) */
 	    if (esp_info->esp_aalg_id != AUTH_ALGORITHM_NONE) {
-		db_attr_add_values(db_ctx, 
+		db_attr_add_values(db_ctx,
 				   AUTH_ALGORITHM, esp_info->esp_aalg_id);
 	    }
 
@@ -476,7 +476,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 			|| esp_info->esp_ealg_id == ESP_AES_GCM_12
 			|| esp_info->esp_ealg_id == ESP_AES_GCM_16 ) {
 
-			db_attr_add_values(db_ctx, 
+			db_attr_add_values(db_ctx,
 				   KEY_LENGTH, esp_info->esp_ealg_keylen - 4 * BITS_PER_BYTE);
 		}
 		else {

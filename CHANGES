@@ -5,6 +5,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
 v2.6.39dr4 (unreleased)
+* Fix for three AES-GCM issues with key lengths 128, 192, 256 bits and IV
+  of 8, 12, 16 bytes as per RFC 4106 [Avesh]
 * SAREF: kernel patches updated to linux 3.2.0 [Simon]
 * Refresh debian/control files to point to the right git URL [Simon]
 * KLIPS: startklips-ip_route patch [Harald]
@@ -28,6 +30,10 @@ v2.6.39dr4 (unreleased)
 * Fix for the issue where ipsec help shows the list twice (rhbz 524146, 509318) [Avesh]
 * relpath changes [Avesh]
 * Bugtracker bugs fixed:
+   #1308 forceencaps= setting does now show up in "ipsec auto --status"
+         [Matt Rogers]
+   #1329 IKEv2 core dumps on 2.6.32 with changes backported from the 2.6.38
+         tree [Steve Lanser]
    #1349 pluto logging no subjectAltName matches ID '%fromcert', replaced
          by subject DN [Tuomo]
    #1371 SAref patches 3.2.0 [Simon]
