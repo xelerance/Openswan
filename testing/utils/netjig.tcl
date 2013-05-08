@@ -303,17 +303,20 @@ proc loginuml {umlname} {
     trace variable expect_out(buffer) w log_by_tracing
     expect {
     	-i $umlid($umlname,spawnid)
-	timeout	{ puts stderr "timeout in loginuml" }
+	timeout	{ puts stderr "timeout in loginuml"; exit }
 	eof	{ 
 	          puts stderr "Error: netjig.tcl:loginuml(): unexpected EOF from umlname=\"$umlname\"" 
     	          shutdownumls
 	}
-#	-exact "normal startup):"
-#	-exact "enter for maintenance"
-	-exact "login:"
+	-exact "enter for maintenance"  {
+		netjigdebug "\nStarting single user mode on $umlname"
+		send -i $umlid($umlname,spawnid) -- "\r"
+	}
+	-exact "login:" {
+	    netjigdebug "\nLogging in to $umlname"
+	    send -i $umlid($umlname,spawnid) -- "root\r"
+	}
     }
-    netjigdebug "\nLogging in to $umlname"
-    send -i $umlid($umlname,spawnid) -- "root\r"
 }
 
 proc inituml {umlname} {

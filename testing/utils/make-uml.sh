@@ -156,7 +156,7 @@ then
 
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
-    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config
     echo "make-uml.sh: Using \"${PLAINKCONF}\" to build a new plain kernel"
     ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install ) || exit 1 </dev/null
 fi
