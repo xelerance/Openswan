@@ -2,7 +2,7 @@
 #
 
 # show me
-set -x
+#set -x
 
 # fail if any command fails
 set -e
