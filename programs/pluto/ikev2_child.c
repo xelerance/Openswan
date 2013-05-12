@@ -64,6 +64,7 @@
 #include "virtual.h"
 #include "hostpair.h"
 
+#if 0
 static void print_ikev2_ts(struct traffic_selector *ts){
         char lbx[ADDRTOT_BUF];
         char hbx[ADDRTOT_BUF];
@@ -79,6 +80,7 @@ static void print_ikev2_ts(struct traffic_selector *ts){
         DBG_log("ip high: %s", hbx);
 	DBG_log("PAUL marker ------------------------");
 }
+#endif
 
 void ikev2_print_ts(struct traffic_selector *ts){
 	char lbx[ADDRTOT_BUF];
@@ -495,7 +497,7 @@ int ikev2_evaluate_connection_fit(struct connection *d
 {
     unsigned int tsi_ni, tsr_ni;
     int bestfit = -1;
-    int best_tsr, best_tsi; 
+    /* int best_tsr, best_tsi;  */
     struct end *ei, *er;
 
     if(role == INITIATOR) {
@@ -595,8 +597,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 		);
 
 		if(fitbits > bestfit) {
+#if 0
 		    best_tsi = tsi_ni;
 		    best_tsr = tsr_ni;
+#endif
 		    bestfit = fitbits;
 		}
 	    }
