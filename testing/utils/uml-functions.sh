@@ -30,11 +30,6 @@ setup_make() {
 
     if $domodules
     then
-	echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
-	echo "$TAB mkdir -p module"
-	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
-	echo
-
 	echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
 	echo "$TAB mkdir -p module26"
 	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "

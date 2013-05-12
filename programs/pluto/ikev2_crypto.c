@@ -45,6 +45,7 @@
 #include "md5.h"
 #include "sha1.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
+#include "demux.h"
 #include "ikev2.h"
 #include "ikev2_prfplus.h"
 #include "ike_alg.h"
@@ -54,12 +55,12 @@
 void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 {
 	struct v2prf_stuff childsacalc;
-	
+
 	chunk_t ikeymat,rkeymat;
 	struct ipsec_proto_info *ipi = &st->st_esp;
-	
+
 	ipi->attrs.transattrs.ei=kernel_alg_esp_info(
-		ipi->attrs.transattrs.encrypt, 
+		ipi->attrs.transattrs.encrypt,
 		ipi->attrs.transattrs.enckeylen,
 		ipi->attrs.transattrs.integ_hash);
 
@@ -68,20 +69,20 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	childsacalc.prf_hasher = (struct hash_desc *)
 		ike_alg_ikev2_find(IKE_ALG_HASH
 				   , IKEv2_PRF_HMAC_SHA1, 0);
-	
+
 	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
 	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);
 	childsacalc.spii.len=0;
 	childsacalc.spir.len=0;
-	
+
 	childsacalc.counter[0] = 1;
 	childsacalc.skeyseed = &st->st_skey_d;
-	
+
 	st->st_esp.present = TRUE;
 	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei->enckeylen+
 		st->st_esp.attrs.transattrs.ei->authkeylen;
-	
-	
+
+
 /*
  *
  * Keying material MUST be taken from the expanded KEYMAT in the
@@ -99,7 +100,7 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
  *    the authentication key is taken from the next octets.
  *
  */
-	
+
 	v2genbytes(&ikeymat, st->st_esp.keymat_len
 		   , "initiator keys", &childsacalc);
 
@@ -129,9 +130,9 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	    st->st_esp.peer_keymat= ikeymat.ptr;
 	    st->st_esp.our_keymat = rkeymat.ptr;
 	}
-	
+
 }
- 
+
 
 /*
  * Local Variables:
@@ -139,4 +140,4 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
  * c-style: pluto
  * End:
  */
- 
+

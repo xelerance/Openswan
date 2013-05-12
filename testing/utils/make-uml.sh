@@ -2,7 +2,7 @@
 #
 
 # show me
-set -x
+#set -x
 
 # fail if any command fails
 set -e
@@ -156,9 +156,10 @@ then
 
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
-    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config
     echo "make-uml.sh: Using \"${PLAINKCONF}\" to build a new plain kernel"
-    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install ) || exit 1 </dev/null
+    echo "${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} linux modules " >build-cmd.sh
+    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} linux modules ) || exit 1 </dev/null
 fi
 
 UMLNETKEY=$POOLSPACE/netkey${KERNVER}
@@ -175,7 +176,7 @@ if [ ! -x $NETKEYKERNEL ]
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     echo "using $NETKEYCONF to build netkey kernel"
-     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF INSTALL_MOD_PATH=${BASICROOT}/ ARCH=um linux modules modules_install) || exit 1 </dev/null
+    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${NETKEYCONF} linux modules ) || exit 1 </dev/null
 fi
 
 
