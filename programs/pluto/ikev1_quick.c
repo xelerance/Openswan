@@ -258,12 +258,12 @@ compute_proto_keymat(struct state *st
 	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL) == NULL) {
 		  needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
 		  break;
-	      } 
+	      }
 #endif
 	    case AUTH_ALGORITHM_DES_MAC:
 		bad_case(pi->attrs.transattrs.integ_hash);
 		break;
-	      
+
 	    }
 	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
 				    "needed_len (after ESP auth)=%d",
@@ -284,7 +284,7 @@ compute_proto_keymat(struct state *st
 		if (kernel_alg_ah_auth_ok(pi->attrs.transattrs.integ_hash, NULL)) {
 		    needed_len += kernel_alg_ah_auth_keylen(pi->attrs.transattrs.integ_hash);
 		    break;
-		} 
+		}
 #endif
 		bad_case(pi->attrs.transattrs.encrypt);
 	    }
@@ -356,8 +356,8 @@ compute_proto_keymat(struct state *st
 
 	    /* more keying material needed: prepare to go around again */
 #ifdef HAVE_LIBNSS
-            hmac_init_chunk(&ctx_me, st->st_oakley.prf_hasher, st->st_skeyid_d); 
-            hmac_init_chunk(&ctx_peer, st->st_oakley.prf_hasher, st->st_skeyid_d);           
+            hmac_init_chunk(&ctx_me, st->st_oakley.prf_hasher, st->st_skeyid_d);
+            hmac_init_chunk(&ctx_peer, st->st_oakley.prf_hasher, st->st_skeyid_d);
 #else
 	    hmac_reinit(&ctx_me);
 	    hmac_reinit(&ctx_peer);
@@ -609,7 +609,7 @@ check_net_id(struct isakmp_ipsec_id *id
 	if (*port != 0 && id->isaiid_port!=1701) {
 		loglog(RC_LOG_SERIOUS, "Allowing bad L2TP/IPsec proposal (see bug #849) anyway");
 		bad_proposal = FALSE;
-	} else 
+	} else
 		bad_proposal = TRUE;
     }
 
@@ -795,14 +795,14 @@ quick_outI1(int whack_sock
     }
 
     pfsgroupname="no-pfs";
-    /* 
+    /*
      * See if pfs_group has been specified for this conn,
      * if not, fallback to old use-same-as-P1 behaviour
      */
     if (st->st_connection) {
 	st->st_pfs_group = ike_alg_pfsgroup(st->st_connection
 					    , st->st_policy);
-	
+
     }
 
     /* If PFS specified, use the same group as during Phase 1:
@@ -822,7 +822,7 @@ quick_outI1(int whack_sock
 	replacestr[0]='\0';
 	if(replacing != SOS_NOBODY)
 	    snprintf(replacestr, 32, " to replace #%lu", replacing);
-	
+
 	openswan_log("initiating Quick Mode %s%s {using isakmp#%lu msgid:%08x proposal=%s pfsgroup=%s}"
 		     , prettypolicy(policy)
 		     , replacestr
@@ -833,7 +833,7 @@ quick_outI1(int whack_sock
     qke->replacing = replacing;
     pcrc_init(&qke->qke_pcrc);
     qke->qke_pcrc.pcrc_func = quick_outI1_continue;
-    
+
     if(policy & POLICY_PFS) {
 	e=build_ke(&qke->qke_pcrc, st, st->st_pfs_group, st->st_import);
     } else {
@@ -844,7 +844,7 @@ quick_outI1(int whack_sock
 
     return e;
 }
-    
+
 static stf_status
 quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 		 , struct pluto_crypto_req *r
@@ -871,7 +871,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
     if (isakmp_sa->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
        /* Duplicate nat_traversal status in new state */
        st->hidden_variables.st_nat_traversal = isakmp_sa->hidden_variables.st_nat_traversal;
-       if (isakmp_sa->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) { 
+       if (isakmp_sa->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME)) {
  	  has_client = TRUE;
        }
        nat_traversal_change_port_lookup(NULL, st);
@@ -1230,17 +1230,17 @@ quick_inI1_outR1(struct msg_digest *md)
 	if ((p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 	    (p1st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
 	    (id_pd->payload.ipsec_id.isaiid_idtype == ID_FQDN)) {
-	    struct hidden_variables hv; 
-	    char idfqdn[32], subnet_buf[SUBNETTOT_BUF]; 
+	    struct hidden_variables hv;
+	    char idfqdn[32], subnet_buf[SUBNETTOT_BUF];
 	    int  idlen = pbs_room(&IDci->pbs);
 
 	    if(idlen > 31) idlen=31;
 	    memcpy(idfqdn, IDci->pbs.cur, idlen);
 	    idfqdn[idlen]='\0';
 
-	    hv = p1st->hidden_variables; 
-	    nat_traversal_natoa_lookup(md, &hv); 
-	    
+	    hv = p1st->hidden_variables;
+	    nat_traversal_natoa_lookup(md, &hv);
+
 	    if (!isanyaddr(&hv.st_nat_oa)){
 	    	addrtosubnet(&hv.st_nat_oa,&b.his.net);
 	    	subnettot(&b.his.net, 0, subnet_buf, sizeof(subnet_buf));
@@ -1672,10 +1672,10 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 
     {
 	char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
-    
+
 	subnettot(our_net, 0, s1, sizeof(s1));
 	subnettot(his_net, 0, d1, sizeof(d1));
-	
+
 	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
 		     , s1, c->spd.this.protocol, c->spd.this.port
 		     , d1, c->spd.that.protocol, c->spd.that.port);
@@ -1804,7 +1804,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 		     * instantiate, carrying over authenticated peer ID
 		     */
 		    p = rw_instantiate(p, &c->spd.that.host_addr,
-				       his_net, 
+				       his_net,
 				       &c->spd.that.id);
 		}
 	    }
@@ -1841,10 +1841,10 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
         if (p->spd.that.has_port_wildcard)
         {
             int port = htons(b->his.port);
- 
+
             setportof(port, &p->spd.that.host_addr);
             setportof(port, &p->spd.that.client.addr);
- 
+
             p->spd.that.port = b->his.port;
             p->spd.that.has_port_wildcard = FALSE;
         }
@@ -1951,7 +1951,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	{
 	    struct payload_digest *const sapd = md->chain[ISAKMP_NEXT_SA];
 	    pb_stream in_pbs = sapd->pbs;
-	    
+
 	    /* parse and accept body, setting variables, but not forming
 	     * our reply. We'll make up the reply later on.
 	     *
@@ -1995,7 +1995,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    } else {
 		e = build_nonce(&qke->qke_pcrc, st, ci);
 	    }
-	
+
 	    passert(st->st_connection != NULL);
 
 	    return e;
@@ -2043,7 +2043,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 						 , "quick outR1 DH");
 
 	unpack_KE(st, r, &st->st_gr);
-    
+
 	/* set up second calculation */
 	dh->md = md;
 	set_suspended(st, md);
@@ -2064,7 +2064,7 @@ quick_inI1_outR1_cryptocontinue1(struct pluto_crypto_req_cont *pcrc
 		if(dh->md) release_md(qke->md);
 	    }
 	}
-	
+
     } else {
 	/* but if PFS is off, we don't do a second DH, so
 	 * just call the continuation after making something up.
@@ -2123,7 +2123,7 @@ quick_inI1_outR1_cryptocontinue2(struct pluto_crypto_req_cont *pcrc
     if(e == STF_OK) {
     	if(dh->md != NULL) {
 		complete_v1_state_transition(&dh->md, e);
-		if(dh->md) 
+		if(dh->md)
 			release_md(dh->md);
 	}
     }
@@ -2155,10 +2155,10 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
      * We build the reply packet as we parse the message since
      * the parse_ipsec_sa_body emits the reply SA
      */
-    
+
     /* HDR* out */
     echo_hdr(md, TRUE, ISAKMP_NEXT_HASH);
-    
+
     /* HASH(2) out -- first pass */
     START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_SA);
 
@@ -2190,12 +2190,12 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 
 	format_end(instbuf, sizeof(instbuf),&sr->this,&sr->that,TRUE, LEMPTY);
 	openswan_log("    us: %s", instbuf);
-	
+
 	format_end(instbuf, sizeof(instbuf),&sr->that,&sr->this,FALSE, LEMPTY);	openswan_log("  them: %s", instbuf);
     }
 
     /**** finish reply packet: Nr [, KE ] [, IDci, IDcr ] ****/
-    
+
     {
 	int np;
 #ifdef IMPAIR_UNALIGNED_R1_MSG
@@ -2223,9 +2223,9 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    pb_stream vid_pbs;
 	    int padsize;
 	    padsize = strtoul(padstr, NULL, 0);
-	    
+
 	    openswan_log("inserting fake VID payload of %u size", padsize);
-	    
+
 	    if(st->st_pfs_group != NULL) {
 		np = ISAKMP_NEXT_KE;
 	    } else if(id_pd != NULL) {
@@ -2237,15 +2237,15 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    if (!out_generic(np,
 			     &isakmp_vendor_id_desc, &md->rbody, &vid_pbs))
 		return STF_INTERNAL_ERROR;
-	    
+
 	    if (!out_zero(padsize, &vid_pbs, "Filler VID"))
 		return STF_INTERNAL_ERROR;
-		
+
 	    close_output_pbs(&vid_pbs);
-	} 
+	}
 #endif
     }
-    
+
 
     /* [ KE ] out (for PFS) */
     if (st->st_pfs_group != NULL && r!=NULL) {
@@ -2255,19 +2255,19 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    return STF_INTERNAL_ERROR;
 
 	finish_dh_secret(st, r);
-	
+
     }
-    
+
     /* [ IDci, IDcr ] out */
     if  (id_pd != NULL)	{
 	struct isakmp_ipsec_id *p = (void *)md->rbody.cur;	/* UGH! */
-	    
+
 	if (!out_raw(id_pd->pbs.start, pbs_room(&id_pd->pbs), &md->rbody, "IDci"))
 	    return STF_INTERNAL_ERROR;
 	p->isaiid_np = ISAKMP_NEXT_ID;
-	
+
 	p = (void *)md->rbody.cur;	/* UGH! */
-	
+
 	if (!out_raw(id_pd->next->pbs.start, pbs_room(&id_pd->next->pbs), &md->rbody, "IDcr"))
 	    return STF_INTERNAL_ERROR;
 	p->isaiid_np = ISAKMP_NEXT_NONE;
@@ -2279,7 +2279,7 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
 
 	TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
-	r_hashval = tpm_relocateHash(pbs);	
+	r_hashval = tpm_relocateHash(pbs);
     }
 #endif
 
@@ -2297,9 +2297,9 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
      */
     if (!install_inbound_ipsec_sa(st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
-    
+
     /* encrypt message, except for fixed part of header */
-    
+
     if (!encrypt_message(&md->rbody, st))
     {
 	delete_ipsec_sa(st, TRUE);
@@ -2470,7 +2470,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
 		(st->hidden_variables.st_nat_traversal & NAT_T_WITH_NATOA) &&
 		(IDcr->payload.ipsec_id.isaiid_idtype == ID_FQDN)) {
-		
+
 		char idfqdn[32], subnet_buf[SUBNETTOT_BUF];
 		int  idlen = pbs_room(&IDcr->pbs);
 		if(idlen > 31) idlen=31;
@@ -2500,7 +2500,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    }
 	}
     }
-    
+
     /* ??? We used to copy the accepted proposal into the state, but it was
      * never used.  From sa_pd->pbs.start, length pbs_room(&sa_pd->pbs).
      */
@@ -2519,28 +2519,29 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 #ifdef IMPAIR_UNALIGNED_I2_MSG
 	{
 	    char *padstr=getenv("PLUTO_UNALIGNED_I2_MSG");
-	    
+
 	    if(padstr) {
 		pb_stream vid_pbs;
 		int padsize;
 		padsize = strtoul(padstr, NULL, 0);
-		
+
 		openswan_log("inserting fake VID payload of %u size", padsize);
 		START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_VID);
-		
+
 		if (!out_generic(ISAKMP_NEXT_NONE,
 				 &isakmp_vendor_id_desc, &md->rbody, &vid_pbs))
 		    return STF_INTERNAL_ERROR;
-		
+
 		if (!out_zero(padsize, &vid_pbs, "Filler VID"))
 		    return STF_INTERNAL_ERROR;
-		
+
 		close_output_pbs(&vid_pbs);
 	    } else {
 		START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_NONE);
 	    }
 	}
 #else
+
 	START_HASH_PAYLOAD(md->rbody, ISAKMP_NEXT_NONE);
 #endif
 
@@ -2548,9 +2549,9 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	{
 	    pb_stream *pbs = &md->rbody;
 	    size_t enc_len = pbs_offset(pbs) - sizeof(struct isakmp_hdr);
-	    
+
 	    TCLCALLOUT_crypt("preHash", st,pbs,sizeof(struct isakmp_hdr),enc_len);
-	    r_hashval = tpm_relocateHash(pbs);	
+	    r_hashval = tpm_relocateHash(pbs);
 	}
 #endif
 
@@ -2584,7 +2585,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 			       , st->st_connection->newest_ipsec_sa
 			       , st->st_connection->spd.eroute_owner));
     }
-    
+
     st->st_connection->newest_ipsec_sa = st->st_serialno;
 
     /* note (presumed) success */
@@ -2634,7 +2635,7 @@ quick_inI2(struct msg_digest *md)
 			       , st->st_connection->newest_ipsec_sa
 			       , st->st_connection->spd.eroute_owner));
     }
-    
+
     st->st_connection->newest_ipsec_sa = st->st_serialno;
 
     update_iv(st);	/* not actually used, but tidy */
