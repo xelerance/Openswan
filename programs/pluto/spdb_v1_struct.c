@@ -1654,64 +1654,69 @@ parse_ipsec_transform(struct isakmp_transform *trans
                 }
                     break;
 #endif
-              case SA_LIFE_TYPE | ISAKMP_ATTR_AF_TV:
-                    ipcomp_inappropriate = FALSE;
-                    if (LHAS(seen_durations, val))
-                    {
-                        loglog(RC_LOG_SERIOUS, "attribute SA_LIFE_TYPE value %s repeated in message"
-                              , enum_show(&sa_lifetime_names, val));
-                        return FALSE;
-                    }
-                    seen_durations |= LELEM(val);
-                    life_type = val;
-                    break;
-              case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TLV:
-                    val = decode_long_duration(&attr_pbs);
-                    /* fall through */
-              case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TV:
-                    ipcomp_inappropriate = FALSE;
-                    if (!LHAS(seen_attrs, SA_LIFE_DURATION))
-                    {
-                        loglog(RC_LOG_SERIOUS, "SA_LIFE_DURATION IPsec attribute not preceded by SA_LIFE_TYPE attribute");
-                        return FALSE;
-                    }
-                    seen_attrs &= ~(LELEM(SA_LIFE_DURATION) | LELEM(SA_LIFE_TYPE));
+	    case SA_LIFE_TYPE | ISAKMP_ATTR_AF_TV:
+		ipcomp_inappropriate = FALSE;
+		if (LHAS(seen_durations, val))
+		{
+		    loglog(RC_LOG_SERIOUS, "attribute SA_LIFE_TYPE value %s repeated in message"
+			, enum_show(&sa_lifetime_names, val));
+		    return FALSE;
+		}
+		seen_durations |= LELEM(val);
+		life_type = val;
+		break;
+	    case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TLV:
+		val = decode_long_duration(&attr_pbs);
+		/* fall through */
+	    case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TV:
+		ipcomp_inappropriate = FALSE;
+		if (!LHAS(seen_attrs, SA_LIFE_DURATION))
+		{
+		    loglog(RC_LOG_SERIOUS, "SA_LIFE_DURATION IPsec attribute not preceded by SA_LIFE_TYPE attribute");
+		    return FALSE;
+		}
+		seen_attrs &= ~(LELEM(SA_LIFE_DURATION) | LELEM(SA_LIFE_TYPE));
 
-                    switch (life_type)
-                    {
-                        case SA_LIFE_TYPE_SECONDS:
-                              /* silently limit duration to our maximum */
-                              attrs->life_seconds = val <= SA_LIFE_DURATION_MAXIMUM
-                                  ? (val < st->st_connection->sa_ipsec_life_seconds ? val : st->st_connection->sa_ipsec_life_seconds) : SA_LIFE_DURATION_MAXIMUM;
-                              break;
-                        case SA_LIFE_TYPE_KBYTES:
-                              attrs->life_kilobytes = val;
-                              break;
-                        default:
-                              bad_case(life_type);
-                    }
-                    break;
-              case GROUP_DESCRIPTION | ISAKMP_ATTR_AF_TV:
-                    if (is_ipcomp)
-                    {
-                        /* Accept reluctantly.  Should not happen, according to
-                         * draft-shacham-ippcp-rfc2393bis-05.txt 4.1.
-                         */
-                        ipcomp_inappropriate = FALSE;
-                        loglog(RC_COMMENT
-                              , "IPCA (IPcomp SA) contains GROUP_DESCRIPTION."
-                              "  Ignoring inapproprate attribute.");
-                    }
-                    pfs_group = lookup_group(val);
-                    if (pfs_group == NULL)
-                    {
-                        loglog(RC_LOG_SERIOUS, "OAKLEY_GROUP %d not supported for PFS",val);
-                        return FALSE;
-                    }
-                    break;
+		switch (life_type)
+		{
+		    case SA_LIFE_TYPE_SECONDS:
+			/* silently limit duration to our maximum */
+                        attrs->life_seconds = SA_LIFE_DURATION_MAXIMUM;
+                        if(val <= st->st_connection->sa_ipsec_life_seconds) {
+                            attrs->life_seconds = val;
+                        } else {
+                            attrs->life_seconds = st->st_connection->sa_ipsec_life_seconds;
+                        }
+			break;
 
-              case ENCAPSULATION_MODE | ISAKMP_ATTR_AF_TV:
-                    ipcomp_inappropriate = FALSE;
+		    case SA_LIFE_TYPE_KBYTES:
+			attrs->life_kilobytes = val;
+			break;
+		    default:
+			bad_case(life_type);
+		}
+		break;
+	    case GROUP_DESCRIPTION | ISAKMP_ATTR_AF_TV:
+		if (is_ipcomp)
+		{
+		    /* Accept reluctantly.  Should not happen, according to
+		     * draft-shacham-ippcp-rfc2393bis-05.txt 4.1.
+		     */
+		    ipcomp_inappropriate = FALSE;
+		    loglog(RC_COMMENT
+			, "IPCA (IPcomp SA) contains GROUP_DESCRIPTION."
+			"  Ignoring inapproprate attribute.");
+		}
+		pfs_group = lookup_group(val);
+		if (pfs_group == NULL)
+		{
+		    loglog(RC_LOG_SERIOUS, "OAKLEY_GROUP %d not supported for PFS",val);
+		    return FALSE;
+		}
+		break;
+
+	    case ENCAPSULATION_MODE | ISAKMP_ATTR_AF_TV:
+		ipcomp_inappropriate = FALSE;
 #ifdef NAT_TRAVERSAL
                     switch (val) {
                               case ENCAPSULATION_MODE_TUNNEL:
