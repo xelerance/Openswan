@@ -2515,7 +2515,6 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    *r_hashval,	/* where in reply to jam hash value */
 	    *r_hash_start;      /* start of what is to be hashed */
 
-
 #ifdef IMPAIR_UNALIGNED_I2_MSG
 	{
 	    char *padstr=getenv("PLUTO_UNALIGNED_I2_MSG");
@@ -2556,6 +2555,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 #endif
 
 	(void)quick_mode_hash3(r_hashval, st);
+        r_hash_start = r_hash_start;   /* otherwise complaint about never used */
     }
 
    /* Derive new keying material */
