@@ -4,7 +4,8 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
-v2.6.39dr4 (unreleased)
+v2.6.39dr5 (unreleased)
+* Nighly builds fixes and whitespace fixes [MCR]
 * Fix for three AES-GCM issues with key lengths 128, 192, 256 bits and IV
   of 8, 12, 16 bytes as per RFC 4106 [Avesh]
 * SAREF: kernel patches updated to linux 3.2.0 [Simon]
