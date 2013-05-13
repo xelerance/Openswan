@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #
 # This is the nightly build script.
@@ -18,7 +18,7 @@ fi
 # /btmp is a place with a bunch of space. 
 BTMP=${BTMP:-/btmp} export BTMP
 
-GITPUBLIC=${GITPUBLIC-http://git.openswan.org/public/scm/openswan.git/.git#public}
+GITPUBLIC=${GITPUBLIC-http://git.openswan.org/public/scm/openswan.git}
 
 # BRANCH can also be set to test branches.
 BRANCH=${BRANCH:-HEAD} export BRANCH
@@ -45,23 +45,32 @@ exec 2>&1
 # invoke file space cleanup first.
 regress-cleanup.pl || (echo "Disk space cleanup failed"; exit 5)
 
-# cvs -Q -d $CVSROOT checkout -r $BRANCH $TOPMODULE
-
 # Now we clone git from the public repo
-cg-clone $GITPUBLIC openswan-2
-
-if [ $? != 0 ]
+if [ -d openswan-2 ]
 then
-        echo "Failed to checkout source code. "
-        exit 10
+	echo "openswan-2 already exists - doing git pull"
+	cd openswan-2
+	git pull
+	cd ..
+else
+	echo git clone $GITPUBLIC openswan-2
+	git clone $GITPUBLIC openswan-2
+	if [ $? != 0 ]
+	then
+        	echo "Failed to checkout source code. "
+        	exit 10
+	fi
 fi
+
+ln -s -f $BUILDSPOOL/openswan-2 $BTMP/$USER/$BRANCH/today
+
 
 # invoke stage 2 now.
 chmod +x $BUILDSPOOL/$TOPMODULE/testing/utils/regress-stage2.sh  
 $BUILDSPOOL/$TOPMODULE/testing/utils/regress-stage2.sh  || exit 6
 
 # warn about changes in myself.
-cmp $BUILDSPOOL/$TOPMODULE/testing/utils/regress-nightly-git.sh $0
+cmp $BUILDSPOOL/$TOPMODULE/testing/utils/regress-nightly.sh $0
 	
 if [ $? != 0 ]
 then
