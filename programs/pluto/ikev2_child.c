@@ -42,7 +42,7 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "connections.h"	/* needs id.h */
+#include "connections.h"        /* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -50,11 +50,11 @@
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "ike_alg.h"
 #include "log.h"
-#include "demux.h"	/* needs packet.h */
+#include "demux.h"        /* needs packet.h */
 #include "ikev2.h"
-#include "ipsec_doi.h"	/* needs demux.h and state.h */
+#include "ipsec_doi.h"        /* needs demux.h and state.h */
 #include "timer.h"
-#include "whack.h"	/* requires connections.h */
+#include "whack.h"        /* requires connections.h */
 #include "server.h"
 #include "vendor.h"
 #include "dpd.h"
@@ -108,12 +108,12 @@ struct traffic_selector ikev2_end_to_ts(struct end *e)
 
     switch(e->client.addr.u.v4.sin_family) {
     case AF_INET:
-	ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-	ts.low   = e->client.addr;
-	ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
-	ts.high  = e->client.addr;
-	ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
-	break;
+        ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+        ts.low   = e->client.addr;
+        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
+        ts.high  = e->client.addr;
+        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
+        break;
 
     case AF_INET6:
 	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
@@ -169,7 +169,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
     its.isat_num = 1;
 
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))
-	return STF_INTERNAL_ERROR;
+        return STF_INTERNAL_ERROR;
 
     switch(ts->ts_type) {
     case IKEv2_TS_IPV4_ADDR_RANGE:
@@ -181,36 +181,36 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 	its1.isat1_sellen = 2*16 + 8; /* See RFC 5669 SEction 13.3.1, 8 octet header plus 2 ip addresses */
 	break;
     case IKEv2_TS_FC_ADDR_RANGE:
-	DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
-	return STF_INTERNAL_ERROR;
+        DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
+        return STF_INTERNAL_ERROR;
     default:
-	DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
+        DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
     }
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
     its1.isat1_startport = ts->startport;      /* ports as per local policy*/
     its1.isat1_endport = ts->endport;
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
-	return STF_INTERNAL_ERROR;
+        return STF_INTERNAL_ERROR;
 
     /* now do IP addresses */
     switch(ts->ts_type) {
     case IKEv2_TS_IPV4_ADDR_RANGE:
-	if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
-	   ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
-	    return STF_INTERNAL_ERROR;
-	break;
+        if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
+           ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
+            return STF_INTERNAL_ERROR;
+        break;
     case IKEv2_TS_IPV6_ADDR_RANGE:
-	if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
-	   ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
-	    return STF_INTERNAL_ERROR;
-	break;
+        if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
+           ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
+            return STF_INTERNAL_ERROR;
+        break;
     case IKEv2_TS_FC_ADDR_RANGE:
-	DBG_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
-	return STF_FAIL;
+        DBG_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
+        return STF_FAIL;
     default:
-	DBG_log("Failed to create unknown IKEv2 Traffic Selector payload '%d'", ts->ts_type);
-	return STF_FAIL;
+        DBG_log("Failed to create unknown IKEv2 Traffic Selector payload '%d'", ts->ts_type);
+        return STF_FAIL;
     }
 
     close_output_pbs(&ts_pbs2);
@@ -234,11 +234,11 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     st->st_childsa = c0;
 
     if(role == INITIATOR) {
-	ts_i = &st->st_ts_this;
-	ts_r = &st->st_ts_that;
+        ts_i = &st->st_ts_this;
+        ts_r = &st->st_ts_that;
     } else {
-	ts_i = &st->st_ts_that;
-	ts_r = &st->st_ts_this;
+        ts_i = &st->st_ts_that;
+        ts_r = &st->st_ts_this;
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
@@ -264,8 +264,8 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 		if(!p){
                         ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
                                                 , ts_r, RESPONDER);
-		}
-	}
+                }
+        }
 
 	if(ret!=STF_OK) return ret;
     }
@@ -276,8 +276,8 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
 /* return number of traffic selectors found */
 int
 ikev2_parse_ts(struct payload_digest *const ts_pd
-	       , struct traffic_selector *array
-	       , unsigned int array_max)
+               , struct traffic_selector *array
+               , unsigned int array_max)
 {
     struct ikev2_ts1 ts1;
     unsigned int i;
@@ -294,48 +294,48 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 		array[i].low.u.v4.sin_family  = AF_INET;
 #ifdef NEED_SIN_LEN
-		array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
+                array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
 #endif
-		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
-		    return -1;
+                if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+                    return -1;
 
-		array[i].high.u.v4.sin_family = AF_INET;
+                array[i].high.u.v4.sin_family = AF_INET;
 #ifdef NEED_SIN_LEN
-		array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
+                array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
 #endif
 
-		if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
-		    return -1;
-		break;
+                if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+                    return -1;
+                break;
 
-	    case IKEv2_TS_IPV6_ADDR_RANGE:
-		array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-		array[i].low.u.v6.sin6_family  = AF_INET6;
+            case IKEv2_TS_IPV6_ADDR_RANGE:
+                array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+                array[i].low.u.v6.sin6_family  = AF_INET6;
 #ifdef NEED_SIN_LEN
-		array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
+                array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
 #endif
 
-		if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
-		    return -1;
+                if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
+                    return -1;
 
-		array[i].high.u.v6.sin6_family = AF_INET6;
+                array[i].high.u.v6.sin6_family = AF_INET6;
 #ifdef NEED_SIN_LEN
                 array[i].high.u.v6.sin6_len = sizeof( struct sockaddr_in6);
 #endif
 
-		if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
-		    return -1;
-		break;
+                if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
+                    return -1;
+                break;
 
-	    default:
-		return -1;
-	    }
+            default:
+                return -1;
+            }
 
-	    array[i].ipprotoid = ts1.isat1_ipprotoid;
-	    /*should be converted to host byte order for local processing*/
-	    array[i].startport = ts1.isat1_startport;
-	    array[i].endport   = ts1.isat1_endport;
-	}
+            array[i].ipprotoid = ts1.isat1_ipprotoid;
+            /*should be converted to host byte order for local processing*/
+            array[i].startport = ts1.isat1_startport;
+            array[i].endport   = ts1.isat1_endport;
+        }
     }
 
     return i;
@@ -611,8 +611,8 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
-				  , enum phase1_role role
-				  , pb_stream *outpbs)
+                                  , enum phase1_role role
+                                  , pb_stream *outpbs)
 {
     struct state      *st = md->st;
     struct state      *st1;
@@ -788,9 +788,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 			return STF_FAIL + rn; // should we delete_state st1?
 	}
 
-	ret = ikev2_calc_emit_ts(md, outpbs, role
-			, c, c->policy);
-	if(ret != STF_OK) return ret; // should we delete_state st1?
+        ret = ikev2_calc_emit_ts(md, outpbs, role
+                        , c, c->policy);
+        if(ret != STF_OK) return ret; // should we delete_state st1?
 
 	if( role == RESPONDER ) {
 		chunk_t child_spi, notifiy_data;
@@ -826,7 +826,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     ikev2_derive_child_keys(st1, role);
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(st1, TRUE))
-	return STF_FATAL;
+        return STF_FATAL;
 
     /* mark the connection as now having an IPsec SA associated with it. */
     st1->st_connection->newest_ipsec_sa = st1->st_serialno;
