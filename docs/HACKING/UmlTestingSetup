@@ -262,3 +262,9 @@ Other notes about debugging
    uml_netjig can be compiled with a built-in tcpdump. This uses
    not-yet-released code from www.tcpdump.org. Please see the
    instructions in testing/utils/uml_netjig/Makefile.
+
+
+
+On *HOST* kernels > 2.6.25, the PTRACE capability will be needed by the
+generated kernels.
+
