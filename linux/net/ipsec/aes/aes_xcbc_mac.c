@@ -1,7 +1,7 @@
 #ifdef __KERNEL__
 #include <linux/types.h>
 #include <linux/kernel.h>
-#define AES_DEBUG(x) 
+#define AES_DEBUG(x)
 #else
 #include <stdio.h>
 #include <sys/types.h>
@@ -14,7 +14,7 @@
 int AES_xcbc_mac_set_key(aes_context_mac *ctxm, const u_int8_t *key, int keylen)
 {
 	int ret=1;
-	aes_block kn[3] = { 
+	aes_block kn[3] = {
 		{ 0x01010101, 0x01010101, 0x01010101, 0x01010101 },
 		{ 0x02020202, 0x02020202, 0x02020202, 0x02020202 },
 		{ 0x03030303, 0x03030303, 0x03030303, 0x03030303 },
@@ -46,22 +46,22 @@ static void xor_block(aes_block res, const aes_block op) {
 }
 int AES_xcbc_mac_hash(const aes_context_mac *ctxm, const u_int8_t * in, int ilen, u_int8_t hash[16]) {
 	int ret=ilen;
-	u_int32_t out[4] = { 0, 0, 0, 0 }; 
+	u_int32_t out[4] = { 0, 0, 0, 0 };
 	for (; ilen > 16 ; ilen-=16) {
 		xor_block(out, (const u_int32_t*) &in[0]);
 		aes_encrypt(&ctxm->ctx_k1, in, (u_int8_t *)&out[0]);
-		in+=16; 
+		in+=16;
 	}
 	do_pad_xor((u_int8_t *)&out, in, ilen);
 	if (ilen==16) {
 		AES_DEBUG(printf("using k3\n"));
 		xor_block(out, ctxm->k3);
 	}
-	else 
+	else
 	{
 		AES_DEBUG(printf("using k2\n"));
 		xor_block(out, ctxm->k2);
 	}
 	aes_encrypt(&ctxm->ctx_k1, (u_int8_t *)out, hash);
 	return ret;
-} 
+}
