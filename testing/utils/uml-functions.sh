@@ -1,11 +1,12 @@
 #! /bin/bash 
 #
 
+TAB="	@"
+#TAB="	"
+
 setup_make() {
     domodules=$1
 
-    TAB="	@"
-    TAB="	"
     depends=""
 
     echo "# RULES for making module"
@@ -52,8 +53,6 @@ setup_host_make() {
     NETKEY_KERNEL=$6
 
     KERNDIR=`dirname $KERNEL`
-    TAB="	@"
-    TAB="	"
     hostroot=$host/root
     depends=""
 
@@ -160,6 +159,7 @@ setup_host_make() {
 
     # setup the mount of /usr/share
     echo "$hostroot/etc/fstab : ${TESTINGROOT}/baseconfigs/$host/etc/fstab"
+    echo "$TAB mkdir -p ${TESTINGROOT}/baseconfigs/$host/etc"
     echo "$TAB cp ${TESTINGROOT}/baseconfigs/$host/etc/fstab $hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /testing		     hostfs   defaults,ro,${TESTINGROOT} 0 0 >>$hostroot/etc/fstab"
