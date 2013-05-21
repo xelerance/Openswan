@@ -157,9 +157,10 @@ then
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
     PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config
+    cp $PLAINKCONF .config
     echo "make-uml.sh: Using \"${PLAINKCONF}\" to build a new plain kernel"
     echo "${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} linux modules " >build-cmd.sh
-    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} linux modules ) || exit 1 </dev/null
+    ( ${MAKE:-make} CC=${CC} ARCH=um ) || exit 1 </dev/null
 fi
 
 UMLNETKEY=$POOLSPACE/netkey${KERNVER}
@@ -175,8 +176,9 @@ if [ ! -x $NETKEYKERNEL ]
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    cp $NETKEYCONF .config
     echo "using $NETKEYCONF to build netkey kernel"
-    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${NETKEYCONF} linux modules ) || exit 1 </dev/null
+    ( ${MAKE:-make} CC=${CC} ARCH=um ) || exit 1 </dev/null
 fi
 
 
@@ -254,10 +256,10 @@ then
 
     # copy the config file
     rm -f .config
-    #cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
     KLIPSKCONF=${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config
     echo "using $KLIPSKCONF to build umlswan kernel"
-    (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install) || exit 1 </dev/null
+    cp ${KLIPSKCONF} .config
+    (make CC=${CC} ARCH=um ) || exit 1 </dev/null
 
     echo "Confirming KLIPS is compiled into the UMLSWAN kernel..."
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
