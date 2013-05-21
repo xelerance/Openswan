@@ -1682,7 +1682,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		    case SA_LIFE_TYPE_SECONDS:
 			/* silently limit duration to our maximum */
                         attrs->life_seconds = SA_LIFE_DURATION_MAXIMUM;
-                        if(val <= st->st_connection->sa_ipsec_life_seconds) {
+                        if(val <= (unsigned)st->st_connection->sa_ipsec_life_seconds) {
                             attrs->life_seconds = val;
                         } else {
                             attrs->life_seconds = st->st_connection->sa_ipsec_life_seconds;
