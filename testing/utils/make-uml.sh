@@ -192,8 +192,8 @@ setup_make $BUILD_MODULES >>$UMLMAKE
 
 # now, execute the Makefile that we have created!
 echo "info: make-uml.sh:${LINENO} in `pwd`"
-echo " aand MAKE=${MAKE}"
-MAKE_DEBUG="--debug=b";
+echo " and MAKE=${MAKE}"
+#MAKE_DEBUG="--debug=b";
 ${MAKE:-make} ${MAKE_DEBUG} -C ${POOLSPACE}   ${REGULARHOSTS}
 
 # now, copy the kernel, apply the UML patches.

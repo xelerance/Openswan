@@ -1,6 +1,6 @@
 // I retain copyright in this code but I encourage its free use provided
-// that I don't carry any responsibility for the results. I am especially 
-// happy to see it used in free and open source software. If you do use 
+// that I don't carry any responsibility for the results. I am especially
+// happy to see it used in free and open source software. If you do use
 // it I would appreciate an acknowledgement of its origin in the code or
 // the product that results and I would also appreciate knowing a little
 // about the use to which it is being put. I am grateful to Frank Yellin
@@ -10,9 +10,9 @@
 //
 // This is an implementation of the AES encryption algorithm (Rijndael)
 // designed by Joan Daemen and Vincent Rijmen. This version is designed
-// to provide both fixed and dynamic block and key lengths and can also 
-// run with either big or little endian internal byte order (see aes.h). 
-// It inputs block and key lengths in bytes with the legal values being 
+// to provide both fixed and dynamic block and key lengths and can also
+// run with either big or little endian internal byte order (see aes.h).
+// It inputs block and key lengths in bytes with the legal values being
 // 16, 24 and 32.
 
 /*
@@ -45,13 +45,13 @@
 //     is not defined, individually declared 32-bit words are used.
 // 6.  Define FAST_VARIABLE if a high speed variable block implementation
 //     is needed (essentially three separate fixed block size code sequences)
-// 7.  Define either ONE_TABLE or FOUR_TABLES for a fast table driven 
+// 7.  Define either ONE_TABLE or FOUR_TABLES for a fast table driven
 //     version using 1 table (2 kbytes of table space) or 4 tables (8
 //     kbytes of table space) for higher speed.
-// 8.  Define either ONE_LR_TABLE or FOUR_LR_TABLES for a further speed 
+// 8.  Define either ONE_LR_TABLE or FOUR_LR_TABLES for a further speed
 //     increase by using tables for the last rounds but with more table
 //     space (2 or 8 kbytes extra).
-// 9.  If neither ONE_TABLE nor FOUR_TABLES is defined, a compact but 
+// 9.  If neither ONE_TABLE nor FOUR_TABLES is defined, a compact but
 //     slower version is provided.
 // 10. If fast decryption key scheduling is needed define ONE_IM_TABLE
 //     or FOUR_IM_TABLES for higher speed (2 or 8 kbytes extra).
@@ -91,11 +91,11 @@
 
 #if defined(AES_BLOCK_SIZE) && AES_BLOCK_SIZE != 16 && AES_BLOCK_SIZE != 24 && AES_BLOCK_SIZE != 32
 #error an illegal block size has been specified
-#endif  
+#endif
 
-// upr(x,n): rotates bytes within words by n positions, moving bytes 
+// upr(x,n): rotates bytes within words by n positions, moving bytes
 // to higher index positions with wrap around into low positions
-// ups(x,n): moves bytes by n positions to higher index positions in 
+// ups(x,n): moves bytes by n positions to higher index positions in
 // words but without wrap around
 // bval(x,n): extracts a byte from a word
 
@@ -108,7 +108,7 @@
 
 /* little endian processor without data alignment restrictions: AES_LE_OK */
 /* original code: i386 */
-#if defined(i386) || defined(_I386) || defined(__i386__) || defined(__i386) 
+#if defined(i386) || defined(_I386) || defined(__i386__) || defined(__i386)
 #define	AES_LE_OK 1
 /* added (tested): alpha  --jjo */
 #elif defined(__alpha__)|| defined (__alpha)
@@ -174,9 +174,9 @@
 // give improved performance if a fast 32-bit multiply is not available. Note
 // that a temporary variable u needs to be defined where FFmulX is used.
 
-// #define FFmulX(x) (u = (x) & m1, u |= (u >> 1), ((x) & m2) << 1) ^ ((u >> 3) | (u >> 6)) 
+// #define FFmulX(x) (u = (x) & m1, u |= (u >> 1), ((x) & m2) << 1) ^ ((u >> 3) | (u >> 6))
 // #define m4  0x1b1b1b1b
-// #define FFmulX(x) (u = (x) & m1, ((x) & m2) << 1) ^ ((u - (u >> 7)) & m4) 
+// #define FFmulX(x) (u = (x) & m1, ((x) & m2) << 1) ^ ((u - (u >> 7)) & m4)
 
 // perform column mix operation on four bytes in parallel
 
@@ -297,7 +297,7 @@ static const u_int32_t rcon_tab[29] =
 #define w2(p)        0x00##p##0000
 #define w3(p)        0x##p##000000
 
-#if defined(FIXED_TABLES) && (defined(ONE_TABLE) || defined(FOUR_TABLES)) 
+#if defined(FIXED_TABLES) && (defined(ONE_TABLE) || defined(FOUR_TABLES))
 
 //  data for forward tables (other than last round)
 
@@ -480,7 +480,7 @@ static const u_int32_t it_tab[4][256] =
 
 #endif
 
-#if defined(FIXED_TABLES) && (defined(ONE_LR_TABLE) || defined(FOUR_LR_TABLES)) 
+#if defined(FIXED_TABLES) && (defined(ONE_LR_TABLE) || defined(FOUR_LR_TABLES))
 
 //  data for inverse tables (last round)
 
@@ -562,7 +562,7 @@ static const u_int32_t il_tab[4][256] =
 
 #endif
 
-#if defined(FIXED_TABLES) && (defined(ONE_IM_TABLE) || defined(FOUR_IM_TABLES)) 
+#if defined(FIXED_TABLES) && (defined(ONE_IM_TABLE) || defined(FOUR_IM_TABLES))
 
 #define m_table \
     r(00,00,00,00), r(0b,0d,09,0e), r(16,1a,12,1c), r(1d,17,1b,12),\
@@ -687,8 +687,8 @@ static u_int32_t  im_tab[4][256];
 
 #if !defined(FF_TABLES)
 
-// It will generally be sensible to use tables to compute finite 
-// field multiplies and inverses but where memory is scarse this 
+// It will generally be sensible to use tables to compute finite
+// field multiplies and inverses but where memory is scarse this
 // code might sometimes be better.
 
 // return 2 ^ (n - 1) where n is the bit number of the highest bit
@@ -697,7 +697,7 @@ static u_int32_t  im_tab[4][256];
 
 static unsigned char hibit(const u_int32_t x)
 {   unsigned char r = (unsigned char)((x >> 1) | (x >> 2));
-    
+
     r |= (r >> 2);
     r |= (r >> 4);
     return (r + 1) >> 1;
@@ -715,14 +715,14 @@ static unsigned char FFinv(const unsigned char x)
         if(!n1) return v1;
 
         while(n2 >= n1)
-        {   
+        {
             n2 /= n1; p2 ^= p1 * n2; v2 ^= v1 * n2; n2 = hibit(p2);
         }
-        
+
         if(!n2) return v2;
 
         while(n1 >= n2)
-        {   
+        {
             n1 /= n2; p1 ^= p2 * n1; v1 ^= v2 * n1; n1 = hibit(p1);
         }
     }
@@ -769,9 +769,9 @@ static void gen_tabs(void)
     // 0x011b as modular polynomial - the simplest primitive
     // root is 0x03, used here to generate the tables
 
-    i = 0; w = 1; 
+    i = 0; w = 1;
     do
-    {   
+    {
         pow[i] = (unsigned char)w;
         pow[i + 255] = (unsigned char)w;
         log[w] = (unsigned char)i++;
@@ -981,15 +981,15 @@ void aes_set_key(aes_context *cx, const unsigned char in_key[], int n_bytes, con
         break;
     }
 
-    cx->aes_Nrnd = (cx->aes_Nkey > nc ? cx->aes_Nkey : nc) + 6; 
+    cx->aes_Nrnd = (cx->aes_Nkey > nc ? cx->aes_Nkey : nc) + 6;
 
     cx->aes_e_key[0] = const_word_in(in_key     );
     cx->aes_e_key[1] = const_word_in(in_key +  4);
     cx->aes_e_key[2] = const_word_in(in_key +  8);
     cx->aes_e_key[3] = const_word_in(in_key + 12);
 
-    kf = cx->aes_e_key; 
-    kt = kf + nc * (cx->aes_Nrnd + 1) - cx->aes_Nkey; 
+    kf = cx->aes_e_key;
+    kt = kf + nc * (cx->aes_Nrnd + 1) - cx->aes_Nkey;
     rci = 0;
 
     switch(cx->aes_Nkey)
@@ -1039,14 +1039,14 @@ void aes_set_key(aes_context *cx, const unsigned char in_key[], int n_bytes, con
 
     if(!f)
     {   u_int32_t    i;
-        
+
         kt = cx->aes_d_key + nc * cx->aes_Nrnd;
         kf = cx->aes_e_key;
-        
+
         cpy(kt, kf); kt -= 2 * nc;
 
         for(i = 1; i < cx->aes_Nrnd; ++i)
-        { 
+        {
 #if defined(ONE_TABLE) || defined(FOUR_TABLES)
 #if !defined(ONE_IM_TABLE) && !defined(FOUR_IM_TABLES)
             u_int32_t    f2, f4, f8, f9;
@@ -1057,7 +1057,7 @@ void aes_set_key(aes_context *cx, const unsigned char in_key[], int n_bytes, con
 #endif
             kt -= 2 * nc;
         }
-        
+
         cpy(kt, kf);
     }
 }
@@ -1076,8 +1076,8 @@ void aes_set_key(aes_context *cx, const unsigned char in_key[], int n_bytes, con
 // is being computed, return the input state variables which are
 // needed for each row (r) of the state
 
-// For the fixed block size options, compilers reduce these two 
-// expressions to fixed variable references. For variable block 
+// For the fixed block size options, compilers reduce these two
+// expressions to fixed variable references. For variable block
 // size code conditional clauses will sometimes be returned
 
 #define unused  77  // Sunset Strip
@@ -1312,17 +1312,17 @@ void aes_encrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
 
     switch(cx->aes_Nrnd)
     {
-    case 14:    round(fwd_rnd,  b1, b0, kp         ); 
+    case 14:    round(fwd_rnd,  b1, b0, kp         );
                 round(fwd_rnd,  b0, b1, kp + nc    ); kp += 2 * nc;
-    case 12:    round(fwd_rnd,  b1, b0, kp         ); 
+    case 12:    round(fwd_rnd,  b1, b0, kp         );
                 round(fwd_rnd,  b0, b1, kp + nc    ); kp += 2 * nc;
-    case 10:    round(fwd_rnd,  b1, b0, kp         );             
+    case 10:    round(fwd_rnd,  b1, b0, kp         );
                 round(fwd_rnd,  b0, b1, kp +     nc);
-                round(fwd_rnd,  b1, b0, kp + 2 * nc); 
+                round(fwd_rnd,  b1, b0, kp + 2 * nc);
                 round(fwd_rnd,  b0, b1, kp + 3 * nc);
-                round(fwd_rnd,  b1, b0, kp + 4 * nc); 
+                round(fwd_rnd,  b1, b0, kp + 4 * nc);
                 round(fwd_rnd,  b0, b1, kp + 5 * nc);
-                round(fwd_rnd,  b1, b0, kp + 6 * nc); 
+                round(fwd_rnd,  b1, b0, kp + 6 * nc);
                 round(fwd_rnd,  b0, b1, kp + 7 * nc);
                 round(fwd_rnd,  b1, b0, kp + 8 * nc);
                 round(fwd_lrnd, b0, b1, kp + 9 * nc);
@@ -1333,7 +1333,7 @@ void aes_encrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
 
         for(rnd = 0; rnd < (cx->aes_Nrnd >> 1) - 1; ++rnd)
         {
-            round(fwd_rnd, b1, b0, kp); 
+            round(fwd_rnd, b1, b0, kp);
             round(fwd_rnd, b0, b1, kp + nc); kp += 2 * nc;
         }
 
@@ -1345,7 +1345,7 @@ void aes_encrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
 
         for(rnd = 0; rnd < cx->aes_Nrnd - 1; ++rnd)
         {
-            round(fwd_rnd, b1, b0, kp); 
+            round(fwd_rnd, b1, b0, kp);
             l_copy(b0, b1); kp += nc;
         }
 
@@ -1361,7 +1361,7 @@ void aes_decrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
     const u_int32_t  *kp = cx->aes_d_key;
 
 #if !defined(ONE_TABLE) && !defined(FOUR_TABLES)
-    u_int32_t        f2, f4, f8, f9; 
+    u_int32_t        f2, f4, f8, f9;
 #endif
 
     state_in(b0, in_blk, kp); kp += nc;
@@ -1374,13 +1374,13 @@ void aes_decrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
                 round(inv_rnd,  b0, b1, kp + nc    ); kp += 2 * nc;
     case 12:    round(inv_rnd,  b1, b0, kp         );
                 round(inv_rnd,  b0, b1, kp + nc    ); kp += 2 * nc;
-    case 10:    round(inv_rnd,  b1, b0, kp         );             
+    case 10:    round(inv_rnd,  b1, b0, kp         );
                 round(inv_rnd,  b0, b1, kp +     nc);
-                round(inv_rnd,  b1, b0, kp + 2 * nc); 
+                round(inv_rnd,  b1, b0, kp + 2 * nc);
                 round(inv_rnd,  b0, b1, kp + 3 * nc);
-                round(inv_rnd,  b1, b0, kp + 4 * nc); 
+                round(inv_rnd,  b1, b0, kp + 4 * nc);
                 round(inv_rnd,  b0, b1, kp + 5 * nc);
-                round(inv_rnd,  b1, b0, kp + 6 * nc); 
+                round(inv_rnd,  b1, b0, kp + 6 * nc);
                 round(inv_rnd,  b0, b1, kp + 7 * nc);
                 round(inv_rnd,  b1, b0, kp + 8 * nc);
                 round(inv_lrnd, b0, b1, kp + 9 * nc);
@@ -1391,7 +1391,7 @@ void aes_decrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
 
         for(rnd = 0; rnd < (cx->aes_Nrnd >> 1) - 1; ++rnd)
         {
-            round(inv_rnd, b1, b0, kp); 
+            round(inv_rnd, b1, b0, kp);
             round(inv_rnd, b0, b1, kp + nc); kp += 2 * nc;
         }
 
@@ -1403,7 +1403,7 @@ void aes_decrypt(const aes_context *cx, const unsigned char in_blk[], unsigned c
 
         for(rnd = 0; rnd < cx->aes_Nrnd - 1; ++rnd)
         {
-            round(inv_rnd, b1, b0, kp); 
+            round(inv_rnd, b1, b0, kp);
             l_copy(b0, b1); kp += nc;
         }
 
