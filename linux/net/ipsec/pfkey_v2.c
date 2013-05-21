@@ -1,12 +1,12 @@
 /*
  * @(#) RFC2367 PF_KEYv2 Key management API domain socket I/F
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -68,7 +68,7 @@
 #include <linux/types.h>
 
 #include "openswan/ipsec_param2.h"
- 
+
 #include <openswan.h>
 
 #include "openswan/radij.h"
@@ -132,7 +132,7 @@ DEBUG_NO_STATIC int pfkey_recvmsg(struct socket *sock, struct msghdr *msg, int s
 
 struct net_proto_family pfkey_family_ops = {
 #ifdef NET_26
-        .owner  = THIS_MODULE, 
+        .owner  = THIS_MODULE,
 #endif
         .family = PF_KEY,
         .create = pfkey_create
@@ -231,12 +231,12 @@ pfkey_list_remove_socket(struct socket *socketp, struct socket_list **sockets)
 
 	socket_listp = *sockets;
 	prev = NULL;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_list_remove_socket: "
 		    "removing sock=0p%p\n",
 		    socketp);
-	
+
 	while(socket_listp != NULL) {
 		if(socket_listp->socketp == socketp) {
 			if(prev != NULL) {
@@ -244,9 +244,9 @@ pfkey_list_remove_socket(struct socket *socketp, struct socket_list **sockets)
 			} else {
 				*sockets = socket_listp->next;
 			}
-			
+
 			kfree((void*)socket_listp);
-			
+
 			break;
 		}
 		prev = socket_listp;
@@ -280,26 +280,26 @@ pfkey_list_insert_socket(struct socket *socketp, struct socket_list **sockets)
 		    "allocating %lu bytes for socketp=0p%p\n",
 		    (unsigned long) sizeof(struct socket_list),
 		    socketp);
-	
+
 	if((socket_listp = (struct socket_list *)kmalloc(sizeof(struct socket_list), GFP_KERNEL)) == NULL) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_list_insert_socket: "
 			    "memory allocation error.\n");
 		return -ENOMEM;
 	}
-	
+
 	socket_listp->socketp = socketp;
 	socket_listp->next = *sockets;
 	*sockets = socket_listp;
 
 	return 0;
 }
-  
+
 int
 pfkey_list_remove_supported(struct ipsec_alg_supported *supported, struct supported_list **supported_list)
 {
 	struct supported_list *supported_listp = *supported_list, *prev = NULL;
-	
+
 	if(!supported) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_list_remove_supported: "
@@ -318,7 +318,7 @@ pfkey_list_remove_supported(struct ipsec_alg_supported *supported, struct suppor
 		    "klips_debug:pfkey_list_remove_supported: "
 		    "removing supported=0p%p\n",
 		    supported);
-	
+
 	while(supported_listp != NULL) {
 		if(supported_listp->supportedp == supported) {
 			if(prev != NULL) {
@@ -326,9 +326,9 @@ pfkey_list_remove_supported(struct ipsec_alg_supported *supported, struct suppor
 			} else {
 				*supported_list = supported_listp->next;
 			}
-			
+
 			kfree((void*)supported_listp);
-			
+
 			break;
 		}
 		prev = supported_listp;
@@ -364,7 +364,7 @@ pfkey_list_insert_supported(struct ipsec_alg_supported *supported
 		    (unsigned long) sizeof(struct supported_list),
 		    supported,
 		    supported_list);
-	
+
 	supported_listp = (struct supported_list *)kmalloc(sizeof(struct supported_list), GFP_KERNEL);
 
 	if(supported_listp == NULL)
@@ -374,7 +374,7 @@ pfkey_list_insert_supported(struct ipsec_alg_supported *supported
 			    "memory allocation error.\n");
 		return -ENOMEM;
 	}
-	
+
 	supported_listp->supportedp = supported;
 	supported_listp->next = *supported_list;
 	*supported_list = supported_listp;
@@ -386,7 +386,7 @@ pfkey_list_insert_supported(struct ipsec_alg_supported *supported
 
 	return 0;
 }
-  
+
 #ifdef NET_26
 DEBUG_NO_STATIC void
 pfkey_insert_socket(struct sock *sk)
@@ -469,7 +469,7 @@ pfkey_destroy_socket(struct sock *sk)
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_destroy_socket: "
 		    "pfkey_remove_socket called, sk=0p%p\n",sk);
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_destroy_socket: "
 		    "sk(0p%p)->(&0p%p)receive_queue.{next=0p%p,prev=0p%p}.\n",
@@ -504,7 +504,7 @@ pfkey_destroy_socket(struct sock *sk)
 			printk(" dst:0p%p", skb_dst(skb));
 			if(sysctl_ipsec_debug_verbose) {
 				int i;
-				
+
 				printk(" cb");
 				for(i=0; i<48; i++) {
 					printk(":%2x", skb->cb[i]);
@@ -606,9 +606,9 @@ pfkey_upmsgsk(struct sock *sk, struct sadb_msg *pfkey_msg)
 		    "klips_debug:pfkey_upmsg: "
 		    "...allocated at 0p%p.\n",
 		    skb);
-	
+
 	skb->dev = NULL;
-	
+
 	if(skb_tailroom(skb) < pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN) {
 		printk(KERN_WARNING "klips_error:pfkey_upmsg: "
 		       "tried to skb_put %ld, %d available.  This should never happen, please report.\n",
@@ -639,7 +639,7 @@ static struct proto key_proto = {
 	.name	  = "KEY",
 	.owner	  = THIS_MODULE,
 	.obj_size = sizeof(struct sock),
-	
+
 };
 #endif
 #ifdef NET_26_24_SKALLOC
@@ -779,9 +779,9 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 			    "No socket attached.\n");
 		return 0; /* -EINVAL; */
 	}
-		
+
 	sk=sock->sk;
-	
+
 	/* May not have data attached */
 	if(sk==NULL) {
 		KLIPS_PRINT(debug_pfkey,
@@ -789,7 +789,7 @@ pfkey_release(struct socket *sock, struct socket *peersock)
 			    "No sk attached to sock=0p%p.\n", sock);
 		return 0; /* -EINVAL; */
 	}
-		
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_release: "
 		    "sock=0p%p sk=0p%p\n", sock, sk);
@@ -829,7 +829,7 @@ pfkey_shutdown(struct socket *sock, int mode)
 	}
 
 	sk=sock->sk;
-	
+
 	if(sk == NULL) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_shutdown: "
@@ -841,7 +841,7 @@ pfkey_shutdown(struct socket *sock, int mode)
 		    "klips_debug:pfkey_shutdown: "
 		    "mode=%x.\n", mode);
 	mode++;
-	
+
 	if(mode&SEND_SHUTDOWN) {
 		sk->sk_shutdown|=SEND_SHUTDOWN;
 		sk->sk_state_change(sk);
@@ -857,7 +857,7 @@ pfkey_shutdown(struct socket *sock, int mode)
 /*
  *	Send PF_KEY data down.
  */
-		
+
 DEBUG_NO_STATIC int
 #ifdef NET_26
 pfkey_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, size_t len)
@@ -868,14 +868,14 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 	struct sock *sk;
 	int error = 0;
 	struct sadb_msg *pfkey_msg = NULL, *pfkey_reply = NULL;
-	
+
 	if(sock == NULL) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
 			    "Null socket passed in.\n");
 		SENDERR(EINVAL);
 	}
-	
+
 	sk = sock->sk;
 
 	if(sk == NULL) {
@@ -884,7 +884,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 			    "Null sock passed in.\n");
 		SENDERR(EINVAL);
 	}
-	
+
 	if(msg == NULL) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -917,7 +917,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 			    "can't set flags or set msg_control.\n");
 		SENDERR(EINVAL);
 	}
-		
+
 	if(sk->sk_shutdown & SEND_SHUTDOWN) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -925,7 +925,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 		send_sig(SIGPIPE, current, 0);
 		SENDERR(EPIPE);
 	}
-	
+
 	if(len < sizeof(struct sadb_msg)) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -971,7 +971,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 			    pfkey_msg->sadb_msg_reserved);
 		SENDERR(EINVAL);
 	}
-	
+
 	if((pfkey_msg->sadb_msg_type > K_SADB_MAX) || (!pfkey_msg->sadb_msg_type)){
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -979,11 +979,11 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 			    pfkey_msg->sadb_msg_type);
 		SENDERR(EINVAL);
 	}
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_sendmsg: "
 		    "msg sent for parsing.\n");
-	
+
 	if((error = pfkey_msg_interp(sk, pfkey_msg))) {
 		struct socket_list *pfkey_socketsp;
 
@@ -1022,9 +1022,9 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 				    "sending up error message to socket=0p%p succeeded.\n",
 				    pfkey_socketsp->socketp);
 		}
-		
+
 		pfkey_msg_free(&pfkey_reply);
-		
+
 		SENDERR(-error);
 	}
 
@@ -1032,7 +1032,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 	if (pfkey_msg) {
 		kfree((void*)pfkey_msg);
 	}
-	
+
 	if(error) {
 		return error;
 	} else {
@@ -1043,7 +1043,7 @@ pfkey_sendmsg(struct socket *sock, struct msghdr *msg, int len, struct scm_cooki
 /*
  *	Receive PF_KEY data up.
  */
-		
+
 DEBUG_NO_STATIC int
 #ifdef NET_26
 pfkey_recvmsg(struct kiocb *kiocb
@@ -1097,9 +1097,9 @@ pfkey_recvmsg(struct socket *sock
 			    flags);
 		return -EOPNOTSUPP;
 	}
-		
+
 	msg->msg_namelen = 0; /* sizeof(*ska); */
-		
+
 	if(sk->sk_err) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_sendmsg: "
@@ -1151,7 +1151,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 	off_t begin=0;
 	int len=0;
 	struct sock *sk;
-	
+
 	if(!sysctl_ipsec_debug_verbose) {
 	len += ipsec_snprintf(buffer, length,
 		      "    sock   pid   socket     next     prev e n p sndbf    Flags     Type St\n");
@@ -1194,7 +1194,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sock_flag(sk, SOCK_ZAPPED),
 #else
 					sk->sk_zapped,
-#endif					
+#endif
 					sk->sk_protocol,
 					sk->sk_sndbuf,
 					(unsigned int)t.tv_sec,
@@ -1203,7 +1203,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 					sk->sk_socket->type,
 					sk->sk_socket->state);
 		}
-		
+
 		if (len >= max_content) {
 			/* we've done all that can fit -- stop loop */
 			len = max_content;	/* truncate crap */
@@ -1240,15 +1240,15 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 )
 {
 	/* limit of useful snprintf output */
-	const int max_content = length > 0? length-1 : 0;	
+	const int max_content = length > 0? length-1 : 0;
 	off_t begin=0;
 	int len=0;
 	int satype;
 	struct supported_list *ps;
-	
+
 	len += ipsec_snprintf(buffer, length,
 		      "satype exttype alg_id ivlen minbits maxbits name\n");
-	
+
 	for(satype = K_SADB_SATYPE_UNSPEC; satype <= K_SADB_SATYPE_MAX; satype++) {
 		ps = pfkey_supported_list[satype];
 		while(ps) {
@@ -1265,7 +1265,7 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 					      alg->ias_keyminbits,
 					      alg->ias_keymaxbits,
 					      n);
-			
+
 			if (len >= max_content) {
 				/* we've done all that can fit -- stop loop */
 				len = max_content;	/* truncate crap */
@@ -1308,10 +1308,10 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 	int len=0;
 	int satype;
 	struct socket_list *pfkey_sockets;
-	
+
 	len += ipsec_snprintf(buffer, length,
 		      "satype   socket   pid       sk\n");
-	
+
 	for(satype = K_SADB_SATYPE_UNSPEC; satype <= K_SADB_SATYPE_MAX; satype++) {
 		pfkey_sockets = pfkey_registered_sockets[satype];
 		while(pfkey_sockets) {
@@ -1321,7 +1321,7 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 				     pfkey_sockets->socketp,
 				     key_pid(pfkey_sockets->socketp->sk),
 				     pfkey_sockets->socketp->sk);
-			
+
 			if (len >= max_content) {
 				/* we've done all that can fit -- stop loop (could stop two) */
 				len = max_content;	/* truncate crap */
@@ -1402,8 +1402,8 @@ supported_add_all(int satype, struct ipsec_alg_supported supported[], int size)
 			    supported[i].ias_ivlen,
 			    supported[i].ias_keyminbits,
 			    supported[i].ias_keymaxbits,
-			    n);			    
-			    
+			    n);
+
 		error |= pfkey_list_insert_supported(&(supported[i]),
 					    &(pfkey_supported_list[satype]));
 	}
@@ -1432,7 +1432,7 @@ supported_remove_all(int satype)
 			    supportedp->ias_ivlen,
 			    supportedp->ias_keyminbits,
 			    supportedp->ias_keymaxbits, n);
-			    
+
 		error |= pfkey_list_remove_supported(supportedp,
 					    &(pfkey_supported_list[satype]));
 	}
@@ -1518,7 +1518,7 @@ int
 pfkey_cleanup(void)
 {
 	int error = 0;
-	
+
         printk(KERN_INFO "klips_info:pfkey_cleanup: "
 	       "shutting down PF_KEY domain sockets.\n");
 #ifdef VOID_SOCK_UNREGISTER
