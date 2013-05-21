@@ -512,7 +512,7 @@ kinstall:
 	( cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) install ) 2>&1 | tee -a out.kinstall
 	${ERRCHECK} out.kinstall
 
-kernelpatch2.6 kernelpatch:
+kernelpatch3.9 kernelpatch2.6 kernelpatch:
 	packaging/utils/kernelpatch 2.6
 
 kernelpatch2.4:
@@ -530,7 +530,7 @@ nattpatch:
 	else	echo "Cannot determine Linux kernel version. Perhaps you need to set KERNELSRC? (eg: export KERNELSRC=/usr/src/linux-`uname -r`/)"; exit 1; \
 	fi;
 
-sarefpatch26:
+sarefpatch39 sarefpatch26:
 	packaging/utils/sarefpatch 2.6
 
 nattpatch2.6:
