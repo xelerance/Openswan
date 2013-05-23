@@ -71,7 +71,7 @@ perl -e 'print time()."\n";' >${REGRESSRESULTS}/datestamp
 # need to be recreated to ensure the tests are legit.
 #
 
-cd $BUILDSPOOL/${TOPMODULE}/testing/x509 && ./dist_certs
+cd $BUILDSPOOL/${TOPMODULE}/testing/x509 && ./dist_certs  >/dev/null
 
 cd $BUILDSPOOL/${TOPMODULE} && make check
 
