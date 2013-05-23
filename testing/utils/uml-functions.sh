@@ -159,7 +159,7 @@ setup_host_make() {
 
     # setup the mount of /usr/share
     echo "$hostroot/etc/fstab : ${TESTINGROOT}/baseconfigs/$host/etc/fstab"
-    echo "$TAB mkdir -p ${TESTINGROOT}/baseconfigs/$host/etc"
+    echo "$TAB mkdir -p $hostroot/etc"
     echo "$TAB cp ${TESTINGROOT}/baseconfigs/$host/etc/fstab $hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /testing		     hostfs   defaults,ro,${TESTINGROOT} 0 0 >>$hostroot/etc/fstab"
