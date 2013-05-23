@@ -110,7 +110,7 @@ if test ${retval} -ne 0 ; then
 	exit ${retval}
 fi
 
-if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
+if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -f -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
 
 UMLMAKE=$POOLSPACE/Makefile
 NOW=`date`
