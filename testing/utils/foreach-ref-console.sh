@@ -6,7 +6,7 @@
 # use this script to run some script on each reference output script.
 # It uses the foreach_ref_console function in functions.sh to do its
 # work.
-# 
+#
 # Start this from testing/*, listing all the test names (directories),
 # space-separated. The script to run is the first argument.
 #

@@ -6,8 +6,8 @@
 #
 # This causes some bootstrap problems, but we deal with that by understanding
 # that this first stage bootstrap can not updated automatically. This script
-# should be copied somewhere that is not in the release tree (i.e. ~/bin) 
-# and invoked periodically. 
+# should be copied somewhere that is not in the release tree (i.e. ~/bin)
+# and invoked periodically.
 #
 
 if [ -f $HOME/openswan-2-regress-env.sh ]
@@ -15,7 +15,7 @@ then
     . $HOME/openswan-2-regress-env.sh
 fi
 
-# /btmp is a place with a bunch of space. 
+# /btmp is a place with a bunch of space.
 BTMP=${BTMP:-/btmp} export BTMP
 
 GITPUBLIC=${GITPUBLIC-http://git.openswan.org/public/scm/openswan.git}
@@ -66,12 +66,12 @@ ln -s -f $BUILDSPOOL/openswan-2 $BTMP/$USER/$BRANCH/today
 
 
 # invoke stage 2 now.
-chmod +x $BUILDSPOOL/$TOPMODULE/testing/utils/regress-stage2.sh  
+chmod +x $BUILDSPOOL/$TOPMODULE/testing/utils/regress-stage2.sh
 $BUILDSPOOL/$TOPMODULE/testing/utils/regress-stage2.sh  || exit 6
 
 # warn about changes in myself.
 cmp $BUILDSPOOL/$TOPMODULE/testing/utils/regress-nightly.sh $0
-	
+
 if [ $? != 0 ]
 then
     echo WARNING $BUILDSPOOL/$TOPMODULE/testing/utils/regress-nightly.sh differs from $0.

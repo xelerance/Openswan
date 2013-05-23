@@ -12,7 +12,7 @@
 . setup.sh
 
 console_edit_func() {
-    testname=$1;           shift        
+    testname=$1;           shift
     consoleprefix=$1;  shift
     reffile=$1;        shift
 

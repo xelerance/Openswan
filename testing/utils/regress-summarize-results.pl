@@ -3,8 +3,8 @@
 #
 # this program processes a bunch of directories routed at
 # $REGRESSRESULTS. Each one is examined for a file "status"
-# the result is an HTML table with the directory name as 
-# left columns (it is the implied test name), and the status 
+# the result is an HTML table with the directory name as
+# left columns (it is the implied test name), and the status
 # on the right.
 #
 # if the test status is negative, then the results are a hotlink
@@ -65,7 +65,7 @@ sub htmlize_test {
       $verdict="<BLINK>**RUNNING**</BLINK>";
       &printit("<TD>$verdict</TD></TR>");
       return;
-  } 
+  }
 
   if(-f "$testname/expected" &&
      open(EXPECTED, "$testname/expected")) {
@@ -102,7 +102,7 @@ sub htmlize_test {
          $expected ne 'missing' &&
 	 $expected ne 'incomplete') {
 	$verdict .= " <FONT COLOR=\"$unexpectedcolour\">AWOL</FONT>";
-      }	
+      }
       $missed++;
 
     } elsif($result =~ /^skipped$/i) {
@@ -111,7 +111,7 @@ sub htmlize_test {
         $expected ne 'missing') {
 	$verdict .= " <FONT COLOR=\"$unexpectedcolour\">AWOL</FONT>";
       }
-      $skipped++;	
+      $skipped++;
     } else {
       $verdict = "${old}FAILED";
       if(!defined($expected) ||
@@ -125,7 +125,7 @@ sub htmlize_test {
       if($expected eq 'bad') {
 	$verdict=$old."<FONT COLOR=\"$expectedcolour\">FAILED</FONT> (expected)";
       }
-	
+
       if(-d "$testname/OUTPUT") {
 	$output="$testname/OUTPUT";
 	$verdict="<A HREF=\"$output\">$verdict</A>";
@@ -139,7 +139,7 @@ sub htmlize_test {
 	  $roguecount++;
 	}
 	close(ROGUE);
-	
+
 	$verdict .=" <FONT COLOR=\"$roguecolour\">ROGUE($roguecount)</A>";
       }
 
@@ -165,7 +165,7 @@ sub htmlize_test {
 	    $type=$1;
 	    print STDERR "found the $file\n" if $debug;
 
-	    # see if the file has any content. Skip zero contents 
+	    # see if the file has any content. Skip zero contents
 	    if(open(DIFFFILE, "$output/$file")) {
 	      $foo=<DIFFFILE>;
 	      if(length($foo) > 0) {
@@ -189,8 +189,8 @@ sub htmlize_test {
 	  } elsif($file =~ /(.*).diff$/) {
 	    $type=$1;
 	    print STDERR "found the $file\n" if $debug;
-	    
-	    # see if the file has any content. Skip zero contents 
+
+	    # see if the file has any content. Skip zero contents
 	    if(open(DIFFFILE, "$output/$file")) {
 	      $foo=<DIFFFILE>;
 	      if(length($foo) > 0) {
@@ -340,25 +340,25 @@ sub openpiecefile {
     print HTMLPART "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 3.2 Final//EN\">\n";
     print HTMLPART "<HTML>  <HEAD>\n";
     print HTMLPART "<META http-equiv=\"content-type\" content=\"text/html; charset=ISO-8859-1\">\n";
-    
+
     if(defined($runningtest)) {
       print HTMLPART "<META http-equiv=\"Refresh\" content=\"$fastrate,$file\">\n";
     } else {
       print HTMLPART "<META http-equiv=\"Refresh\" content=\"$slowrate,$file\">\n";
     }
-    
+
     print HTMLPART "<TITLE>Openswan nightly testing results for $runtime</TITLE>\n";
     print HTMLPART "</HEAD>  <BODY>\n";
     print HTMLPART "<H1>Openswan nightly testing results for $runtime on $hostname</H1>\n";
-    
+
     if(defined($runningtest)) {
       print HTMLPART "Currently running $runningtest<P>\n";
     }
-    
-    
+
+
     print HTMLPART "<TABLE border>\n";
     print HTMLPART "<TD>";
-    
+
     print HTMLPART "<TR><TH COLSPAN=3>Regression tests</TH></TR>\n";
     print HTMLPART "<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n";
     $piece++;
@@ -398,44 +398,44 @@ if($wanttestcategories) {
   foreach $testname (@regresstests) {
     next if($testname =~ /^\./);
     next unless(-d $testname || $testname eq $runningtest);
-    
+
     &htmlize_test($testname);
   }
-  
+
   $testtypename="Goal";
   &printit("<TR><TH COLSPAN=3>Goal tests</TH></TR>\n");
   &printit("<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n");
   $linecount+=3;
-  
+
   foreach $testname (@goaltests) {
     next if($testname =~ /^\./);
     next unless(-d $testname || $testname eq $runningtest);
-    
+
     &htmlize_test($testname);
   }
-  
+
   $testtypename="Exploit ";
   &printit("<TR><TH COLSPAN=3>Exploit tests</TH></TR>\n");
   &printit("<TR><TH>Test name</TH><TH>Result</TH><TH>Detail</TH></TR>\n");
   $linecount+=3;
-  
+
   foreach $testname (@exploittests) {
     next if($testname =~ /^\./);
     next unless(-d $testname || $testname eq $runningtest);
-    
+
     &htmlize_test($testname);
   }
 } else {
   foreach $testname (@testnames) {
     next if($testname =~ /^\./);
     next unless(-d $testname || $testname eq $runningtest);
-    
+
     &htmlize_test($testname);
   }
 }
-  
-  
-  
+
+
+
 $subtotal = $passed + $failed;
 $skipped = $total - $subtotal;
 

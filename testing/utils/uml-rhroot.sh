@@ -71,7 +71,7 @@ then
     d1=$image
     echo "Assuming download RPMS directory at $d1"
 fi
-    
+
 
 mkdir -p $root/var/lib/rpm
 mkdir -p $root/etc $root/usr/bin $root/bin $root/usr/lib $root/lib
@@ -80,7 +80,7 @@ mkdir -p $root/usr/bin $root/etc/X11/applnk/System $root/usr/include
 
 rpm --root=$root --initdb
 
-nri basesystem setup filesystem "glibc-[0-9.]*.i386" glibc-common- "slang-[0-9]" "newt-[0-9]" popt- 
+nri basesystem setup filesystem "glibc-[0-9.]*.i386" glibc-common- "slang-[0-9]" "newt-[0-9]" popt-
 
 nri info- makeinfo- mktemp- shadow-utils- ntsysv- syslinux- \
 	libtermcap- bzip2- libstdc++- logrotate- \

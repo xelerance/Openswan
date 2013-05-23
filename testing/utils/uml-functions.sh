@@ -1,4 +1,4 @@
-#! /bin/bash 
+#! /bin/bash
 #
 
 TAB="	@"
@@ -22,8 +22,8 @@ setup_make() {
     echo "OPENSWANSRCDIR=${OPENSWANSRCDIR}"
     echo "include ${OPENSWANSRCDIR}/Makefile.inc"
     echo "include ${OPENSWANSRCDIR}/Makefile.ver"
-    echo 
-    
+    echo
+
     echo "all: "
     echo "$TAB echo Default make called"
     echo "$TAB exit 1"
@@ -59,10 +59,10 @@ setup_host_make() {
     echo "#"
     echo "#  Used in debugging to see what makefile's got to here."
     echo "export MAKEFILE_LIST"
-    
+
 
     echo "# RULES for host $host"
-    echo 
+    echo
 
     echo "$hostroot:"
     echo "$TAB mkdir -p $host $hostroot"
@@ -102,7 +102,7 @@ setup_host_make() {
     echo "$TAB ln -f $hostroot/bin/true $hostroot/sbin/fsck.hostfs"
 
     # force it to GMT, otherwise (RH7.1) use host's zoneinfo.
-    if [ -f /usr/share/zoneinfo/GMT ] 
+    if [ -f /usr/share/zoneinfo/GMT ]
     then
       echo "$TAB cp /usr/share/zoneinfo/GMT $hostroot/etc/localtime"
     else
@@ -113,7 +113,7 @@ setup_host_make() {
     echo "$TAB (cd ${TESTINGROOT}/baseconfigs/all && find . -type f -print) | (cd $hostroot && xargs rm -f)"
     echo "$TAB (cd ${TESTINGROOT}/baseconfigs/$host && find . -type f -print) | (cd $hostroot && xargs rm -f)"
     # okay, that's all the stock stuff
-    echo 
+    echo
     depends="$depends $hostroot/sbin/init"
 
     # copy global configuration files, and make sure that they are up-to-date.
@@ -131,7 +131,7 @@ setup_host_make() {
 	       echo
 	       echo -n $hostroot/$file ' ' >>makeuml2.$$
 	esac
-    done	 
+    done
     nicelists=`cat makeuml2.$$`
     depends="$depends $nicelists"
     rm -f makeuml.$$ makeuml2.$$
@@ -151,8 +151,8 @@ setup_host_make() {
 	       echo
 	       echo -n $hostroot/$file ' ' >>makeuml2.$$
 	esac
-    done	 
- 
+    done
+
     nicelists=`cat makeuml2.$$`
     depends="$depends $nicelists"
     rm -f makeuml.$$ makeuml2.$$
@@ -180,7 +180,7 @@ setup_host_make() {
     if [ "X$HOSTTYPE" == "Xopenswan" ]
     then
 	# install FreeSWAN if appropriate.
-        
+
 	echo "$hostroot/usr/local/sbin/ipsec : ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver"
 	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} DESTDIR=$POOLSPACE/$hostroot USE_OBJDIR=true install"
 	echo
@@ -216,8 +216,8 @@ setup_host_make() {
 	fi
     fi
 
-    if [ -x $NETKEY_KERNEL ] 
-    then 
+    if [ -x $NETKEY_KERNEL ]
+    then
      # make startup script for NETKEY uml (no modules)
      startscript=$POOLSPACE/$host/start-netkey.sh
      echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.cpio"
@@ -262,7 +262,7 @@ setup_host() {
 
     hostroot=$POOLSPACE/$host/root
     mkdir -p $hostroot
-    # copy (with hard links) 
+    # copy (with hard links)
     (cd ${BASICROOT} && find . -print | cpio -pld $hostroot 2>/dev/null )
 
     # make private copy of /var.
@@ -278,19 +278,19 @@ setup_host() {
     then
       (cd $hostroot/etc/rc.d && ln -fs ../init.d ../rc?.d . )
     fi
-    
+
     # nuke certain other files that get in the way of booting
     rm -f $hostroot/etc/mtab
     rm -f $hostroot/sbin/hwclock
 
     # set up the timezone
-    rm -f $hostroot/etc/localtime 
+    rm -f $hostroot/etc/localtime
 
     # dummy out fsck.
     ln -f $hostroot/bin/true $hostroot/sbin/fsck.hostfs
 
     # force it to GMT, otherwise (RH7.1) use host's zoneinfo.
-    if [ -f /usr/share/zoneinfo/GMT ] 
+    if [ -f /usr/share/zoneinfo/GMT ]
     then
       cp /usr/share/zoneinfo/GMT $hostroot/etc/localtime
     else
@@ -327,14 +327,14 @@ setup_host() {
 }
 
 applypatches() {
-    if [ ! -d arch/um/.PATCHAPPLIED ] 
-    
+    if [ ! -d arch/um/.PATCHAPPLIED ]
+
     then
 	echo Applying $UMLPATCH
 
 	if [ "$UMLPATCH" != "none" ] && [ "$UMLPATCH" != /dev/null ]
 	then
-	    if bzcat $UMLPATCH | patch -p1 
+	    if bzcat $UMLPATCH | patch -p1
 	    then
 		:
 	    else
@@ -346,7 +346,7 @@ applypatches() {
 	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
 	then
 	    echo Applying $UMLPATCH2
-	    if bzcat $UMLPATCH2 | patch -p1 
+	    if bzcat $UMLPATCH2 | patch -p1
 	    then
 		    :
 	    else
@@ -376,7 +376,7 @@ applypatches() {
 
 	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
 	do
-	    if [ -f $patch ] 
+	    if [ -f $patch ]
 	    then
 		echo Applying local patch $patch
 		cat $patch | patch -p1
@@ -385,7 +385,7 @@ applypatches() {
 
 	if $NATTPATCH
 	then
-	    if [ ! -d arch/um/.NATPATCHAPPLIED ] 
+	    if [ ! -d arch/um/.NATPATCHAPPLIED ]
 	    then
 		echo Applying the NAT-Traversal patch
 		( cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
@@ -399,7 +399,7 @@ applypatches() {
 
 	if $SAREFPATCH
         then
-	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ] 
+	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ]
 	    then
 		echo Applying the SAref patches
 		( cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1

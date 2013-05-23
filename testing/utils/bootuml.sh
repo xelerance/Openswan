@@ -11,7 +11,7 @@ then
     echo No umlsetup.sh. Please read instructions in umlsetup-sample.sh.
     exit 1
 fi
-	
+
 export OPENSWANSRCDIR
 . $OPENSWANSRCDIR/umlsetup.sh
 
@@ -29,11 +29,11 @@ case $me in
 
 	east)    horz=530; vert=10;;
 
-	sunrise) horz=530; vert=380;;	
+	sunrise) horz=530; vert=380;;
 
 	nic)     horz=530; vert=750;;
 
-	japan)   horz=30;  vert=750;;	
+	japan)   horz=30;  vert=750;;
 esac
 
 xterm +sb -n $meup -T $meup -geometry 80x25+$horz+$vert -name $meup -e $MYDIR/start.sh $@ &

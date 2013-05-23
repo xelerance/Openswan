@@ -24,7 +24,7 @@ export USE_OBJDIR=true
 
 # include this dir, in particular so that we can get the local "touch"
 # program.
-export PATH=$OPENSWANSRCDIR/testing/utils:$PATH 
+export PATH=$OPENSWANSRCDIR/testing/utils:$PATH
 
 
 #
@@ -43,9 +43,9 @@ fi
 . ${OPENSWANSRCDIR}/umlsetup.sh
 . ${OPENSWANSRCDIR}/testing/utils/uml-functions.sh
 
-KERNVER=${KERNVER-}    
+KERNVER=${KERNVER-}
 
-case $KERNVER in 
+case $KERNVER in
 	26) KERNVERSION=2.6;;
 	*) KERNVERSION=2.4;;
 esac
@@ -148,7 +148,7 @@ do
 done
 
 # build a plain kernel if we need it!
-if $NEED_plain && [ ! -x $UMLPLAIN/linux ] 
+if $NEED_plain && [ ! -x $UMLPLAIN/linux ]
 then
     cd $UMLPLAIN
 
@@ -167,14 +167,14 @@ UMLNETKEY=$POOLSPACE/netkey${KERNVER}
 mkdir -p $UMLNETKEY
 NETKEYKERNEL=$UMLNETKEY/linux
 
-if [ ! -x $NETKEYKERNEL ] 
+if [ ! -x $NETKEYKERNEL ]
   then
    cd $UMLNETKEY
 
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
     cp $NETKEYCONF .config
     echo "using $NETKEYCONF to build netkey kernel"
@@ -189,7 +189,7 @@ then
 else
     BUILD_MODULES=false
 fi
-    
+
 setup_make $BUILD_MODULES >>$UMLMAKE
 
 # now, execute the Makefile that we have created!
@@ -247,7 +247,7 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile 
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile
 
     # looks like applypatches does not patch in klips - make line changed from the old one in commit b195c03ff554 as it built kernel and modules too
     cd $OPENSWANSRCDIR || exit 1
@@ -270,7 +270,7 @@ cd $OPENSWANSRCDIR || exit 1
 make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true USE_IPSECPOLICY=true programs
 
 # now, execute the Makefile that we have created!
-cd $POOLSPACE && make $OPENSWANHOSTS 
+cd $POOLSPACE && make $OPENSWANHOSTS
 
 echo "###  bottom exiting make-umls.sh running at pwd: `pwd`"
 

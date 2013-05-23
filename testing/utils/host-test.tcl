@@ -57,7 +57,7 @@ set umlid(extra_hosts) ""
 
 while { [ set err [ getopt $argv "c:D:H:i:I:n:ap:P:r:R:s:u:U:" opt optarg]] } {
     if { $err < 0 } then {
-	puts stderr "$argv0: $opt and $optarg" 
+	puts stderr "$argv0: $opt and $optarg"
 	usage
     } else {
 	#puts stderr "Opt $opt arg: $optarg"
@@ -85,7 +85,7 @@ while { [ set err [ getopt $argv "c:D:H:i:I:n:ap:P:r:R:s:u:U:" opt optarg]] } {
 	    I {
 		set umlid(uml,finalscript) $optarg
 	    }
-	    s { 
+	    s {
 		set umlid(uml,runscript)   $optarg
             }
 	    n {
@@ -115,7 +115,7 @@ set argv [ lrange $argv $optind end ]
 
 set managed_hosts {}
 set managednets {public private admin}
-lappend managed_hosts $umlid(uml,host) 
+lappend managed_hosts $umlid(uml,host)
 
 foreach net $managednets {
     process_net $net
@@ -219,7 +219,7 @@ expect {
 
 system "sleep 4"
 
-# 
+#
 # $Log: host-test.tcl,v $
 # Revision 1.39  2005/10/20 21:11:45  mcr
 # 	refactored to put wait-user function in netjig.tcl.

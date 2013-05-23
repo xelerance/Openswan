@@ -19,7 +19,7 @@ FAILLINES=128
 
 PATH=$PATH:/sandel/bin export PATH
 CVSROOT=:pserver:anoncvs@ip212.xs4net.freeswan.org:/freeswan/MASTER
-CVSUMASK=002 
+CVSUMASK=002
 export CVSROOT CVSUMASK
 
 SNAPSHOTSIGDIR=$HOME/snapshot-sig
