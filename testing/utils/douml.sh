@@ -54,7 +54,7 @@ cd $HERE
 
 # extract things
 zcat download/$LINUX.tar.gz | tar xf -
-zcat download/$UMLROOT | tar xf - 
+zcat download/$UMLROOT | tar xf -
 
 # setup link
 ln -f -s root-* root
@@ -105,6 +105,6 @@ make check
 
 
 
-      
-      
+
+
 

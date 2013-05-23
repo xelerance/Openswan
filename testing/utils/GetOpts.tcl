@@ -1,34 +1,34 @@
 ## tclGetOpts - GetOpts.tcl
-## 
+##
 ## Description
 ## 	Tcl package: GetOpts v1.1
 ## 	Procedures: getopt, typedopts
 ## 	Contact: Ross Mohn, RPMohn@panix.com
 ## 	Website: http://www.waxandwane.com/toolbox/tclGetOpts/
-## 
+##
 ## 	tclGetOpts contains the Tcl package GetOpts which
 ## 	includes two procedures for parsing command-line options in a
 ## 	Tcl script.
-## 
+##
 ## 		* getopt: a close emulation of the C library routine
 ## 		getopt(3C).
-## 
+##
 ## 		* typedopts: uses long option names and does type checking
 ## 		on option arguments.
-## 
-## 
+##
+##
 ## Directory Listing
 ## 	GetOpts.tcl, pkgIndex.tcl
 ## 	index.html / readme.txt
 ## 	getopt.html / getopt.txt
 ## 	typedopts.html / typedopts.txt
-## 
-## 
+##
+##
 ## Copyright Information
 ## 	All copyrights of this package are hereby transferred to Ross
 ## 	Mohn. This package was originally written by Johnson Earls.
-## 
-## 
+##
+##
 ## Version History
 ## 	v1.1
 ## 		* tclGetOpts1.1.tar.gz
@@ -38,10 +38,10 @@
 ## 		to fail.
 ## 		* Fixed bug with the list-of option type that would only
 ## 		return the last option instead of the entire list.
-## 
+##
 ## 	v1.0
 ## 		* tclGetOpts1.0.tar.gz
-## 
+##
 
 package provide GetOpts 1.1
 

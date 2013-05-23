@@ -36,13 +36,13 @@ fi
 
 . ${OPENSWANSRCDIR}/umlsetup.sh
 
-if [ ! -d ${KERNPOOL}/. ]; then echo Your KERNPOOL= is not properly set; exit 1; fi	
+if [ ! -d ${KERNPOOL}/. ]; then echo Your KERNPOOL= is not properly set; exit 1; fi
 
 if [ "${UMLPATCH}" != "none" ] && [ ! -r ${UMLPATCH} ]; then echo Your UMLPATCH= is not properly set; exit 1; fi
 if [ -z "${OPENSWANHOSTS}" ]; then echo Your OPENSWANHOSTS= is not properly set; exit 1; fi
-if [ -z "${NATTPATCH}" ]; then echo Your NATTPATCH= is not properly set; exit 1; fi 
+if [ -z "${NATTPATCH}" ]; then echo Your NATTPATCH= is not properly set; exit 1; fi
 if [ ! -d ${BASICROOT}/. ]; then echo Your BASICROOT= is not properly set; exit 1; fi
-    
+
 #
 # $Log: verify-uml.sh,v $
 # Revision 1.2  2005/08/11 18:08:04  mikes
@@ -53,4 +53,4 @@ if [ ! -d ${BASICROOT}/. ]; then echo Your BASICROOT= is not properly set; exit 
 # 	we get too far.
 #
 #
-#    
+#

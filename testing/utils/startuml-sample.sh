@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#  
+#
 #
 #
 
@@ -31,7 +31,7 @@ case $me in
 	sunrise) horz=+384;vert=+10; rows=24;;
 
 	nic)     horz=+0;  vert=+400; rows=18;;
-	japan)   horz=+384;vert=+400;;	
+	japan)   horz=+384;vert=+400;;
 	carrot)  horz=+400;vert=+20; rows=18;;
 	beet)    horz=+400;vert=+200; rows=18;;
 esac

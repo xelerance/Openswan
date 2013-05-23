@@ -60,7 +60,7 @@ set umlid(extra_hosts) ""
 
 while { [ set err [ getopt $argv "c:C:D:f:F:H:i:I:n:N:ae:E:w:W:p:P:r:R:u:U:" opt optarg]] } {
     if { $err < 0 } then {
-	puts stderr "$argv0: $opt and $optarg" 
+	puts stderr "$argv0: $opt and $optarg"
 	usage
     } else {
 	#puts stderr "Opt $opt arg: $optarg"
@@ -179,7 +179,7 @@ foreach host $umlid(extra_hosts) {
 }
 
 
-startuml east 
+startuml east
 startuml west
 
 loginuml east
@@ -236,11 +236,11 @@ send -i $umlid(west,spawnid) "\r"
 
 expect {
     -i $umlid(east,spawnid) -exact "# " {}
-    timeout { 
+    timeout {
 	puts "Can not find east's prompt prior to final script (timeout)"
 	exit;
     }
-    eof { 
+    eof {
 	puts "Can not find east's prompt prior to final script (EOF)"
 	exit;
     }
@@ -248,11 +248,11 @@ expect {
 
 expect {
     -i $umlid(west,spawnid) -exact "# " {}
-    timeout { 
+    timeout {
 	puts "Can not find west's prompt prior to final script (timeout)"
 	exit;
     }
-    eof { 
+    eof {
 	puts "Can not find west's prompt prior to final script (EOF)"
 	exit;
     }
@@ -278,7 +278,7 @@ expect {
 	-gl timeout	{ puts "timeout while awaiting EOF" }
 }
 
-# 
+#
 # $Log: 2host-test.tcl,v $
 # Revision 1.22  2004/04/03 19:44:52  ken
 # FREESWANSRCDIR -> OPENSWANSRCDIR (patch by folken)
