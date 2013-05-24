@@ -576,7 +576,6 @@ struct inet_protocol esp_protocol = {
 struct inet6_protocol esp6_protocol = {
 	.handler = ipsec_rcv,
 	.flags = INET6_PROTO_NOPOLICY,
-	.netns_ok  = 1,                 /* this is a lie for now */
 };
 #endif
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */
