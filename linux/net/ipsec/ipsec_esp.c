@@ -93,7 +93,7 @@ ipsec_rcv_esp_checks(struct ipsec_rcv_state *irs,
 
 #if 0
 /* The problem with this check manifests itself when using l2tp over esp in
- * udp over pptp/ppp. This check seems to break for ESPinUDP packets, 
+ * udp over pptp/ppp. This check seems to break for ESPinUDP packets,
  * probably because of how hard_header_len is used with decapsulation.
  *
  * When pinging using -s 0 with Windows, one sees:
@@ -259,8 +259,8 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 	idat += irs->esphlen;
 	irs->ilen -= irs->esphlen;
 
-	if (ipsec_alg_esp_encrypt(ipsp, 
-				  idat, irs->ilen, espp->esp_iv, 
+	if (ipsec_alg_esp_encrypt(ipsp,
+				  idat, irs->ilen, espp->esp_iv,
 				  IPSEC_ALG_DECRYPT) <= 0) {
 		KLIPS_ERROR(debug_rcv, "klips_error:ipsec_rcv: "
 			    "got packet with esplen = %d "
@@ -274,7 +274,7 @@ ipsec_rcv_esp_decrypt(struct ipsec_rcv_state *irs)
 			irs->stats->rx_errors++;
 		}
 		return IPSEC_RCV_BAD_DECRYPT;
-	} 
+	}
 
 	return ipsec_rcv_esp_post_decrypt(irs);
 #else
@@ -435,7 +435,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
   espp = (struct esphdr *)(dat + ixs->iphlen);
   espp->esp_spi = ixs->ipsp->ips_said.spi;
   espp->esp_rpl = htonl(++(ixs->ipsp->ips_replaywin_lastseq));
-  
+
   switch(ixs->ipsp->ips_encalg) {
 #if defined(CONFIG_KLIPS_ENC_3DES)
 #ifdef CONFIG_KLIPS_ENC_3DES
@@ -451,21 +451,21 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
   }
-		
+
   idat = dat + ixs->iphlen + sizeof(struct esphdr);
   ilen = ixs->skb->len - (ixs->iphlen + sizeof(struct esphdr) + ixs->authlen);
-  
+
   /* Self-describing padding */
   pad = &dat[ixs->skb->len - ixs->tailroom];
   padlen = ixs->tailroom - 2 - ixs->authlen;
   for (i = 0; i < padlen; i++) {
-    pad[i] = i + 1; 
+    pad[i] = i + 1;
   }
   dat[ixs->skb->len - ixs->authlen - 2] = padlen;
-  
+
   dat[ixs->skb->len - ixs->authlen - 1] = osw_ip4_hdr(ixs)->protocol;
   osw_ip4_hdr(ixs)->protocol = IPPROTO_ESP;
-  
+
   switch(ixs->ipsp->ips_encalg) {
 #ifdef CONFIG_KLIPS_ENC_3DES
   case ESP_3DES:
@@ -482,7 +482,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
   }
-  
+
   switch(ixs->ipsp->ips_encalg) {
 #if defined(CONFIG_KLIPS_ENC_3DES)
 #ifdef CONFIG_KLIPS_ENC_3DES
@@ -495,7 +495,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     ((__u32*)(ixs->ipsp->ips_iv))[1] =
       ((__u32 *)(idat))[(ilen >> 2) - 1];
 #else /* KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK */
-    prng_bytes(&ipsec_prng, (char *)ixs->ipsp->ips_iv, EMT_ESPDES_IV_SZ); 
+    prng_bytes(&ipsec_prng, (char *)ixs->ipsp->ips_iv, EMT_ESPDES_IV_SZ);
 #endif /* KLIPS_IMPAIRMENT_ESPIV_CBC_ATTACK */
     break;
 #endif /* defined(CONFIG_KLIPS_ENC_3DES) */
@@ -503,7 +503,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     ixs->stats->tx_errors++;
     return IPSEC_XMIT_ESP_BADALG;
   }
-  
+
   switch(ixs->ipsp->ips_authalg) {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
   case AH_MD5:
@@ -521,7 +521,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     osMD5Final(hash, &tctx.md5);
     ipsec_xmit_dmp("octx hash", (char*)&hash, sizeof(hash));
     memcpy(&(dat[ixs->skb->len - ixs->authlen]), hash, ixs->authlen);
-    
+
     /* paranoid */
     memset((caddr_t)&tctx.md5, 0, sizeof(tctx.md5));
     memset((caddr_t)hash, 0, sizeof(*hash));
@@ -536,7 +536,7 @@ ipsec_xmit_esp_setup(struct ipsec_xmit_state *ixs)
     SHA1Update(&tctx.sha1, hash, AHSHA196_ALEN);
     SHA1Final(hash, &tctx.sha1);
     memcpy(&(dat[ixs->skb->len - ixs->authlen]), hash, ixs->authlen);
-    
+
     /* paranoid */
     memset((caddr_t)&tctx.sha1, 0, sizeof(tctx.sha1));
     memset((caddr_t)hash, 0, sizeof(*hash));
