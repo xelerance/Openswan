@@ -170,13 +170,6 @@ setup_host_make() {
     echo "$TAB echo /var/lib/swapfile none  swap    sw              0       0  >>$hostroot/etc/fstab"
     depends="$depends $hostroot/etc/fstab"
 
-    # split Debian "interfaces" file into RH ifcfg-* file
-    echo "$hostroot/etc/sysconfig/network-scripts/ifcfg-eth0: $hostroot/etc/network/interfaces"
-    echo "$TAB mkdir -p $hostroot/etc/sysconfig/network-scripts"
-    echo "$TAB ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts"
-    echo
-    depends="$depends $hostroot/etc/sysconfig/network-scripts/ifcfg-eth0"
-
     if [ "X$HOSTTYPE" == "Xopenswan" ]
     then
 	# install FreeSWAN if appropriate.
@@ -307,10 +300,6 @@ setup_host() {
     # setup the mount of /usr/share
     echo "none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0" >>$hostroot/etc/fstab
     echo "$TAB echo /var/lib/swapfile  none  swap    sw              0       0  >>$hostroot/etc/fstab"
-
-    # split Debian "interfaces" file into RH ifcfg-* file
-    mkdir -p $hostroot/etc/sysconfig/network-scripts
-    ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts
 
     # make startup script
     startscript=$POOLSPACE/$host/start.sh
