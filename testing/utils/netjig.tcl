@@ -359,6 +359,9 @@ proc inituml {umlname} {
 
     send -i $umlid($umlname,spawnid) -- "klogd -c 4 -x -f /tmp/klog.log\r"
 
+    expectprompt $umlid($umlname,spawnid) "for libraries"
+    send -i $umlid($umlname,spawnid) -- "mkdir -p /lib/modules/`uname -r`; depmod -a\r"
+
     if {[info exists umlid($umlname,initscript)]} {
 	dumbplayscript $umlname $umlid($umlname,initscript)
 	netjigdebug "$umlname Initialization done"
