@@ -2,8 +2,8 @@
  * Copyright (C) 2000 Andreas Hess, Patric Lichtsteiner, Roger Wegmann
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
- * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2000-2013 Andreas Steffen, Zuercher Hochschule Winterthur
+ * Copyright (C) 2003-2013 Michael C Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
@@ -763,13 +763,14 @@ atodn(char *src, chunk_t *dn)
     int whitespace  = 0;
     int rdn_seq_len = 0;
     int rdn_set_len = 0;
+    int rdn_len     = 0;
     int dn_seq_len  = 0;
     int pos         = 0;
 
     err_t ugh = NULL;
 
     u_char *dn_ptr = dn->ptr + 4;
-
+    size_t max_len = dn->len - 4;
     state_t state = SEARCH_OID;
 
     do
@@ -840,6 +841,16 @@ atodn(char *src, chunk_t *dn)
 		rdn_set_len = 1 + asn1_rdn_seq_len.len + rdn_seq_len;
 		code_asn1_length(rdn_set_len, &asn1_rdn_set_len);
 
+		/* compute the length of the relative distinguished name */
+		rdn_len = 1 + asn1_rdn_set_len.len + rdn_set_len;
+
+		/* do we have sufficient buffer_space */
+		if (dn_seq_len + rdn_len > max_len)
+		{
+		    ugh = "insufficient buffer space for atodn()";
+		    break;
+		}
+
 		/* encode the relative distinguished name */
 		*dn_ptr++ = ASN1_SET;
 		chunkcpy(dn_ptr, asn1_rdn_set_len);
@@ -856,6 +867,7 @@ atodn(char *src, chunk_t *dn)
 
 		/* accumulate the length of the distinguished name sequence */
 		dn_seq_len += 1 + asn1_rdn_set_len.len + rdn_set_len;
+		dn_seq_len += rdn_len;
 
 		/* reset name and change state */
 		name = empty_chunk;
@@ -865,7 +877,7 @@ atodn(char *src, chunk_t *dn)
 	case UNKNOWN_OID:
 	    break;
 	}
-    } while (*src++ != '\0');
+    } while (*src++ != '\0' && ugh == NULL);
 
     /* complete the distinguished name sequence*/
     code_asn1_length(dn_seq_len, &asn1_dn_seq_len);
@@ -874,6 +886,7 @@ atodn(char *src, chunk_t *dn)
     dn_ptr = dn->ptr;
     *dn_ptr++ = ASN1_SEQUENCE;
     chunkcpy(dn_ptr, asn1_dn_seq_len);
+
     return ugh;
 }
 
