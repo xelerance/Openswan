@@ -910,6 +910,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 	    err_t ugh;
 
 	    dst->ca.ptr = temporary_cyclic_buffer();
+	    dst->ca.len = IDTOA_BUF;
 	    ugh = atodn(src->ca, &dst->ca);
 	    if (ugh != NULL)
 	    {

@@ -1,5 +1,7 @@
 /* identity representation, as in IKE ID Payloads (RFC 2407 DOI 4.6.2.1)
  * Copyright (C) 1999-2001  D. Hugh Redelmeier
+ * Copyright (C) 2013  Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2013  Andreas Steffen
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -119,7 +121,7 @@ atoid(char *src, struct id *id, bool myid_ok)
 	/* we interpret this as an ASCII X.501 ID_DER_ASN1_DN */
 	id->kind = ID_DER_ASN1_DN;
 	id->name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
-	id->name.len = 0;
+	id->name.len = IDTOA_BUF;
 	/* convert from LDAP style or openssl x509 -subject style to ASN.1 DN
 	 * discard optional @ character in front of DN
 	 */
