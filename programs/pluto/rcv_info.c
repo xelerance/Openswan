@@ -54,7 +54,7 @@ int info_fd = -1;
 
 /** Lookup information about the hostpair, and set things like bandwidth
  * relative crypto strength, compression and credentials.
- * 
+ *
  * @param IPsec Policy Query
  * @return void
  */
@@ -102,7 +102,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	    ipcq->query_remote = tmp;
 	}
     }
-    
+
     if (c == NULL)
     {
 #ifdef DEBUG
@@ -170,7 +170,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	case ESP_RC4:
 	    ipcq->strength = IPSEC_PRIVACY_ROT13;
 	    break;
-	    
+
 	case ESP_RC5:
 	case ESP_IDEA:
 	case ESP_CAST:
@@ -214,7 +214,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	ipcq->credentials[0].ii_type   = c->spd.this.id.kind;
 	ipcq->credentials[0].ii_format = CERT_RAW_RSA;
     }
-	
+
 #if 0
     switch (c->spd.id.kind)
     {
@@ -230,7 +230,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
     ipcq->credential_count = 1;
 
     /* pull credentials out of gw_info */
-    
+
     switch (p1st->st_peer_pubkey->dns_auth_level)
     {
     case DAL_UNSIGNED:
@@ -242,7 +242,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 	    , ipcq->credentials[0].ii_credential.ipsec_dns_signed.fqdn
 	    , sizeof(ipcq->credentials[0].ii_credential.ipsec_dns_signed.fqdn));
 	break;
-	
+
     case DAL_SIGNED:
 	ipcq->credentials[0].ii_type   = p1st->st_peer_pubkey->id.kind;
 	ipcq->credentials[0].ii_format = CERT_DNS_SIGNED_KEY;
@@ -270,7 +270,7 @@ info_lookuphostpair(struct ipsec_policy_cmd_query *ipcq)
 }
 
 /**
- * Handle an info/policy request. 
+ * Handle an info/policy request.
  *
  * For now, we close the socket after answering the request.
  * @param infoctlfd File Descriptor for socket communication
@@ -319,7 +319,7 @@ info_handle(int infoctlfd)
             plog("info_handle: write error");
 	    }
 	    break;
-	    
+
 	default:
 	    plog("got unimplemented msg type: %d", ipcq.head.ipm_msg_type);
 	    break;

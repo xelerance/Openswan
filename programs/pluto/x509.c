@@ -238,7 +238,7 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 	if (cert->isCA)
 	{
 	    *pp = cert->next;
-	    
+
 	    /* we don't accept self-signed CA certs */
 	    if (same_dn(cert->issuer, cert->subject))
 	    {
@@ -258,11 +258,11 @@ store_x509certs(x509cert_t **firstcert, bool strict)
 
 
     /* now verify the candidate CA certs */
-    
+
     while (cacerts != NULL)
     {
         x509cert_t *cert = cacerts;
-       
+
         cacerts = cacerts->next;
 
         if (trust_authcert_candidate(cert, cacerts))
@@ -275,7 +275,7 @@ store_x509certs(x509cert_t **firstcert, bool strict)
            free_x509cert(cert);
         }
     }
-    
+
     /* now verify the end certificates */
 
 
@@ -339,7 +339,7 @@ insert_crl(chunk_t blob, chunk_t crl_uri)
 	    strncat(distpoint, (char *)crl->distributionPoints->name.ptr,
 		    (crl->distributionPoints->name.len < PATH_MAX ?
 		     crl->distributionPoints->name.len : PATH_MAX));
-	    
+
 	    openswan_log("crl issuer cacert not found for (%s)",
 			 distpoint);;
 
@@ -444,7 +444,7 @@ load_crls(void)
 		chunk_t blob = empty_chunk;
 		char *filename = filelist[n]->d_name;
 
-		if (load_coded_file(filename, NULL, 
+		if (load_coded_file(filename, NULL,
 #ifdef SINGLE_CONF_DIR
 			FALSE, /* too verbose in a shared dir */
 #else
@@ -510,7 +510,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	DBG(DBG_X509,
 	    DBG_log("issuer crl \"%s\" found", ibuf)
 	)
-     
+
 #ifdef HAVE_THREADS
 	add_distribution_points(cert->crlDistributionPoints
 		, &crl->distributionPoints);
@@ -523,13 +523,13 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	dntoa(cbuf, ASN1_BUF_LEN, crl->issuer);
 	valid = check_signature(crl->tbsCertList, crl->signature
 				, crl->algorithm, issuer_cert);
-	
+
 	unlock_authcert_list("verify_by_crl");
 
 	if (valid)
 	{
 	    bool revoked_crl, expired_crl;
-     
+
 	    DBG(DBG_X509,
 		DBG_log("valid crl signature on \"%s\"", cbuf)
 	    )
@@ -542,7 +542,7 @@ verify_by_crl(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 
 	    /* has the certificate been revoked? */
 	    revoked_crl = x509_check_revocation(crl, cert->serialNumber);
-     
+
 	    /* is the crl still valid? */
 	    expired_crl = time(NULL) > crl->nextUpdate;
 
@@ -686,7 +686,7 @@ verify_x509cert(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	    &&  !verify_by_crl (cert, strict, until))
 		return FALSE;
 	}
-        
+
 	/* go up one step in the trust chain */
 	cert = issuer_cert;
     }
@@ -716,7 +716,7 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
 	    char keyid[KEYID_BUF];
 	    char buf[ASN1_BUF_LEN];
 	    char tbuf[TIMETOA_BUF];
-	    
+
 	    cert_t c;
 
 	    c.type = CERT_X509_SIGNATURE;

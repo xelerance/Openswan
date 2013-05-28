@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper function - calculate DH
  * Copyright (C) 2006-2008 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
@@ -77,7 +77,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
     dhq->prf_hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
-    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
 
     passert(r.pcr_d.dhq.oakley_group != 0);
     DBG(DBG_CONTROL | DBG_CRYPT,
@@ -127,7 +127,7 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
     } else {
 	/* we must have run the continuation directly, so
-	 * complete_state_transition already got called. 
+	 * complete_state_transition already got called.
 	 */
 	return STF_INLINE;
     }
@@ -138,7 +138,7 @@ void finish_dh_secretiv(struct state *st,
 			struct pluto_crypto_req *r)
 {
     struct pcr_skeyid_r *dhr = &r->pcr_d.dhr;
-			
+
     clonetochunk(st->st_shared,   wire_chunk_ptr(dhr, &(dhr->shared))
 		 , dhr->shared.len,   "calculated shared secret");
     clonetochunk(st->st_skeyid,   wire_chunk_ptr(dhr, &(dhr->skeyid))
@@ -151,7 +151,7 @@ void finish_dh_secretiv(struct state *st,
 		 , dhr->skeyid_e.len, "calculated skeyid_a secret");
     clonetochunk(st->st_enc_key, wire_chunk_ptr(dhr, &(dhr->enc_key))
 		 , dhr->enc_key.len, "calculated key for phase 1");
-    
+
     passert(dhr->new_iv.len <= MAX_DIGEST_LEN);
     passert(dhr->new_iv.len > 0);
     memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
@@ -163,7 +163,7 @@ void finish_dh_secretiv(struct state *st,
 stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 			   , struct state *st
 			   , enum crypto_importance importance
-			   , enum phase1_role init      
+			   , enum phase1_role init
 			   , u_int16_t oakley_group2)
 {
     struct pluto_crypto_req r;
@@ -183,7 +183,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
     dhq->prf_hash = st->st_oakley.prf_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
-    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
 
     if(pss) {
 	pluto_crypto_copychunk(&dhq->thespace, dhq->space, &dhq->pss, *pss);
@@ -228,7 +228,7 @@ stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
     } else {
 	/* we must have run the continuation directly, so
-	 * complete_state_transition already got called. 
+	 * complete_state_transition already got called.
 	 */
 	return STF_INLINE;
     }
@@ -275,7 +275,7 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
     dhq->integ_hash = st->st_oakley.integ_hash;
     dhq->oakley_group = oakley_group2;
     dhq->init = init;
-    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE; 
+    dhq->keysize = st->st_oakley.enckeylen/BITS_PER_BYTE;
 
     passert(r.pcr_d.dhq.oakley_group != 0);
 
@@ -320,7 +320,7 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
     } else {
 	/* we must have run the continuation directly, so
-	 * complete_state_transition already got called. 
+	 * complete_state_transition already got called.
 	 */
 	return STF_INLINE;
     }
@@ -331,7 +331,7 @@ void finish_dh_v2(struct state *st,
 		  struct pluto_crypto_req *r)
 {
     struct pcr_skeycalc_v2 *dhv2 = &r->pcr_d.dhv2;
-			
+
     clonetochunk(st->st_shared,   wire_chunk_ptr(dhv2, &(dhv2->shared))
 		 , dhv2->shared.len,   "calculated shared secret");
     clonetochunk(st->st_skey_d,   wire_chunk_ptr(dhv2, &(dhv2->skeyid_d))
@@ -348,7 +348,7 @@ void finish_dh_v2(struct state *st,
 		 , dhv2->skeyid_ei.len, "calculated skeyid_ei secret");
     clonetochunk(st->st_skey_er, wire_chunk_ptr(dhv2, &(dhv2->skeyid_er))
 		 , dhv2->skeyid_er.len, "calculated skeyid_er secret");
-    
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 

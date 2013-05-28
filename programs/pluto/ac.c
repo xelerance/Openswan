@@ -49,11 +49,11 @@
 #include "fetch.h"
 
 /* chained list of X.509 attribute certificates */
- 
+
 static x509acert_t *x509acerts   = NULL;
- 
+
 /* chained list of ietfAttributes */
- 
+
 static ietfAttrList_t *ietfAttributes = NULL;
 
 /* ASN.1 definition of ietfAttrSyntax */
@@ -227,20 +227,20 @@ const x509acert_t empty_ac = {
  */
 static int
 cmp_ietfAttr(ietfAttr_t *a,ietfAttr_t *b)
-{   
+{
      int cmp_len, len, cmp_value;
-       
+
      /* cannot compare OID with STRING or OCTETS attributes */
      if (a->kind == IETF_ATTRIBUTE_OID && b->kind != IETF_ATTRIBUTE_OID)
       return 1;
- 
+
      cmp_len = a->value.len - b->value.len;
      len = (cmp_len < 0)? a->value.len : b->value.len;
      cmp_value = memcmp(a->value.ptr, b->value.ptr, len);
-     
+
     return (cmp_value == 0)? cmp_len : cmp_value;
-}     
-    
+}
+
 /*
  *  add an ietfAttribute to the chained list
  */
@@ -250,7 +250,7 @@ add_ietfAttr(ietfAttr_t *attr)
     ietfAttrList_t **listp = &ietfAttributes;
     ietfAttrList_t *list = *listp;
     int cmp = -1;
-    
+
     while (list != NULL)
     {
       cmp = cmp_ietfAttr(attr, list->attr);
@@ -259,7 +259,7 @@ add_ietfAttr(ietfAttr_t *attr)
       listp = &list->next;
       list = *listp;
     }
-    
+
     if (cmp == 0)
     {
       /* attribute already exists, increase count */
@@ -270,22 +270,22 @@ add_ietfAttr(ietfAttr_t *attr)
     else
     {
       ietfAttrList_t *el = alloc_thing(ietfAttrList_t, "ietfAttrList");
-    
+
       /* new attribute, unshare value */
       attr->value.ptr = clone_bytes(attr->value.ptr, attr->value.len
           , "attr value");
       attr->count = 1;
       time(&attr->installed);
-     
+
       el->attr = attr;
       el->next = list;
       *listp = el;
-    
+
       return attr;
     }
 }
-      
-/*   
+
+/*
  * decodes a comma separated list of group attributes
  */
 void
@@ -293,7 +293,7 @@ decode_groups(char *groups, ietfAttrList_t **listp)
 {
     if (groups == NULL)
       return;
- 
+
     while (strlen(groups) > 0)
     {
       char *end;
@@ -303,34 +303,34 @@ decode_groups(char *groups, ietfAttrList_t **listp)
          end = next = groups + strlen(groups);
       else
          end = next++;
- 
+
       /* eat preceeding whitespace */
       while (groups < end && *groups == ' ')
           groups++;
-      
+
       /* eat trailing whitespace */
       while (end > groups && *(end-1) == ' ')
           end--;
-      
+
       if (groups < end)
       {
           ietfAttr_t *attr   = alloc_thing(ietfAttr_t, "ietfAttr");
           ietfAttrList_t *el = alloc_thing(ietfAttrList_t, "ietfAttrList");
-          
+
           attr->kind  = IETF_ATTRIBUTE_STRING;
           attr->value.ptr = (unsigned char *)groups;
           attr->value.len = end - groups;
           attr->count = 0;
-      
+
           el->attr = add_ietfAttr(attr);
           el->next = *listp;
           *listp = el;
       }
-          
+
       groups = next;
     }
 }
-          
+
 /*
  * parses ietfAttrSyntax
  */
@@ -341,9 +341,9 @@ parse_ietfAttrSyntax(chunk_t blob, int level0)
     chunk_t object;
     u_int level;
     u_int objectID = 0;
-    
+
     ietfAttrList_t *list = NULL;
-	
+
     asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
 
     while (objectID < IETF_ATTR_ROOF)
@@ -359,11 +359,11 @@ parse_ietfAttrSyntax(chunk_t blob, int level0)
            {
                ietfAttr_t *attr   = alloc_thing(ietfAttr_t, "ietfAttr");
                ietfAttrList_t *el = alloc_thing(ietfAttrList_t, "ietfAttrList");
-            
+
                attr->kind  = (objectID - IETF_ATTR_OCTETS) / 2;
                attr->value = object;
                attr->count = 0;
-       
+
                el->attr = add_ietfAttr(attr);
                el->next = list;
                list = el;
@@ -582,7 +582,7 @@ release_ietfAttr(ietfAttr_t* attr)
 	    list = *plist;
 	}
         *plist = list->next;
-	
+
 	pfree(attr->value.ptr);
 	pfree(attr);
 	pfree(list);
@@ -684,7 +684,7 @@ verify_x509acert(x509acert_t *ac, bool strict)
 	dntoa((char *)buf, BUF_LEN, ac->issuerName);
 	DBG_log("issuer: '%s'",buf);
     )
-    
+
     ugh = check_ac_validity(ac);
 
     if (ugh != NULL)
@@ -733,7 +733,7 @@ load_acerts(void)
 
     /* change directory to specified path */
     char *save_dir = getcwd(buf, BUF_LEN);
-    const struct osw_conf_options *oco = osw_init_options(); 
+    const struct osw_conf_options *oco = osw_init_options();
 
     if (!chdir(oco->acerts_dir))
     {
@@ -759,7 +759,7 @@ load_acerts(void)
 				    "acert", &blob, &pgp))
 		{
 		    x509acert_t *ac = alloc_thing(x509acert_t, "x509acert");
-		    
+
 		    *ac = empty_ac;
 
 		    if (parse_ac(blob, ac)
@@ -857,7 +857,7 @@ list_acerts(bool utc)
 		{
 		    int n = snprintf(pos, BUF_LEN, "%s%.*s", (first? "":", ")
 			, (int)attr->value.len, attr->value.ptr);
-		    
+
 		    if (n == -1) /* print buffer is full */
 			break;
 		    pos += n;
@@ -887,7 +887,7 @@ void
 list_groups(bool utc)
 {
     ietfAttrList_t *list = ietfAttributes;
-    
+
     if (list != NULL)
     {
 	whack_log(RC_COMMENT, " ");
@@ -902,7 +902,7 @@ list_groups(bool utc)
 
 	whack_log(RC_COMMENT, "%s, count: %d", timetoa(&attr->installed, utc, tbuf, sizeof(tbuf)),
 		attr->count);
-	
+
 	switch (attr->kind)
 	{
 	case IETF_ATTRIBUTE_OCTETS:

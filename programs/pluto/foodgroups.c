@@ -133,7 +133,7 @@ read_foodgroup(struct fg_groups *g)
 {
     const char *fgn = g->connection->name;
     const ip_subnet *lsn = &g->connection->spd.this.client;
-    const struct osw_conf_options *oco = osw_init_options(); 
+    const struct osw_conf_options *oco = osw_init_options();
     size_t plen = strlen(oco->policies_dir) + 2 + strlen(fgn) + 1;
     struct file_lex_position flp_space;
 

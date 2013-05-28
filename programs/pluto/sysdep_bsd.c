@@ -228,7 +228,7 @@ find_raw_ifaces4(void)
     }
 
     buf = NULL;
-   
+
     /* a million interfaces is probably the maximum, ever... */
     while(num < (1024*1024)) {
 	    /* Get local interfaces.  See netdevice(7). */
@@ -239,18 +239,18 @@ find_raw_ifaces4(void)
 				    ifconf.ifc_len));
 	    memset(buf, 0, num*sizeof(struct ifreq));
 	    ifconf.ifc_buf = (void *) buf;
-	    
+
 	    if (ioctl(master_sock, SIOCGIFCONF, &ifconf) == -1)
 		    exit_log_errno((e, "ioctl(SIOCGIFCONF) in find_raw_ifaces4()"));
-	    
+
 	    /* if we got back less than we asked for, we have them all */
 	    if (ifconf.ifc_len < (int)(sizeof(struct ifreq) * num))
 		    break;
-	    
+
 	    /* try again and ask for more this time */
 	    num *= 2;
     }
-  
+
     /* Add an entry to rifaces for each interesting interface. */
     for (j = 0; (j+1) * sizeof(struct ifreq) <= (size_t)ifconf.ifc_len; j++)
     {
@@ -307,7 +307,7 @@ find_raw_ifaces4(void)
 }
 
 /*
- * there is a BSD way to do this, probably SIOCGCONF 
+ * there is a BSD way to do this, probably SIOCGCONF
  */
 struct raw_iface *
 find_raw_ifaces6(void)
@@ -363,7 +363,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
             secure_peerid_str[IDTOA_BUF] = "",
             secure_peerca_str[IDTOA_BUF] = "",
             secure_xauth_username_str[IDTOA_BUF] = "";
-	    
+
         ip_address ta;
 
 	nexthop_str[0]='\0';
@@ -395,7 +395,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
         addrtot(&ta, 0, peerclientnet_str, sizeof(peerclientnet_str));
         maskof(&sr->that.client, &ta);
         addrtot(&ta, 0, peerclientmask_str, sizeof(peerclientmask_str));
-	
+
 	secure_xauth_username_str[0]='\0';
 	if (st != NULL && st->st_xauth_username) {
 		size_t len;
@@ -418,7 +418,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
             strncat(srcip_str, "'", sizeof(srcip_str));
             l = strlen(srcip_str);
             p = srcip_str + l;
-            
+
             addrtot(&sr->this.host_srcip, 0, p, sizeof(srcip_str));
             strncat(srcip_str, "'", sizeof(srcip_str));
         }
@@ -431,7 +431,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
                 {
                     struct pubkey *key = p->key;
                     int pathlen;
-                    
+
                     if (key->alg == PUBKEY_ALG_RSA && same_id(&sr->that.id, &key->id)
                         && trusted_ca(key->issuer, sr->that.ca, &pathlen))
                         {
@@ -466,7 +466,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
 			   "PLUTO_PEER_CA='%s' "
 			   "PLUTO_CONN_POLICY='%s' "
 			   "%s "
-			   "%s "       /* PLUTO_MY_SRCIP */                    
+			   "%s "       /* PLUTO_MY_SRCIP */
 			   "%s"        /* actual script */
 			   , verb, verb_suffix
 			   , c->name

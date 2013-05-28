@@ -70,7 +70,7 @@ within_range(security_context_t sl, security_context_t range)
                 return 0;
         }
 
-	/* 
+	/*
 	** Straight up test between sl and range
 	**/
         tclass = SECCLASS_ASSOCIATION;

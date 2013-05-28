@@ -233,7 +233,7 @@ static const struct state_microcode
     { X, X \
     , 0 \
     , 0, P(VID) | P(CR), PT(NONE) \
-    , 0, NULL} 
+    , 0, NULL}
 
 static const struct state_microcode state_microcode_table[] = {
 #define PT(n) ISAKMP_NEXT_##n
@@ -457,8 +457,8 @@ static const struct state_microcode state_microcode_table[] = {
     PHONY_STATE(STATE_AGGR_R1),
     PHONY_STATE(STATE_AGGR_I2),
     PHONY_STATE(STATE_AGGR_R2),
-#endif    
-    
+#endif
+
 
 
     /***** Phase 2 Quick Mode *****/
@@ -535,24 +535,24 @@ static const struct state_microcode state_microcode_table[] = {
 
 #ifdef XAUTH
     { STATE_XAUTH_R0, STATE_XAUTH_R1
-    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
     , P(ATTR) | P(HASH), P(VID), PT(NONE)
     , EVENT_NULL, xauth_inR0 },  /*Re-transmit may be done by previous state*/
 
     { STATE_XAUTH_R1, STATE_MAIN_R3
-    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
     , P(ATTR) | P(HASH), P(VID), PT(NONE)
     , EVENT_SA_REPLACE, xauth_inR1 },
 
 #if 0
     /* for situation where there is XAUTH + ModeCFG */
     { STATE_XAUTH_R2, STATE_XAUTH_R3
-    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
     , P(ATTR) | P(HASH), P(VID), PT(NONE)
     , EVENT_SA_REPLACE, xauth_inR2 },
 
     { STATE_XAUTH_R3, STATE_MAIN_R3
-    , SMF_ALL_AUTH | SMF_ENCRYPTED 
+    , SMF_ALL_AUTH | SMF_ENCRYPTED
     , P(ATTR) | P(HASH), P(VID), PT(NONE)
     , EVENT_SA_REPLACE, xauth_inR3 },
 #endif
@@ -563,7 +563,7 @@ static const struct state_microcode state_microcode_table[] = {
  * Case R0:  Responder	->	Initiator
  *			<-	Req(addr=0)
  *	    Reply(ad=x)	->
- *	    
+ *
  * Case R1: Set(addr=x)	->
  *			<-	Ack(ok)
  */
@@ -651,14 +651,14 @@ informational(struct msg_digest *md)
 
         /* Switch on Notification Type (enum) */
 	/* note that we can get notification payloads unencrypted
-	 * once we are at least in R3/I4. 
+	 * once we are at least in R3/I4.
 	 * and that the handler is expected to treat them suspiciously.
 	 */
 	DBG(DBG_CONTROL, DBG_log("processing informational %s (%d)"
 				 , enum_name(&ipsec_notification_names
 					     ,n->isan_type)
 				 , n->isan_type));
-				 
+
         switch (n->isan_type)
         {
         case R_U_THERE:
@@ -704,7 +704,7 @@ informational(struct msg_digest *md)
                 /* Saving connection name and whack sock id*/
 		tmp_name = st->st_connection->name;
 		tmp_whack_sock = dup_any(st->st_whack_sock);
-		
+
 		/* deleting ISAKMP SA with the current remote peer*/
 		delete_state(st);
 
@@ -745,14 +745,14 @@ informational(struct msg_digest *md)
                 } while(tmp_spd!=NULL);
 
                 if(tmp_c->interface!=NULL){
-                DBG(DBG_CONTROLMORE, 
+                DBG(DBG_CONTROLMORE,
                 DBG_log("Current interface_addr: %s", (addrtot(&tmp_c->interface->ip_addr, 0, buftest, sizeof(buftest)), buftest)));
                 }
 
                 if(tmp_c->gw_info!=NULL){
                 DBG(DBG_CONTROLMORE,
                 DBG_log("Current gw_client_addr: %s", (addrtot(&tmp_c->gw_info->client_id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
-                DBG(DBG_CONTROLMORE, 
+                DBG(DBG_CONTROLMORE,
                 DBG_log("Current gw_gw_addr: %s", (addrtot(&tmp_c->gw_info->gw_id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
                 }
 
@@ -762,7 +762,7 @@ informational(struct msg_digest *md)
                 old_addr = tmp_c->spd.that.host_addr;
 
                 /*Decoding remote peer address info where connection has to be redirected to*/
-                memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr, 
+                memcpy(&tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr,
 				(u_int32_t *)(n_pbs->cur + pbs_left(n_pbs)-4), sizeof(tmp_c->spd.that.host_addr.u.v4.sin_addr.s_addr));
 
                 /*Modifying connection info to store the redirected remote peer info*/
@@ -806,7 +806,7 @@ informational(struct msg_digest *md)
 		loglog(RC_LOG_SERIOUS, "received and failed on unknown informational message");
 		return STF_FATAL;
 	    }
-#endif	    
+#endif
             if (pbs_left(n_pbs) >= sizeof(disp_buf)-1)
                 disp_len = sizeof(disp_buf)-1;
             else
@@ -892,7 +892,7 @@ process_v1_packet(struct msg_digest **mdp)
 #ifdef HAVE_LABELED_IPSEC
 	    if(st != NULL && st->st_connection->loopback) {
 		DBG(DBG_CONTROL, DBG_log("loopback scenario: verifying if this is really a correct state, if not, find the correct state"));
-		
+
 		st = find_state_ikev1_loopback(md->hdr.isa_icookie, md->hdr.isa_rcookie
 						, &md->sender, md->hdr.isa_msgid, md);
 		if (st != NULL) {
@@ -1067,8 +1067,8 @@ process_v1_packet(struct msg_digest **mdp)
 		openswan_log("Cannot do Quick Mode until XAUTH done.");
 		return;
 	    }
-#endif 
-#ifdef MODECFG	
+#endif
+#ifdef MODECFG
 	    if(st->st_state == STATE_MODE_CFG_R2)   /* Have we just given an IP address to peer? */
 	    {
 		change_state(st, STATE_MAIN_R3);    /* ISAKMP is up... */
@@ -1103,7 +1103,7 @@ process_v1_packet(struct msg_digest **mdp)
 		SEND_NOTIFICATION(INVALID_MESSAGE_ID);
 		return;
 	    }
-	
+
 	    /* note that we need to reserve this message ID */
 	    st->st_reserve_msgid=FALSE;
 
@@ -1268,7 +1268,7 @@ process_v1_packet(struct msg_digest **mdp)
     case ISAKMP_XCHG_ECHOREQUEST:
 	receive_ike_echo_request(md);
 	return;
-	
+
     case ISAKMP_XCHG_ECHOREPLY_PRIVATE:
     case ISAKMP_XCHG_ECHOREPLY:
 	receive_ike_echo_reply(md);
@@ -1505,15 +1505,15 @@ void process_packet_tail(struct msg_digest **mdp)
 		    st->st_new_iv_len = st->st_iv_len;
 		    init_new_iv(st);
 		}
-	    } 
+	    }
 
 	    TCLCALLOUT_crypt("preDecrypt", st, &md->message_pbs
 			     , pbs_offset(&md->message_pbs)
 			     , pbs_left(&md->message_pbs));
 
-	    crypto_cbc_encrypt(e, FALSE, md->message_pbs.cur, 
+	    crypto_cbc_encrypt(e, FALSE, md->message_pbs.cur,
 			       pbs_left(&md->message_pbs) , st);
-	    
+
 	    TCLCALLOUT_crypt("postDecrypt", st, &md->message_pbs
 			     , pbs_offset(&md->message_pbs)
 			     , pbs_left(&md->message_pbs));
@@ -1635,7 +1635,7 @@ void process_packet_tail(struct msg_digest **mdp)
 		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
-		
+
 		DBG(DBG_PARSING
 		    , DBG_log("got payload 0x%qx(%s) needed: 0x%qx opt: 0x%qx"
 			      , s, enum_show(&payload_names, np)
@@ -1799,7 +1799,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	       && p->payload.notification.isan_type != R_U_THERE_ACK
 		&& p->payload.notification.isan_type != ISAKMP_N_CISCO_LOAD_BALANCE
 	       && p->payload.notification.isan_type != PAYLOAD_MALFORMED) {
-		
+
 		switch(p->payload.notification.isan_type) {
 		case INVALID_MESSAGE_ID:
 		default:
@@ -1808,7 +1808,7 @@ void process_packet_tail(struct msg_digest **mdp)
 			   , "ignoring informational payload, type %s msgid=%08x"
 			   , enum_show(&ipsec_notification_names
 				       , p->payload.notification.isan_type), st->st_msgid);
-		    } 
+		    }
 		    else {
 		    	loglog(RC_LOG_SERIOUS
 			   , "ignoring informational payload, type %s on st==NULL (deleted?)"
@@ -1824,7 +1824,7 @@ void process_packet_tail(struct msg_digest **mdp)
 		    complete_v1_state_transition(mdp, STF_FATAL);
 		    return;
 		}
-#endif	    
+#endif
 	    }
 	    DBG_cond_dump(DBG_PARSING, "info:", p->pbs.cur, pbs_left(&p->pbs));
 
@@ -1840,7 +1840,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	}
 
 	p = md->chain[ISAKMP_NEXT_VID];
-	while(p != NULL) { 
+	while(p != NULL) {
 	    handle_vendorid(md, (char *)p->pbs.cur, pbs_left(&p->pbs), st);
 	    p = p->next;
 	}
@@ -1880,7 +1880,7 @@ void process_packet_tail(struct msg_digest **mdp)
  tpm_stolen:
     *mdp = NULL;
     return;
-#endif    
+#endif
 }
 
 
@@ -1893,7 +1893,7 @@ static void update_retransmit_history(struct state *st, struct msg_digest *md)
 	 * because the sender may well retransmit their request.
 	 */
 	pfreeany(st->st_rpacket.ptr);
-	
+
 	if (md->encrypted)
 	{
 		/* if encrypted, duplication already done */
@@ -1906,7 +1906,7 @@ static void update_retransmit_history(struct state *st, struct msg_digest *md)
 			     , md->packet_pbs.start
 			     , pbs_room(&md->packet_pbs), "raw packet");
 	}
-}	
+}
 
 
 /* complete job started by the state-specific state transition function */
@@ -1973,7 +1973,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, smc->next_state));
-	    
+
 	    if(st->st_reserve_msgid == FALSE && st->st_clonedfrom != SOS_NOBODY && st->st_msgid != 0) {
 		struct state *p1st = state_with_serialno(st->st_clonedfrom);
 
@@ -1981,7 +1981,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		    /* do message ID reservation */
 		    reserve_msgid(p1st, st->st_msgid);
 		}
-		
+
 		st->st_reserve_msgid=TRUE;
 	    }
 
@@ -2182,7 +2182,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		char sadetails[128];
 
 		passert(st->st_state < STATE_IKE_ROOF);
-		
+
 		sadetails[0]='\0';
 
 		/* document IPsec SA details for admin's pleasure */
@@ -2223,7 +2223,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		    }
 		}
 	    }
-	     
+
 
 #ifdef XAUTH
 	    /* Special case for XAUTH server */
@@ -2264,7 +2264,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 			  ? "pull" : "push"
 			  , (st->st_connection->spd.this.modecfg_client
 			     ? "modecfg-client" :"not-client")));
-	    
+
 	    if(st->st_connection->spd.this.modecfg_client
 	       && IS_ISAKMP_SA_ESTABLISHED(st->st_state)
 	       && (st->quirks.modecfg_pull_mode
@@ -2280,7 +2280,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    /* Should we set the peer's IP address regardless? */
 	    if(st->st_connection->spd.this.modecfg_server
 	       && IS_ISAKMP_SA_ESTABLISHED(st->st_state)
-	       && !st->hidden_variables.st_modecfg_vars_set 
+	       && !st->hidden_variables.st_modecfg_vars_set
 	       && !(st->st_connection->policy & POLICY_MODECFG_PULL))
 	    {
 		    change_state(st, STATE_MODE_CFG_R1);
@@ -2294,7 +2294,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	       we need to initiate Quick mode */
 	    if (!(smc->flags & SMF_INITIATOR)
 		&& IS_MODE_CFG_ESTABLISHED(st->st_state)
-		&& (st->st_seen_vendorid & LELEM(VID_NORTEL))) 
+		&& (st->st_seen_vendorid & LELEM(VID_NORTEL)))
 	    {
 		change_state(st, STATE_MAIN_R3);    /* ISAKMP is up... */
 	        set_cur_state(st);
@@ -2304,7 +2304,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 #endif
 			   );
 		break;
-	    }	    
+	    }
 
 	    /* wait for modecfg_set */
 	    if(st->st_connection->spd.this.modecfg_client
@@ -2386,7 +2386,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 		      , "encountered fatal error in state %s"
 		      , enum_name(&state_names, st->st_state));
 #ifdef HAVE_NM
-	   if (st->st_connection->remotepeertype == CISCO 
+	   if (st->st_connection->remotepeertype == CISCO
 	       && st->st_connection->nmconfigured) {
 		if(!do_command(st->st_connection, &st->st_connection->spd, "disconnectNM", st)) {
                 DBG(DBG_CONTROL, DBG_log("sending disconnect to NM failed, you may need to do it manually"));
@@ -2445,7 +2445,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
  tpm_stolen:
     *mdp = NULL;
     return;
-#endif    
+#endif
 
 }
 

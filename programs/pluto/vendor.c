@@ -62,7 +62,7 @@
  *  d6b45f82f24bacb288af59a978830ab7
  *  cf49908791073fb46439790fdeb6aeed981101ab0000000500000300
  *  64405f46f03b7660a23be116a1975058e69e83870000000400000403 - Netscreen-05
- *  
+ *
  * Cisco:
  *  1f07f70eaa6514d3b0fa96542a500300 (VPN 3000 version 3.0.0)
  *  1f07f70eaa6514d3b0fa96542a500301 (VPN 3000 version 3.0.1)
@@ -99,7 +99,7 @@
  * Watchguard FireBox (II ?)
  * da8e937880010000
  *
- * Nortel contivity 251 (RAS F/W Version: VA251_2.0.0.0.013 | 12/3/2003  
+ * Nortel contivity 251 (RAS F/W Version: VA251_2.0.0.0.013 | 12/3/2003
  *   DSL FW Version: Alcatel, Version 3.9.122)
  * 4485152d18b6bbcd0be8a8469579ddcc
  * 625027749d5ab97f5616c1602765cf480a3b7d0b)
@@ -114,7 +114,7 @@
 
 #define MAX_LOG_VID_LEN            32
 
-#define VID_KEEP                   0x0000  
+#define VID_KEEP                   0x0000
 #define VID_MD5HASH                0x0001
 #define VID_STRING                 0x0002
 #define VID_FSWAN_HASH             0x0004
@@ -151,7 +151,7 @@ static struct vid_struct _vid_tab[] = {
 
 	{ VID_MS_NT5, VID_MD5HASH | VID_SUBSTRING_DUMPHEXA,
 		"MS NT5 ISAKMPOAKLEY", NULL, NULL, 0 },
-	/* http://msdn.microsoft.com/en-us/library/cc233476%28v=prot.10%29.aspx 
+	/* http://msdn.microsoft.com/en-us/library/cc233476%28v=prot.10%29.aspx
 	Windows 2000 00 00 00 02
 	Windows XP 00 00 00 03
 	Windows Server 2003 00 00 00 04
@@ -206,10 +206,10 @@ static struct vid_struct _vid_tab[] = {
 		"\x40\x48\xb7\xd5\x6e\xbc\xe8\x85\x25\xe7\xde\x7f\x00\xd6\xc2\xd3\xc0\x00\x00\x00",
 		20 },
 
-	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH, 
+	{ VID_CISCO3K, VID_KEEP | VID_SUBSTRING_MATCH,
           NULL, "Cisco VPN 3000 Series" , "\x1f\x07\xf7\x0e\xaa\x65\x14\xd3\xb0\xfa\x96\x54\x2a\x50", 14},
 
-	{ VID_CISCO_IOS, VID_KEEP | VID_SUBSTRING_MATCH, 
+	{ VID_CISCO_IOS, VID_KEEP | VID_SUBSTRING_MATCH,
 	  NULL, "Cisco IOS Device", "\x3e\x98\x40\x48", 4},
 
 	/* note: md5('CISCO-UNITY') = 12f5f28c457168a9702d9fe274cc02d4 */
@@ -240,7 +240,7 @@ static struct vid_struct _vid_tab[] = {
 
 	/* always make sure to include ourself! */
 	{ VID_OPENSWANSELF,VID_SELF, "","Openswan (this version)", NULL,0},
-	
+
 
 	/* NAT-Traversal */
 
@@ -271,7 +271,7 @@ static struct vid_struct _vid_tab[] = {
 
 	/* misc */
 
-	
+
 	{ VID_MISC_XAUTH, VID_KEEP, NULL, "XAUTH",
 		"\x09\x00\x26\x89\xdf\xd6\xb7\x12", 8 },
 
@@ -377,9 +377,9 @@ static struct vid_struct _vid_tab[] = {
 	/*
 	 * NCP.de
 	 */
-	{ VID_NCP, VID_KEEP, "NCP client", NULL, 
+	{ VID_NCP, VID_KEEP, "NCP client", NULL,
 	  "\x10\x1f\xb0\xb3\x5c\x5a\x4f\x4c\x08\xb9\x19\xf1\xcb\x97\x77\xb0", 16 },
-	
+
 
 	/* -- */
 	{ 0, 0, NULL, NULL, NULL, 0 }
@@ -390,7 +390,7 @@ static const char _hexdig[] = "0123456789abcdef";
 
 static int _vid_struct_init = 0;
 
-/* 
+/*
  * Setup VendorID structs, and populate them
  * FIXME: This functions leaks a little bit, but these are one time leaks:
  * leak: 3 * vid->data, item size: 6
@@ -461,7 +461,7 @@ void init_vendorid(void)
 		    vid->vid_len = FSWAN_VID_SIZE;
 		}
 	    }
-	    
+
 	    if (vid->descr == NULL) {
 		/** Find something to display **/
 		vid->descr = vid->data;
@@ -479,8 +479,8 @@ void init_vendorid(void)
 
 
 /**
- * Handle Known VendorID's.  This function parses what the remote peer 
- * sends us, and enables/disables features based on it.  As we go along, 
+ * Handle Known VendorID's.  This function parses what the remote peer
+ * sends us, and enables/disables features based on it.  As we go along,
  * we set vid_usefull =1 if we did something based on this VendorID.  This
  * supresses the 'Ignored VendorID ...' log message.
  *
@@ -491,7 +491,7 @@ void init_vendorid(void)
  * @param st State Structure (Hopefully initialized)
  * @return void
  */
-static void handle_known_vendorid (struct msg_digest *md 
+static void handle_known_vendorid (struct msg_digest *md
 				   , const char *vidstr
 				   , size_t len
 				   , struct vid_struct *vid
@@ -556,7 +556,7 @@ static void handle_known_vendorid (struct msg_digest *md
 	    }
 	    break;
 #endif
-	    
+
         case VID_MISC_DPD:
 	    /* Remote side would like to do DPD with us on this connection */
 	    md->dpd = 1;
@@ -586,11 +586,11 @@ static void handle_known_vendorid (struct msg_digest *md
 	    vid_usefull=1;
 	    break;
 #endif
-	    
+
 	case VID_OPENSWANSELF:
 	    vid_usefull=1;
 	    break;
-	    
+
 	default:
 	    break;
 	}
@@ -626,7 +626,7 @@ static void handle_known_vendorid (struct msg_digest *md
 
 
 /**
- * Handle VendorID's.  This function parses what the remote peer 
+ * Handle VendorID's.  This function parses what the remote peer
  * sends us, calls handle_known_vendorid on each VID we received
  *
  * Known VendorID's are defined in vendor.h

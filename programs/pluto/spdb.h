@@ -84,7 +84,7 @@ struct db_sa {
     bool                    parentSA;   /* set if this is a parent/oakley */
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
-    
+
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
@@ -110,13 +110,13 @@ extern struct db_sa ipsec_sadb[1 << 3];
 #define AD_NULL     prop_conjs: NULL, prop_conj_cnt: 0,
 
 /* for db_trans */
-#define AD_TR(p, x) transid: p, attrs: x, attr_cnt: elemsof(x)	
+#define AD_TR(p, x) transid: p, attrs: x, attr_cnt: elemsof(x)
 
 /* for db_prop */
-#define AD_PR(p, x) protoid: p, trans: x, trans_cnt: elemsof(x)	
+#define AD_PR(p, x) protoid: p, trans: x, trans_cnt: elemsof(x)
 
 /* for db_prop_conj */
-#define AD_PC(x) props: x, prop_cnt: elemsof(x)	
+#define AD_PC(x) props: x, prop_cnt: elemsof(x)
 
 
 extern bool out_sa(

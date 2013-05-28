@@ -131,7 +131,7 @@ static int print_secrets(struct secret *secret
     const char *kind = "?";
     const char *more = "";
     struct id_list *ids;
-    
+
     switch(pks->kind) {
     case PPK_PSK: kind="PSK"; break;
     case PPK_RSA: kind="RSA"; break;
@@ -152,7 +152,7 @@ static int print_secrets(struct secret *secret
     }
 
     whack_log(RC_COMMENT, "    %d: %s %s %s%s", osw_get_secretlineno(secret),
-	      kind, 
+	      kind,
 	      idb1, idb2, more);
 
     /* continue loop until end */
@@ -224,7 +224,7 @@ int sign_hash_nss(const struct RSA_private_key *k
     SECItem ckaId;
     PK11SlotInfo *slot = NULL;
 
-    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));  
+    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));
 
     ckaId.type=siBuffer;
     ckaId.len=k->ckaid_len;
@@ -237,8 +237,8 @@ int sign_hash_nss(const struct RSA_private_key *k
     }
 
 	if( PK11_Authenticate(slot, PR_FALSE,osw_return_nss_password_file_info()) == SECSuccess ) {
-	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS successful\n"));	
-	} 
+	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS successful\n"));
+	}
 	else {
 	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS either failed or not required,if NSS DB without password\n"));
 	}
@@ -246,7 +246,7 @@ int sign_hash_nss(const struct RSA_private_key *k
     privateKey = PK11_FindKeyByKeyID(slot, &ckaId, osw_return_nss_password_file_info());
     if(privateKey==NULL) {
 	if(k->pub.nssCert != NULL) {
-	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info()); 
+	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info());
 	   DBG(DBG_CRYPT, DBG_log("Can't find the private key from the NSS CKA_ID\n"));
 	}
     }
@@ -287,7 +287,7 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
    PRArenaPool *arena;
    SECStatus retVal = SECSuccess;
    SECItem nss_n, nss_e;
-   SECItem signature, data;    
+   SECItem signature, data;
    chunk_t n,e;
 
     /*Converting n and e to form public key in SECKEYPublicKey data structure*/
@@ -307,7 +307,7 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
 
     publicKey->arena = arena;
     publicKey->keyType = rsaKey;
-    publicKey->pkcs11Slot = NULL;    
+    publicKey->pkcs11Slot = NULL;
     publicKey->pkcs11ID = CK_INVALID_HANDLE;
 
     /*Converting n(modulus) and e(exponent) from mpz_t form to chunk_t*/
@@ -331,7 +331,7 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
     if(retVal != SECSuccess) {
 	pfree(n.ptr);
 	pfree(e.ptr);
-	SECKEY_DestroyPublicKey (publicKey);       
+	SECKEY_DestroyPublicKey (publicKey);
 	return "12" "NSS error: Not able to copy modulus or exponent or both while forming SECKEYPublicKey structure";
     }
     signature.type = siBuffer;
@@ -486,13 +486,13 @@ RSA_check_signature_gen(struct state *st
 	pp = &pluto_pubkeys;
 
 	{
-	  
+
 	  DBG(DBG_CONTROL,
 	      char buf[IDTOA_BUF];
 	      dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
 	      DBG_log("required CA is '%s'", buf));
 	}
-  
+
 	for (p = pluto_pubkeys; p != NULL; p = *pp)
 	{
 	    struct pubkey *key = p->key;
@@ -657,7 +657,7 @@ osw_get_secret(const struct connection *c
 	free_public_key(my_public_key);
 	return best;
     }
-#if defined(AGGRESSIVE) 
+#if defined(AGGRESSIVE)
     if (his_id_was_instantiated(c) && (!(c->policy & POLICY_AGGRESSIVE)) && isanyaddr(&c->spd.that.host_addr) )
     {
 	DBG(DBG_CONTROL,
@@ -752,7 +752,7 @@ get_preshared_secret(const struct connection *c)
 					    , &c->spd.that.id
 					    , PPK_PSK, FALSE);
     const struct private_key_stuff *pks = NULL;
-    
+
     if(s != NULL) pks = osw_get_pks(s);
 
 #ifdef DEBUG
@@ -795,7 +795,7 @@ get_RSA_private_key(const struct connection *c)
 					, &c->spd.this.id, &c->spd.that.id
 					, PPK_RSA, TRUE);
     const struct private_key_stuff *pks = NULL;
-    
+
     if(s != NULL) pks = osw_get_pks(s);
 
 #ifdef DEBUG
@@ -921,7 +921,7 @@ add_public_key(const struct id *id
     pk->alg = alg;
     pk->until_time = UNDEFINED_TIME;
     pk->issuer = empty_chunk;
-   
+
     install_public_key(pk, head);
     return NULL;
 }

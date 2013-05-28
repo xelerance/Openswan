@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper function - calculate KE and nonce
  * Copyright (C) 2004 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2009 - 2012 Avesh Agarwal <avagarwa@redhat.com>
@@ -18,7 +18,7 @@
  *
  * Modifications to use OCF interface written by
  * Daniel Djamaludin <danield@cyberguard.com>
- * Copyright (C) 2004-2005 Intel Corporation. 
+ * Copyright (C) 2004-2005 Intel Corporation.
  *
  */
 
@@ -73,22 +73,22 @@ void calc_ke(struct pluto_crypto_req *r)
     SECKEYDHParams      dhp;
     PK11SlotInfo *slot = NULL;
     SECKEYPrivateKey *privk;
-    SECKEYPublicKey   *pubk; 
+    SECKEYPublicKey   *pubk;
 #endif
     struct pcr_kenonce *kn = &r->pcr_d.kn;
     const struct oakley_group_desc *group;
 
     group = lookup_group(kn->oakley_group);
 
-#ifndef HAVE_LIBNSS    
+#ifndef HAVE_LIBNSS
     pluto_crypto_allocchunk(&kn->thespace
 			    , &kn->secret
 			    , LOCALSECRETSIZE);
-    
+
     get_rnd_bytes(wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
-    
+
     n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
-    
+
     mpz_init(&mp_g);
 
 #ifdef USE_MODP_RFC5114
@@ -96,17 +96,17 @@ void calc_ke(struct pluto_crypto_req *r)
 #else
     oswcrypto.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
 #endif
-    
+
     gi = mpz_to_n(&mp_g, group->bytes);
-    
+
     pluto_crypto_allocchunk(&kn->thespace, &kn->gi, gi.len);
-    
+
     {
 	char *gip = wire_chunk_ptr(kn, &(kn->gi));
-	
+
 	memcpy(gip, gi.ptr, gi.len);
     }
-    
+
     DBG(DBG_CRYPT,
 	DBG_dump("Local DH secret:\n"
 		 , wire_chunk_ptr(kn, &(kn->secret))
@@ -174,7 +174,7 @@ void calc_ke(struct pluto_crypto_req *r)
 	char *gip = wire_chunk_ptr(kn, &(kn->pubk));
 	memcpy(gip, &pubk, sizeof(SECKEYPublicKey*));
     }
-    
+
     DBG(DBG_CRYPT,
        DBG_dump("NSS: Local DH secret:\n"
                 , wire_chunk_ptr(kn, &(kn->secret))
@@ -211,7 +211,7 @@ void calc_nonce(struct pluto_crypto_req *r)
 }
 
 stf_status build_ke(struct pluto_crypto_req_cont *cn
-		    , struct state *st 
+		    , struct state *st
 		    , const struct oakley_group_desc *group
 		    , enum crypto_importance importance)
 {
@@ -222,10 +222,10 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 
     pcr_init(r, pcr_build_kenonce, importance);
     r->pcr_d.kn.oakley_group   = group->group;
-    
+
     cn->pcrc_serialno = st->st_serialno;
     e= send_crypto_helper_request(r, cn, &toomuch);
-    
+
     if(e != NULL) {
 	loglog(RC_LOG_SERIOUS, "can not start crypto helper: %s", e);
 	if(toomuch) {
@@ -240,7 +240,7 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
     } else {
 	/* we must have run the continuation directly, so
-	 * complete_v1_state_transition already got called. 
+	 * complete_v1_state_transition already got called.
 	 */
 	return STF_INLINE;
     }
@@ -248,7 +248,7 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 
 
 stf_status build_nonce(struct pluto_crypto_req_cont *cn
-		       , struct state *st 
+		       , struct state *st
 		       , enum crypto_importance importance)
 {
     struct pluto_crypto_req rd;
@@ -275,7 +275,7 @@ stf_status build_nonce(struct pluto_crypto_req_cont *cn
       return STF_SUSPEND;
   } else {
       /* we must have run the continuation directly, so
-       * complete_v1_state_transition already got called. 
+       * complete_v1_state_transition already got called.
        */
       return STF_INLINE;
   }

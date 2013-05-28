@@ -1,8 +1,8 @@
 /* state and event objects
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2009 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009,2012 Avesh Agarwal <avagarwa@redhat.com>
  *
@@ -72,7 +72,7 @@ struct trans_attrs {
     u_int16_t enckeylen;	/* encryption key len (bits) */
     oakley_hash_t prf_hash;	/* Hash algorithm for PRF */
     oakley_hash_t integ_hash;	/* Hash algorithm for integ */
-    
+
     oakley_auth_t auth;		/* Authentication method (RSA,PSK) */
 #ifdef XAUTH
     u_int16_t xauth;            /* did we negotiate Extended Authentication? */
@@ -151,7 +151,7 @@ struct hidden_variables {
 					    * should be used. */
     ip_address     st_nat_oa;
     ip_address     st_natd;
-};                        
+};
 
 #define set_suspended(st,md) do { st->st_suspended_md=md; \
                                   st->st_suspended_md_func=__FUNCTION__; \
@@ -232,10 +232,10 @@ struct state
 
     ip_address         st_remoteaddr;          /* where to send packets to */
     u_int16_t          st_remoteport;          /* host byte order */
-    
+
     const struct iface_port *st_interface;     /* where to send from */
     ip_address         st_localaddr;           /* where to send them from */
-    u_int16_t          st_localport;           
+    u_int16_t          st_localport;
 
     struct db_sa      *st_sadb;
 
@@ -390,7 +390,7 @@ struct state
 						  recognized Vendor ID */
     struct isakmp_quirks quirks;          /* work arounds for faults in other
  					   * products */
-    
+
 };
 
 /* global variables */

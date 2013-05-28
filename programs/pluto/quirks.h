@@ -16,7 +16,7 @@
 #define _QUIRKS_H_
 
 /**
- * Where to store various quirks (ususally encountered during interop) 
+ * Where to store various quirks (ususally encountered during interop)
  *
  */
 struct isakmp_quirks {

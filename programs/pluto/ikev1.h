@@ -1,4 +1,4 @@
-#ifndef _IKEV1_H
+ #ifndef _IKEV1_H
 #define _IKEv1_H
 
 #include "pluto_crypt.h"
@@ -60,7 +60,7 @@ extern stf_status aggr_outI1(int whack_sock,
 			     , enum crypto_importance importance
 #ifdef HAVE_LABELED_IPSEC
 			     , struct xfrm_user_sec_ctx_ike * uctx
-#endif 
+#endif
 			     );
 
 extern stf_status aggr_not_present(int whack_sock,

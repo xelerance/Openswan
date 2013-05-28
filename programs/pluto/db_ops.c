@@ -1,7 +1,7 @@
-/* 
+/*
  * Dynamic db (proposal, transforms, attributes) handling.
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- * 
+ *
  * db_ops.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -15,11 +15,11 @@
  * for more details.
  */
 
-/* 
+/*
  * The stratedy is to have (full contained) struct db_prop in db_context
  * pointing to ONE dynamically sizable transform vector (trans0).
  * Each transform stores attrib. in ONE dyn. sizable attribute vector (attrs0)
- * in a "serialized" way (attributes storage is used in linear sequence for 
+ * in a "serialized" way (attributes storage is used in linear sequence for
  * subsecuent transforms).
  *
  * Resizing for both trans0 and attrs0 is supported:
@@ -27,7 +27,7 @@
  *               also update trans_cur (by offset)
  * - For attrs0: after allocating and copying attrs, I must rewrite each
  *               trans->attrs present in trans0; to achieve this, calculate
- *               attrs pointer offset (new minus old) and iterate over 
+ *               attrs pointer offset (new minus old) and iterate over
  *               each transform "adding" this difference.
  *               also update attrs_cur (by offset)
  *
@@ -74,7 +74,7 @@
 #ifdef NOT_YET
 /*
  * 	Allocator cache:
- * 	Because of the single-threaded nature of pluto/spdb.c, 
+ * 	Because of the single-threaded nature of pluto/spdb.c,
  * 	alloc()/free() is exercised many times with very small
  * 	lifetime objects.
  * 	Just caching last object (currently it will select the
@@ -88,9 +88,9 @@ struct db_ops_alloc_cache {
 #endif
 
 #ifndef NO_DB_OPS_STATS
-/* 	
- * 	stats: do account for allocations 	
- * 	displayed in db_ops_show_status() 
+/*
+ * 	stats: do account for allocations
+ * 	displayed in db_ops_show_status()
  */
 struct db_ops_stats {
 	int st_curr_cnt;	/* current number of allocations */
@@ -104,14 +104,14 @@ struct db_ops_stats {
 static struct db_ops_stats db_context_st = DB_OPS_ZERO;
 static struct db_ops_stats db_trans_st = DB_OPS_ZERO;
 static struct db_ops_stats db_attrs_st = DB_OPS_ZERO;
-static __inline__ void * alloc_bytes_st (size_t size, const char *str, struct db_ops_stats *st) 
+static __inline__ void * alloc_bytes_st (size_t size, const char *str, struct db_ops_stats *st)
 {
 	void *ptr = alloc_bytes(size, str);
 	if (ptr)  {
 		st->st_curr_cnt++;
 		st->st_total_cnt++;
 		if (size > st->st_maxsz) st->st_maxsz=size;
-	}	
+	}
 	return ptr;
 }
 #define ALLOC_BYTES_ST(z,s,st) alloc_bytes_st(z, s, &st);
@@ -128,7 +128,7 @@ static __inline__ void * alloc_bytes_st (size_t size, const char *str, struct db
  *	as a result of "add" operations
  */
 int
-db_prop_init(struct db_context *ctx, u_int8_t protoid, int max_trans, int max_attrs) 
+db_prop_init(struct db_context *ctx, u_int8_t protoid, int max_trans, int max_attrs)
 {
 	int ret=-1;
 
@@ -136,7 +136,7 @@ db_prop_init(struct db_context *ctx, u_int8_t protoid, int max_trans, int max_at
 	ctx->attrs0 = NULL;
 
 	if (max_trans > 0) { /* quite silly if not */
-		ctx->trans0 = ALLOC_BYTES_ST ( sizeof (struct db_trans) * max_trans, 
+		ctx->trans0 = ALLOC_BYTES_ST ( sizeof (struct db_trans) * max_trans,
 			"db_context->trans", db_trans_st);
 		if (!ctx->trans0) goto out;
 	}
@@ -172,12 +172,12 @@ db_trans_expand(struct db_context *ctx, int delta_trans)
 	int offset;
 
 	old_trans = ctx->trans0;
-	new_trans = ALLOC_BYTES_ST ( sizeof (struct db_trans) * max_trans, 
+	new_trans = ALLOC_BYTES_ST ( sizeof (struct db_trans) * max_trans,
 			"db_context->trans (expand)", db_trans_st);
 	if (!new_trans)
 		goto out;
 	memcpy(new_trans, old_trans, ctx->max_trans * sizeof(struct db_trans));
-	
+
 	/* update trans0 (obviously) */
 	ctx->trans0 = ctx->prop.trans = new_trans;
 	/* update trans_cur (by offset) */
@@ -185,7 +185,7 @@ db_trans_expand(struct db_context *ctx, int delta_trans)
 
 	{
 	  char *cctx = (char *)(ctx->trans_cur);
-	  
+
 	  cctx += offset;
 	  ctx->trans_cur = (struct db_trans *)cctx;
 	}
@@ -198,7 +198,7 @@ db_trans_expand(struct db_context *ctx, int delta_trans)
 out:
 	return ret;
 }
-/*	
+/*
  *	Expand storage for attributes by delta_attrs number AND
  *	rewrite trans->attr pointers
  */
@@ -213,22 +213,22 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 	int offset;
 
 	old_attrs = ctx->attrs0;
-	new_attrs = ALLOC_BYTES_ST ( sizeof (struct db_attr) * max_attrs, 
+	new_attrs = ALLOC_BYTES_ST ( sizeof (struct db_attr) * max_attrs,
 			"db_context->attrs (expand)", db_attrs_st);
 	if (!new_attrs)
 		goto out;
 
 	memcpy(new_attrs, old_attrs, ctx->max_attrs * sizeof(struct db_attr));
-	
+
 	/* update attrs0 and attrs_cur (obviously) */
 	offset = (char *)(new_attrs) - (char *)(old_attrs);
-	
+
 	{
 	  char *actx = (char *)(ctx->attrs0);
-	  
+
 	  actx += offset;
 	  ctx->attrs0 = (struct db_attr *)actx;
-	  
+
 	  actx = (char *)ctx->attrs_cur;
 	  actx += offset;
 	  ctx->attrs_cur = (struct db_attr *)actx;
@@ -238,7 +238,7 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 	for (t=ctx->prop.trans, ti=0; ti < ctx->prop.trans_cnt; t++, ti++) {
 	  {
 	    char *actx = (char *)(t->attrs);
-	  
+
 	    actx += offset;
 	    t->attrs = (struct db_attr *)actx;
 	  }
@@ -252,13 +252,13 @@ out:
 }
 
 /*	Allocate a new db object */
-struct db_context * 
-db_prop_new(u_int8_t protoid, int max_trans, int max_attrs) 
+struct db_context *
+db_prop_new(u_int8_t protoid, int max_trans, int max_attrs)
 {
 	struct db_context *ctx;
 	ctx = ALLOC_BYTES_ST ( sizeof (struct db_context), "db_context", db_context_st);
 	if (!ctx) goto out;
-	
+
 	if (db_prop_init(ctx, protoid, max_trans, max_attrs) < 0) {
 		PFREE_ST(ctx, db_context_st);
 		ctx=NULL;
@@ -283,8 +283,8 @@ db_trans_add(struct db_context *ctx, u_int8_t transid)
 	/*	skip incrementing current trans pointer the 1st time*/
 	if (ctx->trans_cur && ctx->trans_cur->attr_cnt)
 		ctx->trans_cur++;
-	/*	
-	 *	Strategy: if more space is needed, expand by 
+	/*
+	 *	Strategy: if more space is needed, expand by
 	 *	          <current_size>/2 + 1
 	 *
 	 *	This happens to produce a "reasonable" sequence
@@ -306,10 +306,10 @@ db_trans_add(struct db_context *ctx, u_int8_t transid)
 
 /*	Add attr copy to current transform, expanding attrs0 if needed */
 int
-db_attr_add(struct db_context *ctx, const struct db_attr *a) 
+db_attr_add(struct db_context *ctx, const struct db_attr *a)
 {
-	/*	
-	 *	Strategy: if more space is needed, expand by 
+	/*
+	 *	Strategy: if more space is needed, expand by
 	 *	          <current_size>/2 + 1
 	 */
 	if ((ctx->attrs_cur - ctx->attrs0) >= ctx->max_attrs) {
@@ -321,7 +321,7 @@ db_attr_add(struct db_context *ctx, const struct db_attr *a)
 	ctx->trans_cur->attr_cnt++;
 	return 0;
 }
-/*	Add attr copy (by value) to current transform, 
+/*	Add attr copy (by value) to current transform,
  *	expanding attrs0 if needed, just calls db_attr_add().
  */
 int
@@ -336,7 +336,7 @@ db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 int
 db_ops_show_status(void)
 {
-	whack_log(RC_COMMENT, "stats db_ops: " 
+	whack_log(RC_COMMENT, "stats db_ops: "
 			DB_OPS_STATS_DESC " :"
 			DB_OPS_STATS_STR("context")
 			DB_OPS_STATS_STR("trans")
@@ -348,7 +348,7 @@ db_ops_show_status(void)
 	return 0;
 }
 #endif /* NO_DB_OPS_STATS */
-/* 
+/*
  * From below to end just testing stuff ....
  */
 #if defined(TEST)
@@ -394,7 +394,7 @@ static void db_prop_print(struct db_prop *p)
 				default:
 					continue;
 			}
-			DBG_log("    type=\"%s\" value=\"%s\"\n", 
+			DBG_log("    type=\"%s\" value=\"%s\"\n",
 				enum_name(n_at, i),
 				enum_name(n_av, a->val));
 		}
@@ -402,9 +402,9 @@ static void db_prop_print(struct db_prop *p)
 
 }
 
-void db_print(struct db_context *ctx) 
+void db_print(struct db_context *ctx)
 {
-	DBG_log("trans_cur diff=%d, attrs_cur diff=%d\n", 
+	DBG_log("trans_cur diff=%d, attrs_cur diff=%d\n",
 			ctx->trans_cur - ctx->trans0,
 			ctx->attrs_cur - ctx->attrs0);
 	db_prop_print(&ctx->prop);
