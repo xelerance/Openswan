@@ -877,1352 +877,170 @@ atodn(char *src, chunk_t *dn)
     return ugh;
 }
 
-/*  compare two distinguished names by
- *  comparing the individual RDNs
- */
-bool
-same_dn(chunk_t a, chunk_t b)
-{
-    chunk_t rdn_a, rdn_b, attribute_a, attribute_b;
-    chunk_t oid_a, oid_b, value_a, value_b;
-    asn1_t type_a, type_b;
-    bool next_a, next_b;
 
-    /* same lengths for the DNs */
-    if (a.len != b.len)
-	return FALSE;
+#ifdef X509DN_MAIN
 
-    /* try a binary comparison first */
-    if (memcmp(a.ptr, b.ptr, b.len) == 0)
-       return TRUE;
+#include <stdio.h>
 
-
-
-
-    /* initialize DN parsing */
-    if (init_rdn(a, &rdn_a, &attribute_a, &next_a) != NULL
-    ||  init_rdn(b, &rdn_b, &attribute_b, &next_b) != NULL)
-	return FALSE;
-
-    /* fetch next RDN pair */
-    while (next_a && next_b)
-    {
-	/* parse next RDNs and check for errors */
-	if (get_next_rdn(&rdn_a, &attribute_a, &oid_a, &value_a, &type_a, &next_a) != NULL
-	||  get_next_rdn(&rdn_b, &attribute_b, &oid_b, &value_b, &type_b, &next_b) != NULL)
-	{
-	    return FALSE;
-	}
-
-	/* OIDs must agree */
-	if (oid_a.len != oid_b.len || memcmp(oid_a.ptr, oid_b.ptr, oid_b.len) != 0)
-	    return FALSE;
-
-	/* same lengths for values */
-	if (value_a.len != value_b.len)
-	    return FALSE;
-
-	/* printableStrings and email RDNs require uppercase comparison */
-	if (type_a == type_b && (type_a == ASN1_PRINTABLESTRING ||
-	   (type_a == ASN1_IA5STRING && known_oid(oid_a) == OID_PKCS9_EMAIL)))
-	{
-	    if (strncasecmp((char *)value_a.ptr, (char *)value_b.ptr, value_b.len) != 0)
-		return FALSE;
-	}
-	else
-	{
-	    if (strncmp((char *)value_a.ptr, (char *)value_b.ptr, value_b.len) != 0)
-		return FALSE;
-	}
-    }
-    /* both DNs must have same number of RDNs */
-    if (next_a || next_b)
-	return FALSE;
-
-    /* the two DNs are equal! */
-    return TRUE;
-}
-
-
-/*  compare two distinguished names by comparing the individual RDNs.
- *  A single'*' character designates a wildcard RDN in DN b.
- */
-bool
-match_dn(chunk_t a, chunk_t b, int *wildcards)
-{
-    chunk_t rdn_a, rdn_b, attribute_a, attribute_b;
-    chunk_t oid_a, oid_b, value_a, value_b;
-    asn1_t type_a,  type_b;
-    bool next_a, next_b;
-
-    /* initialize wildcard counter */
-    *wildcards = 0;
-
-    /* initialize DN parsing */
-    if (init_rdn(a, &rdn_a, &attribute_a, &next_a) != NULL
-    ||  init_rdn(b, &rdn_b, &attribute_b, &next_b) != NULL)
-    	return FALSE;
-
-    /* fetch next RDN pair */
-    while (next_a && next_b)
-    {
-	/* parse next RDNs and check for errors */
-	if (get_next_rdn(&rdn_a, &attribute_a, &oid_a, &value_a, &type_a, &next_a) != NULL
-	||  get_next_rdn(&rdn_b, &attribute_b, &oid_b, &value_b, &type_b, &next_b) != NULL)
-	{
-	    return FALSE;
-	}
-
-	/* OIDs must agree */
-	if (oid_a.len != oid_b.len || memcmp(oid_a.ptr, oid_b.ptr, oid_b.len) != 0)
-	    return FALSE;
-
-	/* does rdn_b contain a wildcard? */
-	if (value_b.len == 1 && *value_b.ptr == '*')
-	{
-	    (*wildcards)++;
-	    continue;
-	}
-
-	/* same lengths for values */
-	if (value_a.len != value_b.len)
-	    return FALSE;
-
-	/* printableStrings and email RDNs require uppercase comparison */
-	if (type_a == type_b && (type_a == ASN1_PRINTABLESTRING ||
-	   (type_a == ASN1_IA5STRING && known_oid(oid_a) == OID_PKCS9_EMAIL)))
-	{
-	    if (strncasecmp((char *)value_a.ptr, (char *)value_b.ptr, value_b.len) != 0)
-		return FALSE;
-	}
-	else
-	{
-	    if (strncmp((char *)value_a.ptr, (char *)value_b.ptr, value_b.len) != 0)
-		return FALSE;
-	}
-    }
-    /* both DNs must have same number of RDNs */
-    if (next_a || next_b) {
-	if(*wildcards) {
-	    char abuf[ASN1_BUF_LEN];
-	    char bbuf[ASN1_BUF_LEN];
-
-	    dntoa(abuf, ASN1_BUF_LEN, a);
-	    dntoa(bbuf, ASN1_BUF_LEN, b);
-
-	    openswan_log("while comparing A='%s'<=>'%s'=B with a wildcard count of %d, %s had too few RDNs",
-			 abuf, bbuf, *wildcards, (next_a ? "B" : "A"));
-	}
-	return FALSE;
-    }
-
-    /* the two DNs match! */
-    return TRUE;
-}
-
-/*
- *  compare two X.509 certificates by comparing their signatures
- */
-bool
-same_x509cert(const x509cert_t *a, const x509cert_t *b)
-{
-    return same_chunk(a->signature, b->signature);
-}
-
-/*  for each link pointing to the certificate
- "  increase the count by one
- */
-void
-share_x509cert(x509cert_t *cert)
-{
-    if (cert != NULL)
- 	cert->count++;
-}
-
-/*
- * choose either subject DN or a subjectAltName as connection end ID
- */
-void
-select_x509cert_id(x509cert_t *cert, struct id *end_id)
-{
-    bool copy_subject_dn = TRUE;	 /* ID is subject DN */
-
-    if (end_id->kind != ID_NONE) /* check for matching subjectAltName */
-    {
-	generalName_t *gn = cert->subjectAltName;
-
-	while (gn != NULL)
-	{
-	    struct id id = empty_id;
-
-	    gntoid(&id, gn);
-	    if (same_id(&id, end_id))
-	    {
-		copy_subject_dn = FALSE; /* take subjectAltName instead */
-		break;
-	    }
-	    gn = gn->next;
-	}
-    }
-
-    if (copy_subject_dn)
-    {
-	if (end_id->kind != ID_NONE &&
-	    end_id->kind != ID_DER_ASN1_DN &&
-	    end_id->kind != ID_FROMCERT)
-	{
-	     char buf[IDTOA_BUF];
-
-	     idtoa(end_id, buf, IDTOA_BUF);
-	     openswan_log("  no subjectAltName matches ID '%s', replaced by subject DN", buf);
-	}
-	end_id->kind = ID_DER_ASN1_DN;
-	end_id->name.len = cert->subject.len;
-	end_id->name.ptr = temporary_cyclic_buffer();
-	memcpy(end_id->name.ptr, cert->subject.ptr, cert->subject.len);
-    }
-}
-
-/*
- * check for equality between two key identifiers
- */
-bool
-same_keyid(chunk_t a, chunk_t b)
-{
-    if (a.ptr == NULL || b.ptr == NULL)
-	return FALSE;
-
-    return same_chunk(a, b);
-}
-
-/*
- * check for equality between two serial numbers
- */
-bool
-same_serial(chunk_t a, chunk_t b)
-{
-    /* do not compare serial numbers if one of them is not defined */
-    if (a.ptr == NULL || b.ptr == NULL)
-	return TRUE;
-
-    return same_chunk(a, b);
-}
-
-/*
- *  free the dynamic memory used to store generalNames
- */
-void
-free_generalNames(generalName_t* gn, bool free_name)
-{
-    while (gn != NULL)
-    {
-	generalName_t *gn_top = gn;
-	if (free_name)
-	{
-	    pfree(gn->name.ptr);
-	}
-	gn = gn->next;
-	pfree(gn_top);
-    }
-}
-
-/*
- *  free a X.509 certificate
- */
-void
-free_x509cert(x509cert_t *cert)
-{
-    if (cert != NULL)
-    {
-	free_generalNames(cert->subjectAltName, FALSE);
-	free_generalNames(cert->crlDistributionPoints, FALSE);
-	pfreeany(cert->certificate.ptr);
-	pfree(cert);
-	cert = NULL;
-    }
-}
-
-/*
- *  free the dynamic memory used to store revoked certificates
- */
-static void
-free_revoked_certs(revokedCert_t* revokedCerts)
-{
-    while (revokedCerts != NULL)
-    {
-	revokedCert_t * revokedCert = revokedCerts;
-	revokedCerts = revokedCert->next;
-	pfree(revokedCert);
-    }
-}
-
-/*
- *  free the dynamic memory used to store CRLs
- */
-void
-free_crl(x509crl_t *crl)
-{
-    free_revoked_certs(crl->revokedCertificates);
-    free_generalNames(crl->distributionPoints, TRUE);
-    pfree(crl->certificateList.ptr);
-    pfree(crl);
-}
-
-/*
- *  compute a digest over a binary blob
- */
-bool
-compute_digest(chunk_t tbs, int alg, chunk_t *digest)
-{
-    switch (alg)
-    {
-	case OID_MD2:
-	case OID_MD2_WITH_RSA:
-	{
-	    MD2_CTX context;
-	    MD2Init(&context);
-	    MD2Update(&context, tbs.ptr, tbs.len);
-	    MD2Final(digest->ptr, &context);
-	    digest->len = MD2_DIGEST_SIZE;
-	    return TRUE;
-	}
-	case OID_MD5:
-	case OID_MD5_WITH_RSA:
-	{
-	    MD5_CTX context;
-	    osMD5Init(&context);
-	    osMD5Update(&context, tbs.ptr, tbs.len);
-	    osMD5Final(digest->ptr, &context);
-	    digest->len = MD5_DIGEST_SIZE;
-	    return TRUE;
-	}
-	case OID_SHA1:
-	case OID_SHA1_WITH_RSA:
-	case OID_SHA1_WITH_RSA_OIW:
-	{
-	    SHA1_CTX context;
-	    SHA1Init(&context);
-	    SHA1Update(&context, tbs.ptr, tbs.len);
-	    SHA1Final(digest->ptr, &context);
-	    digest->len = SHA1_DIGEST_SIZE;
-	    return TRUE;
-	}
-#ifdef USE_SHA2
-	case OID_SHA256:
-	case OID_SHA256_WITH_RSA:
-	{
-	   sha256_context context;
-	   sha256_init(&context);
-	   sha256_write(&context, tbs.ptr, tbs.len);
-#ifdef HAVE_LIBNSS
-	   unsigned int len;
-	   SECStatus s;
-	   s = PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_256_DIGEST_SIZE);
-	   passert(len==SHA2_256_DIGEST_SIZE);
-	   passert(s==SECSuccess);
-	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
-#else
-	   sha256_final(&context);
-	   memcpy(digest->ptr, context.sha_out, SHA2_256_DIGEST_SIZE);
+#if 0
+#define	MAX_BUF		6
+extern unsigned char *cyclic_buffers[MAX_BUF][IDTOA_BUF](void);
+extern unsigned char *cyclic_canary(void);
 #endif
-	   digest->len = SHA2_256_DIGEST_SIZE;
-	   return TRUE;
-	}
-	case OID_SHA384:
-	case OID_SHA384_WITH_RSA:
-	{
-	   sha512_context context;
-	   sha384_init(&context);
-#ifdef HAVE_LIBNSS
-	   unsigned int len;
-	   SECStatus s;
-	   s = PK11_DigestOp(context.ctx_nss, tbs.ptr, tbs.len);
-	   passert(s==SECSuccess);
-	   s=PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_384_DIGEST_SIZE);
-	   passert(len==SHA2_384_DIGEST_SIZE);
-	   passert(s==SECSuccess);
-	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
-#else
-	   sha512_write(&context, tbs.ptr, tbs.len);
-	   sha512_final(&context);
-	   memcpy(digest->ptr, context.sha_out, SHA2_384_DIGEST_SIZE);
-#endif
-	   digest->len = SHA2_384_DIGEST_SIZE;
-	   return TRUE;
-	}
-	case OID_SHA512:
-	case OID_SHA512_WITH_RSA:
-	{
-	   sha512_context context;
-	   sha512_init(&context);
-	   sha512_write(&context, tbs.ptr, tbs.len);
+extern bool verify_cyclic_buffer(void);
+extern void reset_cyclic_buffer(void);
 
-#ifdef HAVE_LIBNSS
-	   unsigned int len;
-	   SECStatus s;
-	   s=PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_512_DIGEST_SIZE);
-	   passert(len==SHA2_512_DIGEST_SIZE);
-	   passert(s==SECSuccess);
-	   PK11_DestroyContext(context.ctx_nss, PR_TRUE);
-#else
-	   sha512_final(&context);
-	   memcpy(digest->ptr, context.sha_out, SHA2_512_DIGEST_SIZE);
-#endif
-	   digest->len = SHA2_512_DIGEST_SIZE;
-	   return TRUE;
-	}
-#endif
-	default:
-	    digest->len = 0;
-	    return FALSE;
-    }
-}
+void regress(void);
+char *progname = "x509dn_regress";
+void exit_tool(int num) { exit(num);}
 
-/*
- *  decrypts an RSA signature using the issuer's certificate
- */
-#ifdef HAVE_LIBNSS
-static bool
-decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
-	    chunk_t *digest)
-{
-    switch (alg)
-    {
-	case OID_RSA_ENCRYPTION:
-	case OID_MD2_WITH_RSA:
-	case OID_MD5_WITH_RSA:
-	case OID_SHA1_WITH_RSA:
-	case OID_SHA1_WITH_RSA_OIW:
-	case OID_SHA256_WITH_RSA:
-	case OID_SHA384_WITH_RSA:
-	case OID_SHA512_WITH_RSA:
-	{
 
-	   SECKEYPublicKey *publicKey;
-	   PRArenaPool *arena;
-	   SECStatus retVal = SECSuccess;
-	   SECItem nss_n, nss_e, dsig;
-	   SECItem signature;
-           mpz_t e;
-           mpz_t n;
-	   mpz_t s;
-	   chunk_t nc, ec, sc, dsigc;
-
-	    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
-	    if (arena == NULL) {
-	        PORT_SetError (SEC_ERROR_NO_MEMORY);
-	        return FALSE;
-	    }
-
-	    publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
-	    if (!publicKey) {
-	        PORT_FreeArena (arena, PR_FALSE);
-	        PORT_SetError (SEC_ERROR_NO_MEMORY);
-		DBG(DBG_PARSING, DBG_log("NSS: error in allocating memory to public key"));
-	        return FALSE;
-	    }
-
-	    publicKey->arena = arena;
-	    publicKey->keyType = rsaKey;
-	    publicKey->pkcs11Slot = NULL;
-	    publicKey->pkcs11ID = CK_INVALID_HANDLE;
-
-            n_to_mpz(s, sig.ptr, sig.len);
-            n_to_mpz(e, issuer_cert->publicExponent.ptr,
-                        issuer_cert->publicExponent.len);
-            n_to_mpz(n, issuer_cert->modulus.ptr,
-                        issuer_cert->modulus.len);
-
-
-	    nc = mpz_to_n2((const MP_INT *)&n);
-            ec = mpz_to_n2((const MP_INT *)&e);
-	    sc = mpz_to_n2((const MP_INT *)&s);
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS cert: modulus : ", nc)
-            )
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS cert: exponent : ", ec)
-            )
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS: input signature : ", sc)
-            )
-
-            mpz_clear(e);
-            mpz_clear(n);
-            mpz_clear(s);
-
-    /*Converting n and e to nss_n and nss_e*/
-	    nss_n.data = nc.ptr;
-	    nss_n.len = (unsigned int) nc.len;
-	    nss_n.type = siBuffer;
-
-	    nss_e.data = ec.ptr;
-	    nss_e.len  = (unsigned int)ec.len;
-	    nss_e.type = siBuffer;
-
-	    retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
-            if (retVal == SECSuccess) {
-              retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
-            }
-
-	    if(retVal != SECSuccess){
-	    pfree(nc.ptr);
-	    pfree(ec.ptr);
-	    pfree(sc.ptr);
-	    SECKEY_DestroyPublicKey (publicKey);
-            DBG_log("NSS x509dn.c: error in creating public key");
-	    return FALSE;
-	    }
-
-	    signature.type = siBuffer;
-	    signature.data = sc.ptr;
-	    signature.len  = (unsigned int)sc.len;
-
-	    dsigc.len = (unsigned int)sc.len;
-	    dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
-            dsig.type = siBuffer;
-            dsig.data = dsigc.ptr;
-            dsig.len  = (unsigned int)dsigc.len;
-
-    	    /*Verifying RSA signature*/
-	    if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
-	    {
-            DBG(DBG_PARSING,
-                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len);
-                DBG_log("NSS: length of decrypted sig = %d", dsig.len);
-	    );
-	    }
-
-            pfree(nc.ptr);
-            pfree(ec.ptr);
-	    pfree(sc.ptr);
-	    SECKEY_DestroyPublicKey (publicKey);
-
-	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
-	   {
-            pfree(dsigc.ptr);
-	    DBG(DBG_PARSING,
-		DBG_log("NSS: RSA Signature verified, hash values matched")
-	    );
-	    return TRUE;
-	   }
-
-           pfree(dsigc.ptr);
-	   DBG(DBG_PARSING, DBG_log("NSS: RSA Signature NOT verified"));
-	   return FALSE;
-	}
-	default:
-	    digest->len = 0;
-	    return FALSE;
-    }
-
-}
-#else
-static bool
-decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
-	    chunk_t *digest)
-{
-    switch (alg)
-    {
-	chunk_t decrypted;
-	case OID_RSA_ENCRYPTION:
-	case OID_MD2_WITH_RSA:
-	case OID_MD5_WITH_RSA:
-	case OID_SHA1_WITH_RSA:
-	case OID_SHA1_WITH_RSA_OIW:
-	case OID_SHA256_WITH_RSA:
-	case OID_SHA384_WITH_RSA:
-	case OID_SHA512_WITH_RSA:
-	{
-	    mpz_t s;
-	    mpz_t e;
-	    mpz_t n;
-
-	    n_to_mpz(s, sig.ptr, sig.len);
-	    n_to_mpz(e, issuer_cert->publicExponent.ptr,
-			issuer_cert->publicExponent.len);
-	    n_to_mpz(n, issuer_cert->modulus.ptr,
-			issuer_cert->modulus.len);
-
-	    /* decrypt the signature s = s^e mod n */
-	    mpz_powm(s, s, e, n);
-	    /* convert back to bytes */
-	    decrypted = mpz_to_n(s, issuer_cert->modulus.len);
-	    DBG(DBG_CRYPT, DBG_dump_chunk("decrypt_sig() decrypted signature: ", decrypted))
-
-	    /*  copy the least significant bits of decrypted signature
-	     *  into the digest string
-	    */
-	    memcpy(digest->ptr, decrypted.ptr + decrypted.len - digest->len,
-		   digest->len);
-
-	    /* free memory */
-	    pfree(decrypted.ptr);
-	    mpz_clear(s);
-	    mpz_clear(e);
-	    mpz_clear(n);
-	    return TRUE;
-	}
-	default:
-	    digest->len = 0;
-	    return FALSE;
-    }
-}
-#endif
-/*
- *   Check if a signature over binary blob is genuine
- */
-bool
-check_signature(chunk_t tbs, chunk_t sig, int algorithm,
-		const x509cert_t *issuer_cert)
-{
-#ifdef HAVE_LIBNSS
-    u_char digest_buf[MAX_DIGEST_LEN];
-    chunk_t digest = {digest_buf, MAX_DIGEST_LEN};
-#else
-    u_char digest_buf[MAX_DIGEST_LEN];
-    u_char decrypted_buf[MAX_DIGEST_LEN];
-    chunk_t digest = {digest_buf, MAX_DIGEST_LEN};
-    chunk_t decrypted = {decrypted_buf, MAX_DIGEST_LEN};
-#endif
-
-    if (algorithm != OID_UNKNOWN)
-    {
-	DBG(DBG_X509 | DBG_PARSING,
-	    DBG_log("signature algorithm: '%s'",oid_names[algorithm].name);
-	)
-    }
-    else
-    {
-	DBG(DBG_X509 | DBG_PARSING,
-	    DBG_log("unknown signature algorithm");
-	)
-    }
-
-    if (!compute_digest(tbs, algorithm, &digest))
-    {
-	openswan_log("  digest algorithm not supported");
-	return FALSE;
-    }
-
-    DBG(DBG_PARSING,
-	DBG_dump_chunk("  digest:", digest)
-    )
-
-#ifdef HAVE_LIBNSS
-    if (!decrypt_sig(sig, algorithm, issuer_cert, &digest))
-    {
-	openswan_log(" NSS: failure in verifying signature");
-	return FALSE;
-    }
-    return TRUE;
-#else
-
-    decrypted.len = digest.len; /* we want the same digest length */
-
-    if (!decrypt_sig(sig, algorithm, issuer_cert, &decrypted))
-    {
-    	openswan_log("  decryption algorithm not supported");
-	return FALSE;
-    }
-
-    /* check if digests are equal */
-    return !memcmp(decrypted.ptr, digest.ptr, digest.len);
-#endif
-}
-
-/*
- * extracts the basicConstraints extension
- */
-static bool
-parse_basicConstraints(chunk_t blob, int level0)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    unsigned int objectID = 0;
-    bool isCA = FALSE;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < BASIC_CONSTRAINTS_ROOF) {
-
-	if (!extract_object(basicConstraintsObjects, &objectID,
-			    &object,&level, &ctx))
-	     break;
-
-	if (objectID == BASIC_CONSTRAINTS_CA)
-	{
-	    isCA = object.len && *object.ptr;
-	    DBG(DBG_PARSING,
-		DBG_log("  %s",(isCA)?"TRUE":"FALSE");
-	    )
-	}
-	objectID++;
-    }
-    return isCA;
-}
-
-/*
- *  Converts a X.500 generalName into an ID
- */
-void
-gntoid(struct id *id, const generalName_t *gn)
-{
-    switch(gn->kind)
-    {
-    case GN_DNS_NAME:		/* ID type: ID_FQDN */
-	id->kind = ID_FQDN;
-	id->name = gn->name;
-	break;
-    case GN_IP_ADDRESS:		/* ID type: ID_IPV4_ADDR */
-	{
-	    const struct af_info *afi = &af_inet4_info;
-	    err_t ugh = NULL;
-
-	    id->kind = afi->id_addr;
-	    ugh = initaddr(gn->name.ptr, gn->name.len, afi->af, &id->ip_addr);
-	    if (!ugh)
-		{
-		 openswan_log("Warning: gntoid() failed to initaddr(): %s", ugh);
-		}
-
-	}
-	break;
-    case GN_RFC822_NAME:	/* ID type: ID_USER_FQDN */
-	id->kind = ID_USER_FQDN;
-	id->name = gn->name;
-	break;
-    default:
-	id->kind = ID_NONE;
-	id->name = empty_chunk;
-    }
-}
-
-/*
- * extracts a generalName
- */
-static generalName_t*
-parse_generalName(chunk_t blob, int level0)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    unsigned int objectID = 0;
-    u_int level;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < GN_OBJ_ROOF)
-    {
-	bool valid_gn = FALSE;
-
-	if (!extract_object(generalNameObjects, &objectID, &object, &level, &ctx))
-	     return NULL;
-
-	switch (objectID) {
-	case GN_OBJ_RFC822_NAME:
-	case GN_OBJ_DNS_NAME:
-	case GN_OBJ_URI:
-	    DBG(DBG_PARSING,
-		DBG_log("  '%.*s'", (int)object.len, object.ptr);
-	    )
-	    valid_gn = TRUE;
-	    break;
-	case GN_OBJ_DIRECTORY_NAME:
-	    DBG(DBG_PARSING,
-		u_char buf[ASN1_BUF_LEN];
-		dntoa((char *)buf, ASN1_BUF_LEN, object);
-		DBG_log("  '%s'", buf)
-	    )
-	    valid_gn = TRUE;
-	    break;
-	case GN_OBJ_IP_ADDRESS:
-	    DBG(DBG_PARSING,
-		DBG_log("  '%d.%d.%d.%d'", *object.ptr, *(object.ptr+1),
-				      *(object.ptr+2), *(object.ptr+3));
-	    )
-	    valid_gn = TRUE;
-	    break;
-	case GN_OBJ_OTHER_NAME:
-	case GN_OBJ_X400_ADDRESS:
-	case GN_OBJ_EDI_PARTY_NAME:
-	case GN_OBJ_REGISTERED_ID:
-	    break;
-	default:
-	    break;
-	}
-
-	if (valid_gn)
-	{
-	    generalName_t *gn = alloc_thing(generalName_t, "generalName");
-	    gn->kind = (objectID - GN_OBJ_OTHER_NAME) / 2;
-	    gn->name = object;
-	    gn->next = FALSE;
-	    return gn;
-        }
-	objectID++;
-    }
-    return NULL;
-}
-
-
-/*
- * extracts one or several GNs and puts them into a chained list
- */
-static generalName_t*
-parse_generalNames(chunk_t blob, int level0, bool implicit)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    unsigned int objectID = 0;
-
-    generalName_t *top_gn = NULL;
-
-    asn1_init(&ctx, blob, level0, implicit, DBG_RAW);
-
-    while (objectID < GENERAL_NAMES_ROOF)
-    {
-	if (!extract_object(generalNamesObjects, &objectID, &object, &level, &ctx))
-	     return NULL;
-
-	if (objectID == GENERAL_NAMES_GN)
-	{
-	    generalName_t *gn = parse_generalName(object, level+1);
-	    if (gn != NULL)
-	    {
-		gn->next = top_gn;
-		top_gn = gn;
-	    }
-	}
-	objectID++;
-    }
-    return top_gn;
-}
-
-/*
- * returns a directoryName
- */
-chunk_t get_directoryName(chunk_t blob, int level, bool implicit)
-{
-    chunk_t name = empty_chunk;
-    generalName_t * gn = parse_generalNames(blob, level, implicit);
-
-    if (gn != NULL && gn->kind == GN_DIRECTORY_NAME)
-	name= gn->name;
-
-    free_generalNames(gn, FALSE);
-
-    return name;
-}
-
-/*
- * extracts and converts a UTCTIME or GENERALIZEDTIME object
- */
-static time_t
-parse_time(chunk_t blob, int level0)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < TIME_ROOF)
-    {
-	if (!extract_object(timeObjects, &objectID, &object, &level, &ctx))
-	     return UNDEFINED_TIME;
-
-	if (objectID == TIME_UTC || objectID == TIME_GENERALIZED)
-	{
-	    return asn1totime(&object, (objectID == TIME_UTC)
-			? ASN1_UTCTIME : ASN1_GENERALIZEDTIME);
-	}
-	objectID++;
-    }
-    return UNDEFINED_TIME;
- }
-
-/*
- * extracts an algorithmIdentifier
- */
 int
-parse_algorithmIdentifier(chunk_t blob, int level0)
+main(int argc, char *argv[])
 {
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
+	ip_said sa;
+	char buf[100];
+	char buf2[100];
+	const char *oops;
+	size_t n;
 
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
+        chunk_t name;
 
-    while (objectID < ALGORITHM_IDENTIFIER_ROOF)
-    {
-	if (!extract_object(algorithmIdentifierObjects, &objectID, &object, &level, &ctx))
-	     return OID_UNKNOWN;
+	name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
+	name.len = IDTOA_BUF;
 
-	if (objectID == ALGORITHM_IDENTIFIER_ALG)
-	    return known_oid(object);
+	if (argc < 2) {
+		fprintf(stderr, "Usage: %s {ahnnn@aaa|-r}\n", argv[0]);
+		exit(2);
+	}
 
-	objectID++;
-    }
-    return OID_UNKNOWN;
- }
+	if (strcmp(argv[1], "-r") == 0) {
+		regress();
+		fprintf(stderr, "regress() returned?!?\n");
+		exit(1);
+	}
 
+	oops = atodn(argv[1], &name);
 
-/*
- * extracts a keyIdentifier
- */
-static chunk_t
-parse_keyIdentifier(chunk_t blob, int level0, bool implicit)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
+	if (oops != NULL) {
+		fprintf(stderr, "%s: conversion failed: %s\n", argv[0], oops);
+		exit(1);
+	}
+	n = dntoa(buf, sizeof(buf), name);
+	if (n > sizeof(buf)) {
+            fprintf(stderr, "%s: reverse conv ", argv[0]);
+		fprintf(stderr, " failed: need %ld bytes, have only %ld\n",
+						(long)n, (long)sizeof(buf));
+		exit(1);
+	}
+	printf("%s\n", buf);
 
-    asn1_init(&ctx, blob, level0, implicit, DBG_RAW);
-
-    extract_object(keyIdentifierObjects, &objectID, &object, &level, &ctx);
-    return object;
+	exit(0);
 }
 
-/*
- * extracts an authoritykeyIdentifier
- */
+struct rtab {
+	int format;
+	char *input;
+	char *output;			/* NULL means error expected */
+} rtab[] = {
+	{0, "esp257@1.2.3.0",		"esp.101@1.2.3.0"},
+	{0, "ah0x20@1.2.3.4",		"ah.20@1.2.3.4"},
+	{0, "tun20@1.2.3.4",		"tun.14@1.2.3.4"},
+	{0, "comp20@1.2.3.4",		"comp.14@1.2.3.4"},
+	{0, "esp257@::1",		"esp:101@::1"},
+	{0, "esp257@0bc:12de::1",	"esp:101@bc:12de::1"},
+	{0, "esp78@1049:1::8007:2040",	"esp:4e@1049:1::8007:2040"},
+	{0, "esp0x78@1049:1::8007:2040",	"esp:78@1049:1::8007:2040"},
+	{0, "ah78@1049:1::8007:2040",	"ah:4e@1049:1::8007:2040"},
+	{0, "ah0x78@1049:1::8007:2040",	"ah:78@1049:1::8007:2040"},
+	{0, "tun78@1049:1::8007:2040",	"tun:4e@1049:1::8007:2040"},
+	{0, "tun0x78@1049:1::8007:2040",	"tun:78@1049:1::8007:2040"},
+	{0, "duk99@3ffe:370:400:ff::9001:3001",	NULL},
+	{0, "esp78x@1049:1::8007:2040",	NULL},
+	{0, "esp0x78@1049:1:0xfff::8007:2040",	NULL},
+	{0, "es78@1049:1::8007:2040",	NULL},
+	{0, "",				NULL},
+	{0, "_",				NULL},
+	{0, "ah2.2",			NULL},
+	{0, "goo2@1.2.3.4",		NULL},
+	{0, "esp9@1.2.3.4",		"esp.9@1.2.3.4"},
+	{0, "esp0xa9@1.2.3.4",		"esp.000000a9@1.2.3.4"},
+	{0, "espp9@1.2.3.4",		NULL},
+	{0, "es9@1.2.3.4",		NULL},
+	{0, "ah@1.2.3.4",		NULL},
+	{0, "esp7x7@1.2.3.4",		NULL},
+	{0, "esp77@1.0x2.3.4",		NULL},
+	{0, PASSTHROUGHNAME,		PASSTHROUGH4NAME},
+	{0, PASSTHROUGH6NAME,		PASSTHROUGH6NAME},
+	{0, "%pass",			"%pass"},
+	{0, "int256@0.0.0.0",		"%pass"},
+	{0, "%drop",			"%drop"},
+	{0, "int257@0.0.0.0",		"%drop"},
+	{0, "%reject",			"%reject"},
+	{0, "int258@0.0.0.0",		"%reject"},
+	{0, "%hold",			"%hold"},
+	{0, "int259@0.0.0.0",		"%hold"},
+	{0, "%trap",			"%trap"},
+	{0, "int260@0.0.0.0",		"%trap"},
+	{0, "%trapsubnet",		"%trapsubnet"},
+	{0, "int261@0.0.0.0",		"%trapsubnet"},
+	{0, "int262@0.0.0.0",		"int.106@0.0.0.0"},
+	{0, "esp9@1.2.3.4",		"unk77.9@1.2.3.4"},
+	{0, NULL,			NULL}
+};
+
 void
-parse_authorityKeyIdentifier(chunk_t blob, int level0
-    , chunk_t *authKeyID, chunk_t *authKeySerialNumber)
+regress(void)
 {
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
+	struct rtab *r;
+	int status = 0;
+	ip_said sa;
+	char in[100];
+	char buf[100];
+	const char *oops;
+	size_t n;
+        chunk_t name;
 
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
+	for (r = rtab; r->input != NULL; r++) {
+		strcpy(in, r->input);
 
-    while (objectID < AUTH_KEY_ID_ROOF)
-    {
-	if (!extract_object(authorityKeyIdentifierObjects, &objectID, &object, &level, &ctx))
-	     return;
+                reset_cyclic_buffer();
 
-	switch (objectID) {
-	case AUTH_KEY_ID_KEY_ID:
-	    *authKeyID = parse_keyIdentifier(object, level+1, TRUE);
-	    break;
-	case AUTH_KEY_ID_CERT_ISSUER:
-	    {
-		generalName_t * gn = parse_generalNames(object, level+1, TRUE);
+                name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
+                name.len = IDTOA_BUF;
 
-		free_generalNames(gn, FALSE);
-	    }
-	    break;
-	case AUTH_KEY_ID_CERT_SERIAL:
-	    *authKeySerialNumber = object;
-	    break;
-	default:
-	    break;
-	}
-	objectID++;
-    }
-}
+                oops = atodn(in, &name);
 
-/*
- * extracts an authorityInfoAcess location
- */
-static void
-parse_authorityInfoAccess(chunk_t blob, int level0, chunk_t *accessLocation)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
-
-    u_int accessMethod = OID_UNKNOWN;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < AUTH_INFO_ACCESS_ROOF)
-    {
-	if (!extract_object(authorityInfoAccessObjects, &objectID, &object, &level, &ctx))
-	     return;
-
-	switch (objectID) {
-	case AUTH_INFO_ACCESS_METHOD:
-	    accessMethod = known_oid(object);
-	    break;
-	case AUTH_INFO_ACCESS_LOCATION:
-	    {
-		switch (accessMethod)
-		{
-		case OID_OCSP:
-		    if (*object.ptr == ASN1_CONTEXT_S_6)
-		    {
-                        if (asn1_length(&object) == ASN1_INVALID_LENGTH)
-                           return;
-
-			DBG(DBG_PARSING,
-			    DBG_log("  '%.*s'",(int)object.len, object.ptr));
-
-			/* only HTTP(S) URIs accepted */
-		        if (strncasecmp((char *)object.ptr, "http", 4) == 0)
-			{
-			    *accessLocation = object;
-			    return;
-			}
-		    }
-		    openswan_log("warning: ignoring OCSP InfoAccessLocation with unknown protocol");
-		    break;
-		default:
-		    /* unknown accessMethod, ignoring */
-		    break;
+		if (oops != NULL && r->output == NULL)
+			{}		/* okay, error expected */
+		else if (oops != NULL) {
+			printf("`%s' ttosa failed: %s\n", r->input, oops);
+			status = 1;
+		} else if (r->output == NULL) {
+			printf("`%s' atodn succeeded unexpectedly\n",
+                               r->input);
+			status = 1;
+		} else {
+                    n = dntoa(buf, sizeof(buf), name);
+                    if (n > sizeof(buf)) {
+                        printf("`%s' dntoa failed:  need %ld\n",
+                               r->input, (long)n);
+                        status = 1;
+                    } else if (strcmp(r->output, buf) != 0) {
+                        printf("`%s' gave `%s', expected `%s'\n",
+                               r->input, buf, r->output);
+                        status = 1;
+                    }
 		}
-	    }
-	    break;
-	default:
-	    break;
+                if(!verify_cyclic_buffer()) {
+                    printf("overran buffer\n");
+                    status = 1;
+                }
 	}
-	objectID++;
-    }
-
+	exit(status);
 }
 
-/*
- * extracts extendedKeyUsage OIDs
- */
-static bool
-parse_extendedKeyUsage(chunk_t blob, int level0)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < EXT_KEY_USAGE_ROOF)
-    {
-	if (!extract_object(extendedKeyUsageObjects, &objectID
-			    , &object, &level, &ctx))
-	     return FALSE;
-
-	if (objectID == EXT_KEY_USAGE_PURPOSE_ID
-	&& known_oid(object) == OID_OCSP_SIGNING)
-	    return TRUE;
-	objectID++;
-    }
-    return FALSE;
-}
-
-/*  extracts one or several crlDistributionPoints and puts them into
- *  a chained list
- */
-static generalName_t*
-parse_crlDistributionPoints(chunk_t blob, int level0)
-{
-    asn1_ctx_t ctx;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
-
-    generalName_t *top_gn = NULL;      /* top of the chained list */
-    generalName_t **tail_gn = &top_gn; /* tail of the chained list */
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < CRL_DIST_POINTS_ROOF)
-    {
-	if (!extract_object(crlDistributionPointsObjects, &objectID,
-			    &object, &level, &ctx))
-	     return NULL;
-
-	if (objectID == CRL_DIST_POINTS_FULLNAME)
-	{
-	    generalName_t *gn = parse_generalNames(object, level+1, TRUE);
-	    /* append extracted generalNames to existing chained list */
-	    *tail_gn = gn;
-	    /* find new tail of the chained list */
-            while (gn != NULL)
-	    {
-		tail_gn = &gn->next;  gn = gn->next;
-	    }
-	}
-	objectID++;
-    }
-    return top_gn;
-}
-
-
-/*
- *  Parses an X.509v3 certificate
- */
-bool
-parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
-{
-    asn1_ctx_t ctx;
-    bool critical;
-    chunk_t object;
-    u_int level;
-    u_int extn_oid = 0;
-    u_int objectID = 0;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < X509_OBJ_ROOF)
-    {
-	if (!extract_object(certObjects, &objectID, &object, &level, &ctx))
-	     return FALSE;
-
-	/* those objects which will parsed further need the next higher level */
-	level++;
-
-	switch (objectID) {
-	case X509_OBJ_CERTIFICATE:
-	    cert->certificate = object;
-	    break;
-	case X509_OBJ_TBS_CERTIFICATE:
-	    cert->tbsCertificate = object;
-	    break;
-	case X509_OBJ_VERSION:
-	    cert->version = (object.len) ? (1+(u_int)*object.ptr) : 1;
-	    DBG(DBG_PARSING,
-		DBG_log("  v%d", cert->version);
-	    )
-	    break;
-	case X509_OBJ_SERIAL_NUMBER:
-	    cert->serialNumber = object;
-	    break;
-	case X509_OBJ_SIG_ALG:
-	    cert->sigAlg = parse_algorithmIdentifier(object, level);
-	    break;
-	case X509_OBJ_ISSUER:
-	    cert->issuer = object;
-	    DBG(DBG_PARSING,
-		u_char  buf[ASN1_BUF_LEN];
-		dntoa((char *)buf, ASN1_BUF_LEN, object);
-		DBG_log("  '%s'",buf));
-	    break;
-	case X509_OBJ_NOT_BEFORE:
-	    cert->notBefore = parse_time(object, level);
-	    break;
-	case X509_OBJ_NOT_AFTER:
-	    cert->notAfter = parse_time(object, level);
-	    break;
-	case X509_OBJ_SUBJECT:
-	    cert->subject = object;
-	    DBG(DBG_PARSING,
-		u_char  buf[ASN1_BUF_LEN];
-		dntoa((char *)buf, ASN1_BUF_LEN, object);
-		DBG_log("  '%s'",buf));
-	    break;
-	case X509_OBJ_SUBJECT_PUBLIC_KEY_ALGORITHM:
-	    if (parse_algorithmIdentifier(object, level) == OID_RSA_ENCRYPTION)
-		cert->subjectPublicKeyAlgorithm = PUBKEY_ALG_RSA;
-            else
-            {
-                plog("  unsupported public key algorithm");
-                return FALSE;
-            }
-	    break;
-	case X509_OBJ_SUBJECT_PUBLIC_KEY:
-            if (ctx.blobs[4].len > 0 && *ctx.blobs[4].ptr == 0x00)
-	    {
-                /* skip initial bit string octet defining 0 unused bits */
-
-		ctx.blobs[4].ptr++; ctx.blobs[4].len--;
-	    }
-	    else
-            {
-                plog("  invalid RSA public key format");
-                return FALSE;
-            }
-	    break;
-	case X509_OBJ_MODULUS:
-            if (object.len < RSA_MIN_OCTETS + 1)
-            {
-                plog("  " RSA_MIN_OCTETS_UGH);
-                return FALSE;
-            }
-            if (object.len > RSA_MAX_OCTETS + (size_t)(*object.ptr == 0x00))
-            {
-                plog("  " RSA_MAX_OCTETS_UGH);
-                return FALSE;
-            }
-	    cert->modulus = object;
-	    break;
-	case X509_OBJ_PUBLIC_EXPONENT:
-	    cert->publicExponent = object;
-	    break;
-	case X509_OBJ_EXTN_ID:
-	    extn_oid = known_oid(object);
-	    break;
-	case X509_OBJ_CRITICAL:
-	    critical = object.len && *object.ptr;
-	    DBG(DBG_PARSING,
-		DBG_log("  %s",(critical)?"TRUE":"FALSE");
-	    )
-	    break;
-	case X509_OBJ_EXTN_VALUE:
-	    {
-		switch (extn_oid) {
-		case OID_SUBJECT_KEY_ID:
-		    cert->subjectKeyID =
-			parse_keyIdentifier(object, level, FALSE);
-		    break;
-		case OID_SUBJECT_ALT_NAME:
-		    cert->subjectAltName =
-			parse_generalNames(object, level, FALSE);
-		    break;
-		case OID_BASIC_CONSTRAINTS:
-		    cert->isCA =
-			parse_basicConstraints(object, level);
-		    break;
-		case OID_CRL_DISTRIBUTION_POINTS:
-		    cert->crlDistributionPoints =
-			parse_crlDistributionPoints(object, level);
-		    break;
-		 case OID_AUTHORITY_KEY_ID:
-		    parse_authorityKeyIdentifier(object, level
-			, &cert->authKeyID, &cert->authKeySerialNumber);
-		    break;
-		case OID_AUTHORITY_INFO_ACCESS:
-		    parse_authorityInfoAccess(object, level, &cert->accessLocation);
-		    break;
-		case OID_EXTENDED_KEY_USAGE:
-		    cert->isOcspSigner = parse_extendedKeyUsage(object, level);
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    break;
-	case X509_OBJ_ALGORITHM:
-	    cert->algorithm = parse_algorithmIdentifier(object, level);
-	    break;
-	case X509_OBJ_SIGNATURE:
-	    cert->signature = object;
-	    break;
-	default:
-	    break;
-	}
-	objectID++;
-    }
-    time(&cert->installed);
-    return TRUE;
-}
-
-/*
- *  Parses an X.509 CRL
- */
-bool
-parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
-{
-    asn1_ctx_t ctx;
-    bool critical;
-    chunk_t extnID;
-    chunk_t userCertificate;
-    chunk_t object;
-    u_int level;
-    u_int objectID = 0;
-
-   userCertificate.len = 0;
-   userCertificate.ptr = NULL;
-
-    asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
-
-    while (objectID < CRL_OBJ_ROOF)
-    {
-	if (!extract_object(crlObjects, &objectID, &object, &level, &ctx))
-	     return FALSE;
-
-	/* those objects which will parsed further need the next higher level */
-	level++;
-
-	switch (objectID) {
-	case CRL_OBJ_CERTIFICATE_LIST:
-	    crl->certificateList = object;
-	    break;
-	case CRL_OBJ_TBS_CERT_LIST:
-	    crl->tbsCertList = object;
-	    break;
-	case CRL_OBJ_VERSION:
-	    crl->version = (object.len) ? (1+(u_int)*object.ptr) : 1;
-	    DBG(DBG_PARSING,
-		DBG_log("  v%d", crl->version);
-	    )
-	    break;
-	case CRL_OBJ_SIG_ALG:
-	    crl->sigAlg = parse_algorithmIdentifier(object, level);
-	    break;
-	case CRL_OBJ_ISSUER:
-	    crl->issuer = object;
-	    DBG(DBG_PARSING,
-		u_char buf[ASN1_BUF_LEN];
-		dntoa((char *)buf, ASN1_BUF_LEN, object);
-		DBG_log("  '%s'",buf));
-	    break;
-	case CRL_OBJ_THIS_UPDATE:
-	    crl->thisUpdate = parse_time(object, level);
-	    break;
-	case CRL_OBJ_NEXT_UPDATE:
-	    crl->nextUpdate = parse_time(object, level);
-	    break;
-	case CRL_OBJ_USER_CERTIFICATE:
-	    userCertificate = object;
-	    break;
-	case CRL_OBJ_REVOCATION_DATE:
-	    {
-		/* put all the serial numbers and the revocation date in a chained list
-		   with revocedCertificates pointing to the first revoked certificate */
-
-		revokedCert_t *revokedCert = alloc_thing(revokedCert_t, "revokedCert");
-		/* since it is assumed here that CRL_OBJ_USER_CERTIFICATE is reached
-		   before CRL_OBJ_REVOCATION_DATE */
-		revokedCert->userCertificate = userCertificate;
-		revokedCert->revocationDate = parse_time(object, level);
-		revokedCert->next = crl->revokedCertificates;
-		crl->revokedCertificates = revokedCert;
-	    }
-	    break;
-	case CRL_OBJ_EXTN_ID:
-	    extnID = object;
-	    break;
-	case CRL_OBJ_CRL_ENTRY_CRITICAL:
-	case CRL_OBJ_CRITICAL:
-	    critical = object.len && *object.ptr;
-	    DBG(DBG_PARSING,
-		DBG_log("  %s",(critical)?"TRUE":"FALSE");
-	    )
-	    break;
-	case CRL_OBJ_EXTN_VALUE:
-	    {
-		u_int extn_oid = known_oid(extnID);
-
-		if (extn_oid == OID_AUTHORITY_KEY_ID)
-		{
-		    parse_authorityKeyIdentifier(object, level
-			, &crl->authKeyID, &crl->authKeySerialNumber);
-		}
-	    }
-	    break;
-	case CRL_OBJ_ALGORITHM:
-	    crl->algorithm = parse_algorithmIdentifier(object, level);
-	    break;
-	case CRL_OBJ_SIGNATURE:
-	    crl->signature = object;
-	    break;
-	default:
-	    break;
-	}
-	objectID++;
-    }
-    time(&crl->installed);
-    return TRUE;
-}
+#endif /* ATODN_MAIN */
 
 /*
  * Local Variables:

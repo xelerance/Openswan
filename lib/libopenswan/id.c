@@ -45,15 +45,52 @@
  */
 #define	MAX_BUF		6
 
+static unsigned char buf[MAX_BUF][IDTOA_BUF]; /*MAX_BUF internal buffers */
+static unsigned char canary[4];
+static int counter = 0;			/* cyclic counter */
+
 unsigned char*
 temporary_cyclic_buffer(void)
 {
-    static unsigned char buf[MAX_BUF][IDTOA_BUF]; /*MAX_BUF internal buffers */
-    static int counter = 0;			/* cyclic counter */
-
     if (++counter == MAX_BUF) counter = 0;	/* next internal buffer */
     return buf[counter];			/* assign temporary buffer */
 }
+
+#if 0
+unsigned char *cyclic_buffers[MAX_BUF][IDTOA_BUF](void)
+{
+    return &buf;
+}
+unsigned char *cyclic_canary(void)
+{
+    return &canary;
+}
+#endif
+
+bool verify_cyclic_buffer(void)
+{
+    if(canary[0]!='a' ||
+       canary[1]!='b' ||
+       canary[2]!='c' ||
+       canary[3]!='d') {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void reset_cyclic_buffer(void)
+{
+    int i;
+    for(i=0; i<MAX_BUF; i++) {
+        memset(buf[i], 't', IDTOA_BUF);
+    }
+    canary[0]='a';
+    canary[1]='b';
+    canary[2]='c';
+    canary[3]='d';
+}
+
+
 
 /* Convert textual form of id into a (temporary) struct id.
  * Note that if the id is to be kept, unshare_id_content will be necessary.
