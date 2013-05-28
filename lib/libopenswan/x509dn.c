@@ -61,8 +61,6 @@
 # include "oswconf.h"
 #endif
 
-
-
 /* coding of X.501 distinguished name */
 
 typedef struct {
@@ -515,7 +513,6 @@ atodn(char *src, chunk_t *dn)
 		chunkcpy(dn_ptr, name);
 
 		/* accumulate the length of the distinguished name sequence */
-		dn_seq_len += 1 + asn1_rdn_set_len.len + rdn_set_len;
 		dn_seq_len += rdn_len;
 
 		/* reset name and change state */
@@ -604,7 +601,8 @@ struct rtab {
 	char *input;
 	char *output;			/* NULL means error expected */
 } rtab[] = {
-	{0, "OU=Xelerance,CN=test@example.com",		"OU=Xelerance"},
+	{0, "cn=John Doe,dc=example,dc=com,ou=Xelerance",
+            "CN=John Doe, DC=example, DC=com, OU=Xelerance"},
 	{0, NULL,			NULL}
 };
 
@@ -619,6 +617,8 @@ regress(void)
 	const char *oops;
 	size_t n;
         chunk_t name;
+
+        set_debugging(DBG_ALL);
 
 	for (r = rtab; r->input != NULL; r++) {
 		strcpy(in, r->input);
@@ -665,6 +665,7 @@ regress(void)
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto
+ * compile-command: "cd ../../testing/lib/libopenswan && make one TEST=x509dn; cat lib-x509dn/OUTPUT/x509dn.txt"
  * End:
  */
 
