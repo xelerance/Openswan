@@ -141,7 +141,7 @@ struct end {
 	host_nexthop,
 	host_srcip;
     ip_subnet client;
-    
+
     bool key_from_DNS_on_demand;
     bool has_client;
     bool has_client_wildcard;
@@ -191,7 +191,7 @@ struct connection {
     time_t sa_rekey_margin;
     unsigned long sa_rekey_fuzz;
     unsigned long sa_keying_tries;
-    
+
     /* RFC 3706 DPD */
     time_t          dpd_delay;              /* time between checks */
     time_t          dpd_timeout;            /* time after which we are dead */
@@ -212,14 +212,14 @@ struct connection {
    enum keyword_labeled_ipsec labeled_ipsec;
    char *policy_label;
 #endif
-    
+
     bool               forceencaps;         /* always use NAT-T encap */
-    
+
     char              *log_file_name;       /* name of log file */
     FILE              *log_file;            /* possibly open FILE */
     CIRCLEQ_ENTRY(connection) log_link;     /* linked list of open conns {} */
     bool               log_file_err;        /* only bitch once */
-			      
+
     struct spd_route spd;
 
     /* internal fields: */
@@ -254,9 +254,9 @@ struct connection {
     struct connection *hp_next;	/* host pair list link */
 
     struct connection *ac_next;	/* all connections list link */
-    
+
     generalName_t *requested_ca;	/* collected certificate requests */
-#ifdef XAUTH_USEPAM 
+#ifdef XAUTH_USEPAM
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif
 #ifdef DYNAMICDNS
@@ -346,7 +346,7 @@ extern struct connection
 *con_by_name(const char *nm, bool strict);
 
 #define find_host_connection(me, my_port, him, his_port, policy) find_host_connection2(__FUNCTION__, me, my_port, him, his_port, policy)
-extern struct connection 
+extern struct connection
 *find_host_connection2(const char *func
 		       , const ip_address *me, u_int16_t my_port
 	, const ip_address *him, u_int16_t his_port, lset_t policy),
@@ -366,7 +366,7 @@ find_connection_for_clients(struct spd_route **srp
 			    , const ip_address *our_client
 			    , const ip_address *peer_client
  			    , int transport_proto);
-			    
+
 
 /* instantiating routines
  * Note: connection_discard() is in state.h because all its work

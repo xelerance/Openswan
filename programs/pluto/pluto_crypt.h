@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper process.
  * Copyright (C) 2004-2007 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
@@ -48,7 +48,7 @@ struct pcr_kenonce {
 
   /* inputs */
   u_int16_t oakley_group;
-  
+
   /* outputs */
   wire_chunk_t secret;
   wire_chunk_t gi;
@@ -65,9 +65,9 @@ struct pcr_skeyid_q {
 
   /* inputs */
   u_int16_t     oakley_group;
-  oakley_auth_t auth;	            
+  oakley_auth_t auth;
   oakley_hash_t integ_hash;
-  oakley_hash_t prf_hash;               
+  oakley_hash_t prf_hash;
   enum phase1_role init;
   size_t        keysize;     /* of encryptor */
   wire_chunk_t gi;
@@ -95,7 +95,7 @@ struct pcr_skeyid_r {
   wire_chunk_t skeyid_d;        /* output */
   wire_chunk_t skeyid_a;        /* output */
   wire_chunk_t skeyid_e;        /* output */
-  wire_chunk_t new_iv;          
+  wire_chunk_t new_iv;
   wire_chunk_t enc_key;
 };
 
@@ -164,7 +164,7 @@ struct pluto_crypto_req_cont {
 #endif
 };
 
-  
+
 
 #define PCR_REQ_SIZE sizeof(struct pluto_crypto_req)+10
 
@@ -204,7 +204,7 @@ extern void calc_nonce(struct pluto_crypto_req *r);
 extern void compute_dh_shared(struct state *st, const chunk_t g
 			      , const struct oakley_group_desc *group);
 
-/* no longer exists? 
+/* no longer exists?
 extern stf_status perform_dh(struct pluto_crypto_req_cont *cn, struct state *st);
 */
 
@@ -222,7 +222,7 @@ extern void finish_dh_secretiv(struct state *st,
 extern stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 				  , struct state *st
 				  , enum crypto_importance importance
-				  , enum phase1_role init      
+				  , enum phase1_role init
 				  , u_int16_t oakley_group_p);
 
 extern void finish_dh_secret(struct state *st,
@@ -309,4 +309,4 @@ static inline void pcr_init(struct pluto_crypto_req *r
  * c-style: pluto
  * End:
  */
- 
+

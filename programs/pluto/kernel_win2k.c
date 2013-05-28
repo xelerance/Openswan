@@ -58,10 +58,10 @@ static void win2k_init(void)
  * @param proto int (Currently unused) 4=tunnel, 50=esp, 108=ipcomp, etc ...
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
  * @param esatype int
- * @param proto_info 
+ * @param proto_info
  * @param lifetime (Currently unused)
- * @param op int 
- * @return boolean True if successful 
+ * @param op int
+ * @return boolean True if successful
  */
 static bool
 win2k_raw_eroute(const ip_address *this_host UNUSED
@@ -73,7 +73,7 @@ win2k_raw_eroute(const ip_address *this_host UNUSED
 		   , unsigned int transport_proto UNUSED
 		   , unsigned int esatype UNUSED
 		   , const struct pfkey_proto_info *proto_info UNUSED
-		   , time_t use_lifetime UNUSED 
+		   , time_t use_lifetime UNUSED
 		   , unsigned int op UNUSED
 		   , const char *text_said UNUSED
 #ifdef HAVE_LABELED_IPSEC
@@ -97,7 +97,7 @@ win2k_add_sa(const struct kernel_sa *sa, bool replace)
 }
 
 /** netlink_del_sa - Delete an SA from the Kernel
- * 
+ *
  * @param sa Kernel SA to be deleted
  * @return bool True if successfull
  */
@@ -149,7 +149,7 @@ const struct kernel_ops win2k_kernel_ops = {
     policy_lifetime: 1,
     async_fdp: &win2k_bcast_fd,
     replay_window: 32,
-    
+
     init: win2k_init,
     pfkey_register: win2k_pfkey_register,
     pfkey_register_response: win2_pfkey_register_response,

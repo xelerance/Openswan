@@ -69,7 +69,7 @@ struct msg_digest {
 
     enum phase1_role role;
     msgid_t          msgid_received;
-    
+
     pb_stream rbody;	/* room for reply body (after header) */
     notification_t note;	/* reason for failure */
     bool dpd;           /* Peer supports RFC 3706 DPD */
@@ -116,4 +116,4 @@ extern bool check_msg_errqueue(const struct iface_port *ifp, short interest);
  * c-style: pluto
  * End:
  */
- 
+

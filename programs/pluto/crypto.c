@@ -99,7 +99,7 @@ static struct encrypt_desc crypto_encrypter_des =
 #ifdef USE_3DES
 static void do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
 static struct encrypt_desc crypto_encrypter_3des =
-{ 	
+{
     common: {name: "oakley_3des_cbc",
 	     officname:         "3des",
 	     algo_type: 	IKE_ALG_ENCRYPT,
@@ -107,7 +107,7 @@ static struct encrypt_desc crypto_encrypter_3des =
 	     algo_v2id:         IKEv2_ENCR_3DES,
 	     algo_next: 	NULL, },
     enc_ctxsize: 	sizeof(des_key_schedule) * 3,
-    enc_blocksize: 	DES_CBC_BLOCK_SIZE, 
+    enc_blocksize: 	DES_CBC_BLOCK_SIZE,
     keydeflen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
     keyminlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
     keymaxlen: 	DES_CBC_BLOCK_SIZE * 3 * BITS_PER_BYTE,
@@ -116,7 +116,7 @@ static struct encrypt_desc crypto_encrypter_3des =
 #endif
 
 static struct hash_desc crypto_hasher_md5 =
-{ 	
+{
     common: {name: "oakley_md5",
 	     officname: "md5",
 	     algo_type: IKE_ALG_HASH,
@@ -133,7 +133,7 @@ static struct hash_desc crypto_hasher_md5 =
 };
 
 static struct hash_desc crypto_integ_md5 =
-{ 
+{
     common: {name: "oakley_md5",
 	     officname: "md5",
 	     algo_type: IKE_ALG_INTEG,
@@ -143,14 +143,14 @@ static struct hash_desc crypto_integ_md5 =
     hash_ctx_size: sizeof(MD5_CTX),
     hash_key_size:   MD5_DIGEST_SIZE,
     hash_digest_len: MD5_DIGEST_SIZE,
-    hash_integ_len: MD5_DIGEST_SIZE_96,	
+    hash_integ_len: MD5_DIGEST_SIZE_96,
     hash_init: (void (*)(void *)) osMD5Init,
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) osMD5Update,
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 
 static struct hash_desc crypto_hasher_sha1 =
-{ 
+{
     common: {name: "oakley_sha",
 	     officname: "sha1",
 	     algo_type: IKE_ALG_HASH,
@@ -167,7 +167,7 @@ static struct hash_desc crypto_hasher_sha1 =
 };
 
 static struct hash_desc crypto_integ_sha1 =
-{ 	
+{
     common: {name: "oakley_sha",
 	     officname: "sha1",
 	     algo_type: IKE_ALG_INTEG,
@@ -238,7 +238,7 @@ init_crypto(void)
 		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des);
 	    }
 #endif
-	    
+
 #ifdef USE_BLOWFISH
 	    {
 		extern int ike_alg_blowfish_init(void);
@@ -259,7 +259,7 @@ init_crypto(void)
 		ike_alg_sha2_init();
 	    }
 #endif
-	    
+
 	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
 	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1);
 	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
@@ -375,7 +375,7 @@ do_3des(u_int8_t *buf, size_t buf_len
 }
 
 /* hash and prf routines */
-/*========================================================== 
+/*==========================================================
  *
  *  ike_alg linked list
  *
@@ -390,7 +390,7 @@ struct encrypt_desc *crypto_get_encrypter(int alg)
 	return (struct encrypt_desc *) ike_alg_find(IKE_ALG_ENCRYPT, alg, 0);
 }
 
-void 
+void
 crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc
 		   , u_int8_t *buf, size_t size, struct state *st)
 {

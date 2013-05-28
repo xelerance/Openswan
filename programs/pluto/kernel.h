@@ -106,7 +106,7 @@ struct kernel_sa {
 #ifdef HAVE_LABELED_IPSEC
 	struct xfrm_user_sec_ctx_ike *sec_ctx;
 #endif
-  
+
     unsigned long sa_lifetime;   /* number of seconds until SA expires */
 };
 
@@ -133,7 +133,7 @@ struct kernel_ops {
     bool sha2_truncbug_support;
     int  replay_window;
     int *async_fdp;
-    
+
     void (*init)(void);
     void (*pfkey_register)(void);
     void (*pfkey_register_response)(const struct sadb_msg *msg);

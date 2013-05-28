@@ -25,13 +25,13 @@ do_serpent(u_int8_t *buf, size_t buf_size, u_int8_t *key, size_t key_size, u_int
 
 
     serpent_set_key(&serpent_ctx, key, key_size);
-    /*	
+    /*
      *	my SERPENT cbc does not touch passed IV (optimization for
      *	ESP handling), so I must "emulate" des-like IV
      *	crunching
      */
     if (!enc)
-	    memcpy(new_iv=iv_bak, 
+	    memcpy(new_iv=iv_bak,
 			    (char*) buf + buf_size-SERPENT_CBC_BLOCK_SIZE,
 			    SERPENT_CBC_BLOCK_SIZE);
 

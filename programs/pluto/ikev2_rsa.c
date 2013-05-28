@@ -84,12 +84,12 @@ static void ikev2_calculate_sighash(struct state *st
 	    nonce = &st->st_ni;
 	    nonce_name = "inputs to hash2 (initiator nonce)";
 	}
-	    
+
 	DBG(DBG_CRYPT
 	    , DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	      DBG_dump_chunk(nonce_name, *nonce);
 	    DBG_dump("idhash", idhash, st->st_oakley.prf_hasher->hash_digest_len));
-				
+
 	SHA1Init(&ctx_sha1);
 	SHA1Update(&ctx_sha1
 		   , firstpacket.ptr
@@ -130,7 +130,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 
 	DBG(DBG_CRYPT
 	    , DBG_dump("v2rsa octets", signed_octets, signed_len));
-				
+
 	{
 		u_char sig_val[RSA_MAX_OCTETS];
 
@@ -139,7 +139,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 			  , sig_val, sz);
 		out_raw(sig_val, sz, a_pbs, "rsa signature");
 	}
-	
+
 	return TRUE;
 }
 
@@ -157,7 +157,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
     unsigned int padlen;
 #endif
     const struct RSA_public_key *k = &kr->u.rsa;
-    
+
     if (k == NULL)
 	return "1""no key available";	/* failure: no key to use */
 
@@ -213,7 +213,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
 	DBG_dump("v2rsa computed hash:", sig, hash_len);
     );
-	
+
     if(memcmp(sig, hash_val, hash_len) != 0) {
 	return "9""authentication failure: received SIG does not match computed HASH, but message is well-formed";
     }
@@ -239,7 +239,7 @@ ikev2_verify_rsa_sha1(struct state *st
     enum phase1_role invertrole;
 
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
-    
+
     ikev2_calculate_sighash(st, invertrole, idhash, st->st_firstpacket_him, calc_hash);
 
     return RSA_check_signature_gen(st, calc_hash, hash_len
@@ -249,7 +249,7 @@ ikev2_verify_rsa_sha1(struct state *st
 #endif
 				   , gateways_from_dns
 				   , try_RSA_signature_v2);
-    
+
 }
 
 /*

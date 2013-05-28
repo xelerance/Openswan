@@ -77,9 +77,9 @@ static bool ikev2_calculate_psk_sighash(struct state *st
     const chunk_t *pss = get_preshared_secret(c);
     unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
     unsigned char prf_psk[hash_len];
-	
+
     if (pss == NULL){
-	openswan_log("No matching PSK found for connection:%s", 
+	openswan_log("No matching PSK found for connection:%s",
 		     st->st_connection->name);
 	return FALSE;	/* failure: no PSK to use */
     }
@@ -102,7 +102,7 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 #ifdef HAVE_LIBNSS
 	chunk_t pss_chunk;
 
-	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, *pss, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);	
+	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, *pss, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
 	PR_ASSERT(tkey1!=NULL);
 
 	bs=0;
@@ -116,20 +116,20 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	memcpy(pss_chunk.ptr, &tkey2, pss_chunk.len);
 
 	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, pss_chunk);
-	
+
 	PK11_FreeSymKey(tkey1);
 	PK11_FreeSymKey(tkey2);
 	pfree(pss_chunk.ptr);
 #else
-	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, *pss);	
+	hmac_init_chunk(&id_ctx, st->st_oakley.prf_hasher, *pss);
 #endif
 	hmac_update(&id_ctx, psk_key_pad_str, psk_key_pad_str_len);
 	hmac_final(prf_psk, &id_ctx);
     }
 
     DBG(DBG_CRYPT
-	,DBG_log("negotiated prf: %s hash length: %lu", 
-		 st->st_oakley.prf_hasher->common.name, 
+	,DBG_log("negotiated prf: %s hash length: %lu",
+		 st->st_oakley.prf_hasher->common.name,
 		 (long unsigned) hash_len));
      DBG(DBG_PRIVATE
 	 ,DBG_log("PSK , secret, used %s, length %lu"
@@ -138,7 +138,7 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	 	  ,psk_key_pad_str_len));
      DBG(DBG_CRYPT
     	,DBG_dump("inner prf output", prf_psk, hash_len));
-    
+
     /* decide nonce based on the role */
     if(role == INITIATOR) {
 	/* on initiator, we need to hash responders nonce */
@@ -154,11 +154,11 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	struct hmac_ctx id_ctx;
 #ifdef HAVE_LIBNSS
         chunk_t pp_chunk, pps_chunk;
-	
+
 	pp_chunk.ptr = prf_psk;
 	pp_chunk.len = hash_len;
 
-        PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, pp_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);      
+        PK11SymKey *tkey1 = pk11_derive_wrapper_osw(shared, CKM_CONCATENATE_DATA_AND_BASE, pp_chunk, CKM_EXTRACT_KEY_FROM_KEY, CKA_DERIVE, 0);
         PR_ASSERT(tkey1!=NULL);
 
         bs=0;
@@ -179,7 +179,7 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 #else
         hmac_init(&id_ctx, st->st_oakley.prf_hasher, prf_psk, hash_len);
 #endif
-	
+
 /*
  *  For the responder, the octets to
  *  be signed start with the first octet of the first SPI in the header
@@ -195,9 +195,9 @@ static bool ikev2_calculate_psk_sighash(struct state *st
 	hmac_update(&id_ctx, nonce->ptr, nonce->len);
 	hmac_update(&id_ctx, idhash, hash_len);
 	hmac_final(signed_octets, &id_ctx);
-	
+
     }
-    
+
     DBG(DBG_CRYPT
 	, DBG_dump_chunk("inputs to hash1 (first packet)", firstpacket);
 	DBG_dump_chunk(nonce_name, *nonce);
@@ -213,16 +213,16 @@ bool ikev2_calculate_psk_auth(struct state *st
 {
     unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
     unsigned char  signed_octets[hash_len];
-    
+
     if(!ikev2_calculate_psk_sighash(st, role, idhash
 				    , st->st_firstpacket_me
 				    , signed_octets))
 	return FALSE;
     DBG(DBG_CRYPT
 	, DBG_dump("PSK auth octets", signed_octets, hash_len ));
-    
+
     out_raw(signed_octets, hash_len, a_pbs, "PSK auth");
-    
+
     return TRUE;
 }
 
@@ -234,27 +234,27 @@ stf_status ikev2_verify_psk_auth(struct state *st
     unsigned int  hash_len =  st->st_oakley.prf_hasher->hash_digest_len;
     unsigned char calc_hash[hash_len];
     size_t sig_len = pbs_left(sig_pbs);
-    
+
     enum phase1_role invertrole;
-    
+
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
-    
+
     if(sig_len != hash_len) {
-	openswan_log("negotiated prf: %s ", 
+	openswan_log("negotiated prf: %s ",
 		     st->st_oakley.prf_hasher->common.name);
 	openswan_log("I2 hash length:%lu does not match with PRF hash len %lu",
 		     (long unsigned) sig_len,  (long unsigned) hash_len);
 	return STF_FAIL ;
     }
-    
+
     if(!ikev2_calculate_psk_sighash(st, invertrole, idhash,
 				    st->st_firstpacket_him, calc_hash))
 	return STF_FAIL;
-    
+
     DBG(DBG_CRYPT
-	,DBG_dump("Received PSK auth octets",sig_pbs->cur, sig_len); 
+	,DBG_dump("Received PSK auth octets",sig_pbs->cur, sig_len);
 	DBG_dump("Calculated PSK auth octets", calc_hash, hash_len));
-    
+
     if(memcmp(sig_pbs->cur, calc_hash, hash_len) ) {
 	openswan_log("AUTH mismatch: Received AUTH != computed AUTH");
 	return STF_FAIL ;

@@ -85,7 +85,7 @@ bool
 cmp_chunk(chunk_t a, chunk_t b)
 {
     int cmp_len, len, cmp_value;
-    
+
     cmp_len = a.len - b.len;
     len = (cmp_len < 0)? a.len : b.len;
     cmp_value = memcmp(a.ptr, b.ptr, len);

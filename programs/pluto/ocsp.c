@@ -326,8 +326,8 @@ build_ocsp_location(const x509cert_t *cert, ocsp_location_t *location)
     location->issuer = cert->issuer;
     location->authKeyID = cert->authKeyID;
     location->authKeySerialNumber = cert->authKeySerialNumber;
-    
-    if (cert->authKeyID.ptr == NULL) 
+
+    if (cert->authKeyID.ptr == NULL)
     {
 	x509cert_t *authcert = get_authcert(cert->issuer
 		, cert->authKeySerialNumber, cert->authKeyID, AUTH_CA);
@@ -373,7 +373,7 @@ get_ocsp_location(const ocsp_location_t * loc, ocsp_location_t *chain)
     }
     return NULL;
 }
- 
+
 /* retrieves the status of a cert from the ocsp cache
  * returns CERT_UNDEFINED if no status is found
  */
@@ -441,7 +441,7 @@ verify_by_ocsp(/*const*/ x509cert_t *cert, bool strict, time_t *until)
 	return !strict;
     }
 #endif
-    
+
     switch (status)
     {
     case CERT_GOOD:
@@ -480,7 +480,7 @@ check_ocsp(void)
 
     lock_ocsp_cache("check_ocsp");
     location = ocsp_cache;
-    
+
     while (location != NULL)
     {
 #ifdef DEBUG
@@ -537,16 +537,16 @@ void
 ocsp_set_default_uri(char *uri)
 {
     ocsp_default_uri = empty_chunk;
-    
+
     if (uri == NULL)
 	return;
-    
+
     if (strncasecmp(uri, "http", 4) != 0)
     {
 	plog("warning: ignoring default ocsp uri with unknown protocol");
 	return;
     }
-    
+
     clonetochunk(ocsp_default_uri, uri, strlen(uri), "ocsp default uri");
 }
 
@@ -679,7 +679,7 @@ list_ocsp_locations(ocsp_location_t *location, bool requests, bool utc
 	    while (certinfo != NULL)
 	    {
 		char thisUpdate[TIMETOA_BUF];
-		
+
 		timetoa(&certinfo->thisUpdate, utc, thisUpdate, sizeof(thisUpdate));
 
 		if (requests)
@@ -825,7 +825,7 @@ build_signature(chunk_t tbsRequest)
     sigdata = generate_signature(digest_info
 	, ocsp_requestor_pri);
     freeanychunk(digest_info);
-    
+
     /* has the RSA signature generation been successful? */
     if (sigdata.ptr == NULL)
 	return empty_chunk;
@@ -1116,7 +1116,7 @@ valid_ocsp_response(response_t *res)
     x509cert_t *authcert;
 
     lock_authcert_list("valid_ocsp_response");
-    
+
     authcert = get_authcert(res->responder_id_name, empty_chunk
 		    , res->responder_id_key, AUTH_OCSP | AUTH_CA);
 
@@ -1171,11 +1171,11 @@ valid_ocsp_response(response_t *res)
 	    unlock_authcert_list("valid_ocsp_response");
 	    return FALSE;
         }
-	
+
 	DBG(DBG_CONTROL,
 	    DBG_log("certificate is valid")
 	)
-	
+
 	authcert = get_authcert(cert->issuer, cert->authKeySerialNumber
 	    , cert->authKeyID, AUTH_CA);
 
@@ -1234,7 +1234,7 @@ parse_basic_ocsp_response(chunk_t blob, int level0, response_t *res)
     {
 	if (!extract_object(basicResponseObjects, &objectID, &object, &level, &ctx))
 	    return FALSE;
-	
+
 	switch (objectID)
 	{
 	case BASIC_RESPONSE_TBS_DATA:
@@ -1536,7 +1536,7 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
 	*certinfop = cnew;
 	certinfo = cnew;
     }
-	
+
     DBG(DBG_CONTROL,
 	char buf[BUF_LEN];
 	datatot(info->serialNumber.ptr, info->serialNumber.len, ':'
@@ -1548,11 +1548,11 @@ add_certinfo(ocsp_location_t *loc, ocsp_certinfo_t *info, ocsp_location_t **chai
     )
 
     time(&tnow);
-   
+
     if (request)
     {
 	certinfo->status = CERT_UNDEFINED;
-	
+
 	if (cmp != 0)
 	    certinfo->thisUpdate = tnow;
 
@@ -1592,7 +1592,7 @@ process_single_response(ocsp_location_t *location, single_response_t *sres)
 	plog("ocsp single response has wrong issuer");
 	return;
     }
-    
+
     /* traverse list of certinfos in increasing order */
     certinfop = &location->certinfo;
     certinfo = *certinfop;
@@ -1614,12 +1614,12 @@ process_single_response(ocsp_location_t *location, single_response_t *sres)
 
     /* unlink cert from ocsp fetch request list */
     *certinfop = certinfo->next;
-    
+
     /* update certinfo using the single response information */
     certinfo->thisUpdate = sres->thisUpdate;
     certinfo->nextUpdate = sres->nextUpdate;
     certinfo->status = sres->status;
-    
+
     /* add or update certinfo in ocsp cache */
     lock_ocsp_cache("process_single_response");
     add_certinfo(location, certinfo, &ocsp_cache, FALSE);
@@ -1680,7 +1680,7 @@ parse_ocsp(ocsp_location_t *location, chunk_t blob)
 	{
 	    if (!extract_object(responsesObjects, &objectID, &object, &level, &ctx))
 		return;
-	    
+
 	    if (objectID == RESPONSES_SINGLE_RESPONSE)
 	    {
 		single_response_t sres = empty_single_response;

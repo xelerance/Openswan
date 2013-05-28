@@ -46,7 +46,7 @@
 #include "oswtime.h"
 
 #ifdef LIBCURL
-#define LIBCURL_UNUSED 
+#define LIBCURL_UNUSED
 #else
 #define LIBCURL_UNUSED UNUSED
 #endif
@@ -286,14 +286,14 @@ write_buffer(void *ptr, size_t size, size_t nmemb, void *data)
 /*
  * fetches a binary blob from a url with libcurl
  */
-static err_t 
+static err_t
 fetch_curl(chunk_t url LIBCURL_UNUSED, chunk_t *blob LIBCURL_UNUSED)
 {
 #ifdef LIBCURL
     char errorbuffer[CURL_ERROR_SIZE] = "";
     char *uri;
     chunk_t response = empty_chunk;
-    CURLcode res;  
+    CURLcode res;
 
     /* get it with libcurl */
     CURL *curl = curl_easy_init();
@@ -317,7 +317,7 @@ fetch_curl(chunk_t url LIBCURL_UNUSED, chunk_t *blob LIBCURL_UNUSED)
 
 
         res = curl_easy_perform(curl);
-    
+
         if (res == CURLE_OK)
         {
             blob->len = response.len;
@@ -336,7 +336,7 @@ fetch_curl(chunk_t url LIBCURL_UNUSED, chunk_t *blob LIBCURL_UNUSED)
     return strlen(errorbuffer) > 0 ? "libcurl error" : NULL;
 #else
     return "not compiled with libcurl support";
-#endif   
+#endif
 }
 
 
@@ -355,7 +355,7 @@ parse_ldap_result(LDAP * ldap, LDAPMessage *result, chunk_t *blob)
     {
 	BerElement *ber = NULL;
 	char *attr;
-	
+
 	attr = ldap_first_attribute(ldap, entry, &ber);
 
 	if (attr != NULL)
@@ -442,7 +442,7 @@ fetch_ldap_url(chunk_t url, chunk_t *blob)
 
 		timeout.tv_sec = FETCH_CMD_TIMEOUT;
 		timeout.tv_usec = 0;
-		
+
 		rc = ldap_search_st(ldap, lurl->lud_dn
 					, lurl->lud_scope
 					, lurl->lud_filter
@@ -576,11 +576,11 @@ fetch_crls(void)
 		    )
 		    valid_crl = TRUE;
 		    break;
-		}		    
+		}
 	    }
 	    gn = gn->next;
 	}
-	
+
 	if (valid_crl)
 	{
 	    /* delete fetch request */
@@ -671,11 +671,11 @@ fetch_ocsp_status(ocsp_location_t* location LIBCURL_UNUSED)
     }
     freeanychunk(location->nonce);
     freeanychunk(request);
-    
+
     /* increment the trial counter of the unresolved fetch requests */
     {
 	ocsp_certinfo_t *certinfo = location->certinfo;
-	
+
 	while (certinfo != NULL)
 	{
 	    certinfo->trials++;
@@ -762,7 +762,7 @@ void
 init_fetch(void)
 {
     int status;
-    
+
     if (crl_check_interval > 0)
     {
 #ifdef LIBCURL
@@ -913,7 +913,7 @@ void
 add_ocsp_fetch_request(ocsp_location_t *location, chunk_t serialNumber)
 {
     ocsp_certinfo_t certinfo;
-    
+
     certinfo.serialNumber = serialNumber;
 
     lock_ocsp_fetch_list("add_ocsp_fetch_request");
@@ -958,7 +958,7 @@ list_crl_fetch_requests(bool utc)
 
     while (req != NULL)
     {
-	u_char buf[BUF_LEN];	
+	u_char buf[BUF_LEN];
 	char tbuf2[TIMETOA_BUF];
 
 	whack_log(RC_COMMENT, "%s, trials: %d"

@@ -253,14 +253,14 @@ add_entry:
 			&& addrtypeof(&ifp->addr) == AF_INET)
 		    {
 			fd = create_socket(ifp, v->name, NAT_T_IKE_FLOAT_PORT);
-			if (fd < 0) 
+			if (fd < 0)
 			    break;
 			nat_traversal_espinudp_socket(fd, "IPv4"
 						      , ESPINUDP_WITH_NON_ESP);
 			q = alloc_thing(struct iface_port, "struct iface_port");
 			q->ip_dev = id;
 			id->id_count++;
-			
+
 			q->ip_addr = ifp->addr;
 			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 			q->port = NAT_T_IKE_FLOAT_PORT;
@@ -348,7 +348,7 @@ klips_do_command(struct connection *c, struct spd_route *sr
 	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
 	return FALSE;
     }
-	
+
     if (-1 == snprintf(cmd, sizeof(cmd)
 		       , "2>&1 "   /* capture stderr along with stdout */
 		       "PLUTO_VERB='%s%s' "
@@ -369,7 +369,7 @@ const struct kernel_ops klips_kernel_ops = {
     type: USE_KLIPS,
     async_fdp: &pfkeyfd,
     replay_window: 64,
-    
+
     pfkey_register: klips_pfkey_register,
     pfkey_register_response: klips_pfkey_register_response,
     process_queue: pfkey_dequeue,

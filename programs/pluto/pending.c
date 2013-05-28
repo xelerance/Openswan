@@ -274,7 +274,7 @@ bool pending_check_timeout(struct connection *c)
 		    , (unsigned long)p->pend_time
 		    , (unsigned long)c->dpd_timeout
 		    , (unsigned long)n));
-		    
+
 	if(c->dpd_timeout > 0) {
 	    if((p->pend_time + c->dpd_timeout*3) <= n) {
 		DBG(DBG_DPD, DBG_log("connection \"%s\" stuck, restarting", c->name));
@@ -300,7 +300,7 @@ update_pending(struct state *os, struct state *ns)
 	 p = p->next) {
 	if (p->isakmp_sa == os)
 	    p->isakmp_sa = ns;
-    }	    
+    }
 }
 
 /* a Main Mode negotiation has failed; discard any pending */
@@ -309,7 +309,7 @@ flush_pending_by_state(struct state *st)
 {
     struct pending **pp
 	, *p;
-    
+
     pp = host_pair_first_pending(st->st_connection);
     if(pp == NULL) return;
 
@@ -321,7 +321,7 @@ flush_pending_by_state(struct state *st)
 	     */
 	    delete_pending(pp);
 	}
-	else 
+	else
 	    pp = &p->next;
     }
 }
@@ -332,7 +332,7 @@ flush_pending_by_connection(struct connection *c)
 {
     struct pending **pp
 	, *p;
-    
+
     pp = host_pair_first_pending(c);
     if(pp == NULL) return;
 
@@ -354,7 +354,7 @@ show_pending_phase2(const struct connection *c, const struct state *st)
 {
     struct pending **pp
 	, *p;
-    
+
     pp = host_pair_first_pending(c);
     if(pp == NULL) return;
 
@@ -379,7 +379,7 @@ bool in_pending_use(struct connection *c)
 {
     /* see if it is being used by a pending */
     struct pending **pp, *p;
-    
+
     pp = host_pair_first_pending(c);
     if(pp == NULL) return FALSE;
 

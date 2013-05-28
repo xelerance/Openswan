@@ -12,7 +12,7 @@ struct v2prf_stuff {
     unsigned int availbytes;
     unsigned int nextbytes;
 };
-    
+
 extern void v2prfplus(struct v2prf_stuff *vps);
 extern void v2genbytes(chunk_t *need
 		       , unsigned int needed, const char *name

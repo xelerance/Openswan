@@ -107,13 +107,13 @@
  * re-negotiate. (This happens WAY too often)
  *
  * The phase 2 dpd_init() will attempt to kill the phase 1 DPD_EVENT, if it
- * can, to reduce the amount of work. 
+ * can, to reduce the amount of work.
  *
  * The st_last_dpd member which is used is always the one from the phase 1.
  * So, if there are multiple phase 2s, then if any of them receive DPD data
  * they will update the st_last_dpd, so the test in #2 will avoid the traffic
- * for all by one phase 2. 
- * 
+ * for all by one phase 2.
+ *
  * Note that the EVENT_DPD are attached to phase 2s (typically), while the
  * EVENT_DPD_TIMEOUT are attached to phase 1s only.
  *
@@ -122,13 +122,13 @@
  * a conference call, for instance), we may not send enough traffic to keep
  * the NAT port mapping valid.
  *
- */ 
+ */
 
 stf_status
 dpd_init(struct state *st)
 {
     /**
-     * Used to store the 1st state 
+     * Used to store the 1st state
      */
 #ifdef HAVE_LABELED_IPSEC
 	if(st->st_connection->loopback){
@@ -200,13 +200,13 @@ dpd_sched_timeout(struct state *p1st, time_t tm, time_t timeout)
 			     , (unsigned long)timeout));
         delete_dpd_event(p1st);
         event_schedule(EVENT_DPD_TIMEOUT, timeout, p1st);
-    }   
+    }
 }
 
 /**
  * DPD Out Initiator
  *
- * @param p2st A state struct that is already in phase2 
+ * @param p2st A state struct that is already in phase2
  * @return void
  */
 static void
@@ -228,10 +228,10 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
     if (!st->hidden_variables.st_dpd)
         return;
 
-    /* If there is no state, there can be no DPD */         
+    /* If there is no state, there can be no DPD */
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
         return;
-      
+
     /* find out when now is */
     tm = now();
 
@@ -260,7 +260,7 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 	event_schedule(EVENT_DPD, nextdelay, st);
 	return;
     }
-      
+
     /* now plan next check time */
     if(nextdelay < 1) {
 	nextdelay = delay;
@@ -268,18 +268,18 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 
     /*
      * check the phase 2, if we are supposed to,
-     * and return if it is active recently 
+     * and return if it is active recently
      */
     if(eroute_care && !st->hidden_variables.st_nat_traversal) {
-      
+
 	eroute_idle = was_eroute_idle(st, delay);
 	if(!eroute_idle) {
 	    DBG(DBG_DPD,
 		DBG_log("DPD: out event not sent, phase 2 active"));
-	    
+
 	    /* update phase 2 time stamp only */
 	    st->st_last_dpd = tm;
-	    
+
 	    /*
 	     * Since there was activity, kill any EVENT_DPD_TIMEOUT that might
 	     * be waiting. This can happen when a R_U_THERE_ACK is lost, and
@@ -301,17 +301,17 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 	 * reschedule next event, since we can not do it from the activity
 	 * routine.
 	 */
-	event_schedule(EVENT_DPD, nextdelay, st); 
+	event_schedule(EVENT_DPD, nextdelay, st);
     }
-        
+
     if (!p1st->st_dpd_seqno)
-    {   
+    {
         /* Get a non-zero random value that has room to grow */
         get_rnd_bytes((u_char *)&p1st->st_dpd_seqno
 		      , sizeof(p1st->st_dpd_seqno));
         p1st->st_dpd_seqno &= 0x7fff;
         p1st->st_dpd_seqno++;
-    }    
+    }
     seqno = htonl(p1st->st_dpd_seqno);
 
     /* make sure that the timeout occurs. We do this before the send,
@@ -328,11 +328,11 @@ dpd_outI(struct state *p1st, struct state *st, bool eroute_care
 
     if (send_isakmp_notification(p1st, R_U_THERE
 				 , &seqno, sizeof(seqno)) != STF_IGNORE)
-    {   
+    {
         loglog(RC_LOG_SERIOUS, "DPD: could not send R_U_THERE");
         return;
     }
-        
+
     st->st_last_dpd = tm;
     p1st->st_last_dpd = tm;
     p1st->st_dpd_expectseqno = p1st->st_dpd_seqno++;
@@ -386,7 +386,7 @@ dpd_event(struct state *st)
  * @param st A state structure (the phase 1 state)
  * @param n A notification (isakmp_notification)
  * @param pbs A PB Stream
- * @return stf_status 
+ * @return stf_status
  */
 stf_status
 dpd_inI_outR(struct state *p1st
@@ -395,9 +395,9 @@ dpd_inI_outR(struct state *p1st
 {
     time_t tm = now();
     u_int32_t seqno;
-        
+
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
-    {   
+    {
         loglog(RC_LOG_SERIOUS, "DPD: received R_U_THERE for unestablished ISKAMP SA");
         return STF_IGNORE;
     }
@@ -406,7 +406,7 @@ dpd_inI_outR(struct state *p1st
         loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
-        
+
     if (memcmp(pbs->cur, p1st->st_icookie, COOKIE_SIZE) != 0)
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
@@ -415,7 +415,7 @@ dpd_inI_outR(struct state *p1st
 	    DBG_log("DPD: R_U_THERE has invalid icookie (tolerated)"));
     }
     pbs->cur += COOKIE_SIZE;
-    
+
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
 	DBG(DBG_DPD,
@@ -434,7 +434,7 @@ dpd_inI_outR(struct state *p1st
         loglog(RC_LOG_SERIOUS, "DPD: received old or duplicate R_U_THERE");
         return STF_IGNORE;
     }
-     
+
     DBG(DBG_DPD,
 	DBG_log("DPD: received R_U_THERE seq:%u time:%lu (state=#%lu name=\"%s\")"
 	    , seqno
@@ -446,7 +446,7 @@ dpd_inI_outR(struct state *p1st
     if (send_isakmp_notification(p1st, R_U_THERE_ACK
 				 , pbs->cur, pbs_left(pbs)) != STF_IGNORE)
     {
-        loglog(RC_LOG_SERIOUS, "DPD: could not send R_U_THERE_ACK"); 
+        loglog(RC_LOG_SERIOUS, "DPD: could not send R_U_THERE_ACK");
         return STF_IGNORE;
     }
 
@@ -471,7 +471,7 @@ dpd_inI_outR(struct state *p1st
  * @param st A state structure (phase 1)
  * @param n A notification (isakmp_notification)
  * @param pbs A PB Stream
- * @return stf_status 
+ * @return stf_status
  */
 stf_status
 dpd_inR(struct state *p1st
@@ -480,7 +480,7 @@ dpd_inR(struct state *p1st
 {
     time_t tm = now();
     u_int32_t seqno;
-     
+
     if (!IS_ISAKMP_SA_ESTABLISHED(p1st->st_state))
     {
         loglog(RC_LOG_SERIOUS, "DPD: recevied R_U_THERE_ACK for unestablished ISKAMP SA");
@@ -492,7 +492,7 @@ dpd_inR(struct state *p1st
         loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has invalid SPI length (%d)", n->isan_spisize);
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
-     
+
     if (memcmp(pbs->cur, p1st->st_icookie, COOKIE_SIZE) != 0)
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
@@ -501,7 +501,7 @@ dpd_inR(struct state *p1st
 	    DBG_log("DPD: R_U_THERE_ACK has invalid icookie"));
     }
     pbs->cur += COOKIE_SIZE;
-    
+
     if (memcmp(pbs->cur, p1st->st_rcookie, COOKIE_SIZE) != 0)
     {
         /* RFC states we *SHOULD* check cookies, not MUST.  So invalid
@@ -510,13 +510,13 @@ dpd_inR(struct state *p1st
 	    DBG_log("DPD: R_U_THERE_ACK has invalid rcookie"));
     }
     pbs->cur += COOKIE_SIZE;
-    
+
     if (pbs_left(pbs) != sizeof(seqno))
     {
         loglog(RC_LOG_SERIOUS, "DPD: R_U_THERE_ACK has invalid data length (%d)", (int) pbs_left(pbs));
         return STF_FAIL + PAYLOAD_MALFORMED;
     }
-        
+
     seqno = ntohl(*(u_int32_t *)pbs->cur);
     DBG(DBG_DPD,
 	DBG_log("DPD: R_U_THERE_ACK, seqno received: %u expected: %u (state=#%lu)",
@@ -543,8 +543,8 @@ dpd_inR(struct state *p1st
     }
 
     return STF_IGNORE;
-}       
-    
+}
+
 /**
  * DPD Timeout Function
  *
@@ -552,7 +552,7 @@ dpd_inR(struct state *p1st
  * both the SA and the eroutes, depending on what the connection definition
  * tells us (either 'hold' or 'clear')
  *
- * @param st A state structure that is fully negotiated 
+ * @param st A state structure that is fully negotiated
  * @return void
  */
 void
@@ -560,7 +560,7 @@ dpd_timeout(struct state *st)
 {
     struct connection *c = st->st_connection;
     int action = c->dpd_action;
-    
+
     /** delete the state, which is probably in phase 2 */
     set_cur_connection(c);
 
@@ -575,15 +575,15 @@ dpd_timeout(struct state *st)
 	if (c->kind == CK_INSTANCE) {
 	    DBG(DBG_DPD, DBG_log("DPD: warning dpdaction=hold on instance futile - will be deleted"));
 	}
-	delete_states_by_connection(c, TRUE);  
+	delete_states_by_connection(c, TRUE);
 	break;
 
     case DPD_ACTION_CLEAR:
         /** dpdaction=clear - Wipe the SA & eroute - everything */
-    
+
         openswan_log("DPD: Clearing Connection");
-	/* 
-	 * For CK_INSTANCE, delete_states_by_connection() will clear 
+	/*
+	 * For CK_INSTANCE, delete_states_by_connection() will clear
 	 * Note that delete_states_by_connection changes c->kind but we need
 	 * to remember what it was to know if we still need to unroute after delete
 	 */

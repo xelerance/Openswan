@@ -58,7 +58,7 @@ void
 print_sa_attr_oakley(struct db_attr *at)
 {
     const struct enum_names *en = NULL;
-	
+
     if(at->type.oakley == 0) {
 	return;
     }
@@ -75,7 +75,7 @@ void
 print_sa_attr_ipsec(struct db_attr *at)
 {
     const struct enum_names *en = NULL;
-	
+
     if(at->type.ipsec == 0) {
 	return;
     }
@@ -142,7 +142,7 @@ static void
 print_sa_v2_attr(struct db_attr *at)
 {
     //const struct enum_names *en = NULL;
-	
+
     if(at->type.ikev2 == 0) {
 	return;
     }
@@ -209,7 +209,7 @@ sa_v2_print(struct db_sa *f)
 	}
 }
 
-    
+
 /*
  * Local Variables:
  * c-style: pluto

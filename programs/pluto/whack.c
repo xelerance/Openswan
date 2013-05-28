@@ -43,7 +43,7 @@
 #include "defs.h"
 #include "whack.h"
 
-/** 
+/**
  * Print the 'ipsec --whack help' message
  */
 static void
@@ -280,7 +280,7 @@ static const char *label = NULL;	/* --label operand, saved for diagnostics */
 
 static const char *name = NULL;	/* --name operand, saved for diagnostics */
 
-/** Print a string as a diagnostic, then exit whack unhappily 
+/** Print a string as a diagnostic, then exit whack unhappily
  *
  * @param mess The error message to print when exiting
  * @return void
@@ -301,7 +301,7 @@ diag(const char *mess)
     exit(RC_WHACK_PROBLEM);
 }
 
-/** 
+/**
  * Conditially calls diag if ugh is set.
  * Prints second arg, if non-NULL, as quoted string
  *
@@ -440,7 +440,7 @@ enum option_enums {
     END_SRCIP,
     END_UPDOWN,
     END_TUNDEV,
-    	
+
 #define END_LAST  END_TUNDEV	/* last end description*/
 
 /* Connection Description options -- segregated */
@@ -501,7 +501,7 @@ enum option_enums {
     CD_LOOPBACK,
     CD_LABELED_IPSEC,
     CD_POLICY_LABEL,
-    CD_ESP	
+    CD_ESP
 #   define CD_LAST CD_ESP	/* last connection description */
 
 #ifdef DEBUG	/* must be last so others are less than 32 to fit in lset_t */
@@ -627,7 +627,7 @@ static const struct option long_opts[] = {
     { "listpsks", no_argument, NULL, LST_PSKS + OO },
     { "listevents", no_argument, NULL, LST_EVENTS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
-                                                                                                        
+
 
     /* options for an end description */
 
@@ -780,7 +780,7 @@ static const char namechars[] = "abcdefghijklmnopqrstuvwxyz"
 struct sockaddr_un ctl_addr = {
     .sun_family = AF_UNIX,
     .sun_path   = DEFAULT_CTLBASE CTL_SUFFIX,
-#if defined(HAS_SUN_LEN) 
+#if defined(HAS_SUN_LEN)
     .sun_len = sizeof(struct sockaddr_un),
 #endif
 };
@@ -1025,7 +1025,7 @@ main(int argc, char **argv)
              * Reject repeated options (unless later code intervenes).
              */
             lset_t f = LELEM(c - LST_FIRST);
- 
+
             if (lst_seen & f)
                 diagq("duplicated flag", long_opts[long_index].name);
             lst_seen |= f;
@@ -1216,7 +1216,7 @@ main(int argc, char **argv)
 	case OPT_SHUTDOWN:	/* --shutdown */
 	    msg.whack_shutdown = TRUE;
 	    continue;
-	    
+
 	case OPT_OPPO_HERE:	/* --oppohere <ip-address> */
 	    tunnel_af_used_by = long_opts[long_index].name;
 	    diagq(ttoaddr(optarg, 0, msg.tunnel_addr_family, &msg.oppo_my_client), optarg);
@@ -1236,10 +1236,10 @@ main(int argc, char **argv)
 	    continue;
 
         /* List options */
- 
+
          case LST_UTC:          /* --utc */
             msg.whack_utc = TRUE;
-             continue; 
+             continue;
 
         case LST_PUBKEYS:       /* --listpubkeys */
         case LST_CERTS:         /* --listcerts */
@@ -1552,7 +1552,7 @@ main(int argc, char **argv)
 	case CD_IKE:	/* --ike <ike_alg1,ike_alg2,...> */
 	    msg.ike = optarg;
 	    continue;
-	    
+
 	case CD_PFSGROUP:	/* --pfsgroup modpXXXX */
 	    msg.pfsgroup = optarg;
 	    continue;
@@ -1691,7 +1691,7 @@ main(int argc, char **argv)
 
 #ifdef MODECFG_DNSWINS
 	case CD_MODECFGDNS1:
-	   af_used_by = long_opts[long_index].name; 
+	   af_used_by = long_opts[long_index].name;
 	   diagq(ttoaddr(optarg, 0, msg.addr_family
 		, &msg.modecfg_dns1), optarg);
 	   continue;
@@ -1740,7 +1740,7 @@ main(int argc, char **argv)
 
 #else
 	    diag("TaProoM is not enabled in this build");
-#endif	    
+#endif
 	    continue;
 
 #ifdef DEBUG
@@ -1958,7 +1958,7 @@ main(int argc, char **argv)
 
     /* build esp message as esp="<esp>;<pfsgroup>" */
     if (msg.pfsgroup) {
-	    snprintf(esp_buf, sizeof (esp_buf), "%s;%s", 
+	    snprintf(esp_buf, sizeof (esp_buf), "%s;%s",
 		    msg.esp ? msg.esp : "",
 		    msg.pfsgroup ? msg.pfsgroup : "");
 	    msg.esp=esp_buf;

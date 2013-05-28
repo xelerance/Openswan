@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper function - calculate prf+() for ikev2
  * Copyright (C) 2007 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2010 Paul Wouters <paul@xelerance.com>
