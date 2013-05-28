@@ -2160,24 +2160,24 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
     }
 
     if(st->st_ikev2) {
-    for(sr = &c->spd.next; sr; sr =sr->next) {
-    if (kernel_ops->inbound_eroute && inbound
-        && sr->eroute_owner == SOS_NOBODY)
-    {
-        (void) raw_eroute(&sr->that.host_addr, &sr->that.client
-                          , &sr->this.host_addr, &sr->this.client
-                          , 256
-			  , IPSEC_PROTO_ANY
-                          , sr->this.protocol
-                          , ET_UNSPEC
-                          , null_proto_info, 0
-                          , ERO_DEL_INBOUND, "delete inbound"
+        for(sr = &c->spd; sr; sr=sr->next) {
+            if (kernel_ops->inbound_eroute && inbound
+                && sr->eroute_owner == SOS_NOBODY)
+                {
+                    (void) raw_eroute(&sr->that.host_addr, &sr->that.client
+                                      , &sr->this.host_addr, &sr->this.client
+                                      , 256
+                                      , IPSEC_PROTO_ANY
+                                      , sr->this.protocol
+                                      , ET_UNSPEC
+                                      , null_proto_info, 0
+                                      , ERO_DEL_INBOUND, "delete inbound"
 #ifdef HAVE_LABELED_IPSEC
-			  , c->policy_label
+                                      , c->policy_label
 #endif
-			  );
-    }
-    }
+                                      );
+                }
+        }
     }
 
 
