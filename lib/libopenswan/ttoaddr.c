@@ -505,18 +505,22 @@ struct rtab {
 	char  numonly;
         char  format;
 	char  expectfailure;
+        unsigned int af;
 	char *output;			/* NULL means error expected */
 } rtab[] = {
-	{"1.2.3.0",	0,	0,   0,       "1.2.3.0"},
-	{"1:2::3:4",    0,      0,   0,       "1:2::3:4"},
-	{"1:2::3:4",    0,      'Q', 0,       "1:2:0:0:0:0:3:4"},
-	{"1:2:0:0:3:4:0:0", 0,    0, 0,       "1:2::3:4:0:0"},
-	{"www.openswan.org", 0,   0, 0,       "193.110.157.129"},
-	{"www.openswan.org", 1,   0, 'F',     "1.2.3.4"},
-	{"1.2.3.4",         0,   'r',0,       "4.3.2.1.IN-ADDR.ARPA."},
- 	/*                                   0 1 2 3 4 5 6 7 8 9 a b c d e f 0 1 2 3 4 5 6 7 8 9 a b c d e f */
-	{"1:2::3:4",        0,   'r',0,     "4.0.0.0.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.IP6.ARPA."},
-	{NULL,		    0,  0, 0, NULL}
+  {"1.2.3.0",	0,	0,   0,     AF_INET,  "1.2.3.0"},
+  {"1:2::3:4",    0,      0,   0,   AF_INET6,  "1:2::3:4"},
+  {"1:2::3:4",    0,      'Q', 0,   AF_INET6,      "1:2:0:0:0:0:3:4"},
+  {"1:2:0:0:3:4:0:0", 0,    0, 0,   AF_INET6,      "1:2::3:4:0:0"},
+
+  /* these are obviously dependant upon external name servers */
+  {"www.openswan.org", 0,   0, 0,   AF_INET6,    "2400:8900::f03c:91ff:fe70:aff4"},
+  {"www.openswan.org", 0,   0, 0,   AF_INET,     "106.186.20.235"},
+  {"www.openswan.org", 1,   0, 'F', AF_INET,    "1.2.3.4"},
+  {"1.2.3.4",         0,   'r',0,   AF_INET,    "4.3.2.1.IN-ADDR.ARPA."},
+  /*                                            0 1 2 3 4 5 6 7 8 9 a b c d e f 0 1 2 3 4 5 6 7 8 9 a b c d e f */
+  {"1:2::3:4",        0,   'r',0,   AF_INET6,  "4.0.0.0.3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.2.0.0.0.1.0.0.0.IP6.ARPA."},
+  {NULL,		    0,  0, 0, 0, NULL}
 };
 
 void
@@ -538,10 +542,10 @@ regress()
 
 		if(r->numonly) {
 			/* convert it *to* internal format (no DNS) */
-			oops = ttoaddr_num(in, strlen(in), 0, &a);
+			oops = ttoaddr_num(in, strlen(in), r->af, &a);
 		} else {
 			/* convert it *to* internal format */
-			oops = ttoaddr(in, strlen(in), 0, &a);
+			oops = ttoaddr(in, strlen(in), r->af, &a);
 		}
 
 		if(r->expectfailure && oops==NULL) {
