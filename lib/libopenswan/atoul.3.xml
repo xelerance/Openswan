@@ -146,7 +146,7 @@ returns NULL for success and
 a pointer to a string-literal error message for failure;
 see DIAGNOSTICS.
 <emphasis remap='I'>Ultoa</emphasis>
-returns the size of buffer which would 
+returns the size of buffer which would
 be needed to
 accommodate the full conversion result, including terminating NUL;
 it is the caller's responsibility to check this against the size of

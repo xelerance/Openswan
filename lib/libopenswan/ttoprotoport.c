@@ -74,11 +74,11 @@ int *has_port_wildcard;	/* set if port is %any */
 
     /* is there a port wildcard? */
     wildcard = (strcmp(service_name, "%any") == 0);
-   
+
     if(has_port_wildcard) {
       *has_port_wildcard = wildcard;
     }
-    
+
     if (wildcard) {
       *port = 0;
       return NULL;
@@ -94,7 +94,7 @@ int *has_port_wildcard;	/* set if port is %any */
 	l = strtol(service_name, &end, 0);
 
 	if (*service_name && *end)
-	    /* 
+	    /*
 	     * set port to 0, this is needed for protocols without port in
 	     * the proposal, such as with GRE (protoport=47)
 	     */
@@ -174,7 +174,7 @@ char *pgm;
 	  u_int8_t proto;
 	  u_int16_t port;
 	  int has_port_wildcard;
-	  
+
 	  err = ttoprotoport(r->ascii, strlen(r->ascii),
 			     &proto, &port, &has_port_wildcard);
 
@@ -194,26 +194,26 @@ char *pgm;
 	    status = 1;
 	    continue;
 	  }
-	  
+
 	  if(proto != r->proto) {
 	    printf("%s expected proto %d, got %d\n",r->ascii, proto, r->proto);
 	    status = 1;
 	    continue;
 	  }
-	    
+
 	  if(port != r->port) {
 	    printf("%s expected port %d, got %d\n",r->ascii, port, r->port);
 	    status = 1;
 	    continue;
 	  }
-	    
+
 	  if(has_port_wildcard != r->wild) {
 	    printf("%s expected wild %d, got %d\n",r->ascii,
 		   has_port_wildcard, r->wild);
 	    status = 1;
 	    continue;
 	  }
-	    
+
 	  fflush(stdout);
 	}
 	exit(status);

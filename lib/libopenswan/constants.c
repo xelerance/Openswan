@@ -151,7 +151,7 @@ const char *const payload_names_ikev2[] = {
     "ISAKMP_NEXT_v2KE",
     "ISAKMP_NEXT_v2IDi",
     "ISAKMP_NEXT_v2IDr",
-    "ISAKMP_NEXT_v2CERT",  
+    "ISAKMP_NEXT_v2CERT",
     "ISAKMP_NEXT_v2CERTREQ",
     "ISAKMP_NEXT_v2AUTH",
     "ISAKMP_NEXT_v2Ni",
@@ -298,7 +298,7 @@ enum_names ah_transformid_names =
 
 /*
  * ipsec drafts suggest "high" ESP ids values for testing,
- * assign generic ESP_ID<num> if not officially defined 
+ * assign generic ESP_ID<num> if not officially defined
  */
 static const char *const esp_transform_name_private_use[] = {
 	/* id=249 */
@@ -398,7 +398,7 @@ enum_names cert_type_names =
 
 /* Certificate type values RFC 4306 3.6 */
 /* TBD AA don't know how to add v2 sepecific ones, now it is mix of v1 & v2 */
- 
+
 static const char *const ikev2_cert_type_name[] = {
         "CERT_RESERVED",
         "CERT_PKCS7_WRAPPED_X509",
@@ -910,7 +910,7 @@ enum_names oakley_group_names_rfc3526 =
 #endif
 
 enum_names oakley_group_names =
-    { OAKLEY_GROUP_MODP768, OAKLEY_GROUP_MODP1536, 
+    { OAKLEY_GROUP_MODP768, OAKLEY_GROUP_MODP1536,
 	    oakley_group_name, &oakley_group_names_rfc3526 };
 
 /* Oakley Group Type attribute */
@@ -971,7 +971,7 @@ static const char *const ipsec_notification_name[] = {
     };
 
 static const char *const notification_dpd_name[] = {
-        "R_U_THERE", 
+        "R_U_THERE",
         "R_U_THERE_ACK",
 };
 
@@ -1001,7 +1001,7 @@ enum_names notification_juniper_names =
     { NETSCREEN_NHTB_INFORM, NETSCREEN_NHTB_INFORM,
      notification_juniper_name, NULL };
 
-enum_names notification_cisco_more_names = 
+enum_names notification_cisco_more_names =
     {  ISAKMP_N_CISCO_LOAD_BALANCE, ISAKMP_N_CISCO_PRESHARED_KEY_HASH,
       notification_cisco_more_name, &notification_juniper_names };
 
@@ -1032,7 +1032,7 @@ enum_names ipsec_notification_names =
 /* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-13 */
 static const char *const ikev2_notify_name_16384[] = {
 	   "v2N_INITIAL_CONTACT", /* 16384 */
-	   "v2N_SET_WINDOW_SIZE", 
+	   "v2N_SET_WINDOW_SIZE",
 	   "v2N_ADDITIONAL_TS_POSSIBLE",
 	   "v2N_IPCOMP_SUPPORTED",
 	   "v2N_NAT_DETECTION_SOURCE_IP",
@@ -1072,7 +1072,7 @@ static const char *const ikev2_notify_name_16384[] = {
 	   "v2N_IKEV2_MESSAGE_ID_SYNC",
 	   "v2N_IPSEC_REPLAY_COUNTER_SYNC",
 	   "v2N_SECURE_PASSWORD_METHODS", /* 16423 */
- 	}; 
+ 	};
 
 static const char *const ikev2_notify_name[] = {
 	   "v2N_RESERVED", /* unofficial "OK" */
@@ -1120,12 +1120,12 @@ static const char *const ikev2_notify_name[] = {
 	   "v2N_USE_ASSIGNED_HoA",
 	   "v2N_TEMPORARY_FAILURE",
 	   "v2N_CHILD_SA_NOT_FOUND", /* 45 */
-	}; 
+	};
 
-enum_names ikev2_notify_names_16384 = 
+enum_names ikev2_notify_names_16384 =
     { v2N_INITIAL_CONTACT, v2N_SECURE_PASSWORD_METHODS, ikev2_notify_name_16384, NULL};
 
-enum_names ikev2_notify_names = 
+enum_names ikev2_notify_names =
     { 0, v2N_CHILD_SA_NOT_FOUND, ikev2_notify_name, &ikev2_notify_names_16384};
 
 /* http://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xml#ikev2-parameters-19 */
@@ -1157,7 +1157,7 @@ enum_names attr_msg_type_names =
 
 /*
  * IKEv2 Critical bit and RESERVED (7) bits
- */ 
+ */
 const char *const critical_names[] = {
     "RESERVED",         /* bit 0 */
     "RESERVED",         /* bit 1 */
@@ -1431,15 +1431,15 @@ const char *const natt_type_bitnames[] = {
   "draft-ietf-ipsec-nat-t-ike-00/01",    /* 0 */
   "draft-ietf-ipsec-nat-t-ike-02/03",
   "draft-ietf-ipsec-nat-t-ike-05",
-  "draft-ietf-ipsec-nat-t-ike (MacOS X)", 
+  "draft-ietf-ipsec-nat-t-ike (MacOS X)",
   "RFC 3947 (NAT-Traversal)",		/* 4 */
-  "4",   "5",   "6",   "7", 
+  "4",   "5",   "6",   "7",
   "8",   "9",   "10",  "11",
   "12",  "13",  "14",  "15",
-  "16",  "17",  "18",  "19", 
-  "20",  "21",  "22",  "23", 
-  "24",  "25",  "26",  "27", 
-  "28",  "29",  
+  "16",  "17",  "18",  "19",
+  "20",  "21",  "22",  "23",
+  "24",  "25",  "26",  "27",
+  "28",  "29",
   "nat is behind me",
   "nat is behind peer"
 };
@@ -1455,7 +1455,7 @@ struct keyword_enum_value kw_host_values[]={
     { "%oppo",          KH_OPPO },
     { "%opportunistic", KH_OPPO },
     { "%opportunisticgroup", KH_OPPOGROUP },
-    { "%oppogroup",     KH_OPPOGROUP },  
+    { "%oppogroup",     KH_OPPOGROUP },
     { "%group",         KH_GROUP },
     { "%hostname",      KH_IPHOSTNAME },  /* makes no sense on input */
 };
@@ -1486,7 +1486,7 @@ const char *keyword_name(struct keyword_enum_values *kevs, unsigned int value)
     for(kevcount = kevs->valuesize, kev = kevs->values;
         kevcount > 0 && kev->value != value;
         kev++, kevcount--);
-   
+
     passert(kevcount != 0);  /* for now */
 
     return kev->name;
@@ -1516,8 +1516,8 @@ enum_show(enum_names *ed, unsigned long val)
 
 static char bitnamesbuf[200];   /* only one!  I hope that it is big enough! */
 
-int 
-enum_search(enum_names *ed, const char *str) 
+int
+enum_search(enum_names *ed, const char *str)
 {
     enum_names	*p;
     const char *ptr;

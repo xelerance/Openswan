@@ -46,7 +46,7 @@ lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
 
     if (f == NULL)
     {
-      if (!optional || errno != ENOENT) 
+      if (!optional || errno != ENOENT)
 	    log_errno((e, "could not open \"%s\"", name));
 	return FALSE;
     }
@@ -201,7 +201,7 @@ shift(void)
     }
 }
 
-/** ensures we are at a Record (or File) boundary, optionally warning if not 
+/** ensures we are at a Record (or File) boundary, optionally warning if not
  *
  * @param m string
  * @return bool True if everything is ok

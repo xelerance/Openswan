@@ -3,9 +3,9 @@
  * Copyright (C) 2001 Marco Bertossa, Andreas Schleiss
  * Copyright (C) 2002 Mario Strasser
  * Copyright (C) 2000-2004 Andreas Steffen, Zuercher Hochschule Winterthur
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
- * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -563,7 +563,7 @@ get_next_rdn(chunk_t *rdn, chunk_t * attribute, chunk_t *oid, chunk_t *value
 
 
     body.ptr = attribute->ptr;
-    
+
     /* advance to start of next attribute */
     attribute->ptr += body.len;
     attribute->len -= body.len;
@@ -574,7 +574,7 @@ get_next_rdn(chunk_t *rdn, chunk_t * attribute, chunk_t *oid, chunk_t *value
 
     /* extract OID */
     oid->len = asn1_length(&body);
- 
+
     if (oid->len == ASN1_INVALID_LENGTH)
         return "Invalid attribute OID length";
 
@@ -672,7 +672,7 @@ dn_count_wildcards(chunk_t dn)
     while (next)
     {
 	ugh = get_next_rdn(&rdn, &attribute, &oid, &value, &type, &next);
-	
+
 	if (ugh != NULL) /* a parsing error has occured */
 	    return -1;
 	if (value.len == 1 && *value.ptr == '*')
@@ -895,7 +895,7 @@ same_dn(chunk_t a, chunk_t b)
     /* try a binary comparison first */
     if (memcmp(a.ptr, b.ptr, b.len) == 0)
        return TRUE;
- 
+
 
 
 
@@ -1006,10 +1006,10 @@ match_dn(chunk_t a, chunk_t b, int *wildcards)
 	if(*wildcards) {
 	    char abuf[ASN1_BUF_LEN];
 	    char bbuf[ASN1_BUF_LEN];
-	    
+
 	    dntoa(abuf, ASN1_BUF_LEN, a);
 	    dntoa(bbuf, ASN1_BUF_LEN, b);
-	    
+
 	    openswan_log("while comparing A='%s'<=>'%s'=B with a wildcard count of %d, %s had too few RDNs",
 			 abuf, bbuf, *wildcards, (next_a ? "B" : "A"));
 	}
@@ -1216,7 +1216,7 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 	   sha256_write(&context, tbs.ptr, tbs.len);
 #ifdef HAVE_LIBNSS
 	   unsigned int len;
-	   SECStatus s;	
+	   SECStatus s;
 	   s = PK11_DigestFinal(context.ctx_nss, digest->ptr, &len, SHA2_256_DIGEST_SIZE);
 	   passert(len==SHA2_256_DIGEST_SIZE);
 	   passert(s==SECSuccess);
@@ -1618,7 +1618,7 @@ parse_generalName(chunk_t blob, int level0)
     while (objectID < GN_OBJ_ROOF)
     {
 	bool valid_gn = FALSE;
-	
+
 	if (!extract_object(generalNameObjects, &objectID, &object, &level, &ctx))
 	     return NULL;
 
@@ -1679,7 +1679,7 @@ parse_generalNames(chunk_t blob, int level0, bool implicit)
     chunk_t object;
     u_int level;
     unsigned int objectID = 0;
-        
+
     generalName_t *top_gn = NULL;
 
     asn1_init(&ctx, blob, level0, implicit, DBG_RAW);
@@ -1688,7 +1688,7 @@ parse_generalNames(chunk_t blob, int level0, bool implicit)
     {
 	if (!extract_object(generalNamesObjects, &objectID, &object, &level, &ctx))
 	     return NULL;
-	     
+
 	if (objectID == GENERAL_NAMES_GN)
 	{
 	    generalName_t *gn = parse_generalName(object, level+1);
@@ -2128,7 +2128,7 @@ parse_x509crl(chunk_t blob, u_int level0, x509crl_t *crl)
     chunk_t object;
     u_int level;
     u_int objectID = 0;
-   
+
    userCertificate.len = 0;
    userCertificate.ptr = NULL;
 
