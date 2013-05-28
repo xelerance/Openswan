@@ -421,7 +421,7 @@ main(int argc, char *argv[])
 		p = (char *)malloc((size_t)n);
 		if (p == NULL) {
 			fprintf(stderr,
-				"%s: unable to malloc %d bytes for result\n",
+				"%s: unable to malloc %zu bytes for result\n",
 				pgm, n);
 			exit(1);
 		}
@@ -447,7 +447,7 @@ main(int argc, char *argv[])
 		p2 = (char *)malloc((size_t)i);
 		if (p == NULL) {
 			fprintf(stderr,
-				"%s: unable to malloc %d bytes for result\n",
+				"%s: unable to malloc %zu bytes for result\n",
 				pgm, i);
 			exit(1);
 		}
@@ -602,27 +602,27 @@ int *status;
 	if (oops != NULL && r->data == NULL)
 		{}			/* error expected */
 	else if (oops != NULL) {
-		printf("`%s' gave error `%s', expecting %d `", r->ascii,
-						oops, strlen(r->data));
+		printf("`%s' gave error `%s', expecting %zu `", r->ascii,
+                       oops, strlen(r->data));
 		hexout(r->data, strlen(r->data), stdout);
 		printf("'\n");
 		*status = 1;
 	} else if (r->data == NULL) {
-		printf("`%s' gave %d `", r->ascii, n);
+		printf("`%s' gave %zu `", r->ascii, n);
 		hexout(buf, n, stdout);
 		printf("', expecting error\n");
 		*status = 1;
 	} else if (n != strlen(r->data)) {
-		printf("length wrong in `%s': got %d `", r->ascii, n);
+		printf("length wrong in `%s': got %zu `", r->ascii, n);
 		hexout(buf, n, stdout);
-		printf("', expecting %d `", strlen(r->data));
+		printf("', expecting %zu `", strlen(r->data));
 		hexout(r->data, strlen(r->data), stdout);
 		printf("'\n");
 		*status = 1;
 	} else if (memcmp(buf, r->data, n) != 0) {
-		printf("`%s' gave %d `", r->ascii, n);
+		printf("`%s' gave %zu `", r->ascii, n);
 		hexout(buf, n, stdout);
-		printf("', expecting %d `", strlen(r->data));
+		printf("', expecting %zu `", strlen(r->data));
 		hexout(r->data, strlen(r->data), stdout);
 		printf("'\n");
 		*status = 1;
@@ -691,26 +691,26 @@ char *pgm;
 		else if (n == 0) {
 			printf("`");
 			hexout(dr->data, strlen(dr->data), stdout);
-			printf("' %c gave error, expecting %d `%s'\n",
+			printf("' %c gave error, expecting %zu `%s'\n",
 				dr->format, should, dr->ascii);
 			status = 1;
 		} else if (dr->ascii == NULL) {
 			printf("`");
 			hexout(dr->data, strlen(dr->data), stdout);
-			printf("' %c gave %d `%.*s', expecting error\n",
+			printf("' %c gave %zu `%.*s', expecting error\n",
 				dr->format, n, (int)n, buf);
 			status = 1;
 		} else if (n != should) {
 			printf("length wrong in `");
 			hexout(dr->data, strlen(dr->data), stdout);
-			printf("': got %d `%s'", n, buf);
-			printf(", expecting %d `%s'\n", should, dr->ascii);
+			printf("': got %zu `%s'", n, buf);
+			printf(", expecting %zu `%s'\n", should, dr->ascii);
 			status = 1;
 		} else if (strcmp(buf, dr->ascii) != 0) {
 			printf("`");
 			hexout(dr->data, strlen(dr->data), stdout);
-			printf("' gave %d `%s'", n, buf);
-			printf(", expecting %d `%s'\n", should, dr->ascii);
+			printf("' gave %zu `%s'", n, buf);
+			printf(", expecting %zu `%s'\n", should, dr->ascii);
 			status = 1;
 		}
 		fflush(stdout);
