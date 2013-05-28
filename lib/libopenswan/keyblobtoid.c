@@ -120,7 +120,7 @@ char *argv[];
 
 	n = keyblobtoid(hexblob, strlen(hexblob), buf, sizeof(buf));
 	if (n != bl) {
-		fprintf(stderr, "%s: keyblobtoid returned %d not %d\n",
+		fprintf(stderr, "%s: keyblobtoid returned %zu not %zu\n",
 							argv[0], n, bl);
 		st = 1;
 	}
@@ -132,7 +132,7 @@ char *argv[];
 	n = splitkeytoid(hexe, strlen(hexe), hexm, strlen(hexm), buf,
 								sizeof(buf));
 	if (n != bl) {
-		fprintf(stderr, "%s: splitkeytoid returned %d not %d\n",
+		fprintf(stderr, "%s: splitkeytoid returned %zu not %zu\n",
 							argv[0], n, bl);
 		st = 1;
 	}
