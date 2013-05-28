@@ -1,3 +1,4 @@
+libtest x509dn   good
 skiptest lib-addrtoa incomplete
 libtest addrtot good
 skiptest lib-addrtypeof incomplete
