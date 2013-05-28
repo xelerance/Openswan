@@ -251,7 +251,7 @@ find_raw_ifaces4(void)
     }
 
     buf = NULL;
-   
+
     /* a million interfaces is probably the maximum, ever... */
     while(num < (1024*1024)) {
 	    /* Get local interfaces.  See netdevice(7). */
@@ -262,18 +262,18 @@ find_raw_ifaces4(void)
 				    ifconf.ifc_len));
 	    memset(buf, 0, num*sizeof(struct ifreq));
 	    ifconf.ifc_buf = (void *) buf;
-	    
+
 	    if (ioctl(master_sock, SIOCGIFCONF, &ifconf) == -1)
 		    exit_log_errno((e, "ioctl(SIOCGIFCONF) in find_raw_ifaces4()"));
-	    
+
 	    /* if we got back less than we asked for, we have them all */
 	    if (ifconf.ifc_len < (int)(sizeof(struct ifreq) * num))
 		    break;
-	    
+
 	    /* try again and ask for more this time */
 	    num *= 2;
     }
-  
+
     /* Add an entry to rifaces for each interesting interface. */
     for (j = 0; (j+1) * sizeof(struct ifreq) <= (size_t)ifconf.ifc_len; j++)
     {

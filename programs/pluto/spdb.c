@@ -65,7 +65,7 @@
 
 /**
  * the XAUTH server/client stuff is a bit confusing.
- * 
+ *
  * XAUTH overloads the RSA/PSK types with four more types which
  * mean RSA or PSK, but also include whether one is negotiating
  * that the inititator with be the XAUTH client, or the responder will be
@@ -113,7 +113,7 @@ static struct db_attr otpsk2048des3md5[] = {
 	{ .type.oakley=OAKLEY_HASH_ALGORITHM, .val=OAKLEY_MD5 },
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
-	}; 
+	};
 
 static struct db_attr otpsk1024aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
@@ -121,7 +121,7 @@ static struct db_attr otpsk1024aesmd5[] = {
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1024 },
 	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
-	}; 
+	};
 
 static struct db_attr otpsk1536aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
@@ -129,7 +129,7 @@ static struct db_attr otpsk1536aesmd5[] = {
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP1536 },
 	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
-	}; 
+	};
 
 static struct db_attr otpsk2048aesmd5[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
@@ -137,7 +137,7 @@ static struct db_attr otpsk2048aesmd5[] = {
 	{ .type.oakley=OAKLEY_AUTHENTICATION_METHOD, .val=OAKLEY_PRESHARED_KEY },
 	{ .type.oakley=OAKLEY_GROUP_DESCRIPTION, .val=OAKLEY_GROUP_MODP2048 },
 	{ .type.oakley=OAKLEY_KEY_LENGTH, .val=128 },
-	}; 
+	};
 
 static struct db_attr otpsk1024aessha1[] = {
 	{ .type.oakley=OAKLEY_ENCRYPTION_ALGORITHM, .val=OAKLEY_AES_CBC },
@@ -1166,7 +1166,7 @@ struct db_sa *sa_copy_sa_first(struct db_sa *sa)
 /*
  * this routine takes two proposals and conjoins them (or)
  *
- * 
+ *
  */
 struct db_sa *
 sa_merge_proposals(struct db_sa *a, struct db_sa *b)

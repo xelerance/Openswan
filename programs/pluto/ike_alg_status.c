@@ -1,7 +1,7 @@
 /*
  * IKE modular algorithm handling interface
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- * 
+ *
  * ike_alg.c,v 1.1.2.18 2002/05/29 04:13:04 jjo Exp
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -65,7 +65,7 @@ ike_alg_show_status(void)
 			, (int)((struct encrypt_desc *)algo)->enc_blocksize
 			, ((struct encrypt_desc *)algo)->keydeflen
 			);
-		
+
 	}
 	IKE_HALG_FOR_EACH(algo) {
 		whack_log(RC_COMMENT, "algorithm IKE hash: id=%d, name=%s, hashsize=%d"
@@ -85,7 +85,7 @@ ike_alg_show_status(void)
 	}
 }
 /*
- * 	Show IKE algorithms for 
+ * 	Show IKE algorithms for
  * 	- this connection (result from ike= string)
  * 	- newest SA
  */
@@ -96,7 +96,7 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 	if (c->alg_info_ike) {
 		char buf[1024];
 
-		alg_info_snprint(buf, sizeof(buf)-1, 
+		alg_info_snprint(buf, sizeof(buf)-1,
 				 (struct alg_info *)c->alg_info_ike, TRUE);
 		whack_log(RC_COMMENT
 		    , "\"%s\"%s:   IKE algorithms wanted: %s"

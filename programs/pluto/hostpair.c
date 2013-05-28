@@ -107,7 +107,7 @@ struct pending **host_pair_first_pending(const struct connection *c)
     return &c->host_pair->pending;
 }
 
-    
+
 /* check to see that Ids of peers match */
 bool
 same_peer_ids(const struct connection *c, const struct connection *d
@@ -118,12 +118,12 @@ same_peer_ids(const struct connection *c, const struct connection *d
 }
 
 /** returns a host pair based upon addresses.
- * 
+ *
  * find_host_pair is given a pair of addresses, plus UDP ports, and
  * returns a host_pair entry that covers it. It also moves the relevant
  * pair description to the beginning of the list, so that it can be
  * found faster next time.
- * 
+ *
  */
 struct host_pair *
 find_host_pair(const ip_address *myaddr
@@ -142,7 +142,7 @@ find_host_pair(const ip_address *myaddr
 	if(af == NULL) {
 	    af = aftoinfo(AF_INET);
 	}
-	
+
 	if(af) {
 	    hisaddr = af->any;
 	}
@@ -155,7 +155,7 @@ find_host_pair(const ip_address *myaddr
      * look for a host-pair that has the right set of ports/address.
      *
      */
-    
+
     /*
      * for the purposes of comparison, port 500 and 4500 are identical,
      * but other ports are not.
@@ -174,7 +174,7 @@ find_host_pair(const ip_address *myaddr
 		      , p->me.host_port
 		      , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
 		      , p->him.host_port));
-		   
+
 	if (sameaddr(&p->me.addr, myaddr)
 	    && (!p->me.host_port_specific || p->me.host_port == myport)
 	    && sameaddr(&p->him.addr, hisaddr)
@@ -201,7 +201,7 @@ void remove_host_pair(struct host_pair *hp)
 /* find head of list of connections with this pair of hosts */
 struct connection *
 find_host_pair_connections(const char *func
-			   , const ip_address *myaddr, u_int16_t myport			   
+			   , const ip_address *myaddr, u_int16_t myport
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
     struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
@@ -216,7 +216,7 @@ find_host_pair_connections(const char *func
 		  , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "%any"
 		  , hisport
 		  , (hp && hp->connections) ? hp->connections->name : "none"));
-		   
+
     return hp == NULL? NULL : hp->connections;
 }
 
@@ -240,7 +240,7 @@ connect_to_host_pair(struct connection *c)
 		      , (addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2)), b2)
 		      , c->spd.that.host_port
 		      , (hp && hp->connections) ? hp->connections->name : "none"));
-		   
+
 	if (hp == NULL)
 	{
 	    /* no suitable host_pair -- build one */

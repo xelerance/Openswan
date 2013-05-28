@@ -61,7 +61,7 @@ static unsigned short private_net_ok_len=0, private_net_ko_len=0;
  * @param src String in format (see above)
  * @param len Length of src string
  * @param dst IP Subnet Destination
- * @param dstko IP Subnet 
+ * @param dstko IP Subnet
  * @param isok Boolean
  * @return bool If the format string is valid.
  */
@@ -73,7 +73,7 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
     int af;
     /* workaround for typo "%4:" instead of "%v4:" introduced in old openswan release*/
     int offset=0;
-   
+
     if ((len > 4) && (strncmp(src, "%v4:", 4)==0)) {
 	af = AF_INET;
     }
@@ -107,7 +107,7 @@ _read_subnet(const char *src, size_t len, ip_subnet *dst, ip_subnet *dstko,
 }
 
 /** Initialize Virtual IP Support
- * 
+ *
  * @param private_list String (contents of virtual_private= from ipsec.conf)
  */
 void
@@ -201,7 +201,7 @@ init_virtual_ip(const char *private_list)
  *
  * @param c Connection Struct
  * @param string (virtual_private= from ipsec.conf)
- * @return virtual_t 
+ * @return virtual_t
  */
 struct virtual_t
 *create_virtual(const struct connection *c, const char *string)
@@ -285,10 +285,10 @@ fail:
     return NULL;
 }
 
-/** is_virtual_end - Do we have a virtual IP on the other end? 
+/** is_virtual_end - Do we have a virtual IP on the other end?
  *
  * @param that end structure
- * @return bool True if we do 
+ * @return bool True if we do
  */
 bool
 is_virtual_end(const struct end *that)
@@ -299,7 +299,7 @@ is_virtual_end(const struct end *that)
 /** Does this connection have a virtual IP ?
  *
  * @param c Active Connection struct
- * @return bool True if we do 
+ * @return bool True if we do
  */
 bool
 is_virtual_connection(const struct connection *c)
@@ -315,7 +315,7 @@ is_virtual_connection(const struct connection *c)
 /** Does this spd have a virtual IP ?
  *
  * @param c Active Connection struct
- * @return bool True if we do 
+ * @return bool True if we do
  */
 bool
 is_virtual_sr(const struct spd_route *sr)
@@ -397,7 +397,7 @@ is_virtual_net_allowed(const struct connection *c, const ip_subnet *peer_net,
 }
 
 void
-show_virtual_private() 
+show_virtual_private()
 {
     char allowed[SUBNETTOT_BUF];
     char disallowed[SUBNETTOT_BUF];
@@ -437,7 +437,7 @@ show_virtual_private()
     whack_log(RC_COMMENT, "- allowed %d subnet%s: %s",
 	      private_net_ok_len,
 	      (private_net_ok_len == 1) ? "" : "s", all_ok );
-	
+
     whack_log(RC_COMMENT, "- disallowed %d subnet%s: %s",
 	      private_net_ko_len,
 	      (private_net_ko_len == 1) ? "" : "s", all_ko );

@@ -34,7 +34,7 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 #ifdef HAVE_LIBNSS
     u_int8_t iv_bak[AES_CBC_BLOCK_SIZE];
     u_int8_t *new_iv = NULL;        /* logic will avoid copy to NULL */
-    u_int8_t *tmp_buf; 
+    u_int8_t *tmp_buf;
 
     CK_MECHANISM_TYPE  ciphermech;
     SECItem              ivitem;
@@ -71,11 +71,11 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
     memcpy(new_iv=iv_bak,(char*) buf + buf_len-AES_CBC_BLOCK_SIZE,AES_CBC_BLOCK_SIZE);
     }
 
-    enccontext = PK11_CreateContextBySymKey(ciphermech, enc? CKA_ENCRYPT : CKA_DECRYPT, symkey, secparam); 
+    enccontext = PK11_CreateContextBySymKey(ciphermech, enc? CKA_ENCRYPT : CKA_DECRYPT, symkey, secparam);
     rv = PK11_CipherOp(enccontext, tmp_buf, &outlen, buf_len, buf, buf_len);
     passert(rv==SECSuccess);
     PK11_DestroyContext(enccontext, PR_TRUE);
-    memcpy(buf,tmp_buf,buf_len);  
+    memcpy(buf,tmp_buf,buf_len);
 
     if(enc){
     new_iv = (u_int8_t*) buf + buf_len-AES_CBC_BLOCK_SIZE;
@@ -85,7 +85,7 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
     PR_Free(tmp_buf);
 
 out:
- 
+
 if (secparam)
     SECITEM_FreeItem(secparam, PR_TRUE);
 DBG(DBG_CRYPT, DBG_log("NSS do_aes: exit"));
@@ -97,13 +97,13 @@ DBG(DBG_CRYPT, DBG_log("NSS do_aes: exit"));
 
     aes_set_key(&aes_ctx, key, key_size, 0);
 
-    /*	
+    /*
      *	my AES cbc does not touch passed IV (optimization for
      *	ESP handling), so I must "emulate" des-like IV
      *	crunching
      */
     if (!enc)
-	    memcpy(new_iv=iv_bak, 
+	    memcpy(new_iv=iv_bak,
 			    (char*) buf + buf_len-AES_CBC_BLOCK_SIZE,
 			    AES_CBC_BLOCK_SIZE);
 

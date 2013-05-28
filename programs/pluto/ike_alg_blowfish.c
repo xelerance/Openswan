@@ -31,7 +31,7 @@ struct encrypt_desc algo_blowfish =
 	         algo_type:	IKE_ALG_ENCRYPT,
 		 algo_id:	OAKLEY_BLOWFISH_CBC,
 		 algo_v2id:     IKEv2_ENCR_BLOWFISH,
-		 algo_next:	NULL, }, 
+		 algo_next:	NULL, },
 	enc_ctxsize: sizeof(BF_KEY),
 	enc_blocksize: BLOWFISH_CBC_BLOCK_SIZE,
 	keyminlen: BLOWFISH_KEY_MIN_LEN,

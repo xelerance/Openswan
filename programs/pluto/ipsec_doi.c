@@ -192,7 +192,7 @@ unpack_KE(struct state *st
     {
 	st->st_sec_in_use = TRUE;
 	freeanychunk(*g);	/* happens in odd error cases */
-	
+
 	clonetochunk(*g, wire_chunk_ptr(kn, &(kn->gi))
 		     , kn->gi.len, "saved gi value");
 #ifdef HAVE_LIBNSS
@@ -310,7 +310,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
     if((policy & POLICY_IKEV1_DISABLE) == 0 &&
        (c->failed_ikev2 || (policy & POLICY_IKEV2_PROPOSE)==0))  {
 	if(policy & POLICY_AGGRESSIVE) {
-#if defined(AGGRESSIVE)	    
+#if defined(AGGRESSIVE)
 	    return aggr_outI1;
 #else
 	    return aggr_not_present;
@@ -357,7 +357,7 @@ ipsecdoi_initiate(int whack_sock
     if (st == NULL)
     {
 	initiator_function *initiator = pick_initiator(c, policy);
-	
+
 	if(initiator) {
 	    (void) initiator(whack_sock, c, NULL, policy, try, importance
 #ifdef HAVE_LABELED_IPSEC
@@ -465,7 +465,7 @@ ipsecdoi_replace(struct state *st
 	}
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock, st->st_connection, policy, try
-			  , st->st_serialno, st->st_import 
+			  , st->st_serialno, st->st_import
 #ifdef HAVE_LABELED_IPSEC
 			  , st->sec_ctx
 #endif
@@ -575,7 +575,7 @@ extract_peer_id(struct id *peer, const pb_stream *id_pbs)
 	    , enum_show(&ident_names, peer->kind));
 	return FALSE;
     }
-    
+
     return TRUE;
 }
 
@@ -640,7 +640,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 		     , aggrmode ? "Aggressive" : "Main"
 		     , enum_show(&ident_names, id->isaid_idtype), buf);
     }
-    
+
     /* check for certificates */
     decode_cert(md);
 
@@ -789,13 +789,13 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 	   (st->st_connection->policy & POLICY_TUNNEL ?
 	    " tunnel mode" : " transport mode"));
     b += strlen(sadetails);
-    
+
     /* -1 is to leave space for "fin" */
-    
+
     if(st->st_esp.present)
     {
 	const char *natinfo="";
-	
+
 	if((st->st_connection->spd.that.host_port != IKE_UDP_PORT
 	    && st->st_connection->spd.that.host_port != 0)
 	   || st->st_connection->forceencaps) {
@@ -815,7 +815,7 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
     }
     /* advance b to end of string */
     b = b + strlen(b);
-    
+
     if(st->st_ah.present)
     {
 	snprintf(b, sad_len-(b-sadetails)-1
@@ -828,7 +828,7 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
     }
     /* advance b to end of string */
     b = b + strlen(b);
-    
+
     if(st->st_ipcomp.present)
     {
 	snprintf(b, sad_len-(b-sadetails)-1
@@ -839,13 +839,13 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 	ini = " ";
 	fin = "}";
     }
-    
+
     /* advance b to end of string */
     b = b + strlen(b);
-#ifdef NAT_TRAVERSAL		    
+#ifdef NAT_TRAVERSAL
     {
 	char oa[ADDRTOT_BUF];
-	
+
 	strcpy(oa, "none");
 	if(!isanyaddr(&st->hidden_variables.st_nat_oa)) {
 	    addrtot(&st->hidden_variables.st_nat_oa, 0
@@ -857,11 +857,11 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 	ini = " ";
 	fin = "}";
     }
-    
+
     b = b + strlen(b);
     {
 	char oa[ADDRTOT_BUF+sizeof(":00000")];
-	
+
 	strcpy(oa, "none");
 	if(!isanyaddr(&st->hidden_variables.st_natd)) {
 	    char oa2[ADDRTOT_BUF];
@@ -877,19 +877,19 @@ void fmt_ipsec_sa_established(struct state *st, char *sadetails, int sad_len)
 	fin = "}";
     }
 #endif
-    
+
     /* advance b to end of string */
     b = b + strlen(b);
-    
+
     snprintf(b, sad_len-(b-sadetails)-1
 	     , "%sDPD=%s"
 	     , ini
 	     , st->hidden_variables.st_dpd_local ?
 	     "enabled" : "none");
-    
+
     ini = " ";
     fin = "}";
-    
+
     strcat(b, fin);
 }
 
@@ -901,11 +901,11 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     const char *authname;
     const char *integstr, *integname;
     char integname_tmp[20];
-    
+
     passert(st->st_oakley.encrypter != NULL);
     passert(st->st_oakley.prf_hasher != NULL);
     passert(st->st_oakley.group != NULL);
-    
+
     if(st->st_ikev2) {
 	authname="IKEv2";
 	integstr=" integ=";

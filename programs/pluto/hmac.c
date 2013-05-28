@@ -1,5 +1,5 @@
 /* hmac interface for pluto ciphers.
- * 
+ *
  * Copyright (C) 2006  Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009-2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Paul Wouters <paul@xelerance.com>
@@ -63,7 +63,7 @@ hmac_init(struct hmac_ctx *ctx,
 #ifdef HAVE_LIBNSS
     /* DBG(DBG_CRYPT, DBG_log("NSS: hmac init")); */
     SECStatus status;
-    PK11SymKey *symkey=NULL, *tkey1=NULL; 
+    PK11SymKey *symkey=NULL, *tkey1=NULL;
     /* PK11SymKey *tkey1=NULL; */
     unsigned int klen;
     chunk_t hmac_opad, hmac_ipad, hmac_pad;
@@ -75,14 +75,14 @@ hmac_init(struct hmac_ctx *ctx,
     hmac_ipad = hmac_pads(HMAC_IPAD,HMAC_BUFSIZE);
     hmac_pad  = hmac_pads(0x00,HMAC_BUFSIZE-klen);
 
-    if(klen > HMAC_BUFSIZE) 
+    if(klen > HMAC_BUFSIZE)
     {
 	tkey1 = PK11_Derive_osw(symkey, nss_key_derivation_mech(h)
 				, NULL, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
     }
     else
     {
-	tkey1 = symkey; 
+	tkey1 = symkey;
     }
 
     PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_CONCATENATE_BASE_AND_DATA
@@ -100,7 +100,7 @@ hmac_init(struct hmac_ctx *ctx,
 
     if(tkey1!=symkey) {
 	PK11_FreeSymKey(tkey1);
-    } 
+    }
     PK11_FreeSymKey(tkey2);
 
     freeanychunk(hmac_opad);
@@ -189,7 +189,7 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
     PR_ASSERT(status == SECSuccess);
     PR_ASSERT(outlen == ctx->hmac_digest_len);
     PK11_DestroyContext(ctx->ctx_nss, PR_TRUE);
-    ctx->ctx_nss = NULL;  
+    ctx->ctx_nss = NULL;
 
     ctx->ctx_nss = PK11_CreateDigestContext(nss_hash_oid(ctx->h));
     PR_ASSERT(ctx->ctx_nss!=NULL);
@@ -229,7 +229,7 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
 	case OAKLEY_SHA2_256:  mechanism = SEC_OID_SHA256; break;
 	case OAKLEY_SHA2_384:  mechanism = SEC_OID_SHA384; break;
 	case OAKLEY_SHA2_512:  mechanism = SEC_OID_SHA512; break;
-	default: DBG(DBG_CRYPT, DBG_log("NSS: key derivation mechanism not supported")); break; 
+	default: DBG(DBG_CRYPT, DBG_log("NSS: key derivation mechanism not supported")); break;
     }
     return mechanism;
 }
@@ -277,7 +277,7 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
 	CK_EXTRACT_PARAMS bs;
         chunk_t dkey_chunk;
 
-	if( ((mechanism == CKM_SHA256_KEY_DERIVATION) || 
+	if( ((mechanism == CKM_SHA256_KEY_DERIVATION) ||
 	     (mechanism == CKM_SHA384_KEY_DERIVATION)||
 	      (mechanism == CKM_SHA512_KEY_DERIVATION)) && (param == NULL) && (keysize ==0)) {
 
@@ -295,7 +295,7 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
 	status=PK11_DigestKey(ctx, base);
         PR_ASSERT(status == SECSuccess);
 	PK11_DigestFinal(ctx, dkey, &len, sizeof dkey);
-	PK11_DestroyContext(ctx, PR_TRUE);	
+	PK11_DestroyContext(ctx, PR_TRUE);
 
 	dkey_chunk.ptr = dkey;
 	dkey_chunk.len = len;
@@ -308,11 +308,11 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
         dkey_param.len = sizeof (bs);
         PK11SymKey *tkey2 = PK11_Derive(tkey1, CKM_EXTRACT_KEY_FROM_KEY, &dkey_param, target, operation, len);
         PR_ASSERT(tkey2!=NULL);
-	
+
 	if(tkey1!=NULL) {
         PK11_FreeSymKey(tkey1);
 	}
-	
+
 	return tkey2;
 
 	}
@@ -341,7 +341,7 @@ CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher)
 chunk_t hmac_pads(u_char val, unsigned int len)
 {
     chunk_t ret;
-    unsigned int i; 
+    unsigned int i;
 
     ret.len = len;
     ret.ptr = alloc_bytes(ret.len, "hmac_pad");

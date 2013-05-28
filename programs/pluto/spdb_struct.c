@@ -117,7 +117,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 
     if (!ai) {
 	DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
-	
+
 	return NULL;
     }
 
@@ -137,12 +137,12 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    struct db_trans *trans;
 	    struct db_prop  *prop;
 	    struct db_prop_conj *cprop;
-	    
+
 	    ealg = ike_info->ike_ealg;
 	    halg = ike_info->ike_halg;
 	    modp = ike_info->ike_modp;
 	    eklen= ike_info->ike_eklen;
-	    
+
 	    if (!ike_alg_enc_present(ealg)) {
 		DBG_log("oakley_alg_makedb() "
 			"ike enc ealg=%d not present",
@@ -156,12 +156,12 @@ oakley_alg_makedb(struct alg_info_ike *ai
 		continue;
 	    }
 	    enc_desc = ike_alg_get_encrypter(ealg);
-	    
+
 	    passert(enc_desc != NULL);
-	    if (eklen 
+	    if (eklen
 		&& (eklen < enc_desc->keyminlen
 		    || eklen >  enc_desc->keymaxlen))
-		
+
 		{
 		    DBG_log("ike_alg_db_new() "
 			    "ealg=%d (specified) keylen:%d, "
@@ -174,7 +174,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 			    );
 		    continue;
 		}
-	    
+
 	    /* okay copy the basic item, and modify it. */
 	    if(eklen > 0)
 	    {
@@ -195,13 +195,13 @@ oakley_alg_makedb(struct alg_info_ike *ai
 
 	    passert(emp_sp->prop_conj_cnt == 1);
 	    cprop = &emp_sp->prop_conjs[0];
-	    
+
 	    passert(cprop->prop_cnt == 1);
 	    prop = &cprop->props[0];
-	    
+
 	    passert(prop->trans_cnt == 1);
 	    trans = &prop->trans[0];
-	    
+
 	    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
 	    enc  = &trans->attrs[0];
 	    hash = &trans->attrs[1];
@@ -218,18 +218,18 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    if(ealg > 0) {
 		enc->val = ealg;
 	    }
-	    
+
 	    modp = ike_info->ike_modp;
 	    eklen= ike_info->ike_eklen;
-	    
+
 	    passert(hash->type.oakley == OAKLEY_HASH_ALGORITHM);
 	    if(halg > 0) {
 		hash->val = halg;
 	    }
-	    
+
 	    passert(auth->type.oakley == OAKLEY_AUTHENTICATION_METHOD);
 	    /* no setting for auth type for IKE */
-	    
+
 	    passert(grp->type.oakley  == OAKLEY_GROUP_DESCRIPTION);
 	    if(modp > 0) {
 		grp->val = modp;
@@ -261,7 +261,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    if(transcnt > 0) {
 		if(transcnt == 1) {
 		    loglog(RC_LOG_SERIOUS
-			   
+
 			   , "multiple transforms were set in aggressive mode. Only first one used.");
 		}
 
@@ -271,7 +271,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 		       , ike_info->ike_halg
 		       , ike_info->ike_modp
 		       , (long)ike_info->ike_eklen);
-	    } 
+	    }
 
 	} else {
             /*

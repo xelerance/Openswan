@@ -1055,7 +1055,6 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	/* FALL THROUGH ... */
 
     case STF_FAIL:
-	    
 	whack_log(RC_NOTIFICATION + md->note
 		  , "%s: %s"
 		  , from_state_name

@@ -1,8 +1,8 @@
 /* routines for state objects
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009,2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
@@ -196,7 +196,7 @@ new_state(void)
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
     st->st_whack_sock = NULL_FD;
-    
+
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
     anyaddr(AF_INET, &st->hidden_variables.st_natd);
 
@@ -354,6 +354,60 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
+/* PATRICK: I may have to uncomment the following code block: */
+//    if(st->st_ikev2)
+//    {
+//    /* child sa*/
+//    if(st->st_clonedfrom != 0)
+//    {
+//	DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+//	if(st->st_state == STATE_CHILDSA_DEL) {
+//		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+//	}
+//	else
+//	{
+//		/* Only send request if child sa is established
+//		 * otherwise continue with deletion
+//		 */
+//		if(IS_CHILD_SA_ESTABLISHED(st))
+//		{
+//		DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+//		//change_state(st, STATE_CHILDSA_DEL);
+//		send_delete(st);
+//		change_state(st, STATE_CHILDSA_DEL);
+//		/* actual deletion when we receive peer response*/
+//		goto delete_state_end;
+//		}
+//	}
+//    }
+//    else
+//    {
+//	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
+//	/* parent sa */
+//	if(st->st_state == STATE_IKESA_DEL)
+//	{
+//		DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+//	}
+//	else
+//	{
+//		/* Another check to verify if a secured
+//		 * INFORMATIONAL exchange can be sent or not
+//		 */
+//		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
+//			&& st->st_skey_er.ptr && st->st_skey_ar.ptr)
+//		{
+//		DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+//		//change_state(st, STATE_IKESA_DEL);
+//		send_delete(st);
+//		change_state(st, STATE_IKESA_DEL);
+//		/* actual deletion when we receive peer response*/
+//                goto delete_state_end;
+//		}
+//	}
+//
+//    }
+//    }
+//
     DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
 
@@ -400,7 +454,7 @@ delete_state(struct state *st)
 	delete_ipsec_sa(st, FALSE);
     else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
 	delete_ipsec_sa(st, TRUE);
- 
+
     if (c->newest_ipsec_sa == st->st_serialno)
 	c->newest_ipsec_sa = SOS_NOBODY;
 
@@ -448,7 +502,7 @@ delete_state(struct state *st)
 	SECKEY_DestroyPublicKey(pubk);
 	freeanychunk(st->pubk);
 	memcpy(&privk,st->st_sec_chunk.ptr,st->st_sec_chunk.len);
-	SECKEY_DestroyPrivateKey(privk);        
+	SECKEY_DestroyPrivateKey(privk);
 #else
 	mpz_clear(&(st->st_sec));
 #endif
@@ -612,7 +666,7 @@ static bool same_phase1_sa_relations(struct state *this
     so_serial_t parent_sa = *pparent_sa;
 
     return (this->st_connection == c
-	    || (parent_sa != SOS_NOBODY 
+	    || (parent_sa != SOS_NOBODY
 		&& this->st_clonedfrom == parent_sa));
 }
 
@@ -620,7 +674,7 @@ static bool same_phase1_sa_relations(struct state *this
  * Delete all states that have somehow not ben deleted yet
  * but using interfaces that are going down
  */
- 
+
 void delete_states_dead_interfaces(void)
 {
     struct state *st = NULL;
@@ -812,13 +866,13 @@ delete_states_by_peer(ip_address *peer)
 	/* For each hash chain... */
 	for (i = 0; i < STATE_TABLE_SIZE; i++) {
 	    struct state *st;
-		
+
 	    /* For each state in the hash chain... */
 	    for (st = statetable[i]; st != NULL; ) {
 		struct state *this = st;
 		struct connection *c = this->st_connection;
 		char ra[ADDRTOT_BUF];
-		
+
 		st = st->st_hashchain_next;	/* before this is deleted */
 
 		addrtot(&this->st_remoteaddr, 0, ra, sizeof(ra));
@@ -826,7 +880,7 @@ delete_states_by_peer(ip_address *peer)
 
 		if(sameaddr(&this->st_remoteaddr, peer)) {
 		    if(ph1==0 && (IS_PHASE1(this->st_state) || IS_PHASE15(st->st_state ))) {
-			
+
 			whack_log(RC_COMMENT
 				  , "peer %s for connection %s crashed, replacing"
 				  , peerstr
@@ -862,7 +916,7 @@ duplicate_state(struct state *st)
     st->st_outbound_time = now();
 
     nst = new_state();
-    
+
     memcpy(nst->st_icookie, st->st_icookie, COOKIE_SIZE);
     memcpy(nst->st_rcookie, st->st_rcookie, COOKIE_SIZE);
     nst->st_connection = st->st_connection;
@@ -1273,7 +1327,7 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 
     for (i = 0; i < STATE_TABLE_SIZE; i++) {
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
-	    if (LHAS(ok_states, st->st_state) 
+	    if (LHAS(ok_states, st->st_state)
 		&& c->host_pair == st->st_connection->host_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
 		&& (best == NULL
@@ -1371,7 +1425,7 @@ void fmt_state(struct state *st, const time_t n
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; nodpd");
 	}
     }
-    
+
     if(st->st_calculating) {
 	idlestr = "crypto_calculating";
     } else if(st->st_suspended_md) {
@@ -1379,7 +1433,7 @@ void fmt_state(struct state *st, const time_t n
     } else {
 	idlestr = "idle";
     }
-	
+
     snprintf(state_buf, state_buf_len
 	     , "#%lu: \"%s\"%s:%u %s (%s); %s in %lds%s%s%s%s; %s; %s"
 	     , st->st_serialno
@@ -1657,7 +1711,7 @@ startover:
 }
 
 
-/* 
+/*
  * Immediately schedule a replace event for all states for a peer.
  */
 void replace_states_by_peer(ip_address *peer)

@@ -78,7 +78,7 @@ static void
 find_next_free_mast(void)
 {
     int mastno;
-    
+
     for(mastno=0; mastno<MAX_MAST; mastno++) {
 	if(mastdevice[mastno]==MAST_AVAIL) {
 	    next_free_mast_device=mastno;
@@ -107,12 +107,12 @@ recalculate_mast_device_list(struct raw_iface *rifaces)
     for(mastno=0; mastno<MAX_MAST; mastno++) {
 	mastdevice[mastno]=MAST_OPEN;
     }
-    
+
     for(ifp=rifaces; ifp!=NULL; ifp=ifp->next) {
 	/* look for virtual (mast*) interface */
 	if (strncmp(ifp->name, MASTDEVPREFIX, sizeof(MASTDEVPREFIX)-1))
 	    continue;
-	
+
 	if(sscanf(ifp->name, "mast%d", &mastno)==1) {
 	    openswan_log("found %s device already present", ifp->name);
 	    mastdevice[mastno]=MAST_AVAIL;
@@ -138,7 +138,7 @@ allocate_mast_device(void)
     if(next_free_mast_device == -1) {
 	find_next_free_mast();
     }
-	
+
     if(next_free_mast_device != -1) {
 	next = next_free_mast_device;
 	next_free_mast_device = -1;
@@ -174,13 +174,13 @@ init_useful_mast(ip_address addr UNUSED, char *vname)
     /* now configure an IP address on the mast number */
     {
 	char cmd[512];
-	
+
 	/* 1452 gives us enough space for IP + UDP + typical ESP */
 	snprintf(cmd, sizeof(cmd)
 		 , "ifconfig %s inet %s netmask 255.255.255.255 mtu 1452"
 		 , vname
 		 , ip_str(&addr));
-	
+
 	invoke_command("plumb","", cmd);
     }
 #endif
@@ -218,8 +218,8 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
     if(useful_mastno >= 0) {
 	sprintf(useful_mast_name, "mast%d", useful_mastno);
     }
-	
-    /* 
+
+    /*
      * For each real interface...
      */
     for (ifp = rifaces; ifp != NULL; ifp = ifp->next)
@@ -228,7 +228,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 	if (strncmp(ifp->name, IPSECDEVPREFIX, sizeof(IPSECDEVPREFIX)-1) == 0)
 	    continue;
 
-	/* ignore if virtual (mast*) interface */ 
+	/* ignore if virtual (mast*) interface */
 	if (strncmp(ifp->name, MASTDEVPREFIX, sizeof(MASTDEVPREFIX)-1) == 0) {
 		found_mast=TRUE;
 		continue;
@@ -282,18 +282,18 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 #endif
 		    break;
 		}
-		
+
 		/* try again */
 		q = q->next;
-	    } 
+	    }
 
 	    /* search is over if at end of list */
-	    if (newone) 
+	    if (newone)
 	    {
 		/* matches nothing -- create a new entry */
 		char *vname;
 		int fd;
-		
+
 		if(useful_mastno == -1) {
 		    useful_mastno=init_useful_mast(ifp->addr, useful_mast_name);
 		}
@@ -301,47 +301,47 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		vname = clone_str(useful_mast_name
 				  , "virtual device name mast");
 		fd = create_socket(ifp, vname, pluto_port);
-		
-		if (fd < 0) 
+
+		if (fd < 0)
 		    break;
-		
+
 		q = alloc_thing(struct iface_port, "struct iface_port");
 		id = alloc_thing(struct iface_dev, "struct iface_dev");
 		memset(q, 0, sizeof(*q));
 		memset(id,0, sizeof(*id));
 		if(firstq == NULL) firstq=q;
-		
+
 		LIST_INSERT_HEAD(&interface_dev, id, id_entry);
-		
+
 		q->fd = fd;
 		q->ip_dev = id;
 		id->id_rname = clone_str(ifp->name, "real device name");
 		id->id_vname = vname;
 		id->id_count++;
-		
+
 		q->ip_addr = ifp->addr;
 		q->change = IFN_ADD;
 		q->port = pluto_port;
 		q->ike_float = FALSE;
-		
+
 #ifdef NAT_TRAVERSAL
 		if (nat_traversal_support_non_ike && addrtypeof(&ifp->addr) == AF_INET)
 		{
 		    nat_traversal_espinudp_socket(fd, "IPv4", ESPINUDP_WITH_NON_IKE);
 		}
 #endif
-		
+
 		/* done with primary interface */
 		q->next = interfaces;
 		interfaces = q;
-		
+
 		openswan_log("adding interface %s/%s %s:%d (fd=%d)"
 			     , q->ip_dev->id_vname
 			     , q->ip_dev->id_rname
 			     , ip_str(&q->ip_addr)
 			     , q->port, q->fd);
-		
-		
+
+
 #ifdef NAT_TRAVERSAL
 		/*
 		 * right now, we do not support NAT-T on IPv6, because
@@ -363,14 +363,14 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		    q = alloc_thing(struct iface_port, "struct iface_port");
 		    q->ip_dev = id;
 		    id->id_count++;
-		    
+
 		    q->ip_addr = ifp->addr;
 		    setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 		    q->port = NAT_T_IKE_FLOAT_PORT;
 		    q->fd = fd;
 		    q->change = IFN_ADD;
 		    q->ike_float = TRUE;
-		    
+
 		    q->next = interfaces;
 		    interfaces = q;
 		    openswan_log("adding interface %s/%s %s:%d (fd=%d)"
@@ -451,7 +451,7 @@ mast_do_command(struct connection *c, struct spd_route *sr
 		       "%s"        /* actual script */
 		       , ref
 		       , refhim
-		       , (c->policy & POLICY_SAREF_TRACK_CONNTRACK) ? "conntrack" : 
+		       , (c->policy & POLICY_SAREF_TRACK_CONNTRACK) ? "conntrack" :
 			( (c->policy & POLICY_SAREF_TRACK) ? "yes" : "no")
 		       , verb, verb_suffix
 		       , common_shell_out_str
@@ -597,7 +597,7 @@ mast_sag_eroute(struct state *st, struct spd_route *sr
 
     case ERO_ADD:
 	return mast_do_command(st->st_connection, sr, "spdadd", st);
-	
+
     case ERO_DELETE:
 	return mast_do_command(st->st_connection, sr, "spddel", st);
 
@@ -614,7 +614,7 @@ const struct kernel_ops mast_kernel_ops = {
     type: USE_MASTKLIPS,
     async_fdp: &pfkeyfd,
     replay_window: 64,
-    
+
     pfkey_register: klips_pfkey_register,
     pfkey_register_response: klips_pfkey_register_response,
     process_queue: pfkey_dequeue,

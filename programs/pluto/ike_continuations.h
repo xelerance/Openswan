@@ -1,4 +1,4 @@
-/* 
+/*
  * continuations for using the asynchronous crypto routines.
  *
  * Copyright (C) 2007 Michael C. Richardson <mcr@xelerance.com>
@@ -16,7 +16,7 @@
  */
 
 #ifndef _IKE_CONTINUATIONS_
-#define _IKE_CONTINUATIONS_ 
+#define _IKE_CONTINUATIONS_
 
 struct ke_continuation {
     struct pluto_crypto_req_cont ke_pcrc;

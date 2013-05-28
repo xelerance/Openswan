@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper function - calculate DH
  * Copyright (C) 2007-2008 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
@@ -163,7 +163,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
                          , osw_return_nss_password_file_info());
     PR_ASSERT(dhshared!=NULL);
 
-    dhshared_len = PK11_GetKeyLength(dhshared); 
+    dhshared_len = PK11_GetKeyLength(dhshared);
     if( group->bytes > dhshared_len ) {
 	DBG(DBG_CRYPT, DBG_log("Dropped %d leading zeros", group->bytes-dhshared_len));
 	chunk_t zeros;
@@ -241,7 +241,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 
     gettimeofday(&tv1, NULL);
     tv_diff=(tv1.tv_sec  - tv0.tv_sec) * 1000000 + (tv1.tv_usec - tv0.tv_usec);
-    DBG(DBG_CRYPT, 
+    DBG(DBG_CRYPT,
 	DBG_log("calc_dh_shared(): time elapsed (%s): %ld usec"
 		, enum_show(&oakley_group_names, group->group)
 		, tv_diff);
@@ -383,7 +383,7 @@ skeyid_preshared(const chunk_t pss
 	DBG_log("Skey inputs (PSK+NI+NR)");
 	DBG_dump_chunk("ni: ", ni);
 	DBG_dump_chunk("nr: ", nr));
-    
+
     hmac_init_chunk(&ctx, hasher, pss);
     hmac_update_chunk(&ctx, ni);
     hmac_update_chunk(&ctx, nr);
@@ -419,7 +419,7 @@ skeyid_digisig(const chunk_t ni
 #ifdef HAVE_LIBNSS
     memcpy(&shared, shared_chunk.ptr, shared_chunk.len);
 #endif
-    
+
     /* We need to hmac_init with the concatenation of Ni_b and Nr_b,
      * so we have to build a temporary concatentation.
      */
@@ -498,7 +498,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     oakley_auth_t auth = skq->auth;
     oakley_hash_t hash = skq->prf_hash;
     const struct hash_desc *hasher = crypto_get_hasher(hash);
-    chunk_t pss;  
+    chunk_t pss;
     chunk_t ni;
     chunk_t nr;
     chunk_t gi;
@@ -506,7 +506,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     chunk_t icookie;
     chunk_t rcookie;
 #ifdef HAVE_LIBNSS
-    PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key; 
+    PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key;
     /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
     const struct encrypt_desc *encrypter = skq->encrypter;
 #endif
@@ -716,7 +716,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
      * using the PRF.
      * See RFC 2409 "IKE" Appendix B*/
 
-      CK_EXTRACT_PARAMS bitstart = 0; 
+      CK_EXTRACT_PARAMS bitstart = 0;
       param1.data = (unsigned char*)&bitstart;
       param1.len = sizeof (bitstart);
 
@@ -1035,7 +1035,7 @@ void calc_dh_iv(struct pluto_crypto_req *r)
     struct pcr_skeyid_q dhq;
     const struct oakley_group_desc *group;
     chunk_t  shared, g, ltsecret;
-    chunk_t  skeyid, skeyid_d, skeyid_a, skeyid_e; 
+    chunk_t  skeyid, skeyid_d, skeyid_a, skeyid_e;
     chunk_t  new_iv, enc_key;
 #ifdef HAVE_LIBNSS
     chunk_t pubk;
@@ -1082,7 +1082,7 @@ void calc_dh_iv(struct pluto_crypto_req *r)
 
     DBG(DBG_CRYPT,
 	DBG_dump_chunk("peer's g: ", g));
-	
+
 
 #ifndef HAVE_LIBNSS
     DBG(DBG_CRYPT,
@@ -1191,7 +1191,7 @@ void calc_dh(struct pluto_crypto_req *r)
     return;
 }
 
-/* 
+/*
  * IKEv2 - RFC4306 SKEYSEED - calculation.
  */
 
@@ -1238,7 +1238,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(hasher);
 
 
-    const struct encrypt_desc *encrypter = skq->encrypter; 
+    const struct encrypt_desc *encrypter = skq->encrypter;
     passert(encrypter);
 
 
@@ -1301,7 +1301,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	const struct hash_desc *integ_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG, skq->integ_hash, 0);
 #ifdef HAVE_LIBNSS
        int skd_bytes = hasher->hash_key_size;
-       int skp_bytes = hasher->hash_key_size;       
+       int skp_bytes = hasher->hash_key_size;
 #else
        int skd_bytes = vpss.prf_hasher->hash_key_size;
        int skp_bytes = vpss.prf_hasher->hash_key_size;
@@ -1348,7 +1348,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
 			, hmac_ipad, CKM_CONCATENATE_BASE_AND_KEY, CKA_DERIVE, 0);
 		PR_ASSERT(tkey2!=NULL);
-	
+
 
 		keyhandle=PK11_GetSymKeyHandle(tkey11);
 		param.data=(unsigned char*)&keyhandle;
@@ -1363,11 +1363,11 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		PK11_FreeSymKey(tkey2);
 		PK11_FreeSymKey(tkey11);
 		PK11_FreeSymKey(tkey12);
-	   }       
+	   }
 
 	   PR_ASSERT(tkey3!=NULL);
 
-       
+
 	   PK11SymKey *tkey4 = pk11_derive_wrapper_osw(tkey3, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.nr, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 	   PR_ASSERT(tkey4!=NULL);
@@ -1485,42 +1485,42 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 
 	DBG(DBG_CRYPT, DBG_log("NSS ikev2: finished computing individual keys for IKEv2 SA\n"));
-	PK11_FreeSymKey(finalkey); 
+	PK11_FreeSymKey(finalkey);
 
 
 	SK_d->len = sizeof(PK11SymKey *);
 	SK_d->ptr = alloc_bytes(SK_d->len, "SK_d");
-	memcpy(SK_d->ptr, &SK_d_k, SK_d->len);   
+	memcpy(SK_d->ptr, &SK_d_k, SK_d->len);
 
 
 	SK_ai->len = sizeof(PK11SymKey *);
 	SK_ai->ptr = alloc_bytes(SK_ai->len, "SK_ai");
-	memcpy(SK_ai->ptr, &SK_ai_k, SK_ai->len);   
+	memcpy(SK_ai->ptr, &SK_ai_k, SK_ai->len);
 
 
 	SK_ar->len = sizeof(PK11SymKey *);
 	SK_ar->ptr = alloc_bytes(SK_ar->len, "SK_ar");
-	memcpy(SK_ar->ptr, &SK_ar_k, SK_ar->len);   
+	memcpy(SK_ar->ptr, &SK_ar_k, SK_ar->len);
 
 
 	SK_ei->len = sizeof(PK11SymKey *);
 	SK_ei->ptr = alloc_bytes(SK_ei->len, "SK_ei");
-	memcpy(SK_ei->ptr, &SK_ei_k, SK_ei->len);   
+	memcpy(SK_ei->ptr, &SK_ei_k, SK_ei->len);
 
 
 	SK_er->len = sizeof(PK11SymKey *);
 	SK_er->ptr = alloc_bytes(SK_er->len, "SK_er");
-	memcpy(SK_er->ptr, &SK_er_k, SK_er->len);   
+	memcpy(SK_er->ptr, &SK_er_k, SK_er->len);
 
 
 	SK_pi->len = sizeof(PK11SymKey *);
 	SK_pi->ptr = alloc_bytes(SK_pi->len, "SK_pi");
-	memcpy(SK_pi->ptr, &SK_pi_k, SK_pi->len);   
+	memcpy(SK_pi->ptr, &SK_pi_k, SK_pi->len);
 
 
 	SK_pr->len = sizeof(PK11SymKey *);
 	SK_pr->ptr = alloc_bytes(SK_pr->len, "SK_pr");
-	memcpy(SK_pr->ptr, &SK_pr_k, SK_pr->len);   
+	memcpy(SK_pr->ptr, &SK_pr_k, SK_pr->len);
 
 
 	freeanychunk(hmac_opad);
@@ -1610,7 +1610,7 @@ void calc_dh_v2(struct pluto_crypto_req *r)
 #else
     calc_dh_shared(&shared, g, ltsecret, group, pubk);
 #endif
-    
+
     memset(&skeyseed,  0, sizeof(skeyseed));
     memset(&SK_d,      0, sizeof(SK_d));
     memset(&SK_ai,     0, sizeof(SK_ai));

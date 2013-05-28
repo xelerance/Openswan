@@ -87,7 +87,7 @@ terminate_a_connection(struct connection *c, void *arg UNUSED)
 
     return 1;
 }
-    
+
 
 void
 terminate_connection(const char *nm)
@@ -112,7 +112,7 @@ terminate_connection(const char *nm)
 	    }
 	}
 	return;
-    } 
+    }
 
     loglog(RC_COMMENT, "terminating all conns with alias='%s'\n", nm);
     count = foreach_connection_by_alias(nm, terminate_a_connection, NULL);
