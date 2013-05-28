@@ -275,7 +275,7 @@ bool
 ikev2_perfect_match_ts(struct traffic_selector *tsi
                 ,struct traffic_selector *tsr
                 , unsigned int tsi_n
-                , unsigned int tsr_n
+                , unsigned int tsr_n UNUSED
                 , struct connection *c
                 , enum phase1_role role)
 {
@@ -317,7 +317,7 @@ ikev2_perfect_match_ts(struct traffic_selector *tsi
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
                               , pb_stream *outpbs
                               , enum phase1_role role
-                              , struct connection *c0
+                              , struct connection *c0 UNUSED
                               , lset_t policy UNUSED)
 {
     struct state *st = md->st;
@@ -521,7 +521,9 @@ unsigned int i;
 struct end *ei, *er;
 int  bests=0;
 struct connection *bestc=NULL;
+#if 0
 bool specific_first_ts = FALSE;
+#endif
 
 
         hp = find_host_pair(&c->spd.this.host_addr
@@ -547,16 +549,18 @@ bool specific_first_ts = FALSE;
                 return FALSE;
         }
 
+#if 0
         /* check if there is any specific first traffic selector */
         if( addrcmp(&tsi[0].low, &tsi[0].high)==0 && tsi[0].startport == tsi[0].endport &&  tsi[0].ipprotoid!=0
                 && addrcmp(&tsr[0].low, &tsr[0].high)==0 && tsr[0].startport ==  tsr[0].endport &&  tsr[0].ipprotoid!=0) {
                 specific_first_ts = TRUE;
         }
 
-        /*if(!specific_first_ts && (tsi_n >= 2 || tsr_n >= 2) )
+        if(!specific_first_ts && (tsi_n >= 2 || tsr_n >= 2) )
         {
                 return FALSE;
-        }*/
+        }
+#endif
 
         for (d = hp->connections; d != NULL; d = d->hp_next)
         {
