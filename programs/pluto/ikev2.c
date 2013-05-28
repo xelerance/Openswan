@@ -935,8 +935,8 @@ void complete_v2_state_transition(struct msg_digest **mdp
      * (below) to let the peer know why we've rejected the request.
      */
     if(st) {
-        from_state_name = enum_name(&state_names, st->st_state);
         from_state   = st->st_state;
+        from_state_name = enum_name(&state_names, from_state);
     } else {
         from_state_name = "no-state";
     }

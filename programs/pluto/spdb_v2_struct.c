@@ -934,7 +934,7 @@ ikev2_parse_parent_sa_body(
     const struct ikev2_sa *sa_prop UNUSED, /* header of input SA Payload */
     pb_stream *r_sa_pbs,	    /* if non-NULL, where to emit winning SA */
     struct state *st,  	            /* current state object */
-    bool selection                 /* if this SA is a selection, only one
+    bool selection UNUSED           /* if this SA is a selection, only one
 				     * tranform can appear. */
     )
 {
@@ -1391,7 +1391,7 @@ ikev2_parse_child_sa_body(
      */
     ta.integ_hash  = itl->integ_transforms[itl->integ_i];
 
-    /* here we obtain auth value for esp, 
+    /* here we obtain auth value for esp,
      * but loosse what is correct to be sent in the propoasl
      * so preserve the winning proposal.
      */
