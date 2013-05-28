@@ -82,13 +82,13 @@ alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 	return AUTH_ALGORITHM_HMAC_MD5;
     case IKEv2_AUTH_HMAC_SHA1_96:
 	return AUTH_ALGORITHM_HMAC_SHA1;
-    case IKEv2_AUTH_HMAC_SHA2_256_128: 
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
 	return AUTH_ALGORITHM_HMAC_SHA2_256;
     case IKEv2_AUTH_HMAC_SHA2_256_128_TRUNCBUG:
 	return AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
-    case IKEv2_AUTH_HMAC_SHA2_384_192: 
+    case IKEv2_AUTH_HMAC_SHA2_384_192:
 	return AUTH_ALGORITHM_HMAC_SHA2_256;
-    case IKEv2_AUTH_HMAC_SHA2_512_256: 
+    case IKEv2_AUTH_HMAC_SHA2_512_256:
 	return AUTH_ALGORITHM_HMAC_SHA2_256;
 
     /* invalid or not yet supported */
@@ -235,13 +235,13 @@ out:
 	return ret;
 }
 
-void 
+void
 alg_info_free(struct alg_info *alg_info) {
 	pfreeany(alg_info);
 }
 
-/*	
- *	Raw add routine: only checks for no duplicates		
+/*
+ *	Raw add routine: only checks for no duplicates
  */
 static void
 __alg_info_esp_add (struct alg_info_esp *alg_info
@@ -272,7 +272,7 @@ __alg_info_esp_add (struct alg_info_esp *alg_info
 				ealg_id, aalg_id, alg_info->alg_info_cnt));
 }
 
-/*	
+/*
  *	Add ESP alg info _with_ logic (policy):
  */
 static void
@@ -284,7 +284,7 @@ alg_info_esp_add (struct alg_info *alg_info,
 	/*	Policy: default to 3DES */
 	if (ealg_id==0)
 		ealg_id=ESP_3DES;
-	
+
 	if (ealg_id>0) {
 
 	    if(aalg_id > 0 ||
@@ -309,7 +309,7 @@ alg_info_esp_add (struct alg_info *alg_info,
 	}
 }
 
-/*	
+/*
  *	Add AH alg info _with_ logic (policy):
  */
 static void
@@ -341,7 +341,7 @@ static const char *parser_state_esp_names[] = {
 	"ST_INI",
 	"ST_INI_AA",
 	"ST_EA",
-	"ST_EA_END",	
+	"ST_EA_END",
 	"ST_EK",
 	"ST_EK_END",
 	"ST_AA",
@@ -364,10 +364,10 @@ static inline void parser_set_state(struct parser_context *p_ctx, enum parser_st
 		p_ctx->old_state=p_ctx->state;
 		p_ctx->state=state;
 	}
-	
+
 }
 
-static int 
+static int
 parser_machine(struct parser_context *p_ctx)
 {
 	int ch=p_ctx->ch;
@@ -383,7 +383,7 @@ parser_machine(struct parser_context *p_ctx)
 	    case ST_EA:
 	    case ST_EK:
 	    case ST_AA:
-	    case ST_AK: 
+	    case ST_AK:
 	    case ST_MODP:
 	    case ST_FLAG_STRICT:
 		{
@@ -484,7 +484,7 @@ parser_machine(struct parser_context *p_ctx)
                 *(p_ctx->aalg_str++)=0;
                 parser_set_state(p_ctx, ST_AK_END);
                 break;
-            }	    
+            }
 	    if (isalnum(ch) || ch=='_') {
 		*(p_ctx->aalg_str++)=ch;
 		break;
@@ -539,7 +539,7 @@ parser_machine(struct parser_context *p_ctx)
 	    }
 	    p_ctx->err="Flags character(s) must be at end of whole string";
 	    goto err;
-	    
+
 	    /* XXX */
 	case ST_END:
 	case ST_EOF:
@@ -554,7 +554,7 @@ parser_machine(struct parser_context *p_ctx)
 	return ST_ERR;
 }
 
-/*	
+/*
  *	Must be called for each "new" char, with new
  *	character in ctx.ch
  */
@@ -570,13 +570,13 @@ parser_init_esp(struct parser_context *p_ctx)
     p_ctx->ealg_permit = TRUE;
     p_ctx->aalg_permit = TRUE;
     p_ctx->state=ST_INI;
-    
+
     p_ctx->ealg_getbyname=ealg_getbyname_esp;
     p_ctx->aalg_getbyname=aalg_getbyname_esp;
 
 }
 
-/*	
+/*
  *	Must be called for each "new" char, with new
  *	character in ctx.ch
  */
@@ -592,7 +592,7 @@ parser_init_ah(struct parser_context *p_ctx)
     p_ctx->aalg_permit = TRUE;
     p_ctx->modp_str=p_ctx->modp_buf;
     p_ctx->state=ST_INI_AA;
-    
+
     p_ctx->ealg_getbyname=NULL;
     p_ctx->aalg_getbyname=aalg_getbyname_esp;
 
@@ -763,7 +763,7 @@ alg_info_parse_str (struct alg_info *alg_info
 			 ctx.err,
 			 (int)(ptr-alg_str-1), alg_str ,
 			 parser_state_name_esp(ctx.old_state) );
-		
+
 		goto err;
 	    default:
 		if (!ctx.ch) break;
@@ -785,9 +785,9 @@ alg_info_discover_pfsgroup_hack(struct alg_info_esp *aie
     char *pfs_name;
     static char err_buf[256];
     int ret;
-    
+
     pfs_name=index(esp_buf, ';');
-    
+
     if(pfs_name) {
 	*pfs_name='\0';
 	pfs_name++;
@@ -855,7 +855,7 @@ alg_info_esp_create_from_str (const char *alg_str
 	    alg_info_esp=NULL;
 	}
     return alg_info_esp;
-    
+
 }
 
 struct alg_info_esp *
@@ -900,7 +900,7 @@ alg_info_ah_create_from_str (const char *alg_str
  * 	several connections instances,
  * 	handle free() with ref_cnts
  */
-void 
+void
 alg_info_addref(struct alg_info *alg_info)
 {
     if (alg_info != NULL) {
@@ -948,7 +948,7 @@ alg_info_snprint(char *buf, int buflen
     int cnt;
     ptr=buf;
     switch(alg_info->alg_info_protoid) {
-    case PROTO_IPSEC_ESP: 
+    case PROTO_IPSEC_ESP:
 	{
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
@@ -1099,7 +1099,7 @@ alg_info_snprint(char *buf, int buflen
 
  out:
     passert(buflen >= 0);
-    
+
     return ptr-buf;
 }
 

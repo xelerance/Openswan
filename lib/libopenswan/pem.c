@@ -220,7 +220,7 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
 #ifdef HAVE_LIBNSS
-   do_3des_nss(blob->ptr, blob->len, 
+   do_3des_nss(blob->ptr, blob->len,
         key, DES_CBC_BLOCK_SIZE * 3 , (u_int8_t*)iv, FALSE);
 #else
     (void) oswcrypto.des_set_key(&deskey[0], ks[0]);
@@ -310,7 +310,7 @@ pem_decrypt(chunk_t *blob, chunk_t *iv
 		pfree(blob_copy.ptr);
 		return NULL;
 	    }
-	    
+
 	    /* blob is useless after wrong decryption, restore the original */
 	    pfree(blob->ptr);
 	    clonetochunk(*blob, blob_copy.ptr, blob_copy.len, "blob copy");

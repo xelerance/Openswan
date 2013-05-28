@@ -59,7 +59,7 @@
  */
 int
 file_select(
-#ifdef SCANDIR_HAS_CONST	    
+#ifdef SCANDIR_HAS_CONST
 	    const
 #endif
 	    struct dirent *entry)
@@ -67,7 +67,7 @@ file_select(
   return (entry->d_name[0] != '.' &&
 	  strcmp(entry->d_name, "CVS")!=0 &&
 	  strcmp(entry->d_name, "RCS")!=0);
-	  
+
 }
 
 /*
@@ -161,7 +161,7 @@ add_authcert(x509cert_t *cert, u_char auth_flags)
 		DBG_log("  authcert is already present and identical")
 	    )
 	    unlock_authcert_list("add_authcert");
-	    
+
 	    free_x509cert(cert);
 	    return;
 	}
@@ -174,7 +174,7 @@ add_authcert(x509cert_t *cert, u_char auth_flags)
 	    )
 	}
     }
-    
+
     /* add new authcert to chained list */
     cert->next = x509authcerts;
     x509authcerts = cert;
@@ -232,7 +232,7 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 	    }
 	    free(filelist);
 	}
-	
+
 	/* restore directory path */
 	if(chdir(save_dir) != 0) {
 	    char buff[256];
@@ -240,7 +240,7 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
 	    openswan_log("  chdir() ./ error: %s", buff);
 	}
     }
-   
+
 }
 
 /********************** auth cert lists **********/
@@ -302,7 +302,7 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
 	/* go one level up in the CA chain */
 	a = cacert->issuer;
     }
-    
+
     unlock_authcert_list("trusted_ca");
 
     DBG(DBG_X509 | DBG_CONTROLMORE
@@ -502,7 +502,7 @@ check_validity(const x509cert_t *cert, time_t *until)
 
     DBG(DBG_X509,
 	char tbuf[TIMETOA_BUF];
-	
+
 	DBG_log("  not before  : %s"
 		, timetoa(&cert->notBefore, TRUE, tbuf, sizeof(tbuf)));
 	DBG_log("  current time: %s", curtime);
@@ -519,7 +519,7 @@ check_validity(const x509cert_t *cert, time_t *until)
 			 , timetoa(&cert->notBefore, TRUE, tbuf, sizeof(tbuf))
 			 , curtime);
     }
-    
+
     if (current_time > cert->notAfter) {
 	char tbuf[TIMETOA_BUF];
 
@@ -534,7 +534,7 @@ check_validity(const x509cert_t *cert, time_t *until)
 	return NULL;
 }
 
-/* 
+/*
  * does our CA match one of the requested CAs?
  */
 bool
