@@ -235,18 +235,18 @@ load_cert(bool forcedtype, const char *filename,
 		    free_pgpcert(pgpcert);
 		    return FALSE;
 		}
-		
+
 	    } else {
 
 		x509cert_t *x509cert = alloc_thing(x509cert_t, "x509cert");
 		*x509cert = empty_x509cert;
-		
+
 		if (parse_x509cert(blob, 0, x509cert)) {
 		    cert->forced = FALSE;
 		    cert->type = CERT_X509_SIGNATURE;
 		    cert->u.x509 = x509cert;
 		    return TRUE;
-		    
+
 		} else {
 		    openswan_log("  error in X.509 certificate %s", filename);
 		    free_x509cert(x509cert);
@@ -262,7 +262,7 @@ load_cert(bool forcedtype, const char *filename,
 	 */
 	size_t bytes;
 	FILE *fd = fopen(filename, "r");
-	    
+
 	if(fd == NULL) {
 	    openswan_log("  can not open certificate-blob filename '%s': %s\n",
 			 filename, strerror(errno));
@@ -397,7 +397,7 @@ load_cert_from_nss(bool forcedtype, const char *nssHostCertNickName, int verbose
 }
 
 void
-load_authcerts_from_nss(const char *type, u_char auth_flags) 
+load_authcerts_from_nss(const char *type, u_char auth_flags)
 {
     CERTCertList *list = NULL;
     CERTCertListNode *node;

@@ -124,7 +124,7 @@ void *alloc_bytes1(size_t size, const char *name, int leak_detective)
     } else {
 	return p;
     }
-	
+
 }
 
 void

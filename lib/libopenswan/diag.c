@@ -1,6 +1,6 @@
 /*
  * Diagnostic builder
- * Copyright (C) 1998-2003  D. Hugh Redelmeier 
+ * Copyright (C) 1998-2003  D. Hugh Redelmeier
  * Copyright (C) 2004       Michael Richardson <mcr@xelerance.com>
  *
  * alg_info.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
@@ -47,7 +47,7 @@ char diag_space[sizeof(diag_space)];
  *
  * @param fmt String format
  * @param ... strings
- * @return err_t 
+ * @return err_t
  */
 err_t
 builddiag(const char *fmt, ...)

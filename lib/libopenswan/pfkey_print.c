@@ -1,12 +1,12 @@
 /*
  * RFC2367 PF_KEYv2 Key management API message parser
  * Copyright (C) 2003 Michael Richardson <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -26,7 +26,7 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 {
     int len;
     struct sadb_ext *se;
-    
+
     fprintf(out, "version=%d type=%d errno=%d satype=%d len=%d seq=%d pid=%d ",
 	    msg->sadb_msg_version,
 	    msg->sadb_msg_type,
@@ -35,24 +35,24 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	    msg->sadb_msg_len,
 	    (int)msg->sadb_msg_seq,
 	    (int)msg->sadb_msg_pid);
-    
+
     len = IPSEC_PFKEYv2_LEN(msg->sadb_msg_len);
     len -= sizeof(struct sadb_msg);
-    
+
     se = (struct sadb_ext *)(&msg[1]);
     while(len > sizeof(struct sadb_ext)) {
 	fprintf(out, "{ext=%d len=%d ", se->sadb_ext_type, se->sadb_ext_len);
-	
+
 	/* make sure that there is enough left */
 	if(IPSEC_PFKEYv2_LEN(se->sadb_ext_len) > len) {
 	    fprintf(out, "short-packet(%d<%d) ", len,
 		    (int)IPSEC_PFKEYv2_LEN(se->sadb_ext_len));
-	    
+
 	    /* force it to match */
 	    se->sadb_ext_len = IPSEC_PFKEYv2_WORDS(len);
 	    goto dumpbytes;
 	}
-	
+
 	/* okay, decode what we know */
 	switch(se->sadb_ext_type) {
 	case SADB_EXT_SA:
@@ -68,13 +68,13 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 		    (int)sa->sadb_x_sa_ref);
 	  }
 	  break;
-	  
-	case SADB_X_EXT_ADDRESS_SRC_FLOW: 
-	case SADB_X_EXT_ADDRESS_DST_FLOW: 
-	case SADB_X_EXT_ADDRESS_SRC_MASK: 
+
+	case SADB_X_EXT_ADDRESS_SRC_FLOW:
+	case SADB_X_EXT_ADDRESS_DST_FLOW:
+	case SADB_X_EXT_ADDRESS_SRC_MASK:
 	case SADB_X_EXT_ADDRESS_DST_MASK:
-	case SADB_EXT_ADDRESS_DST:        
-	case SADB_EXT_ADDRESS_SRC:        
+	case SADB_EXT_ADDRESS_DST:
+	case SADB_EXT_ADDRESS_SRC:
 	  {
 	    struct sadb_address *addr = (struct sadb_address *)se;
 	    int    alen = IPSEC_PFKEYv2_LEN(addr->sadb_address_len)-sizeof(struct sadb_address);
@@ -93,7 +93,7 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	    fprintf(out, " } ");
 	  }
 	  break;
-	  
+
 	case SADB_X_EXT_PROTOCOL:
 	  {
 	    struct sadb_protocol *sp = (struct sadb_protocol *)se;
@@ -104,9 +104,9 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	  }
 	  break;
 
-	case SADB_EXT_LIFETIME_CURRENT:   
-	case SADB_EXT_LIFETIME_HARD:      
-	case SADB_EXT_LIFETIME_SOFT:      
+	case SADB_EXT_LIFETIME_CURRENT:
+	case SADB_EXT_LIFETIME_HARD:
+	case SADB_EXT_LIFETIME_SOFT:
 	  {
 	    struct sadb_lifetime *life = (struct sadb_lifetime *)se;
 
@@ -119,34 +119,34 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 	    fprintf(out, " } ");
 	  }
 	  break;
-	  
-	  
+
+
 	case SADB_EXT_RESERVED:
-	case SADB_EXT_ADDRESS_PROXY:      
-	case SADB_EXT_KEY_AUTH:           
-	case SADB_EXT_KEY_ENCRYPT:        
-	case SADB_EXT_IDENTITY_SRC:       
-	case SADB_EXT_IDENTITY_DST:       
-	case SADB_EXT_SENSITIVITY:        
-	case SADB_EXT_PROPOSAL:           
-	case SADB_EXT_SUPPORTED_AUTH:     
-	case SADB_EXT_SUPPORTED_ENCRYPT:  
-	case SADB_EXT_SPIRANGE:           
+	case SADB_EXT_ADDRESS_PROXY:
+	case SADB_EXT_KEY_AUTH:
+	case SADB_EXT_KEY_ENCRYPT:
+	case SADB_EXT_IDENTITY_SRC:
+	case SADB_EXT_IDENTITY_DST:
+	case SADB_EXT_SENSITIVITY:
+	case SADB_EXT_PROPOSAL:
+	case SADB_EXT_SUPPORTED_AUTH:
+	case SADB_EXT_SUPPORTED_ENCRYPT:
+	case SADB_EXT_SPIRANGE:
 	case SADB_X_EXT_KMPRIVATE:
 	case SADB_X_EXT_SATYPE2:
 	case SADB_X_EXT_SA2:
-	case SADB_X_EXT_ADDRESS_DST2:     
+	case SADB_X_EXT_ADDRESS_DST2:
 	case SADB_X_EXT_DEBUG:
 	default:
 	  {
 	    unsigned int elen;
 	    unsigned char *bytes;
-	    
+
 	  dumpbytes:
-	    
+
 	    elen = IPSEC_PFKEYv2_LEN(se->sadb_ext_len)-sizeof(struct sadb_ext);
 	    bytes = (unsigned char *)&se[1];
-	    
+
 	    fprintf(out, "bytes=0x");
 	    while(elen > 0)
 	      {
@@ -176,4 +176,4 @@ pfkey_print(struct sadb_msg *msg, FILE *out)
 }
 
 
-    
+

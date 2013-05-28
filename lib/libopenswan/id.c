@@ -415,7 +415,7 @@ same_id(const struct id *a, const struct id *b)
 
     if (a->kind != b->kind)
 	return FALSE;
-    
+
     switch (a->kind)
     {
     case ID_NONE:
@@ -462,7 +462,7 @@ same_id(const struct id *a, const struct id *b)
 bool
 match_id(const struct id *a, const struct id *b, int *wildcards)
 {
-    
+
     bool match;
 
     if (b->kind == ID_NONE)
@@ -499,7 +499,7 @@ match_id(const struct id *a, const struct id *b, int *wildcards)
 	    DBG_log("   results  %s", match ? "matched" : "fail");
 	}
 	);
-    
+
     return match;
 }
 
@@ -524,13 +524,13 @@ id_count_wildcards(const struct id *id)
 	count = 0;
 	break;
     }
-	
+
     idtoa(id, idbuf, IDTOA_BUF);
     DBG(DBG_CONTROL,
 	DBG_log("counting wild cards for %s is %d"
 		, idbuf
 		, count));
-    
+
     return count;
 }
 

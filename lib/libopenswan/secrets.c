@@ -404,7 +404,7 @@ struct secret_byid {
     int            kind;
     struct pubkey *my_public_key;
 };
-    
+
 int osw_check_secret_byid(struct secret *secret,
 			  struct private_key_stuff *pks,
 			  void *uservoid)
@@ -427,8 +427,8 @@ int osw_check_secret_byid(struct secret *secret,
 
     return 1;
 }
-    
-				  
+
+
 
 struct secret *osw_find_secret_by_public_key(struct secret *secrets
 					     , struct pubkey *my_public_key
@@ -470,7 +470,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 
     for (s = secrets; s != NULL; s = s->next)
     {
-	DBG(DBG_CONTROLMORE, 
+	DBG(DBG_CONTROLMORE,
 	    DBG_log("line %d: key type %s(%s) to type %s\n"
 		    , s->secretlineno
 		    , enum_name(&ppk_names, kind)
@@ -530,7 +530,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    match |= match_default;
 	    }
 
-	    DBG(DBG_CONTROL, 
+	    DBG(DBG_CONTROL,
 		DBG_log("line %d: match=%d\n", s->secretlineno, match));
 
 	    switch (match)
@@ -592,7 +592,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 			DBG_log("best_match %d>%d best=%p (line=%d)"
 				, best_match, match
 				, s, s->secretlineno));
-		    
+
 		    /* this is the best match so far */
 		    best_match = match;
 		    best = s;
@@ -607,7 +607,7 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
     DBG(DBG_CONTROL,
 	DBG_log("concluding with best_match=%d best=%p (lineno=%d)"
 		, best_match, best, best? best->secretlineno : -1));
-		    
+
     return best;
 }
 
@@ -640,7 +640,7 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
 #ifdef HAVE_LIBNSS
 err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
 {
-    err_t ugh = NULL; 
+    err_t ugh = NULL;
     SECItem *certCKAID;
     SECKEYPublicKey *pubk;
     CERTCertificate *nssCert;
@@ -690,7 +690,7 @@ err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, ch
     /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);*/
     SECITEM_FreeItem(certCKAID, PR_TRUE);
 
-error2:    
+error2:
     /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: before freeing public key");*/
     SECKEY_DestroyPublicKey(pubk);
     /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nss_cert_file: end retune fine");*/
@@ -871,7 +871,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 static err_t osw_process_psk_secret(const struct secret *secrets, chunk_t *psk)
 {
     err_t ugh = NULL;
-    
+
     if (*flp->tok == '"' || *flp->tok == '\'')
     {
 	clonetochunk(*psk, flp->tok+1, flp->cur - flp->tok  - 2, "PSK");
@@ -907,7 +907,7 @@ static err_t osw_process_psk_secret(const struct secret *secrets, chunk_t *psk)
 static err_t osw_process_xauth_secret(const struct secret *secrets, chunk_t *xauth)
 {
     err_t ugh = NULL;
-    
+
     if (*flp->tok == '"' || *flp->tok == '\'')
     {
 	clonetochunk(*xauth, flp->tok+1, flp->cur - flp->tok  - 2, "XAUTH");
@@ -1164,7 +1164,7 @@ process_secret(struct secret **psecrets, int verbose,
 	     * set of IDs (ipv4 and ipv6)
 	     */
 	    struct id_list *idl, *idl2;
-	    
+
 	    idl = alloc_bytes(sizeof(*idl), "id list");
 	    idl->next = NULL;
 	    idl->id = empty_id;
@@ -1287,7 +1287,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		/* an id
 		 * See RFC2407 IPsec Domain of Interpretation 4.6.2
 		 */
-		
+
 		if (tokeq("%any"))
 		{
 		    id = empty_id;
@@ -1304,7 +1304,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		{
 		    ugh = atoid(flp->tok, &id, FALSE);
 		}
-		
+
 		if (ugh != NULL)
 		{
 		    loglog(RC_LOG_SERIOUS
@@ -1316,7 +1316,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		    struct id_list *i = alloc_thing(struct id_list
 						    , "id_list");
 		    char idb[IDTOA_BUF];
-		    
+
 		    i->id = id;
 		    unshare_id_content(&i->id);
 		    i->next = s->ids;
@@ -1416,7 +1416,7 @@ void
 osw_free_preshared_secrets(struct secret **psecrets)
 {
     lock_certs_and_keys("free_preshared_secrets");
-    
+
     if (*psecrets != NULL)
     {
 	struct secret *s, *ns;
@@ -1458,7 +1458,7 @@ osw_free_preshared_secrets(struct secret **psecrets)
 	}
 	*psecrets = NULL;
     }
-    
+
     unlock_certs_and_keys("free_preshard_secrets");
 }
 
@@ -1492,7 +1492,7 @@ unreference_key(struct pubkey **pkp)
     DBG(DBG_CONTROLMORE,
 	{
 	    char b[IDTOA_BUF];
-	    
+
 	    idtoa(&pk->id, b, sizeof(b));
 	    DBG_log("unreference key: %p %s cnt %d--", pk, b, pk->refcnt);
 	}
@@ -1612,7 +1612,7 @@ void
 install_public_key(struct pubkey *pk, struct pubkey_list **head)
 {
     struct pubkey_list *p = alloc_thing(struct pubkey_list, "pubkey entry");
-    
+
     unshare_id_content(&pk->id);
 
     /* copy issuer dn */

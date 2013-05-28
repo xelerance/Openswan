@@ -1,12 +1,12 @@
 /*
  * more minor utilities for mask length calculations for IKEv2
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -85,7 +85,7 @@ int ikev2_calc_iprangediff(ip_address low, ip_address high)
 	/* need to swap! */
 	t=hp; hp=lp; lp=t;
     }
-    
+
     for(i=n-1; i>=0; i--) {
 	int val=hp[i]-lp[i]-carry;
 	if(val < 0) {
@@ -237,4 +237,4 @@ regress()
  * c-style: pluto
  * End:
  */
- 
+
