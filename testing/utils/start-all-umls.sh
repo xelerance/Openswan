@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #
 # configuration for this file has moved to $OPENSWANSRCDIR/umlsetup.sh
 # By default, that file does not exist. A sample is at
@@ -12,7 +12,7 @@ then
     echo No umlsetup.sh. Please read instructions in umlsetup-sample.sh.
     exit 1
 fi
-	
+
 export OPENSWANSRCDIR
 . $OPENSWANSRCDIR/umlsetup.sh
 

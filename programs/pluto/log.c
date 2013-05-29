@@ -98,7 +98,7 @@ char debug_prefix = '|';
  * Is used by pluto_helpers in their process-title.
  * could be used by debug routines as well, but is not yet.
  */
-const char *pluto_ifn_inst = "";  
+const char *pluto_ifn_inst = "";
 
 /* from sys/queue.h -> NOW private sysdep.h. */
 static CIRCLEQ_HEAD(,connection) perpeer_list;
@@ -429,7 +429,7 @@ openswan_log(const char *message, ...)
 	peerlog("", m);
 
     whack_log(RC_LOG, "~%s", m);
-    
+
     return 0;
 }
 
@@ -673,7 +673,7 @@ extra_debugging(const struct connection *c)
 	    DBG_log("processing connection %s%s"
 		    , c->name, b1);
     }
-    
+
 }
 
 void
@@ -1040,7 +1040,7 @@ log_state(struct state *st, enum state_kind new_state)
 				,
 				st->st_refhim == IPSEC_SAREF_NA ? IPSEC_SAREF_NA
 				: st->st_refhim == IPSEC_SAREF_NULL ? 0u
-				: IPsecSAref2NFmark(st->st_refhim) | IPSEC_NFMARK_IS_SAREF_BIT 
+				: IPsecSAref2NFmark(st->st_refhim) | IPSEC_NFMARK_IS_SAREF_BIT
 		);
 	system(buf);
 	DBG(DBG_CONTROLMORE, DBG_log("log_state for connection %s completed", conn->name));

@@ -876,8 +876,8 @@ static int load_conn (struct starter_config *cfg
 	for(alsosize=0; alsos[alsosize]!=NULL; alsosize++);
 
 	alsoplace = 0;
-	while(alsos != NULL
-	      && alsoplace < alsosize && alsos[alsoplace] != NULL 
+	/*alsos is equal to conn->alsos that has been already veirfied for NULL*/
+	while(alsoplace < alsosize && alsos[alsoplace] != NULL
 	      && alsoplace < ALSO_LIMIT)
 	{
 	    /*

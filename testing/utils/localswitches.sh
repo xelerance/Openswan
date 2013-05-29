@@ -2,10 +2,11 @@
 
 BUILDTOP=${MYBOX-/c2/freeswan/freeswan-1.92}
 export BUILDTOP
-OPENSWANSRCDIR=$BUILDTOP 
+OPENSWANSRCDIR=$BUILDTOP
 export OPENSWANSRCDIR
 
 . $BUILDTOP/umlsetup.sh
+. $BUILDTOP/testing/utils/functions.sh
 
 unset UML_public_CTL
 unset UML_west_CTL
@@ -31,6 +32,7 @@ then
     export EAST_PLAY=${EAST_INPUT}
 fi
 
+export_variables
 
 
 case $* in

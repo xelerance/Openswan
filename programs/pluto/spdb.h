@@ -84,7 +84,7 @@ struct db_sa {
     bool                    parentSA;   /* set if this is a parent/oakley */
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
-    
+
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
@@ -110,13 +110,13 @@ extern struct db_sa ipsec_sadb[1 << 3];
 #define AD_NULL     prop_conjs: NULL, prop_conj_cnt: 0,
 
 /* for db_trans */
-#define AD_TR(p, x) transid: p, attrs: x, attr_cnt: elemsof(x)	
+#define AD_TR(p, x) transid: p, attrs: x, attr_cnt: elemsof(x)
 
 /* for db_prop */
-#define AD_PR(p, x) protoid: p, trans: x, trans_cnt: elemsof(x)	
+#define AD_PR(p, x) protoid: p, trans: x, trans_cnt: elemsof(x)
 
 /* for db_prop_conj */
-#define AD_PC(x) props: x, prop_cnt: elemsof(x)	
+#define AD_PC(x) props: x, prop_cnt: elemsof(x)
 
 
 extern bool out_sa(
@@ -188,6 +188,7 @@ extern void sa_v2_print(struct db_sa *f);
 extern struct db_sa *sa_v2_convert(struct db_sa *f);
 extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
 extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
+extern enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth);
 extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);
 
 

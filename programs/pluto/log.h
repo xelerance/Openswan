@@ -42,7 +42,7 @@ extern char debug_prefix;
  * which pluto is which, when doing
  * unit testing
  */
-extern const char *pluto_ifn_inst;   
+extern const char *pluto_ifn_inst;
 
 
 /* maximum number of files to keep open for per-peer log files */

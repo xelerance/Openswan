@@ -39,7 +39,7 @@
 
 static int setup_socket(void);
 
-/** 
+/**
  * Print the 'ipsec whackinit --help' message
  */
 static void
@@ -74,7 +74,7 @@ static const char *label = NULL;	/* --label operand, saved for diagnostics */
 
 static const char *name = NULL;	/* --name operand, saved for diagnostics */
 
-/** Print a string as a diagnostic, then exit whack unhappily 
+/** Print a string as a diagnostic, then exit whack unhappily
  *
  * @param mess The error message to print when exiting
  * @return void
@@ -95,7 +95,7 @@ diag(const char *mess)
     exit(RC_WHACK_PROBLEM);
 }
 
-/** 
+/**
  * Conditially calls diag if ugh is set.
  * Prints second arg, if non-NULL, as quoted string
  *
@@ -233,7 +233,7 @@ get_secret(char *buf, size_t bufsize)
     strncpy(buf, secret, bufsize);
 
     len = strlen(buf) + 1;
-    
+
     return len;
 }
 
@@ -251,9 +251,9 @@ get_value(char *buf, size_t bufsize)
     while(try > 0 && len==0)
     {
 	fprintf(stderr, "Enter username:   ");
-	
+
 	memset(buf, 0, bufsize);
-	
+
 	if(fgets(buf, bufsize, stdin) != buf) {
 	    if(errno == 0) {
 		fprintf(stderr, "Can not read password from standard in\n");
@@ -263,7 +263,7 @@ get_value(char *buf, size_t bufsize)
 		exit(RC_WHACK_PROBLEM);
 	    }
 	}
-	
+
 	/* send the value to pluto, including \0, but fgets adds \n */
 	len = strlen(buf);
 	if(len == 0)
@@ -327,7 +327,7 @@ static int setup_socket()
     if (sock == -1)
     {
 	int e = errno;
-	
+
 	fprintf(stderr, "whack: socket() failed (%d %s)\n", e, strerror(e));
 	exit(RC_WHACK_PROBLEM);
     }
@@ -336,7 +336,7 @@ static int setup_socket()
 		, offsetof(struct sockaddr_un, sun_path) + strlen(ctl_addr.sun_path)) < 0)
     {
 	int e = errno;
-	
+
 	switch (e)
 	{
 	case EACCES:
@@ -360,7 +360,7 @@ static int setup_socket()
 	}
 	exit(RC_WHACK_PROBLEM);
     }
-    
+
     /* give up all root priveledges, if we had any */
     setuid(getuid());
 

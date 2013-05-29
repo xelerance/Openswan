@@ -147,7 +147,7 @@ enum known_vendorid {
   VID_STRONGSWAN_4_2_1		= 191,
   VID_STRONGSWAN_4_2_2		= 192,
   VID_STRONGSWAN_4_2_3		= 193,
-/* 
+/*
   While searching (strings) in /usr/sbin/racoon on Max OS X 10.3.3, I found it :
   # echo -n "draft-ietf-ipsec-nat-t-ike" | md5sum
   4df37928e9fc4fd1b3262170d515c662

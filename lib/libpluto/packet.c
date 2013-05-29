@@ -597,10 +597,11 @@ struct_desc isakmp_nat_d = { "ISAKMP NAT-D Payload", isag_fields, sizeof(struct 
  */
 static field_desc isanat_oa_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },
-    { ft_mbz, 24/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 16/BITS_PER_BYTE, NULL, NULL },
     { ft_end, 0, NULL, NULL }
 };
 
@@ -664,7 +665,7 @@ struct_desc ikev2_sa_desc = { "IKEv2 Security Association Payload",
  */
 static field_desc ikev2prop_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "prop #", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "proto ID", NULL },
@@ -695,10 +696,10 @@ struct_desc ikev2_prop_desc = { "IKEv2 Proposal Substructure Payload",
  */
 static field_desc ikev2trans_fields[] = {
     { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "transform type", &trans_type_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform ID", NULL },
     { ft_end,  0, NULL, NULL }
 };
@@ -757,7 +758,7 @@ static field_desc ikev2ke_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "reserved", NULL },
     { ft_end,  0, NULL, NULL }
 };
 
@@ -800,8 +801,8 @@ static field_desc ikev2id_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "reserved", NULL },
     { ft_end,  0, NULL, NULL }
 };
 
@@ -883,8 +884,8 @@ static field_desc ikev2a_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "reserved", NULL },
     { ft_end,  0, NULL, NULL }
 };
 
@@ -948,6 +949,10 @@ static field_desc ikev2_notify_fields[] = {
   { ft_end,  0, NULL, NULL }
 };
 
+struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
+			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
+
+
 /* IKEv2 Delete Payload
  * layout from RFC 5996 Section 3.11 
  * This is followed by a variable length SPI.
@@ -977,10 +982,6 @@ static field_desc ikev2_delete_fields[] = {
 
 struct_desc ikev2_delete_desc = { "IKEv2 Delete Payload",
                             ikev2_delete_fields, sizeof(struct ikev2_delete) };
-
-
-struct_desc ikev2_notify_desc = { "IKEv2 Notify Payload",
-			     ikev2_notify_fields, sizeof(struct ikev2_notify) };
 
 /* 
  * 3.12.  Vendor ID Payload
@@ -1029,11 +1030,11 @@ static field_desc ikev2ts_fields[] = {
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},
-    { ft_mbz,  8/BITS_PER_BYTE, NULL, NULL },
-    { ft_mbz, 16/BITS_PER_BYTE, NULL, NULL },
+    { ft_nat,  8/BITS_PER_BYTE, "reserved", NULL },
+    { ft_nat, 16/BITS_PER_BYTE, "reserved", NULL },
     { ft_end,  0, NULL, NULL }
 };
-struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selector Payload",
+struct_desc ikev2_ts_desc = { "IKEv2 Traffic Selectors",
 			     ikev2ts_fields, sizeof(struct ikev2_ts) };
 
 
@@ -1066,7 +1067,7 @@ static field_desc ikev2ts1_fields[] = {
     { ft_nat, 16/BITS_PER_BYTE, "end port", NULL},
     { ft_end,  0, NULL, NULL }
 };
-struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selector",
+struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selectors",
 			       ikev2ts1_fields, sizeof(struct ikev2_ts1) };
 
 

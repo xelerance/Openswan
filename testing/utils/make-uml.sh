@@ -2,7 +2,7 @@
 #
 
 # show me
-set -x
+#set -x
 
 # fail if any command fails
 set -e
@@ -24,7 +24,7 @@ export USE_OBJDIR=true
 
 # include this dir, in particular so that we can get the local "touch"
 # program.
-export PATH=$OPENSWANSRCDIR/testing/utils:$PATH 
+export PATH=$OPENSWANSRCDIR/testing/utils:$PATH
 
 
 #
@@ -43,9 +43,9 @@ fi
 . ${OPENSWANSRCDIR}/umlsetup.sh
 . ${OPENSWANSRCDIR}/testing/utils/uml-functions.sh
 
-KERNVER=${KERNVER-}    
+KERNVER=${KERNVER-}
 
-case $KERNVER in 
+case $KERNVER in
 	26) KERNVERSION=2.6;;
 	*) KERNVERSION=2.4;;
 esac
@@ -110,7 +110,7 @@ if test ${retval} -ne 0 ; then
 	exit ${retval}
 fi
 
-if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
+if [ ! -d ${OPENSWANSRCDIR}/UMLPOOL/. ]; then ln -f -s $POOLSPACE ${OPENSWANSRCDIR}/UMLPOOL; fi
 
 UMLMAKE=$POOLSPACE/Makefile
 NOW=`date`
@@ -148,7 +148,7 @@ do
 done
 
 # build a plain kernel if we need it!
-if $NEED_plain && [ ! -x $UMLPLAIN/linux ] 
+if $NEED_plain && [ ! -x $UMLPLAIN/linux ]
 then
     cd $UMLPLAIN
 
@@ -156,26 +156,29 @@ then
 
     applypatches
     sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =plain/' Makefile
-    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    PLAINKCONF=${TESTINGROOT}/kernelconfigs/umlplain${KERNVER}.config
+    cp $PLAINKCONF .config
     echo "make-uml.sh: Using \"${PLAINKCONF}\" to build a new plain kernel"
-    ( ${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install ) || exit 1 </dev/null
+    echo "${MAKE:-make} CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=${PLAINKCONF} linux modules " >build-cmd.sh
+    ( ${MAKE:-make} CC=${CC} ARCH=um ) || exit 1 </dev/null
 fi
 
 UMLNETKEY=$POOLSPACE/netkey${KERNVER}
 mkdir -p $UMLNETKEY
 NETKEYKERNEL=$UMLNETKEY/linux
 
-if [ ! -x $NETKEYKERNEL ] 
+if [ ! -x $NETKEYKERNEL ]
   then
    cd $UMLNETKEY
 
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile 
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =netkey/' Makefile
     NETKEYCONF=${TESTINGROOT}/kernelconfigs/umlnetkey${KERNVER}.config
+    cp $NETKEYCONF .config
     echo "using $NETKEYCONF to build netkey kernel"
-     (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$NETKEYCONF INSTALL_MOD_PATH=${BASICROOT}/ ARCH=um linux modules modules_install) || exit 1 </dev/null
+    ( ${MAKE:-make} CC=${CC} ARCH=um ) || exit 1 </dev/null
 fi
 
 
@@ -186,13 +189,13 @@ then
 else
     BUILD_MODULES=false
 fi
-    
+
 setup_make $BUILD_MODULES >>$UMLMAKE
 
 # now, execute the Makefile that we have created!
 echo "info: make-uml.sh:${LINENO} in `pwd`"
-echo " aand MAKE=${MAKE}"
-MAKE_DEBUG="--debug=b";
+echo " and MAKE=${MAKE}"
+#MAKE_DEBUG="--debug=b";
 ${MAKE:-make} ${MAKE_DEBUG} -C ${POOLSPACE}   ${REGULARHOSTS}
 
 # now, copy the kernel, apply the UML patches.
@@ -244,7 +247,7 @@ then
     lndirkerndirnogit $KERNPOOL .
 
     applypatches
-    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile 
+    sed -i 's/EXTRAVERSION =.*$/EXTRAVERSION =klips/' Makefile
 
     # looks like applypatches does not patch in klips - make line changed from the old one in commit b195c03ff554 as it built kernel and modules too
     cd $OPENSWANSRCDIR || exit 1
@@ -253,10 +256,10 @@ then
 
     # copy the config file
     rm -f .config
-    #cp ${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config .config
     KLIPSKCONF=${TESTINGROOT}/kernelconfigs/umlswan${KERNVER}.config
     echo "using $KLIPSKCONF to build umlswan kernel"
-    (make CC=${CC} ARCH=um allnoconfig KCONFIG_ALLCONFIG=$KLIPSKCONF INSTALL_MOD_PATH=${BASICROOT}/ linux modules modules_install) || exit 1 </dev/null
+    cp ${KLIPSKCONF} .config
+    (make CC=${CC} ARCH=um ) || exit 1 </dev/null
 
     echo "Confirming KLIPS is compiled into the UMLSWAN kernel..."
     grep CONFIG_KLIPS $UMLSWAN/.config || exit 1
@@ -267,7 +270,7 @@ cd $OPENSWANSRCDIR || exit 1
 make ${WERROR:-WERROR=-Werror} USE_OBJDIR=true USE_IPSECPOLICY=true programs
 
 # now, execute the Makefile that we have created!
-cd $POOLSPACE && make $OPENSWANHOSTS 
+cd $POOLSPACE && make $OPENSWANHOSTS
 
 echo "###  bottom exiting make-umls.sh running at pwd: `pwd`"
 

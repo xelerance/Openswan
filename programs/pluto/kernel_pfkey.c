@@ -302,7 +302,7 @@ pfkey_get(pfkey_buf *buf)
 		, (unsigned) IPSEC_PFKEYv2_ALIGN);
 	}
 	else if (!(buf->msg.sadb_msg_pid == (unsigned)pid
-	/*	for now, unsolicited messages can be: 
+	/*	for now, unsolicited messages can be:
 	 *	K_SADB_ACQUIRE, K_SADB_REGISTER, K_SADB_X_NAT_T_NEW_MAPPING
 	 */
 	|| (buf->msg.sadb_msg_pid == 0 && buf->msg.sadb_msg_type == SADB_ACQUIRE)
@@ -453,7 +453,7 @@ process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX
 	&& !(ugh = addrtypeof(src) == addrtypeof(dst)? NULL : "conflicting address types")
 	&& !(ugh = addrtosubnet(src, &ours))
 	&& !(ugh = addrtosubnet(dst, &his)))
-      record_and_initiate_opportunistic(&ours, &his, 0, 
+      record_and_initiate_opportunistic(&ours, &his, 0,
 #ifdef HAVE_LABELED_IPSEC
 						NULL,
 #endif
@@ -685,7 +685,7 @@ finish_pfkey_msg(struct sadb_ext *extensions[K_SADB_EXT_MAX + 1]
 		    loglog(RC_LOG_SERIOUS, "requested algorithm is not available in the kernel");
 		    success=FALSE;
 		    /* fall through to get error message */
-		    
+
 		  default:
 		  logerr:
 		    openswan_log_errno_routine(e1, "pfkey write() of %s message %u"
@@ -791,7 +791,7 @@ pfkey_register_proto(unsigned int sadb_register
 }
 
 #ifdef KLIPS
-void 
+void
 klips_register_proto(unsigned satype, const char *satypename)
 {
     return pfkey_register_proto(K_SADB_REGISTER, satype, satypename);
@@ -1040,14 +1040,14 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    if(!success) return FALSE;
     }
 #endif
-	
+
     if(sa->outif != -1) {
 	    success = pfkey_outif_build(&extensions[K_SADB_X_EXT_PLUMBIF],sa->outif);
 	    success = pfkey_build(success, "pfkey_outif_build", sa->text_said, extensions);
-	    
+
 	    if(!success) return FALSE;
     }
- 
+
     if(sa->enckeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_ENCRYPT]
 					      , K_SADB_EXT_KEY_ENCRYPT
@@ -1057,7 +1057,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 			      , sa->text_said, extensions);
 	if(!success) return FALSE;
     }
-	
+
 
 #ifdef NAT_TRAVERSAL
     if(sa->natt_type != 0) {
@@ -1081,7 +1081,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	      , DBG_log("setting natt_sport to %d\n", sa->natt_sport));
 	  if(!success) return FALSE;
 	}
-	
+
 	if(sa->natt_dport != 0) {
 	  success = pfkey_build(pfkey_x_nat_t_port_build(
 				  &extensions[K_SADB_X_EXT_NAT_T_DPORT]
@@ -1093,7 +1093,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	      , DBG_log("setting natt_dport to %d\n", sa->natt_dport));
 	  if(!success) return FALSE;
 	}
-	
+
 
 	if(sa->natt_type!=0 && !isanyaddr(sa->natt_oa)) {
 	  success = pfkeyext_address(K_SADB_X_EXT_NAT_T_OA, sa->natt_oa
@@ -1107,7 +1107,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 #endif
 
     success = finish_pfkey_msg(extensions, "Add SA", sa->text_said, &pfb);
-    
+
     if(success) {
 	    /* extract the saref extension */
 	    struct sadb_ext *replies[K_SADB_EXT_MAX + 1];
@@ -1117,10 +1117,10 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    if (error) {
 		plog("success on unparsable message - cannot happen");
 	    }
-#ifdef KLIPS_MAST	    
+#ifdef KLIPS_MAST
 	    if(replies[K_SADB_X_EXT_SAREF]) {
 		    struct sadb_x_saref *sar = (struct sadb_x_saref *)replies[K_SADB_X_EXT_SAREF];
-		    
+
 		    sa->ref = sar->sadb_x_saref_me;
 		    sa->refhim = sar->sadb_x_saref_him;
 	    }
@@ -1250,7 +1250,7 @@ pfkey_shunt_eroute(struct connection *c
         case ERO_DELETE:
             /* delete remains delete */
             break;
-	    
+
 	case ERO_ADD_INBOUND:
 	    break;
 
@@ -1276,7 +1276,7 @@ pfkey_shunt_eroute(struct connection *c
             opname = "replace eclipsed";
             eclipse_count--;
             break;
-	    
+
         case ERO_DELETE:
             /* delete unnecessary: we don't actually have an eroute */
             eclipse_count--;
@@ -1305,11 +1305,11 @@ pfkey_shunt_eroute(struct connection *c
 
 #if 0
     {
-	bool ok; 
+	bool ok;
 	enum pluto_sadb_operations inop;
-	
+
 	inop = op + ERO_ADD_INBOUND-ERO_ADD;
-	
+
 	ok = pfkey_raw_eroute(&c->spd.that.host_addr, &c->spd.that.client
 			      , &c->spd.this.host_addr, &c->spd.this.client
 			      , htonl(spi)
@@ -1327,11 +1327,11 @@ pfkey_shunt_eroute(struct connection *c
       const ip_address *peer = &sr->that.host_addr;
       char buf2[256];
       const struct af_info *fam = aftoinfo(addrtypeof(peer));
-      
+
       if(fam == NULL) {
 	      fam=aftoinfo(AF_INET);
       }
-      
+
       snprintf(buf2, sizeof(buf2)
 	       , "eroute_connection %s", opname);
 
@@ -1766,7 +1766,7 @@ bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
         int ret = TRUE;
 
         passert(st != NULL);
- 
+
         f = fopen(procname, "r");
         if(f == NULL) { /** Can't open the file, perhaps were are on 26sec? */
                 ret = TRUE;
@@ -1780,7 +1780,7 @@ bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
                 ipsec_spi_t spi = 0;
                 static const char idle[] = "idle=";
                 time_t idle_time; /* idle time we read from /proc */
-        
+
                 dst = st->st_connection->spd.this.host_addr; /* inbound SA */
                 if(st->st_ah.present) {
                         proto = SA_AH;
@@ -1788,27 +1788,27 @@ bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
                 }
                 if(st->st_esp.present) {
                         proto = SA_ESP;
-                        spi = st->st_esp.our_spi;  
+                        spi = st->st_esp.our_spi;
                 }
-        
+
                 if(proto == 0 && spi == 0) {
                         ret = TRUE;
 
                         break;
                 }
-                 
+
                 initsaid(&dst, spi, proto, &said);
                 satot(&said, 'x', text_said, SATOT_BUF);
-                        
+
                 line = fgets(buf, sizeof(buf), f);
                 if(line == NULL) { /* Reached end of list */
                         ret = TRUE;
                         break;
                 }
-                 
+
                 if(strncmp(line, text_said, strlen(text_said)) == 0) {
                         /* we found a match, now try to find idle= */
-                        char *p = strstr(line, idle);   
+                        char *p = strstr(line, idle);
                         if(p == NULL) { /* SAs which haven't been used yet
                                          don't have it */
                                 ret = TRUE; /* it didn't have traffic */
@@ -1841,7 +1841,7 @@ bool pfkey_was_eroute_idle(struct state *st, time_t idle_max)
                         }
 
                 }
-                                
+
            }
            fclose(f);
 	}
@@ -1855,7 +1855,7 @@ void pfkey_set_debug(int cur_debug
 #ifdef DEBUG
     pfkey_lib_debug = (cur_debug&DBG_PFKEY ?
 		       PF_KEY_DEBUG_PARSE_MAX : PF_KEY_DEBUG_PARSE_NONE);
-    
+
     pfkey_debug_func = debug_func;
     pfkey_error_func = error_func;
 #endif
@@ -1912,8 +1912,8 @@ pfkey_plumb_mast_device(int mast_dev)
 		return FALSE;
 	}
 
-	
-	
+
+
 	return TRUE;
 }
 #endif /* KLIPS_MAST */

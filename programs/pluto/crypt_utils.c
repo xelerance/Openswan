@@ -1,4 +1,4 @@
-/* 
+/*
  * Cryptographic helper function.
  * Copyright (C) 2004 Michael C. Richardson <mcr@xelerance.com>
  *
@@ -55,7 +55,7 @@ void pluto_crypto_allocchunk(wire_chunk_t *space
 
     new->start = space->start;
     new->len   = howbig;
-    
+
     space->start += howbig;
 }
 

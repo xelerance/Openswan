@@ -45,6 +45,10 @@ CPPFLAGS = $(HDRDIRS) $(DEFINES) \
 	-DPOLICYGROUPSDIR=\"${FINALCONFDDIR}/policies\" \
 	-DPERPEERLOGDIR=\"${FINALLOGDIR}/pluto/peer\"
 
+# must turn this off due to myid.c
+CFLAGS+= -Wno-error=cast-qual
+CFLAGS+= -Wno-error=cpp
+
 ifeq ($(HAVE_BROKEN_POPEN),true)
 CFLAGS+=-DHAVE_BROKEN_POPEN
 endif

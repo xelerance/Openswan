@@ -42,7 +42,7 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "connections.h"	/* needs id.h */
+#include "connections.h"        /* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -50,11 +50,11 @@
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "ike_alg.h"
 #include "log.h"
-#include "demux.h"	/* needs packet.h */
+#include "demux.h"        /* needs packet.h */
 #include "ikev2.h"
-#include "ipsec_doi.h"	/* needs demux.h and state.h */
+#include "ipsec_doi.h"        /* needs demux.h and state.h */
 #include "timer.h"
-#include "whack.h"	/* requires connections.h */
+#include "whack.h"        /* requires connections.h */
 #include "server.h"
 #include "vendor.h"
 #include "dpd.h"
@@ -64,551 +64,1124 @@
 #include "virtual.h"
 #include "hostpair.h"
 
-static void print_ikev2_ts(struct traffic_selector *ts){
-        char lbx[ADDRTOT_BUF];
-        char hbx[ADDRTOT_BUF];
-
-	DBG_log("PAUL marker ------------------------");
-        DBG_log("ts_type: %s", enum_name(&ikev2_ts_type_names, ts->ts_type));
-        DBG_log("ipprotoid: %d", ts->ipprotoid);
-        DBG_log("startport: %d", ts->startport);
-        DBG_log("endport: %d", ts->endport);
-        addrtot(&ts->low,  0, lbx, sizeof(lbx));
-        addrtot(&ts->high, 0, hbx, sizeof(hbx));
-        DBG_log("ip low: %s", lbx);
-        DBG_log("ip high: %s", hbx);
-	DBG_log("PAUL marker ------------------------");
-}
-
-void ikev2_print_ts(struct traffic_selector *ts){
-	char lbx[ADDRTOT_BUF];
-	char hbx[ADDRTOT_BUF];
-
-	DBG_log("printing contents struct traffic_selector");
-	DBG_log("  ts_type: %s", enum_name(&ikev2_ts_type_names, ts->ts_type));
-	DBG_log("  ipprotoid: %d", ts->ipprotoid);
-	DBG_log("  startport: %d", ts->startport);
-	DBG_log("  endport: %d", ts->endport);
-	addrtot(&ts->low,  0, lbx, sizeof(lbx));
-	addrtot(&ts->high, 0, hbx, sizeof(hbx));
-	DBG_log("  ip low: %s", lbx);
-	DBG_log("  ip high: %s", hbx);
-}
-
-
 /* rewrite me with addrbytesptr() */
-struct traffic_selector ikev2_end_to_ts(struct end *e)
+struct traffic_selector ikev2_subnettots(struct end *e)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
 
     memset(&ts, 0, sizeof(ts));
-    
+
     switch(e->client.addr.u.v4.sin_family) {
     case AF_INET:
-	ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-	ts.low   = e->client.addr;
-	ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
-	ts.high  = e->client.addr;
-	ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
-	break;
+        ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+        ts.low   = e->client.addr;
+        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
+        ts.high  = e->client.addr;
+        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
+        break;
 
     case AF_INET6:
-	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-	v6mask = bitstomask6(e->client.maskbits);
+        ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+        v6mask = bitstomask6(e->client.maskbits);
 
-	ts.low   = e->client.addr;
-	ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
-	ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
-	ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
-	ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
+        ts.low   = e->client.addr;
+        ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
+        ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
+        ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
+        ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
 
-	ts.high  = e->client.addr;
-	ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
-	ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
-	ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
-	ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
-	break;
+        ts.high  = e->client.addr;
+        ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
+        ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
+        ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
+        ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
+        break;
+    }
 
     /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
-    }
+
+    /*
+     * The IKEv2 code used to send 0-65535 as port regardless of
+     * the local policy specified. if local policy states a specific
+     * protocol and port, then send that protocol value and port to
+     * other end  -- Avesh
+     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
+     */
+
+    DBG(DBG_CONTROLMORE,
+        {
+        DBG_log("local policy host_addr-port=%d, client-port=%d, port=%d, protocol=%d, has_port_wildcard=%d",
+                ntohs(e->host_addr.u.v4.sin_port), ntohs(e->client.addr.u.v4.sin_port)
+                , e->port, e->protocol, e->has_port_wildcard);
+        }
+    );
 
     ts.ipprotoid = e->protocol;
 
-	/*
-	 * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
-	 * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58) 
-	 *   we only support providing Type, not Code, eg protoport=1/1
-	 */
-	if(e->port == 0 || e->has_port_wildcard) {
-	   ts.startport = 0;
-	   ts.endport = 65535;
-	} else {
-	   ts.startport = e->port;
-	   ts.endport = e->port;
-	}
+        /*
+         * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
+         * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58)
+         *   we only support providing Type, not Code, eg protoport=1/1
+         */
+        if(e->port == 0 || e->has_port_wildcard) {
+           ts.startport = 0;
+           ts.endport = 65535;
+        } else {
+           ts.startport = e->port;
+           ts.endport = e->port;
+        }
+
+        ts.next = NULL;
 
     return ts;
 }
 
+void
+ikev2_store_ts_instate(struct traffic_selector *array_tsi
+                ,struct traffic_selector * array_tsr
+                , unsigned int tsi_n
+                , unsigned int tsr_n
+                , struct traffic_selector *ts_this
+                , struct traffic_selector *ts_that)
+{
+        unsigned int i;
+        struct traffic_selector *curts, *prevts;
+
+        prevts = NULL;
+        curts = ts_this;
+        for(i=0; i<tsi_n; i++) {
+                if(curts == NULL) {
+                curts = alloc_thing(struct traffic_selector, "struct traffic_selector");
+                }
+
+                *curts = array_tsi[i];
+                curts->next = NULL;
+
+                if(prevts!= NULL) {
+                prevts->next = curts;
+                }
+
+                prevts = curts;
+                curts = curts->next;
+        }
+
+        prevts = NULL;
+        curts = ts_that;
+
+        for(i=0; i<tsr_n; i++) {
+                if(curts == NULL) {
+                curts = alloc_thing(struct traffic_selector, "struct traffic_selector");
+                }
+
+                *curts = array_tsr[i];
+                curts->next = NULL;
+
+                if(prevts!= NULL) {
+                prevts->next = curts;
+                }
+
+                prevts = curts;
+                curts = curts->next;
+        }
+}
+
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
-			 , pb_stream *outpbs   
-			 , unsigned int np
-			 , struct traffic_selector *ts
-			 , enum phase1_role role UNUSED)
+                         , pb_stream *outpbs
+                         , unsigned int np
+                         , struct traffic_selector *ts
+                         , enum phase1_role role UNUSED)
 {
     struct ikev2_ts its;
     struct ikev2_ts1 its1;
     pb_stream ts_pbs;
     pb_stream ts_pbs2;
+    struct traffic_selector *tmp=ts;
 
     its.isat_np = np;
     its.isat_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-    its.isat_num = 1;
+
+    its.isat_num = 0;
+    while(tmp!=NULL) {
+        its.isat_num++;
+        tmp = tmp->next;
+    }
 
     if(!out_struct(&its, &ikev2_ts_desc, outpbs, &ts_pbs))
-	return STF_INTERNAL_ERROR;
+        return STF_INTERNAL_ERROR;
+
+   while(ts!=NULL) {
 
     switch(ts->ts_type) {
     case IKEv2_TS_IPV4_ADDR_RANGE:
-	its1.isat1_type = IKEv2_TS_IPV4_ADDR_RANGE;
-	its1.isat1_sellen = 2*4 + 8; /* See RFC 5669 SEction 13.3.1, 8 octet header plus 2 ip addresses */
-	break;
+        its1.isat1_type = IKEv2_TS_IPV4_ADDR_RANGE;
+        its1.isat1_sellen = 16;
+        break;
     case IKEv2_TS_IPV6_ADDR_RANGE:
-	its1.isat1_type = IKEv2_TS_IPV6_ADDR_RANGE;
-	its1.isat1_sellen = 2*16 + 8; /* See RFC 5669 SEction 13.3.1, 8 octet header plus 2 ip addresses */
-	break;
+        its1.isat1_type = IKEv2_TS_IPV6_ADDR_RANGE;
+        its1.isat1_sellen = 40;
+        break;
     case IKEv2_TS_FC_ADDR_RANGE:
-	DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
-	return STF_INTERNAL_ERROR;
+        DBG_log("IKEv2 Traffic Selector IKEv2_TS_FC_ADDR_RANGE not yet supported");
+        return STF_INTERNAL_ERROR;
     default:
-	DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
+        DBG_log("IKEv2 Traffic Selector type '%d' not supported", ts->ts_type);
     }
+
+    /*
+     * The IKEv2 code used to send 0-65535 as port regardless of
+     * the local policy specified. if local policy states a specific
+     * protocol and port, then send that protocol value and port to
+     * other end  -- Avesh
+     * Paul: TODO: I believe IKEv2 allows multiple port ranges?
+     */
 
     its1.isat1_ipprotoid = ts->ipprotoid;      /* protocol as per local policy*/
     its1.isat1_startport = ts->startport;      /* ports as per local policy*/
-    its1.isat1_endport = ts->endport;  
+    its1.isat1_endport = ts->endport;
     if(!out_struct(&its1, &ikev2_ts1_desc, &ts_pbs, &ts_pbs2))
-	return STF_INTERNAL_ERROR;
-    
+        return STF_INTERNAL_ERROR;
+
     /* now do IP addresses */
     switch(ts->ts_type) {
     case IKEv2_TS_IPV4_ADDR_RANGE:
-	if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
-	   ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
-	    return STF_INTERNAL_ERROR;
-	break;
+        if(!out_raw(&ts->low.u.v4.sin_addr.s_addr, 4, &ts_pbs2, "ipv4 low")
+           ||!out_raw(&ts->high.u.v4.sin_addr.s_addr, 4,&ts_pbs2,"ipv4 high"))
+            return STF_INTERNAL_ERROR;
+        break;
     case IKEv2_TS_IPV6_ADDR_RANGE:
-	if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
-	   ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
-	    return STF_INTERNAL_ERROR;
-	break;
+        if(!out_raw(&ts->low.u.v6.sin6_addr.s6_addr, 16, &ts_pbs2, "ipv6 low")
+           ||!out_raw(&ts->high.u.v6.sin6_addr.s6_addr,16,&ts_pbs2,"ipv6 high"))
+            return STF_INTERNAL_ERROR;
+        break;
     case IKEv2_TS_FC_ADDR_RANGE:
-	DBG_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
-	return STF_FAIL;
+        DBG_log("Traffic Selector IKEv2_TS_FC_ADDR_RANGE not supported");
+        return STF_FAIL;
     default:
-	DBG_log("Failed to create unknown IKEv2 Traffic Selector payload '%d'", ts->ts_type);
-	return STF_FAIL;
+        DBG_log("Failed to create unknown IKEv2 Traffic Selector payload '%d'", ts->ts_type);
+        return STF_FAIL;
     }
 
     close_output_pbs(&ts_pbs2);
+    ts = ts->next;
+    }
+
     close_output_pbs(&ts_pbs);
-    
+
     return STF_OK;
 }
 
+bool
+ikev2_perfect_match_ts(struct traffic_selector *tsi
+                ,struct traffic_selector *tsr
+                , unsigned int tsi_n
+                , unsigned int tsr_n UNUSED
+                , struct connection *c
+                , enum phase1_role role)
+{
+        struct end *ei, *er;
+        struct traffic_selector tmpi, tmpr;
+
+        if(tsi_n > 1 ||  tsi_n > 1) {
+                return FALSE;
+        }
+
+        if(role == INITIATOR) {
+                ei = &c->spd.this;
+                er = &c->spd.that;
+        } else {
+                ei = &c->spd.that;
+                er = &c->spd.this;
+        }
+
+        tmpi = ikev2_subnettots(ei);
+        tmpr = ikev2_subnettots(er);
+
+        if(addrcmp(&tmpi.low, &tsi[0].low) == 0
+                && addrcmp(&tmpi.high, &tsi[0].high) == 0
+                && tmpi.startport == tsi[0].startport
+                && tmpi.endport == tsi[0].endport
+                && tmpi.ipprotoid == tsi[0].ipprotoid
+                && addrcmp(&tmpr.low, &tsr[0].low) == 0
+                && addrcmp(&tmpr.high, &tsr[0].high) == 0
+                && tmpr.startport == tsr[0].startport
+                && tmpr.endport == tsr[0].endport
+                && tmpr.ipprotoid == tsr[0].ipprotoid)
+        {
+                return TRUE;
+        }
+
+        return FALSE;
+}
 
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
-			      , pb_stream *outpbs
-			      , enum phase1_role role 
-			      , struct connection *c0
-			      , lset_t policy UNUSED)
+                              , pb_stream *outpbs
+                              , enum phase1_role role
+                              , struct connection *c0 UNUSED
+                              , lset_t policy UNUSED)
 {
     struct state *st = md->st;
     struct traffic_selector *ts_i, *ts_r;
-    struct spd_route *sr;
     stf_status ret;
-    
-    st->st_childsa = c0;
+
 
     if(role == INITIATOR) {
-	ts_i = &st->st_ts_this;
-	ts_r = &st->st_ts_that;
+        ts_i = &st->st_ts_this;
+        ts_r = &st->st_ts_that;
     } else {
-	ts_i = &st->st_ts_that;
-	ts_r = &st->st_ts_this;
+        ts_i = &st->st_ts_that;
+        ts_r = &st->st_ts_this;
     }
 
-    for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
-			    , ts_i, INITIATOR);
-	if(ret!=STF_OK) return ret;
+        ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
+                            , ts_i, INITIATOR);
+        if(ret!=STF_OK) return ret;
 
-	if(role == INITIATOR) {
-	ret = ikev2_emit_ts(md, outpbs, st->st_connection->policy & POLICY_TUNNEL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_v2N
-			    , ts_r, RESPONDER);
-	}
-	else {
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-			DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
-			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
-						, ts_r, RESPONDER);
-			break;
-			}
-		}
-		if(!p){
+        if(role == INITIATOR) {
+        ret = ikev2_emit_ts(md, outpbs, st->st_connection->policy & POLICY_TUNNEL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_v2N
+                            , ts_r, RESPONDER);
+        }
+        else {
+                struct payload_digest *p;
+                for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+                {
+                        if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+                        DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
+                        ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
+                                                , ts_r, RESPONDER);
+                        break;
+                        }
+                }
+                if(!p){
                         ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
                                                 , ts_r, RESPONDER);
-		}
-	}
+                }
+        }
 
-	if(ret!=STF_OK) return ret;
-    }
+        if(ret!=STF_OK) return ret;
 
     return STF_OK;
 }
 
+bool
+ikev2_verify_ts(struct traffic_selector *tsi
+                , struct traffic_selector *tsr
+                , unsigned int ntsi
+                , unsigned int ntsr
+                , struct traffic_selector *this_ts
+                , struct traffic_selector *that_ts
+                , enum phase1_role role)
+{
+        unsigned int i;
+        struct traffic_selector *tmptsi, *tmptsr;
+
+
+        if(role == INITIATOR) {
+                tmptsi = this_ts;
+                tmptsr = that_ts;
+        }
+        else {
+                tmptsi = that_ts;
+                tmptsr = this_ts;
+        }
+
+        for(i = 0; i < ntsi; i++ ) {
+
+                /* verify addresses*/
+                if(addrcmp(&tmptsi->low, &tsi[i].low) > 0
+                        || addrcmp(&tmptsi->high, &tsi[i].high) < 0)
+                {
+                        return FALSE;
+                }
+
+                /* verify port */
+                if(tmptsi->startport > tsi[i].startport
+                        || tmptsi->endport < tsi[i].endport)
+                {
+                        return FALSE;
+                }
+
+                /* verify protocol */
+                if( tmptsi->ipprotoid !=0
+                        && tmptsi->ipprotoid != tsi[i].ipprotoid)
+                {
+                        return FALSE;
+                }
+        }
+
+        for(i = 0; i < ntsr; i++ ) {
+
+                /* verify addresses*/
+                if(addrcmp(&tmptsr->low, &tsr[i].low) > 0
+                        || addrcmp(&tmptsr->high, &tsr[i].high) < 0)
+                {
+                        return FALSE;
+                }
+
+                /* verify port */
+                if(tmptsr->startport > tsr[i].startport
+                        || tmptsr->endport < tsr[i].endport)
+                {
+                        return FALSE;
+                }
+
+                /* verify protocol */
+
+                if( tmptsr->ipprotoid !=0
+                        && tmptsr->ipprotoid != tsr[i].ipprotoid)
+                {
+                        return FALSE;
+                }
+        }
+        return TRUE;
+}
+
 /* return number of traffic selectors found */
-int 
+int
 ikev2_parse_ts(struct payload_digest *const ts_pd
-	       , struct traffic_selector *array
-	       , unsigned int array_max)
+               , struct traffic_selector *array
+               , unsigned int array_max)
 {
     struct ikev2_ts1 ts1;
     unsigned int i;
 
     for(i=0; i<ts_pd->payload.v2ts.isat_num; i++) {
-	pb_stream addr;
-	if(!in_struct(&ts1, &ikev2_ts1_desc, &ts_pd->pbs, &addr))
-	    return -1;
-	
-	if(i < array_max) {
-	    memset(&array[i], 0, sizeof(*array));
-	    switch(ts1.isat1_type) {
-	    case IKEv2_TS_IPV4_ADDR_RANGE:
-		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-		array[i].low.u.v4.sin_family  = AF_INET;
-#ifdef NEED_SIN_LEN
-		array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
-		if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
-		    return -1;
-		
-		array[i].high.u.v4.sin_family = AF_INET;
-#ifdef NEED_SIN_LEN
-		array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
+        pb_stream addr;
+        if(!in_struct(&ts1, &ikev2_ts1_desc, &ts_pd->pbs, &addr))
+            return -1;
 
-		if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
-		    return -1;
-		break;
-
-	    case IKEv2_TS_IPV6_ADDR_RANGE:
-		array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-		array[i].low.u.v6.sin6_family  = AF_INET6;
+        if(i < array_max) {
+            memset(&array[i], 0, sizeof(*array));
+            switch(ts1.isat1_type) {
+            case IKEv2_TS_IPV4_ADDR_RANGE:
+                array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+                array[i].low.u.v4.sin_family  = AF_INET;
 #ifdef NEED_SIN_LEN
-		array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
+                array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
+#endif
+                if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+                    return -1;
+
+                array[i].high.u.v4.sin_family = AF_INET;
+#ifdef NEED_SIN_LEN
+                array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
 #endif
 
-		if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
-		    return -1;
-		
-		array[i].high.u.v6.sin6_family = AF_INET6;
+                if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
+                    return -1;
+                break;
+
+            case IKEv2_TS_IPV6_ADDR_RANGE:
+                array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+                array[i].low.u.v6.sin6_family  = AF_INET6;
+#ifdef NEED_SIN_LEN
+                array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
+#endif
+
+                if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
+                    return -1;
+
+                array[i].high.u.v6.sin6_family = AF_INET6;
 #ifdef NEED_SIN_LEN
                 array[i].high.u.v6.sin6_len = sizeof( struct sockaddr_in6);
 #endif
 
-		if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
-		    return -1;
-		break;
-		
-	    default:
-		return -1;
-	    }
+                if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
+                    return -1;
+                break;
 
-	    array[i].ipprotoid = ts1.isat1_ipprotoid;
-	    /*should be converted to host byte order for local processing*/
-	    array[i].startport = ts1.isat1_startport;
-	    array[i].endport   = ts1.isat1_endport;
-	}
+            default:
+                return -1;
+            }
+
+            array[i].ipprotoid = ts1.isat1_ipprotoid;
+            /*should be converted to host byte order for local processing*/
+            array[i].startport = ts1.isat1_startport;
+            array[i].endport   = ts1.isat1_endport;
+        }
     }
-    
+
     return i;
 }
 
-int ikev2_evaluate_connection_port_fit(struct connection *d
-				  , struct spd_route *sr
-				  , enum phase1_role role
-				  , struct traffic_selector *tsi
-				  , struct traffic_selector *tsr
-				  , unsigned int tsi_n
-				  , unsigned int tsr_n
-				  , unsigned int *best_tsi_i
-				  , unsigned int *best_tsr_i)
+static bool
+ikev2_narrowing(struct connection *c
+                  , enum phase1_role role
+                  , struct traffic_selector *tsi
+                  , struct traffic_selector *tsr
+                  , unsigned int tsi_n
+                  , unsigned int tsr_n
+                  , struct traffic_selector **narrowed_tsi
+                  , struct traffic_selector **narrowed_tsr
+                  , struct connection **result)
 {
-	unsigned int tsi_ni, tsr_ni;
-	int bestfit_p = -1;
-	struct end *ei, *er;
-	int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
-
-	if(role == INITIATOR) {
-		ei = &sr->this;
-		er = &sr->that;
-	} else {
-		ei = &sr->that;
-		er = &sr->this;
-	} 
-	/* compare tsi/r array to this/that, evaluating port ranges how well it fits */
-	for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
-		for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
-			int fitrange1 = 0;
-			int fitrange2 = 0;
-
-			DBG(DBG_CONTROL,DBG_log("ei->port %d  tsi[tsi_ni].startport %d  tsi[tsi_ni].endport %d narrowing=%s"
-						,ei->port , tsi[tsi_ni].startport, tsi[tsi_ni].endport, (narrowing ? "yes" : "no")));
-
-			if((ei->port) && (( ei->port == tsi[tsi_ni].startport ) && (ei->port == tsi[tsi_ni].endport))) {
-				fitrange1 = 1; 
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d  ==  ei->port %d exact match single port  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, ei->port, fitrange1));
-
-			}
-			else if ((!ei->port) && ( ( tsi[tsi_ni].startport == ei->port ) && (tsi[tsi_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange1 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d-%d  ==  ei 0-65535 exact match all ports  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-			} 
-			else if ( (role == INITIATOR) && narrowing && (!ei->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-						 ,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));	
-				if( tsi[tsi_ni].startport <= tsi[tsi_ni].endport ) {
-					fitrange1 = 1 + tsi[tsi_ni].endport - tsi[tsi_ni].startport ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535 can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"  
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
-
-			}		
-			else if ((role == RESPONDER) && ( narrowing  && ei->port) ) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port %d to tsi[%d] %d-%d to"
-						 ,ei->port, tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));	
-				if(( ei->port >= tsi[tsi_ni].startport ) && 
-						(ei->port <= tsi[tsi_ni].endport)) {
-					fitrange1 = 1 ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535. can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"  
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
-
-			}
-
-			else 
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsi[%d] %d-%d to ei->port %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
+struct host_pair *hp = NULL;
+struct connection *d;
+unsigned int i;
+struct end *ei, *er;
+int  bests=0;
+struct connection *bestc=NULL;
+#if 0
+bool specific_first_ts = FALSE;
+#endif
 
 
-			if((er->port) && (( er->port == tsr[tsr_ni].startport ) && (er->port == tsr[tsr_ni].endport))) {
-				fitrange2 = 1; 
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d  ==  er->port %d exact match single port fitrange2 %d"
-							,tsr_ni, tsr[tsr_ni].startport, er->port, fitrange2));
+        hp = find_host_pair(&c->spd.this.host_addr
+                                , c->spd.this.host_port
+                                , &c->spd.that.host_addr
+                                , c->spd.that.host_port);
 
-			}
-			else if ((!er->port) && ( ( tsr[tsr_ni].startport == er->port ) && (tsr[tsr_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange2 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d-%d  ==  ei 0-65535 exact match all ports fitrange2 %d"
-							, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, fitrange2));
-			} 
+#ifdef DEBUG
+        if (DBGP(DBG_CONTROLMORE))
+        {
+                char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
 
-			else if ( (role == INITIATOR) && narrowing && (!er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport)); 
-				if( tsr[tsr_ni].startport <= tsi[tsr_ni].endport ){
-					fitrange2 = 1 + tsr[tsr_ni].endport - tsr[tsi_ni].startport;
-						DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port 0-65535 can be narrowed  fitrange2 %d"
-									,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport,fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsr[%d] %d-%d to er->port 0-65535"  
-								,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
+                subnettot(&c->spd.this.client, 0, s2, sizeof(s2));
+                subnettot(&c->spd.that.client, 0, d2, sizeof(d2));
 
-			} 
-      else if ((role == RESPONDER) &&  narrowing  && (er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65535 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport)); 
-				if((  er->port >= tsr[tsr_ni].startport ) && 
-						(er->port <= tsr[tsr_ni].endport)) {
-					fitrange2 = 1;
-					DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port %d can be narrowed fitrange2 %d" 
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port, fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   can't narrow tsr[%d] %d-%d to er->port %d"
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
-			}
-			else 
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsr[%d] %d-%d to er->port %d"  
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
+                DBG_log("  checking hostpair %s -> %s is %s"
+                        , s2, d2
+                        , (hp ? "found" : "not found"));
+        }
+#endif /* DEBUG */
+
+        if(!hp) {
+                return FALSE;
+        }
+
+#if 0
+        /* check if there is any specific first traffic selector */
+        if( addrcmp(&tsi[0].low, &tsi[0].high)==0 && tsi[0].startport == tsi[0].endport &&  tsi[0].ipprotoid!=0
+                && addrcmp(&tsr[0].low, &tsr[0].high)==0 && tsr[0].startport ==  tsr[0].endport &&  tsr[0].ipprotoid!=0) {
+                specific_first_ts = TRUE;
+        }
+
+        if(!specific_first_ts && (tsi_n >= 2 || tsr_n >= 2) )
+        {
+                return FALSE;
+        }
+#endif
+
+        for (d = hp->connections; d != NULL; d = d->hp_next)
+        {
+                int wildcards, pathlen;  /* XXX */
+                struct traffic_selector tmp,  tmp2;
+                int curs=0;
+                bool found_one_match_tsi = FALSE, found_one_match_tsr = FALSE;
+
+                if (d->policy & POLICY_GROUP)
+                        continue;
+
+                if (!(same_id(&c->spd.this.id, &d->spd.this.id)
+                      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
+                      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+                    continue;
 
 
-			int fitbits  = 0;
-			if(fitrange1 && fitrange2) {
-				fitbits = (fitrange1 << 8) + fitrange2;
-				DBG(DBG_CONTROL,DBG_log("    is a match"));
-				if(fitbits > bestfit_p) {
-					*best_tsi_i = tsi_ni;
-					*best_tsr_i = tsr_ni;
-					bestfit_p = fitbits;
-					DBG(DBG_CONTROL,DBG_log("    and is a better fit tsi[%d] fitrange1 %d tsr[%d] fitrange2 %d fitbits %d"
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				} 
-				else {
-					DBG(DBG_CONTROL,DBG_log("    and is not a better fit tsi[%d] fitrange %d tsr[%d] fitrange2 %d fitbits %d" 
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				}
-			}
-			else {
-				DBG(DBG_CONTROL,DBG_log("    is not a match"));
-			}
+                if(ikev2_perfect_match_ts(tsi, tsr, tsi_n, tsr_n, d, role)) {
+                        *result = d;
+                        return TRUE;
+                }
 
-		}
-	}
-	DBG(DBG_CONTROL,DBG_log("    port_fitness  %d", bestfit_p));
-	return bestfit_p;
+                if(role == INITIATOR) {
+                        ei = &d->spd.this;
+                        er = &d->spd.that;
+                } else {
+                        ei = &d->spd.that;
+                        er = &d->spd.this;
+                }
+
+                tmp = ikev2_subnettots(ei);
+
+
+                for(i=0; i<tsi_n; i++) {
+
+                        /* ip address */
+                        if(addrcmp(&tmp.low, &tsi[i].low) >= 0)
+                        {
+                                tmp2.low = tmp.low;
+                        }
+                        else
+                        {
+                                tmp2.low = tsi[i].low;
+                        }
+
+                        if(addrcmp(&tmp.high, &tsi[i].high) >= 0)
+                        {
+                                tmp2.high = tsi[i].high;
+                        }
+                        else
+                        {
+                                tmp2.high = tmp.high;
+                        }
+
+                        if(addrcmp(&tmp2.low, &tmp2.high) > 0) {
+                                continue;
+                        }
+
+                        if(addrtypeof(&tmp2.low) != addrtypeof(&tmp2.high)) {
+                                continue;
+                        }
+
+                        /* port */
+                        if(tmp.startport >= tsi[i].startport )
+                        {
+                                tmp2.startport=tmp.startport;
+                        }
+                        else
+                        {
+                                tmp2.startport=tsi[i].startport;
+                        }
+
+                        if(tmp.endport >= tsi[i].endport )
+                        {
+                                tmp2.endport=tsi[i].endport;
+                        }
+                        else
+                        {
+                                tmp2.endport=tmp.endport;
+                        }
+
+                        if(tmp2.startport >  tmp2.endport)
+                        {
+                                continue;
+                        }
+
+                        /* protocol */
+                        if( !tmp.ipprotoid && !tsi[i].ipprotoid && tmp.ipprotoid!=tsi[i].ipprotoid )
+                        {
+                                continue;
+                        }
+
+                        curs++;
+                        found_one_match_tsi = TRUE;
+                }
+
+                tmp = ikev2_subnettots(er);
+                for(i=0; i<tsr_n; i++) {
+
+                        /* ip address */
+                        if(addrcmp(&tmp.low, &tsr[i].low) >= 0)
+                        {
+                                tmp2.low = tmp.low;
+                        }
+                        else
+                        {
+                                tmp2.low = tsr[i].low;
+                        }
+
+                        if(addrcmp(&tmp.high, &tsr[i].high) >= 0)
+                        {
+                                tmp2.high = tsr[i].high;
+                        }
+                        else
+                        {
+                                tmp2.high = tmp.high;
+                        }
+
+                        if(addrcmp(&tmp2.low, &tmp2.high) > 0) {
+                                continue;
+                        }
+
+                        if(addrtypeof(&tmp2.low) != addrtypeof(&tmp2.high)) {
+                                continue;
+                        }
+
+                        /* port */
+                        if(tmp.startport >= tsr[i].startport )
+                        {
+                                tmp2.startport=tmp.startport;
+                        }
+                        else
+                        {
+                                tmp2.startport=tsr[i].startport;
+                        }
+
+                        if(tmp.endport >= tsr[i].endport )
+                        {
+                                tmp2.endport=tsr[i].endport;
+                        }
+                        else
+                        {
+                                tmp2.endport=tmp.endport;
+                        }
+
+                        if(tmp2.startport >  tmp2.endport)
+                        {
+                                continue;
+                        }
+
+                        /* protocol */
+                        if( !tmp.ipprotoid && !tsr[i].ipprotoid && tmp.ipprotoid!=tsr[i].ipprotoid )
+                        {
+                                continue;
+                        }
+
+                        curs++;
+                        found_one_match_tsr = TRUE;
+
+                }
+
+                if(curs > bests && found_one_match_tsi && found_one_match_tsr)
+                {
+                bests = curs;
+                bestc = d;
+
+                }
+        }
+
+        if(bestc == NULL) {
+                return FALSE;
+        }
+
+        /* creating narrowed traffic selector */
+        {
+                struct traffic_selector tmp,  tmp2, *tmp3;
+
+                *result = bestc;
+
+                if(role == INITIATOR) {
+                        ei = &bestc->spd.this;
+                        er = &bestc->spd.that;
+                } else {
+                        ei = &bestc->spd.that;
+                        er = &bestc->spd.this;
+                }
+
+
+                tmp = ikev2_subnettots(ei);
+                for(i=0; i<tsi_n; i++) {
+
+                        /* ip address */
+                        if(addrcmp(&tmp.low, &tsi[i].low) >= 0)
+                        {
+                                tmp2.low = tmp.low;
+                        }
+                        else
+                        {
+                                tmp2.low = tsi[i].low;
+                        }
+
+                        if(addrcmp(&tmp.high, &tsi[i].high) >= 0)
+                        {
+                                tmp2.high = tsi[i].high;
+                        }
+                        else
+                        {
+                                tmp2.high = tmp.high;
+                        }
+
+                        if(addrcmp(&tmp2.low, &tmp2.high) > 0) {
+                                continue;
+                        }
+
+                        /* port */
+                        if(tmp.startport >= tsi[i].startport )
+                        {
+                                tmp2.startport=tmp.startport;
+                        }
+                        else
+                        {
+                                tmp2.startport=tsi[i].startport;
+                        }
+
+                        if(tmp.endport >= tsi[i].endport )
+                        {
+                                tmp2.endport=tsi[i].endport;
+                        }
+                        else
+                        {
+                                tmp2.endport=tmp.endport;
+                        }
+
+                        if(tmp2.startport >  tmp2.endport)
+                        {
+                                continue;
+                        }
+
+                        /* as openswan supports only single port, so picking one port*/
+                        if( tmp2.startport > 0){
+                                tmp2.endport = tmp2.startport;
+                        }
+                        else if (tmp2.endport < 65535 ){
+                                tmp2.startport = tmp2.endport;
+                        }
+
+                        /* protocol */
+                        if( tmp.ipprotoid > 0 && tsi[i].ipprotoid > 0 && tmp.ipprotoid!=tsi[i].ipprotoid)
+                        {
+                                continue;
+                        }
+                        else if(tmp.ipprotoid == 0)
+                        {
+                                tmp2.ipprotoid = tsi[i].ipprotoid;
+                        }
+                        else
+                        {
+                                tmp2.ipprotoid = tmp.ipprotoid;
+                        }
+
+                        /*setting type */
+                        switch(tmp2.low.u.v4.sin_family) {
+                        case AF_INET:
+                                tmp2.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+                                break;
+                        case AF_INET6:
+                                tmp2.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+                                break;
+                        }
+
+                        tmp3 = alloc_thing(struct traffic_selector, "struct traffic_selector");
+                        *tmp3 = tmp2;
+                        tmp3->next = NULL;
+
+                        if(*narrowed_tsi == NULL)
+                        {
+                                *narrowed_tsi = tmp3;
+                        }
+                        else
+                        {
+                                struct traffic_selector *tmp4 = *narrowed_tsi;
+                                while(tmp4->next!=NULL){
+                                tmp4 = tmp4->next;
+                                }
+                                tmp4->next = tmp3;
+
+                        }
+                }
+
+                tmp = ikev2_subnettots(er);
+                for(i=0; i<tsr_n; i++) {
+
+                        /* ip address */
+                        if(addrcmp(&tmp.low, &tsr[i].low) >= 0)
+                        {
+                                tmp2.low = tmp.low;
+                        }
+                        else
+                        {
+                                tmp2.low = tsr[i].low;
+                        }
+
+                        if(addrcmp(&tmp.high, &tsr[i].high) >= 0)
+                        {
+                                tmp2.high = tsr[i].high;
+                        }
+                        else
+                        {
+                                tmp2.high = tmp.high;
+                        }
+
+                        if(addrcmp(&tmp2.low, &tmp2.high) > 0) {
+                                continue;
+                        }
+
+                        /* port */
+                        if(tmp.startport >= tsr[i].startport )
+                        {
+                                tmp2.startport=tmp.startport;
+                        }
+                        else
+                        {
+                                tmp2.startport=tsr[i].startport;
+                        }
+
+                        if(tmp.endport >= tsr[i].endport )
+                        {
+                                tmp2.endport=tsr[i].endport;
+                        }
+                        else
+                        {
+                                tmp2.endport=tmp.endport;
+                        }
+
+                        if(tmp2.startport >  tmp2.endport)
+                        {
+                                continue;
+                        }
+
+                        /* as openswan supports only single port, so picking one port*/
+                        if( tmp2.startport > 0){
+                                tmp2.endport = tmp2.startport;
+                        }
+                        else if (tmp2.endport < 65535 ){
+                                tmp2.startport = tmp2.endport;
+                        }
+
+                        /* protocol */
+                        if( !tmp.ipprotoid && !tsr[i].ipprotoid && tmp.ipprotoid!=tsr[i].ipprotoid )
+                        {
+                                continue;
+                        }
+                        else if(tmp.ipprotoid == 0)
+                        {
+                                tmp2.ipprotoid = tsr[i].ipprotoid;
+                        }
+                        else
+                        {
+                                tmp2.ipprotoid = tmp.ipprotoid;
+                        }
+
+                        /*setting type */
+                        switch(tmp2.low.u.v4.sin_family) {
+                        case AF_INET:
+                                tmp2.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
+                                break;
+                        case AF_INET6:
+                                tmp2.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+                                break;
+                        }
+
+                        tmp3 = alloc_thing(struct traffic_selector, "struct traffic_selector");
+                        *tmp3 = tmp2;
+                        tmp3->next = NULL;
+
+                        if(*narrowed_tsr == NULL)
+                        {
+                                *narrowed_tsr = tmp3;
+                        }
+                        else
+                        {
+                                struct traffic_selector *tmp4 = *narrowed_tsr;
+                                while(tmp4->next!=NULL){
+                                tmp4 = tmp4->next;
+                                }
+
+                                tmp4->next = tmp3;
+                        }
+
+                }
+        }
+
+        struct traffic_selector *tmp;
+        tmp = *narrowed_tsi;
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                DBG_log("    tsi=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+            }
+            );
+
+        tmp=tmp->next;
+        }
+
+        tmp = *narrowed_tsr;
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+            {
+                char lbi[ADDRTOT_BUF];
+                char hbi[ADDRTOT_BUF];
+                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                DBG_log("    tsr=%s/%s, port=%d/%d, protocol=%d"
+                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+            }
+            );
+
+        tmp=tmp->next;
+        }
+        return TRUE;
 }
 
-int ikev2_evaluate_connection_fit(struct connection *d
-				  , struct spd_route *sr
-				  , enum phase1_role role
-				  , struct traffic_selector *tsi
-				  , struct traffic_selector *tsr
-				  , unsigned int tsi_n
-				  , unsigned int tsr_n)
+struct connection *
+ikev2_create_narrowed_con(struct connection *c
+                        , struct traffic_selector *narrowed_tsi
+                        , struct traffic_selector *narrowed_tsr
+                        , enum phase1_role role)
 {
-    unsigned int tsi_ni, tsr_ni;
-    int bestfit = -1;
-    int best_tsr, best_tsi; 
-    struct end *ei, *er;
-    
-    if(role == INITIATOR) {
-	ei = &sr->this;
-	er = &sr->that;
-    } else {
-	ei = &sr->that;
-	er = &sr->this;
-    }
-	
-    DBG(DBG_CONTROLMORE,
-    {
-	char ei3[SUBNETTOT_BUF];
-	char er3[SUBNETTOT_BUF];
-	subnettot(&ei->client,  0, ei3, sizeof(ei3));
-	subnettot(&er->client,  0, er3, sizeof(er3));
-	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
-		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
-		, d->name, ei3, ei->protocol, ei->port
-		, er3, er->protocol, er->port
-		, is_virtual_connection(d) ? "(virt)" : "");
-    }
-    );
-   
-    /* compare tsi/r array to this/that, evaluating how well it fits */
-    for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
-	for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
-	    /* does it fit at all? */
+        struct connection *narrowed_con=NULL;
+        struct spd_route *tmp_spd=NULL, *tmp_spd1=NULL;
+        struct traffic_selector *tmptsi=NULL, *tmptsr=NULL;
 
-	    DBG(DBG_CONTROLMORE,
-	    {
-		char lbi[ADDRTOT_BUF];
-		char hbi[ADDRTOT_BUF];
-		char lbr[ADDRTOT_BUF];
-		char hbr[ADDRTOT_BUF];
-		addrtot(&tsi[tsi_ni].low,  0, lbi, sizeof(lbi));
-		addrtot(&tsi[tsi_ni].high, 0, hbi, sizeof(hbi));
-		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
-		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
-		
-		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
-			, tsi_ni, lbi, hbi
-			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
-			, tsr_ni, lbr, hbr
-			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
-	    }
-	    );
-	    /* do addresses fit into the policy? */
+        narrowed_con = ikev2_narrow_instantiate(c);
 
-	    /*
-	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
-	     *       for now we really support/limit ourselves to a single CIDR
-	     */
-	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
-	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
-	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
-	       && addrinsubnet(&tsr[tsr_ni].high, &er->client)
-	       && (tsi[tsi_ni].ipprotoid == ei->protocol)
-	       && (tsr[tsr_ni].ipprotoid == er->protocol)
-	      )
-	    {
-		/*
-		 * now, how good a fit is it? --- sum of bits gives
-		 * how good a fit this is.
-		 */
-		int ts_range1 = ikev2_calc_iprangediff(tsi[tsi_ni].low
-						      , tsi[tsi_ni].high);
-		int maskbits1 = ei->client.maskbits;
-		int fitbits1  = maskbits1 + ts_range1;
+        /* setup spds for narrowed connection*/
+        tmp_spd1 = NULL;
+        tmp_spd = &narrowed_con->spd;
+        tmptsi = narrowed_tsi;
 
-		int ts_range2 = ikev2_calc_iprangediff(tsr[tsr_ni].low
-						      , tsr[tsr_ni].high);
-		int maskbits2 = er->client.maskbits;
-		int fitbits2  = maskbits2 + ts_range2;
-		int fitbits = (fitbits1 << 8) + fitbits2;
+        while(tmptsi != NULL) {
+                ip_subnet tmpsubneti;
+                rangetosubnet(&tmptsi->low, &tmptsi->high, &tmpsubneti);
+                tmptsr = narrowed_tsr;
 
-		/*
-		 * comparing for ports
-		 * for finding better local polcy
-		 */
-		DBG(DBG_CONTROL,DBG_log("ei->port %d  tsi[tsi_ni].startport %d  tsi[tsi_ni].endport %d",
-			ei->port , tsi[tsi_ni].startport, tsi[tsi_ni].endport));
-		if( ei->port && (tsi[tsi_ni].startport == ei->port && tsi[tsi_ni].endport == ei->port)) {
-		fitbits = fitbits << 1;
-		}
+                while(tmptsr != NULL ) {
+                        ip_subnet tmpsubnetr;
+                        rangetosubnet(&tmptsr->low, &tmptsr->high, &tmpsubnetr);
 
-		if( er->port && (tsr[tsr_ni].startport == er->port && tsr[tsr_ni].endport == er->port)) {
-		fitbits = fitbits << 1;
-		}
+                        if(tmp_spd == NULL) {
+                                struct spd_route *tmp_spd2 = clone_thing(narrowed_con->spd, "spds from narrowed ts");
+                                tmp_spd = tmp_spd2;
+                                tmp_spd->next = NULL;
 
-		DBG(DBG_CONTROLMORE,
-		{
-		    DBG_log("      has ts_range1=%u maskbits1=%u ts_range2=%u maskbits2=%u fitbits=%d <> %d"
-			    , ts_range1, maskbits1, ts_range2, maskbits2
-			    , fitbits, bestfit);
-		}
-		);
+                                if(tmp_spd1!= NULL){
+                                        tmp_spd1->next = tmp_spd;
+                                }
 
-		if(fitbits > bestfit) {
-		    best_tsi = tsi_ni;
-		    best_tsr = tsr_ni;
-		    bestfit = fitbits;
-		}
-	    }
-	}
-    }
+                                if(tmp_spd != &narrowed_con->spd) {
+                                tmp_spd->this.id.name.ptr = NULL;
+                                tmp_spd->this.id.name.len = 0;
+                                    tmp_spd->that.id.name.ptr = NULL;
+                                    tmp_spd->that.id.name.len = 0;
 
-    return bestfit;
+                                tmp_spd->this.host_addr_name = NULL;
+                                tmp_spd->that.host_addr_name = NULL;
+
+                                tmp_spd->this.updown = clone_str(tmp_spd->this.updown, "updown");
+                                tmp_spd->that.updown = clone_str(tmp_spd->that.updown, "updown");
+
+                                tmp_spd->this.cert_filename = NULL;
+                                tmp_spd->that.cert_filename = NULL;
+
+                                tmp_spd->this.cert.type = 0;
+                                tmp_spd->that.cert.type = 0;
+
+                                tmp_spd->this.ca.ptr = NULL;
+                                tmp_spd->that.ca.ptr = NULL;
+
+                                tmp_spd->this.groups = NULL;
+                                tmp_spd->that.groups = NULL;
+
+                                tmp_spd->this.virt = NULL;
+                                tmp_spd->that.virt = NULL;
+                                }
+                        }
+
+                        if(role == INITIATOR) {
+                                tmp_spd->this.client = tmpsubneti;
+                                tmp_spd->this.port = tmptsi->startport;
+                                tmp_spd->this.protocol = tmptsi->ipprotoid;
+                                if( subnetishost(&tmp_spd->this.client) && addrinsubnet(&tmp_spd->this.host_addr, &tmp_spd->this.client)) {
+                                tmp_spd->this.has_client = FALSE;
+                                }
+                                else {
+                                tmp_spd->this.has_client = TRUE;
+                                }
+                                tmp_spd->this.has_client_wildcard =  FALSE;
+                                tmp_spd->this.has_port_wildcard = FALSE;
+                                setportof(htons(tmp_spd->this.port), &tmp_spd->this.host_addr);
+                                setportof(htons(tmp_spd->this.port), &tmp_spd->this.client.addr);
+
+                                tmp_spd->that.client = tmpsubnetr;
+                                tmp_spd->that.port = tmptsr->startport;
+                                tmp_spd->that.protocol = tmptsr->ipprotoid;
+                                if( subnetishost(&tmp_spd->that.client) && addrinsubnet(&tmp_spd->that.host_addr, &tmp_spd->that.client)) {
+                                tmp_spd->that.has_client = FALSE;
+                                }
+                                else {
+                                tmp_spd->that.has_client = TRUE;
+                                }
+                                tmp_spd->that.has_client_wildcard =  FALSE;
+                                tmp_spd->that.has_port_wildcard = FALSE;
+                                setportof(htons(tmp_spd->that.port), &tmp_spd->that.host_addr);
+                                setportof(htons(tmp_spd->that.port), &tmp_spd->that.client.addr);
+                        }
+                        else {
+                                tmp_spd->this.client = tmpsubnetr;
+                                tmp_spd->this.port = tmptsr->startport;
+                                tmp_spd->this.protocol = tmptsr->ipprotoid;
+                                if( subnetishost(&tmp_spd->this.client) && addrinsubnet(&tmp_spd->this.host_addr, &tmp_spd->this.client)) {
+                                tmp_spd->this.has_client = FALSE;
+                                }
+                                else {
+                                tmp_spd->this.has_client = TRUE;
+                                }
+                                tmp_spd->this.has_client_wildcard =  FALSE;
+                                tmp_spd->this.has_port_wildcard = FALSE;
+                                setportof(htons(tmp_spd->this.port), &tmp_spd->this.host_addr);
+                                setportof(htons(tmp_spd->this.port), &tmp_spd->this.client.addr);
+
+                                tmp_spd->that.client = tmpsubneti;
+                                tmp_spd->that.port = tmptsi->startport;
+                                tmp_spd->that.protocol = tmptsi->ipprotoid;
+                                if( subnetishost(&tmp_spd->that.client) && addrinsubnet(&tmp_spd->that.host_addr, &tmp_spd->that.client)) {
+                                tmp_spd->that.has_client = FALSE;
+                                }
+                                else {
+                                tmp_spd->that.has_client = TRUE;
+                                }
+                                tmp_spd->that.has_client_wildcard =  FALSE;
+                                tmp_spd->that.has_port_wildcard = FALSE;
+                                setportof(htons(tmp_spd->that.port), &tmp_spd->that.host_addr);
+                                setportof(htons(tmp_spd->that.port), &tmp_spd->that.client.addr);
+                        }
+
+                tmp_spd1 = tmp_spd;
+                tmp_spd = tmp_spd1->next;
+                tmptsr = tmptsr->next;
+                }
+        tmptsi = tmptsi->next;
+        }
+
+                    char buftest[ADDRTOT_BUF];
+                    tmp_spd = &narrowed_con->spd;
+                    int count_spd=0;
+                    do {
+                        DBG(DBG_CONTROLMORE, DBG_log("spd route number: %d", ++count_spd));
+
+                        /**that info**/
+                        DBG(DBG_CONTROLMORE, DBG_log("that id kind: %d",tmp_spd->that.id.kind));
+                        DBG(DBG_CONTROLMORE,
+                                DBG_log("that id ipaddr: %s", (addrtot(&tmp_spd->that.id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+
+                        if (tmp_spd->that.id.name.ptr != NULL) {
+                        DBG(DBG_CONTROLMORE, DBG_dump_chunk("that id name",tmp_spd->that.id.name));
+                        }
+
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("that host_addr: %s", (addrtot(&tmp_spd->that.host_addr, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("that nexthop: %s", (addrtot(&tmp_spd->that.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("that srcip: %s", (addrtot(&tmp_spd->that.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("that client_addr: %s, maskbits:%d", (addrtot(&tmp_spd->that.client.addr, 0,
+                                                        buftest, sizeof(buftest)), buftest),tmp_spd->that.client.maskbits));
+                        DBG(DBG_CONTROLMORE, DBG_log("that has_client: %d", tmp_spd->that.has_client));
+                        DBG(DBG_CONTROLMORE, DBG_log("that has_client_wildcard: %d", tmp_spd->that.has_client_wildcard));
+                        DBG(DBG_CONTROLMORE, DBG_log("that has_port_wildcard: %d", tmp_spd->that.has_port_wildcard));
+                        DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.has_id_wildcards));
+
+                        /**this info**/
+                        DBG(DBG_CONTROLMORE, DBG_log("this id kind: %d",tmp_spd->this.id.kind));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("this id ipaddr: %s", (addrtot(&tmp_spd->this.id.ip_addr, 0, buftest, sizeof(buftest)), buftest)));
+
+                        if (tmp_spd->this.id.name.ptr != NULL) {
+                        DBG_dump_chunk("this id name",tmp_spd->this.id.name);
+                        }
+
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("this host_addr: %s", (addrtot(&tmp_spd->this.host_addr, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("this nexthop: %s", (addrtot(&tmp_spd->this.host_nexthop, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("this srcip: %s", (addrtot(&tmp_spd->this.host_srcip, 0, buftest, sizeof(buftest)), buftest)));
+                        DBG(DBG_CONTROLMORE, DBG_log("this client_addr: %s, maskbits:%d", (addrtot(&tmp_spd->this.client.addr,
+                                                                0, buftest, sizeof(buftest)), buftest),tmp_spd->this.client.maskbits));
+                        DBG(DBG_CONTROLMORE, DBG_log("this has_client: %d", tmp_spd->this.has_client));
+                        DBG(DBG_CONTROLMORE, DBG_log("this has_client_wildcard: %d", tmp_spd->this.has_client_wildcard));
+                        DBG(DBG_CONTROLMORE, DBG_log("this has_port_wildcard: %d", tmp_spd->this.has_port_wildcard));
+                        DBG(DBG_CONTROLMORE, DBG_log("this has_id_wildcards: %d", tmp_spd->this.has_id_wildcards));
+
+                        tmp_spd = tmp_spd->next;
+                    } while(tmp_spd!=NULL);
+
+        return narrowed_con;
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
-				  , enum phase1_role role
-				  , pb_stream *outpbs)
+                                  , enum phase1_role role
+                                  , pb_stream *outpbs)
 {
     struct state      *st = md->st;
     struct state      *st1;
@@ -618,8 +1191,13 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     stf_status ret;
     struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
     struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-    struct traffic_selector tsi[16], tsr[16];
+    struct traffic_selector tsi[16], tsr[16], *narrowed_tsi=NULL, *narrowed_tsr=NULL;
+    struct connection *narrowed_con=NULL, *result=NULL;
     unsigned int tsi_n, tsr_n;
+    bool ts_negotiation_failed = FALSE;
+
+
+    st1 = duplicate_state(st);
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -628,201 +1206,125 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
     tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 
-    /*
-     * now walk through all connections and see if this connection
-     * was in fact the best.
-     *
-     * similar to find_client_connection/fc_try.
-     */
-  {
-	struct connection *b = c;
-	struct connection *d;
-	int bestfit_n, newfit, bestfit_p; 
-	struct spd_route *sra, *bsr;
-	struct host_pair *hp = NULL;
-	unsigned int best_tsi_i ,  best_tsr_i;
+    if(ikev2_narrowing(c, role, tsi, tsr, tsi_n, tsr_n, &narrowed_tsi , &narrowed_tsr, &result)){
 
-	bsr = NULL;
-	bestfit_n = -1;
-	bestfit_p = -1; 
-	best_tsi_i =  best_tsr_i = -1;
+        if(narrowed_tsi == NULL && narrowed_tsr == NULL && result!= NULL) {
+        /*found exact match */
+                narrowed_con = result;
 
-	for (sra = &c->spd; sra != NULL; sra = sra->next)
-	{
-					int bfit_n=ikev2_evaluate_connection_fit(c,sra,role,tsi,tsr,tsi_n,
-													tsr_n);
-					if (bfit_n > bestfit_n) 
-					{ 
-									DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-									int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-																	tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-									if (bfit_p > bestfit_p) {
-													DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
-																									, c->name, best_tsi_i, best_tsr_i));
-													bestfit_p = bfit_p;
-													bestfit_n = bfit_n;
-													b = c;
-													bsr = sra;
-									}
-					}
-					else 
-									DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
-																					, c->name));  
-	}
+                /*preparing traffic selectors (need to do: free first narrowed_ts here) */
+                st1->st_ts_this= ikev2_subnettots(&result->spd.this);
+                st1->st_ts_that= ikev2_subnettots(&result->spd.that);
+        }
+        else {
+                narrowed_con = ikev2_create_narrowed_con(result, narrowed_tsi, narrowed_tsr, role);
 
-	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
-	{
-		hp = find_host_pair(&sra->this.host_addr
-				, sra->this.host_port
-				, &sra->that.host_addr
-				, sra->that.host_port);
+                /*preparing traffic selectors (need to do: free first narrowed_ts here) */
+                if(role == INITIATOR) {
+                st1->st_ts_this= *narrowed_tsi;
+                st1->st_ts_that= *narrowed_tsr;
+                }
+                else {
+                st1->st_ts_this= *narrowed_tsr;
+                st1->st_ts_that= *narrowed_tsi;
+                }
 
-#ifdef DEBUG
-		if (DBGP(DBG_CONTROLMORE))
-		{
-			char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
+                pfreeany(narrowed_tsi);
+                pfreeany(narrowed_tsr);
+        }
+    }
+    else {
+        ts_negotiation_failed = TRUE;
+    }
 
-			subnettot(&sra->this.client, 0, s2, sizeof(s2));
-			subnettot(&sra->that.client, 0, d2, sizeof(d2));
+    if(narrowed_con!= NULL && !ts_negotiation_failed) {
+    c = narrowed_con;
+    }
 
-			DBG_log("  checking hostpair %s -> %s is %s"
-					, s2, d2
-					, (hp ? "found" : "not found"));
-		}
-#endif /* DEBUG */
+    st1->st_connection = c;
+    st1->st_childsa = NULL;
+    insert_state(st1);
 
-		if(!hp) continue;
+    /* start of SA out */
+    {
+        struct isakmp_sa r_sa = sa_pd->payload.sa;
+        notification_t rn;
+        pb_stream r_sa_pbs;
 
-		for (d = hp->connections; d != NULL; d = d->hp_next)
-		{
-			struct spd_route *sr;
-			int wildcards, pathlen;  /* XXX */
+        if(ts_negotiation_failed) {
+        r_sa.isasa_np = ISAKMP_NEXT_v2N;
+        }
+        else {
+        r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
+        }
 
-			if (d->policy & POLICY_GROUP)
-				continue;
+        if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
+            return STF_INTERNAL_ERROR;
 
-			if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-						&& match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-						&& trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-				continue;
+        /* SA body in and out */
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+                                       &r_sa_pbs, st1, FALSE);
 
+        if (rn != NOTHING_WRONG)
+            return STF_FAIL + rn;
+    }
 
-			for (sr = &d->spd; sr != NULL; sr = sr->next) {
-				newfit=ikev2_evaluate_connection_fit(d,sr,role
-						,tsi,tsr,tsi_n,tsr_n);
-				if(newfit > bestfit_n) {  /// will complicated this with narrowing
-					DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name)); 
-					int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-							tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-					if (bfit_p > bestfit_p) {
-						DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
-									, d->name, best_tsi_i, best_tsr_i));
-						bestfit_p = bfit_p;
-						bestfit_n = newfit;
-						b = d;
-						bsr = sr;
-					}
-				}
-				else 
-					DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by port matching", d->name));
-			}
-		}
-	}
+    if(ts_negotiation_failed) {
+        chunk_t child_spi, notifiy_data;
+        memset(&child_spi, 0, sizeof(child_spi));
+        memset(&notifiy_data, 0, sizeof(notifiy_data));
+        ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
+                        &child_spi,
+                        v2N_TS_UNACCEPTABLE, &notifiy_data, outpbs);
+        change_state(st1, STATE_CHILDSA_DEL);
+        delete_state(st1);
+        return STF_OK;
+    }
 
-	/*
-	 * now that we have found the best connection, copy the data into
-	 * the state structure as the tsi/tsr
-	 *
-	 */
+    md->st = st1;
+    md->pst= st;
 
-	/*better connection*/
-	c=b;
+        ret = ikev2_calc_emit_ts(md, outpbs, role
+                        , c, c->policy);
+        if(ret != STF_OK) return ret; // should we delete_state st1?
 
-	/* Paul: should we STF_FAIL here instead of checking for NULL */
-	if (bsr != NULL) {
-    st1 = duplicate_state(st);
-    insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
-	
-		if(role == INITIATOR) {
-			memcpy (&st1->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
-			memcpy (&st1->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
-		}
-		else {
-			st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
-			st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
-		}
-		ikev2_print_ts(&st1->st_ts_this);
-		ikev2_print_ts(&st1->st_ts_that);
-	}
-	else {
-		if(role == INITIATOR) 
-				return STF_FAIL;
-			else
-			return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN ;
-		}
-	}
+    if( role == RESPONDER ) {
+        chunk_t child_spi, notifiy_data;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+        {
+           if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
-	st1->st_connection = c;
-	md->st = st1;
-	md->pst= st;
+           if(st1->st_connection->policy & POLICY_TUNNEL) {
+                DBG_log("Although local policy is tunnel, received v2N_USE_TRANSPORT_MODE");
+                DBG_log("So switching to transport mode, and responding with v2N_USE_TRANSPORT_MODE notify");
+           }
+           else {
+                DBG_log("Local policy is transport, received v2N_USE_TRANSPORT_MODE");
+                DBG_log("Now responding with v2N_USE_TRANSPORT_MODE notify");
+           }
 
-	/* start of SA out */
-	{
-		struct isakmp_sa r_sa = sa_pd->payload.sa;
-		notification_t rn;
-		pb_stream r_sa_pbs;
+           memset(&child_spi, 0, sizeof(child_spi));
+           memset(&notifiy_data, 0, sizeof(notifiy_data));
+           ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
+                        &child_spi,
+                        v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
 
-		r_sa.isasa_np = ISAKMP_NEXT_v2TSi;  
-		if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
-			return STF_INTERNAL_ERROR;
-
-		/* SA body in and out */
-		rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				&r_sa_pbs, st1, FALSE);
-
-		if (rn != NOTHING_WRONG)
-			return STF_FAIL + rn; // should we delete_state st1?
-	}
-
-	ret = ikev2_calc_emit_ts(md, outpbs, role
-			, c, c->policy);
-	if(ret != STF_OK) return ret; // should we delete_state st1?
-
-	if( role == RESPONDER ) {
-		chunk_t child_spi, notifiy_data;
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-
-				if(st1->st_connection->policy & POLICY_TUNNEL) {
-					DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-					DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
-				}
-				else {
-					DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-					DBG_log("Now responding with USE_TRANSPORT_MODE notify");
-				}
-
-				memset(&child_spi, 0, sizeof(child_spi));
-				memset(&notifiy_data, 0, sizeof(notifiy_data));
-				ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
-						&child_spi,
-						v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
-
-				if (st1->st_esp.present == TRUE) {
-					/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-					st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-				}
-				break;
-			}
-		}
+           if (st1->st_esp.present == TRUE) {
+                /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+                st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+           }
+           break;
+           }
+        }
     }
 
     ikev2_derive_child_keys(st1, role);
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(st1, TRUE))
-	return STF_FATAL;
+        return STF_FATAL;
+
+    st1->st_childsa = c;
 
     /* mark the connection as now having an IPsec SA associated with it. */
     st1->st_connection->newest_ipsec_sa = st1->st_serialno;
@@ -836,4 +1338,4 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
  * c-style: pluto
  * End:
  */
- 
+

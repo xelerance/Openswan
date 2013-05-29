@@ -94,7 +94,7 @@ echo "done."
 echo Invoked with Arguments: $*
 
 cd /root
-pivot_root . initrd 
+pivot_root . initrd
 cd /
 exec /sbin/init $*
 

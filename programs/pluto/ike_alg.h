@@ -7,7 +7,7 @@ struct connection;
 struct ike_alg {
     const char *name;
     const char *officname;
-    u_int16_t algo_type;	
+    u_int16_t algo_type;
     u_int16_t algo_id;
     enum ikev2_trans_type_encr algo_v2id;
     struct ike_alg *algo_next;
@@ -61,7 +61,7 @@ bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, 
 
 int ike_alg_init(void);
 
-/*	
+/*
  *	This could be just OAKLEY_XXXXXX_ALGORITHM, but it's
  *	here with other name as a way to assure that the
  *	algorithm hook type is supported (detected at compile time)

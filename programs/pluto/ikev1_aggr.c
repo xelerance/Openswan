@@ -84,7 +84,7 @@
 #include "tpm/tpm.h"
 
 #if defined(AGGRESSIVE)
-/* STATE_AGGR_R0: HDR, SA, KE, Ni, IDii 
+/* STATE_AGGR_R0: HDR, SA, KE, Ni, IDii
  *           --> HDR, SA, KE, Nr, IDir, HASH_R/SIG_R
  */
 static stf_status
@@ -102,7 +102,7 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
  * continuation from second calculation (the DH one)
  *
  */
-static void 
+static void
 aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
 			  , struct pluto_crypto_req *r
 			  , err_t ugh)
@@ -111,10 +111,10 @@ aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
   struct msg_digest *md = dh->md;
   struct state *const st = md->st;
   stf_status e;
-  
+
   DBG(DBG_CONTROLMORE
       , DBG_log("aggr inI1_outR1: calculated ke+nonce+DH, sending R1"));
-  
+
   if (st == NULL) {
 	  loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
 		      __FUNCTION__);
@@ -135,7 +135,7 @@ aggr_inI1_outR1_continue2(struct pluto_crypto_req_cont *pcrc
   st->st_calculating = FALSE;
 
   e = aggr_inI1_outR1_tail(pcrc, r);
-  
+
   if(dh->md != NULL) {
       complete_v1_state_transition(&dh->md, e);
       if(dh->md) release_md(dh->md);
@@ -158,10 +158,10 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
   struct msg_digest *md = ke->md;
   struct state *const st = md->st;
   stf_status e;
-  
+
   DBG(DBG_CONTROLMORE
       , DBG_log("aggr inI1_outR1: calculated ke+nonce, calculating DH"));
-  
+
   if (st == NULL) {
 	  loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
 		      __FUNCTION__);
@@ -188,7 +188,7 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
   unpack_nonce(&st->st_nr, r);
 
   /* NOTE: the "r" reply will get freed by our caller */
-  
+
   /* set up second calculation */
   {
       struct dh_continuation *dh = alloc_thing(struct dh_continuation
@@ -201,7 +201,7 @@ aggr_inI1_outR1_continue1(struct pluto_crypto_req_cont *pcrc
 			    , st->st_import
 			    , RESPONDER
 			    , st->st_oakley.group->group);
-      
+
       if(e != STF_SUSPEND) {
 	  if(dh->md != NULL) {
 	      complete_v1_state_transition(&dh->md, e);
@@ -231,7 +231,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 						, md->sender_port, LEMPTY);
 
 
-#if 0    
+#if 0
 #ifdef NAT_TRAVERSAL
     if (c == NULL && md->iface->ike_float)
     {
@@ -279,7 +279,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 
     st->st_policy |= POLICY_AGGRESSIVE;
 
-    st->st_oakley.auth = authtype;  
+    st->st_oakley.auth = authtype;
 
     if (!decode_peer_id(md, FALSE, TRUE))
     {
@@ -342,7 +342,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     /* SA body in */
     {
 	pb_stream sabs = sa_pd->pbs;
-	
+
 	RETURN_STF_FAILURE(parse_isakmp_sa_body(&sabs
 						, &sa_pd->payload.sa
 						, NULL, FALSE, st));
@@ -501,16 +501,16 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /*
-     * NOW SEND VENDOR ID payloads 
+     * NOW SEND VENDOR ID payloads
      */
-       
+
     /* Announce our ability to do RFC 3706 Dead Peer Detection to the peer
         if we have it enabled on this conn */
     if(st->st_connection->dpd_delay && st->st_connection->dpd_timeout) {
 	/* Set local policy for DPD to be on */
 	st->hidden_variables.st_dpd_local = 1;
     }
-    
+
     /* send DPD VID */
     {
 	int np = ISAKMP_NEXT_NONE;
@@ -651,10 +651,10 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   struct msg_digest *md = dh->md;
   struct state *const st = md->st;
   stf_status e;
-  
+
   DBG(DBG_CONTROLMORE
       , DBG_log("aggr inR1_outI2: calculated DH, sending I2"));
-  
+
   if (st == NULL) {
 	  loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
 		      __FUNCTION__);
@@ -677,7 +677,7 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   finish_dh_secretiv(st, r);
 
   e = aggr_inR1_outI2_tail(md, NULL);
-  
+
   if(dh->md != NULL) {
       complete_v1_state_transition(&dh->md, e);
       if(dh->md) release_md(dh->md);
@@ -796,44 +796,32 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
 #ifdef XAUTH
-    /* It seems as per Cisco implementation, XAUTH and MODECFG 
+    /* It seems as per Cisco implementation, XAUTH and MODECFG
     * are not supposed to be performed again during rekey */
-    if(c->newest_isakmp_sa != SOS_NOBODY && 
-	st->st_connection->spd.this.xauth_client && 
+    if(c->newest_isakmp_sa != SOS_NOBODY &&
+	st->st_connection->spd.this.xauth_client &&
 	st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
+        DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
+        st->hidden_variables.st_xauth_client_done = TRUE;
+        st->st_oakley.xauth = 0;
 
 	if(st->st_connection->spd.this.modecfg_client) {
-	DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
-	st->hidden_variables.st_modecfg_vars_set = TRUE;
-	st->hidden_variables.st_modecfg_started = TRUE;
+            DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
+            st->hidden_variables.st_modecfg_vars_set = TRUE;
+            st->hidden_variables.st_modecfg_started = TRUE;
 	}
     }
 #endif
 
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
-
-	if(st->st_connection->spd.this.modecfg_client) {
-	DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
-	st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE;
-	}
-    }
-
     c->newest_isakmp_sa = st->st_serialno;
 
-    /* save last IV from phase 1 so it can be restored later so anything 
+    /* save last IV from phase 1 so it can be restored later so anything
      * between the end of phase 1 and the start of phase 2 ie mode config
      * payloads etc will not loose our IV
      */
     memcpy(st->st_ph1_iv, st->st_new_iv, st->st_new_iv_len);
     st->st_ph1_iv_len = st->st_new_iv_len;
-    
+
     return STF_OK;
 }
 
@@ -914,46 +902,34 @@ aggr_inI2_tail(struct msg_digest *md
     /**************** done input ****************/
 
 #ifdef XAUTH
-    /* It seems as per Cisco implementation, XAUTH and MODECFG 
+    /* It seems as per Cisco implementation, XAUTH and MODECFG
      * are not supposed to be performed again during rekey */
-    if(c->newest_isakmp_sa != SOS_NOBODY && 
-	st->st_connection->spd.this.xauth_client && 
+    if(c->newest_isakmp_sa != SOS_NOBODY &&
+	st->st_connection->spd.this.xauth_client &&
 	st->st_connection->remotepeertype == CISCO) {
 	   DBG(DBG_CONTROL, DBG_log("Skipping XAUTH for rekey for Cisco Peer compatibility."));
 	   st->hidden_variables.st_xauth_client_done = TRUE;
-	   st->st_oakley.xauth = 0; 
+	   st->st_oakley.xauth = 0;
 
 	   if(st->st_connection->spd.this.modecfg_client) {
 		DBG(DBG_CONTROL, DBG_log("Skipping ModeCFG for rekey for Cisco Peer compatibility."));
 		st->hidden_variables.st_modecfg_vars_set = TRUE;
-		st->hidden_variables.st_modecfg_started = TRUE; 
+		st->hidden_variables.st_modecfg_started = TRUE;
 	   }
     }
 #endif
-
-    if(c->newest_isakmp_sa != SOS_NOBODY && st->st_connection->spd.this.xauth_client && st->st_connection->remotepeertype == CISCO) {
-    DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and XAUTH is not supposed to be done again"));
-    st->hidden_variables.st_xauth_client_done = TRUE;
-    st->st_oakley.xauth = 0; 
-
-        if(st->st_connection->spd.this.modecfg_client) {
-        DBG(DBG_CONTROL, DBG_log("This seems to be rekey, and MODECFG is not supposed to be done again"));
-        st->hidden_variables.st_modecfg_vars_set = TRUE;
-        st->hidden_variables.st_modecfg_started = TRUE; 
-        }
-   }
 
     c->newest_isakmp_sa = st->st_serialno;
 
     update_iv(st);	/* Finalize our Phase 1 IV */
 
-    /* save last IV from phase 1 so it can be restored later so anything 
+    /* save last IV from phase 1 so it can be restored later so anything
      * between the end of phase 1 and the start of phase 2 ie mode config
      * payloads etc will not loose our IV
      */
     memcpy(st->st_ph1_iv, st->st_new_iv, st->st_new_iv_len);
     st->st_ph1_iv_len = st->st_new_iv_len;
-    
+
     DBG(DBG_CONTROL, DBG_log("phase 1 complete"));
 
     return STF_OK;
@@ -976,10 +952,10 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   struct msg_digest *md = ke->md;
   struct state *const st = md->st;
   stf_status e;
-  
+
   DBG(DBG_CONTROLMORE
       , DBG_log("aggr outI1: calculated ke+nonce, sending I1"));
-  
+
   if (st == NULL) {
 	  loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
 		      __FUNCTION__);
@@ -1001,7 +977,7 @@ aggr_outI1_continue(struct pluto_crypto_req_cont *pcrc
   st->st_calculating = FALSE;
 
   e = aggr_outI1_tail(pcrc, r);
-  
+
   if(ke->md != NULL) {
       complete_v1_state_transition(&ke->md, e);
       if(ke->md) release_md(ke->md);
@@ -1020,7 +996,7 @@ aggr_outI1(int whack_sock,
 	   , enum crypto_importance importance
 #ifdef HAVE_LABELED_IPSEC
            , struct xfrm_user_sec_ctx_ike * uctx
-#endif	   
+#endif
 	   )
 {
     struct state *st;
@@ -1155,7 +1131,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	int    policy_index = POLICY_ISAKMP(st->st_policy
 					    , c->spd.this.xauth_server
 					    , c->spd.this.xauth_client);
-	
+
 	if (!out_sa(&md->rbody
 		    , &oakley_am_sadb[policy_index], st
 		    , TRUE, TRUE, ISAKMP_NEXT_KE))
@@ -1171,7 +1147,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /* KE out */
-    if (!ship_KE(st, r, &st->st_gi, 
+    if (!ship_KE(st, r, &st->st_gi,
 			   &md->rbody, ISAKMP_NEXT_NONCE))
 	return STF_INTERNAL_ERROR;
 
@@ -1198,11 +1174,11 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* ALWAYS Announce our ability to do Dead Peer Detection to the peer */
     {
       int np = ISAKMP_NEXT_NONE;
-	
+
       if (nat_traversal_enabled
 	  || c->spd.this.xauth_client
 	  || c->spd.this.xauth_server) {
-	
+
 	/* Add supported NAT-Traversal VID */
 	np = ISAKMP_NEXT_VID;
       }
@@ -1221,7 +1197,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    np = ISAKMP_NEXT_VID;
 	}
 #endif
-	
+
 	if (!nat_traversal_insert_vid(np, &md->rbody, st)) {
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
@@ -1238,7 +1214,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	}
     }
 #endif
-	
+
     /* finish message */
 
     close_message(&md->rbody);

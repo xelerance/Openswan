@@ -1,12 +1,12 @@
 /*
  * conversion from text forms of addresses to internal ones
  * Copyright (C) 2000  Henry Spencer.
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -55,7 +55,7 @@ ttoaddr_base(const char *src,
 	case AF_INET6:
 	case 0:                  /* guess */
 		break;
-	    
+
 	default:
 		return "invalid address family";
 	}
@@ -72,7 +72,7 @@ ttoaddr_base(const char *src,
 	    {
 		af = AF_INET6;
 	    }
-	    
+
 		if (af != AF_INET6)
 			return "non-ipv6 address may not contain `:'";
 		return colon(src, srclen, dst);
@@ -122,7 +122,7 @@ ip_address *dst;
 		}
 		return "does not appear to be either IPv4 or IPv6 numeric address";
 		break;
-	    
+
 	case AF_INET6:
 		return colon(src, srclen, dst);
 		break;
@@ -452,7 +452,7 @@ ttoaddr(const char *src,
 			err = tryname(src, srclen, nultermd, af, dst);
 		return err;
 	}
-	
+
 	return err;
 }
 
@@ -468,7 +468,7 @@ ttoaddr_num(const char *src,
 		srclen = strlen(src);
 		if (srclen == 0)
 			return "empty string";
-	} 
+	}
 
 	return ttoaddr_base(src, srclen, af, &numfailed, dst);
 }
@@ -550,7 +550,7 @@ regress()
 			status++;
 			continue;
 		}
-			
+
 		if(oops) {
 			if(r->expectfailure) continue;
 			printf("%u: '%s' failed to parse: %s\n",
@@ -565,11 +565,11 @@ regress()
 
 		if (n == 0 && r->output == NULL)
 			{}		/* okay, error expected */
-		
+
 		else if (n == 0) {
 			printf("`%s' atoasr failed\n", r->input);
 			status++;
-			
+
 		} else if (r->output == NULL) {
 			printf("`%s' atoasr succeeded unexpectedly '%c'\n",
 							r->input, r->format);

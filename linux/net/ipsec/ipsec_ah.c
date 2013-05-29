@@ -340,27 +340,11 @@ struct xform_functions ah_xform_funcs[]={
 
 
 #ifndef CONFIG_XFRM_ALTERNATE_STACK
-#ifdef NET_26
 struct inet_protocol ah_protocol = {
-  .handler = ipsec_rcv,
-  .no_policy = 1,
+	.handler = ipsec_rcv,
+	.no_policy = 1,
+	.netns_ok  = 1,                 /* this is a lie for now */
 };
-#else
-struct inet_protocol ah_protocol =
-{
-	ipsec_rcv,				/* AH handler */
-	NULL,				/* TUNNEL error control */
-#ifdef NETDEV_25
-	1,				/* no policy */
-#else
-	0,				/* next */
-	IPPROTO_AH,			/* protocol ID */
-	0,				/* copy */
-	NULL,				/* data */
-	"AH"				/* name */
-#endif
-};
-#endif /* NET_26 */
 #endif /* CONFIG_XFRM_ALTERNATE_STACK */
 
 /*

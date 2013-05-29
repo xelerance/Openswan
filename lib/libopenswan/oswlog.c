@@ -109,7 +109,7 @@ openswan_log(const char *message, ...)
 	fprintf(stderr, "%s\n", m);
     if (log_to_syslog)
 	syslog(LOG_WARNING, "%s", m);
-    
+
     return 0;
 }
 

@@ -1,12 +1,12 @@
 /*
  * support for larger bit fields
  * Copyright (C) 2005  Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -23,7 +23,7 @@ void biglset_format(char *buf, size_t blen, biglset_t b)
     int i,j;
     char sep='{';
 
-    buf[0]='{'; buf[1]='\0'; 
+    buf[0]='{'; buf[1]='\0';
     blen-=2; /* reserve space for } */
 
     for(i=0; i<BLMULTI; i++) {

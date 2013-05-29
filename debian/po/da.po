@@ -1,0 +1,426 @@
+# Danish translation openswan.
+# Copyright (C) 2012 openswan & nedenstående oversættere.
+# This file is distributed under the same license as the openswan package.
+# Joe Hansen (joedalton2@yahoo.dk), 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openswan\n"
+"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"POT-Creation-Date: 2010-07-29 19:03+0200\n"
+"PO-Revision-Date: 2012-02-17 12:42+0000\n"
+"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
+"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
+"Language: da\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
+msgid "Old runlevel management superseded"
+msgstr "Tidligere kørselsniveauhåndtering erstattet"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
+msgid ""
+"Previous versions of the Openswan package gave a choice between three "
+"different Start/Stop-Levels. Due to changes in the standard system startup "
+"procedure, this is no longer necessary or useful. For all new installations "
+"as well as old ones running in any of the predefined modes, sane default "
+"levels will now be set. If you are upgrading from a previous version and "
+"changed your Openswan startup parameters, then please take a look at NEWS."
+"Debian for instructions on how to modify your setup accordingly."
+msgstr ""
+"Tidligere versioner af Openswan-pakken gav et valg mellem tre forskellige "
+"Start/stop-niveauer. På grund af ændringer i standardsystemets "
+"opstartsprocedure, er dette ikke længere nødvendigt eller brugbart. For alle "
+"nye installationer samt tidligere som kører i en af de prædefinerede "
+"tilstande, vil nye fornuftige standardniveauer blive sat. Hvis du opgraderer "
+"fra en tidligere version og ændrede dine opstartsparametre for Openswan, så "
+"tag venligst et kig på NEWS.Debian for instruktioner i hvordan du ændrer din "
+"opsætning."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
+msgid "Restart Openswan now?"
+msgstr "Genstart Openswan nu?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
+msgid ""
+"Restarting Openswan is recommended, since if there is a security fix, it "
+"will not be applied until the daemon restarts. Most people expect the daemon "
+"to restart, so this is generally a good idea. However, this might take down "
+"existing connections and then bring them back up, so if you are using such "
+"an Openswan tunnel to connect for this update, restarting is not recommended."
+msgstr ""
+"Genstart af Openswan anbefales, da såfremt der er en sikkerhedsrettelse, så "
+"vil den ikke blive anvendt før dæmonen genstartes. De fleste forventer, at "
+"dæmomen skal genstartes, så dette er normalt en god ide. Dette kan dog lukke "
+"eksisterende forbindelser ned og op igen, så hvis du bruger en sådan "
+"Openswantunnel til forbindelsen for denne opdatering, så anbefales en "
+"genstart ikke."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid "Use an X.509 certificate for this host?"
+msgstr "Brug et X.509-certifikat for denne vært?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid ""
+"An X.509 certificate for this host can be automatically created or imported. "
+"It can be used to authenticate IPsec connections to other hosts and is the "
+"preferred way of building up secure IPsec connections. The other possibility "
+"would be to use shared secrets (passwords that are the same on both sides of "
+"the tunnel) for authenticating a connection, but for a larger number of "
+"connections, key based authentication is easier to administer and more "
+"secure."
+msgstr ""
+"Et X.509-certifikat for denne vært kan oprettes automatisk eller importeres. "
+"Det kan bruges til at godkende IPsec-forbindelser til andre værter og er den "
+"foretrukne måde at bygge sikre IPsec-forbindelser. Den anden mulighed ville "
+"være at bruge delte hemmeligheder (adgangskoder som er ens på begge sider af "
+"tunnelen) for godkendelse af en forbindelse, men for et større antal "
+"forbindelser er nøglebaseret godkendelse nemmere at administrere og mere "
+"sikker."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid ""
+"Alternatively you can reject this option and later use the command \"dpkg-"
+"reconfigure openswan\" to come back."
+msgstr ""
+"Alternativt kan du afvise denne indstilling og senere bruge kommandoen »dpkg-"
+"reconfigure openswan« for at komme tilbage."
+
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "create"
+msgstr "opret"
+
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "import"
+msgstr "importer"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid "Methods for using a X.509 certificate to authenticate this host:"
+msgstr "Metoder for brug af et X.509-certifikat til at godkende denne vært:"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"It is possible to create a new X.509 certificate with user-defined settings "
+"or to import an existing public and private key stored in PEM file(s) for "
+"authenticating IPsec connections."
+msgstr ""
+"Det er muligt at oprette et nyt X.509-certifikat med brugerdefinerede "
+"indstillinger eller at importere en eksisterende offentlig og privat nøgle "
+"gemt i PEM-filer for godkendelse af IPsec-forbindelser."
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"If you choose to create a new X.509 certificate you will first be asked a "
+"number of questions which must be answered before the creation can start. "
+"Please keep in mind that if you want the public key to get signed by an "
+"existing Certificate Authority you should not select to create a self-signed "
+"certificate and all the answers given must match exactly the requirements of "
+"the CA, otherwise the certificate request may be rejected."
+msgstr ""
+"Hvis du vælger at oprette et nyt X.509-certifikat, så vil du først få "
+"stillet en række spørgsmål, som skal besvares før oprettelsen kan begynde. "
+"Husk, at hvis du ønsker, at den offentlige nøgle skal underskrives af et "
+"eksisterende Certificate Authority, så skal du ikke vælge at oprette et "
+"selvunderskrevet certifikat og alle svarene skal præcist opfylde kravene for "
+"CA'et, ellers kan certifikatanmodningen blive afvist."
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"If you want to import an existing public and private key you will be "
+"prompted for their filenames (which may be identical if both parts are "
+"stored together in one file). Optionally you may also specify a filename "
+"where the public key(s) of the Certificate Authority are kept, but this file "
+"cannot be the same as the former ones. Please also be aware that the format "
+"for the X.509 certificates has to be PEM and that the private key must not "
+"be encrypted or the import procedure will fail."
+msgstr ""
+"Hvis du ønsker at importere en eksisterende offenlig og privat nøgle, så vil "
+"du blive spurgt om deres filnavne (som kan være identiske hvis begge dele er "
+"gemt sammen i en fil). Du kan valgfrit også angive et filnavn hvor de "
+"offentlige nøgler for Certificate Authority er gemt, men denne fil kan ikke "
+"være den samme som de tidligere. Vær venligst også opmærksom på at formatet "
+"for X.509-certifikater skal være PEM og at den private nøgle ikke må være "
+"krypteret ellers vil importproceduren fejle."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
+msgid "File name of your PEM format X.509 certificate:"
+msgstr "Filnavn for dit PEM format X.509-certifikat:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
+msgid ""
+"Please enter the location of the file containing your X.509 certificate in "
+"PEM format."
+msgstr ""
+"Indtast placeringen for filen der indeholder dit X.509-certifikat i PEM-"
+"format."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
+msgid "File name of your PEM format X.509 private key:"
+msgstr "Filnavn for din PEM-formateret X.509 private nøgle:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
+msgid ""
+"Please enter the location of the file containing the private RSA key "
+"matching your X.509 certificate in PEM format. This can be the same file "
+"that contains the X.509 certificate."
+msgstr ""
+"Indtast venligst placeringen for filen der indeholder den private RSA-nøgle "
+"der matcher dit X.509-certifikat i PEM-format. Dette kan være den samme fil "
+"som indeholder X.509-certifikatet."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
+msgid "File name of your PEM format X.509 RootCA:"
+msgstr "Filnavn for dit PEM-formateret X.509-RootCA:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
+msgid ""
+"Optionally you can now enter the location of the file containing the X.509 "
+"Certificate Authority root used to sign your certificate in PEM format. If "
+"you do not have one or do not want to use it please leave the field empty. "
+"Please note that it's not possible to store the RootCA in the same file as "
+"your X.509 certificate or private key."
+msgstr ""
+"Du kan nu valgfrit indtaste placeringen for filen der indeholder X.509 "
+"Certificate Authority-administratoren brugt til at underskrive dit "
+"certifikat i PEM-format. Hvis du ikke har en eller ikke ønsker at bruge den "
+"så efterlad feltet tomt. Bemærk venligst at det ikke er muligt at gemme "
+"RootCA'en i den samme fil som dit X.509-certifikat eller private nøgle."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid "Length of RSA key to be created:"
+msgstr "Længde for RSA-nøgle der skal oprettes:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid ""
+"Please enter the required RSA key-length. Anything under 1024 bits should be "
+"considered insecure; anything more than 4096 bits slows down the "
+"authentication process and is not useful at present."
+msgstr ""
+"Indtast venligst den krævede RSA-nøglelængde. Alt under 1024 bit må anses "
+"for at være usikkert; alt over 4096 bit gør godkendelsesprocessen "
+"langsommere og er i øjeblikket ikke brugbart."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid "Create a self-signed X.509 certificate?"
+msgstr "Opret et selvunderskrevet X.509-certifikat?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid ""
+"Only self-signed X.509 certificates can be created automatically, because "
+"otherwise a Certificate Authority is needed to sign the certificate request. "
+"If you choose to create a self-signed certificate, you can use it "
+"immediately to connect to other IPsec hosts that support X.509 certificate "
+"for authentication of IPsec connections. However, using Openswan's PKI "
+"features requires all certificates to be signed by a single Certificate "
+"Authority to create a trust path."
+msgstr ""
+"Kun selvunderskrevne X.509-certifikater kan oprettes automatisk, da et "
+"Certificate Authority ellers kræves for at underskrive "
+"certifikatforespørslen. Hvis du vælger at oprette et selvunderskrevet "
+"certifikat, så kan du bruge det umiddelbart til at forbinde til andre IPsec-"
+"værter som understøtter X.509-certifikat for godkendelse af IPsec-"
+"forbindelser. Brug af Openswans PKI-funktioner kræver alle certifikater for "
+"at blive underskrevet af en enkel Certificate Authority for at oprette en "
+"troværdighedssti."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid ""
+"If you do not choose to create a self-signed certificate, only the RSA "
+"private key and the certificate request will be created, and you will have "
+"to sign the certificate request with your Certificate Authority."
+msgstr ""
+"Hvis du ikke vælger at oprette et selvunderskrevet certifikat vil kun den "
+"RSA privat nøgle og certifikatforespørgslen blive oprettet, og du skal så "
+"underskrive certifikatforespørgslen med dit Certificate Authority."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid "Country code for the X.509 certificate request:"
+msgstr "Landekode for X.509-certifikatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid ""
+"Please enter the two-letter code for the country the server resides in (such "
+"as \"AT\" for Austria)."
+msgstr ""
+"Indtast venligst tobogstavskoden for landet hvor serveren befinder sig "
+"(såsom »AT« for Østrig)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid ""
+"OpenSSL will refuse to generate a certificate unless this is a valid "
+"ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
+"certificate, but not here."
+msgstr ""
+"OpenSSL vil nægte at oprette et certifikat med mindre at der er en gyldig "
+"landekode fra ISO-3166; et tomt felt er tilladt alle andre steder i X.509-"
+"certifikatet, men ikke her."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
+msgid "State or province name for the X.509 certificate request:"
+msgstr "Stat eller områdenavn for X.509-certifkatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
+msgid ""
+"Please enter the full name of the state or province the server resides in "
+"(such as \"Upper Austria\")."
+msgstr ""
+"Indtast venligst det fulde navn for staten eller området hvor serveren "
+"befinder sig (såsom »Fyn«)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
+msgid "Locality name for the X.509 certificate request:"
+msgstr "Stednavn for X.509-certifikatforespørgslen:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
+msgid ""
+"Please enter the locality the server resides in (often a city, such as "
+"\"Vienna\")."
+msgstr ""
+"Indtast venligst stedet hvor serveren befindre sig (oftest en by, såsom "
+"»København«)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
+msgid "Organization name for the X.509 certificate request:"
+msgstr "Organisatinsnavn for X.509-certifikatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
+msgid ""
+"Please enter the organization the server belongs to (such as \"Debian\")."
+msgstr ""
+"Indtast venligst organisationen som serveren tilhører (såsom »Debian«)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
+msgid "Organizational unit for the X.509 certificate request:"
+msgstr "Organisatorisk enhed for X.509-certifikatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
+msgid ""
+"Please enter the organizational unit the server belongs to (such as "
+"\"security group\")."
+msgstr ""
+"Indtast venligst den organisatoriske enhed som serveren tilhører (såsom "
+"»security group«)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
+msgid "Common Name for the X.509 certificate request:"
+msgstr "Common Name for X.509-certifikatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
+msgid ""
+"Please enter the Common Name for this host (such as \"gateway.example.org\")."
+msgstr ""
+"Indtast venligst Common Name for denne vært (såsom »gateway.eksempel.org«)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
+msgid "Email address for the X.509 certificate request:"
+msgstr "E-postadresse for X.509-certifikatforespørgsel:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
+msgid ""
+"Please enter the email address of the person or organization responsible for "
+"the X.509 certificate."
+msgstr ""
+"Indtast venligst e-postadressen for personen eller organisationen anvarlig "
+"for X.509-certifikatet."
+
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
+msgid "Modification of /etc/ipsec.conf"
+msgstr "Ændring af /etc/ipsec.conf"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
+msgid ""
+"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"enabled by default. The no_oe.conf file that was shipped in earlier versions "
+"to explicitly disable it can therefore no longer be included by ipsec.conf. "
+"Any such include paragraph will now be automatically removed to ensure that "
+"Openswan can start correctly."
+msgstr ""
+"På grund af en ændring i opstrømmen for Openswan er opportunistisk "
+"kryptering ikke længere aktiveret som standard. Filen no_oe.conf som var "
+"indholdt i tidligere versioner for eksplicit at deaktivere den kan derfor "
+"ikke længere inkluderes af ipsec.conf. En sådan paragraf vil automatisk "
+"blive fjernet for at sikre, at Openswan kan starte korrekt op."

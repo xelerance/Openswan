@@ -1,7 +1,7 @@
 /*
  * IKE modular algorithm handling interface
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -70,8 +70,8 @@ bool ike_alg_hash_present(int halg)
 	return hash_desc ? hash_desc->hash_digest_len : 0;
 }
 
-bool ike_alg_enc_ok(int ealg, unsigned key_len, 
-		struct alg_info_ike *alg_info_ike __attribute__((unused)), 
+bool ike_alg_enc_ok(int ealg, unsigned key_len,
+		struct alg_info_ike *alg_info_ike __attribute__((unused)),
 		const char **errp, char *ugh_buf, size_t ugh_buf_len)
 {
 	int ret=TRUE;
@@ -94,9 +94,9 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		       );
 		plog ("ike_alg_enc_ok(): %.*s", (int)ugh_buf_len,  ugh_buf);
 		ret = FALSE;
-	} 
+	}
 
-	DBG(DBG_KLIPS, 
+	DBG(DBG_KLIPS,
 		if (ret) {
 			DBG_log("ike_alg_enc_ok(ealg=%d,key_len=%d): "
 				"blocksize=%d, keyminlen=%d, "
@@ -117,18 +117,18 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		*errp = ugh_buf;
 	return ret;
 }
-/* 
- * ML: make F_STRICT logic consider enc,hash/auth,modp algorithms 
+/*
+ * ML: make F_STRICT logic consider enc,hash/auth,modp algorithms
  */
 bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, struct alg_info_ike *alg_info_ike)
 {
-	/* 
+	/*
 	 * simple test to toss low key_len, will accept it only
 	 * if specified in "esp" string
 	 */
 	int ealg_insecure=(key_len < 128) ;
 
-	if (ealg_insecure || 
+	if (ealg_insecure ||
 		(alg_info_ike && alg_info_ike->alg_info_flags & ALG_INFO_F_STRICT))
 	{
 		int i;
@@ -141,7 +141,7 @@ bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, 
 						(ike_info->ike_halg == aalg) &&
 						(ike_info->ike_modp == group)) {
 #ifndef USE_1DES
-					if (ealg_insecure) 
+					if (ealg_insecure)
 						loglog(RC_LOG_SERIOUS, "You should NOT use insecure IKE algorithms (%s)!"
 								, enum_name(&oakley_enc_names, ealg));
 #endif
@@ -210,7 +210,7 @@ int
 		ike_alg_base[a->algo_type]=a;
 	}
 return_out:
-	if (ret) 
+	if (ret)
 		openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
 	return ret;
 }
@@ -232,7 +232,7 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 	if (hash_desc->hash_ctx_size > sizeof (union hash_ctx)) {
 		plog ("ike_alg_register_hash(): hash alg=%d has "
 				"ctx_size=%d > hash_ctx=%d",
-				hash_desc->common.algo_id, 
+				hash_desc->common.algo_id,
 				(int)hash_desc->hash_ctx_size,
 				(int)sizeof (union hash_ctx));
 		return_on(ret,-EOVERFLOW);
@@ -252,7 +252,7 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 				hash_desc->common.algo_id);
 		alg_name="<NULL>";
 	}
-	
+
 	if(hash_desc->common.name == NULL) {
 	    hash_desc->common.name = clone_str(alg_name, "hasher name");
 	}
@@ -260,7 +260,7 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 return_out:
 	if (ret==0)
 		ret=ike_alg_add((struct ike_alg *)hash_desc);
-	openswan_log("ike_alg_register_hash(): Activating %s: %s (ret=%d)", 
+	openswan_log("ike_alg_register_hash(): Activating %s: %s (ret=%d)",
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return ret;
 }
@@ -303,7 +303,7 @@ return_out:
 
 	if (ret==0)
 		ret=ike_alg_add((struct ike_alg *)enc_desc);
-	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)", 
+	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)",
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return 0;
 }
@@ -312,7 +312,7 @@ const struct oakley_group_desc *
 ike_alg_pfsgroup(struct connection *c, lset_t policy)
 {
 	const struct oakley_group_desc * ret = NULL;
-	if ( (policy & POLICY_PFS) && 
+	if ( (policy & POLICY_PFS) &&
 			c->alg_info_esp && c->alg_info_esp->esp_pfsgroup)
 		ret = lookup_group(c->alg_info_esp->esp_pfsgroup);
 	return ret;

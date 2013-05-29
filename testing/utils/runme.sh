@@ -34,5 +34,5 @@ perl ${OPENSWANSRCDIR}/testing/utils/regress-summarize-results.pl ${REGRESSRESUL
 # Revision 1.1  2002/05/05 23:12:05  mcr
 # 	runme.sh script now common for all test types.
 #
-# 
+#
 

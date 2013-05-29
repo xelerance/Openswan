@@ -82,6 +82,7 @@ void readwhackmsg(char *infile)
 	fclose(record);
 	perror(infile);
     }
+    //fclose(record);
 }
 
 /*

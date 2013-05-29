@@ -94,7 +94,7 @@ void osw_conf_setdefault(void)
     ipsecd_dir = clone_str(ipsecd_dir, "default conf ipsecd_dir");
     conffile   = clone_str(conffile, "default conf conffile");
     var_dir    = clone_str(var_dir, "default conf var_dir");
-    
+
     /* figure out what we are doing, look for variables in the environment */
     if((env = getenv("IPSEC_CONFS")) != NULL) {
 	pfree(ipsec_conf_dir);
@@ -110,13 +110,13 @@ void osw_conf_setdefault(void)
 	pfree(conffile);
 	conffile = clone_str(buf, "ipsec.conf");
     }
-    
+
     if((env = getenv("IPSEC_CONFFILE")) != NULL) {
 	pfree(conffile);
 	pfree(ipsec_conf_dir);
 	conffile = clone_str(env, "ipsec.conf");
     }
-    
+
     global_oco.rootdir = "";
     global_oco.confddir= ipsecd_dir;
     global_oco.vardir  = var_dir;
@@ -169,7 +169,7 @@ const struct osw_conf_options *osw_init_rootdir(const char *root_dir)
     global_oco.rootdir = clone_str(root_dir, "override /");
     osw_conf_calculate(&global_oco);
     setup = TRUE;
-    
+
     return &global_oco;
 }
 
@@ -196,7 +196,7 @@ bool Pluto_IsFIPS(void)
      char fips_flag[1];
      int n;
      FILE *fd=fopen("/proc/sys/crypto/fips_enabled","r");
-     
+
      if(fd!=NULL) {
 	    n = fread ((void *)fips_flag, 1, 1, fd);
 		if(n==1) {
@@ -209,11 +209,11 @@ bool Pluto_IsFIPS(void)
 		    }
 		} else {
 			openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
-		} 
+		}
      fclose(fd);
      }
      else {
-	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode"); 
+	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode");
      }
 return FALSE;
 }
@@ -223,7 +223,7 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      secuPWData *pwdInfo = (secuPWData *)arg;
      PRFileDesc *fd;
      PRInt32 nb; /*number of bytes*/
-     char* password; 
+     char* password;
      char* strings;
      char* token=NULL;
      const long maxPwdFileSize = NSSpwdfilesize;
@@ -251,7 +251,7 @@ char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
      return 0;
      }
 
-     
+
      if(pwdInfo->source == PW_FROMFILE) {
      	if(pwdInfo->data !=NULL) {
             fd = PR_Open(pwdInfo->data, PR_RDONLY, 0);
@@ -311,7 +311,7 @@ openswan_log("nss password source is not specified as file");
 return 0;
 }
 #endif
-    
+
 /*
  * Local Variables:
  * c-basic-offset:4

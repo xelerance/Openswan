@@ -1,7 +1,7 @@
-/* 
+/*
  * Copyright (C) 2001-2002 Colubris Networks
  * Copyright (C) 2003-2004 Xelerance Corporation
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -40,7 +40,7 @@ stf_status xauth_send_request(struct state *st);
 stf_status xauth_send_status(struct state *st,int status);
 
 int xauth_launch_authent(struct state *st,chunk_t name
-			 ,chunk_t password, chunk_t connname); 
+			 ,chunk_t password, chunk_t connname);
 
 extern stf_status modecfg_start_set(struct state *st);
 

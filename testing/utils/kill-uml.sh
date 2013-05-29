@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 MCONSOLE=uml_mconsole
 

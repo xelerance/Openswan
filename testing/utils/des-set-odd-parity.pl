@@ -25,7 +25,7 @@ for $i (@ARGV) {
   }
   @bytes=unpack("C*", $i);
   print join(',', @bytes)."\n";
-  
+
   print "0x";
   foreach $byte (@bytes) {
     $byte = $odd_parity[$byte];
@@ -39,6 +39,6 @@ for $i (@ARGV) {
   }
   print "\"\n";
 }
-  
+
 
 

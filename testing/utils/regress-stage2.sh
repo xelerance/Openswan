@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 # This script is used to setup the regression testing environment
 # invoke the tests and record the results. It expects the following
@@ -11,7 +11,7 @@
 #    $TODAY             today's date.
 #
 # it is expected that $BUILDSPOOL/openswan-2 contains a checked out copy
-# of the source tree that is ready for building. 
+# of the source tree that is ready for building.
 #
 # In general, this script is in fact running from
 #    $BUILDSPOOL/openswan-2/testing/utils/regress-stage2.sh
@@ -20,7 +20,7 @@
 # scritpt, which must be invoked from outside of the CVS tree to change
 # very seldom.
 #
-# This script will further look for $HOME/openswan-regress-env.sh for a list 
+# This script will further look for $HOME/openswan-regress-env.sh for a list
 # of variables to include.
 
 # die if anything dies.
@@ -38,7 +38,7 @@ echo "BUILDTOP=$BUILDSPOOL/${TOPMODULE} export BUILDTOP"               >>$umlset
 
 # ${TOPMODULE}-regress-env.sh should have the following variables
 # defined. This should be the only local configuration required.
-# 
+#
 # KERNPOOL=/abigail/kernel/linux-2.6.18
 # UMLPATCH=/abigail/user-mode-linux/uml-patch-2.6.18-4.bz2
 # BASICROOT=/abigail/user-mode-linux/root-23.0
@@ -71,7 +71,7 @@ perl -e 'print time()."\n";' >${REGRESSRESULTS}/datestamp
 # need to be recreated to ensure the tests are legit.
 #
 
-cd $BUILDSPOOL/${TOPMODULE}/testing/x509 && ./dist_certs
+cd $BUILDSPOOL/${TOPMODULE}/testing/x509 && ./dist_certs  >/dev/null
 
 cd $BUILDSPOOL/${TOPMODULE} && make check
 

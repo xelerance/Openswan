@@ -1,11 +1,12 @@
-#! /bin/bash 
+#! /bin/bash
 #
+
+TAB="	@"
+#TAB="	"
 
 setup_make() {
     domodules=$1
 
-    TAB="	@"
-    TAB="	"
     depends=""
 
     echo "# RULES for making module"
@@ -21,8 +22,8 @@ setup_make() {
     echo "OPENSWANSRCDIR=${OPENSWANSRCDIR}"
     echo "include ${OPENSWANSRCDIR}/Makefile.inc"
     echo "include ${OPENSWANSRCDIR}/Makefile.ver"
-    echo 
-    
+    echo
+
     echo "all: "
     echo "$TAB echo Default make called"
     echo "$TAB exit 1"
@@ -30,11 +31,6 @@ setup_make() {
 
     if $domodules
     then
-	echo "module/ipsec.o: ${OPENSWANSRCDIR}/packaging/makefiles/module.make \${IPSECDIR}/*.c"
-	echo "$TAB mkdir -p module"
-	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MODBUILDDIR=$POOLSPACE/module KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module "
-	echo
-
 	echo "module26/ipsec.ko: ${OPENSWANSRCDIR}/packaging/makefiles/module26.make \${IPSECDIR}/*.c"
 	echo "$TAB mkdir -p module26"
 	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} OPENSWANSRCDIR=${OPENSWANSRCDIR} MODBUILDDIR=$POOLSPACE/module MOD26BUILDDIR=$POOLSPACE/module26 KERNELSRC=$UMLPLAIN ARCH=um SUBARCH=${SUBARCH} module26 "
@@ -42,8 +38,8 @@ setup_make() {
     fi
 
     # now describe how to build the initrd.
-    echo "initrd.uml: ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list"
-    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list ${OPENSWANSRCDIR} ${BASICROOT}" 
+    echo "initrd.cpio: ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list"
+    echo "$TAB fakeroot ${OPENSWANSRCDIR}/testing/utils/buildinitrd ${OPENSWANSRCDIR}/testing/utils/initrd-`uname -m`.list ${OPENSWANSRCDIR} ${BASICROOT}"
 }
 
 # output should directed to a Makefile
@@ -57,18 +53,16 @@ setup_host_make() {
     NETKEY_KERNEL=$6
 
     KERNDIR=`dirname $KERNEL`
-    TAB="	@"
-    TAB="	"
     hostroot=$host/root
     depends=""
 
     echo "#"
     echo "#  Used in debugging to see what makefile's got to here."
     echo "export MAKEFILE_LIST"
-    
+
 
     echo "# RULES for host $host"
-    echo 
+    echo
 
     echo "$hostroot:"
     echo "$TAB mkdir -p $host $hostroot"
@@ -108,7 +102,7 @@ setup_host_make() {
     echo "$TAB ln -f $hostroot/bin/true $hostroot/sbin/fsck.hostfs"
 
     # force it to GMT, otherwise (RH7.1) use host's zoneinfo.
-    if [ -f /usr/share/zoneinfo/GMT ] 
+    if [ -f /usr/share/zoneinfo/GMT ]
     then
       echo "$TAB cp /usr/share/zoneinfo/GMT $hostroot/etc/localtime"
     else
@@ -119,7 +113,7 @@ setup_host_make() {
     echo "$TAB (cd ${TESTINGROOT}/baseconfigs/all && find . -type f -print) | (cd $hostroot && xargs rm -f)"
     echo "$TAB (cd ${TESTINGROOT}/baseconfigs/$host && find . -type f -print) | (cd $hostroot && xargs rm -f)"
     # okay, that's all the stock stuff
-    echo 
+    echo
     depends="$depends $hostroot/sbin/init"
 
     # copy global configuration files, and make sure that they are up-to-date.
@@ -137,7 +131,7 @@ setup_host_make() {
 	       echo
 	       echo -n $hostroot/$file ' ' >>makeuml2.$$
 	esac
-    done	 
+    done
     nicelists=`cat makeuml2.$$`
     depends="$depends $nicelists"
     rm -f makeuml.$$ makeuml2.$$
@@ -157,14 +151,15 @@ setup_host_make() {
 	       echo
 	       echo -n $hostroot/$file ' ' >>makeuml2.$$
 	esac
-    done	 
- 
+    done
+
     nicelists=`cat makeuml2.$$`
     depends="$depends $nicelists"
     rm -f makeuml.$$ makeuml2.$$
 
     # setup the mount of /usr/share
     echo "$hostroot/etc/fstab : ${TESTINGROOT}/baseconfigs/$host/etc/fstab"
+    echo "$TAB mkdir -p $hostroot/etc"
     echo "$TAB cp ${TESTINGROOT}/baseconfigs/$host/etc/fstab $hostroot/etc/fstab"
     echo "$TAB echo none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0 >>$hostroot/etc/fstab"
     echo "$TAB echo none	   /testing		     hostfs   defaults,ro,${TESTINGROOT} 0 0 >>$hostroot/etc/fstab"
@@ -175,17 +170,10 @@ setup_host_make() {
     echo "$TAB echo /var/lib/swapfile none  swap    sw              0       0  >>$hostroot/etc/fstab"
     depends="$depends $hostroot/etc/fstab"
 
-    # split Debian "interfaces" file into RH ifcfg-* file
-    echo "$hostroot/etc/sysconfig/network-scripts/ifcfg-eth0: $hostroot/etc/network/interfaces"
-    echo "$TAB mkdir -p $hostroot/etc/sysconfig/network-scripts"
-    echo "$TAB ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts"
-    echo
-    depends="$depends $hostroot/etc/sysconfig/network-scripts/ifcfg-eth0"
-
     if [ "X$HOSTTYPE" == "Xopenswan" ]
     then
 	# install FreeSWAN if appropriate.
-        
+
 	echo "$hostroot/usr/local/sbin/ipsec : ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver"
 	echo "$TAB ${MAKE:-make} -C ${OPENSWANSRCDIR} ${MAKE_DEBUG} DESTDIR=$POOLSPACE/$hostroot USE_OBJDIR=true install"
 	echo
@@ -213,7 +201,7 @@ setup_host_make() {
 	    echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
 	    echo "$TAB echo ''          >>$startscript"
 	    echo "$TAB # the umlroot= is a local hack >>$startscript"
-	    # echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  selinux=0 init=/linuxrc gim\$\$*' >>$startscript"
+	    # echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.cpio umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  selinux=0 init=/linuxrc gim\$\$*' >>$startscript"
 	    echo "$TAB echo '$POOLSPACE/plain${KERNVER}/linux initrd=$POOLSPACE/initrd.cpio rootfstype=hostfs umlroot=$POOLSPACE/$hostroot root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  rdinit=/linuxrc gim\$\$*' >>$startscript"
 	    echo "$TAB chmod +x $startscript"
 	    echo
@@ -221,18 +209,18 @@ setup_host_make() {
 	fi
     fi
 
-    if [ -x $NETKEY_KERNEL ] 
-    then 
+    if [ -x $NETKEY_KERNEL ]
+    then
      # make startup script for NETKEY uml (no modules)
      startscript=$POOLSPACE/$host/start-netkey.sh
-     echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.uml"
+     echo "$startscript : $OPENSWANSRCDIR/umlsetup.sh initrd.cpio"
      echo "$TAB echo '#!/bin/bash' >$startscript"
      echo "$TAB echo ''          >>$startscript"
      echo "$TAB echo '# get $net value from baseconfig'          >>$startscript"
      echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
      echo "$TAB echo ''          >>$startscript"
      echo "$TAB # the umlroot= is a local hack >>$startscript"
-     #echo "$TAB echo '$NETKEY_KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml rootfstype=hostfs umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  selinux=0 init=/linuxrc \$\$*' >>$startscript"
+     #echo "$TAB echo '$NETKEY_KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.cpio rootfstype=hostfs umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  selinux=0 init=/linuxrc \$\$*' >>$startscript"
      echo "$TAB echo '$NETKEY_KERNEL initrd=$POOLSPACE/initrd.cpio rootfstype=hostfs umlroot=$POOLSPACE/$hostroot root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  rdinit=/linuxrc \$\$*' >>$startscript"
      echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
      echo "$TAB chmod +x $startscript"
@@ -248,7 +236,7 @@ setup_host_make() {
     echo "$TAB echo . ${TESTINGROOT}/baseconfigs/net.$host.sh   >>$startscript"
     echo "$TAB echo ''          >>$startscript"
     echo "$TAB # the umlroot= is a local hack >>$startscript"
-    #echo "$TAB echo '$KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.uml umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT selinux=0  init=/linuxrc \$\$*' >>$startscript"
+    #echo "$TAB echo '$KERNEL load_ramdisk=1 ramdisk_size=98304 mem=256M initrd=$POOLSPACE/initrd.cpio umlroot=$POOLSPACE/$hostroot testname=$TESTNAME root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT selinux=0  init=/linuxrc \$\$*' >>$startscript"
     echo "$TAB echo '$KERNEL initrd=$POOLSPACE/initrd.cpio rootfstype=hostfs umlroot=$POOLSPACE/$hostroot root=/dev/ram0 rw ssl=pty umid=$host \$\$net \$\$UML_DEBUG_OPT \$\$UML_"${host}"_OPT  rdinit=/linuxrc \$\$*' >>$startscript"
     echo "$TAB echo 'if [ -n \"\$\$UML_SLEEP\" ]; then eval \$\$UML_SLEEP; fi'  >>$startscript"
     echo "$TAB chmod +x $startscript"
@@ -267,7 +255,7 @@ setup_host() {
 
     hostroot=$POOLSPACE/$host/root
     mkdir -p $hostroot
-    # copy (with hard links) 
+    # copy (with hard links)
     (cd ${BASICROOT} && find . -print | cpio -pld $hostroot 2>/dev/null )
 
     # make private copy of /var.
@@ -283,19 +271,19 @@ setup_host() {
     then
       (cd $hostroot/etc/rc.d && ln -fs ../init.d ../rc?.d . )
     fi
-    
+
     # nuke certain other files that get in the way of booting
     rm -f $hostroot/etc/mtab
     rm -f $hostroot/sbin/hwclock
 
     # set up the timezone
-    rm -f $hostroot/etc/localtime 
+    rm -f $hostroot/etc/localtime
 
     # dummy out fsck.
     ln -f $hostroot/bin/true $hostroot/sbin/fsck.hostfs
 
     # force it to GMT, otherwise (RH7.1) use host's zoneinfo.
-    if [ -f /usr/share/zoneinfo/GMT ] 
+    if [ -f /usr/share/zoneinfo/GMT ]
     then
       cp /usr/share/zoneinfo/GMT $hostroot/etc/localtime
     else
@@ -313,10 +301,6 @@ setup_host() {
     echo "none	   /usr/share		     hostfs   defaults,ro,$SHAREROOT 0 0" >>$hostroot/etc/fstab
     echo "$TAB echo /var/lib/swapfile  none  swap    sw              0       0  >>$hostroot/etc/fstab"
 
-    # split Debian "interfaces" file into RH ifcfg-* file
-    mkdir -p $hostroot/etc/sysconfig/network-scripts
-    ${TESTINGROOT}/utils/interfaces2ifcfg.pl $hostroot/etc/network/interfaces $hostroot/etc/sysconfig/network-scripts
-
     # make startup script
     startscript=$POOLSPACE/$host/start.sh
     if [ ! -f $startscript ]
@@ -332,14 +316,14 @@ setup_host() {
 }
 
 applypatches() {
-    if [ ! -d arch/um/.PATCHAPPLIED ] 
-    
+    if [ ! -d arch/um/.PATCHAPPLIED ]
+
     then
 	echo Applying $UMLPATCH
 
 	if [ "$UMLPATCH" != "none" ] && [ "$UMLPATCH" != /dev/null ]
 	then
-	    if bzcat $UMLPATCH | patch -p1 
+	    if bzcat $UMLPATCH | patch -p1
 	    then
 		:
 	    else
@@ -351,7 +335,7 @@ applypatches() {
 	if [ -n "$UMLPATCH2" ] && [ -f $UMLPATCH2 ]
 	then
 	    echo Applying $UMLPATCH2
-	    if bzcat $UMLPATCH2 | patch -p1 
+	    if bzcat $UMLPATCH2 | patch -p1
 	    then
 		    :
 	    else
@@ -381,7 +365,7 @@ applypatches() {
 
 	for patch in ${TESTINGROOT}/kernelconfigs/local_${KERNEL_MAJ_VERSION}_*.patch
 	do
-	    if [ -f $patch ] 
+	    if [ -f $patch ]
 	    then
 		echo Applying local patch $patch
 		cat $patch | patch -p1
@@ -390,7 +374,7 @@ applypatches() {
 
 	if $NATTPATCH
 	then
-	    if [ ! -d arch/um/.NATPATCHAPPLIED ] 
+	    if [ ! -d arch/um/.NATPATCHAPPLIED ]
 	    then
 		echo Applying the NAT-Traversal patch
 		( cd $OPENSWANSRCDIR && make nattpatch${KERNVERSION} ) | patch -p1
@@ -404,7 +388,7 @@ applypatches() {
 
 	if $SAREFPATCH
         then
-	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ] 
+	    if [ ! -d arch/um/.SAREFPATCHAPPLIED ]
 	    then
 		echo Applying the SAref patches
 		( cd $OPENSWANSRCDIR && make sarefpatch${KERNVERSION} ) | patch -p1

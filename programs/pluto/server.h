@@ -60,7 +60,7 @@ struct iface_port {
     bool ike_float;
     enum { IFN_ADD, IFN_KEEP, IFN_DELETE } change;
 };
-  
+
 extern struct iface_port  *interfaces;	 /* public interfaces */
 
 extern bool use_interface(const char *rifn);

@@ -89,7 +89,7 @@ static int random_fd = -1;
 
 const char *random_devices[]={
 /* Default on Linux + OSX is to use /dev/urandom as 1st choice, and fall back to /dev/random if /dev/urandom doesn't exist */
-#if defined(linux) 
+#if defined(linux)
   "/dev/urandom",
   "/dev/random"
 #elif defined(macintosh) || (defined(__MACH__) && defined(__APPLE__))
@@ -149,7 +149,7 @@ void
 get_rnd_bytes(u_char *buffer, int length)
 {
 #ifdef HAVE_LIBNSS
-   SECStatus rv; 
+   SECStatus rv;
    rv = PK11_GenerateRandom(buffer,length);
    if(rv !=SECSuccess) {
 	loglog(RC_LOG_SERIOUS,"NSS RNG failed");

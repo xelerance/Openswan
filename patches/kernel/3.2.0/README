@@ -1,0 +1,6 @@
+The upstream kernel commit 0c9f79be295c99ac7e4b569ca493d75fdcc19e4e introduced a change in
+net/ipv4/ip_sockglue.c requiring a slight modification of the SAref patches. This upstream
+commit is being backported to stable kernels and have been applied at least to 3.0.56 and
+3.2.35. The upstream kernel 3.2.35 is included in the Ubuntu kernel version 3.2.0-36.56.
+
+If patching an old kernel, use the "-pre-0c9f79be295c99ac7e4b569ca493d75fdcc19e4e" patches.

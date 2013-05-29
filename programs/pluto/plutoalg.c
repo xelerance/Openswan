@@ -130,16 +130,16 @@ __alg_info_ike_add (struct alg_info_ike *alg_info, int ealg_id, unsigned ek_bits
 				alg_info->alg_info_cnt));
 }
 
-/*	
+/*
  * 	Proposals will be built by looping over default_ike_groups array and
  * 	merging alg_info (ike_info) contents
  */
-static int default_ike_groups[] = { 
+static int default_ike_groups[] = {
 	OAKLEY_GROUP_MODP1536,
 	OAKLEY_GROUP_MODP1024
 };
 
-/*	
+/*
  *	Add IKE alg info _with_ logic (policy):
  */
 static void
@@ -155,7 +155,7 @@ alg_info_ike_add (struct alg_info *alg_info
 		n_groups=0;
 		goto in_loop;
 	}
-	
+
 	for (;n_groups--;i++) {
 		modp_id=default_ike_groups[i];
 in_loop:
@@ -210,14 +210,14 @@ alg_info_snprint_esp(char *buf, int buflen, struct alg_info_esp *alg_info)
 		DBG_log("auth algid=%d not available", esp_info->esp_aalg_id);
 		continue;
 	    }
-	    
+
 	    eklen=esp_info->esp_ealg_keylen;
-	    if (!eklen) 
+	    if (!eklen)
 		eklen=kernel_alg_esp_enc_keylen(esp_info->esp_ealg_id)*BITS_PER_BYTE;
 	    aklen=esp_info->esp_aalg_keylen;
-	    if (!aklen) 
+	    if (!aklen)
 		aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
-	    
+
 	    ret=snprintf(ptr, buflen, "%s%s(%d)_%03d-%s(%d)_%03d"
 			 , sep
 			 , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
@@ -257,11 +257,11 @@ alg_info_snprint_ah(char *buf, int buflen, struct alg_info_esp *alg_info)
 		DBG_log("auth algid=%d not available", esp_info->esp_aalg_id);
 		continue;
 	    }
-	    
+
 	    aklen=esp_info->esp_aalg_keylen;
-	    if (!aklen) 
+	    if (!aklen)
 		aklen=kernel_alg_esp_auth_keylen(esp_info->esp_aalg_id)*BITS_PER_BYTE;
-	    
+
 	    ret=snprintf(ptr, buflen, "%s%s(%d)_%03d"
 			 , sep
 			 , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
@@ -295,7 +295,7 @@ char *alg_info_snprint_ike1(struct ike_info *ike_info
 			    , int buflen)
 {
     snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
-	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY") 
+	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")
 	     , ike_info->ike_ealg, eklen
 	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 	     , ike_info->ike_halg, aklen
@@ -317,20 +317,20 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 	struct hash_desc *hash_desc;
 
 	ALG_INFO_IKE_FOREACH(alg_info, ike_info, cnt) {
-	    if (ike_alg_enc_present(ike_info->ike_ealg) 
-		&& (ike_alg_hash_present(ike_info->ike_halg)) 
+	    if (ike_alg_enc_present(ike_info->ike_ealg)
+		&& (ike_alg_hash_present(ike_info->ike_halg))
 		&& (lookup_group(ike_info->ike_modp))) {
 
 		enc_desc=ike_alg_get_encrypter(ike_info->ike_ealg);
 		passert(enc_desc != NULL);
 		hash_desc=ike_alg_get_hasher(ike_info->ike_halg);
 		passert(hash_desc != NULL);
-		
+
 		eklen=ike_info->ike_eklen;
-		if (!eklen) 
+		if (!eklen)
 		    eklen=enc_desc->keydeflen;
 		aklen=ike_info->ike_hklen;
-		if (!aklen) 
+		if (!aklen)
 		    aklen=hash_desc->hash_digest_len * BITS_PER_BYTE;
 		ret=snprintf(ptr, buflen, "%s%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
 			     , sep
@@ -350,7 +350,7 @@ alg_info_snprint_ike(char *buf, int buflen, struct alg_info_ike *alg_info)
 	return ptr-buf;
 }
 
-/*	
+/*
  *	Must be called for each "new" char, with new
  *	character in ctx.ch
  */
@@ -416,7 +416,7 @@ kernel_alg_policy_algorithms(struct esp_info *esp_info)
                  * Note: this is a very dirty hack ;-)
                  *
                  * XXX:jjo
-                 * Idea: Add a key_length_needed attribute to 
+                 * Idea: Add a key_length_needed attribute to
                  * esp_ealg ??
                  */
                 esp_info->esp_ealg_keylen=
@@ -426,7 +426,7 @@ kernel_alg_policy_algorithms(struct esp_info *esp_info)
     }
 }
 
-static bool 
+static bool
 kernel_alg_db_add(struct db_context *db_ctx
 		  , struct esp_info *esp_info
 		  , lset_t policy
@@ -465,14 +465,24 @@ kernel_alg_db_add(struct db_context *db_ctx
 
 	    /* add ESP auth attr (if present) */
 	    if (esp_info->esp_aalg_id != AUTH_ALGORITHM_NONE) {
-		db_attr_add_values(db_ctx, 
+		db_attr_add_values(db_ctx,
 				   AUTH_ALGORITHM, esp_info->esp_aalg_id);
 	    }
 
 	    /*	add keylegth if specified in esp= string */
 	    if (esp_info->esp_ealg_keylen) {
-		db_attr_add_values(db_ctx, 
-				   KEY_LENGTH, esp_info->esp_ealg_keylen);
+
+		if(esp_info->esp_ealg_id == ESP_AES_GCM_8
+			|| esp_info->esp_ealg_id == ESP_AES_GCM_12
+			|| esp_info->esp_ealg_id == ESP_AES_GCM_16 ) {
+
+			db_attr_add_values(db_ctx,
+				   KEY_LENGTH, esp_info->esp_ealg_keylen - 4 * BITS_PER_BYTE);
+		}
+		else {
+			db_attr_add_values(db_ctx,
+				KEY_LENGTH, esp_info->esp_ealg_keylen );
+		}
 	    }
 
 	} else if(policy & POLICY_AUTHENTICATE) {
@@ -480,7 +490,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    db_trans_add(db_ctx, aalg_i);
 
 	    /* add ESP auth attr */
-	    db_attr_add_values(db_ctx, 
+	    db_attr_add_values(db_ctx,
 			       AUTH_ALGORITHM, esp_info->esp_aalg_id);
 
 	}
@@ -488,14 +498,14 @@ kernel_alg_db_add(struct db_context *db_ctx
 	return TRUE;
 }
 
-/*	
+/*
  *	Create proposal with runtime kernel algos, merging
  *	with passed proposal if not NULL
  *
  *	for now this function does free() previous returned
  *	malloced pointer (this quirk allows easier spdb.c change)
  */
-struct db_context * 
+struct db_context *
 kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 {
     int ealg_i, aalg_i;
@@ -563,7 +573,7 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 	    db_destroy(ctx_new);
 	    return NULL;
 	}
-	    
+
 
 	prop=db_prop_get(ctx_new);
 
@@ -589,8 +599,8 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 	return ctx_new;
 }
 
-/* 
- * ML: make F_STRICT logic consider enc,auth algorithms 
+/*
+ * ML: make F_STRICT logic consider enc,auth algorithms
  */
 bool
 kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_info_esp *alg_info)
@@ -604,12 +614,12 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 	 */
 	if (key_len == 0) key_len = kernel_alg_esp_enc_keylen(ealg) * BITS_PER_BYTE;
 
-	/* 
+	/*
 	 * simple test to toss low key_len, will accept it only
 	 * if specified in "esp" string
 	 */
 	ealg_insecure=(key_len < 128) ;
-	if (ealg_insecure || 
+	if (ealg_insecure ||
 		(alg_info && alg_info->alg_info_flags & ALG_INFO_F_STRICT))
 	{
 		int i;
@@ -621,7 +631,7 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 						 (esp_info->esp_ealg_keylen==key_len)) &&
 						(esp_info->esp_aalg_id == aalg)) {
 #ifndef USE_1DES
-					if (ealg_insecure) 
+					if (ealg_insecure)
 						loglog(RC_LOG_SERIOUS, "You should NOT use insecure ESP algorithms [%s (%d)]!"
 								, enum_name(&esp_transformid_names, ealg), key_len);
 #endif
@@ -653,7 +663,7 @@ void kernel_alg_show_status(void)
 			, alg_p->sadb_alg_minbits
 			, alg_p->sadb_alg_maxbits
 		 );
-		
+
 	}
 	ESP_AALG_FOR_EACH(sadb_id) {
 		id=alg_info_esp_sadb2aa(sadb_id);
@@ -712,13 +722,13 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		+15 /* strlen("AUTH_ALGORITHM_") */
 		, c->policy & POLICY_PFS ?
 			c->alg_info_esp->esp_pfsgroup ?
-					enum_show(&oakley_group_names, 
+					enum_show(&oakley_group_names,
 						c->alg_info_esp->esp_pfsgroup)
 						+13 /*strlen("OAKLEY_GROUP_")*/
 				: "<Phase1>"
 			: "<N/A>"
 		    );
-	
+
 	if (st && st->st_ah.present)
 		whack_log(RC_COMMENT
 		, "\"%s\"%s:   %s algorithm newest: %s; pfsgroup=%s"
@@ -728,7 +738,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 		+15 /* strlen("AUTH_ALGORITHM_") */
 		, c->policy & POLICY_PFS ?
 			c->alg_info_esp->esp_pfsgroup ?
-					enum_show(&oakley_group_names, 
+					enum_show(&oakley_group_names,
 						c->alg_info_esp->esp_pfsgroup)
 						+13 /*strlen("OAKLEY_GROUP_")*/
 				: "<Phase1>"
@@ -765,14 +775,14 @@ y	if (can_do_IPcomp)
 	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
 	return sadb;
     }
-    
+
     dbnew=kernel_alg_db_new(ei, policy, logit);
 
     if(!dbnew) {
 	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
 	return NULL;
     }
-    
+
     p = db_prop_get(dbnew);
 
     if(!p) {
@@ -780,7 +790,7 @@ y	if (can_do_IPcomp)
 	db_destroy(dbnew);
 	return NULL;
     }
-    
+
     pc.prop_cnt = 1;
     pc.props = p;
     t.prop_conj_cnt = 1;
@@ -789,7 +799,7 @@ y	if (can_do_IPcomp)
     /* make a fresh copy */
     n = sa_copy_sa(&t, 0);
     n->parentSA = FALSE;
-    
+
     db_destroy(dbnew);
 
     DBG(DBG_CONTROL

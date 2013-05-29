@@ -58,31 +58,31 @@
 #include "vendor.h"
 #include "dpd.h"
 #include "keys.h"
-#include "ipsec_doi.h"	
+#include "ipsec_doi.h"
 
-static stf_status 
+static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role
 		    , unsigned int np, pb_stream *outpbs);
 
 /* Send v2CERT and v2 CERT */
-stf_status 
+stf_status
 ikev2_send_cert( struct state *st, struct msg_digest *md
 		, enum phase1_role role
 		, unsigned int np, pb_stream *outpbs)
 {
     struct ikev2_cert cert;
     /*  flag : to send a certificate request aka CERTREQ */
-    bool send_certreq = FALSE; 
-    
+    bool send_certreq = FALSE;
+
     struct connection *c  = st->st_connection;
     cert_t mycert = st->st_connection->spd.this.cert;
     {
-	/* decide the next payload; 
+	/* decide the next payload;
 	 * send a CERTREQ no preloaded public key exists
 	 */
 	send_certreq = (c->policy & POLICY_RSASIG)
-		       && !has_preloaded_public_key(st) 
+		       && !has_preloaded_public_key(st)
 	               && (role == INITIATOR)
 		       && (st->st_connection->spd.that.ca.ptr != NULL);
     }
@@ -90,7 +90,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	, DBG_log("Thinking about sending a certificate request (CERTREQ)");
    	DBG_log("  my policy is : %s", prettypolicy(c->policy));
 	DBG_log(" my next payload will %sbe a certificate request"
-		  , send_certreq ? "" : "not ")); 
+		  , send_certreq ? "" : "not "));
         if(!send_certreq)
 	{
 	   DBG(DBG_CONTROL
@@ -102,13 +102,13 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	    	{ DBG(DBG_CONTROL
 			, DBG_log(" has a preloaded a public for that end in st"));}
 	     else if(!(role == INITIATOR))
-	        { DBG(DBG_CONTROL 
+	        { DBG(DBG_CONTROL
 		     ,DBG_log("  my role is not INITIATORi"));}
 	     else if(!(st->st_connection->spd.that.ca.ptr != NULL))
 	         { DBG(DBG_CONTROL
 		 	, DBG_log("  no known CA for the other end"));}
-	     else 
-		{ DBG(DBG_CONTROL, 
+	     else
+		{ DBG(DBG_CONTROL,
 	    	      DBG_log(" we reached an unexpected state - a bad day? I don't feel like sending a certificate request (CERTREQ)"));}
         }
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
@@ -118,14 +118,14 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     }
 
     cert.isac_enc = mycert.type;
-    
+
     if(send_certreq){
         cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
 	   openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
 	   cert.isac_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
 	}
-	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;	
+	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;
     }
     else {
 	cert.isac_np = np;
@@ -135,19 +135,19 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	 * if (st->st_connection->spd.that.id)
 	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
 	 */
-	
+
     }
-    
+
     /*   send own (Initiator CERT) */
     {
 	pb_stream cert_pbs;
-	
+
         DBG_log("I am sending my certificate");
-	
+
         if (!out_struct(&cert, &ikev2_certificate_desc
                         , outpbs , &cert_pbs))
             return STF_INTERNAL_ERROR;
-	
+
         if(mycert.forced) {
 	    if (!out_chunk(mycert.u.blob, &cert_pbs, "forced CERT"))
 		return STF_INTERNAL_ERROR;
@@ -157,22 +157,22 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
         }
         close_output_pbs(&cert_pbs);
     }
-    
+
     /* send CERTREQ  */
-    if(send_certreq) { 
+    if(send_certreq) {
 	DBG(DBG_CONTROL
 	    , DBG_log("going to send a certreq"));
 	ikev2_send_certreq(st, md, role, np, outpbs);
     }
     return STF_OK;
 }
-static stf_status 
+static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role UNUSED
 		    , unsigned int np, pb_stream *outpbs)
 {
     if (st->st_connection->kind == CK_PERMANENT)
-	{	
+	{
 	DBG(DBG_CONTROL
 	    , DBG_log("connection->kind is CK_PERMANENT so send CERTREQ"));
 
@@ -186,16 +186,16 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
 	    generalName_t *ca = NULL;
 	DBG(DBG_CONTROL
 	    , DBG_log("connection->kind is not CK_PERMANENT (instance), so collect CAs"));
-	    
+
 	    if (collect_rw_ca_candidates(md, &ca))
 		{
 		    generalName_t *gn;
 	            DBG(DBG_CONTROL
 	                , DBG_log("connection is RW, lookup CA candidates"));
-		    
+
 		    for (gn = ca; gn != NULL; gn = gn->next)
 			{
-			    if (!build_and_ship_CR(CERT_X509_SIGNATURE, 
+			    if (!build_and_ship_CR(CERT_X509_SIGNATURE,
 						   gn->name, outpbs
 		       ,gn->next == NULL ? np : ISAKMP_NEXT_CR))
 				return STF_INTERNAL_ERROR;
@@ -214,12 +214,12 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
     return STF_OK;
 }
 
-/* just for ref copy from ikev1_main.c 
+/* just for ref copy from ikev1_main.c
 
      doi_log_cert_thinking(md , st->st_oakley.auth
 			  , mycert.type
 			  , st->st_connection->spd.this.sendcert
-			  , st->hidden_variables.st_got_certrequest 
+			  , st->hidden_variables.st_got_certrequest
 			  , send_cert);
 
      doi_log_cert_thinking(struct msg_digest *md UNUSED
@@ -232,14 +232,14 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
 
 bool
 doi_send_ikev2_cert_thinking(struct state *st)
-{   
+{
     cert_t mycert = st->st_connection->spd.this.cert;
     enum ipsec_cert_type certtype = mycert.type;
     enum certpolicy policy = st->st_connection->spd.this.sendcert;
     bool send_cert	 = FALSE;
 
     struct connection *c  = st->st_connection;
-    
+
     /* decide to send_cert or not */
     send_cert = (c->policy & POLICY_RSASIG)
 	&& mycert.type != CERT_NONE
@@ -247,14 +247,14 @@ doi_send_ikev2_cert_thinking(struct state *st)
 	     && st->hidden_variables.st_got_certrequest)
 	    || st->st_connection->spd.this.sendcert==cert_alwayssend
 	    || st->st_connection->spd.this.sendcert==cert_forcedtype);
-   
+
     /* log the steps led to the decision */
 
     DBG(DBG_CONTROL
 	, DBG_log("IKEv2 thinking whether to send my certificate:"));
 
     DBG(DBG_CONTROL
-   	, DBG_log(" my policy has %s RSASIG, the policy is : %s", 
+   	, DBG_log(" my policy has %s RSASIG, the policy is : %s",
 		     (c->policy & POLICY_RSASIG) ? "" : "no",
 		     prettypolicy(c->policy)));
 
@@ -275,8 +275,8 @@ doi_send_ikev2_cert_thinking(struct state *st)
 	} else if(policy == cert_sendifasked) {
 	    DBG(DBG_CONTROL, DBG_log("I did not send my certificate because I was not asked to."));
 	}
-    }     
-  
+    }
+
     return send_cert;
 }
 

@@ -22,13 +22,13 @@ sed -n -e '/^$/,$p' $tmpfile >$tmpfile.body
 HOME=/freeswan/users/build export HOME
 PGPPATH=$HOME/.pgp export PGPPATH
 
-pgp -eat $tmpfile.body $recipients 
+pgp -eat $tmpfile.body $recipients
 
-( 
+(
   cat $tmpfile.headers
   echo
-  cat $tmpfile.body.asc 
-) | cat | /usr/sbin/sendmail -t 
+  cat $tmpfile.body.asc
+) | cat | /usr/sbin/sendmail -t
 
 rm -f $tmpfile $tmpfile.headers $tmpfile.body $tmpfile.body.asc
 

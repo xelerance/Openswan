@@ -67,7 +67,7 @@ foreach net $managednets {
 
 while { [ set err [ getopt $argv "D:H:n:N:ae:E:w:W:p:P:" opt optarg]] } {
     if { $err < 0 } then {
-	puts stderr "Error: Xhost-test.tcl: opt=\"$opt\" and optarg=\"$optarg\"" 
+	puts stderr "Error: Xhost-test.tcl: opt=\"$opt\" and optarg=\"$optarg\""
 	usage
 	exit 96
     } else {
@@ -230,7 +230,7 @@ while {$scriptcount > 0} {
     netjigdebug "Asking netjig for any output"
     expect -i $netjig1 -gl "*"
 }
-    
+
 netjigdebug "Okay, done. Shutting down everything"
 
 after 500
@@ -241,11 +241,11 @@ foreach host $managed_hosts {
 foreach host $managed_hosts {
     expect {
 	-i $umlid($host,spawnid) -exact "# " {}
-	timeout { 
+	timeout {
 	    puts stderr "Can not find prompt prior to final script for host: \"$host\" (timeout)"
 	    exit 98;
 	}
-	eof { 
+	eof {
 	    puts stderr "Can not find prompt prior to final script for host: \"$host\" (EOF)"
 	    exit 97;
 	}
@@ -273,7 +273,7 @@ expect {
 	eof
 }
 
-# 
+#
 # $Log: Xhost-test.tcl,v $
 # Revision 1.19  2005/10/20 21:11:45  mcr
 # 	refactored to put wait-user function in netjig.tcl.

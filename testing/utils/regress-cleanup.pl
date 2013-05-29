@@ -13,7 +13,7 @@ if(!defined($ENV{'BTMP'})   || length($ENV{'BTMP'})==0 ||
    !defined($ENV{'BRANCH'}) || length($ENV{'BRANCH'})==0 ||
    !defined($ENV{'TODAY'})  || length($ENV{'TODAY'})==0 )
   {
-    print STDERR "You must define \$BTMP, \$USER, \$BRANCH and \$TODAY for the cleanup to function."; 
+    print STDERR "You must define \$BTMP, \$USER, \$BRANCH and \$TODAY for the cleanup to function.";
     print STDERR "Values are: BTMP=\"".$ENV{'BTMP'}."\"\n";
     print STDERR "\tUSER=\"".$ENV{'USER'}."\"\n";
     print STDERR "\tBRANCH=\"".$ENV{'BRANCH'}."\"\n";
@@ -27,7 +27,7 @@ $BRANCH=$ENV{'BRANCH'};
 $TODAY=$ENV{'TODAY'};
 
 # we need to make all of the directories candidates, otherwise, we get into trouble
-# if we are building multiple branches - one may consume all the space, leaving 
+# if we are building multiple branches - one may consume all the space, leaving
 # the others screwed.
 $cleandir="$BTMP/$USER";
 
@@ -133,7 +133,7 @@ if(&getdiskspace < $desiredspace) {
 
 print "Found ".&getdiskspace." free, continuing.\n";
 
-exit 0;  
+exit 0;
 
 # $Id: regress-cleanup.pl,v 1.6 2003/01/24 16:18:40 build Exp $
 #

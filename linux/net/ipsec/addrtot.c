@@ -1,12 +1,12 @@
 /*
  * addresses to text
  * Copyright (C) 2000  Henry Spencer.
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -34,7 +34,7 @@ static size_t normal6(const unsigned char *s, size_t len, char *b, char **dp, in
 static size_t reverse4(const unsigned char *s, size_t len, char *b, char **dp);
 static size_t reverse6(const unsigned char *s, size_t len, char *b, char **dp);
 
-#if defined(__KERNEL__) && !defined(__HAVE_ARCH_STRSTR) 
+#if defined(__KERNEL__) && !defined(__HAVE_ARCH_STRSTR)
 #define strstr ipsec_strstr
 /*
  * Find the first occurrence of find in s.
@@ -401,11 +401,11 @@ regress()
 
 		if (n == 0 && r->output == NULL)
 			{}		/* okay, error expected */
-		
+
 		else if (n == 0) {
 			printf("`%s' atoasr failed\n", r->input);
 			status = 1;
-			
+
 		} else if (r->output == NULL) {
 			printf("`%s' atoasr succeeded unexpectedly '%c'\n",
 							r->input, r->format);

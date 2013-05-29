@@ -109,7 +109,7 @@ add_x509_public_key(struct id *keyid
        keyid->kind != ID_DER_ASN1_GN) {
 	pk = allocate_RSA_public_key(c);
 	pk->id = *keyid;
-	
+
 	pk->dns_auth_level = dns_auth_level;
 	pk->until_time = until;
 	pk->issuer = cert->issuer;
@@ -274,7 +274,7 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
     {
 	struct isakmp_cr *const cr = &p->payload.cr;
 	chunk_t ca_name;
-	
+
 	ca_name.len = pbs_left(&p->pbs);
 	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
 
@@ -286,7 +286,7 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	    if (ca_name.len > 0)
 	    {
 		generalName_t *gn;
-		
+
 		if (!is_asn1(ca_name))
 		    continue;
 
@@ -322,7 +322,7 @@ ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
     {
 	struct ikev2_certreq *const cr = &p->payload.v2certreq;
 	chunk_t ca_name;
-	
+
 	ca_name.len = pbs_left(&p->pbs);
 	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
 
@@ -334,7 +334,7 @@ ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 	    if (ca_name.len > 0)
 	    {
 		generalName_t *gn;
-		
+
 		if (!is_asn1(ca_name))
 		    continue;
 

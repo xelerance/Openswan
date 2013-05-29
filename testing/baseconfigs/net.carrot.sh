@@ -3,9 +3,9 @@
 #
 if [ -n "$UML_public_CTL" ]
 then
-    net_eth0="eth0=daemon,12:00:00:de:76:bb,unix,$UML_public_CTL,$UML_public_DATA";
+    net_eth0="eth0=daemon,10:00:00:de:76:bb,unix,$UML_public_CTL,$UML_public_DATA";
 else
-    net_eth0="eth0=mcast,12:00:00:de:76:bb,239.192.1.2,31200";
+    net_eth0="eth0=mcast,10:00:00:de:76:bb,239.192.1.2,31200";
 fi
 
 net="$net_eth0"

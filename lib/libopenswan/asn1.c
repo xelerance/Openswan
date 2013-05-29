@@ -109,7 +109,7 @@ asn1_length(chunk_t *blob)
     }
 
     len = 0;
-    
+
     while (n-- > 0)
     {
 	len = 256*len + *blob->ptr++;
@@ -182,7 +182,7 @@ build_asn1_object(chunk_t *object, asn1_t type, size_t datalen)
 
     /* copy the asn.1 tag field and advance the pointer */
    *pos++ = type;
-   
+
    /* copy the asn.1 length field and advance the pointer */
    chunkcpy(pos, length);
 
@@ -400,7 +400,7 @@ extract_object(asn1Object_t const *objects,
     {
         /* advance to end of missing option field */
 	do
-        
+
 	    (*objectID)++;
 	  while (!((objects[*objectID].flags & ASN1_END) &&
 		      (objects[*objectID].level == obj.level )));

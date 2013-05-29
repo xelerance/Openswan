@@ -81,7 +81,13 @@ CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
 CFLAGS+= -Wpointer-arith
-CFLAGS+= -Wcast-qual
+
+# must turn this off due to initsubnet.c
+CFLAGS+= -Wno-error=cast-qual
+
+# some junk left in alg_info.c
+CFLAGS+= -Wno-error=cpp
+
 #CFLAGS+= -Wmissing-declarations
 CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic

@@ -133,6 +133,7 @@ orient(struct connection *c)
 			    else
 				loglog(RC_LOG_SERIOUS, "two interfaces match \"%s\" (%s, %s)"
 				       , c->name, c->interface->ip_dev->id_rname, p->ip_dev->id_rname);
+			    terminate_connection(c->name);
 			    c->interface = NULL;	/* withdraw orientation */
 			    return FALSE;
 			}
@@ -183,7 +184,7 @@ initiate_a_connection(struct connection *c
 
     /* turn on any extra debugging asked for */
     c->extra_debugging |= moredebug;
-    
+
     if (!oriented(*c))
     {
 	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
@@ -217,11 +218,11 @@ initiate_a_connection(struct connection *c
 	 * If we are to proceed asynchronously, whackfd will be NULL_FD.
 	 */
 	c->policy |= POLICY_UP;
-	
+
 	if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
 	    struct alg_info_esp *alg = c->alg_info_esp;
 	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, TRUE);
-	    
+
 	    if(alg != NULL && phase2_sa == NULL) {
 		whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
 		reset_cur_connection();
@@ -230,20 +231,20 @@ initiate_a_connection(struct connection *c
 	    }
 	    free_sa(phase2_sa);
 	}
-	
+
 	{
 	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
 			      , SOS_NOBODY, importance
 #ifdef HAVE_LABELED_IPSEC
-                                        , NULL 
+                                        , NULL
 #endif
 			     );
 	    success = 1;
 	}
     }
     reset_cur_connection();
-    
+
     return success;
 }
 
@@ -291,7 +292,7 @@ restart_connections_by_peer(struct connection *c)
 	   if (
 #ifdef DYNAMICDNS
 	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-	   	|| (c->dnshostname == NULL && d->dnshostname == NULL && 
+	   	|| (c->dnshostname == NULL && d->dnshostname == NULL &&
 #endif /* DYNAMICDNS */
 		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
 #ifdef DYNAMICDNS
@@ -312,7 +313,7 @@ restart_connections_by_peer(struct connection *c)
     	   if (
 #ifdef DYNAMICDNS
 	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-	   	|| (c->dnshostname == NULL && d->dnshostname == NULL && 
+	   	|| (c->dnshostname == NULL && d->dnshostname == NULL &&
 #endif /* DYNAMICDNS */
 		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
 #ifdef DYNAMICDNS
@@ -767,7 +768,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
     /* What connection shall we use?
      * First try for one that explicitly handles the clients.
      */
-    
+
     addrtot(&b->our_client, 0, ours, sizeof(ours));
     addrtot(&b->peer_client, 0, his, sizeof(his));
     ourport = ntohs(portof(&b->our_client));
@@ -776,7 +777,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 #ifdef HAVE_LABELED_IPSEC
     char sec_ctx_value[256];
-    memset(sec_ctx_value, 0, sizeof(sec_ctx_value)); 
+    memset(sec_ctx_value, 0, sizeof(sec_ctx_value));
     if(uctx != NULL) {
     memcpy(sec_ctx_value, uctx->sec_ctx_value, uctx->ctx_len);
     }
@@ -788,7 +789,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	     , ours, ourport, his, hisport, b->transport_proto
 	     , oppo_step_name[b->step], b->want);
 #endif
-    
+
     if(DBGP(DBG_OPPOINFO)) {
 	openswan_log("%s", demandbuf);
 	loggedit = TRUE;
@@ -865,7 +866,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto
 #ifdef HAVE_LABELED_IPSEC
-			  , uctx 
+			  , uctx
 #endif
 			);
 	b->whackfd = NULL_FD;	/* protect from close */
@@ -1290,7 +1291,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 				, oppo_step_name[b->step], b->want));
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
-				      , SOS_NOBODY, pcim_local_crypto 
+				      , SOS_NOBODY, pcim_local_crypto
 #ifdef HAVE_LABELED_IPSEC
 					, NULL /*shall we pass uctx for opportunistic connections?*/
 #endif
@@ -1518,7 +1519,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
  * check_nexthop(const struct connection *c)
  * {
  *     struct connection *d;
- * 
+ *
  *     if (addrinsubnet(&c->spd.this.host_nexthop, &c->spd.that.client))
  *     {
  * 	loglog(RC_LOG_SERIOUS, "cannot perform routing for connection \"%s\""
@@ -1526,7 +1527,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
  * 	    c->name);
  * 	return FALSE;
  *     }
- * 
+ *
  *     for (d = connections; d != NULL; d = d->next)
  *     {
  * 	if (d->routing != RT_UNROUTED)
@@ -1571,7 +1572,7 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 #endif
 	)
 {
-	/* 
+	/*
 	 * for all connections: if the same Phase 1 IDs are used
 	 * for different IP addresses, unorient that connection.
 	 * We also check ports, since different Phase 1 ID's can
@@ -1590,7 +1591,7 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 		|| (c->spd.that.host_port != d->spd.that.host_port))
 #ifdef DYNAMICDNS
 	    && !(c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-#endif /* DYNAMICDNS */            
+#endif /* DYNAMICDNS */
 	       )
 
 	    {
@@ -1713,7 +1714,7 @@ static void connection_check_ddns1(struct connection *c)
 	    continue;
 	if ((c->dnshostname && d->dnshostname &&
 		(strcmp(c->dnshostname, d->dnshostname) == 0))
-		|| (c->dnshostname == NULL && d->dnshostname == NULL && 
+		|| (c->dnshostname == NULL && d->dnshostname == NULL &&
 		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)))
 	    initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
     }
@@ -1749,7 +1750,7 @@ void connection_check_ddns(void)
 void connection_check_phase2(void)
 {
     struct connection *c, *cnext;
-    
+
     /* reschedule */
     event_schedule(EVENT_PENDING_PHASE2, PENDING_PHASE2_INTERVAL, NULL);
 
@@ -1770,10 +1771,10 @@ void connection_check_phase2(void)
 
 	DBG(DBG_CONTROL,
 	    DBG_log("pending review: connection \"%s\" checked", c->name));
-	
+
 	if(pending_check_timeout(c)) {
 	    struct state *p1st;
-	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1" 
+	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
 
@@ -1784,7 +1785,7 @@ void connection_check_phase2(void)
 #ifdef DYNAMICDNS
 	    if (c->dnshostname != NULL)
 		restart_connections_by_peer(c);
-	    else 
+	    else
 	    {
 #endif /* DYNAMICDNS */
 		delete_event(p1st);
@@ -1800,7 +1801,7 @@ void connection_check_phase2(void)
 		is.whackfd   = NULL_FD;
 		is.moredebug = 0;
 		is.importance= pcim_local_crypto;
-		
+
 		initiate_a_connection(c, &is);
 	    }
 	}

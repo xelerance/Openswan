@@ -1,0 +1,417 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Atila KOÇ <akoc@artielektronik.com.tr>, 2012.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: openswan\n"
+"Report-Msgid-Bugs-To: openswan@packages.debian.org\n"
+"POT-Creation-Date: 2010-07-29 19:03+0200\n"
+"PO-Revision-Date: 2012-02-13 14:22+0200\n"
+"Last-Translator: Atila KOÇ <akoc@artielektronik.com.tr>\n"
+"Language-Team: Türkçe <debian-l10n-turkish@lists.debian.org>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
+msgid "Old runlevel management superseded"
+msgstr "Eski çalışma düzeyi yönetimi yerine yenisi geçti"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:1001
+msgid ""
+"Previous versions of the Openswan package gave a choice between three "
+"different Start/Stop-Levels. Due to changes in the standard system startup "
+"procedure, this is no longer necessary or useful. For all new installations "
+"as well as old ones running in any of the predefined modes, sane default "
+"levels will now be set. If you are upgrading from a previous version and "
+"changed your Openswan startup parameters, then please take a look at NEWS."
+"Debian for instructions on how to modify your setup accordingly."
+msgstr ""
+"Openswan paketinin önceki sürümleri üç farklı Başlama/Durma-Seviyesi "
+"arasında seçim şansı tanırdı. Bu, olağan sistem başlatma yordamındaki "
+"değişiklikler nedeni ile artık gerekli ya da faydalı değildir. Şimdi tüm "
+"yeni kurulumlar ve herhangi bir öntanımlı kipte çalışan eskiler için aynı "
+"öntanımlı seviyeler ayarlanacaktır. Eğer eski bir sürümü yükseltiyorsanız ya "
+"da Openswan başlatma değişkenlerinizi değiştirdiyseniz, kurulumunuzu nasıl "
+"uyumlandıracağınızı anlamak için NEWS.Debian'a göz atınız."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
+msgid "Restart Openswan now?"
+msgstr "Openswan şimdi yeniden başlatılsın mı?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:2001
+msgid ""
+"Restarting Openswan is recommended, since if there is a security fix, it "
+"will not be applied until the daemon restarts. Most people expect the daemon "
+"to restart, so this is generally a good idea. However, this might take down "
+"existing connections and then bring them back up, so if you are using such "
+"an Openswan tunnel to connect for this update, restarting is not recommended."
+msgstr ""
+"Yapılan güvenlik iyileştirmesi artalan süreci yeniden başlatılmadan "
+"uygulanamayacağından, Openswan'ı yeniden başlatmanız önerilir. Çoğu kişi "
+"artalan sürecinin tekrar başlayacağını düşünür ve bu genellikle aldatıcıdır. "
+"Oysa, yeniden başlatma, varolan bağlantıları koparıp yeniden yapar ki, eğer "
+"bu güncellemeyi bir Openswan tüneli bağlantısını kullanarak yapıyorsanız "
+"yeniden başlatma önerilmez."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid "Use an X.509 certificate for this host?"
+msgstr "Bu makine için bir X.509 sertifikası kullanılsın mı?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid ""
+"An X.509 certificate for this host can be automatically created or imported. "
+"It can be used to authenticate IPsec connections to other hosts and is the "
+"preferred way of building up secure IPsec connections. The other possibility "
+"would be to use shared secrets (passwords that are the same on both sides of "
+"the tunnel) for authenticating a connection, but for a larger number of "
+"connections, key based authentication is easier to administer and more "
+"secure."
+msgstr ""
+"Bu makine için bir X.509 sertifikası kendiliğinden yaratılabilir ya da içe "
+"aktarılabilir. Bu sertifika diğer makinelerle IPsec bağlantılarını "
+"yetkilendirmek için kullanılacaktır ve bu yöntem güvenli IPsec bağlantıları "
+"için yeğlenen seçenektir. Başka bir seçenek de bağlantıyı yetkilendirmek "
+"için paylaşılan gizlerin (tünelin her iki tarafında da aynı olan parolalar) "
+"kullanılmasıdır, fakat çoğu bağlantılarda anahtar tabanlı yetkilendirme daha "
+"kolay yönetilir ve daha güvenlidir."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:3001
+msgid ""
+"Alternatively you can reject this option and later use the command \"dpkg-"
+"reconfigure openswan\" to come back."
+msgstr ""
+"Dilerseniz bu öneriyi geri çevirir ve daha sonra \"dpkg-reconfigure openswan"
+"\" komutu ile yeniden değerlendirebilirisiniz."
+
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "create"
+msgstr "yarat"
+
+#. Type: select
+#. Choices
+#: ../openswan.templates:4001
+msgid "import"
+msgstr "içe aktar"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid "Methods for using a X.509 certificate to authenticate this host:"
+msgstr "Bu makineyi yetkilendirmek için X.509 sertifika kullanım yöntemleri:"
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"It is possible to create a new X.509 certificate with user-defined settings "
+"or to import an existing public and private key stored in PEM file(s) for "
+"authenticating IPsec connections."
+msgstr ""
+"IPsec bağlantılarını yetkilendirmek için kullanıcı tanımlı ayarlar ile yeni "
+"bir X.509 sertifikası yaratmak ya da PEM dosyası içinde varolan bir anahtarı "
+"içe aktarmak olasıdır."
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"If you choose to create a new X.509 certificate you will first be asked a "
+"number of questions which must be answered before the creation can start. "
+"Please keep in mind that if you want the public key to get signed by an "
+"existing Certificate Authority you should not select to create a self-signed "
+"certificate and all the answers given must match exactly the requirements of "
+"the CA, otherwise the certificate request may be rejected."
+msgstr ""
+"Eğer yeni bir X.509 sertifikası yaratma seçeneğini seçerseniz, sertifika "
+"yaratılmadan önce bir takım soruları yanıtlamanız gerekecektir. Unutmayın, "
+"eğer ortak anahtarın varolan bir Sertifika Yetkilisi (CA) tarafından "
+"imzalanmasını istiyorsanız, kendiliğinden imzalı bir sertifika yaratmayı "
+"seçmemeli ve vereceğiniz tüm yanıtların Sertifika Yetkilisinin koşullarını "
+"bütünüyle karşıladığından emin olmalısınız, tersi durumda sertifika "
+"isteğiniz geri çevirilebilir."
+
+#. Type: select
+#. Description
+#: ../openswan.templates:4002
+msgid ""
+"If you want to import an existing public and private key you will be "
+"prompted for their filenames (which may be identical if both parts are "
+"stored together in one file). Optionally you may also specify a filename "
+"where the public key(s) of the Certificate Authority are kept, but this file "
+"cannot be the same as the former ones. Please also be aware that the format "
+"for the X.509 certificates has to be PEM and that the private key must not "
+"be encrypted or the import procedure will fail."
+msgstr ""
+"Eğer varolan bir özel ve genel anahtarı içe aktarmak istiyorsanız, onların "
+"dosya adlarını girmeniz istenecektir (ve eğer anahtarların ikisi de aynı "
+"dosyada ise dosya adları da aynı olacaktır). İsteğe bağlı olarak, Sertifika "
+"Yetkilisinin genel anahtarını barındıran dosya adını belirtebilirsiniz, "
+"fakat bu dosya öncekilerle aynı olamaz. X.509 sertifikalarının biçiminin PEM "
+"ve özel anahtarın şifrelenmemiş olması gerektiğini unutmayın yoksa içe "
+"aktarma süreci başarısız olacaktır."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
+msgid "File name of your PEM format X.509 certificate:"
+msgstr "PEM biçimindeki X.509 sertifikanızın dosya adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:5001
+msgid ""
+"Please enter the location of the file containing your X.509 certificate in "
+"PEM format."
+msgstr ""
+"PEM biçimindeki X.509 sertifikanızı barındıran dosyanın yolunu giriniz."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
+msgid "File name of your PEM format X.509 private key:"
+msgstr "PEM biçimindeki X.509 özel anahtarınızın dosya adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:6001
+msgid ""
+"Please enter the location of the file containing the private RSA key "
+"matching your X.509 certificate in PEM format. This can be the same file "
+"that contains the X.509 certificate."
+msgstr ""
+"X.509 sertifikanıza karşılık gelen özel RSA anahtarınızı barındıran PEM "
+"biçimindeki dosyanın yolunu giriniz. Bu dosya, X.509 sertifikasını "
+"barındıran dosya ile aynı olabilir."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
+msgid "File name of your PEM format X.509 RootCA:"
+msgstr "PEM biçimindeki X.509 KökSY (RootCA) dosya adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:7001
+msgid ""
+"Optionally you can now enter the location of the file containing the X.509 "
+"Certificate Authority root used to sign your certificate in PEM format. If "
+"you do not have one or do not want to use it please leave the field empty. "
+"Please note that it's not possible to store the RootCA in the same file as "
+"your X.509 certificate or private key."
+msgstr ""
+"Şimdi, isteğe bağlı olarak, sertifikanızı imzalamak için kullanılan X.509 "
+"Sertifika Yetkilisi kökünü barındıran dosyanın yolunu girebilirsiniz. Eğer "
+"yoksa ya da kullanmak istemiyorsanız bu alanı boş bırakınız. Unutmayın, "
+"KökSY (RootCA) ile X.509 sertifikanızı ya da özel anahtarınızı aynı dosyada "
+"tutamazsınız."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid "Length of RSA key to be created:"
+msgstr "Yaratılacak RSA anahtarının uzunluğu girin:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:8001
+msgid ""
+"Please enter the required RSA key-length. Anything under 1024 bits should be "
+"considered insecure; anything more than 4096 bits slows down the "
+"authentication process and is not useful at present."
+msgstr ""
+"Yaratılacak RSA anahtar uzunluğunu giriniz. 1024 bit'ten kısa olduğunda "
+"güvenilirliğini yitirir; 4096 bit'ten uzun olduğunda doğrulama sürecini "
+"yavaşlatır ve zaten şu an faydası da yoktur."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid "Create a self-signed X.509 certificate?"
+msgstr "Öz imzalı bir sertifika yaratılsın mı?"
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid ""
+"Only self-signed X.509 certificates can be created automatically, because "
+"otherwise a Certificate Authority is needed to sign the certificate request. "
+"If you choose to create a self-signed certificate, you can use it "
+"immediately to connect to other IPsec hosts that support X.509 certificate "
+"for authentication of IPsec connections. However, using Openswan's PKI "
+"features requires all certificates to be signed by a single Certificate "
+"Authority to create a trust path."
+msgstr ""
+"Yalnızca öz imzalı X.509 sertifikaları kendiliğinden yaratılabilir, çünkü "
+"öteki durumda sertifika isteğini imzalaması için bir Sertifika Yetkilisi "
+"gereklidir. Eğer öz imzalı bir sertifika yaratmayı seçerseniz, onu hemen "
+"X.509 sertifikaları ile yetkilendirmeyi destekleyen diğer IPsec makineleri "
+"ile bağlanmak için kullanabilirsiniz. Öte yandan, Openswan'ın PKI "
+"özellikleri, güven yolu oluşturmak için tüm sertifikaların aynı Sertifika "
+"Yetkilisi tarafından imzalanmış olmasını gerektirir."
+
+#. Type: boolean
+#. Description
+#: ../openswan.templates:9001
+msgid ""
+"If you do not choose to create a self-signed certificate, only the RSA "
+"private key and the certificate request will be created, and you will have "
+"to sign the certificate request with your Certificate Authority."
+msgstr ""
+"Eğer öz imzalı bir sertifika yaratmayı seçmezseniz, yalnızca RSA özel "
+"anahtarı ve sertifika isteği yaratılacaktır ve sizin bu isteği Sertifika "
+"Yetkilinize imzalatmanız gerekecektedir."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid "Country code for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için ülke kodu:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid ""
+"Please enter the two-letter code for the country the server resides in (such "
+"as \"AT\" for Austria)."
+msgstr ""
+"Sunucunun bulunduğu ülke için iki harfli ülke kodunu giriniz (Türkiye için "
+"\"TR\" gibi)."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:10001
+msgid ""
+"OpenSSL will refuse to generate a certificate unless this is a valid "
+"ISO-3166 country code; an empty field is allowed elsewhere in the X.509 "
+"certificate, but not here."
+msgstr ""
+"Bu geçerli bir ISO-3166 ülke kodu olmadığı sürece OpenSSL sertifika üretmeyi "
+"geri çevirecektir. X.509 sertifikasının başka bir yerinde boş alan kabul "
+"edilir ama burada değil."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
+msgid "State or province name for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için şehir adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:11001
+msgid ""
+"Please enter the full name of the state or province the server resides in "
+"(such as \"Upper Austria\")."
+msgstr "Sunucunun bulunduğu şehrin tam adını giriniz (örneğin \"Ankara\")."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
+msgid "Locality name for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için ilçe adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:12001
+msgid ""
+"Please enter the locality the server resides in (often a city, such as "
+"\"Vienna\")."
+msgstr "Sunucunun bulunduğu ilçeyi girin (örneğin \"Yenimahalle\" gibi):"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
+msgid "Organization name for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için örgüt adı:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:13001
+msgid ""
+"Please enter the organization the server belongs to (such as \"Debian\")."
+msgstr "Sunucunuzun bağlı olduğu örgütü giriniz (örneğin \"Debian\")."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
+msgid "Organizational unit for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için örgütsel birim:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:14001
+msgid ""
+"Please enter the organizational unit the server belongs to (such as "
+"\"security group\")."
+msgstr ""
+"Sunucunuzun bağlı olduğu örgütsel birimi giriniz (örneğin \"Çeviri Birimi\")."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
+msgid "Common Name for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için Genel Ad:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:15001
+msgid ""
+"Please enter the Common Name for this host (such as \"gateway.example.org\")."
+msgstr "Bu makine için Genel Ad giriniz (örneğin \"gecit.example.org\")."
+
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
+msgid "Email address for the X.509 certificate request:"
+msgstr "X.509 sertifika isteği için e-posta adresi:"
+
+#. Type: string
+#. Description
+#: ../openswan.templates:16001
+msgid ""
+"Please enter the email address of the person or organization responsible for "
+"the X.509 certificate."
+msgstr ""
+"X.509 sertifikasından sorumlu kişinin ya da örgütün e-posta adresini giriniz."
+
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
+msgid "Modification of /etc/ipsec.conf"
+msgstr "/etc/ipsec.conf dosyasındaki değişiklikler"
+
+#. Type: note
+#. Description
+#: ../openswan.templates:17001
+msgid ""
+"Due to a change in upstream Openswan, opportunistic encryption is no longer "
+"enabled by default. The no_oe.conf file that was shipped in earlier versions "
+"to explicitly disable it can therefore no longer be included by ipsec.conf. "
+"Any such include paragraph will now be automatically removed to ensure that "
+"Openswan can start correctly."
+msgstr ""
+"Openswan'da kaydedilen iyileştirmeler nedeni ile Fırsatçı Şifreleme "
+"(Opportunistic Encryption - OE) öntanımlı olarak devre dışı bırakılmıştır. "
+"Önceki sürümlerde fırsatçı şifrelemeyi devre dışı bırakmak için dağıtılan "
+"no_oe.conf dosyası artık ipsec.conf yapılandırma dosyasında yer "
+"almamaktadır.  Openswan'ın düzgün başlamasını sağlamak amacıyla yapılandırma "
+"dosyasından Fırsatçı Şifreleme ile ilgili içerme satırları  çıkarılacaktır."

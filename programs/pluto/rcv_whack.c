@@ -1,4 +1,3 @@
-
 /* whack communicating routines
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
@@ -156,7 +155,7 @@ static bool writewhackrecord(char *buf, int buflen)
     header[2]=n;
 
     /* DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen); */
-    
+
     if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing header");
     }
@@ -164,7 +163,7 @@ static bool writewhackrecord(char *buf, int buflen)
     if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing buf");
     }
-    
+
     return TRUE;
 }
 
@@ -182,7 +181,7 @@ static bool openwhackrecordfile(char *file)
     u_int32_t magic;
     struct tm tm1, *tm;
     time_t n;
-    
+
     strcpy(FQDN, "unknown host");
     gethostname(FQDN, sizeof(FQDN));
 
@@ -197,19 +196,19 @@ static bool openwhackrecordfile(char *file)
     time(&n);
     tm = localtime_r(&n, &tm1);
     strftime(when, sizeof(when), "%F %T", tm);
-    
+
     fprintf(whackrecordfile, "#!-pluto-whack-file- recorded on %s on %s\n",
 	    FQDN, when);
 
     magic = WHACK_BASIC_MAGIC;
     writewhackrecord((char *)&magic, 4);
-    
+
     DBG(DBG_CONTROL
 	, DBG_log("started recording whack messages to %s\n"
 		  , whackrecordname));
     return TRUE;
 }
-    
+
 
 
 static void
@@ -347,7 +346,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	    else if (!msg.whack_connection)
 	    {
 		struct connection *c = con_by_name(msg.name, TRUE);
-		
+
 		if (c != NULL)
 		{
 		    c->extra_debugging = msg.debugging;
@@ -363,7 +362,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	case WHACK_SETDUMPDIR:
 	    /* XXX */
 	    break;
-	    
+
 	case WHACK_STARTWHACKRECORD:
 	    /* close old filename */
 	    if(whackrecordfile) {
@@ -378,7 +377,7 @@ void whack_process(int whackfd, struct whack_message msg)
 
 	    /* do not do any other processing for these */
 	    goto done;
-	    
+
 	case WHACK_STOPWHACKRECORD:
 	    if(whackrecordfile) {
 		DBG(DBG_CONTROL
@@ -484,14 +483,14 @@ void whack_process(int whackfd, struct whack_message msg)
 	load_crls();
     }
 
-    if (msg.tpmeval) 
+    if (msg.tpmeval)
     {
 #ifdef TPM
 	passert(msg.tpmeval != NULL);
 	tpm_eval(msg.tpmeval);
 #else
 	openswan_log("Pluto not built with TAPROOM");
-#endif	
+#endif
     }
 
 #ifdef HAVE_OCSP
@@ -634,8 +633,8 @@ void whack_process(int whackfd, struct whack_message msg)
 	    (void)initiate_ondemand(&msg.oppo_my_client, &msg.oppo_peer_client, 0
 		, FALSE
 		, msg.whack_async? NULL_FD : dup_any(whackfd)
-#ifdef HAVE_LABELED_IPSEC 
-		, NULL 
+#ifdef HAVE_LABELED_IPSEC
+		, NULL
 #endif
 		, "whack");
     }
@@ -658,7 +657,7 @@ done:
 }
 
 /*
- * Handle a whack request. 
+ * Handle a whack request.
  */
 void
 whack_handle(int whackctlfd)
@@ -701,7 +700,7 @@ whack_handle(int whackctlfd)
     {
 	err_t ugh = NULL;
         struct whackpacker wp;
-        
+
         wp.msg = &msg;
         wp.n   = n;
         wp.str_next = msg.string;
@@ -743,7 +742,7 @@ whack_handle(int whackctlfd)
 
 	if (ugh != NULL)
 	{
-	    if (*ugh != '\0') 
+	    if (*ugh != '\0')
 		loglog(RC_BADWHACKMESSAGE, "%s", ugh);
 	    whack_log_fd = NULL_FD;
 	    close(whackfd);
@@ -753,7 +752,7 @@ whack_handle(int whackctlfd)
 
     /* dump record if necessary */
     writewhackrecord((char *)&msg_saved, n);
-    
+
     whack_process(whackfd, msg);
 }
 
@@ -778,19 +777,19 @@ bool whack_prompt_for(int whackfd
 	      , prompt1, prompt2);
 
     whack_log_fd = savewfd;
-    
+
     n = read(whackfd, ansbuf, ansbuf_len);
-    
+
     if(n == -1) {
 	whack_log(RC_LOG_SERIOUS, "read(whackfd) failed: %s", strerror(errno));
 	return FALSE;
     }
-    
+
     if(strlen(ansbuf) == 0) {
 	whack_log(RC_LOG_SERIOUS, "no %s entered, aborted", prompt2);
 	return FALSE;
     }
-	
+
     return TRUE;
 }
 

@@ -30,19 +30,19 @@ proc netjigstart {} {
     # stderr from it will go to our stderr.
     set debugjig ""
     set tcpdumpjig ""
-    
+
     if {[info exists env(NETJIGTESTDEBUG)]} {
 	if {$env(NETJIGTESTDEBUG) == "netjig"} {
 	    set debugjig "--debug"
 	}
     }
-    
+
     if {[info exists env(NETJIGDUMP)]} {
 	if { [string length "$env(NETJIGDUMP)"] > 0 } {
 	    set tcpdumpjig "--tcpdump"
 	}
     }
-    
+
     spawn -noecho -open [open "|$netjig_prog --cmdproto $debugjig $tcpdumpjig 2>@stderr" w+]
     return $spawn_id
 }
@@ -61,7 +61,7 @@ proc sendnjcmd {netjig cmd} {
     set ncmd [join $cmd]
     netjigcmddebug "Sending $ncmd\n"
     send -i $netjig "$ncmd\n"
-    
+
 #    exp_internal 1
     expect {
 	-i $netjig
@@ -80,12 +80,12 @@ proc sendnjcmd {netjig cmd} {
 	    puts "Timeout while talking to netjig for $cmd"
 	    puts stderr "Timeout while talking to netjig for $cmd"
 	    exit
-	}	    
+	}
 	eof {
 	    puts "EOF while talking to netjig for $cmd"
 	    puts stderr "EOF while talking to netjig for $cmd"
 	    exit
-	}	    
+	}
     }
 
     netjigcmddebug "There are $expect_out(1,string) lines of output\n"
@@ -104,7 +104,7 @@ proc newswitch {netjig net} {
 	if { $umlid(net$net,arp) != 0 } {
 	    set arpreply "--arpreply"
 	}
-    } 
+    }
     set lines [sendnjcmd $netjig "NEWSWITCH $arpreply $net"]
 
 #    exp_internal 1
@@ -137,7 +137,7 @@ proc njcmd {netjig cmdline} {
 	}
 	set lines [expr $lines - 1]
     }
-}    
+}
 
 proc playnjscript {netjig scriptname} {
     set initscript [open $scriptname r]
@@ -146,7 +146,7 @@ proc playnjscript {netjig scriptname} {
 	# skip empty lines.
 	if {[string length [string trimright $line]] == 0} {
 	    continue;
-	}	
+	}
 	njcmd $netjig $line
     }
 }
@@ -176,7 +176,7 @@ proc expectprompt {umlid msg} {
 	    shutdownumls
 	    exit;
 	}
-	timeout { 
+	timeout {
 	    puts "Cannot find prompt $msg (timeout)"
 	    puts stderr "Can not find prompt $msg (timeout)"
 	    # this ought to be pointless:
@@ -200,7 +200,7 @@ proc dumbplayscript {umlname scriptname} {
 	# skip empty lines.
 	if {[string length [string trimright $line]] == 0} {
 	    continue;
-	}	
+	}
 	if {[string match [string index [string trimleft $line] 0] \#] == 0} {
 	    expectprompt $id "in playscript $scriptname"
 
@@ -215,7 +215,7 @@ proc dumbplayscript {umlname scriptname} {
 
 proc playscript {umlname scriptname} {
     global theprompt
-    global umlid 
+    global umlid
     global managed_hosts
 
     foreach host $managed_hosts {
@@ -292,35 +292,38 @@ proc startuml {umlname} {
     if {[info exists umlid($umlname,consolefile)]} {
 	puts $console "spawn $umlid($umlname,program) single"
 	netjigdebug "Capturing console output to $umlid($umlname,consolefile)"
-    } 
+    }
     set consoleout($umlid($umlname,spawnid)) $console
 }
 
 proc loginuml {umlname} {
     global umlid
     global theprompt
-    
+
     trace variable expect_out(buffer) w log_by_tracing
     expect {
     	-i $umlid($umlname,spawnid)
-	timeout	{ puts stderr "timeout in loginuml" }
-	eof	{ 
-	          puts stderr "Error: netjig.tcl:loginuml(): unexpected EOF from umlname=\"$umlname\"" 
+	timeout	{ puts stderr "timeout in loginuml"; exit }
+	eof	{
+	          puts stderr "Error: netjig.tcl:loginuml(): unexpected EOF from umlname=\"$umlname\""
     	          shutdownumls
 	}
-#	-exact "normal startup):"
-#	-exact "enter for maintenance"
-	-exact "login:"
+	-exact "enter for maintenance"  {
+		netjigdebug "\nStarting single user mode on $umlname"
+		send -i $umlid($umlname,spawnid) -- "\r"
+	}
+	-exact "login:" {
+	    netjigdebug "\nLogging in to $umlname"
+	    send -i $umlid($umlname,spawnid) -- "root\r"
+	}
     }
-    netjigdebug "\nLogging in to $umlname"
-    send -i $umlid($umlname,spawnid) -- "root\r"
 }
 
 proc inituml {umlname} {
     global umlid
     global env
     global theprompt
-    
+
     expectprompt $umlid($umlname,spawnid) "before loading module ($umlname)"
 
     send -i $umlid($umlname,spawnid) -- "echo Starting loading module\r"
@@ -342,11 +345,11 @@ proc inituml {umlname} {
 
 	expectprompt $umlid($umlname,spawnid) "before recording memory level ($umlname)"
 
-	send -i $umlid($umlname,spawnid) -- "cat /proc/meminfo >/tmp/proc_meminfo-no-ipsec-mod-01\r" 
+	send -i $umlid($umlname,spawnid) -- "cat /proc/meminfo >/tmp/proc_meminfo-no-ipsec-mod-01\r"
 	expectprompt $umlid($umlname,spawnid) "for insmod ($umlname)"
 
 	send -i $umlid($umlname,spawnid) -- "insmod /ipsec.o\r"
-    } 
+    }
 
     expectprompt $umlid($umlname,spawnid) "for post-insmod ($umlname)"
 
@@ -355,6 +358,9 @@ proc inituml {umlname} {
     expectprompt $umlid($umlname,spawnid) "for klogd ($umlname)"
 
     send -i $umlid($umlname,spawnid) -- "klogd -c 4 -x -f /tmp/klog.log\r"
+
+    expectprompt $umlid($umlname,spawnid) "for libraries"
+    send -i $umlid($umlname,spawnid) -- "mkdir -p /lib/modules/`uname -r`; depmod -a\r"
 
     if {[info exists umlid($umlname,initscript)]} {
 	dumbplayscript $umlname $umlid($umlname,initscript)
@@ -371,7 +377,7 @@ proc runXuml {umlname pass} {
     set uphost [string toupper $umlname]
 
     set scriptname run${pass}script
-    
+
     set varname $uphost
     append varname _RUN${pass}_SCRIPT
     set_from_env $umlname $scriptname $varname
@@ -384,7 +390,7 @@ proc runXuml {umlname pass} {
 	    send -i $umlid($umlname,spawnid) -- "/sbin/getty ttys/1 38400\r"
 	    set timeout 3600
 	    expectprompt $umlid($umlname,spawnid) "UML_getty for $umlname"
-	} 
+	}
 
 	if {[file exists $umlid($umlname,$scriptname)]} {
 	    playscript $umlname $umlid($umlname,$scriptname)
@@ -442,7 +448,7 @@ proc initdns {umlname} {
 
 proc killdns {umlname} {
     global umlid
-    
+
     trace variable expect_out(buffer) w log_by_tracing
 
     #exp_internal 1
@@ -455,7 +461,7 @@ proc killdns {umlname} {
 	-i $umlid($umlname,spawnid)
 	timeout	{ puts stderr "timeout in killdns" }
 	eof	{ puts stderr "EOF in killdns" }
-	-exact "Power down." 
+	-exact "Power down."
     }
     expect -i $umlid($umlname,spawnid) -gl "*"
 }
@@ -469,7 +475,7 @@ proc killuml {umlname} {
     if {[info exists umlid($umlname,finalscript)]} {
 	dumbplayscript $umlname $umlid($umlname,finalscript)
 	netjigdebug "Finalscript done for $umlname"
-    } 
+    }
 
     netjigdebug "Sending halt to $umlname!"
     # absorb anything there.
@@ -490,7 +496,7 @@ proc killuml {umlname} {
 	    -i $umlid($umlname,spawnid)
 	    timeout	{ puts stderr "timeout in killuml" }
 	    eof	{ puts stderr "EOF in killuml" }
-	    -exact "Power down." 
+	    -exact "Power down."
 	}
 	expect -i $umlid($umlname,spawnid) -gl "*"
     }
@@ -513,7 +519,7 @@ proc process_extra_host {optarg} {
 proc set_from_env {host param varname} {
     global umlid
     global env
-    
+
     netjigdebug "Looking for $varname..."
     if {[info exists env($varname)]} {
 	netjigdebug "netjig.tcl: found it: varname=\"$varname\" umlid($host,$param)=$env($varname)"
@@ -543,7 +549,7 @@ proc process_host {host} {
     set varname $uphost
     append varname _INIT_SCRIPT
     set_from_env $host initscript $varname
-	
+
     set varname $uphost
     append varname _RUN_SCRIPT
     set_from_env $host runscript $varname
@@ -555,11 +561,11 @@ proc process_host {host} {
     set varname $uphost
     append varname _FINAL_SCRIPT
     set_from_env $host finalscript $varname
-    
+
     set varname $uphost
     append varname _START
     set_from_env $host program $varname
-    
+
     set varname REF${kernver}
     append varname _
     append varname $uphost
@@ -587,7 +593,7 @@ proc wait_user {} {
     }
 }
 
-    
+
 # {NORTH,SOUTH,EAST,WEST}_PLAY denotes a pcap file to play on that network
 # {NORTH,SOUTH,EAST,WEST}_REC  denotes a pcap file to reocrd into from that network
 #
@@ -616,7 +622,7 @@ proc process_net {net} {
     set varname $upnet
     append varname _PLAY
     set_from_env net$net play $varname
-	
+
     set varname $upnet
     append varname _REC
     set_from_env net$net record $varname

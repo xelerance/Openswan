@@ -24,13 +24,13 @@ do_twofish(u_int8_t *buf, size_t buf_size, u_int8_t *key, size_t key_size, u_int
     char *new_iv = NULL;	/* logic will avoid copy to NULL */
 
     twofish_set_key(&twofish_ctx, key, key_size);
-    /*	
+    /*
      *	my TWOFISH cbc does not touch passed IV (optimization for
      *	ESP handling), so I must "emulate" des-like IV
      *	crunching
      */
     if (!enc)
-	    memcpy(new_iv=iv_bak, 
+	    memcpy(new_iv=iv_bak,
 			    (char*) buf + buf_size-TWOFISH_CBC_BLOCK_SIZE,
 			    TWOFISH_CBC_BLOCK_SIZE);
 
@@ -42,7 +42,7 @@ do_twofish(u_int8_t *buf, size_t buf_size, u_int8_t *key, size_t key_size, u_int
     memcpy(iv, new_iv, TWOFISH_CBC_BLOCK_SIZE);
 }
 
-struct encrypt_desc encrypt_desc_twofish = 
+struct encrypt_desc encrypt_desc_twofish =
 {
 	common:{officname:      "twofish",
 		algo_type:      IKE_ALG_ENCRYPT,

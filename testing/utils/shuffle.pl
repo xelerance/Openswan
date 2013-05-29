@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Takes a file as standard input, and emits a random order 
+# Takes a file as standard input, and emits a random order
 # for the file. Argument says how many lines to actually emit.
 
 $howmany=shift;

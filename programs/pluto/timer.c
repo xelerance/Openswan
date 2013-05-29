@@ -161,17 +161,17 @@ retransmit_v1_msg(struct state *st)
     struct connection *c;
     unsigned long try;
     unsigned long try_limit;
-	
+
     passert(st != NULL);
     c = st->st_connection;
-    
+
     try       = st->st_try;
     try_limit = c->sa_keying_tries;
-	
-    DBG(DBG_CONTROL, 
+
+    DBG(DBG_CONTROL,
 	    DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&c->spd.that.host_addr), c->name, st->st_serialno));
-    
+
     if (st->st_retransmit < maximum_retransmissions)
 	delay = event_retransmit_delay_0 << (st->st_retransmit + 1);
     else if ((st->st_state == STATE_MAIN_I1 || st->st_state == STATE_AGGR_I1)
@@ -187,7 +187,7 @@ retransmit_v1_msg(struct state *st)
         delay = 0;
 	try   = 0;
     }
-    
+
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -205,7 +205,7 @@ retransmit_v1_msg(struct state *st)
 	 * c->sa_keying_tries == 0 means that there is no limit.
 	 */
 	const char *details = "";
-	
+
 	switch (st->st_state)
 	{
 	case STATE_MAIN_I3:
@@ -237,13 +237,13 @@ retransmit_v1_msg(struct state *st)
 	     * we can delete it right away.
 	     */
 	    char story[80];	/* arbitrary limit */
-	    
+
 	    try++;
 	    snprintf(story, sizeof(story), try_limit == 0
 		     ? "starting keying attempt %ld of an unlimited number"
 		     : "starting keying attempt %ld of at most %ld"
 		     , try, try_limit);
-	    
+
 	    if(!DBGP(DBG_WHACKWATCH)) {
 		if (st->st_whack_sock != NULL_FD)
 		{
@@ -282,14 +282,14 @@ retransmit_v2_msg(struct state *st)
     unsigned long try;
     unsigned long try_limit;
     const char *details = "";
-    
+
     passert(st != NULL);
     c = st->st_connection;
     try_limit = c->sa_keying_tries;
     try = st->st_try;
     try++;
-    
-    DBG(DBG_CONTROL, 
+
+    DBG(DBG_CONTROL,
 	DBG_log("handling event EVENT_RETRANSMIT for %s \"%s\" #%lu"
 	    , ip_str(&c->spd.that.host_addr), c->name, st->st_serialno));
 
@@ -311,7 +311,7 @@ retransmit_v2_msg(struct state *st)
         delay = 0;
 	try   = 0;
     }
-    
+
     if (delay != 0)
     {
 	st->st_retransmit++;
@@ -356,7 +356,7 @@ retransmit_v2_msg(struct state *st)
 	 * we can delete it right away.
 	 */
 	char story[80];	/* arbitrary limit */
-	
+
 	snprintf(story, sizeof(story), try_limit == 0
 		 ? "starting keying attempt %ld of an unlimited number"
 		 : "starting keying attempt %ld of at most %ld"
@@ -449,7 +449,7 @@ handle_next_timer_event(void)
 
     tm = now();
 
-    if (ev == (struct event *) NULL)    
+    if (ev == (struct event *) NULL)
     {
 	return;
     }
@@ -470,7 +470,7 @@ handle_next_timer_event(void)
 	else {
 	    DBG_log("no more events are scheduled");
 	}
-	    
+
     }
 
     /* for state-associated events, pick up the state pointer
@@ -517,7 +517,7 @@ handle_next_timer_event(void)
 	    passert(st == NULL);
 	    connection_check_phase2();
 	    break;
-	
+
 
 	case EVENT_LOG_DAILY:
 	    daily_log_event();
@@ -539,7 +539,7 @@ handle_next_timer_event(void)
 
 		passert(st != NULL);
 		c = st->st_connection;
-		newest = IS_PHASE1(st->st_state)
+		newest = (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))
 		    ? c->newest_isakmp_sa : c->newest_ipsec_sa;
 
 		if (newest != st->st_serialno
@@ -548,7 +548,7 @@ handle_next_timer_event(void)
 		    /* not very interesting: no need to replace */
 		    DBG(DBG_LIFECYCLE
 			, openswan_log("not replacing stale %s SA: #%lu will do"
-			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
+			    , (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"
 			    , newest));
 		}
 		else if (type == EVENT_SA_REPLACE_IF_USED
@@ -573,14 +573,14 @@ handle_next_timer_event(void)
 		     */
 		    DBG(DBG_LIFECYCLE
 			, openswan_log("not replacing stale %s SA: inactive for %lus"
-			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"
+			    , (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"
 			    , (unsigned long)(tm - st->st_outbound_time)));
 		}
 		else
 		{
 		    DBG(DBG_LIFECYCLE
 			, openswan_log("replacing stale %s SA"
-			    , IS_PHASE1(st->st_state)? "ISAKMP" : "IPsec"));
+			    , (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"));
 		    ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
 		}
 		delete_dpd_event(st);
@@ -597,7 +597,7 @@ handle_next_timer_event(void)
 		passert(st != NULL);
 		c = st->st_connection;
 
-		if (IS_PHASE1(st->st_state))
+		if (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))
 		{
 		    satype = "ISAKMP";
 		    latest = c->newest_isakmp_sa;
@@ -639,7 +639,7 @@ handle_next_timer_event(void)
         case EVENT_DPD:
             dpd_event(st);
             break;
-	    
+
         case EVENT_DPD_TIMEOUT:
             dpd_timeout(st);
             break;
@@ -650,14 +650,14 @@ handle_next_timer_event(void)
 	    nat_traversal_ka_event();
 	    break;
 #endif
-	    
+
         case EVENT_CRYPTO_FAILED:
 	    DBG(DBG_CONTROL
 		, DBG_log("event crypto_failed on state #%lu, aborting"
 			  , st->st_serialno));
 	    delete_state(st);
 	    break;
-	    
+
 
 	default:
 	    loglog(RC_LOG_SERIOUS, "INTERNAL ERROR: ignoring unknown expiring event %s"
@@ -749,7 +749,7 @@ _delete_dpd_event(struct state *st, const char *file, int lineno)
 		   ? enum_show(&timer_event_names, st->st_dpd_event->ev_type)
 		   : "none")
 		  , file, lineno));
-  
+
     if (st->st_dpd_event != (struct event *) NULL)
     {
         struct event **ev;
@@ -819,7 +819,7 @@ timer_list(void)
  *   command line arguments for now --- they need to all be whack
  * level items, and all command line arguments go away.
 */
-void 
+void
 init_timer(void)
 {
     char *valstr;

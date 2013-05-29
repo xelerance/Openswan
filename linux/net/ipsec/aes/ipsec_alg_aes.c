@@ -2,14 +2,14 @@
  * ipsec_alg AES cipher stubs
  *
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- * 
+ *
  * ipsec_alg_aes.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -27,7 +27,7 @@
 #endif
 #include <linux/version.h>
 
-/*	
+/*
  *	special case: ipsec core modular with this static algo inside:
  *	must avoid MODULE magic for this file
  */
@@ -81,7 +81,7 @@ MODULE_PARM(keymaxbits, "i");
 #if CONFIG_KLIPS_ENC_AES_MAC
 #include "klips-crypto/aes_xcbc_mac.h"
 
-/*	
+/*
  *	Not IANA number yet (draft-ietf-ipsec-ciph-aes-xcbc-mac-00.txt).
  *	We use 9 for non-modular algorithm and none for modular, thus
  *	forcing user to specify one on module load. -kravietz
@@ -176,7 +176,7 @@ static struct ipsec_alg_enc ipsec_alg_AES = {
 	ixt_common: { ixt_version:	IPSEC_ALG_VERSION,
 		      ixt_refcnt:	ATOMIC_INIT(0),
 		      ixt_name: 	"aes",
-		      ixt_blocksize:	ESP_AES_CBC_BLK_LEN, 
+		      ixt_blocksize:	ESP_AES_CBC_BLK_LEN,
 		      ixt_support: {
 			ias_exttype:	IPSEC_ALG_TYPE_ENCRYPT,
 			//ias_ivlen:      128,
@@ -211,19 +211,19 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_aes_init )
 	}
 	if (excl_aes) ipsec_alg_AES.ixt_common.ixt_state |= IPSEC_ALG_ST_EXCL;
 	ret=register_ipsec_alg_enc(&ipsec_alg_AES);
-	printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n", 
-			ipsec_alg_AES.ixt_common.ixt_support.ias_exttype, 
-			ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
-			ipsec_alg_AES.ixt_common.ixt_name, 
+	printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n",
+			ipsec_alg_AES.ixt_common.ixt_support.ias_exttype,
+			ipsec_alg_AES.ixt_common.ixt_support.ias_id,
+			ipsec_alg_AES.ixt_common.ixt_name,
 			ret);
 	if (ret==0 && test_aes) {
 		test_ret=ipsec_alg_test(
 				ipsec_alg_AES.ixt_common.ixt_support.ias_exttype ,
-				ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
+				ipsec_alg_AES.ixt_common.ixt_support.ias_id,
 				test_aes);
-		printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
-				ipsec_alg_AES.ixt_common.ixt_support.ias_exttype , 
-				ipsec_alg_AES.ixt_common.ixt_support.ias_id, 
+		printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n",
+				ipsec_alg_AES.ixt_common.ixt_support.ias_exttype ,
+				ipsec_alg_AES.ixt_common.ixt_support.ias_id,
 				test_ret);
 	}
 #if CONFIG_KLIPS_ENC_AES_MAC
@@ -231,19 +231,19 @@ IPSEC_ALG_MODULE_INIT_STATIC( ipsec_aes_init )
 		int ret;
 		ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id=auth_id;
 		ret=register_ipsec_alg_auth(&ipsec_alg_AES_MAC);
-		printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n", 
-				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype, 
-				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
-				ipsec_alg_AES_MAC.ixt_common.ixt_name, 
+		printk("ipsec_aes_init(alg_type=%d alg_id=%d name=%s): ret=%d\n",
+				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype,
+				ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id,
+				ipsec_alg_AES_MAC.ixt_common.ixt_name,
 				ret);
 		if (ret==0 && test_aes) {
 			test_ret=ipsec_alg_test(
 					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype,
-					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id,
 					test_aes);
-			printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n", 
-					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype, 
-					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id, 
+			printk("ipsec_aes_init(alg_type=%d alg_id=%d): test_ret=%d\n",
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_exttype,
+					ipsec_alg_AES_MAC.ixt_common.ixt_support.ias_id,
 					test_ret);
 		}
 	} else {

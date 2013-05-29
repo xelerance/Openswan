@@ -43,7 +43,7 @@ echo "done."
 echo Invoked with Arguments: $*
 
 cd /root
-mount -n -t proc none /proc 
+mount -n -t proc none /proc
 mount -n --move . /
 if grep LATE /proc/cmdline; then echo STARTING SHELL2 - exit to continue; /bin/bash; fi
 exec </dev/console >/dev/console 2>&1

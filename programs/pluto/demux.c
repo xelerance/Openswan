@@ -136,7 +136,7 @@ process_packet(struct msg_digest **mdp)
 		SEND_NOTIFICATION(INVALID_MINOR_VERSION);
 		return;
 	    }
-	} 
+	}
 	else {
         /* Although the comments above says that all IKEv2 minor version are acceptable */
         /* but it does not take of it, and in case a peer sends a different minor version */
@@ -271,7 +271,7 @@ read_packet(struct msg_digest *md)
     packet_len = recvfrom(ifp->fd, bigbuffer
 			  , sizeof(bigbuffer), /*flags*/0
 			  , &from.sa, &from_len);
-#endif    
+#endif
 
     /* we do not do anything with *to* addresses yet... we will */
 

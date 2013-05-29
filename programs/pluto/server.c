@@ -1,8 +1,8 @@
 /* get-next-event loop
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
@@ -108,7 +108,7 @@ int ctl_fd = NULL_FD;	/* file descriptor of control (whack) socket */
 struct sockaddr_un ctl_addr = { .sun_family=AF_UNIX,
 #if defined(HAS_SUN_LEN)
 				.sun_len=sizeof(struct sockaddr_un),
-#endif				
+#endif
 				.sun_path  =DEFAULT_CTLBASE CTL_SUFFIX };
 
 /* info (showpolicy) socket */
@@ -116,7 +116,7 @@ int policy_fd = NULL_FD;
 struct sockaddr_un info_addr= { .sun_family=AF_UNIX,
 #if defined(HAS_SUN_LEN)
 				.sun_len=sizeof(struct sockaddr_un),
-#endif				
+#endif
 				.sun_path  =DEFAULT_CTLBASE INFO_SUFFIX };
 
 /* Initialize the control socket.
@@ -540,7 +540,7 @@ reapchildren(void)
 #endif
 	openswan_log("child pid=%d (status=%d) is not my child!", child, status);
     }
-    
+
     if(child == -1) {
 	openswan_log("reapchild failed with errno=%d %s",
 		     errno, strerror(errno));
@@ -700,12 +700,12 @@ call_server(void)
 	 */
 	if(log_to_stderr_desired) {
 	    time_t n;
-	    
+
 	    static time_t lastn = 0;
 
 	    time(&n);
 
-	    if(log_did_something) { 
+	    if(log_did_something) {
 		lastn=n;
 		log_did_something=FALSE;
 		if((n-lastn) > 60) {
@@ -713,7 +713,7 @@ call_server(void)
 		}
 	    }
 	}
-		    
+
 	/* figure out what is interesting */
 	/* do FD's before events are processed */
 
@@ -793,7 +793,7 @@ call_server(void)
 	    {
 		int helpers = pluto_crypto_helper_ready(&readfds);
 		DBG(DBG_CONTROL, DBG_log("* processed %d messages from cryptographic helpers\n", helpers));
-		
+
 		ndes -= helpers;
 	    }
 
@@ -1144,7 +1144,7 @@ send_packet(struct state *st, const char *where, bool verbose)
 
 #ifdef DEBUG
     /* XXX This is a flow change depending on debug. not good. I assume it is only useful
-     * for actual debugging something 
+     * for actual debugging something
      */
     if(DBGP(IMPAIR_JACOB_TWO_TWO)) {
 	/* sleep for half a second, and second another packet */
@@ -1170,7 +1170,7 @@ send_packet(struct state *st, const char *where, bool verbose)
     {
         /* do not log NAT-T Keep Alive packets */
         if (!verbose)
-	    return FALSE; 
+	    return FALSE;
 	log_errno((e, "sendto on %s to %s:%u failed in %s"
 		   , st->st_interface->ip_dev->id_rname
 		   , ip_str(&st->st_remoteaddr)

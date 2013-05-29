@@ -7,7 +7,7 @@
 #
 #  Root out incorrect shell invocations by failing if invoked with the wrong shell.
 #  This script uses extended BASH syntax, so it is NOT POSIX "/bin/sh" compliant.
-if test -z "${BASH_VERSION}" ; then 
+if test -z "${BASH_VERSION}" ; then
 	echo >&2 "Fatal-Error: testing/utils/functions.sh MUST be run under \"/bin/bash\"."
 	exit 55
 fi
@@ -301,26 +301,27 @@ prerunsetup() {
 	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/startmodule.sh}
 	EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/startmodule.sh}
 	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/startmodule.sh}
-	echo "functions.sh:prerunsetup: KLIPS_MODULE is set: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
-	echo "WEST_START=\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
+	$NETJIGDEBUG && echo "functions.sh:prerunsetup: KLIPS_MODULE is set."
+        $NETJIGDEBUG && echo "EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
+	$NETJIGDEBUG && echo "WEST_START=\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
 	REPORT_NAME=${TESTNAME}${KLIPS_MODULE}
     else
 	HOST_START=${HOST_START-$POOLSPACE/$TESTHOST/start.sh}
-	if [ -n "$EAST_NETKEY" ] 
+	if [ -n "$EAST_NETKEY" ]
 	 then
 	  EAST_START=${EAST_START-$POOLSPACE/$EASTHOST/start-netkey.sh}
-	  echo "functions.sh:prerunsetup: netkey: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
+	  $NETJIGDEBUG && echo "functions.sh:prerunsetup: netkey: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
 	else
 	  EAST_START=${EAST_START-${POOLSPACE}/${EASTHOST}/start.sh}
-	  echo "functions.sh:prerunsetup: klips: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
+	  $NETJIGDEBUG && echo "functions.sh:prerunsetup: klips: EAST_START=\"${EAST_START}\" EASTHOST=\"${EASTHOST}\""
 	fi
-	if [ -n "$WEST_NETKEY" ] 
+	if [ -n "$WEST_NETKEY" ]
 	 then
 	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start-netkey.sh}
-	  echo "functions.sh:prerunsetup: netkey: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
-	else 
+	  $NETJIGDEBUG && echo "functions.sh:prerunsetup: netkey: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
+	else
 	  WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
-	  echo "functions.sh:prerunsetup: klips: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
+	  $NETJIGDEBUG && echo "functions.sh:prerunsetup: klips: WEST_START==\"${WEST_START}\" WESTHOST=\"${WESTHOST}\""
 	fi
 	WEST_START=${WEST_START-$POOLSPACE/$WESTHOST/start.sh}
 	REPORT_NAME=${TESTNAME}
@@ -569,7 +570,7 @@ recordresults() {
 		# this code is run only when success is false, so that we have
 		# a record of why the test failed. If it succeeded, then the
 		# possibly volumnous output is not interesting.
-		# 
+		#
 		# NOTE: ${KLIPS_MODULE} is part of $REPORT_NAME
 		rm -rf $REGRESSRESULTS/$REPORT_NAME/OUTPUT
 		mkdir -p $REGRESSRESULTS/$REPORT_NAME/OUTPUT
@@ -1164,7 +1165,7 @@ complibtest() {
     unset FILE
     SRCDIR=${SRCDIR-./}
 
-    if [ -f ${SRCDIR}$testsrc ] 
+    if [ -f ${SRCDIR}$testsrc ]
     then
 	FILE=${SRCDIR}$testsrc
     elif [ -f ${OPENSWANSRCDIR}/lib/libopenwan/$testsrc ]
@@ -1193,11 +1194,11 @@ complibtest() {
     EXTRALIBS=
     UNITTESTARGS=-r
 
-    if [ -f ${SRCDIR}FLAGS ]; then 
+    if [ -f ${SRCDIR}FLAGS ]; then
         ${ECHO} "   "Sourcing ${SRCDIR}FLAGS
 	. ${SRCDIR}FLAGS
     fi
-     	
+
     if [ -f ${SRCDIR}FLAGS.$testobj ]
     then
         ${ECHO} "   "Sourcing ${SRCDIR}FLAGS.$testobj
@@ -1207,7 +1208,7 @@ complibtest() {
     stat=99
     if [ -n "${FILE-}" -a -r "${FILE-}" ]
     then
-	    ${ECHO} "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB} 
+	    ${ECHO} "   "CC -g -o $testobj -D$symbol ${FILE} ${OPENSWANLIB}
 	    ${CC} -g -o $testobj -D$symbol ${MOREFLAGS} ${PORTINCLUDE} ${EXTRAFLAGS} -I${OPENSWANSRCDIR}/linux/include -I${OPENSWANSRCDIR} -I${OPENSWANSRCDIR}/include ${FILE} ${OPENSWANLIB} ${EXTRALIBS}
 	    rm -rf lib-$testobj/OUTPUT
 	    mkdir -p lib-$testobj/OUTPUT
@@ -1330,7 +1331,9 @@ multilibtest() {
 #
 #  Some additional options to control the network emulator
 #    ARPREPLY=--arpreply         - if ARPs should be answered
-#  -> obsoleted by NETWORK_ARPREPLY=true
+#  and on a per-network basis:
+#    ${NETWORK}_ARPREPLY=true
+#  e.g. PUBLIC_ARPREPLY=true
 #
 
 # test entry point:
@@ -1595,7 +1598,7 @@ module_compile() {
 	stat='missing parts'
     fi
 
-    recordresults $testdir "$testexpect" "$stat" $testdir false 
+    recordresults $testdir "$testexpect" "$stat" $testdir false
 }
 
 export_variables() {
@@ -1893,11 +1896,11 @@ buildtest() {
 #
 # testparams.sh should specify a script to be run as $TESTSCRIPT
 #          REF_CONSOLE_OUTPUT= name of reference output
-#    
+#
 # The script will be started with:
 #          ROOTDIR=    set to root of source code.
 #          OBJDIRTOP=  set to location of object files
-# 
+#
 #
 # testparams.sh should set PROGRAMS= to a list of subdirs of programs/
 #                that must be built before using the test. This allows
@@ -1905,12 +1908,12 @@ buildtest() {
 #
 # If there is a Makefile in the subdir, it will be invoked as
 # "make checkprograms". It will have the above variables as well,
-# and make get the build environment with 
+# and make get the build environment with
 #    include ${ROOTDIR}/programs/Makefile.program
 #
 # The stdout of the script will be set to an output file, which will then
 # be sanitized using the normal set of fixup scripts.
-#          
+#
 #
 ###################################
 

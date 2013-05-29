@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # This script downloads everything you need and sets up a UML.
+# it is very old, but it might give you an idea of what you need (mcr: 2013-05-23)
 
 HERE=`pwd`
 set -e
@@ -54,7 +55,7 @@ cd $HERE
 
 # extract things
 zcat download/$LINUX.tar.gz | tar xf -
-zcat download/$UMLROOT | tar xf - 
+zcat download/$UMLROOT | tar xf -
 
 # setup link
 ln -f -s root-* root
@@ -105,6 +106,6 @@ make check
 
 
 
-      
-      
+
+
 
