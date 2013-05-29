@@ -1148,6 +1148,9 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 )
 {
 	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
+#ifdef LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0)
+        struct hlist_node *node;
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
 	off_t begin=0;
 	int len=0;
 	struct sock *sk;
@@ -1160,7 +1163,11 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
 
+#ifndef LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0)
 	sk_for_each(sk, &pfkey_sock_list) {
+#else /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
+        sk_for_each(sk, node, &pfkey_sock_list) {
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
 
 		if(!sysctl_ipsec_debug_verbose) {
 		  len += ipsec_snprintf(buffer+len, length-len,
@@ -1535,9 +1542,15 @@ pfkey_cleanup(void)
 	error |= supported_remove_all(K_SADB_X_SATYPE_IPIP);
 
 #ifdef CONFIG_PROC_FS
+#ifndef LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0)
         remove_proc_subtree("pf_key",            init_net.proc_net);
         remove_proc_subtree("pf_key_supported",  init_net.proc_net);
         remove_proc_subtree("pf_key_registered", init_net.proc_net);
+#else /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
+        proc_net_remove (&init_net, "pf_key");
+        proc_net_remove (&init_net, "pf_key_supported");
+        proc_net_remove (&init_net, "pf_key_registered");
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
 #endif /* CONFIG_PROC_FS */
 
 	/* other module unloading cleanup happens here */
