@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if [ configure = "$1" ]; then
+    : setup python stuff.
+fi
+

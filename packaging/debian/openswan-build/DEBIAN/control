@@ -1,0 +1,10 @@
+Package: openswan-build
+Version: $(VER)
+Section: credil
+Priority: optional
+Architecture: all
+Provides: openswan-build
+Depends: build-essential, git-core, gitk, xutils-dev,gcc-multilib,
+         libperl4-corelibs-perl,expect,libpcap-dev,uml-utilities,tcpdump
+Maintainer: <mcr@xelerance.com>
+Description: Loads all required packages to do Openswan development.
