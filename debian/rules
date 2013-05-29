@@ -5,6 +5,15 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+# The build system doesn't respect CPPFLAGS, pass them to CFLAGS/CXXFLAGS to
+# enable the missing (hardening) flags.
+CFLAGS   += $(CPPFLAGS)
+CXXFLAGS += $(CPPFLAGS)
+
 export DH_OPTIONS
 
 configure: configure-stamp
