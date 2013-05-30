@@ -2,13 +2,14 @@ Source: openswan
 Section: net
 Priority: optional
 Maintainer: Simon Deziel <simon@xelerance.com>
-Standards-Version: 3.8.4
-Vcs-Browser: http://git.openswan.org/cgi-bin/cgit/openswan/
+Standards-Version: 3.9.2
+Vcs-Browser: https://github.com/xelerance/Openswan.git
+Vcs-Git: git://github.com/xelerance/Openswan.git
 Build-Depends: debhelper
 Homepage: http://www.openswan.org/
 
 Package: openswan-modules-$KVERS
-Architecture: any
+Architecture: linux-any
 Section: kernel
 Recommends: linux-image-$KVERS (= $KDREV)
 Description: Internet Key Exchange daemon - binary kernel module
