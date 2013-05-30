@@ -193,15 +193,15 @@ BISONOSFLAGS=
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
 GCC_LINT ?= -DGCC_LINT
-USERCOMPILE?=-g -O2 -fPIE -pie -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 ${WERROR} $(GCC_LINT)
-KLIPSCOMPILE=-O2 -fPIE -pie -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
+USERCOMPILE?=-g -O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 ${WERROR} $(GCC_LINT)
+KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
 #USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
 
 # extra link flags
-USERLINK?=-Wl,-z,relro,-z,now
+USERLINK?=-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 PORTINCLUDE?=
 
