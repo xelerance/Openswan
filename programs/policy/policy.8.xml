@@ -21,7 +21,7 @@
 </refsynopsisdiv>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
-<para>Note that policy is only supported on the new NAST stack. It is
+<para>Note that policy is only supported on the new MAST stack. It is
 not supported on any other stack. On the <emphasis remap='B'>klips</emphasis> stack, use
 <emphasis remap='I'>ipsec eroute</emphasis>, on the <emphasis remap='B'>netkey</emphasis>
 stack, use <emphasis remap='I'>ip xfrm</emphasis></para>
