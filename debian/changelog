@@ -1,4 +1,4 @@
-openswan (1:IPSECBASEVERSION-1xelerance1) lucid; urgency=low
+openswan (1:IPSECBASEVERSION-1xelerance1) precise; urgency=low
 
   * Update to IPSECBASEVERSION
 
