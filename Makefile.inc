@@ -201,7 +201,7 @@ KLIPSCOMPILE=-O2 -fPIE -pie -fstack-protector --param=ssp-buffer-size=4 -Wformat
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
 
 # extra link flags
-USERLINK?=-Wl,-z,relro,now
+USERLINK?=-Wl,-z,relro,-z,now
 
 PORTINCLUDE?=
 
