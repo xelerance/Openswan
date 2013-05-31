@@ -2,12 +2,12 @@
  * crypto-class pseudorandom number generator
  * currently uses same algorithm as RC4(TM), from Schneier 2nd ed p397
  * Copyright (C) 2002  Henry Spencer.
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -204,8 +204,10 @@ regress()
 	unsigned char good[] = "\x3f\x02\x8e\x4a\x2a\xea\x23\x18\x92\x7c"
 				"\x09\x52\x83\x61\xaa\x26\xce\xbb\x9d\x71"
 				"\x71\xe5\x10\x22\xaf\x60\x54\x8d\x5b\x28";
-	int nzero, none;
+	unsigned int nzero, none;
 	int show = 0;
+        nzero = 0;
+        none  = 0;
 
 	prng_init(&pr, key, strlen(key));
 	prng_bytes(&pr, buf, sizeof(buf));

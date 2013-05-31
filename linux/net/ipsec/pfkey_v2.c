@@ -1148,9 +1148,6 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 )
 {
 	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
-#ifdef NET_26
-	struct hlist_node *node;
-#endif
 	off_t begin=0;
 	int len=0;
 	struct sock *sk;
@@ -1163,7 +1160,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
 
-	sk_for_each(sk, node, &pfkey_sock_list) {
+	sk_for_each(sk, &pfkey_sock_list) {
 
 		if(!sysctl_ipsec_debug_verbose) {
 		  len += ipsec_snprintf(buffer+len, length-len,
@@ -1447,11 +1444,7 @@ pfkey_init(void)
 {
 	int error = 0;
 	int i;
-#ifdef HAVE_PROC_DIR_ENTRY
-	struct proc_dir_entry* entry;
-#endif
 
-	
 	static struct ipsec_alg_supported supported_init_ah[] = {
 #ifdef CONFIG_KLIPS_AUTH_HMAC_MD5
 		{K_SADB_EXT_SUPPORTED_AUTH, K_SADB_AALG_MD5HMAC, 0, 128, 128},
@@ -1506,30 +1499,16 @@ pfkey_init(void)
         error |= sock_register(&pfkey_family_ops);
 
 #ifdef CONFIG_PROC_FS
-#  ifndef PROC_FS_2325
-#    ifdef PROC_FS_21
-	error |= proc_register(proc_net, &proc_net_pfkey);
-	error |= proc_register(proc_net, &proc_net_pfkey_supported);
-	error |= proc_register(proc_net, &proc_net_pfkey_registered);
-#    else /* PROC_FS_21 */
-	error |= proc_register_dynamic(&proc_net, &proc_net_pfkey);
-	error |= proc_register_dynamic(&proc_net, &proc_net_pfkey_supported);
-	error |= proc_register_dynamic(&proc_net, &proc_net_pfkey_registered);
-#    endif /* PROC_FS_21 */
-#  else /* !PROC_FS_2325 */
-#    if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-	proc_net_create ("pf_key", 0, pfkey_get_info);
-	proc_net_create ("pf_key_supported", 0, pfkey_supported_get_info);
-	proc_net_create ("pf_key_registered", 0, pfkey_registered_get_info);
-#    else
-	entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
-	entry->read_proc = pfkey_get_info;
-	entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
-	entry->read_proc = pfkey_supported_get_info;
-	entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
-	entry->read_proc = pfkey_registered_get_info;
-#    endif
-#  endif /* !PROC_FS_2325 */
+        {
+                struct proc_dir_entry* entry;
+
+                entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
+                entry->read_proc = pfkey_get_info;
+                entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
+                entry->read_proc = pfkey_supported_get_info;
+                entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+                entry->read_proc = pfkey_registered_get_info;
+        }
 #endif /* CONFIG_PROC_FS */
 
 	return error;
@@ -1556,28 +1535,9 @@ pfkey_cleanup(void)
 	error |= supported_remove_all(K_SADB_X_SATYPE_IPIP);
 
 #ifdef CONFIG_PROC_FS
-#  ifndef PROC_FS_2325
-	if (proc_net_unregister(proc_net_pfkey.low_ino) != 0)
-		printk("klips_debug:pfkey_cleanup: "
-		       "cannot unregister /proc/net/pf_key\n");
-	if (proc_net_unregister(proc_net_pfkey_supported.low_ino) != 0)
-		printk("klips_debug:pfkey_cleanup: "
-		       "cannot unregister /proc/net/pf_key_supported\n");
-	if (proc_net_unregister(proc_net_pfkey_registered.low_ino) != 0)
-		printk("klips_debug:pfkey_cleanup: "
-		       "cannot unregister /proc/net/pf_key_registered\n");
-#  else /* !PROC_FS_2325 */
-#  if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-	proc_net_remove ("pf_key");
-	proc_net_remove ("pf_key_supported");
-	proc_net_remove ("pf_key_registered");
-#  else
-	proc_net_remove (&init_net, "pf_key");
-	proc_net_remove (&init_net, "pf_key_supported");
-	proc_net_remove (&init_net, "pf_key_registered");
-#    endif
-
-#  endif /* !PROC_FS_2325 */
+        remove_proc_subtree("pf_key",            init_net.proc_net);
+        remove_proc_subtree("pf_key_supported",  init_net.proc_net);
+        remove_proc_subtree("pf_key_registered", init_net.proc_net);
 #endif /* CONFIG_PROC_FS */
 
 	/* other module unloading cleanup happens here */
