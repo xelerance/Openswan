@@ -319,42 +319,28 @@ const char *const policy_fail_names[4] = {
 	"REJECT",
     };
 
-static char pbitnamesbuf[200];   /* only one!  I hope that it is big enough! */
-
 /* print a policy: like bitnamesof, but it also does the non-bitfields.
  * Suppress the shunt and fail fields if 0.
  */
 const char *
 prettypolicy(lset_t policy)
 {
+    char pbitnamesbuf[200];
     const char *bn = bitnamesofb(sa_policy_bit_names
 				 , policy & ~(POLICY_SHUNT_MASK | POLICY_FAIL_MASK)
 				 , pbitnamesbuf, sizeof(pbitnamesbuf));
-    size_t len;
+    static char buf[200];   /* NOT RE-ENTRANT!  I hope that it is big enough! */
     lset_t shunt = (policy & POLICY_SHUNT_MASK) >> POLICY_SHUNT_SHIFT;
     lset_t fail = (policy & POLICY_FAIL_MASK) >> POLICY_FAIL_SHIFT;
 
     if (bn != pbitnamesbuf)
 	pbitnamesbuf[0] = '\0';
-    len = strlen(pbitnamesbuf);
-    if (shunt != 0)
-    {
-	snprintf(pbitnamesbuf + len, sizeof(pbitnamesbuf) - len, "+%s"
-	    , policy_shunt_names[shunt]);
-	len += strlen(pbitnamesbuf + len);
-    }
-    if (fail != 0)
-    {
-	snprintf(pbitnamesbuf + len, sizeof(pbitnamesbuf) - len, "+failure%s"
-	    , policy_fail_names[fail]);
-	len += strlen(pbitnamesbuf + len);
-    }
-    if (NEVER_NEGOTIATE(policy))
-    {
-	snprintf(pbitnamesbuf + len, sizeof(pbitnamesbuf) - len, "+NEVER_NEGOTIATE");
-	len += strlen(pbitnamesbuf + len);
-    }
-    return pbitnamesbuf;
+    snprintf(buf, sizeof(buf), "%s%s%s%s%s%s"
+	, pbitnamesbuf
+	, shunt != 0 ? "+" : "", shunt != 0 ? policy_shunt_names[shunt] : ""
+	, fail != 0 ? "+failure" : "", fail != 0 ? policy_fail_names[fail] : ""
+	, NEVER_NEGOTIATE(policy) ? "+NEVER_NEGOTIATE" : "");
+    return buf;
 }
 
 
