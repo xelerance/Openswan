@@ -1,5 +1,7 @@
 openswan (1:IPSECBASEVERSION-1xelerance1) precise; urgency=low
 
+  * Update to IPSECBASEVERSION
+
   The real changelog is in /usr/share/doc/openswan/changelog.gz
 
   This package is NOT an official Debian/Ubuntu package. Please do
