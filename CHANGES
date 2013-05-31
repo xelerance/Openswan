@@ -5,6 +5,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
 v2.6.39 (May 31, 2013)
+* Hardening patches from Florian Weimer
 * Created .in files for distro packages [Patrick]
 * Target deb builds for Precise instead of Lucid [Simon]
 * Enable hardened builds by default [Simon]
