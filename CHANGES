@@ -135,7 +135,7 @@ v2.6.39 (May 31, 2013)
 * Enable hardened builds by default [Simon]
 * Bring 'ipsec policy' back form the dead [Simon]
 * Drop the builddep on htmldoc and man2html as those are not needed anymore [Simon]
-* CVE-2013-2054 fix: Integrated fix from Andreas Steffan
+* CVE-2013-2053 fix: Integrated fix from Andreas Steffan
 * Refactor x509dn to seperate out atodn from other functions [MCR]
 * Fixed regression test to be 64-bit and IPv6 aware [MCR]
 * Patches for kernel 3.9 and changes to work with Linux 3.9 [MCR]
