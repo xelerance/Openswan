@@ -13,8 +13,7 @@ bug fixes from 2.05 and 2.06.  See CREDITS for the history.
 
 Download it from
 
-    http://www.openswan.org/code/
-    ftp://ftp.openswan.org/openswan/
+    http://download.openswan.org/openswan/
 
 #########################################################################
 # REQUIREMENTS
@@ -45,7 +44,7 @@ There are a few packages required for Openswan to compile from source:
    Debian package names: iproute, iptables, the rest are usually there
    Rpm package names:    ????
 
-   perl is also required for "ipsec verify".
+   python is also required for "ipsec verify".
 
 #########################################################################
 # HOW TO INSTALL on Kernel 2.6 (And Kernels with 2.6 IPsec backport)
@@ -155,7 +154,7 @@ Mailing Lists:
 
 Wiki:
 
-    http://wiki.openswan.org is home to the Openswan WIKI.  It has the most
+    http://www.openswan.org is home to the Openswan WIKI.  It has the most
     up to date documentation, interop guides and other related information.
 
 IRC:
@@ -165,15 +164,15 @@ IRC:
     http://www.openswan.org/support/irc.php
 
 Commercial support for Openswan is also available - see
-http://www.xelerance.com/openswan/support.php for more information, or
+http://www.xelerance.com/services/openswan-support/ for more information, or
 email sales@xelerance.com
 
 #########################################################################
 # BUGS
 #########################################################################
 
-Bugs with the package can be filed into our Mantis system, at
-http://bugs.openswan.org
+Bugs with the package can be filed into our Redmine system, at
+http://www.openswan.org
 
 #########################################################################
 # SECURITY HOLES
@@ -182,7 +181,8 @@ http://bugs.openswan.org
 All security vulnerabilities found that require public disclosure will
 receive proper CVE tracking numbers (see http://mitre.org/) and co-ordinated
 via the vendor-sec mailing list. A complete list of known security
-vulnerabilities is   available at: http://www.openswan.org/security/ 
+vulnerabilities is available at:
+https://www.openswan.org/projects/openswan/wiki/Security_and_Vulnerability_information 
 
 #########################################################################
 # DEVELOPMENT
@@ -193,14 +193,11 @@ can join the development mailing list (http://lists.openswan.org -
 dev@lists.openswan.org) or join the development team on IRC in
 #openswan-dev on irc.freenode.net
 
-For those who want to track things a bit more closely, the
-commits@lists.openswan.org mailinglist will mail all the commit messages.
-
 #########################################################################
 # DOCUMENTATION
 #########################################################################
 
-The most up to date docs are at http://wiki.openswan.org/
+The most up to date docs are at http://www.openswan.org/
 
 Several high-level documents are in the doc directory.  Most are in HTML
 format; See doc/index.html for the top level index.  These are now
