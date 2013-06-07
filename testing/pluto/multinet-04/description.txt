@@ -1,4 +1,0 @@
-This is a test case for the "subnets=" declaration. It uses one subnet=
-and one subnetS= definition.
-
-
