@@ -77,13 +77,14 @@ size_t dstlen;
 	char buf[1+ADDRTOT_BUF+1];	/* :address: */
 	char *p;
 	int t = addrtypeof(src);
+
+	passert(dstlen >= sizeof("<invalid>"));
 #	define	TF(t, f)	(((t)<<8) | (f))
 
 	n = addrbytesptr(src, &b);
 	if (n == 0) {
-	bad:
 	  dst[0]='\0';
-	  strncat(dst, "<invalid>", dstlen);
+	  strncat(dst, "<invalid>", dstlen -1);
 	  return sizeof("<invalid>");
 	}
 
@@ -107,7 +108,9 @@ size_t dstlen;
 		n = reverse6(b, n, buf, &p);
 		break;
 	default:		/* including (AF_INET, 'R') */
-	        goto bad;
+		dst[0]='\0';
+		strncat(dst, "<invalid>", dstlen - 1);
+		return sizeof("<invalid>");
 	}
 
 	if (dstlen > 0) {
@@ -132,15 +135,16 @@ size_t dstlen;
 	size_t n;
 	char buf[1+ADDRTOT_BUF+1];	/* :address: */
 	char *p;
+
+	passert(dstlen >= sizeof("<invalid>"));
 #	define	TF(t, f)	(((t)<<8) | (f))
 
 	switch (t) {
 	case AF_INET: n = IP4BYTES; break;
 	case AF_INET6: n = IP6BYTES; break;
 	default:
-	bad:
 	  dst[0]='\0';
-	  strncat(dst, "<invalid>", dstlen);
+	  strncat(dst, "<invalid>", dstlen - 1);
 	  return sizeof("<invalid>");
 	}
 
@@ -164,7 +168,9 @@ size_t dstlen;
 		n = reverse6(src, n, buf, &p);
 		break;
 	default:		/* including (AF_INET, 'R') */
-		goto bad;
+	  	dst[0]='\0';
+	  	strncat(dst, "<invalid>", dstlen - 1);
+	  	return sizeof("<invalid>");
 	}
 
 	if (dstlen > 0) {
@@ -190,6 +196,9 @@ size_t dstlen;
 		struct sockaddr_in sin;
 		struct sockaddr_in6 sin6;
 	} *sinp = (const union SINSIN6 *) src;
+
+	passert(dstlen >= sizeof("<invalid>"));
+
 	switch (sinp->sin.sin_family) {
 	case AF_INET:
 		return inet_addrtot(AF_INET,&sinp->sin.sin_addr,format,dst,dstlen);
@@ -197,7 +206,7 @@ size_t dstlen;
 		return inet_addrtot(AF_INET6,&sinp->sin6.sin6_addr,format,dst,dstlen);
 	default:
 		dst[0]='\0';
-		strncat(dst, "<invalid>", dstlen);
+		strncat(dst, "<invalid>", dstlen - 1);
 		return sizeof("<invalid>");
 	}
 }
