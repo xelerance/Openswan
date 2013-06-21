@@ -98,39 +98,26 @@ void reset_cyclic_buffer(void)
  * Note that if the id is to be kept, unshare_id_content will be necessary.
  */
 err_t
-atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
+atoid(char *src, struct id *id, bool myid_ok)
 {
     err_t ugh = NULL;
 
     *id = empty_id;
 
-    if (streq("%myid", src))
+    if (myid_ok && streq("%myid", src))
     {
-	if(!myid_ok) {
-	    return "%myid not permitted here";
-	}
 	id->kind = ID_MYID;
     }
     else if (streq("%fromcert", src))
     {
-	if(!(permitted_ids & ( PERM_ID_DER_ASN1_DN|PERM_ID_DER_ASN1_GN))) {
-	    return "%fromcert not permitted here";
-	}
 	id->kind = ID_FROMCERT;
     }
     else if (streq("%none", src))
     {
-	if(!(permitted_ids & (PERM_ID_NONE))) {
-	    return "%none-ID not permitted here";
-	}
 	id->kind = ID_NONE;
     }
     else if (strchr(src, '=') != NULL)
     {
-	if(!(permitted_ids & ( PERM_ID_DER_ASN1_DN|PERM_ID_DER_ASN1_GN))) {
-	    return "certificate DN not permitted here";
-	}
-
 	/* we interpret this as an ASCII X.501 ID_DER_ASN1_DN */
 	id->kind = ID_DER_ASN1_DN;
 	id->name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
@@ -165,9 +152,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
 	{
 	    if (*(src+1) == '#')
 	    {
-		if(!(permitted_ids & ( PERM_ID_KEY_ID))) {
-		    return "key_id not permitted here";
-		}
 		/* if there is a second specifier (#) on the line
 		 * we interprete this as ID_KEY_ID
 		 */
@@ -179,9 +163,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
 	    }
 	    else if (*(src+1) == '~')
 	    {
-		if(!(permitted_ids & ( PERM_ID_DER_ASN1_DN|PERM_ID_DER_ASN1_GN))) {
-		    return "certificate DN not permitted here";
-		}
 		/* if there is a second specifier (~) on the line
 		* we interprete this as a binary ID_DER_ASN1_DN
 		*/
@@ -193,9 +174,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
 	    }
 	    else if (*(src+1) == '[')
 	    {
-		if(!(permitted_ids & ( PERM_ID_KEY_ID))) {
-		    return "key_id not permitted here";
-		}
 		/* if there is a second specifier ([) on the line
 		 * we interprete this as a text ID_KEY_ID, and we remove
 		 * a trailing ", if there is one.
@@ -218,9 +196,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
 	    }
 	    else
 	    {
-		if(!(permitted_ids & ( PERM_ID_FQDN))) {
-		    return "fqdn not permitted here";
-		}
 		id->kind = ID_FQDN;
 		id->name.ptr = (unsigned char *)src+1;	/* discard @ */
 		id->name.len = strlen(src)-1;
@@ -231,9 +206,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
 	    /* We leave in @, as per DOI 4.6.2.4
 	     * (but DNS wants . instead).
 	     */
-	    if(!(permitted_ids & ( PERM_ID_USER_FQDN))) {
-		return "fqdn not permitted here";
-	    }
 	    id->kind = ID_USER_FQDN;
 	    id->name.ptr = (unsigned char *)src;
 	    id->name.len = strlen(src);
@@ -242,11 +214,6 @@ atoid_picky(char *src, struct id *id, bool myid_ok, lset_t permitted_ids)
     return ugh;
 }
 
-err_t
-atoid(char *src, struct id *id, bool myid_ok)
-{
-    return atoid_picky(src, id, myid_ok, PERM_ID_ALL);
-}
 
 /*
  *  Converts a binary key ID into hexadecimal format

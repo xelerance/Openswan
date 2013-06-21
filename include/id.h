@@ -48,9 +48,6 @@ extern void set_myFQDN(void);
 extern void free_myFQDN(void);
 
 extern err_t atoid(char *src, struct id *id, bool myid_ok);
-extern err_t atoid_picky(char *src, struct id *id,
-			 bool myid_ok, lset_t permitted_ids);
-
 extern void iptoid(const ip_address *ip, struct id *id);
 extern unsigned char* temporary_cyclic_buffer(void);
 extern int idtoa(const struct id *id, char *dst, size_t dstlen);
@@ -78,34 +75,6 @@ extern void
  * callers may use it.
  */
 extern const char *pluto_ip_str(const ip_address *src);
-
-#include "openswan/ipsec_policy.h"
-enum PERMITED_ID_TYPES {
-  PERM_ID_NONE      = LELEM(ID_NONE),
-  PERM_ID_IPV4_ADDR = LELEM(ID_IPV4_ADDR),
-  PERM_ID_FQDN      = LELEM(ID_FQDN),
-  PERM_ID_USER_FQDN = LELEM(ID_USER_FQDN),
-  PERM_ID_IPV4_ADDR_SUBNET = LELEM(ID_IPV4_ADDR_SUBNET),
-  PERM_ID_IPV6_ADDR = LELEM(ID_IPV6_ADDR),
-  PERM_ID_IPV6_ADDR_SUBNET= LELEM(ID_IPV6_ADDR_SUBNET),
-  PERM_ID_IPV4_ADDR_RANGE = LELEM(ID_IPV4_ADDR_RANGE),
-  PERM_ID_IPV6_ADDR_RANGE = LELEM(ID_IPV6_ADDR_RANGE),
-  PERM_ID_DER_ASN1_DN= LELEM(ID_DER_ASN1_DN),
-  PERM_ID_DER_ASN1_GN= LELEM(ID_DER_ASN1_GN),
-  PERM_ID_KEY_ID     = LELEM(ID_KEY_ID)
-};
-#define PERM_ID_ALL PERM_ID_NONE|\
-    PERM_ID_IPV4_ADDR|\
-    PERM_ID_USER_FQDN|\
-    PERM_ID_IPV4_ADDR_SUBNET|\
-    PERM_ID_IPV6_ADDR |	     \
-    PERM_ID_IPV6_ADDR_SUBNET|     \
-    PERM_ID_IPV4_ADDR_RANGE |     \
-    PERM_ID_IPV6_ADDR_RANGE |     \
-    PERM_ID_DER_ASN1_DN|     \
-    PERM_ID_DER_ASN1_GN|     \
-    PERM_ID_KEY_ID
-
 
 #endif /* _ID_H */
 
