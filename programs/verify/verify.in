@@ -252,10 +252,11 @@ def cmdchecks():
 	else:
 			print_result("OK","OK")
 
+
 def udp500check():
 	printfun(" Pluto listening for IKE on udp 500")
 	if 1==1:
-		p = subprocess.Popen(["/usr/sbin/ss", "-n", "-l", "-u", "sport = :500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+		p = subprocess.Popen(["ss", "-n", "-l", "-u", "sport = :500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		output, err = p.communicate()
 		if ":500" in output:
 			print_result("OK","OK")
@@ -270,7 +271,7 @@ def udp500check():
 def tcp500check():
 	printfun(" Pluto listening for IKE on tcp 500")
 	try:
-		p = subprocess.Popen(["/usr/sbin/ss", "-n", "-l", "-t", "sport = :500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+		p = subprocess.Popen(["ss", "-n", "-l", "-t", "sport = :500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		output, err = p.communicate()
 		if ":500" in output:
 			print_result("OK","OK")
@@ -282,7 +283,7 @@ def tcp500check():
 def udp4500check():
 	printfun(" Pluto listening for IKE/NAT-T on udp 4500")
 	try:
-		p = subprocess.Popen(["/usr/sbin/ss", "-n", "-l", "-u", "sport = :4500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+		p = subprocess.Popen(["ss", "-n", "-l", "-u", "sport = :4500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		output, err = p.communicate()
 		if ":4500" in output:
 			print_result("OK","OK")
@@ -295,7 +296,7 @@ def udp4500check():
 def tcp4500check():
 	printfun(" Pluto listening for IKE/NAT-T on tcp 4500")
 	try:
-		p = subprocess.Popen(["/usr/sbin/ss", "-n", "-l", "-t", "sport = :4500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+		p = subprocess.Popen(["ss", "-n", "-l", "-t", "sport = :4500"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		output, err = p.communicate()
 		if ":4500" in output:
 			print_result("OK","OK")
@@ -308,7 +309,7 @@ def tcp4500check():
 def tcp10000check():
 	printfun(" Pluto listening for IKE on tcp 10000 (cisco)")
 	try:
-		p = subprocess.Popen(["/usr/sbin/ss", "-n", "-l", "-t", "sport = :10000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) 
+		p = subprocess.Popen(["ss", "-n", "-l", "-t", "sport = :10000"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		output, err = p.communicate()
 		if ":10000" in output:
 			print_result("OK","OK")
