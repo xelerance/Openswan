@@ -89,8 +89,12 @@ CFLAGS+= -Wpointer-arith
 # must turn this off due to initsubnet.c
 CFLAGS+= -Wno-error=cast-qual
 
+# Check if GCC's version is recent enough
+GCC_VERSION_GE_46:=$(shell test `gcc -dumpversion | sed 's/^\([0-9]\)\.\([0-9]\).*/\1\2/'` -ge 46 && echo true || echo false)
+ifeq ($(GCC_VERSION_GE_46),true)
 # some junk left in alg_info.c
 CFLAGS+= -Wno-error=cpp
+endif
 
 #CFLAGS+= -Wmissing-declarations
 CFLAGS+= -Wstrict-prototypes
