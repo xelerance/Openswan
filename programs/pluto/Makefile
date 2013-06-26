@@ -47,7 +47,11 @@ CPPFLAGS = $(HDRDIRS) $(DEFINES) \
 
 # must turn this off due to myid.c
 CFLAGS+= -Wno-error=cast-qual
+# Check if GCC's version is recent enough
+GCC_VERSION_GE_46:=$(shell test `gcc -dumpversion | sed 's/^\([0-9]\)\.\([0-9]\).*/\1\2/'` -ge 46 && echo true || echo false)
+ifeq ($(GCC_VERSION_GE_46),true)
 CFLAGS+= -Wno-error=cpp
+endif
 
 ifeq ($(HAVE_BROKEN_POPEN),true)
 CFLAGS+=-DHAVE_BROKEN_POPEN
