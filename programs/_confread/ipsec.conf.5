@@ -529,7 +529,7 @@ signifying that we permit IKEv2, and also use it as the default to initiate;
 If the ikev2= setting is set to
 \fBpermit\fR
 or
-\fBpropose\fR, Openswan will try and detect a "bid down" attack from IKEv2 to IKEv1\&. Since there is no standard for transmitting the IKEv2 capability with IKEv1, Openswan uses a special Vendor ID "CAN\-IKEv2"\&. If a fall back from IKEv2 to IKEv1 was detected, and the IKEv1 negotiation contains Vendor ID "CAN\-IKEv2", Openswan will immediately attempt and IKEv2 rekey and refuse to use the IKEv1 connection\&. With an ikev2= setting of
+\fBpropose\fR, Openswan will try and detect a "bid down" attack from IKEv2 to IKEv1\&. Since there is no standard for transmitting the IKEv2 capability with IKEv1, Openswan uses a special Vendor ID "CAN\-IKEv2"\&. If a fall back from IKEv2 to IKEv1 was detected, and the IKEv1 negotiation contains Vendor ID "CAN\-IKEv2", Openswan will immediately attempt an IKEv2 rekey and refuse to use the IKEv1 connection\&. With an ikev2= setting of
 \fBinsist\fR, no IKEv1 negotiation is allowed, and no bid down attack is possible\&.
 .RE
 .PP
