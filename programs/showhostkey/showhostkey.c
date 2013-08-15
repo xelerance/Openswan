@@ -34,7 +34,7 @@
 #include <getopt.h>
 #include <fcntl.h>
 #include <netinet/in.h>
-#include <libreswan.h>
+#include <openswan.h>
 #include <sys/utsname.h>
 
 #include <arpa/nameser.h>
