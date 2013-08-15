@@ -126,7 +126,7 @@ init_pluto_vendorid(void)
 
 #if PLUTO_VENDORID_SIZE - 3 <= MD5_DIGEST_SIZE
     /* truncate hash to fit our vendor ID */
-    memcpy(pluto_vendorid + 3, hash, PLUTO_VENDORID_SIZE - 2);
+    memcpy(pluto_vendorid + 3, hash, PLUTO_VENDORID_SIZE - 3);
 #else
     /* pad to fill our vendor ID */
     memcpy(pluto_vendorid + 3, hash, MD5_DIGEST_SIZE);
