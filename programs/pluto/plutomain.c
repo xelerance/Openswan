@@ -1,7 +1,7 @@
 /* Pluto main program
  * Copyright (C) 1997      Angelos D. Keromytis.
  * Copyright (C) 1998-2001 D. Hugh Redelmeier.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2001-2013 Michael C Richardson <mcr@xelerance.com>
  * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
@@ -491,8 +491,10 @@ main(int argc, char **argv)
 	    {
 		const char **sp = ipsec_copyright_notice();
 
-		printf("%s%s\n", ipsec_version_string(),
+		printf("\nInterop Options: %s%s\n", ipsec_version_string(),
 				 compile_time_interop_options);
+                printf("\tVendorID: %s\n\n",
+                       init_pluto_vendorid());
 		for (; *sp != NULL; sp++)
 		    puts(*sp);
 	    }
