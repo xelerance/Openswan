@@ -2,18 +2,18 @@
  * show the host keys in various formats
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1999, 2000, 2001  Henry Spencer.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
- * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com> 
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -127,25 +127,25 @@ int print_key(struct secret *secret
 	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
-	    
+
 	case PPK_RSA:
 	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
 	    break;
-	    
+
 	case PPK_XAUTH:
 	    printf("%d(%d): XAUTH keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    xauth: \"%s\"\n", pskbuf);
 	    break;
-	    
+
 	case PPK_PIN:
 	    printf("%d:(%d) PIN key-type not yet supported for id: %s\n", lineno, count, idb);
 	    break;
 	}
-	
+
 	l=l->next;
 	count++;
     }
-    
+
     return 1;
 }
 
@@ -193,7 +193,7 @@ char *get_default_keyid(struct secret *host_secrets)
     return pks->u.RSA_private_key.pub.keyid;
 }
 
-     
+
 void dump_keys(struct secret *host_secrets)
 {
     (void)osw_foreach_secret(host_secrets, dump_key, NULL);
@@ -214,7 +214,7 @@ struct secret *pick_key(struct secret *host_secrets
 
     s = osw_find_secret_by_id(host_secrets, PPK_RSA
 			      , &id, NULL, TRUE /* asymmetric */);
-    
+
     if(s==NULL) {
 	char abuf[IDTOA_BUF];
 	idtoa(&id, abuf, IDTOA_BUF);
@@ -241,7 +241,7 @@ unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
 
     buf = alloc_bytes(e.len+n.len+3, "buffer for rfc3110");
     p = buf;
-    
+
     if (elen <= 255)
 	*p++ = elen;
     else if ((elen &~ 0xffff) == 0) {
@@ -261,7 +261,7 @@ unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
     *keybuflen=(p-buf);
 
     return buf;
-}    
+}
 
 void show_dnskey(struct secret *s
 		 , char *idname
@@ -299,7 +299,7 @@ void show_dnskey(struct secret *s
 			exit(5);
 		  }
 	}
-			
+
 	printf("%s.    IN    IPSECKEY  %d %d 2 %s ",
 	       qname, precedence, gateway_type , (gateway == NULL) ? "." : gateway);
 	{
@@ -321,7 +321,7 @@ void show_dnskey(struct secret *s
 	}
 	printf("\n");
 }
-     
+
 void show_confkey(struct secret *s
 		  , char *idname
 		  , char *side)
@@ -351,12 +351,12 @@ void show_confkey(struct secret *s
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
-    printf("\t# rsakey %s\n", 
+    printf("\t# rsakey %s\n",
 	   pks->u.RSA_private_key.pub.keyid);
     printf("\t%srsasigkey=%s\n", side,
 	   base64);
 }
-     
+
 
 
 int main(int argc, char *argv[])
@@ -386,7 +386,7 @@ int main(int argc, char *argv[])
     tool_init_log();
 
     snprintf(secrets_file, PATH_MAX, "%s/ipsec.secrets", oco->confdir);
-    
+
     while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF) {
 	switch (opt) {
 	case '?':
@@ -468,13 +468,13 @@ int main(int argc, char *argv[])
 	fputs(usage, stderr);
 	exit(1);
     }
-    
+
     if(!left_flg && !right_flg && !dump_flg && !list_flg
        && !ipseckey_flg && !dhclient_flg) {
 	fprintf(stderr, "You must specify some operation\n");
 	goto usage;
     }
-    
+
     if((left_flg + right_flg + dump_flg + list_flg
 	+ ipseckey_flg + dhclient_flg) > 1) {
 	fprintf(stderr, "You must specify only one operation\n");
@@ -504,8 +504,8 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "%s: NSS_InitReadWrite returned %d\n",progname, PR_GetError());
 	exit(1);
     }
-   nss_initialized = PR_TRUE; 
-   PK11_SetPasswordFunc(getNSSPassword); 
+   nss_initialized = PR_TRUE;
+   PK11_SetPasswordFunc(getNSSPassword);
 #endif
 
     load_oswcrypto();
