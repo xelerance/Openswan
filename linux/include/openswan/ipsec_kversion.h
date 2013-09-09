@@ -7,12 +7,13 @@
  * Copyright (C) 2008 - 2011 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2012 David McCullough <david_mccullough@mcafee.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
- * 
+ * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -36,14 +37,9 @@
 # define KERNEL_VERSION(x,y,z) (((x)<<16)+((y)<<8)+(z))
 #endif
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,1,0)
-# define HEADER_CACHE_BIND_21
-# error "KLIPS is no longer supported on Linux 2.0. Sorry"
-#endif
-
 #if __KERNEL__
 # if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,0)
-#  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0) 
+#  if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,0)
 #   include "openswan/ipsec_kern24.h"
 #  else
 #   error "kernels before 2.4 are not supported at this time"
@@ -61,17 +57,17 @@
 # include <linux/config.h>
 #endif
 
-#if !defined(RHEL_RELEASE_CODE) 
+#if !defined(RHEL_RELEASE_CODE)
 # define RHEL_RELEASE_CODE 0
 # define RHEL_RELEASE_VERSION(x,y) 10
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0)
-#define ipsec_ipv6_skip_exthdr ipv6_skip_exthdr
-#define IPSEC_FRAG_OFF_DECL(x) __be16 x;
+# define ipsec_ipv6_skip_exthdr ipv6_skip_exthdr
+# define IPSEC_FRAG_OFF_DECL(x) __be16 x;
 #else
-#define ipsec_ipv6_skip_exthdr(a,b,c,d) ipv6_skip_exthdr(a,b,c)
-#define IPSEC_FRAG_OFF_DECL(x)
+# define ipsec_ipv6_skip_exthdr(a,b,c,d) ipv6_skip_exthdr(a,b,c)
+# define IPSEC_FRAG_OFF_DECL(x)
 #endif
 
 /*
@@ -82,70 +78,15 @@
 #define ipsec_jiffieshz_elapsed(now, last) \
 	((last) <= (now) ? ((now) - (last)) : ((((typeof(jiffies))~0)/HZ) - (last) + (now)))
 
-/* 
- * Kernel version specific defines, in order from oldest to newest kernel 
+/*
+ * Kernel version specific defines, in order from oldest to newest kernel
  * If possible, use the latest native writing, and write macro's to port back
  * the new code to older kernels.
  */
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,1,0)
-# define SPINLOCK
-# define PROC_FS_21
-# define NETLINK_SOCK
-# define NET_21
+#ifndef CONFIG_IP_ALIAS
+# define CONFIG_IP_ALIAS
 #endif
-
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,1,19)
-# define net_device_stats enet_statistics
-#endif                                                                         
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)
-# define SPINLOCK_23
-# define NETDEV_23
-# ifndef CONFIG_IP_ALIAS
-#  define CONFIG_IP_ALIAS
-# endif
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,25)
-# define PROC_FS_2325
-# undef  PROC_FS_21
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,30)
-# define PROC_NO_DUMMY
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,35)
-# define SKB_COPY_EXPAND
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,37)
-# define IP_SELECT_IDENT
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,2)
-# define IP_SELECT_IDENT_NEW
-#endif
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,4)
-# define IPH_is_SKB_PULLED
-# define SKB_COW_NEW
-# define PROTO_HANDLER_SINGLE_PARM
-# define IP_FRAGMENT_LINEARIZE 1
-#else /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,4) */
-#  ifdef REDHAT_BOGOSITY
-#  define IP_SELECT_IDENT_NEW
-#  define IPH_is_SKB_PULLED
-#  define SKB_COW_NEW
-#  define PROTO_HANDLER_SINGLE_PARM
-#  endif /* REDHAT_BOGOSITY */
-#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,4) */
-
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,9)
-# define MALLOC_SLAB
-# define LINUX_KERNEL_HAS_SNPRINTF
-#endif                                                                         
 
 /* API changes are documented at: http://lwn.net/Articles/2.6-kernel-api/ */
 
@@ -176,7 +117,6 @@
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,8)
 # define NEED_INET_PROTOCOL
-
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,12)
@@ -186,7 +126,6 @@
 # else
 #  define NET_26_12_SKALLOC
 # endif
-#endif
 #endif
 
 /* see <linux/security.h> */
@@ -203,14 +142,14 @@
 # define HAVE_TSTAMP
 # define HAVE_INET_SK_SPORT
 #else
-# define HAVE_SKB_LIST 
+# define HAVE_SKB_LIST
 #endif
 
 /* it seems 2.6.14 accidentally removed sysctl_ip_default_ttl */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,14)
 # define SYSCTL_IPSEC_DEFAULT_TTL IPSEC_DEFAULT_TTL
 #else
-# define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl                      
+# define SYSCTL_IPSEC_DEFAULT_TTL sysctl_ip_default_ttl
 #endif
 
 /* how to reset an skb we are reusing after encrpytion/decryption etc */
@@ -248,7 +187,7 @@
 # define HAVE_NEW_SKB_LINEARIZE
 #elif defined(CONFIG_XEN)
   /* this is the best we can do to detect XEN, which makes
-   * patches to linux/skbuff.h, making it look like 2.6.18+ version 
+   * patches to linux/skbuff.h, making it look like 2.6.18+ version
    */
 # define HAVE_NEW_SKB_LINEARIZE
 #elif defined(SLE_VERSION_CODE)
@@ -284,22 +223,22 @@
 /*
    Significant changes have been made to the crypto support interface.
    The sysctl code has been heavily reworked, leading to a number of
-    internal API changes. 
+    internal API changes.
 */
 # define ipsec_register_sysctl_table(a,b) register_sysctl_table(a)
 # define CTL_TABLE_PARENT
 #else
 # define ipsec_register_sysctl_table(a,b) register_sysctl_table(a,b)
 #endif
- 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) 
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22)
 #  define HAVE_KERNEL_TSTAMP
 #  define grab_socket_timeval(tv, sock)  { (tv) = ktime_to_timeval((sock).sk_stamp); }
 #else
 #  define grab_socket_timeval(tv, sock)  { (tv) = (sock).sk_stamp; }
 #endif
 
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2)) 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,22) || (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(5,2))
 /* need to include ip.h early, no longer pick it up in skbuff.h */
 #include <linux/ip.h>
 /* type of sock.sk_stamp changed from timeval to ktime  */
@@ -325,16 +264,16 @@
 #  define skb_set_mac_header(skb,off)  ((skb)->mac.raw = (skb)->data + (off))
 # endif
 # if defined(CONFIG_SLE_VERSION) && defined(CONFIG_SLE_SP) && (CONFIG_SLE_VERSION == 10 && CONFIG_SLE_SP == 2)
-# define ip_hdr(skb) ((skb)->nh.iph)
+#  define ip_hdr(skb) ((skb)->nh.iph)
 # endif
 #endif
 /* turn a pointer into an offset for above macros */
 #define ipsec_skb_offset(skb, ptr) (((unsigned char *)(ptr)) - (skb)->data)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,23)
-/* 
+/*
  * The macro got introduced in 2,6,22 but it does not work properly, and
- * still uses the old number of arguments. 
+ * still uses the old number of arguments.
  */
  /*
     The destructor argument has been removed from kmem_cache_create(), as
@@ -353,12 +292,12 @@
  * We can switch on earlier kernels, but from here on we have no choice
  * but to abandon the old style proc_net and use seq_file
  * The hard_header() method has been removed from struct net_device;
-    it has been replaced by a per-protocol header_ops structure pointer. 
+    it has been replaced by a per-protocol header_ops structure pointer.
 
    The prototype for slab constructor callbacks has changed to:
     void (*ctor)(struct kmem_cache *cache, void *object);
    The unused flags argument has been removed and the order of the other
-    two arguments has been reversed to match other slab functions. 
+    two arguments has been reversed to match other slab functions.
  */
 # define HAVE_PROC_DIR_ENTRY
 # define        PROC_NET        init_net.proc_net
@@ -379,7 +318,7 @@
 # define l_inet_addr_type(a)	inet_addr_type(&init_net, a)
 #else
 # define ip_chk_addr inet_addr_type
-#define l_inet_addr_type	inet_addr_type
+# define l_inet_addr_type	inet_addr_type
 #endif
 
 #include <linux/spinlock.h>
@@ -402,13 +341,13 @@
 #endif
 
 #if LINUX_VERSION_CODE <= KERNEL_VERSION(2,6,31)
-#ifndef NETDEV_TX_BUSY
-# ifdef NETDEV_XMIT_CN
-#  define NETDEV_TX_BUSY NETDEV_XMIT_CN
-# else
-#  define NETDEV_TX_BUSY 1
+# ifndef NETDEV_TX_BUSY
+#  ifdef NETDEV_XMIT_CN
+#   define NETDEV_TX_BUSY NETDEV_XMIT_CN
+#  else
+#   define NETDEV_TX_BUSY 1
+#  endif
 # endif
-#endif
 #endif
 
 #if LINUX_VERSION_CODE == KERNEL_VERSION(2,6,30)
@@ -440,84 +379,20 @@
 #endif
 
 #if !defined(HAVE_CURRENT_UID)
-#define current_uid() (current->uid)
+# define current_uid() (current->uid)
 #endif
 
-#ifdef NET_21
-# define ipsec_kfree_skb(a) kfree_skb(a)
-#else /* NET_21 */
-# define ipsec_kfree_skb(a) kfree_skb(a, FREE_WRITE)
-#endif /* NET_21 */
+#define ipsec_kfree_skb(a) kfree_skb(a)
 
-#ifdef NETDEV_23
-
-#ifndef SPINLOCK
-#  include <linux/bios32.h>
-     /* simulate spin locks and read/write locks */
-     typedef struct {
-       volatile char lock;
-     } spinlock_t;
-
-     typedef struct {
-       volatile unsigned int lock;
-     } rwlock_t;                                                                     
-
-#  define SPIN_LOCK_UNLOCKED {0}
-
-#  define spin_lock_init(x) { (x)->lock = 0;}
-#  define rw_lock_init(x) { (x)->lock = 0; }
-
-#  define spin_lock(x) { while ((x)->lock) barrier(); (x)->lock=1;}
-#  define spin_lock_irq(x) { cli(); spin_lock(x);}
-#  define spin_lock_irqsave(x,flags) { save_flags(flags); spin_lock_irq(x);}
-
-#  define spin_unlock(x) { (x)->lock=0;}
-#  define spin_unlock_irq(x) { spin_unlock(x); sti();}
-#  define spin_unlock_irqrestore(x,flags) { spin_unlock(x); restore_flags(flags);}
-
-#  define read_lock(x) spin_lock(x)
-#  define read_lock_irq(x) spin_lock_irq(x)
-#  define read_lock_irqsave(x,flags) spin_lock_irqsave(x,flags)
-
-#  define read_unlock(x) spin_unlock(x)
-#  define read_unlock_irq(x) spin_unlock_irq(x)
-#  define read_unlock_irqrestore(x,flags) spin_unlock_irqrestore(x,flags)
-
-#  define write_lock(x) spin_lock(x)
-#  define write_lock_irq(x) spin_lock_irq(x)
-#  define write_lock_irqsave(x,flags) spin_lock_irqsave(x,flags)
-
-#  define write_unlock(x) spin_unlock(x)
-#  define write_unlock_irq(x) spin_unlock_irq(x)
-#  define write_unlock_irqrestore(x,flags) spin_unlock_irqrestore(x,flags)
-#endif /* !SPINLOCK */
-
-#ifndef SPINLOCK_23
-#  define spin_lock_bh(x)  spin_lock_irq(x)
-#  define spin_unlock_bh(x)  spin_unlock_irq(x)
-
-#  define read_lock_bh(x)  read_lock_irq(x)
-#  define read_unlock_bh(x)  read_unlock_irq(x)
-
-#  define write_lock_bh(x)  write_lock_irq(x)
-#  define write_unlock_bh(x)  write_unlock_irq(x)
-#endif /* !SPINLOCK_23 */
 
 #ifndef HAVE_NETDEV_PRINTK
-#define netdev_printk(sevlevel, netdev, msglevel, format, arg...) \
+# define netdev_printk(sevlevel, netdev, msglevel, format, arg...) \
 	printk(sevlevel "%s: " format , netdev->name , ## arg)
 #endif
 
-#ifdef NETDEV_23
-# define ipsec_dev_put(x) dev_put(x)
-# define __ipsec_dev_put(x) __dev_put(x)
-# define ipsec_dev_hold(x) dev_hold(x)
-#else /* NETDEV_23 */
-# define ipsec_dev_get dev_get
-# define __ipsec_dev_put(x) 
-# define ipsec_dev_put(x)
-# define ipsec_dev_hold(x) 
-#endif /* NETDEV_23 */
+#define ipsec_dev_put(x) dev_put(x)
+#define __ipsec_dev_put(x) __dev_put(x)
+#define ipsec_dev_hold(x) dev_hold(x)
 
 #ifndef late_initcall
 # include <linux/init.h>
@@ -526,22 +401,12 @@
 # endif
 #endif
 
-#ifdef NET_21
-# include <linux/in6.h>
-#else
-     /* old kernel in.h has some IPv6 stuff, but not quite enough */
-# define	s6_addr16	s6_addr
-# define	AF_INET6	10
-# define uint8_t __u8
-# define uint16_t __u16 
-# define uint32_t __u32 
-# define uint64_t __u64 
-#endif
+#include <linux/in6.h>
 
 #if defined(CONFIG_IPSEC_NAT_TRAVERSAL) && CONFIG_IPSEC_NAT_TRAVERSAL
 # define NAT_TRAVERSAL 1
 #else
-#undef CONFIG_IPSEC_NAT_TRAVERSAL
+# undef CONFIG_IPSEC_NAT_TRAVERSAL
 # if defined(HAVE_UDP_ENCAP_CONVERT)
 #  define NAT_TRAVERSAL 1
 # endif
@@ -558,15 +423,15 @@
 #endif
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,33)
-#define	inet_sport	sport
-#define	inet_dport	dport
-#define	CTL_NAME(n)	.ctl_name = n,
+# define	inet_sport	sport
+# define	inet_dport	dport
+# define	CTL_NAME(n)	.ctl_name = n,
 #else
-#define	CTL_NAME(n)
+# define	CTL_NAME(n)
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,35)
-#define HAVE_SOCKET_WQ
+# define HAVE_SOCKET_WQ
 #endif
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36)

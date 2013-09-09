@@ -9,18 +9,17 @@
  * Copyright (C) 2006-2012 David McCullough <david_mccullough@mcafee.com>
  * Copyright (C) 2006-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2011 Bart Trojanowski <bart@jukie.net>
- * 
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
- *
- * Split out from ipsec_init.c version 1.70.
  */
 
 #include <linux/version.h>
@@ -30,19 +29,15 @@
 #define __NO_VERSION__
 #include <linux/module.h>
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0) && LINUX_VERSION_CODE >= KERNEL_VERSION(2,4,26)
-# include <linux/moduleparam.h> 
-#endif 
+# include <linux/moduleparam.h>
+#endif
 #include <linux/kernel.h> /* printk() */
 #include <linux/ip.h>          /* struct iphdr */
 
 #include "openswan/ipsec_kversion.h"
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -53,23 +48,13 @@
 #include <linux/skbuff.h>
 #include <asm/uaccess.h>       /* copy_from_user */
 #include <openswan.h>
-#ifdef SPINLOCK
-#ifdef SPINLOCK_23
 #include <linux/spinlock.h> /* *lock* */
-#else /* SPINLOCK_23 */
-#include <asm/spinlock.h> /* *lock* */
-#endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
 
 #include <net/ip.h>
 #ifdef CONFIG_PROC_FS
 #include <linux/proc_fs.h>
 #endif /* CONFIG_PROC_FS */
-#ifdef NETLINK_SOCK
 #include <linux/netlink.h>
-#else
-#include <net/netlink.h>
-#endif
 
 #include "openswan/radij.h"
 
@@ -143,9 +128,9 @@ extern int ipsec_xform_get_info(char *buffer, char **start,
 
 IPSEC_PROCFS_DEBUG_NO_STATIC
 int
-ipsec_eroute_get_info(char *buffer, 
-		      char **start, 
-		      off_t offset, 
+ipsec_eroute_get_info(char *buffer,
+		      char **start,
+		      off_t offset,
 		      int length        IPSEC_PROC_LAST_ARG)
 {
 	struct wsbuf w = {buffer, length, offset, 0, 0};
@@ -234,7 +219,7 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 		len += ipsec_snprintf(buffer+len, length-len, " policy=%s->%s",
 			       buf_s, buf_d);
 	}
-	
+
 	if(sa_p->ips_iv_bits) {
 		int j;
 		len += ipsec_snprintf(buffer+len, length-len, " iv_bits=%dbits iv=0x",
@@ -315,12 +300,12 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 		len += ipsec_snprintf(buffer+len, length-len, " encr_pad_errs=%d",
 			       sa_p->ips_errs.ips_encpad_errs);
 	}
-	
+
 	len += ipsec_snprintf(buffer+len, length-len, " life(c,s,h)=");
 
 	len += ipsec_lifetime_format(buffer + len,
 				     length - len,
-				     "alloc", 
+				     "alloc",
 				     ipsec_life_countbased,
 				     &sa_p->ips_life.ipl_allocations);
 
@@ -341,13 +326,13 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 				     "usetime",
 				     ipsec_life_timebased,
 				     &sa_p->ips_life.ipl_usetime);
-	
+
 	len += ipsec_lifetime_format(buffer + len,
 				     length - len,
 				     "packets",
 				     ipsec_life_countbased,
 				     &sa_p->ips_life.ipl_packets);
-	
+
 	if(sa_p->ips_life.ipl_usetime.ipl_last) { /* XXX-MCR should be last? */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)
 		len += ipsec_snprintf(buffer+len, length-len, " idle=%Ld",
@@ -395,17 +380,17 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 
 		len += ipsec_snprintf(buffer + len, length-len, " natencap=%s",
 			       natttype_name);
-		
+
 		len += ipsec_snprintf(buffer + len, length-len, " natsport=%d",
 			       sa_p->ips_natt_sport);
-		
+
 		len += ipsec_snprintf(buffer + len,length-len, " natdport=%d",
 			       sa_p->ips_natt_dport);
 	}
 #else
 	len += ipsec_snprintf(buffer + len, length-len, " natencap=na");
 #endif /* NAT_TRAVERSAL */
-		
+
 	/* we decrement by one, because this SA has been referenced in order to dump this info */
 	len += ipsec_snprintf(buffer + len,length-len, " refcount=%d",
 		       atomic_read(&sa_p->ips_refcount)-1);
@@ -438,7 +423,7 @@ ipsec_spi_format(struct ipsec_sa *sa_p,
 
 	len += ipsec_snprintf(buffer+len, length-len, "\n");
 
-	ipsec_sa_put(sa_p, IPSEC_REFPROC);   
+	ipsec_sa_put(sa_p, IPSEC_REFPROC);
 	return len;
 }
 
@@ -463,7 +448,7 @@ ipsec_spi_get_info(char *buffer,
 		    *start,
 		    (int)offset,
 		    length);
-	
+
 	spin_lock_bh(&tdb_lock);
 
 	for (i = 0; i < SADB_HASHMOD; i++) {
@@ -472,7 +457,7 @@ ipsec_spi_get_info(char *buffer,
 		     sa_p = sa_p->ips_hnext) {
 
 		     	len = ipsec_spi_format(sa_p, buffer, len, length);
-                       
+
                         if (len >= max_content) {
                                /* we've done all that can fit -- stop loops */
                                len = max_content;      /* truncate crap */
@@ -491,7 +476,7 @@ ipsec_spi_get_info(char *buffer,
                 }
         }
 
-done_spi_i:	
+done_spi_i:
 	spin_unlock_bh(&tdb_lock);
 
 	*start = buffer + (offset - begin);	/* Start of wanted data */
@@ -506,7 +491,7 @@ ipsec_spigrp_get_info(char *buffer,
 		      int length     IPSEC_PROC_LAST_ARG)
 {
 	/* Limit of useful snprintf output */
-	const int max_content = length > 0? length-1 : 0; 
+	const int max_content = length > 0? length-1 : 0;
 
 	int len = 0;
 	off_t begin = 0;
@@ -524,7 +509,7 @@ ipsec_spigrp_get_info(char *buffer,
 		    length);
 
 	spin_lock_bh(&tdb_lock);
-	
+
 	for (i = 0; i < SADB_HASHMOD; i++) {
 		for (sa_p = ipsec_sadb_hash[i];
 		     sa_p != NULL;
@@ -535,22 +520,22 @@ ipsec_spigrp_get_info(char *buffer,
 				struct ipsec_sa *sa2n;
 				sa_len = satot(&sa_p2->ips_said,
 					       'x', sa, sizeof(sa));
-				
+
 				len += ipsec_snprintf(buffer+len, length-len, "%s ",
 						      sa_len ? sa : " (error)");
-				
+
 				sa2n = sa_p2->ips_next;
 				sa_p2 = sa2n;
 			}
 			len += ipsec_snprintf(buffer+len, length-len, "\n");
-			
+
 			if (len >= max_content) {
 				/* we've done all that can fit -- stop loops */
 				len = max_content;      /* truncate crap */
 				goto done_spigrp_i;
 			} else {
 				const off_t pos = begin + len;
-				
+
 				if (pos <= offset) {
 					/* all is before first interesting character:
 					 * discard, but note where we are.
@@ -562,7 +547,7 @@ ipsec_spigrp_get_info(char *buffer,
 		}
 	}
 
-done_spigrp_i:	
+done_spigrp_i:
 	spin_unlock_bh(&tdb_lock);
 
 	*start = buffer + (offset - begin);	/* Start of wanted data */
@@ -591,11 +576,11 @@ ipsec_saraw_get_info(char *buffer,
 		    *start,
 		    (int)offset,
 		    length);
-	
+
 	spin_lock_bh(&tdb_lock);
 
 	for (sa_p = ipsec_sa_raw; sa_p; sa_p = sa_p->ips_raw) {
-	       
+
 		len = ipsec_spi_format(sa_p, buffer, len, length);
 
 		if (len >= max_content) {
@@ -615,7 +600,7 @@ ipsec_saraw_get_info(char *buffer,
 		}
 	}
 
-done_spi_i:	
+done_spi_i:
 	spin_unlock_bh(&tdb_lock);
 
 	*start = buffer + (offset - begin);	/* Start of wanted data */
@@ -631,7 +616,7 @@ ipsec_tncfg_get_info(char *buffer,
 		     off_t offset,
 		     int length     IPSEC_PROC_LAST_ARG)
 {
-	/* limit of useful snprintf output */ 
+	/* limit of useful snprintf output */
 	const int max_content = length > 0? length-1 : 0;
 	int len = 0;
 	off_t begin = 0;
@@ -947,7 +932,7 @@ ipsec_stats_get_int_info(char *buffer,
 	int *thing;
 
 	thing = (int *)data;
-	
+
 	len = ipsec_snprintf(buffer+len, length-len, "%08x\n", *thing);
 
 	if (len >= max_content)
@@ -958,94 +943,8 @@ ipsec_stats_get_int_info(char *buffer,
 
 }
 
-#ifndef PROC_FS_2325
-struct proc_dir_entry ipsec_eroute =
-{
-	0,
-	12, "ipsec_eroute",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_eroute_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-
-struct proc_dir_entry ipsec_spi =
-{
-	0,
-	9, "ipsec_spi",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_spi_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-
-struct proc_dir_entry ipsec_spigrp =
-{
-	0,
-	12, "ipsec_spigrp",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_spigrp_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-
-#ifdef IPSEC_SA_RECOUNT_DEBUG
-struct proc_dir_entry ipsec_saraw =
-{
-	0,
-	12, "ipsec_saraw",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_saraw_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-#endif
-
-struct proc_dir_entry ipsec_tncfg =
-{
-	0,
-	11, "ipsec_tncfg",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_tncfg_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-
-struct proc_dir_entry ipsec_version =
-{
-	0,
-	13, "ipsec_version",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_version_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-
-#ifdef IPSEC_PROC_SHOW_SAREF_INFO
-struct proc_dir_entry ipsec_saref =
-{
-	0,
-	13, "ipsec_saref",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_saref_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-#endif
-
-struct proc_dir_entry ipsec_klipsdebug =
-{
-	0,
-	16, "ipsec_klipsdebug",
-	S_IFREG | S_IRUGO, 1, 0, 0, 0,
-	&proc_net_inode_operations,
-	ipsec_klipsdebug_get_info,
-	NULL, NULL, NULL, NULL, NULL
-};
-#endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
-#if defined(PROC_FS_2325) 
 struct ipsec_proc_list {
 	char                   *name;
 	struct proc_dir_entry **parent;
@@ -1085,8 +984,7 @@ static struct ipsec_proc_list proc_items[]={
 #endif
 	{NULL,         NULL,                NULL,             NULL,      NULL, NULL}
 };
-#endif
-		
+
 int
 ipsec_proc_init()
 {
@@ -1098,38 +996,11 @@ ipsec_proc_init()
 	/*
 	 * just complain because pluto won't run without /proc!
 	 */
-#ifndef CONFIG_PROC_FS 
+#ifndef CONFIG_PROC_FS
 #error You must have PROC_FS built in to use KLIPS
 #endif
 
-        /* for 2.0 kernels */
-#if !defined(PROC_FS_2325) && !defined(PROC_FS_21)
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_eroute);
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_spi);
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_spigrp);
-#ifdef IPSEC_SA_RECOUNT_DEBUG
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_saraw);
-#endif
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_tncfg);
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_version);
-	error |= proc_register_dynamic(&PROC_NET, &ipsec_klipsdebug);
-#endif
-
-	/* for 2.2 kernels */
-#if !defined(PROC_FS_2325) && defined(PROC_FS_21)
-	error |= proc_register(PROC_NET, &ipsec_eroute);
-	error |= proc_register(PROC_NET, &ipsec_spi);
-	error |= proc_register(PROC_NET, &ipsec_spigrp);
-#ifdef IPSEC_SA_RECOUNT_DEBUG
-	error |= proc_register(PROC_NET, &ipsec_saraw);
-#endif
-	error |= proc_register(PROC_NET, &ipsec_tncfg);
-	error |= proc_register(PROC_NET, &ipsec_version);
-	error |= proc_register(PROC_NET, &ipsec_klipsdebug);
-#endif
-
 	/* for 2.4 kernels */
-#if defined(PROC_FS_2325)
 	/* create /proc/net/ipsec */
 
 	/* zero these out before we initialize /proc/net/ipsec/birth/stuff */
@@ -1140,7 +1011,7 @@ ipsec_proc_init()
 	if(proc_net_ipsec_dir == NULL) {
 		/* no point in continuing */
 		return 1;
-	} 	
+	}
 
 	{
 		struct ipsec_proc_list *it;
@@ -1170,7 +1041,7 @@ ipsec_proc_init()
 			it++;
 		}
 	}
-	
+
 	/* now create some symlinks to provide compatibility */
 	proc_symlink("ipsec_eroute", PROC_NET, "ipsec/eroute/all");
 	proc_symlink("ipsec_spi",    PROC_NET, "ipsec/spi/all");
@@ -1182,46 +1053,12 @@ ipsec_proc_init()
 	proc_symlink("ipsec_version",PROC_NET, "ipsec/version");
 	proc_symlink("ipsec_klipsdebug",PROC_NET,"ipsec/klipsdebug");
 
-#endif /* !PROC_FS_2325 */
-
 	return error;
 }
 
 void
 ipsec_proc_cleanup()
 {
-
-	/* for 2.0 and 2.2 kernels */
-#if !defined(PROC_FS_2325) 
-
-	if (proc_net_unregister(ipsec_klipsdebug.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_klipsdebug\n");
-
-	if (proc_net_unregister(ipsec_version.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_version\n");
-	if (proc_net_unregister(ipsec_eroute.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_eroute\n");
-	if (proc_net_unregister(ipsec_spi.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_spi\n");
-	if (proc_net_unregister(ipsec_spigrp.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_spigrp\n");
-#ifdef IPSEC_SA_RECOUNT_DEBUG
-	if (proc_net_unregister(ipsec_saraw.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_saraw\n");
-#endif
-	if (proc_net_unregister(ipsec_tncfg.low_ino) != 0)
-		printk("klips_debug:ipsec_cleanup: "
-		       "cannot unregister /proc/net/ipsec_tncfg\n");
-#endif
-
-	/* for 2.4 kernels */
-#if defined(PROC_FS_2325)
 	{
 		struct ipsec_proc_list *it;
 
@@ -1249,7 +1086,6 @@ ipsec_proc_cleanup()
 	remove_proc_entry("ipsec_tncfg",      PROC_NET);
 	remove_proc_entry("ipsec_version",    PROC_NET);
 	remove_proc_entry("ipsec",            PROC_NET);
-#endif /* 2.4 kernel */
 }
 
 /*

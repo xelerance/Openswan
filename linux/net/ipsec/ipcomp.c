@@ -4,6 +4,7 @@
  *
  * Copyright (C) 2000  Svenning Soerensen <svenning@post5.tele.dk>
  * Copyright (C) 2000, 2001  Richard Guy Briggs <rgb@conscoop.ottawa.on.ca>
+ * Copyright (C) 2012, Paul Wouters <paul@libreswan.org>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,11 +30,7 @@
 
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>
 #include <linux/netdevice.h>
@@ -144,11 +141,7 @@ struct sk_buff *skb_compress(struct sk_buff *skb, struct ipsec_sa *ips, unsigned
 		return NULL;
 	}
 	
-#ifdef NET_21
 	iph = ip_hdr(skb);
-#else /* NET_21 */
-	iph = skb->ip_hdr;
-#endif /* NET_21 */
 #ifdef CONFIG_KLIPS_IPV6
 	iph6 = ipv6_hdr(skb);
 #endif
@@ -396,11 +389,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 		return NULL;
 	}
 	
-#ifdef NET_21
 	oiph = ip_hdr(skb);
-#else /* NET_21 */
-	oiph = skb->ip_hdr;
-#endif /* NET_21 */
 #ifdef CONFIG_KLIPS_IPV6
 	oiph6 = ipv6_hdr(skb);
 #endif
@@ -535,11 +524,7 @@ struct sk_buff *skb_decompress(struct sk_buff *skb, struct ipsec_sa *ips, unsign
 
 	safe_skb_put(nskb, pyldsz - cpyldsz - sizeof(struct ipcomphdr));
 
-#ifdef NET_21
 	iph = ip_hdr(nskb);
-#else /* NET_21 */
-	iph = nskb->ip_hdr;
-#endif /* NET_21 */
 #ifdef CONFIG_KLIPS_IPV6
 	iph6 = ipv6_hdr(nskb);
 #endif

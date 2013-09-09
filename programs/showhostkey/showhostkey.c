@@ -2,18 +2,18 @@
  * show the host keys in various formats
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1999, 2000, 2001  Henry Spencer.
- * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com> 
- * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com> 
+ * Copyright (C) 2003-2008 Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
  * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
- * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com> 
+ * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -57,13 +57,12 @@
 # include <prinit.h>
 #endif
 
-char usage[] = "Usage: ipsec showhostkey [--ipseckey {gateway}] [--left ] [--right ]\n"
-             "                         [--dump ] [--list ] [--x509self]\n"
-             "                         [--x509req ] [--x509cert ]      \n"
-             "                         [ --txt gateway ] [--dhclient ] \n"
-             "                         [ --file secretfile ] \n"
-             "                         [ --keynum count ] [ --id identity ]\n"
-             "                         [ --rsaid keyid ] [--verbose] [--version]\n";
+char usage[] = "Usage: ipsec showhostkey [--ipseckey] | [--left ] | [--right ]\n"
+             "                         [--precedence <precedence> ] [--gateway <gateway>] \n"
+             "                         [--dump ] [--list ] \n"
+             "                         [--dhclient ] [--file secretfile ] \n"
+             "                         [--keynum count ] [--id identity ]\n"
+             "                         [--rsaid keyid ] [--verbose] [--version]\n";
 
 struct option opts[] = {
   {"help",	no_argument,	NULL,	'?',},
@@ -71,11 +70,9 @@ struct option opts[] = {
   {"right",	no_argument,	NULL,	'r',},
   {"dump",	no_argument,	NULL,	'D',},
   {"list",	no_argument,	NULL,	'L',},
-  {"x509self",	no_argument,	NULL,	's',},
-  {"x509req",	no_argument,	NULL,	'R',},
-  {"x509cert",	no_argument,	NULL,	'c',},
-  {"txt",	required_argument,NULL,	't',},
-  {"ipseckey",	required_argument,NULL,	'K',},
+  {"ipseckey",	no_argument,	NULL,	'K',},
+  {"gateway",	required_argument,NULL,	'g',},
+  {"precedence",required_argument,NULL,	'p',},
   {"dhclient",	no_argument,    NULL,	'd',},
   {"file",	required_argument,NULL,	'f',},
   {"keynum",	required_argument,NULL,	'n',},
@@ -130,25 +127,25 @@ int print_key(struct secret *secret
 	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
-	    
+
 	case PPK_RSA:
 	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
 	    break;
-	    
+
 	case PPK_XAUTH:
 	    printf("%d(%d): XAUTH keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    xauth: \"%s\"\n", pskbuf);
 	    break;
-	    
+
 	case PPK_PIN:
 	    printf("%d:(%d) PIN key-type not yet supported for id: %s\n", lineno, count, idb);
 	    break;
 	}
-	
+
 	l=l->next;
 	count++;
     }
-    
+
     return 1;
 }
 
@@ -196,7 +193,7 @@ char *get_default_keyid(struct secret *host_secrets)
     return pks->u.RSA_private_key.pub.keyid;
 }
 
-     
+
 void dump_keys(struct secret *host_secrets)
 {
     (void)osw_foreach_secret(host_secrets, dump_key, NULL);
@@ -217,7 +214,7 @@ struct secret *pick_key(struct secret *host_secrets
 
     s = osw_find_secret_by_id(host_secrets, PPK_RSA
 			      , &id, NULL, TRUE /* asymmetric */);
-    
+
     if(s==NULL) {
 	char abuf[IDTOA_BUF];
 	idtoa(&id, abuf, IDTOA_BUF);
@@ -244,7 +241,7 @@ unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
 
     buf = alloc_bytes(e.len+n.len+3, "buffer for rfc3110");
     p = buf;
-    
+
     if (elen <= 255)
 	*p++ = elen;
     else if ((elen &~ 0xffff) == 0) {
@@ -264,16 +261,16 @@ unsigned char *pubkey_to_rfc3110(const struct RSA_public_key *pub,
     *keybuflen=(p-buf);
 
     return buf;
-}    
+}
 
 void show_dnskey(struct secret *s
 		 , char *idname
 		 , int precedence
-		 , char *gateway
-		 , int rr_type)
+		 , char *gateway)
 {
     char qname[256];
     char base64[8192];
+    int gateway_type = 0;
     const struct private_key_stuff *pks = osw_get_pks(s);
     unsigned char *keyblob;
     unsigned int keybloblen = 0;
@@ -290,20 +287,21 @@ void show_dnskey(struct secret *s
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
-    switch(rr_type) {
-    case ns_t_key:
-	printf("key record type has been obsoleted\n");
-	break;
+	if(gateway != NULL){
+		ip_address test;
+		if(ttoaddr(gateway, strlen(gateway), AF_INET, &test) == NULL)
+		   gateway_type = 1;
+		else
+		  if(ttoaddr(gateway, strlen(gateway), AF_INET6, &test) == NULL)
+		     gateway_type = 2;
+		  else {
+			printf("%s: unknown address family for gateway %s", progname,gateway);
+			exit(5);
+		  }
+	}
 
-    case ns_t_ipseckey:
-	printf("ipseckey record type not yet implemented\n");
-	break;
-
-    case ns_t_txt:
-	printf("; info about key: %s\n", 
-	       pks->u.RSA_private_key.pub.keyid);
-	printf("%s.    IN    TXT    \"X-IPsec-Server(%d)=%s \" ",
-	       qname, precedence, gateway);
+	printf("%s.    IN    IPSECKEY  %d %d 2 %s ",
+	       qname, precedence, gateway_type , (gateway == NULL) ? "." : gateway);
 	{
 	    int len = strlen(base64);
 	    char *p=base64+2;  /* skip 0s */
@@ -322,10 +320,8 @@ void show_dnskey(struct secret *s
 	    }
 	}
 	printf("\n");
-	break;
-    }
 }
-     
+
 void show_confkey(struct secret *s
 		  , char *idname
 		  , char *side)
@@ -355,12 +351,12 @@ void show_confkey(struct secret *s
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
-    printf("\t# rsakey %s\n", 
+    printf("\t# rsakey %s\n",
 	   pks->u.RSA_private_key.pub.keyid);
     printf("\t%srsasigkey=%s\n", side,
 	   base64);
 }
-     
+
 
 
 int main(int argc, char *argv[])
@@ -372,14 +368,10 @@ int main(int argc, char *argv[])
     bool right_flg=FALSE;
     bool dump_flg=FALSE;
     bool list_flg=FALSE;
-    bool x509self_flg=FALSE;
-    bool x509req_flg=FALSE;
-    bool x509cert_flg=FALSE;
-    bool txt_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
     char *gateway = NULL;
-    int precedence=10;
+    int precedence = 10;
     int verbose=0;
     const struct osw_conf_options *oco = osw_init_options();
     char *rsakeyid, *keyid;
@@ -394,7 +386,7 @@ int main(int argc, char *argv[])
     tool_init_log();
 
     snprintf(secrets_file, PATH_MAX, "%s/ipsec.secrets", oco->confdir);
-    
+
     while ((opt = getopt_long(argc, argv, "", opts, NULL)) != EOF) {
 	switch (opt) {
 	case '?':
@@ -417,6 +409,13 @@ int main(int argc, char *argv[])
 	    gateway=clone_str(optarg, "gateway");
 	    break;
 
+	case 'p':
+	    precedence = atoi(optarg);
+	    if( (precedence < 0) || (precedence > 255)) {
+		fprintf(stderr, "precedence must be between 0 and 255\n");
+		exit(5);
+	    }
+	    break;
 	case 'L':
 	    list_flg=TRUE;
 	    break;
@@ -426,8 +425,8 @@ int main(int argc, char *argv[])
 	case 'c':
 	    break;
 
-	case 't':
-	    txt_flg=TRUE;
+	case 'g':
+	    ipseckey_flg=TRUE;
 	    gateway=clone_str(optarg, "gateway");
 	    break;
 
@@ -469,16 +468,14 @@ int main(int argc, char *argv[])
 	fputs(usage, stderr);
 	exit(1);
     }
-    
+
     if(!left_flg && !right_flg && !dump_flg && !list_flg
-       && !x509self_flg && !x509req_flg && !x509cert_flg && !txt_flg
        && !ipseckey_flg && !dhclient_flg) {
 	fprintf(stderr, "You must specify some operation\n");
 	goto usage;
     }
-    
+
     if((left_flg + right_flg + dump_flg + list_flg
-	+ x509self_flg + x509req_flg + x509cert_flg + txt_flg
 	+ ipseckey_flg + dhclient_flg) > 1) {
 	fprintf(stderr, "You must specify only one operation\n");
 	goto usage;
@@ -507,8 +504,8 @@ int main(int argc, char *argv[])
 	fprintf(stderr, "%s: NSS_InitReadWrite returned %d\n",progname, PR_GetError());
 	exit(1);
     }
-   nss_initialized = PR_TRUE; 
-   PK11_SetPasswordFunc(getNSSPassword); 
+   nss_initialized = PR_TRUE;
+   PK11_SetPasswordFunc(getNSSPassword);
 #endif
 
     load_oswcrypto();
@@ -566,16 +563,9 @@ int main(int argc, char *argv[])
 	exit(0);
     }
 
-    if(ipseckey_flg || txt_flg) {
-	int rr_type = ns_t_invalid;
-	if(ipseckey_flg) {
-	    rr_type = ns_t_ipseckey;
-	} else if(txt_flg) {
-	    rr_type = ns_t_txt;
-	}
+    if(ipseckey_flg) {
 	show_dnskey(s, keyid,
-		    precedence, gateway,
-		    rr_type);
+		    precedence, gateway);
     }
 
     exit(0);

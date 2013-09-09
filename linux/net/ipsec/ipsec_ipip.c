@@ -1,6 +1,7 @@
 /*
  * processing code for IPIP
  * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,11 +25,7 @@
 
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -38,13 +35,7 @@
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 
@@ -73,11 +64,7 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
 
   switch(sysctl_ipsec_tos) {
   case 0:
-#ifdef NET_21
     osw_ip4_hdr(ixs)->tos = ip_hdr(ixs->skb)->tos;
-#else /* NET_21 */
-    osw_ip4_hdr(ixs)->tos = ixs->skb->ip_hdr->tos;
-#endif /* NET_21 */
     break;
   case 1:
     osw_ip4_hdr(ixs)->tos = 0;
@@ -91,7 +78,7 @@ ipsec_xmit_ipip_setup(struct ipsec_xmit_state *ixs)
   osw_ip4_hdr(ixs)->daddr    = ((struct sockaddr_in*)(ixs->ipsp->ips_addr_d))->sin_addr.s_addr;
   osw_ip4_hdr(ixs)->protocol = IPPROTO_IPIP;
   osw_ip4_hdr(ixs)->ihl      = sizeof(struct iphdr) >> 2;
-  
+
 #ifdef NET_21
   printk("THIS CODE IS NEVER CALLED\n");
   skb_set_transport_header(ixs->skb, ipsec_skb_offset(ixs->skb, ip_hdr(ixs->skb)));
@@ -106,7 +93,7 @@ struct xform_functions ipip_xform_funcs[]={
 	  rcv_setup_auth:     NULL,
 	  rcv_calc_auth:      NULL,
 	  rcv_decrypt:        NULL,
-	  
+
 	  xmit_setup:         ipsec_xmit_ipip_setup,
 	  xmit_headroom:      sizeof(struct iphdr),
 	  xmit_needtailroom:  0,
