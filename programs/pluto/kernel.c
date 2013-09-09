@@ -2881,7 +2881,7 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("set up outgoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
 	st->st_outbound_done = TRUE;
     }
 
