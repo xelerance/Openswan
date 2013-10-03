@@ -1,11 +1,9 @@
 Summary: Openswan IPsec implementation
 Name: openswan
-Version: 2.6.39
-# Build KLIPS kernel module?
+Version: IPSECBASEVERSION
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
-%{!?buildefence: %{expand: %%define buildefence 0}}
-%{!?development: %{expand: %%define development 0}}
+
 # nss build
 %{!?buildnss: %{expand: %%define buildnss 0}}
 
@@ -19,7 +17,7 @@ Version: 2.6.39
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
 %define ourrelease 1
-Release: %{ourrelease}%{?dist}
+Release: %{ourrelease}
 License: GPLv2, some BSD
 Url: http://www.openswan.org/
 Source: openswan-%{srcpkgver}.tar.gz
@@ -29,11 +27,7 @@ Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
 %if %{buildnss}
-BuildRequires: nss-devel >= 3.12.6-2, nspr-devel fipscheck-devel, libcap-ng-devel
-Requires: nss-tools
-%endif
-%if %{buildefence}
-BuildRequires: ElectricFence
+BuildRequires: nss >= 3.12.6-2
 %endif
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
@@ -50,6 +44,11 @@ to build secure tunnels through untrusted networks.  Everything passing
 through the untrusted net is encrypted by the ipsec gateway machine and 
 decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
+
+This package contains Bluerose Openswan, which is a variant maintained
+by Michael Richardson <mcr@sandelman.ca>.  No version information is provided
+with this package other than a year and week number. For a supported product
+contact sales@xelerance.com.
 
 This package contains the daemons and userland tools for setting up
 Openswan. It optionally also builds the Openswan KLIPS IPsec stack that
@@ -72,22 +71,11 @@ kernels.
 
 %prep
 %setup -q -n openswan-%{srcpkgver}
-#sed -i 's/-Werror/#-Werror/' lib/libdns/Makefile
-#sed -i 's/-Werror/#-Werror/' lib/libisc/Makefile
-#sed -i 's/-Werror/#-Werror/' lib/liblwres/Makefile
 
 %build
-%if %{buildefence}
- %define efence "-lefence"
-%endif
-
 %{__make} \
-%if %{development}
-   USERCOMPILE="-g %(echo %{optflags} | sed -e s/-O[0-9]*/ /) %{?efence} -fPIE -pie" \
-%else
-  USERCOMPILE="-g %{optflags} %{?efence} -fPIE -pie" \
-%endif
-  USERLINK="-g -pie %{?efence}" \
+  USERCOMPILE="-g %{optflags} -fPIE -pie" \
+  USERLINK="-g -pie" \
   HAVE_THREADS="true" \
 %if %{buildnss}
   USE_LIBNSS="true" \
@@ -117,8 +105,8 @@ cd packaging/fedora
 %else
     ARCH=%{_arch} \
 %endif
-    MODULE_DEF_INCLUDE=$FS/packaging/fedora/config-%{_target_cpu}.h \
-    MODULE_EXTRA_INCLUDE=$FS/packaging/fedora/extra_%{krelver}.h \
+    MODULE_DEF_INCLUDE=$FS/packaging/centos5/config-%{_target_cpu}.h \
+    MODULE_EXTRA_INCLUDE=$FS/packaging/centos5/extra_%{krelver}.h \
     include module
 %endif
 
@@ -161,16 +149,13 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc OBJ.linux.*/programs/examples/*.conf
-%if %{buildnss}
-%doc doc/README.nss
-%endif
 #%doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
 %attr(0700,root,root) %dir %{_sysconfdir}/ipsec.d
 %attr(0700,root,root) %dir %{_localstatedir}/log/pluto/peer
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.d/policies/*
-%ghost %attr(0700,root,root) %dir %{_localstatedir}/run/pluto
+%{_localstatedir}/run/pluto
 %{_initrddir}/ipsec
 %{_libdir}/ipsec
 %{_sbindir}/ipsec
@@ -205,3 +190,41 @@ fi
 /sbin/chkconfig --add ipsec
 
 %changelog
+* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.03-1
+- Applied patch by RedHat to allow building with debug package
+* Thu Dec 20 2007 Paul Wouters <paul@xelerance.com> - 2.6.01-1
+- Work around for warnings in BIND related code
+- Remove bogus file /etc/init.d/setup at install
+- Cleaned up spec file
+
+* Mon Oct 10 2005 Paul Wouters <paul@xelerance.com>
+- Updated for klips on xen 
+- added ldconfig for post klips to obtain ipsec module dependancies
+- Run 'make include' since on FC4 kernel source does not have the links yet.
+
+* Wed Jan  5 2005 Paul Wouters <paul@xelerance.com>
+- Updated for x86_64 and klips on 2.6
+
+* Sun Sep  5 2004 Paul Wouters <paul@xelerance.com>
+- Updated for openswan
+
+* Fri Aug 22 2003 Sam Sgro <sam@freeswan.org>
+- Juggling release/source package names to allow for 
+  -pre/-rc releases to build.
+
+* Thu Aug 14 2003 Sam Sgro <sam@freeswan.org>
+- Reverting back to pre-x.509 version, cosmetic changes.
+
+* Tue May 20 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-x509_1.3.2_2es
+- Add "Obsoletes: freeswan" to userland RPM.
+
+* Fri May 16 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-x509_1.3.2_1es
+- Add version 1.3.2 of the x509 patch.
+- Add missing /usr/libexec/ipsec dir and files.
+- Minor tidy up of spec file.
+
+* Thu May 15 2003 Charlie Brady <charlieb@e-smith.com> 2.0.0-1es
+- Based on work by Paul Lahaie of Steamballoon, Michael
+  Richardson of freeS/WAN team and Tuomo Soini <tis@foobar.fi>.
+- Build freeswan RPMs from a single source RPM, for RedHat, but
+  should work on any RPM based system.

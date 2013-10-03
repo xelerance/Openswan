@@ -1,6 +1,7 @@
 *~
 OBJ.*
 *.rej
+*.orig
 *.bak
 TAGS
 UMLPOOL

@@ -1,6 +1,7 @@
 /*
  * @(#) RFC2367 PF_KEYv2 Key management API message parser
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  * 
  * OCF support written by David McCullough <dmccullough@cyberguard.com>
  * Copyright (C) 2004-2005 Intel Corporation.  All Rights Reserved.
@@ -30,11 +31,7 @@
 
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -50,26 +47,14 @@
 
 #include <klips-crypto/des.h>
 
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
-#ifdef NET_21
+#include <linux/spinlock.h> /* *lock* */
 # include <net/route.h>          /* inet_addr_type */
 # include <linux/in6.h>
 # include <net/ipv6.h>
 # define IS_MYADDR RTN_LOCAL
-#endif
 
 #include <net/ip.h>
-#ifdef NETLINK_SOCK
-# include <linux/netlink.h>
-#else
-# include <net/netlink.h>
-#endif
+#include <linux/netlink.h>
 
 #include <linux/random.h>	/* get_random_bytes() */
 

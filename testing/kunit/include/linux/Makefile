@@ -1,1 +1,0 @@
-include ${srcdir}../../Makefile.links

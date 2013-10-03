@@ -22,7 +22,7 @@
 
 #define OSW_NFDBITS   (8 * sizeof (long int))
 #define OSW_FDELT(d)  ((d) / OSW_NFDBITS)
-#define OSW_FDMASK(d) ((long int) 1 << ((d) % OSW_NFDBITS))
+#define OSW_FDMASK(d) ((long int) (1UL << ((d) % OSW_NFDBITS)))
 #define OSW_FD_SETCOUNT	((OSW_FD_SETSIZE + OSW_NFDBITS - 1) / OSW_NFDBITS)
 
 typedef struct {

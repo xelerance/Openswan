@@ -7,24 +7,19 @@
 
 export DH_OPTIONS
 
-configure: configure-stamp
-configure-stamp:
-	dh_testdir
-	# Add here commands to configure the package.
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
 
-	touch configure-stamp
-
-patch:
-	dh_testdir
-	dpatch apply-all
-
-unpatch:
-	dpatch deapply-all
+# The build system doesn't respect CPPFLAGS, pass them to CFLAGS/CXXFLAGS to
+# enable the missing (hardening) flags.
+CFLAGS   += $(CPPFLAGS)
+CXXFLAGS += $(CPPFLAGS)
 
 build-arch: build
 build-indep: build
 build: build-stamp
-build-stamp: patch
+build-stamp:
 	# create a dummy ipsec.secrets file before building the package so
 	# that no RSA keys are created during the build process
 	# (a package should not include a RSA key, it should produce the key
@@ -43,10 +38,10 @@ build-stamp: patch
 
 	touch build-stamp
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp
+	rm -f build-stamp
 
 	[ ! -f Makefile ] || $(MAKE) clean
 
@@ -69,8 +64,6 @@ clean: unpatch
 	debconf-updatepo
 
 	dh_clean
-
-	rm -rf debian/patched || true
 
 install-openswan: DH_OPTIONS=-a
 install-openswan: build
@@ -182,7 +175,7 @@ install-openswan-doc: build
 install-openswan-modules-source: DH_OPTIONS=-popenswan-modules-source
 install-openswan-modules-source: PKGDIR=$(CURDIR)/debian/openswan-modules-source
 install-openswan-modules-source: BUILDDIR=$(CURDIR)/debian/openswan-modules-source-build
-install-openswan-modules-source: patch
+install-openswan-modules-source:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
@@ -225,7 +218,7 @@ install-openswan-modules-source: patch
 
 install-openswan-modules-dkms: DH_OPTIONS=-popenswan-modules-dkms
 install-openswan-modules-dkms: VERSION:=$(shell dpkg-parsechangelog | grep '^Version: ' | cut -d: -f3 | cut -d- -f1)
-install-openswan-modules-dkms: patch
+install-openswan-modules-dkms:
 	dh_testdir
 	dh_testroot
 	dh_installdirs
@@ -247,14 +240,8 @@ install-openswan-modules-dkms: patch
 	# more lintian cleanups
 	find $(CURDIR)/debian/openswan-modules-dkms -name ".gitignore" | xargs --no-run-if-empty rm -f
 
-	# Ensure +x for scrips
-	find $(CURDIR)/debian/openswan-modules-dkms -type f -name "*.sh" -o -name "*.pl" | xargs --no-run-if-empty chmod 755
-
 	# remove empty dir
 	find $(CURDIR)/debian/openswan-modules-dkms -type d -name debian | xargs --no-run-if-empty rmdir
-
-	# These are not executable scripts, more like "shell source" files
-	find $(CURDIR)/debian/openswan-modules-dkms -name sshenv -o -name setup | xargs --no-run-if-empty chmod 644
 
 binary-common:
 	dh_testdir

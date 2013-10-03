@@ -727,8 +727,8 @@ format_connection(char *buf, size_t buf_len
 		  , struct spd_route *sr)
 {
     size_t w = format_end(buf, buf_len, &sr->this, &sr->that, TRUE, LEMPTY);
-
-    w += snprintf(buf + w, buf_len - w, "...");
+    snprintf(buf + w, buf_len - w, "...");
+    w += strlen(buf + w);
     return w + format_end(buf + w, buf_len - w, &sr->that, &sr->this, FALSE, c->policy);
 }
 
@@ -910,6 +910,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 	    err_t ugh;
 
 	    dst->ca.ptr = temporary_cyclic_buffer();
+	    dst->ca.len = IDTOA_BUF;
 	    ugh = atodn(src->ca, &dst->ca);
 	    if (ugh != NULL)
 	    {

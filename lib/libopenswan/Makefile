@@ -1,12 +1,12 @@
 # Openswan library
 # Copyright (C) 1998-2001  Henry Spencer.
 # Copyright (C) 2003, 2004 Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -22,7 +22,7 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-X509LIB=x509dn.c certload.c pem.c pkcs.c asn1.c oid.c pgp.c x509chain.c
+X509LIB=x509dn.c x509cert.c certload.c pem.c pkcs.c asn1.c oid.c pgp.c x509chain.c
 
 SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
@@ -42,16 +42,20 @@ SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 SRCS+=sanitizestring.c pfkey_print.c pfkey_sock.c pfkey_error.c
 
 ifeq ($(USE_KLIPS),true)
-KLIPS_DEFS=-DKLIPS 
-# for now, USE_KLIPS=>linux, which implies we have udpfromto() support.
-UDPFROMTO_DEFS=-DWITH_UDPFROMTO -DHAVE_IP_PKTINFO
+KLIPS_DEFS=-DKLIPS
+# Linux always supports udpfromto
+UDPFROMTO_SRCS=udpfromto.c
+endif
+
+ifeq ($(USE_BSDKAME),true)
+# BSD always supports udpfromto
 UDPFROMTO_SRCS=udpfromto.c
 endif
 
 ifeq ($(USE_PFKEYv2),true)
 PFKEYV2_DEFS=-DPFKEYV2
 PFKEYV2_SRCS+=pfkey_v2_build.c pfkey_v2_ext_bits.c pfkey_v2_parse.c
-PFKEYV2_SRCS+=pfkey_v2_debug.c 
+PFKEYV2_SRCS+=pfkey_v2_debug.c
 endif
 
 CFLAGS+=-DUSE_SHA2
@@ -75,7 +79,7 @@ LIBL=liboswlog.a
 # Original flags
 CFLAGS+=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSINC}
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
-CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS} ${UDPFROMTO_DEFS}
+CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS}
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
@@ -85,15 +89,19 @@ CFLAGS+= -Wpointer-arith
 # must turn this off due to initsubnet.c
 CFLAGS+= -Wno-error=cast-qual
 
+# Check if GCC's version is recent enough
+GCC_VERSION_GE_46:=$(shell test `gcc -dumpversion | sed 's/^\([0-9]\)\.\([0-9]\).*/\1\2/'` -ge 46 && echo true || echo false)
+ifeq ($(GCC_VERSION_GE_46),true)
 # some junk left in alg_info.c
 CFLAGS+= -Wno-error=cpp
+endif
 
 #CFLAGS+= -Wmissing-declarations
 CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -Wbad-function-cast
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -212,7 +220,7 @@ l:
 	$(MAKE) $(LIB) ARFLAGS=crv CFLAGS=-O
 	$(RANLIB) $(LIB)
 
-t:	$(LIB) 
+t:	$(LIB)
 	ln -f -s ${KLIPSSRCDIR}/atosubnet.c try.c
 	${CC} ${CFLAGS} -DATOSUBNET_MAIN try.c $(LIB) -o try
 	./try -r

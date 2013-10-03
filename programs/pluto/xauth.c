@@ -1070,8 +1070,8 @@ int do_md5_authentication(void *varg)
 		openswan_log("XAUTH: checking user(%s:%s) " , szuser, szconnid);
 	    }
 
-           /* Ok then now password check */
-           if ( strcmp(cp, szpass ) == 0 )
+           /* Ok then now password check; Note: handle crypt() NULL returns */
+           if ( cp && strcmp(cp, szpass ) == 0 )
            {
              /* we have a winner */
              fclose( fp );

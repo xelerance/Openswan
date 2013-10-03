@@ -1,6 +1,7 @@
 /*
  * processing code for IPCOMP
  * Copyright (C) 2003 Michael Richardson <mcr@sandelman.ottawa.on.ca>
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,11 +25,7 @@
 
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -38,13 +35,7 @@
 #include <linux/ip.h>		/* struct iphdr */
 #include <linux/skbuff.h>
 #include <openswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 
@@ -165,12 +156,8 @@ ipsec_rcv_ipcomp_decomp(struct ipsec_rcv_state *irs)
 
 	/* make sure we update the pointer */
 	irs->skb = skb;
-	
-#ifdef NET_21
+
 	irs->iph = (void *) ip_hdr(skb);
-#else /* NET_21 */
-	irs->iph = (void *) skb->ip_hdr;
-#endif /* NET_21 */
 
 	if (osw_ip_hdr_version(irs) == 6)
 		ipsp->ips_comp_ratio_dbytes += ntohs(osw_ip6_hdr(irs)->payload_len)
@@ -208,12 +195,8 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
 
   ixs->skb = skb_compress(ixs->skb, ixs->ipsp, &flags);
 
-#ifdef NET_21
   ixs->iph = (void *)ip_hdr(ixs->skb);
-#else /* NET_21 */
-  ixs->iph = (void *)ixs->skb->ip_hdr;
-#endif /* NET_21 */
-  
+
 #ifdef CONFIG_KLIPS_IPV6
   if (osw_ip_hdr_version(ixs) == 6) {
 	IPSEC_FRAG_OFF_DECL(frag_off)
@@ -231,7 +214,7 @@ ipsec_xmit_ipcomp_setup(struct ipsec_xmit_state *ixs)
     tot_len = ntohs(osw_ip4_hdr(ixs)->tot_len);
   }
   ixs->ipsp->ips_comp_ratio_cbytes += tot_len;
-  
+
   if (debug_tunnel & DB_TN_CROUT)
     {
       if (old_tot_len > tot_len)

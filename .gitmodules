@@ -1,0 +1,4 @@
+[submodule "testing"]
+	path = testing
+	url = https://github.com/xelerance/testing-openswan.git
+

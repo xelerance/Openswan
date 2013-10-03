@@ -21,7 +21,7 @@
 </refsynopsisdiv>
 
 <refsect1 id='description'><title>DESCRIPTION</title>
-<para>Note that policy is only supported on the new NAST stack. It is
+<para>Note that policy is only supported on the new MAST stack. It is
 not supported on any other stack. On the <emphasis remap='B'>klips</emphasis> stack, use
 <emphasis remap='I'>ipsec eroute</emphasis>, on the <emphasis remap='B'>netkey</emphasis>
 stack, use <emphasis remap='I'>ip xfrm</emphasis></para>
@@ -182,7 +182,7 @@ means that matches are to allowed to pass without IPSEC processing</para>
 <!-- .br -->
 <emphasis remap='B'>        ()	()</emphasis></para>
 
-<para>means that 1,867 packets have been sent to an
+<para>means that 1,867 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to protect traffic between the subnet
 <literal>172.31.252.0</literal>
@@ -206,7 +206,7 @@ in hexadecimal with no identies defined for either end.</para>
 <!-- .br -->
 <emphasis remap='B'>        ()	()</emphasis></para>
 
-<para>means that 746 packets have been sent to an
+<para>means that 746 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to protect traffic sent from any port on the host
 <literal>192.168.2.110</literal>
@@ -221,7 +221,7 @@ in hexadecimal with no identies defined for either end.</para>
 
 <para><emphasis remap='B'>125 3049:1::/64 -&gt; 0:0/0 =&gt; tun:130@3058:4::5 () ()</emphasis></para>
 
-<para>means that 125 packets have been sent to an
+<para>means that 125 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to protect traffic between the subnet
 <emphasis remap='B'>3049:1::</emphasis>
@@ -243,7 +243,7 @@ in hexadecimal with no identies defined for either end.</para>
 
 <para><emphasis remap='B'>42 192.168.6.0/24:0 -&gt; 192.168.7.0/24:0 =&gt; %passthrough</emphasis></para>
 
-<para>means that 42 packets have been sent to an
+<para>means that 42 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to pass the traffic from the subnet
 <literal>192.168.6.0</literal>
@@ -257,7 +257,7 @@ bits without any IPSEC processing with no identies defined for either end.</para
 
 <para><emphasis remap='B'>2112 192.168.8.55/32:0 -&gt; 192.168.9.47/24:0 =&gt; %hold (east) ()</emphasis></para>
 
-<para>means that 2112 packets have been sent to an
+<para>means that 2112 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to hold the traffic from the host
 <literal>192.168.8.55</literal>
@@ -272,7 +272,7 @@ defined as "east" and no identy defined for the remote end.</para>
 <!-- .br -->
 <emphasis remap='B'>        esp0xe6de@192.168.2.120:0	()	()</emphasis></para>
 
-<para>means that 2001 packets have been sent to an
+<para>means that 2001 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to protect traffic between the host
 <literal>192.168.2.110</literal>
@@ -295,7 +295,7 @@ IPPROTO_ESP) with no identies defined for either end.</para>
 <!-- .br -->
 <emphasis remap='B'>        ah:f5ed@3049:1::120	()	()</emphasis></para>
 
-<para>means that 1984 packets have been sent to an
+<para>means that 1984 packets have been sent to a
 <emphasis remap='B'>policy</emphasis>
 that has been set up to authenticate traffic between the host
 <emphasis remap='B'>3049:1::110</emphasis>

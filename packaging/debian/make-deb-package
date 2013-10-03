@@ -16,7 +16,7 @@ STRING="IPSECBASEVERSION"
 BUILD_CMD="debuild -i -us -uc -b"
 
 # Test if version replace can occur
-if ! grep -m1 -q $STRING debian/changelog ; then
+if ! grep -m1 -q $STRING debian/changelog.in ; then
     echo "Unable to find the string \"$STRING\" used for "
     echo "automatic version number replacing."
     echo
@@ -34,7 +34,8 @@ fi
 VERSION="`grep -m1 "^v" CHANGES | cut -dv -f2 | cut -d" " -f1`"
 
 # Update debian/changelog to make debuild/dpkg-buildpackage happy
-sed -i -e "s/$STRING/$VERSION/g" -e "/^openswan/ s/-.*xelerance.*)/~1git`date +%Y%m%d`)/" debian/changelog debian/NEWS
+sed -e "s/$STRING/$VERSION/g" -e "/^openswan/ s/-.*xelerance.*)/~1git`date +%Y%m%d`)/" debian/changelog.in > debian/changelog
+sed -e "s/$STRING/$VERSION/g" -e "/^openswan/ s/-.*xelerance.*)/~1git`date +%Y%m%d`)/" debian/NEWS.in > debian/NEWS
 
 echo "Building Openswan version $(dpkg-parsechangelog | grep -m1 '^Version:' | cut -d' ' -f2 | cut -d: -f2)"
 $BUILD_CMD

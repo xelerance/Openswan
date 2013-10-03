@@ -2,6 +2,7 @@
  * Common routines for IPSEC transformations.
  * Copyright (C) 1996, 1997  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs.
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  * 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,11 +23,7 @@
 
 #include "freeswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -37,13 +34,7 @@
 #include <linux/skbuff.h>
 #include <linux/random.h>	/* get_random_bytes() */
 #include <freeswan.h>
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
 
 #include <net/ip.h>
 

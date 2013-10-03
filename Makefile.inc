@@ -1,12 +1,12 @@
 # Openswan pathnames and other master configuration
 # Copyright (C) 2001, 2002  Henry Spencer.
 # Copyright (C) 2003-2006   Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -113,7 +113,7 @@ FINALLOGDIR?=${FINALVARDIR}/log
 LOGDIR?=${DESTDIR}${FINALLOGDIR}
 
 
-# An attempt is made to automatically figure out where boot/shutdown scripts 
+# An attempt is made to automatically figure out where boot/shutdown scripts
 # will finally go:  the first directory in INC_RCDIRS which exists gets them.
 # If none of those exists (or INC_RCDIRS is empty), INC_RCDEFAULT gets them.
 # With a non-null DESTDIR, INC_RCDEFAULT will be used unless one of the
@@ -192,16 +192,16 @@ BISONOSFLAGS=
 # -DCOMPILER_HAS_NO_PRINTF_LIKE if your old compiler gives you errors with PRINTF_LIKE(x)
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
-GCC_LINT ?= -DGCC_LINT 
-USERCOMPILE?=-g -O3 ${WERROR} $(GCC_LINT)
-KLIPSCOMPILE=-O3 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
+GCC_LINT ?= -DGCC_LINT
+USERCOMPILE?=-g -O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 ${WERROR} $(GCC_LINT)
+KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
 #USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
- 
+
 # extra link flags
-USERLINK?=-Wl,-z,relro
+USERLINK?=-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now
 
 PORTINCLUDE?=
 
@@ -244,7 +244,7 @@ RPMKERNDIR := $(shell echo `pwd`/tmp.rpmkernel)
 RPMTMPDIR := $(shell echo `pwd`/tmp.rpmbuild)
 RPMDEST := $(shell echo `pwd`/rpms)
 
-# Newer versions of RPM do not permit building of packages with the "rpm" 
+# Newer versions of RPM do not permit building of packages with the "rpm"
 # command. For RedHat systems with older version of RPM, use:
 # RPMBUILD=rpm
 # instead.
@@ -256,7 +256,7 @@ RPMBUILD=rpmbuild
 # /usr/src/linux-2.4, but you might have extracted it elsewhere with
 # rpm2cpio.
 # Note: there is no kernel-source rpm anymore for Fedora. Either run
-# rpmbuild -bp on the kernel src.rpm and grab the tree from 
+# rpmbuild -bp on the kernel src.rpm and grab the tree from
 # /usr/src/redhat/BUILD/ or use something like the example below using the
 # module directory.
 # note: there is now a kernel-devel rpm.
@@ -289,7 +289,7 @@ USE_LWRES?=false
 USE_DYNAMICDNS?=true
 
 # Do we want all the configuration files like ipsec.conf and ipsec.secrets
-# and any certificates to be in a single directory defined by 
+# and any certificates to be in a single directory defined by
 # FINALCONFDDIR?
 USE_SINGLE_CONF_DIR?=false
 
@@ -302,7 +302,7 @@ USE_IPSECPOLICY?=false
 # Build ikeping (a utility for testing IKE daemons) in the distribution
 USE_IKEPING?=true
 
-# Build support for KEY RR 
+# Build support for KEY RR
 # this will become false in the future, as all OE sites transition to
 # using IPSECKEY instead of KEY records.  See references to 'Flag Day'
 # Except this to change in Q1 2011
@@ -412,8 +412,8 @@ USE_NOCRYPTO?=false
 
 # should we include additional (strong) algorithms?  It adds a measureable
 # amount of code space to pluto, and many of the algorithms have not had
-# the same scrutiny that AES and 3DES have received, but offers possibilities 
-# of switching away from AES/3DES quickly. 
+# the same scrutiny that AES and 3DES have received, but offers possibilities
+# of switching away from AES/3DES quickly.
 USE_EXTRACRYPTO?=false
 
 # Do we want to limit the number of ipsec connections artificially
@@ -422,8 +422,8 @@ IPSEC_CONNECTION_LIMIT?=250
 
 # Do we have pthreads available?  Only yes if you need it for XAUTH+PAM,
 # or if you need it for CRL fetching.
-# Note: USE_LIBNSS by default uses pthreads, enabling it here will only 
-# affect it for XAUTH+PAM, and CRL. 
+# Note: USE_LIBNSS by default uses pthreads, enabling it here will only
+# affect it for XAUTH+PAM, and CRL.
 HAVE_THREADS?=false
 
 # Do we have an external stats daemon we can push state changes to?
@@ -499,7 +499,7 @@ endif
 
 # include OSDEP/ARCH specific makefiles, if any.
 # OSDEP=linux,bsd,cygwin,darwin
-# 
+#
 # but, BUILDENV could be mingw32-linux, darwin, or mingw32, etc..
 ifeq ($(BUILDENV),)
 BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
@@ -521,7 +521,7 @@ ifeq ($(USE_OBJDIR),true)
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
 OBJDIRTOP?=${OPENSWANSRCDIR}/${OBJDIR}
 else
-# where to place the object files which are built 
+# where to place the object files which are built
 OBJDIR?=.
 OBJDIRTOP?=${OPENSWANSRCDIR}
 endif
@@ -562,13 +562,13 @@ LIBBLOWFISH=${OBJDIRTOP}/lib/libcrypto/libblowfish/libblowfish.a
 LIBTWOFISH=${OBJDIRTOP}/lib/libcrypto/libtwofish/libtwofish.a
 LIBSERPENT=${OBJDIRTOP}/lib/libcrypto/libserpent/libserpent.a
 LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
-CRYPTOLIBS=${LIBAES} ${LIBSHA1} ${LIBMD5} ${LIBMD2} ${LIBDESLITE} ${LIBSHA2}
+CRYPTOLIBS= ${LIBOSWCRYPTO}
+CRYPTOLIBS+=${LIBAES} ${LIBSHA1} ${LIBMD5} ${LIBMD2} ${LIBDESLITE} ${LIBSHA2}
 
 ifeq ($(USE_EXTRACRYPTO),true)
 CRYPTOLIBS+= ${LIBSERPENT} ${LIBTWOFISH} ${LIBBLOWFISH}
 endif
 
-CRYPTOLIBS += ${LIBOSWCRYPTO}
 ifeq ($(HAVE_OCF),true)
 CRYPTOLIBS += -lcrypto
 endif
@@ -580,14 +580,14 @@ WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
 IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
 # export everything so that scripts can use them.
-export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE 
+export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE
 export LIBOPENSWANDIR OPENSWANLIB OSWLOGLIB PLUTOLIB LWRESDIR LIBLWRES LIBDNS
 export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
 export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
 export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB IPSECCONFLIB
 export LIBOSWCRYPTO
 
-#KERNELBUILDMFLAGS=--debug=biv V=1 
+#KERNELBUILDMFLAGS=--debug=biv V=1
 
 # for emacs
 #

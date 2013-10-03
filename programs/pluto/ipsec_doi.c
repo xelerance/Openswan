@@ -120,25 +120,27 @@ init_pluto_vendorid(void)
 	, strlen(compile_time_interop_options));
     osMD5Final(hash, &hc);
 
-    pluto_vendorid[0] = 'O';	/* Opportunistic Encryption Rules */
-    pluto_vendorid[1] = 'E';
+    pluto_vendorid[0] = 'O';
+    pluto_vendorid[1] = 'S';
+    pluto_vendorid[2] = 'W';
 
-#if PLUTO_VENDORID_SIZE - 2 <= MD5_DIGEST_SIZE
+#if PLUTO_VENDORID_SIZE - 3 <= MD5_DIGEST_SIZE
     /* truncate hash to fit our vendor ID */
-    memcpy(pluto_vendorid + 2, hash, PLUTO_VENDORID_SIZE - 2);
+    memcpy(pluto_vendorid + 3, hash, PLUTO_VENDORID_SIZE - 3);
 #else
     /* pad to fill our vendor ID */
-    memcpy(pluto_vendorid + 2, hash, MD5_DIGEST_SIZE);
-    memset(pluto_vendorid + 2 + MD5_DIGEST_SIZE, '\0'
-	, PLUTO_VENDORID_SIZE - 2 - MD5_DIGEST_SIZE);
+    memcpy(pluto_vendorid + 3, hash, MD5_DIGEST_SIZE);
+    memset(pluto_vendorid + 3 + MD5_DIGEST_SIZE, '\0'
+	, PLUTO_VENDORID_SIZE - 3 - MD5_DIGEST_SIZE);
 #endif
 
     /* Make it printable!  Hahaha - MCR */
-    for (i = 2; i < PLUTO_VENDORID_SIZE; i++)
+    for (i = 0; i < PLUTO_VENDORID_SIZE; i++)
     {
 	/* Reset bit 7, force bit 6.  Puts it into 64-127 range */
 	pluto_vendorid[i] &= 0x7f;
 	pluto_vendorid[i] |= 0x40;
+        if(pluto_vendorid[i]==127) pluto_vendorid[i]='_';  /* omit RUBOUT */
     }
     pluto_vendorid[PLUTO_VENDORID_SIZE] = '\0';
     pluto_vendorid_built = TRUE;

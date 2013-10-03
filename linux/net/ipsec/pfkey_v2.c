@@ -1,6 +1,7 @@
 /*
  * @(#) RFC2367 PF_KEYv2 Key management API domain socket I/F
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
+ * Copyright (C) 2012  Paul Wouters <paul@libreswan.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -44,11 +45,7 @@
 #include <linux/net.h> /* struct socket */
 #include <linux/in.h>
 #include <linux/fs.h>
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #ifdef CONFIG_X86
 # include <asm/segment.h>
 #endif
@@ -512,10 +509,6 @@ pfkey_destroy_socket(struct sock *sk)
 			}
 			printk(" len:%d", skb->len);
 			printk(" csum:%d", skb->csum);
-#ifndef NETDEV_23
-			printk(" used:%d", skb->used);
-			printk(" is_clone:%d", skb->is_clone);
-#endif /* NETDEV_23 */
 			printk(" cloned:%d", skb->cloned);
 			printk(" pkt_type:%d", skb->pkt_type);
 			printk(" ip_summed:%d", skb->ip_summed);
@@ -764,11 +757,7 @@ pfkey_create(struct socket *sock, int protocol)
 }
 
 DEBUG_NO_STATIC int
-#ifdef NETDEV_23
 pfkey_release(struct socket *sock)
-#else /* NETDEV_23 */
-pfkey_release(struct socket *sock, struct socket *peersock)
-#endif /* NETDEV_23 */
 {
 	struct sock *sk;
 	int i;
@@ -1133,14 +1122,8 @@ pfkey_recvmsg(struct socket *sock
 }
 
 #ifdef CONFIG_PROC_FS
-#ifndef PROC_FS_2325
-DEBUG_NO_STATIC
-#endif /* PROC_FS_2325 */
 int
 pfkey_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
@@ -1148,6 +1131,9 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 )
 {
 	const int max_content = length > 0? length-1 : 0;	/* limit of useful snprintf output */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0)
+	struct hlist_node *node;
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
 	off_t begin=0;
 	int len=0;
 	struct sock *sk;
@@ -1160,7 +1146,11 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 		      "    sock   pid d    sleep   socket     next     prev e r z n p sndbf    stamp    Flags     Type St\n");
 	}
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,9,0)
 	sk_for_each(sk, &pfkey_sock_list) {
+#else /* LINUX_VERSION_CODE < KERNEL_VERSION(3,9,0) */
+	sk_for_each(sk, node, &pfkey_sock_list) {
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3,9,0) */
 
 		if(!sysctl_ipsec_debug_verbose) {
 		  len += ipsec_snprintf(buffer+len, length-len,
@@ -1225,14 +1215,8 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 	return len - (offset - begin);
 }
 
-#ifndef PROC_FS_2325
-DEBUG_NO_STATIC
-#endif /* PROC_FS_2325 */
 int
 pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
@@ -1289,14 +1273,8 @@ pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
 	return len - (offset - begin);
 }
 
-#ifndef PROC_FS_2325
-DEBUG_NO_STATIC
-#endif /* PROC_FS_2325 */
 int
 pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
-#ifndef  PROC_NO_DUMMY
-, int dummy
-#endif /* !PROC_NO_DUMMY */
 #ifdef  PROC_EOF_DATA
 , int *eof
 , void *data
@@ -1345,32 +1323,6 @@ pfkey_registered_get_info(char *buffer, char **start, off_t offset, int length
 	return len - (offset - begin);
 }
 
-#ifndef PROC_FS_2325
-struct proc_dir_entry proc_net_pfkey =
-{
-	0,
-	6, "pf_key",
-	S_IFREG | S_IRUGO, 1, 0, 0,
-	0, &proc_net_inode_operations,
-	pfkey_get_info
-};
-struct proc_dir_entry proc_net_pfkey_supported =
-{
-	0,
-	16, "pf_key_supported",
-	S_IFREG | S_IRUGO, 1, 0, 0,
-	0, &proc_net_inode_operations,
-	pfkey_supported_get_info
-};
-struct proc_dir_entry proc_net_pfkey_registered =
-{
-	0,
-	17, "pf_key_registered",
-	S_IFREG | S_IRUGO, 1, 0, 0,
-	0, &proc_net_inode_operations,
-	pfkey_registered_get_info
-};
-#endif /* !PROC_FS_2325 */
 #endif /* CONFIG_PROC_FS */
 
 DEBUG_NO_STATIC int
@@ -1510,7 +1462,6 @@ pfkey_init(void)
                 entry->read_proc = pfkey_registered_get_info;
         }
 #endif /* CONFIG_PROC_FS */
-
 	return error;
 }
 

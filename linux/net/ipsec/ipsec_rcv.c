@@ -4,6 +4,7 @@
  * Copyright (C) 1998-2003   Richard Guy Briggs.
  * Copyright (C) 2004-2007   Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2008   Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
  *
  * OCF/receive state machine written by
  * David McCullough <dmccullough@cyberguard.com>
@@ -34,11 +35,7 @@
 
 #include "openswan/ipsec_param.h"
 
-#ifdef MALLOC_SLAB
-# include <linux/slab.h> /* kmalloc() */
-#else /* MALLOC_SLAB */
-# include <linux/malloc.h> /* kmalloc() */
-#endif /* MALLOC_SLAB */
+#include <linux/slab.h> /* kmalloc() */
 #include <linux/errno.h>  /* error codes */
 #include <linux/types.h>  /* size_t */
 #include <linux/interrupt.h> /* mark_bh */
@@ -55,16 +52,10 @@
 #include <linux/skbuff.h>
 #include <openswan.h>
 
-#ifdef SPINLOCK
-# ifdef SPINLOCK_23
-#  include <linux/spinlock.h> /* *lock* */
-#  ifdef NEED_SPINLOCK_TYPES
-#   include <linux/spinlock_types.h> 
-#  endif
-# else /* SPINLOCK_23 */
-#  include <asm/spinlock.h> /* *lock* */
-# endif /* SPINLOCK_23 */
-#endif /* SPINLOCK */
+#include <linux/spinlock.h> /* *lock* */
+#ifdef NEED_SPINLOCK_TYPES
+# include <linux/spinlock_types.h> 
+#endif
 
 #include <net/ip.h>
 
@@ -337,11 +328,7 @@ struct sk_buff *ipsec_rcv_unclone(struct sk_buff *skb,
 		}
 		skb_push(skb, irs->hard_header_len);
 		if
-#ifdef SKB_COW_NEW
 		  (skb_cow(skb, skb_headroom(skb)) != 0)
-#else /* SKB_COW_NEW */
-		  ((skb = skb_cow(skb, skb_headroom(skb))) == NULL)
-#endif /* SKB_COW_NEW */
 		{
 			return NULL;
 		}
@@ -833,8 +820,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 		return IPSEC_RCV_REALLYBAD;
 	}
 
-#if IP_FRAGMENT_LINEARIZE
-	/* In Linux 2.4.4, we may have to reassemble fragments. They are
+	/* In Linux >2.4.4, we may have to reassemble fragments. They are
 	   not assembled automatically to save TCP from having to copy
 	   twice.
 	*/
@@ -848,7 +834,6 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			return IPSEC_RCV_REALLYBAD;
 		}
 	}
-#endif /* IP_FRAGMENT_LINEARIZE */
 
 	irs->iph = (void *)ip_hdr(skb);
 
@@ -923,14 +908,6 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 	KLIPS_PRINTMORE(debug_rcv && skb->dev, "skb->dev=%s ",
 			skb->dev->name ? skb->dev->name : "NULL");
 	KLIPS_PRINTMORE(debug_rcv, "\n");
-
-#ifndef NET_21
-	if((!protocol) || (protocol->protocol != irs->proto)) {
-		KLIPS_PRINT(debug_rcv & DB_RX_IPSA,
-			    "klips_debug:ipsec_rcv_init: "
-			    "protocol arg is NULL or unequal to the packet contents, this is odd, using value in packet.\n");
-	}
-#endif /* !NET_21 */
 
 	if( (irs->proto != IPPROTO_AH) &&
 #ifdef CONFIG_KLIPS_IPCOMP_disabled_until_we_register_IPCOMP_HANDLER
@@ -2066,9 +2043,6 @@ ipsec_rsm(struct ipsec_rcv_state *irs)
 
 int
 ipsec_rcv(struct sk_buff *skb
-#ifndef PROTO_HANDLER_SINGLE_PARM
-	  unsigned short xlen
-#endif /* PROTO_HANDLER_SINGLE_PARM */
 	  )
 {
 	struct ipsec_rcv_state *irs = NULL;

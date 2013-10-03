@@ -1,5 +1,7 @@
 /* identity representation, as in IKE ID Payloads (RFC 2407 DOI 4.6.2.1)
  * Copyright (C) 1999-2001  D. Hugh Redelmeier
+ * Copyright (C) 2013  Michael C Richardson <mcr@xelerance.com>
+ * Copyright (C) 2013  Andreas Steffen
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -45,15 +47,52 @@
  */
 #define	MAX_BUF		6
 
+static unsigned char buf[MAX_BUF][IDTOA_BUF]; /*MAX_BUF internal buffers */
+static unsigned char canary[4];
+static int counter = 0;			/* cyclic counter */
+
 unsigned char*
 temporary_cyclic_buffer(void)
 {
-    static unsigned char buf[MAX_BUF][IDTOA_BUF]; /*MAX_BUF internal buffers */
-    static int counter = 0;			/* cyclic counter */
-
     if (++counter == MAX_BUF) counter = 0;	/* next internal buffer */
     return buf[counter];			/* assign temporary buffer */
 }
+
+#if 0
+unsigned char *cyclic_buffers[MAX_BUF][IDTOA_BUF](void)
+{
+    return &buf;
+}
+unsigned char *cyclic_canary(void)
+{
+    return &canary;
+}
+#endif
+
+bool verify_cyclic_buffer(void)
+{
+    if(canary[0]!='a' ||
+       canary[1]!='b' ||
+       canary[2]!='c' ||
+       canary[3]!='d') {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+void reset_cyclic_buffer(void)
+{
+    int i;
+    for(i=0; i<MAX_BUF; i++) {
+        memset(buf[i], 't', IDTOA_BUF);
+    }
+    canary[0]='a';
+    canary[1]='b';
+    canary[2]='c';
+    canary[3]='d';
+}
+
+
 
 /* Convert textual form of id into a (temporary) struct id.
  * Note that if the id is to be kept, unshare_id_content will be necessary.
@@ -82,7 +121,7 @@ atoid(char *src, struct id *id, bool myid_ok)
 	/* we interpret this as an ASCII X.501 ID_DER_ASN1_DN */
 	id->kind = ID_DER_ASN1_DN;
 	id->name.ptr = temporary_cyclic_buffer(); /* assign temporary buffer */
-	id->name.len = 0;
+	id->name.len = IDTOA_BUF;
 	/* convert from LDAP style or openssl x509 -subject style to ASN.1 DN
 	 * discard optional @ character in front of DN
 	 */
@@ -273,7 +312,7 @@ idtoa(const struct id *id, char *dst, size_t dstlen)
 void
 escape_metachar(const char *src, char *dst, size_t dstlen)
 {
-    while (*src != '\0' && dstlen > 4)
+    while (*src != '\0' && dstlen > 5)
     {
 	switch (*src)
 	{
@@ -282,7 +321,7 @@ escape_metachar(const char *src, char *dst, size_t dstlen)
 	case '"':
 	case '`':
 	case '$':
-	    sprintf(dst,"\\%s%o", (*src < 64)?"0":"", *src);
+	    sprintf(dst,"\\03%o", *src & 0xFF);
 	    dst += 4;
 	    dstlen -= 4;
 	    break;

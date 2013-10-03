@@ -252,6 +252,9 @@ void starter_ifaces_clear (void)
 	for (i=0; i<N_IPSEC_IF; i++) {
 		_iface_down (sock, &(_ipsec_if[i]));
 	}
+	if(close(sock)){
+		starter_log(LOG_LEVEL_ERR,"starter_ifaces_clear socket close() failed: %s", strerror(errno));
+	}
 }
 
 int starter_ifaces_load (char **ifaces, unsigned int omtu, int nat_t)
