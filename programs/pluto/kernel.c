@@ -1794,9 +1794,12 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
 	DBG(DBG_CRYPT,
-            DBG_dump("esp %s enckey:",  inbound_str, said_next->enckey,  said_next->enckeylen);
-            DBG_dump("esp %s authkey:", inbound_str, said_next->authkey, said_next->authkeylen);
-	);
+            {
+                DBG_log("esp %s", inbound_str);
+                DBG_dump("  enckey:",  said_next->enckey,  said_next->enckeylen);
+                DBG_dump("  authkey:", said_next->authkey, said_next->authkeylen);
+
+            });
 
 	if(inbound) {
 	    /*
@@ -2884,7 +2887,7 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("set up outgoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
 	st->st_outbound_done = TRUE;
     }
 
