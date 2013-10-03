@@ -1362,6 +1362,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     IPsecSAref_t refhim = st->st_refhim;
     IPsecSAref_t new_refhim = IPSEC_SAREF_NULL;
 
+    const char *inbound_str = inbound ? "inbound" : "outbound";
+
     /* SPIs, saved for spigrouping or undoing, if necessary */
     struct kernel_sa
         said[EM_MAXRELSPIS],
@@ -1658,7 +1660,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 #endif
 
 	DBG(DBG_CRYPT
-	    , DBG_log("looking for alg with transid: %d keylen: %d auth: %d\n"
+	    , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d\n"
+                      , inbound_str
 		      , st->st_esp.attrs.transattrs.encrypt
 		      , st->st_esp.attrs.transattrs.enckeylen
 		      , st->st_esp.attrs.transattrs.integ_hash));
@@ -1791,9 +1794,12 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
 	DBG(DBG_CRYPT,
-	  DBG_dump("esp enckey:",  said_next->enckey,  said_next->enckeylen);
-	  DBG_dump("esp authkey:", said_next->authkey, said_next->authkeylen);
-	);
+            {
+                DBG_log("esp %s", inbound_str);
+                DBG_dump("  enckey:",  said_next->enckey,  said_next->enckeylen);
+                DBG_dump("  authkey:", said_next->authkey, said_next->authkeylen);
+
+            });
 
 	if(inbound) {
 	    /*

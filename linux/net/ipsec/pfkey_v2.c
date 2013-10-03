@@ -1451,21 +1451,15 @@ pfkey_init(void)
         error |= sock_register(&pfkey_family_ops);
 
 #ifdef CONFIG_PROC_FS
-	{
-		struct proc_dir_entry* entry;
+        {
+                struct proc_dir_entry* entry;
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-		proc_net_create ("pf_key", 0, pfkey_get_info);
-		proc_net_create ("pf_key_supported", 0, pfkey_supported_get_info);
-		proc_net_create ("pf_key_registered", 0, pfkey_registered_get_info);
-#else
-		entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
-		entry->read_proc = pfkey_get_info;
-		entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
-		entry->read_proc = pfkey_supported_get_info;
-		entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
-		entry->read_proc = pfkey_registered_get_info;
-#endif
+                entry = create_proc_entry ("pf_key", 0, init_net.proc_net);
+                entry->read_proc = pfkey_get_info;
+                entry = create_proc_entry ("pf_key_supported", 0, init_net.proc_net);
+                entry->read_proc = pfkey_supported_get_info;
+                entry = create_proc_entry ("pf_key_registered", 0, init_net.proc_net);
+                entry->read_proc = pfkey_registered_get_info;
         }
 #endif /* CONFIG_PROC_FS */
 	return error;
@@ -1492,15 +1486,9 @@ pfkey_cleanup(void)
 	error |= supported_remove_all(K_SADB_X_SATYPE_IPIP);
 
 #ifdef CONFIG_PROC_FS
-# if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,24)
-	proc_net_remove ("pf_key");
-	proc_net_remove ("pf_key_supported");
-	proc_net_remove ("pf_key_registered");
-# else
-	proc_net_remove (&init_net, "pf_key");
-	proc_net_remove (&init_net, "pf_key_supported");
-	proc_net_remove (&init_net, "pf_key_registered");
-# endif
+        remove_proc_subtree("pf_key",            init_net.proc_net);
+        remove_proc_subtree("pf_key_supported",  init_net.proc_net);
+        remove_proc_subtree("pf_key_registered", init_net.proc_net);
 #endif /* CONFIG_PROC_FS */
 
 	/* other module unloading cleanup happens here */

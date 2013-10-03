@@ -1,3 +1,4 @@
 [submodule "testing"]
 	path = testing
-	url = git@github.com:xelerance/testing-openswan.git
+	url = git@github.com:xelerance/openswan-testing.git
+
