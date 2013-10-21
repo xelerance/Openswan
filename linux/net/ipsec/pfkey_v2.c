@@ -207,6 +207,50 @@ static __inline__ void pfkey_unlock_sock_list(void)
 }
 #endif
 
+/*****
+Grabbed Mr. Viro's proc_subtree backport code for older kernels
+commit 8ce584c7416d8a85a6f3edc17d1cddefe331e87e
+Author: Al Viro <v...@zeniv.linux.org.uk>
+Date:   Sat Mar 30 20:13:46 2013 -0400
+****/
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,10,0)
+#ifdef CONFIG_PROC_FS
+
+static void backport_proc_subdir_remove(struct proc_dir_entry *dir)
+{
+       struct proc_dir_entry *pe, *tmp;
+       pe = dir->subdir;
+       while (pe) {
+               tmp = pe->next;
+               backport_proc_subdir_remove(pe);
+               remove_proc_entry(pe->name, dir);
+               pe = tmp;
+       }
+};
+
+int remove_proc_subtree(const char *name, struct proc_dir_entry *parent)
+{
+       struct proc_dir_entry *pe, *tmp;
+
+       if (!parent)
+               goto out;
+
+       pe = parent->subdir;
+       while (pe) {
+               tmp = pe->next;
+               backport_proc_subdir_remove(pe);
+               remove_proc_entry(pe->name, parent);
+               pe = tmp;
+       }
+
+out:
+       remove_proc_entry(name, parent);
+
+       return 0;
+}
+#endif /* CONFIG_PROC_FS */
+#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(3,10,0) */
+
 int
 pfkey_list_remove_socket(struct socket *socketp, struct socket_list **sockets)
 {
