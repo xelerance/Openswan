@@ -35,7 +35,7 @@ doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LI
 	@mkdir -p $(RCDIR) $(BINDIR)
 	# install and link everything
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
-	@ln -s $(RELFINALRCDIR)/ipsec $(BINDIR)/setup
+	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
 
 install_file_list::
 	@echo $(RCDIR)/ipsec

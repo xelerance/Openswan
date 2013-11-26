@@ -129,8 +129,6 @@ FINALRCDIR?=$(shell for d in $(INC_RCDIRS) ; \
 		do if test -d $(DESTDIR)/$$d ; \
 		then echo $$d ; exit 0 ; \
 		fi ; done ; echo $(INC_RCDEFAULT) )
-# this needs to be a relative path from BINDIR
-RELFINALRCDIR?=../../..$(FINALRCDIR)
 RCDIR?=$(DESTDIR)$(FINALRCDIR)
 
 
