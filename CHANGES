@@ -2,7 +2,7 @@
 Note that listings are in chronological order of release times, not in order
 of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
-See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
+See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 v2.6.40 (February 14, 2014)
  This version specifically addresses CVE 2013-6466.

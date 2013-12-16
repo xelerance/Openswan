@@ -1,7 +1,7 @@
 This code is still less than perfect and undoubtedly has bugs.  As of this
 release, the following are considered known bugs.
 
-For a detailed list, see http://bugs.openswan.org/
+For a detailed list, see https://github.com/xelerance/Openswan/issues
 
 * It was our intent for Opportunistic Encryption to work with 4096 bit keys.
   Currently, there is a buffer limitation that prevents this; the additional 

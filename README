@@ -13,7 +13,7 @@ bug fixes from 2.05 and 2.06.  See CREDITS for the history.
 
 Download it from
 
-    http://download.openswan.org/openswan/
+    https://download.openswan.org/openswan/
 
 #########################################################################
 # REQUIREMENTS
@@ -149,19 +149,19 @@ See the ipsec.conf man page for more information on configuration options.
 
 Mailing Lists:
 
-    http://lists.openswan.org is home of the mailing lists.  Note: these are 
+    https://lists.openswan.org is home of the mailing lists.  Note: these are
     closed lists - you *must* be subscribed to post.
 
 Wiki:
 
-    http://www.openswan.org is home to the Openswan WIKI.  It has the most
-    up to date documentation, interop guides and other related information.
+    https://github.com/xelerance/Openswan/wiki is home to the Openswan Wiki.
+    It has the most up to date documentation, interop guides and other related
+    information.
 
 IRC:
 
     Openswan developers and users can be found on IRC, on #openswan on
-    irc.freenode.net.  If you need more information on our IRC channel, see
-    http://www.openswan.org/support/irc.php
+    irc.freenode.net.
 
 Commercial support for Openswan is also available - see
 http://www.xelerance.com/services/openswan-support/ for more information, or
@@ -171,8 +171,8 @@ email sales@xelerance.com
 # BUGS
 #########################################################################
 
-Bugs with the package can be filed into our Redmine system, at
-http://www.openswan.org
+Bugs with the package can be report on:
+https://github.com/xelerance/Openswan/issues
 
 #########################################################################
 # SECURITY HOLES
@@ -182,14 +182,14 @@ All security vulnerabilities found that require public disclosure will
 receive proper CVE tracking numbers (see http://mitre.org/) and co-ordinated
 via the vendor-sec mailing list. A complete list of known security
 vulnerabilities is available at:
-https://www.openswan.org/projects/openswan/wiki/Security_and_Vulnerability_information 
+https://github.com/xelerance/Openswan/wiki/Security-and-vulnerability-information
 
 #########################################################################
 # DEVELOPMENT
 #########################################################################
 
 Those interested in the development, patches, beta releases of Openswan
-can join the development mailing list (http://lists.openswan.org -
+can join the development mailing list (https://lists.openswan.org -
 dev@lists.openswan.org) or join the development team on IRC in
 #openswan-dev on irc.freenode.net
 
@@ -197,7 +197,7 @@ dev@lists.openswan.org) or join the development team on IRC in
 # DOCUMENTATION
 #########################################################################
 
-The most up to date docs are at http://www.openswan.org/
+The most up to date docs are at https://github.com/xelerance/Openswan/wiki
 
 Several high-level documents are in the doc directory.  Most are in HTML
 format; See doc/index.html for the top level index.  These are now
