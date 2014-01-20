@@ -627,6 +627,24 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     }
 
     /*
+     * If we did not get a KE payload, we cannot continue. There should be
+     * a Notify telling us why. We inform the user, but continue to try this
+     * connection via regular retransmit intervals.
+     */
+    if(md->chain[ISAKMP_NEXT_v2N]  && (md->chain[ISAKMP_NEXT_v2KE] == NULL))
+    {
+         const char *from_state_name = enum_name(&state_names, st->st_state);
+         const u_int16_t isan_type = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type;
+         openswan_log("%s: received %s"
+                     , from_state_name
+                     , enum_name(&ikev2_notify_names, isan_type));
+         return STF_FAIL + isan_type;
+    } else if( md->chain[ISAKMP_NEXT_v2N]) {
+            /* XXX/SML: KE payload came with a notification-- is there a problem? */
+         DBG(DBG_CONTROL,DBG_log("received a notify.."));
+    }
+
+    /*
      * We have to agree to the DH group before we actually know who
      * we are talking to.   If we support the group, we use it.
      *
@@ -636,6 +654,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
      */
     {
         struct ikev2_ke *ke;
+        if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
+                    return STF_FAIL;
         ke = &md->chain[ISAKMP_NEXT_v2KE]->payload.v2ke;
 
         st->st_oakley.group=lookup_group(ke->isak_group);
@@ -735,6 +755,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     numvidtosend++;  /* we send Openswan VID */
 #endif
 
+    if (sa_pd == NULL) {
+                return STF_FAIL;
+    }
+
     /* note that we don't update the state here yet */
 
     /* record first packet for later checking of signature */
@@ -784,6 +808,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     {
         v2_notification_t rn;
         chunk_t dc;
+        if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
+                    return STF_FAIL;
         keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
         /* KE in */
         rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
@@ -2210,6 +2236,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     {
         v2_notification_t rn;
         struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+        if (sa_pd == NULL) {
+                return STF_FAIL;
+        }
 
         rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
             NULL, st, FALSE);
