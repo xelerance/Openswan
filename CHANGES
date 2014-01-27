@@ -4,6 +4,130 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
+v2.6.40 (February 14, 2014)
+ This version specifically addresses CVE 2013-6466.
+
+ Big changes are coming for the testing subsystem.
+   From this version on, we are disengaging the testing subsystem from 
+   the Openswan source tree.  You can still get a copy at
+   git@github.com:xelerance/old-openswan-testing.git
+
+ Some parts of an RFC4306/5996 patch were removed due to it
+ introducing a few IKEv2 specific crashers.
+ We will introduce a greater IKEv2 functionality upgrade in
+ the next version.
+
+ * CVE-2013-6466 fix: Integrated fix from Steve Lanser [Patrick Naubert]
+ * KLIPS: Fix for crashes in ipsec_xmit_ipip() for 3.4.65+ kernels [Thomas Geulig]
+ * Revert "relpath changes" [Brenda J. Butler]
+ * Add xmlto as Debian build dependency to have fresh man pages. [Simon Deziel]
+ * Avoid dns(sec) lookups for numerical sourceip= values [Paul Wouters]
+ * Updated FSF address on the GPLv2 COPYING file [Paul Wouters]
+ * Removed some obsoleted files in docs/ [Paul Wouters]
+ * Added "ipsec initnss" command [Paul Wouters]
+ * XAUTH:  Use incoming XAUTH VID when picking best connection [Andrey Alexandrenko]
+ * XAUTH: fix pam race condition and contrib/pam.d file [Paul Wouters]
+ * Do not perform XAUTH/ModeCfg during rekey when using Cisco compatibility [Avesh Agarwal]
+ * v1phase2tov2child_integ() addition [Avesh Agarwal]
+ * Changed related to bz#703985 for Secure Labeling [Avesh Agarwal]
+ * Added Avesh's additional labeled ipsec logging to starterwhack [Paul Wouters]
+ * Support reading NSS password from file [Paul Wouters]
+ * Restore postpluto functionaliy which was missing [Tuomo Soini]
+ * Don't refer to NETKEY as "2.6" or "experimental code" [Paul Wouters]
+ * Added AH_SHA2_256_TRUNC to ah_transform_name_private_use [Paul Wouters]
+ * helper: helper_passert_fail no longer used. Fix two string format warnings [Paul Wouters]
+ * Put rpmbuild values used to compile in Makefile.inc as commented examples [Paul Wouters]
+ * X509: fetch_ocsp should return void, not void * [Paul Wouters]
+ * gen_reqid() can call exit_log() but confuses compiler [Paul Wouters]
+ * XAUTH: fixup previous maxlength fix. mova hardcoded to defines [Paul Wouters]
+ * Support /etc/sysconfig/ipsec and /etc/default/ipsec (rhbz#789917) [Paul Wouters]
+ * Backporting proc_subdir_remove with Al Viro's code.
+   There must a better way than me backporting something... [Patrick Naubert]
+ * Added package to load dependancy for developers [Michael Richardson]
+ * Make ls command explicitely avoid columns, and search both regular
+   directory and execdir [Michael Richardson]
+ * When logging ESP keys, be clear about which direction is which [Michael Richardson]
+ * inet6 protocol does not have netns_ok flag [Michael Richardson]
+ * Added netns_ok lie to get regression tests to pass [Michael Richardson]
+ * Changes to work with linux 3.9 [Michael Richardson]
+ * Fix a typo reported by someone to the dev@lists.openswan.org (https://lists.openswan.org/pipermail/dev/2013-September/003104.html) [Simon Deziel]
+ * Update links in the README and mention that Python is a dependancy
+   for ipsec verify now [Patrick Naubert]
+ * Log if we send non-default PLUTO_*_RETRANSMIT_* values via env variables [Paul Wouters]
+ * NETKEY: linux_pfkey_add_aead() left alg.sadb_alg_reserved uninitialised [Paul Wouters]
+ * starter: remove prototypes for static functions [Paul Wouters]
+ * Remove duplicate include of oswlog.h in x509dn.c [Paul Wouters]
+ * Merge virtif.c header change [Paul Wouters]
+ * _updown.netkey: fix route to be inserted on correct interface when
+   nexthop is used [Tuomo Soini]
+ * Added new option plutostderrlogtime= (default=no) [Paul Wouters]
+ * Cap xauthpasslen and xauthnamelen at 128 (their buffer size) [Paul Wouters]
+ * fmt_log() fix similar to previous strncat() use [Paul Wouters]
+ * xauth: in theory, in xauth_inI0() it could attempt to memcpy NULL [Paul Wouters]
+ * Ensure not to call same_chunk on a null pointer [Paul Wouters]
+ * Simplified functions around strncat/snprintf [Paul Wouters]
+ * Fixup format_end(), do not use strncat but snprintf [Paul Wouters]
+ * Move the close() call for the sock to the function that created it. [Paul Wouters]
+ * Undo the close on whack_sock, as it is placed in the state. [Paul Wouters]
+ * Close dup()ed whack_sock in ipsecdoi_replace() to avoid leaking fd [Paul Wouters]
+ * Remove other half of ipsec_copyright_notice() [Paul Wouters]
+ * Include "sysdep.h" in udpfromto.c [Paul Wouters]
+ * Close socket fd of the interface in _iface_down() [Paul Wouters]
+ * Fix potential strncat() failure in format_end() [Paul Wouters]
+ * More strnat() safety checks [Paul Wouters]
+ * Additional safety checks to alg_info_snprint_esp() and
+   alg_info_snprint_ah() [Paul Wouters]
+ * Additional safety checks to addrtot(), inet_addrtot() and sin_addrtot() [Paul Wouters]
+ * Block rules created by openswan remain even after tunnel establishment [Panagiotis Tamtamis]
+ * Remove KLIPS define in initiate.c [Paul Wouters]
+ * DNSSEC: added root and DLV (dlv.isc.org) key for dnssec validation [Paul Wouters]
+ * ipsec-tools 0.8.0 mistakenly sets some NAT-OA fields that are defined
+   in RFC1374 as "always zero". We define these as "ft_mbz" (Must Be Zero) [Paul Wouters]
+ * Fixup some credits. Remove merged contrib code for selinux [Brenda J. Butler]
+ * Redone and simplified functions around strncat/snprintf for addrtot.c [Paul Wouters]
+ * Fix addrtot() with a passert and off-by-one [Paul Wouters]
+ * Move the close() call for the sock to the function that created it. [Paul Wouters]
+ * Close socket fd of the interface in _iface_down() [Paul Wouters]
+ * Change name from libreswan.h to openswan.h [Brenda J. Butler]
+ * Fixup IPSECKEY support with ipv4/ipv6 family and support --precedence [Paul Wouters]
+ * Updated vendorID to be Openswan specific. Print it with --version [Michael Richardson]
+ * Remove support for kernels without snprintf [Paul Wouters]
+ * Remove support for kernels not supporting MALLOC_SLAB [Paul Wouters]
+ * Remove remaining pre 2.4.4 kernel support [Paul Wouters]
+ * Remove pre 2.4.4 IP_FRAGMENT_LINEARIZE compat code [Paul Wouters]
+ * Remove pre 2.4.4 kernel compat for PROTO_HANDLER_SINGLE_PARM [Paul Wouters]
+ * Remove compat code for SKB_COW_NEW for < 2.4.4. kernels [Paul Wouters]
+ * Remove compat old/broken IP_SELECT_IDENT for < 2.4.2 kernels [Paul Wouters]
+ * Remove SKB_COPY_EXPAND for < 2.3 kernels [Paul Wouters]
+ * Remove /proc dummy code for old kernels (PROC_NO_DUMMY) [Paul Wouters]
+ * Always add support for alias capability (CONFIG_IP_ALIAS) [Paul Wouters]
+ * Remove support for NET_23 (kernels before 2.3) [Paul Wouters]
+ * Remove kernel support predating NETLINK [Paul Wouters]
+ * Remove /proc support pre-2.4 kernels (PROC_FS_2325/PROC_FS_21) [Paul Wouters]
+ * Remove more old 2.1 and 2.3 kernel code [Paul Wouters]
+ * Remove support for kernels without SPINLOCK and SPINLOCK_23 [Paul Wouters]
+ * Remove support for Linux kernels < 2.1.0 via NET_21 define [Paul Wouters]
+ * Fixup IPSECKEY support with ipv4/ipv6 family and support --precedence [Paul Wouters]
+ * Updated ipsec showhostkey to support IPSECKEY [Paul Wouters]
+ * Fix generating libreswan versions based of git [Paul Wouters]
+ * Typo fix in man 5 ipsec.conf [Simon Deziel]
+ * Handle NULL returns from glibc 2.17+ crypt(). [mancha]
+ * Only use -Wno-error=cpp when GCC's version is >= 4.6 [Simon Deziel]
+ * Remove debug code [Simon Deziel]
+ * Call "ss" without using the fully qualified path as this binary is installed in different place depending on the distro [Simon Deziel]
+ * Removed some /testing links in Makefile.top [Patrick Naubert]
+ * DPD typo fix: Dectection -> Detection [Simon Deziel]
+ * Redone and simplified functions around strncat/snprintf for addrtot.c [Paul Wouters]
+ * Fix addrtot() with a passert and off-by-one [Paul Wouters]
+ * Move the close() call for the sock to the function that created it. [Paul Wouters]
+ * Close socket fd of the interface in _iface_down() [Paul Wouters]
+ * Additional safety checks to addrtot(), inet_addrtot() and sin_addrtot() [Paul Wouters]
+ * Sync patches with variables names [Paul Wouters]
+ * Log a warning for NETKEY/XFRM breaking RFC 4301, Section 5.2 [Paul Wouters]
+ * Always assume UDPFROMTO works on Linux and BSD [Paul Wouters]
+ * Only set MODP768_MODULUS with USE_VERYWEAK_DH1 [Paul Wouters]
+ * updown: Delete the source ip addres on down only for Cisco peer [Paul Wouters]
+
 v2.6.39 (May 31, 2013)
 * Hardening patches from Florian Weimer
 * Created .in files for distro packages [Patrick]
