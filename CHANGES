@@ -4,6 +4,52 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and http://www.openswan.org/
 
+v2.6.39 (May 31, 2013)
+* Hardening patches from Florian Weimer
+* Created .in files for distro packages [Patrick]
+* Target deb builds for Precise instead of Lucid [Simon]
+* Enable hardened builds by default [Simon]
+* Bring 'ipsec policy' back form the dead [Simon]
+* Drop the builddep on htmldoc and man2html as those are not needed anymore [Simon]
+* CVE-2013-2054 fix: Integrated fix from Andreas Steffan
+* Refactor x509dn to seperate out atodn from other functions [MCR]
+* Fixed regression test to be 64-bit and IPv6 aware [MCR]
+* Patches for kernel 3.9 and changes to work with Linux 3.9 [MCR]
+* Nighly builds fixes and whitespace fixes [MCR]
+* Fix for three AES-GCM issues with key lengths 128, 192, 256 bits and IV
+  of 8, 12, 16 bytes as per RFC 4106 [Avesh]
+* SAREF: kernel patches updated to linux 3.2.0 [Simon]
+* Refresh debian/control files to point to the right git URL [Simon]
+* KLIPS: startklips-ip_route patch [Harald]
+* MAST: updown.mast-scriptfix patch [Harald]
+* Refresh debian/po from Debian [Simon]
+* Fixed ipsec verify to avoid perl and use python instead. It helps during minimum install so that openswan does not have to pull perl packages, and it keeps minimal install really minimum. Also Removed compilation of ipsec policy subprogram as it is not needed with NETKEY. [Paul]
+* NATT: rhbz #834400 NAT-OA reserved field issue. [Avesh]
+* rhbz #834396 Coverity scan fixes, warnings, dead code. [Avesh] 
+* rhbz #785180 openswan uses ifconfig which is deprecated. [Avesh]
+* barf: ipsec barf should not grep sparse file. [Paul]
+* XAUTH: Phase15 as xauth and modecfg is called in openswan is not handled properly when only xauth (without modecfg) is used. [Avesh]
+* Interop: Fixes to interop issues (related to updating/removing local interface with remote ip address and removing local routes) between cisco ASA and openswan. [Avesh]
+* XAUTH: Fixes to interop issues between cisco ASA and openswan in main mode.  These fixes prevents xauth/modecfg negotiation during IKE rekey in main mode. [Avesh]
+* rhbz #831676 [Avesh]
+* IKE: ikev1 aes-gcm esp fixes [Avesh]
+* IKE: ikev1/ikev2 sha2-256 related changes [Avesh]
+* rhbz#609343: pluto crashes when removing logical interface [Avesh]
+* Reading password from a file when creating keys. [Avesh]
+* IKEv2: IKEv2 RFC4306/5996 related changes [Avesh]
+* Interop: Fixes to solve interop issues between cisco ASA and openswan in aggressive mode.[Avesh]
+* Fix for the issue where ipsec help shows the list twice (rhbz 524146, 509318) [Avesh]
+* relpath changes [Avesh]
+* Bugtracker bugs fixed:
+   #1308 forceencaps= setting does now show up in "ipsec auto --status"
+         [Matt Rogers]
+   #1329 IKEv2 core dumps on 2.6.32 with changes backported from the 2.6.38
+         tree [Steve Lanser]
+   #1349 pluto logging no subjectAltName matches ID '%fromcert', replaced
+         by subject DN [Tuomo]
+   #1371 SAref patches 3.2.0 [Simon]
+* Fix url to bugs system. [Tuomo]
+
 v2.6.38 (March 23, 2012)
 * DPD: seq_no logged after hton() call [Shinichi Furuso]
 * DPD: With multiple phase 2 SAs, we sent too many [Shinichi Furuso]
