@@ -76,6 +76,7 @@ typedef int bool;
  */
 
 typedef unsigned long long lset_t;
+#define LELEM_ROOF  64  /* all elements must be less than this */
 #define LEMPTY 0ULL
 #define LELEM(opt) (1ULL << (opt))
 #define LRANGE(lwb, upb) LRANGES(LELEM(lwb), LELEM(upb))

@@ -4,7 +4,7 @@
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  * Copyright (C) 2004 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2002  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2002,2014  D. Hugh Redelmeier.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -387,6 +387,8 @@ enum next_payload_types {
 	ISAKMP_NEXT_NATD_DRAFTS  = 130,   /* NAT-Traversal: NAT-D (drafts) */
 	ISAKMP_NEXT_NATOA_DRAFTS = 131   /* NAT-Traversal: NAT-OA (drafts) */
 };
+
+#define ISAKMP_v2PAYLOAD_TYPE_BASE     ISAKMP_NEXT_v2SA        /* lowest value of a v2 payload type */
 
 /* These values are to be used within the Type field of an Attribute (14) 
  *    ISAKMP payload.  */

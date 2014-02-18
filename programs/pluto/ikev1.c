@@ -1557,7 +1557,7 @@ void process_packet_tail(struct msg_digest **mdp)
 
 	while (np != ISAKMP_NEXT_NONE)
 	{
-	    struct_desc *sd = np < ISAKMP_NEXT_ROOF? payload_descs[np] : NULL;
+	    struct_desc *sd = payload_desc(np);
 
 	    if (pd == &md->digest[PAYLIMIT])
 	    {
@@ -1604,12 +1604,12 @@ void process_packet_tail(struct msg_digest **mdp)
 #ifdef NAT_TRAVERSAL
 		case ISAKMP_NEXT_NATD_DRAFTS:
 		    np = ISAKMP_NEXT_NATD_RFC;  /* NAT-D relocated */
-		    sd = payload_descs[np];
+		    sd = payload_desc(np);
 		    break;
 
 		case ISAKMP_NEXT_NATOA_DRAFTS:
 		    np = ISAKMP_NEXT_NATOA_RFC;  /* NAT-OA relocated */
-		    sd = payload_descs[np];
+		    sd = payload_desc(np);
 		    break;
 #endif
 		default:
@@ -1619,6 +1619,7 @@ void process_packet_tail(struct msg_digest **mdp)
 		    SEND_NOTIFICATION(INVALID_PAYLOAD_TYPE);
 		    return;
 		}
+	    passert(sd != NULL);
 	    }
 
 	    {

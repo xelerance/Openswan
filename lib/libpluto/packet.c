@@ -1,6 +1,6 @@
 /* parsing packets: formats and tools
  * Copyright (C) 1997 Angelos D. Keromytis.
- * Copyright (C) 1998-2001  D. Hugh Redelmeier.
+ * Copyright (C) 1998-2001,2013-2014  D. Hugh Redelmeier.
  * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
  *
@@ -1106,7 +1106,7 @@ struct_desc ikev2_e_desc = { "IKEv2 Encryption Payload",
  * That leaves only Identification payloads as a problem.
  * We make all these entries NULL
  */
-struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
+static struct_desc *const payload_descs[] = {
     NULL,				/* 0 ISAKMP_NEXT_NONE (No other payload following) */
     &isakmp_sa_desc,			/* 1 ISAKMP_NEXT_SA (Security Association) */
     NULL,				/* 2 ISAKMP_NEXT_P (Proposal) */
@@ -1145,6 +1145,11 @@ struct_desc *const payload_descs[ISAKMP_NEXT_ROOF] = {
     &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
     &ikev2_e_desc,                      /* 46 */
 };
+
+const struct_desc *payload_desc(unsigned p)
+{
+	return p < elemsof(payload_descs) ? payload_descs[p] : NULL;
+}
 
 void
 init_pbs(pb_stream *pbs, u_int8_t *start, size_t len, const char *name)

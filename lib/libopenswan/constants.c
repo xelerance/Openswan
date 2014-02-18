@@ -146,7 +146,8 @@ const char *const payload_name[] = {
 	NULL
     };
 
-const char *const payload_names_ikev2[] = {
+/* dual-use: for enum_name and for bitnamesof */
+const char *const payload_name_ikev2_main[] = {
     "ISAKMP_NEXT_v2SA",            /* 33 */
     "ISAKMP_NEXT_v2KE",
     "ISAKMP_NEXT_v2IDi",
@@ -163,23 +164,23 @@ const char *const payload_names_ikev2[] = {
     "ISAKMP_NEXT_v2E",
     "ISAKMP_NEXT_v2CP",
     "ISAKMP_NEXT_v2EAP",
-    NULL
+    NULL    /* termination for bitnamesof() */
 };
 
-const char *const payload_name_nat_d[] = {
-    "ISAKMP_NEXT_NAT-D",
-    "ISAKMP_NEXT_NAT-OA",
-    NULL
+static enum_names payload_names_ikev2_main =
+{ ISAKMP_NEXT_v2SA, ISAKMP_NEXT_v2EAP, payload_name_ikev2_main,
+  NULL };
+
+const char *const payload_name_ikev2[] = {
+    "ISAKMP_NEXT_v2NONE",            /* 33 */
 };
 
-static enum_names payload_names_nat_d =
-{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
-static enum_names payload_names_ikev2_d =
-{ ISAKMP_NEXT_v2SA, ISAKMP_NEXT_v2EAP, payload_names_ikev2, &payload_names_nat_d };
+enum_names payload_names_ikev2 =
+{ ISAKMP_NEXT_NONE, ISAKMP_NEXT_NONE, payload_name_ikev2,
+  &payload_names_ikev2_main };
 
 enum_names payload_names =
-{ ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_ikev2_d };
-
+{ ISAKMP_NEXT_NONE, ISAKMP_NEXT_NATOA_RFC, payload_name, &payload_names_ikev2_main };
 
 /* Exchange types (note: two discontinuous ranges) */
 
