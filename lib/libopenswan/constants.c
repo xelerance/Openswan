@@ -167,9 +167,18 @@ const char *const payload_name_ikev2_main[] = {
     NULL    /* termination for bitnamesof() */
 };
 
+const char *const payload_name_nat_d[] = {
+    "ISAKMP_NEXT_NAT-D",
+    "ISAKMP_NEXT_NAT-OA",
+    NULL
+};
+
+static enum_names payload_names_nat_d =
+{ ISAKMP_NEXT_NATD_DRAFTS, ISAKMP_NEXT_NATOA_DRAFTS, payload_name_nat_d, NULL };
+
 static enum_names payload_names_ikev2_main =
 { ISAKMP_NEXT_v2SA, ISAKMP_NEXT_v2EAP, payload_name_ikev2_main,
-  NULL };
+  &payload_names_nat_d };
 
 const char *const payload_name_ikev2[] = {
     "ISAKMP_NEXT_v2NONE",            /* 33 */
