@@ -671,7 +671,7 @@ extern struct_desc isakmp_nat_oa;
  * That leaves only Identification payloads as a problem.
  * We make all these entries NULL
  */
-extern struct_desc *const payload_descs[ISAKMP_NEXT_ROOF];
+extern const struct_desc *payload_desc(unsigned p);
 
 /*
  * IKEv2 structures

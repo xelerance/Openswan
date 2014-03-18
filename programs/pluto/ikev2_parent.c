@@ -216,7 +216,7 @@ ikev2parent_outI1(int whack_sock
 
         ke->md = alloc_md();
         ke->md->from_state = STATE_IKEv2_BASE;
-        ke->md->svm = ikev2_parent_firststate();
+        ke->md->svm = &ikev2_parent_firststate_microcode;
         ke->md->st = st;
         set_suspended(st, ke->md);
 
@@ -928,7 +928,7 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
                                 st->st_dcookie);
                 DBG_log("next STATE_PARENT_I1 resend I1 with the dcookie"));
 
-            md->svm = ikev2_parent_firststate();
+            md->svm = &ikev2_parent_firststate_microcode;
 
             /* PATRICK: I may have to interchange the next two blocks: */
             /* Block 1 */
@@ -945,23 +945,6 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
             return ikev2_parent_outI1_common(md, st);
         }
-
-    /*
-     * If we did not get a KE payload, we cannot continue. There * should be
-     * a Notify telling us why. We inform the user, but continue to try this
-     * connection via regular retransmit intervals.
-     */
-    if( md->chain[ISAKMP_NEXT_v2N]  && (md->chain[ISAKMP_NEXT_v2KE] == NULL))
-        {
-            const char *from_state_name = enum_name(&state_names, st->st_state);
-            const u_int16_t isan_type =  md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type;
-            openswan_log("%s: received %s"
-                         , from_state_name
-                         , enum_name(&ikev2_notify_names , isan_type));
-            return STF_FAIL + isan_type;
-        } else if( md->chain[ISAKMP_NEXT_v2N]) {
-        DBG(DBG_CONTROL,DBG_log("received a notify.."));
-    }
 
     /*
      * the responder sent us back KE, Gr, Nr, and it's our time to calculate
@@ -1265,14 +1248,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         init_pbs(&md->clr_pbs, encstart, enclen - (padlen+1), "cleartext");
     }
 
-    { stf_status ret;
-        ret = ikev2_process_payloads(md, &md->clr_pbs, st->st_state, np);
-        if(ret != STF_OK) {
-            return ret;
-        }
-    }
-
-    return STF_OK;
+    return ikev2_process_encrypted_payloads(md, &md->clr_pbs, np);
 }
 
 static stf_status ikev2_send_auth(struct connection *c

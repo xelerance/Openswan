@@ -4,6 +4,13 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.41 (February 21, 2014)
+ This version specifically addresses CVE 2014-2037
+ This CVE is a continuation of CVE 2013-6466. We missed some cases.
+
+* SAREF: kernel patches updated to linux 3.11.0 (Simon Deziel)
+* Fix for CVE-2014-2037 (Paul Wouters, Hugh Redelmeier)
+
 v2.6.40 (February 14, 2014)
  This version specifically addresses CVE 2013-6466.
 

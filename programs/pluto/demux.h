@@ -81,8 +81,9 @@ struct msg_digest {
 #   define PAYLIMIT 30
     struct payload_digest
 	digest[PAYLIMIT],
-	*digest_roof,
-	*chain[ISAKMP_NEXT_ROOF];
+	*digest_roof;
+	struct payload_digest
+		*chain[(unsigned)ISAKMP_NEXT_ROOF];
     struct isakmp_quirks quirks;
 };
 
