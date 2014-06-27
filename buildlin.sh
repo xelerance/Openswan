@@ -1,11 +1,34 @@
 #!/bin/sh
 
+fail=false
+
 if [ ! -f /usr/include/gmp.h ];
 then
     echo You need to install libgmp-dev.
     echo "    apt-get install libgmp-dev"
     echo "or  yum install gmp-dev"
-    exit 1
+    echo
+    fail=true
+fi
+if [ ! -f /usr/bin/bison ];
+then
+    echo You need to install bison.
+    echo "    apt-get install bison"
+    echo "or  yum install bison"
+    fail=true
+fi
+
+if [ ! -f /usr/bin/flex ];
+then
+    echo You need to install flex.
+    echo "    apt-get install flex"
+    echo "or  yum install flex"
+    fail=true
+fi
+
+if $fail;
+then 
+   exit 1;
 fi
 
 if [ -n "$WERROR" ];
