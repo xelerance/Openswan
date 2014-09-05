@@ -1,6 +1,6 @@
 # Openswan master makefile
 # Copyright (C) 1998-2002  Henry Spencer.
-# Copyright (C) 2003-2004  Xelerance Corporation
+# Copyright (C) 2003-2014  Xelerance Corporation
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
