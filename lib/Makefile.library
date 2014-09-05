@@ -2,6 +2,8 @@ KLIPSD=${OPENSWANSRCDIR}/linux/include
 KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
+include ${OPENSWANSRCDIR}/Makefile.common
+
 LEX=flex
 ifeq ($(USE_YACC),true)
 BISON=yacc -b parser
@@ -95,6 +97,5 @@ depend: ${DISTSRC}
 	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${PORTINCLUDE} ${INCLUDES} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
 
 -include ${srcdir}Makefile.depend.${OSDEP}
-
 
 

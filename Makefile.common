@@ -1,0 +1,9 @@
+# some files have issues with cpp, and need -Wno-error=cpp, but only for
+# newer versions of gcc.
+# Check if GCC's version is recent enough
+GCC_VERSION_GE_46:=$(shell test `${CC} -dumpversion | sed 's/^\([0-9]\)\.\([0-9]\).*/\1\2/'` -ge 46 && echo true || echo false)
+ifeq ($(GCC_VERSION_GE_46),true)
+GCC_CPP_FLAG=-Wno-error=cpp
+endif
+
+

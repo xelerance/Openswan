@@ -20,6 +20,7 @@ TERMCAP=
 export TERMCAP
 
 include ${OPENSWANSRCDIR}/Makefile.inc
+-include ${OPENSWANSRCDIR}/Makefile.vendor
 
 srcdir?=$(shell pwd)
 
@@ -205,6 +206,11 @@ checkv199install:
 	fi
 
 install:: checkv199install
+
+install::
+	mkdir -p ${LIBEXECDIR}
+	if [ -n '${VENDOR}' ]; then echo '${VENDOR} ' >${LIBEXECDIR}/vendor; fi
+
 
 clean::
 	rm -rf $(RPMTMPDIR) $(RPMDEST)

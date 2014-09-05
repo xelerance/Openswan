@@ -1,6 +1,7 @@
 
 include ${OPENSWANSRCDIR}/Makefile.ver
 include ${OPENSWANSRCDIR}/Makefile.inc
+include ${OPENSWANSRCDIR}/Makefile.common
 
 LEX=flex
 BISON=bison
@@ -177,9 +178,9 @@ LOADLIBS=${OBJS}
 
 # ${LIBS} is repeated due to possible circular dependancies among libraries
 ifeq ($(USE_LIBNSS),false)
-LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp
+LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP}
 else
-LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} -lgmp -lnspr4 -lnss3
+LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP} -lnspr4 -lnss3
 endif
 
 

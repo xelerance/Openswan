@@ -1,7 +1,3 @@
-# vendor/distro things go here.
+# vendor/distro things go here, if any.
 #VENDOR=-bluerose
-
-install::
-	mkdir -p ${LIBEXECDIR}
-	if [ -n '${VENDOR}' ]; then echo '${VENDOR} ' >${LIBEXECDIR}/vendor; fi
 
