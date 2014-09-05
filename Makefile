@@ -1,12 +1,12 @@
 # Openswan master makefile
 # Copyright (C) 1998-2002  Henry Spencer.
 # Copyright (C) 2003-2004  Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -88,7 +88,7 @@ unapplynpatch:
 	fi
 
 applynpatch:
-	@echo "info: Now performing forward NAT patches in `pwd`"; 
+	@echo "info: Now performing forward NAT patches in `pwd`";
 	${MAKE} nattpatch${KERNELREL} | tee ${KERNELSRC}/natt.patch | (cd ${KERNELSRC} && patch -p1 -b -z .preipsec --forward --ignore-whitespace )
 
 unapplysarefpatch:
@@ -170,11 +170,11 @@ klipsdefaults:
 # programs
 
 ifeq ($(strip $(OBJDIR)),.) # If OBJDIR is OPENSWANSRCDIR (ie dot) then the simple case:
-programs install clean:: 
+programs install clean::
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
-	done; 
+	done;
 else
 ABSOBJDIR:=$(shell mkdir -p ${OBJDIR}; cd ${OBJDIR} && pwd)
 OBJDIRTOP=${ABSOBJDIR}
@@ -190,11 +190,11 @@ ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 
 endif
 
-checkprograms:: 
+checkprograms::
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
-	done; 
+	done;
 
 checkv199install:
 	@if [ "${LIBDIR}" != "${LIBEXECDIR}" ] && [ -f ${LIBDIR}/pluto ]; \
@@ -215,8 +215,8 @@ clean::
 # do-everything entries
 KINSERT_PRE=precheck verset insert
 PRE=precheck verset kpatch
-POST=confcheck programs kernel install 
-MPOST=confcheck programs module install 
+POST=confcheck programs kernel install
+MPOST=confcheck programs module install
 #ogo:		$(PRE) pcf $(POST)
 #oldgo:		$(PRE) ocf $(POST)
 #nopromptgo:	$(PRE) rcf $(POST)
@@ -271,7 +271,7 @@ pcf:
 	-cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) config
 
 ocf:
-	-cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) oldconfig 
+	-cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) oldconfig
 
 rcf:
 	cd $(KERNELSRC) ; $(MAKE) $(KERNMAKEOPTS) ${NONINTCONFIG} </dev/null
@@ -305,7 +305,7 @@ confcheck:
 # kernel building, with error checks
 kernel:
 	rm -f out.kbuild out.kinstall
-	# undocumented kernel folklore: clean BEFORE dep. 
+	# undocumented kernel folklore: clean BEFORE dep.
 	# we run make dep seperately, because there is no point in running ERRCHECK
 	# on the make dep output.
 	# see LKML thread "clean before or after dep?"
@@ -374,21 +374,21 @@ module24:
         fi ; \
         ${MAKE} ${MODBUILDDIR}/Makefile
 	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
-	@echo 
+	@echo
 	@echo '========================================================='
-	@echo 
+	@echo
 	@echo 'KLIPS module built successfully. '
 	@echo ipsec.o is in ${MODBUILDDIR}
-	@echo 
+	@echo
 	@(cd ${MODBUILDDIR}; ls -l ipsec.o)
 	@(cd ${MODBUILDDIR}; size ipsec.o)
-	@echo 
+	@echo
 	@echo 'use make minstall as root to install it'
-	@echo 
+	@echo
 	@echo '========================================================='
-	@echo 
+	@echo
 
-mod24clean module24clean: 
+mod24clean module24clean:
 	rm -rf ${MODBUILDDIR}
 
 #autoodetect 2.4 and 2.6
@@ -424,7 +424,7 @@ minstall24:
 
 
 else
-module: 
+module:
 	echo 'Building in place is no longer supported. Please set MODBUILDDIR='
 	exit 1
 
@@ -450,21 +450,21 @@ module26:
         fi ; \
         ${MAKE}  ${MOD26BUILDDIR}/Makefile
 	${MAKE} -C ${KERNELSRC} ${KERNELBUILDMFLAGS} BUILDDIR=${MOD26BUILDDIR} SUBDIRS=${MOD26BUILDDIR} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} MODULE_DEFCONFIG=${MODULE_DEFCONFIG}  MODULE_EXTRA_INCLUDE=${MODULE_EXTRA_INCLUDE} ARCH=${ARCH} V=${V} modules
-	@echo 
+	@echo
 	@echo '========================================================='
-	@echo 
+	@echo
 	@echo 'KLIPS26 module built successfully. '
 	@echo ipsec.ko is in ${MOD26BUILDDIR}
-	@echo 
+	@echo
 	@(cd ${MOD26BUILDDIR}; ls -l ipsec.ko)
 	@(cd ${MOD26BUILDDIR}; size ipsec.ko)
-	@echo 
+	@echo
 	@echo 'use make minstall as root to install it'
-	@echo 
+	@echo
 	@echo '========================================================='
-	@echo 
+	@echo
 
-mod26clean module26clean: 
+mod26clean module26clean:
 	rm -rf ${MOD26BUILDDIR}
 
 # module-only install, with error checks
@@ -493,7 +493,7 @@ minstall26:
 
 
 else
-module26: 
+module26:
 	echo 'Building in place is no longer supported. Please set MOD26BUILDDIR='
 	exit 1
 
@@ -575,7 +575,7 @@ buildready:
 
 rpm:
 	@echo To build an rpm, use: rpmbuild -ba packaging/XXX/openswan.spec
-	@echo where XXX is your rpm based vendor 
+	@echo where XXX is your rpm based vendor
 	rpmbuild -bs packaging/centos5/bluerose.spec
 
 ipkg_strip:
@@ -606,7 +606,7 @@ ipkg_clean:
 
 
 ipkg: programs install ipkg_strip ipkg_module
-	@echo "Generating ipkg..."; 
+	@echo "Generating ipkg...";
 	DESTDIR=${DESTDIR} OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} IPSECVERSION=${IPSECVERSION} ./packaging/ipkg/generate-ipkg
 
 tarpkg:
@@ -614,7 +614,7 @@ tarpkg:
 	@rm -rf /var/tmp/openswan-${USER}
 	@make DESTDIR=/var/tmp/openswan-${USER} programs install
 	@rm /var/tmp/openswan-${USER}/etc/ipsec.conf
-	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz 
+	@(cd /var/tmp/openswan-${USER} && tar czf - . ) >openswan${VENDOR}-${IPSECVERSION}.tgz
 	@ls -l openswan${VENDOR}-${IPSECVERSION}.tgz
 	@rm -rf /var/tmp/openswan-${USER}
 

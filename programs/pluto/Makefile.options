@@ -23,7 +23,7 @@ endif
 
 ifeq ($(USE_LDAP),true)
 # Everyone (should) be using LDAPv3, however LDAP_VERSION=2 is an option
-# if you require LDAPv2 
+# if you require LDAPv2
 LDAP_VERSION=3
 endif
 
@@ -54,11 +54,11 @@ endif
 
 # where to find klips headers and Openswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
-HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC) 
+HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
 
 # Use LIBNSS
 ifeq ($(USE_LIBNSS),true)
-HDRDIRS+= -I/usr/include/nspr4 -I/usr/include/nss3	
+HDRDIRS+= -I/usr/include/nspr4 -I/usr/include/nss3
 endif
 
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=BIG_ENDIAN
@@ -125,24 +125,24 @@ PFKEYv2_DIST_SRC=
 PFKEYv2_OBJS=
 endif
 
-NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h 
+NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h
 ifeq ($(USE_NETKEY),true)
 NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES -DPFKEY
 NETKEY_SRCS=${NETKEY_DIST_SRCS}
-NETKEY_OBJS=kernel_netlink.o 
+NETKEY_OBJS=kernel_netlink.o
 endif
 
 KLIPS_DIST_SRCS=kernel_klips.c
 ifeq ($(USE_KLIPS),true)
 KLIPS_SRCS=${KLIPS_DIST_SRCS}
 KLIPS_DEFS=-DKLIPS -DHAVE_UDPFROMTO -DPFKEY
-KLIPS_OBJS=kernel_klips.o 
+KLIPS_OBJS=kernel_klips.o
 endif
 
-MAST_DIST_SRCS=kernel_mast.c 
+MAST_DIST_SRCS=kernel_mast.c
 ifeq ($(USE_MAST),true)
 MAST_SRCS=${MAST_DIST_SRCS}
-MAST_DEFS=-DKLIPS_MAST 
+MAST_DEFS=-DKLIPS_MAST
 MAST_OBJS=kernel_mast.o
 endif
 
@@ -166,8 +166,8 @@ endif
 #
 X509_DIST_OBJS=ac.o x509.o ocsp.o x509keys.o
 X509_DIST_SRCS=${X509_DIST_OBJS:.o=.c}
-X509_DIST_SRCS+=fetch.h 
-HAVE_THREADS_DIST_OBJS=fetch.o 
+X509_DIST_SRCS+=fetch.h
+HAVE_THREADS_DIST_OBJS=fetch.o
 HAVE_THREADS_DIST_SRCS=${HAVE_THREADS_DIST_OBJS:.o=.c}
 X509_OBJS=${X509_DIST_OBJS}
 X509_SRCS=${X509_DIST_SRCS}
@@ -250,10 +250,10 @@ endif
 endif
 
 ifeq ($(USE_EXTRACRYPTO),true)
-EXTRA_CRYPTO_DEFS=-DUSE_TWOFISH -DUSE_BLOWFISH -DUSE_SERPENT 
-EXTRA_CRYPTO_SRCS=ike_alg_blowfish.c ike_alg_twofish.c ike_alg_serpent.c 
-EXTRA_CRYPTO_OBJS=ike_alg_blowfish.o ike_alg_twofish.o ike_alg_serpent.o 
-EXTRA_CRYPTO_LIBS=$(LIBBLOWFISH) $(LIBTWOFISH) $(LIBSERPENT) 
+EXTRA_CRYPTO_DEFS=-DUSE_TWOFISH -DUSE_BLOWFISH -DUSE_SERPENT
+EXTRA_CRYPTO_SRCS=ike_alg_blowfish.c ike_alg_twofish.c ike_alg_serpent.c
+EXTRA_CRYPTO_OBJS=ike_alg_blowfish.o ike_alg_twofish.o ike_alg_serpent.o
+EXTRA_CRYPTO_LIBS=$(LIBBLOWFISH) $(LIBTWOFISH) $(LIBSERPENT)
 endif
 
 
@@ -268,7 +268,7 @@ endif
 ifeq ($(USE_TAPROOM),true)
 LIBTPM=tpm/libtpm.a
 TPM_LIBS=${LIBTPM} ${TCLLIB}
-TPM_DEFS=-DTPM ${TCLINC} 
+TPM_DEFS=-DTPM ${TCLINC}
 endif
 
 DEFINES = $(EXTRA_DEFINES) \
@@ -303,12 +303,12 @@ LIBSPLUTO =$(OBJSGCRYPT)
 LIBSPLUTO+=$(LIBOSWCRYPTO)
 LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) $(OPENSWANLIB) $(LIBPLUTO)
 LIBSPLUTO+=${LIBSHA1} ${LIBMD5} ${LIBMD2}
-LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS) 
+LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS)
 LIBSPLUTO+=$(HAVE_THREADS_LIBS)
 LIBSPLUTO+=${CURL_LIBS} ${TPM_LIBS}
 LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} $(LIBSHA2)
 LIBSPLUTO+=${WHACKLIB} ${PLUTOLIB} ${BSDKAME_LIBS}
-PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS} 
+PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS}
 PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}
 PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} -lgmp # -lefence
 

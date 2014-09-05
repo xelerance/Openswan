@@ -21,7 +21,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -Wbad-function-cast
 
 ifeq ($(USE_SAREF_KERNEL),true)
 CFLAGS+=-DSAREF_SUPPORTED
@@ -36,7 +36,7 @@ NAT_DEFS=-DNAT_TRAVERSAL
 endif
 CFLAGS+= ${NAT_DEFS}
 
-LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS} 
+LIBS?=${PROGLIBS} ${OSWLOGLIB} ${OPENSWANLIB} ${CRYPTOLIBS}
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -173,7 +173,7 @@ install_file_list::
 endif
 
 # set values for implicit rules.
-LOADLIBS=${OBJS} 
+LOADLIBS=${OBJS}
 
 # ${LIBS} is repeated due to possible circular dependancies among libraries
 ifeq ($(USE_LIBNSS),false)
@@ -201,8 +201,8 @@ endif
 
 include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 
-%.i: %.c 
-	$(CC) $(CFLAGS) -E -o $@ $< 
+%.i: %.c
+	$(CC) $(CFLAGS) -E -o $@ $<
 
 TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \

@@ -14,7 +14,7 @@ OSDEP?=$(shell uname -s | tr 'A-Z' 'a-z')
 
 # Original flags
 INCLUDES+=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
-INCLUDES+=-I${OPENSWANSRCDIR}/include 
+INCLUDES+=-I${OPENSWANSRCDIR}/include
 CFLAGS+=${PORTINCLUDE} ${INCLUDES} ${CROSSFLAGS}
 CFLAGS+=-DDEBUG
 CFLAGS+= $(USERCOMPILE)
@@ -30,7 +30,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -Wbad-function-cast
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -51,8 +51,8 @@ ifeq ($(SHOULDWERESTART),true${ONEFILE})
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && ${MAKE} $@
 else
-all:	$(LIB) 
-programs: $(LIB) 
+all:	$(LIB)
+programs: $(LIB)
 clean:	cleanall
 install: doinstall
 
