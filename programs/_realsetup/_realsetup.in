@@ -446,13 +446,13 @@ case "$1" in
 		if test -d /proc/`cat $plutopid 2> /dev/null` >/dev/null
 		then
 			plutokind=normal
-		elif ps -C pluto >/dev/null
+		elif pidof pluto >/dev/null
 		then
 			plutokind=illicit
 		else
 			plutokind=dead
 		fi
-	elif ps -C pluto >/dev/null
+	elif pidof pluto >/dev/null
 	then
 		plutokind=orphaned
 	else
