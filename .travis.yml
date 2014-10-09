@@ -1,0 +1,17 @@
+language: c
+compiler:
+  - cc
+
+before_install:
+  - "sudo apt-get update"
+
+install:
+  - "sudo apt-get install gcc-multilib libgmp-dev libgmp3-dev:i386 "
+  - "sudo apt-get install build-essential lib32stdc++6 flex bison "
+  - "PATH=$HOME/bin:$PATH export PATH"
+  - "echo WERROR=-Werror >Makefile.inc.local"
+
+script:
+  - "cat Makefile.inc.local"
+  - "make env "
+  - "make programs "
