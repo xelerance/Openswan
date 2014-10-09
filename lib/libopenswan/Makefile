@@ -67,17 +67,14 @@ LOGSRCS=oswlog.c oswid.c
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
 LOGOBJS=${LOGSRCS:.c=.o}
 
-KLIPSSRCDIR?=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
-
-VPATH+= ${KLIPSSRCDIR}
 
 HDRS=${KLIPSINC}/openswan.h internal.h
 
 LIBA=libopenswan.a
 LIBL=liboswlog.a
 # Original flags
-CFLAGS+=${PORTINCLUDE} -I. -I${KLIPSSRCDIR} -I${KLIPSINC}
+CFLAGS+=${PORTINCLUDE} -I.
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS}
 CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS}
@@ -217,25 +214,25 @@ l:
 	$(RANLIB) $(LIB)
 
 t:	$(LIB)
-	ln -f -s ${KLIPSSRCDIR}/atosubnet.c try.c
+	ln -f -s ${srcdir}/atosubnet.c try.c
 	${CC} ${CFLAGS} -DATOSUBNET_MAIN try.c $(LIB) -o try
 	./try -r
-	ln -f -s ${KLIPSSRCDIR}/ttosubnet.c try1a.c
+	ln -f -s $[srcdir}/ttosubnet.c try1a.c
 	${CC} ${CFLAGS} -DTTOSUBNET_MAIN try1a.c $(LIB) -o try1a
 	./try1a -r
-	ln -f -s ${KLIPSSRCDIR}/ttodata.c try2.c
+	ln -f -s ${srcdir}/ttodata.c try2.c
 	${CC} ${CFLAGS} -DTTODATA_MAIN try2.c $(LIB) -o try2
 	./try2 -r
-	ln -f -s ${KLIPSSRCDIR}/atoasr.c try3.c
+	ln -f -s ${srcdir}/atoasr.c try3.c
 	${CC} ${CFLAGS} -DATOASR_MAIN try3.c $(LIB) -o try3
 	./try3 -r
-	ln -f -s ${KLIPSSRCDIR}/ttosa.c try4a.c
+	ln -f -s ${srcdir}/ttosa.c try4a.c
 	${CC} ${CFLAGS} -DTTOSA_MAIN try4a.c $(LIB) -o try4a
 	./try4a -r
-	ln -f -s ${KLIPSSRCDIR}/rangetosubnet.c try6.c
+	ln -f -s ${srcdir}/rangetosubnet.c try6.c
 	${CC} ${CFLAGS} -DRANGETOSUBNET_MAIN try6.c $(LIB) -o try6
 	./try6 -r
-	ln -f -s ${KLIPSSRCDIR}/addrtot.c try7.c
+	ln -f -s ${srcdir}/addrtot.c try7.c
 	${CC} ${CFLAGS} -DADDRTOT_MAIN try7.c $(LIB) -o try7
 	./try7 -r
 
