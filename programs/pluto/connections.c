@@ -599,7 +599,7 @@ format_end(char *buf
 		size_t room = sizeof(host_space) - icl - 1;
 		int needed = snprintf(host_space + icl, room, "<%s>", this->host_addr_name);
 
-		if (needed > room) {
+		if (needed > (signed)room) {
 		   loglog(RC_BADID, "format_end: buffer too small for dohost_name - should not happen\n");
 		}
 	}

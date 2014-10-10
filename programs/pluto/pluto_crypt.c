@@ -742,7 +742,7 @@ void handle_helper_comm(struct pluto_crypto_worker *w)
     if(r->pcr_len > sizeof(reqbuf)) {
 	loglog(RC_LOG_SERIOUS, "helper(%d) pid=%lu screwed up length: %lu > %lu, killing it"
 	       , w->pcw_helpernum
-	       , w->pcw_pid, (unsigned long)r->pcr_len
+	       , (unsigned long)w->pcw_pid, (unsigned long)r->pcr_len
                , (unsigned long)sizeof(reqbuf));
     killit:
 #ifdef HAVE_LIBNSS
@@ -995,8 +995,8 @@ static void cleanup_crypto_helper(struct pluto_crypto_worker *w
 				  , int status)
 {
     if(w->pcw_pipe) {
-	loglog(RC_LOG_SERIOUS, "closing helper(%u) pid=%lu fd=%d exit=%d"
-	       , w->pcw_helpernum, w->pcw_pid, w->pcw_pipe, status);
+	loglog(RC_LOG_SERIOUS, "closing helper(%lu) pid=%lu fd=%d exit=%d"
+	       , (unsigned long)w->pcw_helpernum, (unsigned long)w->pcw_pid, w->pcw_pipe, status);
 	close(w->pcw_pipe);
     }
 
