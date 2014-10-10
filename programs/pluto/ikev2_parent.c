@@ -2101,27 +2101,30 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     c->newest_isakmp_sa = pst->st_serialno;
 
     /* PATRICK: I may have to uncomment the following block: */
-    /* {
-//        /*check for child sa related errors */
-//        /* check for TS_UNACCEPTABLE */
-//        struct payload_digest *p;
-//
-//        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-//            {
-//                if ( p->payload.v2n.isan_type == v2N_TS_UNACCEPTABLE ) {
-//                    /* we can proceed with successful parent SA */
-//                    if(st->st_clonedfrom != 0) {
-//                        delete_event(st);
-//                        pst = state_with_serialno(st->st_clonedfrom);
-//                        md->st = pst;
-//                        md->pst = pst;
-//                        delete_event(st);
-//                        delete_state(st);
-//                    }
-//                    return STF_OK;
-//                }
-//            }
-//    }
+#if 0
+    {
+
+        /*check for child sa related errors */
+        /* check for TS_UNACCEPTABLE */
+        struct payload_digest *p;
+
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+            {
+                if ( p->payload.v2n.isan_type == v2N_TS_UNACCEPTABLE ) {
+                    /* we can proceed with successful parent SA */
+                    if(st->st_clonedfrom != 0) {
+                        delete_event(st);
+                        pst = state_with_serialno(st->st_clonedfrom);
+                        md->st = pst;
+                        md->pst = pst;
+                        delete_event(st);
+                        delete_state(st);
+                    }
+                    return STF_OK;
+                }
+            }
+    }
+#endif
 
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
@@ -2134,22 +2137,28 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
          * Delete previous retransmission event.
          */
         /* PATRICK: I may have to switch the following blocks: */
+#if 1
         /* Block 1 */
         delete_event(st);
         return STF_OK;
+#else
         /* Block 2 */
-        //if(st->st_clonedfrom != 0) {
-        //    pst = state_with_serialno(st->st_clonedfrom);
-        //    md->st = pst;
-        //    md->pst = pst;
-        //    delete_event(st);
-        //    delete_state(st);
-        //}
-        //return STF_OK;
+        if(st->st_clonedfrom != 0) {
+            pst = state_with_serialno(st->st_clonedfrom);
+            md->st = pst;
+            md->pst = pst;
+            delete_event(st);
+            delete_state(st);
+        }
+        return STF_OK;
         /* End of blocks */
+#endif
     }
+
     /* PATRICK: I may have to switch the following blocks: */
+#define CHECK_TS1_BLOCK1
     /* Block 1 */
+#ifdef CHECK_TS1_BLOCK1
     {
         int bestfit_n, bestfit_p;
         unsigned int best_tsi_i ,  best_tsr_i;
@@ -2208,6 +2217,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
             return STF_FAIL + v2N_TS_UNACCEPTABLE;
         }
     } /* end of TS check block */
+#endif /* CHECK_TS1_BLOCK1 */
 
     {
         v2_notification_t rn;
@@ -2265,178 +2275,180 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     ikev2_derive_child_keys(st, md->role);
 
     c->newest_ipsec_sa = st->st_serialno;
+
+#ifndef CHECK_TS1_BLOCK1
     /* Block 2 */
-    //{
-    //    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-    //    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-    //
-    //    /* parse traffic selector */
+    {
+        struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+        struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
 
-    //    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-    //    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+        /* parse traffic selector */
 
-    //    /* verify if the received traffic selectors are
-    //     * really same/or a subset of what we sent
-    //     */
-    //    if(ikev2_verify_ts(tsi, tsr, tsi_n, tsr_n
-    //                       , &st->st_ts_this, &st->st_ts_that
-    //                       , md->role) == FALSE) {
-    //        /* mistmatch in received selectors */
-    //        /*only proceeding with parent SA*/
-    //        delete_event(st);
-    //        return STF_OK;
-    //    }
+        tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+        tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
 
-    //}
+        /* verify if the received traffic selectors are
+         * really same/or a subset of what we sent
+         */
+        if(ikev2_verify_ts(tsi, tsr, tsi_n, tsr_n
+                           , &st->st_ts_this, &st->st_ts_that
+                           , md->role) == FALSE) {
+            /* mistmatch in received selectors */
+            /*only proceeding with parent SA*/
+            delete_event(st);
+            return STF_OK;
+        }
 
-    //{
-    //    v2_notification_t rn;
-    //    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    }
 
-    //    rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-    //                                   NULL, st, FALSE);
+    {
+        v2_notification_t rn;
+        struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
 
-    //    if(rn != v2N_NOTHING_WRONG)
-    //        return STF_FAIL + rn;
-    //}
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+                                       NULL, st, FALSE);
 
-    //{
-    //    struct payload_digest *p;
+        if(rn != v2N_NOTHING_WRONG)
+            return STF_FAIL + rn;
+    }
 
-    //    for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-    //        {
-    //            /* RFC 5996 */
-    //            /*Types in the range 0 - 16383 are intended for reporting errors.  An
-    //             * implementation receiving a Notify payload with one of these types
-    //             * that it does not recognize in a response MUST assume that the
-    //             * corresponding request has failed entirely.  Unrecognized error types
-    //             * in a request and status types in a request or response MUST be
-    //             * ignored, and they should be logged.*/
+    {
+        struct payload_digest *p;
 
-    //            if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
-    //                if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
-    //                    return STF_FAIL + p->payload.v2n.isan_type;
-    //                }
-    //            }
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
+            {
+                /* RFC 5996 */
+                /*Types in the range 0 - 16383 are intended for reporting errors.  An
+                 * implementation receiving a Notify payload with one of these types
+                 * that it does not recognize in a response MUST assume that the
+                 * corresponding request has failed entirely.  Unrecognized error types
+                 * in a request and status types in a request or response MUST be
+                 * ignored, and they should be logged.*/
 
-    //            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-    //                if ( st->st_connection->policy & POLICY_TUNNEL) {
-    //                    /*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
-    //                    DBG(DBG_CONTROLMORE,
-    //                        DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-    //                }
-    //                else {
-    //                    DBG(DBG_CONTROLMORE,
-    //                        DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
-    //                    if (st->st_esp.present == TRUE) {
-    //                        /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-    //                        st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-    //                    }
-    //                }
-    //            }
-    //        } /* for */
+                if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
+                    if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
+                        return STF_FAIL + p->payload.v2n.isan_type;
+                    }
+                }
 
-    //} /* notification block */
+                if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+                    if ( st->st_connection->policy & POLICY_TUNNEL) {
+                        /*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
+                    }
+                    else {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
+                        if (st->st_esp.present == TRUE) {
+                            /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+                            st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                        }
+                    }
+                }
+            } /* for */
 
-    //{
-    //    /*storing received traffic selectors */
+    } /* notification block */
 
-    //    struct traffic_selector *tmp;
-    //    unsigned int i=0;
-
-
-    //    ikev2_store_ts_instate(tsi, tsr, tsi_n, tsr_n, &st->st_ts_this, &st->st_ts_that);
-
-    //    for(i=0; i< tsi_n; i++) {
-
-    //        DBG(DBG_CONTROLMORE,
-    //            {
-    //                char lbi[ADDRTOT_BUF];
-    //                char hbi[ADDRTOT_BUF];
-    //                addrtot(&tsi[i].low,  0, lbi, sizeof(lbi));
-    //                addrtot(&tsi[i].high, 0, hbi, sizeof(hbi));
-
-    //                DBG_log("tsi=%s/%s, port=%d/%d, protocol=%d"
-    //                        ,  lbi, hbi, tsi[i].startport, tsi[i].endport, tsi[i].ipprotoid);
-    //            }
-    //            );
-
-    //    }
-
-    //    for(i=0; i< tsr_n; i++) {
-
-    //        DBG(DBG_CONTROLMORE,
-    //            {
-    //                char lbi[ADDRTOT_BUF];
-    //                char hbi[ADDRTOT_BUF];
-    //                addrtot(&tsr[i].low,  0, lbi, sizeof(lbi));
-    //                addrtot(&tsr[i].high, 0, hbi, sizeof(hbi));
-
-    //                DBG_log("tsr=%s/%s, port=%d/%d, protocol=%d"
-    //                        ,  lbi, hbi, tsr[i].startport, tsr[i].endport, tsr[i].ipprotoid);
-    //            }
-    //            );
-
-    //    }
+    {
+        /*storing received traffic selectors */
+            struct traffic_selector *tmp;
+        unsigned int i=0;
 
 
-    //    tmp = &st->st_ts_this;
+        ikev2_store_ts_instate(tsi, tsr, tsi_n, tsr_n, &st->st_ts_this, &st->st_ts_that);
 
-    //    while(tmp!= NULL) {
+        for(i=0; i< tsi_n; i++) {
 
-    //        DBG(DBG_CONTROLMORE,
-    //            {
-    //                char lbi[ADDRTOT_BUF];
-    //                char hbi[ADDRTOT_BUF];
-    //                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
-    //                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+            DBG(DBG_CONTROLMORE,
+                {
+                    char lbi[ADDRTOT_BUF];
+                    char hbi[ADDRTOT_BUF];
+                    addrtot(&tsi[i].low,  0, lbi, sizeof(lbi));
+                    addrtot(&tsi[i].high, 0, hbi, sizeof(hbi));
 
-    //                DBG_log(" R2  this  tsr=%s/%s, port=%d/%d, protocol=%d"
-    //                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
-    //            }
-    //            );
+                    DBG_log("tsi=%s/%s, port=%d/%d, protocol=%d"
+                            ,  lbi, hbi, tsi[i].startport, tsi[i].endport, tsi[i].ipprotoid);
+                }
+                );
 
-    //        tmp=tmp->next;
-    //    }
+        }
 
-    //    tmp = &st->st_ts_that;
-    //    while(tmp!= NULL) {
+        for(i=0; i< tsr_n; i++) {
 
-    //        DBG(DBG_CONTROLMORE,
-    //            {
-    //                char lbi[ADDRTOT_BUF];
-    //                char hbi[ADDRTOT_BUF];
-    //                addrtot(&tmp->low,  0, lbi, sizeof(lbi));
-    //                addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+            DBG(DBG_CONTROLMORE,
+                {
+                    char lbi[ADDRTOT_BUF];
+                    char hbi[ADDRTOT_BUF];
+                    addrtot(&tsr[i].low,  0, lbi, sizeof(lbi));
+                    addrtot(&tsr[i].high, 0, hbi, sizeof(hbi));
 
-    //                DBG_log(" R2  that  tsr=%s/%s, port=%d/%d, protocol=%d"
-    //                        ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
-    //            }
-    //            );
+                    DBG_log("tsr=%s/%s, port=%d/%d, protocol=%d"
+                            ,  lbi, hbi, tsr[i].startport, tsr[i].endport, tsr[i].ipprotoid);
+                }
+                );
 
-    //        tmp=tmp->next;
-    //    }
+        }
 
-    //    if(!ikev2_perfect_match_ts(tsi, tsr, tsi_n, tsr_n, c, md->role)) {
-    //        c = ikev2_create_narrowed_con(c, &st->st_ts_this, &st->st_ts_that, md->role);
-    //        st->st_connection = c;
-    //    }
 
-    //}
+        tmp = &st->st_ts_this;
 
-    //ikev2_derive_child_keys(st, md->role);
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+                {
+                    char lbi[ADDRTOT_BUF];
+                    char hbi[ADDRTOT_BUF];
+                    addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                    addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                    DBG_log(" R2  this  tsr=%s/%s, port=%d/%d, protocol=%d"
+                            ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+                }
+                );
+
+            tmp=tmp->next;
+        }
+
+        tmp = &st->st_ts_that;
+        while(tmp!= NULL) {
+
+            DBG(DBG_CONTROLMORE,
+                {
+                    char lbi[ADDRTOT_BUF];
+                    char hbi[ADDRTOT_BUF];
+                    addrtot(&tmp->low,  0, lbi, sizeof(lbi));
+                    addrtot(&tmp->high, 0, hbi, sizeof(hbi));
+
+                    DBG_log(" R2  that  tsr=%s/%s, port=%d/%d, protocol=%d"
+                            ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
+                }
+                );
+
+            tmp=tmp->next;
+        }
+
+        if(!ikev2_perfect_match_ts(tsi, tsr, tsi_n, tsr_n, c, md->role)) {
+            c = ikev2_create_narrowed_con(c, &st->st_ts_this, &st->st_ts_that, md->role);
+            st->st_connection = c;
+        }
+
+    }
+
+    ikev2_derive_child_keys(st, md->role);
     /* end of blocks */
+#endif /* !CHECK_TS1_BLOCK1 */
 
-	/* now install child SAs */
-	if(!install_ipsec_sa(st, TRUE))
-	   return STF_FATAL;
+    /* now install child SAs */
+    if(!install_ipsec_sa(st, TRUE))
+        return STF_FATAL;
 
-	/*
-	 * Delete previous retransmission event.
-	 */
-	delete_event(st);
+    /*
+     * Delete previous retransmission event.
+     */
+    delete_event(st);
 
-	return STF_OK;
+    return STF_OK;
 }
 
 /*
@@ -2915,19 +2927,23 @@ stf_status process_informational_ikev2(struct msg_digest *md)
  	* we need to send informational responde using existig SAs
  	*/
 
-        /* PATRICK: I may have to uncomment the following block: 
-        /*if(md->hdr.isa_flags & ISAKMP_FLAGS_R){
+        /* PATRICK: I may have to uncomment the following block: */
+#if 0
+        if(md->hdr.isa_flags & ISAKMP_FLAGS_R) {
             ikev2_update_counters(md, response_recd);
-        }*/
+        }
+#endif
 
         {
           /* PATRICK: I may have to switch the following two blocks: */
+        if(md->chain[ISAKMP_NEXT_v2D]
+#if 0
           /* Block 1 */
-            if(md->chain[ISAKMP_NEXT_v2D] && st->st_state != STATE_IKESA_DEL) {
+            && st->st_state != STATE_IKESA_DEL
+#else
           /* Block 2 */
-          //if(md->chain[ISAKMP_NEXT_v2D]) {
-          /* End of blocks */
-
+#endif
+           ) {
                 for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
                     v2del = &p->payload.v2delete;
 
@@ -2961,9 +2977,11 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                         else
                                             {
                                                 change_state(current_st, STATE_IKESA_DEL);
-                                                /* PATRICK: I may have to uncomment the following block:
-                                                /* md->st = NULL;
-                                                md->pst = NULL; */
+                                                /* PATRICK: I may have to uncomment the following block: */
+#if 0
+                                                md->st = NULL;
+                                                md->pst = NULL;
+#endif
                                             }
                                         delete_state(current_st);
                                         current_st = next_st;
@@ -3056,9 +3074,11 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                     else
                                         {
                                             change_state(current_st, STATE_IKESA_DEL);
-                                            /* PATRICK: I may have to uncomment the following block:
-                                            /* md->st = NULL;
-                                               md->pst = NULL; */
+                                            /* PATRICK: I may have to uncomment the following block: */
+#if 0
+                                            md->st = NULL;
+                                            md->pst = NULL;
+#endif
                                         }
                                     delete_state(current_st);
                                     current_st = next_st;
