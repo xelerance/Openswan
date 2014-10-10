@@ -1693,18 +1693,16 @@ parse_ipsec_transform(struct isakmp_transform *trans
                     {
                         case SA_LIFE_TYPE_SECONDS:
                             /* silently limit duration to our maximum */
-                            /* PATRICK: I may have to switch the following two blocks: */
-                            /* Block 1 */
-                            attrs->life_seconds = val <= SA_LIFE_DURATION_MAXIMUM
-                                ? (val < st->st_connection->sa_ipsec_life_seconds ? val : st->st_connection->sa_ipsec_life_seconds) : SA_LIFE_DURATION_MAXIMUM;
-                            /* Block 2 */
-                            //attrs->life_seconds = SA_LIFE_DURATION_MAXIMUM;
-                            //if(val <= (unsigned)st->st_connection->sa_ipsec_life_seconds) {
-                            //    attrs->life_seconds = val;
-                            //} else {
-                            //    attrs->life_seconds = st->st_connection->sa_ipsec_life_seconds;
-                            //}
-                            /* Enf of blocks */
+			    if(val <= SA_LIFE_DURATION_MAXIMUM) {
+				if(val < (unsigned)st->st_connection->sa_ipsec_life_seconds) {
+				    attrs->life_seconds = val;
+				} else {
+				    attrs->life_seconds = st->st_connection->sa_ipsec_life_seconds;
+				}
+			    }
+			    else {
+				attrs->life_seconds = SA_LIFE_DURATION_MAXIMUM;
+			    }
                             break;
                         case SA_LIFE_TYPE_KBYTES:
                               attrs->life_kilobytes = val;
