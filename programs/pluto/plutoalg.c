@@ -475,7 +475,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    /*	open new transformation */
 	    db_trans_add(db_ctx, ealg_i);
 
-#warning todo: needs to handle ikev2 now as well - 
+            /* XXX-MCR todo: needs to handle IKEV2 now as well  #3949  */
 	    /* add ESP auth attr (if present) */
 	    if (esp_info->esp_aalg_id != AUTH_ALGORITHM_NONE) {
 		db_attr_add_values(db_ctx,
