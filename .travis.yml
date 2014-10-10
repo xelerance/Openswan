@@ -29,9 +29,9 @@ install:
   - "PATH=$HOME/bin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
-  - if [ "$BUILD_ARCH" = i386 ]; then echo "CROSSCOMPILE=-m32" >>Makefile.inc.local; fi
+  - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINK=-m32" >>Makefile.inc.local; echo "USERCOMPILE=-m32" >>Makefile.inc.local; fi
 
 script:
   - "cat Makefile.inc.local"
   - "make env | sort -f"
-  - "make programs "
+  - "make programs ARCH=${BUILD_ARCH}"
