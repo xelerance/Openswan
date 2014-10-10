@@ -19,6 +19,7 @@ env:
 before_install:
   - uname -a
   - env | sort -f
+  - if [ -z "$TRAVIS_OS_NAME" ]; then TRAVIS_OS_NAME=linux; fi
   - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get update; fi
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew update; fi
 
