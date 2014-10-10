@@ -757,7 +757,7 @@ main(int argc, char **argv)
 	if (log_with_timestamp_desired)
 	   log_with_timestamp = TRUE;
     }
-    else 
+    else
 	log_to_stderr = FALSE;
 
 #ifdef DEBUG
