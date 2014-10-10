@@ -562,7 +562,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	memcpy(st->st_icookie, md->hdr.isa_icookie, COOKIE_SIZE);
 	/* initialize_new_state expects valid icookie/rcookie values, so create it now */
 	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
-	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto); 
+	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
 	change_state(st, STATE_PARENT_R1);
 	st->st_msgid_lastack = INVALID_MSGID;
@@ -1480,10 +1480,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
             st->st_connection = c0;
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
-	    
+
 	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this);
 	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that);
-	    
+
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
             if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
@@ -2946,11 +2946,11 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                 for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
                     v2del = &p->payload.v2delete;
 
-			switch (v2del->isad_protoid) 
+			switch (v2del->isad_protoid)
 			{
-			case PROTO_ISAKMP: 
+			case PROTO_ISAKMP:
 				{
-				/* My understanding is that delete payload for IKE SA 
+				/* My understanding is that delete payload for IKE SA
 				 *  should be the only payload in the informational
 				 * Now delete the IKE SA state and all its child states
 				 */
@@ -2996,7 +2996,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                 u_int16_t i;
                                 u_char *spi;
 
-				for(i = 0; i < v2del->isad_nrspi; i++ ) 
+				for(i = 0; i < v2del->isad_nrspi; i++ )
 				{
 					spi = p->pbs.cur + (i * v2del->isad_spisize);
 					DBG(DBG_CONTROLMORE, DBG_log("Now doing actual deletion for request: %s SA(0x%08lx)"
@@ -3008,18 +3008,18 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                                                                               , v2del->isad_protoid
                                                                                               , *(ipsec_spi_t *)spi);
 
-					if(dst != NULL) 
+					if(dst != NULL)
 					{
 						struct ipsec_proto_info *pr = v2del->isad_protoid == PROTO_IPSEC_AH? &dst->st_ah : &dst->st_esp;
 						DBG(DBG_CONTROLMORE, DBG_log("our side spi that needs to be deleted: %s SA(0x%08lx)"
                                                                 , enum_show(&protocol_names, v2del->isad_protoid)
                                                                 , (unsigned long)ntohl(pr->our_spi)));
-						
+
 						/* now delete the state*/
 						change_state(dst, STATE_CHILDSA_DEL);
 						delete_state(dst);
 					}
-					else 
+					else
 					{
 						DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s SA(0x%08lx) but local state is not found"
 								, enum_show(&protocol_names, v2del->isad_protoid)
@@ -3039,15 +3039,15 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                         break;
                     }
 
-		} /* for */ 
+		} /* for */
 
 		} /* if*/
-		else 
+		else
 		{
 			/* empty response to our IKESA delete request*/
 			if((md->hdr.isa_flags & ISAKMP_FLAGS_R) && st->st_state == STATE_IKESA_DEL)
 			{
-				/* My understanding is that delete payload for IKE SA 
+				/* My understanding is that delete payload for IKE SA
 				 *  should be the only payload in the informational
 				 * Now delete the IKE SA state and all its child states
 				 */

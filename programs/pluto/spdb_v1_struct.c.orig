@@ -76,7 +76,7 @@ parse_secctx_attr (pb_stream *pbs, struct state *st)
 		int i=0;
 
 		DBG(DBG_PARSING, DBG_log("received sec ctx"));
-		
+
 		/*doing sanity check*/
 		if(pbs_left(pbs) < (sizeof(ctx_doi) + sizeof(ctx_alg) + sizeof(ctx_len) + 1) ) {
 			DBG(DBG_PARSING, DBG_log("received perhaps corrupted security ctx (should not happen really)"));
@@ -86,7 +86,7 @@ parse_secctx_attr (pb_stream *pbs, struct state *st)
 		/*reading ctx doi*/
 		memcpy (&ctx_doi, pbs->cur, sizeof(ctx_doi));
 		pbs->cur += sizeof(ctx_doi);
-		
+
 		/*reading ctx alg*/
 		memcpy (&ctx_alg, pbs->cur, sizeof(ctx_alg));
 		pbs->cur += sizeof(ctx_alg);
@@ -121,13 +121,13 @@ parse_secctx_attr (pb_stream *pbs, struct state *st)
 			return FALSE;
 			}
 		}
-		
+
 		/*while (pbs_left(pbs) != 0){
 		sec_ctx_value[i++]= *pbs->cur++;
 		    if(i == MAX_SECCTX_LEN){
 		    DBG(DBG_PARSING, DBG_log("security label reached maximum length (MAX_SECCTX_LEN) allowed"));
 		    break;
-		    }	
+		    }
 		}*/
 
 		//sec_ctx_value[i]='\0';
@@ -161,10 +161,10 @@ parse_secctx_attr (pb_stream *pbs, struct state *st)
 		DBG_log("security contexts are verified in the initiator state");
 	   }
 	   else {
-		DBG_log("security context verification failed in the initiator state" 
+		DBG_log("security context verification failed in the initiator state"
 				"(shouldnt reach here unless responder (or something in between) is modifying the security context");
 		return FALSE;
-	   }	
+	   }
 	}
 	else if (st->st_state==STATE_QUICK_R0) {
 		DBG_log("Receievd sec ctx in responder state again, already stored it so doing nothing now");
@@ -333,10 +333,10 @@ out_sa(pb_stream *outs
 	struct db_prop_conj *pc;
 	unsigned int pn;
 	int valid_prop_cnt;
-	
+
 	pc = &sadb->prop_conjs[pcn];
 	valid_prop_cnt = pc->prop_cnt;
-	DBG(DBG_EMITTING, 
+	DBG(DBG_EMITTING,
 	    DBG_log("out_sa pcn: %d has %d valid proposals",
 		    pcn, valid_prop_cnt));
 
@@ -370,12 +370,12 @@ out_sa(pb_stream *outs
 		: p->protoid == PROTO_IPCOMP ? IPCOMP_CPI_SIZE
 		: IPSEC_DOI_SPI_SIZE;
 
-	    DBG(DBG_EMITTING, 
+	    DBG(DBG_EMITTING,
 		DBG_log("out_sa pcn: %d pn: %d<%d valid_count: %d trans_cnt: %d",
 			pcn, pn, pc->prop_cnt, valid_prop_cnt, p->trans_cnt));
 
 	    /* but, skip things if the transform count is zero */
-	    if(p->trans_cnt == 0) continue; 
+	    if(p->trans_cnt == 0) continue;
 
 	    /* Proposal header */
 	    if(--valid_prop_cnt > 0) {
@@ -419,7 +419,7 @@ out_sa(pb_stream *outs
 		    attr_val_descs = oakley_attr_val_descs;
 		    /* no SPI needed */
 		    break;
-		    
+
 		case PROTO_IPSEC_AH:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_ah_transform_desc;
@@ -429,7 +429,7 @@ out_sa(pb_stream *outs
 		    spi_generated = &ah_spi_generated;
 		    proto = IPPROTO_AH;
 		    break;
-		    
+
 		case PROTO_IPSEC_ESP:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_esp_transform_desc;
@@ -439,7 +439,7 @@ out_sa(pb_stream *outs
 		    spi_generated = &esp_spi_generated;
 		    proto = IPPROTO_ESP;
 		    break;
-		    
+
 		case PROTO_IPCOMP:
 		    passert(!oakley_mode);
 		    trans_desc = &isakmp_ipcomp_transform_desc;
@@ -467,11 +467,11 @@ out_sa(pb_stream *outs
 		    , &proposal_pbs, "CPI"))
 			return_on(ret, FALSE);
 		    break;
-		    
+
 		default:
 		    bad_case(p->protoid);
 		}
-		
+
 		if (spi_ptr != NULL)
 		{
 		    if (spi_generated != NULL && !*spi_generated)
@@ -593,7 +593,7 @@ out_sa(pb_stream *outs
 			pb_stream val_pbs;
 			attr.isaat_af_type = secctx_attr_value | ISAKMP_ATTR_AF_TLV;
 			DBG(DBG_EMITTING, DBG_log("secctx_attr_value=%d, type=%d", secctx_attr_value, attr.isaat_af_type));
-			out_struct(&attr, attr_desc, &trans_pbs, &val_pbs); 
+			out_struct(&attr, attr_desc, &trans_pbs, &val_pbs);
 			DBG(DBG_EMITTING, DBG_log("placing security context attribute in the out going structure"));
 			DBG(DBG_EMITTING, DBG_log("sending ctx_doi"));
 			out_raw(&st->sec_ctx->ctx_doi, sizeof(st->sec_ctx->ctx_doi),  &val_pbs, " variable length sec ctx: ctx_doi");
@@ -623,7 +623,7 @@ out_sa(pb_stream *outs
 				 , &trans_pbs);
 		    } else {
 				out_attr(a->type.ipsec,  a->val , attr_desc, attr_val_descs , &trans_pbs);
-			
+
 		    }
 
 		}
@@ -1003,7 +1003,7 @@ parse_isakmp_sa_body(
 			ta.encrypt = val;
 			ta.encrypter = crypto_get_encrypter(val);
 			ta.enckeylen = ta.encrypter->keydeflen;
-		    } else 
+		    } else
 #endif
 		    switch (val)
 		    {
@@ -1031,7 +1031,7 @@ parse_isakmp_sa_body(
 		    if (ike_alg_hash_present(val)) {
 			ta.prf_hash = val;
 			ta.prf_hasher = crypto_get_hasher(val);
-		    } else 
+		    } else
 #endif
 /* #else */
 		    switch (val)
@@ -1138,7 +1138,7 @@ parse_isakmp_sa_body(
 			ta.xauth = val;
 			val = OAKLEY_RSA_SIG;
 			/* No break; */
-#endif			
+#endif
 
 		    case OAKLEY_RSA_SIG:
 #ifdef XAUTH
@@ -1254,7 +1254,7 @@ parse_isakmp_sa_body(
 		        break;
 		    }
 		    /*
-		     * check if this keylen is compatible with 
+		     * check if this keylen is compatible with
 		     * specified alg_info_ike
 		     */
 		    if (!ike_alg_enc_ok(ta.encrypt, val, c->alg_info_ike, NULL, ugh_buf, sizeof(ugh_buf))) {
@@ -1297,8 +1297,8 @@ parse_isakmp_sa_body(
 	}
 
 #ifdef IKE_ALG
-	/* 
-	 * ML: at last check for allowed transforms in alg_info_ike 
+	/*
+	 * ML: at last check for allowed transforms in alg_info_ike
 	 *     (ALG_INFO_F_STRICT flag)
 	 */
 	if (ugh == NULL)
@@ -1418,7 +1418,7 @@ parse_isakmp_sa_body(
  * This should probably get more of its parameters, like what group to use,
  * from the connection specification, but it's not there yet.
  * This should ideally be done by passing them via whack.
- * 
+ *
  */
 
 /* XXX MCR. I suspect that actually all of this is redundent */
@@ -1445,12 +1445,12 @@ init_am_st_oakley(struct state *st, lset_t policy)
 
     passert(policy_index < elemsof(oakley_am_sadb));
     sa = &oakley_am_sadb[policy_index];
-    
+
     /* Max transforms == 2 - Multiple transforms, 1 DH group */
     revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
 				   , sa, 2);
 
-    
+
     if(revised_sadb == NULL) {
 	return FALSE;
     }
@@ -1462,7 +1462,7 @@ init_am_st_oakley(struct state *st, lset_t policy)
 
     trans = &prop->trans[0];
 
-    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5); 
+    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
     enc  = &trans->attrs[0];
     hash = &trans->attrs[1];
     auth = &trans->attrs[2];
@@ -1845,7 +1845,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 		}
 #endif
 	}
-		
+
 	if (ipcomp_inappropriate)
 	{
 	    loglog(RC_LOG_SERIOUS, "IPsec attribute %s inappropriate for IPCOMP"
@@ -2337,7 +2337,7 @@ parse_ipsec_sa_body(
 			case ESP_3DES:
 			    break;
 #endif
-			    
+
 #ifdef SUPPORT_ESP_NULL	/* should be about as secure as AH-only */
 #warning "Building with ESP-Null"
 			case ESP_NULL:
@@ -2357,7 +2357,7 @@ parse_ipsec_sa_body(
 				}
 			    break;
 #endif
-			    
+
 			case ESP_DES:          /* NOT safe */
 			    loglog(RC_LOG_SERIOUS, "1DES was proposed, it is insecure");
 			default:
@@ -2397,7 +2397,7 @@ parse_ipsec_sa_body(
 			    continue;   /* try another */
 			}
 		}
-		    
+
 		if (ah_seen && ah_attrs.encapsulation != esp_attrs.encapsulation)
 		{
 		    /* ??? This should be an error, but is it? */
@@ -2410,8 +2410,8 @@ parse_ipsec_sa_body(
 	    if (tn == esp_proposal.isap_notrans)
 		continue;	/* we didn't find a nice one */
 #ifdef KERNEL_ALG
-	    /* 
-	     * ML: at last check for allowed transforms in alg_info_esp 
+	    /*
+	     * ML: at last check for allowed transforms in alg_info_esp
 	     *     (ALG_INFO_F_STRICT flag)
 	     *
 	     */
