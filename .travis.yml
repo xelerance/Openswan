@@ -6,8 +6,6 @@ language: c
 compiler:
   - gcc
 
-before_install:
-  - "sudo apt-get update"
 
 env:
   global:
@@ -16,11 +14,12 @@ env:
     - BUILD_ARCH=i386
     - BUILD_ARCH=amd64
 
+# remove the oracle junk, because it otherwise gets updated, and we do not care about it.
 before_install:
   - uname -a
   - env | sort -f
   - if [ -z "$TRAVIS_OS_NAME" ]; then TRAVIS_OS_NAME=linux; fi
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get update; fi
+  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get update; sudo apt-get remove oracle-java7-installer oracle-java8-installer; fi
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew update; fi
 
 install:
