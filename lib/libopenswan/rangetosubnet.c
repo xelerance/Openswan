@@ -29,8 +29,8 @@ const ip_address *from;
 const ip_address *to;
 ip_subnet *dst;
 {
-	unsigned const char *fp;
-	unsigned const char *tp;
+	unsigned char *fp;
+	unsigned char *tp;
 	unsigned fb;
 	unsigned tb;
 	unsigned const char *f;

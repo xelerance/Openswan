@@ -30,18 +30,18 @@ const ip_address *src;
 size_t				/* 0 for error */
 addrbytesptr(src, dstp)
 const ip_address *src;
-const unsigned char **dstp;	/* NULL means just a size query */
+unsigned char **dstp;	/* NULL means just a size query */
 {
-	const unsigned char *p;
+	unsigned char *p;
 	size_t n;
 
 	switch (src->u.v4.sin_family) {
 	case AF_INET:
-		p = (const unsigned char *)&src->u.v4.sin_addr.s_addr;
+		p = (unsigned char *)&src->u.v4.sin_addr.s_addr;
 		n = 4;
 		break;
 	case AF_INET6:
-		p = (const unsigned char *)&src->u.v6.sin6_addr;
+		p = (unsigned char *)&src->u.v6.sin6_addr;
 		n = 16;
 		break;
 	default:
@@ -103,7 +103,7 @@ const ip_address *src;
 unsigned char *dst;
 size_t dstlen;
 {
-	const unsigned char *p;
+	unsigned char *p;
 	size_t n;
 	size_t ncopy;
 
