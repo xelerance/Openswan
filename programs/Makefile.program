@@ -90,7 +90,7 @@ ifeq ($(SHOULDWERESTART),true../Makefile.program)
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/${SOURCEDIR} && $(MAKE) $@
 else
-all: ${PROGRAM}
+all: ${PROGRAM} ${CONFFILES}
 programs: all
 clean:	cleanall
 install: doinstall
