@@ -31,8 +31,8 @@ SUBDIRS+=proc pluto addconn
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _updown 
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets initnss
-SUBDIRS+=rsasigkey setup showdefaults showhostkey 
-SUBDIRS+=ikeping examples policy
+SUBDIRS+=rsasigkey setup showdefaults showhostkey
+SUBDIRS+=ikeping examples policy readwriteconf
 
 ifeq ($(USE_KLIPS),true)
 SUBDIRS+= _startklips _updown.klips 

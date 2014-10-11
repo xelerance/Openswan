@@ -18,6 +18,7 @@ PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 #EXTRALIBS=-lefence
 
 PROGRAM=readwriteconf
+NOINSTALL=true
 
 # reach into pluto for now.
 INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
@@ -27,4 +28,5 @@ include ${srcdir}../Makefile.program
 
 TAGS:	$(DISTSRC)
 	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
+
 
