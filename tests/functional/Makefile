@@ -17,5 +17,5 @@ srcdir?=${OPENSWANSRCDIR}/tests/functional
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
-        @${MAKE} -C 01-confread check
+	@${MAKE} -C 01-confread check
 

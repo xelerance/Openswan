@@ -17,5 +17,5 @@ srcdir?=${OPENSWANSRCDIR}/programs/
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
-        @${MAKE} -C functional check
+	@${MAKE} -C functional check
 
