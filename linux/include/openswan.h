@@ -392,6 +392,9 @@ const char *dns_string_datetime(time_t seconds,
 				char *buf,
 				int bufsize);
 
+/* from OpenBSD */
+size_t strlcat(char *dst, const char *src, size_t siz);
+
 
 /*
  * old functions, to be deleted eventually
