@@ -1,12 +1,13 @@
+# -*- makefile -*-
 # Openswan master makefile
 # Copyright (C) 1998-2002  Henry Spencer.
 # Copyright (C) 2003-2004  Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -32,14 +33,14 @@ clean::
 	-(cd ${OPENSWANSRCDIR} && $(MAKE) modclean && $(MAKE) mod26clean)
 
 distclean:	clean
-	rm -f out.kpatch 
+	rm -f out.kpatch
 	if [ -f umlsetup.sh ]; then source umlsetup.sh; if [ -d "$$POOLSPACE" ]; then rm -rf $$POOLSPACE; fi; fi
 
 install_file_list:
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) --no-print-directory srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} install_file_list ) || exit 1; \
-	done; 
+	done;
 
 # uninstall, as much as possible
 uninstall:
@@ -63,38 +64,8 @@ TAGS:	$(TAGSFILES)
 .PHONY: dummy
 dummy:
 
-uml:	checkprograms
-	-chmod +x packaging/utils/*.sh 
-	-chmod +x testing/utils/make-uml.sh testing/utils/verify-uml.sh
-	./testing/utils/verify-uml.sh
-	./testing/utils/make-uml.sh `pwd`
-
-umluserland:
-	(touch ${OPENSWANSRCDIR}/Makefile.inc && source ${OPENSWANSRCDIR}/umlsetup.sh && cd $$POOLSPACE && $(MAKE) $$OPENSWANHOSTS $$REGULARHOSTS ) 
-
-
-# DESTDIR is normally set in Makefile.inc
-# These recipes explicitly pass it to the second-level makes so that
-# DESTDIR can be adjusted for building for UML without changing Makefile.inc
-# See	testing/utils/functions.sh
-#	testing/utils/make-uml.sh
-#	testing/utils/uml-functions.sh
-check:	uml Makefile.ver
-ifneq ($(strip(${REGRESSRESULTS})),)
-	mkdir -p ${REGRESSRESULTS}
-endif
-	@for d in $(SUBDIRS); do (cd $$d && $(MAKE) DESTDIR=${DESTDIR} checkprograms || exit 1); done
-	@for d in $(SUBDIRS); \
-	do \
-		echo ===================================; \
-		echo Now making check in $$d; \
-		echo ===================================; \
-		${MAKE} -C $$d DESTDIR=${DESTDIR} check ;\
-	done
-ifneq ($(strip(${REGRESSRESULTS})),)
-	-perl testing/utils/regress-summarize-results.pl ${REGRESSRESULTS}
-endif
-	@echo "======== End of make check target. ========"
+check:
+	@${MAKE} -C tests check
 
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them
