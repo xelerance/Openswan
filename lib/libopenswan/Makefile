@@ -151,19 +151,8 @@ install: doinstall
 
 endif
 
-
 doinstall:
-	@mkdir -p $(MANDIR)
-	@for f in $(MANS) ; \
-	do \
-		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
-	done
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
-	while read from to; \
-	do \
-		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
-	done
-
+	true
 
 install_file_list:
 	@for f in $(MANS) ; \

@@ -1,3 +1,5 @@
+# -*- makefile -*-
+
 KLIPSD=${OPENSWANSRCDIR}/linux/include
 KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
@@ -61,14 +63,19 @@ install: doinstall
 endif
 
 doinstall:
+	@true
+
+# really, installing man pages for libraries on production machines is stupid.
+doinstall_devel:
 	@for d in $(MANDIR); do mkdir -p $$d; done
 	@for f in $(MANS) ; \
 	do \
 		$(INSTALL) $(INSTMANFLAGS) $(MANSRCDIR)/$$f $(MANDIR)/ipsec_$$f || exit 1 ; \
 	done
-	@$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
+	$(OPENSWANSRCDIR)/packaging/utils/manlink $(foreach man, $(MANS), ${MANSRCDIR}/$(man)) | \
 	while read from to; \
 	do \
+                rm -f $(MANDIR)/$$to;; \
 		ln -s -f ipsec_$$from $(MANDIR)/$$to; \
 	done
 
