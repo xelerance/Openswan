@@ -28,12 +28,11 @@ include ${srcdir}../Makefile.program
 # into the $BINDIR.
 #
 # the priorities match those in setup's chkconfig line
+
+# remove any old vendor file installed previously
 doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LIBFILES) $(CONFDFILES)
-	# remove any old vendor file installed previously
 	@rm -f $(BINDIR)/setup
-	# check the directories we need exist (ie., make install DESTDIR=/tmp/IPsec)
 	@mkdir -p $(RCDIR) $(BINDIR)
-	# install and link everything
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
 
