@@ -1,0 +1,75 @@
+#conn net-net loaded
+#conn host-host loaded
+#conn rw loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn net-net
+conn net-net
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=192.168.0.2
+	rightid="@sun.strongswan.org"
+	rightsubnet=10.2.0.0/16
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn net-net
+
+# begin conn host-host
+conn host-host
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftcert=moonCert.pem
+	right=192.168.0.2
+	rightid="@sun.strongswan.org"
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn host-host
+
+# begin conn rw
+conn rw
+	left=192.168.0.1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=%any
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn rw
+
+# end of config

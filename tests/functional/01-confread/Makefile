@@ -19,9 +19,11 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 check:
 	mkdir -p ../OUTPUTS
 	${OBJDIRTOP}/programs/readwriteconf/readwriteconf --config ${OBJDIRTOP}/programs/_confread/ipsec.conf | tee ../OUTPUTS/default.ipsec.conf.raw | diff - default.ipsec.conf.out
-
+	${OBJDIRTOP}/programs/readwriteconf/readwriteconf --config moon-base.conf | tee ../OUTPUTS/moon-base.conf.raw | diff - moon-base.conf.out
 
 update:
 	cp ../OUTPUTS/default.ipsec.conf.raw default.ipsec.conf.out
+	cp ../OUTPUTS/moon-base.conf.raw     moon-base.conf.out
+
 
 

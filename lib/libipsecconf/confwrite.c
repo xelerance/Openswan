@@ -353,10 +353,6 @@ void confwrite_side(FILE *out,
 		databuf, b2);
     }
 
-    if(end->cert) {
-	fprintf(out, "\t%scert=%s\n", side, end->cert);
-    }
-
     if(!isanyaddr(&end->sourceip)) {
 	addrtot(&end->sourceip, 0, databuf, ADDRTOT_BUF);
 	fprintf(out, "\t%ssourceip=%s\n", side, databuf);
