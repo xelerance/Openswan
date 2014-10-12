@@ -1492,7 +1492,7 @@ enum_name(enum_names *ed, unsigned long val)
 const char *keyword_name(struct keyword_enum_values *kevs, unsigned int value)
 {
     int kevcount;
-    struct keyword_enum_value *kev;
+    const struct keyword_enum_value *kev;
 
     for(kevcount = kevs->valuesize, kev = kevs->values;
         kevcount > 0 && kev->value != value;

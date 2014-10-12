@@ -182,6 +182,12 @@ struct spd_route {
     uint32_t reqid;
 };
 
+/*
+ * Not that variables that relate to features that might in fact be disabled, or compiled
+ * out remain in this structure so that the system can intelligently notice misconfigurations.
+ * This also reduces much of the testing complexity of maintain the options.
+ */
+
 struct connection {
     char *name;
     char *connalias;
@@ -200,18 +206,16 @@ struct connection {
     /*Cisco interop: remote peer type*/
     enum keyword_remotepeertype remotepeertype;
 
-    enum keyword_sha2_truncbug sha2_truncbug;
+    /* sha2 truncation bug work around */
+    bool sha2_truncbug;
 
-    /*Network Manager support*/
-#ifdef HAVE_NM
-    enum keyword_nmconfigured nmconfigured;
-#endif
+    /* Network Manager support */
+    bool nmconfigured;
 
-#ifdef HAVE_LABELED_IPSEC
-   enum keyword_loopback loopback;
-   enum keyword_labeled_ipsec labeled_ipsec;
-   char *policy_label;
-#endif
+    /* labeled ipsec support */
+    bool loopback;                          /* indicates that XXX */
+    bool labeled_ipsec;
+    char *policy_label;
 
     bool               forceencaps;         /* always use NAT-T encap */
 

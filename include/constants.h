@@ -124,8 +124,8 @@ struct keyword_enum_value {
 };
 
 struct keyword_enum_values {
-    struct keyword_enum_value *values;
-    size_t                     valuesize;
+    const struct keyword_enum_value *values;
+    size_t                           valuesize;
 };
 
 extern const char *keyword_name(struct keyword_enum_values *kevs, unsigned int value);

@@ -243,7 +243,7 @@ struct keyword_def {
     unsigned int       validity;       /* has bits kv_config or kv_conn set */
     enum keyword_type  type;
     unsigned int       field;          /* one of keyword_*_field */
-    struct keyword_enum_values *validenum;
+    const struct keyword_enum_values *validenum;
 };
 
 struct keyword {

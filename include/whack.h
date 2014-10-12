@@ -133,16 +133,16 @@ struct whack_message {
     /* Force the use of NAT-T on a connection */
     bool forceencaps;
 
-    enum keyword_sha2_truncbug sha2_truncbug;
+    bool sha2_truncbug;
 
     /* Checking if this connection is configured by Network Manager*/
-    enum keyword_nmconfigured nmconfigured;
+    bool nmconfigured;
 
     /* Force the MTU for this connection */
     int connmtu;
 
-    enum keyword_loopback loopback;
-    enum keyword_labeled_ipsec labeled_ipsec;
+    bool loopback;
+    bool labeled_ipsec;
     char *policy_label;
 
     /*  note that each end contains string 2/5.id, string 3/6 cert,

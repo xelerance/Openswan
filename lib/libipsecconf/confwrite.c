@@ -27,8 +27,8 @@
 
 void confwrite_list(FILE *out, char *prefix, int val, struct keyword_def *k)
 {
-    struct keyword_enum_values *kevs = k->validenum;
-    struct keyword_enum_value  *kev  = kevs->values;
+    const struct keyword_enum_values *kevs = k->validenum;
+    const struct keyword_enum_value  *kev  = kevs->values;
     int i=0;
     unsigned int mask=1;
     char *sep="";
@@ -114,8 +114,8 @@ void confwrite_int(FILE *out,
 		if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
 		    fprintf(out, "%s\n", strings[k->field]);
 		} else {
-		    struct keyword_enum_values *kevs = k->validenum;
-		    struct keyword_enum_value  *kev  = kevs->values;
+		    const struct keyword_enum_values *kevs = k->validenum;
+		    const struct keyword_enum_value  *kev  = kevs->values;
 		    int i=0;
 
 		    while(i <kevs->valuesize) {
