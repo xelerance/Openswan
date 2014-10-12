@@ -62,7 +62,7 @@ struct oe_conn oe_packet_default = {
 	.oe_sc = {
 		.policy = POLICY_TUNNEL|POLICY_RSASIG|POLICY_ENCRYPT|POLICY_PFS|
 		POLICY_OPPO|POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
-		
+
 		.options[KBF_REKEY]=FALSE,
 		.options_set[KBF_REKEY]=TRUE,
 
@@ -71,12 +71,12 @@ struct oe_conn oe_packet_default = {
 
 		.options[KBF_IKELIFETIME]=3600,
 		.options_set[KBF_IKELIFETIME]=TRUE,
-		
+
 		.options[KBF_SALIFETIME]=1800,
 		.options_set[KBF_SALIFETIME]=TRUE,
-		
+
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=TRUE,
@@ -95,7 +95,7 @@ struct oe_conn oe_packet_default = {
 			 .maskbits=0
 		 },
 		.left.key_from_DNS_on_demand = TRUE,
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_OPPO,
 		.right.addr={
@@ -131,9 +131,9 @@ struct oe_conn oe_clear = {
 	.oe_cn = "clear",
 	.oe_sc = {
 		.policy = POLICY_TUNNEL|POLICY_PFS|POLICY_GROUP|POLICY_GROUTED|POLICY_SHUNT_PASS,
-		
+
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=FALSE,
@@ -151,7 +151,7 @@ struct oe_conn oe_clear = {
 			 },
 			 .maskbits=0
 		 },
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_GROUP,
 		.right.addr={
@@ -194,18 +194,18 @@ struct oe_conn oe_clear_or_private = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_DONT_REKEY|POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
 		POLICY_SHUNT_PASS|POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
-		
+
 		.options[KBF_KEYINGTRIES]=3,
 		.options_set[KBF_KEYINGTRIES]=TRUE,
 
 		.options[KBF_IKELIFETIME]=3600,
 		.options_set[KBF_IKELIFETIME]=TRUE,
-		
+
 		.options[KBF_SALIFETIME]=1800,
 		.options_set[KBF_SALIFETIME]=TRUE,
-		
+
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=FALSE,
@@ -224,7 +224,7 @@ struct oe_conn oe_clear_or_private = {
 			 .maskbits=0
 		 },
 		.left.key_from_DNS_on_demand = TRUE,
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
@@ -267,18 +267,18 @@ struct oe_conn oe_private_or_clear = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_DONT_REKEY|POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
 		POLICY_FAIL_PASS|POLICY_IKEV2_ALLOW,
-		
+
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.options[KBF_KEYINGTRIES]=3,
 		.options_set[KBF_KEYINGTRIES]=TRUE,
 
 		.options[KBF_IKELIFETIME]=3600,
 		.options_set[KBF_IKELIFETIME]=TRUE,
-		
+
 		.options[KBF_SALIFETIME]=1800,
 		.options_set[KBF_SALIFETIME]=TRUE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=FALSE,
@@ -297,7 +297,7 @@ struct oe_conn oe_private_or_clear = {
 			 .maskbits=0
 		 },
 		.left.key_from_DNS_on_demand = TRUE,
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
@@ -340,21 +340,21 @@ struct oe_conn oe_private = {
 		.policy = POLICY_RSASIG|POLICY_ENCRYPT|POLICY_TUNNEL|POLICY_PFS|
 		POLICY_OPPO|POLICY_GROUP|POLICY_GROUTED|
 		POLICY_FAIL_DROP|POLICY_IKEV2_ALLOW,
-		
+
 		.options[KBF_REKEY]=FALSE,    /* really want REKEY if used */
 		.options_set[KBF_REKEY]=TRUE,
 
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.options[KBF_KEYINGTRIES]=3,
 		.options_set[KBF_KEYINGTRIES]=TRUE,
 
 		.options[KBF_IKELIFETIME]=3600,
 		.options_set[KBF_IKELIFETIME]=TRUE,
-		
+
 		.options[KBF_SALIFETIME]=1800,
 		.options_set[KBF_SALIFETIME]=TRUE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=FALSE,
@@ -373,7 +373,7 @@ struct oe_conn oe_private = {
 			 .maskbits=0
 		 },
 		.left.key_from_DNS_on_demand = TRUE,
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
@@ -404,7 +404,7 @@ struct oe_conn oe_private = {
  *		}
  *
  * However, in addition it also does "also=%oedefault"
- * 
+ *
  */
 
 struct oe_conn oe_block = {
@@ -413,9 +413,9 @@ struct oe_conn oe_block = {
 	.oe_sc = {
 		.policy = POLICY_TUNNEL|POLICY_PFS|
 		POLICY_GROUP|POLICY_GROUTED|POLICY_SHUNT_REJECT|POLICY_IKEV2_ALLOW,
-		
+
 		.desired_state = STARTUP_ROUTE,
-		
+
 		.left.addrtype = KH_DEFAULTROUTE,
 		.left.addr_family = AF_INET,
 		.left.has_client=FALSE,
@@ -434,7 +434,7 @@ struct oe_conn oe_block = {
 			 .maskbits=0
 		 },
 		.left.key_from_DNS_on_demand = TRUE,
-		
+
 		.right.addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
@@ -477,10 +477,10 @@ void add_any_oeconns(struct starter_config *cfg,
 	int i;
 
 	for(i=0;i<OE_MAX;i++) found_conns[i]=FALSE;
-	
+
 	/* look for the conn. */
 	for(sconn = cfgp->sections.tqh_first; sconn != NULL; sconn = sconn->link.tqe_next)
-		
+
 	{
 	    for(i=0, oc=implicit_conns; *oc!=NULL; oc++, i++) {
 		if(strcasecmp((*oc)->oe_cn, sconn->name)==0) {
@@ -490,7 +490,7 @@ void add_any_oeconns(struct starter_config *cfg,
 	    }
 	}
 
-	
+
 	for(i=0, oc=implicit_conns; *oc!=NULL; oc++, i++) {
 		if(found_conns[i]==FALSE) {
 			struct starter_conn *conn;
@@ -531,4 +531,4 @@ void add_any_oeconns(struct starter_config *cfg,
 	}
 }
 
-	    
+

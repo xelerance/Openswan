@@ -54,13 +54,13 @@ void confwrite_int(FILE *out,
     struct keyword_def *k;
 
     for(k=ipsec_conf_keywords_v2; k->keyname!=NULL; k++) {
-	
+
 	if((k->validity & KV_CONTEXT_MASK) != context) continue;
 	if(keying_context != 0 && (k->validity & keying_context)==0) continue;
 
 	/* do not output aliases */
 	if(k->validity & kv_alias) continue;
-	
+
 	/* do not output policy settings handled elsewhere */
 	if(k->validity & kv_policy) continue;
 	if(k->validity & kv_processed) continue;
@@ -69,7 +69,7 @@ void confwrite_int(FILE *out,
 	printf("#side: %s  %s validity: %08x & %08x=%08x vs %08x\n", side,
 	       k->keyname, k->validity, KV_CONTEXT_MASK, k->validity&KV_CONTEXT_MASK, context);
 #endif
-	
+
 	switch(k->type) {
 	case kt_string:
 	case kt_appendstring:
@@ -110,7 +110,7 @@ void confwrite_int(FILE *out,
 	    if(options_set[k->field]) {
 		int val = options[k->field];
 		fprintf(out, "\t%s%s=",side, k->keyname);
-		
+
 		if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
 		    fprintf(out, "%s\n", strings[k->field]);
 		} else {
@@ -129,7 +129,7 @@ void confwrite_int(FILE *out,
 		}
 	    }
 	    continue;
-	
+
 	case kt_list:
 	    /* special enumeration */
 	    if(options_set[k->field]) {
@@ -157,9 +157,9 @@ void confwrite_int(FILE *out,
 	if(options_set[k->field]) {
 	    fprintf(out, "\t%s%s=%d\n",side, k->keyname, options[k->field]);
 	}
-    }	
-}    
-		   
+    }
+}
+
 void confwrite_str(FILE *out,
 		   char   *side,
 		   int     context,
@@ -176,24 +176,24 @@ void confwrite_str(FILE *out,
 
 	/* do not output aliases */
 	if(k->validity & kv_alias) continue;
-	
+
 	/* do not output policy settings handled elsewhere */
 	if(k->validity & kv_policy) continue;
 	if(k->validity & kv_processed) continue;
-	
+
 	switch(k->type) {
 	case kt_appendlist:
 	    if(strings_set[k->field]) {
 		fprintf(out, "\t%s%s={%s}\n",side, k->keyname, strings[k->field]);
 	    }
-	    continue;	    
+	    continue;
 
 	case kt_string:
 	case kt_appendstring:
 	case kt_filename:
 	case kt_dirname:
 	    /* these are strings */
-	    break; 
+	    break;
 
 	case kt_rsakey:
 	case kt_ipaddr:
@@ -229,16 +229,16 @@ void confwrite_str(FILE *out,
 	    char *quote="";
 
 	    if(strchr(strings[k->field],' ')) quote="\"";
-	    
+
 	    fprintf(out, "\t%s%s=%s%s%s\n",side, k->keyname
 		    , quote
 		    , strings[k->field]
 		    , quote);
 	}
-    }	
-}    
-		   
-		   
+    }
+}
+
+
 void confwrite_side(FILE *out,
 		    struct starter_conn *conn,
 		    struct starter_end *end,
@@ -257,31 +257,31 @@ void confwrite_side(FILE *out,
     case KH_NOTSET:
 	/* nothing! */
 	break;
-	
+
     case KH_DEFAULTROUTE:
 	fprintf(out, "\t%s=%%defaultroute\n",side);
 	break;
-	
+
     case KH_ANY:
 	fprintf(out, "\t%s=%%any\n",side);
 	break;
-	
+
     case KH_IFACE:
 	if(end->strings_set[KSCF_IP]) {
 	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
 	}
 	break;
-	
+
     case KH_OPPO:
-	fprintf(out, "\t%s=%%opportunistic\n",side);   
+	fprintf(out, "\t%s=%%opportunistic\n",side);
 	break;
-	
+
     case KH_OPPOGROUP:
-	fprintf(out, "\t%s=%%opportunisticgroup\n",side);   
+	fprintf(out, "\t%s=%%opportunisticgroup\n",side);
 	break;
-	
+
     case KH_GROUP:
-	fprintf(out, "\t%s=%%group\n",side);   
+	fprintf(out, "\t%s=%%group\n",side);
 	break;
 
     case KH_IPHOSTNAME:
@@ -304,11 +304,11 @@ void confwrite_side(FILE *out,
     case KH_NOTSET:
 	/* nothing! */
 	break;
-	
+
     case KH_DEFAULTROUTE:
 	fprintf(out, "\t%snexthop=%%defaultroute\n",side);
 	break;
-	
+
     case KH_IPADDR:
 	addrtot(&end->nexthop, 0, databuf, ADDRTOT_BUF);
 	fprintf(out, "\t%snexthop=%s\n", side, databuf);
@@ -338,7 +338,7 @@ void confwrite_side(FILE *out,
 
     if(end->port || end->protocol) {
 	char b2[32];
-	
+
 	strcpy(b2, "%any");
 	strcpy(databuf, "%any");
 
@@ -348,7 +348,7 @@ void confwrite_side(FILE *out,
 	if(end->protocol) {
 	    sprintf(databuf, "%u", end->protocol);
 	}
-	    
+
 	fprintf(out, "\t%sprotoport=%s/%s\n", side,
 		databuf, b2);
     }
@@ -380,7 +380,7 @@ void confwrite_comments(FILE *out, struct starter_conn *conn)
 	sc != NULL;
 	sc = scnext) {
 	scnext = sc->link.tqe_next;
-	
+
 	fprintf(out, "\t%s=%s\n",
 		sc->x_comment, sc->commentvalue);
     }
@@ -398,12 +398,12 @@ void confwrite_conn(FILE *out,
     }
 
     fprintf(out,"# begin conn %s\n",conn->name);
-    
+
     fprintf(out, "conn %s\n", conn->name);
-    
-    if(conn->alsos) 
+
+    if(conn->alsos)
     { /* handle also= as a comment */
-	
+
 	int alsoplace=0;
 	fprintf(out, "\t#also = ");
 	while(conn->alsos[alsoplace] != NULL)
@@ -438,15 +438,15 @@ void confwrite_conn(FILE *out,
 	case STARTUP_POLICY:
 	    fprintf(out, "\tauto=policy\n");
 	    break;
-	    
+
 	case STARTUP_ADD:
 	    fprintf(out, "\tauto=add\n");
 	    break;
-	    
+
 	case STARTUP_ROUTE:
 	    fprintf(out, "\tauto=route\n");
 	    break;
-	    
+
 	case STARTUP_START:
 	    fprintf(out, "\tauto=start\n");
 	    break;
@@ -469,13 +469,13 @@ void confwrite_conn(FILE *out,
 	    } else {
 		fprintf(out, "\ttype=transport\n");
 	    }
-	    
+
 	    if(conn->policy & POLICY_COMPRESS) {
 		fprintf(out, "\tcompress=yes\n");
 	    } else {
 		fprintf(out, "\tcompress=no\n");
 	    }
-	    
+
 	    if(conn->policy & POLICY_PFS) {
 		fprintf(out, "\tpfs=yes\n");
 	    } else {
@@ -493,35 +493,35 @@ void confwrite_conn(FILE *out,
 	    } else {
 		fprintf(out, "\toverlapip=no\n");
 	    }
-	    
+
 	    auth_policy=(conn->policy & POLICY_ID_AUTH_MASK);
 	    switch(auth_policy) {
 	    case POLICY_PSK:
 		fprintf(out, "\tauthby=secret\n");
 		break;
-		
+
 	    case POLICY_RSASIG:
 		fprintf(out, "\tauthby=rsasig\n");
 		break;
-		
+
 	    default:
 		fprintf(out, "\tauthby=never\n");
 		break;
 	    }
-	    
+
 	    switch(phase2_policy) {
 	    case POLICY_AUTHENTICATE:
 		fprintf(out, "\tphase2=ah\n");
 		break;
-		
+
 	    case POLICY_ENCRYPT:
 		fprintf(out, "\tphase2=esp\n");
 		break;
-		
+
 	    case (POLICY_ENCRYPT|POLICY_AUTHENTICATE):
 		fprintf(out, "\tphase2=ah+esp\n");
 		break;
-		
+
 	    default:
 		break;
 	    }
@@ -529,15 +529,15 @@ void confwrite_conn(FILE *out,
 	    switch(failure_policy) {
 	    case POLICY_FAIL_NONE:
 		break;
-		
+
 	    case POLICY_FAIL_PASS:
 		fprintf(out, "\tfailureshunt=passthrough\n");
 		break;
-		
+
 	    case POLICY_FAIL_DROP:
 		fprintf(out, "\tfailureshunt=drop\n");
 		break;
-		
+
 	    case POLICY_FAIL_REJECT:
 		fprintf(out, "\tfailureshunt=reject\n");
 		break;
@@ -545,18 +545,18 @@ void confwrite_conn(FILE *out,
 
 	    switch(ikev2_policy) {
 	    case 0:
-		fprintf(out, "\tikev2=never\n"); 
+		fprintf(out, "\tikev2=never\n");
 		break;
 
 	    case POLICY_IKEV2_ALLOW:
 		/* it's the default, do not print anything */
 		/* fprintf(out, "\tikev2=permit\n"); */
 		break;
-		
+
 	    case POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE:
 		fprintf(out, "\tikev2=propose\n");
 		break;
-		
+
 	    case POLICY_IKEV1_DISABLE|POLICY_IKEV2_ALLOW|POLICY_IKEV2_PROPOSE:
 		fprintf(out, "\tikev2=insist\n");
 		break;
@@ -566,20 +566,20 @@ void confwrite_conn(FILE *out,
 	case POLICY_SHUNT_PASS:
 	    fprintf(out, "\ttype=passthrough\n");
 	    break;
-	    
+
 	case POLICY_SHUNT_DROP:
 	    fprintf(out, "\ttype=drop\n");
 	    break;
-	    
+
 	case POLICY_SHUNT_REJECT:
 	    fprintf(out, "\ttype=reject\n");
 	    break;
 
 	}
-	
+
     }
 
-    
+
     fprintf(out,"# end conn %s\n\n",conn->name);
 }
 
@@ -593,10 +593,10 @@ void confwrite(struct starter_config *cfg, FILE *out)
 
 	/* output config setup section */
 	fprintf(out, "config setup\n");
-	confwrite_int(out, "", 
+	confwrite_int(out, "",
 		      kv_config, 0,
 		      cfg->setup.options, cfg->setup.options_set, cfg->setup.strings);
-	confwrite_str(out, "", 
+	confwrite_str(out, "",
 		      kv_config, 0,
 		      cfg->setup.strings, cfg->setup.strings_set);
 

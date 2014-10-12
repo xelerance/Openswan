@@ -106,7 +106,7 @@ enum keyword_numeric_config_field {
     KBF_IKEv2,
     KBF_IKEv2_ALLOW_NARROWING,
     KBF_CONNADDRFAMILY,
-    KBF_FORCEBUSY, 
+    KBF_FORCEBUSY,
     KBF_OVERLAPIP,
     KBF_REMOTEPEERTYPE, /*Cisco interop: remote peer type*/
     KBF_NMCONFIGURED, /*Network Manager support*/
@@ -115,7 +115,7 @@ enum keyword_numeric_config_field {
     KBF_SAREFTRACK, /* saref tracking paramter for _updown */
     KBF_WARNIGNORE, /* to ignore obsoleted keywords */
     KBF_SECCTX, /*security context attribute value for labeled ipsec*/
-    KBF_MAX         
+    KBF_MAX
 };
 
 /*
@@ -150,7 +150,7 @@ enum keyword_string_conn_field {
     KSCF_MODECFGDNS2  = 19,
     KSCF_MODECFGWINS1 = 20,
     KSCF_MODECFGWINS2 = 21,
-    KSCF_MAX          
+    KSCF_MAX
 };
 
 
@@ -169,7 +169,7 @@ enum keyword_numeric_conn_field {
     KNCF_SPI,
     KNCF_ESPREPLAYWINDOW,
     KNCF_SENDCERT,
-    KNCF_MAX              
+    KNCF_MAX
 };
 
 #define KEY_STRINGS_MAX ((int)KSF_MAX > (int)KSCF_MAX ? (int)KSF_MAX : (int)KSCF_MAX)+1
@@ -271,7 +271,7 @@ TAILQ_HEAD(starter_comments_list, starter_comments);
 struct section_list {
     TAILQ_ENTRY(section_list) link;
 
-    char *name;    
+    char *name;
     struct kw_list *kw;
     struct starter_comments_list comments;
     bool  beenhere;

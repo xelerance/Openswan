@@ -72,7 +72,7 @@ struct whack_end {
     unsigned int tundev;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
-    
+
     char *host_addr_name;       /* DNS name for host, of hosttype==IPHOSTNAME*/
                                 /* pluto will convert to IP address again,
 				 * if this is non-NULL when conn fails.
@@ -207,7 +207,7 @@ struct whack_message {
 
     /* for WHACK_PURGEOCSP */
     bool whack_purgeocsp;
-    
+
     /* for WHACK_REREAD */
     u_char whack_reread;
 
@@ -260,7 +260,7 @@ struct whack_message {
      * 21 connalias
      * 22 left.host_addr_name
      * 23 right.host_addr_name
-     * 24 genstring1  - used with opt_set 
+     * 24 genstring1  - used with opt_set
      * 25 genstring2
      * 26 genstring3
      * 27 dnshostname

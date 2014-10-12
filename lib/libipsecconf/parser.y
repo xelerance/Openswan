@@ -59,7 +59,7 @@ static struct starter_comments_list *_parser_comments;
         unsigned int num;
 	struct keyword k;
 }
-%token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION 
+%token EQUAL FIRST_SPACES EOL CONFIG SETUP CONN INCLUDE VERSION
 %token <s>      STRING
 %token <num>    INTEGER
 %token <num>    BOOL
@@ -75,14 +75,14 @@ static struct starter_comments_list *_parser_comments;
  */
 
 config_file:
-        blanklines versionstmt blanklines sections 
-        | blanklines sections 
+        blanklines versionstmt blanklines sections
+        | blanklines sections
         ;
 
 /* check out the version number - this is optional (and we're phasing out its use) */
 /* we have configs shipped with version 2 (INTEGER) and with version 2.0 (STRING, now  NUMBER/float was removed */
 
-versionstmt: 
+versionstmt:
         | VERSION STRING EOL
         | VERSION INTEGER EOL
 	;
@@ -91,7 +91,7 @@ blanklines: /* NULL */
 	| blanklines EOL
 	| blanklines FIRST_SPACES EOL
 	;
-                        
+
 sections: /* NULL */
 	| sections section_or_include
 	;
@@ -133,7 +133,7 @@ section_or_include:
 	} kw_sections
 	| INCLUDE STRING EOL {
  		parser_y_include($2);
-	} 
+	}
 	;
 
 kw_sections:
@@ -196,7 +196,7 @@ statement_kw:
 
            	    case kt_obsolete:
                         break;
-		    }	
+		    }
 		    new->next = NULL;
 
 		    if (_parser_kw_last)
@@ -266,7 +266,7 @@ statement_kw:
                         break;
            	    case kt_obsolete:
                         break;
-		    }	
+		    }
 		    new->next = NULL;
 
 		    if (_parser_kw_last)
@@ -325,24 +325,24 @@ statement_kw:
 
 		str = $3;
 
-		val = strtoul(str, &endptr, 10);	
+		val = strtoul(str, &endptr, 10);
 
 		if(endptr == str) {
                   snprintf(buf, 80, "bad duration value %s=%s", kw.keydef->keyname, str);
                   yyerror(buf);
 		  fail = TRUE;
-	
-		} 
+
+		}
 
 		if(!fail)
                 {
-		  if(*endptr == '\0') { /* nothing */ }	
-		  else if ((*endptr == 's') && (endptr[1] == '\0')) { } 
-		  else if ((*endptr == 'm') && (endptr[1] == '\0')) { val *= 60; } 
-		  else if ((*endptr == 'h') && (endptr[1] == '\0')) { val *= 3600; } 
-		  else if ((*endptr == 'd') && (endptr[1] == '\0')) { val *= 3600*24; } 
-		  else if ((*endptr == 'w') && (endptr[1] == '\0')) { val *= 7*3600*24; } 
-		  else { 
+		  if(*endptr == '\0') { /* nothing */ }
+		  else if ((*endptr == 's') && (endptr[1] == '\0')) { }
+		  else if ((*endptr == 'm') && (endptr[1] == '\0')) { val *= 60; }
+		  else if ((*endptr == 'h') && (endptr[1] == '\0')) { val *= 3600; }
+		  else if ((*endptr == 'd') && (endptr[1] == '\0')) { val *= 3600*24; }
+		  else if ((*endptr == 'w') && (endptr[1] == '\0')) { val *= 7*3600*24; }
+		  else {
                     snprintf(buf, 80, "bad duration multiplier '%c' on %s", *endptr, str);
                     yyerror(buf);
                     fail=TRUE;
@@ -380,19 +380,19 @@ statement_kw:
 
 		str = $3;
 
-		val = strtoul(str, &endptr, 10);	
+		val = strtoul(str, &endptr, 10);
 
 		if(endptr == str) {
                   snprintf(buf, 80, "bad percent value %s=%s", kw.keydef->keyname, str);
                   yyerror(buf);
 		  fail = TRUE;
-	
-		} 
+
+		}
 
 		if(!fail)
                 {
-		  if ((*endptr == '%') && (endptr[1] == '\0')) { } 
-		  else { 
+		  if ((*endptr == '%') && (endptr[1] == '\0')) { }
+		  else {
                     snprintf(buf, 80, "bad percentage multiplier '%c' on %s", *endptr, str);
                     yyerror(buf);
                     fail=TRUE;
@@ -539,7 +539,7 @@ void parser_free_conf (struct config_parsed *cfg)
 			parser_free_kwlist(sec->kw);
 			free(sec);
 		}
-		
+
 		free(cfg);
 	}
 }

@@ -162,7 +162,7 @@ typedef enum {
 #define DBG_CONTROL	LELEM(4)	/* control flow within Pluto */
 #define DBG_LIFECYCLE	LELEM(5)	/* SA lifecycle */
 #define DBG_KLIPS	LELEM(6)	/* messages with the kernel */
-#define DBG_NETKEY	LELEM(6)	/* same as previous entry!! */ 
+#define DBG_NETKEY	LELEM(6)	/* same as previous entry!! */
 #define DBG_DNS		LELEM(7)	/* DNS activity */
 #define DBG_OPPO	LELEM(8)	/* opportunism */
 #define DBG_CONTROLMORE LELEM(9)	/* more detailed debugging */
@@ -286,7 +286,7 @@ enum state_kind {
     /* IKEv2 Delete States */
     STATE_IKESA_DEL,
     STATE_CHILDSA_DEL,
-    
+
     STATE_IKEv2_ROOF,
 };
 
@@ -343,8 +343,8 @@ enum phase1_role {
 #endif
 
 #define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1 || (s) == STATE_IKESA_DEL)
-/* 
- * Issue here is that our child sa appears as a STATE_PARENT_I3/STATE_PARENT_R2 state which it should not 
+/*
+ * Issue here is that our child sa appears as a STATE_PARENT_I3/STATE_PARENT_R2 state which it should not
  * So we fall back to checking if it is cloned, and therefor really a child
  */
 #define IS_CHILD_SA_ESTABLISHED(st) ( (((st->st_state == STATE_PARENT_I3) || (st->st_state == STATE_PARENT_R2)) && (st->st_clonedfrom != SOS_NOBODY)) || (st->st_state == STATE_CHILDSA_DEL) )
@@ -435,18 +435,18 @@ enum saref_tracking {
 
 extern const char *prettypolicy(lset_t policy);
 
-/* 
+/*
  * ISAKMP auth techniques (none means never negotiate)
  * a pluto policy is stored in a lset_t which is an unsigned long long,
  * so we should have 64 bits to play with
  */
 enum pluto_policy {
-	POLICY_PSK     = LELEM(0), 
+	POLICY_PSK     = LELEM(0),
 	POLICY_RSASIG  = LELEM(1),
 #define POLICY_ISAKMP_SHIFT	0	/* log2(POLICY_PSK) */
 
 /* policies that affect ID types that are acceptable - RSA, PSK, XAUTH */
-        POLICY_ID_AUTH_MASK=LRANGES(POLICY_PSK, POLICY_RSASIG), 
+        POLICY_ID_AUTH_MASK=LRANGES(POLICY_PSK, POLICY_RSASIG),
 
 /* policies that affect choices of proposal, note, does not include XAUTH */
 #define POLICY_ISAKMP(x,xs,xc)	(((x) & LRANGES(POLICY_PSK, POLICY_RSASIG)) + \
@@ -467,7 +467,7 @@ enum pluto_policy {
 	POLICY_SHUNT_SHIFT = 8,	/* log2(POLICY_SHUNT_PASS) */
 	POLICY_SHUNT_MASK  = (03ul << POLICY_SHUNT_SHIFT),
 	POLICY_SHUNT_TRAP  = (0ul << POLICY_SHUNT_SHIFT), /* default: negotiate */
-	POLICY_SHUNT_PASS  = (1ul << POLICY_SHUNT_SHIFT), 
+	POLICY_SHUNT_PASS  = (1ul << POLICY_SHUNT_SHIFT),
 	POLICY_SHUNT_DROP  = (2ul << POLICY_SHUNT_SHIFT),
 	POLICY_SHUNT_REJECT=(3ul << POLICY_SHUNT_SHIFT),
 

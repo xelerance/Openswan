@@ -26,7 +26,7 @@
  * and external constants (defined by IETF, etc.)
  *
  * Constants which are kernel/IPsec related are in appropriate
- * openswan / *.h files. 
+ * openswan / *.h files.
  *
  */
 

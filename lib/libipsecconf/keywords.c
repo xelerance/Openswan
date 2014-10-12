@@ -169,7 +169,7 @@ static const struct keyword_enum_value kw_proto_stack_list[]={
     { "none",         NO_KERNEL },
     { "auto",         AUTO_PICK },
     { "klips",        USE_KLIPS },
-    { "mast",         USE_MASTKLIPS }, 
+    { "mast",         USE_MASTKLIPS },
     { "netkey",       USE_NETKEY },
     { "native",       USE_NETKEY },
     { "bsd",          USE_BSDKAME },
@@ -284,7 +284,7 @@ static const struct keyword_enum_values kw_phase2types_list = VALUES_INITIALIZER
  */
 static const struct keyword_enum_value kw_sendcert_values[]={
     { "never",        cert_neversend },
-    { "sendifasked",  cert_sendifasked }, 
+    { "sendifasked",  cert_sendifasked },
     { "alwayssend",   cert_alwayssend },
     { "always",       cert_alwayssend },
     { "forcedtype",   cert_forcedtype },
@@ -401,14 +401,14 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     /* route metric */
     {"metric",         kv_conn|kv_auto, kt_number, KBF_METRIC, NOT_ENUM},
 
-    /* DPD */ 
+    /* DPD */
     {"dpddelay",       kv_conn|kv_auto,kt_number, KBF_DPDDELAY, NOT_ENUM},
     {"dpdtimeout",     kv_conn|kv_auto,kt_number,KBF_DPDTIMEOUT , NOT_ENUM},
     {"dpdaction",      kv_conn|kv_auto,kt_enum, KBF_DPDACTION , &kw_dpdaction_list},
 
     {"mtu",            kv_conn|kv_auto,kt_number, KBF_CONNMTU, NOT_ENUM},
 
-    /* aggr/xauth/modeconfig */ 
+    /* aggr/xauth/modeconfig */
     {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
     {"xauthserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHSERVER,  NOT_ENUM},
     {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
@@ -438,11 +438,11 @@ const int ipsec_conf_keywords_v2_count = sizeof(ipsec_conf_keywords_v2)/sizeof(s
 
 /*
  * look for one of the above tokens, and set the value up right.
- * 
+ *
  * if we don't find it, then strdup() the string and return a string
  *
  */
-   
+
 /* type is really "token" type, which is actually int */
 int parser_find_keyword(const char *s, YYSTYPE *lval)
 {
@@ -474,7 +474,7 @@ int parser_find_keyword(const char *s, YYSTYPE *lval)
 		break;
 	    }
 	}
-	
+
 	k++;
     }
 
@@ -565,7 +565,7 @@ unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list)
 		     , "%s: %d: keyword %s, invalid value: %s"
 		     , parser_cur_filename(), parser_cur_lineno()
 		     , kd->keyname, piece);
-	 
+
 	    if(warningsarefatal)
 	    {
 		fprintf(stderr, "ERROR: %s\n", complaintbuf);
@@ -636,6 +636,6 @@ unsigned int parser_loose_enum(struct keyword *k, const char *s)
  * c-style: pluto
  * End:
  */
-	
 
-    
+
+
