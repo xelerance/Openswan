@@ -4,6 +4,17 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.42 (October 20, 2014)
+Bugfixes
+
+* Update two minor copyright statements [MCR]
+* Make -lgmp into a variable [MCR]
+* Clarify use of Makefile.vendor, and clean it out. [MCR]
+* buildlin should warn if WERROR set, and look for missing gmp.h [MCR]
+* Target build for Trusty by instead of Precise [Simon Deziel]
+* Improve wording of leftsubnets' explanation in the man page [Simon Deziel]
+* Bring back NAT traversal that got mistakenly pulled out by CVE-2014-2037 patch. [Thomas Geulig]
+
 v2.6.41 (February 21, 2014)
  This version specifically addresses CVE 2014-2037
  This CVE is a continuation of CVE 2013-6466. We missed some cases.
