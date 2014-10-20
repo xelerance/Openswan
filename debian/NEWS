@@ -1,6 +1,6 @@
-openswan (1:2.6.41-1xelerance1) precise; urgency=low
+openswan (1:2.6.42-0xelerance1) trusty; urgency=low
 
-  * Update to 2.6.41
+  * Update to 2.6.42
 
   The real changelog is in /usr/share/doc/openswan/changelog.gz
 
@@ -8,5 +8,5 @@ openswan (1:2.6.41-1xelerance1) precise; urgency=low
   not file any Debian/Ubuntu bug reports for this package but contact
   <dev@openswan.org> or <simon@xelerance.com> if you have a problem.
 
- -- Simon Deziel <simon@xelerance.com>  Mon, 09 Aug 2010 11:29:42 +0200
+ -- Simon Deziel <simon@xelerance.com>  Tue, 18 Mar 2014 16:42:20 -0400
 
