@@ -50,7 +50,7 @@ done
 if test " $output" = " " && test ! -f ${IPSEC_CONFS}/ipsec.secrets
 then
     output=${IPSEC_CONFS}/ipsec.secrets
-elif test " $output" = " " && test ! -z /var/lib/openswan/ipsec.secrets.inc
+elif test " $output" = " " && test -r /var/lib/openswan/ipsec.secrets.inc && test ! -s /var/lib/openswan/ipsec.secrets.inc
 then
     output=/var/lib/openswan/ipsec.secrets.inc
 fi
