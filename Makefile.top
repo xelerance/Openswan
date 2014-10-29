@@ -67,6 +67,9 @@ dummy:
 check:
 	@${MAKE} -C tests check
 
+version:
+	@echo ${IPSECVERSION}
+
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them
 export USE_LWRES USE_IPSECPOLICY USE_IKEPING
