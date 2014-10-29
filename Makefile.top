@@ -64,7 +64,7 @@ TAGS:	$(TAGSFILES)
 .PHONY: dummy
 dummy:
 
-check:
+check: checkprograms
 	@${MAKE} -C tests check
 
 version:

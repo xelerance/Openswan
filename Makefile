@@ -191,7 +191,7 @@ ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 
 endif
 
-checkprograms::
+checkprograms:: programs
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
