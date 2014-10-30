@@ -255,6 +255,7 @@ void confwrite_side(FILE *out,
 
     switch(end->addrtype) {
     case KH_NOTSET:
+	fprintf(out, "\t#%s= not set\n",side);
 	/* nothing! */
 	break;
 

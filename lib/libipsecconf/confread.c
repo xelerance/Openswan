@@ -458,11 +458,7 @@ static int validate_end(struct starter_conn *conn_st
 	    end->nexttype = KH_IPADDR;
 	}
     } else {
-#if 0
-	if(conn_st->policy & POLICY_OPPO) {
-	    end->nexttype = KH_DEFAULTROUTE;
-	}
-#endif
+        end->nexttype = KH_DEFAULTROUTE;
 	anyaddr(family, &end->nexthop);
     }
 
