@@ -43,18 +43,9 @@
 #include "packet.h"
 #include "whack.h"
 
-enum myid_state myid_state = MYID_UNKNOWN;
-struct id myids[MYID_SPECIFIED+1];	/* %myid */
 char *myid_str[MYID_SPECIFIED+1];     /* string form of IDs */
 
-const struct id *resolve_myid(const struct id *id)
-{
-  if((id)->kind == ID_MYID) {
-    return &myids[myid_state];
-  } else {
-    return (id);
-  }
-}
+/* resolv_myid moved to libopenswan */
 
 void
 show_myid_status(void)

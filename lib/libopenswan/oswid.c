@@ -15,8 +15,16 @@
 #include "oswalloc.h"
 #include "constants.h"
 #include "id.h"
+#include "openswan/ipsec_policy.h"
+
+enum myid_state myid_state = MYID_UNKNOWN;
+struct id myids[MYID_SPECIFIED+1];	/* %myid */
 
 const struct id *resolve_myid(const struct id *id)
 {
-  return id;
+  if((id)->kind == ID_MYID) {
+    return &myids[myid_state];
+  } else {
+    return (id);
+  }
 }
