@@ -18,4 +18,5 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
 	@${MAKE} -C lp01-spdbtest check
+	-@${MAKE} -C lp02-parentI1 check
 
