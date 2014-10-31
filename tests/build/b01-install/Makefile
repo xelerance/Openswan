@@ -23,10 +23,9 @@ check:
 	@rm -rf ${buildtmp}
 	@mkdir -p ${buildtmp}
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
-	(cd ${buildtmp} && find . -type f -print) | sort | tee ../OUTPUTS/01-build-list.raw | diff - 01-build-list.txt
-
+	(cd ${buildtmp} && find . -type f -print) | sort | tee ../OUTPUTS/01-build-list.raw | diff - 01-build-list.txt || cat ../OUTPUTS/01-build-list.raw
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
-	(cd ${buildtmp} && find . -type f -print) | sort | tee ../OUTPUTS/01-build-list-again.raw | diff - 01-build-list-again.txt
+	(cd ${buildtmp} && find . -type f -print) | sort | tee ../OUTPUTS/01-build-list-again.raw | diff - 01-build-list-again.txt || cat ../OUTPUTS/01-build-list-again.raw
 	grep -v .old ../OUTPUTS/01-build-list-again.raw | diff - 01-build-list.txt
 
 update:
