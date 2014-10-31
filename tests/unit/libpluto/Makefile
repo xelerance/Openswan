@@ -11,12 +11,11 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ..; pwd)
-srcdir?=${OPENSWANSRCDIR}/programs/
+OPENSWANSRCDIR?=$(shell cd ../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
-	@${MAKE} -C functional check
-	@${MAKE} -C unit       check
+	@${MAKE} -C lp01-spdbtest check
 
