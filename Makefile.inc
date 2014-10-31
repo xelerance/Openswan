@@ -588,6 +588,9 @@ POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
 IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
+# set this to "ulimit -c unlimited" if you want core dumps from unit tests.
+COREULIMIT?=/bin/true
+
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE
 export LIBOPENSWANDIR OPENSWANLIB OSWLOGLIB PLUTOLIB LWRESDIR LIBLWRES LIBDNS

@@ -30,7 +30,7 @@ check:
 	${CC} -o lp01-spdbtest ${EXTRAFLAGS} spdbtest.c ${EXTRALIBS}
 	@echo "file ../$testobj"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
-	ulimit -c unlimited && ./lp01-spdbtest ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
+	${COREULIMIT} && ./lp01-spdbtest ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
