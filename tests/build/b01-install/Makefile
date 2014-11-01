@@ -22,6 +22,7 @@ check:
 	@mkdir -p ../OUTPUTS
 	@rm -rf ${buildtmp}
 	@mkdir -p ${buildtmp}
+	env
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
 	(cd ${buildtmp} && find . -type f -print) | sort | tee ../OUTPUTS/01-build-list.raw | diff - 01-build-list.txt || cat ../OUTPUTS/01-build-list.raw
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
