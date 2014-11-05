@@ -154,7 +154,8 @@ static bool writewhackrecord(char *buf, int buflen)
     time(&n);
     header[2]=n;
 
-    DBG_log("writewhack record buflen: %u abuflen: %u\n", header[0], abuflen);
+    DBG(DBG_CONTROL
+	, DBG_log("writewhack record buflen: %u abuflen: %u\n", header[0], abuflen));
 
     if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing header");
