@@ -408,7 +408,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	if (st == NULL)
 	{
 	    loglog(RC_UNKNOWN_NAME, "no state #%lu to delete"
-		, msg.whack_deletestateno);
+                   , (long unsigned int)msg.whack_deletestateno);
 	}
 	else
 	{
@@ -727,8 +727,8 @@ whack_handle(int whackctlfd)
 	    }
 	    else
 	    {
-		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; Mismatched versions of userland tools and KLIPS code."
-		    , msg.magic, WHACK_MAGIC);
+		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and KLIPS code."
+                                , msg.magic, WHACK_MAGIC);
 	    }
 	}
         else if ((ugh = unpack_whack_msg(&wp)) != NULL)

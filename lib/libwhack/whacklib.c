@@ -170,8 +170,10 @@ err_t unpack_whack_msg (struct whackpacker *wp)
     if (wp->str_next > wp->str_roof)
     {
 	ugh = builddiag("ignoring truncated message from whack: got %d bytes; expected %u"
-			, (int) wp->n, (unsigned) sizeof(wp->msg));
+			, (int) wp->n, (unsigned) sizeof(*wp->msg));
+        return ugh;
     }
+
     if (!unpack_str(wp, &wp->msg->name)	          /* string 1 */
 	|| !unpack_str(wp, &wp->msg->left.id)     /* string 2 */
 	|| !unpack_str(wp, &wp->msg->left.cert)   /* string 3 */

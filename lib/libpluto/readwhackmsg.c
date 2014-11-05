@@ -30,10 +30,12 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	size_t abuflen;
 
+        /* time stamp, MSB word first of time */
 	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
 	
 	/* account for this header we just consumed */
+        /* 4 bytes of plen,  8 bytes of time stamp  */
 	plen -= 12;
 
 	/* round up to multiple of 4 */
@@ -52,16 +54,33 @@ void readwhackmsg(char *infile)
 	    fclose(record);
 	    exit(5);
 	}
-	
+
 	if(plen <= 4) {
 	    /* empty message */
 	    continue;
 	}
 
+        /* if it's a basic command, skip it */
+        if(m1.magic == WHACK_BASIC_MAGIC) continue;
+
+        if(m1.magic != WHACK_MAGIC) {
+            fprintf(stderr, "this is whack message from different version");
+            if((m1.magic & 0xf0000000) != WHACK_MAGIC_INTVALUE) {
+                fprintf(stderr, "this is whack message from a %u-bit system",
+                        ((m1.magic & 0xf0000000) >> 28) * 8);
+            }
+            continue;
+        }
+
         wp.msg = &m1;
         wp.n   = plen;
         wp.str_next = m1.string;
         wp.str_roof = (unsigned char *)&m1 + plen;
+        fprintf(stderr, "processing whack msg time: %u size: %d\n",
+                a[1],plen);
+
+        fprintf(stderr, "next: %p roof: %p\n",
+                wp.str_next, wp.str_roof);
 
         if ((ugh = unpack_whack_msg(&wp)) != NULL)
         {
