@@ -766,7 +766,7 @@ static const struct option long_opts[] = {
     { "impair-retransmits", no_argument, NULL, DBGOPT_IMPAIR_RETRANSMITS + OO },
     { "impair-send-bogus-isakmp-flag", no_argument, NULL, DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
-    { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
+    { "whackstoprecord", no_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
 #   undef OO
     { 0,0,0,0 }
