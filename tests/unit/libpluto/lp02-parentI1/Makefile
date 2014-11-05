@@ -59,15 +59,15 @@ EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}
 EXTRALIBS+=-lgmp -lefence -lpcap
 
-UNITTESTARGS=ikev2.record westnet--eastnet-ikev2
+UNITTESTARGS=sun-netnet.record net-net
 
 TESTNAME=parentI1
 
 
 check:
 	@mkdir -p OUTPUT
-	${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
-	@echo "file ../$testobj"          >.gdbinit
+	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
+	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt

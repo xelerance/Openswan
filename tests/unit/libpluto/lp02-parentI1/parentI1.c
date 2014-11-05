@@ -72,6 +72,7 @@ main(int argc, char *argv[])
     send_packet_setup_pcap("parentI1.pcap");
 
     c1 = con_by_name(conn_name, TRUE);
+    assert(c1 != NULL);
 
     show_one_connection(c1);
 
@@ -93,6 +94,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4
- * compile-command: "make TEST=parentI1 one"
+ * compile-command: "make check"
  * End:
  */
