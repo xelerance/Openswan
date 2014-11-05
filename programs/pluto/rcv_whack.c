@@ -164,6 +164,7 @@ static bool writewhackrecord(char *buf, int buflen)
     if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing buf");
     }
+    fflush(whackrecordfile);
 
     return TRUE;
 }
@@ -203,9 +204,10 @@ static bool openwhackrecordfile(char *file)
 
     magic = WHACK_BASIC_MAGIC;
     writewhackrecord((char *)&magic, 4);
+    fflush(whackrecordfile);
 
     DBG(DBG_CONTROL
-	, DBG_log("started recording whack messages to %s\n"
+	, DBG_log("writewhack started recording whack messages to %s\n"
 		  , whackrecordname));
     return TRUE;
 }
