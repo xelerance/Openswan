@@ -20,8 +20,9 @@ void readwhackmsg(char *infile)
     /* okay, eat first line, it's a comment, but log it. */
     if(fgets(b1, sizeof(b1), record)==NULL)
 	DBG(DBG_PARSING, DBG_log("readwhackmsg: fgets returned NULL"));
-    printf("Pre-amble: %s", b1);
-    
+    printf("Pre-amble (offset: %llu): %s",
+           (unsigned long long)ftello(record), b1);
+
     plen=0;
     while((iocount=fread(&plen, 4, 1, record))==1) {
 	u_int32_t a[2];
@@ -55,7 +56,7 @@ void readwhackmsg(char *infile)
 	    exit(5);
 	}
 
-	if(plen <= 4) {
+	if(plen <= 4 || iocount != 1) {
 	    /* empty message */
 	    continue;
 	}
@@ -79,8 +80,8 @@ void readwhackmsg(char *infile)
         fprintf(stderr, "processing whack msg time: %u size: %d\n",
                 a[1],plen);
 
-        fprintf(stderr, "next: %p roof: %p\n",
-                wp.str_next, wp.str_roof);
+        fprintf(stderr, "m1: %p next: %p roof: %p\n",
+                &m1, wp.str_next, wp.str_roof);
 
         if ((ugh = unpack_whack_msg(&wp)) != NULL)
         {
