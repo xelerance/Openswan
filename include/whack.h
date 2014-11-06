@@ -42,7 +42,7 @@
 
 /* mark top-bit with size of int,
  * so that mis-matches in integer size are easier to diagnose */
-#define WHACK_MAGIC_INTVALUE (sizeof(int)&0x8 << 31)
+#define WHACK_MAGIC_INTVALUE (sizeof(void *)&0x8 << 31)
 #define WHACK_MAGIC_INT4 ((WHACK_MAGIC_BASE) + (0 << 31))
 #define WHACK_MAGIC_INT8 ((WHACK_MAGIC_BASE) + (1 << 31))
 
