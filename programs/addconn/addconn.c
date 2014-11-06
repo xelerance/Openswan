@@ -90,7 +90,7 @@ static struct option const longopts[] =
 	{"listroute",           no_argument, NULL, 'r'},
 	{"liststart",           no_argument, NULL, 's'},
 	{"varprefix",           required_argument, NULL, 'P'},
-	{ "ctlbase",            required_argument, NULL, 'c' },
+	{"ctlbase" ,            required_argument, NULL, 'c' },
 	{"search",              no_argument, NULL, 'S'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"configsetup",         no_argument, NULL, 'T'},
@@ -121,6 +121,7 @@ main(int argc, char *argv[])
     char *defaultnexthop = NULL;
     char *ctlbase = NULL;
     bool resolvip = FALSE;
+    char  ctlbuf[1024];
 
 #if 0
     /* efence settings */
@@ -173,7 +174,11 @@ main(int argc, char *argv[])
 	    break;
 
 	case 'c':
-	    ctlbase = clone_str(optarg, "control base");
+	    if(snprintf(ctlbuf, sizeof(ctlbuf), "%s%s", optarg, CTL_SUFFIX) == -1) {
+		fprintf(stderr, "<ctlbase>" CTL_SUFFIX " must be fit in a 1024 bytes");
+                exit(4);
+            }
+	    ctlbase = clone_str(ctlbuf, "control base");
 	    break;
 
 	case 'A':
