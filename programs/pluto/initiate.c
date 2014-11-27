@@ -238,9 +238,7 @@ initiate_a_connection(struct connection *c
 	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
 			      , SOS_NOBODY, importance
-#ifdef HAVE_LABELED_IPSEC
                                         , NULL
-#endif
 			     );
 	    success = 1;
 	}
@@ -530,9 +528,7 @@ initiate_ondemand(const ip_address *our_client
 , int transport_proto
 , bool held
 , int whackfd
-#ifdef HAVE_LABELED_IPSEC
 , struct xfrm_user_sec_ctx_ike *uctx
-#endif
 , err_t why)
 {
     struct find_oppo_bundle b;
@@ -619,9 +615,7 @@ continue_oppo(struct adns_continuation *acr, err_t ugh)
     else
     {
 	(void)initiate_ondemand_body(&cr->b, &cr->ac, ugh
-#ifdef HAVE_LABELED_IPSEC
 				     , NULL
-#endif
 				    );
 	whackfd = NULL_FD;	/* was handed off */
     }
@@ -863,9 +857,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto
-#ifdef HAVE_LABELED_IPSEC
 			  , uctx
-#endif
 			);
 	b->whackfd = NULL_FD;	/* protect from close */
     }
@@ -1286,9 +1278,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 		    ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto
-#ifdef HAVE_LABELED_IPSEC
 					, NULL /*shall we pass uctx for opportunistic connections?*/
-#endif
 				     );
 		    b->whackfd = NULL_FD;	/* protect from close */
 		}
