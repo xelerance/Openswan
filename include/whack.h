@@ -38,15 +38,15 @@
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 25)
 
-#define WHACK_MAGIC_BASE (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38)
+#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38UL)
 
 /* mark top-bit with size of int,
  * so that mis-matches in integer size are easier to diagnose */
-#define WHACK_MAGIC_INTVALUE (sizeof(void *)&0x8 << 31)
-#define WHACK_MAGIC_INT4 ((WHACK_MAGIC_BASE) + (0 << 31))
-#define WHACK_MAGIC_INT8 ((WHACK_MAGIC_BASE) + (1 << 31))
+#define WHACK_MAGIC_INTVALUE (sizeof(void *)&0x8 << 28)
+#define WHACK_MAGIC_INT4 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(0UL << 31))
+#define WHACK_MAGIC_INT8 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(1UL << 31))
 
-#define WHACK_MAGIC (u_int32_t)((WHACK_MAGIC_BASE) + WHACK_MAGIC_INTVALUE)
+#define WHACK_MAGIC (u_int32_t)((WHACK_MAGIC_BASE) | WHACK_MAGIC_INTVALUE)
 
 
 /* struct whack_end is a lot like connection.h's struct end
