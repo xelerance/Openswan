@@ -471,9 +471,7 @@ netlink_raw_eroute(const ip_address *this_host
 		   , time_t use_lifetime UNUSED
 		   , enum pluto_sadb_operations sadb_op
 		   , const char *text_said
-#ifdef HAVE_LABELED_IPSEC
-		   , char *policy_label
-#endif
+		   , char *policy_label UNUSED
 		   )
 {
     struct {
@@ -1272,13 +1270,14 @@ netlink_acquire(struct nlmsghdr *n)
     unsigned family;
     unsigned transport_proto;
     err_t ugh = NULL;
+
+    struct xfrm_user_sec_ctx_ike *uctx=NULL;
 #ifdef HAVE_LABELED_IPSEC
     char *tmp;
     struct rtattr *attr;
     int remaining;
     struct xfrm_user_sec_ctx *xuctx=NULL;
     char sec_context_value[MAX_SECCTX_LEN];
-    struct xfrm_user_sec_ctx_ike *uctx=NULL;
     bool found_sec_ctx= FALSE;
 
     DBG(DBG_NETKEY, DBG_log("xfrm netlink msg len %lu", (unsigned long) n->nlmsg_len));
@@ -1400,9 +1399,7 @@ netlink_acquire(struct nlmsghdr *n)
 	&& !(ugh = addrtosubnet(&src, &ours))
 	&& !(ugh = addrtosubnet(&dst, &his)))
       record_and_initiate_opportunistic(&ours, &his, transport_proto
-#ifdef HAVE_LABELED_IPSEC
 					  , uctx
-#endif
 					  , "%acquire-netlink");
 
 #ifdef HAVE_LABELED_IPSEC
@@ -1755,9 +1752,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         , inner_spi, inner_proto
 	, inner_esatype, proto_info + i
         , op, opname
-#ifdef HAVE_LABELED_IPSEC
 	, st->st_connection->policy_label
-#endif
 	);
 }
 
@@ -1884,9 +1879,7 @@ netlink_shunt_eroute(struct connection *c
 			      , sr->this.protocol
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
-#ifdef HAVE_LABELED_IPSEC
 			      , c->policy_label
-#endif
 			      ) )
       { return FALSE; }
 
@@ -1913,9 +1906,7 @@ netlink_shunt_eroute(struct connection *c
 			      , sr->this.protocol
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
-#ifdef HAVE_LABELED_IPSEC
                               , c->policy_label
-#endif
 			      );
     }
 }

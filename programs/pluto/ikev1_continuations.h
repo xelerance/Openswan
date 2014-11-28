@@ -17,9 +17,7 @@ typedef stf_status initiator_function(int whack_sock
 				      , lset_t policy
 				      , unsigned long try
 				      , enum crypto_importance importance
-#ifdef HAVE_LABELED_IPSEC
 				      , struct xfrm_user_sec_ctx_ike * uctx
-#endif
 					);
 
 /* MAGIC: perform f, a function that returns notification_t

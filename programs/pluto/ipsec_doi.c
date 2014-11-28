@@ -341,9 +341,7 @@ ipsecdoi_initiate(int whack_sock
 		  , unsigned long try
 		  , so_serial_t replacing
 		  , enum crypto_importance importance
-#ifdef HAVE_LABELED_IPSEC
 		  , struct xfrm_user_sec_ctx_ike * uctx
-#endif
 		  )
 {
     /* If there's already an ISAKMP SA established, use that and
@@ -362,10 +360,8 @@ ipsecdoi_initiate(int whack_sock
 
 	if(initiator) {
 	    (void) initiator(whack_sock, c, NULL, policy, try, importance
-#ifdef HAVE_LABELED_IPSEC
-				, uctx
-#endif
-			    );
+                             , uctx
+                             );
 	    return;
 	}
     }
@@ -378,9 +374,7 @@ ipsecdoi_initiate(int whack_sock
 	/* leave our Phase 2 negotiation pending */
 	add_pending(whack_sock, st, c, policy, try
 		    , replacing
-#ifdef HAVE_LABELED_IPSEC
 		    , uctx
-#endif
 		   );
 	return;
       }
@@ -391,9 +385,7 @@ ipsecdoi_initiate(int whack_sock
 	 */
 	(void) quick_outI1(whack_sock, st, c, policy, try
 			   , replacing
-#ifdef HAVE_LABELED_IPSEC
 			   , uctx
-#endif
 			  );
 	return;
       }
@@ -433,10 +425,7 @@ ipsecdoi_replace(struct state *st
 	if(initiator) {
 	    (void) initiator(whack_sock, st->st_connection, st, policy
 			     , try, st->st_import
-#ifdef HAVE_LABELED_IPSEC
-			     , st->sec_ctx
-#endif
-			    );
+			     , st->sec_ctx);
 	}
     }
     else
@@ -468,10 +457,7 @@ ipsecdoi_replace(struct state *st
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock, st->st_connection, policy, try
 			  , st->st_serialno, st->st_import
-#ifdef HAVE_LABELED_IPSEC
-			  , st->sec_ctx
-#endif
-			 );
+			  , st->sec_ctx);
     }
     /* don't close whack_sock here as some caller above might have placed it in the state object */
 }

@@ -102,9 +102,7 @@ ikev2parent_outI1(int whack_sock
                   , lset_t policy
                   , unsigned long try
                   , enum crypto_importance importance
-#ifdef HAVE_LABELED_IPSEC
-                  , struct xfrm_user_sec_ctx_ike * uctx
-#endif
+                  , struct xfrm_user_sec_ctx_ike * uctx UNUSED
                   )
 {
     struct state *st = new_state();
@@ -134,9 +132,7 @@ ikev2parent_outI1(int whack_sock
 
         add_pending(dup_any(whack_sock), st, c, policy, 1
                     , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
-#ifdef HAVE_LABELED_IPSEC
                     , st->sec_ctx
-#endif
                     );
     }
 

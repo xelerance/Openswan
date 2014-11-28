@@ -276,9 +276,8 @@ struct state
     chunk_t            st_firstpacket_me;      /* copy of my message 1 */
     chunk_t            st_firstpacket_him;     /* copy of his message 1 */
 
-#ifdef HAVE_LABELED_IPSEC
-     struct xfrm_user_sec_ctx_ike *sec_ctx;
-#endif
+    /* always present, but not used if feature compiled out */
+    struct xfrm_user_sec_ctx_ike *sec_ctx;
 
     /* Phase 2 ID payload info about my user */
     u_int8_t           st_myuserprotoid;       /* IDcx.protoid */

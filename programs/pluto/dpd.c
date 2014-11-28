@@ -131,9 +131,9 @@ dpd_init(struct state *st)
      * Used to store the 1st state
      */
 #ifdef HAVE_LABELED_IPSEC
-	if(st->st_connection->loopback){
-	openswan_log("dpd is not required for ipsec connections over loopback");
-	return STF_OK;
+	if(st->st_connection->loopback) {
+            openswan_log("dpd is not required for ipsec connections over loopback");
+            return STF_OK;
 	}
 #endif
     struct state *p1st;

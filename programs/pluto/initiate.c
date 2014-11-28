@@ -238,7 +238,7 @@ initiate_a_connection(struct connection *c
 	    whackfd = dup(whackfd);
 	    ipsecdoi_initiate(whackfd, c, c->policy, 1
 			      , SOS_NOBODY, importance
-                                        , NULL
+                              , NULL_POLICY
 			     );
 	    success = 1;
 	}
@@ -517,9 +517,7 @@ cannot_oppo(struct connection *c
 
 static int initiate_ondemand_body(struct find_oppo_bundle *b
     , struct adns_continuation *ac, err_t ac_ugh
-#ifdef HAVE_LABELED_IPSEC
     , struct xfrm_user_sec_ctx_ike *uctx
-#endif
     );	/* forward */
 
 int
@@ -528,7 +526,7 @@ initiate_ondemand(const ip_address *our_client
 , int transport_proto
 , bool held
 , int whackfd
-, struct xfrm_user_sec_ctx_ike *uctx
+, struct xfrm_user_sec_ctx_ike *uctx UNUSED
 , err_t why)
 {
     struct find_oppo_bundle b;
@@ -544,10 +542,7 @@ initiate_ondemand(const ip_address *our_client
     b.whackfd = whackfd;
     b.step = fos_start;
     return initiate_ondemand_body(&b, NULL, NULL
-#ifdef HAVE_LABELED_IPSEC
-				 , uctx
-#endif
-				 );
+				 , uctx);
 }
 
 static void
@@ -615,8 +610,7 @@ continue_oppo(struct adns_continuation *acr, err_t ugh)
     else
     {
 	(void)initiate_ondemand_body(&cr->b, &cr->ac, ugh
-				     , NULL
-				    );
+				     , NULL_POLICY);
 	whackfd = NULL_FD;	/* was handed off */
     }
 
@@ -741,12 +735,9 @@ check_txt_recs(enum myid_state try_state
 /* return true if we did something */
 static int
 initiate_ondemand_body(struct find_oppo_bundle *b
-, struct adns_continuation *ac
-, err_t ac_ugh
-#ifdef HAVE_LABELED_IPSEC
-    , struct xfrm_user_sec_ctx_ike *uctx
-#endif
-)
+                       , struct adns_continuation *ac
+                       , err_t ac_ugh
+                       , struct xfrm_user_sec_ctx_ike *uctx)
 {
     struct connection *c;
     struct spd_route *sr;
@@ -857,8 +848,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
 	ipsecdoi_initiate(b->whackfd, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto
-			  , uctx
-			);
+			  , uctx);
 	b->whackfd = NULL_FD;	/* protect from close */
     }
     else

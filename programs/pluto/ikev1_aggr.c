@@ -994,9 +994,7 @@ aggr_outI1(int whack_sock,
 	   lset_t policy,
 	   unsigned long try
 	   , enum crypto_importance importance
-#ifdef HAVE_LABELED_IPSEC
            , struct xfrm_user_sec_ctx_ike * uctx
-#endif
 	   )
 {
     struct state *st;
@@ -1048,9 +1046,7 @@ aggr_outI1(int whack_sock,
     if (HAS_IPSEC_POLICY(policy))
 	add_pending(dup_any(whack_sock), st, c, policy, 1
 	    , predecessor == NULL? SOS_NOBODY : predecessor->st_serialno
-#ifdef HAVE_LABELED_IPSEC
 	     , uctx
-#endif
 		   );
 
     if (predecessor == NULL) {

@@ -188,6 +188,9 @@ struct spd_route {
  * This also reduces much of the testing complexity of maintain the options.
  */
 
+/* so that NULL labelled policy will be more obvious */
+#define NULL_POLICY NULL
+
 struct connection {
     char *name;
     char *connalias;
@@ -307,18 +310,14 @@ extern void initiate_connection(const char *name
 				, enum crypto_importance importance);
 extern void restart_connections_by_peer(struct connection *c);
 
-#ifdef HAVE_LABELED_IPSEC
 struct xfrm_user_sec_ctx_ike; /* forward declaration */
-#endif
 
 extern int initiate_ondemand(const ip_address *our_client
                               , const ip_address *peer_client
                               , int transport_proto
                               , bool held
                               , int whackfd
-#ifdef HAVE_LABELED_IPSEC
                               , struct xfrm_user_sec_ctx_ike *uctx
-#endif
                               , err_t why);
 extern void terminate_connection(const char *nm);
 extern void release_connection(struct connection *c, bool relations);
@@ -421,9 +420,7 @@ extern void add_pending(int whack_sock
     , lset_t policy
     , unsigned long try
     , so_serial_t replacing
-#ifdef HAVE_LABELED_IPSEC
     , struct xfrm_user_sec_ctx_ike * uctx
-#endif
     );
 
 extern void release_pending_whacks(struct state *st, err_t story);
