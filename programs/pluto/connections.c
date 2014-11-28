@@ -262,11 +262,17 @@ delete_connection(struct connection *c, bool relations)
     /* Must be careful to avoid circularity:
      * we mark c as going away so it won't get deleted recursively.
      */
+    struct state *st = state_with_serialno(c->newest_isakmp_sa);
+    unsigned int whack_sock = NULL_FD;
+    if(st) {
+        whack_sock = st->st_whack_sock;
+    }
+
     passert(c->kind != CK_GOING_AWAY);
     if (c->kind == CK_INSTANCE)
     {
-	openswan_log("deleting connection \"%s\" instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
-	     , c->name
+	openswan_log("deleting connection \"%s\" [whackfd=%u] instance with peer %s {isakmp=#%lu/ipsec=#%lu}"
+                     , c->name, whack_sock
 	     , ip_str(&c->spd.that.host_addr)
 	     , c->newest_isakmp_sa, c->newest_ipsec_sa);
 	c->kind = CK_GOING_AWAY;
