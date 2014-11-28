@@ -2416,9 +2416,11 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	    }
 
 	    DBG(DBG_CONTROL,
-		DBG_log("state transition function for %s failed: %s"
+		DBG_log("state transition function for %s failed: %s whack_fd: %u"
 			, enum_name(&state_names, from_state)
-			, enum_name(&ipsec_notification_names, md->note)));
+			, enum_name(&ipsec_notification_names, md->note)
+                        , st->st_whack_sock
+                        ));
 #ifdef HAVE_NM
            if (st->st_connection->remotepeertype == CISCO
                && st->st_connection->nmconfigured) {
