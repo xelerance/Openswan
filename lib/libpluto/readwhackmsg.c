@@ -70,7 +70,7 @@ void readwhackmsg(char *infile)
                 unsigned int bit64 = (m1.magic & 0x80000000);
                 unsigned int bits = bit64 ? 64 : 32;
                 fprintf(stderr, "this is whack message from a %u-bit system, this system is %lu",
-                        bits, sizeof(void *)*8);
+                        bits, (unsigned long)sizeof(void *)*8);
             }
             continue;
         }
