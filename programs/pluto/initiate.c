@@ -1,6 +1,6 @@
 /* information about connections between hosts and clients
  * Copyright (C) 1998-2010  D. Hugh Redelmeier.
- * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007,2014 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2009 Stefan Arentz <stefan@arentz.ca>
  * Copyright (C) 2009-2010 David McCullough <david_mccullough@securecomputing.com>
