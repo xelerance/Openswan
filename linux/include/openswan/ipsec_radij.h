@@ -21,14 +21,31 @@
 
 int ipsec_walk(char *);
 
-int ipsec_rj_walker_procprint(struct radij_node *, void *);
+void ipsec_rj_walker_procprint(struct seq_file *m, struct radij_node *rn);
 int ipsec_rj_walker_delete(struct radij_node *, void *);
 
-struct rj_walkstate;  /* forward reference */
+enum walkonce_control_t {
+  WALK_DONE = 0,
+  WALK_DOTOP = 1,
+  WALK_DODUPEKEY = 2,
+  WALK_PROCNODE  = 3,
+};
+
+struct rj_walkstate {
+  struct radij_node *rn;
+  struct radij_node *base;
+  struct radij_node *next;
+  struct radij_node *current_node;
+  enum walkonce_control_t walkonce_control;
+  int (*f)(struct radij_node *,void *);
+  void *w;
+};
 int rj_initwalk(struct rj_walkstate *rjws,
                 struct radij_node_head *head,
                 int (*func)(struct radij_node *,void *),
                 void *extra);
+int rj_walktreeonce(struct rj_walkstate *rjs);
+void rj_walktreeonce_top(struct rj_walkstate *rjs);
 extern void rj_finiwalk(struct rj_walkstate *rjws);
 
 /* This structure is used to pass information between
@@ -47,6 +64,7 @@ struct wsbuf
 };
 
 extern struct radij_node_head *rnh;
+extern unsigned int rnh_count;
 extern spinlock_t eroute_lock;
 
 struct eroute * ipsec_findroute(struct sockaddr_encap *);

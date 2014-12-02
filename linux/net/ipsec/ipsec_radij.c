@@ -60,6 +60,7 @@
 #include "openswan/ipsec_proto.h"
 
 struct radij_node_head *rnh = NULL;
+unsigned int rnh_count = 0;
 DEFINE_SPINLOCK(eroute_lock);
 
 int
@@ -82,6 +83,7 @@ ipsec_radijcleanup(void)
 	spin_lock_bh(&eroute_lock);
 
 	error = radijcleanup();
+        rnh_count = 0;
 
 	spin_unlock_bh(&eroute_lock);
 
@@ -96,6 +98,7 @@ ipsec_cleareroutes(void)
 	spin_lock_bh(&eroute_lock);
 
 	error = radijcleartree();
+        rnh_count = 0;
 
 	spin_unlock_bh(&eroute_lock);
 
@@ -319,7 +322,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 
 	error = rj_addroute(&(retrt->er_eaddr), &(retrt->er_emask),
 			 rnh, retrt->er_rjt.rd_nodes);
-
+        rnh_count++;
 	spin_unlock_bh(&eroute_lock);
 
 	if(error) {
@@ -333,6 +336,7 @@ ipsec_makeroute(struct sockaddr_encap *eaddr,
 		if (retrt->er_ident_d.data)
 			kfree(retrt->er_ident_d.data);
 
+                rnh_count--;
 		kfree(retrt);
 
 		return error;
@@ -423,18 +427,6 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 }
 
 #ifdef CONFIG_PROC_FS
-int
-ipsec_rj_walker_procdump(struct radij_node *rn, void *w0)
-{
-        char buffer[1024];
-
-	struct wsbuf w = { buffer, sizeof(buffer), 0, 0, 0};
-        ipsec_rj_walker_procprint(rn, &w);
-        w.buffer[w.len]='\0';
-        //printk("walker: %s\n", buffer);
-        return 0;
-}
-
 /** ipsec_rj_walker_procprint: print one line of eroute table output.
  *
  * Theoretical BUG: if w->length is less than the length
@@ -442,12 +434,10 @@ ipsec_rj_walker_procdump(struct radij_node *rn, void *w0)
  * be finished.  In effect, the "file" will stop part way
  * through that line.
  */
-int
-ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
+void ipsec_rj_walker_procprint(struct seq_file *m, struct radij_node *rn)
 {
 	struct eroute *ro = (struct eroute *)rn;
 	struct rjtentry *rd = (struct rjtentry *)rn;
-	struct wsbuf *w = (struct wsbuf *)w0;
 	char buf1[SUBNETTOA_BUF], buf2[SUBNETTOA_BUF];
 	char buf3[16];
 	char sa[SATOT_BUF];
@@ -456,18 +446,16 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 
 	KLIPS_PRINT(debug_radij,
 		    "klips_debug:ipsec_rj_walker_procprint: "
-		    "rn=0p%p, w0=0p%p\n",
-		    rn,
-		    w0);
+		    "rn=0p%p\n", rn);
 	if (rn->rj_b >= 0) {
-		return 0;
+		return;
 	}
 
 	key = rd_key(rd);
 	mask = rd_mask(rd);
 
 	if (key == NULL || mask == NULL) {
-                return 0;
+                return;
         }
 
 	if (key->sen_type == SENT_IP6) {
@@ -497,50 +485,23 @@ ipsec_rj_walker_procprint(struct radij_node *rn, void *w0)
 		}
 
 	} else {
-		return 0;
+		return;
 	}
 
 	buf3[0]='\0';
 	if(key->sen_proto != 0) {
-	  sprintf(buf3, ":%d", key->sen_proto);
+                sprintf(buf3, ":%d", key->sen_proto);
 	}
 
 	sa_len = satot(&ro->er_said, 'x', sa, sizeof(sa));
-	w->len += ipsec_snprintf(w->buffer + w->len,
-				 w->length - w->len,
-				 "%-10d "
-				 "%-18s -> %-18s => %s%s\n",
-				 ro->er_count,
-				 buf1,
-				 buf2,
-				 sa_len ? sa : " (error)",
-				 buf3);
-
-       {
-               /* snprintf can only fill the last character with NUL
-                * so the maximum useful character is w->length-1.
-                * However, if w->length == 0, we cannot go back.
-                * (w->length surely cannot be negative.)
-                */
-               int max_content = w->length > 0? w->length-1 : 0;
-
-               if (w->len >= max_content) {
-                       /* we've done all that can fit -- stop treewalking */
-                       w->len = max_content;   /* truncate crap */
-                       return -ENOBUFS;
-               } else {
-                       const off_t pos = w->begin + w->len;    /* file position of end of what we've generated */
-
-                       if (pos <= w->offset) {
-                               /* all is before first interesting character:
-                                * discard, but note where we are.
-                                */
-                               w->len = 0;
-                               w->begin = pos;
-                       }
-                       return 0;
-               }
-        }
+	seq_printf(m,
+                    "%-10d "
+                    "%-18s -> %-18s => %s%s\n",
+                    ro->er_count,
+                    buf1,
+                    buf2,
+                    sa_len ? sa : " (error)",
+                    buf3);
 }
 #endif          /* CONFIG_PROC_FS */
 
@@ -581,6 +542,7 @@ ipsec_rj_walker_delete(struct radij_node *rn, void *w0)
 			    "rj_delete failed with error=%d.\n", error);
 		return error;
 	}
+        rnh_count--;
 
 	if(rn2 != rn) {
 		printk("klips_debug:ipsec_rj_walker_delete: "

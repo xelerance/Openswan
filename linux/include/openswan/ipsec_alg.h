@@ -245,4 +245,8 @@ typedef void (*__cleanup_module_func_t)(void);
 #define IPSEC_ALG_MODULE_EXIT( func_name )	IPSEC_ALG_MODULE_EXIT_STATIC(func_name)
 #endif
 
+/* proc processing for list of supported algorithms */
+extern int proc_alg_open(struct inode *inode, struct file *file);
+
+
 #endif /* IPSEC_ALG_H */

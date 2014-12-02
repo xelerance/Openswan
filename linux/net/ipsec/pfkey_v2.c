@@ -1494,6 +1494,7 @@ pfkey_init(void)
 
         error |= sock_register(&pfkey_family_ops);
 
+#if 0
 #ifdef CONFIG_PROC_FS
         {
                 struct proc_dir_entry* entry;
@@ -1506,6 +1507,7 @@ pfkey_init(void)
                 entry->read_proc = pfkey_registered_get_info;
         }
 #endif /* CONFIG_PROC_FS */
+#endif
 	return error;
 }
 

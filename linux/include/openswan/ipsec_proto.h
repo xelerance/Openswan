@@ -98,13 +98,6 @@ extern enum ipsec_life_alive ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 						  enum ipsec_direction idir,
 						  struct ipsec_sa *ips);
 
-
-extern int ipsec_lifetime_format(char *buffer,
-				 int   buflen,
-				 char *lifename,
-				 enum ipsec_life_type timebaselife,
-				 struct ipsec_lifetime64 *lifetime);
-
 extern void ipsec_lifetime_update_hard(struct ipsec_lifetime64 *lifetime,
 				       __u64 newvalue);
 

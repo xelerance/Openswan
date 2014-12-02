@@ -240,6 +240,12 @@ static void ipsec_alg_put(struct ipsec_alg *ixt) {
 	__ipsec_alg_usage_dec((struct ipsec_alg *)ixt);
 }
 
+static struct ipsec_alg *ipsec_alg_get1(struct ipsec_alg *ixt) {
+	if (ixt) __ipsec_alg_usage_inc(ixt);
+        return ixt;
+}
+
+
 /*****************************************************************
  *
  * 	INTERFACE for ENC services: key creation, encrypt function
@@ -951,27 +957,25 @@ int ipsec_alg_sa_wipe(struct ipsec_sa *sa_p) {
 	return 0;
 }
 
-IPSEC_PROCFS_DEBUG_NO_STATIC
-int
-ipsec_xform_get_info(char *buffer,
-		     char **start,
-		     off_t offset,
-		     int length     IPSEC_PROC_LAST_ARG)
+struct alg_walkstate {
+        unsigned int alg_total;                 /* total number of items in spi list */
+        unsigned int alg_hash_num;              /* hash bucket sequenced through to */
+        unsigned int alg_offset;                /* current place in list */
+        struct ipsec_alg *alg_current;           /* has been locked? */
+};
+
+static void * proc_alg_start(struct seq_file *m, loff_t *pos)
 {
-	int len = 0;
-	off_t begin = 0;
 	int i;
+        struct alg_walkstate *aws = kmalloc(sizeof(struct alg_walkstate), GFP_KERNEL);
 	struct list_head *head;
 	struct ipsec_alg *ixt;
 
-	KLIPS_PRINT(debug_tunnel & DB_TN_PROCFS,
-		    "klips_debug:ipsec_tncfg_get_info: "
-		    "buffer=0p%p, *start=0p%p, offset=%d, length=%d\n",
-		    buffer,
-		    *start,
-		    (int)offset,
-		    length);
+        if(aws == NULL) return NULL;
+        memset(aws, 0, sizeof(struct alg_walkstate));
 
+	read_lock(&ipsec_alg_lock);
+        /* count number of items */
 	for(i = 0, head = ipsec_alg_hash_table;
 	    i<IPSEC_ALG_HASHSZ;
 	    i++, head++)
@@ -979,55 +983,175 @@ ipsec_xform_get_info(char *buffer,
 		struct list_head *p;
 		for (p=head->next; p!=head; p=p->next)
 		{
-			ixt = list_entry(p, struct ipsec_alg, ixt_list);
-			len += ipsec_snprintf(buffer+len, length-len,
-					      "VERSION=%d TYPE=%d ID=%d NAME=%s REFCNT=%d ",
-					      ixt->ixt_version, ixt->ixt_alg_type, ixt->ixt_support.ias_id,
-					      ixt->ixt_name, ixt->ixt_refcnt);
+                  aws->alg_total++;
+                }
+        }
 
-			len += ipsec_snprintf(buffer+len, length-len,
-					      "STATE=%08x BLOCKSIZE=%d IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
-					      ixt->ixt_state, ixt->ixt_blocksize,
-					      ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
+        if(*pos >= aws->alg_total) {
+                read_unlock(&ipsec_alg_lock);
+                kfree(aws);
+                return NULL;
+        }
 
-			len += ipsec_snprintf(buffer+len, length-len,
-					      "IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
-					      ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
+        printk("total: %u %d\n", aws->alg_total, (int)*pos);
 
-			switch(ixt->ixt_alg_type)
-			{
-			case IPSEC_ALG_TYPE_AUTH:
-			{
-				struct ipsec_alg_auth *auth = (struct ipsec_alg_auth *)ixt;
+        /* now find the place in the system where we need to be */
+        aws->alg_hash_num = 0;
+        aws->alg_offset = 0;
+        aws->alg_current = NULL;
 
-				len += ipsec_snprintf(buffer+len, length-len,
-						      "KEYLEN=%d CTXSIZE=%d AUTHLEN=%d ",
-						      auth->ixt_a_keylen, auth->ixt_a_ctx_size,
-						      auth->ixt_a_authlen);
-				break;
-			}
-			case IPSEC_ALG_TYPE_ENCRYPT:
-			{
-				struct ipsec_alg_enc *enc = (struct ipsec_alg_enc *)ixt;
-				len += ipsec_snprintf(buffer+len, length-len,
-						      "KEYLEN=%d CTXSIZE=%d ",
-						      enc->ixt_e_keylen, enc->ixt_e_ctx_size);
+        /* look for first stop, linear walk through hash chain */
+	for(i = 0, head = ipsec_alg_hash_table;
+	    i<IPSEC_ALG_HASHSZ && (aws->alg_offset <= *pos);
+	    i++, head++)
+	{
+          struct list_head *p;
+          aws->alg_hash_num   = i;
+          for (p=head->next;
+               p!=head && (aws->alg_offset <= *pos);
+               p=p->next)
+            {
+              if(aws->alg_offset == *pos) {
+                ixt = list_entry(p, struct ipsec_alg, ixt_list);
+                aws->alg_current = ipsec_alg_get1(ixt);
+              }
+              aws->alg_offset++;
+            }
+        }
 
-				break;
-			}
-			}
+        if(aws->alg_current == NULL) {
+                /* did not found valid item */
+                read_unlock(&ipsec_alg_lock);
+                kfree(aws);
+                return NULL;
+        }
+	read_unlock(&ipsec_alg_lock);
+        printk("alg_start: %u %u %u %p\n", aws->alg_total, aws->alg_hash_num,
+               aws->alg_offset, aws->alg_current);
 
-			len += ipsec_snprintf(buffer+len, length-len, "\n");
-		}
-	}
-
-	*start = buffer + (offset - begin);	/* Start of wanted data */
-	len -= (offset - begin);			/* Start slop */
-	if (len > length)
-		len = length;
-	return len;
+	return aws;
 }
 
+static void   proc_alg_stop(struct seq_file *m, void *v)
+{
+        if(v) {
+                struct alg_walkstate *aws = (struct alg_walkstate *)v;
+                if(aws->alg_current) ipsec_alg_put(aws->alg_current);
+                aws->alg_current = NULL;
+                kfree(aws);
+        }
+}
+
+static void * proc_alg_next(struct seq_file *m, void *v, loff_t *pos)
+{
+        int i;
+	struct list_head *head;
+        struct alg_walkstate *aws = (struct alg_walkstate *)v;
+
+        printk("alg_next 1 pos=%ld tot:%u hash:%u off:%u cur:%p\n", (long int)*pos, aws->alg_total, aws->alg_hash_num,
+               aws->alg_offset, aws->alg_current);
+
+        /* free current item, if any */
+        if(aws->alg_current) ipsec_alg_put(aws->alg_current);
+        aws->alg_current = NULL;
+
+        if(*pos >= aws->alg_total) {
+                return NULL;
+        }
+
+        if(aws->alg_offset > *pos) {
+                /* reset search? */
+                aws->alg_offset = 0;
+                aws->alg_hash_num = 0;
+        }
+
+        read_lock(&ipsec_alg_lock);
+        /* find the next item in the list */
+	for (i = aws->alg_hash_num, head = &ipsec_alg_hash_table[aws->alg_hash_num];
+             i<IPSEC_ALG_HASHSZ && (aws->alg_offset <= *pos);
+             i++, head++) {
+          struct list_head *p;
+
+          aws->alg_hash_num   = i;
+          for (p=head->next;
+               p!=head && (aws->alg_offset <= *pos);
+               p=p->next)
+            {
+              if(aws->alg_offset == *pos) {
+                struct ipsec_alg *ixt;
+                ixt = list_entry(p, struct ipsec_alg, ixt_list);
+                aws->alg_current = ipsec_alg_get1(ixt);
+              }
+              aws->alg_offset++;
+            }
+        }
+        read_unlock(&ipsec_alg_lock);
+
+        if(aws->alg_current == NULL) {
+                return NULL;
+        }
+
+        printk("alg_next 2 %u %u %u %p\n", aws->alg_total, aws->alg_hash_num,
+               aws->alg_offset, aws->alg_current);
+	(*pos)++;
+	return v;
+}
+
+
+
+static int    proc_alg_show(struct seq_file *m, void *v)
+{
+	struct ipsec_alg *ixt;
+        struct alg_walkstate *algws = (struct alg_walkstate *)v;
+
+        ixt = algws->alg_current;
+        seq_printf(m, "VERSION=%d TYPE=%d ID=%d NAME=%s REFCNT=%d ",
+                   ixt->ixt_version, ixt->ixt_alg_type, ixt->ixt_support.ias_id,
+                   ixt->ixt_name, atomic_read(&ixt->ixt_refcnt));
+
+        seq_printf(m, "STATE=%08x BLOCKSIZE=%d IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
+                   ixt->ixt_state, ixt->ixt_blocksize,
+                   ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
+
+        seq_printf(m, "IVLEN=%d KEYMINBITS=%d KEYMAXBITS=%d ",
+                   ixt->ixt_support.ias_ivlen, ixt->ixt_support.ias_keyminbits, ixt->ixt_support.ias_keymaxbits);
+
+        switch(ixt->ixt_alg_type)
+          {
+          case IPSEC_ALG_TYPE_AUTH:
+            {
+              struct ipsec_alg_auth *auth = (struct ipsec_alg_auth *)ixt;
+
+              seq_printf(m, "KEYLEN=%d CTXSIZE=%d AUTHLEN=%d ",
+                         auth->ixt_a_keylen, auth->ixt_a_ctx_size,
+                         auth->ixt_a_authlen);
+              break;
+            }
+          case IPSEC_ALG_TYPE_ENCRYPT:
+            {
+              struct ipsec_alg_enc *enc = (struct ipsec_alg_enc *)ixt;
+              seq_printf(m, "KEYLEN=%d CTXSIZE=%d ",
+                         enc->ixt_e_keylen, enc->ixt_e_ctx_size);
+              break;
+            }
+          }
+
+        seq_printf(m, "\n");
+        return 0;
+}
+
+static struct seq_operations proc_alg_op = {
+        .start =        proc_alg_start,
+        .next =         proc_alg_next,
+        .stop =         proc_alg_stop,
+        .show =         proc_alg_show
+};
+
+int
+proc_alg_open(struct inode *inode, struct file *file)
+{
+        return seq_open(file, &proc_alg_op);
+}
 
 /*
  * 	As the author of this module, I ONLY ALLOW using it from
