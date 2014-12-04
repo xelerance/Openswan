@@ -35,7 +35,7 @@ documentation and/or software.
 
 /*
  * Additions by JI
- * 
+ *
  * HAVEMEMCOPY is defined if mem* routines are available
  *
  * HAVEHTON is defined if htons() and htonl() can be used
@@ -142,7 +142,7 @@ Rotation is separate from addition to prevent recomputation.
  */
 void osMD5Init(void *vcontext)
 {
-  MD5_CTX *context = vcontext;                                     
+  MD5_CTX *context = vcontext;
 
   context->count[0] = context->count[1] = 0;
   /* Load magic initialization constants.*/
@@ -161,7 +161,7 @@ void osMD5Update (vcontext, input, inputLen)
      unsigned char *input;                                /* input block */
      __u32 inputLen;                     /* length of input block */
 {
-  MD5_CTX *context = vcontext;                                     
+  MD5_CTX *context = vcontext;
   __u32 i;
   unsigned int index, partLen;
 
@@ -204,7 +204,7 @@ void osMD5Final (digest, vcontext)
 unsigned char digest[16];                         /* message digest */
 void *vcontext;                                       /* context */
 {
-  MD5_CTX *context = vcontext;                                     
+  MD5_CTX *context = vcontext;
   unsigned char bits[8];
   unsigned int index, padLen;
 

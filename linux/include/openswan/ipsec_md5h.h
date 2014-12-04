@@ -75,5 +75,5 @@ void osMD5Init PROTO_LIST ((void *));
 void osMD5Update PROTO_LIST
   ((void *, unsigned char *, __u32));
 void osMD5Final PROTO_LIST ((unsigned char [16], void *));
- 
+
 #endif /* _IPSEC_MD5H_H_ */

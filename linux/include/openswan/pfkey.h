@@ -2,12 +2,12 @@
  * Openswan specific PF_KEY headers
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
  * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -198,7 +198,7 @@ static inline void pfkey_mark_extension(enum sadb_extension_t exttype,
 {
 	*exten_track |= (1 << exttype);
 }
-	
+
 extern int pfkey_extensions_missing(enum pfkey_ext_required inout,
 				    enum sadb_msg_t sadb_operation,
 				    pfkey_ext_track extensions_seen);

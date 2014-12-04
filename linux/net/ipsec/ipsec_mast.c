@@ -2,12 +2,12 @@
  * IPSEC MAST code.
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -83,7 +83,7 @@ static __u32 zeroes[64];
 DEBUG_NO_STATIC int
 ipsec_mast_open(struct net_device *dev)
 {
-	struct mastpriv *prv = netdev_to_mastpriv(dev); 
+	struct mastpriv *prv = netdev_to_mastpriv(dev);
 
 	prv = prv;
 
@@ -128,7 +128,7 @@ static int klips_set_ipc_saref(struct ipcm_cookie *ipc,
 	sp->ref = ref;
 	KLIPS_PRINT(debug_mast, "klips_debug:klips_set_ipc_saref: "
 			"sending with saref=%u\n", sp->ref);
-		
+
 	sa1 = ipsec_sa_getbyref(sp->ref, IPSEC_REFOTHER);
 	if(sa1 && sa1->ips_out) {
 		ipc->oif = sa1->ips_out->ifindex;
@@ -136,7 +136,7 @@ static int klips_set_ipc_saref(struct ipcm_cookie *ipc,
 			"setting oif: %d\n", ipc->oif);
 	}
 	ipsec_sa_put(sa1, IPSEC_REFOTHER);
-	
+
 	ipc->sp  = sp;
 
 	return 0;
@@ -237,7 +237,7 @@ ipsec_mast_send(struct ipsec_xmit_state*ixs)
 			if(net_ratelimit())
 				printk(KERN_ERR
 				       "klips_error:ipsec_mast_send: "
-				       "ip_send() failed, err=%d\n", 
+				       "ip_send() failed, err=%d\n",
 				       -err);
 			ixs->stats->tx_errors++;
 			ixs->stats->tx_aborted_errors++;
@@ -434,7 +434,7 @@ ipsec_mast_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			"passed NULL\n");
 		return 0;
 	}
-		
+
 	ixs = ipsec_xmit_state_new(dev);
 	if(ixs == NULL)
 		return NETDEV_TX_BUSY;
@@ -537,7 +537,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 	struct mastpriv *mprv = netdev_to_mastpriv(dev);
 	struct net_device_stats *stats;	/* This device's statistics */
 	int ret = 0;
-	
+
 	if(skb == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 			    "klips_debug:ipsec_mast_hard_header: "
@@ -556,7 +556,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 		    "klips_debug:ipsec_mast_hard_header: "
 		    "skb->dev=%s\n",
 		    dev->name);
-	
+
 	if(prv == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 			    "klips_debug:ipsec_mast_hard_header: "
@@ -600,7 +600,7 @@ ipsec_mast_hard_header(struct sk_buff *skb, struct net_device *dev,
 		KLIPS_PRINT(debug_mast,
 			    "klips_debug:ipsec_mast_hard_header: "
 			    "is IPv6 packet, skip debugging messages, only revector and build linklocal header.\n");
-	}                                                                      
+	}
 
 	return ret;
 }
@@ -618,7 +618,7 @@ DEBUG_NO_STATIC int
 ipsec_mast_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct mastpriv *prv = netdev_to_mastpriv(dev);
-	
+
 	prv = prv;
 	return 0;
 
@@ -628,7 +628,7 @@ DEBUG_NO_STATIC void
 ipsec_mast_cache_update(struct hh_cache *hh, struct net_device *dev, unsigned char *  haddr)
 {
 	struct mastpriv *prv = netdev_to_mastpriv(dev);
-	
+
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_REVEC,
 			    "klips_debug:ipsec_mast_cache_update: "
@@ -687,12 +687,12 @@ ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 {
 	/* struct ipsecmastconf *cf = (struct ipsecmastconf *)&ifr->ifr_data;*/
 	/* overlay our struct ipsecmast onto ifr.ifr_ifru union (hope it fits!) */
-	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr->ifr_ifru.ifru_newname;       
+	struct ipsecmastconf *cf=(struct ipsecmastconf *)ifr->ifr_ifru.ifru_newname;
 	struct mastpriv *mprv = netdev_to_mastpriv(dev);
 
 	cf = cf;
 	mprv = mprv;
-	
+
 	if(dev == NULL) {
 		KLIPS_PRINT(debug_mast & DB_MAST_INIT,
 			    "klips_debug:ipsec_mast_ioctl: "
@@ -713,7 +713,7 @@ ipsec_mast_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 			    "unknown command %d.\n",
 			    cmd);
 		return -EOPNOTSUPP;
-	  
+
 	}
 }
 
@@ -878,7 +878,7 @@ ipsec_mast_probe(struct net_device *dev)
 	for(i = 0; i < sizeof(zeroes); i++) {
 		((__u8*)(zeroes))[i] = 0;
 	}
-	
+
 #ifdef HAVE_NETDEV_HEADER_OPS
 	dev->header_ops = NULL;
 #else
@@ -890,7 +890,7 @@ ipsec_mast_probe(struct net_device *dev)
 	dev->mtu		= 0;
 	dev->addr_len		= 0;
 	dev->type		= ARPHRD_NONE;
-	dev->tx_queue_len	= 10;		
+	dev->tx_queue_len	= 10;
 #ifdef IFF_XMIT_DST_RELEASE
 	dev->priv_flags	       &= ~IFF_XMIT_DST_RELEASE;
 #endif
@@ -926,7 +926,7 @@ static const struct net_device_ops ipsec_mast_ops = {
 };
 #endif
 
-int ipsec_mast_createnum(int vifnum) 
+int ipsec_mast_createnum(int vifnum)
 {
 	struct net_device *im;
 	int vifentry;
@@ -939,7 +939,7 @@ int ipsec_mast_createnum(int vifnum)
 	if(mastdevices[vifnum]!=NULL) {
 		return -EEXIST;
 	}
-	
+
 	/* no identical device */
 	if(vifnum > mastdevices_max) {
 		mastdevices_max=vifnum;
@@ -947,7 +947,7 @@ int ipsec_mast_createnum(int vifnum)
 	vifentry = vifnum;
 
 	snprintf(name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
-	
+
 #ifdef alloc_netdev
 	im = alloc_netdev(sizeof(struct mastpriv), name, ipsec_mast_netdev_setup);
 #else
@@ -962,7 +962,7 @@ int ipsec_mast_createnum(int vifnum)
 	memset((caddr_t)im, 0, sizeof(struct net_device));
 	memcpy(im->name, name, IFNAMSIZ);
 #endif
-		
+
 #ifdef USE_NETDEV_OPS
 	im->netdev_ops = &ipsec_mast_ops;
 #else
@@ -986,7 +986,7 @@ int
 ipsec_mast_deletenum(int vifnum)
 {
 	struct net_device *dev_ipsec;
-	
+
 	if(vifnum >= IPSEC_NUM_IFMAX) {
 		return -ENOENT;
 	}
@@ -999,7 +999,7 @@ ipsec_mast_deletenum(int vifnum)
 	/* release reference */
 	mastdevices[vifnum]=NULL;
 	ipsec_dev_put(dev_ipsec);
-	
+
 	KLIPS_PRINT(debug_tunnel, "Unregistering %s\n", dev_ipsec->name);
 	unregister_netdev(dev_ipsec);
 	KLIPS_PRINT(debug_tunnel, "Unregisted %s\n", dev_ipsec->name);
@@ -1021,7 +1021,7 @@ ipsec_mast_get_device(int vifnum)
 		return ipsec_tunnel_get_device(vifnum-IPSECDEV_OFFSET);
 	} else {
 		struct net_device *nd;
-		
+
 		if(vifnum >= MASTTRANSPORT_OFFSET) {
 			vifnum -= MASTTRANSPORT_OFFSET;
 		}
@@ -1048,7 +1048,7 @@ ipsec_mast_is_transport(int vifnum)
 	return 0;
 }
 
-int 
+int
 ipsec_mast_init_devices(void)
 {
 	/*
@@ -1056,7 +1056,7 @@ ipsec_mast_init_devices(void)
 	 * the default unless the user decides to create more.
 	 */
 	ipsec_mast_createnum(0);
-  
+
 	return 0;
 }
 
@@ -1067,7 +1067,7 @@ ipsec_mast_cleanup_devices(void)
 	int error = 0;
 	int i;
 	struct net_device *dev_mast;
-	
+
 	for(i = 0; i <= mastdevices_max; i++) {
 		if(mastdevices[i]!=NULL) {
 			dev_mast = mastdevices[i];

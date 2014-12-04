@@ -4,12 +4,12 @@
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
  *                                 2001  Michael Richardson <mcr@freeswan.org>
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -61,7 +61,7 @@
  * - the returned result is never negative --
  *   an error generates a "?" or null output (depending on space).
  *   (Our callers are too lazy to check for an error return.)
- * 
+ *
  * @param buf String buffer
  * @param size Size of the string
  * @param fmt printf string
@@ -91,10 +91,10 @@ void ipsec_dmp_block(char *s, caddr_t bb, int len)
 {
 	int i;
 	unsigned char *b = bb;
-  
+
 	printk(KERN_INFO "klips_dmp: "
 	       "at %s, len=%d:\n", s, len);
-	
+
 	for(i = 0; i < len; i++ /*, c++*/) {
 		if(!(i % 16)) {
 			printk(KERN_INFO
@@ -110,7 +110,7 @@ void ipsec_dmp_block(char *s, caddr_t bb, int len)
 		printk("\n");
 	}
 }
-		
+
 /*
  * Local Variables:
  * c-file-style: "linux"

@@ -5,12 +5,12 @@
  * 	Harpo MAxx <harpo@linuxmendoza.org.ar>
  * 	JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  * 	Luciano Ruete <docemeses@softhome.net>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -30,7 +30,7 @@
 #include <linux/config.h>
 #endif
 
-/*	
+/*
  *	special case: ipsec core modular with this static algo inside:
  *	must avoid MODULE magic for this file
  */
@@ -320,12 +320,12 @@ setup_ipsec_alg_capi_cipher(struct ipsec_alg_capi_cipher *cptr)
 	cptr->alg.ixt_common.ixt_data = cptr;
 
 	ret=register_ipsec_alg_enc(&cptr->alg);
-	printk(KERN_INFO "KLIPS cryptoapi interface: " 
+	printk(KERN_INFO "KLIPS cryptoapi interface: "
 			"alg_type=%d alg_id=%d name=%s "
-			"keyminbits=%d keymaxbits=%d, %s(%d)\n", 
-				cptr->alg.ixt_common.ixt_support.ias_exttype, 
-				cptr->alg.ixt_common.ixt_support.ias_id, 
-				cptr->alg.ixt_common.ixt_name, 
+			"keyminbits=%d keymaxbits=%d, %s(%d)\n",
+				cptr->alg.ixt_common.ixt_support.ias_exttype,
+				cptr->alg.ixt_common.ixt_support.ias_id,
+				cptr->alg.ixt_common.ixt_name,
 				cptr->alg.ixt_common.ixt_support.ias_keyminbits,
 				cptr->alg.ixt_common.ixt_support.ias_keymaxbits,
 	       ret ? "not found" : "found", ret);
@@ -335,11 +335,11 @@ setup_ipsec_alg_capi_cipher(struct ipsec_alg_capi_cipher *cptr)
  * 	called in ipsec_sa_wipe() time, will destroy key contexts
  * 	and do 1 unbind()
  */
-static void 
+static void
 _capi_destroy_key (struct ipsec_alg_enc *alg, __u8 *key_e)
 {
 	struct crypto_tfm *tfm=(struct crypto_tfm*)key_e;
-	
+
 	if (debug_crypto > 0)
 		printk(KERN_DEBUG "klips_debug: _capi_destroy_key:"
 				"name=%s key_e=%p \n",
@@ -352,7 +352,7 @@ _capi_destroy_key (struct ipsec_alg_enc *alg, __u8 *key_e)
 	}
 	crypto_free_tfm(tfm);
 }
-	
+
 /*
  * 	create new key context, need alg->ixt_data to know which
  * 	(of many) cipher inside this module is the target
@@ -366,7 +366,7 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 	cptr = alg->ixt_common.ixt_data;
 	if (!cptr) {
 		printk(KERN_ERR "_capi_new_key(): "
-				"NULL ixt_data (?!) for \"%s\" algo\n" 
+				"NULL ixt_data (?!) for \"%s\" algo\n"
 				, alg->ixt_common.ixt_name);
 		goto err;
 	}
@@ -374,20 +374,20 @@ _capi_new_key (struct ipsec_alg_enc *alg, const __u8 *key, size_t keylen)
 		printk(KERN_DEBUG "klips_debug:_capi_new_key:"
 				"name=%s cptr=%p key=%p keysize=%zd\n",
 				alg->ixt_common.ixt_name, cptr, key, keylen);
-	
-	/*	
+
+	/*
 	 *	alloc tfm
 	 */
 	tfm = crypto_blkcipher_tfm(crypto_alloc_blkcipher(cptr->ciphername, 0, 0));
 	if (!tfm) {
 		printk(KERN_ERR "_capi_new_key(): "
-				"NULL tfm for \"%s\" cryptoapi (\"%s\") algo\n" 
+				"NULL tfm for \"%s\" cryptoapi (\"%s\") algo\n"
 			, alg->ixt_common.ixt_name, cptr->ciphername);
 		goto err;
 	}
 	if (crypto_blkcipher_setkey(crypto_blkcipher_cast(tfm), key, keylen) < 0) {
 		printk(KERN_ERR "_capi_new_key(): "
-				"failed new_key() for \"%s\" cryptoapi algo (keylen=%zd)\n" 
+				"failed new_key() for \"%s\" cryptoapi algo (keylen=%zd)\n"
 			, alg->ixt_common.ixt_name, keylen);
 		crypto_free_tfm(tfm);
 		tfm=NULL;
@@ -403,7 +403,7 @@ err:
  * 	core encryption function: will use cx->ci to call actual cipher's
  * 	cbc function
  */
-static int 
+static int
 _capi_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e, __u8 * in, int ilen, __u8 * iv, int encrypt) {
 	int error =0;
 	struct crypto_tfm *tfm=(struct crypto_tfm *)key_e;
@@ -445,12 +445,12 @@ _capi_cbc_encrypt(struct ipsec_alg_enc *alg, __u8 * key_e, __u8 * in, int ilen, 
  * 	2) register ipsec_alg object
  */
 static int
-setup_cipher_list (struct ipsec_alg_capi_cipher* clist) 
+setup_cipher_list (struct ipsec_alg_capi_cipher* clist)
 {
 	struct ipsec_alg_capi_cipher *cptr;
 	/* foreach cipher in list ... */
 	for (cptr=clist;cptr->ciphername;cptr++) {
-		/* 
+		/*
 		 * see if cipher has been disabled (0) or
 		 * if noauto set and not enabled (1)
 		 */
@@ -472,7 +472,7 @@ setup_cipher_list (struct ipsec_alg_capi_cipher* clist)
 				, cptr->parm[0]
 				, cptr->parm[1]);
 			}
-		/* 
+		/*
 		 * 	use a local ci to avoid touching cptr->ci,
 		 * 	if register ipsec_alg success then bind cipher
 		 */
@@ -504,7 +504,7 @@ setup_cipher_list (struct ipsec_alg_capi_cipher* clist)
  * 	deregister ipsec_alg objects and unbind ciphers
  */
 static int
-unsetup_cipher_list (struct ipsec_alg_capi_cipher* clist) 
+unsetup_cipher_list (struct ipsec_alg_capi_cipher* clist)
 {
 	struct ipsec_alg_capi_cipher *cptr;
 	/* foreach cipher in list ... */
@@ -519,7 +519,7 @@ unsetup_cipher_list (struct ipsec_alg_capi_cipher* clist)
  * 	test loop for registered algos
  */
 static int
-test_cipher_list (struct ipsec_alg_capi_cipher* clist) 
+test_cipher_list (struct ipsec_alg_capi_cipher* clist)
 {
 	int test_ret;
 	struct ipsec_alg_capi_cipher *cptr;
@@ -528,10 +528,10 @@ test_cipher_list (struct ipsec_alg_capi_cipher* clist)
 		if (cptr->alg.ixt_common.ixt_state & IPSEC_ALG_ST_REGISTERED) {
 			test_ret=ipsec_alg_test(
 					cptr->alg.ixt_common.ixt_support.ias_exttype,
-					cptr->alg.ixt_common.ixt_support.ias_id, 
+					cptr->alg.ixt_common.ixt_support.ias_id,
 					test_crypto);
-			printk("test_cipher_list(alg_type=%d alg_id=%d): test_ret=%d\n", 
-			       cptr->alg.ixt_common.ixt_support.ias_exttype, 
+			printk("test_cipher_list(alg_type=%d alg_id=%d): test_ret=%d\n",
+			       cptr->alg.ixt_common.ixt_support.ias_exttype,
 			       cptr->alg.ixt_common.ixt_support.ias_id,
 			       test_ret);
 		}

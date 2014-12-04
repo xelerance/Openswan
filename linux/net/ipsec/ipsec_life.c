@@ -7,12 +7,12 @@
  * Copyright (C) 2006 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2012 David McCullough <david_mccullough@mcafee.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -20,7 +20,7 @@
  *
  */
 
-/* 
+/*
  * This provides series of utility functions for dealing with lifetime
  * structures.
  *
@@ -90,7 +90,7 @@ ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 	} else {
 		dir = "outgoing";
 	}
-		
+
 
 	if(ilt == ipsec_life_timebased) {
 		count = ipsec_jiffieshz_elapsed(jiffies/HZ, il64->ipl_count);
@@ -138,7 +138,7 @@ ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 /*
  * This function takes a buffer (with length), a lifetime name and type,
  * and formats a string to represent the current values of the lifetime.
- * 
+ *
  * It returns the number of bytes that the format took (or would take,
  * if the buffer were large enough: snprintf semantics).
  * This is used in /proc routines and in debug output.
@@ -159,10 +159,10 @@ ipsec_lifetime_format(char *buffer,
 		count = lifetime->ipl_count;
 	}
 
-	if(lifetime->ipl_count > 1 || 
+	if(lifetime->ipl_count > 1 ||
 	   lifetime->ipl_soft      ||
 	   lifetime->ipl_hard) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0)) 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,3,0))
 		len = ipsec_snprintf(buffer, buflen,
 			       "%s(%Lu,%Lu,%Lu)",
 			       lifename,
@@ -196,7 +196,7 @@ ipsec_lifetime_update_hard(struct ipsec_lifetime64 *lifetime,
 			lifetime->ipl_soft = lifetime->ipl_hard;
 		}
 	}
-}	
+}
 
 void
 ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
@@ -214,7 +214,7 @@ ipsec_lifetime_update_soft(struct ipsec_lifetime64 *lifetime,
 	}
 }
 
-	
+
 /*
  *
  * Local variables:

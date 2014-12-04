@@ -4,13 +4,13 @@
  * Variable and procedure names have been modified so that they don't
  * conflict with the original BSD code, as a small number of modifications
  * have been introduced and we may want to reuse this code in BSD.
- * 
+ *
  * The `j' in `radij' is pronounced as a voiceless guttural (like a Greek
- * chi or a German ch sound (as `doch', not as in `milch'), or even a 
+ * chi or a German ch sound (as `doch', not as in `milch'), or even a
  * spanish j as in Juan.  It is not as far back in the throat like
  * the corresponding Hebrew sound, nor is it a soft breath like the English h.
  * It has nothing to do with the Dutch ij sound.
- * 
+ *
  * Here is the appropriate copyright notice:
  */
 
@@ -107,7 +107,7 @@ static char *rj_zeroes, *rj_ones;
  * We define the index of a route to associated with the mask to be
  * the first bit number in the mask where 0 occurs (with bit number 0
  * representing the highest order bit).
- * 
+ *
  * We say a mask is normal if every bit is 0, past the index of the mask.
  * If a node n has a descendant (k, m) with index(m) == index(n) == rj_b,
  * and m is a normal mask, then the route applies to every descendant of n.
@@ -119,7 +119,7 @@ static char *rj_zeroes, *rj_ones;
  * but similar logic shows that a non-normal mask m such that
  * index(m) <= index(n) could potentially apply to many children of n.
  * Thus, for each non-host route, we attach its mask to a list at an internal
- * node as high in the tree as we can go. 
+ * node as high in the tree as we can go.
  */
 
 struct radij_node *
@@ -173,7 +173,7 @@ rj_refines(m_arg, n_arg)
 			return 0;
 		if (*n++ != *m++)
 			masks_are_equal = 0;
-			
+
 	}
 	while (n < lim2)
 		if (*n++)
@@ -214,7 +214,7 @@ rj_match(v_arg, head)
 	KLIPS_PRINT(debug_radij,
 		    "klips_debug:rj_match: "
 		    "* See if we match exactly as a host destination\n");
-	
+
 	cp += off; cp2 = t->rj_key + off; cplim = v + vlen;
 	for (; cp < cplim; cp++, cp2++)
 		if (*cp != *cp2)
@@ -257,7 +257,7 @@ on1:
 		    t);
 	do {
 		register struct radij_mask *m;
-		
+
 		t = t->rj_p;
 		KLIPS_PRINT(debug_radij,
 			    "klips_debug:rj_match: "
@@ -299,7 +299,7 @@ on1:
 		    "***** not found.\n");
 	return 0;
 };
-		
+
 #ifdef RJ_DEBUG
 int	rj_nodenum;
 struct	radij_node *rj_clist;
@@ -368,7 +368,7 @@ on1:
 	cp = v;
 	do {
 		p = x;
-		if (cp[x->rj_off] & x->rj_bmask) 
+		if (cp[x->rj_off] & x->rj_bmask)
 			x = x->rj_r;
 		else x = x->rj_l;
 	} while (b > (unsigned) x->rj_b); /* x->rj_b < b && x->rj_b >= 0 */
@@ -432,7 +432,7 @@ rj_addmask(n_arg, search, skip)
 	if (cp != cplim) {
 		if (*cp != 0) {
 			gotOddMasks = 1;
-			for (j = 0x80; j; b++, j >>= 1)  
+			for (j = 0x80; j; b++, j >>= 1)
 				if ((j & *cp) == 0)
 					break;
 		}
@@ -538,7 +538,7 @@ rj_addroute(v_arg, n_arg, head, treenodes)
 	b_leaf = -1 - t->rj_b;
 	if (t->rj_r == saved_tt) x = t->rj_l; else x = t->rj_r;
 	/* Promote general routes from below */
-	if (x->rj_b < 0) { 
+	if (x->rj_b < 0) {
 		if (x->rj_mask && (x->rj_b >= b_leaf) && x->rj_mklist == 0) {
 			MKGet(m);
 			if (m) {
@@ -637,7 +637,7 @@ rj_delete(v_arg, netmask_arg, head, node)
 	 * Delete our route from mask lists.
 	 */
 	if ((dupedkey = tt->rj_dupedkey)) {
-		if (netmask) 
+		if (netmask)
 			netmask = rj_search(netmask, rj_masktop)->rj_key;
 		while (tt->rj_mask != netmask)
 			if ((tt = tt->rj_dupedkey) == 0)
@@ -722,7 +722,7 @@ on1:
 				if (m == x->rj_mklist && (--(m->rm_refs) < 0)) {
 					x->rj_mklist = 0;
 					MKFree(m);
-				} else 
+				} else
 					printk("klips_debug:rj_delete: "
 					    "Orphaned Mask 0p%p at 0p%p\n", m, x);
 				m = mm;
@@ -895,13 +895,13 @@ void
 rj_preorder(struct radij_node *rn, int l)
 {
 	int i;
-	
+
 	if (rn == NULL){
 		printk("klips_debug:rj_preorder: "
 		       "NULL pointer\n");
 		return;
 	}
-	
+
 	if (rn->rj_b >= 0){
 		rj_preorder(rn->rj_l, l+1);
 		rj_preorder(rn->rj_r, l+1);

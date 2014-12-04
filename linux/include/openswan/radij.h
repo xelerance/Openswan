@@ -4,13 +4,13 @@
  * Variable and procedure names have been modified so that they don't
  * conflict with the original BSD code, as a small number of modifications
  * have been introduced and we may want to reuse this code in BSD.
- * 
+ *
  * The `j' in `radij' is pronounced as a voiceless guttural (like a Greek
- * chi or a German ch sound (as `doch', not as in `milch'), or even a 
+ * chi or a German ch sound (as `doch', not as in `milch'), or even a
  * spanish j as in Juan.  It is not as far back in the throat like
  * the corresponding Hebrew sound, nor is it a soft breath like the English h.
  * It has nothing to do with the Dutch ij sound.
- * 
+ *
  * Here is the appropriate copyright notice:
  */
 
@@ -52,7 +52,7 @@
 #ifndef _RADIJ_H_
 #define	_RADIJ_H_
 
-/* 
+/*
 #define RJ_DEBUG
 */
 

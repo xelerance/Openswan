@@ -4,12 +4,12 @@
  * Copyright (C) 1998 - 2002  Richard Guy Briggs <rgb@freeswan.org>
  *               2001 - 2004  Michael Richardson <mcr@xelerance.com>
  *  Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -302,13 +302,13 @@ ipsec_klips_init(void)
 	} else {
 	   KLIPS_PRINT(1, "KLIPS: registered klips26_rcv_encap function\n");
 	}
-#endif	
+#endif
 
 #ifdef CONFIG_SYSCTL
         error |= ipsec_sysctl_register();
         if (error)
                 goto error_sysctl_register;
-#endif                                                                          
+#endif
 
 #ifdef CONFIG_KLIPS_ALG
 	ipsec_alg_init();
@@ -373,7 +373,7 @@ error_rcv_state_cache:
         ipsec_xmit_state_cache_cleanup ();
 error_xmit_state_cache:
         return error;
-}	
+}
 
 
 #ifdef NET_26
@@ -387,7 +387,7 @@ ipsec_cleanup(void)
 
 #ifdef CONFIG_SYSCTL
         ipsec_sysctl_unregister();
-#endif                                                                          
+#endif
 #if defined(NET_26) && defined(CONFIG_IPSEC_NAT_TRAVERSAL)
 # ifndef HAVE_UDP_ENCAP_CONVERT
 	/* unfortunately we have two versions of this function, one with one
@@ -460,7 +460,7 @@ ipsec_cleanup(void)
 		    "klips_debug:ipsec_cleanup: "
 		    "calling ipsec_radijcleanup.\n");
 	error |= ipsec_radijcleanup();
-	
+
 	KLIPS_PRINT(debug_pfkey, /* debug_tunnel & DB_TN_INIT, */
 		    "klips_debug:ipsec_cleanup: "
 		    "calling pfkey_cleanup.\n");

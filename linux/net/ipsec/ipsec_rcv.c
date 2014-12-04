@@ -54,7 +54,7 @@
 
 #include <linux/spinlock.h> /* *lock* */
 #ifdef NEED_SPINLOCK_TYPES
-# include <linux/spinlock_types.h> 
+# include <linux/spinlock_types.h>
 #endif
 
 #include <net/ip.h>
@@ -379,16 +379,16 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 		struct udphdr *udp = (struct udphdr *)((__u32 *)ip+ip->ihl);
 		__u8 *udpdata = (__u8 *)udp + sizeof(struct udphdr);
 		__u32 *udpdata32 = (__u32 *)udpdata;
-		
+
 		irs->natt_sport = ntohs(udp->source);
 		irs->natt_dport = ntohs(udp->dest);
-	  
+
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv_natt_decap: "
 			    "suspected ESPinUDP packet (NAT-Traversal) [%d].\n",
 			    tp->esp_in_udp);
 		KLIPS_IP_PRINT(debug_rcv, ip);
-	  
+
 		if (udpdata < skb->tail) {
 			unsigned int len = skb->tail - udpdata;
 			if ((len==1) && (udpdata[0]==0xff)) {
@@ -403,7 +403,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				  (len > (2*sizeof(__u32) + sizeof(struct esphdr))) &&
 				  (udpdata32[0]==0) && (udpdata32[1]==0) ) {
 				/* ESP Packet with Non-IKE header */
-				KLIPS_PRINT(debug_rcv, 
+				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv_natt_decap: "
 					    "ESPinUDP pkt with Non-IKE - spi=0x%x\n",
 					    ntohl(udpdata32[2]));
@@ -416,7 +416,7 @@ struct sk_buff *ipsec_rcv_natt_decap(struct sk_buff *skb
 				/* ESP Packet without Non-ESP header */
 				irs->natt_type = ESPINUDP_WITH_NON_ESP;
 				irs->natt_len = sizeof(struct udphdr);
-				KLIPS_PRINT(debug_rcv, 
+				KLIPS_PRINT(debug_rcv,
 					    "klips_debug:ipsec_rcv_natt_decap: "
 					    "ESPinUDP pkt without Non-ESP - spi=0x%x\n",
 					    ntohl(udpdata32[0]));
@@ -449,7 +449,7 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 				    irs->ipsp->ips_out->name);
 		}
 		skb->dev = irs->ipsp->ips_out;
-		
+
 #ifdef USE_NETDEV_OPS
 		if(skb->dev && skb->dev->netdev_ops->ndo_get_stats) {
 			struct net_device_stats *stats = skb->dev->netdev_ops->ndo_get_stats(skb->dev);
@@ -461,7 +461,7 @@ void ipsec_rcv_setoutif(struct ipsec_rcv_state *irs)
 			irs->stats = stats;
 		}
 #endif
-	} 
+	}
 }
 
 static enum ipsec_rcv_value
@@ -542,7 +542,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 				    "klips_debug:ipsec_rcv_decap_ipip: "
 				    "SA:%s, src=%s(%s) does match expected %s.\n",
 				    irs->sa_len ? irs->sa : " (error)",
-				    irs->ipsaddr_txt, 
+				    irs->ipsaddr_txt,
 				    saddr1, saddr2);
 			if(irs->stats) {
 				irs->stats->rx_dropped++;
@@ -550,7 +550,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			goto rcvleave;
 		}
 	}
-	
+
 	ipsec_rcv_setoutif(irs);
 
 	/* added to support AT&T heartbeats to SIG/GIG */
@@ -564,16 +564,16 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 		 */
 		ipsp->ips_life.ipl_bytes.ipl_count += skb->len;
 		ipsp->ips_life.ipl_bytes.ipl_last   = skb->len;
-		
+
 		if(!ipsp->ips_life.ipl_usetime.ipl_count) {
 			ipsp->ips_life.ipl_usetime.ipl_count = jiffies / HZ;
 		}
 		ipsp->ips_life.ipl_usetime.ipl_last = jiffies / HZ;
 		ipsp->ips_life.ipl_packets.ipl_count += 1;
-		
+
 		/* new L3 header is where L4 payload was */
 		skb_set_network_header(skb, ipsec_skb_offset(skb, skb_transport_header(skb)));
-		
+
 		/* now setup new L4 payload location */
 		ipp = (struct iphdr *)skb_network_header(skb);
 #ifdef CONFIG_KLIPS_IPV6
@@ -599,26 +599,26 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			       "tried to skb_pull iphlen=%d, %d available.  This should never happen, please report(3).\n",
 			       irs->iphlen,
 			       (int)(skb->len));
-			
+
 			goto rcvleave;
 		}
-		
+
 		/*
 		 * we need to pull up by size of the new IP header,
 		 * + options, but also by any UDP/ESP encap there might
 		 * have been, and this deals with all cases.
 		 */
 		skb_pull(skb, (skb_transport_header(skb) - skb_network_header(skb)));
-		
+
 		/* remove any saved options that we might have,
 		 * since we have a new IP header.
 		 */
 		memset(&(IPCB(skb)->opt), 0, sizeof(struct ip_options));
-		
+
 #if 0
 		KLIPS_PRINT(debug_rcv, "csum: %d\n", ip_fast_csum((u8 *)ipp, ipp->ihl));
 #endif
-		
+
 		/* re-do any strings for debugging */
 		irs->iph = (void*)ipp;
 		if (debug_rcv)
@@ -634,7 +634,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 			    "IPIP tunnel stripped.\n");
 		KLIPS_IP_PRINT(debug_rcv & DB_RX_PKTRX, ipp);
 	}
-	
+
 	if(sysctl_ipsec_inbound_policy_check) {
 	   /*
 	     Note: "xor" (^) logically replaces "not equal"
@@ -688,7 +688,7 @@ ipsec_rcv_decap_ipip(struct ipsec_rcv_state *irs)
 	if (failed_inbound_check)
 	{
 		char sflow_txt[SUBNETTOA_BUF], dflow_txt[SUBNETTOA_BUF];
-		
+
 #ifdef CONFIG_KLIPS_IPV6
 		if (ipsp->ips_flow_s.u.v4.sin_family == AF_INET6) {
 			subnet6toa(&ipsp->ips_flow_s.u.v6.sin6_addr,
@@ -828,7 +828,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 #ifdef HAVE_NEW_SKB_LINEARIZE
 		if (skb_linearize_cow(skb) != 0)
 #else
-		if (skb_linearize(skb, GFP_ATOMIC) != 0) 
+		if (skb_linearize(skb, GFP_ATOMIC) != 0)
 #endif
 		{
 			return IPSEC_RCV_REALLYBAD;
@@ -934,7 +934,7 @@ ipsec_rcv_init(struct ipsec_rcv_state *irs)
 			if(!netdev_priv(ipsecdevices[i])) continue;
 
 			prvdev = netdev_to_ipsecpriv(ipsecdevices[i]);
-			
+
 			if(prvdev->dev == skb->dev) {
 				ipsecdev = ipsecdevices[i];
 				break;
@@ -1047,7 +1047,7 @@ ipsec_rcv_decap_lookup(struct ipsec_rcv_state *irs)
 		irs->said.dst.u.v4.sin_addr.s_addr = osw_ip4_hdr(irs)->daddr;
 		irs->said.dst.u.v4.sin_family = AF_INET;
 	}
-	
+
 	/* note: rcv_checks set up the said.spi value, if appropriate */
 	if (irs->proto_funcs->rcv_checks)
 		return (*irs->proto_funcs->rcv_checks)(irs, irs->skb);
@@ -1203,7 +1203,7 @@ ipsec_rcv_auth_init(struct ipsec_rcv_state *irs)
                                 return IPSEC_RCV_FAILEDINBOUND;
                         }
                 }
-#endif		 
+#endif
 	}
 
 	if (newipsp != irs->ipsp) {
@@ -1275,7 +1275,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 	   ipsec_lifetime_check(&irs->ipsp->ips_life.ipl_packets, "packets",
 				irs->sa, ipsec_life_countbased, ipsec_incoming,
 				irs->ipsp) == ipsec_life_harddied) {
-		
+
 		/*
 		 * disconnect SA from the hash table, so it can not be
 		 * found again.
@@ -1284,7 +1284,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 		if(irs->stats) {
 			irs->stats->rx_dropped++;
 		}
-		
+
 		KLIPS_PRINT(debug_rcv,
 			    "klips_debug:ipsec_rcv_auth_decap: "
 			    "decap (%d) failed lifetime check\n",
@@ -1376,7 +1376,7 @@ ipsec_rcv_auth_decap(struct ipsec_rcv_state *irs)
 		KLIPS_PRINT(debug_rcv,
 				"klips_debug:ipsec_rcv_auth_decap: "
 				"authalg=%d authlen=%d\n",
-				irs->ipsp->ips_authalg, 
+				irs->ipsp->ips_authalg,
 				irs->authlen);
 	} else
 #endif /* CONFIG_KLIPS_ALG */
@@ -1632,7 +1632,7 @@ ipsec_rcv_decap_cont(struct ipsec_rcv_state *irs)
 		irs->iphlen = osw_ip4_hdr(irs)->ihl<<2;
 		skb_set_transport_header(skb, ipsec_skb_offset(skb, skb_network_header(skb) + irs->iphlen));
 	}
-	
+
 	/* zero any options that there might be */
 	memset(&(IPCB(skb)->opt), 0, sizeof(struct ip_options));
 
@@ -1834,7 +1834,7 @@ ipsec_rcv_cleanup(struct ipsec_rcv_state *irs)
 			return decap_stat;
 		}
 	}
-  
+
 	if(irs->stats) {
 		irs->stats->rx_bytes += skb->len;
 	}
@@ -2077,7 +2077,7 @@ ipsec_rcv(struct sk_buff *skb
   		/* NET_26 NAT-T is handled by seperate function */
   		struct sk_buff *nskb;
 		int udp_decap_ret = 0;
-  
+
 		nskb = ipsec_rcv_natt_decap(skb, irs, &udp_decap_ret);
   		if(nskb == NULL) {
 			/* return with non-zero, because UDP.c code
@@ -2124,7 +2124,7 @@ ipsec_rcv(struct sk_buff *skb
  *
  * skb->iph->tot_len has been byte-swapped, and reduced by the size of
  *              the IP header (and options).
- * 
+ *
  * skb->h.raw has been pulled up the ESP header.
  *
  * skb->iph->protocol = 50 IPPROTO_ESP;
@@ -2278,11 +2278,11 @@ int klips26_rcv_encap(struct sk_buff *skb, __u16 encap_type)
 	case UDP_ENCAP_ESPINUDP:
 	  irs->natt_type = ESPINUDP_WITH_NON_ESP;
 	  break;
-	  
+
 	case UDP_ENCAP_ESPINUDP_NON_IKE:
 	  irs->natt_type = ESPINUDP_WITH_NON_IKE;
 	  break;
-	  
+
 	default:
 	  if(printk_ratelimit()) {
 	    printk(KERN_INFO "KLIPS received unknown UDP-ESP encap type %u\n",

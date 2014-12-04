@@ -11,7 +11,7 @@
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -21,7 +21,7 @@
 #ifndef IPSEC_ALG_H
 #define IPSEC_ALG_H
 
-/* 
+/*
  *   gcc >= 3.2 has removed __FUNCTION__, replaced by C99 __func__
  *   *BUT* its a compiler variable.
  */
@@ -39,7 +39,7 @@
 #include <asm/atomic.h>
 #include <openswan/pfkey.h>
 
-/*	
+/*
  *	The following structs are used via pointers in ipsec_alg object to
  *	avoid ipsec_alg.h coupling with freeswan headers, thus simplifying
  *	module development
@@ -49,12 +49,12 @@ struct esp;
 
 /**************************************
  *
- *	Main registration object 
+ *	Main registration object
  *
  *************************************/
 #define IPSEC_ALG_VERSION_QUAD(v)	\
 	(v>>24),((v>>16)&0xff),((v>>8)&0xff),(v&0xff)
-/*	
+/*
  *	Main ipsec_alg objects: "OOPrograming wannabe"
  *	Hierachy (carefully handled with _minimal_ cast'ing):
  *
@@ -87,7 +87,7 @@ struct ipsec_alg {
 
 	struct ipsec_alg_supported ixt_support;
 };
-/* 
+/*
  * 	Note the const in cbc_encrypt IV arg:
  * 	some ciphers like to toast passed IV (eg. 3DES): make a local IV copy
  */
@@ -108,8 +108,8 @@ struct ipsec_alg_auth {
 	int (*ixt_a_hmac_set_key)(struct ipsec_alg_auth *alg, __u8 *key_a, const __u8 *key, int keylen);
 	int (*ixt_a_hmac_hash)(struct ipsec_alg_auth *alg, __u8 *key_a, const __u8 *dat, int len, __u8 *hash, int hashlen);
 };
-/*	
- *	These are _copies_ of SADB_EXT_SUPPORTED_{AUTH,ENCRYPT}, 
+/*
+ *	These are _copies_ of SADB_EXT_SUPPORTED_{AUTH,ENCRYPT},
  *	to avoid header coupling for true constants
  *	about headers ... "cp is your friend" --Linus
  */
@@ -151,7 +151,7 @@ static inline int unregister_ipsec_alg_auth(struct ipsec_alg_auth *ixt) {
 
 /* 	encryption key context creation function */
 int ipsec_alg_enc_key_create(struct ipsec_sa *sa_p);
-/* 
+/*
  * 	ipsec_alg_esp_encrypt(): encrypt ilen bytes in idat returns
  * 	0 or ERR<0
  */
@@ -180,12 +180,12 @@ typedef int (*ipsec_alg_init_func_t) (void);
  **********************************************/
 
 /* returns true if ipsec_sa has ipsec_alg obj attached */
-/* 
+/*
  * Initializes ipsec_sa's ipsec_alg object, using already loaded
  * proto, authalg, encalg.; links ipsec_alg objects (enc, auth)
  */
 int ipsec_alg_sa_init(struct ipsec_sa *sa_p);
-/* 
+/*
  * Destroys ipsec_sa's ipsec_alg object
  * unlinking ipsec_alg objects
  */
@@ -229,15 +229,15 @@ typedef void (*__cleanup_module_func_t)(void);
         static inline __cleanup_module_func_t __cleanup_module_inline(void) \
         { return x; }
 #endif
-#define IPSEC_ALG_MODULE_INIT( func_name )	IPSEC_ALG_MODULE_INIT_MOD( func_name )	
+#define IPSEC_ALG_MODULE_INIT( func_name )	IPSEC_ALG_MODULE_INIT_MOD( func_name )
 #define IPSEC_ALG_MODULE_EXIT( func_name )	IPSEC_ALG_MODULE_EXIT_MOD( func_name )
 
 #else	/* not MODULE */
 #ifndef THIS_MODULE
 #define THIS_MODULE          NULL
 #endif
-/*	
- *	I only want module_init() magic 
+/*
+ *	I only want module_init() magic
  *	when algo.c file *is THE MODULE*, in all other
  *	cases, initialization is called explicitely from ipsec_alg_init()
  */

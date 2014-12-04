@@ -3,12 +3,12 @@
  * Copyright (C) 1998-2003   Richard Guy Briggs.
  * Copyright (C) 2004-2006   Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2012  Paul Wouters  <paul@libreswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -83,7 +83,7 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	struct sadb_sa *pfkey_sa = (struct sadb_sa *)pfkey_ext;
 	int error = 0;
 	struct ipsec_sa* ipsp;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_sa_process: .\n");
 
@@ -124,7 +124,7 @@ pfkey_sa_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 	if(k_pfkey_sa->sadb_sa_len > sizeof(struct sadb_sa)/IPSEC_PFKEYv2_ALIGN) {
 		ipsp->ips_ref = k_pfkey_sa->sadb_x_sa_ref;
 	}
-	
+
 	switch(ipsp->ips_said.proto) {
 	case IPPROTO_AH:
 		ipsp->ips_authalg = pfkey_sa->sadb_sa_auth;
@@ -249,10 +249,10 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	struct sadb_address *pfkey_address = (struct sadb_address *)pfkey_ext;
 	struct sockaddr* s = (struct sockaddr*)((char*)pfkey_address + sizeof(*pfkey_address));
 	struct ipsec_sa* ipsp;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_address_process:\n");
-	
+
 	if(!extr || !extr->ips) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_address_process: "
@@ -290,7 +290,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			    s->sa_family);
 		SENDERR(EPFNOSUPPORT);
 	}
-	
+
 	switch(pfkey_address->sadb_address_exttype) {
 	case K_SADB_EXT_ADDRESS_SRC:
 		KLIPS_PRINT(debug_pfkey,
@@ -410,7 +410,7 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 			    pfkey_address->sadb_address_exttype);
 		SENDERR(EINVAL);
 	}
-	
+
 	switch(pfkey_address->sadb_address_exttype) {
 	case K_SADB_EXT_ADDRESS_SRC:
 	case K_SADB_EXT_ADDRESS_DST:
@@ -514,9 +514,9 @@ pfkey_address_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 	default:
 		break;
 	}
-	
+
 	/* XXX check if port!=0 */
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_address_process: successful.\n");
  errlab:
@@ -528,7 +528,7 @@ pfkey_key_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
         int error = 0;
         struct sadb_key *pfkey_key = (struct sadb_key *)pfkey_ext;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_key_process: .\n");
 
@@ -605,7 +605,7 @@ pfkey_ident_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* ext
 	switch(pfkey_ident->sadb_ident_exttype) {
 	case K_SADB_EXT_IDENTITY_SRC:
 		data_len = pfkey_ident->sadb_ident_len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
-		
+
 		extr->ips->ips_ident_s.type = pfkey_ident->sadb_ident_type;
 		extr->ips->ips_ident_s.id = pfkey_ident->sadb_ident_id;
 		extr->ips->ips_ident_s.len = pfkey_ident->sadb_ident_len;
@@ -627,7 +627,7 @@ pfkey_ident_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* ext
                 break;
 	case K_SADB_EXT_IDENTITY_DST: /* Identity(ies) */
 		data_len = pfkey_ident->sadb_ident_len * IPSEC_PFKEYv2_ALIGN - sizeof(struct sadb_ident);
-		
+
 		extr->ips->ips_ident_d.type = pfkey_ident->sadb_ident_type;
 		extr->ips->ips_ident_d.id = pfkey_ident->sadb_ident_id;
 		extr->ips->ips_ident_d.len = pfkey_ident->sadb_ident_len;
@@ -658,7 +658,7 @@ int
 pfkey_sens_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
         int error = 0;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_sens_process: "
 		    "Sorry, I can't process exttype=%d yet.\n",
@@ -672,13 +672,13 @@ int
 pfkey_prop_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* extr)
 {
         int error = 0;
-	
+
 	KLIPS_PRINT(debug_pfkey,
 		    "klips_debug:pfkey_prop_process: "
 		    "Sorry, I can't process exttype=%d yet.\n",
 		    pfkey_ext->sadb_ext_type);
 	SENDERR(EINVAL); /* don't process these yet */
-	
+
  errlab:
 	return error;
 }
@@ -759,7 +759,7 @@ pfkey_x_satype_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* 
 		    extr->ips2->ips_said.proto,
 		    pfkey_x_satype->sadb_x_satype_satype,
 		    satype2name(pfkey_x_satype->sadb_x_satype_satype));
-	
+
 errlab:
 	return error;
 }
@@ -908,7 +908,7 @@ pfkey_x_debug_process(struct sadb_ext *pfkey_ext, struct pfkey_extracted_data* e
 #endif /* CONFIG_KLIPS_IPCOMP */
 			sysctl_ipsec_debug_verbose &= pfkey_x_debug->sadb_x_debug_verbose;
 		}
-	
+
 errlab:
 	return error;
 }

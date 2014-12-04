@@ -1,12 +1,12 @@
 /*
  * sysctl interface to net IPSEC subsystem.
  * Copyright (C) 1998, 1999, 2000, 2001	  Richard Guy Briggs.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -71,7 +71,7 @@ int sysctl_ipsec_regress_pfkey_lossage;
 #else
 enum {
 
-#define NET_IPSEC 2112 /* Random number - if not blame linux sysctl people */ 
+#define NET_IPSEC 2112 /* Random number - if not blame linux sysctl people */
 
 	NET_IPSEC_DEBUG_AH=1,
 	NET_IPSEC_DEBUG_ESP=2,
@@ -216,31 +216,31 @@ static ctl_table ipsec_table[] = {
        },
 #else
 	{ NET_IPSEC_DEBUG_AH, "debug_ah", &debug_ah,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_ESP, "debug_esp", &debug_esp,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_MAST, "debug_mast", &debug_mast,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_TUNNEL, "debug_tunnel", &debug_tunnel,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_TUNNEL, "debug_xmit", &debug_xmit,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_EROUTE, "debug_eroute", &debug_eroute,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_SPI, "debug_spi", &debug_spi,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_RADIJ, "debug_radij", &debug_radij,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_NETLINK, "debug_netlink", &debug_netlink,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_XFORM, "debug_xform", &debug_xform,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_RCV, "debug_rcv", &debug_rcv,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_PFKEY, "debug_pfkey", &debug_pfkey,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_DEBUG_VERBOSE, "debug_verbose",&sysctl_ipsec_debug_verbose,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 #endif /* CTL_TABLE_PARENT */
 
 #ifdef CONFIG_KLIPS_IPCOMP
@@ -255,7 +255,7 @@ static ctl_table ipsec_table[] = {
        },
 #else
 	{ NET_IPSEC_DEBUG_IPCOMP, "debug_ipcomp", &sysctl_ipsec_debug_ipcomp,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 #endif
 #endif /* CONFIG_KLIPS_IPCOMP */
 
@@ -307,11 +307,11 @@ static ctl_table ipsec_table[] = {
        {0}
 #else
 	{ NET_IPSEC_ICMP, "icmp", &sysctl_ipsec_icmp,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_INBOUND_POLICY_CHECK, "inbound_policy_check", &sysctl_ipsec_inbound_policy_check,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{ NET_IPSEC_TOS, "tos", &sysctl_ipsec_tos,
-	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},    
+	  sizeof(int), 0644, NULL, .proc_handler = &proc_dointvec},
 	{0}
 #endif
 };
@@ -332,7 +332,7 @@ static ctl_table ipsec_net_table[] = {
         { 0 }
 #endif
 };
- 
+
 static ctl_table ipsec_root_table[] = {
 #ifdef CTL_TABLE_PARENT
        { CTL_NAME(CTL_NET)
@@ -349,7 +349,7 @@ static ctl_table ipsec_root_table[] = {
         { 0 }
 #endif
 };
- 
+
 static struct ctl_table_header *ipsec_table_header;
 
 int ipsec_sysctl_register(void)
@@ -365,7 +365,7 @@ int ipsec_sysctl_register(void)
 	}
         return 0;
 }
- 
+
 void ipsec_sysctl_unregister(void)
 {
         unregister_sysctl_table(ipsec_table_header);

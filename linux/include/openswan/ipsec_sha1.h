@@ -24,6 +24,6 @@ void SHA1Init(void *context);
 void SHA1Update(void *context, unsigned char *data, __u32 len);
 void SHA1Final(unsigned char digest[20], void *context);
 
- 
+
 #endif /* _IPSEC_SHA1_H_ */
 

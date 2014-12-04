@@ -139,7 +139,7 @@ void SHA1Final(unsigned char digest[20], void *vcontext)
   __u32 i, j;
   unsigned char finalcount[8];
   SHA1_CTX* context = vcontext;
-    
+
     for (i = 0; i < 8; i++) {
         finalcount[i] = (unsigned char)((context->count[(i >= 4 ? 0 : 1)]
          >> ((3-(i & 3)) * 8) ) & 255);  /* Endian independent */
