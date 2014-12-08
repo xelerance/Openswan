@@ -42,7 +42,7 @@
 
 /* mark top-bit with size of int,
  * so that mis-matches in integer size are easier to diagnose */
-#define WHACK_MAGIC_INTVALUE (sizeof(void *)&0x8 << 28)
+#define WHACK_MAGIC_INTVALUE (((u_int32_t)sizeof(void *)) << 28)
 #define WHACK_MAGIC_INT4 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(0UL << 31))
 #define WHACK_MAGIC_INT8 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(1UL << 31))
 

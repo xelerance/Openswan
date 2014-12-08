@@ -65,10 +65,12 @@ void readwhackmsg(char *infile)
         if(m1.magic == WHACK_BASIC_MAGIC) continue;
 
         if(m1.magic != WHACK_MAGIC) {
-            fprintf(stderr, "this is whack message from different version");
-            if((m1.magic & 0xf0000000) != WHACK_MAGIC_INTVALUE) {
-                fprintf(stderr, "this is whack message from a %u-bit system",
-                        ((m1.magic & 0xf0000000) >> 28) * 8);
+            fprintf(stderr, "this is whack message from different version\n");
+            if((m1.magic & 0x80000000) != WHACK_MAGIC_INTVALUE) {
+                unsigned int bit64 = (m1.magic & 0x80000000);
+                unsigned int bits = bit64 ? 64 : 32;
+                fprintf(stderr, "this is whack message from a %u-bit system, this system is %lu",
+                        bits, sizeof(void *)*8);
             }
             continue;
         }
