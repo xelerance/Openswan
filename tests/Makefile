@@ -19,4 +19,5 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 check:
 	@${MAKE} -C functional check
 	@${MAKE} -C unit       check
+	@${MAKE} -C build      check
 
