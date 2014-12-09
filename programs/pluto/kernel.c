@@ -2215,7 +2215,7 @@ init_kernel(void)
 #if defined(NETKEY_SUPPORT) || defined(KLIPS) || defined(KLIPS_MAST)
 	/* If we detect NETKEY and KLIPS, we can't continue */
 	if(stat("/proc/net/pfkey", &buf) == 0 &&
-	   stat("/proc/net/pf_key", &buf) == 0) {
+	   stat("/proc/net/ipsec/spi/all", &buf) == 0) {
 	    /* we don't die, we just log and go to sleep */
 	    openswan_log("Can not run with both NETKEY and KLIPS in the kernel");
 	    openswan_log("Please check your kernel configuration, or specify a stack");
@@ -2241,7 +2241,7 @@ init_kernel(void)
 
 #if defined(KLIPS)
     case USE_KLIPS:
-	if (stat("/proc/net/pf_key", &buf) == 0) {
+	if (stat("/proc/net/ipsec/spi/all", &buf) == 0) {
 	    kern_interface = USE_KLIPS;
 	    openswan_log("Using KLIPS IPsec interface code on %s"
 			 , kversion);
