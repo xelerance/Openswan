@@ -1322,10 +1322,9 @@ pfkey_register_parse(struct sock *sk, struct sadb_ext **extensions, struct pfkey
 				 &(pfkey_registered_sockets[satype]))) {
 		KLIPS_PRINT(debug_pfkey,
 			    "klips_debug:pfkey_register_parse: "
-			    "SATYPE=%02d(%s) successfully registered by KMd (pid=%d).\n",
+			    "SATYPE=%02d(%s) successfully registered by KMd.\n",
 			    satype,
-			    satype2name(satype),
-			    key_pid(sk));
+			    satype2name(satype));
 	};
 
 	/* send up register msg with supported SATYPE algos */
@@ -1464,7 +1463,7 @@ pfkey_register_reply(int satype, struct sadb_msg *sadb_msg)
 							  satype,
 							  0,
 							  sadb_msg? sadb_msg->sadb_msg_seq : ++pfkey_msg_seq,
-							  sadb_msg? sadb_msg->sadb_msg_pid: current_uid()),
+							  sadb_msg? sadb_msg->sadb_msg_pid : 0),
 			      extensions_reply) &&
 	     (alg_num_a ? pfkey_safe_build(error = pfkey_supported_build(&extensions_reply[K_SADB_EXT_SUPPORTED_AUTH],
 									K_SADB_EXT_SUPPORTED_AUTH,

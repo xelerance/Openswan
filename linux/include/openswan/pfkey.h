@@ -55,6 +55,7 @@ struct supported_list
 extern int pfkey_list_insert_supported(struct ipsec_alg_supported*, struct supported_list**);
 extern int pfkey_list_remove_supported(struct ipsec_alg_supported*, struct supported_list**);
 
+/* this structure used by userspace, so sizes are critical */
 struct sockaddr_key
 {
 	uint16_t	key_family;	/* PF_KEY */
@@ -149,13 +150,15 @@ extern uint8_t proto2satype(uint8_t proto);
 extern char* satype2name(uint8_t satype);
 extern char* proto2name(uint8_t proto);
 
+#if 0
 struct key_opt
 {
-	uint32_t	key_pid;	/* process ID */
-	struct sock	*sk;
+  kuid_t   	key_pid;	/* process ID */
+  struct sock	*sk;            /* back pointer to PFKEY socket */
 };
 
 #define key_pid(sk) ((struct key_opt*)&((sk)->sk_protinfo))->key_pid
+#endif
 
 /* XXX-mcr this is not an alignment, this is because the count is in 64-bit
  * words.
@@ -231,7 +234,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		    uint8_t		satype,
 		    uint8_t		msg_errno,
 		    uint32_t		seq,
-		    uint32_t		pid);
+		    uint32_t		pid4msg);
 
 int
 pfkey_sa_ref_build(struct sadb_ext **	pfkey_ext,

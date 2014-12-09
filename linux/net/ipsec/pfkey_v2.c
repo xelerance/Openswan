@@ -775,7 +775,6 @@ pfkey_create(struct socket *sock, int protocol)
 	sk->sk_family = PF_KEY;
 /*	sk->num = protocol; */
 	sk->sk_protocol = protocol;
-	key_pid(sk) = current_uid();
 
 #ifdef HAVE_SOCKET_WQ
 	KLIPS_PRINT(debug_pfkey,
@@ -1165,6 +1164,7 @@ pfkey_recvmsg(struct socket *sock
 	return size;
 }
 
+#if 0
 #ifdef CONFIG_PROC_FS
 int
 pfkey_get_info(char *buffer, char **start, off_t offset, int length
@@ -1258,6 +1258,7 @@ pfkey_get_info(char *buffer, char **start, off_t offset, int length
 	*start = buffer + (offset - begin);	/* Start of wanted data */
 	return len - (offset - begin);
 }
+#endif
 
 int
 pfkey_supported_get_info(char *buffer, char **start, off_t offset, int length
@@ -1495,6 +1496,7 @@ pfkey_init(void)
         error |= sock_register(&pfkey_family_ops);
 
 #if 0
+        /* XXX - does anyone actually use this interface at all? */
 #ifdef CONFIG_PROC_FS
         {
                 struct proc_dir_entry* entry;

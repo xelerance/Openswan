@@ -489,5 +489,9 @@
 # define IP_SELECT_IDENT_NEW
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0)
+#define NEIGH_PARAMS_IS_ARRAY
+#endif
+
 #endif /* _OPENSWAN_KVERSIONS_H */
 

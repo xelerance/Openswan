@@ -676,8 +676,13 @@ ipsec_mast_neigh_setup_dev(struct net_device *dev, struct neigh_parms *p)
 
         if (p->tbl->family == AF_INET) {
                 p->neigh_setup = ipsec_mast_neigh_setup;
+#ifdef NEIGH_PARAMS_IS_ARRAY
+                p->data[NEIGH_VAR_UCAST_PROBES] = 0;
+                p->data[NEIGH_VAR_MCAST_PROBES] = 0;
+#else
                 p->ucast_probes = 0;
                 p->mcast_probes = 0;
+#endif
         }
         return 0;
 }
