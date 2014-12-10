@@ -95,7 +95,7 @@ enum {
 };
 #endif
 
-static ctl_table ipsec_table[] = {
+static struct ctl_table ipsec_table[] = {
 
 #ifdef CTL_TABLE_PARENT
        { CTL_NAME(NET_IPSEC_DEBUG_AH)
@@ -316,7 +316,7 @@ static ctl_table ipsec_table[] = {
 #endif
 };
 
-static ctl_table ipsec_net_table[] = {
+static struct ctl_table ipsec_net_table[] = {
 #ifdef CTL_TABLE_PARENT
        { CTL_NAME(NET_IPSEC)
           .procname = "ipsec",
@@ -333,7 +333,7 @@ static ctl_table ipsec_net_table[] = {
 #endif
 };
 
-static ctl_table ipsec_root_table[] = {
+static struct ctl_table ipsec_root_table[] = {
 #ifdef CTL_TABLE_PARENT
        { CTL_NAME(CTL_NET)
           .procname = "net",

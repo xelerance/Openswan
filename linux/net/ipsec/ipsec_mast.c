@@ -953,7 +953,9 @@ int ipsec_mast_createnum(int vifnum)
 
 	snprintf(name, IFNAMSIZ, MAST_DEV_FORMAT, vifnum);
 
-#ifdef alloc_netdev
+#ifdef ALLOC_NETDEV4
+	im = alloc_netdev(sizeof(struct mastpriv), name, NET_NAME_UNKNOWN, ipsec_mast_netdev_setup);
+#elif defined(alloc_netdev)
 	im = alloc_netdev(sizeof(struct mastpriv), name, ipsec_mast_netdev_setup);
 #else
 	im = (struct net_device *)kmalloc(sizeof(struct net_device),GFP_KERNEL);

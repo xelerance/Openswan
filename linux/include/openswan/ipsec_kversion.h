@@ -493,5 +493,9 @@
 #define NEIGH_PARAMS_IS_ARRAY
 #endif
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(3,18,0)
+#define ALLOC_NETDEV4
+#endif
+
 #endif /* _OPENSWAN_KVERSIONS_H */
 
