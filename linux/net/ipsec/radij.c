@@ -750,92 +750,130 @@ out:
 	return 0; /* (tt) rgb */
 }
 
-int
-rj_walktree(h, f, w)
-	struct radij_node_head *h;
-	register int (*f)(struct radij_node *,void *);
+struct rj_walkstate {
+        struct radij_node *rn;
+        int (*f)(struct radij_node *,void *);
 	void *w;
-{
-	int error;
-	struct radij_node *base, *next;
-	register struct radij_node *rn;
+};
 
-	if(!h || !f /* || !w */) {
-		return -ENODATA;
+
+int rj_initwalk(struct rj_walkstate *rjws,
+            struct radij_node_head *head,
+            int (*func)(struct radij_node *,void *),
+            void *extra)
+{
+	if(!head || !func || !rjws) {
+		return 1;
 	}
 
-	rn = h->rnh_treetop;
+	rjws->rn = head->rnh_treetop;
 	/*
 	 * This gets complicated because we may delete the node
 	 * while applying the function f to it, so we need to calculate
 	 * the successor node in advance.
 	 */
 	/* First time through node, go left */
-	while (rn->rj_b >= 0)
-		rn = rn->rj_l;
+	while (rjws->rn->rj_b >= 0)
+		rjws->rn = rjws->rn->rj_l;
+        rjws->f  = func;
+        rjws->w  = extra;
+
+        return 0;
+}
+
+void
+rj_finiwalk(struct rj_walkstate *rjws)
+{
+        return;
+}
+
+int rj_walktreeonce(struct rj_walkstate *rjs)
+{
+	int error;
+	struct radij_node *base, *next;
+
+        if(debug_radij) {
+                printk("klips_debug:rj_walktree: "
+                       "for: rn=0p%p rj_b=%d rj_flags=%x",
+                       (rjs->rn),
+                       (rjs->rn)->rj_b,
+                       (rjs->rn)->rj_flags);
+                (rjs->rn)->rj_b >= 0 ?
+                        printk(" node off=%x\n",
+                               (rjs->rn)->rj_off) :
+                        printk(" leaf key = %08x->%08x\n",
+                               (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_src.s_addr),
+                               (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_dst.s_addr))
+                        ;
+        }
+
+        base = (rjs->rn);
+        /* If at right child go back up, otherwise, go right */
+        while ((rjs->rn)->rj_p->rj_r == (rjs->rn) && ((rjs->rn)->rj_flags & RJF_ROOT) == 0)
+                (rjs->rn) = (rjs->rn)->rj_p;
+        /* Find the next *leaf* since next node might vanish, too */
+        for ((rjs->rn) = (rjs->rn)->rj_p->rj_r; (rjs->rn)->rj_b >= 0;)
+                (rjs->rn) = (rjs->rn)->rj_l;
+        next = (rjs->rn);
+
+        if(debug_radij) {
+                printk("klips_debug:rj_walktree: "
+                       "processing leaves, rn=0p%p rj_b=%d rj_flags=%x",
+                       (rjs->rn),
+                       (rjs->rn)->rj_b,
+                       (rjs->rn)->rj_flags);
+                (rjs->rn)->rj_b >= 0 ?
+                        printk(" node off=%x\n",
+                               (rjs->rn)->rj_off) :
+                        printk(" leaf key = %08x->%08x\n",
+                               (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_src.s_addr),
+                               (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_dst.s_addr))
+                        ;
+        }
+
+        /* Process leaves */
+        while (((rjs->rn) = base)) {
+                base = (rjs->rn)->rj_dupedkey;
+                if(debug_radij) {
+                        printk("klips_debug:rj_walktree: "
+                               "while: base=0p%p rn=0p%p rj_b=%d rj_flags=%x",
+                               base,
+                               (rjs->rn),
+                               (rjs->rn)->rj_b,
+                               (rjs->rn)->rj_flags);
+                        (rjs->rn)->rj_b >= 0 ?
+                                printk(" node off=%x\n",
+                                       (rjs->rn)->rj_off) :
+                                printk(" leaf key = %08x->%08x\n",
+                                       (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_src.s_addr),
+                                       (u_int)ntohl(((struct sockaddr_encap *)(rjs->rn)->rj_key)->sen_ip_dst.s_addr))
+                                ;
+                }
+                if (!((rjs->rn)->rj_flags & RJF_ROOT) && (error = (*rjs->f)((rjs->rn), rjs->w)))
+                        return (-error);
+        }
+        (rjs->rn) = next;
+        if ((rjs->rn)->rj_flags & RJF_ROOT)
+                return (0);
+        return 1;
+}
+
+int
+rj_walktree(h, f, w)
+	struct radij_node_head *h;
+	int (*f)(struct radij_node *,void *);
+	void *w;
+{
+        struct rj_walkstate rjws;
+        memset(&rjws, 0, sizeof(rjws));
+
+        if(rj_initwalk(&rjws, h, f, w)) return -ENODATA;
+
 	for (;;) {
-		if(debug_radij) {
-			printk("klips_debug:rj_walktree: "
-			       "for: rn=0p%p rj_b=%d rj_flags=%x",
-			       rn,
-			       rn->rj_b,
-			       rn->rj_flags);
-			rn->rj_b >= 0 ?
-				printk(" node off=%x\n",
-				       rn->rj_off) :
-				printk(" leaf key = %08x->%08x\n",
-				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_src.s_addr),
-				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
-				;
-		}
-		base = rn;
-		/* If at right child go back up, otherwise, go right */
-		while (rn->rj_p->rj_r == rn && (rn->rj_flags & RJF_ROOT) == 0)
-			rn = rn->rj_p;
-		/* Find the next *leaf* since next node might vanish, too */
-		for (rn = rn->rj_p->rj_r; rn->rj_b >= 0;)
-			rn = rn->rj_l;
-		next = rn;
-		if(debug_radij) {
-			printk("klips_debug:rj_walktree: "
-			       "processing leaves, rn=0p%p rj_b=%d rj_flags=%x",
-			       rn,
-			       rn->rj_b,
-			       rn->rj_flags);
-			rn->rj_b >= 0 ?
-				printk(" node off=%x\n",
-				       rn->rj_off) :
-				printk(" leaf key = %08x->%08x\n",
-				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_src.s_addr),
-				       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
-				;
-		}
-		/* Process leaves */
-		while ((rn = base)) {
-			base = rn->rj_dupedkey;
-			if(debug_radij) {
-				printk("klips_debug:rj_walktree: "
-				       "while: base=0p%p rn=0p%p rj_b=%d rj_flags=%x",
-				       base,
-				       rn,
-				       rn->rj_b,
-				       rn->rj_flags);
-				rn->rj_b >= 0 ?
-					printk(" node off=%x\n",
-					       rn->rj_off) :
-					printk(" leaf key = %08x->%08x\n",
-					       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_src.s_addr),
-					       (u_int)ntohl(((struct sockaddr_encap *)rn->rj_key)->sen_ip_dst.s_addr))
-					;
-			}
-			if (!(rn->rj_flags & RJF_ROOT) && (error = (*f)(rn, w)))
-				return (-error);
-		}
-		rn = next;
-		if (rn->rj_flags & RJF_ROOT)
-			return (0);
+                if(rj_walktreeonce(&rjws) != 1) break;
 	}
-	/* NOTREACHED */
+        rj_finiwalk(&rjws);
+        return 0;
 }
 
 int

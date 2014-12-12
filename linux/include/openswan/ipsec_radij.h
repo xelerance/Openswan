@@ -24,6 +24,13 @@ int ipsec_walk(char *);
 int ipsec_rj_walker_procprint(struct radij_node *, void *);
 int ipsec_rj_walker_delete(struct radij_node *, void *);
 
+struct rj_walkstate;  /* forward reference */
+int rj_initwalk(struct rj_walkstate *rjws,
+                struct radij_node_head *head,
+                int (*func)(struct radij_node *,void *),
+                void *extra);
+extern void rj_finiwalk(struct rj_walkstate *rjws);
+
 /* This structure is used to pass information between
  * ipsec_eroute_get_info and ipsec_rj_walker_procprint
  * (through rj_walktree) and between calls of ipsec_rj_walker_procprint.

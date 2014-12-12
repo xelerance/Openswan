@@ -423,6 +423,18 @@ ipsec_findroute(struct sockaddr_encap *eaddr)
 }
 
 #ifdef CONFIG_PROC_FS
+int
+ipsec_rj_walker_procdump(struct radij_node *rn, void *w0)
+{
+        char buffer[1024];
+
+	struct wsbuf w = { buffer, sizeof(buffer), 0, 0, 0};
+        ipsec_rj_walker_procprint(rn, &w);
+        w.buffer[w.len]='\0';
+        //printk("walker: %s\n", buffer);
+        return 0;
+}
+
 /** ipsec_rj_walker_procprint: print one line of eroute table output.
  *
  * Theoretical BUG: if w->length is less than the length
