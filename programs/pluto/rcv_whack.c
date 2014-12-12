@@ -154,7 +154,8 @@ static bool writewhackrecord(char *buf, int buflen)
     time(&n);
     header[2]=n;
 
-    /* DBG_log("buflen: %u abuflen: %u\n", header[0], abuflen); */
+    DBG(DBG_CONTROL
+	, DBG_log("writewhack record buflen: %u abuflen: %u\n", header[0], abuflen));
 
     if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing header");
@@ -163,6 +164,7 @@ static bool writewhackrecord(char *buf, int buflen)
     if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
 	DBG_log("writewhackrecord: fwrite error when writing buf");
     }
+    fflush(whackrecordfile);
 
     return TRUE;
 }
@@ -202,9 +204,10 @@ static bool openwhackrecordfile(char *file)
 
     magic = WHACK_BASIC_MAGIC;
     writewhackrecord((char *)&magic, 4);
+    fflush(whackrecordfile);
 
     DBG(DBG_CONTROL
-	, DBG_log("started recording whack messages to %s\n"
+	, DBG_log("writewhack started recording whack messages to %s\n"
 		  , whackrecordname));
     return TRUE;
 }
@@ -408,7 +411,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	if (st == NULL)
 	{
 	    loglog(RC_UNKNOWN_NAME, "no state #%lu to delete"
-		, msg.whack_deletestateno);
+                   , (long unsigned int)msg.whack_deletestateno);
 	}
 	else
 	{
@@ -633,9 +636,7 @@ void whack_process(int whackfd, struct whack_message msg)
 	    (void)initiate_ondemand(&msg.oppo_my_client, &msg.oppo_peer_client, 0
 		, FALSE
 		, msg.whack_async? NULL_FD : dup_any(whackfd)
-#ifdef HAVE_LABELED_IPSEC
 		, NULL
-#endif
 		, "whack");
     }
 
@@ -727,8 +728,8 @@ whack_handle(int whackctlfd)
 	    }
 	    else
 	    {
-		ugh = builddiag("ignoring message from whack with bad magic %d; should be %d; Mismatched versions of userland tools and KLIPS code."
-		    , msg.magic, WHACK_MAGIC);
+		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and KLIPS code."
+                                , msg.magic, WHACK_MAGIC);
 	    }
 	}
         else if ((ugh = unpack_whack_msg(&wp)) != NULL)

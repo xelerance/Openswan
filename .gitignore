@@ -10,3 +10,4 @@ testing/*/OUTPUT/*
 testing/*/*/OUTPUT
 umlsetup.sh
 osxApp/build
+Makefile.inc.local

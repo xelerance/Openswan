@@ -43,18 +43,9 @@
 #include "packet.h"
 #include "whack.h"
 
-enum myid_state myid_state = MYID_UNKNOWN;
-struct id myids[MYID_SPECIFIED+1];	/* %myid */
 char *myid_str[MYID_SPECIFIED+1];     /* string form of IDs */
 
-const struct id *resolve_myid(const struct id *id)
-{
-  if((id)->kind == ID_MYID) {
-    return &myids[myid_state];
-  } else {
-    return (id);
-  }
-}
+/* resolv_myid moved to libopenswan */
 
 void
 show_myid_status(void)
@@ -173,6 +164,7 @@ void
 build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
 {
     const struct id *id = resolve_myid(&end->id);
+    unsigned char *tlcptr = tl->ptr;
 
     zero(hd);
     zero(tl);
@@ -181,8 +173,10 @@ build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
     {
     case ID_NONE:
 	hd->isaiid_idtype = aftoinfo(addrtypeof(&end->host_addr))->id_addr;
-	tl->len = addrbytesptr(&end->host_addr
-	    , (const unsigned char **)&tl->ptr);	/* sets tl->ptr too */
+
+        /* this also sets tl->ptr */
+	tl->len = addrbytesptr(&end->host_addr, &tlcptr);
+        tl->ptr = tlcptr;
 	break;
     case ID_FQDN:
     case ID_USER_FQDN:
@@ -192,8 +186,8 @@ build_id_payload(struct isakmp_ipsec_id *hd, chunk_t *tl, struct end *end)
 	break;
     case ID_IPV4_ADDR:
     case ID_IPV6_ADDR:
-	tl->len = addrbytesptr(&id->ip_addr
-	    , (const unsigned char **)&tl->ptr);	/* sets tl->ptr too */
+	tl->len = addrbytesptr(&id->ip_addr, &tlcptr);	/* sets tl->ptr too */
+        tl->ptr = (unsigned char *)tlcptr;
 	break;
     default:
 	bad_case(id->kind);

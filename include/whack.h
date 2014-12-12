@@ -37,7 +37,17 @@
  */
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 25)
-#define WHACK_MAGIC (((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38)
+
+#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38UL)
+
+/* mark top-bit with size of int,
+ * so that mis-matches in integer size are easier to diagnose */
+#define WHACK_MAGIC_INTVALUE (((u_int32_t)sizeof(void *)) << 28)
+#define WHACK_MAGIC_INT4 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(0UL << 31))
+#define WHACK_MAGIC_INT8 (u_int32_t)((WHACK_MAGIC_BASE) | (unsigned)(1UL << 31))
+
+#define WHACK_MAGIC (u_int32_t)((WHACK_MAGIC_BASE) | WHACK_MAGIC_INTVALUE)
+
 
 /* struct whack_end is a lot like connection.h's struct end
  * It differs because it is going to be shipped down a socket
@@ -72,7 +82,7 @@ struct whack_end {
     unsigned int tundev;
     enum certpolicy      sendcert;
     enum ipsec_cert_type certtype;
-    
+
     char *host_addr_name;       /* DNS name for host, of hosttype==IPHOSTNAME*/
                                 /* pluto will convert to IP address again,
 				 * if this is non-NULL when conn fails.
@@ -86,8 +96,9 @@ enum whack_opt_set {
     WHACK_STOPWHACKRECORD=3,  /* turn off recording to file */
 };
 
+/* whack message should be size independant, but it is in host-endian format */
 struct whack_message {
-    unsigned int magic;
+    u_int32_t magic;
 
     /* for WHACK_STATUS: */
     bool whack_status;
@@ -118,14 +129,14 @@ struct whack_message {
     time_t sa_ike_life_seconds;
     time_t sa_ipsec_life_seconds;
     time_t sa_rekey_margin;
-    unsigned long sa_rekey_fuzz;
-    unsigned long sa_keying_tries;
+    u_int32_t sa_rekey_fuzz;
+    u_int32_t sa_keying_tries;
 
     /* For DPD 3706 - Dead Peer Detection */
     time_t dpd_delay;
     time_t dpd_timeout;
     enum dpd_action dpd_action;
-    int dpd_count;
+    u_int32_t dpd_count;
 
     /*Cisco interop:  remote peer type*/
     enum keyword_remotepeertype remotepeertype;
@@ -133,16 +144,16 @@ struct whack_message {
     /* Force the use of NAT-T on a connection */
     bool forceencaps;
 
-    enum keyword_sha2_truncbug sha2_truncbug;
+    bool sha2_truncbug;
 
     /* Checking if this connection is configured by Network Manager*/
-    enum keyword_nmconfigured nmconfigured;
+    bool nmconfigured;
 
     /* Force the MTU for this connection */
-    int connmtu;
+    u_int32_t connmtu;
 
-    enum keyword_loopback loopback;
-    enum keyword_labeled_ipsec labeled_ipsec;
+    bool loopback;
+    bool labeled_ipsec;
     char *policy_label;
 
     /*  note that each end contains string 2/5.id, string 3/6 cert,
@@ -191,7 +202,7 @@ struct whack_message {
 
     /* for WHACK_DELETESTATE: */
     bool whack_deletestate;
-    long unsigned int whack_deletestateno;
+    u_int32_t whack_deletestateno;
 
     /* for WHACK_LISTEN: */
     bool whack_listen, whack_unlisten;
@@ -207,7 +218,7 @@ struct whack_message {
 
     /* for WHACK_PURGEOCSP */
     bool whack_purgeocsp;
-    
+
     /* for WHACK_REREAD */
     u_char whack_reread;
 
@@ -223,8 +234,8 @@ struct whack_message {
     ip_address modecfg_wins1;
     ip_address modecfg_wins2;
 
-	/* what metric to put on ipsec routes */
-	int metric;
+    /* what metric to put on ipsec routes */
+    u_int32_t metric;
 
     /* for DYNAMICDNS */
     char *dnshostname;
@@ -260,13 +271,13 @@ struct whack_message {
      * 21 connalias
      * 22 left.host_addr_name
      * 23 right.host_addr_name
-     * 24 genstring1  - used with opt_set 
+     * 24 genstring1  - used with opt_set
      * 25 genstring2
      * 26 genstring3
      * 27 dnshostname
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
-    size_t str_size;
+    u_int32_t str_size;
     unsigned char string[4096];
 };
 

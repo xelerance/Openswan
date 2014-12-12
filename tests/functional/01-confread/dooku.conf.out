@@ -1,0 +1,69 @@
+#setting rootdir=dooku
+#conn dooku--cassidy-net loaded
+#conn dooku-base loaded
+#conn cassidy-base loaded
+
+version 2.0
+
+config setup
+	oe=no
+	nat_traversal=yes
+	dumpdir=/var/run/pluto/
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+	protostack=auto
+
+
+# begin conn dooku--cassidy-net
+conn dooku--cassidy-net
+	#also = dooku-base cassidy-base 
+	leftid="@dooku.sandelman.ca"
+	leftnexthop=%defaultroute
+	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
+	rightid="@cassidy.sandelman.ca"
+	rightnexthop=%defaultroute
+	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn dooku--cassidy-net
+
+# begin conn dooku-base
+conn dooku-base
+	leftid="@dooku.sandelman.ca"
+	leftnexthop=%defaultroute
+	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
+	#right= not set
+	rightnexthop=%defaultroute
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn dooku-base
+
+# begin conn cassidy-base
+conn cassidy-base
+	#left= not set
+	leftnexthop=%defaultroute
+	rightid="@cassidy.sandelman.ca"
+	rightnexthop=%defaultroute
+	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn cassidy-base
+
+# end of config

@@ -77,17 +77,13 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/*Cisco interop: remote peer type*/
 	cfg->conn_default.options[KBF_REMOTEPEERTYPE] = NON_CISCO;
 
-	cfg->conn_default.options[KBF_SHA2_TRUNCBUG] = SHA2_TRUNCBUG_NO;
+	cfg->conn_default.options[KBF_SHA2_TRUNCBUG]  = FALSE;
 
 	/*Network Manager support*/
-#ifdef HAVE_NM
-	cfg->conn_default.options[KBF_NMCONFIGURED] = NM_NO;
-#endif
+	cfg->conn_default.options[KBF_NMCONFIGURED]   = FALSE;
 
-#ifdef HAVE_LABELED_IPSEC
-	cfg->conn_default.options[KBF_LOOPBACK] = LB_NO;
-	cfg->conn_default.options[KBF_LABELED_IPSEC] = LI_NO;
-#endif
+	cfg->conn_default.options[KBF_LOOPBACK]      = FALSE;
+	cfg->conn_default.options[KBF_LABELED_IPSEC] = FALSE;
 	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
 	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW; /* ikev2=yes */
 	cfg->conn_default.policy |= POLICY_SAREF_TRACK;  /* sareftrack=yes */
@@ -462,11 +458,7 @@ static int validate_end(struct starter_conn *conn_st
 	    end->nexttype = KH_IPADDR;
 	}
     } else {
-#if 0
-	if(conn_st->policy & POLICY_OPPO) {
-	    end->nexttype = KH_DEFAULTROUTE;
-	}
-#endif
+        end->nexttype = KH_DEFAULTROUTE;
 	anyaddr(family, &end->nexthop);
     }
 

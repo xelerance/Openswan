@@ -4,12 +4,12 @@
  * Copyright (C) 2001, 2002, 2003
  *                      Richard Guy Briggs  <rgb@freeswan.org>
  *                  and Michael Richardson  <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -19,17 +19,17 @@
  *
  */
 
-/* 
+/*
  * This file describes the IPsec Security Association Structure.
  *
  * This structure keeps track of a single transform that may be done
  * to a set of packets. It can describe applying the transform or
  * apply the reverse. (e.g. compression vs expansion). However, it
  * only describes one at a time. To describe both, two structures would
- * be used, but since the sides of the transform are performed 
+ * be used, but since the sides of the transform are performed
  * on different machines typically it is usual to have only one side
  * of each association.
- * 
+ *
  */
 
 #ifndef _IPSEC_SA_H_
@@ -125,7 +125,7 @@ typedef unsigned short int IPsecRefTableUnusedCount;
 #define EMT_INBOUND	0x01	/* SA direction, 1=inbound */
 
 /* 'struct ipsec_sa' should be 64bit aligned when allocated. */
-struct ipsec_sa 	                        
+struct ipsec_sa
 {
 	atomic_t	ips_refcount;	/* reference count for this struct */
         int             ips_marked_deleted;     /* used with reference counting */

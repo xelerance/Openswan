@@ -124,8 +124,9 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		    uint8_t		msg_type,
 		    uint8_t		satype,
 		    uint8_t		msg_errno,
-		    uint32_t		seq,
-		    uint32_t		pid)
+                    uint32_t		seq,
+		    uint32_t		pid4msg
+        )
 {
 	int error = 0;
 	struct sadb_msg *pfkey_msg = (struct sadb_msg *)*pfkey_ext;
@@ -184,7 +185,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 	pfkey_msg->sadb_msg_errno = msg_errno;
 	pfkey_msg->sadb_msg_reserved = 0;
 	pfkey_msg->sadb_msg_seq = seq;
-	pfkey_msg->sadb_msg_pid = pid;
+	pfkey_msg->sadb_msg_pid = pid4msg;
 	DEBUGGING(PF_KEY_DEBUG_BUILD,
 		"pfkey_msg_hdr_build: "
 		"on_exit &pfkey_ext=0p%p pfkey_ext=0p%p *pfkey_ext=0p%p.\n",

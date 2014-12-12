@@ -62,9 +62,7 @@ struct pending {
     unsigned long try;
     so_serial_t   replacing;
     time_t        pend_time;
-#ifdef HAVE_LABELED_IPSEC
     struct xfrm_user_sec_ctx_ike * uctx;
-#endif
 
     struct pending *next;
 };
@@ -77,9 +75,7 @@ add_pending(int whack_sock
 , lset_t policy
 , unsigned long try
 , so_serial_t replacing
-#ifdef HAVE_LABELED_IPSEC
-, struct xfrm_user_sec_ctx_ike * uctx
-#endif
+, struct xfrm_user_sec_ctx_ike * uctx UNUSED
 )
 {
     struct pending *p, **pp;
@@ -215,9 +211,7 @@ unpend(struct state *st)
 	    p->pend_time = time(NULL);
 	    (void) quick_outI1(p->whack_sock, st, p->connection, p->policy
 			       , p->try, p->replacing
-#ifdef HAVE_LABELED_IPSEC
 			       , p->uctx
-#endif
 			      );
 	    p->whack_sock = NULL_FD;	/* ownership transferred */
 	    p->connection = NULL;	/* ownership transferred */

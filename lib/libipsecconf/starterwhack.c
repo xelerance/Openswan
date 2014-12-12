@@ -83,16 +83,16 @@ int starter_whack_read_reply(int sock,
 	char buf[4097];	/* arbitrary limit on log line length */
 	char *be = buf;
 	int ret = 0;
-	
+
 	for (;;)
 	{
 		char *ls = buf;
 		ssize_t rl = read(sock, be, (buf + sizeof(buf)-1) - be);
-		
+
 		if (rl < 0)
 		{
 			int e = errno;
-			
+
 			fprintf(stderr, "whack: read() failed (%d %s)\n", e, strerror(e));
 			return RC_WHACK_PROBLEM;
 		}
@@ -102,10 +102,10 @@ int starter_whack_read_reply(int sock,
 				fprintf(stderr, "whack: last line from pluto too long or unterminated\n");
 			break;
 		}
-		
+
 		be += rl;
 		*be = '\0';
-		
+
 		for (;;)
 		{
 		    char *le = strchr(ls, '\n');
@@ -117,14 +117,14 @@ int starter_whack_read_reply(int sock,
 			be -= ls - buf;
 			break;
 		    }
-		    
+
 		    le++;	/* include NL in line */
 		    if(write(STDOUT_FILENO, ls, le - ls) == -1) {
 			int e = errno;
 			starter_log(LOG_LEVEL_ERR, "whack: write() failed (%d %s), and ignored.\n",
 		    		e, strerror(e));
 		    }
-		    
+
 		    /* figure out prefix number
 		     * and how it should affect our exit status
 		     */
@@ -243,7 +243,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	{
 		char xauthname[XAUTH_MAX_NAME_LENGTH];
 		char xauthpass[XAUTH_MAX_PASS_LENGTH];
-			
+
 		ret = starter_whack_read_reply(sock, xauthname,xauthpass,0,0);
 		close(sock);
 	}
@@ -287,7 +287,7 @@ static void set_whack_end(struct starter_config *cfg
 			w->host_addr = *aftoinfo(l->addr_family)->any;
 		}
 		break;
-		
+
 	case KH_IPADDR:
 	case KH_IFACE:
 		w->host_addr = l->addr;
@@ -308,7 +308,7 @@ static void set_whack_end(struct starter_config *cfg
 	case KH_ANY:
 		anyaddr(l->addr_family, &w->host_addr);
 		break;
-		
+
 	default:
 		printf("%s: do something with host case: %d\n", lr, l->addrtype);
 		break;
@@ -319,11 +319,11 @@ static void set_whack_end(struct starter_config *cfg
 	case KH_DEFAULTROUTE:
 		w->host_nexthop = cfg->dnh;
 		break;
-		
+
 	case KH_IPADDR:
 		w->host_nexthop = l->nexthop;
 		break;
-		
+
 	default:
 		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
 		break;
@@ -357,8 +357,8 @@ static void set_whack_end(struct starter_config *cfg
 	w->ca   = l->ca;
 	if(l->options_set[KNCF_SENDCERT]) {
 		w->sendcert = l->options[KNCF_SENDCERT];
-        } else { 
-                w->sendcert = cert_alwayssend; 
+        } else {
+                w->sendcert = cert_alwayssend;
         }
 
 
@@ -610,10 +610,10 @@ bool one_subnet_from_string(struct starter_conn *conn
 	if(*subnets=='\0') return FALSE;  /* no */
 
 	eln = subnets;
-	
+
 	/* find end of this item */
         while(*subnets!='\0' && !(isspace(*subnets) || *subnets==',')) subnets++;
-	
+
 	e = ttosubnet(eln, subnets-eln, af, sn);
 	if(e) {
 		starter_log(LOG_LEVEL_ERR, "conn: \"%s\" warning '%s' is not a subnet declaration. (%ssubnets)"
@@ -699,7 +699,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		 */
 		sc.left.subnet = lnet;
 		sc.left.has_client = TRUE;
-		
+
 		sc.right.subnet = rnet;
 		sc.right.has_client = TRUE;
 
@@ -707,7 +707,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		sc.name = tmpconnname;
 
 		sc.connalias = conn->name;
-		
+
 		success = (*operation)(cfg, &sc);
 		if(success != 0) {
 			/* fail at first failure? . I think so */
@@ -733,8 +733,8 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 			} else {
 				one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
 				rc = 1;
-			} 
-			
+			}
+
 			/* left */
 			lc++;
 			if(!one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left")) {
@@ -743,7 +743,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		}
 
 	} while(!done);
-	
+
 	return 0;  /* success. */
 }
 

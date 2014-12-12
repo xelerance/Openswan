@@ -42,12 +42,12 @@ enum sadb_msg_t {
 	K_SADB_MAX=19
 };
 
-#define SADB_X_GRPSA	    K_SADB_X_GRPSA		    
-#define SADB_X_ADDFLOW	    K_SADB_X_ADDFLOW	    
-#define SADB_X_DELFLOW	    K_SADB_X_DELFLOW	    
-#define SADB_X_DEBUG	    K_SADB_X_DEBUG		    
-#define SADB_X_PLUMBIF	    K_SADB_X_PLUMBIF	    
-#define SADB_X_UNPLUMBIF    K_SADB_X_UNPLUMBIF	    
+#define SADB_X_GRPSA	    K_SADB_X_GRPSA
+#define SADB_X_ADDFLOW	    K_SADB_X_ADDFLOW
+#define SADB_X_DELFLOW	    K_SADB_X_DELFLOW
+#define SADB_X_DEBUG	    K_SADB_X_DEBUG
+#define SADB_X_PLUMBIF	    K_SADB_X_PLUMBIF
+#define SADB_X_UNPLUMBIF    K_SADB_X_UNPLUMBIF
 
 struct k_sadb_sa {
 	uint16_t sadb_sa_len;
@@ -79,7 +79,7 @@ struct sadb_x_satype {
   uint8_t sadb_x_satype_satype;
   uint8_t sadb_x_satype_reserved[3];
 } __attribute__((packed));
-  
+
 struct sadb_x_debug {
   uint16_t sadb_x_debug_len;
   uint16_t sadb_x_debug_exttype;
@@ -107,7 +107,7 @@ struct sadb_x_debug {
  *
  * the create/delete part could/should be replaced with netlink equivalents,
  * or better yet, FORCES versions of same.
- * 
+ *
  */
 struct sadb_x_plumbif {
 	uint16_t sadb_x_outif_len;
@@ -133,7 +133,7 @@ struct sadb_x_plumbif {
 struct sadb_x_saref {
 	uint16_t sadb_x_saref_len;
 	uint16_t sadb_x_saref_exttype;
-	uint32_t sadb_x_saref_me;       
+	uint32_t sadb_x_saref_me;
 	uint32_t sadb_x_saref_him;
 } __attribute__((packed));
 
@@ -195,20 +195,20 @@ enum sadb_extension_t {
 };
 
 
-#define SADB_X_EXT_SATYPE2		K_SADB_X_EXT_SATYPE2		
-#define SADB_X_EXT_ADDRESS_DST2	        K_SADB_X_EXT_ADDRESS_DST2	
-#define SADB_X_EXT_ADDRESS_SRC_FLOW	K_SADB_X_EXT_ADDRESS_SRC_FLOW	
-#define SADB_X_EXT_ADDRESS_DST_FLOW	K_SADB_X_EXT_ADDRESS_DST_FLOW	
-#define SADB_X_EXT_ADDRESS_SRC_MASK	K_SADB_X_EXT_ADDRESS_SRC_MASK	
-#define SADB_X_EXT_ADDRESS_DST_MASK	K_SADB_X_EXT_ADDRESS_DST_MASK	
-#define SADB_X_EXT_DEBUG		K_SADB_X_EXT_DEBUG		
-#define SADB_X_EXT_PROTOCOL		K_SADB_X_EXT_PROTOCOL		
+#define SADB_X_EXT_SATYPE2		K_SADB_X_EXT_SATYPE2
+#define SADB_X_EXT_ADDRESS_DST2	        K_SADB_X_EXT_ADDRESS_DST2
+#define SADB_X_EXT_ADDRESS_SRC_FLOW	K_SADB_X_EXT_ADDRESS_SRC_FLOW
+#define SADB_X_EXT_ADDRESS_DST_FLOW	K_SADB_X_EXT_ADDRESS_DST_FLOW
+#define SADB_X_EXT_ADDRESS_SRC_MASK	K_SADB_X_EXT_ADDRESS_SRC_MASK
+#define SADB_X_EXT_ADDRESS_DST_MASK	K_SADB_X_EXT_ADDRESS_DST_MASK
+#define SADB_X_EXT_DEBUG		K_SADB_X_EXT_DEBUG
+#define SADB_X_EXT_PROTOCOL		K_SADB_X_EXT_PROTOCOL
 
-#undef SADB_X_EXT_NAT_T_TYPE		
-#undef SADB_X_EXT_NAT_T_SPORT	        
-#undef SADB_X_EXT_NAT_T_DPORT	        
-#undef SADB_X_EXT_NAT_T_OA		
-#define SADB_X_EXT_PLUMBIF		K_SADB_X_EXT_PLUMBIF		
+#undef SADB_X_EXT_NAT_T_TYPE
+#undef SADB_X_EXT_NAT_T_SPORT
+#undef SADB_X_EXT_NAT_T_DPORT
+#undef SADB_X_EXT_NAT_T_OA
+#define SADB_X_EXT_PLUMBIF		K_SADB_X_EXT_PLUMBIF
 
 
 
@@ -253,9 +253,9 @@ enum sadb_sastate {
 
 /* not obvious, but these are the same values as used in isakmp,
  * and in freeswan/ipsec_policy.h. If you need to add any, they
- * should be added as according to 
+ * should be added as according to
  *   http://www.iana.org/assignments/isakmp-registry
- * 
+ *
  * and if not, then please try to use a private-use value, and
  * consider asking IANA to assign a value.
  */
@@ -270,9 +270,9 @@ enum sadb_sastate {
 #define SADB_X_AALG_SHA2_256HMAC_TRUNCBUG	252 /* used internally to signal for broken linux kernel behaviour */
 
 enum sadb_aalg {
-	K_SADB_AALG_NONE=          SADB_AALG_NONE,           	
-	K_SADB_AALG_MD5HMAC=       SADB_AALG_MD5HMAC,        	
-	K_SADB_AALG_SHA1HMAC=      SADB_AALG_SHA1HMAC,       	
+	K_SADB_AALG_NONE=          SADB_AALG_NONE,
+	K_SADB_AALG_MD5HMAC=       SADB_AALG_MD5HMAC,
+	K_SADB_AALG_SHA1HMAC=      SADB_AALG_SHA1HMAC,
 	K_SADB_X_AALG_SHA2_256HMAC=SADB_X_AALG_SHA2_256HMAC,
 	K_SADB_X_AALG_SHA2_256HMAC_TRUNCBUG=SADB_X_AALG_SHA2_256HMAC_TRUNCBUG,
 	K_SADB_X_AALG_SHA2_384HMAC=SADB_X_AALG_SHA2_384HMAC,
@@ -300,13 +300,13 @@ enum sadb_aalg {
 #define SADB_X_EALG_CAMELLIACBC		22
 
 enum sadb_ealg {
-	K_SADB_EALG_NONE=SADB_EALG_NONE,		 
-	K_SADB_EALG_DESCBC=SADB_EALG_DESCBC,	 
-	K_SADB_EALG_3DESCBC=SADB_EALG_3DESCBC,	 
-	K_SADB_X_EALG_CASTCBC=SADB_X_EALG_CASTCBC,	 
-	K_SADB_X_EALG_BLOWFISHCBC=SADB_X_EALG_BLOWFISHCBC, 
-	K_SADB_EALG_NULL=SADB_EALG_NULL,		 
-	K_SADB_X_EALG_AESCBC=SADB_X_EALG_AESCBC,    
+	K_SADB_EALG_NONE=SADB_EALG_NONE,
+	K_SADB_EALG_DESCBC=SADB_EALG_DESCBC,
+	K_SADB_EALG_3DESCBC=SADB_EALG_3DESCBC,
+	K_SADB_X_EALG_CASTCBC=SADB_X_EALG_CASTCBC,
+	K_SADB_X_EALG_BLOWFISHCBC=SADB_X_EALG_BLOWFISHCBC,
+	K_SADB_EALG_NULL=SADB_EALG_NULL,
+	K_SADB_X_EALG_AESCBC=SADB_X_EALG_AESCBC,
 	K_SADB_X_EALG_AESCTR=SADB_X_EALG_AESCTR,
 	K_SADB_X_EALG_AES_CCM_ICV8=SADB_X_EALG_AES_CCM_ICV8,
 	K_SADB_X_EALG_AES_CCM_ICV12=SADB_X_EALG_AES_CCM_ICV12,

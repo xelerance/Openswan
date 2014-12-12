@@ -184,6 +184,9 @@ BISONOSFLAGS=
 ### misc configuration, included here in hopes that other files will not
 ### have to be changed for common customizations.
 
+# XXX THESE are now pretty much STOCK, and should get rolled back into CFLAGS and LDFLAGS.
+# USER* should be empty for end users/vendors to use
+
 # extra compile flags, for userland and kernel stuff, e.g. -g for debug info
 # you can add to this in the defaults file using +=
 # -DGCC_LINT uses gcc-specific declarations to improve compile-time diagnostics.
@@ -191,7 +194,7 @@ BISONOSFLAGS=
 #Example for a cross compile:
 #USERCOMPILE?=-g ${PORTDEFINE} -I/usr/local/arm_tools/arm-elf/inc -L/usr/local/arm_tools/lib/gcc-lib
 GCC_LINT ?= -DGCC_LINT
-USERCOMPILE?=-g -O3 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 ${WERROR} $(GCC_LINT)
+USERCOMPILE?=-g -O3 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 ${WERROR} $(GCC_LINT) ${USERCOMPILEEXTRA}
 # on fedora/rhel
 #USERCOMPILE?=-g -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4  -m64 -mtune=generic -fPIE -pie -DSUPPORT_BROKEN_ANDROID_ICS
 KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
@@ -201,7 +204,7 @@ KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wfo
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
 
 # extra link flags
-USERLINK?=-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now
+USERLINK?=-Wl,-Bsymbolic-functions -fPIE -pie -Wl,-z,relro -Wl,-z,now ${USERLINKEXTRA}
 # on fedora/rhel
 #USERLINK=-g -pie
 
@@ -584,6 +587,9 @@ POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
 IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
+
+# set this to "ulimit -c unlimited" if you want core dumps from unit tests.
+COREULIMIT?=/bin/true
 
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE

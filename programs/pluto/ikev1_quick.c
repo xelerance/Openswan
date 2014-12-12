@@ -142,7 +142,7 @@ emit_subnet_id(ip_subnet *net
     struct isakmp_ipsec_id id;
     pb_stream id_pbs;
     ip_address ta;
-    const unsigned char *tbp;
+    unsigned char *tbp;
     size_t tal;
     const struct af_info *ai;
     bool usehost = FALSE;
@@ -747,9 +747,7 @@ quick_outI1(int whack_sock
 	    , lset_t policy
 	    , unsigned long try
 	    , so_serial_t replacing
-#ifdef HAVE_LABELED_IPSEC
-	    , struct xfrm_user_sec_ctx_ike * uctx
-#endif
+	    , struct xfrm_user_sec_ctx_ike * uctx UNUSED
 	    )
 {
     struct state *st = duplicate_state(isakmp_sa);

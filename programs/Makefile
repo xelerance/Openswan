@@ -31,8 +31,12 @@ SUBDIRS+=proc pluto addconn
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _updown 
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets initnss
-SUBDIRS+=rsasigkey setup showdefaults showhostkey 
+SUBDIRS+=rsasigkey setup showdefaults showhostkey
 SUBDIRS+=ikeping examples policy
+
+# this directory is built to make sure it is always buildable, but it
+# is not installed.
+SUBDIRS+=readwriteconf
 
 ifeq ($(USE_KLIPS),true)
 SUBDIRS+= _startklips _updown.klips 
@@ -55,8 +59,8 @@ def:
 
 # programs
 
-cleanall distclean mostlyclean realclean install programs checkprograms clean spotless install_file_list:
-	@for d in $(SUBDIRS) ; \
+cleanall distclean mostlyclean realclean install programs checkprograms clean spotless install_file_list::
+	@for d in $(SUBDIRS); \
 	do \
 		(cd $$d && $(MAKE) srcdir=${srcdir}$$d/ OPENSWANSRCDIR=$(OPENSWANSRCDIR) $@ ) || exit 1;\
 	done; \

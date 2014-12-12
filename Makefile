@@ -191,7 +191,7 @@ ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 
 endif
 
-checkprograms::
+checkprograms:: programs
 	@for d in $(SUBDIRS) ; \
 	do \
 		(cd $$d && $(MAKE) srcdir=${OPENSWANSRCDIR}/$$d/ OPENSWANSRCDIR=${OPENSWANSRCDIR} $@ ) || exit 1; \
@@ -324,28 +324,6 @@ kernel:
 	fi
 	${ERRCHECK} out.kbuild
 
-# this target takes a kernel source tree and it builds a link tree,
-# and then does make oldconfig for each .config file that was found in configs.
-# The location for the disk space required for the link tree is found via
-# $RH_KERNELSRC_POOL
-preprhkern4module:
-	if [ -z "${RH_KERNELSRC_POOL}" ]; then echo Please set RH_KERNELSRC_POOL.; exit 1; fi
-	mkdir -p ${RH_KERNELSRC_POOL}
-	KV=`${KVUTIL} $(RH_KERNELSRC)/Makefile` ; \
-	cd ${RH_KERNELSRC_POOL} && \
-	mkdir -p $$KV && cd $$KV && \
-	for config in ${RH_KERNELSRC}/configs/*; do \
-		basecfg=`basename $$config` ;\
-		mkdir -p ${RH_KERNELSRC_POOL}/$$KV/$$basecfg && \
-		cd ${RH_KERNELSRC_POOL}/$$KV/$$basecfg && \
-		lndir ${RH_KERNELSRC} . && \
-		rm -rf include/asm && \
-		(cd include/linux && sed -e '/#include "\/boot\/kernel.h"/d' <rhconfig.h >rhconfig.h-new && mv rhconfig.h-new rhconfig.h ) && \
-		rm -f include/linux/modules/*.stamp && \
-		${MAKE} dep && \
-		${MAKE} oldconfig; \
-	done;
-
 # module-only building, with error checks
 ifneq ($(strip $(MODBUILDDIR)),)
 ${MODBUILDDIR}/Makefile : ${OPENSWANSRCDIR}/packaging/makefiles/module.make
@@ -362,11 +340,8 @@ module:
         fi;
 	@if [ -f ${KERNELSRC}/README.freeswan ] ; then \
                 echo "ERROR: Kernel source ${KERNELSRC} has already been patched with freeswan, out of tree build will fail!"; \
-        fi;
-	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
-                echo "Building module for a 2.4 kernel"; ${MAKE} module24 ; \
-        else echo "Building module for a 2.6 kernel"; ${MAKE} module26; \
-        fi;
+	fi;
+	${MAKE} module26
 
 modclean moduleclean:
 	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
@@ -374,60 +349,10 @@ modclean moduleclean:
 	else echo "Cleaning module for a 2.6 kernel"; ${MAKE} module26clean; \
 	fi;
 
-module24:
-	@if [ ! -f ${KERNELSRC}/Rules.make ] ; then \
-                echo "Warning: Building for a 2.4 kernel in what looks like a 2.6 tree"; \
-        fi ; \
-        ${MAKE} ${MODBUILDDIR}/Makefile
-	${MAKE} -C ${MODBUILDDIR}  OPENSWANSRCDIR=${OPENSWANSRCDIR} ARCH=${ARCH} V=${V} ${MODULE_FLAGS} MODULE_DEF_INCLUDE=${MODULE_DEF_INCLUDE} TOPDIR=${KERNELSRC} -f Makefile ipsec.o
-	@echo
-	@echo '========================================================='
-	@echo
-	@echo 'KLIPS module built successfully. '
-	@echo ipsec.o is in ${MODBUILDDIR}
-	@echo
-	@(cd ${MODBUILDDIR}; ls -l ipsec.o)
-	@(cd ${MODBUILDDIR}; size ipsec.o)
-	@echo
-	@echo 'use make minstall as root to install it'
-	@echo
-	@echo '========================================================='
-	@echo
-
-mod24clean module24clean:
-	rm -rf ${MODBUILDDIR}
-
 #autoodetect 2.4 and 2.6
 module_install: minstall
 minstall:
-	@if [ -f ${KERNELSRC}/Rules.make ] ; then \
-                ${MAKE} minstall24 ; else ${MAKE} minstall26; \
-        fi;
-
-# module-only install, with error checks
-minstall24:
-	( OSMODLIB=`${MAKE} -C $(KERNELSRC) -p dummy | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
-	if [ -z "$$OSMODLIB" ] ; then \
-		OSMODLIB=`${MAKE} -C $(KERNELSRC) -n -p modules_install | ( sed -n -e '/^MODLIB/p' -e '/^MODLIB/q' ; cat > /dev/null ) | sed -e 's/^MODLIB[ :=]*\([^;]*\).*/\1/'` ; \
-	fi ; \
-	if [ -z "$$OSMODLIB" ] ; then \
-		echo "No known place to install module. Aborting." ; \
-		exit 93 ; \
-	fi ; \
-	set -x ; \
-	mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
-	cp $(MODBUILDDIR)/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
-	if [ -f /sbin/depmod ] ; then /sbin/depmod -a ; fi; \
-	if [ -n "$(OSMOD_DESTDIR)" ] ; then \
-        mkdir -p $$OSMODLIB/kernel/$(OSMOD_DESTDIR) ; \
-                if [ -f $$OSMODLIB/kernel/ipsec.o -a -f $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ] ; then \
-                        echo "WARNING: two ipsec.o modules found in $$OSMODLIB/kernel:" ; \
-                        ls -l $$OSMODLIB/kernel/ipsec.o $$OSMODLIB/kernel/$(OSMOD_DESTDIR)/ipsec.o ; \
-                        exit 1; \
-                fi ; \
-        fi ; \
-        set -x ) ;
-
+	${MAKE} minstall26; 
 
 else
 module:

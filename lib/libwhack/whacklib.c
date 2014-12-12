@@ -139,9 +139,7 @@ err_t pack_whack_msg (struct whackpacker *wp)
 	|| !pack_str(wp, &wp->msg->string2)                /* string 25 */
 	|| !pack_str(wp, &wp->msg->string3)                /* string 26 */
 	|| !pack_str(wp, &wp->msg->dnshostname) /* string 27 ? */
-#ifdef HAVE_LABELED_IPSEC
 	|| !pack_str(wp, &wp->msg->policy_label) /* string 28 */
-#endif
 	|| wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len)    /* chunk (sort of string 28) */
     {
 	ugh = "too many bytes of strings to fit in message to pluto";
@@ -172,8 +170,10 @@ err_t unpack_whack_msg (struct whackpacker *wp)
     if (wp->str_next > wp->str_roof)
     {
 	ugh = builddiag("ignoring truncated message from whack: got %d bytes; expected %u"
-			, (int) wp->n, (unsigned) sizeof(wp->msg));
+			, (int) wp->n, (unsigned) sizeof(*wp->msg));
+        return ugh;
     }
+
     if (!unpack_str(wp, &wp->msg->name)	          /* string 1 */
 	|| !unpack_str(wp, &wp->msg->left.id)     /* string 2 */
 	|| !unpack_str(wp, &wp->msg->left.cert)   /* string 3 */
@@ -201,9 +201,7 @@ err_t unpack_whack_msg (struct whackpacker *wp)
 	|| !unpack_str(wp, &wp->msg->string2)                /* string 25 */
 	|| !unpack_str(wp, &wp->msg->string3)                /* string 26 */
 	|| !unpack_str(wp, &wp->msg->dnshostname)  /* string 27 ? */
-#ifdef HAVE_LABELED_IPSEC
 	|| !unpack_str(wp, &wp->msg->policy_label) /* string 28 */
-#endif
 	|| wp->str_roof - wp->str_next != (ptrdiff_t)wp->msg->keyval.len)	/* check chunk */
     {
 	ugh = "message from whack contains bad string";

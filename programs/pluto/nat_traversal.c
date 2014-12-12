@@ -680,7 +680,7 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 	}
 	fdp[0] = sk;
 	fdp[1] = type;
-	r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
+	r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
 	if (r == -1) {
 		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
 			   "new style NAT-T family %s (errno=%d)"
@@ -693,15 +693,14 @@ int nat_traversal_espinudp_socket (int sk, const char *fam, u_int32_t type)
 
 #if defined(KLIPS)
 	DBG(DBG_NATT, DBG_log("NAT-Traversal: Trying old style NAT-T"));
-	r = setsockopt(sk, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
+	r = ioctl(sk, IPSEC_UDP_ENCAP_CONVERT, &ifr);
 	if (r == -1) {
 		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup failed for "
 			   "old style NAT-T family %s (errno=%d)"
 			   , type, fam, errno));
-	}
-	else {
+	} else {
 		DBG(DBG_NATT, DBG_log("NAT-Traversal: ESPINUDP(%d) setup succeeded for "
-			   "new style NAT-T family %s" , type, fam));
+			   "old style NAT-T family %s" , type, fam));
 		return r;
 	}
 # else

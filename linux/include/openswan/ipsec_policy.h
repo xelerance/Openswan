@@ -2,12 +2,12 @@
 /*
  * policy interface file between pluto and applications
  * Copyright (C) 2003              Michael Richardson <mcr@freeswan.org>
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -40,7 +40,7 @@ enum ipsec_policy_command {
 
 struct ipsec_policy_msg_head {
   u_int32_t ipm_version;
-  u_int32_t ipm_msg_len;  
+  u_int32_t ipm_msg_len;
   u_int32_t ipm_msg_type;
   u_int32_t ipm_msg_seq;
 };
@@ -146,7 +146,7 @@ enum ipsec_comp_algo {
  * RFC 2407 The Internet IP security Domain of Interpretation for
  * ISAKMP 4.6.2.1
  *
- * Also for RFC4306. 
+ * Also for RFC4306.
  *
  * enum ident_names;
  */
@@ -185,7 +185,7 @@ enum ipsec_cert_type {
   CERT_ARL=			8,
   CERT_SPKI=			9,
   CERT_X509_ATTRIBUTE=		10,
-  CERT_RAW_RSA=                 11, /* raw RSA from config file */ 
+  CERT_RAW_RSA=                 11, /* raw RSA from config file */
 };
 
 /* a SIG record in ASCII */
@@ -224,7 +224,7 @@ struct ipsec_policy_cmd_query {
   /* Answer section */
   enum ipsec_privacy_quality     strength;
   enum ipsec_bandwidth_quality   bandwidth;
-  enum ipsec_authentication_algo auth_detail;  
+  enum ipsec_authentication_algo auth_detail;
   enum ipsec_cipher_algo         esp_detail;
   enum ipsec_comp_algo           comp_detail;
 

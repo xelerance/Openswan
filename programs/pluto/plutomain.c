@@ -169,10 +169,14 @@ usage(const char *mess)
 	    " \\\n\t"
 	    "[--adns <pathname>]"
 	    "[--nhelpers <number>]"
-#ifdef HAVE_LABELED_IPSEC
 	    " \\\n\t"
-	    "[--secctx_attr_value <number>]"
+	    "[--secctx_attr_value <number>] "
+#ifdef HAVE_LABELED_IPSEC
+            "(available) "
+#else
+            "(unavailable) "
 #endif
+
 #ifdef DEBUG
 	    " \\\n\t"
 	    "[--debug-none]"
@@ -424,6 +428,7 @@ main(int argc, char **argv)
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
 #ifdef HAVE_LABELED_IPSEC
+            /* XXX - should accept argument and return error */
 	    { "secctx_attr_value", required_argument, NULL, 'w' },
 #endif
 #ifdef DEBUG
@@ -757,7 +762,7 @@ main(int argc, char **argv)
 	if (log_with_timestamp_desired)
 	   log_with_timestamp = TRUE;
     }
-    else 
+    else
 	log_to_stderr = FALSE;
 
 #ifdef DEBUG

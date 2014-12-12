@@ -1,15 +1,15 @@
 /*
  * This program reads a configuration file and then writes it out
- * again to stdout. 
+ * again to stdout.
  * That's not that useful in practice, but it helps a lot in debugging.
  *
- * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
- * 
+ * Copyright (C) 2006-2014 Michael Richardson <mcr@xelerance.com>
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -128,12 +128,13 @@ main(int argc, char *argv[])
 
 	case 'R':
 	    printf("#setting rootdir=%s\n", optarg);
-	    strncat(rootdir, optarg, sizeof(rootdir));
+	    strlcat(rootdir, optarg, sizeof(rootdir));
 	    break;
 
 	case 'S':
 	    printf("#setting rootdir2=%s\n", optarg);
-	    strncat(rootdir2, optarg, sizeof(rootdir2));
+            rootdir2[0]='\0';
+	    strlcat(rootdir2, optarg, sizeof(rootdir2));
 	    break;
 	}
     }
@@ -144,7 +145,7 @@ main(int argc, char *argv[])
     {
 	confdir = IPSEC_CONFDIR;
     }
-	
+
     if(!configfile) {
 	configfile = alloc_bytes(strlen(confdir)+sizeof("/ipsec.conf")+2,"conf file");
 
@@ -170,12 +171,12 @@ main(int argc, char *argv[])
     starter_use_log (verbose, 1, verbose ? 0 : 1);
 
     cfg = confread_load(configfile, &err, FALSE, NULL,FALSE);
-    
+
     if(!cfg) {
 	printf("config file: %s can not be loaded: %s\n", configfile, err);
 	exit(3);
     }
-    
+
     /* load all conns marked as auto=add or better */
     for(conn = cfg->conns.tqh_first;
 	conn != NULL;

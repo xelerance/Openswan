@@ -2,12 +2,12 @@
  * Openswan specific PF_KEY headers
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs.
  * Copyright (C) 2006-2007 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -55,6 +55,7 @@ struct supported_list
 extern int pfkey_list_insert_supported(struct ipsec_alg_supported*, struct supported_list**);
 extern int pfkey_list_remove_supported(struct ipsec_alg_supported*, struct supported_list**);
 
+/* this structure used by userspace, so sizes are critical */
 struct sockaddr_key
 {
 	uint16_t	key_family;	/* PF_KEY */
@@ -149,13 +150,15 @@ extern uint8_t proto2satype(uint8_t proto);
 extern char* satype2name(uint8_t satype);
 extern char* proto2name(uint8_t proto);
 
+#if 0
 struct key_opt
 {
-	uint32_t	key_pid;	/* process ID */
-	struct sock	*sk;
+  kuid_t   	key_pid;	/* process ID */
+  struct sock	*sk;            /* back pointer to PFKEY socket */
 };
 
 #define key_pid(sk) ((struct key_opt*)&((sk)->sk_protinfo))->key_pid
+#endif
 
 /* XXX-mcr this is not an alignment, this is because the count is in 64-bit
  * words.
@@ -198,7 +201,7 @@ static inline void pfkey_mark_extension(enum sadb_extension_t exttype,
 {
 	*exten_track |= (1 << exttype);
 }
-	
+
 extern int pfkey_extensions_missing(enum pfkey_ext_required inout,
 				    enum sadb_msg_t sadb_operation,
 				    pfkey_ext_track extensions_seen);
@@ -231,7 +234,7 @@ pfkey_msg_hdr_build(struct sadb_ext**	pfkey_ext,
 		    uint8_t		satype,
 		    uint8_t		msg_errno,
 		    uint32_t		seq,
-		    uint32_t		pid);
+		    uint32_t		pid4msg);
 
 int
 pfkey_sa_ref_build(struct sadb_ext **	pfkey_ext,

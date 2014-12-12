@@ -49,6 +49,12 @@ struct chunk {
     };
 typedef struct chunk chunk_t;
 
+struct const_chunk {
+    const u_char *ptr;
+    const size_t len;
+    };
+typedef struct const_chunk constchunk_t;
+
 #define setchunk(ch, addr, size) { (ch).ptr = (addr); (ch).len = (size); }
 /* NOTE: freeanychunk, unlike pfreeany, NULLs .ptr */
 #define freeanychunk(ch) { pfreeany((ch).ptr); (ch).ptr = NULL; }
@@ -60,7 +66,7 @@ typedef struct chunk chunk_t;
     { memcpy(dst, chunk.ptr, chunk.len); dst += chunk.len;}
 #define same_chunk(a, b) \
     (a).len == (b).len && memcmp((a).ptr, (b).ptr, (b).len) == 0
-  
+
 extern const chunk_t empty_chunk;
 
 /* compare two chunks */
@@ -80,7 +86,7 @@ extern void set_exit_log_func(exit_log_func_t func);
 #define free_osw_nss_symkey(ch)  \
                { PK11SymKey *ptr=0; \
                  if((ch).ptr!=NULL) { memcpy(&ptr, (ch).ptr, (ch).len); memset((ch).ptr,0,(ch).len );} \
-                 if(ptr!=NULL) { PK11_FreeSymKey(ptr);} }  
+                 if(ptr!=NULL) { PK11_FreeSymKey(ptr);} }
 
 #define dup_osw_nss_symkey(ch)  \
                { PK11SymKey *ptr=0; \

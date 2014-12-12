@@ -154,9 +154,7 @@ struct kernel_ops {
 		       time_t use_lifetime,
 		       enum pluto_sadb_operations op,
 		       const char *text_said
-#ifdef HAVE_LABELED_IPSEC
-		      , char *policy_label
-#endif
+                       , char *policy_label
 		       );
     bool (*shunt_eroute)(struct connection *c
 			 , struct spd_route *sr
@@ -307,15 +305,12 @@ struct bare_shunt **bare_shunt_ptr(const ip_subnet *ours
 # define EM_MAXRELSPIS 4	/* AH ESP IPCOMP IPIP */
 #endif
 
-#ifdef HAVE_LABELED_IPSEC
 struct xfrm_user_sec_ctx_ike; /* forward declaration of tag */
-#endif
+
 extern void record_and_initiate_opportunistic(const ip_subnet *
                                               , const ip_subnet *
                                               , int transport_proto
-#ifdef HAVE_LABELED_IPSEC
                                               , struct xfrm_user_sec_ctx_ike *
-#endif
                                               , const char *why);
 extern void init_kernel(void);
 
@@ -369,9 +364,7 @@ extern bool eroute_connection(struct spd_route *sr
 			      , enum eroute_type esatype
 			      , const struct pfkey_proto_info *proto_info
 			      , unsigned int op, const char *opname
-#ifdef HAVE_LABELED_IPSEC
 			      , char *policy_label
-#endif
 			      );
 
 static inline bool

@@ -132,9 +132,7 @@ void
 record_and_initiate_opportunistic(const ip_subnet *ours
                                   , const ip_subnet *his
                                   , int transport_proto
-#ifdef HAVE_LABELED_IPSEC
                                   , struct xfrm_user_sec_ctx_ike *uctx
-#endif
                                   , const char *why)
 {
     passert(samesubnettype(ours, his));
@@ -172,9 +170,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
         networkof(his, &dst);
         if (initiate_ondemand(&src, &dst, transport_proto
 				, TRUE, NULL_FD,
-#ifdef HAVE_LABELED_IPSEC
 				uctx,
-#endif
 				"acquire") == 0) {
 			/* if we didn't do any ondemand stuff the shunt is not needed */
 			struct bare_shunt **bspp = bare_shunt_ptr(ours,his,transport_proto);
@@ -909,9 +905,7 @@ raw_eroute(const ip_address *this_host
            , time_t use_lifetime
            , enum pluto_sadb_operations op
            , const char *opname USED_BY_DEBUG
-#ifdef HAVE_LABELED_IPSEC
 	   , char *policy_label
-#endif
 	   )
 {
     char text_said[SATOT_BUF];
@@ -933,7 +927,7 @@ raw_eroute(const ip_address *this_host
                     , text_said);
 #ifdef HAVE_LABELED_IPSEC
 		if(policy_label) {
-		DBG_log("policy security label %s", policy_label);
+                    DBG_log("policy security label %s", policy_label);
 		}
 #endif
         });
@@ -944,10 +938,7 @@ raw_eroute(const ip_address *this_host
                                   , transport_proto
                                   , esatype, proto_info
                                   , use_lifetime, op, text_said
-#ifdef HAVE_LABELED_IPSEC
-				  , policy_label
-#endif
-				  );
+				  , policy_label);
 
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
 	   DBG_log("raw_eroute result=%u\n", result);
@@ -1070,10 +1061,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                                        , transport_proto
                                        , ET_INT, null_proto_info
                                        , SHUNT_PATIENCE, ERO_REPLACE, why
-#ifdef HAVE_LABELED_IPSEC
-				       , NULL
-#endif
-				       ))
+				       , NULL_POLICY))
                             {
                                 struct bare_shunt *bs = alloc_thing(struct bare_shunt, "bare shunt");
 
@@ -1102,10 +1090,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , transport_proto
                        , ET_INT, null_proto_info
                        , SHUNT_PATIENCE, ERO_ADD, why
-#ifdef HAVE_LABELED_IPSEC
-		       , NULL
-#endif
-		       ))
+		       , NULL_POLICY))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client, &that_client
                                                            , transport_proto);
@@ -1128,11 +1113,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
                        , htonl(shunt_spi), SA_INT
                        , 0 /* transport_proto */
                        , ET_INT, null_proto_info
-                       , SHUNT_PATIENCE, op, why
-#ifdef HAVE_LABELED_IPSEC
-		       , NULL
-#endif
-		       ))
+                       , SHUNT_PATIENCE, op, why, NULL_POLICY))
             {
                 struct bare_shunt **bs_pp = bare_shunt_ptr(&this_client
                                                            , &that_client, 0);
@@ -1175,9 +1156,7 @@ bool eroute_connection(struct spd_route *sr
 		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
 		       , unsigned int op, const char *opname
-#ifdef HAVE_LABELED_IPSEC
 		       , char *policy_label
-#endif
 		       )
 {
     const ip_address *peer = &sr->that.host_addr;
@@ -1197,9 +1176,7 @@ bool eroute_connection(struct spd_route *sr
                       , sr->this.protocol
                       , esatype
                       , proto_info, 0, op, buf2
-#ifdef HAVE_LABELED_IPSEC
 		      , policy_label
-#endif
 		      );
 }
 
@@ -1273,9 +1250,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 				  , null_proto_info
 				  , op
 				  , reason
-#ifdef HAVE_LABELED_IPSEC
 				  , c->policy_label
-#endif
 				  )) {
                 return FALSE;
             }
@@ -2032,9 +2007,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 			      , 0                      /* lifetime */
                               , ERO_ADD_INBOUND        /* op */
 			      , "add inbound"        /* opname */
-#ifdef HAVE_LABELED_IPSEC
 			      , st->st_connection->policy_label
-#endif
 			      );
         }
     }
@@ -2130,9 +2103,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
                           , ET_UNSPEC
                           , null_proto_info, 0
                           , ERO_DEL_INBOUND, "delete inbound"
-#ifdef HAVE_LABELED_IPSEC
 			  , c->policy_label
-#endif
 			  );
     }
 
@@ -2150,9 +2121,7 @@ teardown_half_ipsec_sa(struct state *st, bool inbound)
 //                                      , ET_UNSPEC
 //                                      , null_proto_info, 0
 //                                      , ERO_DEL_INBOUND, "delete inbound"
-//#ifdef HAVE_LABELED_IPSEC
 //                                      , c->policy_label
-//#endif
 //                                      );
 //                }
 //        }
@@ -2246,7 +2215,7 @@ init_kernel(void)
 #if defined(NETKEY_SUPPORT) || defined(KLIPS) || defined(KLIPS_MAST)
 	/* If we detect NETKEY and KLIPS, we can't continue */
 	if(stat("/proc/net/pfkey", &buf) == 0 &&
-	   stat("/proc/net/pf_key", &buf) == 0) {
+	   stat("/proc/net/ipsec/spi/all", &buf) == 0) {
 	    /* we don't die, we just log and go to sleep */
 	    openswan_log("Can not run with both NETKEY and KLIPS in the kernel");
 	    openswan_log("Please check your kernel configuration, or specify a stack");
@@ -2272,7 +2241,7 @@ init_kernel(void)
 
 #if defined(KLIPS)
     case USE_KLIPS:
-	if (stat("/proc/net/pf_key", &buf) == 0) {
+	if (stat("/proc/net/ipsec/spi/all", &buf) == 0) {
 	    kern_interface = USE_KLIPS;
 	    openswan_log("Using KLIPS IPsec interface code on %s"
 			 , kversion);
@@ -2773,9 +2742,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                     , null_proto_info
                     , SHUNT_PATIENCE
                     , ERO_REPLACE, "restore"
-#ifdef HAVE_LABELED_IPSEC
-		    , NULL             /* bare shunt are not associated with any connection so no security label*/
-#endif
+		    , NULL_POLICY /* bare shunt are not associated with any connection so no security label*/
 		    );
             }
             else if (ero != NULL)

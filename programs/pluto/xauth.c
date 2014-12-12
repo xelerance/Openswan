@@ -381,7 +381,7 @@ stf_status modecfg_resp(struct state *st
 	    dont_advance = FALSE;
 	    if(resp & 1)
 	    {
-		const unsigned char *byte_ptr;
+		unsigned char *byte_ptr;
 		unsigned int len;
 
 		/* ISAKMP attr out */
@@ -1787,7 +1787,7 @@ modecfg_inR1(struct msg_digest *md)
 
 		    if(addrbytesptr(&c->spd.this.host_srcip, NULL) == 0
 		       || isanyaddr(&c->spd.this.host_srcip)
-			|| c->remotepeertype == CISCO ) { 
+			|| c->remotepeertype == CISCO ) {
 			/*with remotepeertype == CISCO, overwrite the previous address with the new received address*/
 			openswan_log("setting ip source address to %s"
 				     , caddr);
@@ -1799,7 +1799,7 @@ modecfg_inR1(struct msg_digest *md)
 
 		case INTERNAL_IP4_NETMASK:
 		{
-		    //struct connection *c = st->st_connection;	
+		    //struct connection *c = st->st_connection;
 		    ip_address a;
 		    char caddr[SUBNETTOT_BUF];
 
@@ -1844,7 +1844,7 @@ modecfg_inR1(struct msg_digest *md)
 			     * concatenate only if the received DNS is not
 			     * already present in the current string.
 			     */
- 
+
 			    if( !strstr(c->cisco_dns_info, caddr) ) {
 			    size_t sz_old = strlen(old);
 			    size_t sz_added = strlen(caddr) + 1;
@@ -1900,7 +1900,7 @@ modecfg_inR1(struct msg_digest *md)
                     }
 
 					/* receiving remote subnets information again
-					* free the previous ones before proceeding. 
+					* free the previous ones before proceeding.
 					*/
 					tmp_spd = tmp_spd2->next;
 					tmp_spd2->next = NULL;
@@ -1908,7 +1908,7 @@ modecfg_inR1(struct msg_digest *md)
 					delete_sr(c, tmp_spd);
 					tmp_spd1 = tmp_spd->next;
 					pfree(tmp_spd);
-					tmp_spd = tmp_spd1;	    	
+					tmp_spd = tmp_spd1;
 					}
 
                     while (len > 0) {

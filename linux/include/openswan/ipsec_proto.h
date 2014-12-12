@@ -1,14 +1,14 @@
 /*
- * @(#) prototypes for FreeSWAN functions 
+ * @(#) prototypes for FreeSWAN functions
  *
  * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
  *                 and Michael Richardson  <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -20,7 +20,7 @@
 
 #include "ipsec_param.h"
 
-/* 
+/*
  * This file is a kernel only file that declares prototypes for
  * all intra-module function calls and global data structures.
  *
@@ -45,7 +45,7 @@ extern spinlock_t       tdb_lock;
 extern int ipsec_sadb_init(void);
 extern int ipsec_sadb_cleanup(__u8);
 
-extern struct ipsec_sa *ipsec_sa_alloc(int*error); 
+extern struct ipsec_sa *ipsec_sa_alloc(int*error);
 
 
 extern struct ipsec_sa *ipsec_sa_getbyid(ip_said *, int type);
@@ -97,13 +97,6 @@ extern enum ipsec_life_alive ipsec_lifetime_check(struct ipsec_lifetime64 *il64,
 						  enum ipsec_life_type ilt,
 						  enum ipsec_direction idir,
 						  struct ipsec_sa *ips);
-
-
-extern int ipsec_lifetime_format(char *buffer,
-				 int   buflen,
-				 char *lifename,
-				 enum ipsec_life_type timebaselife,
-				 struct ipsec_lifetime64 *lifetime);
 
 extern void ipsec_lifetime_update_hard(struct ipsec_lifetime64 *lifetime,
 				       __u64 newvalue);

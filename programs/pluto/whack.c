@@ -766,7 +766,7 @@ static const struct option long_opts[] = {
     { "impair-retransmits", no_argument, NULL, DBGOPT_IMPAIR_RETRANSMITS + OO },
     { "impair-send-bogus-isakmp-flag", no_argument, NULL, DBGOPT_IMPAIR_SEND_BOGUS_ISAKMP_FLAG + OO },
     { "whackrecord",     required_argument, NULL, OPT_WHACKRECORD + OO},
-    { "whackstoprecord", required_argument, NULL, OPT_WHACKSTOPRECORD + OO},
+    { "whackstoprecord", no_argument, NULL, OPT_WHACKSTOPRECORD + OO},
 #endif
 #   undef OO
     { 0,0,0,0 }
@@ -941,19 +941,14 @@ main(int argc, char **argv)
     msg.pfsgroup = NULL;
 
     msg.remotepeertype = NON_CISCO;
-
-    msg.sha2_truncbug = SHA2_TRUNCBUG_NO;
+    msg.sha2_truncbug  = FALSE;
 
     /*Network Manager support*/
-#ifdef HAVE_NM
-    msg.nmconfigured = NM_NO;
-#endif
+    msg.nmconfigured   = FALSE;
 
-#ifdef HAVE_LABELED_IPSEC
-    msg.loopback = LB_NO;
-    msg.labeled_ipsec = LI_NO;
+    msg.loopback = FALSE;
+    msg.labeled_ipsec = FALSE;
     msg.policy_label = NULL;
-#endif
 
     msg.sa_ike_life_seconds = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
     msg.sa_ipsec_life_seconds = PLUTO_SA_LIFE_DURATION_DEFAULT;
@@ -1568,20 +1563,20 @@ main(int argc, char **argv)
 
 	case CD_SHA2_TRUNCBUG: /* --sha2_truncbug */
 	    if ( strcmp(optarg, "yes" ) == 0) {
-		msg.sha2_truncbug = SHA2_TRUNCBUG_YES;
+		msg.sha2_truncbug = TRUE;
 	    }
 	    else {
-		msg.sha2_truncbug = SHA2_TRUNCBUG_NO;
+		msg.sha2_truncbug = FALSE;
 	    }
-		continue;
+            continue;
 
 #ifdef HAVE_NM
 	case CD_NMCONFIGURED: /* --nm_configured */
 	    if ( strcmp(optarg, "yes" ) == 0) {
-		msg.nmconfigured = NM_YES;
+		msg.nmconfigured = TRUE;
 	    }
 	    else {
-		msg.nmconfigured = NM_NO;
+		msg.nmconfigured = FALSE;
 	    }
 		continue;
 #endif

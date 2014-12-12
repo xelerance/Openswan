@@ -27,7 +27,7 @@
 void *xmalloc(size_t s)
 {
   void *m = malloc(s);
-  
+
   return m;
 }
 
@@ -41,7 +41,7 @@ char *xstrdup(char *s)
 void *xrealloc(void *o, size_t s)
 {
   void *m = realloc(o, s);
-  
+
   return m;
 }
 

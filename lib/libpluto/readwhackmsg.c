@@ -20,8 +20,9 @@ void readwhackmsg(char *infile)
     /* okay, eat first line, it's a comment, but log it. */
     if(fgets(b1, sizeof(b1), record)==NULL)
 	DBG(DBG_PARSING, DBG_log("readwhackmsg: fgets returned NULL"));
-    printf("Pre-amble: %s", b1);
-    
+    printf("Pre-amble (offset: %llu): %s",
+           (unsigned long long)ftello(record), b1);
+
     plen=0;
     while((iocount=fread(&plen, 4, 1, record))==1) {
 	u_int32_t a[2];
@@ -30,10 +31,12 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	size_t abuflen;
 
+        /* time stamp, MSB word first of time */
 	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
 	
 	/* account for this header we just consumed */
+        /* 4 bytes of plen,  8 bytes of time stamp  */
 	plen -= 12;
 
 	/* round up to multiple of 4 */
@@ -52,16 +55,35 @@ void readwhackmsg(char *infile)
 	    fclose(record);
 	    exit(5);
 	}
-	
-	if(plen <= 4) {
+
+	if(plen <= 4 || iocount != 1) {
 	    /* empty message */
 	    continue;
 	}
+
+        /* if it's a basic command, skip it */
+        if(m1.magic == WHACK_BASIC_MAGIC) continue;
+
+        if(m1.magic != WHACK_MAGIC) {
+            fprintf(stderr, "this is whack message from different version\n");
+            if((m1.magic & 0x80000000) != WHACK_MAGIC_INTVALUE) {
+                unsigned int bit64 = (m1.magic & 0x80000000);
+                unsigned int bits = bit64 ? 64 : 32;
+                fprintf(stderr, "this is whack message from a %u-bit system, this system is %lu",
+                        bits, (unsigned long)sizeof(void *)*8);
+            }
+            continue;
+        }
 
         wp.msg = &m1;
         wp.n   = plen;
         wp.str_next = m1.string;
         wp.str_roof = (unsigned char *)&m1 + plen;
+        fprintf(stderr, "processing whack msg time: %u size: %d\n",
+                a[1],plen);
+
+        fprintf(stderr, "m1: %p next: %p roof: %p\n",
+                &m1, wp.str_next, wp.str_roof);
 
         if ((ugh = unpack_whack_msg(&wp)) != NULL)
         {

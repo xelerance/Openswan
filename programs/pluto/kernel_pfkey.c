@@ -454,9 +454,7 @@ process_pfkey_acquire(pfkey_buf *buf, struct sadb_ext *extensions[K_SADB_EXT_MAX
 	&& !(ugh = addrtosubnet(src, &ours))
 	&& !(ugh = addrtosubnet(dst, &his)))
       record_and_initiate_opportunistic(&ours, &his, 0,
-#ifdef HAVE_LABELED_IPSEC
-						NULL,
-#endif
+						NULL_POLICY,
 						"%acquire-pfkey");
 
     if (ugh != NULL)
@@ -541,9 +539,7 @@ void pfkey_dequeue(void)
       record_and_initiate_opportunistic(&orphaned_holds->ours
 					, &orphaned_holds->his
 					, orphaned_holds->transport_proto
-#ifdef HAVE_LABELED_IPSEC
-                                        , NULL
-#endif
+                                        , NULL_POLICY
 					, "%hold found-pfkey");
 
     if (limit <= 0) {
@@ -877,9 +873,7 @@ pfkey_raw_eroute(const ip_address *this_host
 		 , time_t use_lifetime UNUSED
 		 , enum pluto_sadb_operations op
 		 , const char *text_said
-#ifdef HAVE_LABELED_IPSEC
 		 , char *policy_label UNUSED
-#endif
 		 )
 {
     struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
@@ -1343,9 +1337,7 @@ pfkey_shunt_eroute(struct connection *c
 			      , sr->this.protocol
 			      , ET_INT
 			      , null_proto_info, 0, op, buf2
-#ifdef HAVE_LABELED_IPSEC
 			      , c->policy_label
-#endif
 			      );
     }
 }
@@ -1437,9 +1429,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
 			     , inner_spi, inner_proto
 			     , inner_esatype, proto_info + i
 			     , op, opname
-#ifdef HAVE_LABELED_IPSEC
-			     , NULL
-#endif
+			     , NULL_POLICY
 			     );
 }
 

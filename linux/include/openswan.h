@@ -3,12 +3,12 @@
  * header file for FreeS/WAN library functions
  * Copyright (C) 1998, 1999, 2000  Henry Spencer.
  * Copyright (C) 1999, 2000, 2001  Richard Guy Briggs
- * 
+ *
  * This library is free software; you can redistribute it and/or modify it
  * under the terms of the GNU Library General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/lgpl.txt>.
- * 
+ *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library General Public
@@ -43,7 +43,7 @@
  * where we get them depends on whether we're in userland or not.
  */
 /* things that need to come from one place or the other, depending */
-#if defined(linux) 
+#if defined(linux)
 #if defined(__KERNEL__)
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -65,9 +65,9 @@
 #include <stdio.h>
 
 #  define uint8_t u_int8_t
-#  define uint16_t u_int16_t 
-#  define uint32_t u_int32_t 
-#  define uint64_t u_int64_t 
+#  define uint16_t u_int16_t
+#  define uint32_t u_int32_t
+#  define uint64_t u_int64_t
 
 
 
@@ -81,7 +81,7 @@
  * Yes Virginia, we have started a windows port.
  */
 #if defined(__CYGWIN32__)
-#if !defined(WIN32_KERNEL) 
+#if !defined(WIN32_KERNEL)
 /* get windows equivalents */
 #include <stdio.h>
 #include <string.h>
@@ -157,7 +157,7 @@
 /* first, some quick fakes in case we're on an old system with no IPv6 */
 #if !defined(s6_addr16) && defined(__CYGWIN32__)
 struct in6_addr {
-	union 
+	union
 	{
 		u_int8_t	u6_addr8[16];
 		u_int16_t	u6_addr16[8];
@@ -348,8 +348,8 @@ err_t rangetosubnet(const ip_address *from, const ip_address *to, ip_subnet *dst
 int addrtypeof(const ip_address *src);
 int subnettypeof(const ip_subnet *src);
 size_t addrlenof(const ip_address *src);
-size_t addrbytesptr(const ip_address *src, const unsigned char **dst);
-size_t addrbytesptr_write(ip_address *src, unsigned char **dst);
+size_t addrbytesptr(const ip_address *src, unsigned char **const dst);
+size_t addrbytesptr_write(ip_address *src, unsigned char **const dst);
 size_t addrbytesof(const ip_address *src, unsigned char *dst, size_t dstlen);
 int masktocount(const ip_address *src);
 void networkof(const ip_subnet *src, ip_address *dst);
@@ -391,6 +391,9 @@ const char *dns_string_rr(int rr, char *buf, int bufsize);
 const char *dns_string_datetime(time_t seconds,
 				char *buf,
 				int bufsize);
+
+/* from OpenBSD */
+size_t strlcat(char *dst, const char *src, size_t siz);
 
 
 /*
@@ -577,7 +580,7 @@ extern unsigned int pfkey_lib_debug;  /* bits selecting what to report */
 
 /*
  * pluto and lwdnsq need to know the maximum size of the commands to,
- * and replies from lwdnsq. 
+ * and replies from lwdnsq.
  */
 
 #define LWDNSQ_CMDBUF_LEN      1024

@@ -16,12 +16,14 @@
 me="ipsec newhostkey"
 usage="Usage: $me --output filename [--random device] [--bits n] [--quiet] [--hostname host] [--configdir nssdbdir] [--password password] 
          or
-       $me --output - [--random device] [--bits n] [--quiet] [--verbose] [--hostname host]  [--configdir nssdbdir] [--password password] >filename"
+       $me --output - [--random device] [--bits n] [--quiet] [--verbose] [--hostname host]  [--configdir nssdbdir] [--password password] >filename
+         or
+       $me [--bits n]  (defaults to /etc/ipsec.secrets or /var/lib/openswan/ipsec.secrets.inc)"
 
 bits=2192
 verbose=
 host=
-random="--random /dev/random"
+random="--random /dev/urandom"
 output=
 configdir=
 password=
@@ -35,8 +37,8 @@ do
 	--verbose)	verbose=--verbose 	;;
 	--version)	echo "$me $IPSEC_VERSION" ; exit 0	;;
 	--random)	random="--random $2" ; shift	;;
-    --configdir)    configdir="--configdir $2" ;    shift   ;;
-    --password)     password="--password $2" ;      shift   ;;
+        --configdir)    configdir="--configdir $2" ;    shift   ;;
+        --password)     password="--password $2" ;      shift   ;;
 	--help)	echo "$usage" ; exit 0	;;
 	--)	shift ; break		;;
 	-*)	echo "$me: unknown option \`$1'" >&2 ; exit 2	;;
@@ -48,6 +50,9 @@ done
 if test " $output" = " " && test ! -f ${IPSEC_CONFS}/ipsec.secrets
 then
     output=${IPSEC_CONFS}/ipsec.secrets
+elif test " $output" = " " && test -r /var/lib/openswan/ipsec.secrets.inc && test ! -s /var/lib/openswan/ipsec.secrets.inc
+then
+    output=/var/lib/openswan/ipsec.secrets.inc
 fi
 
 if test " $output" = " "
