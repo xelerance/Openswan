@@ -45,11 +45,6 @@ through the untrusted net is encrypted by the ipsec gateway machine and
 decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
-This package contains Bluerose Openswan, which is a variant maintained
-by Michael Richardson <mcr@sandelman.ca>.  No version information is provided
-with this package other than a year and week number. For a supported product
-contact sales@xelerance.com.
-
 This package contains the daemons and userland tools for setting up
 Openswan. It optionally also builds the Openswan KLIPS IPsec stack that
 is an alternative for the NETKEY/XFRM IPsec stack that exists in the
