@@ -1,5 +1,5 @@
 Summary: Openswan IPsec implementation
-Name: openswan
+Name: openswanX
 Version: 2.6.43
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
@@ -22,8 +22,12 @@ Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
-BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
+BuildRequires: gmp-devel bison flex redhat-rpm-config xmlto
+Conflicts: libreswan
+Obsoletes: openswan
+
 Requires: iproute >= 2.6.8
+
 Requires(post): coreutils bash
 Requires(preun): initscripts chkconfig
 Requires(post): /sbin/chkconfig
@@ -68,6 +72,7 @@ kernels.
   HAVE_THREADS="true" \
   USE_DYNAMICDNS="true" \
   WERROR="" \
+  VENDOR="Community" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
