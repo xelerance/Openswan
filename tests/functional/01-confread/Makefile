@@ -23,11 +23,13 @@ check:
 	${READWRITE} --config ${OBJDIRTOP}/programs/_confread/ipsec.conf | tee ../OUTPUTS/default.ipsec.conf.raw | diff - default.ipsec.conf.out
 	${READWRITE} --config moon-base.conf | tee ../OUTPUTS/moon-base.conf.raw | diff - moon-base.conf.out
 	${READWRITE} --rootdir=dooku --config dooku.conf | tee ../OUTPUTS/dooku.conf.raw | diff - dooku.conf.out
+	${READWRITE} --rootdir=cassidy --config cassidy.conf | tee ../OUTPUTS/cassidy.conf.raw | diff - cassidy.conf.out
 
 update:
 	cp ../OUTPUTS/default.ipsec.conf.raw default.ipsec.conf.out
 	cp ../OUTPUTS/moon-base.conf.raw     moon-base.conf.out
 	cp ../OUTPUTS/dooku.conf.raw         dooku.conf.out
+	cp ../OUTPUTS/cassidy.conf.raw       cassidy.conf.out
 
 
 
