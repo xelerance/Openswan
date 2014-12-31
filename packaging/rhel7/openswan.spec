@@ -1,11 +1,8 @@
 Summary: Openswan IPsec implementation
 Name: openswan
-Version: IPSECBASEVERSION
+Version: 2.6.43
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
-
-# nss build
-%{!?buildnss: %{expand: %%define buildnss 0}}
 
 # The default kernel version to build for is the latest of
 # the installed binary kernel
@@ -26,9 +23,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 BuildRequires: gmp-devel bison flex bind-devel redhat-rpm-config xmlto
-%if %{buildnss}
-BuildRequires: nss >= 3.12.6-2
-%endif
 Requires: iproute >= 2.6.8
 Requires(post): coreutils bash
 Requires(preun): initscripts chkconfig
@@ -37,11 +31,11 @@ Requires(preun): /sbin/chkconfig
 Requires(preun): /sbin/service
 
 %description
-Openswan is a free implementation of IPsec & IKE for Linux.  IPsec is 
+Openswan is a free implementation of IPsec & IKE for Linux.  IPsec is
 the Internet Protocol Security and uses strong cryptography to provide
 both authentication and encryption services.  These services allow you
 to build secure tunnels through untrusted networks.  Everything passing
-through the untrusted net is encrypted by the ipsec gateway machine and 
+through the untrusted net is encrypted by the ipsec gateway machine and
 decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
@@ -72,13 +66,8 @@ kernels.
   USERCOMPILE="-g %{optflags} -fPIE -pie" \
   USERLINK="-g -pie" \
   HAVE_THREADS="true" \
-%if %{buildnss}
-  USE_LIBNSS="true" \
-  USE_FIPSCHECK="true" \
-  USE_LIBCAP_NG="true" \
-%endif
   USE_DYNAMICDNS="true" \
-  USE_LWRES="true" \
+  WERROR="" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
@@ -89,7 +78,7 @@ FS=$(pwd)
 %if %{buildklips}
 mkdir -p BUILD.%{_target_cpu}
 
-cd packaging/fedora
+cd packaging/rhel7
 # rpm doesn't know we're compiling kernel code. optflags will give us -m64
 %{__make} -C $FS MOD26BUILDDIR=$FS/BUILD.%{_target_cpu} \
     OPENSWANSRCDIR=$FS \
@@ -100,6 +89,7 @@ cd packaging/fedora
 %else
     ARCH=%{_arch} \
 %endif
+    WERROR="" \
     MODULE_DEF_INCLUDE=$FS/packaging/centos5/config-%{_target_cpu}.h \
     MODULE_EXTRA_INCLUDE=$FS/packaging/centos5/extra_%{krelver}.h \
     include module
@@ -113,7 +103,7 @@ rm -rf ${RPM_BUILD_ROOT}
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{buildroot}%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
-  USE_LWRES="true" \
+  WERROR="" \
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
@@ -122,7 +112,7 @@ rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
 
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
-# used when setting --perpeerlog without --perpeerlogbase 
+# used when setting --perpeerlog without --perpeerlogbase
 install -d -m 0700 %{buildroot}%{_localstatedir}/log/pluto/peer
 install -d %{buildroot}%{_sbindir}
 
@@ -132,7 +122,7 @@ for i in $FS/BUILD.%{_target_cpu}/ipsec.ko  $FS/modobj/ipsec.o
 do
   if [ -f $i ]
   then
-    cp $i %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec 
+    cp $i %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec
   fi
 done
 %endif
@@ -140,7 +130,7 @@ done
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 
-%files 
+%files
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc OBJ.linux.*/programs/examples/*.conf
@@ -181,7 +171,7 @@ fi
 /sbin/depmod -ae %{kversion}
 %endif
 
-%post 
+%post
 /sbin/chkconfig --add ipsec
 
 %changelog
@@ -193,7 +183,7 @@ fi
 - Cleaned up spec file
 
 * Mon Oct 10 2005 Paul Wouters <paul@xelerance.com>
-- Updated for klips on xen 
+- Updated for klips on xen
 - added ldconfig for post klips to obtain ipsec module dependancies
 - Run 'make include' since on FC4 kernel source does not have the links yet.
 
@@ -204,7 +194,7 @@ fi
 - Updated for openswan
 
 * Fri Aug 22 2003 Sam Sgro <sam@freeswan.org>
-- Juggling release/source package names to allow for 
+- Juggling release/source package names to allow for
   -pre/-rc releases to build.
 
 * Thu Aug 14 2003 Sam Sgro <sam@freeswan.org>
