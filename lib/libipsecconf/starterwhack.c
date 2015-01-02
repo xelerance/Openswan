@@ -386,137 +386,129 @@ static void set_whack_end(struct starter_config *cfg
 	}
 }
 
+int starter_whack_build_pkmsg(struct starter_config *cfg,
+                              struct whack_message *msg,
+                              struct starter_conn *conn,
+                              struct starter_end *end,
+                              unsigned int keynum,
+                              enum pubkey_source key_type,
+                              unsigned char *rsakey,
+                              const char *lr)
+{
+  char keyspace[1024 + 4];
+  const char *err;
+
+  msg->whack_key = TRUE;
+  msg->pubkey_alg = PUBKEY_ALG_RSA;
+  if (end->id && rsakey) {
+    msg->keyid = end->id;
+
+    switch(key_type) {
+    case PUBKEY_DNS:
+    case PUBKEY_DNSONDEMAND:
+      starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from DNS",
+                  connection_name(conn), lr, keynum);
+      break;
+
+    case PUBKEY_CERTIFICATE:
+      starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from certificate",
+                  connection_name(conn), lr, keynum);
+      break;
+
+    case PUBKEY_NOTSET:
+      break;
+
+    case PUBKEY_PREEXCHANGED:
+      err = atobytes((char *)rsakey, 0, keyspace, sizeof(keyspace),
+                     &msg->keyval.len);
+      if (err) {
+        starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
+                    connection_name(conn), lr, keynum, err);
+        return 1;
+      }
+      else {
+        msg->keyval.ptr = (unsigned char *)keyspace;
+        return 0;
+      }
+    }
+  }
+
+  /* nothing to send, do not send it */
+  return 2;
+}
+
 static int starter_whack_add_pubkey (struct starter_config *cfg,
 				     struct starter_conn *conn,
 				     struct starter_end *end, const char *lr)
 {
-	const char *err;
-	char keyspace[1024 + 4];
 	struct whack_message msg;
 	int ret;
 
 	ret = 0;
 
 	init_whack_msg(&msg);
-
-	msg.whack_key = TRUE;
-	msg.pubkey_alg = PUBKEY_ALG_RSA;
-	if (end->id && end->rsakey1) {
-		msg.keyid = end->id;
-
-		switch(end->rsakey1_type) {
-		case PUBKEY_DNS:
-		case PUBKEY_DNSONDEMAND:
-		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from DNS",
-				connection_name(conn), lr);
-		    break;
-
-		case PUBKEY_CERTIFICATE:
-		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from certificate",
-				connection_name(conn), lr);
-		    break;
-
-		case PUBKEY_NOTSET:
-		    break;
-
-		case PUBKEY_PREEXCHANGED:
- 		    err = atobytes((char *)end->rsakey1, 0, keyspace, sizeof(keyspace),
-				   &msg.keyval.len);
-		    if (err) {
-			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				    connection_name(conn), lr, err);
-			return 1;
-		    }
-		    else {
-			    msg.keyval.ptr = (unsigned char *)keyspace;
-			    ret = send_whack_msg(&msg, cfg->ctlbase);
-		    }
-		}
-	}
-
-	if(ret < 0) return ret;
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
+          ret = send_whack_msg(&msg, cfg->ctlbase);
+          if(ret != 0) return ret;
+        }
 
 	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
+          ret = send_whack_msg(&msg, cfg->ctlbase);
+          if(ret != 0) return ret;
+        }
 
-	msg.whack_key = TRUE;
-	msg.pubkey_alg = PUBKEY_ALG_RSA;
-	if (end->id && end->rsakey2) {
-		/* printf("addkey2: %s\n", lr); */
-
-		msg.keyid = end->id;
-		switch(end->rsakey2_type) {
-		case PUBKEY_NOTSET:
-		case PUBKEY_DNS:
-		case PUBKEY_DNSONDEMAND:
-		case PUBKEY_CERTIFICATE:
-		    break;
-
-		case PUBKEY_PREEXCHANGED:
-		  err = atobytes((char *)end->rsakey2, 0, keyspace, sizeof(keyspace),
-				   &msg.keyval.len);
-		    if (err) {
-			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				    connection_name(conn), lr, err);
-			return 1;
-		    }
-		    else {
-		      msg.keyval.ptr = (unsigned char *)keyspace;
-		      return send_whack_msg(&msg, cfg->ctlbase);
-		    }
-		}
-	}
-	return 0;
+        return 0;
 }
 
-static int starter_whack_basic_add_conn(struct starter_config *cfg
-					, struct starter_conn *conn)
+
+int starter_whack_build_basic_conn(struct starter_config *cfg
+                                   , struct whack_message *msg
+                                   , struct starter_conn *conn)
 {
-	struct whack_message msg;
-	int r;
+	msg->whack_connection = TRUE;
+	msg->whack_delete = TRUE;      /* always do replace for now */
+	msg->name = connection_name(conn);
 
-	init_whack_msg(&msg);
-
-	msg.whack_connection = TRUE;
-	msg.whack_delete = TRUE;      /* always do replace for now */
-	msg.name = connection_name(conn);
-
-	msg.addr_family = conn->left.addr_family;
-	msg.tunnel_addr_family = conn->left.addr_family;
+	msg->addr_family = conn->left.addr_family;
+	msg->tunnel_addr_family = conn->left.addr_family;
 
 	if (conn->right.addrtype == KH_IPHOSTNAME)
 	{
-		msg.dnshostname = conn->right.strings[KSCF_IP];
+		msg->dnshostname = conn->right.strings[KSCF_IP];
 	}
 
-	msg.sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
-	msg.sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
-	msg.sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
-	msg.sa_rekey_fuzz = conn->options[KBF_REKEYFUZZ];
-	msg.sa_keying_tries = conn->options[KBF_KEYINGTRIES];
+	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
+	msg->sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
+	msg->sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
+	msg->sa_rekey_fuzz = conn->options[KBF_REKEYFUZZ];
+	msg->sa_keying_tries = conn->options[KBF_KEYINGTRIES];
 
-	msg.policy = conn->policy;
+	msg->policy = conn->policy;
 
-	msg.connalias = conn->connalias;
+	msg->connalias = conn->connalias;
 
-	msg.metric = conn->options[KBF_METRIC];
+	msg->metric = conn->options[KBF_METRIC];
 
 	if(conn->options_set[KBF_CONNMTU]) {
-		msg.connmtu   = conn->options[KBF_CONNMTU];
+		msg->connmtu   = conn->options[KBF_CONNMTU];
 	}
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {
-		msg.dpd_delay   = conn->options[KBF_DPDDELAY];
-		msg.dpd_timeout = conn->options[KBF_DPDTIMEOUT];
+		msg->dpd_delay   = conn->options[KBF_DPDDELAY];
+		msg->dpd_timeout = conn->options[KBF_DPDTIMEOUT];
 
 		if(conn->options_set[KBF_DPDACTION]) {
-			msg.dpd_action = conn->options[KBF_DPDACTION];
+			msg->dpd_action = conn->options[KBF_DPDACTION];
 		} else {
 			/*
 			 * there is a default DPD action, but DPD is only
 			 * enabled if there is a dpd delay set.
 			 */
-			msg.dpd_action = DPD_ACTION_HOLD;
+			msg->dpd_action = DPD_ACTION_HOLD;
 		}
 
 	} else {
@@ -530,23 +522,23 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	}
 #ifdef NAT_TRAVERSAL
 	if(conn->options_set[KBF_FORCEENCAP]) {
-		msg.forceencaps=conn->options[KBF_FORCEENCAP];
+		msg->forceencaps=conn->options[KBF_FORCEENCAP];
 	}
 #endif
 
 	/*Cisco interop : remote peer type*/
 	if(conn->options_set[KBF_REMOTEPEERTYPE]) {
-		msg.remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
+		msg->remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
 	}
 
 	if(conn->options_set[KBF_SHA2_TRUNCBUG]) {
-		msg.sha2_truncbug=conn->options[KBF_SHA2_TRUNCBUG];
+		msg->sha2_truncbug=conn->options[KBF_SHA2_TRUNCBUG];
 	}
 
 #ifdef HAVE_NM
 	/*Network Manager support*/
 	if(conn->options_set[KBF_NMCONFIGURED]) {
-		msg.nmconfigured=conn->options[KBF_NMCONFIGURED];
+		msg->nmconfigured=conn->options[KBF_NMCONFIGURED];
 	}
 #endif
 
@@ -554,29 +546,41 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 #ifdef HAVE_LABELED_IPSEC
 	/*Labeled ipsec support*/
 	if(conn->options_set[KBF_LOOPBACK]) {
-		msg.loopback=conn->options[KBF_LOOPBACK];
+		msg->loopback=conn->options[KBF_LOOPBACK];
 	}
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" loopback=%d", conn->name, msg.loopback);
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" loopback=%d", conn->name, msg->loopback);
 
         if(conn->options_set[KBF_LABELED_IPSEC]) {
-                msg.labeled_ipsec=conn->options[KBF_LABELED_IPSEC];
+                msg->labeled_ipsec=conn->options[KBF_LABELED_IPSEC];
         }
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" labeled_ipsec=%d", conn->name, msg.labeled_ipsec);
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" labeled_ipsec=%d", conn->name, msg->labeled_ipsec);
 
-	msg.policy_label = conn->policy_label;
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg.policy_label);
+	msg->policy_label = conn->policy_label;
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg->policy_label);
 #endif
 
-	set_whack_end(cfg, "left",  &msg.left, &conn->left);
-	set_whack_end(cfg, "right", &msg.right, &conn->right);
+	set_whack_end(cfg, "left",  &msg->left, &conn->left);
+	set_whack_end(cfg, "right", &msg->right, &conn->right);
 
 	/* for bug #1004 */
-	update_ports(&msg);
+	update_ports(msg);
 
-	msg.esp = conn->esp;
-	msg.ike = conn->ike;
-	msg.tpmeval = NULL;
+	msg->esp = conn->esp;
+	msg->ike = conn->ike;
+	msg->tpmeval = NULL;
 
+        return 0;
+}
+
+static int starter_whack_basic_add_conn(struct starter_config *cfg
+					, struct starter_conn *conn)
+{
+	struct whack_message msg;
+	int r;
+
+	init_whack_msg(&msg);
+        r = starter_whack_build_basic_conn(cfg, &msg, conn);
+        if(r != 0) return r;
 	r =  send_whack_msg(&msg, cfg->ctlbase);
 
 	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
