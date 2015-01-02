@@ -34,7 +34,7 @@ void readwhackmsg(char *infile)
         /* time stamp, MSB word first of time */
 	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
-	
+
 	/* account for this header we just consumed */
         /* 4 bytes of plen,  8 bytes of time stamp  */
 	plen -= 12;
@@ -69,7 +69,7 @@ void readwhackmsg(char *infile)
             if((m1.magic & 0x80000000) != WHACK_MAGIC_INTVALUE) {
                 unsigned int bit64 = (m1.magic & 0x80000000);
                 unsigned int bits = bit64 ? 64 : 32;
-                fprintf(stderr, "this is whack message from a %u-bit system, this system is %lu",
+                fprintf(stderr, "this is whack message from a %u-bit system, this system is %lu\n",
                         bits, (unsigned long)sizeof(void *)*8);
             }
             continue;
