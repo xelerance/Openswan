@@ -9,8 +9,8 @@ struct state *sendI1(struct connection *c1, int debugging)
 			  , c1->policy
 			  , 0
 			  , FALSE
-			  , pcim_demand_crypto);
-	
+			  , pcim_demand_crypto, USER_SEC_CTX_NULL);
+
 	/* find st involved */
 	st = state_with_serialno(1);
 

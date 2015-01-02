@@ -33,10 +33,8 @@ int initiate_ondemand(const ip_address *our_client
                               , int transport_proto
                               , bool held
                               , int whackfd
-#ifdef HAVE_LABELED_IPSEC
                               , struct xfrm_user_sec_ctx_ike *uctx
-#endif
-                      , err_t why) {}
+                              , err_t why) {}
 
 void show_status(void) {}
 

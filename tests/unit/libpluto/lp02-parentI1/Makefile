@@ -59,7 +59,7 @@ EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${OSWLOGLIB} ${OPENSWANLIB} ${OSWLOGLIB}
 EXTRALIBS+=-lgmp -lefence -lpcap
 
-UNITTESTARGS=sun-netnet.record net-net
+UNITTESTARGS=sun-netnet.record.${ARCH} net-net
 
 TESTNAME=parentI1
 
