@@ -305,7 +305,8 @@ struct bare_shunt **bare_shunt_ptr(const ip_subnet *ours
 # define EM_MAXRELSPIS 4	/* AH ESP IPCOMP IPIP */
 #endif
 
-struct xfrm_user_sec_ctx_ike; /* forward declaration of tag */
+#define USER_SEC_CTX_NULL NULL  /* makes it easier to read/comprehend */
+struct xfrm_user_sec_ctx_ike;   /* forward declaration of tag */
 
 extern void record_and_initiate_opportunistic(const ip_subnet *
                                               , const ip_subnet *
