@@ -426,6 +426,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"espenckey",      kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPENCKEY,NOT_ENUM},
     {"espauthkey",     kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPAUTHKEY,NOT_ENUM},
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM},
+
+    /* some things from libreswan, which we will probably accept */
+    { "plutofork",      kv_config, kt_obsolete /*kt_bool*/,      KBF_PLUTOFORK,  NOT_ENUM },
+
     {NULL, 0, 0, 0, NOT_ENUM}
 };
 

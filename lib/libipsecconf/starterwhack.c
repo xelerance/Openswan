@@ -401,7 +401,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
   msg->whack_key = TRUE;
   msg->pubkey_alg = PUBKEY_ALG_RSA;
   if (end->id && rsakey) {
-    msg->keyid = end->id;
+    msg->keyid = end->id;   /* XXX? should this clone_str? */
 
     switch(key_type) {
     case PUBKEY_DNS:

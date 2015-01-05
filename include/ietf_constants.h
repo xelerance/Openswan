@@ -300,7 +300,8 @@
 /* RFC 2403 "HMAC-MD5-96" section 3 */
 #define HMAC_MD5_KEY_LEN    MD5_DIGEST_SIZE
 
-#define IKE_UDP_PORT	500
+#define IKE_UDP_PORT	  500
+#define NAT_IKE_UDP_PORT 4500 /* RFC-3947 */
 
 /* Version numbers - IKEv1 */
 #define ISAKMP_MAJOR_VERSION   0x1

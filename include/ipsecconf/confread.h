@@ -21,9 +21,13 @@
 
 #ifndef _OPENSWAN_H
 #include <openswan.h>
-#include "constants.h"  
+#include "constants.h"
 #endif
+#include "sysqueue.h"
 
+#include <limits.h>  /* for PATH_MAX */
+extern char rootdir[PATH_MAX];        /* when evaluating paths, prefix this to them */
+extern char rootdir2[PATH_MAX];       /* when evaluating paths, prefix this to them */
 
 /* define an upper limit to number of times also= can be used */
 #define ALSO_LIMIT 32
@@ -47,7 +51,7 @@ struct starter_end {
     ip_subnet subnet;
     char *iface;
     char *id;
-    
+
     enum pubkey_source rsakey1_type, rsakey2_type;
     unsigned char *rsakey1;
     unsigned char *rsakey2;

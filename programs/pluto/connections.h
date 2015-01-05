@@ -120,6 +120,7 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
+#include "defs.h"
 
 struct virtual_t;
 

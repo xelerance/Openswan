@@ -1,6 +1,18 @@
 /* Openswan config file parser (confread.c)
  * Copyright (C) 2001-2002 Mathieu Lafon - Arkoon Network Security
  * Copyright (C) 2004 Xelerance Corporation
+ * Copyright (C) 2004-2015 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
+ * Copyright (C) 2006-2012 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2010 Michael Smith <msmith@cbnco.com>
+ * Copyright (C) 2010 Tuomo Soini <tis@foobar.fi>
+ * Copyright (C) 2012-2013 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
+ * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2012 Antony Antony <antony@phenome.org>
+ * Copyright (C) 2013 Florian Weimer <fweimer@redhat.com>
+ * Copyright (C) 2013 David McCullough <ucdevel@gmail.com>
+ * Copyright (C) 2013 D. Hugh Redelmeier <hugh@mimosa.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -36,7 +48,8 @@
 #include "oswconf.h"
 #endif
 
-static char _tmp_err[512];
+/* errors that are returned to the caller are kept here */
+static char tmp_err[512];
 
 /*
  * A policy only conn means that we load it, and do the appropriate firewalling
@@ -45,8 +58,6 @@ static char _tmp_err[512];
  */
 #define POLICY_ONLY_CONN(conn) if(conn->options[KBF_AUTO] > STARTUP_ROUTE) { conn->options[KBF_AUTO]=STARTUP_POLICY; }
 
-void free_list(char **list);
-char **new_list(char *value);
 
 
 /**
@@ -57,8 +68,10 @@ char **new_list(char *value);
  */
 void ipsecconf_default_values(struct starter_config *cfg)
 {
-	if (!cfg) return;
-	memset(cfg, 0, sizeof(struct starter_config));
+	if (!cfg)
+		return;
+
+	zero(cfg);
 
 	TAILQ_INIT(&cfg->conns);
 
@@ -66,29 +79,48 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	cfg->setup.options[KBF_HIDETOS]  = TRUE;
 	cfg->setup.options[KBF_PLUTORESTARTONCRASH]  = TRUE;
 	cfg->setup.options[KBF_PLUTOSTDERRLOGTIME]  = FALSE;
-	cfg->setup.options[KBF_UNIQUEIDS]= TRUE;
-#ifdef NAT_TRAVERSAL
+	cfg->setup.options[KBF_UNIQUEIDS] = TRUE;
+        /* XXX not yet: cfg->setup.options[KBF_PLUTOFORK] = FALSE; */
+	cfg->setup.options[KBF_IKEPORT]    = IKE_UDP_PORT;
+	cfg->setup.options[KBF_NATIKEPORT] = NAT_IKE_UDP_PORT;
+	cfg->setup.options[KBF_NHELPERS]  = -1; /* MCR XXX */
+	cfg->setup.options[KBF_KEEPALIVE] = 0;
+	cfg->setup.options[KBF_SECCTX]    = SECCTX;
 	cfg->setup.options[KBF_DISABLEPORTFLOATING]= FALSE;
 	cfg->setup.options[KBF_FORCE_KEEPALIVE]= FALSE;
-	cfg->setup.options[KBF_KEEPALIVE]= 0;
-#endif
+
+	cfg->conn_default.options[KBF_NAT_KEEPALIVE] = TRUE;    /* per conn */
 	cfg->conn_default.options[KBF_TYPE] = KS_TUNNEL;
 
 	/*Cisco interop: remote peer type*/
+	cfg->conn_default.options[KBF_INITIAL_CONTACT] = FALSE;
+	/* cfg->conn_default.options[KBF_CISCO_UNITY] = FALSE; */
+	cfg->conn_default.options[KBF_SEND_VENDORID] = FALSE;
+
 	cfg->conn_default.options[KBF_REMOTEPEERTYPE] = NON_CISCO;
 
-	cfg->conn_default.options[KBF_SHA2_TRUNCBUG]  = FALSE;
+	cfg->conn_default.options[KBF_SHA2_TRUNCBUG] = FALSE;
+
+	cfg->conn_default.options[KBF_IKEV1_NATT] = natt_both;
 
 	/*Network Manager support*/
 	cfg->conn_default.options[KBF_NMCONFIGURED]   = FALSE;
 
 	cfg->conn_default.options[KBF_LOOPBACK]      = FALSE;
 	cfg->conn_default.options[KBF_LABELED_IPSEC] = FALSE;
-	cfg->conn_default.policy = POLICY_RSASIG|POLICY_TUNNEL|POLICY_ENCRYPT|POLICY_PFS;
-	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW; /* ikev2=yes */
-	cfg->conn_default.policy |= POLICY_SAREF_TRACK;  /* sareftrack=yes */
+#if 0
+	cfg->conn_default.options[KBF_XAUTHBY] = XAUTHBY_FILE;
+	cfg->conn_default.options[KBF_XAUTHFAIL] = XAUTHFAIL_HARD;
+#endif
+
+	cfg->conn_default.policy = POLICY_RSASIG | POLICY_TUNNEL |
+				   POLICY_ENCRYPT | POLICY_PFS;
+	cfg->conn_default.policy |= POLICY_IKEV2_ALLOW;         /* ikev2=yes */
+	cfg->conn_default.policy |= POLICY_SAREF_TRACK;         /* sareftrack=yes */
+	/* cfg->conn_default.policy |= POLICY_IKE_FRAG_ALLOW; */     /* ike_frag=yes */
 
 	cfg->conn_default.options[KBF_IKELIFETIME] = OAKLEY_ISAKMP_SA_LIFETIME_DEFAULT;
+
 	cfg->conn_default.options[KBF_SALIFETIME]  = SA_LIFE_DURATION_DEFAULT;
 	cfg->conn_default.options[KBF_REKEYMARGIN] = SA_REPLACEMENT_MARGIN_DEFAULT;
 	cfg->conn_default.options[KBF_REKEYFUZZ]   = SA_REPLACEMENT_FUZZ_DEFAULT;
@@ -121,33 +153,31 @@ void ipsecconf_default_values(struct starter_config *cfg)
 }
 
 /* format error, and append to string of errors */
-int error_append(char **perr, const char *fmt, ...)
+static bool error_append(char **perr, const char *fmt, ...)
 {
-    va_list args;
+    static char tmp_err[512];
 
-    if(perr) {
+	va_list args;
+
 	char *nerr;
 	int len;
 
 	va_start(args, fmt);
-	vsnprintf(_tmp_err, sizeof(_tmp_err)-1, fmt, args);
+	vsnprintf(tmp_err, sizeof(tmp_err) - 1, fmt, args);
 	va_end(args);
 
-	len = 1+ strlen(_tmp_err) + (*perr ? strlen(*perr) : 0);
-	nerr = xmalloc(len);
-	nerr[0]='\0';
-	if(*perr) strcpy(nerr, *perr);
-	strcat(nerr, _tmp_err);
-
-	if(*perr) free(*perr);
+	len = 1 + strlen(tmp_err) + (*perr != NULL ? strlen(*perr) : 0);
+	nerr = alloc_bytes(len, "error_append len");
+	nerr[0] = '\0';
+	if (*perr != NULL) {
+		strcpy(nerr, *perr);	/* safe: see allocation above */
+		pfree(*perr);
+	}
+	strcat(nerr, tmp_err);	/* safe: see allocation above */
 	*perr = nerr;
 
-	return 1;
-    }
-    return 0;
+	return TRUE;
 }
-
-#define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
 
 
 #define KW_POLICY_FLAG(val,fl) if(conn->options_set[val]) \
@@ -166,27 +196,29 @@ int error_append(char **perr, const char *fmt, ...)
 	    conn->policy &= ~fl;\
 	  }}
 
+#define FREE_LIST(v) { if ((v) != NULL) { free_list(v); (v) = NULL; } }
 /**
  * Free the pointer list
  *
  * @param list list of pointers
  * @return void
  */
-void free_list(char **list)
+static void free_list(char **list)
 {
 	char **s;
-	for (s=list; *s; s++) free(*s);
-	free(list);
+
+	for (s = list ; *s; s++)
+		pfreeany(*s);
+	pfree(list);
 }
 
-
 /**
- * Create a new list of pointers
+ * Create a new list (array) of pointers to strings, NULL-terminated
  *
- * @param value
- * @return new_list (pointer to list of pointers)
+ * @param value string to be broken up at spaces, creating strings for list
+ * @return new_list (pointer to NULL-terminated array of pointers to strings)
  */
-char **new_list(char *value)
+static char **new_list(char *value)
 {
 	char *val, *b, *e, *end, **nlist;
 	int count;
@@ -194,9 +226,7 @@ char **new_list(char *value)
 	if(value == NULL) return NULL;
 
 	/* avoid damaging original string */
-	val = xstrdup(value);
-	if(val == NULL) return NULL;
-
+	val = clone_str(value, "new_list value");
 	end = val + strlen(val);
 
 	/* count number of items in string */
@@ -206,25 +236,21 @@ char **new_list(char *value)
 		if (e!=b) { count++; }
 		b=e+1;
 	}
-	if (count==0) {
-		free(val);
+	if (count == 0) {
+		pfree(val);
 		return NULL;
 	}
 
-	nlist = (char **)malloc((count+1) * sizeof(char *));
-	if (!nlist) {
-		free(val);
-		return NULL;
-	}
-	for (b=val, count=0; b<end; ) {
-		for (e=b; (*e!='\0'); e++);
-		if (e!=b) {
-			nlist[count++] = xstrdup(b);
-		}
-		b=e+1;
+	nlist = (char **)alloc_bytes((count + 1) * sizeof(char *), "new_list nlist");
+	for (b = val, count = 0; b < end; ) {
+		e = b + strlen(b);
+		if (e != b) {
+			nlist[count++] = clone_str(b, "new_list item");
+                }
+		b = e + 1;
 	}
 	nlist[count] = NULL;
-	free(val);
+	pfree(val);
 	return nlist;
 }
 
@@ -236,92 +262,80 @@ char **new_list(char *value)
  * @param perr pointer to store errors in
  * @return int 0 if successfull
  */
-static int load_setup (struct starter_config *cfg
-		       , struct config_parsed *cfgp
-		       , err_t *perr)
+static bool load_setup(struct starter_config *cfg,
+		      struct config_parsed *cfgp)
 {
-	unsigned int err = 0;
+	bool err = FALSE;
 	struct kw_list *kw;
 
-	for (kw=cfgp->config_setup; kw; kw=kw->next) {
+	for (kw = cfgp->config_setup; kw; kw = kw->next) {
 
-	    /**
-	     * the parser already made sure that only config keywords were used,
-	     * but we double check!
-	     */
-	    assert(kw->keyword.keydef->validity & kv_config);
+		/**
+		 * the parser already made sure that only config keywords were used,
+		 * but we double check!
+		 */
+		assert(kw->keyword.keydef->validity & kv_config);
 
-	    switch(kw->keyword.keydef->type)
-	    {
-	    case kt_string:
-	    case kt_filename:
-	    case kt_dirname:
-	    case kt_loose_enum:
-		/* all treated as strings for now */
-		assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
-		if(cfg->setup.strings[kw->keyword.keydef->field]) free(cfg->setup.strings[kw->keyword.keydef->field]);
-		cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
-		cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
-		break;
+		switch (kw->keyword.keydef->type) {
+		case kt_string:
+		case kt_filename:
+		case kt_dirname:
+		case kt_loose_enum:
+			/* all treated as strings for now */
+			assert(kw->keyword.keydef->field <
+			       sizeof(cfg->setup.strings));
+			pfreeany(cfg->setup.strings[kw->keyword.keydef->
+							field]);
+			cfg->setup.strings[kw->keyword.keydef->field] =
+				clone_str(kw->string, "kt_loose_enum kw->string");
+			cfg->setup.strings_set[kw->keyword.keydef->field] =
+				TRUE;
+			break;
 
-	    case kt_appendstring:
-	    case kt_appendlist:
-		assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
-		if(!cfg->setup.strings[kw->keyword.keydef->field])
-		{
-		    cfg->setup.strings[kw->keyword.keydef->field] = xstrdup(kw->string);
-		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
-		} else {
-		    int len;
-		    char *s;
+		case kt_list:
+		case kt_bool:
+		case kt_invertbool:
+		case kt_enum:
+		case kt_number:
+		case kt_time:
+		case kt_percent:
+			/* all treated as a number for now */
+			assert(kw->keyword.keydef->field <
+			       sizeof(cfg->setup.options));
+			cfg->setup.options[kw->keyword.keydef->field] =
+				kw->number;
+			cfg->setup.options_set[kw->keyword.keydef->field] =
+				TRUE;
+			break;
 
-		    len = strlen(cfg->setup.strings[kw->keyword.keydef->field])+1;
-		    len += strlen(kw->string)+1;
+		case kt_bitstring:
+		case kt_rsakey:
+		case kt_ipaddr:
+		case kt_subnet:
+                /* case kt_range: */
+		case kt_idtype:
+			err = TRUE;
+			break;
 
-		    /* allocate the string */
-		    s = cfg->setup.strings[kw->keyword.keydef->field];
-		    s = xrealloc(s, len);
-		    strncat(s, " ", len);
-		    strncat(s, kw->string, len);
+		case kt_comment:
+			break;
 
-		    cfg->setup.strings[kw->keyword.keydef->field] = s;
-		    cfg->setup.strings_set[kw->keyword.keydef->field]=TRUE;
+		case kt_obsolete:
+			starter_log(LOG_LEVEL_INFO,
+				    "Warning: ignored obsolete keyword '%s'",
+				    kw->keyword.keydef->keyname);
+			break;
+		default:
+		    /* NEVER HAPPENS */
+		    break;
 		}
-		break;
-
-	    case kt_list:
-	    case kt_bool:
-	    case kt_invertbool:
-	    case kt_enum:
-	    case kt_number:
-	    case kt_time:
-	    case kt_percent:
-		/* all treated as a number for now */
-		assert(kw->keyword.keydef->field < sizeof(cfg->setup.options));
-		cfg->setup.options[kw->keyword.keydef->field] = kw->number;
-		cfg->setup.options_set[kw->keyword.keydef->field]=TRUE;
-		break;
-
-	    case kt_bitstring:
-	    case kt_rsakey:
-	    case kt_ipaddr:
-	    case kt_subnet:
-	    case kt_idtype:
-		err++;
-		break;
-
-	    case kt_comment:
-		break;
-	    case kt_obsolete:
-	        starter_log(LOG_LEVEL_INFO, "Warning: ignored obsolete keyword %s",kw->keyword.keydef->keyname);
-		break;
-	    }
 	}
 
 	/* now process some things with specific values */
 
 	/* interfaces has to be chopped up */
-	if (cfg->setup.interfaces) free_list(cfg->setup.interfaces);
+	if (cfg->setup.interfaces)
+		FREE_LIST(cfg->setup.interfaces);
 	cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
 
 	return err;
@@ -338,9 +352,9 @@ static int load_setup (struct starter_config *cfg
  * @param end a connection end
  * @param left boolean (are we 'left'? 1 = yes, 0 = no)
  * @param perr pointer to char containing error value
- * @return int 0 if successfull
+ * @return bool TRUE if failed
  */
-static int validate_end(struct starter_conn *conn_st
+static bool validate_end(struct starter_conn *conn_st
 			, struct starter_end *end
 			, bool left
 			, bool resolvip UNUSED
@@ -350,7 +364,9 @@ static int validate_end(struct starter_conn *conn_st
     char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
     int family = conn_st->options[KBF_CONNADDRFAMILY];
-    int err=0;
+    bool err = FALSE;
+
+#define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
 
     if(!end->options_set[KNCF_IP]) {
 	conn_st->state = STATE_INCOMPLETE;
@@ -360,22 +376,22 @@ static int validate_end(struct starter_conn *conn_st
     end->addr_family = family;
 
     /* validate the KSCF_IP/KNCF_IP */
-    switch(end->addrtype)
-    {
+    switch(end->addrtype) {
     case KH_ANY:
 	anyaddr(family, &(end->addr));
 	break;
 
     case KH_IFACE:
 	/* generally, this doesn't show up at this stage */
+
 	break;
 
     case KH_IPADDR:
 	assert(end->strings[KSCF_IP] != NULL);
 
 	if (end->strings[KSCF_IP][0]=='%') {
-	    if (end->iface) free(end->iface);
-	    end->iface = xstrdup(end->strings[KSCF_IP]+1);
+	    if (end->iface) pfree(end->iface);
+            end->iface = clone_str(end->strings[KSCF_IP] + 1, "KH_IPADDR end->iface");
 	    if (starter_iface_find(end->iface, family, &(end->addr),
 				   &(end->nexthop)) == -1) {
 	        conn_st->state = STATE_INVALID;
@@ -385,7 +401,7 @@ static int validate_end(struct starter_conn *conn_st
 	    break;
 	}
 
-	er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
+        er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
 	if(er) {
 	    /* not numeric, so set the type to the string type */
 	    end->addrtype = KH_IPHOSTNAME;
@@ -395,7 +411,7 @@ static int validate_end(struct starter_conn *conn_st
             char idbuf[ADDRTOT_BUF];
             addrtot(&end->addr, 0, idbuf, sizeof(idbuf));
 
-            end->id=clone_str(idbuf, "end if");
+            end->id= clone_str(idbuf, "end id");
         }
 	break;
 
@@ -430,8 +446,7 @@ static int validate_end(struct starter_conn *conn_st
         if ( ((strlen(value)>=6) && (strncmp(value,"vhost:",6)==0)) ||
 	     ((strlen(value)>=5) && (strncmp(value,"vnet:",5)==0)) ) {
 	    er = NULL;
-	    end->virt = xstrdup(value);
-	    if (!end->virt) ERR_FOUND("can't alloc memory");
+	    end->virt = clone_str(value, "end->virt");
 	}
 	else {
 	    end->has_client = TRUE;
@@ -452,14 +467,20 @@ static int validate_end(struct starter_conn *conn_st
 	if(strcasecmp(value, "%defaultroute")==0) {
 	    end->nexttype=KH_DEFAULTROUTE;
 	} else {
-	    er = ttoaddr(value, 0, family, &(end->nexthop));
-	    if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
-
-	    end->nexttype = KH_IPADDR;
+            if (tnatoaddr(value, strlen(value), AF_INET,
+                          &(end->nexthop)) != NULL &&
+                tnatoaddr(value, strlen(value), AF_INET6,
+                          &(end->nexthop)) != NULL) {
+                er = ttoaddr(value, 0, family, &(end->nexthop));
+                if (er) ERR_FOUND("bad addr %snexthop=%s [%s]", leftright, value, er);
+            }
+            end->nexttype = KH_IPADDR;
 	}
     } else {
+      if (end->addrtype == KH_DEFAULTROUTE) {
         end->nexttype = KH_DEFAULTROUTE;
-	anyaddr(family, &end->nexthop);
+      }
+      anyaddr(family, &end->nexthop);
     }
 
     /* validate the KSCF_ID */
@@ -467,8 +488,8 @@ static int validate_end(struct starter_conn *conn_st
     {
 	char *value = end->strings[KSCF_ID];
 
-	if (end->id) free(end->id);
-	end->id = xstrdup(value);
+        pfreeany(end->id);
+        end->id = clone_str(value, "end->id");
     }
 
     if(end->options_set[KSCF_RSAKEY1]) {
@@ -488,15 +509,15 @@ static int validate_end(struct starter_conn *conn_st
 	    {
 		char *value = end->strings[KSCF_RSAKEY1];
 
-		if (end->rsakey1) free(end->rsakey1);
-		end->rsakey1 = (unsigned char *)xstrdup(value);
+                pfreeany(end->rsakey1);
+                end->rsakey1 = (unsigned char *)clone_str(value,"end->rsakey1");
 	    }
 	    if(end->strings[KSCF_RSAKEY2] != NULL)
 	    {
 		char *value = end->strings[KSCF_RSAKEY2];
 
-		if (end->rsakey2) free(end->rsakey2);
-		end->rsakey2 = (unsigned char *)xstrdup(value);
+                pfreeany(end->rsakey2);
+                end->rsakey2 = (unsigned char *)clone_str(value,"end->rsakey2");
 	    }
 	}
     }
@@ -530,15 +551,15 @@ static int validate_end(struct starter_conn *conn_st
 
     /* copy certificate path name */
     if(end->strings_set[KSCF_CERT]) {
-	end->cert = xstrdup(end->strings[KSCF_CERT]);
+        end->cert = clone_str(end->strings[KSCF_CERT], "KSCF_CERT");
     }
 
     if(end->strings_set[KSCF_CA]) {
-	end->ca = xstrdup(end->strings[KSCF_CA]);
+        end->ca = clone_str(end->strings[KSCF_CA], "KSCF_CA");
     }
 
     if(end->strings_set[KSCF_UPDOWN]) {
-	end->updown = xstrdup(end->strings[KSCF_UPDOWN]);
+        end->updown = clone_str(end->strings[KSCF_UPDOWN], "KSCF_UPDOWN");
     }
 
     if(end->strings_set[KSCF_PROTOPORT]) {
@@ -550,7 +571,8 @@ static int validate_end(struct starter_conn *conn_st
 	if (ugh) ERR_FOUND("bad %sprotoport=%s [%s]", leftright, value, ugh);
     }
 
-    if(end->options_set[KNCF_XAUTHSERVER]) {
+    if (end->options_set[KNCF_XAUTHSERVER] ||
+        end->options_set[KNCF_XAUTHCLIENT]) {
 	conn_st->policy |= POLICY_XAUTH;
     }
 
@@ -560,10 +582,11 @@ static int validate_end(struct starter_conn *conn_st
     KSCF_ESPAUTHKEY      --- todo (manual keying)
     KSCF_SOURCEIP     = 16,
     KSCF_MAX          = 19
-*/
+    */
 
     if(err) *perr = err_str;
     return err;
+#  undef ERR_FOUND
 }
 
 
@@ -606,12 +629,12 @@ bool translate_conn (struct starter_conn *conn
 	if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
-	    *error = (const char *)_tmp_err;
+	    *error = (const char *)tmp_err;
 
-	    snprintf(_tmp_err, sizeof(_tmp_err),
+	    snprintf(tmp_err, sizeof(tmp_err),
 		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
 		     kw->keyword.keydef->keyname, sl->name, i);
-	    starter_log(LOG_LEVEL_INFO, _tmp_err);
+	    starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
 	    continue;
 	}
 
@@ -653,15 +676,15 @@ bool translate_conn (struct starter_conn *conn
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if((*set_strings)[field] == k_set)
 	    {
-		*error = _tmp_err;
+		*error = tmp_err;
 
-		snprintf(_tmp_err, sizeof(_tmp_err)
+		snprintf(tmp_err, sizeof(tmp_err)
 			 , "duplicate key '%s' in conn %s while processing def %s"
 			 , kw->keyword.keydef->keyname
 			 , conn->name
 			 , sl->name);
 
-		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
 		if(kw->keyword.string == NULL
 		   || (*the_strings)[field] == NULL
 		   || strcmp(kw->keyword.string, (*the_strings)[field])!=0)
@@ -670,23 +693,19 @@ bool translate_conn (struct starter_conn *conn
 		    break;
 		}
 	    }
-	    if((*the_strings)[field])
-	    {
-		    free((*the_strings)[field]);
-	    }
+            pfreeany((*the_strings)[field]);
 
-	    if(kw->string == NULL)
-		{
-		*error = _tmp_err;
+	    if(kw->string == NULL) {
+		*error = tmp_err;
 
-		snprintf(_tmp_err, sizeof(_tmp_err)
+		snprintf(tmp_err, sizeof(tmp_err)
 			 , "Invalid %s value"
 			 , kw->keyword.keydef->keyname);
 		    err++;
 		    break;
-		}
+            }
 
-	    (*the_strings)[field] = xstrdup(kw->string);
+            (*the_strings)[field] = clone_str(kw->string,"kt_idtype kw->string");
 	    (*set_strings)[field] = assigned_value;
 	    break;
 
@@ -696,21 +715,19 @@ bool translate_conn (struct starter_conn *conn
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
 	    {
-		(*the_strings)[field] = xstrdup(kw->string);
+                (*the_strings)[field] = clone_str(kw->string, "kt_appendlist kw->string");
 	    } else {
-		int len;
-		char *s;
+                char *s = (*the_strings)[field];
+                size_t old_len = strlen(s);	/* excludes '\0' */
+                size_t new_len = strlen(kw->string);
+                char *n;
 
-		len = strlen((*the_strings)[field])+1;
-		len += strlen(kw->string)+1;
-
-		/* allocate the string */
-		s = (*the_strings)[field];
-		s = xrealloc(s, len);
-		strncat(s, " ", len);
-		strncat(s, kw->string, len);
-
-		(*the_strings)[field] = s;
+                n = alloc_bytes(old_len + 1 + new_len + 1, "kt_appendlist");
+                memcpy(n, s, old_len);
+                n[old_len] = ' ';
+                memcpy(n + old_len + 1, kw->string, new_len + 1);	/* includes '\0' */
+                (*the_strings)[field] = n;
+                pfree(s);
 	    }
 	    (*set_strings)[field] = TRUE;
 	    break;
@@ -722,14 +739,14 @@ bool translate_conn (struct starter_conn *conn
 
 	    if((*set_options)[field] == k_set)
 	    {
-		*error = _tmp_err;
-		snprintf(_tmp_err, sizeof(_tmp_err)
+		*error = tmp_err;
+		snprintf(tmp_err, sizeof(tmp_err)
 			 , "duplicate key '%s' in conn %s while processing def %s"
 			 , kw->keyword.keydef->keyname
 			 , conn->name
 			 , sl->name);
 
-		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
 
 		/* only fatal if we try to change values */
 		if((*the_options)[field] != kw->number
@@ -748,8 +765,8 @@ bool translate_conn (struct starter_conn *conn
 	    if(kw->number == LOOSE_ENUM_OTHER)
 	    {
 		assert(kw->keyword.string != NULL);
-		if((*the_strings)[field]) free((*the_strings)[field]);
-		(*the_strings)[field] = xstrdup(kw->keyword.string);
+                pfreeany((*the_strings)[field]);
+                (*the_strings)[field] = clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
 	    }
 	    (*set_options)[field] = assigned_value;
 	    break;
@@ -766,13 +783,9 @@ bool translate_conn (struct starter_conn *conn
 
 	    if((*set_options)[field] == k_set)
 	    {
-		*error = _tmp_err;
-		snprintf(_tmp_err, sizeof(_tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , kw->keyword.keydef->keyname
-			 , conn->name
-			 , sl->name);
-		starter_log(LOG_LEVEL_INFO, _tmp_err);
+		starter_log(LOG_LEVEL_INFO
+                            , "duplicate key '%s' in conn %s while processing def %s"
+                            , kw->keyword.keydef->keyname, conn->name, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -838,7 +851,6 @@ static int load_conn (struct starter_config *cfg
 		      , err_t *perr)
 {
     unsigned int err;
-    char **alsos;
     char **newalsos;
     int   newalsoplace;
     int   alsoplace;
@@ -868,6 +880,7 @@ static int load_conn (struct starter_config *cfg
 
     if(alsoprocessing && conn->alsos)
     {
+        char **alsos;
 	/* reset all of the "beenhere" flags */
 	for(sl1 = cfgp->sections.tqh_first; sl1 != NULL; sl1 = sl1->link.tqe_next)
 	{
@@ -899,13 +912,13 @@ static int load_conn (struct starter_config *cfg
 			, conn->name, alsos[alsoplace]);
 
 	    /*
-	     * if we found something that matches by name, and we haven't be
+	     * if we found something that matches by name, and we haven't been
 	     * there, then process it.
 	     */
 	    if(sl1 && !sl1->beenhere)
 	    {
 		conn->strings_set[KSF_ALSO]=FALSE;
-		if(conn->strings[KSF_ALSO]) free(conn->strings[KSF_ALSO]);
+		pfreeany(conn->strings[KSF_ALSO]);
 		conn->strings[KSF_ALSO]=NULL;
 		sl1->beenhere = TRUE;
 
@@ -919,11 +932,17 @@ static int load_conn (struct starter_config *cfg
 
 		    if(newalsos && newalsos[0]!=NULL)
 		    {
-			/* count them */
+                        char **ra;
+                        /* count them */
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
 
 			/* extend conn->alsos */
-			alsos = xrealloc(alsos, (alsosize+newalsoplace+1) * sizeof(char *));
+                        ra = alloc_bytes((alsosize + newalsoplace + 1) * sizeof(char *),
+                                         "conn->alsos");
+                        memcpy(ra, alsos, alsosize * sizeof(char *));
+                        pfree(alsos);
+                        alsos = ra;
+
 			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++)
 			{
 			    assert(conn != NULL);
@@ -932,16 +951,16 @@ static int load_conn (struct starter_config *cfg
 					, "\twhile processing section '%s' added also=%s"
 					, sl1->name, newalsos[newalsoplace]);
 
-			    alsos[alsosize++]=xstrdup(newalsos[newalsoplace]);
+                            alsos[alsosize++] = clone_str(newalsos[newalsoplace], "alsos");
 			}
 			alsos[alsosize]=NULL;
 		    }
-
-		    free_list(newalsos);
+		    FREE_LIST(newalsos);
 		}
 	    }
 	    alsoplace++;
 	}
+        conn->alsos = alsos;
 
 	if(alsoplace >= ALSO_LIMIT)
 	{
@@ -951,11 +970,6 @@ static int load_conn (struct starter_config *cfg
 			, conn->alsos[alsoplace]
 			, ALSO_LIMIT);
 	    return 1;
-	}
-
-	if(conn->alsos != alsos && conn->alsos != NULL)
-	{
-	    free_list(conn->alsos);
 	}
 	conn->alsos = alsos;
     }
@@ -1009,18 +1023,6 @@ static int load_conn (struct starter_config *cfg
     /* reset authby flags */
     if(conn->options_set[KBF_AUTHBY]) {
 	conn->policy &= ~(POLICY_ID_AUTH_MASK);
-
-#ifdef HAVE_LIBNSS
-/* #ifdef FIPS_CHECK */
-        if(Pluto_IsFIPS()) {
-		if((conn->options[KBF_AUTHBY] & POLICY_PSK) == POLICY_PSK){
-		starter_log(LOG_LEVEL_INFO
-                        ,"while loading conn '%s', PSK not allowed in FIPS mode with NSS", conn->name);
-		return 1;
-		}
-	}
-#endif
-
 	conn->policy |= conn->options[KBF_AUTHBY];
 
 #if STARTER_POLICY_DEBUG
@@ -1043,22 +1045,37 @@ static int load_conn (struct starter_config *cfg
     KW_POLICY_FLAG(KBF_IKEv2_ALLOW_NARROWING, POLICY_IKEV2_ALLOW_NARROWING);
 
     if(conn->strings_set[KSF_ESP]) {
-	conn->esp = xstrdup(conn->strings[KSF_ESP]);
+        conn->esp = clone_str(conn->strings[KSF_ESP],"KSF_ESP");
     }
 
 #ifdef HAVE_LABELED_IPSEC
     if(conn->strings_set[KSF_POLICY_LABEL]) {
-        conn->policy_label = xstrdup(conn->strings[KSF_POLICY_LABEL]);
+        conn->policy_label = clone_str(conn->strings[KSF_POLICY_LABEL],"KSF_POLICY_LABEL");
     }
     starter_log(LOG_LEVEL_DEBUG,"connection's  policy label: %s", conn->policy_label);
 #endif
 
+#if 0
+    if (conn->strings_set[KSF_MODECFGDNS1]) {
+        conn->modecfg_dns1 = clone_str(conn->strings[KSF_MODECFGDNS1],"KSF_MODECFGDNS1");
+    }
+    if (conn->strings_set[KSF_MODECFGDNS2]) {
+        conn->modecfg_dns2 = clone_str(conn->strings[KSF_MODECFGDNS2], "KSF_MODECFGDNS2");
+    }
+    if (conn->strings_set[KSF_MODECFGDOMAIN]) {
+        conn->modecfg_domain = clone_str(conn->strings[KSF_MODECFGDOMAIN],"KSF_MODECFGDOMAIN");
+    }
+    if (conn->strings_set[KSF_MODECFGBANNER]) {
+        conn->modecfg_banner = clone_str(conn->strings[KSF_MODECFGBANNER],"KSF_MODECFGBANNER");
+    }
+#endif
+
     if(conn->strings_set[KSF_IKE]) {
-	conn->ike = xstrdup(conn->strings[KSF_IKE]);
+        conn->ike = clone_str(conn->strings[KSF_IKE],"KSF_IKE");
     }
 
     if(conn->strings_set[KSF_CONNALIAS]) {
-	conn->connalias = xstrdup(conn->strings[KSF_CONNALIAS]);
+        conn->connalias = clone_str(conn->strings[KSF_CONNALIAS],"KSF_CONNALIAS");
     }
 
     if(conn->options_set[KBF_PHASE2]) {
@@ -1139,8 +1156,8 @@ void conn_default (char *n, struct starter_conn *conn,
     /* unlink it */
     memset(&conn->link, 0, sizeof(conn->link));
 
-#define CONN_STR2(v,T) if (v) v=(T)xstrdup((char *)v)
-#define CONN_STR(v) if (v) v=xstrdup((char *)v)
+#define CONN_STR2(v,T) if (v) v=(T)clone_str((char *)v, #v)
+#define CONN_STR(v) if (v) v=clone_str((char *)v, #v)
     CONN_STR(conn->left.iface);
     CONN_STR(conn->left.id);
     CONN_STR2(conn->left.rsakey1, unsigned char * );
@@ -1171,26 +1188,21 @@ void conn_default (char *n, struct starter_conn *conn,
 
     CONN_STR(conn->esp);
     CONN_STR(conn->ike);
-#ifdef HAVE_LABELED_IPSEC
     CONN_STR(conn->policy_label);
-#endif
     conn->policy = def->policy;
 #undef CONN_STR
+#undef CONN_STR2
 }
 
 struct starter_conn *alloc_add_conn(struct starter_config *cfg, char *name, err_t *perr)
 {
     struct starter_conn *conn;
 
-    conn = (struct starter_conn *)malloc(sizeof(struct starter_conn));
-    if (!conn) {
-	if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
-	return NULL;
-    }
+    conn = (struct starter_conn *)alloc_bytes(sizeof(struct starter_conn),"add_conn starter_conn");
 
-    memset(conn, 0, sizeof(struct starter_conn));
+    zero(conn);
     conn_default(name, conn, &cfg->conn_default);
-    conn->name = xstrdup(name);
+    conn->name = clone_str(name, "conn name");
     conn->desired_state = STARTUP_NO;
     conn->state = STATE_FAILED;
 
@@ -1249,13 +1261,9 @@ struct starter_config *confread_load(const char *file
 	cfgp = parser_load_conf(file, perr);
 	if (!cfgp) return NULL;
 
-	cfg = (struct starter_config *)malloc(sizeof(struct starter_config));
-	if (!cfg) {
-		if (perr) *perr = xstrdup("can't allocate mem in confread_load()");
-		parser_free_conf(cfgp);
-		return NULL;
-	}
-	memset(cfg, 0, sizeof(*cfg));
+	cfg = (struct starter_config *)alloc_bytes(sizeof(struct starter_config),"starter_config cfg");
+
+	zero(cfg);
 
 	/**
 	 * Set default values
@@ -1270,7 +1278,7 @@ struct starter_config *confread_load(const char *file
 	/**
 	 * Load setup
 	 */
-	err += load_setup(cfg, cfgp, perr);
+	err += load_setup(cfg, cfgp);
 
 	if(err) {
 		parser_free_conf(cfgp);
@@ -1336,63 +1344,60 @@ struct starter_config *confread_load(const char *file
 	return cfg;
 }
 
-#define FREE_STR(v) { if (v) { free(v); v=NULL; } }
-#define FREE_LST(v) { if (v) { free_list(v); v=NULL; } }
 static void confread_free_conn(struct starter_conn *conn)
 {
     int i;
-	FREE_STR(conn->left.iface);
-	FREE_STR(conn->left.id);
-	FREE_STR(conn->left.rsakey1);
-	FREE_STR(conn->left.rsakey2);
-	FREE_STR(conn->right.iface);
-	FREE_STR(conn->right.id);
-	FREE_STR(conn->right.rsakey1);
-	FREE_STR(conn->right.rsakey2);
-	for(i=0; i<KSCF_MAX; i++)
-	{
-	    FREE_STR(conn->left.strings[i]);
-	    FREE_STR(conn->right.strings[i]);
-	}
-	for(i=0 ;i<KSF_MAX; i++)
-	{
-	    FREE_STR(conn->strings[i]);
-	}
+    pfreeany(conn->left.iface);
+    pfreeany(conn->left.id);
+    pfreeany(conn->left.rsakey1);
+    pfreeany(conn->left.rsakey2);
+    pfreeany(conn->right.iface);
+    pfreeany(conn->right.id);
+    pfreeany(conn->right.rsakey1);
+    pfreeany(conn->right.rsakey2);
+    for(i=0; i<KSCF_MAX; i++) {
+        pfreeany(conn->left.strings[i]);
+        pfreeany(conn->right.strings[i]);
+    }
+    for(i=0 ;i<KSF_MAX; i++) {
+        pfreeany(conn->strings[i]);
+    }
 
-	FREE_STR(conn->connalias);
-	FREE_STR(conn->name);
+    pfreeany(conn->connalias);
+    pfreeany(conn->name);
 
-#ifdef ALG_PATCH
-	FREE_STR(conn->esp);
-	FREE_STR(conn->ike);
+    pfreeany(conn->esp);
+    pfreeany(conn->ike);
+
+#if 0
+    pfreeany(conn->modecfg_dns1);
+    pfreeany(conn->modecfg_dns2);
 #endif
-	FREE_STR(conn->left.virt);
-	FREE_STR(conn->right.virt);
+
+    pfreeany(conn->left.virt);
+    pfreeany(conn->right.virt);
 }
 
 void confread_free(struct starter_config *cfg)
 {
     int i;
-	struct starter_conn *conn, *c;
-	FREE_LST(cfg->setup.interfaces);
-	FREE_STR(cfg->setup.virtual_private);
-	FREE_STR(cfg->setup.listen);
-	for(i=0 ;i<KSF_MAX; i++)
-	{
-	    FREE_STR(cfg->setup.strings[i]);
-	}
-	confread_free_conn(&(cfg->conn_default));
+    struct starter_conn *conn, *c;
+    FREE_LIST(cfg->setup.interfaces);
+    pfreeany(cfg->setup.virtual_private);
+    pfreeany(cfg->setup.listen);
+    for(i=0 ;i<KSF_MAX; i++) {
+        pfreeany(cfg->setup.strings[i]);
+    }
+    confread_free_conn(&(cfg->conn_default));
 
-	for(conn = cfg->conns.tqh_first; conn != NULL; )
-	{
-	    c = conn;
-	    conn = conn->link.tqe_next;
-	    confread_free_conn(c);
-	    free(c);
-	}
-	free(cfg);
+    for(conn = cfg->conns.tqh_first; conn != NULL; ) {
+        c = conn;
+        conn = conn->link.tqe_next;
+        confread_free_conn(c);
+        pfree(c);
+    }
+    pfree(cfg);
 }
-#undef FREE_STR
 
 /*
  * Local Variables:

@@ -1,3 +1,5 @@
+#include "oswlog.h"
+#include "connections.h"
 /* log.c SEAM */
 void close_peerlog(void) {}
 void daily_log_reset(void) {}
