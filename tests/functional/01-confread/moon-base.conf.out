@@ -11,12 +11,10 @@ config setup
 conn net-net
 	left=192.168.0.1
 	leftid="@moon.strongswan.org"
-	leftnexthop=%defaultroute
 	leftsubnet=10.1.0.0/16
 	leftcert=moonCert.pem
 	right=192.168.0.2
 	rightid="@sun.strongswan.org"
-	rightnexthop=%defaultroute
 	rightsubnet=10.2.0.0/16
 	salifetime=1200
 	rekeymargin=180
@@ -36,11 +34,9 @@ conn net-net
 conn host-host
 	left=192.168.0.1
 	leftid="@moon.strongswan.org"
-	leftnexthop=%defaultroute
 	leftcert=moonCert.pem
 	right=192.168.0.2
 	rightid="@sun.strongswan.org"
-	rightnexthop=%defaultroute
 	salifetime=1200
 	rekeymargin=180
 	keyingtries=1
@@ -59,11 +55,9 @@ conn host-host
 conn rw
 	left=192.168.0.1
 	leftid="@moon.strongswan.org"
-	leftnexthop=%defaultroute
 	leftsubnet=10.1.0.0/16
 	leftcert=moonCert.pem
 	right=%any
-	rightnexthop=%defaultroute
 	salifetime=1200
 	rekeymargin=180
 	keyingtries=1
