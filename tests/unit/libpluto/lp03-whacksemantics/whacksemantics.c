@@ -76,8 +76,8 @@ main(int argc, char *argv[])
     tool_init_log();
     //init_fake_vendorid();
 
-    rootdir2[0]='\0';
-    strlcat(rootdir2, argv[1], sizeof(rootdir2));
+    rootdir[0]='\0';
+    strlcat(rootdir, argv[1], sizeof(rootdir));
 
     starter_use_log(1, 1, 1);
     cfg = confread_load(argv[2], &err, FALSE, NULL,FALSE);
@@ -95,6 +95,8 @@ main(int argc, char *argv[])
             }
         }
     }
+
+    confread_free(cfg);
 
     report_leaks();
 

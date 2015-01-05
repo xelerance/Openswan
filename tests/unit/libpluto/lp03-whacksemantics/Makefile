@@ -59,7 +59,7 @@ EXTRALIBS+=${OPENSWANLIB} ${OSWLOGLIB}
 EXTRALIBS+=${IPSECCONFLIB} ${WHACKLIB} ${OPENSWANLIB}
 EXTRALIBS+=-lgmp -lefence -lpcap
 
-CONFBASE=${OPENSWANSRCDIR}/tests/functional/01-confread/
+CONFBASE=${OPENSWANSRCDIR}/tests/functional/01-confread
 UNITTESTARGS=${CONFBASE}/dooku ${CONFBASE}/dooku.conf dooku--cassidy-net
 
 TESTNAME=whacksemantics
