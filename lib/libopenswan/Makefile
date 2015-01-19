@@ -142,7 +142,8 @@ MANS=anyaddr.3 atoaddr.3 atoasr.3 atoul.3 goodmask.3 \
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ttodata.3.xml)
 ifeq ($(SHOULDWERESTART),truettodata.3.xml)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
+	@echo OBJDIR MAKE
+	@cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
 else
 all:	$(LIBA) ${LIBL}
 programs: $(LIBA) ${LIBL}
@@ -166,10 +167,12 @@ install_file_list:
 	done
 
 $(LIBA): $(OBJS)
-	$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
+	@echo AR ${LIBA}
+	@$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
 
 $(LIBL): $(LOGOBJS)
-	$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
+	@echo AR ${LIBL}
+	@$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
 
 $(OBJS):	$(HDRS)
 
@@ -177,7 +180,8 @@ $(LOGOBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	@echo VERSION
+	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a

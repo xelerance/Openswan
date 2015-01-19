@@ -53,7 +53,8 @@ MANS=
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ${ONEFILE})
 ifeq ($(SHOULDWERESTART),true${ONEFILE})
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && ${MAKE} $@
+	@echo OBJDIR MAKE $@
+	@cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/lib${LIBRARY} && ${MAKE} $@
 else
 all:	$(LIB)
 programs: $(LIB)
@@ -92,7 +93,8 @@ install_file_list:
 	done
 
 $(LIB): $(OBJS)
-	$(AR) $(ARFLAGS) $(LIB) $(OBJS)
+	@echo AR ${LIB}
+	@$(AR) $(ARFLAGS) $(LIB) $(OBJS)
 
 $(OBJS):	$(HDRS)
 

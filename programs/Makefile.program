@@ -193,20 +193,12 @@ endif
 
 
 %: %.o $(OBJS) ${LIBS}
+	@echo LD $@
 ifeq ($(USE_LIBNSS),true)
-	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK) -lnspr4 -lnss3
+	@$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK) -lnspr4 -lnss3
 else
-	$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
+	@$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
 endif
-
-# cancel direct version
-%: %.c
-
-# cancel direct version
-%: %.c
-
-%.o: ${srcdir}%.c
-	${CC} -c ${CFLAGS} $<
 
 include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 
@@ -232,13 +224,13 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 
 
 %: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'IN' $< '->' $@
-	${TRANSFORM_VARIABLES} < $< > $@
+	@echo  'IN' `basename $<` '->' $@
+	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
 
 %: ${srcdir}%.pl ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'PL' $< '->' $@
+	@echo  'PL' `basename $<` '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.pl" = $< ]; then chmod +x $@; fi

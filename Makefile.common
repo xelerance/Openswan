@@ -6,4 +6,15 @@ ifeq ($(GCC_VERSION_GE_46),true)
 GCC_CPP_FLAG=-Wno-error=cpp
 endif
 
+# cancel direct version
+%: %.c
+
+# cancel direct version
+%: %.c
+
+%.o: ${srcdir}%.c
+	@echo CC `basename $<`
+	@${CC} -c ${CFLAGS} $<
+
+
 
