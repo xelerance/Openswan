@@ -1,4 +1,5 @@
 #define PLUTO_VENDORID_SIZE 12
+char pluto_vendorid[PLUTO_VENDORID_SIZE + 1];
 
 void init_fake_vendorid()
 {
@@ -6,3 +7,8 @@ void init_fake_vendorid()
         pluto_vendorid[PLUTO_VENDORID_SIZE] = '\0';
 }
 
+const char *
+init_pluto_vendorid(void)
+{
+  init_fake_vendorid();
+}
