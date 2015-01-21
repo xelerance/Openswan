@@ -118,7 +118,6 @@ DISTSRC = \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	keys.c \
-	rnd.c \
 	server.c server.h \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \
@@ -155,7 +154,7 @@ OBJSPLUTO += kernel_noklips.o rcv_whack.o
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_crypto.o ikev2_prfplus.o
-OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
+OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o

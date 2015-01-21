@@ -31,6 +31,7 @@
  *
  * - Setting up the "secret_of_the_day".  This changes every hour!  20
  *   bytes a shot.  It is used in building responder cookies.
+ *   (done in plutomain.c now)
  *
  * - generating initiator cookies (8 bytes, once per Phase 1 initiation).
  *
@@ -65,10 +66,9 @@
 
 #include "sha1.h"
 #include "constants.h"
-#include "defs.h"
-#include "rnd.h"
-#include "log.h"
-#include "timer.h"
+#include "pluto/defs.h"
+#include "pluto/rnd.h"
+#include "oswlog.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -210,21 +210,6 @@ init_rnd_pool(void)
     }
 #endif
 }
-
-u_char    secret_of_the_day[SHA1_DIGEST_SIZE];
-u_char    ikev2_secret_of_the_day[SHA1_DIGEST_SIZE];
-
-void
-init_secret(void)
-{
-    /*
-     * Generate the secret value for responder cookies, and
-     * schedule an event for refresh.
-     */
-    get_rnd_bytes(secret_of_the_day, sizeof(secret_of_the_day));
-    event_schedule(EVENT_REINIT_SECRET, EVENT_REINIT_SECRET_DELAY, NULL);
-}
-
 
 /*
  * Local Variables:
