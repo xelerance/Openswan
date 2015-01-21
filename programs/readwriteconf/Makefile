@@ -20,6 +20,8 @@ PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 PROGRAM=readwriteconf
 NOINSTALL=true
 
+PROGLIBS=${WHACKLIB} ${LIBIPSECCONF}
+
 # reach into pluto for now.
 INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
 INCLUDES+=-I${srcdir}

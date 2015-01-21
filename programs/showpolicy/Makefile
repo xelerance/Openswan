@@ -17,7 +17,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=showpolicy
 
-LIBS=${POLICYLIB} ${OPENSWANLIB} 
+LIBS=${POLICYLIB} ${LIBOPENSWAN}
 
 include ${srcdir}../Makefile.program
 

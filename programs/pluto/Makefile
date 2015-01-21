@@ -68,7 +68,7 @@ ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
 
-LIBSADNS = $(OPENSWANLIB)
+LIBSADNS = ${LIBOPENSWAN}
 LIBSADNS += -lresolv # -lefence
 
 # Solaris needs -lsocket -lnsl
@@ -232,14 +232,14 @@ install_file_list:
 			echo $(FMANDIR)/$$to; \
 		done
 
-alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(OPENSWANLIB)
+alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) ${LIBOPENSWAN}
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
 
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
 $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM}
-	@echo LD ${BINDNAMEPLUTO}
+	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
 $(BINNAMEADNS): $(OBJSADNS)

@@ -25,7 +25,7 @@ INCLUDES+=-I/usr/include/nspr4 -I/usr/include/nss3
 endif
 
 PROGRAM=rsasigkey
-LIBS=${OPENSWANLIB} ${LIBGMP}
+LIBS=${LIBOPENSWAN} ${LIBGMP}
 ifeq ($(USE_LIBNSS),true)
 LIBS+= -lnspr4 -lnss3 -lplc4
 ifeq ($(USE_FIPSCHECK),true)

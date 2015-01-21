@@ -16,6 +16,5 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=_copyright
 PROGRAMDIR=${LIBDIR}
-LIBS=${OPENSWANLIB}
 
 include ${srcdir}../Makefile.program

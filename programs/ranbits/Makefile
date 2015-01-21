@@ -15,6 +15,5 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=ranbits
-LIBS=${OPENSWANLIB}
 
 include ${srcdir}../Makefile.program

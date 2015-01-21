@@ -18,6 +18,4 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 PROGRAM:=pf_key
 EXTRA5PROC=${PROGRAM}.5
 
-LIBS:=${OPENSWANLIB}
-
 include ${srcdir}../Makefile.program

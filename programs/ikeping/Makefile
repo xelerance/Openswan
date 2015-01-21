@@ -16,7 +16,6 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=ikeping
-LIBS=${OPENSWANLIB}
 
 ifeq ($(USE_IKEPING),false)
 NOINSTALL=true

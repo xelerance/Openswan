@@ -20,7 +20,7 @@ INCLUDES+=-I/usr/include/nspr4 -I/usr/include/nss3
 endif
 
 PROGRAM=showhostkey
-
+LIBS:=${LIBOPENSWAN} ${CRYPTOLIBS} ${LIBOSWKEYS} ${LIBOSWLOG}
 include ${srcdir}../Makefile.program
 
 # temp workaround for bug in nspr 4.8.2
