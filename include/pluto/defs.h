@@ -57,4 +57,8 @@ extern bool all_zero(const unsigned char *m, size_t len);
 /* pad_up(n, m) is the amount to add to n to make it a multiple of m */
 #define pad_up(n, m) (((m) - 1) - (((n) + (m) - 1) % (m)))
 
+/* does not belong here, have not found another place */
+extern struct secret *pluto_secrets;
+
+
 #endif /* _DEFS_H */

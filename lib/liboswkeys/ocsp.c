@@ -664,7 +664,7 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 	)
 
 	    /* look for a matching private key in the chained list */
-	    pri = get_x509_private_key(cert);
+	    pri = osw_get_x509_private_key(pluto_secrets, cert);
 
 	    if (pri != NULL)
 	    {
