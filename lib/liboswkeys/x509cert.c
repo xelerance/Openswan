@@ -61,7 +61,7 @@
 #endif
 
 #include "x509dn.h"
-
+#include "pluto/x509lists.h"
 
 
 /* ASN.1 definition of a basicConstraints extension */

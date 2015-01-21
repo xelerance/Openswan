@@ -71,10 +71,6 @@ endif
 LIBSADNS = ${LIBOPENSWAN}
 LIBSADNS += -lresolv # -lefence
 
-# Solaris needs -lsocket -lnsl
-LIBSWHACK = ${WHACKLIB} ${OPENSWANLIB}
-
-
 RM = /bin/rm
 RMFLAGS = -f
 
@@ -100,7 +96,6 @@ DISTSRC = \
 	cookie.c cookie.h \
 	crypto.h crypto.c \
 	db_ops.c \
-	defs.h defs.c \
 	demux.c demux.h msgdigest.c \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
@@ -149,7 +144,7 @@ DIST = $(DISTMISC) $(DISTSRC)
 OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o initiate.o terminate.o
-OBJSPLUTO += pending.o cookie.o crypto.o defs.o dpd.o
+OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
@@ -238,12 +233,12 @@ alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypt
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
 $(BINNAMEADNS): $(OBJSADNS)
-	@echo LD ${BINDNAMEADNS}
+	@echo LD ${BINNAMEADNS}
 	@$(CC) -o $(BINNAMEADNS) $(LDFLAGS) $(OBJSADNS) $(USERLINK) $(LIBSADNS) ${ADNSMINUSL}
 
 $(BINNAMEWHACK): $(OBJSWHACK)

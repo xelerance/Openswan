@@ -146,7 +146,7 @@ extern bool strict_crl_policy;
 
 /*
  * check periodically for expired crls
- */ 
+ */
 extern long crl_check_interval;
 
 /* used for initialization */
@@ -242,5 +242,8 @@ extern int file_select(
 #endif
 		       dirent_t *entry);
 
+
+/* Maximum length of ASN.1 distinquished name */
+#define ASN1_BUF_LEN	      512
 
 #endif /* _X509_H */

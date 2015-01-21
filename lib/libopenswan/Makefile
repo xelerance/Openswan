@@ -22,8 +22,6 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-X509LIB=x509dn.c x509cert.c certload.c pem.c pkcs.c asn1.c oid.c pgp.c x509chain.c
-
 SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c \
@@ -61,11 +59,7 @@ endif
 CFLAGS+=-DUSE_SHA2
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libcrypto/libsha2
 
-LOGSRCS=oswlog.c
-
-
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
-LOGOBJS=${LOGSRCS:.c=.o}
 
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
@@ -145,8 +139,8 @@ all programs clean install:
 	@echo OBJDIR MAKE
 	@cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
 else
-all:	$(LIBA) ${LIBL}
-programs: $(LIBA) ${LIBL}
+all:	$(LIBA)
+programs: $(LIBA)
 clean:	cleanall
 install: doinstall
 
@@ -170,13 +164,7 @@ $(LIBA): $(OBJS)
 	@echo AR ${LIBA}
 	@$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
 
-$(LIBL): $(LOGOBJS)
-	@echo AR ${LIBL}
-	@$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
-
 $(OBJS):	$(HDRS)
-
-$(LOGOBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
@@ -247,8 +235,9 @@ check:
 
 checkprograms:
 
+# this should be a generic process.
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS))) $(wildcard $(LOGSRCS)) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS)))) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend

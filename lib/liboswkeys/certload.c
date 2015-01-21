@@ -42,8 +42,6 @@
 # include <cert.h>
 #endif
 
-#define ASN1_BUF_LEN		256
-
 /*
  * used for initialization of private keys
  */

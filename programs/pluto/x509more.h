@@ -23,6 +23,7 @@
 #include "demux.h"
 #include "server.h"
 #include "secrets.h"
+#include "pluto/x509lists.h"
 
 /* forward reference */
 struct msg_digest;
