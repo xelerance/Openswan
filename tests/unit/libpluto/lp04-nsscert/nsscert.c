@@ -17,6 +17,10 @@
 
 char *progname;
 
+/** by default pluto does not check crls dynamically */
+long crl_check_interval = 0;
+struct pubkey_list *pluto_pubkeys = NULL;
+
 main(int argc, char *argv[])
 {
     int i;
