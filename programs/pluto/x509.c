@@ -63,6 +63,8 @@
 #include "pkcs.h"
 #include "log.h"
 
+#define OCSP_BUF_LEN			512
+
 /*
  *  list all X.509 certs in a chained list
  */
@@ -277,6 +279,102 @@ list_certs(bool utc)
 {
     list_x509_end_certs(utc);
     list_pgp_end_certs(utc);
+}
+
+/*
+ * list a chained list of ocsp_locations
+ */
+void
+list_ocsp_locations(ocsp_location_t *location, bool requests, bool utc
+, bool strict)
+{
+    bool first = TRUE;
+
+    while (location != NULL)
+    {
+	ocsp_certinfo_t *certinfo = location->certinfo;
+
+	if (certinfo != NULL)
+	{
+	    char buf[OCSP_BUF_LEN];
+
+	    if (first)
+	    {
+		whack_log(RC_COMMENT, " ");
+		whack_log(RC_COMMENT, "List of OCSP %s:", requests?
+		    "fetch requests":"responses");
+		first = FALSE;
+            }
+	    whack_log(RC_COMMENT, " ");
+	    if (location->issuer.ptr != NULL)
+	    {
+		dntoa(buf, OCSP_BUF_LEN, location->issuer);
+		whack_log(RC_COMMENT, "       issuer:  '%s'", buf);
+	    }
+	    whack_log(RC_COMMENT, "       uri:     '%.*s", (int)location->uri.len
+		, location->uri.ptr);
+	    if (location->authNameID.ptr != NULL)
+	    {
+		datatot(location->authNameID.ptr, location->authNameID.len, ':'
+		    , buf, OCSP_BUF_LEN);
+		whack_log(RC_COMMENT, "       authname: %s", buf);
+	    }
+	    if (location->authKeyID.ptr != NULL)
+	    {
+		datatot(location->authKeyID.ptr, location->authKeyID.len, ':'
+		    , buf, OCSP_BUF_LEN);
+		whack_log(RC_COMMENT, "       authkey:  %s", buf);
+	    }
+	    if (location->authKeySerialNumber.ptr != NULL)
+	    {
+		datatot(location->authKeySerialNumber.ptr
+		    , location->authKeySerialNumber.len, ':', buf, OCSP_BUF_LEN);
+		whack_log(RC_COMMENT, "       aserial:  %s", buf);
+	    }
+	    while (certinfo != NULL)
+	    {
+		char thisUpdate[TIMETOA_BUF];
+
+		timetoa(&certinfo->thisUpdate, utc, thisUpdate, sizeof(thisUpdate));
+
+		if (requests)
+		{
+		    whack_log(RC_COMMENT, "%s, trials: %d", thisUpdate
+			, certinfo->trials);
+		}
+		else if (certinfo->once)
+		{
+		    whack_log(RC_COMMENT, "%s, onetime use%s", thisUpdate
+			, (certinfo->nextUpdate < time(NULL))? " (expired)": "");
+		}
+		else
+		{
+		    char tbuf2[TIMETOA_BUF];
+
+		    whack_log(RC_COMMENT, "%s, until %s %s", thisUpdate
+			      , timetoa(&certinfo->nextUpdate, utc, tbuf2, sizeof(tbuf2))
+			      , check_expiry(certinfo->nextUpdate, OCSP_WARNING_INTERVAL, strict));
+		}
+		datatot(certinfo->serialNumber.ptr, certinfo->serialNumber.len, ':'
+		    , buf, OCSP_BUF_LEN);
+		whack_log(RC_COMMENT, "       serial:   %s, %s", buf
+		    , cert_status_names[certinfo->status]);
+		certinfo = certinfo->next;
+	    }
+	}
+	location = location->next;
+    }
+}
+
+/*
+ * list the ocsp cache
+ */
+void
+list_ocsp_cache(bool utc, bool strict)
+{
+    lock_ocsp_cache("list_ocsp_cache");
+    list_ocsp_locations(ocsp_cache, FALSE, utc, strict);
+    unlock_ocsp_cache("list_ocsp_cache");
 }
 
 /*

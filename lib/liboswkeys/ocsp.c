@@ -33,19 +33,18 @@
 #include "constants.h"
 #include "oswtime.h"
 
-#include "defs.h"
+#include "oswlog.h"
+#include "pluto/defs.h"
 #include "id.h"
-#include "log.h"
 #include "x509.h"
-#include "rnd.h"
 #include "asn1.h"
 #include "pgp.h"
 #include "certs.h"
 #include "oid.h"
 #include "whack.h"
-#include "keys.h"
-#include "fetch.h"
-#include "ocsp.h"
+#include "pluto/rnd.h"
+#include "pluto/keys.h"
+#include "pluto/ocsp.h"
 
 #define NONCE_LENGTH		16
 #define BUF_LEN			512
@@ -53,7 +52,7 @@
 #define constcpy(dst, str) \
     { memcpy(dst, str, sizeof(str)); dst += sizeof(str);}
 
-static const char *const cert_status_names[] = {
+const char *const cert_status_names[] = {
     "good",
     "revoked",
     "unknown",
@@ -177,7 +176,7 @@ const char ASN1_response_content[] = {
 static chunk_t ocsp_default_uri;
 
 /* ocsp cache: pointer to first element */
-static ocsp_location_t *ocsp_cache = NULL;
+ocsp_location_t *ocsp_cache = NULL;
 
 /* static temporary storage for ocsp requestor information */
 static x509cert_t *ocsp_requestor_cert = NULL;
@@ -624,102 +623,6 @@ free_ocsp(void)
 {
     pfreeany(ocsp_default_uri.ptr);
     free_ocsp_cache();
-}
-
-/*
- * list a chained list of ocsp_locations
- */
-void
-list_ocsp_locations(ocsp_location_t *location, bool requests, bool utc
-, bool strict)
-{
-    bool first = TRUE;
-
-    while (location != NULL)
-    {
-	ocsp_certinfo_t *certinfo = location->certinfo;
-
-	if (certinfo != NULL)
-	{
-	    char buf[BUF_LEN];
-
-	    if (first)
-	    {
-		whack_log(RC_COMMENT, " ");
-		whack_log(RC_COMMENT, "List of OCSP %s:", requests?
-		    "fetch requests":"responses");
-		first = FALSE;
-            }
-	    whack_log(RC_COMMENT, " ");
-	    if (location->issuer.ptr != NULL)
-	    {
-		dntoa(buf, BUF_LEN, location->issuer);
-		whack_log(RC_COMMENT, "       issuer:  '%s'", buf);
-	    }
-	    whack_log(RC_COMMENT, "       uri:     '%.*s", (int)location->uri.len
-		, location->uri.ptr);
-	    if (location->authNameID.ptr != NULL)
-	    {
-		datatot(location->authNameID.ptr, location->authNameID.len, ':'
-		    , buf, BUF_LEN);
-		whack_log(RC_COMMENT, "       authname: %s", buf);
-	    }
-	    if (location->authKeyID.ptr != NULL)
-	    {
-		datatot(location->authKeyID.ptr, location->authKeyID.len, ':'
-		    , buf, BUF_LEN);
-		whack_log(RC_COMMENT, "       authkey:  %s", buf);
-	    }
-	    if (location->authKeySerialNumber.ptr != NULL)
-	    {
-		datatot(location->authKeySerialNumber.ptr
-		    , location->authKeySerialNumber.len, ':', buf, BUF_LEN);
-		whack_log(RC_COMMENT, "       aserial:  %s", buf);
-	    }
-	    while (certinfo != NULL)
-	    {
-		char thisUpdate[TIMETOA_BUF];
-
-		timetoa(&certinfo->thisUpdate, utc, thisUpdate, sizeof(thisUpdate));
-
-		if (requests)
-		{
-		    whack_log(RC_COMMENT, "%s, trials: %d", thisUpdate
-			, certinfo->trials);
-		}
-		else if (certinfo->once)
-		{
-		    whack_log(RC_COMMENT, "%s, onetime use%s", thisUpdate
-			, (certinfo->nextUpdate < time(NULL))? " (expired)": "");
-		}
-		else
-		{
-		    char tbuf2[TIMETOA_BUF];
-
-		    whack_log(RC_COMMENT, "%s, until %s %s", thisUpdate
-			      , timetoa(&certinfo->nextUpdate, utc, tbuf2, sizeof(tbuf2))
-			      , check_expiry(certinfo->nextUpdate, OCSP_WARNING_INTERVAL, strict));
-		}
-		datatot(certinfo->serialNumber.ptr, certinfo->serialNumber.len, ':'
-		    , buf, BUF_LEN);
-		whack_log(RC_COMMENT, "       serial:   %s, %s", buf
-		    , cert_status_names[certinfo->status]);
-		certinfo = certinfo->next;
-	    }
-	}
-	location = location->next;
-    }
-}
-
-/*
- * list the ocsp cache
- */
-void
-list_ocsp_cache(bool utc, bool strict)
-{
-    lock_ocsp_cache("list_ocsp_cache");
-    list_ocsp_locations(ocsp_cache, FALSE, utc, strict);
-    unlock_ocsp_cache("list_ocsp_cache");
 }
 
 /* moves a chunk to a memory position, chunk is freed afterwards

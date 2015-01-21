@@ -115,11 +115,10 @@ DISTSRC = \
 	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
 	log.c log.h \
 	plutomain.c plutoalg.c \
-	ocsp.c ocsp.h \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	crypt_ke.c crypt_dh.c crypt_start_dh.c \
-	keys.c keys.h \
-	rnd.c rnd.h \
+	keys.c \
+	rnd.c \
 	server.c server.h \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \

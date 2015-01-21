@@ -14,6 +14,7 @@
  *
  */
 
+#ifndef _OCSP_H
 /* constants */
 
 #define OCSP_BASIC_RESPONSE_VERSION	1
@@ -88,3 +89,10 @@ extern void free_ocsp_locations(ocsp_location_t **chain);
 extern void free_ocsp_cache(void);
 extern void free_ocsp(void);
 extern void ocsp_purge_cache(void);
+
+/* ocsp cache: pointer to first element */
+extern ocsp_location_t *ocsp_cache;
+extern const char *const cert_status_names[];
+
+#define _OCSP_H
+#endif
