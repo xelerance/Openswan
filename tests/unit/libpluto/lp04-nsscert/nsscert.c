@@ -2,29 +2,66 @@
 #define AGGRESSIVE 1
 #define XAUTH 1
 #define PRINT_SA_DEBUG 1
-#include "../../programs/pluto/crypt_ke.c"
 
-#include "seam_timer.c"
-#include "seam_cryptohelper.c"
-#include "seam_exitlog.c"
-#include "seam_natt.c"
-#include "seam_vendor.c"
+#include <stdlib.h>
+#include "openswan.h"
+#include "openswan/ipsec_policy.h"
+#include "oswalloc.h"
+#include "constants.h"
+#include "certs.h"
+#include "oswlog.h"
+#include "oswconf.h"
+#include "oswtime.h"
+
+#include "../seam_exitlog.c"
 
 char *progname;
 
 main(int argc, char *argv[])
 {
     int i;
-    struct pluto_crypto_req r1;
-    zero(&r1);
+    chunk_t blob, crl_uri;
+    err_t e;
+    cert_t cacert,t1;
+    time_t until;
 
     progname = argv[0];
     leak_detective=1;
 
     tool_init_log();
+    load_oswcrypto();
 
-    /* init something with the calculator */
-    calc_ke(&r1);
+    /* load CAcert */
+    if(!load_cert(CERT_NONE, argv[1], TRUE, "cacert", &cacert)) {
+        printf("could not load cert file: %s\n", argv[1]);
+        exit(1);
+    }
+    add_authcert(cacert.u.x509, 0);
+
+    /* load target cert */
+    if(!load_cert(CERT_NONE, argv[1], TRUE, "test1", &t1)) {
+        printf("could not load cert file: %s\n", argv[1]);
+        exit(1);
+    }
+
+    time(&until);
+    until += 86400;
+#if 0
+    e=check_validity(t1.u.x509, &until);
+    if(e) {
+        printf("validity check: %s\n", e);
+        exit(2);
+    }
+#endif
+    if(verify_x509cert(t1.u.x509, TRUE, &until)) {
+        printf("verify x509 failed\n");
+        exit(3);
+    }
+
+    printf("cert is valid\n");
+
+    free_x509cert(t1.u.x509);
+    free_x509cert(cacert.u.x509);
 
     report_leaks();
     tool_close_log();

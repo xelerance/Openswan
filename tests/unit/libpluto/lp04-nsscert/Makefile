@@ -21,24 +21,12 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rnd.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
-ifeq ($(USE_EXTRACRYPTO),true)
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
-endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=-lgmp -lefence -lpcap
 
-UNITTESTARGS=sun-netnet.record.${ARCH} net-net
+UNITTESTARGS=CAcert.pem badcert1.pem
 
 TESTNAME=nsscert
 

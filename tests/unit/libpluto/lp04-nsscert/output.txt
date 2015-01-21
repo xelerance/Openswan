@@ -1,0 +1,5 @@
+
+  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
+./nsscert   loaded cacert file 'CAcert.pem' (1927 bytes)
+./nsscert   loaded test1 file 'CAcert.pem' (1927 bytes)
+./nsscert leak detective found no leaks
