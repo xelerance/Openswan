@@ -1,12 +1,12 @@
 # Openswan library
 # Copyright (C) 1998-2001  Henry Spencer.
 # Copyright (C) 2003, 2004 Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -23,7 +23,7 @@ MANDIR=$(MANTREE)/man3
 
 SRCS=whacklib.c aliascomp.c
 
-OBJS=${SRCS:.c=.o} 
+OBJS=${SRCS:.c=.o}
 
 KLIPSD=${OPENSWANSRCDIR}/linux/include
 KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
@@ -35,8 +35,8 @@ LIB=libwhack.a
 
 # Original flags
 INCLUDES=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
-INCLUDES+=-I${OPENSWANSRCDIR}/include 
-CFLAGS+=${PORTINCLUDE} ${INCLUDES} 
+INCLUDES+=-I${OPENSWANSRCDIR}/include
+CFLAGS+=${PORTINCLUDE} ${INCLUDES}
 CFLAGS+=-DDEBUG
 CFLAGS+= $(USERCOMPILE)
 CFLAGS+= -Wall
@@ -49,7 +49,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -pedantic
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
-CFLAGS+= -Wbad-function-cast 
+CFLAGS+= -Wbad-function-cast
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL

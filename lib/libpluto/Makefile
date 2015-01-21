@@ -6,12 +6,12 @@
 # this library)
 #
 # Copyright (C) 2007 Xelerance Corporation
-# 
+#
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; either version 2 of the License, or (at your
 # option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
-# 
+#
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -36,7 +36,7 @@ SRCS+=readwhackmsg.c
 #enable to get lots more debugging about semantics.
 #CFLAGS+=-DPARSER_TYPE_DEBUG
 
-OBJS=${SRCS:.c=.o} 
+OBJS=${SRCS:.c=.o}
 
 include ${srcdir}../Makefile.library
 

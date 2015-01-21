@@ -21,11 +21,11 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 CINCLUDES =	-I${srcdir}${ISCARCH}/include \
 		-I${srcdir}../libisc/${ISCARCH}/include \
 		-I${srcdir}../libisc/include \
-		-I. -I./include -I${srcdir}include 
+		-I. -I./include -I${srcdir}include
 CDEFINES =
 CWARNINGS = -Werror
 
-CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${CINCLUDES} ${CDEFINES} ${CWARNINGS} 
+CFLAGS+=${USERCOMPILE} ${PORTINCLUDE} ${CINCLUDES} ${CDEFINES} ${CWARNINGS}
 
 VERSION="@(\#) openswan-hacking-9.3-for-osw2"
 LIBINTERFACE=2

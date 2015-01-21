@@ -76,7 +76,7 @@ install checkprograms check install_file_list:
 TAGS: ${SRCS}
 	etags ${SRCS}
 
-rdata.o: code.h 
+rdata.o: code.h
 name.o: ${HDRS}
 
 include/dns/enumtype.h: gen

@@ -32,19 +32,19 @@ LIBINTERFACE=2
 LIBREVISION=0
 LIBAGE=1
 LIB=libisc
-VPATH+=${srcdir}nls 
+VPATH+=${srcdir}nls
 VPATH+=${srcdir}${ISCARCH}
 
-OBJS =		mem.o buffer.o inet_pton.o assertions.o error.o 
+OBJS =		mem.o buffer.o inet_pton.o assertions.o error.o
 OBJS += 	lib.o region.o lex.o hex.o string.o result.o base64.o
 OBJS += 	msgcat.o parseint.o stdio.o stdtime.o ondestroy.o
-OBJS += 	task.o event.o errno2result.o strerror.o 
+OBJS += 	task.o event.o errno2result.o strerror.o
 OBJS +=		rwlock.o random.o inet_aton.o inet_ntop.o
 
-SRCS =		mem.c buffer.c inet_pton.c assertions.c error.c 
+SRCS =		mem.c buffer.c inet_pton.c assertions.c error.c
 SRCS += 	lib.c region.c lex.c hex.c string.c result.c base64.c
 SRCS +=		msgcat.c parseint.c stdio.c stdtime.c ondestroy.c
-SRCS +=		task.c event.c errno2result.c strerror.c 
+SRCS +=		task.c event.c errno2result.c strerror.c
 SRCS +=		rwlock.c random.c inet_aton.c inet_ntop.c
 
 programs all: ${LIB}.a
