@@ -305,7 +305,7 @@ main_mode_hash_body(struct state *st
                     , bool hashi        /* Initiator? */
                     , const pb_stream *idpl     /* ID payload, as PBS */
                     , struct hmac_ctx *ctx
-                    , hash_update_t hash_update_void)
+                    , hash_update_t hash_update_void UNUSED)
 #else
 void
 main_mode_hash_body(struct state *st

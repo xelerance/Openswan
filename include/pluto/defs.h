@@ -60,5 +60,17 @@ extern bool all_zero(const unsigned char *m, size_t len);
 /* does not belong here, have not found another place */
 extern struct secret *pluto_secrets;
 
+/* a macro to discard the const portion of a variable to avoid
+ * otherwise unavoidable -Wcast-qual warnings.
+ * USE WITH CAUTION and only when you know it's safe to discard the const
+ */
+#ifdef __GNUC__
+#define DISCARD_CONST(vartype, \
+		      varname) (__extension__({ const vartype tmp = (varname); \
+						(vartype)(uintptr_t)tmp; }))
+#else
+#define DISCARD_CONST(vartype, varname) ((vartype)(uintptr_t)(varname))
+#endif
+
 
 #endif /* _DEFS_H */

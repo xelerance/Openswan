@@ -165,7 +165,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 
     dhshared_len = PK11_GetKeyLength(dhshared);
     if( group->bytes > dhshared_len ) {
-	DBG(DBG_CRYPT, DBG_log("Dropped %d leading zeros", group->bytes-dhshared_len));
+	DBG(DBG_CRYPT, DBG_log("Dropped %lu leading zeros", (long)group->bytes-dhshared_len));
 	chunk_t zeros;
 	PK11SymKey *newdhshared = NULL;
 	CK_KEY_DERIVATION_STRING_DATA string_params;
@@ -1326,7 +1326,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	counter.len =1;
 
 
-	PK11SymKey *finalkey;
+	PK11SymKey *finalkey = NULL;
 	PK11SymKey *tkey1 = pk11_derive_wrapper_osw(skeyseed_k, CKM_CONCATENATE_BASE_AND_DATA
 		, hmac_pad_prf,CKM_XOR_BASE_AND_DATA, CKA_DERIVE, HMAC_BUFSIZE);
 	PR_ASSERT(tkey1!=NULL);
@@ -1334,7 +1334,8 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 
 	for(;;)
 	{
-	   PK11SymKey *tkey11,*tkey3;;
+	   PK11SymKey *tkey11,*tkey3;
+           tkey11=NULL;
 
 	   if(vpss.counter[0]== 0x01) {
 		PK11SymKey *tkey2 = pk11_derive_wrapper_osw(tkey1, CKM_XOR_BASE_AND_DATA
