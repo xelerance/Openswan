@@ -488,6 +488,23 @@ trust_authcert_candidate(const x509cert_t *cert, const x509cert_t *alt_chain)
     return FALSE;
 }
 
+static time_t fakenow = 0;
+
+void
+set_fake_x509_time(time_t when)
+{
+    fakenow = when;
+}
+
+time_t get_time_maybe_fake(time_t *when)
+{
+    if(fakenow != 0) {
+        if(when) *when=fakenow;
+        return fakenow;
+    }
+    return time(when);
+}
+
 /* verify the validity of a certificate by
  * checking the notBefore and notAfter dates
  */
@@ -497,7 +514,7 @@ check_validity(const x509cert_t *cert, time_t *until)
     time_t current_time;
     char curtime[TIMETOA_BUF];
 
-    time(&current_time);
+    get_time_maybe_fake(&current_time);
     timetoa(&current_time, TRUE, curtime, sizeof(curtime));
 
     DBG(DBG_X509,

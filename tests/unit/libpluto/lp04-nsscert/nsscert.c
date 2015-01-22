@@ -36,6 +36,9 @@ main(int argc, char *argv[])
     tool_init_log();
     load_oswcrypto();
 
+    set_debugging(DBG_X509);
+    set_fake_x509_time(1421896274);  /* Wed Jan 21 22:11:14 2015 */
+
     /* load CAcert */
     if(!load_cert(CERT_NONE, argv[1], TRUE, "cacert", &cacert)) {
         printf("could not load cert file: %s\n", argv[1]);

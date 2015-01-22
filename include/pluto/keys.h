@@ -27,6 +27,9 @@
 
 struct connection;
 
+extern time_t get_time_maybe_fake(time_t *when);
+extern void set_fake_x509_time(time_t now);
+
 extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 
