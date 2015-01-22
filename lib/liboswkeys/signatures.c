@@ -153,6 +153,7 @@ static int sign_hash_nss(const struct RSA_private_key *k
     DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
     return signature.len;
 }
+#endif
 
 /*
  * compute an RSA signature with PKCS#1 padding
@@ -201,6 +202,7 @@ sign_hash(const struct RSA_private_key *k
 #endif
 }
 
+#ifdef HAVE_LIBNSS
 err_t RSA_signature_verify_nss(const struct RSA_public_key *k
                               , const u_char *hash_val, size_t hash_len
                                ,const u_char *sig_val, size_t sig_len)

@@ -53,6 +53,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "connections.h"	/* needs id.h */
+#include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
