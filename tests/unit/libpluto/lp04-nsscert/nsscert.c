@@ -36,7 +36,7 @@ main(int argc, char *argv[])
     tool_init_log();
     load_oswcrypto();
 
-    set_debugging(DBG_X509);
+    set_debugging(DBG_X509|DBG_PARSING);
     set_fake_x509_time(1421896274);  /* Wed Jan 21 22:11:14 2015 */
 
     /* load CAcert */
@@ -44,7 +44,7 @@ main(int argc, char *argv[])
         printf("could not load cert file: %s\n", argv[1]);
         exit(1);
     }
-    add_authcert(cacert.u.x509, 0);
+    add_authcert(cacert.u.x509, AUTH_CA);
 
     /* load target cert */
     if(!load_cert(CERT_NONE, argv[2], TRUE, "test1", &t1)) {
@@ -61,7 +61,7 @@ main(int argc, char *argv[])
         exit(2);
     }
 #endif
-    if(verify_x509cert(t1.u.x509, TRUE, &until)) {
+    if(verify_x509cert(t1.u.x509, TRUE, &until) == FALSE) {
         printf("verify x509 failed\n");
         exit(3);
     }
