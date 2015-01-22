@@ -546,7 +546,8 @@ KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
 LIBOPENSWAN=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
 OPENSWANLIB=${LIBOPENSWAN}
-PLUTOLIB=${OBJDIRTOP}/lib/libpluto/libpluto.a
+LIBPLUTO=${OBJDIRTOP}/lib/libpluto/libpluto.a
+PLUTOLIB=${LIBPLUTO}
 LIBOSWLOG=${OBJDIRTOP}/lib/liboswlog/liboswlog.a
 LIBOSWKEYS=${OBJDIRTOP}/lib/liboswkeys/liboswkeys.a
 
