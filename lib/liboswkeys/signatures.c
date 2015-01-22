@@ -94,8 +94,8 @@ static int sign_hash_nss(const struct RSA_private_key *k
     DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));
 
     ckaId.type=siBuffer;
-    ckaId.len=k->ckaid_len;
-    ckaId.data=k->ckaid;
+    ckaId.len = k->ckaid_len;
+    ckaId.data = DISCARD_CONST(unsigned char *, k->ckaid);
 
     slot = PK11_GetInternalKeySlot();
     if (slot == NULL) {
@@ -103,47 +103,55 @@ static int sign_hash_nss(const struct RSA_private_key *k
 	return 0;
     }
 
-	if( PK11_Authenticate(slot, PR_FALSE,osw_return_nss_password_file_info()) == SECSuccess ) {
+    if( PK11_Authenticate(slot, PR_FALSE,osw_return_nss_password_file_info()) == SECSuccess ) {
 	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS successful\n"));
-	}
-	else {
+    }
+    else {
 	DBG(DBG_CRYPT, DBG_log("NSS: Authentication to NSS either failed or not required,if NSS DB without password\n"));
-	}
+    }
 
     privateKey = PK11_FindKeyByKeyID(slot, &ckaId, osw_return_nss_password_file_info());
     if(privateKey==NULL) {
+        DBG(DBG_CRYPT,
+            DBG_log("Can't find the private key from the NSS CKA_ID"));
 	if(k->pub.nssCert != NULL) {
 	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info());
-	   DBG(DBG_CRYPT, DBG_log("Can't find the private key from the NSS CKA_ID\n"));
+           if (privateKey == NULL) {
+               loglog(RC_LOG_SERIOUS,
+                      "Can't find the private key from the NSS CERT (err %d)",
+                      PR_GetError());
+           }
 	}
     }
 
-    if (!privateKey) {
+    PK11_FreeSlot(slot);
+
+    if (privateKey == NULL) {
 	loglog(RC_LOG_SERIOUS, "Can't find the private key from the NSS CERT (err %d)\n", PR_GetError());
-	PK11_FreeSlot(slot);
 	return 0;
     }
 
-   if(slot) {
-	PK11_FreeSlot(slot);
-   }
+    data.type=siBuffer;
+    data.len=hash_len;
+    data.data = DISCARD_CONST(u_char *, hash_val);
 
-   data.type=siBuffer;
-   data.len=hash_len;
-   data.data=hash_val;
+    /*signature.len=PK11_SignatureLen(privateKey);*/
+    signature.len=sig_len;
+    signature.data=sig_val;
 
-   /*signature.len=PK11_SignatureLen(privateKey);*/
-   signature.len=sig_len;
-   signature.data=sig_val;
+    {
+        SECStatus s = PK11_Sign(privateKey, &signature, &data);
 
-   SECStatus s = PK11_Sign(privateKey, &signature, &data);
-   if(s!=SECSuccess) {
-	loglog(RC_LOG_SERIOUS, "RSA_sign_hash: sign function failed (%d)\n", PR_GetError());
-	return 0;
-   }
+        if (s != SECSuccess) {
+            loglog(RC_LOG_SERIOUS,
+                   "RSA_sign_hash: sign function failed (%d)",
+                   PR_GetError());
+            return 0;
+        }
+    }
 
-   DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
-   return signature.len;
+    DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Ended using NSS"));
+    return signature.len;
 }
 
 /*
@@ -224,9 +232,9 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
     publicKey->pkcs11Slot = NULL;
     publicKey->pkcs11ID = CK_INVALID_HANDLE;
 
-    /*Converting n(modulus) and e(exponent) from mpz_t form to chunk_t*/
-    n = mpz_to_n2(&k->n);
-    e = mpz_to_n2(&k->e);
+    /* Converting n(modulus) and e(exponent) from mpz_t form to chunk_t */
+    n = mpz_to_n_autosize(&k->n);
+    e = mpz_to_n_autosize(&k->e);
 
     /*Converting n and e to nss_n and nss_e*/
     nss_n.data = n.ptr;
@@ -249,7 +257,7 @@ err_t RSA_signature_verify_nss(const struct RSA_public_key *k
 	return "12" "NSS error: Not able to copy modulus or exponent or both while forming SECKEYPublicKey structure";
     }
     signature.type = siBuffer;
-    signature.data = sig_val;
+    signature.data = DISCARD_CONST(unsigned char *, sig_val);
     signature.len  = (unsigned int)sig_len;
 
     data.len = (unsigned int)sig_len;
