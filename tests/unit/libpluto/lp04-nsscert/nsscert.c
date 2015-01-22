@@ -36,9 +36,22 @@ main(int argc, char *argv[])
     tool_init_log();
     load_oswcrypto();
 
-    set_debugging(DBG_X509|DBG_PARSING);
+    set_debugging(DBG_X509|DBG_PARSING|DBG_CONTROL);
     until =1421896274;
     set_fake_x509_time(until);  /* Wed Jan 21 22:11:14 2015 */
+
+#ifdef HAVE_LIBNSS
+    {
+	SECStatus nss_init_status= NSS_InitReadWrite("nss.d");
+	if (nss_init_status != SECSuccess) {
+	    fprintf(stderr, "NSS initialization failed (err %d)\n", PR_GetError());
+            exit(10);
+	} else {
+	    printf("NSS Initialized\n");
+	    PK11_SetPasswordFunc(getNSSPassword);
+        }
+    }
+#endif
 
     if(argc < 3) {
         fprintf(stderr, "Usage: nsscert CAcertfile.pem cert1.pem cert2.pem...\n");
@@ -69,7 +82,7 @@ main(int argc, char *argv[])
 
 
         until += 86400;
-        if(verify_x509cert(t1.u.x509, TRUE, &until) == FALSE) {
+        if(verify_x509cert(t1.u.x509, FALSE, &until) == FALSE) {
             printf("verify x509 failed\n");
             exit(3);
         }
