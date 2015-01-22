@@ -68,8 +68,14 @@ typedef int bool;
 #endif
 #define BYTES_FOR_BITS(b)   (((b) + BITS_PER_BYTE - 1) / BITS_PER_BYTE)
 
-#define streq(a, b) (strcmp((a), (b)) == 0)	/* clearer shorthand */
-#define strcaseeq(a, b) (strcasecmp((a), (b)) == 0)	/* clearer shorthand */
+/* DHR's clearer shorthands for *cmp functions */
+#define streq(a, b) (strcmp((a), (b)) == 0)
+#define strcaseeq(a, b) (strcasecmp((a), (b)) == 0)
+#define startswith(a, b) strneq((a), (b), sizeof(b)-1)	/* b must be literal! */
+#define eat(a, b) (startswith((a), (b))? ((a) += sizeof(b) - 1), TRUE : FALSE)
+#define strcaseeq(a, b) (strcasecmp((a), (b)) == 0)
+#define strncaseeq(a, b, n) (strncasecmp((a), (b), (n)) == 0)
+#define memeq(a, b, n) (memcmp((a), (b), (n)) == 0)
 
 /* set type with room for at least 64 elements for ALG opts
  * (was 32 in stock FS)
