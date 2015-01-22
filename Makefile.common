@@ -13,8 +13,12 @@ endif
 %: %.c
 
 %.o: ${srcdir}%.c
+ifeq ($(V),1)
+	${CC} -c ${CFLAGS} $<
+else
 	@echo CC `basename $<`
 	@${CC} -c ${CFLAGS} $<
+endif
 
 
 
