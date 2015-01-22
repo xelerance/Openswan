@@ -26,7 +26,7 @@ EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=-lgmp -lefence -lpcap ${NSS_LIBS} ${FIPS_LIBS}
 
-UNITTESTARGS=CAcert.pem badcert1.pem
+UNITTESTARGS=CAcert.pem goodcert1.pem badcert1.pem
 
 TESTNAME=nsscert
 

@@ -37,38 +37,45 @@ main(int argc, char *argv[])
     load_oswcrypto();
 
     set_debugging(DBG_X509|DBG_PARSING);
-    set_fake_x509_time(1421896274);  /* Wed Jan 21 22:11:14 2015 */
+    until =1421896274;
+    set_fake_x509_time(until);  /* Wed Jan 21 22:11:14 2015 */
+
+    if(argc < 3) {
+        fprintf(stderr, "Usage: nsscert CAcertfile.pem cert1.pem cert2.pem...\n");
+        exit(5);
+    }
+
+    /* skip argv0 */
+    argc--;
+    argv++;
 
     /* load CAcert */
-    if(!load_cert(CERT_NONE, argv[1], TRUE, "cacert", &cacert)) {
-        printf("could not load cert file: %s\n", argv[1]);
+    if(!load_cert(CERT_NONE, argv[0], TRUE, "cacert", &cacert)) {
+        printf("could not load CA cert file: %s\n", argv[0]);
         exit(1);
     }
     add_authcert(cacert.u.x509, AUTH_CA);
 
-    /* load target cert */
-    if(!load_cert(CERT_NONE, argv[2], TRUE, "test1", &t1)) {
-        printf("could not load cert file: %s\n", argv[1]);
-        exit(1);
-    }
+    argc--;
+    argv++;
 
-    time(&until);
-    until += 86400;
-#if 0
-    e=check_validity(t1.u.x509, &until);
-    if(e) {
-        printf("validity check: %s\n", e);
-        exit(2);
-    }
-#endif
-    if(verify_x509cert(t1.u.x509, TRUE, &until) == FALSE) {
-        printf("verify x509 failed\n");
-        exit(3);
-    }
+    while(argc-- > 0) {
+        char *file = *argv++;
+        /* load target cert */
+        if(!load_cert(CERT_NONE, file, TRUE, "test1", &t1)) {
+            printf("could not load cert file: %s\n", file);
+            exit(1);
+        }
 
-    printf("cert is valid\n");
 
-    free_x509cert(t1.u.x509);
+        until += 86400;
+        if(verify_x509cert(t1.u.x509, TRUE, &until) == FALSE) {
+            printf("verify x509 failed\n");
+            exit(3);
+        }
+        printf("cert: %s is valid\n", file);
+        free_x509cert(t1.u.x509);
+    }
     free_x509cert(cacert.u.x509);
 
     report_leaks();
