@@ -36,8 +36,7 @@ check:
 	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} 2>&1 | tee OUTPUT/${TESTNAME}.txt | diff - output.txt
 
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt

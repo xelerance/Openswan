@@ -813,7 +813,7 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	case OID_SHA384_WITH_RSA:
 	case OID_SHA512_WITH_RSA:
 	{
-
+            int validrecovery;
 	   SECKEYPublicKey *publicKey;
 	   PRArenaPool *arena;
 	   SECStatus retVal = SECSuccess;
@@ -913,27 +913,32 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
             dsig.len  = (unsigned int)dsigc.len;
 
     	    /*Verifying RSA signature*/
-	    if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
-	    {
-            DBG(DBG_PARSING,
-                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len);
-                DBG_log("NSS: length of decrypted sig = %d", dsig.len);
-	    );
-	    }
+            validrecovery = PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info());
+            if(validrecovery != SECSuccess )
+            {
+                DBG(DBG_PARSING,
+                    DBG_log("NSS signature recovery failed with result: %d\n",
+                            validrecovery));
+            } else {
+                DBG(DBG_PARSING,
+                    DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len);
+                    DBG_log("NSS: length of decrypted sig = %d", dsig.len);
+                    );
+            }
 
             pfree(nc.ptr);
             pfree(ec.ptr);
 	    pfree(sc.ptr);
 	    SECKEY_DestroyPublicKey (publicKey);
 
-	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
-	   {
-            pfree(dsigc.ptr);
-	    DBG(DBG_PARSING,
-		DBG_log("NSS: RSA Signature verified, hash values matched")
-	    );
-	    return TRUE;
-	   }
+            if(validrecovery == SECSuccess
+               && memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0) {
+                pfree(dsigc.ptr);
+                DBG(DBG_PARSING,
+                    DBG_log("NSS: RSA Signature verified, hash values matched")
+                    );
+                return TRUE;
+            }
 
            pfree(dsigc.ptr);
 	   DBG(DBG_PARSING, DBG_log("NSS: RSA Signature NOT verified"));
