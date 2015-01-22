@@ -47,7 +47,7 @@ main(int argc, char *argv[])
     add_authcert(cacert.u.x509, 0);
 
     /* load target cert */
-    if(!load_cert(CERT_NONE, argv[1], TRUE, "test1", &t1)) {
+    if(!load_cert(CERT_NONE, argv[2], TRUE, "test1", &t1)) {
         printf("could not load cert file: %s\n", argv[1]);
         exit(1);
     }

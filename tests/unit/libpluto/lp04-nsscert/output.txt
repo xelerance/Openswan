@@ -1,5 +1,14 @@
 
   Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
 ./nsscert   loaded cacert file 'CAcert.pem' (1927 bytes)
-./nsscert   loaded test1 file 'CAcert.pem' (1927 bytes)
+|   authcert inserted
+./nsscert   loaded test1 file 'badcert1.pem' (1461 bytes)
+| subject: 'C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+|   not before  : Oct 27 08:02:57 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 26 08:02:57 UTC 2016
+| valid certificate for "C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913"
+./nsscert issuer cacert not found
 ./nsscert leak detective found no leaks
+cert is valid
