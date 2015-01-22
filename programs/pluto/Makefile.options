@@ -58,11 +58,6 @@ HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26
 HDRDIRS+= -I${OPENSWANSRCDIR}/include/pluto -I${OPENSWANSRCDIR}/include
 HDRDIRS+= -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
 
-# Use LIBNSS
-ifeq ($(USE_LIBNSS),true)
-HDRDIRS+= -I/usr/include/nspr4 -I/usr/include/nss3
-endif
-
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=BIG_ENDIAN
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=LITTLE_ENDIAN
 
@@ -320,21 +315,11 @@ PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} # -lefence
 # Solaris needs -lsocket -lnsl
 LIBSWHACK+= ${WHACKLIB} ${LIBOPENSWAN}
 
+# NSS things
+DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
+PLUTOMINUSL+=${NSS_LIBS} ${FIPS_LIBS}
+HDRDIRS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
-# Use LIBNSS
-ifeq ($(USE_LIBNSS),true)
-HAVE_LIBNSS=1
-DEFINES+=-DHAVE_LIBNSS
-LIBSPLUTO+= -lnspr4
-LIBSPLUTO+= -lnss3
-# For avoiding implicit DSO linking
-LIBSPLUTO+= -lpthread
-ifeq ($(USE_FIPSCHECK),true)
-FIPS_CHECK=1
-DEFINES+=-DFIPS_CHECK
-LIBSPLUTO+= -lfipscheck
-endif
-endif
 
 # Use MODP group described in RFC 5114
 ifeq ($(USE_MODP_RFC5114),true)

@@ -16,6 +16,10 @@ endif
 VPATH+= ${KLIPSSRCDIR}
 OSDEP?=$(shell uname -s | tr 'A-Z' 'a-z')
 
+# NSS things
+DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
+INCLUDES+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+
 # Original flags
 INCLUDES+=-I. -I${KLIPSSRCDIR} -I${KLIPSD} -I${OPENSWANSRCDIR}
 INCLUDES+=-I${OPENSWANSRCDIR}/include
@@ -35,6 +39,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast
+CFLAGS+= ${DEFINES}
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL

@@ -584,6 +584,31 @@ ifeq ($(HAVE_OCF),true)
 CRYPTOLIBS += -lcrypto
 endif
 
+# Use LIBNSS
+ifeq ($(USE_LIBNSS),true)
+NSS_HDRDIRS= $(shell nspr-config --cflags) $(shell nss-config --cflags)
+NSS_FLAGS=-DHAVE_LIBNSS
+NSS_LIBS=$(shell nspr-config --libs) $(shell nss-config --libs) -lpthread
+
+ifeq ($(USE_FIPSCHECK),true)
+FIPS_FLAGS =-DFIPS_CHECK
+FIPS_LIBS  = -lfipscheck
+FIPS_HDRDIRS=
+else
+FIPS_FLAGS =
+FIPS_LIBS  =
+FIPS_HDRDIRS=
+endif
+
+else
+NSS_HDRDIRS=
+NSS_FLAGS=
+NSS_LIBS=
+
+endif
+
+
+
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 

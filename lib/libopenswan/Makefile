@@ -66,12 +66,16 @@ MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 HDRS=${KLIPSINC}/openswan.h internal.h
 
 LIBA=libopenswan.a
-LIBL=liboswlog.a
+
+# NSS things
+DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
+INCLUDES+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+
 # Original flags
 CFLAGS+=${PORTINCLUDE} -I.
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS}
-CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS}
+CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS} ${INCLUDES}
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
@@ -89,6 +93,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast
+CFLAGS+= ${DEFINES}
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
