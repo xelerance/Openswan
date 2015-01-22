@@ -194,3 +194,9 @@ osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert);
 
 
 #endif /* _SECRETS_H */
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
