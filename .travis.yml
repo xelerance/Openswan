@@ -24,7 +24,7 @@ before_install:
 
 install:
   - "sudo apt-get install gcc-multilib"
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install flex bison libgmp-dev:${BUILD_ARCH} libgmp3-dev:${BUILD_ARCH} libpcap-dev libpcap0.8:${BUILD_ARCH} electric-fence:${BUILD_ARCH}; fi
+  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install flex bison libgmp-dev:${BUILD_ARCH} libgmp3-dev:${BUILD_ARCH} libpcap0.8-dev:${BUILD_ARCH} libpcap0.8:${BUILD_ARCH} electric-fence:${BUILD_ARCH}; fi
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
   - "PATH=$HOME/bin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
