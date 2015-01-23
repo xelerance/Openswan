@@ -21,6 +21,7 @@ char *progname;
 long crl_check_interval = 0;
 struct pubkey_list *pluto_pubkeys = NULL;
 struct secret *pluto_secrets = NULL;
+extern int EF_DISABLE_BANNER;
 
 main(int argc, char *argv[])
 {
@@ -30,6 +31,7 @@ main(int argc, char *argv[])
     cert_t cacert,t1;
     time_t until;
 
+    EF_DISABLE_BANNER = 1;
     progname = argv[0];
     leak_detective=1;
 
