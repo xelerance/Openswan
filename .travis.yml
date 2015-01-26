@@ -11,7 +11,6 @@ env:
   global:
     - BUILD_ARCH=amd64
   matrix:
-    - BUILD_ARCH=i386
     - BUILD_ARCH=amd64
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
