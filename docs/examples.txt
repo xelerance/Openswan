@@ -1,0 +1,77 @@
+ 
+
+Roadwarriors IPsec VPN with SSL certificate authentication
+ 
+1. Create a the necessary directory structure for openssl   
+(may you want also to change openssl configuration, generally under /etc/ssl/openssl.cnf):
+
+    cd /etc/ipsec.d
+    rm -rf ./demoCA
+    mkdir demoCA
+    mkdir demoCA/newcerts
+    mkdir demoCA/private
+    touch demoCA/index.txt
+    echo "01" >> demoCA/serial
+
+
+2. Create the CA (valid for 10 years)
+    openssl req -x509 -days 3650 -newkey rsa:2048 -keyout /etc/ipsec.d/private/caKey.pem -out /etc/ipsec.d/cacerts/caCert.pem
+
+3. Create a certification request for the server
+    openssl req  -newkey rsa:2048 -keyout /etc/ipsec.d/private/serverKey.pem -out /etc/ipsec.d/private/serverReq.pem
+    
+4. Convert the server key in order to be read by openswan
+    openssl rsa -in /etc/ipsec.d/private/serverKey.pem -out /etc/ipsec.d/private/serverKey.pem.openswan
+   
+5. Sign the certification request with our just created certification-authority (CA) (valid for 2 years)
+    openssl ca -in /etc/ipsec.d/private/serverReq.pem -days 730 -out /etc/ipsec.d/certs/serverCert.pem -notext -cert /etc/ipsec.d/cacerts/caCert.pem -keyfile /etc/ipsec.d/private/caKey.pem
+    
+6. Create a client certification request
+    openssl req -newkey rsa:2048 -keyout /etc/ipsec.d/private/userAKey.pem  -out /etc/ipsec.d/private/userAReq.pem
+    
+7. Sign the client certification request
+    openssl ca -in /etc/ipsec.d/private/userAReq.pem -days 730 -out /etc/ipsec.d/certs/userACert.pem -notext -cert /etc/ipsec.d/cacerts/caCert.pem -keyfile /etc/ipsec.d/private/caKey.pem
+ 
+8. Add server private key in file /etc/ipsec.secrets:
+    : RSA serverKey.pem.new "your password"
+    
+9. Configure ipsec. Example /etc/ipsec.conf:
+
+    conn roadwarriors_rsa
+        authby=rsasig
+        #
+        left=  ??? 
+        leftid=  ???
+        leftsubnet=  ???
+        leftrsasigkey=%cert
+        leftcert=serverCert.pem
+        #
+        right=%any
+        rightrsasigkey=%cert
+        # PHASE 1
+        # negothiation mode
+        aggrmode=no
+        ike=3des-sha1;modp1024,aes256-sha2_256;modp2048
+        ikelifetime=3h
+        # PHASE 2
+        type=tunnel
+        phase2=esp
+        phase2alg=3des-sha1;modp1024
+        salifetime=3h
+    
+    conn user_userA
+        also=roadwarriors_rsa
+        rightid=@userA.yourdomani
+        rightsubnet=  ???
+        rightcert=userACert.pem
+        auto=add
+        
+    conn user_userB
+        also=roadwarriors_rsa
+        rightid=@userB.yourdomani
+        rightsubnet=  ???
+        rightcert=userBCert.pem
+        auto=add        
+    
+
+User A and B are two roadwarrior users that can connect at the same time to your server.
