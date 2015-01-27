@@ -317,6 +317,21 @@ bool   log_with_timestamp_desired = FALSE;
 u_int16_t secctx_attr_value=SECCTX;
 #endif
 
+u_char    secret_of_the_day[SHA1_DIGEST_SIZE];
+u_char    ikev2_secret_of_the_day[SHA1_DIGEST_SIZE];
+
+void
+init_secret(void)
+{
+    /*
+     * Generate the secret value for responder cookies, and
+     * schedule an event for refresh.
+     */
+    get_rnd_bytes(secret_of_the_day, sizeof(secret_of_the_day));
+    event_schedule(EVENT_REINIT_SECRET, EVENT_REINIT_SECRET_DELAY, NULL);
+}
+
+
 int
 main(int argc, char **argv)
 {

@@ -38,8 +38,7 @@
 #include "oswalloc.h"
 #include "oswtime.h"
 #include "id.h"
-#include "x509.h"
-#include "pgp.h"
+#include "pluto/x509lists.h"
 #include "certs.h"
 #include "secrets.h"
 

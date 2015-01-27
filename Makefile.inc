@@ -544,9 +544,12 @@ KLIPSSRCDIR=${OPENSWANSRCDIR}/linux/net/ipsec
 #KLIPSSRCDIR=/mara1/git/klips/net/ipsec
 
 LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
-OPENSWANLIB=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
-PLUTOLIB=${OBJDIRTOP}/lib/libpluto/libpluto.a
-OSWLOGLIB=${OBJDIRTOP}/lib/libopenswan/liboswlog.a
+LIBOPENSWAN=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
+OPENSWANLIB=${LIBOPENSWAN}
+LIBPLUTO=${OBJDIRTOP}/lib/libpluto/libpluto.a
+PLUTOLIB=${LIBPLUTO}
+LIBOSWLOG=${OBJDIRTOP}/lib/liboswlog/liboswlog.a
+LIBOSWKEYS=${OBJDIRTOP}/lib/liboswkeys/liboswkeys.a
 
 LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
 LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
@@ -582,18 +585,45 @@ ifeq ($(HAVE_OCF),true)
 CRYPTOLIBS += -lcrypto
 endif
 
+# Use LIBNSS
+ifeq ($(USE_LIBNSS),true)
+NSS_HDRDIRS= $(shell nspr-config --cflags) $(shell nss-config --cflags)
+NSS_FLAGS=-DHAVE_LIBNSS
+NSS_LIBS=$(shell nspr-config --libs) $(shell nss-config --libs) -lpthread
+NSS_LIBTOKEN=-libnss
+ifeq ($(USE_FIPSCHECK),true)
+FIPS_FLAGS =-DFIPS_CHECK
+FIPS_LIBS  = -lfipscheck
+FIPS_HDRDIRS=
+else
+FIPS_FLAGS =
+FIPS_LIBS  =
+FIPS_HDRDIRS=
+endif
+
+else
+NSS_LIBTOKEN=
+NSS_HDRDIRS=
+NSS_FLAGS=
+NSS_LIBS=
+
+endif
+
+
+
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
 WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
-IPSECCONFLIB=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
+LIBIPSECCONF=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
 # set this to "ulimit -c unlimited" if you want core dumps from unit tests.
 COREULIMIT?=/bin/true
 
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE
-export LIBOPENSWANDIR OPENSWANLIB OSWLOGLIB PLUTOLIB LWRESDIR LIBLWRES LIBDNS
+export LIBOPENSWANDIR LIBOPENSWAN LIBOSWLOG LIBPLUTO LIBOSWKEYS PLUTOLIB
+export LWRESDIR LIBLWRES LIBDNS
 export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
 export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
 export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB IPSECCONFLIB

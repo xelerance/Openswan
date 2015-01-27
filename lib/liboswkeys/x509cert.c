@@ -57,11 +57,12 @@
 # include <pk11pub.h>
 # include <keyhi.h>
 # include <secerr.h>
+# include <prerror.h>
 # include "oswconf.h"
 #endif
 
 #include "x509dn.h"
-
+#include "pluto/x509lists.h"
 
 
 /* ASN.1 definition of a basicConstraints extension */
@@ -812,17 +813,14 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	case OID_SHA256_WITH_RSA:
 	case OID_SHA384_WITH_RSA:
 	case OID_SHA512_WITH_RSA:
+	case OID_SHA224_WITH_RSA:
 	{
-
-	   SECKEYPublicKey *publicKey;
-	   PRArenaPool *arena;
-	   SECStatus retVal = SECSuccess;
-	   SECItem nss_n, nss_e, dsig;
-	   SECItem signature, data;
-           mpz_t e;
-           mpz_t n;
-	   mpz_t s;
-	   chunk_t nc, ec, sc, dsigc;
+            SECKEYPublicKey *publicKey;
+            PRArenaPool *arena;
+            SECStatus retVal;
+            SECItem nss_n, nss_e;
+            SECItem dsig, signature;
+            int skip;
 
 	    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
 	    if (arena == NULL) {
@@ -830,109 +828,139 @@ decrypt_sig(chunk_t sig, int alg, const x509cert_t *issuer_cert,
 	        return FALSE;
 	    }
 
-	    publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
-	    if (!publicKey) {
-	        PORT_FreeArena (arena, PR_FALSE);
-	        PORT_SetError (SEC_ERROR_NO_MEMORY);
-		DBG(DBG_PARSING, DBG_log("NSS: error in allocating memory to public key"));
-	        return FALSE;
-	    }
-
-	    publicKey->arena = arena;
-	    publicKey->keyType = rsaKey;
-	    publicKey->pkcs11Slot = NULL;
-	    publicKey->pkcs11ID = CK_INVALID_HANDLE;
-
-            n_to_mpz(s, sig.ptr, sig.len);
-            n_to_mpz(e, issuer_cert->publicExponent.ptr,
-                        issuer_cert->publicExponent.len);
-            n_to_mpz(n, issuer_cert->modulus.ptr,
-                        issuer_cert->modulus.len);
-
-
-	    nc = mpz_to_n2((const MP_INT *)&n);
-            ec = mpz_to_n2((const MP_INT *)&e);
-	    sc = mpz_to_n2((const MP_INT *)&s);
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS cert: modulus : ", nc)
-            )
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS cert: exponent : ", ec)
-            )
-
-            DBG(DBG_PARSING,
-                DBG_dump_chunk("NSS: input signature : ", sc)
-            )
-
-            mpz_clear(e);
-            mpz_clear(n);
-            mpz_clear(s);
-
-    /*Converting n and e to nss_n and nss_e*/
-	    nss_n.data = nc.ptr;
-	    nss_n.len = (unsigned int) nc.len;
-	    nss_n.type = siBuffer;
-
-	    nss_e.data = ec.ptr;
-	    nss_e.len  = (unsigned int)ec.len;
-	    nss_e.type = siBuffer;
-
-	    retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
-            if (retVal == SECSuccess) {
-              retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
+            publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc(arena,
+                                                             sizeof(SECKEYPublicKey));
+            if (publicKey == NULL) {
+                PORT_FreeArena(arena, PR_FALSE);
+                PORT_SetError(SEC_ERROR_NO_MEMORY);
+                DBG(DBG_X509 | DBG_CONTROL,
+                    DBG_log("NSS: error in allocating memory to public key");
+                    );
+                return FALSE;
             }
 
-	    if(retVal != SECSuccess){
-	    pfree(nc.ptr);
-	    pfree(ec.ptr);
-	    pfree(sc.ptr);
-	    SECKEY_DestroyPublicKey (publicKey);
-            DBG_log("NSS x509dn.c: error in creating public key");
-	    return FALSE;
-	    }
+            publicKey->arena = arena;
+            publicKey->keyType = rsaKey;
+            publicKey->pkcs11Slot = NULL;
+            publicKey->pkcs11ID = CK_INVALID_HANDLE;
 
-	    signature.type = siBuffer;
-	    signature.data = sc.ptr;
-	    signature.len  = (unsigned int)sc.len;
+            DBG(DBG_X509 | DBG_CONTROL,	/* n */
+                DBG_dump("NSS cert: modulus : ",
+                         issuer_cert->modulus.ptr,
+                         issuer_cert->modulus.len);
+                );
 
-	    data.type = siBuffer;
-	    data.data = digest->ptr;
-	    data.len  = (unsigned int)digest->len;
+            DBG(DBG_X509 | DBG_CONTROL,	/* e */
+                DBG_dump("NSS cert: exponent : ",
+                         issuer_cert->publicExponent.ptr,
+                         issuer_cert->publicExponent.len);
+                );
 
-	    dsigc.len = (unsigned int)sc.len;
-	    dsigc.ptr = alloc_bytes(dsigc.len, "NSS decrypted signature");
+            DBG(DBG_X509 | DBG_CONTROL,	/* s */
+                DBG_dump("NSS: input signature : ", sig.ptr, sig.len);
+                );
+
+            /* Converting n and e to nss_n and nss_e */
+
+            skip = (issuer_cert->modulus.len > 0 &&
+                    issuer_cert->modulus.ptr[0] == 0x00) ? 1 : 0;
+            if (skip != 1) {
+                DBG(DBG_X509 | DBG_CONTROL,
+                    DBG_log("NSS: RSA Modulus has no leading 0x00 byte, modules < 2^511 ?");
+                    );
+            }
+            nss_n.data = issuer_cert->modulus.ptr + skip;
+            nss_n.len = issuer_cert->modulus.len - skip;
+            nss_n.type = siBuffer;
+
+            /*
+             * exponents are always < 2^255, so they never have
+             * a leading zero
+             */
+            nss_e.data = issuer_cert->publicExponent.ptr;
+            nss_e.len = issuer_cert->publicExponent.len;
+            nss_e.type = siBuffer;
+
+            retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus,
+                                      &nss_n);
+            if (retVal == SECSuccess) {
+                retVal = SECITEM_CopyItem(arena,
+                                          &publicKey->
+                                          u.rsa.publicExponent,
+                                          &nss_e);
+            }
+
+            if (retVal != SECSuccess) {
+                SECKEY_DestroyPublicKey(publicKey);
+                loglog(RC_LOG_SERIOUS,
+                       "NSS x509dn.c: error in creating public key");
+                return FALSE;
+            }
+
+            if (skip != 1) {
+                DBG(DBG_X509 | DBG_CONTROL,
+                    DBG_log("NSS: RSA Signature has no leading 0x00 byte?");
+                    );
+            }
+
+            signature.data = sig.ptr + skip;
+            signature.len  = sig.len - skip;
+            signature.type = siBuffer;
+            DBG(DBG_X509 | DBG_CONTROL,
+                DBG_log("RSA Signature length is %d", signature.len);
+                );
+
+            dsig.len = signature.len;	/*
+                                         * this is a hack! yes,
+                                         * a digest will always be
+                                         * shorter then the full sig
+                                         */
+            dsig.data = alloc_bytes(dsig.len, "NSS decrypted signature");
             dsig.type = siBuffer;
-            dsig.data = dsigc.ptr;
-            dsig.len  = (unsigned int)dsigc.len;
 
-    	    /*Verifying RSA signature*/
-	    if(PK11_VerifyRecover(publicKey,&signature,&dsig,osw_return_nss_password_file_info()) == SECSuccess )
-	    {
-            DBG(DBG_PARSING,
-                DBG_dump("NSS decrypted sig: ", dsig.data, dsig.len);
-                DBG_log("NSS: length of decrypted sig = %d", dsig.len);
-	    );
-	    }
+            /* Verifying RSA signature */
+            if (PK11_VerifyRecover(publicKey, &signature, &dsig,
+                                   osw_return_nss_password_file_info()) ==
+                SECSuccess) {
+                DBG(DBG_X509 | DBG_CONTROL,
+                    DBG_dump("NSS digest sig: ",
+                             dsig.data, dsig.len);
+                    DBG_log("NSS: length of digest sig = %d",
+                            dsig.len);
+                    );
+            } else {
+                loglog(RC_LOG_SERIOUS,
+                       "NSS: signature FAILED verification; PK11_VerifyRecover() failed (%d) to recover digest",
+                       PR_GetError());
+                SECKEY_DestroyPublicKey(publicKey);
+                return FALSE;
+            }
 
-            pfree(nc.ptr);
-            pfree(ec.ptr);
-	    pfree(sc.ptr);
-	    SECKEY_DestroyPublicKey (publicKey);
+            SECKEY_DestroyPublicKey(publicKey);
 
-	   if(memcmp(dsig.data+dsig.len-digest->len,digest->ptr, digest->len)==0)
-	   {
-            pfree(dsigc.ptr);
-	    DBG(DBG_PARSING,
-		DBG_log("NSS: RSA Signature verified, hash values matched")
-	    );
-	    return TRUE;
-	   }
+            DBG(DBG_X509 | DBG_CONTROL,
+                DBG_dump("NSS scratchpad plus computed digest sig: ",
+                         dsig.data, dsig.len);
+                DBG_dump("NSS adjusted digest sig: ",
+                         dsig.data + dsig.len - digest->len,
+                         digest->len);
+                DBG_dump_chunk("NSS expected digest sig: ", *digest);
+                );
 
-           pfree(dsigc.ptr);
-	   DBG(DBG_PARSING, DBG_log("NSS: RSA Signature NOT verified"));
-	   return FALSE;
+            if (memeq(dsig.data + dsig.len - digest->len, digest->ptr,
+                      digest->len)) {
+                pfree(dsig.data);
+                DBG(DBG_CONTROL,
+                    DBG_log("NSS: RSA Signature verified, hash values matched");
+                    );
+                return TRUE;
+            }
+
+            pfree(dsig.data);
+
+            loglog(RC_LOG_SERIOUS, "NSS: RSA Signature FAILED verification");
+            digest->len = 0;
+            return FALSE;
 	}
 	default:
 	    digest->len = 0;

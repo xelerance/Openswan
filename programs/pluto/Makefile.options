@@ -54,12 +54,9 @@ endif
 
 # where to find klips headers and Openswan headers
 # and 2.6 kernel's <rtnetlink.h> and <xfrm.h>
-HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26 -I${OPENSWANSRCDIR}/include -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
-
-# Use LIBNSS
-ifeq ($(USE_LIBNSS),true)
-HDRDIRS+= -I/usr/include/nspr4 -I/usr/include/nss3
-endif
+HDRDIRS = -I${OPENSWANSRCDIR}/programs/pluto/linux26
+HDRDIRS+= -I${OPENSWANSRCDIR}/include/pluto -I${OPENSWANSRCDIR}/include
+HDRDIRS+= -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
 
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=BIG_ENDIAN
 # BYTE_ORDER = -DBIG_ENDIAN=4321 -DLITTLE_ENDIAN=1234 -DBYTE_ORDER=LITTLE_ENDIAN
@@ -164,7 +161,7 @@ endif
 
 # the files are defined here so that TAGS: can catch them.
 #
-X509_DIST_OBJS=ac.o x509.o ocsp.o x509keys.o
+X509_DIST_OBJS=ac.o x509.o x509keys.o
 X509_DIST_SRCS=${X509_DIST_OBJS:.o=.c}
 X509_DIST_SRCS+=fetch.h
 HAVE_THREADS_DIST_OBJS=fetch.o
@@ -172,6 +169,9 @@ HAVE_THREADS_DIST_SRCS=${HAVE_THREADS_DIST_OBJS:.o=.c}
 X509_OBJS=${X509_DIST_OBJS}
 X509_SRCS=${X509_DIST_SRCS}
 X509_DEFS=-DX509_PLUTO
+X509_LIBS= ${LIBOSWKEYS} ${CRYPTOLIBS}
+LIBSWHACK+=${LIBOSWKEYS} ${CRYPTOLIBS}
+
 
 # dynamic LDAP CRL fetching requires OpenLDAP library
 ifeq ($(USE_LDAP),true)
@@ -301,7 +301,7 @@ DEFINES = $(EXTRA_DEFINES) \
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO =$(OBJSGCRYPT)
 LIBSPLUTO+=$(LIBOSWCRYPTO)
-LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) $(OPENSWANLIB) $(LIBPLUTO)
+LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) ${LIBOPENSWAN} ${LIBPLUTO}
 LIBSPLUTO+=${LIBSHA1} ${LIBMD5} ${LIBMD2}
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS)
 LIBSPLUTO+=$(HAVE_THREADS_LIBS)
@@ -312,20 +312,14 @@ PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS}
 PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}
 PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} # -lefence
 
-# Use LIBNSS
-ifeq ($(USE_LIBNSS),true)
-HAVE_LIBNSS=1
-DEFINES+=-DHAVE_LIBNSS
-LIBSPLUTO+= -lnspr4
-LIBSPLUTO+= -lnss3
-# For avoiding implicit DSO linking
-LIBSPLUTO+= -lpthread
-ifeq ($(USE_FIPSCHECK),true)
-FIPS_CHECK=1
-DEFINES+=-DFIPS_CHECK
-LIBSPLUTO+= -lfipscheck
-endif
-endif
+# Solaris needs -lsocket -lnsl
+LIBSWHACK+= ${WHACKLIB} ${LIBOPENSWAN}
+
+# NSS things
+DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
+PLUTOMINUSL+=${NSS_LIBS} ${FIPS_LIBS}
+HDRDIRS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+
 
 # Use MODP group described in RFC 5114
 ifeq ($(USE_MODP_RFC5114),true)

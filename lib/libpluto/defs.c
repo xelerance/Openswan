@@ -25,8 +25,7 @@
 #include "constants.h"
 #include "openswan/ipsec_policy.h"
 #include "oswtime.h"
-#include "defs.h"
-#include "log.h"
+#include "pluto/defs.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 
 /*  checks if the expiration date has been reached and

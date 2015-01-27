@@ -1,3 +1,5 @@
+# Copyright (C) 2003-2004 Andreas Steffen, Zuercher Hochschule Winterthur
+
 0x02                         "ITU-T Administration"
   0x82                       ""
     0x06                     "Germany ITU-T member"
@@ -64,6 +66,7 @@
                 0x0B         "sha256WithRSAEncryption"	OID_SHA256_WITH_RSA
                 0x0C         "sha384WithRSAEncryption"	OID_SHA384_WITH_RSA
                 0x0D         "sha512WithRSAEncryption"	OID_SHA512_WITH_RSA
+                0x0E         "sha224WithRSAEncryption"	OID_SHA224_WITH_RSA
               0x07           "PKCS-7"
                 0x01         "data"			OID_PKCS7_DATA
                 0x02         "signedData"		OID_PKCS7_SIGNED_DATA
@@ -88,7 +91,7 @@
                 0x01         ""
                   0x02       ""
                     0x02     ""
-                    0x4B     "TCGID"
+                      0x4B   "TCGID"
       0x05                   "security"
         0x05                 "mechanisms"
           0x07               "id-pkix"

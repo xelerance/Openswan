@@ -53,6 +53,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "connections.h"	/* needs id.h */
+#include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -305,7 +306,7 @@ main_mode_hash_body(struct state *st
                     , bool hashi        /* Initiator? */
                     , const pb_stream *idpl     /* ID payload, as PBS */
                     , struct hmac_ctx *ctx
-                    , hash_update_t hash_update_void)
+                    , hash_update_t hash_update_void UNUSED)
 #else
 void
 main_mode_hash_body(struct state *st

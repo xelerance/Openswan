@@ -22,8 +22,6 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-X509LIB=x509dn.c x509cert.c certload.c pem.c pkcs.c asn1.c oid.c pgp.c x509chain.c
-
 SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c \
@@ -61,23 +59,23 @@ endif
 CFLAGS+=-DUSE_SHA2
 CFLAGS+=-I${OPENSWANSRCDIR}/lib/libcrypto/libsha2
 
-LOGSRCS=oswlog.c
-
-
 OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
-LOGOBJS=${LOGSRCS:.c=.o}
 
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
 HDRS=${KLIPSINC}/openswan.h internal.h
 
 LIBA=libopenswan.a
-LIBL=liboswlog.a
+
+# NSS things
+DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
+INCLUDES+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+
 # Original flags
 CFLAGS+=${PORTINCLUDE} -I.
 CFLAGS+=-I${OPENSWANSRCDIR} -DDEBUG
 CFLAGS+=${PFKEYV2_DEFS} ${KLIPS_DEFS}
-CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS}
+CFLAGS+= -I${OPENSWANSRCDIR}/include ${PORTINCLUDE} $(USERCOMPILE) ${CROSSFLAGS} ${INCLUDES}
 CFLAGS+= -Wall
 #CFLAGS+= -Wconversion
 #CFLAGS+= -Wmissing-prototypes
@@ -95,6 +93,7 @@ CFLAGS+= -Wstrict-prototypes
 #CFLAGS+= -W
 #CFLAGS+= -Wwrite-strings
 CFLAGS+= -Wbad-function-cast
+CFLAGS+= ${DEFINES}
 
 ifeq ($(USE_NAT_TRAVERSAL),true)
 CFLAGS+= -DNAT_TRAVERSAL
@@ -142,10 +141,11 @@ MANS=anyaddr.3 atoaddr.3 atoasr.3 atoul.3 goodmask.3 \
 SHOULDWERESTART=${USE_OBJDIR}$(wildcard ttodata.3.xml)
 ifeq ($(SHOULDWERESTART),truettodata.3.xml)
 all programs clean install:
-	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
+	@echo OBJDIR MAKE
+	@cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/lib/libopenswan && make $@
 else
-all:	$(LIBA) ${LIBL}
-programs: $(LIBA) ${LIBL}
+all:	$(LIBA)
+programs: $(LIBA)
 clean:	cleanall
 install: doinstall
 
@@ -166,18 +166,15 @@ install_file_list:
 	done
 
 $(LIBA): $(OBJS)
-	$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
-
-$(LIBL): $(LOGOBJS)
-	$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
+	@echo AR ${LIBA}
+	@$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
 
 $(OBJS):	$(HDRS)
 
-$(LOGOBJS):	$(HDRS)
-
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	@echo VERSION
+	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a
@@ -243,8 +240,9 @@ check:
 
 checkprograms:
 
+# this should be a generic process.
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS))) $(wildcard $(LOGSRCS)) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS)))) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend

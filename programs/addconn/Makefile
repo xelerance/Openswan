@@ -16,7 +16,7 @@ $(info info: addcon/Makefile: MAKECMDGOALS="$(MAKECMDGOALS)")
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-PROGLIBS=${WHACKLIB} ${IPSECCONFLIB} 
+PROGLIBS=${WHACKLIB} ${LIBIPSECCONF}
 #EXTRALIBS=-lefence
 
 PROGRAM=addconn

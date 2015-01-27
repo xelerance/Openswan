@@ -18,4 +18,5 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
 	@${MAKE} -C b01-install check
+	@${MAKE} -C b02-libnss  check
 

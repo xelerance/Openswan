@@ -1,0 +1,200 @@
+
+./nsscert   loaded cacert file 'CAcert.pem' (1927 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+| L3 - version:
+|   v3
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 07:57:12 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 27 07:57:12 UTC 2034'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L2 - optional extensions:
+| L3 - extensions:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'authorityKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - authorityKeyIdentifier:
+| L7 - keyIdentifier:
+| L8 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'basicConstraints'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - basicConstraints:
+| L7 - CA:
+|   TRUE
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+|   authcert inserted
+./nsscert   loaded test1 file 'goodcert1.pem' (1461 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+|   v1
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 08:03:15 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 26 08:03:15 UTC 2016'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+| subject: 'C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+|   not before  : Oct 27 08:03:15 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 26 08:03:15 UTC 2016
+| valid certificate for "C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  df 65 e3 90  2e 54 c1 1d  3e 5f fd 0c  8d d3 65 a8
+|   76 0b 85 46
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821)
+./nsscert no crl from issuer "C=SP, O=adMotion SL, CN=CAcert-adMotion" found (strict=no)
+| subject: 'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| authkey:  87:97:93:86:b3:19:9d:53:53:cf:90:01:9e:95:11:96:1a:b8:b5:2a
+|   not before  : Oct 27 07:57:12 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 27 07:57:12 UTC 2034
+| valid certificate for "C=SP, O=adMotion SL, CN=CAcert-adMotion"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=CAcert-adMotion)
+| reached self-signed root ca
+./nsscert   loaded test1 file 'badcert1.pem' (1461 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+|   v1
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 08:02:57 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 26 08:02:57 UTC 2016'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+| subject: 'C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+|   not before  : Oct 27 08:02:57 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 26 08:02:57 UTC 2016
+| valid certificate for "C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  d8 97 fb 26  e0 92 e9 e0  fa 3e b9 ea  d0 87 04 89
+|   f1 f1 ed 78
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913)
+./nsscert no crl from issuer "C=SP, O=adMotion SL, CN=CAcert-adMotion" found (strict=no)
+| subject: 'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| authkey:  87:97:93:86:b3:19:9d:53:53:cf:90:01:9e:95:11:96:1a:b8:b5:2a
+|   not before  : Oct 27 07:57:12 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 27 07:57:12 UTC 2034
+| valid certificate for "C=SP, O=adMotion SL, CN=CAcert-adMotion"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=CAcert-adMotion)
+| reached self-signed root ca
+./nsscert leak detective found no leaks
+cert: goodcert1.pem is valid
+cert: badcert1.pem is valid

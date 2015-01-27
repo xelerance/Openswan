@@ -61,7 +61,7 @@ struct RSA_private_key {
 	qInv;	/* (q^-1) mod p */
 #ifdef HAVE_LIBNSS
     unsigned char ckaid[HMAC_BUFSIZE];  /*ckaid for use in NSS*/
-    unsigned int  ckaid_len;	
+    unsigned int  ckaid_len;
 #endif
 };
 
@@ -90,7 +90,7 @@ extern struct id_list *osw_get_idlist(const struct secret *s);
 typedef int (*secret_eval)(struct secret *secret,
 			   struct private_key_stuff *pks,
 			   void *uservoid);
-			   
+
 extern struct secret *osw_foreach_secret(struct secret *secrets,
 					 secret_eval func, void *uservoid);
 extern struct secret *osw_get_defaultsecret(struct secret *secrets);
@@ -125,7 +125,7 @@ struct pubkey_list {
 #define MAX_PROMPT_PASS_TRIALS	5
 #define PROMPT_PASS_LEN		64
 
-typedef void (*pass_prompt_func)(int mess_no, const char *message, ...) PRINTF_LIKE(2);   
+typedef void (*pass_prompt_func)(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 typedef struct {
     char secret[PROMPT_PASS_LEN];
@@ -194,3 +194,9 @@ osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert);
 
 
 #endif /* _SECRETS_H */
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

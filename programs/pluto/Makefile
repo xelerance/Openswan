@@ -68,12 +68,8 @@ ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
 
-LIBSADNS = $(OPENSWANLIB)
+LIBSADNS = ${LIBOPENSWAN}
 LIBSADNS += -lresolv # -lefence
-
-# Solaris needs -lsocket -lnsl
-LIBSWHACK = ${WHACKLIB} ${OPENSWANLIB}
-
 
 RM = /bin/rm
 RMFLAGS = -f
@@ -100,7 +96,6 @@ DISTSRC = \
 	cookie.c cookie.h \
 	crypto.h crypto.c \
 	db_ops.c \
-	defs.h defs.c \
 	demux.c demux.h msgdigest.c \
 	dnskey.c dnskey.h \
 	dpd.c dpd.h \
@@ -120,11 +115,9 @@ DISTSRC = \
 	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
 	log.c log.h \
 	plutomain.c plutoalg.c \
-	ocsp.c ocsp.h \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	crypt_ke.c crypt_dh.c crypt_start_dh.c \
-	keys.c keys.h \
-	rnd.c rnd.h \
+	keys.c \
 	server.c server.h \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \
@@ -149,7 +142,7 @@ DIST = $(DISTMISC) $(DISTSRC)
 OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o initiate.o terminate.o
-OBJSPLUTO += pending.o cookie.o crypto.o defs.o dpd.o
+OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
@@ -161,7 +154,7 @@ OBJSPLUTO += kernel_noklips.o rcv_whack.o
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_crypto.o ikev2_prfplus.o
-OBJSPLUTO += rnd.o spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
+OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
@@ -232,23 +225,27 @@ install_file_list:
 			echo $(FMANDIR)/$$to; \
 		done
 
-alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) $(OPENSWANLIB)
+alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) ${LIBOPENSWAN}
 	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
 
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) $(OPENSWANLIB) ${LIBTPM}
-	$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM}
+	@echo LD ${BINNAMEPLUTO}
+	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
 $(BINNAMEADNS): $(OBJSADNS)
-	$(CC) -o $(BINNAMEADNS) $(LDFLAGS) $(OBJSADNS) $(USERLINK) $(LIBSADNS) ${ADNSMINUSL}
+	@echo LD ${BINNAMEADNS}
+	@$(CC) -o $(BINNAMEADNS) $(LDFLAGS) $(OBJSADNS) $(USERLINK) $(LIBSADNS) ${ADNSMINUSL}
 
 $(BINNAMEWHACK): $(OBJSWHACK)
-	$(CC) -o $(BINNAMEWHACK) $(LDFLAGS) $(OBJSWHACK) $(USERLINK) $(LIBSWHACK) ${WHACKMINUSL}
+	@echo LD ${BINNAMEWHACK}
+	@$(CC) -o $(BINNAMEWHACK) $(LDFLAGS) $(OBJSWHACK) $(USERLINK) $(LIBSWHACK) ${WHACKMINUSL}
 
 $(BINNAMEWHACKINIT): $(OBJSWHACKINIT)
-	$(CC) -o $(BINNAMEWHACKINIT) $(LDFLAGS) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
+	@echo LD ${BINNAMEWHACKINIT}
+	@$(CC) -o $(BINNAMEWHACKINIT) $(LDFLAGS) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
 
 distlist:
 	@echo $(DIST)
@@ -271,7 +268,8 @@ check:
 checkprograms:
 
 .c.o:
-	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+	@echo CC `basename $<`
+	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
 
 %.i: %.c
 	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -E -o $@ $<
@@ -279,7 +277,7 @@ checkprograms:
 
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	@(ls $(DISTSRC) | grep '\.c' | xargs $(GCC) -MM ${COPTS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
+	@(ls $(DISTSRC) | grep '\.c' | xargs $(CC) -MM ${COPTS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend.${OSDEP}
 
 -include ${srcdir}Makefile.depend.${OSDEP}
 
