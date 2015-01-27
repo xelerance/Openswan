@@ -1,6 +1,6 @@
  
 
-Roadworrios Ipsec VPN with SSL certificate authentication
+Roadwarriors IPsec VPN with SSL certificate authentication
  
 1. Create a the necessary directory structure for openssl   
 (may you want also to change openssl configuration, generally under /etc/ssl/openssl.cnf):
