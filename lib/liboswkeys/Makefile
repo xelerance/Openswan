@@ -24,6 +24,9 @@ LIBRARY=oswkeys
 LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
 
+# just always turn on these two.
+CFLAGS+=-DUSE_SHA2 -DUSE_AES
+
 ONEFILE=x509dn.c
 SRCS=asn1.c certload.c pem.c pgp.c pkcs.c x509dn.c ocsp.c
 SRCS+=x509cert.c x509lists.c oid.c x509chain.c signatures.c
