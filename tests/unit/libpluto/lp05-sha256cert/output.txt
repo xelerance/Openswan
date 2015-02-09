@@ -1,5 +1,3 @@
-
-  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
 ./nsscert   loaded cacert file 'CAcert.pem' (1350 bytes)
 |   file content is not binary ASN.1
 |   -----BEGIN CERTIFICATE-----
