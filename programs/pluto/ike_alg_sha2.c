@@ -7,7 +7,7 @@
 #include "constants.h"
 #include "defs.h"
 #include "log.h"
-#include "libsha2/sha2.h"
+#include "sha2.h"
 #include "alg_info.h"
 #include "ike_alg.h"
 

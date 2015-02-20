@@ -1,0 +1,221 @@
+./nsscert   loaded cacert file 'CAcert.pem' (1350 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+| L3 - version:
+|   v3
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha256WithRSAEncryption'
+| L2 - issuer:
+|   'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Sep 10 10:01:18 UTC 2004'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Sep 07 10:01:18 UTC 2019'
+| L2 - subject:
+|   'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L2 - optional extensions:
+| L3 - extensions:
+| L4 - extension:
+| L5 - extnID:
+|   'basicConstraints'
+| L5 - critical:
+|   TRUE
+| L5 - extnValue:
+| L6 - basicConstraints:
+| L7 - CA:
+|   TRUE
+| L7 - pathLenConstraint:
+| L4 - extension:
+| L5 - extnID:
+|   'keyUsage'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'authorityKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - authorityKeyIdentifier:
+| L7 - keyIdentifier:
+| L8 - keyIdentifier:
+| L7 - authorityCertIssuer:
+| L8 - generalNames:
+| L9 - generalName:
+| L10 - directoryName:
+|   'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| L7 - authorityCertSerialNumber:
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha256WithRSAEncryption'
+| L1 - signatureValue:
+|   authcert inserted
+./nsscert   loaded test1 file 'sunCert.pem' (1493 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+| L3 - version:
+|   v3
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha256WithRSAEncryption'
+| L2 - issuer:
+|   'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Aug 27 14:42:45 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Aug 26 14:42:45 UTC 2019'
+| L2 - subject:
+|   'C=CH, O=Linux strongSwan, CN=sun.strongswan.org'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L2 - optional extensions:
+| L3 - extensions:
+| L4 - extension:
+| L5 - extnID:
+|   'basicConstraints'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - basicConstraints:
+| L7 - CA:
+|   FALSE
+| L4 - extension:
+| L5 - extnID:
+|   'keyUsage'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'authorityKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - authorityKeyIdentifier:
+| L7 - keyIdentifier:
+| L8 - keyIdentifier:
+| L7 - authorityCertIssuer:
+| L8 - generalNames:
+| L9 - generalName:
+| L10 - directoryName:
+|   'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| L7 - authorityCertSerialNumber:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectAltName'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - generalNames:
+| L7 - generalName:
+| L8 - dnsName:
+|   'sun.strongswan.org'
+| L4 - extension:
+| L5 - extnID:
+|   'extendedKeyUsage'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - extendedKeyUsage:
+| L7 - keyPurposeID:
+|   'serverAuth'
+| L4 - extension:
+| L5 - extnID:
+|   'crlDistributionPoints'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - crlDistributionPoints:
+| L7 - DistributionPoint:
+| L8 - distributionPoint:
+| L9 - fullName:
+| L10 - generalNames:
+| L11 - generalName:
+| L12 - uniformResourceIdentifier:
+|   'http://crl.strongswan.org/strongswan.crl'
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha256WithRSAEncryption'
+| L1 - signatureValue:
+| subject: 'C=CH, O=Linux strongSwan, CN=sun.strongswan.org'
+| issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|   not before  : Aug 27 14:42:45 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Aug 26 14:42:45 UTC 2019
+| valid certificate for "C=CH, O=Linux strongSwan, CN=sun.strongswan.org"
+| issuer cacert "C=CH, O=Linux strongSwan, CN=strongSwan Root CA" found
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  79 52 54 f7  58 19 be 3f  a9 e7 13 03  a8 a2 23 6c
+|   18 e0 4a d9  39 57 73 a3  b8 0d fe c8  ca 18 cd c0
+| valid certificate signature (C=CH, O=Linux strongSwan, CN=strongSwan Root CA -> C=CH, O=Linux strongSwan, CN=sun.strongswan.org)
+./nsscert no crl from issuer "C=CH, O=Linux strongSwan, CN=strongSwan Root CA" found (strict=no)
+| subject: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+| authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|   not before  : Sep 10 10:01:18 UTC 2004
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Sep 07 10:01:18 UTC 2019
+| valid certificate for "C=CH, O=Linux strongSwan, CN=strongSwan Root CA"
+| issuer cacert "C=CH, O=Linux strongSwan, CN=strongSwan Root CA" found
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  63 33 5c 1c  04 4c 3c 18  f3 3c c9 ae  27 67 2e 3d
+|   6e cc 19 9e  c2 d1 9f 9d  ee 43 7f 8c  44 e9 6d a5
+| valid certificate signature (C=CH, O=Linux strongSwan, CN=strongSwan Root CA -> C=CH, O=Linux strongSwan, CN=strongSwan Root CA)
+| reached self-signed root ca
+./nsscert leak detective found no leaks
+cert: sunCert.pem is valid

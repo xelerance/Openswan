@@ -1,0 +1,545 @@
+
+./nsscert   loaded cacert file 'CAcert.pem' (1927 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+| L3 - version:
+|   v3
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 07:57:12 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 27 07:57:12 UTC 2034'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L2 - optional extensions:
+| L3 - extensions:
+| L4 - extension:
+| L5 - extnID:
+|   'subjectKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'authorityKeyIdentifier'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - authorityKeyIdentifier:
+| L7 - keyIdentifier:
+| L8 - keyIdentifier:
+| L4 - extension:
+| L5 - extnID:
+|   'basicConstraints'
+| L5 - critical:
+|   FALSE
+| L5 - extnValue:
+| L6 - basicConstraints:
+| L7 - CA:
+|   TRUE
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+|   authcert inserted
+./nsscert   loaded test1 file 'goodcert1.pem' (1461 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+|   v1
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 08:03:15 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 26 08:03:15 UTC 2016'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+| subject: 'C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+|   not before  : Oct 27 08:03:15 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 26 08:03:15 UTC 2016
+| valid certificate for "C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  df 65 e3 90  2e 54 c1 1d  3e 5f fd 0c  8d d3 65 a8
+|   76 0b 85 46
+| NSS cert: modulus :
+|   00 c9 47 4a  c0 69 72 63  6e e8 cb 6a  fb cd 68 ab
+|   7f d7 47 67  c9 c2 f2 22  d7 bc b5 fa  b1 25 19 d7
+|   2a 4d df 22  04 45 18 fa  29 a8 89 53  53 37 c9 6b
+|   52 a9 b8 40  66 d5 fa 8b  65 6d 67 66  a1 8b 6e 28
+|   b5 26 d9 b8  dc 40 07 27  9d d4 9f 47  12 cf 85 98
+|   31 c9 be bf  ef 95 36 c5  e2 d4 3e f0  26 13 32 cd
+|   42 71 72 c5  5f 9c 76 f8  ce 03 1a b8  35 b6 11 60
+|   00 80 27 b1  c7 c5 b0 d7  1f a9 ed 0e  2c bc c3 f8
+|   0a 7a 3e 7f  51 3f eb bd  73 9d 49 a3  5d 82 28 b7
+|   84 20 6f 1e  48 63 e1 dc  96 d8 59 b6  f9 27 6b 30
+|   23 d3 d5 88  85 c3 5e 84  8d b1 c6 3a  8e c7 af 9b
+|   22 c5 78 7a  53 c6 de f8  ab 54 bf ca  fe 98 13 3d
+|   74 fb d5 61  0a b8 b7 96  90 a3 f9 7f  db 6b 66 ef
+|   65 1c b0 c4  9d 22 24 fc  ad 3c ef 52  0e 12 81 31
+|   e9 a6 56 d5  53 08 a2 58  20 6f dd 25  97 6e cf 32
+|   b0 eb a0 72  85 8f 7d e2  bb f4 2d a8  97 cc e2 70
+|   c9 85 b6 d6  bf 1b 21 07  59 dc 2e 8c  c5 6a 08 2f
+|   e3 2f df 6e  f3 c5 ca f5  13 42 3c 6a  67 4d e6 ef
+|   4f a9 20 81  a0 93 a4 97  e9 ce bc a9  d7 4d e6 f6
+|   c1 f6 f3 ab  12 69 15 cb  10 3c e7 a9  17 e8 0f 48
+|   87 76 c7 7e  78 9b d5 25  ff 72 63 6e  90 1a 3b 6c
+|   c1 d4 7c cf  66 39 bd 2e  9c 25 e9 be  1b 56 cb ff
+|   f2 10 62 6c  5e dc 95 a1  52 b2 b6 21  24 37 e0 f1
+|   96 51 f4 38  1f be 8c 40  48 44 38 f5  db 75 3a c3
+|   21 00 83 16  6b 0a e1 37  74 9f 34 78  29 f0 2f 14
+|   7c 2e 6c c2  32 33 c1 44  86 15 35 55  2c 83 b4 7c
+|   1a 20 a6 28  f8 fe b6 16  8d b8 be 48  fa 0c f7 83
+|   fe 79 07 24  18 76 15 0d  41 82 45 53  3e db 96 c2
+|   fe 0e 5c 35  4b 37 30 7e  e2 44 a6 91  94 fb 16 f6
+|   ae d8 f5 bd  f9 d8 6e 55  9b e9 6c d8  a1 b9 74 e2
+|   bf 80 24 d7  76 24 f4 b9  02 5b 59 c6  10 d2 66 01
+|   3f 74 f6 bc  29 f1 d6 71  2e 34 87 ba  fd 21 8f 47
+|   3f
+| NSS cert: exponent :
+|   01 00 01
+| NSS: input signature :
+|   00 3a 1d ae  0f 44 ad db  99 a8 eb 5e  b9 14 04 31
+|   74 7e 84 81  06 e0 e0 ec  f1 61 f9 0d  c8 e2 0b 45
+|   56 d5 20 63  cc cc 7b 9d  59 00 b1 87  fd 9b c7 02
+|   1f fa f2 f4  14 68 b1 f4  95 a3 d4 ae  c4 a1 fd 6a
+|   16 9d e3 bd  cb be e5 49  4a 48 f5 e4  17 16 f6 33
+|   3c 39 56 6d  e3 7e 91 0d  73 ba 86 ad  72 d7 af 62
+|   08 b8 52 71  88 5e 50 ee  ab e4 18 c2  4b 3c 33 53
+|   5c b3 82 f9  36 3d ff 1c  c9 a3 da 05  8b 58 cf ab
+|   2e 65 6b c0  4d b3 73 c8  ba 12 ea 77  cb 1c b1 79
+|   e8 d5 1b af  dd dc 5b 89  ad ce 63 89  c1 a0 79 21
+|   01 9c 93 f6  50 9c 3d a0  fe 92 52 81  20 92 1b 1e
+|   17 02 be 1b  85 dd 00 11  3a 51 f3 47  4a ef 5f 0a
+|   3f a3 4b cb  fc 2f b8 6c  39 99 a2 49  ed 29 c9 3c
+|   30 ae 75 d2  7b d3 51 65  eb f1 b4 ae  df 18 21 8d
+|   fc 7a c6 2d  f1 b3 1c 41  c3 8f d5 ce  0a ea 25 48
+|   a6 b8 4d a7  74 2b 22 e1  90 9f 50 18  e3 28 f1 e9
+|   33 9b fd 7a  8e 8d a4 d2  24 05 f5 03  3e 44 70 b2
+|   5e f2 dd e3  b8 75 31 d9  f6 2b bb af  7b 0c fc 1f
+|   a6 81 66 c7  2f 77 9c 00  34 9b 20 1c  69 72 05 fd
+|   8b 7a 6e cf  39 3a 2a ab  77 59 1c b7  c0 5a 3b 35
+|   85 67 b7 d4  58 ad 37 3e  e7 44 a1 d7  24 ed 38 6f
+|   28 b4 d2 cd  e7 55 eb d6  a8 4b 27 63  dd be d6 4e
+|   83 2e 38 75  be b9 29 57  3a 81 6f 15  aa 13 0a 97
+|   55 f0 f0 4c  bc cc c9 c4  00 ac 89 df  0d 38 41 d2
+|   1d 1c 55 7f  ad e7 a3 3f  1c 3e fe 21  b7 c9 04 27
+|   03 44 9c 9f  23 77 f9 d5  1e c7 ce 9d  52 b8 52 1e
+|   85 35 12 d5  47 4f 24 cb  73 54 68 ed  b6 e5 54 70
+|   6c 7a 06 05  b1 d5 dc d2  52 ec 96 f1  84 97 95 6d
+|   e1 a2 e6 25  7d 11 30 73  0f 53 11 65  da 59 7b 59
+|   54 f9 4f 69  16 76 a7 71  9e c9 1f a7  07 10 58 55
+|   d5 24 f5 8c  ed 44 06 57  ae e8 f1 bd  a3 7d 83 3f
+|   e5 6e 3f 56  56 0d a7 36  29 4a 38 82  d8 dc a2 19
+|   b5
+| RSA Signature length is 512
+| NSS digest sig:   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 df
+|   65 e3 90 2e  54 c1 1d 3e  5f fd 0c 8d  d3 65 a8 76
+|   0b 85 46
+| NSS: length of digest sig = 35
+| NSS scratchpad plus computed digest sig:
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 df
+|   65 e3 90 2e  54 c1 1d 3e  5f fd 0c 8d  d3 65 a8 76
+|   0b 85 46
+| NSS adjusted digest sig:
+|   df 65 e3 90  2e 54 c1 1d  3e 5f fd 0c  8d d3 65 a8
+|   76 0b 85 46
+| NSS expected digest sig:
+|   df 65 e3 90  2e 54 c1 1d  3e 5f fd 0c  8d d3 65 a8
+|   76 0b 85 46
+| NSS: RSA Signature verified, hash values matched
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=OTIS-MPDOVI00001020120821)
+./nsscert no crl from issuer "C=SP, O=adMotion SL, CN=CAcert-adMotion" found (strict=no)
+| subject: 'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| authkey:  87:97:93:86:b3:19:9d:53:53:cf:90:01:9e:95:11:96:1a:b8:b5:2a
+|   not before  : Oct 27 07:57:12 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 27 07:57:12 UTC 2034
+| valid certificate for "C=SP, O=adMotion SL, CN=CAcert-adMotion"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS cert: modulus :
+|   00 c9 47 4a  c0 69 72 63  6e e8 cb 6a  fb cd 68 ab
+|   7f d7 47 67  c9 c2 f2 22  d7 bc b5 fa  b1 25 19 d7
+|   2a 4d df 22  04 45 18 fa  29 a8 89 53  53 37 c9 6b
+|   52 a9 b8 40  66 d5 fa 8b  65 6d 67 66  a1 8b 6e 28
+|   b5 26 d9 b8  dc 40 07 27  9d d4 9f 47  12 cf 85 98
+|   31 c9 be bf  ef 95 36 c5  e2 d4 3e f0  26 13 32 cd
+|   42 71 72 c5  5f 9c 76 f8  ce 03 1a b8  35 b6 11 60
+|   00 80 27 b1  c7 c5 b0 d7  1f a9 ed 0e  2c bc c3 f8
+|   0a 7a 3e 7f  51 3f eb bd  73 9d 49 a3  5d 82 28 b7
+|   84 20 6f 1e  48 63 e1 dc  96 d8 59 b6  f9 27 6b 30
+|   23 d3 d5 88  85 c3 5e 84  8d b1 c6 3a  8e c7 af 9b
+|   22 c5 78 7a  53 c6 de f8  ab 54 bf ca  fe 98 13 3d
+|   74 fb d5 61  0a b8 b7 96  90 a3 f9 7f  db 6b 66 ef
+|   65 1c b0 c4  9d 22 24 fc  ad 3c ef 52  0e 12 81 31
+|   e9 a6 56 d5  53 08 a2 58  20 6f dd 25  97 6e cf 32
+|   b0 eb a0 72  85 8f 7d e2  bb f4 2d a8  97 cc e2 70
+|   c9 85 b6 d6  bf 1b 21 07  59 dc 2e 8c  c5 6a 08 2f
+|   e3 2f df 6e  f3 c5 ca f5  13 42 3c 6a  67 4d e6 ef
+|   4f a9 20 81  a0 93 a4 97  e9 ce bc a9  d7 4d e6 f6
+|   c1 f6 f3 ab  12 69 15 cb  10 3c e7 a9  17 e8 0f 48
+|   87 76 c7 7e  78 9b d5 25  ff 72 63 6e  90 1a 3b 6c
+|   c1 d4 7c cf  66 39 bd 2e  9c 25 e9 be  1b 56 cb ff
+|   f2 10 62 6c  5e dc 95 a1  52 b2 b6 21  24 37 e0 f1
+|   96 51 f4 38  1f be 8c 40  48 44 38 f5  db 75 3a c3
+|   21 00 83 16  6b 0a e1 37  74 9f 34 78  29 f0 2f 14
+|   7c 2e 6c c2  32 33 c1 44  86 15 35 55  2c 83 b4 7c
+|   1a 20 a6 28  f8 fe b6 16  8d b8 be 48  fa 0c f7 83
+|   fe 79 07 24  18 76 15 0d  41 82 45 53  3e db 96 c2
+|   fe 0e 5c 35  4b 37 30 7e  e2 44 a6 91  94 fb 16 f6
+|   ae d8 f5 bd  f9 d8 6e 55  9b e9 6c d8  a1 b9 74 e2
+|   bf 80 24 d7  76 24 f4 b9  02 5b 59 c6  10 d2 66 01
+|   3f 74 f6 bc  29 f1 d6 71  2e 34 87 ba  fd 21 8f 47
+|   3f
+| NSS cert: exponent :
+|   01 00 01
+| NSS: input signature :
+|   00 13 91 e9  6e f4 3b b5  ab 12 b9 2b  f6 ee a9 c6
+|   e0 2f 91 f0  8d 28 45 05  7d e2 ff 19  0e d4 5d b5
+|   1a 67 ee 0c  37 7d 11 30  7c 39 7c 62  21 af 99 11
+|   f4 e6 2b 8e  ed 27 02 d3  b1 b7 4d dd  11 84 d2 b2
+|   ef ca 4a cb  69 dd ae 79  08 20 2b 32  c7 d6 e8 6a
+|   4a 1e f1 ed  3e 29 14 b9  b0 b6 48 a0  6f 0d 69 66
+|   83 5a 80 25  ad 90 29 06  f4 b3 22 85  3b 16 ad 92
+|   e0 69 c6 24  96 c4 df da  b6 66 48 dd  f4 32 ca 57
+|   64 d9 d5 31  93 e5 d3 43  89 72 e5 69  0c 05 15 03
+|   7d ee 77 8d  75 07 7c 9a  dc ab 74 7a  87 71 29 c2
+|   56 08 23 52  b4 5d 0e 79  9e ff a8 78  80 fe fa 1f
+|   ab 0a 0a 13  e0 23 41 4a  b3 7b 29 53  b3 b2 b1 31
+|   4e 2c a2 40  c0 59 53 1c  d4 60 fc ed  e1 40 84 84
+|   4e a3 c7 e4  26 8f 16 63  c2 ec ea 92  95 38 d7 fa
+|   7b 00 c1 ad  c5 ed 0e 4b  c9 db 76 30  08 a1 f8 66
+|   fa 1c 2c f6  a3 d2 f0 be  63 50 7e 1c  37 da 63 dc
+|   e0 c1 d6 07  e0 dd c2 f0  74 43 2a 79  81 8e b1 7c
+|   99 3e ac 03  ea 96 fa 77  4a 06 95 4a  dd 88 2e c7
+|   bb f3 a8 12  e2 b7 f3 40  28 a7 e5 5f  a2 26 a3 c4
+|   fa c9 e6 42  60 a9 c7 1e  23 1f ab cc  34 cd 0c 6e
+|   45 82 b7 1e  1b 2c a8 aa  22 7b 86 2c  e7 e1 60 cb
+|   a4 0f d4 c1  5f 31 68 3f  74 fa 1e b4  a8 d7 45 2c
+|   58 0a 4b 8b  df f8 ea 47  77 c9 ce 99  6e d0 76 9c
+|   6b 21 2d 21  da 93 28 8d  b2 12 9e 9d  2c d8 ac bc
+|   12 ce 89 fa  d7 09 32 88  ae 9c cd 32  26 3b ee eb
+|   85 4b 2b 71  43 d9 76 0c  82 5c 18 27  70 fd 7c e4
+|   58 52 44 d1  df 21 f2 ef  26 27 1c 9c  aa 50 2d 73
+|   a1 5c ff 82  c8 01 84 44  df 5a c2 28  24 4c c8 5e
+|   82 fe 76 6b  77 cd be 37  9d 35 72 80  0b 1c 72 1f
+|   d7 37 42 e9  f2 a7 81 59  c6 d7 af 59  ef 37 eb 37
+|   7b 52 02 ba  1c b5 1d 1b  43 38 b9 6a  04 35 6a 3e
+|   26 74 13 2b  8e 4a e2 56  37 d8 e0 54  49 61 bb 08
+|   7b
+| RSA Signature length is 512
+| NSS digest sig:   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 14
+|   69 73 fc cc  4d cd 5e 49  f5 79 35 1a  d7 6a b9 ae
+|   aa f8 55
+| NSS: length of digest sig = 35
+| NSS scratchpad plus computed digest sig:
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 14
+|   69 73 fc cc  4d cd 5e 49  f5 79 35 1a  d7 6a b9 ae
+|   aa f8 55
+| NSS adjusted digest sig:
+|   14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS expected digest sig:
+|   14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS: RSA Signature verified, hash values matched
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=CAcert-adMotion)
+| reached self-signed root ca
+./nsscert   loaded test1 file 'badcert1.pem' (1461 bytes)
+|   file content is not binary ASN.1
+|   -----BEGIN CERTIFICATE-----
+|   -----END CERTIFICATE-----
+|   file coded in PEM format
+| L0 - certificate:
+| L1 - tbsCertificate:
+| L2 - DEFAULT v1:
+|   v1
+| L2 - serialNumber:
+| L2 - signature:
+| L3 - algorithmIdentifier:
+| L4 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L2 - issuer:
+|   'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| L2 - validity:
+| L3 - notBefore:
+| L4 - utcTime:
+|   'Oct 27 08:02:57 UTC 2014'
+| L3 - notAfter:
+| L4 - utcTime:
+|   'Oct 26 08:02:57 UTC 2016'
+| L2 - subject:
+|   'C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913'
+| L2 - subjectPublicKeyInfo:
+| L3 - algorithm:
+| L4 - algorithmIdentifier:
+| L5 - algorithm:
+|   'rsaEncryption'
+| L3 - subjectPublicKey:
+| L4 - RSAPublicKey:
+| L5 - modulus:
+| L5 - publicExponent:
+| L1 - signatureAlgorithm:
+| L2 - algorithmIdentifier:
+| L3 - algorithm:
+|   'sha-1WithRSAEncryption'
+| L1 - signatureValue:
+| subject: 'C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+|   not before  : Oct 27 08:02:57 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 26 08:02:57 UTC 2016
+| valid certificate for "C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  d8 97 fb 26  e0 92 e9 e0  fa 3e b9 ea  d0 87 04 89
+|   f1 f1 ed 78
+| NSS cert: modulus :
+|   00 c9 47 4a  c0 69 72 63  6e e8 cb 6a  fb cd 68 ab
+|   7f d7 47 67  c9 c2 f2 22  d7 bc b5 fa  b1 25 19 d7
+|   2a 4d df 22  04 45 18 fa  29 a8 89 53  53 37 c9 6b
+|   52 a9 b8 40  66 d5 fa 8b  65 6d 67 66  a1 8b 6e 28
+|   b5 26 d9 b8  dc 40 07 27  9d d4 9f 47  12 cf 85 98
+|   31 c9 be bf  ef 95 36 c5  e2 d4 3e f0  26 13 32 cd
+|   42 71 72 c5  5f 9c 76 f8  ce 03 1a b8  35 b6 11 60
+|   00 80 27 b1  c7 c5 b0 d7  1f a9 ed 0e  2c bc c3 f8
+|   0a 7a 3e 7f  51 3f eb bd  73 9d 49 a3  5d 82 28 b7
+|   84 20 6f 1e  48 63 e1 dc  96 d8 59 b6  f9 27 6b 30
+|   23 d3 d5 88  85 c3 5e 84  8d b1 c6 3a  8e c7 af 9b
+|   22 c5 78 7a  53 c6 de f8  ab 54 bf ca  fe 98 13 3d
+|   74 fb d5 61  0a b8 b7 96  90 a3 f9 7f  db 6b 66 ef
+|   65 1c b0 c4  9d 22 24 fc  ad 3c ef 52  0e 12 81 31
+|   e9 a6 56 d5  53 08 a2 58  20 6f dd 25  97 6e cf 32
+|   b0 eb a0 72  85 8f 7d e2  bb f4 2d a8  97 cc e2 70
+|   c9 85 b6 d6  bf 1b 21 07  59 dc 2e 8c  c5 6a 08 2f
+|   e3 2f df 6e  f3 c5 ca f5  13 42 3c 6a  67 4d e6 ef
+|   4f a9 20 81  a0 93 a4 97  e9 ce bc a9  d7 4d e6 f6
+|   c1 f6 f3 ab  12 69 15 cb  10 3c e7 a9  17 e8 0f 48
+|   87 76 c7 7e  78 9b d5 25  ff 72 63 6e  90 1a 3b 6c
+|   c1 d4 7c cf  66 39 bd 2e  9c 25 e9 be  1b 56 cb ff
+|   f2 10 62 6c  5e dc 95 a1  52 b2 b6 21  24 37 e0 f1
+|   96 51 f4 38  1f be 8c 40  48 44 38 f5  db 75 3a c3
+|   21 00 83 16  6b 0a e1 37  74 9f 34 78  29 f0 2f 14
+|   7c 2e 6c c2  32 33 c1 44  86 15 35 55  2c 83 b4 7c
+|   1a 20 a6 28  f8 fe b6 16  8d b8 be 48  fa 0c f7 83
+|   fe 79 07 24  18 76 15 0d  41 82 45 53  3e db 96 c2
+|   fe 0e 5c 35  4b 37 30 7e  e2 44 a6 91  94 fb 16 f6
+|   ae d8 f5 bd  f9 d8 6e 55  9b e9 6c d8  a1 b9 74 e2
+|   bf 80 24 d7  76 24 f4 b9  02 5b 59 c6  10 d2 66 01
+|   3f 74 f6 bc  29 f1 d6 71  2e 34 87 ba  fd 21 8f 47
+|   3f
+| NSS cert: exponent :
+|   01 00 01
+| NSS: input signature :
+|   00 00 b3 31  0a a9 18 e4  d4 88 e0 8f  3b 86 fa 6e
+|   e1 23 35 e5  5c bf 77 3d  7f a8 cd 83  96 14 e0 55
+|   9e e1 55 8f  1e 0b 4b e6  22 c1 f4 1d  42 55 d9 22
+|   04 42 58 36  13 a8 42 44  22 96 43 5f  95 d8 e0 a5
+|   04 8e 62 ae  a5 4d f0 18  af b3 25 0b  cc ba 28 50
+|   58 f9 78 7a  3e 82 83 85  05 2e 88 04  a3 bd 40 de
+|   1c 8f c8 fc  4c 4f 2f d6  5d 05 2a a7  90 39 28 77
+|   6d 67 2a 62  54 9b 36 fb  14 c5 46 e5  69 7b e8 4e
+|   0b bd c5 02  66 17 2e 3d  54 32 9d 10  ce b9 9f 28
+|   ae 99 c0 de  5e 94 0d a8  ed 85 4b 24  71 79 a3 f6
+|   e7 75 a9 3c  bc d2 70 27  68 92 ca 81  1e 7d 9f 04
+|   ee dd d2 d7  02 9d 2f 5d  94 70 d8 62  c3 81 59 84
+|   91 4b 15 03  bf 07 d1 5c  6f 43 d4 9d  da b8 af ef
+|   57 49 aa 11  ca c4 00 80  61 8a 0c 18  7f cc 82 bd
+|   39 91 00 57  c5 47 3c 09  9f e4 86 de  2a 48 83 2f
+|   8d 3a fa 03  a3 48 09 95  a7 8e 3e ec  9a b2 eb 9b
+|   b3 48 27 23  77 3c cf 34  94 80 00 69  61 3d 9f 01
+|   a4 10 8f 59  4c 8b dc ad  b7 35 f8 c9  83 87 40 77
+|   1c 6d be be  24 08 9e 9b  e4 85 a4 34  e2 bd 22 f6
+|   a2 3f 5a 1b  2f bf 5b 83  20 f8 05 b2  62 e9 ab b7
+|   e9 3c d3 c3  53 83 f3 c0  fc 45 5e 29  a7 f3 d2 51
+|   e7 7c 98 43  46 b3 16 f8  64 8f c3 93  29 b0 ba 9f
+|   e5 27 cd a0  0b 5d ae bf  d0 83 08 79  7d 0f ce eb
+|   de b4 26 12  95 af 51 06  99 71 de 96  00 ee 3b ca
+|   94 bd 5e 89  b5 4f 53 b5  60 1a af 73  74 e3 0d e8
+|   b1 0b 00 86  37 27 2a 7e  5e 56 a0 e0  ff f5 ad b8
+|   f8 07 25 4d  39 49 9b 0d  13 53 87 7c  7e d9 0f 6b
+|   75 39 f2 e1  7e 50 c9 35  4a 5d a0 52  fd ea 35 93
+|   4c c2 c0 83  9b e3 29 b7  77 bf 8c 92  54 54 40 a1
+|   20 c6 cc 6a  c7 61 f2 0b  d8 ea cf 79  80 7d 30 b0
+|   e1 c5 52 82  86 99 0f cf  77 a2 fe 3f  dc e6 20 59
+|   4a 59 e6 fb  67 ce 50 22  52 d1 13 22  8b b1 59 2f
+|   f8
+| RSA Signature length is 512
+| NSS digest sig:   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 d8
+|   97 fb 26 e0  92 e9 e0 fa  3e b9 ea d0  87 04 89 f1
+|   f1 ed 78
+| NSS: length of digest sig = 35
+| NSS scratchpad plus computed digest sig:
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 d8
+|   97 fb 26 e0  92 e9 e0 fa  3e b9 ea d0  87 04 89 f1
+|   f1 ed 78
+| NSS adjusted digest sig:
+|   d8 97 fb 26  e0 92 e9 e0  fa 3e b9 ea  d0 87 04 89
+|   f1 f1 ed 78
+| NSS expected digest sig:
+|   d8 97 fb 26  e0 92 e9 e0  fa 3e b9 ea  d0 87 04 89
+|   f1 f1 ed 78
+| NSS: RSA Signature verified, hash values matched
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=OTIS-MPDMUR00020320120913)
+./nsscert no crl from issuer "C=SP, O=adMotion SL, CN=CAcert-adMotion" found (strict=no)
+| subject: 'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| issuer:  'C=SP, O=adMotion SL, CN=CAcert-adMotion'
+| authkey:  87:97:93:86:b3:19:9d:53:53:cf:90:01:9e:95:11:96:1a:b8:b5:2a
+|   not before  : Oct 27 07:57:12 UTC 2014
+|   current time: Jan 22 03:11:14 UTC 2015
+|   not after   : Oct 27 07:57:12 UTC 2034
+| valid certificate for "C=SP, O=adMotion SL, CN=CAcert-adMotion"
+| issuer cacert "C=SP, O=adMotion SL, CN=CAcert-adMotion" found
+| signature algorithm: 'sha-1WithRSAEncryption'
+|   digest:  14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS cert: modulus :
+|   00 c9 47 4a  c0 69 72 63  6e e8 cb 6a  fb cd 68 ab
+|   7f d7 47 67  c9 c2 f2 22  d7 bc b5 fa  b1 25 19 d7
+|   2a 4d df 22  04 45 18 fa  29 a8 89 53  53 37 c9 6b
+|   52 a9 b8 40  66 d5 fa 8b  65 6d 67 66  a1 8b 6e 28
+|   b5 26 d9 b8  dc 40 07 27  9d d4 9f 47  12 cf 85 98
+|   31 c9 be bf  ef 95 36 c5  e2 d4 3e f0  26 13 32 cd
+|   42 71 72 c5  5f 9c 76 f8  ce 03 1a b8  35 b6 11 60
+|   00 80 27 b1  c7 c5 b0 d7  1f a9 ed 0e  2c bc c3 f8
+|   0a 7a 3e 7f  51 3f eb bd  73 9d 49 a3  5d 82 28 b7
+|   84 20 6f 1e  48 63 e1 dc  96 d8 59 b6  f9 27 6b 30
+|   23 d3 d5 88  85 c3 5e 84  8d b1 c6 3a  8e c7 af 9b
+|   22 c5 78 7a  53 c6 de f8  ab 54 bf ca  fe 98 13 3d
+|   74 fb d5 61  0a b8 b7 96  90 a3 f9 7f  db 6b 66 ef
+|   65 1c b0 c4  9d 22 24 fc  ad 3c ef 52  0e 12 81 31
+|   e9 a6 56 d5  53 08 a2 58  20 6f dd 25  97 6e cf 32
+|   b0 eb a0 72  85 8f 7d e2  bb f4 2d a8  97 cc e2 70
+|   c9 85 b6 d6  bf 1b 21 07  59 dc 2e 8c  c5 6a 08 2f
+|   e3 2f df 6e  f3 c5 ca f5  13 42 3c 6a  67 4d e6 ef
+|   4f a9 20 81  a0 93 a4 97  e9 ce bc a9  d7 4d e6 f6
+|   c1 f6 f3 ab  12 69 15 cb  10 3c e7 a9  17 e8 0f 48
+|   87 76 c7 7e  78 9b d5 25  ff 72 63 6e  90 1a 3b 6c
+|   c1 d4 7c cf  66 39 bd 2e  9c 25 e9 be  1b 56 cb ff
+|   f2 10 62 6c  5e dc 95 a1  52 b2 b6 21  24 37 e0 f1
+|   96 51 f4 38  1f be 8c 40  48 44 38 f5  db 75 3a c3
+|   21 00 83 16  6b 0a e1 37  74 9f 34 78  29 f0 2f 14
+|   7c 2e 6c c2  32 33 c1 44  86 15 35 55  2c 83 b4 7c
+|   1a 20 a6 28  f8 fe b6 16  8d b8 be 48  fa 0c f7 83
+|   fe 79 07 24  18 76 15 0d  41 82 45 53  3e db 96 c2
+|   fe 0e 5c 35  4b 37 30 7e  e2 44 a6 91  94 fb 16 f6
+|   ae d8 f5 bd  f9 d8 6e 55  9b e9 6c d8  a1 b9 74 e2
+|   bf 80 24 d7  76 24 f4 b9  02 5b 59 c6  10 d2 66 01
+|   3f 74 f6 bc  29 f1 d6 71  2e 34 87 ba  fd 21 8f 47
+|   3f
+| NSS cert: exponent :
+|   01 00 01
+| NSS: input signature :
+|   00 13 91 e9  6e f4 3b b5  ab 12 b9 2b  f6 ee a9 c6
+|   e0 2f 91 f0  8d 28 45 05  7d e2 ff 19  0e d4 5d b5
+|   1a 67 ee 0c  37 7d 11 30  7c 39 7c 62  21 af 99 11
+|   f4 e6 2b 8e  ed 27 02 d3  b1 b7 4d dd  11 84 d2 b2
+|   ef ca 4a cb  69 dd ae 79  08 20 2b 32  c7 d6 e8 6a
+|   4a 1e f1 ed  3e 29 14 b9  b0 b6 48 a0  6f 0d 69 66
+|   83 5a 80 25  ad 90 29 06  f4 b3 22 85  3b 16 ad 92
+|   e0 69 c6 24  96 c4 df da  b6 66 48 dd  f4 32 ca 57
+|   64 d9 d5 31  93 e5 d3 43  89 72 e5 69  0c 05 15 03
+|   7d ee 77 8d  75 07 7c 9a  dc ab 74 7a  87 71 29 c2
+|   56 08 23 52  b4 5d 0e 79  9e ff a8 78  80 fe fa 1f
+|   ab 0a 0a 13  e0 23 41 4a  b3 7b 29 53  b3 b2 b1 31
+|   4e 2c a2 40  c0 59 53 1c  d4 60 fc ed  e1 40 84 84
+|   4e a3 c7 e4  26 8f 16 63  c2 ec ea 92  95 38 d7 fa
+|   7b 00 c1 ad  c5 ed 0e 4b  c9 db 76 30  08 a1 f8 66
+|   fa 1c 2c f6  a3 d2 f0 be  63 50 7e 1c  37 da 63 dc
+|   e0 c1 d6 07  e0 dd c2 f0  74 43 2a 79  81 8e b1 7c
+|   99 3e ac 03  ea 96 fa 77  4a 06 95 4a  dd 88 2e c7
+|   bb f3 a8 12  e2 b7 f3 40  28 a7 e5 5f  a2 26 a3 c4
+|   fa c9 e6 42  60 a9 c7 1e  23 1f ab cc  34 cd 0c 6e
+|   45 82 b7 1e  1b 2c a8 aa  22 7b 86 2c  e7 e1 60 cb
+|   a4 0f d4 c1  5f 31 68 3f  74 fa 1e b4  a8 d7 45 2c
+|   58 0a 4b 8b  df f8 ea 47  77 c9 ce 99  6e d0 76 9c
+|   6b 21 2d 21  da 93 28 8d  b2 12 9e 9d  2c d8 ac bc
+|   12 ce 89 fa  d7 09 32 88  ae 9c cd 32  26 3b ee eb
+|   85 4b 2b 71  43 d9 76 0c  82 5c 18 27  70 fd 7c e4
+|   58 52 44 d1  df 21 f2 ef  26 27 1c 9c  aa 50 2d 73
+|   a1 5c ff 82  c8 01 84 44  df 5a c2 28  24 4c c8 5e
+|   82 fe 76 6b  77 cd be 37  9d 35 72 80  0b 1c 72 1f
+|   d7 37 42 e9  f2 a7 81 59  c6 d7 af 59  ef 37 eb 37
+|   7b 52 02 ba  1c b5 1d 1b  43 38 b9 6a  04 35 6a 3e
+|   26 74 13 2b  8e 4a e2 56  37 d8 e0 54  49 61 bb 08
+|   7b
+| RSA Signature length is 512
+| NSS digest sig:   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 14
+|   69 73 fc cc  4d cd 5e 49  f5 79 35 1a  d7 6a b9 ae
+|   aa f8 55
+| NSS: length of digest sig = 35
+| NSS scratchpad plus computed digest sig:
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 14
+|   69 73 fc cc  4d cd 5e 49  f5 79 35 1a  d7 6a b9 ae
+|   aa f8 55
+| NSS adjusted digest sig:
+|   14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS expected digest sig:
+|   14 69 73 fc  cc 4d cd 5e  49 f5 79 35  1a d7 6a b9
+|   ae aa f8 55
+| NSS: RSA Signature verified, hash values matched
+| valid certificate signature (C=SP, O=adMotion SL, CN=CAcert-adMotion -> C=SP, O=adMotion SL, CN=CAcert-adMotion)
+| reached self-signed root ca
+./nsscert leak detective found no leaks
+NSS Initialized
+cert: goodcert1.pem is valid
+cert: badcert1.pem is valid

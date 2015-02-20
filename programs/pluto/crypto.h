@@ -24,7 +24,7 @@
 #include "sha1.h"
 #include "md5.h"
 #ifdef USE_SHA2
-#include "libsha2/sha2.h"
+#include "sha2.h"
 #endif
 
 #ifdef HAVE_LIBNSS
