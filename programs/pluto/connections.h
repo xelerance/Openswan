@@ -1,5 +1,6 @@
 /* information about connections between hosts and clients
- * Copyright (C) 1998-2001  D. Hugh Redelmeier
+ * Copyright (C) 1998-2015  D. Hugh Redelmeier
+ * Copyright (C) 2004-2015  Michael Richardson <mcr@sandelman.ca>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -12,6 +13,8 @@
  * for more details.
  *
  */
+
+#ifndef _CONNECTIONS_H
 
 /* There are two kinds of connections:
  * - ISAKMP connections, between hosts (for IKE communication)
@@ -120,7 +123,7 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "defs.h"
+#include "pluto/defs.h"
 
 struct virtual_t;
 
@@ -485,6 +488,9 @@ extern void update_host_pairs(struct connection *c);
 #ifdef HAVE_LIBNSS
 extern void load_authcerts_from_nss(const char *type, u_char auth_flags);
 #endif
+
+#define _CONNECTIONS_H
+#endif /* _CONNECTIONS_H */
 
 /*
  * Local Variables:
