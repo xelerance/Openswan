@@ -17,39 +17,44 @@
 #include "ipsecconf/files.h"
 #include "ipsecconf/starterwhack.h"
 
-#if 0
 #include "../../programs/pluto/rcv_whack.h"
-
 #include "../../programs/pluto/connections.c"
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
-#include "seam_pending.c"
-#include "seam_ikev1.c"
 #include "seam_crypt.c"
-#include "seam_kernel.c"
+#include "seam_pending.c"
+#if 0
+#include "seam_ikev1.c"
 #include "seam_rnd.c"
 #include "seam_vendor.c"
 #endif
+#include "seam_kernel.c"
 #include "seam_log.c"
-#if 0
-#include "seam_xauth.c"
 #include "seam_west.c"
 #include "seam_initiate.c"
+#include "seam_xauth.c"
 #include "seam_terminate.c"
-#include "seam_x509.c"
+#if 0
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
-#include "seam_whack.c"
-#include "seam_keys.c"
-#include "seam_natt.c"
 #endif
+#include "seam_delete.c"
+#include "seam_secretday.c"
+#include "seam_ipsecdoi.c"
+#include "seam_natt.c"
+#include "seam_x509.c"
+#include "seam_keys.c"
+#include "seam_whack.c"
 #include "seam_exitlog.c"
 
 char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 
+long crl_check_interval = 0;
+struct secret *pluto_secrets = NULL;
+extern int EF_DISABLE_BANNER;
 
 main(int argc, char *argv[])
 {

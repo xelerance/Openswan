@@ -1,0 +1,8 @@
+
+  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
+debugging mode enabled
+Loading conn dooku--cassidy-net
+	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
+	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+Loading conn dooku-base
+Loading conn cassidy-base
