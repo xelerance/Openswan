@@ -8,8 +8,8 @@ Loading conn dooku-base
 Loading conn cassidy-base
 ./whacksemantics connection must specify host IP address for our side
 ./whacksemantics attempt to load incomplete connection
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
+./whacksemantics leak: 2 * new_list item, item size: 11
+./whacksemantics leak: new_list nlist, item size: 24
 ./whacksemantics leak: default base, item size: 25
-./whacksemantics leak detective found 4 leaks, total size X
+./whacksemantics leak detective found 4 leaks, total size 60
 processing conn: dooku--cassidy-net
