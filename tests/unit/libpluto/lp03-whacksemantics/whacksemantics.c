@@ -67,8 +67,8 @@ main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 4) {
-	fprintf(stderr, "Usage: %s <cfgrootdir> <cfgfile> <conn-name>\n", progname);
+    if(argc < 4) {
+	fprintf(stderr, "Usage: %s <cfgrootdir> <cfgfile> <conn-name>.. \n", progname);
 	exit(10);
     }
     /* argv[1] == "-r" */
@@ -81,17 +81,22 @@ main(int argc, char *argv[])
 
     starter_use_log(1, 1, 1);
     cfg = confread_load(argv[2], &err, FALSE, NULL,FALSE);
-    conn_name = argv[3];
+    argv+=3;
+    argc-=3;
 
     /* load all conns marked as auto=add or better */
     for(conn = cfg->conns.tqh_first;
 	conn != NULL;
 	conn = conn->link.tqe_next)
     {
-        if(strcasecmp(conn->name, conn_name)==0) {
-            struct whack_message msg1;
-            if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
-                /* load it with add_connection */
+        for(; argc>0; argc--, argv++) {
+            conn_name = *argv;
+            printf("processing conn: %s\n", conn_name);
+            if(strcasecmp(conn->name, conn_name)==0) {
+                struct whack_message msg1;
+                if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
+                    add_connection(&msg1);
+                }
             }
         }
     }
