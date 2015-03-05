@@ -60,7 +60,8 @@ EXTRALIBS+=${IPSECCONFLIB} ${WHACKLIB} ${OPENSWANLIB}
 EXTRALIBS+=-lgmp -lefence -lpcap
 
 CONFBASE=${OPENSWANSRCDIR}/tests/functional/01-confread
-UNITTESTARGS=${CONFBASE}/dooku ${CONFBASE}/dooku.conf dooku--cassidy-net
+UNITTEST1ARGS=${CONFBASE}/dooku ${CONFBASE}/dooku.conf dooku--cassidy-net
+UNITTEST2ARGS=${CONFBASE}/cassidy ${CONFBASE}/cassidy.conf knothole--cassidy
 
 TESTNAME=whacksemantics
 
@@ -69,8 +70,10 @@ check:
 	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
+	diff OUTPUT/${TESTNAME}1.txt output1.txt
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}2.txt 2>&1
+	diff OUTPUT/${TESTNAME}2.txt output2.txt
 
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt

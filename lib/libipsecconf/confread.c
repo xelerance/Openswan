@@ -35,6 +35,7 @@
 #include <sys/queue.h>
 
 #include "oswalloc.h"
+#include "libopenswan.h"
 
 #include "ipsecconf/parser.h"
 #include "ipsecconf/files.h"

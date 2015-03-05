@@ -1,0 +1,15 @@
+
+  Electric Fence 2.2 Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>
+debugging mode enabled
+Loading conn dooku--cassidy-net
+	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
+	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+Loading conn dooku-base
+Loading conn cassidy-base
+./whacksemantics connection must specify host IP address for our side
+./whacksemantics attempt to load incomplete connection
+./whacksemantics leak: 2 * new_list item, item size: 11
+./whacksemantics leak: new_list nlist, item size: 24
+./whacksemantics leak: default base, item size: 25
+./whacksemantics leak detective found 4 leaks, total size 60
+processing conn: dooku--cassidy-net
