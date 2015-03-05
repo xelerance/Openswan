@@ -451,9 +451,9 @@ static bool validate_end(struct starter_conn *conn_st
 	}
 	else {
 	    end->has_client = TRUE;
-	    er = ttosubnet(value, 0, family, &(end->subnet));
+	    er = ttosubnet(value, 0, 0, &(end->subnet));
 	}
-	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s]", leftright, value, er);
+	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
     }
 
     /* set nexthop address to something consistent, by default */
