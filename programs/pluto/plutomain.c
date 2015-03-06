@@ -524,7 +524,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case 'j':	/* --nhelpers */
-            if (optarg == NULL || !isdigit(optarg[0]))
+            if (optarg == NULL || !isdigit(optarg[0]) || optarg[0]!='-')
                 usage("missing number of pluto helpers");
 
             {
