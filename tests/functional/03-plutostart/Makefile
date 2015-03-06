@@ -11,12 +11,20 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/functional
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/functional/01-confread
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
+
 check:
-	@${MAKE} -C 01-confread check
-	@${MAKE} -C 02-plutostart check
+	mkdir -p ../OUTPUTS
+	${PLUTOBIN} --help | tee ../OUTPUTS/pluto.help.raw | diff - pluto.help.out
+
+update:
+	cp ../OUTPUTS/pluto.help.raw		pluto.help.out
+
+
+
 
