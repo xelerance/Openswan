@@ -70,6 +70,8 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 UNITTESTARGS=sun-netnet.record.${ARCH} net-net
 
 TESTNAME=parentI1
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
 
 check:
