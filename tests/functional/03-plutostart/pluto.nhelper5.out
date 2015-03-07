@@ -1,3 +1,4 @@
+adjusting ipsec.d to OUTPUT
 Starting Pluto (Openswan Version VERSION
 LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
@@ -13,14 +14,14 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up 5 cryptographic helpers
 started helper pid=PID (fd:4)
-started helper pid=PID (fd:6)
+started helper pid=PID (fd:5)
 started helper pid=PID (fd:7)
 started helper pid=PID (fd:8)
 started helper pid=PID (fd:9)
 Using 'no_kernel' interface code on 3.2.0-4-686-pae
-Could not change to directory '/etc/ipsec.d/cacerts': No such file or directory
-Could not change to directory '/etc/ipsec.d/aacerts': No such file or directory
-Could not change to directory '/etc/ipsec.d/ocspcerts': No such file or directory
-Could not change to directory '/etc/ipsec.d/crls': 2 No such file or directory
+Could not change to directory 'OUTPUT/cacerts': No such file or directory
+Could not change to directory 'OUTPUT/aacerts': No such file or directory
+Could not change to directory 'OUTPUT/ocspcerts': No such file or directory
+Could not change to directory 'OUTPUT/crls': 2 No such file or directory
 shutting down
 002 shutting down
