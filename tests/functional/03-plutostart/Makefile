@@ -17,14 +17,17 @@ srcdir?=${OPENSWANSRCDIR}/tests/functional/01-confread
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
+WHACKBIN=${OBJDIRTOP}/programs/pluto/whack
+CTLBASE=--ctlbase OUTPUT
+SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog
 
 check:
 	mkdir -p ../OUTPUTS
-	${PLUTOBIN} --help | tee ../OUTPUTS/pluto.help.raw | diff - pluto.help.out
+	${PLUTOBIN} --help 2>&1 | tee ../OUTPUTS/pluto.help.raw | sed -r -f ${TESTUTILS}/openswanver.sed | diff - pluto.help.out
+	(${PLUTOBIN} ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ../OUTPUTS/pluto.start.raw | sed -r -f ${TESTUTILS}/openswanver.sed | diff - pluto.start.out;
 
 update:
-	cp ../OUTPUTS/pluto.help.raw		pluto.help.out
-
-
+	sed -r -f ${TESTUTILS}/openswanver.sed ../OUTPUTS/pluto.help.raw  >pluto.help.out
+	sed -r -f ${TESTUTILS}/openswanver.sed ../OUTPUTS/pluto.start.raw >pluto.start.out
 
 
