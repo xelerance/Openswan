@@ -42,7 +42,7 @@ config setup
 
 # begin conn cassidy--marajade
 conn cassidy--marajade
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -65,7 +65,7 @@ conn cassidy--marajade
 
 # begin conn cassidy--marajade-extrude
 conn cassidy--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -88,7 +88,7 @@ conn cassidy--marajade-extrude
 
 # begin conn istari--marajade-extrude
 conn istari--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -112,7 +112,7 @@ conn istari--marajade-extrude
 
 # begin conn catfish--marajade-extrude
 conn catfish--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -135,7 +135,7 @@ conn catfish--marajade-extrude
 
 # begin conn franklin--marajade-extrude
 conn franklin--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -159,7 +159,7 @@ conn franklin--marajade-extrude
 
 # begin conn aragorn--marajade-extrude
 conn aragorn--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -183,7 +183,7 @@ conn aragorn--marajade-extrude
 
 # begin conn saruman--marajade-extrude
 conn saruman--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -206,7 +206,7 @@ conn saruman--marajade-extrude
 
 # begin conn galadriel--marajade-extrude
 conn galadriel--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -229,7 +229,7 @@ conn galadriel--marajade-extrude
 
 # begin conn grouper--marajade-extrude
 conn grouper--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -252,7 +252,7 @@ conn grouper--marajade-extrude
 
 # begin conn jarvis--marajade-extrude
 conn jarvis--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -275,7 +275,7 @@ conn jarvis--marajade-extrude
 
 # begin conn tuna--marajade-extrude
 conn tuna--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -298,7 +298,7 @@ conn tuna--marajade-extrude
 
 # begin conn cassidy--correlhorn
 conn cassidy--correlhorn
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -323,7 +323,7 @@ conn cassidy--correlhorn
 
 # begin conn istari--correlhorn-extrude
 conn istari--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -349,7 +349,7 @@ conn istari--correlhorn-extrude
 
 # begin conn franklin--correlhorn-extrude
 conn franklin--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -375,7 +375,7 @@ conn franklin--correlhorn-extrude
 
 # begin conn aragorn--correlhorn-extrude
 conn aragorn--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -436,7 +436,7 @@ conn cassidy-left
 
 # begin conn dooku--cassidy-net
 conn dooku--cassidy-net
-	#also = dooku-base cassidy-base 
+	#also = dooku-base cassidy-base
 	left=172.30.11.230
 	leftid="@dooku.sandelman.ca"
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
