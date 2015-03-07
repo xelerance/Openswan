@@ -39,7 +39,6 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 #include "seam_gi_sha1.c"
 
 #include "ikev2sendI1.c"
-extern int EF_FREE_WIPES;
 
 main(int argc, char *argv[])
 {
@@ -51,7 +50,6 @@ main(int argc, char *argv[])
     struct state *st;
 
     EF_PROTECT_FREE=1;
-    EF_FREE_WIPES  =1;
 
     progname = argv[0];
     leak_detective = 1;
