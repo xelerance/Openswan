@@ -618,6 +618,10 @@ LIBWHACK=${OBJDIRTOP}/lib/libwhack/libwhack.a
 WHACKLIB=${LIBWHACK}
 LIBIPSECCONF=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
 
+
+# for testing
+TESTUTILS=${OPENSWANSRCDIR}/tests/utils
+
 # set this to "ulimit -c unlimited" if you want core dumps from unit tests.
 COREULIMIT?=/bin/true
 
