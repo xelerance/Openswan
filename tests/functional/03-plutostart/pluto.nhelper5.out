@@ -13,12 +13,12 @@ ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up 5 cryptographic helpers
-started helper pid=PID (fd:4)
-started helper pid=PID (fd:5)
-started helper pid=PID (fd:7)
-started helper pid=PID (fd:8)
-started helper pid=PID (fd:9)
-Using 'no_kernel' interface code on 3.2.0-4-686-pae
+started helper pid=PID 
+started helper pid=PID 
+started helper pid=PID 
+started helper pid=PID 
+started helper pid=PID 
+Using 'no_kernel' interface code on
 Could not change to directory 'OUTPUT/cacerts': No such file or directory
 Could not change to directory 'OUTPUT/aacerts': No such file or directory
 Could not change to directory 'OUTPUT/ocspcerts': No such file or directory
