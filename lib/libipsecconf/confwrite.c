@@ -402,10 +402,10 @@ void confwrite_conn(FILE *out,
     { /* handle also= as a comment */
 
 	int alsoplace=0;
-	fprintf(out, "\t#also = ");
+	fprintf(out, "\t#also =");
 	while(conn->alsos[alsoplace] != NULL)
 	{
-	    fprintf(out, "%s ", conn->alsos[alsoplace]);
+	    fprintf(out, " %s", conn->alsos[alsoplace]);
 	    alsoplace++;
 	}
 	fprintf(out, "\n");

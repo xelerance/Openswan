@@ -15,7 +15,7 @@ config setup
 
 # begin conn dooku--cassidy-net
 conn dooku--cassidy-net
-	#also = dooku-base cassidy-base 
+	#also = dooku-base cassidy-base
 	leftid="@dooku.sandelman.ca"
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
 	rightid="@cassidy.sandelman.ca"
