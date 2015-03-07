@@ -12,7 +12,7 @@ ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up 5 cryptographic helpers
-started helper pid=PID (fd:5)
+started helper pid=PID (fd:4)
 started helper pid=PID (fd:6)
 started helper pid=PID (fd:7)
 started helper pid=PID (fd:8)
