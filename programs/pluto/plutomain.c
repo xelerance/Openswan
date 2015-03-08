@@ -450,10 +450,9 @@ main(int argc, char **argv)
 #endif
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
-#ifdef HAVE_LABELED_IPSEC
-            /* XXX - should accept argument and return error */
+
+            /* might not be enabled, but always accept the option */
 	    { "secctx_attr_value", required_argument, NULL, 'w' },
-#endif
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all", no_argument, NULL, 'A' },
@@ -546,7 +545,6 @@ main(int argc, char **argv)
             }
 	    continue;
 
-#ifdef HAVE_LABELED_IPSEC
 	case 'w':	/* --secctx_attr_value*/
 	    if (optarg == NULL || !isdigit(optarg[0]))
 		usage("missing (positive integer) value of secctx_attr_value (needed only if using labeled ipsec)");
@@ -555,13 +553,16 @@ main(int argc, char **argv)
                 char *endptr;
                 long value = strtol(optarg, &endptr, 0);
 
+#ifdef HAVE_LABELED_IPSEC
                 if (*endptr != '\0' || endptr == optarg
                     || (value != SECCTX && value !=10) )
                     usage("<secctx_attr_value> must be a positive number (32001 by default, 10 for backward compatibility, or any other future number assigned by IANA)");
-                 secctx_attr_value = (u_int16_t)value;
+                secctx_attr_value = (u_int16_t)value;
+#else
+                openswan_log("Labelled IPsec not enabled; value %ld ignored.", value);
+#endif
 	   }
 	   continue;
-#endif
 
 	case 'd':	/* --nofork*/
 	    fork_desired = FALSE;
