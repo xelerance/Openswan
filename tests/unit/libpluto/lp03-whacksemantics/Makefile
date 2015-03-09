@@ -64,6 +64,8 @@ UNITTEST1ARGS=${CONFBASE}/dooku ${CONFBASE}/dooku.conf dooku--cassidy-net
 UNITTEST2ARGS=${CONFBASE}/cassidy ${CONFBASE}/cassidy.conf knothole--cassidy
 
 TESTNAME=whacksemantics
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
 check:
 	@mkdir -p OUTPUT
