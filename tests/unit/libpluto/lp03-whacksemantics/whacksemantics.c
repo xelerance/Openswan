@@ -55,6 +55,7 @@ int warningsarefatal = 0;
 long crl_check_interval = 0;
 struct secret *pluto_secrets = NULL;
 extern int EF_DISABLE_BANNER;
+extern int EF_FILL;
 
 main(int argc, char *argv[])
 {
