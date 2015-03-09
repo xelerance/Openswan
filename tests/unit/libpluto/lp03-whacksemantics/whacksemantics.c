@@ -54,8 +54,6 @@ int warningsarefatal = 0;
 
 long crl_check_interval = 0;
 struct secret *pluto_secrets = NULL;
-extern int EF_DISABLE_BANNER;
-extern int EF_FILL;
 
 main(int argc, char *argv[])
 {
@@ -67,8 +65,7 @@ main(int argc, char *argv[])
     struct starter_config *cfg = NULL;
     struct starter_conn *conn = NULL;
 
-    EF_PROTECT_FREE=1;
-    EF_FILL=0xea;
+    //EF_PROTECT_FREE=1;
 
     progname = argv[0];
     leak_detective = 1;
