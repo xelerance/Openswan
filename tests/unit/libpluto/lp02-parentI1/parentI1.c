@@ -66,7 +66,7 @@ main(int argc, char *argv[])
     infile = argv[1];
     conn_name = argv[2];
 
-    readwhackmsg(infile);
+    if(readwhackmsg(infile) == 0) exit(10);
 
     send_packet_setup_pcap("parentI1.pcap");
 
