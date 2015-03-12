@@ -4,10 +4,13 @@
 #include "oswalloc.h"
 #include "whack.h"
 #include "oswlog.h"
+#include "readwhackmsg.h"
 
-void readwhackmsg(char *infile)
+/* returns number of messages processed */
+int readwhackmsg(char *infile)
 {
     int   iocount;
+    int   msgcount=0;
     FILE *record;
     char  b1[8192];
     u_int32_t plen;
@@ -31,6 +34,7 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	size_t abuflen;
 
+        DBG_log("processing whack message of size: %u", plen);
         /* time stamp, MSB word first of time */
 	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
@@ -98,6 +102,7 @@ void readwhackmsg(char *infile)
 	 * message, and call whack_handle.
 	 */
 	whack_process(NULL_FD, m1);
+        msgcount++;
     }
 
     if(iocount != 0 || !feof(record)) {
@@ -105,6 +110,8 @@ void readwhackmsg(char *infile)
 	perror(infile);
     }
     //fclose(record);
+
+    return msgcount;
 }
 
 /*

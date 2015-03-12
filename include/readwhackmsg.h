@@ -1,1 +1,1 @@
-extern void readwhackmsg(char *infile);
+extern int readwhackmsg(char *infile);
