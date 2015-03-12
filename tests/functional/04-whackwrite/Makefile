@@ -11,13 +11,23 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/functional
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/functional/01-confread
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
+OUTPUTS=../OUTPUTS
+SAMPLEDIR=../01-confread
+
 check:
-	@${MAKE} -C 01-confread check
-	@${MAKE} -C 03-plutostart check
-	@${MAKE} -C 04-whackwrite check
+	@mkdir -p ${OUTPUTS}
+	@${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net
+	@strings ${OUTPUTS}/dookurecord.whack | grep pluto-whack-file >/dev/null
+	@strings ${OUTPUTS}/dookurecord.whack | grep dooku--cassidy-net >/dev/null
+
+update:
+	true
+
+
 

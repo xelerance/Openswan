@@ -146,12 +146,12 @@ main(int argc, char *argv[])
 	    break;
 
 	case 'R':
-	    printf("#setting rootdir=%s\n", optarg);
+            if(verbose) printf("#setting rootdir=%s\n", optarg);
 	    strlcat(rootdir, optarg, sizeof(rootdir));
 	    break;
 
 	case 'S':
-	    printf("#setting rootdir2=%s\n", optarg);
+            if(verbose) printf("#setting rootdir2=%s\n", optarg);
             rootdir2[0]='\0';
 	    strlcat(rootdir2, optarg, sizeof(rootdir2));
 	    break;
@@ -219,9 +219,13 @@ main(int argc, char *argv[])
             conn != NULL;
             conn = conn->link.tqe_next)
             {
+                argv+=optind;
+                argc-=optind;
                 for(; argc>0; argc--, argv++) {
                     char *conn_name = *argv;
-                    printf("processing conn: %s\n", conn_name);
+                    if(verbose) {
+                        printf("processing conn: %s\n", conn_name);
+                    }
                     if(strcasecmp(conn->name, conn_name)==0) {
                         struct whack_message msg1;
                         if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
