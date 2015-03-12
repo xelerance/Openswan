@@ -39,6 +39,9 @@ extern int starter_whack_build_pkmsg(struct starter_config *cfg,
                                      unsigned char *rsakey,
                                      const char *lr);
 
+/* serialize strings */
+extern int serialize_whack_msg(struct whack_message *msg);
+
 extern int starter_whack_build_basic_conn(struct starter_config *cfg
                                           , struct whack_message *msg
                                           , struct starter_conn *conn);

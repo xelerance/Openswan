@@ -181,18 +181,12 @@ int starter_whack_read_reply(int sock,
 	return ret;
 }
 
-static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+/* returns length of result... XXX unit test would be good here */
+int serialize_whack_msg(struct whack_message *msg)
 {
-	struct sockaddr_un ctl_addr =
-	    { .sun_family = AF_UNIX };
-	int sock;
-	ssize_t len;
 	struct whackpacker wp;
+	ssize_t len;
 	err_t ugh;
-	int ret;
-
-	/* copy socket location */
-	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
 
 	/**
 	 * Pack strings
@@ -210,6 +204,22 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	}
 
 	len = wp.str_next - (unsigned char *)msg;
+        return len;
+}
+
+static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+{
+	struct sockaddr_un ctl_addr =
+	    { .sun_family = AF_UNIX };
+	int sock;
+	ssize_t len;
+	int ret;
+
+	/* copy socket location */
+	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
+
+        len = serialize_whack_msg(msg);
+        if(len == -1) return -1;   /* already logged error */
 
 	/**
 	 * Connect to pluto ctl
