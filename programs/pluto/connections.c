@@ -42,7 +42,7 @@
 #include "certs.h"
 #include "secrets.h"
 
-#include "defs.h"
+#include "pluto/defs.h"
 #include "ac.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -58,7 +58,7 @@
 #include "server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
-#include "keys.h"
+#include "pluto/keys.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"

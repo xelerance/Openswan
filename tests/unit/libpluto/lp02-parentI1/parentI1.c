@@ -50,7 +50,6 @@ main(int argc, char *argv[])
     struct state *st;
 
     EF_PROTECT_FREE=1;
-    EF_FREE_WIPES  =1;
 
     progname = argv[0];
     leak_detective = 1;

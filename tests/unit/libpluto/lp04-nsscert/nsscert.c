@@ -31,6 +31,7 @@ main(int argc, char *argv[])
     cert_t cacert,t1;
     time_t until;
 
+    /* sadly, this is actually too late */
     EF_DISABLE_BANNER = 1;
     progname = argv[0];
     leak_detective=1;

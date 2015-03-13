@@ -133,82 +133,90 @@ usage(const char *mess)
     if (mess != NULL && *mess != '\0')
 	fprintf(stderr, "%s\n", mess);
     fprintf(stderr
-	, "Usage: pluto"
-	    " [--help]"
-	    " [--version]"
-	    " [--optionsfrom <filename>]"
-	    " \\\n\t"
-	    "[--nofork]"
-	    " [--stderrlog]"
-	    " [--plutostderrlogtime]"
-	    " [--force_busy]"
-	    " [--nocrsend]"
-	    " [--strictcrlpolicy]"
-	    " [--crlcheckinterval]"
-	    " [--ocspuri]"
-	    " [--uniqueids]"
-	    " [--use-auto]"
-	    " [--use-klips]"
-	    " [--use-netkey]"
-	    " [--use-mast]"
-	    " [--use-bsdkame]"
-	    " [--use-nostack]"         /* old --no_klips */
-	    " \\\n\t"
-	    "[--interface <ifname|ifaddr>]"
-	    " [--ikeport <port-number>]"
-	    "[--listen <ifaddr>]"
-	    " \\\n\t"
-	    "[--ctlbase <path>]"
-	    " \\\n\t"
-	    "[--perpeerlogbase <path>] [--perpeerlog]"
-	    " \\\n\t"
-	    "[--coredir <dirname>] [--noretransmits]"
-	    " \\\n\t"
-	    "[--secretsfile <secrets-file>]"
-	    " [--ipsecdir <ipsec-dir>]"
-	    " \\\n\t"
-	    "[--adns <pathname>]"
-	    "[--nhelpers <number>]"
-	    " \\\n\t"
-	    "[--secctx_attr_value <number>] "
+	, "Usage: pluto  "
+	    "[--help] "
+	    "[--version] "
+	    "[--optionsfrom <filename>] "
+	    "\n\t"
+	    "[--nofork] "
+	    "[--stderrlog] "
+	    "[--plutostderrlogtime] "
+	    "[--force_busy] "
+	    "\n\t"
+	    "[--nocrsend] "
+	    "[--strictcrlpolicy] "
+	    "[--crlcheckinterval] "
+	    "[--ocspuri] "
+	    "[--uniqueids] "
+            "[--noretransmits] "
+	    "\n\nIPsec stack options\n\t"
+	    "[--use-auto] "
+	    "[--use-klips] "
+	    "[--use-netkey] "
+	    "[--use-mast] "
+	    "[--use-bsdkame] "
+	    "[--use-nostack]"         /* old --no_klips */
+            "\n\nConnection options\n\t"
+	    "[--interface <ifname|ifaddr>] "
+	    "[--ikeport <port-number>] "
+	    "[--listen <ifaddr>] "
+	    "\n\nFile/Directory settings\n\t"
+	    "[--ctlbase <path>] "
+	    "\n\t"
+	    "[--perpeerlogbase <path>] [--perpeerlog] "
+	    " \n\t"
+	    "[--coredir <dirname>]"
+	    "\n\t"
+	    "[--secretsfile <secrets-file>] "
+	    "[--ipsecdir <ipsec-dir>] "
+	    "\n\t"
+	    "[--adns <pathname>] "
+	    "[--nhelpers <number>] "
+	    " \n\t"
+	    "[--secctx_attr_value <number>]  "
 #ifdef HAVE_LABELED_IPSEC
-            "(available) "
+            "(available)  "
 #else
-            "(unavailable) "
+            "(unavailable)  "
 #endif
 
 #ifdef DEBUG
-	    " \\\n\t"
-	    "[--debug-none]"
-	    " [--debug-all]"
-	    " \\\n\t"
-	    "[--debug-raw]"
-	    " [--debug-crypt]"
-	    " [--debug-crypto]"
-	    " [--debug-parsing]"
-	    " [--debug-emitting]"
-	    " \\\n\t"
-	    "[--debug-control]"
-	    "[--debug-lifecycle]"
-	    " [--debug-klips]"
-	    " [--debug-netkey]"
-	    " [--debug-x509]"
-	    " [--debug-dns]"
-	    " [--debug-oppo]"
-	    " [--debug-oppoinfo]"
-	    " [--debug-dpd]"
-	    " [ --debug-private]"
-	    " [ --debug-pfkey]"
+	    " \n\nDebug Options\n\t"
+	    "[--debug-none] "
+	    "[--debug-all] "
+	    "\n\t"
+	    "[--debug-raw] "
+	    "[--debug-crypt] "
+	    "[--debug-crypto] "
+	    "[--debug-parsing] "
+	    "[--debug-emitting] "
+	    "\n\t"
+	    "[--debug-control] "
+	    "[--debug-lifecycle] "
+	    "[--debug-klips] "
+	    "[--debug-netkey] "
+	    "[--debug-x509] "
+	    "[ --debug-nat-t] "
+#ifndef NAT_TRAVERSAL
+            "(unavailable) "
+#endif
+	    "\n\t"
+	    "[--debug-dns] "
+	    "[--debug-oppo] "
+	    "[--debug-oppoinfo] "
+	    "[--debug-dpd] "
+	    "[ --debug-private] "
+	    "[ --debug-pfkey] "
+            "\n\t"
 #endif
 #ifdef NAT_TRAVERSAL
-	    " [ --debug-nat-t]"
-	    " \\\n\t"
-	    "[--nat_traversal] [--keep_alive <delay_sec>]"
-	    " \\\n\t"
-            "[--force_keepalive] [--disable_port_floating]"
+	    " \n\t"
+	    "[--nat_traversal] [--keep_alive <delay_sec>] "
+	    " \n\t"
+            "[--force_keepalive] [--disable_port_floating] "
+	   " \n\t"
 #endif
-	   " \\\n\t"
-	   "[--virtual_private <network_list>]"
+	   "[--virtual_private <network_list>] "
 	    "\n"
 	"Openswan %s\n"
 	, ipsec_version_code());
@@ -442,10 +450,9 @@ main(int argc, char **argv)
 #endif
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
-#ifdef HAVE_LABELED_IPSEC
-            /* XXX - should accept argument and return error */
+
+            /* might not be enabled, but always accept the option */
 	    { "secctx_attr_value", required_argument, NULL, 'w' },
-#endif
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all", no_argument, NULL, 'A' },
@@ -524,7 +531,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case 'j':	/* --nhelpers */
-            if (optarg == NULL || !isdigit(optarg[0]))
+            if (optarg == NULL || !(isdigit(optarg[0]) || optarg[0]=='-'))
                 usage("missing number of pluto helpers");
 
             {
@@ -538,7 +545,6 @@ main(int argc, char **argv)
             }
 	    continue;
 
-#ifdef HAVE_LABELED_IPSEC
 	case 'w':	/* --secctx_attr_value*/
 	    if (optarg == NULL || !isdigit(optarg[0]))
 		usage("missing (positive integer) value of secctx_attr_value (needed only if using labeled ipsec)");
@@ -547,13 +553,16 @@ main(int argc, char **argv)
                 char *endptr;
                 long value = strtol(optarg, &endptr, 0);
 
+#ifdef HAVE_LABELED_IPSEC
                 if (*endptr != '\0' || endptr == optarg
                     || (value != SECCTX && value !=10) )
                     usage("<secctx_attr_value> must be a positive number (32001 by default, 10 for backward compatibility, or any other future number assigned by IANA)");
-                 secctx_attr_value = (u_int16_t)value;
+                secctx_attr_value = (u_int16_t)value;
+#else
+                openswan_log("Labelled IPsec not enabled; value %ld ignored.", value);
+#endif
 	   }
 	   continue;
-#endif
 
 	case 'd':	/* --nofork*/
 	    fork_desired = FALSE;

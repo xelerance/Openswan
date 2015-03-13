@@ -1,0 +1,5 @@
+This unit test case reads some Openswan configuration files found in the
+functional/01-confread directory, and then runs them through the pluto
+validation process.
+This works by using the libipsecconf libraries to produce a whackmsg
+structure, and then feeding that into the add_connection code.

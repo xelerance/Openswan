@@ -23,6 +23,7 @@
 #include "openswan.h"
 #include "constants.h"
 #endif
+#include "sysqueue.h"
 
 
 /*
@@ -55,6 +56,10 @@ enum keyword_string_config_field {
     KSF_CONNALIAS,
     KSF_LISTEN,
     KSF_POLICY_LABEL,
+    KSF_MODECFGDNS1,
+    KSF_MODECFGDNS2,
+    KSF_MODECFGDOMAIN,
+    KSF_MODECFGBANNER,
     KSF_MAX
 };
 
@@ -115,6 +120,16 @@ enum keyword_numeric_config_field {
     KBF_SAREFTRACK, /* saref tracking paramter for _updown */
     KBF_WARNIGNORE, /* to ignore obsoleted keywords */
     KBF_SECCTX, /*security context attribute value for labeled ipsec*/
+
+    /* some keywords which are not yet valid for openswan */
+    KBF_PLUTOFORK,
+    KBF_NATIKEPORT,
+    KBF_IKEPORT,
+    KBF_NAT_KEEPALIVE,      /* per conn enabling/disabling of sending keep-alives */
+    KBF_INITIAL_CONTACT,
+    KBF_SEND_VENDORID,      /* per conn sending of our own libreswan vendorid */
+    KBF_IKEV1_NATT,	    /* ikev1 NAT-T payloads to send/process */
+
     KBF_MAX
 };
 

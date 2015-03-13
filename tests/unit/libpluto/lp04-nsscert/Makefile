@@ -32,9 +32,12 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 UNITTESTARGS=CAcert.pem goodcert1.pem badcert1.pem
 
 TESTNAME=nsscert
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
+.PHONY: check update
 
-check:
+check:	nsscert.c
 	@mkdir -p OUTPUT
 	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
@@ -44,3 +47,5 @@ check:
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
+clean:
+	rm -f ${TESTNAME}

@@ -42,14 +42,13 @@ config setup
 
 # begin conn cassidy--marajade
 conn cassidy--marajade
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -66,14 +65,13 @@ conn cassidy--marajade
 
 # begin conn cassidy--marajade-extrude
 conn cassidy--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -90,7 +88,7 @@ conn cassidy--marajade-extrude
 
 # begin conn istari--marajade-extrude
 conn istari--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -98,7 +96,6 @@ conn istari--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -115,7 +112,7 @@ conn istari--marajade-extrude
 
 # begin conn catfish--marajade-extrude
 conn catfish--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -123,7 +120,6 @@ conn catfish--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -139,7 +135,7 @@ conn catfish--marajade-extrude
 
 # begin conn franklin--marajade-extrude
 conn franklin--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -147,7 +143,6 @@ conn franklin--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -164,7 +159,7 @@ conn franklin--marajade-extrude
 
 # begin conn aragorn--marajade-extrude
 conn aragorn--marajade-extrude
-	#also = cassidy-left marajade-extrude-new 
+	#also = cassidy-left marajade-extrude-new
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -172,7 +167,6 @@ conn aragorn--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -189,7 +183,7 @@ conn aragorn--marajade-extrude
 
 # begin conn saruman--marajade-extrude
 conn saruman--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -197,7 +191,6 @@ conn saruman--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -213,7 +206,7 @@ conn saruman--marajade-extrude
 
 # begin conn galadriel--marajade-extrude
 conn galadriel--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -221,7 +214,6 @@ conn galadriel--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -237,7 +229,7 @@ conn galadriel--marajade-extrude
 
 # begin conn grouper--marajade-extrude
 conn grouper--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -245,7 +237,6 @@ conn grouper--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -261,7 +252,7 @@ conn grouper--marajade-extrude
 
 # begin conn jarvis--marajade-extrude
 conn jarvis--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -269,7 +260,6 @@ conn jarvis--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -285,7 +275,7 @@ conn jarvis--marajade-extrude
 
 # begin conn tuna--marajade-extrude
 conn tuna--marajade-extrude
-	#also = cassidy-left marajade-extrude 
+	#also = cassidy-left marajade-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -293,7 +283,6 @@ conn tuna--marajade-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	rekey=no
@@ -309,14 +298,13 @@ conn tuna--marajade-extrude
 
 # begin conn cassidy--correlhorn
 conn cassidy--correlhorn
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@correlhorn.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
@@ -335,7 +323,7 @@ conn cassidy--correlhorn
 
 # begin conn istari--correlhorn-extrude
 conn istari--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -343,7 +331,6 @@ conn istari--correlhorn-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@correlhorn.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
@@ -362,7 +349,7 @@ conn istari--correlhorn-extrude
 
 # begin conn franklin--correlhorn-extrude
 conn franklin--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -370,7 +357,6 @@ conn franklin--correlhorn-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@correlhorn.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
@@ -389,7 +375,7 @@ conn franklin--correlhorn-extrude
 
 # begin conn aragorn--correlhorn-extrude
 conn aragorn--correlhorn-extrude
-	#also = cassidy-left correlhorn-extrude 
+	#also = cassidy-left correlhorn-extrude
 	left=209.87.252.252
 	leftid="@cassidy.sandelman.ottawa.on.ca"
 	leftnexthop=209.87.252.241
@@ -397,7 +383,6 @@ conn aragorn--correlhorn-extrude
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	right=%any
 	rightid="@correlhorn.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215
@@ -417,11 +402,9 @@ conn aragorn--correlhorn-extrude
 # begin conn cassidy--tygerteam-home88
 conn cassidy--tygerteam-home88
 	left=209.87.252.252
-	leftnexthop=%defaultroute
 	leftsubnet=209.87.252.240/28
 	right=%any
 	rightid="@homegatekey.tygerteam.com."
-	rightnexthop=%defaultroute
 	rightsubnet=192.168.88.0/24
 	rightsourceip=192.168.88.3
 	auto=ignore
@@ -441,7 +424,6 @@ conn cassidy-left
 	leftnexthop=209.87.252.241
 	leftrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	#right= not set
-	rightnexthop=%defaultroute
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -454,14 +436,12 @@ conn cassidy-left
 
 # begin conn dooku--cassidy-net
 conn dooku--cassidy-net
-	#also = dooku-base cassidy-base 
+	#also = dooku-base cassidy-base
 	left=172.30.11.230
 	leftid="@dooku.sandelman.ca"
-	leftnexthop=%defaultroute
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
 	right=209.87.249.25
 	rightid="@cassidy.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	auto=ignore
 	type=tunnel
@@ -476,10 +456,8 @@ conn dooku--cassidy-net
 # begin conn dooku-base
 conn dooku-base
 	left=172.30.11.230
-	leftnexthop=%defaultroute
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
 	#right= not set
-	rightnexthop=%defaultroute
 	auto=ignore
 	type=tunnel
 	compress=no
@@ -493,10 +471,8 @@ conn dooku-base
 # begin conn cassidy-base
 conn cassidy-base
 	#left= not set
-	leftnexthop=%defaultroute
 	right=209.87.249.25
 	rightid="@cassidy.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	auto=ignore
 	type=tunnel
@@ -512,12 +488,11 @@ conn cassidy-base
 conn knothole--cassidy
 	left=%any
 	leftid="@knothole.gatineau.credil.org"
-	leftnexthop=%defaultroute
-	leftsubnet=10.10.5.40/32
+	leftsubnet=2001:4830:116e:1:224:21ff:fea7:5e27/128
 	leftrsakey=0sAQOTzAG72JnYx2wxgCgqROWNV61etR4IqTQe4QeT/u1ITggA48AiiGjyyalsEePy3AhTH9YoSF2FPgvbLssEJqc3YDk3wMtoSKHMIWmk2qumfPVA0y4rJTkgEPSa5D4eOaGSdzBZq9Lp2hYSTgKQjRtl5rLy+DHn/vKMS+ceXDfy5oM/0ZcdxTsnGnGkPXFubtT+WztRxPiTfYzP/+muQQagBHpxUkk/etb2oNa3LkDb5FpCRr3A0kyPGIxlyjl7+HwTjdHdf1mwW5KDyFkyA8b+eif5KOPehjdEWfQlSwOJ7nIsAOJRJ/CX+Yc5qnpcKlbVC1jG31rmA1TbrngN1wRJ8OPlHgdWRekG9dy9tCbOnQlz
 	right=209.87.249.25
 	rightid="@cassidy.sandelman.ca"
-	rightnexthop=%defaultroute
+	rightsubnet=2607:f0b0:f:2:216:3eff:fe11:22e4/128
 	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	auto=add
 	type=tunnel
@@ -532,10 +507,8 @@ conn knothole--cassidy
 # begin conn marajade-extrude
 conn marajade-extrude
 	#left= not set
-	leftnexthop=%defaultroute
 	right=%any
 	rightid="@marajade.sandelman.ottawa.on.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=205.150.200.163/32
 	rightsourceip=205.150.200.163
 	auto=ignore
@@ -551,10 +524,8 @@ conn marajade-extrude
 # begin conn marajade-extrude-new
 conn marajade-extrude-new
 	#left= not set
-	leftnexthop=%defaultroute
 	right=%any
 	rightid="@marajade.sandelman.ca."
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.213/32
 	rightsourceip=209.87.252.213
 	forceencaps=yes
@@ -571,10 +542,8 @@ conn marajade-extrude-new
 # begin conn correlhorn-extrude
 conn correlhorn-extrude
 	#left= not set
-	leftnexthop=%defaultroute
 	right=%any
 	rightid="@correlhorn.sandelman.ca"
-	rightnexthop=%defaultroute
 	rightsubnet=209.87.252.215/32
 	rightrsakey=0sAQPhXFiBI/83BXnfYzUYE79IXhzRwNDGi0VfQlHtS3+/6g3H0Seqs7Hr40IKrt13AtiDKOooVCBPn+lMd6hi1FWhg7bw4y6by8dr9QxcOdjdl+tFLJ8KzTk2hSwcaKBxqHm3gsuVnQByV20xcP5BVRxmekyuTcZjgavcSpTfjc3yKy9AwF9htGu5lnPjasrXSU1c2vcWSbYil/tIBGxKgprbBe4+JZYxTIENZ+kvVZTtkOAHpxizV0LQ2w2dYaqZ/SzhO0+DwgVB6/SHxCJveUwpufDqmFN99dic66Psrmacrqk1UWt4KeI5tAo7lMrOTHdarViYIuAwOCE2brcpW1/X
 	rightsourceip=209.87.252.215

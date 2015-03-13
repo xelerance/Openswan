@@ -32,7 +32,8 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 UNITTESTARGS=CAcert.pem sunCert.pem
 
 TESTNAME=nsscert
-
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
 check:
 	@mkdir -p OUTPUT
