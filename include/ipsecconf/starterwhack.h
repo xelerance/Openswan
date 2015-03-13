@@ -28,6 +28,7 @@ int starter_whack_route_conn (struct starter_config *cfg, struct starter_conn *c
 int starter_whack_initiate_conn (struct starter_config *cfg, struct starter_conn *conn);
 int starter_whack_listen (struct starter_config *cfg);
 int starter_whack_shutdown (struct starter_config *cfg);
+void init_whack_msg (struct whack_message *msg);
 
 /* build whack message from starter structures */
 extern int starter_whack_build_pkmsg(struct starter_config *cfg,

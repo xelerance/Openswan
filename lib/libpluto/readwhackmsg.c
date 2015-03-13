@@ -66,10 +66,12 @@ int readwhackmsg(char *infile)
 	}
 
         /* if it's a basic command, skip it */
+        fprintf(stderr, "processing %08x\n", m1.magic);
         if(m1.magic == WHACK_BASIC_MAGIC) continue;
 
         if(m1.magic != WHACK_MAGIC) {
-            fprintf(stderr, "this is whack message from different version\n");
+            fprintf(stderr, "this is whack message from different version: me %08lx file: %08lx\n",
+                    (unsigned long)WHACK_MAGIC, (unsigned long)m1.magic);
             if((m1.magic & 0x80000000) != WHACK_MAGIC_INTVALUE) {
                 unsigned int bit64 = (m1.magic & 0x80000000);
                 unsigned int bits = bit64 ? 64 : 32;

@@ -261,7 +261,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	return ret;
 }
 
-static void init_whack_msg (struct whack_message *msg)
+void init_whack_msg (struct whack_message *msg)
 {
 	memset(msg, 0, sizeof(struct whack_message));
 	msg->magic = WHACK_MAGIC;
@@ -478,6 +478,8 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
                                    , struct whack_message *msg
                                    , struct starter_conn *conn)
 {
+	init_whack_msg(msg);
+
 	msg->whack_connection = TRUE;
 	msg->whack_delete = TRUE;      /* always do replace for now */
 	msg->name = connection_name(conn);

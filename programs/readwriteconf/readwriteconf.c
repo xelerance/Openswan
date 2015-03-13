@@ -97,6 +97,27 @@ static struct option const longopts[] =
 };
 
 
+static void write_whack_pubkey (struct starter_config *cfg,
+                               struct starter_conn *conn,
+                               struct starter_end *end, const char *lr)
+{
+	struct whack_message msg;
+
+	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
+            unsigned int len = serialize_whack_msg(&msg);
+            writewhackrecord((char *)&msg, len);
+        }
+
+	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
+            unsigned int len = serialize_whack_msg(&msg);
+            writewhackrecord((char *)&msg, len);
+        }
+}
+
 
 int
 main(int argc, char *argv[])
@@ -228,18 +249,26 @@ main(int argc, char *argv[])
                     }
                     if(strcasecmp(conn->name, conn_name)==0) {
                         struct whack_message msg1;
+
+                        init_whack_msg(&msg1);
+
                         if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
                             unsigned int len = serialize_whack_msg(&msg1);
                             writewhackrecord((char *)&msg1, len);
+                        }
+
+                        if (conn->policy & POLICY_RSASIG) {
+                            write_whack_pubkey (cfg, conn, &conn->left,  "left");
+                            write_whack_pubkey (cfg, conn, &conn->right, "right");
                         }
                     }
                 }
             }
     }
-
     confread_free(cfg);
     exit(0);
 }
+
 
 void exit_tool(int x)
 {
