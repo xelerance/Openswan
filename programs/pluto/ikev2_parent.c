@@ -106,6 +106,26 @@ ikev2parent_outI1(int whack_sock
                   )
 {
     struct state *st = new_state();
+    initialize_new_state(st, c, policy, try, whack_sock, importance);
+
+    return
+        ikev2parent_outI1_withstate(st, whack_sock, c
+                                    , predecessor, policy
+                                    , try, importance
+                                    , uctx);
+}
+
+stf_status
+ikev2parent_outI1_withstate(struct state *st
+                            , int whack_sock
+                            , struct connection *c
+                            , struct state *predecessor
+                            , lset_t policy
+                            , unsigned long try /* how many attempts so far */
+                            , enum crypto_importance importance
+                            , struct xfrm_user_sec_ctx_ike * uctx UNUSED
+                            )
+{
     struct db_sa *sadb;
     int    groupnum;
     int    policy_index = POLICY_ISAKMP(policy
@@ -115,7 +135,6 @@ ikev2parent_outI1(int whack_sock
 
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
-    initialize_new_state(st, c, policy, try, whack_sock, importance);
     st->st_ikev2 = TRUE;
     change_state(st, STATE_PARENT_I1);
     st->st_msgid_lastack = INVALID_MSGID;

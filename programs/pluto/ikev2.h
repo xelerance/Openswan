@@ -11,7 +11,15 @@ extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct xfrm_user_sec_ctx_ike * uctx
 				    );
 
-
+extern stf_status ikev2parent_outI1_withstate(struct state *st
+                            , int whack_sock
+                            , struct connection *c
+                            , struct state *predecessor
+                            , lset_t policy
+                            , unsigned long try /* how many attempts so far */
+                            , enum crypto_importance importance
+                            , struct xfrm_user_sec_ctx_ike * uctx
+                                              );
 
 extern void ikev2_delete_out(struct state *st);
 
