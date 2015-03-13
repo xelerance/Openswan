@@ -15,7 +15,7 @@
 #ifndef _DEMUX_H
 #define _DEMUX_H
 
-#include "server.h"
+#include "pluto/server.h"
 #include "packet.h"
 #include "quirks.h"
 

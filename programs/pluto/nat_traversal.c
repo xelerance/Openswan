@@ -1,6 +1,6 @@
 /* Openswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
- * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2015 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2005 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
@@ -49,7 +49,7 @@
 
 #include "defs.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "state.h"
 #include "id.h"
 #include "x509.h"
@@ -58,7 +58,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"
+#include "pluto/connections.h"
 #include "packet.h"
 #include "demux.h"
 #include "kernel.h"

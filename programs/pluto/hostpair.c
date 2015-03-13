@@ -49,7 +49,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -57,7 +57,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -75,7 +75,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
 
@@ -161,8 +161,8 @@ find_host_pair(const ip_address *myaddr
      * but other ports are not.
      * So if any port==4500, then set it to 500.
      */
-    if(myport == 4500) myport=500;
-    if(hisport== 4500) hisport=500;
+    if(myport == NAT_IKE_UDP_PORT) myport=IKE_UDP_PORT;
+    if(hisport== NAT_IKE_UDP_PORT) hisport=IKE_UDP_PORT;
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
@@ -248,8 +248,8 @@ connect_to_host_pair(struct connection *c)
 	    hp->me.addr = c->spd.this.host_addr;
 	    hp->him.addr = c->spd.that.host_addr;
 #ifdef NAT_TRAVERSAL
-	    hp->me.host_port = nat_traversal_enabled ? pluto_port : c->spd.this.host_port;
-	    hp->him.host_port = nat_traversal_enabled ? pluto_port : c->spd.that.host_port;
+	    hp->me.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.this.host_port;
+	    hp->him.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.that.host_port;
 #else
 	    hp->me.host_port = c->spd.this.host_port;
  	    hp->him.host_port = c->spd.that.host_port;

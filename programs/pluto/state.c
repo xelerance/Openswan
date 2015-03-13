@@ -41,7 +41,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
@@ -65,12 +65,6 @@
 # include <pk11pub.h>
 # include <keyhi.h>
 #endif
-
-/*
- * Global variables: had to go somewhere, might as well be this file.
- */
-
-u_int16_t pluto_port = IKE_UDP_PORT;	/* Pluto's port */
 
 /*
  * This file has the functions that handle the
@@ -354,6 +348,8 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
+    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
+
 /* PATRICK: I may have to uncomment the following code block: */
 //    if(st->st_ikev2)
 //    {
@@ -382,7 +378,7 @@ delete_state(struct state *st)
 //    }
 //    else
 //    {
-//	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
+//	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state");
 //	/* parent sa */
 //	if(st->st_state == STATE_IKESA_DEL)
 //	{
@@ -408,7 +404,6 @@ delete_state(struct state *st)
 //    }
 //    }
 //
-    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
 
     /* If DPD is enabled on this state object, clear any pending events */

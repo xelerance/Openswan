@@ -38,7 +38,7 @@
 
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "kernel.h"
 #include "kernel_pfkey.h"
@@ -300,7 +300,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 
 		vname = clone_str(useful_mast_name
 				  , "virtual device name mast");
-		fd = create_socket(ifp, vname, pluto_port);
+		fd = create_socket(ifp, vname, pluto_port500);
 
 		if (fd < 0)
 		    break;
@@ -321,7 +321,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 
 		q->ip_addr = ifp->addr;
 		q->change = IFN_ADD;
-		q->port = pluto_port;
+		q->port = pluto_port500;
 		q->ike_float = FALSE;
 
 #ifdef NAT_TRAVERSAL

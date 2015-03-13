@@ -44,7 +44,7 @@
 #include "defs.h"
 #include "rnd.h"
 #include "id.h"
-#include "connections.h"        /* needs id.h */
+#include "pluto/connections.h"        /* needs id.h */
 #include "state.h"
 #include "timer.h"
 #include "kernel.h"
@@ -54,7 +54,7 @@
 #include "packet.h"
 #include "x509.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
@@ -245,7 +245,7 @@ find_raw_ifaces4(void)
 	ip_address any;
 
 	happy(anyaddr(AF_INET, &any));
-	setportof(htons(pluto_port), &any);
+	setportof(htons(pluto_port500), &any);
 	if (bind(master_sock, sockaddrof(&any), sockaddrlenof(&any)) < 0)
 	    exit_log_errno((e, "bind() failed in find_raw_ifaces4()"));
     }

@@ -38,7 +38,7 @@
 
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "kernel.h"
 #include "kernel_pfkey.h"
@@ -206,7 +206,7 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, v->name, pluto_port);
+		    int fd = create_socket(ifp, v->name, pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -232,7 +232,7 @@ add_entry:
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port;
+		    q->port = pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;
@@ -252,7 +252,7 @@ add_entry:
 		    if (nat_traversal_support_port_floating
 			&& addrtypeof(&ifp->addr) == AF_INET)
 		    {
-			fd = create_socket(ifp, v->name, NAT_T_IKE_FLOAT_PORT);
+			fd = create_socket(ifp, v->name, pluto_port4500);
 			if (fd < 0)
 			    break;
 			nat_traversal_espinudp_socket(fd, "IPv4"
@@ -262,8 +262,8 @@ add_entry:
 			id->id_count++;
 
 			q->ip_addr = ifp->addr;
-			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
-			q->port = NAT_T_IKE_FLOAT_PORT;
+			q->port = pluto_port4500;
+			setportof(htons(q->port), &q->ip_addr);
 			q->fd = fd;
 			q->next = interfaces;
 			q->change = IFN_ADD;

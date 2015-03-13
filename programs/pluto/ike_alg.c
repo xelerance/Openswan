@@ -42,7 +42,7 @@
 #include "ike_alg.h"
 #include "db_ops.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "kernel.h"
 #include "plutoalg.h"
 

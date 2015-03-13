@@ -48,7 +48,7 @@
 
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "kernel.h"
 #include "kernel_pfkey.h"

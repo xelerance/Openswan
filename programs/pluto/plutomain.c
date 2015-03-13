@@ -56,11 +56,11 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -80,7 +80,7 @@
 #include "vendor.h"
 #include "pluto_crypt.h"
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -674,9 +674,10 @@ main(int argc, char **argv)
 		long port = strtol(optarg, &endptr, 0);
 
 		if (*endptr != '\0' || endptr == optarg
-		|| port <= 0 || port > 0x10000)
-		    usage("<port-number> must be a number between 1 and 65535");
-		pluto_port = port;
+                    || port <= 0 || port > (0x10000-4000))
+		    usage("<port-number> must be a number between 1 and 61535 (nat port: port-number+4000)");
+		pluto_port500  = port;
+		pluto_port4500 = port+4000;
 	    }
 	    continue;
 

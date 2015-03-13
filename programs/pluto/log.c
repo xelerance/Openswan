@@ -40,7 +40,7 @@
 
 #include "defs.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "state.h"
 #include "id.h"
 #include "x509.h"
@@ -49,14 +49,14 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "kernel.h"	/* needs connections.h */
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
 #include "kernel_alg.h"
 #include "ike_alg.h"
 #include "plutoalg.h"
-#include "virtual.h" /* for show_virtual_private */
+#include "pluto/virtual.h" /* for show_virtual_private */
 
 #ifndef NO_DB_OPS_STATS
 #define NO_DB_CONTEXT

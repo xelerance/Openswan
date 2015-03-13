@@ -51,7 +51,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -65,7 +65,7 @@
 #include "timer.h"
 #if 0
 #include "whack.h"	/* requires connections.h */
-#include "server.h"
+#include "pluto/server.h"
 #ifdef XAUTH
 #include "xauth.h"
 #endif

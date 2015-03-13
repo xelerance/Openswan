@@ -51,9 +51,9 @@
 #include "defs.h"
 #include "id.h"
 #include "state.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "kernel.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "nat_traversal.h"
 #include "state.h"
 #include "kernel_netlink.h"
@@ -2054,7 +2054,7 @@ add_entry:
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, v->name, pluto_port);
+		    int fd = create_socket(ifp, v->name, pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -2080,7 +2080,7 @@ add_entry:
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port;
+		    q->port = pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;

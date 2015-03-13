@@ -45,7 +45,7 @@
 #include "defs.h"
 #include "rnd.h"
 #include "id.h"
-#include "connections.h"        /* needs id.h */
+#include "pluto/connections.h"        /* needs id.h */
 #include "state.h"
 #include "timer.h"
 #include "kernel.h"
@@ -56,7 +56,7 @@
 #include "packet.h"
 #include "x509.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
@@ -69,6 +69,12 @@
 #include "nat_traversal.h"
 #endif
 
+/*
+ * Global variables: had to go somewhere, might as well be this file.
+ */
+
+u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
+u_int16_t pluto_port4500 = NAT_IKE_UDP_PORT;	/* Pluto's port NAT */
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 /* test if the routes required for two different connections agree

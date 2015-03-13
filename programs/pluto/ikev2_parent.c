@@ -35,7 +35,7 @@
 #include "defs.h"
 #include "state.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -244,6 +244,7 @@ ikev2parent_outI1_withstate(struct state *st
                 delete_state(st);
             }
         } else {
+            /* this case is that st_sec already is initialized */
             e = ikev2_parent_outI1_tail((struct pluto_crypto_req_cont *)ke
                                         , NULL);
         }
@@ -551,7 +552,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
          pb_stream pre_sa_pbs = sa_pd->pbs;
          policy = preparse_isakmp_sa_body(&pre_sa_pbs);
-        c = find_host_connection(&md->iface->ip_addr, pluto_port
+        c = find_host_connection(&md->iface->ip_addr, pluto_port500
                                  , (ip_address*)NULL, md->sender_port, policy);
 
 

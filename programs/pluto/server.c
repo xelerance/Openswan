@@ -66,10 +66,10 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "kernel.h"  /* for no_klips; needs connections.h */
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "timer.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
@@ -440,7 +440,7 @@ create_socket(struct raw_iface *ifp, const char *v_name, int port)
 	close(fd);
 	return -1;
     }
-    setportof(htons(pluto_port), &ifp->addr);
+    setportof(htons(pluto_port500), &ifp->addr);
 
 #if defined(HAVE_UDPFROMTO)
     /* we are going to use udpfromto.c, so initialize it */

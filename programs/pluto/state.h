@@ -390,10 +390,6 @@ struct state
 
 };
 
-/* global variables */
-
-extern u_int16_t pluto_port;	/* Pluto's port */
-
 extern bool states_use_connection(struct connection *c);
 
 /* state functions */

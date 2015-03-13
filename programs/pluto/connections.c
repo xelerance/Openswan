@@ -47,7 +47,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -55,7 +55,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "pluto/keys.h"
@@ -73,7 +73,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
 
@@ -438,7 +438,7 @@ check_orientations(void)
 		for (hp = host_pairs; hp != NULL; hp = hp->next)
 		{
 		    if (sameaddr(&hp->him.addr, &i->ip_addr)
-			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port))
+			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port500))
 		    {
 			/* bad news: the whole chain of connections
 			 * hanging off this host pair has both sides
@@ -2151,9 +2151,9 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * that it is pluto_port (makes debugging easier).
 	 */
 	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->ip_addr
-							  , pluto_port
+							  , pluto_port500
 							  , (ip_address *)NULL
-							  , pluto_port);
+							  , pluto_port500);
 
 	for (; c != NULL; c = c->hp_next)
 	{

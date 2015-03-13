@@ -52,7 +52,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
@@ -62,7 +62,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -93,7 +93,7 @@
 #include "nat_traversal.h"
 #endif
 #ifdef VIRTUAL_IP
-#include "virtual.h"
+#include "pluto/virtual.h"
 #endif
 #include "dpd.h"
 #include "x509more.h"
@@ -756,7 +756,7 @@ main_inI1_outR1(struct msg_digest *md)
 
 
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(&md->iface->ip_addr, pluto_port
+    c = find_host_connection(&md->iface->ip_addr, pluto_port500
 			     , &md->sender
 			     , md->sender_port, LEMPTY);
 
@@ -783,7 +783,7 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(&md->iface->ip_addr, pluto_port
+	    d = find_host_connection(&md->iface->ip_addr, pluto_port500
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);
 
@@ -824,7 +824,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but \"%s\" forbids connection"
-		, ip_str(&md->iface->ip_addr), pluto_port, c->name);
+		, ip_str(&md->iface->ip_addr), pluto_port500, c->name);
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -834,7 +834,7 @@ main_inI1_outR1(struct msg_digest *md)
 	     * His ID isn't declared yet.
 	     */
 	   DBG(DBG_CONTROL, DBG_log("instantiating \"%s\" for initial Main Mode message received on %s:%u"
-		, c->name, ip_str(&md->iface->ip_addr), pluto_port));
+		, c->name, ip_str(&md->iface->ip_addr), pluto_port500));
 	    c = rw_instantiate(c, &md->sender
 			       , NULL, NULL);
 	}
