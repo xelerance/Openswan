@@ -1733,7 +1733,7 @@ void set_state_ike_endpoints(struct state *st
 {
     /* reset our choice of interface */
     c->interface = NULL;
-    orient(c);
+    orient(c, pluto_port500);
 
     st->st_localaddr  = c->spd.this.host_addr;
     st->st_localport  = c->spd.this.host_port;

@@ -417,7 +417,7 @@ check_orientations(void)
 	{
 	    struct connection *nxt = c->hp_next;
 
-	    (void)orient(c);
+	    (void)orient(c, pluto_port500);
 	    connect_to_host_pair(c);
 	    c = nxt;
 	}
@@ -457,7 +457,7 @@ check_orientations(void)
 			    struct connection *nxt = c->hp_next;
 
 			    c->interface = NULL;
-			    (void)orient(c);
+			    (void)orient(c, pluto_port500);
 			    connect_to_host_pair(c);
 			    c = nxt;
 			}
@@ -1474,7 +1474,7 @@ add_connection(const struct whack_message *wm)
 
 	unshare_connection_strings(c);
 
-	(void)orient(c);
+	(void)orient(c, pluto_port500);
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
