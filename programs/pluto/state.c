@@ -265,7 +265,7 @@ insert_state(struct state *st)
     if (st->st_event == NULL)
 	event_schedule(EVENT_SO_DISCARD, 0, st);
 
-	refresh_state(st);
+    refresh_state(st);
 }
 
 /*
@@ -1747,6 +1747,7 @@ void set_state_ike_endpoints(struct state *st
 
 /*
  * Local Variables:
- * c-basic-offset:4
+ * c-style: pluto
+ * c-basic-offset: 4
  * End:
  */
