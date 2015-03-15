@@ -350,61 +350,52 @@ delete_state(struct state *st)
 
     DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
 
-/* PATRICK: I may have to uncomment the following code block: */
-//    if(st->st_ikev2)
-//    {
-//    /* child sa*/
-//    if(st->st_clonedfrom != 0)
-//    {
-//	DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
-//	if(st->st_state == STATE_CHILDSA_DEL) {
-//		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
-//	}
-//	else
-//	{
-//		/* Only send request if child sa is established
-//		 * otherwise continue with deletion
-//		 */
-//		if(IS_CHILD_SA_ESTABLISHED(st))
-//		{
-//		DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
-//		//change_state(st, STATE_CHILDSA_DEL);
-//		send_delete(st);
-//		change_state(st, STATE_CHILDSA_DEL);
-//		/* actual deletion when we receive peer response*/
-//		goto delete_state_end;
-//		}
-//	}
-//    }
-//    else
-//    {
-//	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state");
-//	/* parent sa */
-//	if(st->st_state == STATE_IKESA_DEL)
-//	{
-//		DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
-//	}
-//	else
-//	{
-//		/* Another check to verify if a secured
-//		 * INFORMATIONAL exchange can be sent or not
-//		 */
-//		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
-//			&& st->st_skey_er.ptr && st->st_skey_ar.ptr)
-//		{
-//		DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
-//		//change_state(st, STATE_IKESA_DEL);
-//		send_delete(st);
-//		change_state(st, STATE_IKESA_DEL);
-//		/* actual deletion when we receive peer response*/
-//                goto delete_state_end;
-//		}
-//	}
-//
-//    }
-//    }
-//
+#if 0
+    /* This is a PATRICK commented out */
+    if(st->st_ikev2) {
+        /* child sa*/
+        if(st->st_clonedfrom != 0) {
+            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+            if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
 
+            } else {
+                /* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */
+		if(IS_CHILD_SA_ESTABLISHED(st)) {
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    send_delete(st);
+                    change_state(st, STATE_CHILDSA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+
+        } else {
+            DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
+            /* parent sa */
+            if(st->st_state == STATE_IKESA_DEL) {
+                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+
+            } else {
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
+                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
+                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+                    send_delete(st);
+                    change_state(st, STATE_IKESA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+        }
+    }
+#endif
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
