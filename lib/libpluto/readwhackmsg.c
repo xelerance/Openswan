@@ -88,8 +88,10 @@ int readwhackmsg(char *infile)
         fprintf(stderr, "processing whack msg time: %u size: %d\n",
                 a[1],plen);
 
+#if 0
         fprintf(stderr, "m1: %p next: %p roof: %p\n",
                 &m1, wp.str_next, wp.str_roof);
+#endif
 
         if ((ugh = unpack_whack_msg(&wp)) != NULL)
         {
