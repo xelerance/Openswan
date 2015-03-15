@@ -282,7 +282,8 @@ static char *connection_name (struct starter_conn *conn)
 	}
 }
 
-static void set_whack_end(struct starter_config *cfg
+static int set_whack_end(struct starter_config *cfg
+                          , struct starter_conn *conn
 			  , char *lr
 			  , struct whack_end *w
 			  , struct starter_end *l)
@@ -319,8 +320,12 @@ static void set_whack_end(struct starter_config *cfg
 		anyaddr(l->addr_family, &w->host_addr);
 		break;
 
+        case KH_NOTSET:
+          printf("%s: %s= end is not defined, conn not loaded\n", conn->name, lr);
+                return -1;
+
 	default:
-		printf("%s: do something with host case: %d\n", lr, l->addrtype);
+          printf("%s %s: do something with host case: %d\n", conn->name, lr, l->addrtype);
 		break;
 	}
 	w->host_addr_name = l->strings[KSCF_IP];
@@ -335,7 +340,7 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 
 	default:
-		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
+          printf("%s %s: do something with nexthop case: %d\n", conn->name, lr, l->nexttype);
 		break;
 
 	case KH_NOTSET:  /* acceptable to not set nexthop */
@@ -394,6 +399,7 @@ static void set_whack_end(struct starter_config *cfg
 	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
 		w->modecfg_client = l->options[KNCF_MODECONFIGCLIENT];
 	}
+        return 0;
 }
 
 int starter_whack_build_pkmsg(struct starter_config *cfg,
@@ -571,8 +577,10 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg->policy_label);
 #endif
 
-	set_whack_end(cfg, "left",  &msg->left, &conn->left);
-	set_whack_end(cfg, "right", &msg->right, &conn->right);
+	if(set_whack_end(cfg, conn, "left",  &msg->left, &conn->left) != 0
+           || set_whack_end(cfg, conn, "right", &msg->right, &conn->right)!=0) {
+          return -1;
+        }
 
 	/* for bug #1004 */
 	update_ports(msg);

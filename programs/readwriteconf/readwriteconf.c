@@ -236,16 +236,16 @@ main(int argc, char *argv[])
         }
         /* load all conns marked as auto=add or better */
 
-        for(conn = cfg->conns.tqh_first;
-            conn != NULL;
-            conn = conn->link.tqe_next)
-            {
-                argv+=optind;
-                argc-=optind;
-                for(; argc>0; argc--, argv++) {
-                    char *conn_name = *argv;
+        argv+=optind;
+        argc-=optind;
+        for(; argc>0; argc--, argv++) {
+            char *conn_name = *argv;
+            for(conn = cfg->conns.tqh_first;
+                conn != NULL;
+                conn = conn->link.tqe_next)
+                {
                     if(verbose) {
-                        printf("processing conn: %s\n", conn_name);
+                        printf("processing conn: %s vs %s\n", conn_name, conn->name);
                     }
                     if(strcasecmp(conn->name, conn_name)==0) {
                         struct whack_message msg1;
@@ -255,11 +255,13 @@ main(int argc, char *argv[])
                         if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
                             unsigned int len = serialize_whack_msg(&msg1);
                             writewhackrecord((char *)&msg1, len);
-                        }
 
-                        if (conn->policy & POLICY_RSASIG) {
-                            write_whack_pubkey (cfg, conn, &conn->left,  "left");
-                            write_whack_pubkey (cfg, conn, &conn->right, "right");
+                            if (conn->policy & POLICY_RSASIG) {
+                                write_whack_pubkey (cfg, conn, &conn->left,  "left");
+                                write_whack_pubkey (cfg, conn, &conn->right, "right");
+                            }
+                        } else {
+                            fprintf(stderr, "failed to load conn: %s\n", conn_name);
                         }
                     }
                 }
