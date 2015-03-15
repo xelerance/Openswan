@@ -1,0 +1,43 @@
+| processing whack message of size: 16
+| processing whack message of size: 1194
+processing ef686b26
+processing whack msg time: X size: 1182
+| checking against if: eth0
+./orienttest added connection description "parker1--jj2"
+| processing whack message of size: 1187
+processing ef686b26
+processing whack msg time: X size: 1175
+| checking against if: eth0
+./orienttest added connection description "ikev2:parker--jj"
+RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
+RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0 
+RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; 
+RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+./orienttest leak: keep id name, item size: 26
+./orienttest leak: host ip, item size: 14
+./orienttest leak: keep id name, item size: 30
+./orienttest leak: connection name, item size: 17
+./orienttest leak: struct connection, item size: 1104
+./orienttest leak: host_pair, item size: 96
+./orienttest leak: host ip, item size: 12
+./orienttest leak: keep id name, item size: 26
+./orienttest leak: host ip, item size: 14
+./orienttest leak: keep id name, item size: 30
+./orienttest leak: connection name, item size: 13
+./orienttest leak: struct connection, item size: 1104
+./orienttest leak: policies path, item size: 22
+./orienttest leak: ocspcerts path, item size: 23
+./orienttest leak: aacerts path, item size: 21
+./orienttest leak: certs path, item size: 19
+./orienttest leak: private path, item size: 21
+./orienttest leak: crls path, item size: 18
+./orienttest leak: cacert path, item size: 21
+./orienttest leak: acert path, item size: 20
+./orienttest leak: default conf var_dir, item size: 5
+./orienttest leak: default conf conffile, item size: 16
+./orienttest leak: default conf ipsecd_dir, item size: 13
+./orienttest leak: default conf ipsec_conf_dir, item size: 5
+./orienttest leak detective found 24 leaks, total size X
+Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+processing parker1--jj2

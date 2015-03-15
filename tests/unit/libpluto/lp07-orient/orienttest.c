@@ -53,7 +53,7 @@ main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 3) {
+    if(argc < 3) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
 	exit(10);
     }
@@ -61,16 +61,25 @@ main(int argc, char *argv[])
 
     tool_init_log();
     init_fake_vendorid();
+    init_parker_interface();
 
-    infile = argv[1];
-    conn_name = argv[2];
+    argc--;
+    argv++;
 
+    infile = *argv;
     if(readwhackmsg(infile) == 0) exit(10);
 
-    c1 = con_by_name(conn_name, TRUE);
-    assert(c1 != NULL);
+    argc--;
+    argv++;
 
-    assert(orient(c1, pluto_port500));
+    while(argc-->0) {
+        conn_name = *argv++;
+        printf("processing %s\n", conn_name);
+        c1 = con_by_name(conn_name, TRUE);
+        show_one_connection(c1);
+        assert(c1 != NULL);
+        assert(orient(c1, pluto_port500));
+    }
 
     report_leaks();
 

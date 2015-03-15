@@ -11,7 +11,12 @@ struct iface_port if1 = {
 	.ip_addr.u.v4.sin_addr.s_addr = 0x0101a8c0, /* 192.168.1.1 */
 	.fd     = -1,
 	.next   = NULL,
-	.ike_float = 1,
+	.ike_float = 0,
 	.change    = IFN_KEEP
 };
 
+void init_parker_interface(void)
+{
+  if1.next = interfaces;
+  interfaces = &if1;
+}

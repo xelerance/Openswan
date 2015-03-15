@@ -70,27 +70,34 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTESTARGS=${WHACKFILE} ikev2:parker--jj
+UNITTESTARGS=${WHACKFILE} parker1--jj2
+#UNITTESTARGS=${WHACKFILE} parker1--jj2 ikev2:parker--jj
 
 TESTNAME=orienttest
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
-check:	${WHACKFILE}
-	@mkdir -p OUTPUT
+programs ${TESTNAME}: ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	@echo "  "CC ${TESTNAME}
+
+check:	${WHACKFILE} ${TESTNAME}
+	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
-
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} ikev2:parker--jj
+	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
 
 update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+
+clean:
+	rm -f ${TESTNAME} ${WHACKFILE}
+
 
