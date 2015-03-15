@@ -348,7 +348,9 @@ delete_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
-    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
+    openswan_log("deleting state #%lu (%s)",
+                 st->st_serialno,
+                 enum_show(&state_names, st->st_state));
 
 #if 0
     /* This is a PATRICK commented out */
