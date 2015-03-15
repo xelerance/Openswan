@@ -75,7 +75,8 @@ connections.o: connections.c ../../include/openswan.h \
  ../../include/alg_info.h spdb.h ike_alg.h \
  plutocerts.h ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
- nat_traversal.h virtual.h hostpair.h
+ nat_traversal.h ../../include/pluto/virtual.h \
+ hostpair.h
 cookie.o: cookie.c ../../include/openswan.h \
  ../../include/constants.h \
  ../../include/biglset.h \
@@ -496,7 +497,8 @@ hostpair.o: hostpair.c ../../include/openswan.h \
  ../../include/alg_info.h spdb.h ike_alg.h \
  plutocerts.h ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
- nat_traversal.h virtual.h hostpair.h
+ nat_traversal.h ../../include/pluto/virtual.h \
+ hostpair.h
 ike_alg.o: ike_alg.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
@@ -695,8 +697,8 @@ ikev1_aggr.o: ikev1_aggr.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h \
  pluto_crypt.h ../../include/osw_select.h ikev1.h \
  ikev1_continuations.h ike_continuations.h xauth.h vendor.h \
- nat_traversal.h virtual.h dpd.h x509more.h \
- ../../include/pluto/x509lists.h tpm/tpm.h
+ nat_traversal.h ../../include/pluto/virtual.h dpd.h \
+ x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
 ikev1_quick.o: ikev1_quick.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
@@ -741,8 +743,8 @@ ikev1_quick.o: ikev1_quick.c ../../include/openswan.h \
  ../../include/linux/pfkeyv2.h plutoalg.h \
  pluto_crypt.h ../../include/osw_select.h ikev1.h \
  ikev1_continuations.h ike_continuations.h xauth.h vendor.h \
- nat_traversal.h virtual.h dpd.h x509more.h \
- ../../include/pluto/x509lists.h tpm/tpm.h
+ nat_traversal.h ../../include/pluto/virtual.h dpd.h \
+ x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
 ikev2.o: ikev2.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -816,7 +818,7 @@ ikev2_child.o: ikev2_child.c ../../include/openswan.h \
  ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h vendor.h dpd.h \
  ../../include/udpfromto.h tpm/tpm.h kernel.h \
- virtual.h hostpair.h
+ ../../include/pluto/virtual.h hostpair.h
 ikev2_crypto.o: ikev2_crypto.c \
  ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
@@ -1078,7 +1080,8 @@ initiate.o: initiate.c ../../include/openswan.h \
  ../../include/alg_info.h spdb.h ike_alg.h \
  plutocerts.h ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
- nat_traversal.h virtual.h hostpair.h
+ nat_traversal.h ../../include/pluto/virtual.h \
+ hostpair.h
 ipsec_doi.o: ipsec_doi.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
@@ -1124,8 +1127,8 @@ ipsec_doi.o: ipsec_doi.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h \
  pluto_crypt.h ../../include/osw_select.h ikev1.h \
  ikev1_continuations.h ike_continuations.h ikev2.h xauth.h vendor.h \
- nat_traversal.h virtual.h dpd.h x509more.h \
- ../../include/pluto/x509lists.h tpm/tpm.h
+ nat_traversal.h ../../include/pluto/virtual.h dpd.h \
+ x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
 kernel.o: kernel.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
@@ -1386,8 +1389,8 @@ log.o: log.c ../../include/openswan.h \
  ../../include/oswtime.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h ike_alg.h \
- plutoalg.h virtual.h db_ops.h spdb.h \
- ../../include/packet.h
+ plutoalg.h ../../include/pluto/virtual.h db_ops.h \
+ spdb.h ../../include/packet.h
 msgdigest.o: msgdigest.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -1627,7 +1630,8 @@ plutomain.o: plutomain.c ../../include/openswan.h \
  ../../include/md5.h crypto.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h vendor.h pluto_crypt.h \
- ../../include/osw_select.h virtual.h nat_traversal.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/virtual.h nat_traversal.h \
  ../../include/oswcrypto.h \
  ../../include/klips-crypto/aes.h \
  ../../include/klips-crypto/aes_cbc.h \
@@ -2051,8 +2055,8 @@ stubs.o: stubs.c ../../include/openswan.h \
  ../../include/alg_info.h spdb.h ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
- nat_traversal.h virtual.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h \
+ nat_traversal.h ../../include/pluto/virtual.h \
+ pluto_crypt.h ../../include/osw_select.h crypto.h \
  ../../include/sha1.h \
  ../../include/md5.h \
  ../../include/sha2.h \
@@ -2133,7 +2137,8 @@ terminate.o: terminate.c ../../include/openswan.h \
  ../../include/alg_info.h spdb.h ike_alg.h \
  plutocerts.h ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
- nat_traversal.h virtual.h hostpair.h
+ nat_traversal.h ../../include/pluto/virtual.h \
+ hostpair.h
 timer.o: timer.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -2223,7 +2228,8 @@ virtual.o: virtual.c ../../include/openswan.h \
  ../../include/pluto/connections.h \
  ../../include/pluto/defs.h \
  ../../include/whack.h \
- ../../include/openswan/ipsec_policy.h virtual.h
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/pluto/virtual.h
 whack.o: whack.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -2333,7 +2339,7 @@ x509keys.o: x509keys.c ../../include/openswan.h \
  ../../include/sha1.h \
  ../../include/whack.h fetch.h \
  ../../include/pluto/ocsp.h \
- ../../include/pkcs.h x509more.h \
+ ../../include/pkcs.h kernel.h x509more.h \
  ../../include/pluto/x509lists.h
 xauth.o: xauth.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
@@ -2372,4 +2378,5 @@ xauth.o: xauth.c ../../include/openswan.h \
  ../../include/sha1.h \
  ../../include/md5.h crypto.h \
  ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h xauth.h virtual.h
+ ../../include/mpzfuncs.h ike_alg.h xauth.h \
+ ../../include/pluto/virtual.h
