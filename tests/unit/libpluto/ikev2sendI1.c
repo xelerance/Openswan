@@ -1,7 +1,7 @@
 struct state *sendI1(struct connection *c1, int debugging)
 {
 	struct state *st;
-	struct pcr_kenonce *kn = &r->pcr_d.kn;  /* r is a global */
+	struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;  /* r is a global in the seams */
 
 	c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 	ipsecdoi_initiate(/* whack-sock=stdout */1
@@ -22,7 +22,7 @@ struct state *sendI1(struct connection *c1, int debugging)
 	clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc3_ni, tc3_ni_len);
 	clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc3_gi, tc3_gi_len);
 
-	run_continuation(r);
+	run_continuation(crypto_req);
 
 	return st;
 }
