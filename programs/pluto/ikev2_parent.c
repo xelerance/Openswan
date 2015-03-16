@@ -106,6 +106,7 @@ ikev2parent_outI1(int whack_sock
                   )
 {
     struct state *st = new_state();
+    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
 
     return
@@ -134,7 +135,6 @@ ikev2parent_outI1_withstate(struct state *st
 
 
     /* set up new state */
-    get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     st->st_ikev2 = TRUE;
     change_state(st, STATE_PARENT_I1);
     st->st_msgid_lastack = INVALID_MSGID;
