@@ -32,7 +32,6 @@
 #include "seam_kernel.c"
 #include "seam_log.c"
 #include "seam_west.c"
-#include "seam_initiate.c"
 #include "seam_xauth.c"
 #include "seam_terminate.c"
 #if 0
