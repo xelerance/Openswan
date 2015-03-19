@@ -23,8 +23,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_west.c"
-#include "seam_initiate.c"
+#include "seam_parker.c"
 #include "seam_terminate.c"
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
@@ -62,22 +61,27 @@ main(int argc, char *argv[])
 
     tool_init_log();
     init_fake_vendorid();
+    init_parker_interface();
 
     infile = argv[1];
     conn_name = argv[2];
 
-    readwhackmsg(infile);
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+    if(readwhackmsg(infile) == 0) exit(10);
 
-    send_packet_setup_pcap("parentI1.pcap");
+    send_packet_setup_pcap("OUTPUT/parentI1.pcap");
 
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
+    assert(orient(c1, 500));
     show_one_connection(c1);
 
-    st = sendI1(c1,DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
+    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
 
-    run_continuation(r);
+    /* now accept the reply packet */
+
+
 
     /* clean up so that we can see any leaks */
     delete_state(st);
@@ -89,7 +93,7 @@ main(int argc, char *argv[])
 }
 
 
-/*
+ /*
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4

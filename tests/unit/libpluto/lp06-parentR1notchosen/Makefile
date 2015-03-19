@@ -67,22 +67,34 @@ EXTRALIBS+=-lgmp -lefence -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
-UNITTESTARGS=sun-netnet.record.${ARCH} net-net
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
+SAMPLEDIR=../samples
+OUTPUTS=OUTPUT
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTESTARGS=${WHACKFILE} parker1--jj2
 
 TESTNAME=parentI1
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
-check:
+check:	${WHACKFILE}
 	@mkdir -p OUTPUT
-	${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/I1-dump.txt | sed -f sanity.sed | diff - I1-dump.txt
+
+${WHACKFILE}:
+	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
 
 update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	sed -f sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
+
+clean:
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
 

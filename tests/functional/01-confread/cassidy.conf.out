@@ -1,4 +1,3 @@
-#setting rootdir=cassidy
 #conn cassidy--marajade loaded
 #conn cassidy--marajade-extrude loaded
 #conn istari--marajade-extrude loaded
