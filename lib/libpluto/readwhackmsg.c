@@ -66,7 +66,6 @@ int readwhackmsg(char *infile)
 	}
 
         /* if it's a basic command, skip it */
-        fprintf(stderr, "processing %08x\n", m1.magic);
         if(m1.magic == WHACK_BASIC_MAGIC) continue;
 
         if(m1.magic != WHACK_MAGIC) {
