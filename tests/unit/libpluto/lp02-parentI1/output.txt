@@ -1,7 +1,6 @@
-| processing whack message of size: 16
-| processing whack message of size: 1194
-processing ef686b26
-processing whack msg time: X size: 1182
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
@@ -469,56 +468,56 @@ sending 772 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./parentI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./parentI1 STATE_PARENT_I1: sent v2I1, expected v2R1
 ./parentI1 deleting state #1 (STATE_PARENT_I1)
-./parentI1 leak: msg_digest, item size: 3488
-./parentI1 leak: ikev2_outI1 KE, item size: 136
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_prop, item size: 192
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: db_attrs, item size: 8
-./parentI1 leak: db_v2_trans, item size: 96
-./parentI1 leak: db_v2_prop_conj, item size: 24
-./parentI1 leak: host_pair, item size: 96
-./parentI1 leak: host ip, item size: 12
-./parentI1 leak: keep id name, item size: 26
-./parentI1 leak: host ip, item size: 14
-./parentI1 leak: keep id name, item size: 30
-./parentI1 leak: connection name, item size: 13
-./parentI1 leak: struct connection, item size: 1104
-./parentI1 leak: policies path, item size: 22
-./parentI1 leak: ocspcerts path, item size: 23
-./parentI1 leak: aacerts path, item size: 21
-./parentI1 leak: certs path, item size: 19
-./parentI1 leak: private path, item size: 21
-./parentI1 leak: crls path, item size: 18
-./parentI1 leak: cacert path, item size: 21
-./parentI1 leak: acert path, item size: 20
-./parentI1 leak: default conf var_dir, item size: 5
-./parentI1 leak: default conf conffile, item size: 16
-./parentI1 leak: default conf ipsecd_dir, item size: 13
-./parentI1 leak: default conf ipsec_conf_dir, item size: 5
+./parentI1 leak: msg_digest, item size: X
+./parentI1 leak: ikev2_outI1 KE, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_prop, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: db_attrs, item size: X
+./parentI1 leak: db_v2_trans, item size: X
+./parentI1 leak: db_v2_prop_conj, item size: X
+./parentI1 leak: host_pair, item size: X
+./parentI1 leak: host ip, item size: X
+./parentI1 leak: keep id name, item size: X
+./parentI1 leak: host ip, item size: X
+./parentI1 leak: keep id name, item size: X
+./parentI1 leak: connection name, item size: X
+./parentI1 leak: struct connection, item size: X
+./parentI1 leak: policies path, item size: X
+./parentI1 leak: ocspcerts path, item size: X
+./parentI1 leak: aacerts path, item size: X
+./parentI1 leak: certs path, item size: X
+./parentI1 leak: private path, item size: X
+./parentI1 leak: crls path, item size: X
+./parentI1 leak: cacert path, item size: X
+./parentI1 leak: acert path, item size: X
+./parentI1 leak: default conf var_dir, item size: X
+./parentI1 leak: default conf conffile, item size: X
+./parentI1 leak: default conf ipsecd_dir, item size: X
+./parentI1 leak: default conf ipsec_conf_dir, item size: X
 ./parentI1 leak detective found 52 leaks, total size X

@@ -78,8 +78,7 @@ EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
-check:	${WHACKFILE}
-	@mkdir -p OUTPUT
+check:	${WHACKFILE} OUTPUT
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
@@ -88,13 +87,16 @@ check:	${WHACKFILE}
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
 	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/I1-dump.txt | sed -f sanity.sed | diff - I1-dump.txt
 
-${WHACKFILE}:
+${WHACKFILE}: OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
 
-update:
+update: OUTPUT
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 	sed -f sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
-clean:
+clean: OUTPUT
 	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
+
+OUTPUT:
+	@mkdir -p OUTPUT
 
