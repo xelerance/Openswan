@@ -402,6 +402,7 @@ extern void rehash_state(struct state *st);
 extern void release_whack(struct state *st);
 extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);
+extern void free_state(struct state *st);
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
