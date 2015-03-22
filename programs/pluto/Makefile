@@ -271,6 +271,10 @@ checkprograms:
 	@echo CC `basename $<`
 	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
 
+%.s: %.c
+	@echo CC-TO-AS `basename $<`
+	@$(CC) -S $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
+
 %.i: %.c
 	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -E -o $@ $<
 

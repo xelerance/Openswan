@@ -1,0 +1,6 @@
+OUTPUT
+core.*
+parentR1
+parentR1.o
+parentR1.pcap
+.gdbinit

@@ -790,11 +790,9 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     {
         struct isakmp_hdr r_hdr = md->hdr;
 
-        /* PATRICK: May need to uncomment this line.
-         * r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-         */
-
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+
+        r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np = ISAKMP_NEXT_v2SA;
         r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
         r_hdr.isa_flags |=  ISAKMP_FLAGS_R;

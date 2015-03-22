@@ -223,6 +223,7 @@ typedef enum {
 
 enum state_kind {
     STATE_UNDEFINED=0,	/* 0 -- most likely accident */
+    STATE_DELETING,     /* indicates state is dead, but not yet freed */
 
     /*  Opportunism states: see "Opportunistic Encryption" 2.2 */
 

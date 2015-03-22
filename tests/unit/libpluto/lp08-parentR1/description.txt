@@ -1,0 +1,7 @@
+This test case is an IKEv2 responder.  It receives a connection from the
+parentI1 test unit test case. The output of parentI1.pcap is copied here to
+be processed.
+This case should create an R1 packet that can be sent back to the initiator
+for test case parentI2.
+The sanity.sed in this directory works on the pcap output.
+

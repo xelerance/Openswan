@@ -341,131 +341,9 @@ release_whack(struct state *st)
     close_any(st->st_whack_sock);
 }
 
-/* delete a state object */
-void
-delete_state(struct state *st)
+/* here we are just freeing RAM */
+void free_state(struct state *st)
 {
-    struct connection *const c = st->st_connection;
-    struct state *old_cur_state = cur_state == st? NULL : cur_state;
-
-    openswan_log("deleting state #%lu (%s)",
-                 st->st_serialno,
-                 enum_show(&state_names, st->st_state));
-
-#if 0
-    /* This is a PATRICK commented out */
-    if(st->st_ikev2) {
-        /* child sa*/
-        if(st->st_clonedfrom != 0) {
-            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
-            if(st->st_state == STATE_CHILDSA_DEL) {
-		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
-
-            } else {
-                /* Only send request if child sa is established
-		 * otherwise continue with deletion
-		 */
-		if(IS_CHILD_SA_ESTABLISHED(st)) {
-                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
-                    send_delete(st);
-                    change_state(st, STATE_CHILDSA_DEL);
-
-                    /* actual deletion when we receive peer response*/
-                    return;
-		}
-            }
-
-        } else {
-            DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
-            /* parent sa */
-            if(st->st_state == STATE_IKESA_DEL) {
-                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
-
-            } else {
-		/* Another check to verify if a secured
-		 * INFORMATIONAL exchange can be sent or not
-		 */
-		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
-                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
-                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
-                    send_delete(st);
-                    change_state(st, STATE_IKESA_DEL);
-
-                    /* actual deletion when we receive peer response*/
-                    return;
-		}
-            }
-        }
-    }
-#endif
-
-    /* If DPD is enabled on this state object, clear any pending events */
-    if(st->st_dpd_event != NULL)
-            delete_dpd_event(st);
-
-    /* if there is a suspended state transition, disconnect us */
-    if (st->st_suspended_md != NULL)
-    {
-	passert(st->st_suspended_md->st == st);
-	DBG(DBG_CONTROL, DBG_log("disconnecting state #%lu from md",
-	    st->st_serialno));
-	st->st_suspended_md->st = NULL;
-    }
-
-    /* tell the other side of any IPSEC SAs that are going down */
-    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-    || IS_ISAKMP_SA_ESTABLISHED(st->st_state))
-	send_delete(st);
-
-    delete_event(st);	/* delete any pending timer event */
-
-    /* Ditch anything pending on ISAKMP SA being established.
-     * Note: this must be done before the unhash_state to prevent
-     * flush_pending_by_state inadvertently and prematurely
-     * deleting our connection.
-     */
-    flush_pending_by_state(st);
-
-    /* if there is anything in the cryptographic queue, then remove this
-     * state from it.
-     */
-    delete_cryptographic_continuation(st);
-
-    /* effectively, this deletes any ISAKMP SA that this state represents */
-    unhash_state(st);
-
-    /* tell kernel to delete any IPSEC SA
-     * ??? we ought to tell peer to delete IPSEC SAs
-     */
-    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	|| IS_CHILD_SA_ESTABLISHED(st))
-	delete_ipsec_sa(st, FALSE);
-    else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
-	delete_ipsec_sa(st, TRUE);
-
-    if (c->newest_ipsec_sa == st->st_serialno)
-	c->newest_ipsec_sa = SOS_NOBODY;
-
-    if (c->newest_isakmp_sa == st->st_serialno)
-	c->newest_isakmp_sa = SOS_NOBODY;
-
-    /*
-     * fake a state change here while we are still associated with a
-     * connection.  Without this the state logging (when enabled) cannot
-     * work out what happened.
-     */
-    fake_state(st, STATE_UNDEFINED);
-
-    st->st_connection = NULL;	/* we might be about to free it */
-    cur_state = old_cur_state;	/* without st_connection, st isn't complete */
-    connection_discard(c);
-
-    change_state(st, STATE_UNDEFINED);
-
-    release_whack(st);
-
-    /* from here on we are just freeing RAM */
-
     {
 	struct msgid_list *p = st->st_used_msgids;
 
@@ -548,6 +426,133 @@ delete_state(struct state *st)
     pfreeany(st->sec_ctx);
 #endif
     pfree(st);
+}
+
+/* delete a state object */
+void
+delete_state(struct state *st)
+{
+    struct connection *const c = st->st_connection;
+    struct state *old_cur_state = cur_state == st? NULL : cur_state;
+
+    openswan_log("deleting state #%lu (%s)",
+                 st->st_serialno,
+                 enum_show(&state_names, st->st_state));
+
+    /*
+     * for most IKEv2 things, we may have further things to do after marking the state deleted,
+     * so we do not actually free it here at all, but back in the main loop when all the work is done.
+     */
+    if(st->st_ikev2) {
+        /* child sa*/
+        if(st->st_clonedfrom != 0) {
+            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+            if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+
+            } else {
+                /* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */
+		if(IS_CHILD_SA_ESTABLISHED(st)) {
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    send_delete(st);
+                    change_state(st, STATE_CHILDSA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+
+        } else {
+            DBG(DBG_CONTROL, DBG_log("considering request to delete IKE parent state"));
+            /* parent sa */
+            if(st->st_state == STATE_IKESA_DEL) {
+                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+
+            } else {
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
+                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
+                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+                    send_delete(st);
+                    change_state(st, STATE_IKESA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+        }
+    }
+
+    /* If DPD is enabled on this state object, clear any pending events */
+    if(st->st_dpd_event != NULL)
+            delete_dpd_event(st);
+
+    /* if there is a suspended state transition, disconnect us */
+    if (st->st_suspended_md != NULL)
+    {
+	passert(st->st_suspended_md->st == st);
+	DBG(DBG_CONTROL, DBG_log("disconnecting state #%lu from md",
+	    st->st_serialno));
+	st->st_suspended_md->st = NULL;
+    }
+
+    /* tell the other side of any IPSEC SAs that are going down */
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
+    || IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+	send_delete(st);
+
+    delete_event(st);	/* delete any pending timer event */
+
+    /* Ditch anything pending on ISAKMP SA being established.
+     * Note: this must be done before the unhash_state to prevent
+     * flush_pending_by_state inadvertently and prematurely
+     * deleting our connection.
+     */
+    flush_pending_by_state(st);
+
+    /* if there is anything in the cryptographic queue, then remove this
+     * state from it.
+     */
+    delete_cryptographic_continuation(st);
+
+    /* effectively, this deletes any ISAKMP SA that this state represents */
+    unhash_state(st);
+
+    /* tell kernel to delete any IPSEC SA
+     * ??? we ought to tell peer to delete IPSEC SAs
+     */
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
+	|| IS_CHILD_SA_ESTABLISHED(st))
+	delete_ipsec_sa(st, FALSE);
+    else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
+	delete_ipsec_sa(st, TRUE);
+
+    if (c->newest_ipsec_sa == st->st_serialno)
+	c->newest_ipsec_sa = SOS_NOBODY;
+
+    if (c->newest_isakmp_sa == st->st_serialno)
+	c->newest_isakmp_sa = SOS_NOBODY;
+
+    /*
+     * fake a state change here while we are still associated with a
+     * connection.  Without this the state logging (when enabled) cannot
+     * work out what happened.
+     */
+    fake_state(st, STATE_UNDEFINED);
+
+    st->st_connection = NULL;	/* we might be about to free it */
+    cur_state = old_cur_state;	/* without st_connection, st isn't complete */
+    connection_discard(c);
+
+    change_state(st, STATE_UNDEFINED);
+
+    release_whack(st);
+
+    change_state(st, STATE_CHILDSA_DEL);
 }
 
 /*
