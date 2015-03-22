@@ -1,7 +1,7 @@
 void delete_cryptographic_continuation(struct state *st) {}
 
 #include "pluto_crypt.h"
-struct pluto_crypto_req_cont *continuation;
+struct pluto_crypto_req_cont *continuation = NULL;
 
 
 struct pluto_crypto_req rd;
