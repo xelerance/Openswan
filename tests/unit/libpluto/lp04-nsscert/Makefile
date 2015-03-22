@@ -39,7 +39,8 @@ export EF_DISABLE_BANNER
 
 check:	nsscert.c
 	@mkdir -p OUTPUT
-	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
+	@echo CC ${TESTNAME}.c
+	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} 2>&1 | tee OUTPUT/${TESTNAME}.txt | diff -B - output${NSS_LIBTOKEN}.txt

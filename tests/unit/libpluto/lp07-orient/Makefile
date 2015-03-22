@@ -79,6 +79,7 @@ export EF_DISABLE_BANNER
 
 
 programs ${TESTNAME}: ${TESTNAME}.c
+	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 	@echo "  "CC ${TESTNAME}

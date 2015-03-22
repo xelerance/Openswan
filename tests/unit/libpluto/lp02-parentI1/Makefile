@@ -79,6 +79,7 @@ export EF_DISABLE_BANNER
 
 
 check:	${WHACKFILE} OUTPUT
+	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
