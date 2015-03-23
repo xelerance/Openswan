@@ -9,5 +9,5 @@ Loading conn cassidy-base
 ./whacksemantics leak: 2 * new_list item, item size: X
 ./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: default base, item size: X
-./whacksemantics leak detective found 4 leaks, total size X
+./whacksemantics leak detective found Z leaks, total size X
 processing conn: dooku--cassidy-net
