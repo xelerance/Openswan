@@ -71,7 +71,8 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTESTARGS=${WHACKFILE} parker1--jj2 parentI1.pcap
+UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentI1badKE.pcap parentR1notify.pcap
+UNITTEST2ARGS=${WHACKFILE} parker1--jj2 parentI1.pcap
 
 TESTNAME=parentR1
 EF_DISABLE_BANNER=1
@@ -85,6 +86,9 @@ check:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}.txt 2>&1
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
+	tcpdump -n -t -v -r OUTPUT/parentR1notify.pcap | tee OUTPUT/R1notify-dump.txt | sed -f sanity.sed | diff - R1notify-dump.txt
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
 	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/I1-dump.txt | sed -f sanity.sed | diff - I1-dump.txt
