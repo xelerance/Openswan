@@ -428,20 +428,19 @@ process_v2_packet(struct msg_digest **mdp)
 		/* this is a recent retransmit. */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
 		return;
-    /* PATRICK: I may have to uncomment the following block: */
-//		}
-//	    }
-//	    else
-//	    {
-//	    /* if it is response from Initiator*/
-//		/* it seems that it should not happen
-//		 * why a response will be retransmitted?
-//		 */
-//		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
-//		openswan_log("received an old response, ignoring: %u < %u"
-//                             , md->msgid_received, st->st_msgid_last_localreq_ack);
-//		}
+            }
+#if 0 /* PATRICK */
+            else {
+                /* if it is response from Initiator*/
+		/* it seems that it should not happen
+		 * why a response will be retransmitted?
+		 */
+		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
+                    openswan_log("received an old response, ignoring: %u < %u"
+                                 , md->msgid_received, st->st_msgid_last_localreq_ack);
+		}
 	    }
+#endif
 	    /* update lastrecv later on */
 	}
 	
@@ -496,20 +495,20 @@ process_v2_packet(struct msg_digest **mdp)
 		DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
 					 , md->msgid_received));
 		return;
-    /* PATRICK: I may have to uncomment the following block: */
-//		}
-//	    }
-//	    else
-//	    {
-//	    /* if it is response from Responder*/
-//		/* it seems that it should not happen
-//		 * why a response will be retransmitted?
-//		 */
-//		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
-//		openswan_log("received an old response, ignoring: %u < %u"
-//                             , md->msgid_received, st->st_msgid_last_localreq_ack);
-//		}
+            }
+#if 0 /* PATRICK */
+	    else {
+                /* if it is response from Responder*/
+		/* it seems that it should not happen
+		 * why a response will be retransmitted?
+		 */
+		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
+                    openswan_log("received an old response, ignoring: %u < %u"
+                                 , md->msgid_received, st->st_msgid_last_localreq_ack);
+		}
+
 	    }
+#endif
 #if 0
 	    openswan_log("last msgid ack is %u, received: %u"
 			 , st->st_msgid_lastack
