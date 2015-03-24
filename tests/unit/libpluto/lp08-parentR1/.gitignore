@@ -3,4 +3,5 @@ core.*
 parentR1
 parentR1.o
 parentR1.pcap
-.gdbinit
+.gdb1init
+.gdb2init

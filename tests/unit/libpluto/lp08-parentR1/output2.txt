@@ -1,0 +1,20 @@
+./parentR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| counting wild cards for @jamesjohnson.emmjay.credil.org is 0
+| counting wild cards for @parker01.emmjay.credil.org is 0
+| checking against if: eth0
+| connect_to_host_pair: 132.213.238.7:500 192.168.1.1:500 -> hp:none 
+./parentR1 added connection description "parker1--jj2"
+| fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
+RC=0 "parker1--jj2":     myip=unset; hisip=unset;
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0 
+RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; 
+RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+Pre-amble (offset: 75): #!-pluto-whack-file- recorded on dooku.sandelman.ca on 2015-03-23 19:28:50

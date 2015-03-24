@@ -83,7 +83,7 @@ main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 4) {
+    if(argc != 5) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
 	exit(10);
     }
@@ -105,7 +105,7 @@ main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1);
 
-    send_packet_setup_pcap("parentR1.pcap");
+    send_packet_setup_pcap(argv[4]);
 
     pt = pcap_open_offline(argv[3], eb1);
     if(!pt) {

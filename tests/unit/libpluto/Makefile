@@ -22,5 +22,6 @@ check:
 	@${MAKE} -C lp03-whacksemantics check
 	@${MAKE} -C lp04-nsscert check
 	@${MAKE} -C lp05-sha256cert check
-	@${MAKE} -C lp07-orient check
+	@${MAKE} -C lp07-orient     check
+	@${MAKE} -C lp08-parentR1   check
 

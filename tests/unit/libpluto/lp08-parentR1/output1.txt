@@ -258,5 +258,5 @@ sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 ./parentR1 leak: default conf ipsecd_dir, item size: X
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
-./parentR1 leak detective found 74 leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+./parentR1 leak detective found Z leaks, total size X
+Pre-amble (offset: 75): #!-pluto-whack-file- recorded on dooku.sandelman.ca on 2015-03-23 19:28:50
