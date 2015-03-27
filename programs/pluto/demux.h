@@ -82,8 +82,7 @@ struct msg_digest {
     struct payload_digest
 	digest[PAYLIMIT],
 	*digest_roof;
-	struct payload_digest
-		*chain[(unsigned)ISAKMP_NEXT_ROOF];
+    struct payload_digest *chain[(unsigned)ISAKMP_NEXT_ROOF];
     struct isakmp_quirks quirks;
 };
 

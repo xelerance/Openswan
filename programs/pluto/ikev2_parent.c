@@ -1568,9 +1568,27 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
 
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N] ) {
-        DBG_log("inR1 found notify type: %s",
-                enum_name(&ikev2_notify_names,
-                          md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type));
+        struct payload_digest *notify;
+        const char *action = "ignored";
+
+        for(notify=md->chain[ISAKMP_NEXT_v2N]; notify!=NULL; notify=notify->next) {
+            switch(notify->payload.v2n.isan_type) {
+            case v2N_NO_PROPOSAL_CHOSEN:
+                action="SA deleted";
+                break;
+            case v2N_INVALID_KE_PAYLOAD:
+                action="SA deleted";
+                break;
+            default:
+                break;
+            }
+
+            loglog(RC_LOG_SERIOUS, "received notify: %s %s"
+                   ,enum_name(&ikev2_notify_names
+                             , notify->payload.v2n.isan_type)
+                   ,action);
+        }
+
     }
 
     /* now. nuke the state */

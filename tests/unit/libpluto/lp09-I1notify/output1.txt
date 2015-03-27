@@ -96,10 +96,55 @@ sending 772 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | state hash entry 28
 | inserting state object #1
 | state found and its state is (STATE_PARENT_I1)
-here we should see a notify
-
-
+|   seen payloads: none
+| considering state entry: 0
+|   reject: needed clear text payloads missing: none
+| considering state entry: 1
+| Now lets proceed with state specific processing
+./parent_outI1inR1 received notify: v2N_INVALID_KE_PAYLOAD SA deleted
 ./parent_outI1inR1 deleting state #1 (STATE_PARENT_I1)
+| considering request to delete IKE parent state
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+RC=200 EVENT_NULL: (null)
+./parent_outI1inR1 leak: saved first packet, item size: X
+./parent_outI1inR1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./parent_outI1inR1 leak: sa in main_outI1, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_prop, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: db_attrs, item size: X
+./parent_outI1inR1 leak: db_v2_trans, item size: X
+./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: initiator nonce, item size: X
+./parent_outI1inR1 leak: long term secret, item size: X
+./parent_outI1inR1 leak: saved gi value, item size: X
 ./parent_outI1inR1 leak: msg_digest, item size: X
 ./parent_outI1inR1 leak: ikev2_outI1 KE, item size: X
 ./parent_outI1inR1 leak: db_attrs, item size: X
@@ -133,6 +178,12 @@ here we should see a notify
 ./parent_outI1inR1 leak: db_attrs, item size: X
 ./parent_outI1inR1 leak: db_v2_trans, item size: X
 ./parent_outI1inR1 leak: db_v2_prop_conj, item size: X
+./parent_outI1inR1 leak: 12 * sa copy attrs array, item size: X
+./parent_outI1inR1 leak: sa copy trans array, item size: X
+./parent_outI1inR1 leak: sa copy prop array, item size: X
+./parent_outI1inR1 leak: sa copy prop conj array, item size: X
+./parent_outI1inR1 leak: sa copy prop_conj, item size: X
+./parent_outI1inR1 leak: struct state in new_state(), item size: X
 ./parent_outI1inR1 leak: host_pair, item size: X
 ./parent_outI1inR1 leak: host ip, item size: X
 ./parent_outI1inR1 leak: keep id name, item size: X
