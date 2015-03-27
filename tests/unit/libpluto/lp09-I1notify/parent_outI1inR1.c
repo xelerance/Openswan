@@ -83,7 +83,7 @@ main(int argc, char *argv[])
     infile = argv[1];
     conn_name = argv[2];
 
-    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+    cur_debugging = DBG_CONTROL;
     if(readwhackmsg(infile) == 0) exit(10);
 
     send_packet_setup_pcap("OUTPUT/parentI1.pcap");
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
     show_one_connection(c1);
 
     /* send the I1 packet */
-    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
+    st = sendI1(c1, DBG_CONTROL);
 
     send_packet_setup_pcap(argv[4]);
 
