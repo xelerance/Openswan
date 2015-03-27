@@ -159,7 +159,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .next_state = STATE_IKESA_DEL,
       .flags = SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
-      .opt_clear_payloads = 0,
+      .opt_clear_payloads = P(N),
       .processor  = ikev2parent_inR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
@@ -268,6 +268,9 @@ ikev2_collect_payloads(struct msg_digest *md,
     while (np != ISAKMP_NEXT_NONE)
     {
         struct_desc *sd = payload_desc(np);
+
+        DBG_log("  seen payloads: %s"
+                , bitnamesof(payload_name_ikev2_main, seen));
 
 	memset(pd, 0, sizeof(*pd));
 
@@ -381,7 +384,7 @@ ikev2_process_payloads(struct msg_digest *md UNUSED,
         return STF_FAIL + v2N_INVALID_SYNTAX;
     }
 
-    extra_payloads = (seen & (req_payloads | opt_payloads | everywhere_payloads));
+    extra_payloads = (seen & ~(req_payloads | opt_payloads | everywhere_payloads));
     if(extra_payloads!=LEMPTY) {
         /* unexpected payload */
         loglog(RC_LOG_SERIOUS,
@@ -570,14 +573,37 @@ process_v2_packet(struct msg_digest **mdp)
     for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm_num++,svm++) {
         DBG(DBG_CONTROLMORE, DBG_log("considering state entry: %u", svm_num));
 	if(svm->flags & SMF2_STATENEEDED) {
-	    if(st==NULL) continue;
+	    if(st==NULL) {
+                DBG(DBG_CONTROLMORE,DBG_log("  reject:state needed and state unavailable"));
+                continue;
+            }
 	}
 	if((svm->flags&SMF2_STATENEEDED)==0) {
-	    if(st!=NULL) continue;
+	    if(st!=NULL) {
+                DBG(DBG_CONTROLMORE,DBG_log("  reject:state unneeded and state available"));
+                continue;
+            }
 	}
-	if(svm->state != from_state) continue;
-	if(svm->recv_type != ix) continue;
-        if((seen & svm->req_clear_payloads)==0) continue;
+	if(svm->state != from_state) {
+            DBG(DBG_CONTROLMORE,DBG_log("  reject: in state: %s, needs %s"
+                                        , enum_name(&state_names, from_state)
+                                        , enum_name(&state_names, svm->state)));
+            continue;
+        }
+	if(svm->recv_type != ix) {
+            DBG(DBG_CONTROLMORE,DBG_log("  reject: recv_type: %s, needs %s"
+                                        , enum_name(&exchange_names, ix)
+                                        , enum_name(&exchange_names, svm->recv_type)));
+            continue;
+        }
+
+        if((seen & svm->req_clear_payloads)==0) {
+            DBG(DBG_CONTROLMORE
+                ,DBG_log("  reject: needed clear text payloads missing: %s",
+                         bitnamesof(payload_name_ikev2_main
+                                    , seen & svm->req_clear_payloads)));
+            continue;
+        }
 
 	break;
     }
