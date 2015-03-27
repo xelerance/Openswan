@@ -86,7 +86,7 @@ ${TESTNAME}:	${WHACKFILE} OUTPUT
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
-	@echo "set args "${UNITTESTARGS} >>.gdbinit
+	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
 
 OUTPUT/R1notify-dump.txt t1: ${WHACKFILE} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
