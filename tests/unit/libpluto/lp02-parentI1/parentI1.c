@@ -79,8 +79,11 @@ main(int argc, char *argv[])
 
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
 
-    /* clean up so that we can see any leaks */
-    delete_state(st);
+    st = state_with_serialno(1);
+    if(st!=NULL) {
+        delete_state(st);
+        free_state(st);
+    }
 
     report_leaks();
 
