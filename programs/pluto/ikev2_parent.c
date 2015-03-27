@@ -1558,6 +1558,30 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 }
 
 /*
+ * this routine deals with replies that are failures, which do not
+ * contain proposal, or which require us to try initiator cookies.
+ */
+stf_status ikev2parent_inR1(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    /* struct connection *c = st->st_connection; */
+
+    /* check if the responder replied with v2N with DOS COOKIE */
+    if( md->chain[ISAKMP_NEXT_v2N] ) {
+        DBG_log("inR1 found notify type: %s",
+                enum_name(&ikev2_notify_names,
+                          md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type));
+    }
+
+    /* now. nuke the state */
+    {
+        delete_state(st);
+        reset_globals();
+        return STF_FAIL;
+    }
+}
+
+/*
  *
  ***************************************************************
  *                       PARENT_inI2                       *****

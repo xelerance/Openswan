@@ -1,7 +1,7 @@
 /* demultiplex incoming IKE messages
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2010  D. Hugh Redelmeier.
- * Copyright (C) 2007-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2007-2015 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2009 David McCullough <david_mccullough@securecomputing.com>
  * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2010 Simon Deziel <simon@xelerance.com>
@@ -155,6 +155,15 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
+    { .state      = STATE_PARENT_I1,
+      .next_state = STATE_IKESA_DEL,
+      .flags = SMF2_STATENEEDED,
+      .req_clear_payloads = P(N),
+      .opt_clear_payloads = 0,
+      .processor  = ikev2parent_inR1,
+      .recv_type  = ISAKMP_v2_SA_INIT,
+    },
+
     { .state      = STATE_PARENT_I2,
       .next_state = STATE_PARENT_I3,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
@@ -248,125 +257,139 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
  * split up an incoming message into payloads
  */
 static stf_status
-ikev2_process_payloads(struct msg_digest *md,
-			    pb_stream    *in_pbs,
-          unsigned int np,
-          lset_t req_payloads,
-          lset_t opt_payloads)
+ikev2_collect_payloads(struct msg_digest *md,
+                       pb_stream    *in_pbs,
+                       lset_t       *seen_payloads, /* results */
+                       unsigned int np)
 {
     struct payload_digest *pd = md->digest_roof;
     lset_t seen = LEMPTY;
-    /* ??? zero out the digest descriptors -- might nuke ISAKMP_NEXT_v2E digest! */
 
     while (np != ISAKMP_NEXT_NONE)
     {
-  struct_desc *sd = payload_desc(np);
+        struct_desc *sd = payload_desc(np);
 
 	memset(pd, 0, sizeof(*pd));
 
 	if (pd == &md->digest[PAYLIMIT])
 	{
 	    loglog(RC_LOG_SERIOUS, "more than %d payloads in message; ignored", PAYLIMIT);
-      return STF_FAIL + v2N_INVALID_SYNTAX;
+            return STF_FAIL + v2N_INVALID_SYNTAX;
 	}
 
+        if (sd == NULL || np < ISAKMP_v2PAYLOAD_TYPE_BASE) {
+            /* This payload is unknown to us.
+             * RFCs 4306 and 5996 2.5 say that if the payload
+             * has the Critical Bit, we should be upset
+             * but if it does not, we should just ignore it.
+             */
 
-  memset(pd, 0, sizeof(*pd));     /* ??? is this needed? */
+            if (!in_struct(&pd->payload, &ikev2_generic_desc, in_pbs, &pd->pbs)) {
+                loglog(RC_LOG_SERIOUS, "malformed payload in packet");
+                return STF_FAIL + v2N_INVALID_SYNTAX;
+            }
 
+            if (pd->payload.v2gen.isag_critical & ISAKMP_PAYLOAD_CRITICAL) {
+                /* It was critical.
+                 * See RFC 5996 1.5 "Version Numbers and Forward Compatibility"
+                 * ??? we are supposed to send the offending np byte
+                 * back in the notify payload.
+                 */
+                loglog(RC_LOG_SERIOUS,
+                       "critical payload (%s) was not understood. Message dropped.",
+                       enum_show(&payload_names_ikev2, np));
+                return STF_FAIL + v2N_UNSUPPORTED_CRITICAL_PAYLOAD;
+            }
 
-  if (sd == NULL || np < ISAKMP_v2PAYLOAD_TYPE_BASE) {
-    /* This payload is unknown to us.
-     * RFCs 4306 and 5996 2.5 say that if the payload
-     * has the Critical Bit, we should be upset
-     * but if it does not, we should just ignore it.
-     */
-    if (!in_struct(&pd->payload, &ikev2_generic_desc, in_pbs, &pd->pbs)) {
-      loglog(RC_LOG_SERIOUS, "malformed payload in packet");
-      return STF_FAIL + v2N_INVALID_SYNTAX;
-    }
-    if (pd->payload.v2gen.isag_critical & ISAKMP_PAYLOAD_CRITICAL) {
-      /* It was critical.
-       * See RFC 5996 1.5 "Version Numbers and Forward Compatibility"
-       * ??? we are supposed to send the offending np byte back in the
-       * notify payload.
-       */
-      loglog(RC_LOG_SERIOUS,
-             "critical payload (%s) was not understood. Message dropped.",
-             enum_show(&payload_names_ikev2, np));
-      return STF_FAIL + v2N_UNSUPPORTED_CRITICAL_PAYLOAD;
-    }
-    loglog(RC_COMMENT, "non-critical payload ignored because it contains an unknown or"
-           " unexpected payload type (%s) at the outermost level",
-           enum_show(&payload_names_ikev2, np));
-    np = pd->payload.generic.isag_np;
-    continue;
+            loglog(RC_COMMENT, "non-critical payload ignored because it contains an unknown or"
+                   " unexpected payload type (%s) at the outermost level",
+                   enum_show(&payload_names_ikev2, np));
+            np = pd->payload.generic.isag_np;
+            continue;
 	}
 
-  passert(np - ISAKMP_v2PAYLOAD_TYPE_BASE < LELEM_ROOF);
+        passert(np - ISAKMP_v2PAYLOAD_TYPE_BASE < LELEM_ROOF);
 
-  {
-    lset_t s = LELEM(np - ISAKMP_v2PAYLOAD_TYPE_BASE);
+        {
+            lset_t s = LELEM(np - ISAKMP_v2PAYLOAD_TYPE_BASE);
+            seen |= s;
 
-    if (s & seen & ~repeatable_payloads) {
-      /* improperly repeated payload */
-      loglog(RC_LOG_SERIOUS,
-             "payload (%s) unexpectedly repeated. Message dropped.",
-             enum_show(&payload_names_ikev2, np));
-      return STF_FAIL + v2N_INVALID_SYNTAX;
-    }
-    if ((s & (req_payloads | opt_payloads | everywhere_payloads)) == LEMPTY) {
-      /* unexpected payload */
-      loglog(RC_LOG_SERIOUS,
-             "payload (%s) unexpected. Message dropped.",
-             enum_show(&payload_names_ikev2, np));
-      return STF_FAIL + v2N_INVALID_SYNTAX;
-    }
-    seen |= s;
+            if (s & seen & ~repeatable_payloads) {
+                /* improperly repeated payload */
+                loglog(RC_LOG_SERIOUS,
+                       "payload (%s) unexpectedly repeated. Message dropped.",
+                       enum_show(&payload_names_ikev2, np));
+                return STF_FAIL + v2N_INVALID_SYNTAX;
+            }
 	}
 
 	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))
-	{
-      loglog(RC_LOG_SERIOUS, "malformed payload in packet");
-      return STF_FAIL + v2N_INVALID_SYNTAX;
-	}
+            {
+                loglog(RC_LOG_SERIOUS, "malformed payload in packet");
+                return STF_FAIL + v2N_INVALID_SYNTAX;
+            }
 
 
 	DBG(DBG_PARSING
 	    , DBG_log("processing payload: %s (len=%u)\n"
-          , enum_show(&payload_names, np)
+                      , enum_show(&payload_names, np)
 		      , pd->payload.generic.isag_length));
 
 	/* place this payload at the end of the chain for this type */
 	{
 	    struct payload_digest **p;
 
-      for (p = &md->chain[np]; *p != NULL; p = &(*p)->next)
+            for (p = &md->chain[np]; *p != NULL; p = &(*p)->next)
 		;
 	    *p = pd;
 	    pd->next = NULL;
 	}
 
-  switch(np) {
+        switch(np) {
 	case ISAKMP_NEXT_v2E:
 	    np = ISAKMP_NEXT_NONE;
 	    break;
-  default:
-      np = pd->payload.generic.isag_np;
+        default:
+            np = pd->payload.generic.isag_np;
 	    break;
 	}
 
 	pd++;
     }
+    *seen_payloads  = seen;
+    md->digest_roof = pd;
+    return STF_OK;
+}
+
+
+/*
+ * see see if collected payloads match required ones
+ */
+static stf_status
+ikev2_process_payloads(struct msg_digest *md UNUSED,
+                       lset_t seen,
+                       lset_t req_payloads,
+                       lset_t opt_payloads)
+{
+    lset_t extra_payloads;
 
     if (req_payloads & ~seen) {
-   /* improperly repeated payload */
-   loglog(RC_LOG_SERIOUS,
-     "missing payload(s) (%s). Message dropped.",
-     bitnamesof(payload_name_ikev2_main, req_payloads & ~seen));
-   return STF_FAIL + v2N_INVALID_SYNTAX;
-     }
+        /* improperly repeated payload */
+        loglog(RC_LOG_SERIOUS,
+               "missing payload(s) (%s). Message dropped.",
+               bitnamesof(payload_name_ikev2_main, req_payloads & ~seen));
+        return STF_FAIL + v2N_INVALID_SYNTAX;
+    }
 
-    md->digest_roof = pd;
+    extra_payloads = (seen & (req_payloads | opt_payloads | everywhere_payloads));
+    if(extra_payloads!=LEMPTY) {
+        /* unexpected payload */
+        loglog(RC_LOG_SERIOUS,
+               "payload (%s) unexpected. Message dropped.",
+               bitnamesof(payload_name_ikev2_main, extra_payloads));
+
+        return STF_FAIL + v2N_INVALID_SYNTAX;
+    }
     return STF_OK;
 }
 
@@ -375,7 +398,17 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
             pb_stream   *in_pbs,
             unsigned int np)
 {
-  return ikev2_process_payloads(md, in_pbs, np, md->svm->req_enc_payloads, md->svm->opt_enc_payloads);
+    stf_status stf;
+    lset_t seen;
+    const struct state_v2_microcode *svm = md->svm;
+    stf = ikev2_collect_payloads(md, in_pbs, &seen, np);
+    if(stf != STF_OK) {
+        return stf;
+    }
+
+    stf = ikev2_process_payloads(md, seen,
+                                 svm->req_clear_payloads, svm->opt_clear_payloads);
+    return stf;
 }
 
 /*
@@ -392,6 +425,8 @@ process_v2_packet(struct msg_digest **mdp)
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
     enum isakmp_xchg_types ix;
+    unsigned int svm_num;
+    lset_t seen = LEMPTY;
 
     /* Look for an state which matches the various things we know */
     /*
@@ -443,10 +478,10 @@ process_v2_packet(struct msg_digest **mdp)
 #endif
 	    /* update lastrecv later on */
 	}
-	
+
     } else {
         /* then I am the initiator, and this is a reply */
-	
+
 	md->role = INITIATOR;
 
 	DBG(DBG_CONTROL, DBG_log("I am IKE SA Initiator"));
@@ -484,7 +519,7 @@ process_v2_packet(struct msg_digest **mdp)
 	if(st) {
 	    /*
 	     * then there is something wrong with the msgid, so
-	     * maybe they retransmitted for some reason. 
+	     * maybe they retransmitted for some reason.
 	     * Check if it's an old packet being returned, and
 	     * if so, drop it.
 	     * NOTE: in_struct() changed the byte order.
@@ -520,12 +555,20 @@ process_v2_packet(struct msg_digest **mdp)
 
     ix = md->hdr.isa_xchg;
     if(st) {
-
 	from_state = st->st_state;
 	DBG(DBG_CONTROL, DBG_log("state found and its state is (%s)", enum_show(&state_names, from_state)));
     }
 
-    for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm++) {
+    stf_status stf = ikev2_collect_payloads(md, &md->message_pbs,
+                                            &seen, md->hdr.isa_np);
+    if(stf != STF_OK) {
+        complete_v2_state_transition(mdp, stf);
+        return;
+    }
+
+    svm_num=0;
+    for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm_num++,svm++) {
+        DBG(DBG_CONTROLMORE, DBG_log("considering state entry: %u", svm_num));
 	if(svm->flags & SMF2_STATENEEDED) {
 	    if(st==NULL) continue;
 	}
@@ -534,15 +577,8 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 	if(svm->state != from_state) continue;
 	if(svm->recv_type != ix) continue;
+        if((seen & svm->req_clear_payloads)==0) continue;
 
-	/* I1 receiving NO_PROPOSAL ened up picking the wrong STATE_UNDEFINED state
- 	   Since the wrong state is a responder, we just add a check for initiator,
-	   so we hit STATE_IKEv2_ROOF
-	 */
-	//if ( ((svm->flags&SMF2_INITIATOR) != 0) != ((md->hdr.isa_flags & ISAKMP_FLAGS_R) != 0) )
-        //        continue;
-	
-	/* must be the right state */
 	break;
     }
 
@@ -565,10 +601,9 @@ process_v2_packet(struct msg_digest **mdp)
 
     {
 	stf_status stf;
-  stf = ikev2_process_payloads(md, &md->message_pbs,
-      md->hdr.isa_np,
-      svm->req_clear_payloads, svm->opt_clear_payloads);
-	
+        stf = ikev2_process_payloads(md, seen,
+                                     svm->req_clear_payloads, svm->opt_clear_payloads);
+
 	if(stf != STF_OK) {
 	    complete_v2_state_transition(mdp, stf);
 	    return;
@@ -746,7 +781,7 @@ void ikev2_update_counters(struct msg_digest *md)
 	}
 	if(pst == NULL) pst = st;
     }
-    
+
     /* PATRICK: I may have to switch the following blocks: */
    /* Block 1 */
     switch(md->role) {
@@ -755,7 +790,7 @@ void ikev2_update_counters(struct msg_digest *md)
 	pst->st_msgid_lastack = md->msgid_received;
 	pst->st_msgid_nextuse = pst->st_msgid_lastack+1;
 	break;
-	
+
     case RESPONDER:
 	pst->st_msgid_lastrecv= md->msgid_received;
 	break;
