@@ -796,7 +796,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
         r_hdr.isa_np = ISAKMP_NEXT_v2SA;
         r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
         r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
-        // PAUL shouldn't we set r_hdr.isa_msgid = [htonl](st->st_msgid);  here?
+        r_hdr.isa_msgid = st->st_msgid;
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             return STF_INTERNAL_ERROR;
     }
@@ -1371,14 +1371,12 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
         struct isakmp_hdr r_hdr = md->hdr;
 
-        /* PATRICK: I may have to uncomment the line below:
-         * r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-         */
-
+        /* should be set to version received */
+        // r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np    = ISAKMP_NEXT_v2E;
         r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
         r_hdr.isa_flags = ISAKMP_FLAGS_I;
-        r_hdr.isa_msgid = st->st_msgid;
+        r_hdr.isa_msgid = htonl(st->st_msgid);
         memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
@@ -2610,8 +2608,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
         n_hdr.isa_np = ISAKMP_NEXT_v2N;
         n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
         n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+        n_hdr.isa_msgid = htonl(p1st->st_msgid);
 
-        // PAUL: shouldn't we set n_hdr.isa_msgid = [htonl](p1st->st_msgid);
         if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody))
             {
                 openswan_log("error initializing hdr for notify message");
