@@ -116,7 +116,7 @@ DISTSRC = \
 	log.c log.h \
 	plutomain.c plutoalg.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
-	crypt_ke.c crypt_dh.c crypt_start_dh.c \
+	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	keys.c \
 	server.c server.h \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
@@ -152,7 +152,7 @@ OBJSPLUTO += ikeping.o kernel.o
 OBJSPLUTO += $(NETKEY_OBJS) $(BSDKAME_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${PFKEYv2_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
-OBJSPLUTO += pluto_crypt.o crypt_utils.o crypt_ke.o crypt_dh.o crypt_start_dh.o
+OBJSPLUTO += pluto_crypt.o crypt_utils.o build_ke.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_crypto.o ikev2_prfplus.o
 OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o

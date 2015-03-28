@@ -59,65 +59,20 @@
 # include <pk11pub.h>
 # include <keyhi.h>
 # include "oswconf.h"
-#endif
 
 void calc_ke(struct pluto_crypto_req *r)
 {
-#ifndef HAVE_LIBNSS
-    MP_INT mp_g;
-    MP_INT secret;
-    chunk_t gi;
-#else
     chunk_t  prime;
     chunk_t  base;
     SECKEYDHParams      dhp;
     PK11SlotInfo *slot = NULL;
     SECKEYPrivateKey *privk;
     SECKEYPublicKey   *pubk;
-#endif
     struct pcr_kenonce *kn = &r->pcr_d.kn;
     const struct oakley_group_desc *group;
 
     group = lookup_group(kn->oakley_group);
 
-#ifndef HAVE_LIBNSS
-    pluto_crypto_allocchunk(&kn->thespace
-			    , &kn->secret
-			    , LOCALSECRETSIZE);
-
-    get_rnd_bytes(wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
-
-    n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
-
-    mpz_init(&mp_g);
-
-#ifdef USE_MODP_RFC5114
-    oswcrypto.mod_exp(&mp_g, group->generator, &secret, group->modulus);
-#else
-    oswcrypto.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
-#endif
-
-    gi = mpz_to_n(&mp_g, group->bytes);
-
-    pluto_crypto_allocchunk(&kn->thespace, &kn->gi, gi.len);
-
-    {
-	char *gip = wire_chunk_ptr(kn, &(kn->gi));
-
-	memcpy(gip, gi.ptr, gi.len);
-    }
-
-    DBG(DBG_CRYPT,
-	DBG_dump("Local DH secret:\n"
-		 , wire_chunk_ptr(kn, &(kn->secret))
-		 , LOCALSECRETSIZE);
-	DBG_dump_chunk("Public DH value sent:\n", gi));
-
-    /* clean up after ourselves */
-    mpz_clear(&mp_g);
-    mpz_clear(&secret);
-    freeanychunk(gi);
-#else
 
 #ifdef USE_MODP_RFC5114
     base  = mpz_to_n2(group->generator);
@@ -194,7 +149,6 @@ void calc_ke(struct pluto_crypto_req *r)
     /* if (pubk){SECKEY_DestroyPublicKey(pubk);} */
     freeanychunk(prime);
     freeanychunk(base);
-#endif
 }
 
 void calc_nonce(struct pluto_crypto_req *r)
@@ -209,78 +163,68 @@ void calc_nonce(struct pluto_crypto_req *r)
 	       , wire_chunk_ptr(kn, &(kn->n))
 	       , DEFAULT_NONCE_SIZE));
 }
-
-stf_status build_ke(struct pluto_crypto_req_cont *cn
-		    , struct state *st
-		    , const struct oakley_group_desc *group
-		    , enum crypto_importance importance)
+#else
+void calc_ke(struct pluto_crypto_req *r)
 {
-    struct pluto_crypto_req rd;
-    struct pluto_crypto_req *r = &rd;
-    err_t e;
-    bool toomuch = FALSE;
+    MP_INT mp_g;
+    MP_INT secret;
+    chunk_t gi;
+    struct pcr_kenonce *kn = &r->pcr_d.kn;
+    const struct oakley_group_desc *group;
 
-    pcr_init(r, pcr_build_kenonce, importance);
-    r->pcr_d.kn.oakley_group   = group->group;
+    group = lookup_group(kn->oakley_group);
 
-    cn->pcrc_serialno = st->st_serialno;
-    e= send_crypto_helper_request(r, cn, &toomuch);
+    pluto_crypto_allocchunk(&kn->thespace
+			    , &kn->secret
+			    , LOCALSECRETSIZE);
 
-    if(e != NULL) {
-	loglog(RC_LOG_SERIOUS, "can not start crypto helper: %s", e);
-	if(toomuch) {
-	    return STF_TOOMUCHCRYPTO;
-	} else {
-	    return STF_FAIL;
-	}
-    } else if(!toomuch) {
-	st->st_calculating = TRUE;
-	delete_event(st);
-	event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
-	return STF_SUSPEND;
-    } else {
-	/* we must have run the continuation directly, so
-	 * complete_v1_state_transition already got called.
-	 */
-	return STF_INLINE;
+    get_rnd_bytes(wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
+
+    n_to_mpz(&secret, wire_chunk_ptr(kn, &(kn->secret)), LOCALSECRETSIZE);
+
+    mpz_init(&mp_g);
+
+#ifdef USE_MODP_RFC5114
+    oswcrypto.mod_exp(&mp_g, group->generator, &secret, group->modulus);
+#else
+    oswcrypto.mod_exp(&mp_g, &groupgenerator, &secret, group->modulus);
+#endif
+
+    gi = mpz_to_n(&mp_g, group->bytes);
+
+    pluto_crypto_allocchunk(&kn->thespace, &kn->gi, gi.len);
+
+    {
+	char *gip = wire_chunk_ptr(kn, &(kn->gi));
+
+	memcpy(gip, gi.ptr, gi.len);
     }
+
+    DBG(DBG_CRYPT,
+	DBG_dump("Local DH secret:\n"
+		 , wire_chunk_ptr(kn, &(kn->secret))
+		 , LOCALSECRETSIZE);
+	DBG_dump_chunk("Public DH value sent:\n", gi));
+
+    /* clean up after ourselves */
+    mpz_clear(&mp_g);
+    mpz_clear(&secret);
+    freeanychunk(gi);
 }
 
-
-stf_status build_nonce(struct pluto_crypto_req_cont *cn
-		       , struct state *st
-		       , enum crypto_importance importance)
+void calc_nonce(struct pluto_crypto_req *r)
 {
-    struct pluto_crypto_req rd;
-    struct pluto_crypto_req *r = &rd;
-    err_t e;
-    bool toomuch = FALSE;
+  struct pcr_kenonce *kn = &r->pcr_d.kn;
 
-  pcr_init(r, pcr_build_nonce, importance);
+  pluto_crypto_allocchunk(&kn->thespace, &kn->n, DEFAULT_NONCE_SIZE);
+  get_rnd_bytes(wire_chunk_ptr(kn, &(kn->n)), DEFAULT_NONCE_SIZE);
 
-  cn->pcrc_serialno = st->st_serialno;
-  e = send_crypto_helper_request(r, cn, &toomuch);
-
-  if(e != NULL) {
-      loglog(RC_LOG_SERIOUS, "can not start crypto helper: %s", e);
-      if(toomuch) {
-	  return STF_TOOMUCHCRYPTO;
-      } else {
-	  return STF_FAIL;
-      }
-  } else if(!toomuch) {
-      st->st_calculating = TRUE;
-      delete_event(st);
-      event_schedule(EVENT_CRYPTO_FAILED, EVENT_CRYPTO_FAILED_DELAY, st);
-      return STF_SUSPEND;
-  } else {
-      /* we must have run the continuation directly, so
-       * complete_v1_state_transition already got called.
-       */
-      return STF_INLINE;
-  }
+  DBG(DBG_CRYPT,
+      DBG_dump("Generated nonce:\n"
+	       , wire_chunk_ptr(kn, &(kn->n))
+	       , DEFAULT_NONCE_SIZE));
 }
-
+#endif
 
 /*
  * Local Variables:
