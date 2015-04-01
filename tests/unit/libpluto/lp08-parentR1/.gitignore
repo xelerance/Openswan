@@ -5,3 +5,4 @@ parentR1.o
 parentR1.pcap
 .gdb1init
 .gdb2init
+.gdbinit
