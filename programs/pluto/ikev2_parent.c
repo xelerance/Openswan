@@ -1564,6 +1564,8 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
     struct state *st = md->st;
     /* struct connection *c = st->st_connection; */
 
+    set_cur_state(st);
+
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N] ) {
         struct payload_digest *notify;
@@ -1581,10 +1583,11 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
                 break;
             }
 
-            loglog(RC_LOG_SERIOUS, "received notify: %s %s"
-                   ,enum_name(&ikev2_notify_names
-                             , notify->payload.v2n.isan_type)
-                   ,action);
+            whack_log(RC_NOTIFICATION + notify->payload.v2n.isan_type
+                      , "received notify: %s %s"
+                      ,enum_name(&ikev2_notify_names
+                                 , notify->payload.v2n.isan_type)
+                      ,action);
         }
 
     }

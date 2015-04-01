@@ -268,10 +268,6 @@ ikev2_collect_payloads(struct msg_digest *md,
     while (np != ISAKMP_NEXT_NONE)
     {
         struct_desc *sd = payload_desc(np);
-
-        DBG_log("  seen payloads: %s"
-                , bitnamesof(payload_name_ikev2_main, seen));
-
 	memset(pd, 0, sizeof(*pd));
 
 	if (pd == &md->digest[PAYLIMIT])
