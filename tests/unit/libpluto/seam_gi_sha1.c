@@ -1,3 +1,8 @@
+/*
+ * these files are created by running a full pluto, and observing the
+ * debug lines, and transforming them to C data files
+ */
+
 /* test case 3 - DH operation, SHA1 + AES */
 u_int16_t     tc3_oakleygroup  = OAKLEY_GROUP_MODP1536;
 oakley_auth_t tc3_auth         = AUTH_ALGORITHM_HMAC_SHA1;

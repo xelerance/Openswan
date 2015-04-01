@@ -45,6 +45,7 @@ main(int argc, char *argv[])
     char *infile;
     char *conn_name;
     int  lineno=0;
+    int  regression = 0;
     struct connection *c1;
     struct state *st;
 
@@ -53,18 +54,25 @@ main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 3) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
+    if(argc != 3 && argc!=4) {
+	fprintf(stderr, "Usage: %s [-r] <whackrecord> <conn-name>\n", progname);
 	exit(10);
     }
-    /* argv[1] == "-r" */
+    /* skip argv0 */
+    argc--; argv++;
+
+    if(strcmp(argv[0], "-r")==0) {
+        regression = 1;
+        argc--; argv++;
+    }
 
     tool_init_log();
+    load_oswcrypto();
     init_fake_vendorid();
     init_parker_interface();
 
-    infile = argv[1];
-    conn_name = argv[2];
+    infile = argv[0];
+    conn_name = argv[1];
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(10);
@@ -77,7 +85,8 @@ main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1);
 
-    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
+    /* do calculation if not -r for regression */
+    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
 
     st = state_with_serialno(1);
     if(st!=NULL) {
