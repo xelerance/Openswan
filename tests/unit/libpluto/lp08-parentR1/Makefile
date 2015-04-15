@@ -89,7 +89,7 @@ OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "set args "${UNITTEST2ARGS} >>.gdb2init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
-	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
+	tcpdump -n -t -v -r OUTPUT/parentR1.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
 
 OUTPUT/R1notify-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
