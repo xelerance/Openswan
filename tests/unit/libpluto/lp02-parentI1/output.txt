@@ -389,28 +389,39 @@ RC=134 STATE_PARENT_I1: initiate
 |    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
-| emitting 80 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
-| ikev2 g^x  ed 8d 98 c0  22 1f 62 98  b3 c8 16 73  11 35 5b b3
-|   c3 59 f6 9d  2b 19 16 48  7d 37 00 da  9d 63 8a 41
-|   3c dd 51 ce  1b e9 5a 7f  13 e3 22 84  da df ea f2
-|   fd e4 86 dd  d7 d2 61 21  5e 9e f2 d8  e1 1b d4 38
-|   d2 58 35 bd  71 6f ff 7a  15 74 93 b3  0f 6d ca af
-| emitting length of IKEv2 Key Exchange Payload: 88
+| emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x  02 22 e0 44  01 d6 b3 98  c1 56 2e 8e  3e d2 1c 80
+|   9d c1 cb 68  c7 8e 87 ec  1f d3 12 55  5b 6c f9 dd
+|   3c d1 a6 dd  ee ed e8 2f  ec 99 aa 73  a2 85 6a 5a
+|   44 1d 4b 0f  48 d8 b4 eb  2d ff 8b ab  db 78 d7 21
+|   14 95 2e 2d  d1 5d 34 6b  4b 57 e6 5e  b7 97 b9 95
+|   8e 63 33 89  dc 64 52 f0  b4 01 8a f3  c9 00 48 07
+|   25 c2 fd 02  c0 49 13 ce  82 23 51 1c  c9 ed 28 96
+|   aa d8 bb 96  b6 ee 99 b8  8f 61 2e 93  40 17 bf bc
+|   0b 55 aa d7  e2 90 26 c6  21 b3 af cf  5e 2c 76 b2
+|   9d bc 87 c9  98 f3 77 ae  30 62 ce 0c  60 aa 3e 5c
+|   0b 90 bb 5d  0b 55 40 3c  65 2b d1 36  20 6f d5 4b
+|   a2 50 0d ac  f0 85 23 cc  05 bb e3 35  4a c1 ff 1b
+|   2a 85 89 2a  55 1e fe 2a  e3 30 44 5d  c9 ec 5a 02
+|   86 c5 78 d3  bf b3 44 8d  d0 14 d5 fd  aa 3e d4 bc
+|   15 5e b0 be  3a 9f 76 6c  55 84 fd 55  2a 91 b9 c6
+|   ea b3 3f 3d  2e 23 c8 3f  d4 19 46 d9  69 cb 1c 54
+| emitting length of IKEv2 Key Exchange Payload: 264
 | ***emit IKEv2 Nonce Payload:
 |    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
-| IKEv2 nonce  92 b3 ae ca  67 60 7c 05  c2 80 25 94  2d 77 75 e0
+| IKEv2 nonce  c9 f5 35 1a  b9 de 69 c0  d6 3f e4 17  21 67 eb 7e
 | emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 660
-sending 660 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 836
+sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 02 94  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -442,14 +453,25 @@ sending 660 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
 |   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
 |   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 00 58  00 0e 00 00
-|   ed 8d 98 c0  22 1f 62 98  b3 c8 16 73  11 35 5b b3
-|   c3 59 f6 9d  2b 19 16 48  7d 37 00 da  9d 63 8a 41
-|   3c dd 51 ce  1b e9 5a 7f  13 e3 22 84  da df ea f2
-|   fd e4 86 dd  d7 d2 61 21  5e 9e f2 d8  e1 1b d4 38
-|   d2 58 35 bd  71 6f ff 7a  15 74 93 b3  0f 6d ca af
-|   2b 00 00 14  92 b3 ae ca  67 60 7c 05  c2 80 25 94
-|   2d 77 75 e0  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   02 22 e0 44  01 d6 b3 98  c1 56 2e 8e  3e d2 1c 80
+|   9d c1 cb 68  c7 8e 87 ec  1f d3 12 55  5b 6c f9 dd
+|   3c d1 a6 dd  ee ed e8 2f  ec 99 aa 73  a2 85 6a 5a
+|   44 1d 4b 0f  48 d8 b4 eb  2d ff 8b ab  db 78 d7 21
+|   14 95 2e 2d  d1 5d 34 6b  4b 57 e6 5e  b7 97 b9 95
+|   8e 63 33 89  dc 64 52 f0  b4 01 8a f3  c9 00 48 07
+|   25 c2 fd 02  c0 49 13 ce  82 23 51 1c  c9 ed 28 96
+|   aa d8 bb 96  b6 ee 99 b8  8f 61 2e 93  40 17 bf bc
+|   0b 55 aa d7  e2 90 26 c6  21 b3 af cf  5e 2c 76 b2
+|   9d bc 87 c9  98 f3 77 ae  30 62 ce 0c  60 aa 3e 5c
+|   0b 90 bb 5d  0b 55 40 3c  65 2b d1 36  20 6f d5 4b
+|   a2 50 0d ac  f0 85 23 cc  05 bb e3 35  4a c1 ff 1b
+|   2a 85 89 2a  55 1e fe 2a  e3 30 44 5d  c9 ec 5a 02
+|   86 c5 78 d3  bf b3 44 8d  d0 14 d5 fd  aa 3e d4 bc
+|   15 5e b0 be  3a 9f 76 6c  55 84 fd 55  2a 91 b9 c6
+|   ea b3 3f 3d  2e 23 c8 3f  d4 19 46 d9  69 cb 1c 54
+|   2b 00 00 14  c9 f5 35 1a  b9 de 69 c0  d6 3f e4 17
+|   21 67 eb 7e  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./parentI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./parentI1 STATE_PARENT_I1: sent v2I1, expected v2R1
