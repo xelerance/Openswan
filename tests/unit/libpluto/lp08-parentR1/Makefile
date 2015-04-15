@@ -73,6 +73,7 @@ OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentI1badKE.pcap OUTPUT/parentR1notify.pcap
 UNITTEST2ARGS=${WHACKFILE} parker1--jj2 parentI1.pcap      OUTPUT/parentR1.pcap
+UNITTEST3ARGS=${WHACKFILE} parker1--jj2 parentI1syntax.pcap OUTPUT/parentR1syntax.pcap
 
 TESTNAME=parentR1
 EF_DISABLE_BANNER=1
@@ -82,22 +83,30 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
-check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt
+check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt OUTPUT/R1invalidsyntax-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb2init
-	@echo "set args "${UNITTESTARGS} >>.gdb2init
+	@echo "set args "${UNITTEST2ARGS} >>.gdb2init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output.txt
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
 	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
 
 OUTPUT/R1notify-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb1init
-	@echo "set args "${UNITTESTARGS} >>.gdb1init
+	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/parentR1notify.pcap | tee OUTPUT/R1notify-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1notify-dump.txt
+
+OUTPUT/R1invalidsyntax-dump.txt: ${WHACKFILE} ${TESTNAME}
+	@mkdir -p OUTPUT
+	@echo "file ${TESTNAME}"           >.gdb3init
+	@echo "set args "${UNITTEST1ARGS} >>.gdb3init
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_3.txt 2>&1
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_3.txt | diff - output3.txt
+	tcpdump -n -t -v -r OUTPUT/parentR1notify.pcap | tee OUTPUT/R1syntax-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1syntax-dump.txt
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
@@ -106,8 +115,10 @@ ${WHACKFILE}:
 update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
-	sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1notify-dump.txt >R1notify-dump.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_3.txt >output3.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
+	sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1notify-dump.txt >R1notify-dump.txt
+	sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1syntax-dump.txt >R1syntax-dump.txt
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap

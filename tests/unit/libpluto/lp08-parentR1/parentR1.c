@@ -36,11 +36,9 @@
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
-#include "seam_gi_sha1.c"
-
-#include "ikev2sendI1.c"
-
 #include <pcap.h>
+
+#include "seam_gr_sha1_group14.c"
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user
@@ -54,15 +52,16 @@ void recv_pcap_packet(u_char *user
 
     /* find st involved */
     st = state_with_serialno(1);
-    passert(st != NULL);
-    st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    if(st) {
+        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
-    /* now fill in the KE values from a constant.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc3_secret,tc3_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc3_nr, tc3_nr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc3_gr, tc3_gr_len);
+        /* now fill in the KE values from a constant.. not calculated */
+        clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
 
-    run_continuation(crypto_req);
+        run_continuation(crypto_req);
+    }
 }
 
 
