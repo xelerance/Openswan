@@ -466,11 +466,14 @@ process_v2_packet(struct msg_digest **mdp)
             }
 #if 0 /* PATRICK */
             else {
-                /* if it is response from Initiator*/
-		/* it seems that it should not happen
-		 * why a response will be retransmitted?
-		 */
-		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
+                /* (was PATRICK XXX)
+                 * if it a message from Initiator, and we have received
+                 * something before, and already acknowledged it (i.e.
+                 * initiator sent us something newer!), then we just ignore it
+                 * as it is outside of our window.
+                 */
+		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID
+                   &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
                     openswan_log("received an old response, ignoring: %u < %u"
                                  , md->msgid_received, st->st_msgid_last_localreq_ack);
 		}
@@ -527,8 +530,11 @@ process_v2_packet(struct msg_digest **mdp)
 	    if(st->st_msgid_lastack != INVALID_MSGID
 	       && md->msgid_received <= st->st_msgid_lastack) {
 		/* it's fine, it's just a retransmit */
-		DBG(DBG_CONTROL, DBG_log("responding peer retransmitted msgid %u"
-					 , md->msgid_received));
+                st->st_msg_retransmitted++;
+                if((st->st_msg_retransmitted % 512) == 1 || DBGP(DBG_CONTROL)) {
+                    DBG_log("responding peer retransmitted msgid %u (retransmission count: %u)"
+                            , md->msgid_received, st->st_msg_retransmitted);
+                }
 		return;
             }
 #if 0 /* PATRICK */

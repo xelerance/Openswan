@@ -250,6 +250,8 @@ struct state
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
     /* IKEv2 things */
+    unsigned           st_msg_retransmitted;   /* total number of retransmissions seen */
+
     /* message ID sequence for things we send (as initiator) */
     msgid_t            st_msgid_lastack;       /* last one peer acknowledged */
     msgid_t            st_msgid_nextuse;       /* next one to use */
