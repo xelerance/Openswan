@@ -28,15 +28,16 @@
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
+#include "seam_commhandle.c"
 #include "seam_whack.c"
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
-#include "seam_commhandle.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include "seam_gi_sha1.c"
+#include "seam_gi_sha1_group14.c"
 
 #include "ikev2sendI1.c"
 
@@ -50,9 +51,15 @@ void recv_pcap_packet(u_char *user
 
     recv_pcap_packet_gen(user, h, bytes);
 
-    passert(continuation == NULL);
-}
+    /* find st involved */
+    st = state_with_serialno(1);
+    if(st != NULL) {
+        passert(st != NULL);
+        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    }
 
+    run_continuation(crypto_req);
+}
 
 main(int argc, char *argv[])
 {
@@ -60,33 +67,49 @@ main(int argc, char *argv[])
     char *infile;
     char *conn_name;
     int  lineno=0;
+    int  regression = 0;
     pcap_t *pt;
+    char   eb1[256];  /* error buffer for pcap open */
     struct connection *c1;
     struct state *st;
-    char   eb1[256];  /* error buffer for pcap open */
 
     EF_PROTECT_FREE=1;
 
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 5) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
+    /* skip argv0 */
+    argc--; argv++;
+
+    if(strcmp(argv[0], "-r")==0) {
+        regression = 1;
+        argc--; argv++;
+    }
+    if(argc != 4) {
+	fprintf(stderr, "Usage: %s [-r] <whackrecord> <conn-name> <pcapfile> <pcapout>\n", progname);
 	exit(10);
     }
-    /* argv[1] == "-r" */
 
     tool_init_log();
+    load_oswcrypto();
     init_fake_vendorid();
     init_parker_interface();
 
-    infile = argv[1];
-    conn_name = argv[2];
+    infile = argv[0];
+    conn_name = argv[1];
 
-    cur_debugging = DBG_CONTROL;
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(10);
 
-    send_packet_setup_pcap("OUTPUT/parentI1.pcap");
+    /* input packets */
+    pt = pcap_open_offline(argv[2], eb1);
+    if(!pt) {
+	fprintf(stderr, "can not open %s: %s\n", argv[2], eb1);
+	exit(50);
+    }
+
+    /* output packets */
+    send_packet_setup_pcap(argv[3]);
 
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
@@ -94,21 +117,12 @@ main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1);
 
-    /* send the I1 packet */
-    st = sendI1(c1, DBG_CONTROL);
+    st = sendI1(c1, DBG_CONTROL, regression == 0);
 
-    send_packet_setup_pcap(argv[4]);
-
-    pt = pcap_open_offline(argv[3], eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[3], eb1);
-	exit(50);
-    }
-
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    /* now accept the reply packet */
+    cur_debugging = DBG_CONTROL|DBG_PARSING;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
-    /* clean up so that we can see any leaks */
     st = state_with_serialno(1);
     if(st!=NULL) {
         delete_state(st);
