@@ -91,6 +91,7 @@ main(int argc, char *argv[])
     }
 
     tool_init_log();
+    init_crypto();
     load_oswcrypto();
     init_fake_vendorid();
     init_parker_interface();
@@ -129,7 +130,6 @@ main(int argc, char *argv[])
 
     st = state_with_serialno(1);
     if(st!=NULL) {
-        delete_state(st);
         free_state(st);
     }
 

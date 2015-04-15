@@ -70,22 +70,24 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentR1.pcap      OUTPUT/parentI2.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} parker1--jj2 parentR1.pcap      OUTPUT/parentI2.pcap
 
 TESTNAME=parentI2
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
+	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo LD ${TESTNAME}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check: OUTPUT/I2-dump.txt
 OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb1init
-	@echo "set args "${UNITTEST2ARGS} >>.gdb1init
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
+	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/parentI2.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
