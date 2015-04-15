@@ -344,6 +344,8 @@ release_whack(struct state *st)
 /* here we are just freeing RAM */
 void free_state(struct state *st)
 {
+    delete_event(st);	/* delete any pending timer event */
+
     {
 	struct msgid_list *p = st->st_used_msgids;
 
