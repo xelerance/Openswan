@@ -311,8 +311,6 @@ ikev2_collect_payloads(struct msg_digest *md,
 
         {
             lset_t s = LELEM(np - ISAKMP_v2PAYLOAD_TYPE_BASE);
-            seen |= s;
-
             if (s & seen & ~repeatable_payloads) {
                 /* improperly repeated payload */
                 loglog(RC_LOG_SERIOUS,
@@ -320,6 +318,9 @@ ikev2_collect_payloads(struct msg_digest *md,
                        enum_show(&payload_names_ikev2, np));
                 return STF_FAIL + v2N_INVALID_SYNTAX;
             }
+
+            /* mark this payload as seen */
+            seen |= s;
 	}
 
 	if (!in_struct(&pd->payload, sd, in_pbs, &pd->pbs))

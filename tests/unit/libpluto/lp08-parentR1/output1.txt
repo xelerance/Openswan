@@ -8,15 +8,15 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | checking against if: eth0
-| connect_to_host_pair: 132.213.238.7:500 192.168.1.1:500 -> hp:none 
+| connect_to_host_pair: 132.213.238.7:500 192.168.1.1:500 -> hp:none
 ./parentR1 added connection description "parker1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
-RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0 
-RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; 
-RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0; 
+RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0;
+RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | *received 772 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 04  22 00 01 fc
@@ -77,14 +77,21 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 state object not found
+| considering state entry: 0
+|   reject:state needed and state unavailable
+| considering state entry: 1
+|   reject:state needed and state unavailable
+| considering state entry: 2
+|   reject:state needed and state unavailable
+| considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 192.168.1.1:500 
-| find_host_pair_conn (find_host_connection2): 132.213.238.7:500 192.168.1.1:500 -> hp:parker1--jj2 
+| find_host_pair: comparing to 132.213.238.7:500 192.168.1.1:500
+| find_host_pair_conn (find_host_connection2): 132.213.238.7:500 192.168.1.1:500 -> hp:parker1--jj2
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (parker1--jj2)
 | find_host_connection2 returns parker1--jj2
-| found connection: parker1--jj2 
+| found connection: parker1--jj2
 | creating state object #1 at Z
 | checking against if: eth0
 | ICOOKIE:  00 01 02 03  04 05 06 07
@@ -259,4 +266,4 @@ sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
 ./parentR1 leak detective found Z leaks, total size X
-Pre-amble (offset: 75): #!-pluto-whack-file- recorded on dooku.sandelman.ca on 2015-03-23 19:28:50
+Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
