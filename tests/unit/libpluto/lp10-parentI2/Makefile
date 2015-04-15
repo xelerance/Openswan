@@ -1,6 +1,5 @@
-# FreeS/WAN testing makefile
-# Copyright (C) 2014 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2002 Michael Richardson <mcr@freeswan.org>
+# Openswan unit testing makefile
+# Copyright (C) 2014,2015 Michael Richardson <mcr@xelerance.com>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -21,8 +20,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
-
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
@@ -39,7 +36,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
@@ -47,6 +43,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
@@ -73,37 +70,34 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentR1notify.pcap OUTPUT/parentI1n.pcap
+UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentR1.pcap      OUTPUT/parentI2.pcap
 
-TESTNAME=parent_outI1inR1
+TESTNAME=parentI2
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-
-check:	OUTPUT/R1notify-dump.txt
-
-${TESTNAME}:	${WHACKFILE} OUTPUT $(wildcard ../seam_*.c) ${EXTRAOBJS}
-	@echo CC ${TESTNAME}.c
+programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
-	@echo "file ${TESTNAME}"          >.gdbinit
-	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
 
-OUTPUT/R1notify-dump.txt t1: ${WHACKFILE} ${TESTNAME}
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
-	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
-	tcpdump -n -t -v -r OUTPUT/parentI1n.pcap | tee OUTPUT/R1notify-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1notify-dump.txt
+check: OUTPUT/I2-dump.txt
+OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
+	@mkdir -p OUTPUT
+	@echo "file ${TESTNAME}"          >.gdb1init
+	@echo "set args "${UNITTEST2ARGS} >>.gdb1init
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	tcpdump -n -t -v -r OUTPUT/parentI2.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
-${WHACKFILE}: OUTPUT
+${WHACKFILE}:
+	@mkdir -p OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
 
-update: OUTPUT
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}1.txt >output1.txt
-	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
+update: update1
+update1:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	[ -f OUTPUT/I2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt
 
-clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
-
-OUTPUT:
-	@mkdir -p OUTPUT
+clean:
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
 
