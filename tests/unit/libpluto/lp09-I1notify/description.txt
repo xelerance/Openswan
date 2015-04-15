@@ -4,5 +4,7 @@ It should be logged, and the state should be deleted.
 (WELL... Should it?  Should it try some more?  We can not be sure.
 This test case should be improved...)
 
+This test case shares 100% code with lp10-parentI2, and could be
+merged into that directory.
 
 
