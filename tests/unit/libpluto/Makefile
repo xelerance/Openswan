@@ -24,4 +24,6 @@ check:
 	@${MAKE} -C lp05-sha256cert check
 	@${MAKE} -C lp07-orient     check
 	@${MAKE} -C lp08-parentR1   check
+	@${MAKE} -C lp10-parentI2   check
+	@${MAKE} -C lp11-parentI2dup   check
 
