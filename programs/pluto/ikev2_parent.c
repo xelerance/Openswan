@@ -60,12 +60,12 @@
 
 #include "tpm/tpm.h"
 
-#define SEND_NOTIFICATION_AA(t, d) \
+#define SEND_V2_NOTIFICATION_AA(t, d) \
     if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
     else send_v2_notification_from_md(md, t, d);
 
 
-#define SEND_NOTIFICATION(t)                                            \
+#define SEND_V2_NOTIFICATION(t)                                            \
     if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
     else send_v2_notification_from_md(md, t, NULL);
 
@@ -621,7 +621,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
                     if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
                         openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
-                        SEND_NOTIFICATION_AA(v2N_COOKIE, &dc);
+                        SEND_V2_NOTIFICATION_AA(v2N_COOKIE, &dc);
                         return STF_FAIL + v2N_INVALID_IKE_SPI;
                     }
                     DBG(DBG_CONTROLMORE
@@ -633,7 +633,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
                     DBG(DBG_CONTROLMORE
                         ,DBG_log("busy mode on. receieved I1 without a valid dcookie");
                         DBG_log("send a dcookie and forget this state"));
-                    SEND_NOTIFICATION_AA(v2N_COOKIE, &dc);
+                    SEND_V2_NOTIFICATION_AA(v2N_COOKIE, &dc);
                     return STF_FAIL;
                 }
         }
@@ -831,7 +831,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
             u_int16_t group_number = htons(st->st_oakley.group->group);
             dc.ptr = (unsigned char *)&group_number;
             dc.len = 2;
-            SEND_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
+            SEND_V2_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
             delete_state(st);
             return STF_FAIL + rn;
         }
@@ -1801,7 +1801,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
                     openswan_log("RSA authentication failed");
-                    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
+                    SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
                     return STF_FATAL;
                 }
                 break;
@@ -1814,7 +1814,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
                     openswan_log("PSK authentication failed AUTH mismatch!");
-                    SEND_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
+                    SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
                     return STF_FATAL;
                 }
                 break;
