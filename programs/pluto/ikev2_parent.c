@@ -1962,7 +1962,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             np = ISAKMP_NEXT_NONE;
         } else {
             DBG_log("CHILD SA proposals received");
-            openswan_log("PAUL: this is where we have to check the TSi/TSr");
+            /* PAUL: openswan_log("PAUL: this is where we have to check the TSi/TSr"); */
             np = ISAKMP_NEXT_v2SA;
         }
 
@@ -1980,8 +1980,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         if(np == ISAKMP_NEXT_v2SA) {
             /* must have enough to build an CHILD_SA */
             ret = ikev2_child_sa_respond(md, RESPONDER, &e_pbs_cipher);
-            /* PATRICK: I may have to switch the following two blocks: */
-            /* Block 1 */
             if(ret > STF_FAIL) {
                 v2_notify_num = ret - STF_FAIL;
                 DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
@@ -1990,9 +1988,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                 DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
                 np = ISAKMP_NEXT_NONE;
             }
-           /* Block 2 */
-           // if(ret != STF_OK) return ret;
-           /* End of blocks */
         }
 
         ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
@@ -2028,7 +2023,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     /* note: retransimission is driven by initiator */
 
     /* if the child failed, delete its state here - we sent the packet */
-    /* PAUL */
     return STF_OK;
 
 }

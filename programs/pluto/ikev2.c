@@ -907,12 +907,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    fmt_isakmp_sa_established(st, sadetails,sizeof(sadetails));
 	}
 
-  /* PATRICK: I may have to switch the following code blocks: */
-  /* Block 1 */
 	if (IS_CHILD_SA_ESTABLISHED(st))
-  /* Block 2 */
-	//if (IS_CHILD_SA_ESTABLISHED(st) || IS_PARENT_SA_ESTABLISHED(st->st_state))
-  /* End of blocks */
 	{
 	    /* log our success */
 	    w = RC_SUCCESS;
