@@ -25,7 +25,7 @@ OUTPUTS=../OUTPUTS
 check:
 	@mkdir -p ${OUTPUTS}
 	-rm -f OUTPUT.pid
-	${PLUTOBIN} --help 2>&1 | tee ${OUTPUTS}/pluto.help.raw | sed -r -f ${TESTUTILS}/openswanver.sed | diff - pluto.help.out
+	${PLUTOBIN} --help 2>&1 | tee ${OUTPUTS}/pluto.help.raw | sed -r -f ${TESTUTILS}/openswanver.sed | diff - pluto.help.out || (cat ${OUTPUTS}/pluto.help.raw; exit 1)
 	(${PLUTOBIN} ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ${OUTPUTS}/pluto.start.raw | sed -r -f ${TESTUTILS}/openswanver.sed  -f ./removehelpers.sed | diff - pluto.start.out;
 	(${PLUTOBIN} --nhelpers -1 ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ${OUTPUTS}/pluto.nhelpers.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed | diff - pluto.nhelpers.out;
 	: make sure that nhelpers=-1 started at least one helper.
