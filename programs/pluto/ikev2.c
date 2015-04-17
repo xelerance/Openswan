@@ -402,12 +402,19 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     lset_t seen;
     const struct state_v2_microcode *svm = md->svm;
     stf = ikev2_collect_payloads(md, in_pbs, &seen, np);
+
     if(stf != STF_OK) {
         return stf;
     }
 
-    stf = ikev2_process_payloads(md, seen,
-                                 svm->req_clear_payloads, svm->opt_clear_payloads);
+    if (svm->req_enc_payloads & ~seen) {
+        /* missing payloads in encryption part */
+        loglog(RC_LOG_SERIOUS,
+               "missing encrypted payload(s) (%s). Message dropped.",
+               bitnamesof(payload_name_ikev2_main
+                          , svm->req_enc_payloads & ~seen));
+        return STF_FAIL + v2N_INVALID_SYNTAX;
+    }
     return stf;
 }
 
