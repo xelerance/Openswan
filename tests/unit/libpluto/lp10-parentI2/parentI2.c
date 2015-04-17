@@ -55,7 +55,7 @@ void recv_pcap_packet(u_char *user
     st = state_with_serialno(1);
     if(st != NULL) {
         passert(st != NULL);
-        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
     }
 
     run_continuation(crypto_req);
@@ -120,12 +120,12 @@ main(int argc, char *argv[])
 
     st = sendI1(c1, DBG_CONTROL, regression == 0);
 
-    /* now accept the reply packet */
-    cur_debugging = DBG_CONTROL|DBG_PARSING;
-
-    /* now output interesting packet to capture file */
+    /* now accept the reply packet:
+       output interesting packet to capture file
+    */
     send_packet_setup_pcap(argv[3]);
 
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     st = state_with_serialno(1);
