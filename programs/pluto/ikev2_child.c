@@ -638,7 +638,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
      *
      * similar to find_client_connection/fc_try.
      */
-  {
+    {
 	struct connection *b = c;
 	struct connection *d;
 	int bestfit_n, newfit, bestfit_p;
@@ -651,87 +651,82 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
-	for (sra = &c->spd; sra != NULL; sra = sra->next)
-	{
-					int bfit_n=ikev2_evaluate_connection_fit(c,sra,role,tsi,tsr,tsi_n,
-													tsr_n);
-					if (bfit_n > bestfit_n)
-					{
-									DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-									int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-																	tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-									if (bfit_p > bestfit_p) {
-													DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
-																									, c->name, best_tsi_i, best_tsr_i));
-													bestfit_p = bfit_p;
-													bestfit_n = bfit_n;
-													b = c;
-													bsr = sra;
-									}
-					}
-					else
-									DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
-																					, c->name));
-	}
+	for (sra = &c->spd; sra != NULL; sra = sra->next) {
+            int bfit_n=ikev2_evaluate_connection_fit(c,sra,role,tsi,tsr,tsi_n,
+                                                     tsr_n);
+            if (bfit_n > bestfit_n) {
+                DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
+                                                                  tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+                if (bfit_p > bestfit_p) {
+                    DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
+                                                 , c->name, best_tsi_i, best_tsr_i));
+                    bestfit_p = bfit_p;
+                    bestfit_n = bfit_n;
+                    b = c;
+                    bsr = sra;
+                }
+            }
+            else
+                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
+                                             , c->name));
+        }
 
-	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
-	{
-		hp = find_host_pair(&sra->this.host_addr
-				, sra->this.host_port
-				, &sra->that.host_addr
-				, sra->that.host_port);
+	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
+            hp = find_host_pair(&sra->this.host_addr
+                                , sra->this.host_port
+                                , &sra->that.host_addr
+                                , sra->that.host_port);
 
 #ifdef DEBUG
-		if (DBGP(DBG_CONTROLMORE))
-		{
-			char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
+            if (DBGP(DBG_CONTROLMORE))  {
+                char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
 
-			subnettot(&sra->this.client, 0, s2, sizeof(s2));
-			subnettot(&sra->that.client, 0, d2, sizeof(d2));
+                subnettot(&sra->this.client, 0, s2, sizeof(s2));
+                subnettot(&sra->that.client, 0, d2, sizeof(d2));
 
-			DBG_log("  checking hostpair %s -> %s is %s"
-					, s2, d2
-					, (hp ? "found" : "not found"));
-		}
+                DBG_log("  checking hostpair %s -> %s is %s"
+                        , s2, d2
+                        , (hp ? "found" : "not found"));
+            }
 #endif /* DEBUG */
 
-		if(!hp) continue;
+            if(!hp) continue;
 
-		for (d = hp->connections; d != NULL; d = d->hp_next)
-		{
-			struct spd_route *sr;
-			int wildcards, pathlen;  /* XXX */
+            for (d = hp->connections; d != NULL; d = d->hp_next) {
+                struct spd_route *sr;
+                int wildcards, pathlen;  /* XXX */
 
-			if (d->policy & POLICY_GROUP)
-				continue;
+                if (d->policy & POLICY_GROUP)
+                    continue;
 
-			if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-						&& match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-						&& trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-				continue;
+                if (!(same_id(&c->spd.this.id, &d->spd.this.id)
+                      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
+                      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+                    continue;
 
 
-			for (sr = &d->spd; sr != NULL; sr = sr->next) {
-				newfit=ikev2_evaluate_connection_fit(d,sr,role
-						,tsi,tsr,tsi_n,tsr_n);
-				if(newfit > bestfit_n) {  /// will complicated this with narrowing
-					DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
-					int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-							tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-					if (bfit_p > bestfit_p) {
-						DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
-									, d->name, best_tsi_i, best_tsr_i));
-						bestfit_p = bfit_p;
-						bestfit_n = newfit;
-						b = d;
-						bsr = sr;
-					}
-				}
-				else
-					DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by port matching", d->name));
-			}
-		}
-	}
+                for (sr = &d->spd; sr != NULL; sr = sr->next) {
+                    newfit=ikev2_evaluate_connection_fit(d,sr,role
+                                                         ,tsi,tsr,tsi_n,tsr_n);
+                    if(newfit > bestfit_n) {  /// will complicated this with narrowing
+                        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
+                        int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
+                                                                          tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+                        if (bfit_p > bestfit_p) {
+                            DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
+                                                         , d->name, best_tsi_i, best_tsr_i));
+                            bestfit_p = bfit_p;
+                            bestfit_n = newfit;
+                            b = d;
+                            bsr = sr;
+                        }
+                    }
+                    else
+                        DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by port matching", d->name));
+                }
+            }
+        }
 
 	/*
 	 * now that we have found the best connection, copy the data into
@@ -744,83 +739,82 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 	/* Paul: should we STF_FAIL here instead of checking for NULL */
 	if (bsr != NULL) {
-    st1 = duplicate_state(st);
-    insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
+            st1 = duplicate_state(st);
+            insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
 
-		if(role == INITIATOR) {
-			memcpy (&st1->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
-			memcpy (&st1->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
-		}
-		else {
-			st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
-			st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
-		}
-		ikev2_print_ts(&st1->st_ts_this);
-		ikev2_print_ts(&st1->st_ts_that);
+            if(role == INITIATOR) {
+                memcpy (&st1->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
+                memcpy (&st1->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
+            }
+            else {
+                st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
+                st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
+            }
+            ikev2_print_ts(&st1->st_ts_this);
+            ikev2_print_ts(&st1->st_ts_that);
 	}
 	else {
-		if(role == INITIATOR)
-				return STF_FAIL;
-			else
-			return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN ;
-		}
-	}
+            if(role == INITIATOR)
+                return STF_FAIL;
+            else
+                return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN ;
+        }
+    }
 
-	st1->st_connection = c;
-	md->st = st1;
-	md->pst= st;
+    st1->st_connection = c;
+    md->st = st1;
+    md->pst= st;
 
-	/* start of SA out */
-	{
-		struct isakmp_sa r_sa = sa_pd->payload.sa;
-		notification_t rn;
-		pb_stream r_sa_pbs;
+    /* start of SA out */
+    {
+        struct isakmp_sa r_sa = sa_pd->payload.sa;
+        notification_t rn;
+        pb_stream r_sa_pbs;
 
-		r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
-		if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
-			return STF_INTERNAL_ERROR;
+        r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
+        if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
+            return STF_INTERNAL_ERROR;
 
-		/* SA body in and out */
-		rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				&r_sa_pbs, st1, FALSE);
+        /* SA body in and out */
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+                                       &r_sa_pbs, st1, FALSE);
 
-		if (rn != NOTHING_WRONG)
-			return STF_FAIL + rn; // should we delete_state st1?
-	}
+        if (rn != NOTHING_WRONG)
+            return STF_FAIL + rn; // should we delete_state st1?
+    }
 
-        ret = ikev2_calc_emit_ts(md, outpbs, role
-                        , c, c->policy);
-        if(ret != STF_OK) return ret; // should we delete_state st1?
+    ret = ikev2_calc_emit_ts(md, outpbs, role
+                             , c, c->policy);
+    if(ret != STF_OK) return ret; // should we delete_state st1?
 
-	if( role == RESPONDER ) {
-		chunk_t child_spi, notifiy_data;
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+    if( role == RESPONDER ) {
+        chunk_t child_spi, notifiy_data;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+                if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
-				if(st1->st_connection->policy & POLICY_TUNNEL) {
-					DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-					DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
-				}
-				else {
-					DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-					DBG_log("Now responding with USE_TRANSPORT_MODE notify");
-				}
+                    if(st1->st_connection->policy & POLICY_TUNNEL) {
+                        DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
+                        DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+                    }
+                    else {
+                        DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
+                        DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+                    }
 
-				memset(&child_spi, 0, sizeof(child_spi));
-				memset(&notifiy_data, 0, sizeof(notifiy_data));
-				ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
-						&child_spi,
-						v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+                    memset(&child_spi, 0, sizeof(child_spi));
+                    memset(&notifiy_data, 0, sizeof(notifiy_data));
+                    ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
+                              &child_spi,
+                              v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
 
-				if (st1->st_esp.present == TRUE) {
-					/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-					st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-				}
-				break;
-			}
-		}
+                    if (st1->st_esp.present == TRUE) {
+                        /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+                        st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                    }
+                    break;
+                }
+            }
     }
 
     ikev2_derive_child_keys(st1, role);
