@@ -271,7 +271,7 @@ struct state
     chunk_t            st_gr;                  /* Responder public value */
     u_int8_t           st_rcookie[COOKIE_SIZE];/* Responder Cookie */
     chunk_t            st_nr;                  /* Nr nonce */
-    chunk_t			   st_dcookie;             /* DOS cookie of responder */
+    chunk_t            st_dcookie;             /* DOS cookie of responder */
 
     /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */
