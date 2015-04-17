@@ -2106,43 +2106,41 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     /* now check signature from RSA key */
-    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
-        {
-        case v2_AUTH_RSA:
-            {
-                stf_status authstat = ikev2_verify_rsa_sha1(pst
-                                                            , INITIATOR
-                                                            , idhash_in
-                                                            , NULL /* keys from DNS */
-                                                            , NULL /* gateways from DNS */
-                                                            , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
-                if(authstat != STF_OK) {
-                    openswan_log("authentication failed");
-                    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
-                    return STF_FAIL;
-                }
-                break;
-            }
-        case v2_AUTH_SHARED:
-            {
-                stf_status authstat = ikev2_verify_psk_auth(pst
-                                                            , INITIATOR
-                                                            , idhash_in
-                                                            , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
-                if(authstat != STF_OK) {
-                    openswan_log("PSK authentication failed");
-                    SEND_NOTIFICATION(AUTHENTICATION_FAILED);
-                    return STF_FAIL;
-                }
-                break;
-            }
-
-        default:
-            openswan_log("authentication method: %s not supported"
-                         , enum_name(&ikev2_auth_names
-                                     ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
+    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type) {
+    case v2_AUTH_RSA: {
+        stf_status authstat = ikev2_verify_rsa_sha1(pst
+                                                    , INITIATOR
+                                                    , idhash_in
+                                                    , NULL /* keys from DNS */
+                                                    , NULL /* gateways from DNS */
+                                                    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+        if(authstat != STF_OK) {
+            openswan_log("authentication failed");
+            SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
             return STF_FAIL;
         }
+        break;
+    }
+
+    case v2_AUTH_SHARED: {
+        stf_status authstat = ikev2_verify_psk_auth(pst
+                                                    , INITIATOR
+                                                    , idhash_in
+                                                    , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+        if(authstat != STF_OK) {
+            openswan_log("PSK authentication failed");
+            SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
+            return STF_FAIL;
+        }
+        break;
+    }
+
+    default:
+        openswan_log("authentication method: %s not supported"
+                     , enum_name(&ikev2_auth_names
+                                 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
+        return STF_FAIL;
+    }
 
     /*
      * update the parent state to make sure that it knows we have
@@ -2150,32 +2148,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
      */
     change_state(pst, STATE_PARENT_I3);
     c->newest_isakmp_sa = pst->st_serialno;
-
-    /* PATRICK: I may have to uncomment the following block: */
-#if 0
-    {
-
-        /*check for child sa related errors */
-        /* check for TS_UNACCEPTABLE */
-        struct payload_digest *p;
-
-        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-            {
-                if ( p->payload.v2n.isan_type == v2N_TS_UNACCEPTABLE ) {
-                    /* we can proceed with successful parent SA */
-                    if(st->st_clonedfrom != 0) {
-                        delete_event(st);
-                        pst = state_with_serialno(st->st_clonedfrom);
-                        md->st = pst;
-                        md->pst = pst;
-                        delete_event(st);
-                        delete_state(st);
-                    }
-                    return STF_OK;
-                }
-            }
-    }
-#endif
 
     /* authentication good, see if there is a child SA available */
     if(md->chain[ISAKMP_NEXT_v2SA] == NULL
@@ -2187,34 +2159,15 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         /*
          * Delete previous retransmission event.
          */
-        /* PATRICK: I may have to switch the following blocks: */
-#if 1
-        /* Block 1 */
         delete_event(st);
         return STF_OK;
-#else
-        /* Block 2 */
-        if(st->st_clonedfrom != 0) {
-            pst = state_with_serialno(st->st_clonedfrom);
-            md->st = pst;
-            md->pst = pst;
-            delete_event(st);
-            delete_state(st);
-        }
-        return STF_OK;
-        /* End of blocks */
-#endif
     }
 
-    /* PATRICK: I may have to switch the following blocks: */
-#define CHECK_TS1_BLOCK1
-    /* Block 1 */
-#ifdef CHECK_TS1_BLOCK1
     {
-        int bestfit_n, bestfit_p;
-        unsigned int best_tsi_i ,  best_tsr_i;
-        bestfit_n = -1;
-        bestfit_p = -1;
+        int best_tsi_i ,  best_tsr_i;
+        int bestfit_n = -1;
+        int bestfit_p = -1;
+        int bestfit_pr= -1;
 
         /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
         DBG(DBG_CONTROLMORE,DBG_log(" check narrowing - we are responding to I2"));
@@ -2228,25 +2181,58 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         const char *oops;
 #endif
 
-        unsigned int tsi_n, tsr_n;
-        tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-        tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+        const int tsi_n = ikev2_parse_ts(tsi_pd, tsi, elemsof(tsi));
+        const int tsr_n = ikev2_parse_ts(tsr_pd, tsr, elemsof(tsr));
 
-        DBG_log("Checking TSi(%d)/TSr(%d) selectors, looking for exact match", tsi_n,tsr_n);
+        DBG_log("checking TSi(%d)/TSr(%d) selectors, looking for exact match"
+                , tsi_n,tsr_n);
+        if (tsi_n < 0 || tsr_n < 0)
+            return STF_FAIL + v2N_TS_UNACCEPTABLE;
+
         {
             struct spd_route *sra ;
             sra = &c->spd;
-            int bfit_n=ikev2_evaluate_connection_fit(c,sra,INITIATOR,tsi,tsr,tsi_n, tsr_n);
+            int bfit_n=ikev2_evaluate_connection_fit(c
+                                                     ,sra
+                                                     ,INITIATOR
+                                                     ,tsi   ,tsr
+                                                     ,tsi_n ,tsr_n);
             if (bfit_n > bestfit_n)
             {
-                DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-                int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,INITIATOR,tsi,tsr,
-                tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+                DBG(DBG_CONTROLMORE,
+                    DBG_log(" prefix fitness found a better match c %s"
+                            , c->name));
+                int bfit_p =
+                    ikev2_evaluate_connection_port_fit(c
+                                                       ,sra
+                                                       ,INITIATOR
+                                                       ,tsi,tsr
+                                                       ,tsi_n,tsr_n
+                                                       , &best_tsi_i
+                                                       , &best_tsr_i);
                 if (bfit_p > bestfit_p) {
-                    DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
-                        , c->name, best_tsi_i, best_tsr_i));
-                    bestfit_p = bfit_p;
-                    bestfit_n = bfit_n;
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  port fitness found better match c %s, tsi[%d],tsr[%d]"
+                                , c->name, best_tsi_i, best_tsr_i));
+                    int bfit_pr =
+                        ikev2_evaluate_connection_protocol_fit(c, sra
+                                                               , INITIATOR
+                                                               , tsi, tsr
+                                                               , tsi_n, tsr_n
+                                                               , &best_tsi_i
+                                                               , &best_tsr_i);
+                    if (bfit_pr > bestfit_pr ) {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("   protocol fitness found better match c %s, tsi[%d],tsr[%d]"
+                                    , c->name, best_tsi_i,
+                                    best_tsr_i));
+                        bestfit_p = bfit_p;
+                        bestfit_n = bfit_n;
+                    } else {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("    protocol fitness rejected c %s",
+                                    c->name));
+                    }
                 }
             }
             else
@@ -2255,11 +2241,45 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         }
 
         if ( ( bestfit_n > 0 )  && (bestfit_p > 0))  {
+            ip_subnet tmp_subnet_i;
+            ip_subnet tmp_subnet_r;
+
             DBG(DBG_CONTROLMORE, DBG_log(("found an acceptable TSi/TSr Traffic Selector")));
             memcpy (&st->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
             memcpy (&st->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
             ikev2_print_ts(&st->st_ts_this);
             ikev2_print_ts(&st->st_ts_that);
+
+            rangetosubnet(&st->st_ts_this.low,
+                          &st->st_ts_this.high, &tmp_subnet_i);
+            rangetosubnet(&st->st_ts_that.low,
+                          &st->st_ts_that.high, &tmp_subnet_r);
+
+            c->spd.this.client = tmp_subnet_i;
+            c->spd.this.port = st->st_ts_this.startport;
+            c->spd.this.protocol = st->st_ts_this.ipprotoid;
+            setportof(htons(c->spd.this.port),
+                      &c->spd.this.host_addr);
+            setportof(htons(c->spd.this.port),
+                      &c->spd.this.client.addr);
+
+            c->spd.this.has_client =
+                !(subnetishost(&c->spd.this.client) &&
+                  addrinsubnet(&c->spd.this.host_addr,
+                               &c->spd.this.client));
+
+            c->spd.that.client = tmp_subnet_r;
+            c->spd.that.port = st->st_ts_that.startport;
+            c->spd.that.protocol = st->st_ts_that.ipprotoid;
+            setportof(htons(c->spd.that.port),
+                      &c->spd.that.host_addr);
+            setportof(htons(c->spd.that.port),
+                      &c->spd.that.client.addr);
+
+            c->spd.that.has_client =
+                !(subnetishost(&c->spd.that.client) &&
+                  addrinsubnet(&c->spd.that.host_addr,
+                               &c->spd.that.client));
         }
         else {
             DBG(DBG_CONTROLMORE, DBG_log(("reject responder TSi/TSr Traffic Selector")));
@@ -2267,7 +2287,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
             return STF_FAIL + v2N_TS_UNACCEPTABLE;
         }
     } /* end of TS check block */
-#endif /* CHECK_TS1_BLOCK1 */
 
     {
         v2_notification_t rn;
@@ -2276,26 +2295,26 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
                 return STF_FAIL;
         }
 
-        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-            NULL, st, FALSE);
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa
+                                       , NULL, st, TRUE);
 
         if(rn != v2N_NOTHING_WRONG)
             return STF_FAIL + rn;
-        }
+    }
 
-        {
-            struct payload_digest *p;
+    {
+        struct payload_digest *p;
 
-            for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-            {
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
             /* RFC 5996 */
-            /*Types in the range 0 - 16383 are intended for reporting errors.  An
-            * implementation receiving a Notify payload with one of these types
-            * that it does not recognize in a response MUST assume that the
-            * corresponding request has failed entirely.  Unrecognized error types
-            * in a request and status types in a request or response MUST be
-            * ignored, and they should be logged.*/
-
+            /* Types in the range 0 - 16383 are intended for reporting errors.
+             * An implementation receiving a Notify payload with one of these
+             * types that it does not recognize in a response MUST assume
+             * that the corresponding request has failed entirely.
+             * Unrecognized error types in a request and status types in a
+             * request or response MUST be
+             * ignored, and they should be logged.
+             */
             if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
                 if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
                     return STF_FAIL + p->payload.v2n.isan_type;
@@ -2325,169 +2344,6 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     ikev2_derive_child_keys(st, md->role);
 
     c->newest_ipsec_sa = st->st_serialno;
-
-#ifndef CHECK_TS1_BLOCK1
-    /* Block 2 */
-    {
-        struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-        struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-
-        /* parse traffic selector */
-
-        tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-        tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
-
-        /* verify if the received traffic selectors are
-         * really same/or a subset of what we sent
-         */
-        if(ikev2_verify_ts(tsi, tsr, tsi_n, tsr_n
-                           , &st->st_ts_this, &st->st_ts_that
-                           , md->role) == FALSE) {
-            /* mistmatch in received selectors */
-            /*only proceeding with parent SA*/
-            delete_event(st);
-            return STF_OK;
-        }
-
-    }
-
-    {
-        v2_notification_t rn;
-        struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-
-        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-                                       NULL, st, FALSE);
-
-        if(rn != v2N_NOTHING_WRONG)
-            return STF_FAIL + rn;
-    }
-
-    {
-        struct payload_digest *p;
-
-        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-            {
-                /* RFC 5996 */
-                /*Types in the range 0 - 16383 are intended for reporting errors.  An
-                 * implementation receiving a Notify payload with one of these types
-                 * that it does not recognize in a response MUST assume that the
-                 * corresponding request has failed entirely.  Unrecognized error types
-                 * in a request and status types in a request or response MUST be
-                 * ignored, and they should be logged.*/
-
-                if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
-                    if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
-                        return STF_FAIL + p->payload.v2n.isan_type;
-                    }
-                }
-
-                if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-                    if ( st->st_connection->policy & POLICY_TUNNEL) {
-                        /*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-                    }
-                    else {
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
-                        if (st->st_esp.present == TRUE) {
-                            /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-                            st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-                        }
-                    }
-                }
-            } /* for */
-
-    } /* notification block */
-
-    {
-        /*storing received traffic selectors */
-            struct traffic_selector *tmp;
-        unsigned int i=0;
-
-
-        ikev2_store_ts_instate(tsi, tsr, tsi_n, tsr_n, &st->st_ts_this, &st->st_ts_that);
-
-        for(i=0; i< tsi_n; i++) {
-
-            DBG(DBG_CONTROLMORE,
-                {
-                    char lbi[ADDRTOT_BUF];
-                    char hbi[ADDRTOT_BUF];
-                    addrtot(&tsi[i].low,  0, lbi, sizeof(lbi));
-                    addrtot(&tsi[i].high, 0, hbi, sizeof(hbi));
-
-                    DBG_log("tsi=%s/%s, port=%d/%d, protocol=%d"
-                            ,  lbi, hbi, tsi[i].startport, tsi[i].endport, tsi[i].ipprotoid);
-                }
-                );
-
-        }
-
-        for(i=0; i< tsr_n; i++) {
-
-            DBG(DBG_CONTROLMORE,
-                {
-                    char lbi[ADDRTOT_BUF];
-                    char hbi[ADDRTOT_BUF];
-                    addrtot(&tsr[i].low,  0, lbi, sizeof(lbi));
-                    addrtot(&tsr[i].high, 0, hbi, sizeof(hbi));
-
-                    DBG_log("tsr=%s/%s, port=%d/%d, protocol=%d"
-                            ,  lbi, hbi, tsr[i].startport, tsr[i].endport, tsr[i].ipprotoid);
-                }
-                );
-
-        }
-
-
-        tmp = &st->st_ts_this;
-
-        while(tmp!= NULL) {
-
-            DBG(DBG_CONTROLMORE,
-                {
-                    char lbi[ADDRTOT_BUF];
-                    char hbi[ADDRTOT_BUF];
-                    addrtot(&tmp->low,  0, lbi, sizeof(lbi));
-                    addrtot(&tmp->high, 0, hbi, sizeof(hbi));
-
-                    DBG_log(" R2  this  tsr=%s/%s, port=%d/%d, protocol=%d"
-                            ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
-                }
-                );
-
-            tmp=tmp->next;
-        }
-
-        tmp = &st->st_ts_that;
-        while(tmp!= NULL) {
-
-            DBG(DBG_CONTROLMORE,
-                {
-                    char lbi[ADDRTOT_BUF];
-                    char hbi[ADDRTOT_BUF];
-                    addrtot(&tmp->low,  0, lbi, sizeof(lbi));
-                    addrtot(&tmp->high, 0, hbi, sizeof(hbi));
-
-                    DBG_log(" R2  that  tsr=%s/%s, port=%d/%d, protocol=%d"
-                            ,  lbi, hbi, tmp->startport, tmp->endport, tmp->ipprotoid);
-                }
-                );
-
-            tmp=tmp->next;
-        }
-
-        if(!ikev2_perfect_match_ts(tsi, tsr, tsi_n, tsr_n, c, md->role)) {
-            c = ikev2_create_narrowed_con(c, &st->st_ts_this, &st->st_ts_that, md->role);
-            st->st_connection = c;
-        }
-
-    }
-
-    ikev2_derive_child_keys(st, md->role);
-    /* end of blocks */
-#endif /* !CHECK_TS1_BLOCK1 */
 
     /* now install child SAs */
     if(!install_ipsec_sa(st, TRUE))

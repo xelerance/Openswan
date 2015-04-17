@@ -143,15 +143,25 @@ extern int ikev2_evaluate_connection_fit(struct connection *d
 				, unsigned int tsi_n
 				, unsigned int tsr_n);
 
-extern int ikev2_evaluate_connection_port_fit(struct connection *d
-				, struct spd_route *sr
-				, enum phase1_role role
-				, struct traffic_selector *tsi
-				, struct traffic_selector *tsr
-				, unsigned int tsi_n
-				, unsigned int tsr_n
-				, unsigned int *best_tsi_i
-				, unsigned int *best_tsr_i);
+extern int ikev2_evaluate_connection_port_fit(const struct connection *d
+                                              , const struct spd_route *sr
+                                              , enum phase1_role role
+                                              , const struct traffic_selector *tsi
+                                              , const struct traffic_selector *tsr
+                                              , int tsi_n
+                                              , int tsr_n
+                                              , int *best_tsi_i
+                                              , int *best_tsr_i);
+
+extern int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
+						  const struct spd_route *sr,
+						  enum phase1_role role,
+						  const struct traffic_selector *tsi,
+						  const struct traffic_selector *tsr,
+						  int tsi_n,
+						  int tsr_n,
+						  int *best_tsi_i,
+						  int *best_tsr_i);
 
 extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, pb_stream *outpbs

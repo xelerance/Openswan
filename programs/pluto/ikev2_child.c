@@ -341,149 +341,209 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
     return i;
 }
 
-int ikev2_evaluate_connection_port_fit(struct connection *d
-				  , struct spd_route *sr
-				  , enum phase1_role role
-				  , struct traffic_selector *tsi
-				  , struct traffic_selector *tsr
-				  , unsigned int tsi_n
-				  , unsigned int tsr_n
-				  , unsigned int *best_tsi_i
-				  , unsigned int *best_tsr_i)
+/*
+ * Check if our policy's protocol (proto) matches
+ * the Traffic Selector protocol (ts_proto).
+ * If superset_ok, narrowing ts_proto 0 to our proto is OK (responder narrowing)
+ * If subset_ok, narrowing our proto 0 to ts_proto is OK (initiator narrowing).
+ * Returns 0 for no match, 1 for narrowed match, 255 for exact match.
+ */
+static int ikev2_match_protocol(u_int8_t proto, u_int8_t ts_proto
+                                , bool superset_ok
+                                , bool subset_ok, const char *which, int index)
 {
-	unsigned int tsi_ni, tsr_ni;
+    int f = 0;	/* strength of match */
+    const char *m = "no";
+
+    if (proto == ts_proto) {
+        f = 255;	/* ??? odd value */
+        m = "exact";
+    } else if (superset_ok && ts_proto == 0) {
+        f = 1;
+        m = "superset";
+    } else if (subset_ok && proto == 0) {
+        f = 1;
+        m = "subset";
+    }
+    DBG(DBG_CONTROL,
+        DBG_log("protocol %d and %s[%d].ipprotoid %d: %s match",
+                proto,
+                which, index,
+                ts_proto,
+                m));
+    return f;
+}
+
+/*
+ * returns -1 on no match; otherwise a weight of how great the match was.
+ * *best_tsi_i and *best_tsr_i are set if there was a match.
+ */
+int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
+					   const struct spd_route *sr,
+					   enum phase1_role role,
+					   const struct traffic_selector *tsi,
+					   const struct traffic_selector *tsr,
+					   int tsi_n,
+					   int tsr_n,
+					   int *best_tsi_i,
+					   int *best_tsr_i)
+{
+    int tsi_ni;
+    int bestfit_pr = -1;
+    const struct end *ei, *er;
+    int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
+
+    if (role == INITIATOR) {
+        ei = &sr->this;
+        er = &sr->that;
+    } else {
+        ei = &sr->that;
+        er = &sr->this;
+    }
+    /* compare tsi/r array to this/that, evaluating protocol how well it fits */
+    /* ??? stupid n**2 algorithm */
+    for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+        int tsr_ni;
+
+        int fitrange_i = ikev2_match_protocol(ei->protocol, tsi[tsi_ni].ipprotoid,
+                                              role == RESPONDER && narrowing,
+                                              role == INITIATOR && narrowing,
+                                              "tsi", tsi_ni);
+
+        if (fitrange_i == 0)
+            continue;	/* save effort! */
+
+        for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
+            int fitrange_r = ikev2_match_protocol(er->protocol, tsr[tsr_ni].ipprotoid,
+                                                  role == RESPONDER && narrowing,
+                                                  role == INITIATOR && narrowing,
+                                                  "tsr", tsr_ni);
+
+            int matchiness;
+
+            if (fitrange_r == 0)
+                continue;	/* save effort! */
+
+            matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
+
+            if (matchiness > bestfit_pr) {
+                *best_tsi_i = tsi_ni;
+                *best_tsr_i = tsr_ni;
+                bestfit_pr = matchiness;
+                DBG(DBG_CONTROL,
+                    DBG_log("    best protocol fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+                            *best_tsi_i, fitrange_i,
+                            *best_tsr_i, fitrange_r,
+                            matchiness));
+            }
+        }
+    }
+    DBG(DBG_CONTROL, DBG_log("    protocol_fitness %d", bestfit_pr));
+    return bestfit_pr;
+}
+
+/*
+ * Check if our policy's port (port) matches
+ * the Traffic Selector port range (ts.startport to ts.endport)
+ * Note port == 0 means port range 0 to 65535.
+ * If superset_ok, narrowing ts port range to our port range is OK (responder narrowing)
+ * If subset_ok, narrowing our port range to ts port range is OK (initiator narrowing).
+ * Returns 0 if no match; otherwise number of ports within match
+ */
+static int ikev2_match_port_range(u_int16_t port, struct traffic_selector ts,
+	bool superset_ok, bool subset_ok, const char *which, int index)
+{
+	u_int16_t low = port;
+	u_int16_t high = port == 0 ? 65535 : port;
+	int f = 0;	/* strength of match */
+	const char *m = "no";
+
+	if (ts.startport > ts.endport) {
+		m = "invalid range in";
+	} else if (ts.startport == low && ts.endport == high) {
+		f = 1 + (high - low);
+		m = "exact";
+	} else if (superset_ok && ts.startport <= low && high <= ts.endport) {
+		f = 1 + (high - low);
+		m = "superset";
+	} else if (subset_ok && low <= ts.startport && ts.endport <= high) {
+		f = 1 + (ts.endport - ts.startport);
+		m = "subset";
+	}
+	DBG(DBG_CONTROL,
+	    DBG_log("   %s[%d] %u-%u: %s port match with %u.  fitness %d",
+		    which, index,
+		    ts.startport, ts.endport,
+		    m,
+		    port,
+		    f));
+	return f;
+}
+
+/*
+ * returns -1 on no match; otherwise a weight of how great the match was.
+ * *best_tsi_i and *best_tsr_i are set if there was a match.
+ */
+int ikev2_evaluate_connection_port_fit(const struct connection *d,
+				       const struct spd_route *sr,
+				       enum phase1_role role,
+				       const struct traffic_selector *tsi,
+				       const struct traffic_selector *tsr,
+				       int tsi_n,
+				       int tsr_n,
+				       int *best_tsi_i,
+				       int *best_tsr_i)
+{
+	int tsi_ni;
 	int bestfit_p = -1;
-	struct end *ei, *er;
+	const struct end *ei, *er;
 	int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
 
-	if(role == INITIATOR) {
+	if (role == INITIATOR) {
 		ei = &sr->this;
 		er = &sr->that;
 	} else {
 		ei = &sr->that;
 		er = &sr->this;
 	}
-	/* compare tsi/r array to this/that, evaluating port ranges how well it fits */
-	for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
-		for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
-			int fitrange1 = 0;
-			int fitrange2 = 0;
+	/* compare tsi/r array to this/that, evaluating how well each port range fits */
+	/* ??? stupid n**2 algorithm */
+	for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+		int tsr_ni;
+		int fitrange_i = ikev2_match_port_range(ei->port, tsi[tsi_ni],
+			role == RESPONDER && narrowing,
+			role == INITIATOR && narrowing,
+			"tsi", tsi_ni);
 
-			DBG(DBG_CONTROL,DBG_log("ei->port %d  tsi[tsi_ni].startport %d  tsi[tsi_ni].endport %d narrowing=%s"
-						,ei->port , tsi[tsi_ni].startport, tsi[tsi_ni].endport, (narrowing ? "yes" : "no")));
+		if (fitrange_i == 0)
+			continue;	/* save effort! */
 
-			if((ei->port) && (( ei->port == tsi[tsi_ni].startport ) && (ei->port == tsi[tsi_ni].endport))) {
-				fitrange1 = 1;
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d  ==  ei->port %d exact match single port  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, ei->port, fitrange1));
+		for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
+			int fitrange_r = ikev2_match_port_range(er->port, tsr[tsr_ni],
+				role == RESPONDER && narrowing,
+				role == INITIATOR && narrowing,
+				"tsr", tsr_ni);
 
+			int matchiness;
+
+			if (fitrange_r == 0)
+				continue;	/* no match */
+
+			matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
+
+			if (matchiness > bestfit_p) {
+				*best_tsi_i = tsi_ni;
+				*best_tsr_i = tsr_ni;
+				bestfit_p = matchiness;
+				DBG(DBG_CONTROL,
+				    DBG_log("    best ports fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+					    *best_tsi_i, fitrange_i,
+					    *best_tsr_i, fitrange_r,
+					    matchiness));
 			}
-			else if ((!ei->port) && ( ( tsi[tsi_ni].startport == ei->port ) && (tsi[tsi_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange1 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d-%d  ==  ei 0-65535 exact match all ports  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-			}
-			else if ( (role == INITIATOR) && narrowing && (!ei->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-						 ,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));
-				if( tsi[tsi_ni].startport <= tsi[tsi_ni].endport ) {
-					fitrange1 = 1 + tsi[tsi_ni].endport - tsi[tsi_ni].startport ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535 can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
-
-			}
-			else if ((role == RESPONDER) && ( narrowing  && ei->port) ) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port %d to tsi[%d] %d-%d to"
-						 ,ei->port, tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));
-				if(( ei->port >= tsi[tsi_ni].startport ) &&
-						(ei->port <= tsi[tsi_ni].endport)) {
-					fitrange1 = 1 ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535. can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
-
-			}
-
-			else
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsi[%d] %d-%d to ei->port %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
-
-
-			if((er->port) && (( er->port == tsr[tsr_ni].startport ) && (er->port == tsr[tsr_ni].endport))) {
-				fitrange2 = 1;
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d  ==  er->port %d exact match single port fitrange2 %d"
-							,tsr_ni, tsr[tsr_ni].startport, er->port, fitrange2));
-
-			}
-			else if ((!er->port) && ( ( tsr[tsr_ni].startport == er->port ) && (tsr[tsr_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange2 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d-%d  ==  ei 0-65535 exact match all ports fitrange2 %d"
-							, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, fitrange2));
-			}
-
-			else if ( (role == INITIATOR) && narrowing && (!er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
-				if( tsr[tsr_ni].startport <= tsi[tsr_ni].endport ){
-					fitrange2 = 1 + tsr[tsr_ni].endport - tsr[tsi_ni].startport;
-						DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port 0-65535 can be narrowed  fitrange2 %d"
-									,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport,fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsr[%d] %d-%d to er->port 0-65535"
-								,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
-
-			}
-      else if ((role == RESPONDER) &&  narrowing  && (er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65535 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
-				if((  er->port >= tsr[tsr_ni].startport ) &&
-						(er->port <= tsr[tsr_ni].endport)) {
-					fitrange2 = 1;
-					DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port %d can be narrowed fitrange2 %d"
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port, fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   can't narrow tsr[%d] %d-%d to er->port %d"
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
-			}
-			else
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsr[%d] %d-%d to er->port %d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
-
-
-			int fitbits  = 0;
-			if(fitrange1 && fitrange2) {
-				fitbits = (fitrange1 << 8) + fitrange2;
-				DBG(DBG_CONTROL,DBG_log("    is a match"));
-				if(fitbits > bestfit_p) {
-					*best_tsi_i = tsi_ni;
-					*best_tsr_i = tsr_ni;
-					bestfit_p = fitbits;
-					DBG(DBG_CONTROL,DBG_log("    and is a better fit tsi[%d] fitrange1 %d tsr[%d] fitrange2 %d fitbits %d"
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				}
-				else {
-					DBG(DBG_CONTROL,DBG_log("    and is not a better fit tsi[%d] fitrange %d tsr[%d] fitrange2 %d fitbits %d"
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				}
-			}
-			else {
-				DBG(DBG_CONTROL,DBG_log("    is not a match"));
-			}
-
 		}
 	}
-	DBG(DBG_CONTROL,DBG_log("    port_fitness  %d", bestfit_p));
+	DBG(DBG_CONTROL, DBG_log("    port_fitness %d", bestfit_p));
 	return bestfit_p;
 }
 
@@ -644,7 +704,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	int bestfit_n, newfit, bestfit_p;
 	struct spd_route *sra, *bsr;
 	struct host_pair *hp = NULL;
-	unsigned int best_tsi_i ,  best_tsr_i;
+	int best_tsi_i ,  best_tsr_i;
 
 	bsr = NULL;
 	bestfit_n = -1;
@@ -656,7 +716,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-                int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,role,tsi,tsr,
                                                                   tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                 if (bfit_p > bestfit_p) {
                     DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
