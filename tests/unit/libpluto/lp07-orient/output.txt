@@ -1,11 +1,9 @@
 | processing whack message of size: A
 | processing whack message of size: A
-processing ef686b26
 processing whack msg time: X size: Y
 | checking against if: eth0
 ./orienttest added connection description "parker1--jj2"
 | processing whack message of size: A
-processing ef686b26
 processing whack msg time: X size: Y
 | checking against if: eth0
 ./orienttest added connection description "ikev2:parker--jj"

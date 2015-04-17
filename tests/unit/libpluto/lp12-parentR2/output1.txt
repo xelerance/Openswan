@@ -438,7 +438,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   72 67
 | assembled IDr payload -- CERT next
 | CHILD SA proposals received
-./parentR2 PAUL: this is where we have to check the TSi/TSr
 | going to assemble AUTH payload
 | *****emit IKEv2 Authentication Payload:
 |    next payload type: ISAKMP_NEXT_v2SA
@@ -471,12 +470,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c parker1--jj2
-| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535 narrowing=no
-|    tsi[0] 0-65535  ==  ei 0-65535 exact match all ports  fitrange1 65535
-|    tsr[0] 0-65535  ==  ei 0-65535 exact match all ports fitrange2 65535
-|     is a match
-|     and is a better fit tsi[0] fitrange1 65535 tsr[0] fitrange2 65535 fitbits 16842495
-|     port_fitness  16842495
+|    tsi[0] 0-65535: exact port match with 0.  fitness 65536
+|    tsr[0] 0-65535: exact port match with 0.  fitness 65536
+|     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
+|     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
 | find_host_pair: comparing to 132.213.238.7:500 192.168.1.1:500
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
@@ -610,7 +607,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ipv6 high  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-| kernel_alg_esp_info():transid=12, auth=2, ei=0x691d30, enckeylen=16, authkeylen=20, encryptalg=12, authalg=3
+| kernel_alg_esp_info():transid=12, auth=2, ei=0x6924f0, enckeylen=16, authkeylen=20, encryptalg=12, authalg=3
 | prf+[1]:  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4
 | prf+[2]:  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
