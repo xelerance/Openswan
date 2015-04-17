@@ -700,10 +700,17 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
  * and encryption keys for an IKEv2 SA.  This is done in a format that
  * is compatible with tcpdump 4.0's -E option.
  *
+ * this is probably uninteresting to anyone who isn't a developer.
+ *
  * The peerlog will be perfect, the syslog will require that a cut
  * command is used to remove the initial text.
  *
  */
+#ifdef EMBEDDED
+void ikev2_log_parentSA(struct state *st)
+{
+}
+#else
 void ikev2_log_parentSA(struct state *st)
 {
     const char *authalgo;
@@ -728,6 +735,7 @@ void ikev2_log_parentSA(struct state *st)
 
 
     if(DBGP(DBG_CRYPT)) {
+        DBG_log("ikev2 parent SA details");
 	datatot(st->st_skey_ei.ptr, st->st_skey_ei.len, 'x', enckeybuf, 256);
 	datatot(st->st_skey_ai.ptr, st->st_skey_ai.len, 'x', authkeybuf, 256);
 	DBG_log("ikev2 I 0x%02x%02x%02x%02x%02x%02x%02x%02x 0x%02x%02x%02x%02x%02x%02x%02x%02x %s:%s %s:%s"
@@ -761,6 +769,7 @@ void ikev2_log_parentSA(struct state *st)
 		, enckeybuf);
     }
 }
+#endif
 
 void
 send_v2_notification_from_state(struct state *st, enum state_kind state,
