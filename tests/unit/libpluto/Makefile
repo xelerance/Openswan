@@ -22,6 +22,7 @@ clean check:
 	@${MAKE} -C lp03-whacksemantics $@
 	@${MAKE} -C lp04-nsscert  $@
 	@${MAKE} -C lp05-sha256cert $@
+	@: ${MAKE} -C lp06-parentR1notchosen $@
 	@${MAKE} -C lp07-orient     $@
 	@${MAKE} -C lp08-parentR1   $@
 	@${MAKE} -C lp10-parentI2   $@

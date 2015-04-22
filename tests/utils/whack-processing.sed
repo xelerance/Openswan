@@ -3,3 +3,4 @@ s/^Pre-amble (offset: 65): #!-pluto-whack-file- recorded on .*/Pre-amble (offset
 s/creating state object \(.*\) at .*/creating state object \1 at Z/
 s/processing whack message of size: .*/processing whack message of size: A/
 s/ *$//
+/kernel_alg_esp_info/d

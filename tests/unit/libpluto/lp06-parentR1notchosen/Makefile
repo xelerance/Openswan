@@ -73,7 +73,7 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTESTARGS=-r ${WHACKFILE} parker1--jj2 parentR1invalidsyntax.pcap
+UNITTESTARGS=-r ${WHACKFILE} parker1--jj2 parker1.pcap
 
 TESTNAME=parentI1R1
 EF_DISABLE_BANNER=1
