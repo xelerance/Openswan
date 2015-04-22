@@ -1,6 +1,24 @@
 #include "demux.h"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
+unsigned int dlt_type;
+pcap_t *pt;
+
+
+void recv_pcap_setup(char *file)
+{
+    char   eb1[256];  /* error buffer for pcap open */
+
+    pt = pcap_open_offline(file, eb1);
+    if(!pt) {
+	fprintf(stderr, "can not open %s: %s\n", file, eb1);
+	exit(50);
+    }
+
+    dlt_type = pcap_datalink(pt);
+}
+
+
 
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h
@@ -22,11 +40,29 @@ void recv_pcap_packet_gen(u_char *user
     } from;
 
     md = alloc_md();
-    dlt = (u_int32_t *)bytes;
-    if(*dlt != PF_INET) return;
+    switch(dlt_type) {
+    case DLT_NULL:
+      dlt = (u_int32_t *)bytes;
+      if(*dlt != PF_INET) {
+        fprintf(stderr, "DLT_NULL - can not process packet in DLT=%08x\n", *dlt);
+        return;
+      }
+      dlt++;
+      break;
 
-    ip  = (struct iphdr *)(dlt + 1);
-    udp = (struct udphdr *)(dlt + ip->ihl + 1);
+    case DLT_EN10MB:
+      dlt = (u_int32_t *)(bytes+14);
+      break;
+
+    case DLT_LINUX_SLL:
+
+    default:
+      fprintf(stderr, "can not process packet with DLT=%08x\n", dlt_type);
+      return;
+    }
+
+    ip  = (struct iphdr *)(dlt);
+    udp = (struct udphdr *)(dlt + ip->ihl);
     ike = (u_char *)(udp+1);
 
     from.sa_in4.sin_addr.s_addr = ip->saddr;

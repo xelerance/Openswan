@@ -94,10 +94,8 @@ main(int argc, char *argv[])
     char *pcap_out;
     int  lineno=0;
     int regression;
-    pcap_t *pt;
     struct connection *c1;
     struct state *st;
-    char   eb1[256];  /* error buffer for pcap open */
 
     EF_PROTECT_FREE=1;
 
@@ -141,11 +139,8 @@ main(int argc, char *argv[])
     /* omit the R1 reply */
     send_packet_setup_pcap("/dev/null");
 
-    pt = pcap_open_offline(pcap1in, eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[3], eb1);
-	exit(50);
-    }
+    /* setup to process the I1 packet */
+    recv_pcap_setup(pcap1in);
 
     /* process first I1 packet */
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
@@ -156,11 +151,7 @@ main(int argc, char *argv[])
     pcap_close(pt);
 
     /* now process the I2 packet */
-    pt = pcap_open_offline(pcap2in, eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[3], eb1);
-	exit(50);
-    }
+    recv_pcap_setup(pcap2in);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);

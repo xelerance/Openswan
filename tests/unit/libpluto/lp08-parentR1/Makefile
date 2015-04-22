@@ -71,8 +71,10 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+WHACKFILE3=${OUTPUTS}/any1.record.${ARCH}
 UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentI1badKE.pcap OUTPUT/parentR1notify.pcap
 UNITTEST2ARGS=${WHACKFILE} parker1--jj2 parentI1.pcap      OUTPUT/parentR1.pcap
+UNITTEST3ARGS=${WHACKFILE3} any1--jj2 parker1.pcap       OUTPUT/parentR1parker.pcap
 
 TESTNAME=parentR1
 EF_DISABLE_BANNER=1
@@ -82,7 +84,7 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
-check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt
+check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt OUTPUT/R1parker-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb2init
@@ -99,9 +101,21 @@ OUTPUT/R1notify-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/parentR1notify.pcap | tee OUTPUT/R1notify-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1notify-dump.txt
 
-${WHACKFILE}:
+OUTPUT/R1parker-dump.txt:	${WHACKFILE3} ${TESTNAME}
+	@mkdir -p OUTPUT
+	@echo "file ${TESTNAME}"           >.gdb3init
+	@echo "set args "${UNITTEST3ARGS} >>.gdb3init
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST3ARGS} >OUTPUT/${TESTNAME}_3.txt 2>&1
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_3.txt | diff - output3.txt
+	tcpdump -n -t -v -r OUTPUT/parentR1parker.pcap | tee OUTPUT/R1parker-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1parker-dump.txt
+
+${WHACKFILE}: ${SAMPLEDIR}/parker.conf
 	@mkdir -p OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
+
+${WHACKFILE3}: ${SAMPLEDIR}/parker.conf
+	@mkdir -p OUTPUT
+	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE3} any1--jj2
 
 update: update1 update2
 update1:

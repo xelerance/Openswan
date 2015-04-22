@@ -38,6 +38,7 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include "seam_gi_sha1.c"
 #include "seam_gi_sha1_group14.c"
+#include "seam_finish.c"
 
 #include "ikev2sendI1.c"
 
@@ -68,8 +69,6 @@ main(int argc, char *argv[])
     char *conn_name;
     int  lineno=0;
     int  regression = 0;
-    pcap_t *pt;
-    char   eb1[256];  /* error buffer for pcap open */
     struct connection *c1;
     struct state *st;
 
@@ -102,11 +101,7 @@ main(int argc, char *argv[])
     if(readwhackmsg(infile) == 0) exit(10);
 
     /* input packets */
-    pt = pcap_open_offline(argv[2], eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[3], eb1);
-	exit(50);
-    }
+    recv_pcap_setup(argv[2]);
 
     /* output packets */
     send_packet_setup_pcap("OUTPUT/parentI2.pcap");

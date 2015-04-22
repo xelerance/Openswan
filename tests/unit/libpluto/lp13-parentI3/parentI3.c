@@ -89,8 +89,6 @@ main(int argc, char *argv[])
     char *pcap2in;
     int  lineno=0;
     int  regression = 0;
-    pcap_t *pt;
-    char   eb1[256];  /* error buffer for pcap open */
     struct connection *c1;
     struct state *st;
 
@@ -137,21 +135,13 @@ main(int argc, char *argv[])
     st = sendI1(c1, DBG_CONTROL, regression == 0);
 
     /* input packet R1 */
-    pt = pcap_open_offline(pcap1in, eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", pcap1in, eb1);
-	exit(50);
-    }
+    recv_pcap_setup(pcap1in);
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_PARSING;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     /* now process the R2 packet */
-    pt = pcap_open_offline(pcap2in, eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", pcap2in, eb1);
-	exit(50);
-    }
+    pt = recv_pcap_setup(pcap2in);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);

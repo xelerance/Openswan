@@ -72,7 +72,6 @@ main(int argc, char *argv[])
     char *infile;
     char *conn_name;
     int  lineno=0;
-    pcap_t *pt;
     struct connection *c1;
     struct state *st;
     char   eb1[256];  /* error buffer for pcap open */
@@ -106,11 +105,8 @@ main(int argc, char *argv[])
 
     send_packet_setup_pcap(argv[4]);
 
-    pt = pcap_open_offline(argv[3], eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[3], eb1);
-	exit(50);
-    }
+    /* setup to process the I1 packet */
+    recv_pcap_setup(argv[3]);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);

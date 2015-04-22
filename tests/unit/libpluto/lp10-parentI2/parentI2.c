@@ -69,8 +69,6 @@ main(int argc, char *argv[])
     char *conn_name;
     int  lineno=0;
     int  regression = 0;
-    pcap_t *pt;
-    char   eb1[256];  /* error buffer for pcap open */
     struct connection *c1;
     struct state *st;
 
@@ -104,11 +102,7 @@ main(int argc, char *argv[])
     if(readwhackmsg(infile) == 0) exit(10);
 
     /* input packets */
-    pt = pcap_open_offline(argv[2], eb1);
-    if(!pt) {
-	fprintf(stderr, "can not open %s: %s\n", argv[2], eb1);
-	exit(50);
-    }
+    recv_pcap_setup(argv[2]);
 
     /* output first packets to /dev/null */
     send_packet_setup_pcap("/dev/null");
