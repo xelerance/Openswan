@@ -2149,7 +2149,33 @@ find_host_connection2(const char *func
 
     }
 
+    /* need to check for NEVER_NEGOTIATE, because policy might not be set */
     for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+
+    if(c == NULL) {
+        c = find_host_pair_connections(__FUNCTION__, me, my_port, NULL, pluto_port500);
+
+        if (policy != LEMPTY) {
+            DBG(DBG_CONTROLMORE,
+		DBG_log("searching for %%any connection with policy = %s"
+			, bitnamesof(sa_policy_bit_names, policy)));
+            for (; c != NULL; c = c->hp_next) {
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("found policy = %s (%s)"
+                            , bitnamesof(sa_policy_bit_names, c->policy)
+                            , c->name));
+                if(NEVER_NEGOTIATE(c->policy)) continue;
+
+                /* XAUTH must match true/false exactly */
+                if ((policy & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
+
+                if ((c->policy & policy) == policy)
+                    break;
+            }
+        }
+        for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+    }
+
 
     DBG(DBG_CONTROLMORE,
 	DBG_log("find_host_connection2 returns %s", c ? c->name : "empty"));

@@ -135,20 +135,7 @@ find_host_pair(const ip_address *myaddr
 
     /* default hisaddr to an appropriate any */
     if (hisaddr == NULL) {
-#if 0
-	/* broken */
-	const struct af_info *af = aftoinfo(addrtypeof(myaddr));
-
-	if(af == NULL) {
-	    af = aftoinfo(AF_INET);
-	}
-
-	if(af) {
-	    hisaddr = af->any;
-	}
-#else
 	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
-#endif
     }
 
     /*
@@ -161,8 +148,8 @@ find_host_pair(const ip_address *myaddr
      * but other ports are not.
      * So if any port==4500, then set it to 500.
      */
-    if(myport == NAT_IKE_UDP_PORT) myport=IKE_UDP_PORT;
-    if(hisport== NAT_IKE_UDP_PORT) hisport=IKE_UDP_PORT;
+    if(myport == pluto_port4500)   myport=pluto_port500;
+    if(hisport== pluto_port4500)   hisport=pluto_port500;
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
@@ -179,8 +166,9 @@ find_host_pair(const ip_address *myaddr
 
 	if (sameaddr(&p->me.addr, myaddr)
 	    && (!p->me.host_port_specific || p->me.host_port == myport)
-	    && sameaddr(&p->him.addr, hisaddr)
-	    && (!p->him.host_port_specific || p->him.host_port == hisport)
+	    && (p->him.host_type == KH_ANY
+                || (sameaddr(&p->him.addr, hisaddr)
+                    && (!p->him.host_port_specific || p->him.host_port == hisport)))
 	    )
 	{
 	    if (prev != NULL)

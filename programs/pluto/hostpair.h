@@ -1,8 +1,9 @@
 struct host_pair {
     struct {
-	ip_address addr;
-	u_int16_t  host_port;	        /* IKE port */
-	bool       host_port_specific;	/* if above is interesting */
+      ip_address addr;
+      enum keyword_host host_type;      /* if above is interesting */
+      u_int16_t  host_port;	        /* IKE port */
+      bool       host_port_specific;	/* if above is interesting */
     } me, him;
     struct connection *connections;	/* connections with this pair */
     struct pending *pending;	/* awaiting Keying Channel */
