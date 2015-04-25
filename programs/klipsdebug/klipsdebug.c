@@ -3,12 +3,12 @@
  * Copyright (C) 1996  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
  *                                 2001  Michael Richardson <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -113,7 +113,7 @@ main(int argc, char **argv)
 /*	int fd; */
 	unsigned char action = 0;
 	int c;
-	
+
 	int error = 0;
 	int argcount = argc;
 	int em_db_tn, em_db_nl, em_db_xf, em_db_er, em_db_sp;
@@ -122,7 +122,7 @@ main(int argc, char **argv)
 
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
-	
+
 	em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=0;
 	em_db_rj=em_db_es=em_db_ah=em_db_rx=em_db_ky=0;
 	em_db_gz=em_db_vb=0;
@@ -358,7 +358,7 @@ main(int argc, char **argv)
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
-	
+
 	if((error = pfkey_x_debug_build(&extensions[SADB_X_EXT_DEBUG],
 					em_db_tn,
 					em_db_nl,
@@ -377,7 +377,7 @@ main(int argc, char **argv)
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
-	
+
 	if((error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_IN))) {
 		fprintf(stderr, "%s: Trouble building pfkey message, error=%d.\n",
 			progname, error);
@@ -385,7 +385,7 @@ main(int argc, char **argv)
 		pfkey_msg_free(&pfkey_msg);
 		exit(1);
 	}
-	
+
 	if((error = write(pfkey_sock,
 			  pfkey_msg,
 			  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=

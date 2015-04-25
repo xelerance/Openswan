@@ -3,19 +3,19 @@
  *
  * Copyright (C) 2001  Richard Guy Briggs  <rgb@freeswan.org>
  *                 and Michael Richardson  <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
  * for more details.
  */
 
-/* 
+/*
  * This program opens a pfkey socket or a file
  * and prints all messages that it sees.
  *
@@ -154,12 +154,12 @@ main(int argc, char *argv[])
 	pidfilename = NULL;
 	infilename  = NULL;
 	outfilename = NULL;
-	
+
 	progname = argv[0];
 	if(strrchr(progname, '/')) {
 		progname=strrchr(progname, '/')+1;
 	}
-	
+
 	while((opt = getopt_long(argc, argv, "hd:e:f:",
 				 long_options, NULL)) !=  EOF) {
 		switch(opt) {
@@ -171,11 +171,11 @@ main(int argc, char *argv[])
 		case 'd':
 			infilename = optarg;
 			break;
-			
+
 		case 'e':
 			outfilename = optarg;
 			break;
-			
+
 		case 'h':
 			Usage();
 			break;
@@ -204,7 +204,7 @@ main(int argc, char *argv[])
 			ipip_register=1;
 			ipcomp_register=1;
 		}
-		
+
 		if(ah_register) {
 			pfkey_register(K_SADB_SATYPE_AH);
 		}
@@ -220,23 +220,23 @@ main(int argc, char *argv[])
 
 		if(fork_after_register) {
 			/*
-			 * to aid in regression testing, we offer to register 
+			 * to aid in regression testing, we offer to register
 			 * everything first, and then we fork. As part of this
 			 * we write the PID of the new process to a file
 			 * provided.
 			 */
 			int pid;
 			FILE *pidfile;
-			
+
 			fflush(stdout);
 			fflush(stderr);
-			
+
 			pid=fork();
 			if(pid!=0) {
 				/* in parent! */
 				exit(0);
 			}
-			
+
 			if((pidfile=fopen(pidfilename, "w"))==NULL) {
 				perror(pidfilename);
 			} else {
@@ -256,20 +256,20 @@ main(int argc, char *argv[])
 		/* call encoder */
 		exit(1);
 	}
-			
+
 	signal(SIGINT,  controlC);
 	signal(SIGTERM, controlC);
 
 	while((readlen = read(pfkey_sock, pfkey_buf, sizeof(pfkey_buf))) > 0) {
 		msg = (struct sadb_msg *)pfkey_buf;
-		
+
 		/* first, see if we got enough for an sadb_msg */
 		if((size_t)readlen < sizeof(struct sadb_msg)) {
 			printf("%s: runt packet of size: %d (<%lu)\n",
 			       progname, (int)readlen, (unsigned long)sizeof(struct sadb_msg));
 			continue;
 		}
-		
+
 		/* okay, we got enough for a message, print it out */
 		printf("\npfkey v%d msg. type=%d(%s) seq=%d len=%d pid=%d errno=%d satype=%d(%s)\n",
 		       msg->sadb_msg_version,
@@ -281,12 +281,12 @@ main(int argc, char *argv[])
 		       msg->sadb_msg_errno,
 		       msg->sadb_msg_satype,
 		       satype2name(msg->sadb_msg_satype));
-		
+
 		if((size_t)readlen != msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)
 		{
 			printf("%s: packet size read from socket=%d doesn't equal sadb_msg_len %d * %u; message not decoded\n",
 			       progname,
-			       (int) readlen, 
+			       (int) readlen,
 			       msg->sadb_msg_len,
 			       (int) IPSEC_PFKEYv2_ALIGN);
 			continue;
