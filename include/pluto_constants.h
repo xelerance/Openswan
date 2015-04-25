@@ -630,6 +630,7 @@ enum keyword_host {
     KH_IPHOSTNAME   = 7,                /* host_addr invalid, only string */
     KH_IPADDR       = LOOSE_ENUM_OTHER,
 };
+struct keyword_enum_values kw_host_list;
 
 /* BIND enumerated types */
 

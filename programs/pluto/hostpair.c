@@ -166,14 +166,16 @@ find_host_pair(const ip_address *myaddr
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
+        char himtypebuf[KEYWORD_NAME_BUFLEN];
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
-	    DBG_log("find_host_pair: comparing to %s:%d %s:%d\n"
-		      , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
-		      , p->me.host_port
-		      , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
-		      , p->him.host_port));
+	    DBG_log("find_host_pair: comparing to %s:%d %s %s:%d\n"
+                    , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
+                    , p->me.host_port
+                    , keyword_name(&kw_host_list, p->him.host_type, himtypebuf)
+                    , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
+                    , p->him.host_port));
 
 	if (sameaddr(&p->me.addr, myaddr)
 	    && (!p->me.host_port_specific || p->me.host_port == myport)
