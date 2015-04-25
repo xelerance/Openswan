@@ -68,7 +68,7 @@ ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
 
-LIBSADNS = ${LIBOPENSWAN}
+LIBSADNS = ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOPENSWAN}
 LIBSADNS += -lresolv # -lefence
 
 RM = /bin/rm

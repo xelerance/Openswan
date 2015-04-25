@@ -41,6 +41,7 @@
 
 /* what exchange number to use for outgoing requests */
 static int exchange_number;
+char *progname;
 
 static void
 help(void)
@@ -310,6 +311,8 @@ main(int argc, char **argv)
   ip_address laddr, raddr;
   char *afam = "";
 
+  progname = argv[0];
+
   afamily=AF_INET;
   pfamily=PF_INET;
   lport=500;
@@ -507,10 +510,15 @@ main(int argc, char **argv)
   }
 
    printf("%d packets sent, %d packets received. %d%% packet loss\n",
-	  numSenders, 
+	  numSenders,
 	  numReceived,
 	  numSenders > 0 ? 100-numReceived*100/numSenders : 0);
    exit(numSenders - numReceived);
+}
+
+void exit_tool(int val)
+{
+  exit(val);
 }
 
 /*

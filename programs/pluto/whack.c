@@ -278,6 +278,7 @@ help(void)
 
 static const char *label = NULL;	/* --label operand, saved for diagnostics */
 
+char *progname = NULL;
 static const char *name = NULL;	/* --name operand, saved for diagnostics */
 
 /** Print a string as a diagnostic, then exit whack unhappily
@@ -907,6 +908,8 @@ main(int argc, char **argv)
     int xauthnamelen = 0, xauthpasslen = 0;
     bool gotxauthname = FALSE, gotxauthpass = FALSE;
     const char *ugh;
+
+    progname = argv[0];
 
     /* check division of numbering space */
 #ifdef DEBUG
@@ -2114,6 +2117,11 @@ main(int argc, char **argv)
 	}
 	return exit_status;
     }
+}
+
+void exit_tool(int val)
+{
+  exit(val);
 }
 
 /*

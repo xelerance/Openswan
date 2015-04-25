@@ -58,6 +58,7 @@
 #include <netdb.h>	/* ??? for h_errno */
 
 #include <openswan.h>
+#include <oswlog.h>
 
 /* GCC magic! */
 #ifdef GCC_LINT
@@ -72,7 +73,7 @@
 
 /* shared by all processes */
 
-static const char *name;	/* program name, for messages */
+char *progname;	/* program name, for messages */
 
 static bool debug = FALSE;
 
@@ -595,7 +596,7 @@ main(int argc UNUSED, char **argv)
 {
     int i = 1;
 
-    name = argv[0];
+    progname = argv[0];
 
     while (i < argc)
     {
@@ -612,6 +613,11 @@ main(int argc UNUSED, char **argv)
     }
 
     return master();
+}
+
+void exit_tool(int val)
+{
+  exit(val);
 }
 
 #endif /* !USE_LWRES */

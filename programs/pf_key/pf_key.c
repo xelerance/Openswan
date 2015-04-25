@@ -297,7 +297,12 @@ main(int argc, char *argv[])
 	printf("%s: exited normally\n", progname);
 	exit(0);
 }
-	
+
+void exit_tool(int val)
+{
+  exit(val);
+}
+
 /*
  * Local variables:
  * c-file-style: "linux"
