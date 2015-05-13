@@ -160,14 +160,21 @@ find_host_pair(const ip_address *myaddr
                     , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
                     , p->him.host_port));
 
-	if (sameaddr(&p->me.addr, myaddr)
-	    && (!p->me.host_port_specific || p->me.host_port == myport)
-	    && (p->him.host_type == KH_ANY
-                || (sameaddr(&p->him.addr, hisaddr)
-                    && (!p->him.host_port_specific || p->him.host_port == hisport)))
-	    )
-	{
-	    if (prev != NULL)
+        /* kick out if it does not match: easier to understand than positive/convuluted logic */
+	if (!sameaddr(&p->me.addr, myaddr))  continue;
+        if(p->me.host_port_specific && p->me.host_port != myport) continue;
+
+        /* if we are looking for %any, then it *MUST* match that */
+        if(histype == KH_ANY && p->him.host_type != KH_ANY) continue;
+
+        /* if hisport is specific, then it must match */
+        if(p->him.host_port_specific && p->him.host_port != hisport) continue;
+
+        /* finally, it must either match address, or conn is %any */
+        if(p->him.host_type != KH_ANY && !sameaddr(&p->him.addr, hisaddr)) continue;
+
+	/* now it matches: but a future version might want to try for bestfit */
+        if (prev != NULL)
 	    {
 		prev->next = p->next;	/* remove p from list */
 		p->next = host_pairs;	/* and stick it on front */
