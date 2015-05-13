@@ -537,6 +537,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     lset_t policy = POLICY_IKEV2_ALLOW;
     struct connection *c = find_host_connection(&md->iface->ip_addr
                                                 , md->iface->port
+                                                , KH_IPADDR
                                                 , &md->sender
                                                 , md->sender_port
                                                 , POLICY_IKEV2_ALLOW);

@@ -843,6 +843,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    c = find_host_pair_connections(__FUNCTION__
 					   , &this->host_addr
 					   , this->host_port
+                                           , KH_ANY
 					   , (const ip_address *)NULL
 					   , that->host_port);
 
@@ -850,15 +851,19 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    {
 		if (c->policy & POLICY_AGGRESSIVE)
 			continue;
-#if 0
+
+                /* if IKEv1 is now allowed, then there is no problem */
+		if (c->policy & POLICY_IKEV1_DISABLE)
+			continue;
+#if 1
 		if (!NEVER_NEGOTIATE(c->policy)
-		&& ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
-		{
-		    loglog(RC_CLASH
-			, "authentication method disagrees with \"%s\", which is also for an unspecified peer"
-			, c->name);
-		    return FALSE;
-		}
+                    && ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
+                    {
+                        loglog(RC_CLASH
+                               , "authentication method disagrees with \"%s\", which is also for an unspecified peer"
+                               , c->name);
+                        return FALSE;
+                    }
 #endif
 	    }
 	}
@@ -1916,6 +1921,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 */
 	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->ip_addr
 							  , pluto_port500
+                                                          , KH_ANY
 							  , (ip_address *)NULL
 							  , pluto_port500);
 
@@ -2112,8 +2118,9 @@ route_owner(struct connection *c
  */
 struct connection *
 find_host_connection2(const char *func
-		     , const ip_address *me, u_int16_t my_port
-		     , const ip_address *him, u_int16_t his_port, lset_t policy)
+                      , const ip_address *me, u_int16_t my_port
+                      , enum keyword_host histype
+                      , const ip_address *him, u_int16_t his_port, lset_t policy)
 {
     struct connection *c;
     DBG(DBG_CONTROLMORE,
@@ -2123,7 +2130,7 @@ find_host_connection2(const char *func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
 		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"
 		, his_port , bitnamesof(sa_policy_bit_names, policy)));
-    c = find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
+    c = find_host_pair_connections(__FUNCTION__, me, my_port, histype, him, his_port);
 
     if (policy != LEMPTY) {
 	/*
@@ -2153,7 +2160,7 @@ find_host_connection2(const char *func
     for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
 
     if(c == NULL) {
-        c = find_host_pair_connections(__FUNCTION__, me, my_port, NULL, pluto_port500);
+        c = find_host_pair_connections(__FUNCTION__, me, my_port, KH_ANY, NULL, pluto_port500);
 
         if (policy != LEMPTY) {
             DBG(DBG_CONTROLMORE,
@@ -2479,6 +2486,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 */
 	d = find_host_pair_connections(__FUNCTION__, &c->spd.this.host_addr
 				       , c->spd.this.host_port
+                                       , KH_ANY
 				       , (ip_address *)NULL
 				       , c->spd.that.host_port);
     }
@@ -2937,6 +2945,7 @@ find_client_connection(struct connection *c
 	{
 	    hp = find_host_pair(&sra->this.host_addr
 				, sra->this.host_port
+                                , KH_ANY                  /* XXX maybe some other types too */
 				, NULL
 				, sra->that.host_port);
 #ifdef DEBUG

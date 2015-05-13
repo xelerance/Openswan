@@ -128,19 +128,15 @@ same_peer_ids(const struct connection *c, const struct connection *d
 struct host_pair *
 find_host_pair(const ip_address *myaddr
 	       , u_int16_t myport
+               , enum keyword_host histype
 	       , const ip_address *hisaddr
 	       , u_int16_t hisport)
 {
     struct host_pair *p, *prev;
 
-    /* default hisaddr to an appropriate any */
-    if (hisaddr == NULL) {
-	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
-    }
-
     /*
-     * look for a host-pair that has the right set of ports/address.
-     *
+     * look for a host-pair that has the right set of ports/address,
+     *   but the histype could also be %any.
      */
 
     /*
@@ -153,10 +149,10 @@ find_host_pair(const ip_address *myaddr
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
-        char himtypebuf[KEYWORD_NAME_BUFLEN];
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
+            char himtypebuf[KEYWORD_NAME_BUFLEN];
 	    DBG_log("find_host_pair: comparing to %s:%d %s %s:%d\n"
                     , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
                     , p->me.host_port
@@ -177,8 +173,7 @@ find_host_pair(const ip_address *myaddr
 		p->next = host_pairs;	/* and stick it on front */
 		host_pairs = p;
 	    }
-	    break;
-	}
+        break;
     }
     return p;
 }
@@ -192,17 +187,20 @@ void remove_host_pair(struct host_pair *hp)
 struct connection *
 find_host_pair_connections(const char *func
 			   , const ip_address *myaddr, u_int16_t myport
+                           , enum keyword_host histype
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
-    struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
+    struct host_pair *hp = find_host_pair(myaddr, myport, histype, hisaddr, hisport);
 
     DBG(DBG_CONTROLMORE,
 	char b1[ADDRTOT_BUF];
 	char b2[ADDRTOT_BUF];
-	DBG_log("find_host_pair_conn (%s): %s:%d %s:%d -> hp:%s\n"
+        char himtypebuf[KEYWORD_NAME_BUFLEN];
+	DBG_log("found_host_pair_conn (%s): %s:%d %s/%s:%d -> hp:%s\n"
 		  , func
 		  , (addrtot(myaddr,  0, b1, sizeof(b1)), b1)
 		  , myport
+                  , keyword_name(&kw_host_list, histype, himtypebuf)
 		  , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "%any"
 		  , hisport
 		  , (hp && hp->connections) ? hp->connections->name : "none"));
@@ -217,6 +215,7 @@ connect_to_host_pair(struct connection *c)
     {
 	struct host_pair *hp = find_host_pair(&c->spd.this.host_addr
 					      , c->spd.this.host_port
+                                              , c->spd.that.host_type
 					      , &c->spd.that.host_addr
 					      , c->spd.that.host_port);
 
@@ -224,9 +223,11 @@ connect_to_host_pair(struct connection *c)
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
-	    DBG_log("connect_to_host_pair: %s:%d %s:%d -> hp:%s\n"
+            char himtypebuf[KEYWORD_NAME_BUFLEN];
+	    DBG_log("connect_to_host_pair: %s:%d %s %s:%d -> hp:%s\n"
 		      , (addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1)), b1)
 		      , c->spd.this.host_port
+                    , keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf)
 		      , (addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2)), b2)
 		      , c->spd.that.host_port
 		      , (hp && hp->connections) ? hp->connections->name : "none"));
@@ -237,6 +238,7 @@ connect_to_host_pair(struct connection *c)
 	    hp = alloc_thing(struct host_pair, "host_pair");
 	    hp->me.addr = c->spd.this.host_addr;
 	    hp->him.addr = c->spd.that.host_addr;
+	    hp->him.host_type = c->spd.that.host_type;
 #ifdef NAT_TRAVERSAL
 	    hp->me.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.this.host_port;
 	    hp->him.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.that.host_port;

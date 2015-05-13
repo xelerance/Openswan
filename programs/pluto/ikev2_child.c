@@ -735,6 +735,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
             hp = find_host_pair(&sra->this.host_addr
                                 , sra->this.host_port
+                                , sra->that.host_type
                                 , &sra->that.host_addr
                                 , sra->that.host_port);
 

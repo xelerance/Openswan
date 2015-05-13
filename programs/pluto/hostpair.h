@@ -16,11 +16,13 @@ extern void connect_to_host_pair(struct connection *c);
 extern struct connection *find_host_pair_connections(const char *func
 						     , const ip_address *myaddr
 						     , u_int16_t myport
+                                                     , enum keyword_host histype
 						     , const ip_address *hisaddr
 						     , u_int16_t hisport);
 
 extern struct host_pair *find_host_pair(const ip_address *myaddr
 					, u_int16_t myport
+                                        , enum keyword_host histype
 					, const ip_address *hisaddr
 					, u_int16_t hisport);
 
