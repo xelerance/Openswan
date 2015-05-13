@@ -117,7 +117,7 @@ ${WHACKFILE3}: ${SAMPLEDIR}/parker.conf
 	@mkdir -p OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE3} any1--jj2
 
-update: update1 update2
+update: update1 update2 update3
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
@@ -125,6 +125,10 @@ update1:
 update2:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
 	[ -f OUTPUT/R1notify-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1notify-dump.txt >R1notify-dump.txt
+
+update3:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_3.txt >output3.txt
+	[ -f OUTPUT/R1parker-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1parker-dump.txt >R1parker-dump.txt
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
