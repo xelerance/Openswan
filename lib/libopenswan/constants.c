@@ -1469,6 +1469,7 @@ struct keyword_enum_value kw_host_values[]={
     { "%opportunisticgroup", KH_OPPOGROUP },
     { "%oppogroup",     KH_OPPOGROUP },
     { "%group",         KH_GROUP },
+    { "%address",       KH_IPADDR },
     { "%hostname",      KH_IPHOSTNAME },  /* makes no sense on input */
 };
 
