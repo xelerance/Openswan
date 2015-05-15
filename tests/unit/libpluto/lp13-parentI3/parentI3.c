@@ -141,7 +141,7 @@ main(int argc, char *argv[])
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
 
     /* now process the R2 packet */
-    pt = recv_pcap_setup(pcap2in);
+    recv_pcap_setup(pcap2in);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);

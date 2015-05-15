@@ -8,7 +8,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | checking against if: eth0
-| connect_to_host_pair: 132.213.238.7:500 192.168.1.1:500 -> hp:none
+| connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
 ./parentR2 added connection description "parker1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -90,8 +90,8 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 192.168.1.1:500
-| find_host_pair_conn (find_host_connection2): 132.213.238.7:500 192.168.1.1:500 -> hp:parker1--jj2
+| find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:parker1--jj2
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (parker1--jj2)
 | find_host_connection2 returns parker1--jj2
@@ -475,7 +475,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_host_pair: comparing to 132.213.238.7:500 192.168.1.1:500
+| find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
 |    match_id a=@parker01.emmjay.credil.org
 |             b=@parker01.emmjay.credil.org
