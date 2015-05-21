@@ -470,14 +470,14 @@ static int starter_whack_add_pubkey (struct starter_config *cfg,
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
+                                      1, end->rsakey1_type, end->rsakey1, lr)==0) {
           ret = send_whack_msg(&msg, cfg->ctlbase);
           if(ret != 0) return ret;
         }
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
+                                      2, end->rsakey2_type, end->rsakey2, lr)==0) {
           ret = send_whack_msg(&msg, cfg->ctlbase);
           if(ret != 0) return ret;
         }
