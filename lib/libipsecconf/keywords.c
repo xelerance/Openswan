@@ -630,7 +630,7 @@ unsigned int parser_loose_enum(struct keyword *k, const char *s)
     }
 
     k->string = strdup(s);
-    return 255;
+    return kd->loose_enum_value;
 }
 
 
