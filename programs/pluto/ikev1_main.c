@@ -757,6 +757,7 @@ main_inI1_outR1(struct msg_digest *md)
 
     /* random source ports are handled by find_host_connection */
     c = find_host_connection(&md->iface->ip_addr, pluto_port500
+                             , KH_IPADDR
 			     , &md->sender
 			     , md->sender_port, LEMPTY);
 
@@ -784,6 +785,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    struct connection *d;
 	    d = find_host_connection(&md->iface->ip_addr, pluto_port500
+                                     , KH_ANY
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);
 
