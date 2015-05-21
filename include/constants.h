@@ -123,6 +123,7 @@ extern const char *bitnamesofb(const char *const table[]
  */
 
 #define LOOSE_ENUM_OTHER 255
+#define KEV_LITERAL(X) { #X, X }
 
 struct keyword_enum_value {
     const char *name;
