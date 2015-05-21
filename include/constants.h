@@ -136,7 +136,7 @@ struct keyword_enum_values {
 };
 
 #define KEYWORD_NAME_BUFLEN 256
-extern const char *keyword_name(struct keyword_enum_values *kevs
+extern const char *keyword_name(const struct keyword_enum_values *kevs
                                 , unsigned int value
                                 , char namebuf[KEYWORD_NAME_BUFLEN]);
 

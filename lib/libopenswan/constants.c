@@ -1491,7 +1491,7 @@ enum_name(enum_names *ed, unsigned long val)
 }
 
 /* look up an enum in a starter friendly way */
-const char *keyword_name(struct keyword_enum_values *kevs
+const char *keyword_name(const struct keyword_enum_values *kevs
                          , unsigned int value
                          , char namebuf[KEYWORD_NAME_BUFLEN])
 {
