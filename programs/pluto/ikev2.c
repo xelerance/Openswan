@@ -467,26 +467,12 @@ process_v2_packet(struct msg_digest **mdp)
 		return;
 	    }
 	    if(st->st_msgid_lastrecv == md->msgid_received){
-		/* this is a recent retransmit. */
+		/* this is a recent retransmit, resend our reply */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
 		return;
             }
-#if 0 /* PATRICK */
-            else {
-                /* (was PATRICK XXX)
-                 * if it a message from Initiator, and we have received
-                 * something before, and already acknowledged it (i.e.
-                 * initiator sent us something newer!), then we just ignore it
-                 * as it is outside of our window.
-                 */
-		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID
-                   &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
-                    openswan_log("received an old response, ignoring: %u < %u"
-                                 , md->msgid_received, st->st_msgid_last_localreq_ack);
-		}
-	    }
-#endif
-	    /* update lastrecv later on */
+            /* this must be a packet that is newer, so we process it */
+	    /* we will update lastrecv later on, after we do crypto */
 	}
 
     } else {
@@ -528,15 +514,16 @@ process_v2_packet(struct msg_digest **mdp)
 
 	if(st) {
 	    /*
-	     * then there is something wrong with the msgid, so
+	     * then if there is something wrong with the msgid,
 	     * maybe they retransmitted for some reason.
 	     * Check if it's an old packet being returned, and
 	     * if so, drop it.
-	     * NOTE: in_struct() changed the byte order.
+	     * NOTE: in_struct() changed the byte order on
+             *       md->msgid_received, so we can use it directly
 	     */
 	    if(st->st_msgid_lastack != INVALID_MSGID
 	       && md->msgid_received <= st->st_msgid_lastack) {
-		/* it's fine, it's just a retransmit */
+		/* it's fine, it's just a retransmit: log it with some small frequency */
                 st->st_msg_retransmitted++;
                 if((st->st_msg_retransmitted % 512) == 1 || DBGP(DBG_CONTROL)) {
                     DBG_log("responding peer retransmitted msgid %u (retransmission count: %u)"
@@ -544,25 +531,24 @@ process_v2_packet(struct msg_digest **mdp)
                 }
 		return;
             }
-#if 0 /* PATRICK */
-	    else {
-                /* if it is response from Responder*/
-		/* it seems that it should not happen
-		 * why a response will be retransmitted?
-		 */
-		if(st->st_msgid_last_localreq_ack!=INVALID_MSGID &&  st->st_msgid_last_localreq_ack >= md->msgid_received){
-                    openswan_log("received an old response, ignoring: %u < %u"
-                                 , md->msgid_received, st->st_msgid_last_localreq_ack);
-		}
 
-	    }
-#endif
-#if 0
-	    openswan_log("last msgid ack is %u, received: %u"
-			 , st->st_msgid_lastack
-			 , md->msgid_received);
-	    return;
-#endif
+            /*
+             * we currently only support a window of 1, but by using nextuse, we anticipate
+             * having a window > 1
+             */
+            if(md->msgid_received >= st->st_msgid_nextuse) {
+                /*
+                 * here, the reply packet is newer than one we last received an ACK for,
+                 * which is a problem, because we didn't send it, so we drop it and ignore it
+                 */
+                st->st_msg_badmsgid_recv++;
+                if((st->st_msg_badmsgid_recv % 512) == 1 || DBGP(DBG_CONTROL)) {
+                    openswan_log("dropping reply: expecting <%u,%u> received: %u"
+                                 , st->st_msgid_lastack+1, st->st_msgid_nextuse
+                                 , md->msgid_received);
+                    return;
+                }
+            }
 	}
     }
 
@@ -619,7 +605,7 @@ process_v2_packet(struct msg_digest **mdp)
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
-	DBG(DBG_CONTROL, DBG_log("ended up with STATE_IKEv2_ROOF"));
+	DBG(DBG_CONTROL, DBG_log("did not found valid state; ended up with STATE_IKEv2_ROOF"));
 
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
@@ -827,8 +813,6 @@ void ikev2_update_counters(struct msg_digest *md)
 	if(pst == NULL) pst = st;
     }
 
-    /* PATRICK: I may have to switch the following blocks: */
-   /* Block 1 */
     switch(md->role) {
     case INITIATOR:
 	/* update lastuse values */
@@ -840,22 +824,6 @@ void ikev2_update_counters(struct msg_digest *md)
 	pst->st_msgid_lastrecv= md->msgid_received;
 	break;
     }
-  /* Block 2 */
-//	switch(msgtype) {
-//	case req_sent:
-//		pst->st_msgid_last_localreq = pst->st_msgid_last_localreq == INVALID_MSGID? 0 : pst->st_msgid_last_localreq + 1;
-//		break;
-//	case req_recd:
-//		break;
-//	case response_sent:
-//		pst->st_msgid_last_remotereq = md->msgid_received;
-//		break;
-//	case response_recd:
-//		pst->st_msgid_last_localreq_ack = md->msgid_received;
-//		break;
-//	default: break;
-//	}
-  /* End of block */
 }
 
 static void success_v2_state_transition(struct msg_digest **mdp)

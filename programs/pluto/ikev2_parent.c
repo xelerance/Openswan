@@ -1345,7 +1345,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     pst = st;
     st = duplicate_state(pst);
-    st->st_msgid = htonl(pst->st_msgid_nextuse); /* PAUL: note ordering */
+    st->st_msgid = htonl(pst->st_msgid_nextuse);
     insert_state(st);
     md->st = st;
     md->pst= pst;
@@ -3058,12 +3058,7 @@ void ikev2_delete_out(struct state *st)
             memcpy(r_hdr.isa_icookie, pst->st_icookie, COOKIE_SIZE);
             r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
             r_hdr.isa_np = ISAKMP_NEXT_v2E;
-            /* PATRICK: I may have to swap the following two blocks: */
-            /* Block 1 */
             r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
-            /* Block 2 */
-            //r_hdr.isa_msgid = htonl(pst->st_msgid_last_localreq == INVALID_MSGID? 0 : pst->st_msgid_last_localreq + 1);
-            /* End of blocks */
 
             /*set initiator bit if we are initiator*/
             if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
