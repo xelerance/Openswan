@@ -402,6 +402,12 @@ static int set_whack_end(struct starter_config *cfg
         return 0;
 }
 
+
+/*
+ * returns 0 if a key needs to be sent
+ * returns 1 if there was an error.
+ * returns 2 if everything is fine, no key to send.
+ */
 int starter_whack_build_pkmsg(struct starter_config *cfg,
                               struct whack_message *msg,
                               struct starter_conn *conn,
