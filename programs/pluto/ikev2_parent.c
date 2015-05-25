@@ -141,6 +141,10 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_msgid_nextuse = 0;
     st->st_try   = try;
 
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv2_MAJOR_VERSION;
+    st->st_ike_min        = IKEv2_MINOR_VERSION;
+
     if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
         st->sec_ctx = NULL;
@@ -923,6 +927,10 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     struct state *st = md->st;
     /* struct connection *c = st->st_connection; */
     pb_stream *keyex_pbs;
+
+    /* record IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
 
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N]

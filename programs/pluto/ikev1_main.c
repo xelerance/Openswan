@@ -135,6 +135,11 @@ main_outI1(int whack_sock
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv1_MAJOR_VERSION;
+    st->st_ike_min        = IKEv1_MINOR_VERSION;
+
     change_state(st, STATE_MAIN_I1);
 
     if (HAS_IPSEC_POLICY(policy))
@@ -865,6 +870,10 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
 
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */

@@ -196,6 +196,8 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
+    u_char             st_ike_maj;
+    u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
 					      * to be replaced with IKEv2 */
 

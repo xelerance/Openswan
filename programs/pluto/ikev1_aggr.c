@@ -272,6 +272,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
     change_state(st, STATE_AGGR_R1);
 
     /* until we have clue who this is, then be conservative about allocating
@@ -1009,12 +1012,18 @@ aggr_outI1(int whack_sock,
 #endif
     set_state_ike_endpoints(st, c);
 
+    DBG_log("aggr_outI1");
 #ifdef DEBUG
     extra_debugging(c);
 #endif
     st->st_policy = policy & ~POLICY_IPSEC_MASK;
     st->st_whack_sock = whack_sock;
     st->st_try = try;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv1_MAJOR_VERSION;
+    st->st_ike_min        = IKEv1_MINOR_VERSION;
+
     change_state(st, STATE_AGGR_I1);
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);

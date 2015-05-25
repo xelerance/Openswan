@@ -303,9 +303,12 @@
 #define IKE_UDP_PORT	  500
 #define NAT_IKE_UDP_PORT 4500 /* RFC-3947 */
 
-/* Version numbers - IKEv1 */
-#define ISAKMP_MAJOR_VERSION   0x1
-#define ISAKMP_MINOR_VERSION   0x0
+/* Version numbers - IKEv1 --- never got bumped, protocol was not upgradeable */
+#define IKEv1_MAJOR_VERSION   0x1
+#define IKEv1_MINOR_VERSION   0x0
+/* should obsolete these */
+#define ISAKMP_MAJOR_VERSION   IKEv1_MAJOR_VERSION
+#define ISAKMP_MINOR_VERSION   IKEv1_MINOR_VERSION
 
 /* version numbers - IKEv2 */
 #define IKEv2_MAJOR_VERSION    0x2
