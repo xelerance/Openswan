@@ -165,14 +165,14 @@ ikev2parent_outI1_withstate(struct state *st
     if (predecessor != NULL)
         {
             update_pending(predecessor, st);
-            whack_log(RC_NEW_STATE + STATE_PARENT_I1
+            loglog(RC_NEW_STATE + STATE_PARENT_I1
                       , "%s: initiate, replacing #%lu"
                       , enum_name(&state_names, st->st_state)
                       , predecessor->st_serialno);
         }
     else
         {
-            whack_log(RC_NEW_STATE + STATE_PARENT_I1
+            loglog(RC_NEW_STATE + STATE_PARENT_I1
                       , "%s: initiate", enum_name(&state_names, st->st_state));
         }
 
@@ -1594,7 +1594,7 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
                 break;
             }
 
-            whack_log(RC_NOTIFICATION + notify->payload.v2n.isan_type
+            loglog(RC_NOTIFICATION + notify->payload.v2n.isan_type
                       , "received notify: %s %s"
                       ,enum_name(&ikev2_notify_names
                                  , notify->payload.v2n.isan_type)

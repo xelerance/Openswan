@@ -1175,7 +1175,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	/* update_retransmit_history(st, md); */
 
 	passert(st);
-	whack_log(RC_FATAL
+	loglog(RC_FATAL
 		  , "encountered fatal error in state %s"
 		  , from_state_name);
 	delete_event(st);
@@ -1198,7 +1198,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	/* FALL THROUGH ... */
 
     case STF_FAIL:
-	whack_log(RC_NOTIFICATION + md->note
+	loglog(RC_NOTIFICATION + md->note
 		  , "%s: %s"
 		  , from_state_name
 		  , enum_name(&ipsec_notification_names, md->note));
