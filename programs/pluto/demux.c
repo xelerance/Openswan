@@ -219,6 +219,9 @@ comm_handle(const struct iface_port *ifp)
     md = alloc_md();
     md->iface = ifp;
 
+#ifdef DEBUG_WITH_PAUSE
+    pause();
+#endif
     if (read_packet(md))
 	process_packet(&md);
 

@@ -12,12 +12,7 @@ Setting NAT-Traversal port-4500 floating to off
 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
-starting up 5 cryptographic helpers
-started helper pid=PID 
-started helper pid=PID 
-started helper pid=PID 
-started helper pid=PID 
-started helper pid=PID 
+starting up X cryptographic helpers
 Using 'no_kernel' interface code on
 Could not change to directory 'OUTPUT/cacerts': No such file or directory
 Could not change to directory 'OUTPUT/aacerts': No such file or directory
@@ -25,3 +20,8 @@ Could not change to directory 'OUTPUT/ocspcerts': No such file or directory
 Could not change to directory 'OUTPUT/crls': 2 No such file or directory
 shutting down
 002 shutting down
+pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
+pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
+pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
+pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
+pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

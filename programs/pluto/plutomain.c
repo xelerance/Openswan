@@ -38,6 +38,7 @@
 #include <getopt.h>
 #include <netinet/in.h>
 #include <resolv.h>
+#include <signal.h>
 
 #include <openswan.h>
 
@@ -233,6 +234,12 @@ usage(const char *mess)
 
 static char pluto_lock[sizeof(ctl_addr.sun_path)] = DEFAULT_CTLBASE LOCK_SUFFIX;
 static bool pluto_lock_created = FALSE;
+
+void pluto_sigusr1(int signum)
+{
+    openswan_log("signal 1 received");
+    signal(SIGUSR1, pluto_sigusr1);
+}
 
 /** create lockfile, or die in the attempt */
 static int
@@ -996,6 +1003,10 @@ main(int argc, char **argv)
     if(coredir) {
 	openswan_log("core dump dir: %s", coredir);
     }
+
+    /* establish SIGUSR1 handler */
+    signal(SIGUSR1, pluto_sigusr1);
+
 
 #ifdef LEAK_DETECTIVE
 	openswan_log("LEAK_DETECTIVE support [enabled]");

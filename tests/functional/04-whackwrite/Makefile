@@ -38,7 +38,7 @@ check:
 	@strings ${OUTPUTS}/parkerrecord.whack | grep ikev2:parker--jj >/dev/null
 
 update:
-	true
+	cp ../OUTPUTS/parker1load.out  output2.txt
 
 
 

@@ -912,6 +912,9 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	struct rlimit nf;
 	int i, arg_len = 0;
 
+        /* reset sigusr1 handler */
+        signal(SIGUSR1, SIG_IGN);
+
 	/* diddle with our proc title */
 	memset(global_argv[0], '\0', strlen(global_argv[0])+1);
 	arg_len += strlen(global_argv[0]);
