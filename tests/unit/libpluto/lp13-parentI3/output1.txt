@@ -487,7 +487,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 | *received 444 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 20  01 00 00 00  00 00 01 bc  24 00 01 a0
+|   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -513,8 +513,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   5a 3c 92 93  70 80 1e 90  1c d5 c4 5b  79 be 96 94
 |   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
-|   bd 8f 66 fd  5a 7c 7a f9  9e 06 55 22
-|  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 16777216
+|   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -525,7 +525,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | state hash entry 28
 | v2 peer and cookies match on #1
 | v2 state object #1 found, in STATE_PARENT_I2
-| state found and its state is (STATE_PARENT_I2)
+| state found and its state is:STATE_PARENT_I2 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_I2, needs STATE_PARENT_I1
 | considering state entry: 1
@@ -569,7 +569,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | empty esp_info, returning defaults
 | complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_PARENT_I2 to state STATE_PARENT_I3
-./parentI3 STATE_PARENT_I3: PARENT SA established
+./parentI3 STATE_PARENT_I3: PARENT SA established (msgid: 00000000)
 ./parentI3 leak: skeyseed_t1, item size: X
 ./parentI3 leak: db_v2_trans, item size: X
 ./parentI3 leak: db_v2_prop_conj, item size: X
