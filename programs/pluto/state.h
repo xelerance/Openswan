@@ -55,10 +55,12 @@
 #define INVALID_MSGID     0xffffffff
 
 struct state;	/* forward declaration of tag */
+
+/* used by IKEv1 only */
 extern void reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
 extern bool unique_msgid(struct state *isakmp_sa, msgid_t msgid);
-
 extern msgid_t generate_msgid(struct state *isakmp_sa);
+
 
 #define XAUTH_USERNAME_LEN 64
 
