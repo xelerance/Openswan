@@ -1429,6 +1429,14 @@ void fmt_state(struct state *st, const time_t n
 	} else {
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; nodpd");
 	}
+        if(st->st_ikev2 && IS_PARENT_SA(st)) {
+            snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld"
+                     , (long)st->st_msg_retransmitted
+                     , (long)st->st_msg_badmsgid_recv
+                     , (long)st->st_msgid_lastack
+                     , (long)st->st_msgid_nextuse
+                     , (long)st->st_msgid_lastrecv);
+        }
     }
 
     if(st->st_calculating) {
@@ -1440,15 +1448,16 @@ void fmt_state(struct state *st, const time_t n
     }
 
     snprintf(state_buf, state_buf_len
-	     , "#%lu: \"%s\"%s:%u %s (%s); %s in %lds%s%s%s%s; %s; %s"
+	     , "#%lu: \"%s\"%s:%u IKEv%u.%u %s (%s); %s in %lds%s%s%s%s%s; %s; %s"
 	     , st->st_serialno
 	     , c->name, inst
 	     , st->st_remoteport
+             , st->st_ike_maj, st->st_ike_min
 	     , enum_name(&state_names, st->st_state)
 	     , state_story[st->st_state - STATE_MAIN_R0]
 	     , st->st_event ? enum_name(&timer_event_names, st->st_event->ev_type) : "none"
 	     , delta
-	     , np1, np2, eo, dpdbuf
+	     , np1, np2, eo, dpdbuf, msgidbuf
 	     , idlestr
 	     , enum_name(&pluto_cryptoimportance_names, st->st_import));
 
@@ -1598,7 +1607,7 @@ show_states_status(void)
 	   }
         }
 
-         /* sort it! */
+         /* sort it --- XXXX might be a big deal for really big systems... */
          qsort(array, count, sizeof(struct state *), state_compare);
 
          /* now print sorted results */
