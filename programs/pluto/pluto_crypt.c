@@ -207,9 +207,9 @@ helper_passert_fail(const char *pred_str
 }
 #endif
 
+#ifdef HAVE_LIBNSS
 void pluto_crypto_helper(int fd, int helpernum)
 {
-#ifdef HAVE_LIBNSS
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
@@ -270,13 +270,18 @@ void pluto_crypto_helper(int fd, int helpernum)
     }
 
     /* probably normal EOF */
-    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is exiting (eof, normal)\n",helpernum);
 
 error:
     fclose(in);
     fclose(out);
     /*pthread_exit();*/
-#else
+}
+
+#else /* non-LIBNSS */
+
+void pluto_crypto_helper(int fd, int helpernum)
+{
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
     struct pluto_crypto_req reqbuf[2];
@@ -346,10 +351,10 @@ error:
     /* probably normal EOF */
     fclose(in);
     fclose(out);
-    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper [nonnss] (%d) is exiting normally\n",helpernum);
     exit(0);
-#endif
 }
+#endif
 
 
 /* send the request, make sure it all goes down. */
