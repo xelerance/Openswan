@@ -488,6 +488,7 @@ process_v2_packet(struct msg_digest **mdp)
      *
      */
 
+    /* NOTE: in_struct() did not change the byte order, so make a copy in local order */
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
     if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
@@ -503,7 +504,6 @@ process_v2_packet(struct msg_digest **mdp)
 	if(st == NULL) {
 	    /* first time for this cookie, it's a new state! */
 	    st = find_state_ikev2_parent_init(md->hdr.isa_icookie);
-
 	}
 
 	if(st) {
@@ -539,7 +539,18 @@ process_v2_packet(struct msg_digest **mdp)
 		    unhash_state(st);
 		    memcpy(st->st_rcookie, md->hdr.isa_rcookie, COOKIE_SIZE);
 		    insert_state(st);
-		}
+		} else {
+                    /*
+                     * response is from some weird place. It probably does not
+                     * not belong.  It might be a sign that we have rebooted,
+                     * and we should rekey?
+                     * This logging should be rate limited by remote IP address,
+                     * and we need to find/make a library for rate-limited by remote.
+                     */
+                    openswan_log("ignored received packett with unknown cookies");
+                    /* cookies will have been dumped by state_hash() during lookup */
+                    return;
+                }
 	    }
 	} else {
 	    st = find_state_ikev2_child(md->hdr.isa_icookie
@@ -565,8 +576,6 @@ process_v2_packet(struct msg_digest **mdp)
 	     * maybe they retransmitted for some reason.
 	     * Check if it's an old packet being returned, and
 	     * if so, drop it.
-	     * NOTE: in_struct() changed the byte order on
-             *       md->msgid_received, so we can use it directly
 	     */
 	    if(st->st_msgid_lastack != INVALID_MSGID
 	       && md->msgid_received <= st->st_msgid_lastack) {
@@ -583,14 +592,15 @@ process_v2_packet(struct msg_digest **mdp)
              * we currently only support a window of 1, but by using nextuse, we anticipate
              * having a window > 1
              */
-            if(md->msgid_received >= st->st_msgid_nextuse) {
+            if(md->msgid_received != MAINMODE_MSGID
+               && md->msgid_received >= st->st_msgid_nextuse) {
                 /*
                  * here, the reply packet is newer than one we last received an ACK for,
                  * which is a problem, because we didn't send it, so we drop it and ignore it
                  */
                 st->st_msg_badmsgid_recv++;
                 if((st->st_msg_badmsgid_recv % 512) == 1 || DBGP(DBG_CONTROL)) {
-                    openswan_log("dropping reply: expecting <%u,%u> received: %u"
+                    openswan_log("dropping reply: expecting [%u,%u> received: %u"
                                  , st->st_msgid_lastack+1, st->st_msgid_nextuse
                                  , md->msgid_received);
                     return;
