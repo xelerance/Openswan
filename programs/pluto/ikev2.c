@@ -78,6 +78,7 @@
 	else send_v2_notification_from_md(md, t, NULL); }
 
 struct state_v2_microcode {
+    const char *svm_name;       /* human readable name for this state */
     enum state_kind state, next_state;
     enum isakmp_xchg_types recv_type;
     lset_t flags;
@@ -138,7 +139,8 @@ static const lset_t repeatable_payloads = P(N) | P(D) | P(CP) | P(V);  /* if one
 
 /* microcode to parent first initiator state: not associated with an input packet */
 const struct state_v2_microcode ikev2_parent_firststate_microcode =
-    { .state      = STATE_UNDEFINED,
+    { .svm_name   = "first_state",
+      .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_I1,
       .flags      = SMF2_INITIATOR,
       .processor  = NULL,
@@ -146,7 +148,8 @@ const struct state_v2_microcode ikev2_parent_firststate_microcode =
 
 /* microcode for input packet processing */
 static const struct state_v2_microcode v2_state_microcode_table[] = {
-    { .state      = STATE_PARENT_I1,
+    { .svm_name   = "initiator-V2_init",
+      .state      = STATE_PARENT_I1,
       .next_state = STATE_PARENT_I2,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED|SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Nr),
@@ -155,7 +158,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
-    { .state      = STATE_PARENT_I1,
+    { .svm_name   = "initiator-failure",
+      .state      = STATE_PARENT_I1,
       .next_state = STATE_IKESA_DEL,
       .flags = SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
@@ -164,7 +168,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
-    { .state      = STATE_PARENT_I2,
+    { .svm_name   = "initiator-auth-process",
+      .state      = STATE_PARENT_I2,
       .next_state = STATE_PARENT_I3,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -175,7 +180,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
-    { .state      = STATE_UNDEFINED,
+    { .svm_name   = "responder-V2_init",
+      .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
       .flags =  /* not SMF2_INITIATOR, not SMF2_STATENEEDED */ SMF2_REPLY,
       .req_clear_payloads = P(SA) | P(KE) | P(Ni),
@@ -183,7 +189,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
-    { .state      = STATE_PARENT_R1,
+    { .svm_name   = "responder-auth-process",
+      .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R2,
       .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
@@ -195,7 +202,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     /* Informational Exchange*/
-    { .state      = STATE_PARENT_I2,
+    { .svm_name   = "initiator-insecure-informational",
+      .state      = STATE_PARENT_I2,
       .next_state = STATE_PARENT_I2,
       .flags      = SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -206,7 +214,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
 
 
     /* Informational Exchange*/
-    { .state      = STATE_PARENT_R1,
+    { .svm_name   = "responder-insecure-informational",
+      .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R1,
       .flags      = SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -216,7 +225,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     /* Informational Exchange*/
-    { .state      = STATE_PARENT_I3,
+    { .svm_name   = "initiator-informational",
+      .state      = STATE_PARENT_I3,
       .next_state = STATE_PARENT_I3,
       .flags      = SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -226,7 +236,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     /* Informational Exchange*/
-    { .state      = STATE_PARENT_R2,
+    { .svm_name   = "responder-authenticated-informational",
+      .state      = STATE_PARENT_R2,
       .next_state = STATE_PARENT_R2,
       .flags      = SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -236,7 +247,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     /* Informational Exchange*/
-    { .state      = STATE_IKESA_DEL,
+    { .svm_name   = "delete-ike-sa",
+      .state      = STATE_IKESA_DEL,
       .next_state = STATE_IKESA_DEL,
       .flags      = SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -247,7 +259,8 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
 
 
     /* last entry */
-    { .state      = STATE_IKEv2_ROOF }
+    { .svm_name   = "invalid-transition",
+      .state      = STATE_IKEv2_ROOF }
 };
 
 #undef P
@@ -410,9 +423,10 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     if (svm->req_enc_payloads & ~seen) {
         /* missing payloads in encryption part */
         loglog(RC_LOG_SERIOUS,
-               "missing encrypted payload(s) (%s). Message dropped.",
-               bitnamesof(payload_name_ikev2_main
-                          , svm->req_enc_payloads & ~seen));
+               "missing encrypted payload for v2_state: %s: %s. Message dropped."
+               , svm->svm_name
+               , bitnamesof(payload_name_ikev2_main
+                            , svm->req_enc_payloads & ~seen));
         return STF_FAIL + v2N_INVALID_SYNTAX;
     }
     return stf;
