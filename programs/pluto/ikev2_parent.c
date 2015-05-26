@@ -1844,11 +1844,16 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         DBG(DBG_CONTROL,DBG_log(" notify payload detected, should be processed...."));
     }
 
-    /* good. now create child state */
+    /* good, things checked out!. now create child state */
+    DBG(DBG_CONTROL, DBG_log("PARENT SA now authenticated, building child and reply"));
     /* note: as we will switch to child state, we force the parent to the
-     * new state now */
+     * new state now, but note also that child state exists just to contain
+     * the IPsec SA, and to provide for it's eventual rekeying
+     */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
+
+    /* XXX MCR need to duplicate state here, I think? */
 
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
