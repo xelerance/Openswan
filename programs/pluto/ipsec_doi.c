@@ -740,6 +740,8 @@ void initialize_new_state(struct state *st
     st->st_try   = try;
 
     st->st_import = importance;
+    st->st_msgid_nextuse = 1;     /* first non-INIT message is 1 */
+    st->st_msgid_lastack = INVALID_MSGID;
 
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	if(sr->this.xauth_client) {

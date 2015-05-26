@@ -137,8 +137,6 @@ ikev2parent_outI1_withstate(struct state *st
     /* set up new state */
     st->st_ikev2 = TRUE;
     change_state(st, STATE_PARENT_I1);
-    st->st_msgid_lastack = INVALID_MSGID;
-    st->st_msgid_nextuse = 0;
     st->st_try   = try;
 
     /* IKE version numbers -- used mostly in logging */
@@ -401,7 +399,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
         hdr.isa_xchg = ISAKMP_v2_SA_INIT;
         hdr.isa_flags = ISAKMP_FLAGS_I;
         memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
-        /* R-cookie, are left zero */
+        /* R-cookie, msgid are left zero */
 
         if (!out_struct(&hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             {
@@ -586,8 +584,6 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
 	change_state(st, STATE_PARENT_R1);
-	st->st_msgid_lastack = INVALID_MSGID;
-	st->st_msgid_nextuse = 0;
 
         md->st = st;
         md->from_state = STATE_IKEv2_BASE;
@@ -953,18 +949,11 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
             md->svm = &ikev2_parent_firststate_microcode;
 
-            /* PATRICK: I may have to interchange the next two blocks: */
-            /* Block 1 */
+            /* now reset state, and try again with noncense */
             change_state(st, STATE_PARENT_I1);
             st->st_msgid_lastack = INVALID_MSGID;
             md->msgid_received = INVALID_MSGID;  /* AAA hack  */
             st->st_msgid_nextuse = 0;
-            /* Block 2 */
-            // change_state(st, STATE_PARENT_I1);
-            // st->st_msgid_last_localreq = INVALID_MSGID;
-            // st->st_msgid_last_localreq_ack = INVALID_MSGID;
-            // st->st_msgid_last_remotereq=INVALID_MSGID;
-            /* end blocks */
 
             return ikev2_parent_outI1_common(md, st);
         }
@@ -1343,6 +1332,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *idhash;
     unsigned char *authstart;
     struct state *pst = st;
+    msgid_t        mid = INVALID_MSGID;
     bool send_cert = FALSE;
 
     finish_dh_v2(st, r);
@@ -1352,8 +1342,20 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     pst = st;
+    ret = allocate_msgid_from_parent(pst, &mid);
+    if(ret != STF_OK) {
+        /*
+         * XXX: need to return here, having enqueued our pluto_crypto_req_cont
+         * onto a structure on the parent for processing when there is message
+         * ID available.
+         */
+        return ret;
+    }
+
+    /* okay, got a transmit slot */
     st = duplicate_state(pst);
-    st->st_msgid = htonl(pst->st_msgid_nextuse);
+
+    st->st_msgid = mid;
     insert_state(st);
     md->st = st;
     md->pst= pst;
@@ -1867,10 +1869,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         /* HDR out */
         {
             struct isakmp_hdr r_hdr = md->hdr;
-            /* PATRICK: I may have to uncomment the following line:
-            * r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-            */
 
+            /* let the isa_version reply be the same as what the sender had */
             r_hdr.isa_np    = ISAKMP_NEXT_v2E;
             r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
             r_hdr.isa_flags = ISAKMP_FLAGS_R;

@@ -207,3 +207,5 @@ extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 
 extern bool force_busy;  /* config option to emulate responder under DOS */
 
+/* allocate a transmit slot */
+extern stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p);

@@ -418,6 +418,38 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     return stf;
 }
 
+/* allocate_msgid_from_parent takes two stats, a parent (pst) and a child state.
+ *
+ * As all retransmissions are in some sense managed by the parent (because that is where
+ * the msgid window and retransmitters are), the parent must multiplex between different
+ * CHILD SAs that want to use the state.
+ *
+ * Since Openswan only supports a window of 1, only one message may be outstanding, any
+ * subsequent users of the state must therefore wait for the parent to be available.
+ * Even once windowed IKEv2 is implemented, that won't change things because there may be
+ * more children than available windows.  (Of course, you can negotiate multiple SAs
+ * in a single exchange, but that is going to be very difficult to architect)
+ *
+ * return STF_SUSPEND if the window will not let the child negotiate now.
+ * nothing is done in that case, the state has to be retried later.
+ *
+ * note that this is not related to IKEv1's reserve msgid, although conceptually there
+ * are similarities.
+ *
+ */
+stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p)
+{
+    msgid_t msgid = pst->st_msgid_nextuse;
+
+    /* XXX haha, you thought fun things were going to happen in this routine..
+     * but not yet.. takes some unit testing. */
+    if(newid_p) {
+        *newid_p = msgid;
+        pst->st_msgid_nextuse++;
+    }
+    return STF_OK;
+}
+
 /*
  * process an input packet, possibly generating a reply.
  *
@@ -556,7 +588,9 @@ process_v2_packet(struct msg_digest **mdp)
     ix = md->hdr.isa_xchg;
     if(st) {
 	from_state = st->st_state;
-	DBG(DBG_CONTROL, DBG_log("state found and its state is (%s)", enum_show(&state_names, from_state)));
+	DBG(DBG_CONTROL, DBG_log("state found and its state is:%s msgid: %05u"
+                                 , enum_show(&state_names, from_state)
+                                 , md->msgid_received));
     }
 
     stf_status stf = ikev2_collect_payloads(md, &md->message_pbs,
@@ -818,7 +852,6 @@ void ikev2_update_counters(struct msg_digest *md)
     case INITIATOR:
 	/* update lastuse values */
 	pst->st_msgid_lastack = md->msgid_received;
-	pst->st_msgid_nextuse = pst->st_msgid_lastack+1;
 	break;
 
     case RESPONDER:
@@ -884,10 +917,10 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
 	/* tell whack and logs our progress */
 	loglog(w
-	       , "%s: %s%s"
+	       , "%s: %s%s (msgid: %08u)"
 	       , enum_name(&state_names, st->st_state)
 	       , story
-	       , sadetails);
+	       , sadetails, st->st_msgid);
     }
 
     /* if requested, send the new reply packet */

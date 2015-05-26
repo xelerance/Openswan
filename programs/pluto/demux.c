@@ -158,10 +158,10 @@ process_packet(struct msg_digest **mdp)
     md->min = (md->hdr.isa_version & ISA_MIN_MASK);
 
     DBG(DBG_CONTROL
-	, DBG_log(" processing version=%u.%u packet with exchange type=%s (%d)"
+	, DBG_log(" processing version=%u.%u packet with exchange type=%s (%d), msgid: %08u"
 		  , md->maj, md->min
 		  , enum_name(&exchange_names, md->hdr.isa_xchg)
-		  , md->hdr.isa_xchg));
+		  , md->hdr.isa_xchg, ntohl(md->hdr.isa_msgid)));
 
     TCLCALLOUT("processRawPacket", NULL, NULL, md);
 
