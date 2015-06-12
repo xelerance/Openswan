@@ -547,7 +547,7 @@ process_v2_packet(struct msg_digest **mdp)
                      * This logging should be rate limited by remote IP address,
                      * and we need to find/make a library for rate-limited by remote.
                      */
-                    openswan_log("ignored received packett with unknown cookies");
+                    openswan_log("ignored received packet with unknown cookies");
                     /* cookies will have been dumped by state_hash() during lookup */
                     return;
                 }
