@@ -235,7 +235,7 @@ usage(const char *mess)
 static char pluto_lock[sizeof(ctl_addr.sun_path)] = DEFAULT_CTLBASE LOCK_SUFFIX;
 static bool pluto_lock_created = FALSE;
 
-void pluto_sigusr1(int signum)
+static void pluto_sigusr1(int signum UNUSED)
 {
     openswan_log("signal 1 received");
     signal(SIGUSR1, pluto_sigusr1);
