@@ -1178,6 +1178,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	loglog(RC_FATAL
 		  , "encountered fatal error in state %s"
 		  , from_state_name);
+#ifdef DEBUG_WITH_PAUSE
+        pause();
+#endif
 	delete_event(st);
 	{
 	    struct state *pst;

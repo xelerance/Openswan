@@ -2363,8 +2363,13 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     c->newest_ipsec_sa = st->st_serialno;
 
     /* now install child SAs */
-    if(!install_ipsec_sa(st, TRUE))
+    if(!install_ipsec_sa(st, TRUE)) {
+#ifdef DEBUG_WITH_PAUSE
+        pause();
+#endif
+        loglog(RC_LOG_SERIOUS, "failed to installed IPsec Child SAs");
         return STF_FATAL;
+    }
 
     /*
      * Delete previous retransmission event.
