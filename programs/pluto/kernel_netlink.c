@@ -155,13 +155,15 @@ static sparse_names aalg_list = {
 /** Encryption algs */
 static sparse_names ealg_list = {
 	{ SADB_EALG_NULL, "cipher_null" },
-	{ SADB_EALG_DESCBC, "des" },
+	/* { SADB_EALG_DESCBC, "des" }, obsoleted */
 	{ SADB_EALG_3DESCBC, "des3_ede" },
 	{ SADB_X_EALG_CASTCBC, "cast128" },
 	{ SADB_X_EALG_BLOWFISHCBC, "blowfish" },
 	{ SADB_X_EALG_AESCBC, "aes" },
-	{ SADB_X_EALG_AESCTR, "ctr(aes)" },
+	{ SADB_X_EALG_AESCTR, "rfc3686(ctr(aes))" },
 	{ SADB_X_EALG_CAMELLIACBC, "cbc(camellia)" },
+	{ SADB_X_EALG_SERPENTCBC, "serpent" },
+	{ SADB_X_EALG_TWOFISHCBC, "twofish" },
 	{ 0, sparse_end }
 };
 
@@ -175,12 +177,12 @@ static sparse_names calg_list = {
 
 static struct aead_alg aead_algs[] =
 {
-	{ .id = SADB_X_EALG_AES_CCM_ICV8, .icvlen = 8, .name = "rfc4309(ccm(aes))" },
-	{ .id = SADB_X_EALG_AES_CCM_ICV12, .icvlen = 12, .name = "rfc4309(ccm(aes))" },
-	{ .id = SADB_X_EALG_AES_CCM_ICV16, .icvlen = 16, .name = "rfc4309(ccm(aes))" },
-	{ .id = SADB_X_EALG_AES_GCM_ICV8, .icvlen = 8, .name = "rfc4106(gcm(aes))" },
-	{ .id = SADB_X_EALG_AES_GCM_ICV12, .icvlen = 12, .name = "rfc4106(gcm(aes))" },
-	{ .id = SADB_X_EALG_AES_GCM_ICV16, .icvlen = 16, .name = "rfc4106(gcm(aes))" },
+    { .id = SADB_X_EALG_AES_CCM_ICV8, .icvlen = 8, .name = "rfc4309(ccm(aes))" },
+    { .id = SADB_X_EALG_AES_CCM_ICV12, .icvlen = 12, .name = "rfc4309(ccm(aes))" },
+    { .id = SADB_X_EALG_AES_CCM_ICV16, .icvlen = 16, .name = "rfc4309(ccm(aes))" },
+    { .id = SADB_X_EALG_AES_GCM_ICV8, .icvlen = 8, .name = "rfc4106(gcm(aes))" },
+    { .id = SADB_X_EALG_AES_GCM_ICV12, .icvlen = 12, .name = "rfc4106(gcm(aes))" },
+    { .id = SADB_X_EALG_AES_GCM_ICV16, .icvlen = 16, .name = "rfc4106(gcm(aes))" },
 };
 
 static struct aead_alg *get_aead_alg(int algid)
@@ -998,6 +1000,10 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.id.spi = sa->spi;
     req.p.id.proto = esatype2proto(sa->esatype);
     req.p.family = sa->src->u.v4.sin_family;
+
+    DBG_log("creating SA spi=%08x proto=%u family=%u"
+            , req.p.id.spi, req.p.id.proto, req.p.family);
+
     /*
      * This requires ipv6 modules. It is required to support 6in4 and 4in6
      * tunnels in linux 2.6.25+
@@ -1011,219 +1017,295 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     {
 	req.p.mode = XFRM_MODE_TRANSPORT;
 
-	if(!sameaddr(sa->src, sa->dst)) {
-	req.p.sel.sport = portof(&sa->src_client->addr);
-	req.p.sel.dport = portof(&sa->dst_client->addr);
-
-	/* As per RFC 4301/5996, icmp type is put in the most significant 8 bits
-	* and icmp code is in the least significant 8 bits of port field.
-	* Although Openswan does not have any configuration options for
-	* icmp type/code values, it is possible to specify icmp type and code
-	* using protoport option. For example, icmp echo request (type 8/code 0)
-	* needs to be encoded as 0x0800 in the port field and can be specified
-	* as left/rightprotoport=icmp/2048. Now with NETKEY, icmp type and code
-	* need to be passed as source and destination ports, respectively.
-	* therefore, this code extracts upper 8 bits and lower 8 bits and puts
-	* into source and destination ports before passing to NETKEY. */
-
-
-	if( 1 == sa->transport_proto /*icmp*/ || 58 == sa->transport_proto /*ipv6-icmp*/) {
-
-	u_int16_t icmp_type;
-	u_int16_t icmp_code;
-
-	icmp_type = ntohs(req.p.sel.sport) >> 8;
-	icmp_code = ntohs(req.p.sel.sport) & 0xFF;
-
-	req.p.sel.sport = htons(icmp_type);
-	req.p.sel.dport = htons(icmp_code);
-
-	}
-
-	req.p.sel.sport_mask = (req.p.sel.sport) ? ~0:0;
-	req.p.sel.dport_mask = (req.p.sel.dport) ? ~0:0;
-	ip2xfrm(&sa->src_client->addr, &req.p.sel.saddr);
-	ip2xfrm(&sa->dst_client->addr, &req.p.sel.daddr);
-	req.p.sel.prefixlen_s = sa->src_client->maskbits;
-	req.p.sel.prefixlen_d = sa->dst_client->maskbits;
-	req.p.sel.proto = sa->transport_proto;
-	req.p.sel.family = sa->src_client->addr.u.v4.sin_family;
-	}
-
     }
 
-    req.p.replay_window = sa->replay_window > 32 ? 32 : sa->replay_window;
-    req.p.reqid = sa->reqid;
-    req.p.lft.soft_byte_limit = XFRM_INF;
-    req.p.lft.soft_packet_limit = XFRM_INF;
-    req.p.lft.hard_byte_limit = XFRM_INF;
-    req.p.lft.hard_packet_limit = XFRM_INF;
-
-    req.n.nlmsg_len = NLMSG_ALIGN(NLMSG_LENGTH(sizeof(req.p)));
-
-    attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
-
-    if (sa->authkeylen)
-    {
-	const char *name;
-
-	name = sparse_name(aalg_list, sa->authalg);
-	if (!name) {
-	    loglog(RC_LOG_SERIOUS, "unknown authentication algorithm: %u"
-		, sa->authalg);
-	    return FALSE;
-	}
-
+    /* indent matching libreswan */
 	/*
-	 * According to RFC-4868 the hash should be nnn/2, so 128 bits for SHA256 and 256
-	 * for SHA512. The XFRM/NETKEY kernel uses a default of 96, which was the value in
-	 * an earlier draft. The kernel then introduced a new struct xfrm_algo_auth to
-	 * replace struct xfrm_algo to deal with this
+	 * We only add traffic selectors for transport mode. The problem is
+	 * that Tunnel mode ipsec with ipcomp is layered so that ipcomp
+	 * tunnel is protected with transport mode ipsec but in this case we
+	 * shouldn't any more add traffic selectors. Caller function will
+	 * inform us if we need or don't need selectors.
 	 */
-	if(sa->authalg == AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG) {
-	struct xfrm_algo_auth algo;
-	DBG(DBG_NETKEY, DBG_log("  using new struct xfrm_algo_auth for XFRM message with explicit truncation for sha2_256"));
-	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
-	algo.alg_trunc_len = 128;
-	attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
-	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
-	sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256; /* fixup to the real number, not our private number */
+	if (sa->add_selector) {
+		ip_subnet src_tmp;
+		ip_subnet dst_tmp;
+		const ip_subnet *src;
+		const ip_subnet *dst;
 
-	strcpy(algo.alg_name, name);
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
-	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->authkey
-	    , sa->authkeylen);
+		/*
+		 * With XFRM/NETKEY and transport mode with nat-traversal we
+		 * need to change outbound IPsec SA to point to exteral ip of
+		 * the peer. Here we substitute real client ip with NATD ip.
+		 */
+		if (sa->inbound == 0) {
+			addrtosubnet(sa->dst, &dst_tmp);
+			dst = &dst_tmp;
+		} else {
+			dst = sa->dst_client;
+		}
 
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-	} else {
-	struct xfrm_algo algo;
-	DBG(DBG_NETKEY, DBG_log("  using old struct xfrm_algo for XFRM message"));
-	algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
-	attr->rta_type = XFRMA_ALG_AUTH;
-	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->authkeylen);
-	strcpy(algo.alg_name, name);
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
-	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->authkey
-	    , sa->authkeylen);
+		if (sa->inbound == 1) {
+			addrtosubnet(sa->src, &src_tmp);
+			src = &src_tmp;
+		} else {
+			src = sa->src_client;
+		}
 
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-	}
-    }
+		req.p.sel.sport = portof(&sa->src_client->addr);
+		req.p.sel.dport = portof(&sa->dst_client->addr);
 
-    aead = get_aead_alg(sa->encalg);
-    if (sa->esatype == ET_IPCOMP)
-    {
-	struct xfrm_algo algo;
-	const char *name;
+		/*
+		 * As per RFC 4301/5996, icmp type is put in the most
+		 * significant 8 bits and icmp code is in the least
+		 * significant 8 bits of port field. Although Libreswan does
+		 * not have any configuration options for
+		 * icmp type/code values, it is possible to specify icmp type
+		 * and code  using protoport option. For example,
+		 * icmp echo request (type 8/code 0) needs to be encoded as
+		 * 0x0800 in the port field and can be specified
+		 * as left/rightprotoport=icmp/2048. Now with NETKEY,
+		 * icmp type and code  need to be passed as source and
+		 * destination ports, respectively. Therefore, this code
+		 * extracts upper 8 bits and lower 8 bits and puts
+		 * into source and destination ports before passing to NETKEY.
+		 */
+		if (IPPROTO_ICMP == sa->transport_proto ||
+			IPPROTO_ICMPV6 == sa->transport_proto) {
 
-	name = sparse_name(calg_list, sa->encalg);
-	if (!name) {
-	    loglog(RC_LOG_SERIOUS, "unknown compression algorithm: %u"
-		, sa->encalg);
-	    return FALSE;
-	}
+			u_int16_t icmp_type;
+			u_int16_t icmp_code;
 
-	strcpy(algo.alg_name, name);
-	algo.alg_key_len = 0;
+			icmp_type = ntohs(req.p.sel.sport) >> 8;
+			icmp_code = ntohs(req.p.sel.sport) & 0xFF;
 
-	attr->rta_type = XFRMA_ALG_COMP;
-	attr->rta_len = RTA_LENGTH(sizeof(algo));
+			req.p.sel.sport = htons(icmp_type);
+			req.p.sel.dport = htons(icmp_code);
 
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+		}
 
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
-    else if (aead)
-    {
-	struct xfrm_algo_aead algo;
+		req.p.sel.sport_mask = (req.p.sel.sport) ? ~0 : 0;
+		req.p.sel.dport_mask = (req.p.sel.dport) ? ~0 : 0;
+		ip2xfrm(&src->addr, &req.p.sel.saddr);
+		ip2xfrm(&dst->addr, &req.p.sel.daddr);
+		req.p.sel.prefixlen_s = src->maskbits;
+		req.p.sel.prefixlen_d = dst->maskbits;
+		req.p.sel.proto = sa->transport_proto;
+		req.p.sel.family = src->addr.u.v4.sin_family;
 
-	strcpy(algo.alg_name, aead->name);
-	algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
-	algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
-
-	attr->rta_type = XFRMA_ALG_AEAD;
-	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
-
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
-	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
-	    , sa->enckeylen);
-
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
-    else if (sa->esatype == ET_ESP)
-    {
-	struct xfrm_algo algo;
-	const char *name;
-
-	name = sparse_name(ealg_list, sa->encalg);
-	if (!name) {
-	    loglog(RC_LOG_SERIOUS, "unknown encryption algorithm: %u"
-		, sa->encalg);
-	    return FALSE;
 	}
 
-	strcpy(algo.alg_name, name);
-	algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+	req.p.replay_window = sa->replay_window > 32 ? 32 : sa->replay_window;
+	req.p.reqid = sa->reqid;
 
-	attr->rta_type = XFRMA_ALG_CRYPT;
-	attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+	/* TODO expose limits to kernel_sa via config */
+	req.p.lft.soft_byte_limit = XFRM_INF;
+	req.p.lft.soft_packet_limit = XFRM_INF;
+	req.p.lft.hard_byte_limit = XFRM_INF;
+	req.p.lft.hard_packet_limit = XFRM_INF;
 
-	memcpy(RTA_DATA(attr), &algo, sizeof(algo));
-	memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey
-	    , sa->enckeylen);
+	req.n.nlmsg_len = NLMSG_ALIGN(NLMSG_LENGTH(sizeof(req.p)));
 
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
+	attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
 
-#ifdef NAT_TRAVERSAL
-    if (sa->natt_type)
-    {
-	struct xfrm_encap_tmpl natt;
+	if (sa->authkeylen) {
+		const char *name = sparse_name(aalg_list, sa->authalg);
 
-	natt.encap_type = sa->natt_type;
-	natt.encap_sport = ntohs(sa->natt_sport);
-	natt.encap_dport = ntohs(sa->natt_dport);
-	memset (&natt.encap_oa, 0, sizeof (natt.encap_oa));
+		if (name == NULL) {
+			loglog(RC_LOG_SERIOUS,
+				"NETKEY/XFRM: unknown authentication algorithm: %u",
+				sa->authalg);
+			return FALSE;
+		}
 
-	attr->rta_type = XFRMA_ENCAP;
-	attr->rta_len = RTA_LENGTH(sizeof(natt));
+		/*
+		 * According to RFC-4868 the hash should be nnn/2, so
+		 * 128 bits for SHA256 and 256 for SHA512. The XFRM/NETKEY
+		 * kernel uses a default of 96, which was the value in
+		 * an earlier draft. The kernel then introduced a new struct
+		 * xfrm_algo_auth to  replace struct xfrm_algo to deal with
+		 * this.
+		 */
 
-	memcpy(RTA_DATA(attr), &natt, sizeof(natt));
+		switch (sa->authalg)
+		{
+		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG:
+		case AUTH_ALGORITHM_HMAC_SHA2_256:
+		case AUTH_ALGORITHM_HMAC_SHA2_384:
+		case AUTH_ALGORITHM_HMAC_SHA2_512:
+		{
+			struct xfrm_algo_auth algo;
 
-	req.n.nlmsg_len += attr->rta_len;
-	attr = (struct rtattr *)((char *)attr + attr->rta_len);
-    }
-#endif
+			algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
+			switch(sa->authalg) {
+			case AUTH_ALGORITHM_HMAC_SHA2_256:
+				algo.alg_trunc_len = 128;
+				break;
+
+			case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG:
+				algo.alg_trunc_len = 96;
+				/* fixup to the real number, not our private number */
+				sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256;
+				break;
+
+			case AUTH_ALGORITHM_HMAC_SHA2_384:
+				algo.alg_trunc_len = 192;
+				break;
+
+			case AUTH_ALGORITHM_HMAC_SHA2_512:
+				algo.alg_trunc_len = 256;
+				break;
+			}
+
+			attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
+			attr->rta_len = RTA_LENGTH(
+				sizeof(algo) + sa->authkeylen);
+
+			strcpy(algo.alg_name, name);
+			memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+			memcpy((char *)RTA_DATA(
+					attr) + sizeof(algo), sa->authkey,
+				sa->authkeylen);
+
+			req.n.nlmsg_len += attr->rta_len;
+			attr = (struct rtattr *)((char *)attr + attr->rta_len);
+			break;
+		}
+		default:
+		{
+			struct xfrm_algo algo_old;
+
+			algo_old.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
+			attr->rta_type = XFRMA_ALG_AUTH;
+			attr->rta_len = RTA_LENGTH(
+				sizeof(algo_old) + sa->authkeylen);
+			strcpy(algo_old.alg_name, name);
+			memcpy(RTA_DATA(attr), &algo_old, sizeof(algo_old));
+			memcpy((char *)RTA_DATA(
+					attr) + sizeof(algo_old), sa->authkey,
+				sa->authkeylen);
+
+			req.n.nlmsg_len += attr->rta_len;
+			attr = (struct rtattr *)((char *)attr + attr->rta_len);
+			break;
+		}
+		}
+	}
+
+	/* ??? why does IPCOMP trump aead and ESP?  Shouldn't all be bundled? */
+
+	aead = get_aead_alg(sa->encalg);
+	if (sa->esatype == ET_IPCOMP) {
+		struct xfrm_algo algo;
+
+                /* XXX should use proper formatter that has unknown */
+		const char *name = sparse_name(calg_list, sa->encalg);
+
+		if (name == NULL) {
+			loglog(RC_LOG_SERIOUS,
+				"unknown compression algorithm: %u",
+				sa->encalg);
+			return FALSE;
+		}
+
+		strcpy(algo.alg_name, name);
+		algo.alg_key_len = 0;
+
+		attr->rta_type = XFRMA_ALG_COMP;
+		attr->rta_len = RTA_LENGTH(sizeof(algo));
+
+		memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+
+		req.n.nlmsg_len += attr->rta_len;
+		attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	} else if (aead != NULL) {
+		struct xfrm_algo_aead algo;
+
+		strcpy(algo.alg_name, aead->name);
+		algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+		algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
+
+		attr->rta_type = XFRMA_ALG_AEAD;
+		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+
+		memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+		memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey,
+			sa->enckeylen);
+
+		req.n.nlmsg_len += attr->rta_len;
+		attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	} else if (sa->esatype == ET_ESP) {
+		struct xfrm_algo algo;
+		const char *name = sparse_name(ealg_list, sa->encalg);
+
+		if (name == NULL) {
+			loglog(RC_LOG_SERIOUS,
+				"unknown encryption algorithm: %u",
+				sa->encalg);
+			return FALSE;
+		}
+
+		strcpy(algo.alg_name, name);
+		algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+
+		attr->rta_type = XFRMA_ALG_CRYPT;
+		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+
+		memcpy(RTA_DATA(attr), &algo, sizeof(algo));
+		memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey,
+			sa->enckeylen);
+
+		req.n.nlmsg_len += attr->rta_len;
+		attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	}
+
+	if (sa->natt_type) {
+		struct xfrm_encap_tmpl natt;
+
+		natt.encap_type = sa->natt_type;
+		natt.encap_sport = ntohs(sa->natt_sport);
+		natt.encap_dport = ntohs(sa->natt_dport);
+		zero(&natt.encap_oa);
+
+		attr->rta_type = XFRMA_ENCAP;
+		attr->rta_len = RTA_LENGTH(sizeof(natt));
+
+		memcpy(RTA_DATA(attr), &natt, sizeof(natt));
+
+		req.n.nlmsg_len += attr->rta_len;
+		attr = (struct rtattr *)((char *)attr + attr->rta_len);	/* ??? why is this not used? */
+	}
 
 #ifdef HAVE_LABELED_IPSEC
-   if (sa->sec_ctx != NULL)
-   {
-	struct xfrm_user_sec_ctx xuctx;
+	if (sa->sec_ctx != NULL) {
+		size_t len = sa->sec_ctx->ctx.ctx_len;
+		struct xfrm_user_sec_ctx xuctx;
 
-	xuctx.len = sizeof(struct xfrm_user_sec_ctx) + sa->sec_ctx->ctx_len;
-	xuctx.exttype = XFRMA_SEC_CTX;
-	xuctx.ctx_alg = 1;
-	xuctx.ctx_doi = 1;
-	xuctx.ctx_len = sa->sec_ctx->ctx_len;
+		xuctx.len = sizeof(struct xfrm_user_sec_ctx) + len;
+		xuctx.exttype = XFRMA_SEC_CTX;
+		xuctx.ctx_alg = 1;	/* ??? sa->sec_ctx.ctx_alg? */
+		xuctx.ctx_doi = 1;	/* ??? sa->sec_ctx.ctx_doi? */
+		xuctx.ctx_len = len;
 
-	attr->rta_type = XFRMA_SEC_CTX;
-	attr->rta_len = RTA_LENGTH(xuctx.len);
+		attr->rta_type = XFRMA_SEC_CTX;
+		attr->rta_len = RTA_LENGTH(xuctx.len);
 
-        memcpy(RTA_DATA(attr), &xuctx, sizeof(xuctx));
-        memcpy((char *)RTA_DATA(attr) + sizeof(xuctx), sa->sec_ctx->sec_ctx_value
-            , sa->sec_ctx->ctx_len);
+		memcpy(RTA_DATA(attr), &xuctx, sizeof(xuctx));
+		memcpy((char *)RTA_DATA(attr) + sizeof(xuctx),
+			sa->sec_ctx->sec_ctx_value, len);
 
-        req.n.nlmsg_len += attr->rta_len;
-        attr = (struct rtattr *)((char *)attr + attr->rta_len);
-   }
+		req.n.nlmsg_len += attr->rta_len;
+		attr = (struct rtattr *)((char *)attr + attr->rta_len);
+	}
 #endif
-
-    return send_netlink_msg(&req.n, NULL, 0, "Add SA", sa->text_said);
+	ret = send_netlink_msg(&req.n, NULL, 0, "Add SA", sa->text_said);
+	if (!ret && errno == ESRCH &&
+		req.n.nlmsg_type == XFRM_MSG_UPDSA) {
+		loglog(RC_LOG_SERIOUS,
+			"Warning: expected to find an existing IPsec SA - continuing as Add SA");
+		return netlink_add_sa(sa, FALSE);
+	}
+	return ret;
 }
 
 /** netlink_del_sa - Delete an SA from the Kernel
