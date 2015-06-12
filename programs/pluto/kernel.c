@@ -1323,6 +1323,278 @@ del_spi(ipsec_spi_t spi, int proto
 }
 
 /*
+ * many arguments might go elsewhere, but for now this is fine
+ * to just make the code clearer
+ */
+static err_t setup_esp_sa(struct connection *c
+                          , struct state *st
+                          , unsigned int encapsulation
+                          , bool inbound
+                          , bool outgoing_ref_set
+                          , bool replace
+                          , const char *inbound_str
+                          , struct kernel_sa *said_next
+                          , ip_subnet src
+                          , ip_subnet dst
+                          , ip_subnet src_client
+                          , ip_subnet dst_client)
+{
+    ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
+    u_char *esp_dst_keymat = inbound? st->st_esp.our_keymat : st->st_esp.peer_keymat;
+    const struct esp_info *ei;
+    u_int16_t key_len;
+    char text_said[SATOT_BUF];
+    IPsecSAref_t refhim = st->st_refhim;
+
+    /* this maps IKE/IETF values into kernel identifiers */
+    static const struct esp_info esp_info[] = {
+        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
+          0, HMAC_MD5_KEY_LEN,
+          SADB_EALG_NULL, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
+          0, HMAC_SHA1_KEY_LEN,
+          SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
+          DES_CBC_BLOCK_SIZE, 0,
+          SADB_EALG_DESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
+          DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
+          SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
+          DES_CBC_BLOCK_SIZE,
+          HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
+          DES_CBC_BLOCK_SIZE * 3, 0,
+          SADB_EALG_3DESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
+          DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
+          SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
+          DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
+          SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
+          AES_CBC_BLOCK_SIZE, 0,
+          SADB_X_EALG_AESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
+              AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
+          SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
+          AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
+          SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
+    };
+
+    /* static const int esp_max = elemsof(esp_info); */
+    /* int esp_count; */
+
+#ifdef NAT_TRAVERSAL
+    u_int8_t natt_type = 0;
+    u_int16_t natt_sport = 0, natt_dport = 0;
+    ip_address natt_oa;
+
+    if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
+        if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
+            natt_type = ESPINUDP_WITH_NON_ESP;
+        } else {
+            natt_type = ESPINUDP_WITH_NON_IKE;
+        }
+
+        if(inbound) {
+            natt_sport = st->st_remoteport;
+            natt_dport = st->st_localport;
+        } else {
+            natt_sport = st->st_localport;
+            natt_dport = st->st_remoteport;
+        }
+
+        natt_oa = st->hidden_variables.st_nat_oa;
+    }
+#endif
+
+    DBG(DBG_CRYPT
+        , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d\n"
+                      , inbound_str
+		      , st->st_esp.attrs.transattrs.encrypt
+		      , st->st_esp.attrs.transattrs.enckeylen
+		      , st->st_esp.attrs.transattrs.integ_hash));
+
+    for (ei = esp_info; ; ei++) {
+
+        /* if it is the last key entry, then ask algo */
+        if (ei == &esp_info[elemsof(esp_info)]) {
+            /* Check for additional kernel alg */
+#ifdef KERNEL_ALG
+            if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
+                                        st->st_esp.attrs.transattrs.enckeylen,
+                                        st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
+                break;
+            }
+#endif
+
+            /* note: enum_show may use a static buffer, so two
+             * calls in one printf would be a mistake.
+             * enum_name does the same job, without a static buffer,
+             * assuming the name will be found.
+             */
+            loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
+                   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+                   , st->st_esp.attrs.transattrs.enckeylen
+                   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
+            return "implement not implemented";
+        }
+
+        DBG(DBG_CRYPT
+            , DBG_log("checking transid: %d keylen: %d auth: %d\n"
+                      , ei->transid, ei->enckeylen, ei->auth));
+
+        if (st->st_esp.attrs.transattrs.encrypt == ei->transid
+            && (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
+            && st->st_esp.attrs.transattrs.integ_hash == ei->auth)
+            break;
+    }
+
+    if (st->st_esp.attrs.transattrs.encrypt != ei->transid
+        && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE
+        && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
+        loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
+               , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+               , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
+        return "failed to find key info";
+    }
+
+    key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
+    if (key_len) {
+        /* XXX: must change to check valid _range_ key_len */
+        if (key_len > ei->enckeylen) {
+            loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
+                   enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
+                   (int)key_len, (int)ei->enckeylen);
+            return "wrong key length";
+        }
+    } else {
+        key_len = ei->enckeylen;
+    }
+
+    /* ifdef 3DES? */
+    /* Grrrrr.... f*cking 7 bits jurassic algos  */
+
+    /* 168 bits in kernel, need 192 bits for keymat_len */
+    if (ei->transid == ESP_3DES && key_len == 21)
+        key_len = 24;
+
+    /* 56 bits in kernel, need 64 bits for keymat_len */
+    if (ei->transid == ESP_DES && key_len == 7)
+        key_len = 8;
+
+    /* divide up keying material */
+    /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
+    if(st->st_esp.keymat_len != key_len + ei->authkeylen)
+        DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
+        st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
+    passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
+
+    set_text_said(text_said, &dst.addr, esp_spi, SA_ESP);
+
+    said_next->src = &src.addr;
+    said_next->dst = &dst.addr;
+    said_next->src_client = &src_client;
+    said_next->dst_client = &dst_client;
+    said_next->transport_proto = c->spd.this.protocol;
+    said_next->spi = esp_spi;
+    said_next->esatype = ET_ESP;
+    said_next->replay_window = kernel_ops->replay_window;
+    said_next->authalg = ei->authalg;
+
+    /* XXX -- where does this bug come from? */
+    if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256)
+        && (st->st_connection->sha2_truncbug)) {
+        if(kernel_ops->sha2_truncbug_support) {
+            DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
+            /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
+            said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
+        } else {
+            loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
+            return "sha2 trunc bug not fixable";
+        }
+    }
+
+    said_next->authkeylen = ei->authkeylen;
+    /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
+    said_next->authkey = esp_dst_keymat + key_len;
+    said_next->encalg = ei->encryptalg;
+    /* said_next->enckeylen = ei->enckeylen; */
+    said_next->enckeylen = key_len;
+    said_next->enckey = esp_dst_keymat;
+    said_next->encapsulation = encapsulation;
+    said_next->reqid = c->spd.reqid + 1;
+
+#ifdef HAVE_LABELED_IPSEC
+    said_next->sec_ctx = st->sec_ctx;
+#endif
+
+#ifdef NAT_TRAVERSAL
+    said_next->natt_sport = natt_sport;
+    said_next->natt_dport = natt_dport;
+    said_next->transid = st->st_esp.attrs.transattrs.encrypt;
+    said_next->natt_type = natt_type;
+    said_next->natt_oa = &natt_oa;
+#endif
+    said_next->outif   = -1;
+#ifdef KLIPS_MAST
+    if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT
+        && useful_mastno != -1) {
+        said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
+    }
+#endif
+    said_next->text_said = text_said;
+    said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+    DBG(DBG_CRYPT
+        , DBG_dump("esp %s enckey:",  said_next->enckey,  said_next->enckeylen);
+          DBG_dump("esp %s authkey:", said_next->authkey, said_next->authkeylen);
+          );
+
+    if(inbound) {
+        /*
+         * set corresponding outbound SA. We can do this on
+         * each SA in the bundle without harm.
+         */
+        said_next->refhim = refhim;
+    } else if (!outgoing_ref_set) {
+        /* on outbound, pick up the SAref if not already done */
+        said_next->ref    = refhim;
+        outgoing_ref_set  = TRUE;
+    }
+
+    if(inbound) {
+        /*
+         * set corresponding outbound SA. We can do this on
+         * each SA in the bundle without harm.
+         */
+        said_next->refhim = refhim;
+    } else if (!outgoing_ref_set) {
+        /* on outbound, pick up the SAref if not already done */
+        said_next->ref    = refhim;
+        outgoing_ref_set  = TRUE;
+    }
+
+    {
+      bool add_success = kernel_ops->add_sa(said_next, replace);
+
+      /* good crypto hygiene, (not just LIBNSS) */
+      memset(said_next->enckey, 0, said_next->enckeylen);
+      memset(said_next->authkey, 0, said_next->authkeylen);
+
+      if(!add_success) {
+        return "failed to add sa";
+      }
+    }
+    return NULL; /* no error */
+}
+
+/*
  * Setup a pair of SAs.
  *
  */
@@ -1330,7 +1602,7 @@ static bool
 setup_half_ipsec_sa(struct state *st, bool inbound)
 {
     /* Build an inbound or outbound SA */
-
+    err_t err = NULL;
     struct connection *c = st->st_connection;
     ip_subnet src, dst;
     ip_subnet src_client, dst_client;
@@ -1353,6 +1625,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     char text_said[SATOT_BUF];
     int encapsulation;
 
+    bool add_selector;
+
     replace = inbound && (kernel_ops->get_spi != NULL);
 
     src.maskbits = 0;
@@ -1374,10 +1648,13 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     }
 
     encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+    add_selector  = TRUE;
+
     if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
         || st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
         || st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
     {
+        add_selector = FALSE; /* Don't add selectors for tunnel mode */
         encapsulation = ENCAPSULATION_MODE_TUNNEL;
     }
 
@@ -1422,6 +1699,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
+	said_next->inbound         = inbound;
+	said_next->add_selector    = add_selector;
         said_next->spi = ipip_spi;
         said_next->esatype = ET_IPIP;
         said_next->text_said = text_said;
@@ -1568,270 +1847,31 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up ESP SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("esp maybe"));
     if (st->st_esp.present)
     {
-        ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
-        u_char *esp_dst_keymat = inbound? st->st_esp.our_keymat : st->st_esp.peer_keymat;
-        const struct esp_info *ei;
-        u_int16_t key_len;
+        err = setup_esp_sa(c, st, encapsulation, inbound
+                           , outgoing_ref_set, replace
+                           , inbound_str, said_next
+                           , src, dst, src_client, dst_client);
+        if(err) goto fail;
 
-        static const struct esp_info esp_info[] = {
-            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
-                0, HMAC_MD5_KEY_LEN,
-                SADB_EALG_NULL, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
-                0, HMAC_SHA1_KEY_LEN,
-                SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
-                DES_CBC_BLOCK_SIZE, 0,
-                SADB_EALG_DESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
-                DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-                SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
-                DES_CBC_BLOCK_SIZE,
-                HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
-                DES_CBC_BLOCK_SIZE * 3, 0,
-                SADB_EALG_3DESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
-                DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
-                SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
-                DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
-                SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
-                AES_CBC_BLOCK_SIZE, 0,
-                SADB_X_EALG_AESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
-                AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-                SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
-                AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
-                SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
-        };
-	/* static const int esp_max = elemsof(esp_info); */
-	/* int esp_count; */
-
-#ifdef NAT_TRAVERSAL
-        u_int8_t natt_type = 0;
-        u_int16_t natt_sport = 0, natt_dport = 0;
-        ip_address natt_oa;
-
-        if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
-	    if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
-		natt_type = ESPINUDP_WITH_NON_ESP;
-	    } else {
-		natt_type = ESPINUDP_WITH_NON_IKE;
-	    }
-
-	    if(inbound) {
-		natt_sport = st->st_remoteport;
-		natt_dport = st->st_localport;
-	    } else {
-		natt_sport = st->st_localport;
-		natt_dport = st->st_remoteport;
-	    }
-
-            natt_oa = st->hidden_variables.st_nat_oa;
-        }
-#endif
-
-	DBG(DBG_CRYPT
-	    , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d\n"
-                      , inbound_str
-		      , st->st_esp.attrs.transattrs.encrypt
-		      , st->st_esp.attrs.transattrs.enckeylen
-		      , st->st_esp.attrs.transattrs.integ_hash));
-
-        for (ei = esp_info; ; ei++)
-        {
-
-	    /* if it is the last key entry, then ask algo */
-            if (ei == &esp_info[elemsof(esp_info)])
-            {
-                /* Check for additional kernel alg */
-#ifdef KERNEL_ALG
-                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
-					    st->st_esp.attrs.transattrs.enckeylen,
-					    st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
-                        break;
-                }
-#endif
-
-                /* note: enum_show may use a static buffer, so two
-                 * calls in one printf would be a mistake.
-                 * enum_name does the same job, without a static buffer,
-                 * assuming the name will be found.
-                 */
-                loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
-                    , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
-		       , st->st_esp.attrs.transattrs.enckeylen
-                    , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-                goto fail;
+        /*
+         * SA refs will have been allocated for this SA.
+         * The inner most one is interesting for the outgoing SA,
+         * since we refer to it in the policy that we instantiate.
+         */
+        if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+            new_refhim = said_next->ref;
+            if(new_refhim == IPSEC_SAREF_NULL) {
+                new_refhim = IPSEC_SAREF_NA;
             }
-
-	    DBG(DBG_CRYPT
-		, DBG_log("checking transid: %d keylen: %d auth: %d\n"
-			  , ei->transid, ei->enckeylen, ei->auth));
-
-            if (st->st_esp.attrs.transattrs.encrypt == ei->transid
-		&& (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
-		&& st->st_esp.attrs.transattrs.integ_hash == ei->auth)
-                break;
+        }
+        if(!incoming_ref_set && inbound) {
+            st->st_ref = said_next->ref;
+            incoming_ref_set=TRUE;
         }
 
-	if (st->st_esp.attrs.transattrs.encrypt != ei->transid
-	    && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE
-	    && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
-	    loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
-		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
-		   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-	    goto fail;
-	}
-
-        key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
-        if (key_len) {
-                /* XXX: must change to check valid _range_ key_len */
-                if (key_len > ei->enckeylen) {
-                        loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
-                        enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
-                        (int)key_len, (int)ei->enckeylen);
-                        goto fail;
-                }
-        } else {
-                key_len = ei->enckeylen;
-        }
-        /* Grrrrr.... f*cking 7 bits jurassic algos  */
-
-        /* 168 bits in kernel, need 192 bits for keymat_len */
-        if (ei->transid == ESP_3DES && key_len == 21)
-                key_len = 24;
-
-        /* 56 bits in kernel, need 64 bits for keymat_len */
-        if (ei->transid == ESP_DES && key_len == 7)
-                key_len = 8;
-
-        /* divide up keying material */
-        /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
-	if(st->st_esp.keymat_len != key_len + ei->authkeylen)
-	    DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
-		    st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
-        passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
-
-        set_text_said(text_said, &dst.addr, esp_spi, SA_ESP);
-
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
-        said_next->src_client = &src_client;
-        said_next->dst_client = &dst_client;
-        said_next->transport_proto = c->spd.this.protocol;
-        said_next->spi = esp_spi;
-        said_next->esatype = ET_ESP;
-        said_next->replay_window = kernel_ops->replay_window;
-        said_next->authalg = ei->authalg;
-
-		if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) && (st->st_connection->sha2_truncbug)) {
-			if(kernel_ops->sha2_truncbug_support){
-			   DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
-			   /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
-			   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
-			} else {
-                   loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
-		   	goto fail;
-			}
-		}
-        said_next->authkeylen = ei->authkeylen;
-        /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
-        said_next->authkey = esp_dst_keymat + key_len;
-        said_next->encalg = ei->encryptalg;
-        /* said_next->enckeylen = ei->enckeylen; */
-        said_next->enckeylen = key_len;
-        said_next->enckey = esp_dst_keymat;
-        said_next->encapsulation = encapsulation;
-        said_next->reqid = c->spd.reqid + 1;
-
-#ifdef HAVE_LABELED_IPSEC
-        said_next->sec_ctx = st->sec_ctx;
-#endif
-
-#ifdef NAT_TRAVERSAL
-        said_next->natt_sport = natt_sport;
-        said_next->natt_dport = natt_dport;
-        said_next->transid = st->st_esp.attrs.transattrs.encrypt;
-        said_next->natt_type = natt_type;
-        said_next->natt_oa = &natt_oa;
-#endif
-	said_next->outif   = -1;
-#ifdef KLIPS_MAST
-	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT && useful_mastno != -1) {
-	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
-	}
-#endif
-	said_next->text_said = text_said;
-	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
-
-	DBG(DBG_CRYPT,
-            DBG_dump("esp %s enckey:",  said_next->enckey,  said_next->enckeylen);
-            DBG_dump("esp %s authkey:", said_next->authkey, said_next->authkeylen);
-	);
-
-	if(inbound) {
-	    /*
-	     * set corresponding outbound SA. We can do this on
-	     * each SA in the bundle without harm.
-	     */
-	    said_next->refhim = refhim;
-	} else if (!outgoing_ref_set) {
-	    /* on outbound, pick up the SAref if not already done */
-	    said_next->ref    = refhim;
-	    outgoing_ref_set  = TRUE;
-	}
-
-	if(inbound) {
-	    /*
-	     * set corresponding outbound SA. We can do this on
-	     * each SA in the bundle without harm.
-	     */
-	    said_next->refhim = refhim;
-	} else if (!outgoing_ref_set) {
-	    /* on outbound, pick up the SAref if not already done */
-	    said_next->ref    = refhim;
-	    outgoing_ref_set  = TRUE;
-	}
-
-#ifdef HAVE_LIBNSS
-       if (!kernel_ops->add_sa(said_next, replace)) {
-            memset(said_next->enckey, 0, said_next->enckeylen);
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#else
-        if (!kernel_ops->add_sa(said_next, replace))
-#endif
-            goto fail;
-#ifdef HAVE_LIBNSS
-       }
-            memset(said_next->enckey, 0, said_next->enckeylen);
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#endif
-
-	/*
-	 * SA refs will have been allocated for this SA.
-	 * The inner most one is interesting for the outgoing SA,
-	 * since we refer to it in the policy that we instantiate.
-	 */
-	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
-	    new_refhim = said_next->ref;
-	    if(new_refhim == IPSEC_SAREF_NULL) {
-		new_refhim = IPSEC_SAREF_NA;
-	    }
-	}
-	if(!incoming_ref_set && inbound) {
-	    st->st_ref = said_next->ref;
-	    incoming_ref_set=TRUE;
-	}
         said_next++;
 
         encapsulation = ENCAPSULATION_MODE_TRANSPORT;
