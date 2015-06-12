@@ -227,7 +227,7 @@ init_crypto(void)
 
 #ifdef USE_3DES
 	    {
-		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des);
+		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des, FALSE);
 	    }
 #endif
 
@@ -252,10 +252,10 @@ init_crypto(void)
 	    }
 #endif
 
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1);
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_md5);
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1, FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1,  FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5,  FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_md5,   FALSE);
 	}
 #endif
 }

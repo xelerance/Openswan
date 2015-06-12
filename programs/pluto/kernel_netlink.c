@@ -211,6 +211,179 @@ static void ip2xfrm(const ip_address *addr, xfrm_address_t *xaddr)
     }
 }
 
+#ifdef HAVE_AEAD
+static struct encrypt_desc algo_aes_ccm_8 =
+{
+	.common = {
+		.name = "aes_ccm_8",
+		.officname = "aes_ccm_8",
+		.algo_type =    IKE_ALG_ENCRYPT,
+		.algo_v2id =    IKEv2_ENCR_AES_CCM_8,
+		.algo_next =    NULL,
+	},
+	.enc_blocksize =  AES_BLOCK_SIZE,
+	.ivsize =  8,
+	/* Only 128, 192 and 256 are supported (24 bits KEYMAT for salt not included) */
+	.keyminlen =      AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =      AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =      AEAD_AES_KEY_MAX_LEN,
+};
+
+static struct encrypt_desc algo_aes_ccm_12 =
+{
+	.common = {
+		.name = "aes_ccm_12",
+		.officname = "aes_ccm_12",
+		.algo_type =    IKE_ALG_ENCRYPT,
+		.algo_v2id =    IKEv2_ENCR_AES_CCM_12,
+		.algo_next =    NULL,
+	},
+	.enc_blocksize =  AES_BLOCK_SIZE,
+	.ivsize =  8,
+	/* Only 128, 192 and 256 are supported (24 bits KEYMAT for salt not included) */
+	.keyminlen =      AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =      AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =      AEAD_AES_KEY_MAX_LEN,
+};
+
+static struct encrypt_desc algo_aes_ccm_16 =
+{
+	.common = {
+		.name = "aes_ccm_16",
+		.officname = "aes_ccm_16",
+		.algo_type =   IKE_ALG_ENCRYPT,
+		.algo_v2id =   IKEv2_ENCR_AES_CCM_16,
+		.algo_next =   NULL,
+	},
+	.enc_blocksize = AES_BLOCK_SIZE,
+	.ivsize = 8,
+	/* Only 128, 192 and 256 are supported (24 bits KEYMAT for salt not included) */
+	.keyminlen =     AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =     AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
+};
+
+static struct encrypt_desc algo_aes_gcm_8 =
+{
+	.common = {
+		.name = "aes_gcm_8",
+		.officname = "aes_gcm_8",
+		.algo_type =   IKE_ALG_ENCRYPT,
+		.algo_v2id =   IKEv2_ENCR_AES_GCM_8,
+		.algo_next =   NULL,
+	},
+	.enc_blocksize = AES_BLOCK_SIZE,
+	.ivsize = 8,
+	/* Only 128, 192 and 256 are supported (32 bits KEYMAT for salt not included) */
+	.keyminlen =     AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =     AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
+};
+
+static struct encrypt_desc algo_aes_gcm_12 =
+{
+	.common = {
+		.name = "aes_gcm_12",
+		.officname = "aes_gcm_12",
+		.algo_type =   IKE_ALG_ENCRYPT,
+		.algo_v2id =   IKEv2_ENCR_AES_GCM_12,
+		.algo_next =   NULL,
+	},
+	.enc_blocksize = AES_BLOCK_SIZE,
+	.ivsize = 8,
+	/* Only 128, 192 and 256 are supported (32 bits KEYMAT for salt not included) */
+	.keyminlen =     AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =     AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
+};
+
+static struct encrypt_desc algo_aes_gcm_16 =
+{
+	.common = {
+		.name = "aes_gcm_16",
+		.officname = "aes_gcm_16",
+		.algo_type =  IKE_ALG_ENCRYPT,
+		.algo_v2id =    IKEv2_ENCR_AES_GCM_16,
+		.algo_next =  NULL,
+	},
+	.enc_blocksize = AES_BLOCK_SIZE,
+	.ivsize = 8,
+	/* Only 128, 192 and 256 are supported (32 bits KEYMAT for salt not included) */
+	.keyminlen =    AEAD_AES_KEY_MIN_LEN,
+	.keydeflen =    AEAD_AES_KEY_DEF_LEN,
+	.keymaxlen =    AEAD_AES_KEY_MAX_LEN,
+};
+
+
+/*
+ * wire-in Authenticated Encryption with Associated Data transforms
+ * (do both enc and auth in one transform)
+ */
+static void linux_pfkey_add_aead(void)
+{
+	struct sadb_alg alg;
+
+	alg.sadb_alg_reserved = 0;
+
+
+	/* IPsec algos (encryption and authentication combined) */
+	alg.sadb_alg_ivlen = 8;
+	alg.sadb_alg_minbits = 128;
+	alg.sadb_alg_maxbits = 256;
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV8;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_8 for ESP");
+
+	alg.sadb_alg_ivlen = 12;
+	alg.sadb_alg_minbits = 128;
+	alg.sadb_alg_maxbits = 256;
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV12;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_12 for ESP");
+
+	alg.sadb_alg_ivlen = 16;
+	alg.sadb_alg_minbits = 128;
+	alg.sadb_alg_maxbits = 256;
+	alg.sadb_alg_id = SADB_X_EALG_AES_GCM_ICV16;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_16 for ESP");
+
+	/* keeping aes-ccm behaviour intact as before */
+	alg.sadb_alg_ivlen = 8;
+	alg.sadb_alg_minbits = 128;
+	alg.sadb_alg_maxbits = 256;
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV8;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_8 for ESP");
+
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV12;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_12 for ESP");
+
+	alg.sadb_alg_id = SADB_X_EALG_AES_CCM_ICV16;
+	if (kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT, &alg) != 1)
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_16 for ESP");
+
+	/* IKE algos (encryption and authentication combined) */
+	if (!ike_alg_register_enc(&algo_aes_ccm_8))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_8 for IKE");
+	if (!ike_alg_register_enc(&algo_aes_ccm_12))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_12 for IKE");
+	if (!ike_alg_register_enc(&algo_aes_ccm_16))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_ccm_16 for IKE");
+	if (!ike_alg_register_enc(&algo_aes_gcm_8))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_8 for IKE");
+	if (!ike_alg_register_enc(&algo_aes_gcm_12))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_12 for IKE");
+	if (!ike_alg_register_enc(&algo_aes_gcm_16))
+		loglog(RC_LOG_SERIOUS, "Warning: failed to register algo_aes_gcm_16 for IKE");
+
+	DBG(DBG_CONTROLMORE,
+		DBG_log("Registered AEAD AES CCM/GCM algorithms"));
+}
+#endif /* HAVE_AEAD */
+
+
 /** init_netlink - Initialize the netlink inferface.  Opens the sockets and
  * then binds to the broadcast socket.
  */
@@ -246,9 +419,19 @@ static void init_netlink(void)
     /*
      * also open the pfkey socket, since we need it to get a list of
      * algorithms.
-     * There is currently no netlink way to do this.
+     * There is currently no netlink way to do this: (XXX - probably no longer
+     * true in 2015).
      */
     init_pfkey();
+
+#ifdef HAVE_AEAD
+    /* ??? why do we have to wire these in?
+     * -- MCR knows not either.
+     * presumably because they aren't auth and aren't just crypto,
+     * so they don't fit into kernel cryptoapi well.
+     **/
+    linux_pfkey_add_aead();
+#endif /* HAVE_AEAD */
 }
 
 /** send_netlink_msg
@@ -724,24 +907,28 @@ netlink_raw_eroute(const ip_address *this_host
     }
 
 #ifdef HAVE_LABELED_IPSEC
-    {
-	if(policy_label) {
-	struct rtattr *attr;
-	struct xfrm_user_sec_ctx *uctx;
-	attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
-	attr->rta_type = XFRMA_SEC_CTX;
-	/*Passing null terminated sec label (strlen + '\0')*/
-	DBG_log("passing security label %s (len=%d) to kernel", policy_label, strlen(policy_label));
-	attr->rta_len = RTA_LENGTH(sizeof(struct xfrm_user_sec_ctx) + strlen(policy_label) +1);
+    if (policy_label != NULL) {
+        size_t len = strlen(policy_label) + 1;
+        struct rtattr *attr = (struct rtattr *)
+            ((char *)&req + req.n.nlmsg_len);
+        struct xfrm_user_sec_ctx *uctx;
+
+        passert(len <= MAX_SECCTX_LEN);
+        attr->rta_type = XFRMA_SEC_CTX;
+
+        DBG(DBG_KERNEL,
+            DBG_log("passing security label \"%s\" to kernel",
+                    policy_label));
+        attr->rta_len =
+            RTA_LENGTH(sizeof(struct xfrm_user_sec_ctx) + len);
         uctx = RTA_DATA(attr);
         uctx->exttype = XFRMA_SEC_CTX;
-        uctx->len = sizeof(struct xfrm_user_sec_ctx) + strlen(policy_label) +1;
-        uctx->ctx_doi = 1;
-        uctx->ctx_alg = 1;
-        uctx->ctx_len = strlen(policy_label) +1;
-	memcpy(uctx + 1, policy_label, uctx->ctx_len);
-	req.n.nlmsg_len += attr->rta_len;
-	}
+        uctx->len = sizeof(struct xfrm_user_sec_ctx) + len;
+        uctx->ctx_doi = 1;	/* ??? hardwired and nameless */
+        uctx->ctx_alg = 1;	/* ??? hardwired and nameless */
+        uctx->ctx_len = len;
+        memcpy(uctx + 1, policy_label, len);
+        req.n.nlmsg_len += attr->rta_len;
     }
 #endif
 
@@ -799,6 +986,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     } req;
     struct rtattr *attr;
     struct aead_alg *aead;
+    bool ret;
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
