@@ -1414,11 +1414,12 @@ static err_t setup_esp_sa(struct connection *c
 #endif
 
     DBG(DBG_CRYPT
-        , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d\n"
-                      , inbound_str
-		      , st->st_esp.attrs.transattrs.encrypt
-		      , st->st_esp.attrs.transattrs.enckeylen
-		      , st->st_esp.attrs.transattrs.integ_hash));
+        , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d for spi=%08x\n"
+                  , inbound_str
+                  , st->st_esp.attrs.transattrs.encrypt
+                  , st->st_esp.attrs.transattrs.enckeylen
+                  , st->st_esp.attrs.transattrs.integ_hash
+                  , esp_spi));
 
     for (ei = esp_info; ; ei++) {
 
@@ -1551,10 +1552,12 @@ static err_t setup_esp_sa(struct connection *c
     said_next->text_said = text_said;
     said_next->sa_lifetime = c->sa_ipsec_life_seconds;
 
-    DBG(DBG_CRYPT
-        , DBG_dump("esp %s enckey:",  said_next->enckey,  said_next->enckeylen);
-          DBG_dump("esp %s authkey:", said_next->authkey, said_next->authkeylen);
-          );
+    DBG(DBG_CRYPT, {
+            DBG_dump("ESP enckey:",  said_next->enckey,
+                     said_next->enckeylen);
+            DBG_dump("ESP authkey:", said_next->authkey,
+                     said_next->authkeylen);
+        });
 
     if(inbound) {
         /*
@@ -2107,7 +2110,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
 fail:
     {
-	DBG_log("setup_half_ipsec_sa() hit fail:");
+	DBG_log("setup_half_ipsec_sa() hit fail %s", err ? err : "<unknown>");
         /* undo the done SPIs */
         while (said_next-- != said) {
 	    if(said_next->proto) {
@@ -2869,16 +2872,17 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 	if(!setup_half_ipsec_sa(st, FALSE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outgoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("state #%lu: set up outgoing SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
 	st->st_outbound_done = TRUE;
     }
 
+    DBG(DBG_KLIPS, DBG_log("now setting up incoming SA"));
     /* now setup inbound SA */
     if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
 	if(!setup_half_ipsec_sa(st, TRUE)) {
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("state #%lu: set up incoming SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
     }
 
     if(rb == route_unnecessary) {

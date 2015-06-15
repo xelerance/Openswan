@@ -2179,10 +2179,15 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         /*
          * Delete previous retransmission event.
          */
-        delete_event(st);
+        delete_event(pst);
         return STF_OK;
     }
 
+    /*
+     * here we actually really need the child state, it's not just
+     * optional if we creating child SAs.
+     */
+    /* so let's look for the child state */
     {
         int best_tsi_i ,  best_tsr_i;
         int bestfit_n = -1;
