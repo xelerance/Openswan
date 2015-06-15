@@ -1002,7 +1002,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.family = sa->src->u.v4.sin_family;
 
     DBG_log("creating SA spi=%08x proto=%u family=%u"
-            , req.p.id.spi, req.p.id.proto, req.p.family);
+            , htonl(req.p.id.spi), req.p.id.proto, req.p.family);
 
     /*
      * This requires ipv6 modules. It is required to support 6in4 and 4in6

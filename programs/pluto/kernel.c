@@ -2839,7 +2839,7 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     struct spd_route *sr;
     enum routability rb;
 
-    DBG(DBG_CONTROL, DBG_log("install_ipsec_sa() for #%ld: %s"
+    DBG(DBG_CONTROL, DBG_log("state #%ld: install_ipsec_sa() for %s"
                              , st->st_serialno
                              , inbound_also?
                              "inbound and outbound" : "outbound only"));
@@ -2870,16 +2870,18 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 #endif
 	) {
 	if(!setup_half_ipsec_sa(st, FALSE)) {
+            loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup outgoing SA", st->st_serialno);
 	    return FALSE;
 	}
 	DBG(DBG_KLIPS, DBG_log("state #%lu: set up outgoing SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
 	st->st_outbound_done = TRUE;
     }
 
-    DBG(DBG_KLIPS, DBG_log("now setting up incoming SA"));
+    DBG(DBG_KLIPS, DBG_log("state #%lu: now setting up incoming SA", st->st_serialno));
     /* now setup inbound SA */
     if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
 	if(!setup_half_ipsec_sa(st, TRUE)) {
+            loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup incoming SA", st->st_serialno);
 	    return FALSE;
 	}
 	DBG(DBG_KLIPS, DBG_log("state #%lu: set up incoming SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
