@@ -129,9 +129,9 @@ struct ipsec_proto_info {
 };
 
 /*
- * internal state that
- * should get copied by god... to the child SA state.
- * this is to make Einstein happy.
+ * internal state that should get copied by god... to the child SA state.
+ * (this is to make Einstein happy)
+ * A smarter way in IKEv2 might be to make this a pointer in the child?
  */
 
 struct hidden_variables {
