@@ -156,8 +156,7 @@ struct traffic_selector ikev2_end_to_ts(struct end *e)
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 			 , pb_stream *outpbs
 			 , unsigned int np
-			 , struct traffic_selector *ts
-			 , enum phase1_role role UNUSED)
+			 , struct traffic_selector *ts)
 {
     struct ikev2_ts its;
     struct ikev2_ts1 its1;
@@ -223,6 +222,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			      , pb_stream *outpbs
 			      , enum phase1_role role
+                              , unsigned int next_payload
 			      , struct connection *c0
 			      , lset_t policy UNUSED)
 {
@@ -242,31 +242,10 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
-			    , ts_i, INITIATOR);
+	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr, ts_i);
 	if(ret!=STF_OK) return ret;
 
-	if(role == INITIATOR) {
-	ret = ikev2_emit_ts(md, outpbs, st->st_connection->policy & POLICY_TUNNEL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_v2N
-			    , ts_r, RESPONDER);
-	}
-	else {
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-			DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
-			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
-						, ts_r, RESPONDER);
-			break;
-			}
-		}
-		if(!p){
-                        ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
-                                                , ts_r, RESPONDER);
-                }
-        }
-
+        ret = ikev2_emit_ts(md, outpbs, next_payload, ts_r);
 	if(ret!=STF_OK) return ret;
     }
 
@@ -837,37 +816,52 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         }
     }
 
-    ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER
-                             , c, c->policy);
-    if(ret != STF_OK) {
-        return ret;
+    {
+        unsigned int next_payload = ISAKMP_NEXT_NONE;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+                next_payload = ISAKMP_NEXT_v2N;
+                break;
+            }
+        }
+
+        ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER, next_payload
+                                 , c, c->policy);
+        if(ret != STF_OK) {
+            return ret;
+        }
     }
 
-    chunk_t child_spi, notifiy_data;
-    struct payload_digest *p;
-    for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
-        if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+    {
+        chunk_t child_spi, notifiy_data;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
-            if(st1->st_connection->policy & POLICY_TUNNEL) {
-                DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-                DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+                if(st1->st_connection->policy & POLICY_TUNNEL) {
+                    DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
+                    DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+                }
+                else {
+                    DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
+                    DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+                }
+
+                memset(&child_spi, 0, sizeof(child_spi));
+                memset(&notifiy_data, 0, sizeof(notifiy_data));
+                ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL
+                          , /*PROTO_ISAKMP*/ 0,
+                          &child_spi,
+                          v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+
+                if (st1->st_esp.present == TRUE) {
+                    /* openswan supports only "esp" with ikev2 it seems,
+                     * look at ikev2_parse_child_sa_body handling*/
+                    st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                }
+                break;
             }
-            else {
-                DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-                DBG_log("Now responding with USE_TRANSPORT_MODE notify");
-            }
-
-            memset(&child_spi, 0, sizeof(child_spi));
-                    memset(&notifiy_data, 0, sizeof(notifiy_data));
-                    ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
-                              &child_spi,
-                              v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
-
-                    if (st1->st_esp.present == TRUE) {
-                        /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-                        st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-                    }
-                    break;
         }
     }
 

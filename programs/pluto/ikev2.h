@@ -166,14 +166,14 @@ extern int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
 extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, pb_stream *outpbs
 				, unsigned int np
-				, struct traffic_selector *ts
-				, enum phase1_role role);
+				, struct traffic_selector *ts);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
-				, pb_stream *outpbs
-				, enum phase1_role role
-				, struct connection *c0
-				, lset_t policy);
+                                     , pb_stream *outpbs
+                                     , enum phase1_role role
+                                     , unsigned int next_payload
+                                     , struct connection *c0
+                                     , lset_t policy);
 
 extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, struct traffic_selector *array
