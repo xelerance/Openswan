@@ -671,7 +671,6 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
-                                  , enum phase1_role role
                                   , pb_stream *outpbs)
 {
     struct state      *st = md->st;
@@ -712,11 +711,11 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	best_tsi_i =  best_tsr_i = -1;
 
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,sra,role,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,role,tsi,tsr,
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,RESPONDER,tsi,tsr,
                                                                   tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                 if (bfit_p > bestfit_p) {
                     DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
@@ -768,11 +767,11 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,sr,role
+                    newfit=ikev2_evaluate_connection_fit(d,sr,RESPONDER
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
-                        int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
+                        int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
                                                                           tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                         if (bfit_p > bestfit_p) {
                             DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
@@ -844,7 +843,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             return STF_FAIL + rn; // should we delete_state st1?
     }
 
-    ret = ikev2_calc_emit_ts(md, outpbs, role
+    ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER
                              , c, c->policy);
     if(ret != STF_OK) return ret; // should we delete_state st1?
 
@@ -878,7 +877,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             }
     }
 
-    ikev2_derive_child_keys(st1, role);
+    ikev2_derive_child_keys(st1, RESPONDER);
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(st1, TRUE))
         return STF_FATAL;
