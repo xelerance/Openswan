@@ -1429,13 +1429,19 @@ void fmt_state(struct state *st, const time_t n
 	} else {
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; nodpd");
 	}
-        if(st->st_ikev2 && IS_PARENT_SA(st)) {
-            snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld"
+        if(st->st_ikev2) {
+            if(IS_PARENT_SA(st)) {
+                snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld; msgid=%ld"
                      , (long)st->st_msg_retransmitted
                      , (long)st->st_msg_badmsgid_recv
                      , (long)st->st_msgid_lastack
                      , (long)st->st_msgid_nextuse
-                     , (long)st->st_msgid_lastrecv);
+                     , (long)st->st_msgid_lastrecv
+                     , (long)st->st_msgid);
+            } else {
+                snprintf(msgidbuf, sizeof(msgidbuf), "; msgid=%ld"
+                         , (long)st->st_msgid);
+            }
         }
     }
 
