@@ -2582,7 +2582,7 @@ bool ship_v2N (unsigned int np, u_int8_t  critical,
  *                       INFORMATIONAL                     *****
  ***************************************************************
  *  -
- *
+ * XXX -- wow this function is a mess.
  *
  */
 stf_status process_informational_ikev2(struct msg_digest *md)
