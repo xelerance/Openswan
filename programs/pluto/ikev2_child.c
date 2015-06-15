@@ -674,7 +674,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                                   , pb_stream *outpbs)
 {
     struct state      *st = md->st;
-    struct state      *st1;
+    struct state      *st1= st;
     struct connection *c  = st->st_connection;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
@@ -797,30 +797,22 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	/*better connection*/
 	c=b;
 
-	/* Paul: should we STF_FAIL here instead of checking for NULL */
-	if (bsr != NULL) {
-            st1 = duplicate_state(st);
-            insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
-
-            if(role == INITIATOR) {
-                memcpy (&st1->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
-                memcpy (&st1->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
-            }
-            else {
-                st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
-                st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
-            }
-            ikev2_print_ts(&st1->st_ts_this);
-            ikev2_print_ts(&st1->st_ts_that);
-	}
-	else {
-            if(role == INITIATOR)
-                return STF_FAIL;
-            else
-                return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN ;
+        if(bsr == NULL) {
+            /* no proposal matched... */
+            return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN;
         }
+
+        /* we are sure, so lets make a state for this child SA */
+        st1 = duplicate_state(st);
+        insert_state(st1);
+
+        st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
+        st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
+        ikev2_print_ts(&st1->st_ts_this);
+        ikev2_print_ts(&st1->st_ts_that);
     }
 
+    /* note that st1 starts == st, but a child SA creation can change that */
     st1->st_connection = c;
     md->st = st1;
     md->pst= st;
@@ -839,30 +831,33 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
                                        &r_sa_pbs, st1, FALSE);
 
-        if (rn != NOTHING_WRONG)
-            return STF_FAIL + rn; // should we delete_state st1?
+        /* we do not delete_state st1 yet, because initiator could retransmit */
+        if (rn != NOTHING_WRONG) {
+            return STF_FAIL + rn;
+        }
     }
 
     ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER
                              , c, c->policy);
-    if(ret != STF_OK) return ret; // should we delete_state st1?
+    if(ret != STF_OK) {
+        return ret;
+    }
 
-    if( role == RESPONDER ) {
-        chunk_t child_spi, notifiy_data;
-        struct payload_digest *p;
-        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
-                if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+    chunk_t child_spi, notifiy_data;
+    struct payload_digest *p;
+    for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+        if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
 
-                    if(st1->st_connection->policy & POLICY_TUNNEL) {
-                        DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-                        DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
-                    }
-                    else {
-                        DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-                        DBG_log("Now responding with USE_TRANSPORT_MODE notify");
-                    }
+            if(st1->st_connection->policy & POLICY_TUNNEL) {
+                DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
+                DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+            }
+            else {
+                DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
+                DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+            }
 
-                    memset(&child_spi, 0, sizeof(child_spi));
+            memset(&child_spi, 0, sizeof(child_spi));
                     memset(&notifiy_data, 0, sizeof(notifiy_data));
                     ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
                               &child_spi,
@@ -873,8 +868,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                         st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
                     }
                     break;
-                }
-            }
+        }
     }
 
     ikev2_derive_child_keys(st1, RESPONDER);
