@@ -1120,6 +1120,7 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
     struct state *pst = st;
     chunk_t *cipherkey, *authkey;
 
+    /* IKEv2 crypto state is in parent */
     if(st->st_clonedfrom != 0) {
         pst = state_with_serialno(st->st_clonedfrom);
     }
@@ -1352,7 +1353,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
         return ret;
     }
 
-    /* okay, got a transmit slot */
+    /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(pst);
 
     st->st_msgid = mid;
@@ -1854,6 +1855,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     c->newest_isakmp_sa = st->st_serialno;
 
     /* XXX MCR need to duplicate state here, I think? */
+    /* st = duplicate_state(pst); */
 
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
