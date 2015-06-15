@@ -1773,6 +1773,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up IPCOMP SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("ipcomp maybe"));
     if (st->st_ipcomp.present)
     {
         ipsec_spi_t ipcomp_spi = inbound? st->st_ipcomp.our_spi : st->st_ipcomp.attrs.spi;
@@ -1850,7 +1851,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up ESP SA, if any */
 
-    DBG(DBG_KLIPS, DBG_log("esp maybe"));
+    DBG(DBG_KLIPS, DBG_log("esp %s maybe", inbound_str));
     if (st->st_esp.present)
     {
         err = setup_esp_sa(c, st, encapsulation, inbound
@@ -1882,6 +1883,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up AH SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("ah maybe"));
     if (st->st_ah.present)
     {
         ipsec_spi_t ah_spi = inbound? st->st_ah.our_spi : st->st_ah.attrs.spi;
