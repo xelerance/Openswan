@@ -1125,6 +1125,12 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
         pst = state_with_serialno(st->st_clonedfrom);
     }
 
+    /* sanity check on inputs */
+    if(authloc < authstart) {
+       loglog(RC_CRYPTOFAILED, "ikev2 encrypt internal error: authloc<authstart. Please report.");
+       return STF_FAIL;
+    }
+
     if(init == INITIATOR) {
         cipherkey = &pst->st_skey_ei;
         authkey   = &pst->st_skey_ai;
@@ -1533,7 +1539,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
         unsigned char *authloc = ikev2_authloc(md, &e_pbs);
 
-        if(authloc == NULL) return STF_INTERNAL_ERROR;
+        if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
 
         close_output_pbs(&e_pbs);
         close_output_pbs(&md->rbody);
@@ -2019,7 +2025,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         {
             unsigned char *authloc = ikev2_authloc(md, &e_pbs);
 
-            if(authloc == NULL) return STF_INTERNAL_ERROR;
+            if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
 
             close_output_pbs(&e_pbs);
 
@@ -2834,7 +2840,8 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 
             {
                 unsigned char *authloc = ikev2_authloc(md, &e_pbs);
-                if(authloc == NULL) return STF_INTERNAL_ERROR;
+                if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
+
                 close_output_pbs(&e_pbs);
                 close_output_pbs(&md->rbody);
                 close_output_pbs(&reply_stream);
@@ -3044,25 +3051,18 @@ stf_status process_informational_ikev2(struct msg_digest *md)
  */
 void ikev2_delete_out(struct state *st)
 {
-    struct state *pst = NULL;
+    struct state *pst = st;
 
-    if(st->st_clonedfrom != 0)
-        {
-            /*child SA*/
-            pst = state_with_serialno(st->st_clonedfrom);
+    if(st->st_clonedfrom != 0) {
+        /*child SA*/
+        pst = state_with_serialno(st->st_clonedfrom);
 
-            if(!pst) {
-                DBG(DBG_CONTROL, DBG_log("IKE SA does not exist for this child SA"));
-                DBG(DBG_CONTROL, DBG_log("INFORMATIONAL exchange can not be sent, deleting state"));
-                goto end;
-            }
+        if(!pst) {
+            DBG(DBG_CONTROL, DBG_log("IKE SA does not exist for this child SA"));
+            DBG(DBG_CONTROL, DBG_log("INFORMATIONAL exchange can not be sent, deleting state"));
+            goto end;
         }
-    else
-        {
-            /* Parent SA*/
-            pst = st;
-
-        }
+    }
 
     {
         unsigned char *authstart;
@@ -3077,12 +3077,13 @@ void ikev2_delete_out(struct state *st)
 
         md.st = st;
         md.pst= pst;
-        /* beginning of data going out */
-        authstart = reply_stream.cur;
 
         /* make sure HDR is at start of a clean buffer */
         zero(reply_buffer);
         init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange request packet");
+
+        /* beginning of data going out */
+        authstart = reply_stream.cur;
 
         /* HDR out */
         {
@@ -3180,7 +3181,7 @@ void ikev2_delete_out(struct state *st)
         {
             stf_status ret;
             unsigned char *authloc = ikev2_authloc(&md, &e_pbs);
-            if(authloc == NULL) goto end;
+            if(authloc == NULL || authloc < encstart)  goto end;
             close_output_pbs(&e_pbs);
             close_output_pbs(&rbody);
             close_output_pbs(&reply_stream);
