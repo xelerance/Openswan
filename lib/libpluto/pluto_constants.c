@@ -219,7 +219,7 @@ enum_names pluto_cryptoop_names =
     { pcr_build_kenonce, pcr_compute_dh_v2, pluto_cryptoop_strings, NULL};
 
 
-/* pluto crypto importance */
+/* pluto crypto importance: enum crypto_importance in pluto_constants.h */
 static const char *const pluto_cryptoimportance_strings[] = {
 	"import:not set",
   "import:respond to stranger",	

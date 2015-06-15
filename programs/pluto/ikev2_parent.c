@@ -1847,6 +1847,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* good, things checked out!. now create child state */
     DBG(DBG_CONTROL, DBG_log("PARENT SA now authenticated, building child and reply"));
+
+    /* now that we now who they are, give them a higher crypto priority! */
+    st->st_import = pcim_known_crypto;
+
     /* note: as we will switch to child state, we force the parent to the
      * new state now, but note also that child state exists just to contain
      * the IPsec SA, and to provide for it's eventual rekeying
