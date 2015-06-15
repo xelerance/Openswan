@@ -67,12 +67,12 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 |   2b 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
 |   53 05 b3 c4  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
-|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34)
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found
+| v2 state object not found in hash 4
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -97,7 +97,7 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| inserting state object #1
+| inserting state object #1 bucket: 28
 | will not send/process a dcookie
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -178,7 +178,7 @@ sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | complete v2 state transition with STF_FAIL
-RC=217 EVENT_NULL: INVALID_KEY_INFORMATION
+./parentR1 EVENT_NULL: INVALID_KEY_INFORMATION
 ./parentR1 sending  notification v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
