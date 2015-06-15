@@ -474,7 +474,8 @@ void
 process_v2_packet(struct msg_digest **mdp)
 {
     struct msg_digest *md = *mdp;
-    struct state *st = NULL;
+    struct state *st  = NULL;
+    struct state *pst = NULL;
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
     enum isakmp_xchg_types ix;
@@ -555,7 +556,7 @@ process_v2_packet(struct msg_digest **mdp)
 	} else {
 	    st = find_state_ikev2_child(md->hdr.isa_icookie
 					, md->hdr.isa_rcookie
-					, md->hdr.isa_msgid); /* PAUL: really? not md->msgid_received */
+					, md->msgid_received);
 
 	    if(st) {
 		/* found this child state, so we'll use it */
@@ -570,16 +571,26 @@ process_v2_packet(struct msg_digest **mdp)
 	    }
 	}
 
-	if(st) {
+        pst = st;
+
+        /* find parent, if there is one */
+        if(st && st->st_clonedfrom != 0) {
+            pst = state_with_serialno(st->st_clonedfrom);
+        }
+
+	if(pst) {
 	    /*
 	     * then if there is something wrong with the msgid,
 	     * maybe they retransmitted for some reason.
 	     * Check if it's an old packet being returned, and
 	     * if so, drop it.
 	     */
-	    if(st->st_msgid_lastack != INVALID_MSGID
-	       && md->msgid_received <= st->st_msgid_lastack) {
-		/* it's fine, it's just a retransmit: log it with some small frequency */
+	    if(pst->st_msgid_lastack != INVALID_MSGID
+	       && md->msgid_received <= pst->st_msgid_lastack) {
+		/* it's fine, it's just a retransmit as a result of our retransmit.
+                 * Log it with some small frequency.
+                 * Logging of retransmitted is done on child SA!
+                 */
                 st->st_msg_retransmitted++;
                 if((st->st_msg_retransmitted % 512) == 1 || DBGP(DBG_CONTROL)) {
                     DBG_log("responding peer retransmitted msgid %u (retransmission count: %u)"
@@ -589,25 +600,26 @@ process_v2_packet(struct msg_digest **mdp)
             }
 
             /*
-             * we currently only support a window of 1, but by using nextuse, we anticipate
-             * having a window > 1
+             * we currently only support a window of 1, but by using nextuse,
+             * we anticipate having a window > 1
              */
             if(md->msgid_received != MAINMODE_MSGID
-               && md->msgid_received >= st->st_msgid_nextuse) {
+               && md->msgid_received > pst->st_msgid_nextuse) {
                 /*
                  * here, the reply packet is newer than one we last received an ACK for,
                  * which is a problem, because we didn't send it, so we drop it and ignore it
                  */
-                st->st_msg_badmsgid_recv++;
-                if((st->st_msg_badmsgid_recv % 512) == 1 || DBGP(DBG_CONTROL)) {
-                    openswan_log("dropping reply: expecting [%u,%u> received: %u"
-                                 , st->st_msgid_lastack+1, st->st_msgid_nextuse
+                pst->st_msg_badmsgid_recv++;
+                if((pst->st_msg_badmsgid_recv % 512) == 1 || DBGP(DBG_CONTROL)) {
+                    loglog(RC_LOG_SERIOUS, "dropping reply: expecting [%u,%u> received: %u"
+                                 , pst->st_msgid_lastack+1, pst->st_msgid_nextuse
                                  , md->msgid_received);
                     return;
                 }
             }
 	}
     }
+    /* probably done with pst */
 
     ix = md->hdr.isa_xchg;
     if(st) {

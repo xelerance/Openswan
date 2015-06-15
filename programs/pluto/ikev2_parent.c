@@ -2053,6 +2053,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
  *    that there will have to be DNS continuations, but they
  *    just aren't implemented yet.
  *
+ *  - note that the md->st here will be the child state,
+ *    as demux used find_state_ikev2_child when msgid > 0.
+ *
  */
 stf_status ikev2parent_inR2(struct msg_digest *md)
 {
