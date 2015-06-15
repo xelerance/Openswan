@@ -64,24 +64,6 @@
 #include "pluto/virtual.h"
 #include "hostpair.h"
 
-#if 0
-static void print_ikev2_ts(struct traffic_selector *ts){
-        char lbx[ADDRTOT_BUF];
-        char hbx[ADDRTOT_BUF];
-
-	DBG_log("PAUL marker ------------------------");
-        DBG_log("ts_type: %s", enum_name(&ikev2_ts_type_names, ts->ts_type));
-        DBG_log("ipprotoid: %d", ts->ipprotoid);
-        DBG_log("startport: %d", ts->startport);
-        DBG_log("endport: %d", ts->endport);
-        addrtot(&ts->low,  0, lbx, sizeof(lbx));
-        addrtot(&ts->high, 0, hbx, sizeof(hbx));
-        DBG_log("ip low: %s", lbx);
-        DBG_log("ip high: %s", hbx);
-	DBG_log("PAUL marker ------------------------");
-}
-#endif
-
 void ikev2_print_ts(struct traffic_selector *ts){
 	char lbx[ADDRTOT_BUF];
 	char hbx[ADDRTOT_BUF];
