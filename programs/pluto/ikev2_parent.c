@@ -2335,7 +2335,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         }
 
         rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa
-                                       , NULL, st, TRUE);
+                                       , NULL, st, /* selection=*/TRUE);
 
         if(rn != v2N_NOTHING_WRONG)
             return STF_FAIL + rn;
