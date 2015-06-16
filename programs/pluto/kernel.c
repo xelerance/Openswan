@@ -1652,15 +1652,15 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
 
     if (inbound)
     {
-        src = c->spd.that.host_addr;
-        dst = c->spd.this.host_addr;
+        src = parent_st->st_remoteaddr;
+        dst = parent_st->st_localaddr;
         src_client = c->spd.that.client;
         dst_client = c->spd.this.client;
     }
     else
     {
-        src = c->spd.this.host_addr,
-        dst = c->spd.that.host_addr;
+        src = parent_st->st_localaddr;
+        dst = parent_st->st_remoteaddr;
         src_client = c->spd.this.client;
         dst_client = c->spd.that.client;
     }
