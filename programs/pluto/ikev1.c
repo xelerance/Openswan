@@ -1390,6 +1390,10 @@ process_v1_packet(struct msg_digest **mdp)
      * (may be suspended due to crypto operation not yet complete)
      */
     md->st = st;
+    md->pst = st;
+    if(st!=NULL && st->st_clonedfrom != 0) {
+        md->pst = state_with_serialno(st->st_clonedfrom);
+    }
     md->from_state = from_state;
     md->smc = smc;
     md->new_iv_set = new_iv_set;

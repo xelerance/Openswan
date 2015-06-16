@@ -850,7 +850,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
     ikev2_derive_child_keys(st1, RESPONDER);
     /* install inbound and outbound SPI info */
-    if(!install_ipsec_sa(st1, TRUE))
+    if(!install_ipsec_sa(st, st1, TRUE))
         return STF_FATAL;
 
     /* mark the connection as now having an IPsec SA associated with it. */

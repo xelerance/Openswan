@@ -2385,7 +2385,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     c->newest_ipsec_sa = st->st_serialno;
 
     /* now install child SAs */
-    if(!install_ipsec_sa(st, TRUE)) {
+    if(!install_ipsec_sa(pst, st, TRUE)) {
 #ifdef DEBUG_WITH_PAUSE
         pause();
 #endif

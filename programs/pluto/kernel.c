@@ -1608,7 +1608,7 @@ static err_t setup_esp_sa(struct connection *c
  *
  */
 static bool
-setup_half_ipsec_sa(struct state *st, bool inbound)
+setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
 {
     /* Build an inbound or outbound SA */
     err_t err = NULL;
@@ -2424,7 +2424,7 @@ static void look_for_replacement_state(struct state *st)
  * The Initiator uses install_ipsec_sa to install both at once.
  */
 bool
-install_inbound_ipsec_sa(struct state *st)
+install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 {
     struct connection *const c = st->st_connection;
 
@@ -2506,17 +2506,16 @@ install_inbound_ipsec_sa(struct state *st)
 #ifdef HAVE_LABELED_IPSEC
 	if(!st->st_connection->loopback) {
 #endif
-
-	DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
-	if(!setup_half_ipsec_sa(st, FALSE)) {
-	    DBG_log("failed to install outgoing SA: %u", st->st_refhim);
-	    return FALSE;
-	}
+            DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
+            if(!setup_half_ipsec_sa(parent_st, st, FALSE)) {
+                DBG_log("failed to install outgoing SA: %u", st->st_refhim);
+                return FALSE;
+            }
 #ifdef HAVE_LABELED_IPSEC
 	}
 	else {
-	DBG(DBG_CONTROL,
-	DBG_log("in case of loopback, the state that initiated this quick mode exchange will install outgoing SAs, so skipping this"));
+            DBG(DBG_CONTROL,
+                DBG_log("in case of loopback, the state that initiated this quick mode exchange will install outgoing SAs, so skipping this"));
 	}
 #endif
 
@@ -2527,17 +2526,17 @@ install_inbound_ipsec_sa(struct state *st)
     /* (attempt to) actually set up the SAs */
 
 #ifdef HAVE_LABELED_IPSEC
-	if(!st->st_connection->loopback) {
+    if(!st->st_connection->loopback)
 #endif
-
-    return setup_half_ipsec_sa(st, TRUE);
+        {
+            return setup_half_ipsec_sa(parent_st, st, TRUE);
+        }
 
 #ifdef HAVE_LABELED_IPSEC
-	}
-	else {
-	DBG(DBG_CONTROL, DBG_log("in case of loopback, the state that initiated this quick mode exchange will install incoming SAs, so skipping this"));
+    else {
+        DBG(DBG_CONTROL, DBG_log("in case of loopback, the state that initiated this quick mode exchange will install incoming SAs, so skipping this"));
 	return TRUE;
-	}
+    }
 #endif
 }
 
@@ -2851,7 +2850,9 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 }
 
 bool
-install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
+install_ipsec_sa(struct state *parent_st
+                 , struct state *st
+                 , bool inbound_also USED_BY_KLIPS)
 {
     struct spd_route *sr;
     enum routability rb;
@@ -2885,8 +2886,8 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 #ifdef HAVE_LABELED_IPSEC
 	&& !st->st_connection->loopback
 #endif
-	) {
-	if(!setup_half_ipsec_sa(st, FALSE)) {
+       ) {
+	if(!setup_half_ipsec_sa(parent_st, st, FALSE)) {
             loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup outgoing SA", st->st_serialno);
 	    return FALSE;
 	}
@@ -2897,7 +2898,7 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
     DBG(DBG_KLIPS, DBG_log("state #%lu: now setting up incoming SA", st->st_serialno));
     /* now setup inbound SA */
     if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
-	if(!setup_half_ipsec_sa(st, TRUE)) {
+	if(!setup_half_ipsec_sa(parent_st, st, TRUE)) {
             loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup incoming SA", st->st_serialno);
 	    return FALSE;
 	}
