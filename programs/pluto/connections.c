@@ -3193,14 +3193,15 @@ show_one_connection(struct connection *c)
     /* Note: we display key_from_DNS_on_demand as if policy [lr]KOD */
     fmt_policy_prio(c->prio, prio);
     whack_log(RC_COMMENT
-	      , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; "
+	      , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; kind=%s"
 	      , c->name
 	      , instance
 	      , prettypolicy(c->policy)
 	      , c->spd.this.key_from_DNS_on_demand? "+lKOD" : ""
 	      , c->spd.that.key_from_DNS_on_demand? "+rKOD" : ""
 	      , prio
-	      , ifn);
+	      , ifn
+              , enum_name(&connection_kind_names, c->kind));
 
     if(c->connmtu > 0 || c->metric > 0) {
 	whack_log(RC_COMMENT

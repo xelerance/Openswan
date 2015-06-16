@@ -8,7 +8,6 @@ processing whack msg time: X size: Y
 | Added new connection any1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| based upon policy, the connection is a template.
 | checking against if: eth0
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./parentR1 added connection description "any1--jj2"
@@ -17,7 +16,7 @@ processing whack msg time: X size: Y
 RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
 RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
-RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0;
+RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | *received 836 bytes from 10.10.5.4:500 on eth0 (port=500)
 |   56 11 47 13  4b 1d 6d 52  00 00 00 00  00 00 00 00
