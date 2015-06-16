@@ -1198,8 +1198,7 @@ add_connection(const struct whack_message *wm)
 	    c->kind = CK_GROUP;
 	    add_group(c);
 	}
-	else if ((isanyaddr(&c->spd.that.host_addr) && !NEVER_NEGOTIATE(c->policy))
-		|| c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
+	else if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
 		|| ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards ))
 	{
 	    DBG(DBG_CONTROL, DBG_log("based upon policy, the connection is a template."));
