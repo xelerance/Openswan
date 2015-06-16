@@ -1186,7 +1186,6 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	if (sa->esatype == ET_IPCOMP) {
 		struct xfrm_algo algo;
 
-                /* XXX should use proper formatter that has unknown */
 		const char *name = sparse_name(calg_list, sa->encalg);
 
 		if (name == NULL) {
