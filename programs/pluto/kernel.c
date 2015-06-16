@@ -1334,8 +1334,8 @@ static err_t setup_esp_sa(struct connection *c
                           , bool replace
                           , const char *inbound_str
                           , struct kernel_sa *said_next
-                          , ip_address src
-                          , ip_address dst
+                          , ip_address src, u_int16_t natt_sport
+                          , ip_address dst, u_int16_t natt_dport
                           , ip_subnet src_client
                           , ip_subnet dst_client)
 {
@@ -1391,7 +1391,6 @@ static err_t setup_esp_sa(struct connection *c
 
 #ifdef NAT_TRAVERSAL
     u_int8_t natt_type = 0;
-    u_int16_t natt_sport = 0, natt_dport = 0;
     ip_address natt_oa;
 
     if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
@@ -1400,17 +1399,8 @@ static err_t setup_esp_sa(struct connection *c
         } else {
             natt_type = ESPINUDP_WITH_NON_IKE;
         }
-
-        if(inbound) {
-            natt_sport = st->st_remoteport;
-            natt_dport = st->st_localport;
-        } else {
-            natt_sport = st->st_localport;
-            natt_dport = st->st_remoteport;
-        }
-
-        natt_oa = st->hidden_variables.st_nat_oa;
     }
+    natt_oa = st->hidden_variables.st_nat_oa;
 #endif
 
     if(DBGP(DBG_KLIPS)) {
@@ -1614,6 +1604,7 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
     err_t err = NULL;
     struct connection *c = st->st_connection;
     ip_address src, dst;
+    u_int16_t srcport, dstport;
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0;
@@ -1640,15 +1631,15 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
 
     if (inbound)
     {
-        src = parent_st->st_remoteaddr;
-        dst = parent_st->st_localaddr;
+        src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
+        dst = parent_st->st_localaddr;    dstport = parent_st->st_localport;
         src_client = c->spd.that.client;
         dst_client = c->spd.this.client;
     }
     else
     {
-        src = parent_st->st_localaddr;
-        dst = parent_st->st_remoteaddr;
+        src = parent_st->st_localaddr;    srcport = parent_st->st_localport;
+        dst = parent_st->st_remoteaddr;   dstport = parent_st->st_remoteport;
         src_client = c->spd.this.client;
         dst_client = c->spd.that.client;
     }
@@ -1714,7 +1705,9 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
             , &c->spd.that.host_addr, ipip_spi, SA_IPIP);
 
         said_next->src = &src;
+        said_next->natt_sport = srcport;
         said_next->dst = &dst;
+        said_next->natt_dport = dstport;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -1873,7 +1866,8 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
         err = setup_esp_sa(c, st, encapsulation, inbound
                            , outgoing_ref_set, replace
                            , inbound_str, said_next
-                           , src, dst, src_client, dst_client);
+                           , src, srcport, dst, dstport
+                           , src_client, dst_client);
         if(err) goto fail;
 
         /*
@@ -3063,21 +3057,26 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 }
 
 #ifdef NAT_TRAVERSAL
-static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
+/* XXX -- seems to be dead code */
+#if 0
+static bool update_nat_t_ipsec_esp_sa (struct state *parent_st
+                                       , struct state *st, bool inbound)
 {
-        struct connection *c = st->st_connection;
         char text_said[SATOT_BUF];
         struct kernel_sa sa;
-        ip_address
-                src = inbound? c->spd.that.host_addr : c->spd.this.host_addr,
-                dst = inbound? c->spd.this.host_addr : c->spd.that.host_addr;
+        ip_address src, dst;
+        ipsec_spi_t esp_spi;
+        u_int16_t natt_sport, natt_dport;
 
-
-        ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
-
-        u_int16_t
-                natt_sport = inbound? c->spd.that.host_port : c->spd.this.host_port,
-                natt_dport = inbound? c->spd.this.host_port : c->spd.that.host_port;
+        if (inbound) {
+            src = parent_st->st_remoteaddr;   natt_sport = parent_st->st_remoteport;
+            dst = parent_st->st_localaddr;    natt_dport = parent_st->st_localport;
+            esp_spi = st->st_esp.our_spi;
+        } else {
+            src = parent_st->st_localaddr;    natt_sport = parent_st->st_localport;
+            dst = parent_st->st_remoteaddr;   natt_dport = parent_st->st_remoteport;
+            esp_spi = st->st_esp.attrs.spi;
+        }
 
         set_text_said(text_said, &dst, esp_spi, SA_ESP);
 
@@ -3098,27 +3097,29 @@ static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
 
 }
 
-bool update_ipsec_sa (struct state *st USED_BY_KLIPS)
+bool update_ipsec_sa (struct state *parent_st, struct state *st USED_BY_KLIPS)
 {
         if (IS_IPSEC_SA_ESTABLISHED(st->st_state)) {
-                if ((st->st_esp.present) && (
-                        (!update_nat_t_ipsec_esp_sa (st, TRUE)) ||
-                        (!update_nat_t_ipsec_esp_sa (st, FALSE)))) {
-                        return FALSE;
-                }
+            if ((st->st_esp.present)
+                && ((!update_nat_t_ipsec_esp_sa (parent_st, st, TRUE))
+                    || (!update_nat_t_ipsec_esp_sa (parent_st, st, FALSE)))) {
+                return FALSE;
+            }
         }
         else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state)) {
-                if ((st->st_esp.present) && (!update_nat_t_ipsec_esp_sa (st, FALSE))) {
-                        return FALSE;
-                }
+            if ((st->st_esp.present)
+                && (!update_nat_t_ipsec_esp_sa (parent_st, st, FALSE))) {
+                return FALSE;
+            }
         }
         else {
-                DBG_log("assert failed at %s:%d st_state=%d", __FILE__, __LINE__,
-                        st->st_state);
-                return FALSE;
+            DBG_log("assert failed at %s:%d st_state=%d", __FILE__, __LINE__,
+                    st->st_state);
+            return FALSE;
         }
         return TRUE;
 }
+#endif
 #endif
 
 bool was_eroute_idle(struct state *st, time_t since_when)

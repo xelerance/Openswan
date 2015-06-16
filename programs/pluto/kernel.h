@@ -362,7 +362,7 @@ extern bool was_eroute_idle(struct state *st, time_t idle_max);
 extern bool get_sa_info(struct state *st, bool inbound, time_t *ago);
 
 #ifdef NAT_TRAVERSAL
-extern bool update_ipsec_sa(struct state *st);
+extern bool update_ipsec_sa(struct state *parent_st, struct state *st);
 #endif
 
 extern bool eroute_connection(struct spd_route *sr
