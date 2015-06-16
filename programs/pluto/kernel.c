@@ -1413,13 +1413,19 @@ static err_t setup_esp_sa(struct connection *c
     }
 #endif
 
-    DBG(DBG_CRYPT
-        , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d for spi=%08x\n"
-                  , inbound_str
-                  , st->st_esp.attrs.transattrs.encrypt
-                  , st->st_esp.attrs.transattrs.enckeylen
-                  , st->st_esp.attrs.transattrs.integ_hash
-                  , esp_spi));
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[SUBNETTOT_BUF];
+        char sa_dst[SUBNETTOT_BUF];
+
+        subnettot(&src, 0, sa_src, sizeof(sa_src));
+        subnettot(&dst, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d for spi=%08x [%s->%s]\n"
+                , inbound_str
+                , st->st_esp.attrs.transattrs.encrypt
+                , st->st_esp.attrs.transattrs.enckeylen
+                , st->st_esp.attrs.transattrs.integ_hash
+                , esp_spi, sa_src, sa_dst);
+    }
 
     for (ei = esp_info; ; ei++) {
 
