@@ -1638,18 +1638,6 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
 
     replace = inbound && (kernel_ops->get_spi != NULL);
 
-    if(DBGP(DBG_KLIPS)) {
-        char sa_this[ADDRTOT_BUF];
-        char sa_that[ADDRTOT_BUF];
-
-        addrtot(&c->spd.this.host_addr, 0, sa_this, sizeof(sa_this));
-        addrtot(&c->spd.that.host_addr, 0, sa_that, sizeof(sa_that));
-        DBG_log("setup %s ipsec keys for %s, between %s<->%s"
-                , inbound_str
-                , c->name
-                , sa_this, sa_that);
-    }
-
     if (inbound)
     {
         src = parent_st->st_remoteaddr;
@@ -1663,6 +1651,19 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
         dst = parent_st->st_remoteaddr;
         src_client = c->spd.this.client;
         dst_client = c->spd.that.client;
+    }
+
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
+
+        addrtot(&src, 0, sa_src, sizeof(sa_src));
+        addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("state #%lu: setup %s ipsec keys for %s, between %s<->%s"
+                , st->st_serialno
+                , inbound_str
+                , c->name
+                , sa_src, sa_dst);
     }
 
     encapsulation = ENCAPSULATION_MODE_TRANSPORT;
