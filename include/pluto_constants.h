@@ -82,6 +82,10 @@ enum event_type {
 #define EVENT_RETRANSMIT_DELAY_0		10   /* 10 seconds */
 #define EVENT_GIVEUP_ON_DNS_DELAY               300  /* 5 minutes for DNS */
 
+/* how long to keep a failed state open in case of retransmits */
+#define EVENT_HALF_OPEN_TIMEOUT                 60
+
+
 /*
  * cryptographic helper operations.
  */
