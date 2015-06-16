@@ -1334,8 +1334,8 @@ static err_t setup_esp_sa(struct connection *c
                           , bool replace
                           , const char *inbound_str
                           , struct kernel_sa *said_next
-                          , ip_subnet src
-                          , ip_subnet dst
+                          , ip_address src
+                          , ip_address dst
                           , ip_subnet src_client
                           , ip_subnet dst_client)
 {
@@ -1414,11 +1414,11 @@ static err_t setup_esp_sa(struct connection *c
 #endif
 
     if(DBGP(DBG_KLIPS)) {
-        char sa_src[SUBNETTOT_BUF];
-        char sa_dst[SUBNETTOT_BUF];
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
 
-        subnettot(&src, 0, sa_src, sizeof(sa_src));
-        subnettot(&dst, 0, sa_dst, sizeof(sa_dst));
+        addrtot(&src, 0, sa_src, sizeof(sa_src));
+        addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
         DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d for spi=%08x [%s->%s]\n"
                 , inbound_str
                 , st->st_esp.attrs.transattrs.encrypt
@@ -1502,10 +1502,10 @@ static err_t setup_esp_sa(struct connection *c
         st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
     passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
 
-    set_text_said(text_said, &dst.addr, esp_spi, SA_ESP);
+    set_text_said(text_said, &dst, esp_spi, SA_ESP);
 
-    said_next->src = &src.addr;
-    said_next->dst = &dst.addr;
+    said_next->src = &src;
+    said_next->dst = &dst;
     said_next->src_client = &src_client;
     said_next->dst_client = &dst_client;
     said_next->transport_proto = c->spd.this.protocol;
@@ -1514,7 +1514,7 @@ static err_t setup_esp_sa(struct connection *c
     said_next->replay_window = kernel_ops->replay_window;
     said_next->authalg = ei->authalg;
 
-    /* XXX -- where does this bug come from? */
+    /* this is a bug in the 2.6.28/29 kernel, we should remove this code */
     if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256)
         && (st->st_connection->sha2_truncbug)) {
         if(kernel_ops->sha2_truncbug_support) {
@@ -1613,7 +1613,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     /* Build an inbound or outbound SA */
     err_t err = NULL;
     struct connection *c = st->st_connection;
-    ip_subnet src, dst;
+    ip_address src, dst;
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0;
@@ -1638,20 +1638,17 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     replace = inbound && (kernel_ops->get_spi != NULL);
 
-    src.maskbits = 0;
-    dst.maskbits = 0;
-
     if (inbound)
     {
-        src.addr = c->spd.that.host_addr;
-        dst.addr = c->spd.this.host_addr;
+        src = c->spd.that.host_addr;
+        dst = c->spd.this.host_addr;
         src_client = c->spd.that.client;
         dst_client = c->spd.this.client;
     }
     else
     {
-        src.addr = c->spd.this.host_addr,
-        dst.addr = c->spd.that.host_addr;
+        src = c->spd.this.host_addr,
+        dst = c->spd.that.host_addr;
         src_client = c->spd.this.client;
         dst_client = c->spd.that.client;
     }
@@ -1703,8 +1700,8 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         set_text_said(text_said
             , &c->spd.that.host_addr, ipip_spi, SA_IPIP);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->dst = &dst;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -1797,10 +1794,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                 goto fail;
         }
 
-        set_text_said(text_said, &dst.addr, ipcomp_spi, SA_COMP);
+        set_text_said(text_said, &dst, ipcomp_spi, SA_COMP);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->dst = &dst;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -1915,10 +1912,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
             goto fail;
         }
 
-        set_text_said(text_said, &dst.addr, ah_spi, SA_AH);
+        set_text_said(text_said, &dst, ah_spi, SA_AH);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->dst = &dst;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -2123,7 +2120,7 @@ fail:
         while (said_next-- != said) {
 	    if(said_next->proto) {
 		(void) del_spi(said_next->spi, said_next->proto
-			       , &src.addr, said_next->dst);
+			       , &src, said_next->dst);
 	    }
 	}
         return FALSE;
