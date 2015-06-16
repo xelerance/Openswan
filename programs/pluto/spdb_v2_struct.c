@@ -1401,10 +1401,10 @@ ikev2_parse_child_sa_body(
     st->st_esp.attrs.transattrs = ta;
     st->st_esp.present = TRUE;
 
-    /* if not confirming, then record the SPI value */
-    if(!selection) {
-	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next -1];
-    }
+    /* record the SPI value */
+    st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next -1];
+
+    /* could get changed by a notify */
     st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
 
     if (r_sa_pbs != NULL)
