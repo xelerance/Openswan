@@ -2380,7 +2380,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     } /* notification block */
 
 
-    ikev2_derive_child_keys(st, md->role);
+    ikev2_derive_child_keys(st, INITIATOR);
 
     c->newest_ipsec_sa = st->st_serialno;
 
