@@ -34,4 +34,6 @@ script:
   - "cat Makefile.inc.local"
   - "make env | sort -f"
   - "make programs ARCH=${BUILD_ARCH}"
+  - "cat OBJ.linux.amd64/lib/libopenswan/version.c"
+  - "OBJ.linux.amd64/programs/pluto/pluto --help"
   - "make check ARCH=${BUILD_ARCH}"
