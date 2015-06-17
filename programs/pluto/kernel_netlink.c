@@ -674,59 +674,44 @@ netlink_raw_eroute(const ip_address *this_host
     bool ok;
     bool enoent_ok;
     ip_subnet local_that_client;
-    int satype = 0;
+
+    {
+        char sa_this[ADDRTOT_BUF];
+        char sa_that[ADDRTOT_BUF];
+
+        addrtot(this_host, 0, sa_this, sizeof(sa_this));
+        addrtot(that_host, 0, sa_that, sizeof(sa_that));
+
+        DBG_log("creating SPD to %s->spi=%08x@%s proto=%u"
+                , sa_this, htonl(spi), sa_that, proto);
+    }
 
     policy = IPSEC_POLICY_IPSEC;
 
-    switch(esatype) {
-    case ET_UNSPEC:
-	    satype = SADB_SATYPE_UNSPEC;
-	    break;
-
-    case ET_AH:
-	    satype = SADB_SATYPE_AH;
-	    break;
-
-    case ET_ESP:
-	    satype = SADB_SATYPE_ESP;
-	    break;
-
-    case ET_IPCOMP:
-	    satype = SADB_X_SATYPE_IPCOMP;
-	    break;
-
-    case ET_IPIP:
-	    satype = K_SADB_X_SATYPE_IPIP;
-	    break;
-
-    case ET_INT:
+    if(esatype == ET_INT) {
 	/* shunt route */
-	    switch (ntohl(spi))
+        switch (ntohl(spi))
 	    {
 	    case SPI_PASS:
-		    policy = IPSEC_POLICY_NONE;
-		    break;
+                policy = IPSEC_POLICY_NONE;
+                break;
 	    case SPI_DROP:
 	    case SPI_REJECT:
 	    default:
-		    policy = IPSEC_POLICY_DISCARD;
-		    break;
+                policy = IPSEC_POLICY_DISCARD;
+                break;
 	    case SPI_TRAP:
 	    case SPI_TRAPSUBNET:
-		    if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
+                if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
 		    {
-			    return TRUE;
+                        return TRUE;
 		    }
-		    break;
-	    /* Do we really need %hold under NETKEY? Seems not so we just ignore. */
+                break;
+                /* Do we really need %hold under NETKEY? Seems not so we just ignore. */
 	    case SPI_HOLD:
-	            return TRUE;
+                return TRUE;
 	    }
-	    break;
     }
-    DBG(DBG_NETKEY,
-	DBG_log("satype(%d) is not used in netlink_raw_eroute.",satype));
-
 
     /* log warning for RFC-breaking implementation in NETKEY/XFRM stack */
     if( (proto_info[0].encapsulation != ENCAPSULATION_MODE_TUNNEL)
