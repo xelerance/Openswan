@@ -9,7 +9,7 @@ compiler:
 
 env:
   global:
-    - IPSECVERSION=travis
+    - IPSECVERSION=0.0.0
   matrix:
     - BUILD_ARCH=amd64
 
