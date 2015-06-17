@@ -1425,7 +1425,7 @@ pfkey_sag_eroute(struct state *st, struct spd_route *sr
         }
     }
 
-    return eroute_connection(sr
+    return eroute_connection(NULL_STATE, sr
 			     , inner_spi, inner_proto
 			     , inner_esatype, proto_info + i
 			     , op, opname

@@ -1157,7 +1157,8 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 
 }
 
-bool eroute_connection(struct spd_route *sr
+bool eroute_connection(struct state *st
+                       , struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
 		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
@@ -1165,18 +1166,37 @@ bool eroute_connection(struct spd_route *sr
 		       , char *policy_label
 		       )
 {
-    const ip_address *peer = &sr->that.host_addr;
+    const ip_address *null_host = aftoinfo(addrtypeof(&sr->this.host_addr))->any;
+    const ip_address *this, *that;
     char buf2[256];
 
     snprintf(buf2, sizeof(buf2)
              , "eroute_connection %s", opname);
 
-    if (proto == SA_INT)
-        peer = aftoinfo(addrtypeof(peer))->any;
+    if (proto == SA_INT) {
+        this = null_host;
+        that = null_host;
+    } else if(st != NULL) {
+        this = &st->st_localaddr;
+        that = &st->st_remoteaddr;
+    } else {
+        this = &sr->this.host_addr;
+        that = &sr->that.host_addr;
+    }
 
-    return raw_eroute(&sr->this.host_addr, &sr->this.client
-                      , peer
-                      , &sr->that.client
+
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
+
+        addrtot(this, 0, sa_src, sizeof(sa_src));
+        addrtot(that, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("eroute_connection: between %s<->%s"
+                , sa_src, sa_dst);
+    }
+
+    return raw_eroute(this,   &sr->this.client
+                      , that, &sr->that.client
                       , spi
                       , proto
                       , sr->this.protocol
@@ -1251,7 +1271,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 		reason= "add broad %hold";
 	    }
 
-            if(!eroute_connection(sr, htonl(SPI_HOLD)
+            if(!eroute_connection(NULL_STATE, sr, htonl(SPI_HOLD)
 				  , SA_INT, ET_INT
 				  , null_proto_info
 				  , op

@@ -629,10 +629,10 @@ netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
 
 /** netlink_raw_eroute
  *
- * @param this_host ip_address
- * @param this_client ip_subnet
- * @param that_host ip_address
- * @param that_client ip_subnet
+ * @param this_host   SOURCE ip_address for SA to use
+ * @param this_client SOURCE ip_subnet  for traffic to select
+ * @param that_host   DEST   ip_address for SA to use
+ * @param that_client DEST   ip_subnet  for traffic to select
  * @param spi
  * @param proto int (4=tunnel, 50=esp, 108=ipcomp, etc ...)
  * @param transport_proto int (Currently unused) Contains protocol (u=tcp, 17=udp, etc...)
@@ -2005,7 +2005,7 @@ netlink_sag_eroute(struct state *st, struct spd_route *sr
         }
     }
 
-    return eroute_connection(sr
+    return eroute_connection(st, sr
         , inner_spi, inner_proto
 	, inner_esatype, proto_info + i
         , op, opname

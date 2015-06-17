@@ -397,6 +397,7 @@ struct state
  					   * products */
 
 };
+#define NULL_STATE NULL
 
 extern bool states_use_connection(struct connection *c);
 

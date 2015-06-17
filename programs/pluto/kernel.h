@@ -365,7 +365,7 @@ extern bool get_sa_info(struct state *st, bool inbound, time_t *ago);
 extern bool update_ipsec_sa(struct state *parent_st, struct state *st);
 #endif
 
-extern bool eroute_connection(struct spd_route *sr
+extern bool eroute_connection(struct state *st, struct spd_route *sr
 			      , ipsec_spi_t spi, unsigned int proto
 			      , enum eroute_type esatype
 			      , const struct pfkey_proto_info *proto_info
