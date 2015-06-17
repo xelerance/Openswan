@@ -675,7 +675,7 @@ netlink_raw_eroute(const ip_address *this_host
     bool enoent_ok;
     ip_subnet local_that_client;
 
-    {
+    if(DBGP(DBG_NETKEY)) {
         char sa_this[ADDRTOT_BUF];
         char sa_that[ADDRTOT_BUF];
 
@@ -986,8 +986,10 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.id.proto = esatype2proto(sa->esatype);
     req.p.family = sa->src->u.v4.sin_family;
 
-    DBG_log("creating SA spi=%08x proto=%u family=%u"
-            , htonl(req.p.id.spi), req.p.id.proto, req.p.family);
+    if(DBGP(DBG_NETKEY)) {
+        DBG_log("creating SA spi=%08x@%08x proto=%u family=%u"
+                , htonl(req.p.id.spi), htonl(req.p.id.daddr.a4), req.p.id.proto, req.p.family);
+    }
 
     /*
      * This requires ipv6 modules. It is required to support 6in4 and 4in6
