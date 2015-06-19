@@ -26,7 +26,8 @@ check:
 	@mkdir -p ${OUTPUTS}
 	-rm -f OUTPUT.pid
 	${PLUTOBIN} --help 2>&1 | tee ${OUTPUTS}/pluto.help.raw | sed -r -f ${TESTUTILS}/openswanver.sed  -f ${TESTUTILS}/randomhelper.sed | diff - pluto.help.out || (cat ${OUTPUTS}/pluto.help.raw; exit 1)
-	(${PLUTOBIN} ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ${OUTPUTS}/pluto.start.raw | sed -r -f ${TESTUTILS}/openswanver.sed  -f ./removehelpers.sed  -f ${TESTUTILS}/randomhelper.sed | diff - pluto.start.out;
+	-(${PLUTOBIN} ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ${OUTPUTS}/pluto.start.raw | sed -r -f ${TESTUTILS}/openswanver.sed  -f ./removehelpers.sed  -f ${TESTUTILS}/randomhelper.sed | diff - pluto.start.out;
+	cat ${OUTPUTS}/pluto.start.raw
 	(${PLUTOBIN} --nhelpers -1 ${CTLBASE} ${SOCKETS} 2>&1; sleep 1; ${WHACKBIN} ${CTLBASE} --shutdown)| tee ${OUTPUTS}/pluto.nhelpers.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed  -f ${TESTUTILS}/randomhelper.sed | diff - pluto.nhelpers.out;
 	: make sure that nhelpers=-1 started at least one helper.
 	[ $$(sed -n -f ./nhelpers.sed ${OUTPUTS}/pluto.nhelpers.raw | wc -l) -ge 1 ]
