@@ -412,7 +412,8 @@ main(int argc, char **argv)
 	  laddr.u.v4.sin_family= AF_INET;
 	  laddr.u.v4.sin_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v4, sizeof(laddr.u.v4)) < 0) {
-              perror("warning, unable to bind v4 socket port %u", lport);
+              fprintf(stderr, "warning, unable to bind v4 socket port %u: %s"
+                      , lport, strerror(errno));
 	  }
 	  break;
 
@@ -420,7 +421,8 @@ main(int argc, char **argv)
 	  laddr.u.v6.sin6_family= AF_INET6;
 	  laddr.u.v6.sin6_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v6, sizeof(laddr.u.v6)) < 0) {
-              perror("warning, unable to bind v6 socket to port %u", lport);
+              fprintf(stderr, "warning, unable to bind v6 socket to port %u: %s"
+                      , lport, strerror(errno));
 	  }
 	  break;
   }
