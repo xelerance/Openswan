@@ -38,6 +38,7 @@
 #include <getopt.h>
 #include <netinet/in.h>
 #include <resolv.h>
+#include <signal.h>
 
 #include <openswan.h>
 
@@ -56,11 +57,11 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -80,7 +81,7 @@
 #include "vendor.h"
 #include "pluto_crypt.h"
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -233,6 +234,12 @@ usage(const char *mess)
 
 static char pluto_lock[sizeof(ctl_addr.sun_path)] = DEFAULT_CTLBASE LOCK_SUFFIX;
 static bool pluto_lock_created = FALSE;
+
+static void pluto_sigusr1(int signum UNUSED)
+{
+    openswan_log("signal 1 received");
+    signal(SIGUSR1, pluto_sigusr1);
+}
 
 /** create lockfile, or die in the attempt */
 static int
@@ -674,9 +681,10 @@ main(int argc, char **argv)
 		long port = strtol(optarg, &endptr, 0);
 
 		if (*endptr != '\0' || endptr == optarg
-		|| port <= 0 || port > 0x10000)
-		    usage("<port-number> must be a number between 1 and 65535");
-		pluto_port = port;
+                    || port <= 0 || port > (0x10000-4000))
+		    usage("<port-number> must be a number between 1 and 61535 (nat port: port-number+4000)");
+		pluto_port500  = port;
+		pluto_port4500 = port+4000;
 	    }
 	    continue;
 
@@ -995,6 +1003,10 @@ main(int argc, char **argv)
     if(coredir) {
 	openswan_log("core dump dir: %s", coredir);
     }
+
+    /* establish SIGUSR1 handler */
+    signal(SIGUSR1, pluto_sigusr1);
+
 
 #ifdef LEAK_DETECTIVE
 	openswan_log("LEAK_DETECTIVE support [enabled]");

@@ -292,7 +292,7 @@ struct connection {
 };
 
 #define oriented(c) ((c).interface != NULL)
-extern bool orient(struct connection *c);
+extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern bool same_peer_ids(const struct connection *c
     , const struct connection *d, const struct id *his_id);
@@ -352,21 +352,25 @@ struct state;	/* forward declaration of tag (defined in state.h) */
 extern struct connection
 *con_by_name(const char *nm, bool strict);
 
-#define find_host_connection(me, my_port, him, his_port, policy) find_host_connection2(__FUNCTION__, me, my_port, him, his_port, policy)
-extern struct connection
-*find_host_connection2(const char *func
-		       , const ip_address *me, u_int16_t my_port
-	, const ip_address *him, u_int16_t his_port, lset_t policy),
-    *refine_host_connection(const struct state *st, const struct id *id
-	, bool initiator, bool aggrmode),
-    *find_client_connection(struct connection *c
-			    , const ip_subnet *our_net
-			    , const ip_subnet *peer_net
-			    , const u_int8_t our_protocol
-			    , const u_int16_t out_port
-			    , const u_int8_t peer_protocol
-			    , const u_int16_t peer_port),
-    *find_connection_by_reqid(uint32_t reqid);
+#define find_host_connection(me, my_port, histype, him, his_port, policy) find_host_connection2(__FUNCTION__, me, my_port, histype, him, his_port, policy)
+extern struct connection *find_host_connection2(const char *func
+                                                , const ip_address *me
+                                                , u_int16_t my_port
+                                                , enum keyword_host histype
+                                                , const ip_address *him
+                                                , u_int16_t his_port
+                                                , lset_t policy);
+extern struct connection *refine_host_connection(const struct state *st
+                                                 , const struct id *id
+                                                 , bool initiator, bool aggrmode);
+extern struct connection *find_client_connection(struct connection *c
+                                                 , const ip_subnet *our_net
+                                                 , const ip_subnet *peer_net
+                                                 , const u_int8_t our_protocol
+                                                 , const u_int16_t out_port
+                                                 , const u_int8_t peer_protocol
+                                                 , const u_int16_t peer_port);
+extern struct connection *find_connection_by_reqid(uint32_t reqid);
 
 extern struct connection *
 find_connection_for_clients(struct spd_route **srp

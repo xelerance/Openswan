@@ -45,7 +45,7 @@
 #include "defs.h"
 #include "rnd.h"
 #include "id.h"
-#include "connections.h"        /* needs id.h */
+#include "pluto/connections.h"        /* needs id.h */
 #include "state.h"
 #include "timer.h"
 #include "kernel.h"
@@ -56,7 +56,7 @@
 #include "packet.h"
 #include "x509.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
@@ -69,6 +69,12 @@
 #include "nat_traversal.h"
 #endif
 
+/*
+ * Global variables: had to go somewhere, might as well be this file.
+ */
+
+u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
+u_int16_t pluto_port4500 = NAT_IKE_UDP_PORT;	/* Pluto's port NAT */
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
 /* test if the routes required for two different connections agree
@@ -1151,7 +1157,8 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 
 }
 
-bool eroute_connection(struct spd_route *sr
+bool eroute_connection(struct state *st
+                       , struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
 		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
@@ -1159,18 +1166,37 @@ bool eroute_connection(struct spd_route *sr
 		       , char *policy_label
 		       )
 {
-    const ip_address *peer = &sr->that.host_addr;
+    const ip_address *null_host = aftoinfo(addrtypeof(&sr->this.host_addr))->any;
+    const ip_address *this, *that;
     char buf2[256];
 
     snprintf(buf2, sizeof(buf2)
              , "eroute_connection %s", opname);
 
-    if (proto == SA_INT)
-        peer = aftoinfo(addrtypeof(peer))->any;
+    if (proto == SA_INT) {
+        this = null_host;
+        that = null_host;
+    } else if(st != NULL) {
+        this = &st->st_localaddr;
+        that = &st->st_remoteaddr;
+    } else {
+        this = &sr->this.host_addr;
+        that = &sr->that.host_addr;
+    }
 
-    return raw_eroute(&sr->this.host_addr, &sr->this.client
-                      , peer
-                      , &sr->that.client
+
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
+
+        addrtot(this, 0, sa_src, sizeof(sa_src));
+        addrtot(that, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("eroute_connection: between %s<->%s"
+                , sa_src, sa_dst);
+    }
+
+    return raw_eroute(this,   &sr->this.client
+                      , that, &sr->that.client
                       , spi
                       , proto
                       , sr->this.protocol
@@ -1245,7 +1271,7 @@ assign_hold(struct connection *c USED_BY_DEBUG
 		reason= "add broad %hold";
 	    }
 
-            if(!eroute_connection(sr, htonl(SPI_HOLD)
+            if(!eroute_connection(NULL_STATE, sr, htonl(SPI_HOLD)
 				  , SA_INT, ET_INT
 				  , null_proto_info
 				  , op
@@ -1317,16 +1343,288 @@ del_spi(ipsec_spi_t spi, int proto
 }
 
 /*
+ * many arguments might go elsewhere, but for now this is fine
+ * to just make the code clearer
+ */
+static err_t setup_esp_sa(struct connection *c
+                          , struct state *st
+                          , unsigned int encapsulation
+                          , bool inbound
+                          , bool outgoing_ref_set
+                          , bool replace
+                          , const char *inbound_str
+                          , struct kernel_sa *said_next
+                          , ip_address src, u_int16_t natt_sport
+                          , ip_address dst, u_int16_t natt_dport
+                          , ip_subnet src_client
+                          , ip_subnet dst_client)
+{
+    ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
+    u_char *esp_dst_keymat = inbound? st->st_esp.our_keymat : st->st_esp.peer_keymat;
+    const struct esp_info *ei;
+    u_int16_t key_len;
+    char text_said[SATOT_BUF];
+    IPsecSAref_t refhim = st->st_refhim;
+
+    /* this maps IKE/IETF values into kernel identifiers */
+    static const struct esp_info esp_info[] = {
+        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
+          0, HMAC_MD5_KEY_LEN,
+          SADB_EALG_NULL, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
+          0, HMAC_SHA1_KEY_LEN,
+          SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
+          DES_CBC_BLOCK_SIZE, 0,
+          SADB_EALG_DESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
+          DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
+          SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
+          DES_CBC_BLOCK_SIZE,
+          HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
+          DES_CBC_BLOCK_SIZE * 3, 0,
+          SADB_EALG_3DESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
+          DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
+          SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
+          DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
+          SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
+
+        { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
+          AES_CBC_BLOCK_SIZE, 0,
+          SADB_X_EALG_AESCBC, SADB_AALG_NONE },
+        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
+              AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
+          SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
+        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
+          AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
+          SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
+    };
+
+    /* static const int esp_max = elemsof(esp_info); */
+    /* int esp_count; */
+
+#ifdef NAT_TRAVERSAL
+    u_int8_t natt_type = 0;
+    ip_address natt_oa;
+
+    if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
+        if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
+            natt_type = ESPINUDP_WITH_NON_ESP;
+        } else {
+            natt_type = ESPINUDP_WITH_NON_IKE;
+        }
+    }
+    natt_oa = st->hidden_variables.st_nat_oa;
+#endif
+
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
+
+        addrtot(&src, 0, sa_src, sizeof(sa_src));
+        addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d for spi=%08x [%s->%s]\n"
+                , inbound_str
+                , st->st_esp.attrs.transattrs.encrypt
+                , st->st_esp.attrs.transattrs.enckeylen
+                , st->st_esp.attrs.transattrs.integ_hash
+                , esp_spi, sa_src, sa_dst);
+    }
+
+    for (ei = esp_info; ; ei++) {
+
+        /* if it is the last key entry, then ask algo */
+        if (ei == &esp_info[elemsof(esp_info)]) {
+            /* Check for additional kernel alg */
+#ifdef KERNEL_ALG
+            if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
+                                        st->st_esp.attrs.transattrs.enckeylen,
+                                        st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
+                break;
+            }
+#endif
+
+            /* note: enum_show may use a static buffer, so two
+             * calls in one printf would be a mistake.
+             * enum_name does the same job, without a static buffer,
+             * assuming the name will be found.
+             */
+            loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
+                   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+                   , st->st_esp.attrs.transattrs.enckeylen
+                   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
+            return "implement not implemented";
+        }
+
+        DBG(DBG_CRYPT
+            , DBG_log("checking transid: %d keylen: %d auth: %d\n"
+                      , ei->transid, ei->enckeylen, ei->auth));
+
+        if (st->st_esp.attrs.transattrs.encrypt == ei->transid
+            && (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
+            && st->st_esp.attrs.transattrs.integ_hash == ei->auth)
+            break;
+    }
+
+    if (st->st_esp.attrs.transattrs.encrypt != ei->transid
+        && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE
+        && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
+        loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
+               , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+               , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
+        return "failed to find key info";
+    }
+
+    key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
+    if (key_len) {
+        /* XXX: must change to check valid _range_ key_len */
+        if (key_len > ei->enckeylen) {
+            loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
+                   enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
+                   (int)key_len, (int)ei->enckeylen);
+            return "wrong key length";
+        }
+    } else {
+        key_len = ei->enckeylen;
+    }
+
+    /* ifdef 3DES? */
+    /* Grrrrr.... f*cking 7 bits jurassic algos  */
+
+    /* 168 bits in kernel, need 192 bits for keymat_len */
+    if (ei->transid == ESP_3DES && key_len == 21)
+        key_len = 24;
+
+    /* 56 bits in kernel, need 64 bits for keymat_len */
+    if (ei->transid == ESP_DES && key_len == 7)
+        key_len = 8;
+
+    /* divide up keying material */
+    /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
+    if(st->st_esp.keymat_len != key_len + ei->authkeylen)
+        DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
+        st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
+    passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
+
+    set_text_said(text_said, &dst, esp_spi, SA_ESP);
+
+    said_next->src = &src;
+    said_next->dst = &dst;
+    said_next->src_client = &src_client;
+    said_next->dst_client = &dst_client;
+    said_next->transport_proto = c->spd.this.protocol;
+    said_next->spi = esp_spi;
+    said_next->esatype = ET_ESP;
+    said_next->replay_window = kernel_ops->replay_window;
+    said_next->authalg = ei->authalg;
+
+    /* this is a bug in the 2.6.28/29 kernel, we should remove this code */
+    if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256)
+        && (st->st_connection->sha2_truncbug)) {
+        if(kernel_ops->sha2_truncbug_support) {
+            DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
+            /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
+            said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
+        } else {
+            loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
+            return "sha2 trunc bug not fixable";
+        }
+    }
+
+    said_next->authkeylen = ei->authkeylen;
+    /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
+    said_next->authkey = esp_dst_keymat + key_len;
+    said_next->encalg = ei->encryptalg;
+    /* said_next->enckeylen = ei->enckeylen; */
+    said_next->enckeylen = key_len;
+    said_next->enckey = esp_dst_keymat;
+    said_next->encapsulation = encapsulation;
+    said_next->reqid = c->spd.reqid + 1;
+
+#ifdef HAVE_LABELED_IPSEC
+    said_next->sec_ctx = st->sec_ctx;
+#endif
+
+#ifdef NAT_TRAVERSAL
+    said_next->natt_sport = natt_sport;
+    said_next->natt_dport = natt_dport;
+    said_next->transid = st->st_esp.attrs.transattrs.encrypt;
+    said_next->natt_type = natt_type;
+    said_next->natt_oa = &natt_oa;
+#endif
+    said_next->outif   = -1;
+#ifdef KLIPS_MAST
+    if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT
+        && useful_mastno != -1) {
+        said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
+    }
+#endif
+    said_next->text_said = text_said;
+    said_next->sa_lifetime = c->sa_ipsec_life_seconds;
+
+    DBG(DBG_CRYPT, {
+            DBG_dump("ESP enckey:",  said_next->enckey,
+                     said_next->enckeylen);
+            DBG_dump("ESP authkey:", said_next->authkey,
+                     said_next->authkeylen);
+        });
+
+    if(inbound) {
+        /*
+         * set corresponding outbound SA. We can do this on
+         * each SA in the bundle without harm.
+         */
+        said_next->refhim = refhim;
+    } else if (!outgoing_ref_set) {
+        /* on outbound, pick up the SAref if not already done */
+        said_next->ref    = refhim;
+        outgoing_ref_set  = TRUE;
+    }
+
+    if(inbound) {
+        /*
+         * set corresponding outbound SA. We can do this on
+         * each SA in the bundle without harm.
+         */
+        said_next->refhim = refhim;
+    } else if (!outgoing_ref_set) {
+        /* on outbound, pick up the SAref if not already done */
+        said_next->ref    = refhim;
+        outgoing_ref_set  = TRUE;
+    }
+
+    {
+      bool add_success = kernel_ops->add_sa(said_next, replace);
+
+      /* good crypto hygiene, (not just LIBNSS) */
+      memset(said_next->enckey, 0, said_next->enckeylen);
+      memset(said_next->authkey, 0, said_next->authkeylen);
+
+      if(!add_success) {
+        return "failed to add sa";
+      }
+    }
+    return NULL; /* no error */
+}
+
+/*
  * Setup a pair of SAs.
  *
  */
 static bool
-setup_half_ipsec_sa(struct state *st, bool inbound)
+setup_half_ipsec_sa(struct state *parent_st, struct state *st, bool inbound)
 {
     /* Build an inbound or outbound SA */
-
+    err_t err = NULL;
     struct connection *c = st->st_connection;
-    ip_subnet src, dst;
+    ip_address src, dst;
+    u_int16_t srcport, dstport;
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0;
@@ -1347,31 +1645,46 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
     char text_said[SATOT_BUF];
     int encapsulation;
 
-    replace = inbound && (kernel_ops->get_spi != NULL);
+    bool add_selector;
 
-    src.maskbits = 0;
-    dst.maskbits = 0;
+    replace = inbound && (kernel_ops->get_spi != NULL);
 
     if (inbound)
     {
-        src.addr = c->spd.that.host_addr;
-        dst.addr = c->spd.this.host_addr;
+        src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
+        dst = parent_st->st_localaddr;    dstport = parent_st->st_localport;
         src_client = c->spd.that.client;
         dst_client = c->spd.this.client;
     }
     else
     {
-        src.addr = c->spd.this.host_addr,
-        dst.addr = c->spd.that.host_addr;
+        src = parent_st->st_localaddr;    srcport = parent_st->st_localport;
+        dst = parent_st->st_remoteaddr;   dstport = parent_st->st_remoteport;
         src_client = c->spd.this.client;
         dst_client = c->spd.that.client;
     }
 
+    if(DBGP(DBG_KLIPS)) {
+        char sa_src[ADDRTOT_BUF];
+        char sa_dst[ADDRTOT_BUF];
+
+        addrtot(&src, 0, sa_src, sizeof(sa_src));
+        addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
+        DBG_log("state #%lu: setup %s ipsec keys for %s, between %s<->%s"
+                , st->st_serialno
+                , inbound_str
+                , c->name
+                , sa_src, sa_dst);
+    }
+
     encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+    add_selector  = TRUE;
+
     if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
         || st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL
         || st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
     {
+        add_selector = FALSE; /* Don't add selectors for tunnel mode */
         encapsulation = ENCAPSULATION_MODE_TUNNEL;
     }
 
@@ -1411,11 +1724,15 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
         set_text_said(text_said
             , &c->spd.that.host_addr, ipip_spi, SA_IPIP);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->natt_sport = srcport;
+        said_next->dst = &dst;
+        said_next->natt_dport = dstport;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
+	said_next->inbound         = inbound;
+	said_next->add_selector    = add_selector;
         said_next->spi = ipip_spi;
         said_next->esatype = ET_IPIP;
         said_next->text_said = text_said;
@@ -1485,6 +1802,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up IPCOMP SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("ipcomp maybe"));
     if (st->st_ipcomp.present)
     {
         ipsec_spi_t ipcomp_spi = inbound? st->st_ipcomp.our_spi : st->st_ipcomp.attrs.spi;
@@ -1502,10 +1820,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
                 goto fail;
         }
 
-        set_text_said(text_said, &dst.addr, ipcomp_spi, SA_COMP);
+        set_text_said(text_said, &dst, ipcomp_spi, SA_COMP);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->dst = &dst;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -1562,270 +1880,32 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up ESP SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("esp %s maybe", inbound_str));
     if (st->st_esp.present)
     {
-        ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
-        u_char *esp_dst_keymat = inbound? st->st_esp.our_keymat : st->st_esp.peer_keymat;
-        const struct esp_info *ei;
-        u_int16_t key_len;
+        err = setup_esp_sa(c, st, encapsulation, inbound
+                           , outgoing_ref_set, replace
+                           , inbound_str, said_next
+                           , src, srcport, dst, dstport
+                           , src_client, dst_client);
+        if(err) goto fail;
 
-        static const struct esp_info esp_info[] = {
-            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
-                0, HMAC_MD5_KEY_LEN,
-                SADB_EALG_NULL, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
-                0, HMAC_SHA1_KEY_LEN,
-                SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
-                DES_CBC_BLOCK_SIZE, 0,
-                SADB_EALG_DESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
-                DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-                SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
-                DES_CBC_BLOCK_SIZE,
-                HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
-                DES_CBC_BLOCK_SIZE * 3, 0,
-                SADB_EALG_3DESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
-                DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
-                SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
-                DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
-                SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
-
-            { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
-                AES_CBC_BLOCK_SIZE, 0,
-                SADB_X_EALG_AESCBC, SADB_AALG_NONE },
-            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
-                AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-                SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
-            { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
-                AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
-                SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
-        };
-	/* static const int esp_max = elemsof(esp_info); */
-	/* int esp_count; */
-
-#ifdef NAT_TRAVERSAL
-        u_int8_t natt_type = 0;
-        u_int16_t natt_sport = 0, natt_dport = 0;
-        ip_address natt_oa;
-
-        if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
-	    if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
-		natt_type = ESPINUDP_WITH_NON_ESP;
-	    } else {
-		natt_type = ESPINUDP_WITH_NON_IKE;
-	    }
-
-	    if(inbound) {
-		natt_sport = st->st_remoteport;
-		natt_dport = st->st_localport;
-	    } else {
-		natt_sport = st->st_localport;
-		natt_dport = st->st_remoteport;
-	    }
-
-            natt_oa = st->hidden_variables.st_nat_oa;
-        }
-#endif
-
-	DBG(DBG_CRYPT
-	    , DBG_log("looking for %s alg with transid: %d keylen: %d auth: %d\n"
-                      , inbound_str
-		      , st->st_esp.attrs.transattrs.encrypt
-		      , st->st_esp.attrs.transattrs.enckeylen
-		      , st->st_esp.attrs.transattrs.integ_hash));
-
-        for (ei = esp_info; ; ei++)
-        {
-
-	    /* if it is the last key entry, then ask algo */
-            if (ei == &esp_info[elemsof(esp_info)])
-            {
-                /* Check for additional kernel alg */
-#ifdef KERNEL_ALG
-                if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
-					    st->st_esp.attrs.transattrs.enckeylen,
-					    st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
-                        break;
-                }
-#endif
-
-                /* note: enum_show may use a static buffer, so two
-                 * calls in one printf would be a mistake.
-                 * enum_name does the same job, without a static buffer,
-                 * assuming the name will be found.
-                 */
-                loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
-                    , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
-		       , st->st_esp.attrs.transattrs.enckeylen
-                    , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-                goto fail;
+        /*
+         * SA refs will have been allocated for this SA.
+         * The inner most one is interesting for the outgoing SA,
+         * since we refer to it in the policy that we instantiate.
+         */
+        if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
+            new_refhim = said_next->ref;
+            if(new_refhim == IPSEC_SAREF_NULL) {
+                new_refhim = IPSEC_SAREF_NA;
             }
-
-	    DBG(DBG_CRYPT
-		, DBG_log("checking transid: %d keylen: %d auth: %d\n"
-			  , ei->transid, ei->enckeylen, ei->auth));
-
-            if (st->st_esp.attrs.transattrs.encrypt == ei->transid
-		&& (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
-		&& st->st_esp.attrs.transattrs.integ_hash == ei->auth)
-                break;
+        }
+        if(!incoming_ref_set && inbound) {
+            st->st_ref = said_next->ref;
+            incoming_ref_set=TRUE;
         }
 
-	if (st->st_esp.attrs.transattrs.encrypt != ei->transid
-	    && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE
-	    && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
-	    loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
-		   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
-		   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-	    goto fail;
-	}
-
-        key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
-        if (key_len) {
-                /* XXX: must change to check valid _range_ key_len */
-                if (key_len > ei->enckeylen) {
-                        loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
-                        enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
-                        (int)key_len, (int)ei->enckeylen);
-                        goto fail;
-                }
-        } else {
-                key_len = ei->enckeylen;
-        }
-        /* Grrrrr.... f*cking 7 bits jurassic algos  */
-
-        /* 168 bits in kernel, need 192 bits for keymat_len */
-        if (ei->transid == ESP_3DES && key_len == 21)
-                key_len = 24;
-
-        /* 56 bits in kernel, need 64 bits for keymat_len */
-        if (ei->transid == ESP_DES && key_len == 7)
-                key_len = 8;
-
-        /* divide up keying material */
-        /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
-	if(st->st_esp.keymat_len != key_len + ei->authkeylen)
-	    DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
-		    st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
-        passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
-
-        set_text_said(text_said, &dst.addr, esp_spi, SA_ESP);
-
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
-        said_next->src_client = &src_client;
-        said_next->dst_client = &dst_client;
-        said_next->transport_proto = c->spd.this.protocol;
-        said_next->spi = esp_spi;
-        said_next->esatype = ET_ESP;
-        said_next->replay_window = kernel_ops->replay_window;
-        said_next->authalg = ei->authalg;
-
-		if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256) && (st->st_connection->sha2_truncbug)) {
-			if(kernel_ops->sha2_truncbug_support){
-			   DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
-			   /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
-			   said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
-			} else {
-                   loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
-		   	goto fail;
-			}
-		}
-        said_next->authkeylen = ei->authkeylen;
-        /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
-        said_next->authkey = esp_dst_keymat + key_len;
-        said_next->encalg = ei->encryptalg;
-        /* said_next->enckeylen = ei->enckeylen; */
-        said_next->enckeylen = key_len;
-        said_next->enckey = esp_dst_keymat;
-        said_next->encapsulation = encapsulation;
-        said_next->reqid = c->spd.reqid + 1;
-
-#ifdef HAVE_LABELED_IPSEC
-        said_next->sec_ctx = st->sec_ctx;
-#endif
-
-#ifdef NAT_TRAVERSAL
-        said_next->natt_sport = natt_sport;
-        said_next->natt_dport = natt_dport;
-        said_next->transid = st->st_esp.attrs.transattrs.encrypt;
-        said_next->natt_type = natt_type;
-        said_next->natt_oa = &natt_oa;
-#endif
-	said_next->outif   = -1;
-#ifdef KLIPS_MAST
-	if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT && useful_mastno != -1) {
-	    said_next->outif = MASTTRANSPORT_OFFSET+useful_mastno;
-	}
-#endif
-	said_next->text_said = text_said;
-	said_next->sa_lifetime = c->sa_ipsec_life_seconds;
-
-	DBG(DBG_CRYPT,
-            DBG_dump("esp %s enckey:",  said_next->enckey,  said_next->enckeylen);
-            DBG_dump("esp %s authkey:", said_next->authkey, said_next->authkeylen);
-	);
-
-	if(inbound) {
-	    /*
-	     * set corresponding outbound SA. We can do this on
-	     * each SA in the bundle without harm.
-	     */
-	    said_next->refhim = refhim;
-	} else if (!outgoing_ref_set) {
-	    /* on outbound, pick up the SAref if not already done */
-	    said_next->ref    = refhim;
-	    outgoing_ref_set  = TRUE;
-	}
-
-	if(inbound) {
-	    /*
-	     * set corresponding outbound SA. We can do this on
-	     * each SA in the bundle without harm.
-	     */
-	    said_next->refhim = refhim;
-	} else if (!outgoing_ref_set) {
-	    /* on outbound, pick up the SAref if not already done */
-	    said_next->ref    = refhim;
-	    outgoing_ref_set  = TRUE;
-	}
-
-#ifdef HAVE_LIBNSS
-       if (!kernel_ops->add_sa(said_next, replace)) {
-            memset(said_next->enckey, 0, said_next->enckeylen);
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#else
-        if (!kernel_ops->add_sa(said_next, replace))
-#endif
-            goto fail;
-#ifdef HAVE_LIBNSS
-       }
-            memset(said_next->enckey, 0, said_next->enckeylen);
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#endif
-
-	/*
-	 * SA refs will have been allocated for this SA.
-	 * The inner most one is interesting for the outgoing SA,
-	 * since we refer to it in the policy that we instantiate.
-	 */
-	if(new_refhim == IPSEC_SAREF_NULL && !inbound) {
-	    new_refhim = said_next->ref;
-	    if(new_refhim == IPSEC_SAREF_NULL) {
-		new_refhim = IPSEC_SAREF_NA;
-	    }
-	}
-	if(!incoming_ref_set && inbound) {
-	    st->st_ref = said_next->ref;
-	    incoming_ref_set=TRUE;
-	}
         said_next++;
 
         encapsulation = ENCAPSULATION_MODE_TRANSPORT;
@@ -1833,6 +1913,7 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
     /* set up AH SA, if any */
 
+    DBG(DBG_KLIPS, DBG_log("ah maybe"));
     if (st->st_ah.present)
     {
         ipsec_spi_t ah_spi = inbound? st->st_ah.our_spi : st->st_ah.attrs.spi;
@@ -1858,10 +1939,10 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
             goto fail;
         }
 
-        set_text_said(text_said, &dst.addr, ah_spi, SA_AH);
+        set_text_said(text_said, &dst, ah_spi, SA_AH);
 
-        said_next->src = &src.addr;
-        said_next->dst = &dst.addr;
+        said_next->src = &src;
+        said_next->dst = &dst;
         said_next->src_client = &src_client;
         said_next->dst_client = &dst_client;
         said_next->transport_proto = c->spd.this.protocol;
@@ -2061,12 +2142,12 @@ setup_half_ipsec_sa(struct state *st, bool inbound)
 
 fail:
     {
-	DBG_log("setup_half_ipsec_sa() hit fail:");
+	DBG_log("setup_half_ipsec_sa() hit fail %s", err ? err : "<unknown>");
         /* undo the done SPIs */
         while (said_next-- != said) {
 	    if(said_next->proto) {
 		(void) del_spi(said_next->spi, said_next->proto
-			       , &src.addr, said_next->dst);
+			       , &src, said_next->dst);
 	    }
 	}
         return FALSE;
@@ -2358,7 +2439,7 @@ static void look_for_replacement_state(struct state *st)
  * The Initiator uses install_ipsec_sa to install both at once.
  */
 bool
-install_inbound_ipsec_sa(struct state *st)
+install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 {
     struct connection *const c = st->st_connection;
 
@@ -2440,17 +2521,16 @@ install_inbound_ipsec_sa(struct state *st)
 #ifdef HAVE_LABELED_IPSEC
 	if(!st->st_connection->loopback) {
 #endif
-
-	DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
-	if(!setup_half_ipsec_sa(st, FALSE)) {
-	    DBG_log("failed to install outgoing SA: %u", st->st_refhim);
-	    return FALSE;
-	}
+            DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
+            if(!setup_half_ipsec_sa(parent_st, st, FALSE)) {
+                DBG_log("failed to install outgoing SA: %u", st->st_refhim);
+                return FALSE;
+            }
 #ifdef HAVE_LABELED_IPSEC
 	}
 	else {
-	DBG(DBG_CONTROL,
-	DBG_log("in case of loopback, the state that initiated this quick mode exchange will install outgoing SAs, so skipping this"));
+            DBG(DBG_CONTROL,
+                DBG_log("in case of loopback, the state that initiated this quick mode exchange will install outgoing SAs, so skipping this"));
 	}
 #endif
 
@@ -2461,17 +2541,17 @@ install_inbound_ipsec_sa(struct state *st)
     /* (attempt to) actually set up the SAs */
 
 #ifdef HAVE_LABELED_IPSEC
-	if(!st->st_connection->loopback) {
+    if(!st->st_connection->loopback)
 #endif
-
-    return setup_half_ipsec_sa(st, TRUE);
+        {
+            return setup_half_ipsec_sa(parent_st, st, TRUE);
+        }
 
 #ifdef HAVE_LABELED_IPSEC
-	}
-	else {
-	DBG(DBG_CONTROL, DBG_log("in case of loopback, the state that initiated this quick mode exchange will install incoming SAs, so skipping this"));
+    else {
+        DBG(DBG_CONTROL, DBG_log("in case of loopback, the state that initiated this quick mode exchange will install incoming SAs, so skipping this"));
 	return TRUE;
-	}
+    }
 #endif
 }
 
@@ -2785,12 +2865,14 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 }
 
 bool
-install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
+install_ipsec_sa(struct state *parent_st
+                 , struct state *st
+                 , bool inbound_also USED_BY_KLIPS)
 {
     struct spd_route *sr;
     enum routability rb;
 
-    DBG(DBG_CONTROL, DBG_log("install_ipsec_sa() for #%ld: %s"
+    DBG(DBG_CONTROL, DBG_log("state #%ld: install_ipsec_sa() for %s"
                              , st->st_serialno
                              , inbound_also?
                              "inbound and outbound" : "outbound only"));
@@ -2819,20 +2901,23 @@ install_ipsec_sa(struct state *st, bool inbound_also USED_BY_KLIPS)
 #ifdef HAVE_LABELED_IPSEC
 	&& !st->st_connection->loopback
 #endif
-	) {
-	if(!setup_half_ipsec_sa(st, FALSE)) {
+       ) {
+	if(!setup_half_ipsec_sa(parent_st, st, FALSE)) {
+            loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup outgoing SA", st->st_serialno);
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up outgoing SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("state #%lu: set up outgoing SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
 	st->st_outbound_done = TRUE;
     }
 
+    DBG(DBG_KLIPS, DBG_log("state #%lu: now setting up incoming SA", st->st_serialno));
     /* now setup inbound SA */
     if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
-	if(!setup_half_ipsec_sa(st, TRUE)) {
+	if(!setup_half_ipsec_sa(parent_st, st, TRUE)) {
+            loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup incoming SA", st->st_serialno);
 	    return FALSE;
 	}
-	DBG(DBG_KLIPS, DBG_log("set up incoming SA, ref=%u/%u", st->st_ref, st->st_refhim));
+	DBG(DBG_KLIPS, DBG_log("state #%lu: set up incoming SA, ref=%u/%u", st->st_serialno, st->st_ref, st->st_refhim));
     }
 
     if(rb == route_unnecessary) {
@@ -2992,21 +3077,26 @@ delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS)
 }
 
 #ifdef NAT_TRAVERSAL
-static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
+/* XXX -- seems to be dead code */
+#if 0
+static bool update_nat_t_ipsec_esp_sa (struct state *parent_st
+                                       , struct state *st, bool inbound)
 {
-        struct connection *c = st->st_connection;
         char text_said[SATOT_BUF];
         struct kernel_sa sa;
-        ip_address
-                src = inbound? c->spd.that.host_addr : c->spd.this.host_addr,
-                dst = inbound? c->spd.this.host_addr : c->spd.that.host_addr;
+        ip_address src, dst;
+        ipsec_spi_t esp_spi;
+        u_int16_t natt_sport, natt_dport;
 
-
-        ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
-
-        u_int16_t
-                natt_sport = inbound? c->spd.that.host_port : c->spd.this.host_port,
-                natt_dport = inbound? c->spd.this.host_port : c->spd.that.host_port;
+        if (inbound) {
+            src = parent_st->st_remoteaddr;   natt_sport = parent_st->st_remoteport;
+            dst = parent_st->st_localaddr;    natt_dport = parent_st->st_localport;
+            esp_spi = st->st_esp.our_spi;
+        } else {
+            src = parent_st->st_localaddr;    natt_sport = parent_st->st_localport;
+            dst = parent_st->st_remoteaddr;   natt_dport = parent_st->st_remoteport;
+            esp_spi = st->st_esp.attrs.spi;
+        }
 
         set_text_said(text_said, &dst, esp_spi, SA_ESP);
 
@@ -3027,27 +3117,29 @@ static bool update_nat_t_ipsec_esp_sa (struct state *st, bool inbound)
 
 }
 
-bool update_ipsec_sa (struct state *st USED_BY_KLIPS)
+bool update_ipsec_sa (struct state *parent_st, struct state *st USED_BY_KLIPS)
 {
         if (IS_IPSEC_SA_ESTABLISHED(st->st_state)) {
-                if ((st->st_esp.present) && (
-                        (!update_nat_t_ipsec_esp_sa (st, TRUE)) ||
-                        (!update_nat_t_ipsec_esp_sa (st, FALSE)))) {
-                        return FALSE;
-                }
+            if ((st->st_esp.present)
+                && ((!update_nat_t_ipsec_esp_sa (parent_st, st, TRUE))
+                    || (!update_nat_t_ipsec_esp_sa (parent_st, st, FALSE)))) {
+                return FALSE;
+            }
         }
         else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state)) {
-                if ((st->st_esp.present) && (!update_nat_t_ipsec_esp_sa (st, FALSE))) {
-                        return FALSE;
-                }
+            if ((st->st_esp.present)
+                && (!update_nat_t_ipsec_esp_sa (parent_st, st, FALSE))) {
+                return FALSE;
+            }
         }
         else {
-                DBG_log("assert failed at %s:%d st_state=%d", __FILE__, __LINE__,
-                        st->st_state);
-                return FALSE;
+            DBG_log("assert failed at %s:%d st_state=%d", __FILE__, __LINE__,
+                    st->st_state);
+            return FALSE;
         }
         return TRUE;
 }
+#endif
 #endif
 
 bool was_eroute_idle(struct state *st, time_t since_when)

@@ -11,7 +11,15 @@ extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct xfrm_user_sec_ctx_ike * uctx
 				    );
 
-
+extern stf_status ikev2parent_outI1_withstate(struct state *st
+                            , int whack_sock
+                            , struct connection *c
+                            , struct state *predecessor
+                            , lset_t policy
+                            , unsigned long try /* how many attempts so far */
+                            , enum crypto_importance importance
+                            , struct xfrm_user_sec_ctx_ike * uctx
+                                              );
 
 extern void ikev2_delete_out(struct state *st);
 
@@ -34,6 +42,7 @@ extern void complete_v2_state_transition(struct msg_digest **mdp
 extern stf_status process_informational_ikev2(struct msg_digest *md);
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
+extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
@@ -134,34 +143,43 @@ extern int ikev2_evaluate_connection_fit(struct connection *d
 				, unsigned int tsi_n
 				, unsigned int tsr_n);
 
-extern int ikev2_evaluate_connection_port_fit(struct connection *d
-				, struct spd_route *sr
-				, enum phase1_role role
-				, struct traffic_selector *tsi
-				, struct traffic_selector *tsr
-				, unsigned int tsi_n
-				, unsigned int tsr_n
-				, unsigned int *best_tsi_i
-				, unsigned int *best_tsr_i);
+extern int ikev2_evaluate_connection_port_fit(const struct connection *d
+                                              , const struct spd_route *sr
+                                              , enum phase1_role role
+                                              , const struct traffic_selector *tsi
+                                              , const struct traffic_selector *tsr
+                                              , int tsi_n
+                                              , int tsr_n
+                                              , int *best_tsi_i
+                                              , int *best_tsr_i);
+
+extern int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
+						  const struct spd_route *sr,
+						  enum phase1_role role,
+						  const struct traffic_selector *tsi,
+						  const struct traffic_selector *tsr,
+						  int tsi_n,
+						  int tsr_n,
+						  int *best_tsi_i,
+						  int *best_tsr_i);
 
 extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, pb_stream *outpbs
 				, unsigned int np
-				, struct traffic_selector *ts
-				, enum phase1_role role);
+				, struct traffic_selector *ts);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
-				, pb_stream *outpbs
-				, enum phase1_role role
-				, struct connection *c0
-				, lset_t policy);
+                                     , pb_stream *outpbs
+                                     , enum phase1_role role
+                                     , unsigned int next_payload
+                                     , struct connection *c0
+                                     , lset_t policy);
 
 extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, struct traffic_selector *array
 				, unsigned int array_max);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
-					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
 extern struct traffic_selector ikev2_end_to_ts(struct end *e);
@@ -188,3 +206,5 @@ extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 
 extern bool force_busy;  /* config option to emulate responder under DOS */
 
+/* allocate a transmit slot */
+extern stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p);

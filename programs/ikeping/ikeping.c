@@ -41,6 +41,7 @@
 
 /* what exchange number to use for outgoing requests */
 static int exchange_number;
+char *progname;
 
 static void
 help(void)
@@ -108,13 +109,13 @@ send_ping(int afamily,
 	raddrlen=0;
 
 	for(i=0; i<COOKIE_SIZE; i++) {
-		ih.isa_icookie[i]=rand()&0xff;		
+		ih.isa_icookie[i]=rand()&0xff;
 	}
-	     
+
 	for(i=0; i<COOKIE_SIZE; i++) {
-		ih.isa_rcookie[i]=rand()&0xff;		
+		ih.isa_rcookie[i]=rand()&0xff;
 	}
-	     
+
 	ih.isa_np    = NOTHING_WRONG;
 	ih.isa_version = (1 << ISA_MAJ_SHIFT) | 0;
 	ih.isa_xchg  = (exchange_number ?
@@ -128,7 +129,7 @@ send_ping(int afamily,
 		raddr->u.v4.sin_port = htons(rport);
 		raddrlen=sizeof(raddr->u.v4);
 		break;
-	  
+
 	case AF_INET6:
 		raddr->u.v6.sin6_port = htons(rport);
 		raddrlen=sizeof(raddr->u.v6);
@@ -163,7 +164,7 @@ reply_packet(int afamily,
 		op->isa_icookie[i]=op->isa_rcookie[i];
 		op->isa_rcookie[i]=tmp;
 	}
-	     
+
 	op->isa_np    = NOTHING_WRONG;
 	op->isa_version = (1 << ISA_MAJ_SHIFT) | 0;
 	op->isa_xchg  = ISAKMP_XCHG_ECHOREPLY;
@@ -212,17 +213,17 @@ receive_ping(int afamily, int s, int reply, int natt)
 		       , n);
 		return;
 	    }
-	    
+
 	    /* otherwise, skip 4 bytes */
 	    memcpy(&ih, rbuf+4, sizeof(ih));
 	}
-	    
+
 	addrtot(&sender, 0, buf, sizeof(buf));
 	switch(afamily) {
 	case AF_INET:
 		rport = sender.u.v4.sin_port;
 		break;
-	  
+
 	case AF_INET6:
 		rport = sender.u.v6.sin6_port;
 		break;
@@ -310,6 +311,8 @@ main(int argc, char **argv)
   ip_address laddr, raddr;
   char *afam = "";
 
+  progname = argv[0];
+
   afamily=AF_INET;
   pfamily=PF_INET;
   lport=500;
@@ -325,19 +328,19 @@ main(int argc, char **argv)
       case 'h':	        /* --help */
 	  help();
 	  return 0;	/* GNU coding standards say to stop here */
-	  
+
       case 'V':               /* --version */
 	  fprintf(stderr, "Openswan %s\n", ipsec_version_code());
 	  return 0;	/* GNU coding standards say to stop here */
-	  
+
       case 'v':	/* --label <string> */
 	  verbose++;
 	  continue;
-	  
+
       case 'T':
 	  natt++;
 	  break;
-	  
+
       case 'E':
 	  exchange_number=strtol(optarg, &foo, 0);
 	  if(optarg==foo || exchange_number < 1 || exchange_number>255) {
@@ -346,12 +349,12 @@ main(int argc, char **argv)
 	      exit(1);
 	  }
 	  continue;
-	  
-	  
+
+
       case 's':
 	  listen_only++;
 	  continue;
-	  
+
       case 'p':
 	  lport=strtol(optarg, &foo, 0);
 	  if(optarg==foo || lport <0 || lport>65535) {
@@ -360,7 +363,7 @@ main(int argc, char **argv)
 	      exit(1);
 	  }
 	  continue;
-	  
+
       case 'w':
 	  /* convert msec to sec */
 	  waitTime=strtol(optarg, &foo, 0)*500;
@@ -370,7 +373,7 @@ main(int argc, char **argv)
 	      exit(1);
 	  }
 	  continue;
-	  
+
       case 'b':
 	  errstr = ttoaddr(optarg, strlen(optarg), afamily, &laddr);
 	  if(errstr!=NULL) {
@@ -379,19 +382,19 @@ main(int argc, char **argv)
 	      exit(1);
 	  }
 	  continue;
-	  
+
       case '4':
 	  afamily=AF_INET;
 	  pfamily=PF_INET;
 	  afam = "IPv4";
 	  continue;
-	  
+
       case '6':
 	  afamily=AF_INET6;
 	  pfamily=PF_INET6;
 	  afam = "IPv6";
 	  continue;
-	  
+
       default:
 	  assert(FALSE);	/* unknown return value */
       }
@@ -412,7 +415,7 @@ main(int argc, char **argv)
 		  exit(5);
 	  }
 	  break;
-	  
+
   case AF_INET6:
 	  laddr.u.v6.sin6_family= AF_INET6;
 	  laddr.u.v6.sin6_port = htons(lport);
@@ -425,12 +428,12 @@ main(int argc, char **argv)
 
   if(natt) {
       int r;
-      
+
       /* only support RFC method */
       int type = ESPINUDP_WITH_NON_ESP;
       r = setsockopt(s, SOL_UDP, UDP_ESPINUDP, &type, sizeof(type));
       if ((r<0) && (errno == ENOPROTOOPT)) {
-	  fprintf(stderr, 
+	  fprintf(stderr,
 		 "NAT-Traversal: ESPINUDP(%d) not supported by kernel for family %s"
 		 , type, afam);
       }
@@ -471,7 +474,7 @@ main(int argc, char **argv)
 		  addrtot(&raddr, 0, namebuf, sizeof(namebuf));
 
 		  printf("Sending packet to %s/%d\n", namebuf, dport);
-			 
+
 		  send_ping(afamily, s, &raddr, dport);
 		  numSenders++;
 		  optind++;
@@ -495,7 +498,7 @@ main(int argc, char **argv)
 		  exit(1);
 	      }
 	  }
-	  
+
 	  if(n == 0 && !listen_only) {
 		  break;
 	  }
@@ -507,10 +510,15 @@ main(int argc, char **argv)
   }
 
    printf("%d packets sent, %d packets received. %d%% packet loss\n",
-	  numSenders, 
+	  numSenders,
 	  numReceived,
 	  numSenders > 0 ? 100-numReceived*100/numSenders : 0);
    exit(numSenders - numReceived);
+}
+
+void exit_tool(int val)
+{
+  exit(val);
 }
 
 /*

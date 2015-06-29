@@ -51,7 +51,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -65,7 +65,7 @@
 #include "timer.h"
 #if 0
 #include "whack.h"	/* requires connections.h */
-#include "server.h"
+#include "pluto/server.h"
 #ifdef XAUTH
 #include "xauth.h"
 #endif
@@ -105,7 +105,6 @@ process_packet(struct msg_digest **mdp)
 {
     struct msg_digest *md = *mdp;
     struct state *st = NULL;
-    int maj, min;
     enum state_kind from_state = STATE_UNDEFINED;	/* state we started in */
     struct isakmp_hdr *hdr;
 
@@ -121,18 +120,18 @@ process_packet(struct msg_digest **mdp)
 	if (md->packet_pbs.roof - md->packet_pbs.cur >= (ptrdiff_t)isakmp_hdr_desc.size)
 	{
 	    hdr = (struct isakmp_hdr *)md->packet_pbs.cur;
-	    maj = (hdr->isa_version >> ISA_MAJ_SHIFT);
-	    min = (hdr->isa_version & ISA_MIN_MASK);
+	    md->maj = (hdr->isa_version >> ISA_MAJ_SHIFT);
+	    md->min = (hdr->isa_version & ISA_MIN_MASK);
 
-	    if ( maj != ISAKMP_MAJOR_VERSION
-		 && maj != IKEv2_MAJOR_VERSION)
+	    if ( md->maj != ISAKMP_MAJOR_VERSION
+		 && md->maj != IKEv2_MAJOR_VERSION)
 	    {
 		SEND_NOTIFICATION(INVALID_MAJOR_VERSION);
 		return;
 	    }
-	    else if (maj == ISAKMP_MAJOR_VERSION && min != ISAKMP_MINOR_VERSION)
+	    else if (md->maj == ISAKMP_MAJOR_VERSION && md->min != ISAKMP_MINOR_VERSION)
 	    {
-		/* all IKEv2 minor version are acceptable */
+		/* note: all IKEv2 minor version are acceptable */
 		SEND_NOTIFICATION(INVALID_MINOR_VERSION);
 		return;
 	    }
@@ -155,18 +154,18 @@ process_packet(struct msg_digest **mdp)
 	return;
     }
 
-    maj = (md->hdr.isa_version >> ISA_MAJ_SHIFT);
-    min = (md->hdr.isa_version & ISA_MIN_MASK);
+    md->maj = (md->hdr.isa_version >> ISA_MAJ_SHIFT);
+    md->min = (md->hdr.isa_version & ISA_MIN_MASK);
 
     DBG(DBG_CONTROL
-	, DBG_log(" processing version=%u.%u packet with exchange type=%s (%d)"
-		  , maj, min
+	, DBG_log(" processing version=%u.%u packet with exchange type=%s (%d), msgid: %08u"
+		  , md->maj, md->min
 		  , enum_name(&exchange_names, md->hdr.isa_xchg)
-		  , md->hdr.isa_xchg));
+		  , md->hdr.isa_xchg, ntohl(md->hdr.isa_msgid)));
 
     TCLCALLOUT("processRawPacket", NULL, NULL, md);
 
-    switch(maj) {
+    switch(md->maj) {
     case ISAKMP_MAJOR_VERSION:
 	process_v1_packet(mdp);
 	break;
@@ -176,7 +175,11 @@ process_packet(struct msg_digest **mdp)
 	break;
 
     default:
-	bad_case(maj);
+	bad_case(md->maj);
+    }
+
+    if(cur_state!=NULL && cur_state->st_state == STATE_DELETING) {
+        free_state(st);
     }
 }
 
@@ -216,6 +219,9 @@ comm_handle(const struct iface_port *ifp)
     md = alloc_md();
     md->iface = ifp;
 
+#ifdef DEBUG_WITH_PAUSE
+    pause();
+#endif
     if (read_packet(md))
 	process_packet(&md);
 

@@ -3,12 +3,12 @@
  * Copyright (C) 1996  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs <rgb@freeswan.org>
  *                                 2001  Michael Richardson <mcr@freeswan.org>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -60,7 +60,7 @@
 #include "osw_select.h"
 #include "oswlog.h"
 __u32 bigbuf[1024];
-char *program_name;
+char *progname;
 
 int pfkey_sock;
 osw_fd_set pfkey_socks;
@@ -113,7 +113,7 @@ main(int argc, char **argv)
 /*	int fd; */
 	unsigned char action = 0;
 	int c;
-	
+
 	int error = 0;
 	int argcount = argc;
 	int em_db_tn, em_db_nl, em_db_xf, em_db_er, em_db_sp;
@@ -122,13 +122,13 @@ main(int argc, char **argv)
 
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
-	
+
 	em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=0;
 	em_db_rj=em_db_es=em_db_ah=em_db_rx=em_db_ky=0;
 	em_db_gz=em_db_vb=0;
 
 
-	program_name = argv[0];
+	progname = argv[0];
 
 	while((c = getopt_long(argc, argv, ""/*"s:c:anhvl:+:d"*/, longopts, 0)) != EOF) {
 		switch(c) {
@@ -139,7 +139,7 @@ main(int argc, char **argv)
 		case 's':
 			if(action) {
 				fprintf(stderr, "%s: Only one of '--set', '--clear', '--all' or '--none' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action = 's';
@@ -182,15 +182,15 @@ main(int argc, char **argv)
 				em_db_vb = -1L;
 			} else {
 				fprintf(stdout, "%s: unknown set argument '%s'\n",
-						program_name, optarg);
-				usage(program_name);
+						progname, optarg);
+				usage(progname);
 			}
 			em_db_nl |= 1 << (sizeof(em_db_nl) * 8 -1);
 			break;
 		case 'c':
 			if(action) {
 				fprintf(stderr, "%s: Only one of '--set', '--clear', '--all' or '--none' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			em_db_tn=em_db_nl=em_db_xf=em_db_er=em_db_sp=-1;
@@ -231,15 +231,15 @@ main(int argc, char **argv)
 				em_db_vb = 0;
 			} else {
 				fprintf(stdout, "%s: unknown clear argument '%s'\n",
-						program_name, optarg);
-				usage(program_name);
+						progname, optarg);
+				usage(progname);
 			}
 			em_db_nl &= ~(1 << (sizeof(em_db_nl) * 8 -1));
 			break;
 		case 'a':
 			if(action) {
 				fprintf(stderr, "%s: Only one of '--set', '--clear', '--all' or '--none' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action = 'a';
@@ -251,7 +251,7 @@ main(int argc, char **argv)
 		case 'n':
 			if(action) {
 				fprintf(stderr, "%s: Only one of '--set', '--clear', '--all' or '--none' options permitted.\n",
-					program_name);
+					progname);
 				exit(1);
 			}
 			action = 'n';
@@ -261,7 +261,7 @@ main(int argc, char **argv)
 			break;
 		case 'h':
 		case '?':
-			usage(program_name);
+			usage(progname);
 			exit(1);
 		case 'v':
 			fprintf(stdout, "klipsdebug (Openswan %s) \n",
@@ -269,10 +269,10 @@ main(int argc, char **argv)
 			fputs(copyright, stdout);
 			exit(0);
 		case 'l':
-			program_name = malloc(strlen(argv[0])
+			progname = malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(program_name, "%s --label %s",
+			sprintf(progname, "%s --label %s",
 				argv[0],
 				optarg);
 			argcount -= 2;
@@ -283,7 +283,7 @@ main(int argc, char **argv)
 			break;
 		default:
 			fprintf(stdout, "%s: unknown option '%s'\n",
-					program_name, argv[optind]);
+					progname, argv[optind]);
 			break;
 		}
 	}
@@ -294,12 +294,12 @@ main(int argc, char **argv)
 	}
 
 	if(!action) {
-		usage(program_name);
+		usage(progname);
 	}
 
 	if((pfkey_sock = safe_socket(PF_KEY, SOCK_RAW, PF_KEY_V2) ) < 0) {
 		fprintf(stderr, "%s: Trouble opening PF_KEY family socket with error: ",
-			program_name);
+			progname);
 		switch(errno) {
 		case ENOENT:
 			fprintf(stderr, "device does not exist.  See FreeS/WAN installation procedure.\n");
@@ -354,11 +354,11 @@ main(int argc, char **argv)
 					++pfkey_seq,
 					getpid()))) {
 		fprintf(stderr, "%s: Trouble building message header, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
-	
+
 	if((error = pfkey_x_debug_build(&extensions[SADB_X_EXT_DEBUG],
 					em_db_tn,
 					em_db_nl,
@@ -373,26 +373,26 @@ main(int argc, char **argv)
 					em_db_gz,
 					em_db_vb))) {
 		fprintf(stderr, "%s: Trouble building message header, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
-	
+
 	if((error = pfkey_msg_build(&pfkey_msg, extensions, EXT_BITS_IN))) {
 		fprintf(stderr, "%s: Trouble building pfkey message, error=%d.\n",
-			program_name, error);
+			progname, error);
 		pfkey_extensions_free(extensions);
 		pfkey_msg_free(&pfkey_msg);
 		exit(1);
 	}
-	
+
 	if((error = write(pfkey_sock,
 			  pfkey_msg,
 			  pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) !=
 	   (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		fprintf(stderr,
 			"%s: pfkey write failed, tried to write %u octets, returning %d with errno=%d.\n",
-			program_name,
+			progname,
 			(unsigned)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN),
 			error,
 			errno);
@@ -454,4 +454,9 @@ main(int argc, char **argv)
 
 	(void) close(pfkey_sock);  /* close the socket */
 	exit(0);
+}
+
+void exit_tool(int val)
+{
+  exit(val);
 }

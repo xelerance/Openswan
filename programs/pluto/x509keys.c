@@ -46,7 +46,7 @@
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "md2.h"
 #include "md5.h"
@@ -55,6 +55,7 @@
 #include "fetch.h"
 #include "ocsp.h"
 #include "pkcs.h"
+#include "kernel.h"
 #include "x509more.h"
 
 /*
@@ -312,7 +313,9 @@ bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
     struct connection *d = find_host_connection(&md->iface->ip_addr
-	, pluto_port, (ip_address*)NULL, md->sender_port, LEMPTY);
+                                                , pluto_port500
+                                                , KH_ANY
+                                                ,(ip_address*)NULL, md->sender_port, LEMPTY);
 
     for (; d != NULL; d = d->hp_next)
     {

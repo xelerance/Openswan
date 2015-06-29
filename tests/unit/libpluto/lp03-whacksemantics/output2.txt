@@ -64,38 +64,38 @@ did not find conn: clear-or-private, loading implicit
 did not find conn: private-or-clear, loading implicit
 did not find conn: private, loading implicit
 did not find conn: block, loading implicit
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: 2 * new_list item, item size: Z
-./whacksemantics leak: new_list nlist, item size: Y
-./whacksemantics leak: default base, item size: 25
-./whacksemantics leak detective found 49 leaks, total size X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: default base, item size: X
+./whacksemantics leak detective found Z leaks, total size X
 processing conn: knothole--cassidy

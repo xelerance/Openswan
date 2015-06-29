@@ -49,7 +49,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -57,7 +57,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -75,7 +75,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
 
@@ -128,32 +128,15 @@ same_peer_ids(const struct connection *c, const struct connection *d
 struct host_pair *
 find_host_pair(const ip_address *myaddr
 	       , u_int16_t myport
+               , enum keyword_host histype
 	       , const ip_address *hisaddr
 	       , u_int16_t hisport)
 {
     struct host_pair *p, *prev;
 
-    /* default hisaddr to an appropriate any */
-    if (hisaddr == NULL) {
-#if 0
-	/* broken */
-	const struct af_info *af = aftoinfo(addrtypeof(myaddr));
-
-	if(af == NULL) {
-	    af = aftoinfo(AF_INET);
-	}
-
-	if(af) {
-	    hisaddr = af->any;
-	}
-#else
-	hisaddr = aftoinfo(addrtypeof(myaddr))->any;
-#endif
-    }
-
     /*
-     * look for a host-pair that has the right set of ports/address.
-     *
+     * look for a host-pair that has the right set of ports/address,
+     *   but the histype could also be %any.
      */
 
     /*
@@ -161,34 +144,43 @@ find_host_pair(const ip_address *myaddr
      * but other ports are not.
      * So if any port==4500, then set it to 500.
      */
-    if(myport == 4500) myport=500;
-    if(hisport== 4500) hisport=500;
+    if(myport == pluto_port4500)   myport=pluto_port500;
+    if(hisport== pluto_port4500)   hisport=pluto_port500;
 
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
-	    DBG_log("find_host_pair: comparing to %s:%d %s:%d\n"
-		      , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
-		      , p->me.host_port
-		      , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
-		      , p->him.host_port));
+            char himtypebuf[KEYWORD_NAME_BUFLEN];
+	    DBG_log("find_host_pair: comparing to %s:%d %s %s:%d\n"
+                    , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
+                    , p->me.host_port
+                    , keyword_name(&kw_host_list, p->him.host_type, himtypebuf)
+                    , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
+                    , p->him.host_port));
 
-	if (sameaddr(&p->me.addr, myaddr)
-	    && (!p->me.host_port_specific || p->me.host_port == myport)
-	    && sameaddr(&p->him.addr, hisaddr)
-	    && (!p->him.host_port_specific || p->him.host_port == hisport)
-	    )
-	{
-	    if (prev != NULL)
+        /* kick out if it does not match: easier to understand than positive/convuluted logic */
+	if (!sameaddr(&p->me.addr, myaddr))  continue;
+        if(p->me.host_port_specific && p->me.host_port != myport) continue;
+
+        /* if we are looking for %any, then it *MUST* match that */
+        if(histype == KH_ANY && p->him.host_type != KH_ANY) continue;
+
+        /* if hisport is specific, then it must match */
+        if(p->him.host_port_specific && p->him.host_port != hisport) continue;
+
+        /* finally, it must either match address, or conn is %any */
+        if(p->him.host_type != KH_ANY && !sameaddr(&p->him.addr, hisaddr)) continue;
+
+	/* now it matches: but a future version might want to try for bestfit */
+        if (prev != NULL)
 	    {
 		prev->next = p->next;	/* remove p from list */
 		p->next = host_pairs;	/* and stick it on front */
 		host_pairs = p;
 	    }
-	    break;
-	}
+        break;
     }
     return p;
 }
@@ -202,17 +194,20 @@ void remove_host_pair(struct host_pair *hp)
 struct connection *
 find_host_pair_connections(const char *func
 			   , const ip_address *myaddr, u_int16_t myport
+                           , enum keyword_host histype
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
-    struct host_pair *hp = find_host_pair(myaddr, myport, hisaddr, hisport);
+    struct host_pair *hp = find_host_pair(myaddr, myport, histype, hisaddr, hisport);
 
     DBG(DBG_CONTROLMORE,
 	char b1[ADDRTOT_BUF];
 	char b2[ADDRTOT_BUF];
-	DBG_log("find_host_pair_conn (%s): %s:%d %s:%d -> hp:%s\n"
+        char himtypebuf[KEYWORD_NAME_BUFLEN];
+	DBG_log("found_host_pair_conn (%s): %s:%d %s/%s:%d -> hp:%s\n"
 		  , func
 		  , (addrtot(myaddr,  0, b1, sizeof(b1)), b1)
 		  , myport
+                  , keyword_name(&kw_host_list, histype, himtypebuf)
 		  , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "%any"
 		  , hisport
 		  , (hp && hp->connections) ? hp->connections->name : "none"));
@@ -227,6 +222,7 @@ connect_to_host_pair(struct connection *c)
     {
 	struct host_pair *hp = find_host_pair(&c->spd.this.host_addr
 					      , c->spd.this.host_port
+                                              , c->spd.that.host_type
 					      , &c->spd.that.host_addr
 					      , c->spd.that.host_port);
 
@@ -234,9 +230,11 @@ connect_to_host_pair(struct connection *c)
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
-	    DBG_log("connect_to_host_pair: %s:%d %s:%d -> hp:%s\n"
+            char himtypebuf[KEYWORD_NAME_BUFLEN];
+	    DBG_log("connect_to_host_pair: %s:%d %s %s:%d -> hp:%s\n"
 		      , (addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1)), b1)
 		      , c->spd.this.host_port
+                    , keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf)
 		      , (addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2)), b2)
 		      , c->spd.that.host_port
 		      , (hp && hp->connections) ? hp->connections->name : "none"));
@@ -247,9 +245,10 @@ connect_to_host_pair(struct connection *c)
 	    hp = alloc_thing(struct host_pair, "host_pair");
 	    hp->me.addr = c->spd.this.host_addr;
 	    hp->him.addr = c->spd.that.host_addr;
+	    hp->him.host_type = c->spd.that.host_type;
 #ifdef NAT_TRAVERSAL
-	    hp->me.host_port = nat_traversal_enabled ? pluto_port : c->spd.this.host_port;
-	    hp->him.host_port = nat_traversal_enabled ? pluto_port : c->spd.that.host_port;
+	    hp->me.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.this.host_port;
+	    hp->him.host_port = nat_traversal_enabled ? pluto_port500 : c->spd.that.host_port;
 #else
 	    hp->me.host_port = c->spd.this.host_port;
  	    hp->him.host_port = c->spd.that.host_port;

@@ -46,7 +46,7 @@
 #include "defs.h"
 #include "rnd.h"
 #include "id.h"
-#include "connections.h"        /* needs id.h */
+#include "pluto/connections.h"        /* needs id.h */
 #include "state.h"
 #include "timer.h"
 #include "kernel.h"
@@ -56,7 +56,7 @@
 #include "packet.h"
 #include "x509.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 

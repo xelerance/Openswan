@@ -47,7 +47,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -55,7 +55,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "pluto/keys.h"
@@ -73,7 +73,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
 
@@ -417,7 +417,7 @@ check_orientations(void)
 	{
 	    struct connection *nxt = c->hp_next;
 
-	    (void)orient(c);
+	    (void)orient(c, pluto_port500);
 	    connect_to_host_pair(c);
 	    c = nxt;
 	}
@@ -438,7 +438,7 @@ check_orientations(void)
 		for (hp = host_pairs; hp != NULL; hp = hp->next)
 		{
 		    if (sameaddr(&hp->him.addr, &i->ip_addr)
-			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port))
+			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port500))
 		    {
 			/* bad news: the whole chain of connections
 			 * hanging off this host pair has both sides
@@ -457,7 +457,7 @@ check_orientations(void)
 			    struct connection *nxt = c->hp_next;
 
 			    c->interface = NULL;
-			    (void)orient(c);
+			    (void)orient(c, pluto_port500);
 			    connect_to_host_pair(c);
 			    c = nxt;
 			}
@@ -501,242 +501,6 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     }
 
     return ugh;
-}
-
-/* Format the topology of a connection end, leaving out defaults.
- * Largest left end looks like: client === host : port [ host_id ] --- hop
- * Note: if that==NULL, skip nexthop
- * Returns strlen of formated result (length excludes NUL at end).
- */
-size_t
-format_end(char *buf
-	   , size_t buf_len
-	   , const struct end *this
-	   , const struct end *that
-	   , bool is_left
-	   , lset_t policy)
-{
-    char client[SUBNETTOT_BUF];
-    const char *client_sep = "";
-    char protoport[sizeof(":255/65535")];
-    const char *host = NULL;
-    char host_space[ADDRTOT_BUF+256]; /* if you change this, see below */
-    bool dohost_name = FALSE;
-    char host_port[sizeof(":65535")];
-    char host_id[IDTOA_BUF + 2];
-    char hop[ADDRTOT_BUF];
-    char endopts[sizeof("MS+MC+XS+XC+Sxx")+1];
-    const char *hop_sep = "";
-    const char *open_brackets  = "";
-    const char *close_brackets = "";
-    const char *id_obrackets = "";
-    const char *id_cbrackets = "";
-    const char *id_comma = "";
-
-    memset(endopts, 0, sizeof(endopts));
-
-    if (isanyaddr(&this->host_addr))
-    {
-	if(this->host_type == KH_IPHOSTNAME) {
-	    host = strcpy(host_space, "%dns");
-	    dohost_name=TRUE;
-	} else {
-	    switch (policy & (POLICY_GROUP | POLICY_OPPO))
-	    {
-	    case POLICY_GROUP:
-		host = "%group";
-		break;
-	    case POLICY_OPPO:
-		host = "%opportunistic";
-		break;
-	    case POLICY_GROUP | POLICY_OPPO:
-		host = "%opportunisticgroup";
-		break;
-	    default:
-		host = "%any";
-		break;
-	    }
-	}
-    }
-
-    client[0] = '\0';
-
-    if (is_virtual_end(this) && isanyaddr(&this->host_addr)) {
-	host = "%virtual";
-    }
-
-    /* [client===] */
-    if (this->has_client)
-    {
-	ip_address client_net, client_mask;
-
-	networkof(&this->client, &client_net);
-	maskof(&this->client, &client_mask);
-	client_sep = "===";
-
- 	/* {client_subnet_wildcard} */
- 	if (this->has_client_wildcard)
- 	{
- 	    open_brackets  = "{";
- 	    close_brackets = "}";
- 	}
-
-	if (isanyaddr(&client_net) && isanyaddr(&client_mask)
-	&& (policy & (POLICY_GROUP | POLICY_OPPO)))
-	    client_sep = "";	/* boring case */
-	else if (subnetisnone(&this->client))
-	    strcpy(client, "?");
-	else
-	    subnettot(&this->client, 0, client, sizeof(client));
-    }
-
-    /* host */
-    if (host == NULL)
-    {
-	addrtot(&this->host_addr, 0, host_space, sizeof(host_space));
-	host = host_space;
-	dohost_name=TRUE;
-    }
-
-    if(dohost_name) {
-    	if(this->host_addr_name) {
-		size_t icl = strlen(host_space);
-		size_t room = sizeof(host_space) - icl - 1;
-		int needed = snprintf(host_space + icl, room, "<%s>", this->host_addr_name);
-
-		if (needed > (signed)room) {
-		   loglog(RC_BADID, "format_end: buffer too small for dohost_name - should not happen\n");
-		}
-	}
-    }
-
-    host_port[0] = '\0';
-    if (this->host_port_specific)
-	snprintf(host_port, sizeof(host_port), ":%u"
-	    , this->host_port);
-
-    /* payload portocol and port */
-    protoport[0] = '\0';
-    if (this->has_port_wildcard)
-	snprintf(protoport, sizeof(protoport), ":%u/%%any", this->protocol);
-    else if (this->port || this->protocol)
-	snprintf(protoport, sizeof(protoport), ":%u/%u", this->protocol
-	    , this->port);
-
-    /* id, if different from host */
-    host_id[0] = '\0';
-    if (this->id.kind == ID_MYID)
-    {
-	id_obrackets = "[";
-	id_cbrackets = "]";
-	strcpy(host_id, "%myid");
-    }
-    else if (!(this->id.kind == ID_NONE
-    || (id_is_ipaddr(&this->id) && sameaddr(&this->id.ip_addr, &this->host_addr))))
-    {
-	id_obrackets = "[";
-	id_cbrackets = "]";
-	idtoa(&this->id, host_id, sizeof(host_id));
-    }
-
-#if defined(XAUTH)
-    if(this->modecfg_server || this->modecfg_client
-       || this->xauth_server || this->xauth_client
-       || this->sendcert != cert_defaultcertpolicy)
-    {
-	const char *plus = "+";
-	endopts[0]='\0';
-
-	if(id_obrackets[0]=='[')
-	{
-	    id_comma=",";
-	} else {
-	    id_obrackets = "[";
-	    id_cbrackets = "]";
-	}
-
-	if(this->modecfg_server) {
-	    strncat(endopts, "MS", sizeof(endopts) - strlen(endopts)-1);
-	}
-
-	if(this->modecfg_client) {
-	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
-	    strncat(endopts, "MC", sizeof(endopts) - strlen(endopts)-1);
-	}
-
-	if(this->xauth_server) {
-	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
-	    strncat(endopts, "XS", sizeof(endopts) - strlen(endopts)-1);
-	}
-
-	if(this->xauth_client) {
-	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
-	    strncat(endopts, "XC", sizeof(endopts) - strlen(endopts)-1);
-	}
-
-	{
-	    const char *send_cert = "";
-	    char s[32];
-
-	    send_cert=""; /* Length 3 because cert.type is 1-11 */
-
-	    switch(this->sendcert) {
-	    case cert_neversend:
-		send_cert="S-C";
-		break;
-	    case cert_sendifasked:
-		send_cert="S?C";
-		break;
-	    case cert_alwayssend:
-		send_cert="S=C";
-		break;
-	    case cert_forcedtype:
-		sprintf(s, "S%d", this->cert.type);
-		send_cert=s;
-		break;
-	    }
-	    strncat(endopts, plus, sizeof(endopts) - strlen(endopts)-1);
-	    strncat(endopts, send_cert, sizeof(endopts) - strlen(endopts)-1);
-	}
-    }
-#endif
-
-    /* [---hop] */
-    hop[0] = '\0';
-    hop_sep = "";
-    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr))
-    {
-	addrtot(&this->host_nexthop, 0, hop, sizeof(hop));
-	hop_sep = "---";
-    }
-
-    if (is_left)
-	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s"
-	    , open_brackets, client, close_brackets
-	    , client_sep, host, host_port
-		 , id_obrackets, host_id, id_comma, endopts, id_cbrackets
-	    , protoport, hop_sep, hop);
-    else
-	snprintf(buf, buf_len, "%s%s%s%s%s%s%s%s%s%s%s%s%s%s"
-	    , hop, hop_sep, host, host_port
-		 , id_obrackets, host_id, id_comma, endopts, id_cbrackets
-	    , protoport, client_sep
-	    , open_brackets, client, close_brackets);
-    return strlen(buf);
-}
-
-/* format topology of a connection.
- * Two symmetric ends separated by ...
- */
-size_t
-format_connection(char *buf, size_t buf_len
-		  , const struct connection *c
-		  , struct spd_route *sr)
-{
-    size_t w = format_end(buf, buf_len, &sr->this, &sr->that, TRUE, LEMPTY);
-    snprintf(buf + w, buf_len - w, "...");
-    w += strlen(buf + w);
-    return w + format_end(buf + w, buf_len - w, &sr->that, &sr->this, FALSE, c->policy);
 }
 
 static void
@@ -1079,6 +843,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    c = find_host_pair_connections(__FUNCTION__
 					   , &this->host_addr
 					   , this->host_port
+                                           , KH_ANY
 					   , (const ip_address *)NULL
 					   , that->host_port);
 
@@ -1086,15 +851,19 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    {
 		if (c->policy & POLICY_AGGRESSIVE)
 			continue;
-#if 0
+
+                /* if IKEv1 is now allowed, then there is no problem */
+		if (c->policy & POLICY_IKEV1_DISABLE)
+			continue;
+#if 1
 		if (!NEVER_NEGOTIATE(c->policy)
-		&& ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
-		{
-		    loglog(RC_CLASH
-			, "authentication method disagrees with \"%s\", which is also for an unspecified peer"
-			, c->name);
-		    return FALSE;
-		}
+                    && ((c->policy ^ wm->policy) & (POLICY_PSK | POLICY_RSASIG)))
+                    {
+                        loglog(RC_CLASH
+                               , "authentication method disagrees with \"%s\", which is also for an unspecified peer"
+                               , c->name);
+                        return FALSE;
+                    }
 #endif
 	    }
 	}
@@ -1429,8 +1198,7 @@ add_connection(const struct whack_message *wm)
 	    c->kind = CK_GROUP;
 	    add_group(c);
 	}
-	else if ((isanyaddr(&c->spd.that.host_addr) && !NEVER_NEGOTIATE(c->policy))
-		|| c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
+	else if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
 		|| ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards ))
 	{
 	    DBG(DBG_CONTROL, DBG_log("based upon policy, the connection is a template."));
@@ -1474,7 +1242,7 @@ add_connection(const struct whack_message *wm)
 
 	unshare_connection_strings(c);
 
-	(void)orient(c);
+	(void)orient(c, pluto_port500);
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
@@ -2151,9 +1919,10 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * that it is pluto_port (makes debugging easier).
 	 */
 	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->ip_addr
-							  , pluto_port
+							  , pluto_port500
+                                                          , KH_ANY
 							  , (ip_address *)NULL
-							  , pluto_port);
+							  , pluto_port500);
 
 	for (; c != NULL; c = c->hp_next)
 	{
@@ -2348,8 +2117,9 @@ route_owner(struct connection *c
  */
 struct connection *
 find_host_connection2(const char *func
-		     , const ip_address *me, u_int16_t my_port
-		     , const ip_address *him, u_int16_t his_port, lset_t policy)
+                      , const ip_address *me, u_int16_t my_port
+                      , enum keyword_host histype
+                      , const ip_address *him, u_int16_t his_port, lset_t policy)
 {
     struct connection *c;
     DBG(DBG_CONTROLMORE,
@@ -2359,7 +2129,7 @@ find_host_connection2(const char *func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
 		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"
 		, his_port , bitnamesof(sa_policy_bit_names, policy)));
-    c = find_host_pair_connections(__FUNCTION__, me, my_port, him, his_port);
+    c = find_host_pair_connections(__FUNCTION__, me, my_port, histype, him, his_port);
 
     if (policy != LEMPTY) {
 	/*
@@ -2376,6 +2146,7 @@ find_host_connection2(const char *func
 			, c->name));
 	    if(NEVER_NEGOTIATE(c->policy)) continue;
 
+            /* XAUTH must match true/false exactly */
 	    if ((policy & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
 
 	    if ((c->policy & policy) == policy)
@@ -2384,7 +2155,33 @@ find_host_connection2(const char *func
 
     }
 
+    /* need to check for NEVER_NEGOTIATE, because policy might not be set */
     for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+
+    if(c == NULL) {
+        c = find_host_pair_connections(__FUNCTION__, me, my_port, KH_ANY, NULL, pluto_port500);
+
+        if (policy != LEMPTY) {
+            DBG(DBG_CONTROLMORE,
+		DBG_log("searching for %%any connection with policy = %s"
+			, bitnamesof(sa_policy_bit_names, policy)));
+            for (; c != NULL; c = c->hp_next) {
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("found policy = %s (%s)"
+                            , bitnamesof(sa_policy_bit_names, c->policy)
+                            , c->name));
+                if(NEVER_NEGOTIATE(c->policy)) continue;
+
+                /* XAUTH must match true/false exactly */
+                if ((policy & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
+
+                if ((c->policy & policy) == policy)
+                    break;
+            }
+        }
+        for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+    }
+
 
     DBG(DBG_CONTROLMORE,
 	DBG_log("find_host_connection2 returns %s", c ? c->name : "empty"));
@@ -2688,6 +2485,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 */
 	d = find_host_pair_connections(__FUNCTION__, &c->spd.this.host_addr
 				       , c->spd.this.host_port
+                                       , KH_ANY
 				       , (ip_address *)NULL
 				       , c->spd.that.host_port);
     }
@@ -3146,6 +2944,7 @@ find_client_connection(struct connection *c
 	{
 	    hp = find_host_pair(&sra->this.host_addr
 				, sra->this.host_port
+                                , KH_ANY                  /* XXX maybe some other types too */
 				, NULL
 				, sra->that.host_port);
 #ifdef DEBUG
@@ -3394,14 +3193,15 @@ show_one_connection(struct connection *c)
     /* Note: we display key_from_DNS_on_demand as if policy [lr]KOD */
     fmt_policy_prio(c->prio, prio);
     whack_log(RC_COMMENT
-	      , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; "
+	      , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; kind=%s"
 	      , c->name
 	      , instance
 	      , prettypolicy(c->policy)
 	      , c->spd.this.key_from_DNS_on_demand? "+lKOD" : ""
 	      , c->spd.that.key_from_DNS_on_demand? "+rKOD" : ""
 	      , prio
-	      , ifn);
+	      , ifn
+              , enum_name(&connection_kind_names, c->kind));
 
     if(c->connmtu > 0 || c->metric > 0) {
 	whack_log(RC_COMMENT

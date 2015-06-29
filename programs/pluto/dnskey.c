@@ -42,12 +42,12 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "keys.h"	    /* needs connections.h */
 #include "dnskey.h"
 #include "packet.h"
 #include "timer.h"
-#include "server.h"
+#include "pluto/server.h"
 
 /* somebody has to decide */
 #define MAX_TXT_RDATA	((MAX_KEY_BYTES * 8 / 6) + 40)	/* somewhat arbitrary overkill */

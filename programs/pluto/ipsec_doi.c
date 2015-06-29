@@ -50,7 +50,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "packet.h"
 #include "keys.h"
 #include "demux.h"	/* needs packet.h */
@@ -59,7 +59,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -88,7 +88,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "dpd.h"
 #include "x509more.h"
 
@@ -740,6 +740,8 @@ void initialize_new_state(struct state *st
     st->st_try   = try;
 
     st->st_import = importance;
+    st->st_msgid_nextuse = 1;     /* first non-INIT message is 1 */
+    st->st_msgid_lastack = INVALID_MSGID;
 
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	if(sr->this.xauth_client) {

@@ -32,7 +32,7 @@
 #include "constants.h"
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "kernel.h"
 #include "kernel_netlink.h"
 #include "kernel_pfkey.h"

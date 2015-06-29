@@ -39,7 +39,7 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -107,14 +107,6 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	v2genbytes(&rkeymat, st->st_esp.keymat_len
 		   , "responder keys", &childsacalc);
 
-	/* This should really be role == INITIATOR, but then our keys are
-	 * installed reversed. This is a workaround until we locate the
-	 * real problem. It's better not to release copies of our code
-	 * that will be incompatible with everything else, including our
-	 * own updated version
-	 * Found by Herbert Xu
-	 * if(role == INITIATOR) {
-	 */
 	if(role != INITIATOR) {
 	    DBG(DBG_CRYPT,
 		DBG_dump_chunk("our  keymat", ikeymat);

@@ -43,7 +43,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -53,7 +53,7 @@
 #include "log.h"
 #include "demux.h"	/* needs packet.h */
 #include "ikev2.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "vendor.h"
 #include "dpd.h"
 #include "keys.h"

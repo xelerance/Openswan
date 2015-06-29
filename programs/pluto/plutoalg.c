@@ -29,7 +29,7 @@
 #include "oswalloc.h"
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "kernel_alg.h"
 #include "alg_info.h"

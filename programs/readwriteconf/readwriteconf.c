@@ -49,6 +49,8 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 #include "oswalloc.h"
 #include "oswconf.h"
 #include "oswlog.h"
+#include "whack.h"
+#include "pluto/whackfile.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
 #include "ipsecconf/starterlog.h"
@@ -66,7 +68,11 @@ int verbose=0;
 int warningsarefatal = 0;
 
 static const char *usage_string = ""
-    "Usage: readwriteconn [--config file] \n";
+    "Usage: readwriteconn [--config file] \n"
+    "       [--rootdir X] [--rootdir2 Y]   -- also look here for files\n"
+    "       [--debug] [--verbose]          -- enable debugging or verbose\n"
+    "       [--text]                       -- enable text output\n"
+    "       [--whackout=file]       -- enable generating messages out\n";
 
 
 static void usage(void)
@@ -81,6 +87,9 @@ static struct option const longopts[] =
 	{"config",              required_argument, NULL, 'C'},
 	{"debug",               no_argument, NULL, 'D'},
 	{"verbose",             no_argument, NULL, 'D'},
+	{"warningsarefatal",    no_argument, NULL, 'W'},
+	{"whackout",            required_argument, NULL, 'w'},
+	{"text",                no_argument, NULL, 'T'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"rootdir2",            required_argument, NULL, 'S'},
 	{"help",                no_argument, NULL, 'h'},
@@ -88,11 +97,35 @@ static struct option const longopts[] =
 };
 
 
+static void write_whack_pubkey (struct starter_config *cfg,
+                               struct starter_conn *conn,
+                               struct starter_end *end, const char *lr)
+{
+	struct whack_message msg;
+
+	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
+            unsigned int len = serialize_whack_msg(&msg);
+            writewhackrecord((char *)&msg, len);
+        }
+
+	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
+            unsigned int len = serialize_whack_msg(&msg);
+            writewhackrecord((char *)&msg, len);
+        }
+}
+
 
 int
 main(int argc, char *argv[])
 {
     int opt = 0;
+    int textout  = 1;
+    int whackout = 0;              /* if true, write whack messages */
+    char *whackfile = NULL;
     struct starter_config *cfg = NULL;
     err_t err = NULL;
     char *confdir = NULL;
@@ -111,6 +144,16 @@ main(int argc, char *argv[])
 	    usage();
 	    break;
 
+        case 'T':
+            textout = 1;
+            break;
+
+        case 'w':
+            whackfile = clone_str(optarg, "output file name");
+            whackout  = 1;
+            textout   = 0;
+            break;
+
 	case 'D':
 	    verbose++;
 	    break;
@@ -124,12 +167,12 @@ main(int argc, char *argv[])
 	    break;
 
 	case 'R':
-	    printf("#setting rootdir=%s\n", optarg);
+            if(verbose) printf("#setting rootdir=%s\n", optarg);
 	    strlcat(rootdir, optarg, sizeof(rootdir));
 	    break;
 
 	case 'S':
-	    printf("#setting rootdir2=%s\n", optarg);
+            if(verbose) printf("#setting rootdir2=%s\n", optarg);
             rootdir2[0]='\0';
 	    strlcat(rootdir2, optarg, sizeof(rootdir2));
 	    break;
@@ -174,18 +217,60 @@ main(int argc, char *argv[])
 	exit(3);
     }
 
-    /* load all conns marked as auto=add or better */
-    for(conn = cfg->conns.tqh_first;
-	conn != NULL;
-	conn = conn->link.tqe_next)
-    {
-	printf("#conn %s loaded\n", conn->name);
+    if(textout) {
+        /* load all conns marked as auto=add or better */
+        for(conn = cfg->conns.tqh_first;
+            conn != NULL;
+            conn = conn->link.tqe_next)
+            {
+                printf("#conn %s loaded\n", conn->name);
+            }
+
+        confwrite(cfg, stdout);
     }
 
-    confwrite(cfg, stdout);
+    if(whackout && whackfile!=NULL) {
+        if(!openwhackrecordfile(whackfile)) {
+            perror(whackfile);
+            exit(5);
+        }
+        /* load all conns marked as auto=add or better */
+
+        argv+=optind;
+        argc-=optind;
+        for(; argc>0; argc--, argv++) {
+            char *conn_name = *argv;
+            for(conn = cfg->conns.tqh_first;
+                conn != NULL;
+                conn = conn->link.tqe_next)
+                {
+                    if(verbose) {
+                        printf("processing conn: %s vs %s\n", conn_name, conn->name);
+                    }
+                    if(strcasecmp(conn->name, conn_name)==0) {
+                        struct whack_message msg1;
+
+                        init_whack_msg(&msg1);
+
+                        if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
+                            unsigned int len = serialize_whack_msg(&msg1);
+                            writewhackrecord((char *)&msg1, len);
+
+                            if (conn->policy & POLICY_RSASIG) {
+                                write_whack_pubkey (cfg, conn, &conn->left,  "left");
+                                write_whack_pubkey (cfg, conn, &conn->right, "right");
+                            }
+                        } else {
+                            fprintf(stderr, "failed to load conn: %s\n", conn_name);
+                        }
+                    }
+                }
+            }
+    }
     confread_free(cfg);
     exit(0);
 }
+
 
 void exit_tool(int x)
 {

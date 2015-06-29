@@ -24,6 +24,7 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <stdio.h>  /* gmp.h needs to to define mpz_out_str */
 #include <gmp.h>
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>

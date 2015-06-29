@@ -1,11 +1,11 @@
 void delete_cryptographic_continuation(struct state *st) {}
 
 #include "pluto_crypt.h"
-struct pluto_crypto_req_cont *continuation;
+struct pluto_crypto_req_cont *continuation = NULL;
 
 
 struct pluto_crypto_req rd;
-struct pluto_crypto_req *r = &rd;
+struct pluto_crypto_req *crypto_req = &rd;
 
 stf_status build_ke(struct pluto_crypto_req_cont *cn
 		    , struct state *st
@@ -15,12 +15,12 @@ stf_status build_ke(struct pluto_crypto_req_cont *cn
 	continuation = cn;
 	memset(&rd, 0, sizeof(rd));
 
-	r->pcr_len  = sizeof(struct pluto_crypto_req);
-	r->pcr_type = pcr_build_kenonce;
-	r->pcr_pcim = importance;
+	crypto_req->pcr_len  = sizeof(struct pluto_crypto_req);
+	crypto_req->pcr_type = pcr_build_kenonce;
+	crypto_req->pcr_pcim = importance;
 
-	pcr_init(r, pcr_build_kenonce, importance);
-	r->pcr_d.kn.oakley_group   = group->group;
+	pcr_init(crypto_req, pcr_build_kenonce, importance);
+	crypto_req->pcr_d.kn.oakley_group   = group->group;
 
 	return STF_SUSPEND;
 }
@@ -34,12 +34,12 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 	continuation = cn;
 	memset(&rd, 0, sizeof(rd));
 
-	r->pcr_len  = sizeof(struct pluto_crypto_req);
-	r->pcr_type = pcr_compute_dh_v2;
-	r->pcr_pcim = importance;
+	crypto_req->pcr_len  = sizeof(struct pluto_crypto_req);
+	crypto_req->pcr_type = pcr_compute_dh_v2;
+	crypto_req->pcr_pcim = importance;
 
 	pcr_init(&rd, pcr_compute_dh_v2, importance);
-	r->pcr_d.kn.oakley_group   = oakley_group2;
+	crypto_req->pcr_d.kn.oakley_group   = oakley_group2;
 
 	return STF_SUSPEND;
 }

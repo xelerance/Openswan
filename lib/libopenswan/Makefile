@@ -173,8 +173,8 @@ $(OBJS):	$(HDRS)
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	@echo VERSION
-	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	@echo VERSION processing ${IPSECVERSION}
+	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${OPENSWANSRCDIR}/lib/libopenswan/version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a

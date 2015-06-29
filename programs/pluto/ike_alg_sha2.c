@@ -89,15 +89,14 @@ struct hash_desc hash_desc_sha2_512 = {
 	hash_update: (void (*)(void *, const u_char *, size_t ))sha512_write,
 	hash_final:(void (*)(u_char *, void *))sha512_hash_final,
 };
-int ike_alg_sha2_init(void);
-int
-ike_alg_sha2_init(void)
+
+int ike_alg_sha2_init(void)
 {
 	int ret;
 	ret = ike_alg_register_hash(&hash_desc_sha2_512);
 	if (!ret){
 	    ret = ike_alg_register_hash(&hash_desc_sha2_256);
-	    ike_alg_add((struct ike_alg *) &integ_desc_sha2_256);
+	    ike_alg_add((struct ike_alg *) &integ_desc_sha2_256, TRUE);
 	}
 
 	return ret;

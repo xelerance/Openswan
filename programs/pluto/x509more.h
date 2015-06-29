@@ -21,7 +21,7 @@
 
 #include "packet.h"
 #include "demux.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "secrets.h"
 #include "pluto/x509lists.h"
 

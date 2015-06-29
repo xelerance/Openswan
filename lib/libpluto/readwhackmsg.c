@@ -4,10 +4,13 @@
 #include "oswalloc.h"
 #include "whack.h"
 #include "oswlog.h"
+#include "readwhackmsg.h"
 
-void readwhackmsg(char *infile)
+/* returns number of messages processed */
+int readwhackmsg(char *infile)
 {
     int   iocount;
+    int   msgcount=0;
     FILE *record;
     char  b1[8192];
     u_int32_t plen;
@@ -31,6 +34,7 @@ void readwhackmsg(char *infile)
 	struct whack_message m1;
 	size_t abuflen;
 
+        DBG_log("processing whack message of size: %u", plen);
         /* time stamp, MSB word first of time */
 	if(fread(&a, 4, 2, record) == 0) /* eat time stamp */
 		DBG(DBG_PARSING, DBG_log( "readwhackmsg: fread returned 0"));
@@ -65,7 +69,8 @@ void readwhackmsg(char *infile)
         if(m1.magic == WHACK_BASIC_MAGIC) continue;
 
         if(m1.magic != WHACK_MAGIC) {
-            fprintf(stderr, "this is whack message from different version\n");
+            fprintf(stderr, "this is whack message from different version: me %08lx file: %08lx\n",
+                    (unsigned long)WHACK_MAGIC, (unsigned long)m1.magic);
             if((m1.magic & 0x80000000) != WHACK_MAGIC_INTVALUE) {
                 unsigned int bit64 = (m1.magic & 0x80000000);
                 unsigned int bits = bit64 ? 64 : 32;
@@ -82,8 +87,10 @@ void readwhackmsg(char *infile)
         fprintf(stderr, "processing whack msg time: %u size: %d\n",
                 a[1],plen);
 
+#if 0
         fprintf(stderr, "m1: %p next: %p roof: %p\n",
                 &m1, wp.str_next, wp.str_roof);
+#endif
 
         if ((ugh = unpack_whack_msg(&wp)) != NULL)
         {
@@ -98,6 +105,7 @@ void readwhackmsg(char *infile)
 	 * message, and call whack_handle.
 	 */
 	whack_process(NULL_FD, m1);
+        msgcount++;
     }
 
     if(iocount != 0 || !feof(record)) {
@@ -105,6 +113,8 @@ void readwhackmsg(char *infile)
 	perror(infile);
     }
     //fclose(record);
+
+    return msgcount;
 }
 
 /*

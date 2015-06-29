@@ -38,13 +38,13 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "kernel.h"	/* needs connections.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "log.h"
 #include "rnd.h"
 #include "timer.h"

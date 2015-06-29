@@ -1,0 +1,4 @@
+Implicit in these test cases, and seams is that there is machine that
+is being similated.  This has to include interfaces and IP addresses,
+so the orient() code is slightly adjusted to make it all make sense.
+

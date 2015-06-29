@@ -1,0 +1,6 @@
+This test case parses a configuration file with readwriteconf, and then
+emits a whackrecord file.  This is a purely functional test of the
+code in readwriteconf, the contents of the whackrecord are not examined
+here for consistency. A similar invocation is used in
+     tests/unit/libpluto/lp02-0parentI1.
+

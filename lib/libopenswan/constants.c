@@ -1460,6 +1460,7 @@ const char *const natt_type_bitnames[] = {
  * Values for right= and left=
  */
 struct keyword_enum_value kw_host_values[]={
+    { "%unset",         KH_NOTSET },
     { "%defaultroute",  KH_DEFAULTROUTE },
     { "%any",           KH_ANY },
     { "%",              KH_IFACE },
@@ -1468,6 +1469,7 @@ struct keyword_enum_value kw_host_values[]={
     { "%opportunisticgroup", KH_OPPOGROUP },
     { "%oppogroup",     KH_OPPOGROUP },
     { "%group",         KH_GROUP },
+    { "%address",       KH_IPADDR },
     { "%hostname",      KH_IPHOSTNAME },  /* makes no sense on input */
 };
 
@@ -1489,7 +1491,9 @@ enum_name(enum_names *ed, unsigned long val)
 }
 
 /* look up an enum in a starter friendly way */
-const char *keyword_name(struct keyword_enum_values *kevs, unsigned int value)
+const char *keyword_name(const struct keyword_enum_values *kevs
+                         , unsigned int value
+                         , char namebuf[KEYWORD_NAME_BUFLEN])
 {
     int kevcount;
     const struct keyword_enum_value *kev;
@@ -1498,8 +1502,10 @@ const char *keyword_name(struct keyword_enum_values *kevs, unsigned int value)
         kevcount > 0 && kev->value != value;
         kev++, kevcount--);
 
-    passert(kevcount != 0);  /* for now */
-
+    if(kevcount == 0) {
+        snprintf(namebuf, 256, "value:%u", value);
+        return namebuf;
+    }
     return kev->name;
 }
 

@@ -55,10 +55,12 @@
 #define INVALID_MSGID     0xffffffff
 
 struct state;	/* forward declaration of tag */
+
+/* used by IKEv1 only */
 extern void reserve_msgid(struct state *isakmp_sa, msgid_t msgid);
 extern bool unique_msgid(struct state *isakmp_sa, msgid_t msgid);
-
 extern msgid_t generate_msgid(struct state *isakmp_sa);
+
 
 #define XAUTH_USERNAME_LEN 64
 
@@ -127,9 +129,9 @@ struct ipsec_proto_info {
 };
 
 /*
- * internal state that
- * should get copied by god... to the child SA state.
- * this is to make Einstein happy.
+ * internal state that should get copied by god... to the child SA state.
+ * (this is to make Einstein happy)
+ * A smarter way in IKEv2 might be to make this a pointer in the child?
  */
 
 struct hidden_variables {
@@ -196,6 +198,8 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
+    u_char             st_ike_maj;
+    u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
 					      * to be replaced with IKEv2 */
 
@@ -250,13 +254,17 @@ struct state
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
     /* IKEv2 things */
+    /* counters */
+    unsigned           st_msg_retransmitted;   /* total number of retransmissions seen */
+    unsigned           st_msg_badmsgid_recv;   /* out of order messages */
+
+
     /* message ID sequence for things we send (as initiator) */
     msgid_t            st_msgid_lastack;       /* last one peer acknowledged */
     msgid_t            st_msgid_nextuse;       /* next one to use */
 
     /* message ID sequence for things we receive (as responder) */
     msgid_t            st_msgid_lastrecv;      /* last one peer sent */
-
 
     /* symmetric stuff */
 
@@ -269,7 +277,7 @@ struct state
     chunk_t            st_gr;                  /* Responder public value */
     u_int8_t           st_rcookie[COOKIE_SIZE];/* Responder Cookie */
     chunk_t            st_nr;                  /* Nr nonce */
-    chunk_t			   st_dcookie;             /* DOS cookie of responder */
+    chunk_t            st_dcookie;             /* DOS cookie of responder */
 
     /* my stuff */
     chunk_t            st_tpacket;             /* Transmitted packet */
@@ -389,10 +397,7 @@ struct state
  					   * products */
 
 };
-
-/* global variables */
-
-extern u_int16_t pluto_port;	/* Pluto's port */
+#define NULL_STATE NULL
 
 extern bool states_use_connection(struct connection *c);
 
@@ -406,6 +411,7 @@ extern void rehash_state(struct state *st);
 extern void release_whack(struct state *st);
 extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);
+extern void free_state(struct state *st);
 extern void delete_state(struct state *st);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);

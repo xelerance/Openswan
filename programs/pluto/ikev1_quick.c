@@ -44,7 +44,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -53,7 +53,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -83,7 +83,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "dpd.h"
 #include "x509more.h"
 #include "tpm/tpm.h"
@@ -2294,7 +2294,7 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_inbound_ipsec_sa(st))
+    if (!install_inbound_ipsec_sa(md->pst, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
     /* encrypt message, except for fixed part of header */
@@ -2565,7 +2565,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_ipsec_sa(st, TRUE))
+    if (!install_ipsec_sa(md->pst, st, TRUE))
 	return STF_INTERNAL_ERROR;
 
     /* encrypt message, except for fixed part of header */
@@ -2623,7 +2623,7 @@ quick_inI2(struct msg_digest *md)
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_ipsec_sa(st, FALSE))
+    if (!install_ipsec_sa(md->pst, st, FALSE))
 	return STF_INTERNAL_ERROR;
 
     {

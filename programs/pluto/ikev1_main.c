@@ -52,7 +52,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
@@ -62,7 +62,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -93,7 +93,7 @@
 #include "nat_traversal.h"
 #endif
 #ifdef VIRTUAL_IP
-#include "virtual.h"
+#include "pluto/virtual.h"
 #endif
 #include "dpd.h"
 #include "x509more.h"
@@ -135,6 +135,11 @@ main_outI1(int whack_sock
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv1_MAJOR_VERSION;
+    st->st_ike_min        = IKEv1_MINOR_VERSION;
+
     change_state(st, STATE_MAIN_I1);
 
     if (HAS_IPSEC_POLICY(policy))
@@ -756,7 +761,8 @@ main_inI1_outR1(struct msg_digest *md)
 
 
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(&md->iface->ip_addr, pluto_port
+    c = find_host_connection(&md->iface->ip_addr, pluto_port500
+                             , KH_IPADDR
 			     , &md->sender
 			     , md->sender_port, LEMPTY);
 
@@ -783,7 +789,8 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(&md->iface->ip_addr, pluto_port
+	    d = find_host_connection(&md->iface->ip_addr, pluto_port500
+                                     , KH_ANY
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);
 
@@ -824,7 +831,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but \"%s\" forbids connection"
-		, ip_str(&md->iface->ip_addr), pluto_port, c->name);
+		, ip_str(&md->iface->ip_addr), pluto_port500, c->name);
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -834,7 +841,7 @@ main_inI1_outR1(struct msg_digest *md)
 	     * His ID isn't declared yet.
 	     */
 	   DBG(DBG_CONTROL, DBG_log("instantiating \"%s\" for initial Main Mode message received on %s:%u"
-		, c->name, ip_str(&md->iface->ip_addr), pluto_port));
+		, c->name, ip_str(&md->iface->ip_addr), pluto_port500));
 	    c = rw_instantiate(c, &md->sender
 			       , NULL, NULL);
 	}
@@ -863,6 +870,10 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
 
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */

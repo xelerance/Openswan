@@ -1,8 +1,9 @@
 struct host_pair {
     struct {
-	ip_address addr;
-	u_int16_t  host_port;	        /* IKE port */
-	bool       host_port_specific;	/* if above is interesting */
+      ip_address addr;
+      enum keyword_host host_type;      /* if above is interesting */
+      u_int16_t  host_port;	        /* IKE port */
+      bool       host_port_specific;	/* if above is interesting */
     } me, him;
     struct connection *connections;	/* connections with this pair */
     struct pending *pending;	/* awaiting Keying Channel */
@@ -15,11 +16,13 @@ extern void connect_to_host_pair(struct connection *c);
 extern struct connection *find_host_pair_connections(const char *func
 						     , const ip_address *myaddr
 						     , u_int16_t myport
+                                                     , enum keyword_host histype
 						     , const ip_address *hisaddr
 						     , u_int16_t hisport);
 
 extern struct host_pair *find_host_pair(const ip_address *myaddr
 					, u_int16_t myport
+                                        , enum keyword_host histype
 					, const ip_address *hisaddr
 					, u_int16_t hisport);
 

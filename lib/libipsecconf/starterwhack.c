@@ -181,18 +181,12 @@ int starter_whack_read_reply(int sock,
 	return ret;
 }
 
-static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+/* returns length of result... XXX unit test would be good here */
+int serialize_whack_msg(struct whack_message *msg)
 {
-	struct sockaddr_un ctl_addr =
-	    { .sun_family = AF_UNIX };
-	int sock;
-	ssize_t len;
 	struct whackpacker wp;
+	ssize_t len;
 	err_t ugh;
-	int ret;
-
-	/* copy socket location */
-	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
 
 	/**
 	 * Pack strings
@@ -210,6 +204,22 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	}
 
 	len = wp.str_next - (unsigned char *)msg;
+        return len;
+}
+
+static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+{
+	struct sockaddr_un ctl_addr =
+	    { .sun_family = AF_UNIX };
+	int sock;
+	ssize_t len;
+	int ret;
+
+	/* copy socket location */
+	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
+
+        len = serialize_whack_msg(msg);
+        if(len == -1) return -1;   /* already logged error */
 
 	/**
 	 * Connect to pluto ctl
@@ -251,7 +261,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	return ret;
 }
 
-static void init_whack_msg (struct whack_message *msg)
+void init_whack_msg (struct whack_message *msg)
 {
 	memset(msg, 0, sizeof(struct whack_message));
 	msg->magic = WHACK_MAGIC;
@@ -272,7 +282,8 @@ static char *connection_name (struct starter_conn *conn)
 	}
 }
 
-static void set_whack_end(struct starter_config *cfg
+static int set_whack_end(struct starter_config *cfg
+                          , struct starter_conn *conn
 			  , char *lr
 			  , struct whack_end *w
 			  , struct starter_end *l)
@@ -309,8 +320,12 @@ static void set_whack_end(struct starter_config *cfg
 		anyaddr(l->addr_family, &w->host_addr);
 		break;
 
+        case KH_NOTSET:
+          printf("%s: %s= end is not defined, conn not loaded\n", conn->name, lr);
+                return -1;
+
 	default:
-		printf("%s: do something with host case: %d\n", lr, l->addrtype);
+          printf("%s %s: do something with host case: %d\n", conn->name, lr, l->addrtype);
 		break;
 	}
 	w->host_addr_name = l->strings[KSCF_IP];
@@ -325,7 +340,7 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 
 	default:
-		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
+          printf("%s %s: do something with nexthop case: %d\n", conn->name, lr, l->nexttype);
 		break;
 
 	case KH_NOTSET:  /* acceptable to not set nexthop */
@@ -384,8 +399,15 @@ static void set_whack_end(struct starter_config *cfg
 	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
 		w->modecfg_client = l->options[KNCF_MODECONFIGCLIENT];
 	}
+        return 0;
 }
 
+
+/*
+ * returns 0 if a key needs to be sent
+ * returns 1 if there was an error.
+ * returns 2 if everything is fine, no key to send.
+ */
 int starter_whack_build_pkmsg(struct starter_config *cfg,
                               struct whack_message *msg,
                               struct starter_conn *conn,
@@ -448,14 +470,14 @@ static int starter_whack_add_pubkey (struct starter_config *cfg,
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
+                                      1, end->rsakey1_type, end->rsakey1, lr)==0) {
           ret = send_whack_msg(&msg, cfg->ctlbase);
           if(ret != 0) return ret;
         }
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
+                                      2, end->rsakey2_type, end->rsakey2, lr)==0) {
           ret = send_whack_msg(&msg, cfg->ctlbase);
           if(ret != 0) return ret;
         }
@@ -468,6 +490,8 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
                                    , struct whack_message *msg
                                    , struct starter_conn *conn)
 {
+	init_whack_msg(msg);
+
 	msg->whack_connection = TRUE;
 	msg->whack_delete = TRUE;      /* always do replace for now */
 	msg->name = connection_name(conn);
@@ -559,8 +583,10 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg->policy_label);
 #endif
 
-	set_whack_end(cfg, "left",  &msg->left, &conn->left);
-	set_whack_end(cfg, "right", &msg->right, &conn->right);
+	if(set_whack_end(cfg, conn, "left",  &msg->left, &conn->left) != 0
+           || set_whack_end(cfg, conn, "right", &msg->right, &conn->right)!=0) {
+          return -1;
+        }
 
 	/* for bug #1004 */
 	update_ports(msg);

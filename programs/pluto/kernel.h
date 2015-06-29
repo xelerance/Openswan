@@ -17,6 +17,9 @@
 
 #include <net/if.h>
 
+/* global variables */
+extern u_int16_t pluto_port500;	        /* Pluto's port (usually 500) */
+extern u_int16_t pluto_port4500;	/* Pluto's NAT port (usually 4500) */
 extern bool can_do_IPcomp;  /* can system actually perform IPCOMP? */
 
 /*
@@ -77,6 +80,8 @@ struct kernel_sa {
 	const ip_subnet *src_client;
 	const ip_subnet *dst_client;
 
+        bool inbound;
+        bool add_selector;
 	ipsec_spi_t spi;
 	unsigned proto;
 	unsigned int transport_proto;
@@ -346,8 +351,8 @@ extern ipsec_spi_t get_ipsec_spi(ipsec_spi_t avoid
 				 , bool tunnel_mode);
 extern ipsec_spi_t get_my_cpi(struct spd_route *sr, bool tunnel_mode);
 
-extern bool install_inbound_ipsec_sa(struct state *st);
-extern bool install_ipsec_sa(struct state *st, bool inbound_also);
+extern bool install_inbound_ipsec_sa(struct state *parent_st, struct state *st);
+extern bool install_ipsec_sa(struct state *parent_st, struct state *st, bool inbound_also);
 extern void delete_ipsec_sa(struct state *st, bool inbound_only);
 extern bool route_and_eroute(struct connection *c
 			     , struct spd_route *sr
@@ -357,10 +362,10 @@ extern bool was_eroute_idle(struct state *st, time_t idle_max);
 extern bool get_sa_info(struct state *st, bool inbound, time_t *ago);
 
 #ifdef NAT_TRAVERSAL
-extern bool update_ipsec_sa(struct state *st);
+extern bool update_ipsec_sa(struct state *parent_st, struct state *st);
 #endif
 
-extern bool eroute_connection(struct spd_route *sr
+extern bool eroute_connection(struct state *st, struct spd_route *sr
 			      , ipsec_spi_t spi, unsigned int proto
 			      , enum eroute_type esatype
 			      , const struct pfkey_proto_info *proto_info

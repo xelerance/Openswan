@@ -1,4 +1,3 @@
-#setting rootdir=dooku
 #conn dooku--cassidy-net loaded
 #conn dooku-base loaded
 #conn cassidy-base loaded

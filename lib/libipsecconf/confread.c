@@ -497,7 +497,7 @@ static bool validate_end(struct starter_conn *conn_st
 	end->rsakey1_type = end->options[KSCF_RSAKEY1];
 	end->rsakey2_type = end->options[KSCF_RSAKEY2];
 
-	switch(end->options[KSCF_RSAKEY1]) {
+	switch(end->rsakey1_type) {
 	case PUBKEY_DNS:
 	case PUBKEY_DNSONDEMAND:
 	    end->key_from_DNS_on_demand = TRUE;

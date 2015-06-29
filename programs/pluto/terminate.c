@@ -45,7 +45,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -53,7 +53,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -71,7 +71,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
 

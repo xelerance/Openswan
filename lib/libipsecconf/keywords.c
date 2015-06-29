@@ -40,6 +40,33 @@
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
 
 /*
+ * values for keyword types  (used for debugging)
+ */
+static const struct keyword_enum_value kt_values[]={
+    KEV_LITERAL(kt_string),
+    KEV_LITERAL(kt_appendstring),
+    KEV_LITERAL(kt_appendlist),
+    KEV_LITERAL(kt_filename),
+    KEV_LITERAL(kt_dirname),
+    KEV_LITERAL(kt_bool),
+    KEV_LITERAL(kt_invertbool),
+    KEV_LITERAL(kt_enum),
+    KEV_LITERAL(kt_list),
+    KEV_LITERAL(kt_loose_enum),
+    KEV_LITERAL(kt_rsakey),
+    KEV_LITERAL(kt_number),
+    KEV_LITERAL(kt_time),
+    KEV_LITERAL(kt_percent),
+    KEV_LITERAL(kt_ipaddr),
+    KEV_LITERAL(kt_subnet),
+    KEV_LITERAL(kt_idtype),
+    KEV_LITERAL(kt_bitstring),
+    KEV_LITERAL(kt_comment),
+    KEV_LITERAL(kt_obsolete),
+};
+static const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
+
+/*
  * Values for failureshunt={passthrough, drop, reject, none}
  */
 static const struct keyword_enum_value kw_failureshunt_values[]={
@@ -333,7 +360,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
 
     /* this is "left=" and "right=" */
-    {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list},
+    {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list, LOOSE_ENUM_OTHER},
 
     {"ike",            kv_conn|kv_auto, kt_string, KSF_IKE,NOT_ENUM},
 
@@ -344,8 +371,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"firewall",       kv_conn|kv_auto|kv_leftright|kt_obsolete, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
     {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
     {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
-    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
-    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
+    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list, PUBKEY_PREEXCHANGED},
+    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list, PUBKEY_PREEXCHANGED},
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
     {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
     {"sendcert",       kv_conn|kv_auto|kv_leftright, kt_enum,   KNCF_SENDCERT, &kw_sendcert_list},
@@ -629,8 +656,16 @@ unsigned int parser_loose_enum(struct keyword *k, const char *s)
 	return valresult;
     }
 
+#ifdef KEYWORD_PARSE_DEBUG
+    {
+        char kdtypebuf[KEYWORD_NAME_BUFLEN];
+        fprintf(stderr, "loose enum for %s is %d\n", keyword_name(&kt_values_list, kd->type, kdtypebuf),
+                kd->loose_enum_value);
+    }
+#endif
+    /* else, it's a literal other value */
     k->string = strdup(s);
-    return 255;
+    return kd->loose_enum_value;
 }
 
 

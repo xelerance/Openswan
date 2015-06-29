@@ -259,6 +259,7 @@ struct keyword_def {
     enum keyword_type  type;
     unsigned int       field;          /* one of keyword_*_field */
     const struct keyword_enum_values *validenum;
+    unsigned int       loose_enum_value;  /* what value to use if the for a literal type */
 };
 
 struct keyword {

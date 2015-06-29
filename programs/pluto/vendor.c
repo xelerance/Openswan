@@ -31,10 +31,10 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"
+#include "pluto/connections.h"
 #include "packet.h"
 #include "demux.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "whack.h"
 #include "vendor.h"
 #include "quirks.h"

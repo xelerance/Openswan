@@ -23,8 +23,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_west.c"
-#include "seam_initiate.c"
+#include "seam_parker.c"
 #include "seam_terminate.c"
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
@@ -37,6 +36,8 @@
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include "seam_gi_sha1.c"
+#include "seam_gi_sha1_group14.c"
+#include "seam_finish.c"
 
 #include "ikev2sendI1.c"
 
@@ -46,6 +47,7 @@ main(int argc, char *argv[])
     char *infile;
     char *conn_name;
     int  lineno=0;
+    int  regression = 0;
     struct connection *c1;
     struct state *st;
 
@@ -54,33 +56,45 @@ main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 3) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name>\n", progname);
+    if(argc != 3 && argc!=4) {
+	fprintf(stderr, "Usage: %s [-r] <whackrecord> <conn-name>\n", progname);
 	exit(10);
     }
-    /* argv[1] == "-r" */
+    /* skip argv0 */
+    argc--; argv++;
+
+    if(strcmp(argv[0], "-r")==0) {
+        regression = 1;
+        argc--; argv++;
+    }
 
     tool_init_log();
+    load_oswcrypto();
     init_fake_vendorid();
+    init_parker_interface();
 
-    infile = argv[1];
-    conn_name = argv[2];
+    infile = argv[0];
+    conn_name = argv[1];
 
-    readwhackmsg(infile);
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
+    if(readwhackmsg(infile) == 0) exit(10);
 
-    send_packet_setup_pcap("parentI1.pcap");
+    send_packet_setup_pcap("OUTPUT/parentI1.pcap");
 
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
+    assert(orient(c1, 500));
     show_one_connection(c1);
 
-    st = sendI1(c1,DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE);
+    /* do calculation if not -r for regression */
+    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
 
-    run_continuation(r);
-
-    /* clean up so that we can see any leaks */
-    delete_state(st);
+    st = state_with_serialno(1);
+    if(st!=NULL) {
+        delete_state(st);
+        free_state(st);
+    }
 
     report_leaks();
 
@@ -89,7 +103,7 @@ main(int argc, char *argv[])
 }
 
 
-/*
+ /*
  * Local Variables:
  * c-style: pluto
  * c-basic-offset: 4

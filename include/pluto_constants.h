@@ -82,6 +82,10 @@ enum event_type {
 #define EVENT_RETRANSMIT_DELAY_0		10   /* 10 seconds */
 #define EVENT_GIVEUP_ON_DNS_DELAY               300  /* 5 minutes for DNS */
 
+/* how long to keep a failed state open in case of retransmits */
+#define EVENT_HALF_OPEN_TIMEOUT                 60
+
+
 /*
  * cryptographic helper operations.
  */
@@ -223,6 +227,7 @@ typedef enum {
 
 enum state_kind {
     STATE_UNDEFINED=0,	/* 0 -- most likely accident */
+    STATE_DELETING,     /* indicates state is dead, but not yet freed */
 
     /*  Opportunism states: see "Opportunistic Encryption" 2.2 */
 
@@ -629,6 +634,7 @@ enum keyword_host {
     KH_IPHOSTNAME   = 7,                /* host_addr invalid, only string */
     KH_IPADDR       = LOOSE_ENUM_OTHER,
 };
+struct keyword_enum_values kw_host_list;
 
 /* BIND enumerated types */
 
