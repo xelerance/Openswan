@@ -14,7 +14,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
 # elinks is there to make xmlto happy on RHEL6.
-BuildRequires: gmp-devel bison flex redhat-rpm-config xmlto elinks
+BuildRequires: gmp-devel bison flex redhat-rpm-config xmlto elinks nss-devel nspr-devel
 Conflicts: libreswan
 Obsoletes: openswan
 
@@ -45,11 +45,11 @@ Openswan.  Openswan 2.6.x supports IKEv1 and IKEv2 (RFC4309,RFC5996,RFC7296)
 %{__make} \
   USERCOMPILE="-g %{optflags} -fPIE -pie" \
   USERLINK="-g -pie" \
-  USE_LIBNSS=true \
+  USE_LIBNSS="true" \
   HAVE_THREADS="true" \
   USE_DYNAMICDNS="true" \
   WERROR="" \
-  VENDOR="Community" \
+  VENDOR="Xelerance" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
