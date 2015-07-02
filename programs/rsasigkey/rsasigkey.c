@@ -74,13 +74,9 @@
 /* the code in getoldkey() knows about this */
 #define	E	3		/* standard public exponent */
 
-#ifdef HAVE_LIBNSS
-/*#define F4	65537*/	/* preferred public exponent, Fermat's 4th number */
-char usage[] = "rsasigkey [--verbose] [--random device] [--configdir dir] [--password password] nbits [--hostname host] [--noopt] [--rounds num]";
-#else
-char usage[] = "rsasigkey [--verbose] [--random device] nbits [--hostname host] [--noopt] [--rounds num]";
-char usage2[] = "rsasigkey [--verbose] --oldkey filename";
-#endif
+char usage1[]     = "rsasigkey [--verbose] [--random device] nbits [--hostname host] [--noopt] [--rounds num]";
+char usage2[]    = "rsasigkey [--verbose] --oldkey filename";
+char usage_nss[] = "          [--configdir dir] [--password password] (nss only)";
 struct option opts[] = {
   {"verbose",	0,	NULL,	'v',},
   {"random",	1,	NULL,	'r',},
@@ -304,6 +300,18 @@ char *GetModulePassword(PK11SlotInfo *slot, PRBool retry, void *arg)
 }
 #endif /* HAVE_LIBNSS */
 
+static void usage(void)
+{
+  printf("Usage:\t%s\n%s\n", usage1, usage_nss);
+  printf("\t%s\n", usage2);
+#ifdef HAVE_LIBNSS
+  printf("\t LIBNSS available\n");
+#else
+  printf("\t LIBNSS un-available\n");
+#endif
+  exit(2);
+}
+
 /*
  - main - mostly argument parsing
  */
@@ -346,13 +354,9 @@ int main(int argc, char *argv[])
 			do_lcm = 0;
 			break;
 		case 'h':	/* help */
-			printf("Usage:\t%s\n", usage);
-#ifndef HAVE_LIBNSS
-			printf("\tor\n");
-			printf("\t%s\n", usage2);
-#endif
-			exit(0);
-			break;
+                  usage();
+                  exit(0);
+                  break;
 		case 'V':	/* version */
 			printf("%s %s\n", me, ipsec_version_code());
 			exit(0);
@@ -370,19 +374,17 @@ int main(int argc, char *argv[])
 			errflg = 1;
 			break;
 		}
+
 #ifdef HAVE_LIBNSS
-	if (errflg || optind != argc-1) {
-		printf("Usage:\t%s\n", usage);
-		exit(2);
-	}
-#else
-	if (errflg || optind != ((oldkeyfile != NULL) ? argc : argc-1)) {
-		printf("Usage:\t%s\n", usage);
-		printf("\tor\n");
-		printf("\t%s\n", usage2);
-		exit(2);
-	}
+        if(oldkeyfile != NULL) {
+          printf("libnss version can not work with old secrets file\n");
+          errflg = 1;
+        }
 #endif
+
+	if (errflg || optind != argc-1) {
+          usage();
+	}
 
 	if (outputhostname[0] == '\0') {
 		i = gethostname(outputhostname, sizeof(outputhostname));
