@@ -8,9 +8,9 @@ processing whack msg time: X size: Y
 | Added new connection any1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| checking against if: eth0
+| orient any1--jj2 checking against if: eth0
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-./parentR1 added connection description "any1--jj2"
+./parentR1 adding connection: "any1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
@@ -98,7 +98,7 @@ RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | find_host_connection2 returns any1--jj2
 | found connection: any1--jj2
 | creating state object #1 at Z
-| checking against if: eth0
+| orient any1--jj2 checking against if: eth0
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  a9 e1 ff 4d  1c 8b b8 19
 | state hash entry 12

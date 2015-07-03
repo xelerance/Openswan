@@ -583,7 +583,7 @@ load_end_certificate(const char *filename, struct end *dst)
 	return;
     }
 
-    openswan_log("loading certificate from %s\n", filename);
+    openswan_log("  loading certificate from %s\n", filename);
     dst->cert_filename = clone_str(filename, "certificate filename");
 
 	{
@@ -1246,7 +1246,7 @@ add_connection(const struct whack_message *wm)
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
-	openswan_log("added connection description \"%s\"", c->name);
+	openswan_log("adding connection: \"%s\"", c->name);
 	DBG(DBG_CONTROL,
 	    char topo[CONN_BUF_LEN];
 
