@@ -74,6 +74,8 @@
 /* the code in getoldkey() knows about this */
 #define	E	3		/* standard public exponent */
 
+char *progname;
+
 char usage1[]     = "rsasigkey [--verbose] [--random device] nbits [--hostname host] [--noopt] [--rounds num]";
 char usage2[]    = "rsasigkey [--verbose] --oldkey filename";
 char usage_nss[] = "          [--configdir dir] [--password password] (nss only)";
@@ -122,6 +124,10 @@ void report(char *msg);
 #include "rsasigkey-nssfiles.c"
 #endif /* HAVE_LIBNSS */
 
+void exit_tool(int val)
+{
+  exit(val);
+}
 
 static void usage(void)
 {
