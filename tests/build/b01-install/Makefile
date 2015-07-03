@@ -23,9 +23,9 @@ check:
 	@rm -rf ${buildtmp}
 	@mkdir -p ${buildtmp}
 	env
-	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
+	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} programs install
 	(cd ${buildtmp} && find . -type f -print) | LC_ALL=C sort | tee ../OUTPUTS/01-build-list.raw | diff - 01-build-list.txt || cat ../OUTPUTS/01-build-list.raw
-	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} install
+	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} programs install
 	(cd ${buildtmp} && find . -type f -print) | LC_ALL=C sort | tee ../OUTPUTS/01-build-list-again.raw | diff - 01-build-list-again.txt || cat ../OUTPUTS/01-build-list-again.raw
 	grep -v .old ../OUTPUTS/01-build-list-again.raw | diff - 01-build-list.txt
 
