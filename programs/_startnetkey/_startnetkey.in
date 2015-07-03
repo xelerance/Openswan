@@ -180,7 +180,7 @@ fi
 		# load all NETKEY modules
 		for mod in ipcomp6 ipcomp xfrm6_tunnel xfrm6_mode_tunnel xfrm6_mode_beet xfrm6_mode_ro \
 			xfrm6_mode_transport xfrm4_mode_transport xfrm4_mode_tunnel \
-			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 iaf_key
+			xfrm4_tunnel xfrm4_mode_beet esp4 esp6 ah4 ah6 af_key
 		   do
 			#echo -n "$mod "
 			@MODPROBE@ $mod 2> /dev/null
