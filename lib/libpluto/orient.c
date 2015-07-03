@@ -61,7 +61,7 @@ orient(struct connection *c, unsigned int pluto_port)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
-              DBG_log("checking against if: %s", p->ip_dev->id_rname);
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s", c->name, p->ip_dev->id_rname));
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
