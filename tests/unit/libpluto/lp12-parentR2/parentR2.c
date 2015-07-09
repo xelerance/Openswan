@@ -23,7 +23,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_jamesjohnson.c"
+#include "seam_host_jamesjohnson.c"
 #include "seam_terminate.c"
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
