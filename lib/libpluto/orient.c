@@ -36,9 +36,18 @@
 #include "oswalloc.h"
 #include "oswtime.h"
 #include "oswlog.h"
+#include "pluto/keys.h"
 
 #include "pluto/server.h"
 #include "pluto/connections.h"	/* needs id.h */
+
+static void swap_ends(struct spd_route *sr)
+{
+    struct end t = sr->this;
+
+    sr->this = sr->that;
+    sr->that = t;
+}
 
 bool
 orient(struct connection *c, unsigned int pluto_port)
@@ -110,16 +119,35 @@ orient(struct connection *c, unsigned int pluto_port)
 		     * Only continue if the far side matches.
 		     * If both sides match, there is an error-out.
 		     */
-		    {
-			struct end t = sr->this;
-
-			sr->this = sr->that;
-			sr->that = t;
-		    }
+                    swap_ends(sr);
 		}
 	    }
-	}
+
+            if(!oriented(*c)) {
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s matching on public/private keys", c->name));
+
+                /* if %any, then check if we have a matching private key! */
+                if((sr->this.host_type == KH_DEFAULTROUTE
+                    || sr->this.host_type == KH_ANY)
+                   && osw_asymmetric_key(sr->this.cert)
+                   && osw_has_private_key(pluto_secrets, sr->this.cert)) {
+                    /*
+                     * orientated is determined by selecting an interface, and this will pick
+                     * first interface in the list...  want to pick wildcard outgoing interface.
+                     */
+                    c->interface = interfaces;
+
+                } else if((sr->that.host_type == KH_DEFAULTROUTE
+                           || sr->that.host_type == KH_ANY)
+                          && osw_asymmetric_key(sr->that.cert)
+                          && osw_has_private_key(pluto_secrets, sr->that.cert)) {
+                    swap_ends(sr);
+                    c->interface = interfaces;
+                }
+            }
+        }
     }
+
     return oriented(*c);
 }
 
