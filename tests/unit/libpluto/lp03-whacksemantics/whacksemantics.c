@@ -52,7 +52,6 @@ int verbose=0;
 int warningsarefatal = 0;
 
 long crl_check_interval = 0;
-struct secret *pluto_secrets = NULL;
 
 main(int argc, char *argv[])
 {

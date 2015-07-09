@@ -27,3 +27,4 @@ void transfer_to_public_keys(struct gw_info *gateways_from_dns
 			     , struct pubkey_list **keys) {}
 
 struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
+struct secret *pluto_secrets = NULL;

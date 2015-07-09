@@ -1,3 +1,5 @@
+./parentI1 loading secrets from "../samples/parker.secrets"
+./parentI1 loaded private key for keyid: PPK_RSA:AQN7wUerV
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -528,4 +530,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./parentI1 leak: default conf conffile, item size: X
 ./parentI1 leak: default conf ipsecd_dir, item size: X
 ./parentI1 leak: default conf ipsec_conf_dir, item size: X
+./parentI1 leak: 2 * id list, item size: X
+./parentI1 leak: secret, item size: X
 ./parentI1 leak detective found Z leaks, total size X
