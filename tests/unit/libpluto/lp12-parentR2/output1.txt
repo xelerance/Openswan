@@ -740,8 +740,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
 |   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
-| releasing whack for #2 (sock=-1)
-| releasing whack for #1 (sock=-1)
+| releasing whack for #X (sock=Y)
+| releasing whack for #X (sock=Y)
 ./parentR2 leak: reply packet, item size: X
 ./parentR2 leak: skeyseed_t1, item size: X
 ./parentR2 leak: responder keys, item size: X
