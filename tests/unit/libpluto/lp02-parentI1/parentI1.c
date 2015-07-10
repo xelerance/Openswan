@@ -1,4 +1,5 @@
 #include "parentI1_head.c"
+#include "seam_keys.c"
 
 static void init_local_interface(void)
 {
