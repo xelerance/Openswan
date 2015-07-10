@@ -49,6 +49,26 @@ static void swap_ends(struct spd_route *sr)
     sr->that = t;
 }
 
+
+
+static bool osw_end_has_private_key(struct end *him)
+{
+    if(him->cert.type != CERT_NONE) {
+        return osw_asymmetric_key(him->cert)
+            && osw_has_private_key(pluto_secrets, him->cert);
+    } else {
+        /* in raw RSA case, the end has a name, and the key is associated with the name. */
+        struct pubkey * himkey = osw_get_public_key_by_end(him);
+
+        if(himkey) {
+            return has_private_rawkey(himkey);
+        } else {
+            return FALSE;
+        }
+    }
+}
+
+
 bool
 orient(struct connection *c, unsigned int pluto_port)
 {
@@ -129,8 +149,7 @@ orient(struct connection *c, unsigned int pluto_port)
                 /* if %any, then check if we have a matching private key! */
                 if((sr->this.host_type == KH_DEFAULTROUTE
                     || sr->this.host_type == KH_ANY)
-                   && osw_asymmetric_key(sr->this.cert)
-                   && osw_has_private_key(pluto_secrets, sr->this.cert)) {
+                   && osw_end_has_private_key(&sr->this)) {
                     /*
                      * orientated is determined by selecting an interface, and this will pick
                      * first interface in the list...  want to pick wildcard outgoing interface.
@@ -139,8 +158,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
                            || sr->that.host_type == KH_ANY)
-                          && osw_asymmetric_key(sr->that.cert)
-                          && osw_has_private_key(pluto_secrets, sr->that.cert)) {
+                          && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
                     c->interface = interfaces;
                 }

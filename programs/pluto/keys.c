@@ -651,6 +651,28 @@ free_remembered_public_keys(void)
     free_public_keys(&pluto_pubkeys);
 }
 
+/* find a public key */
+struct pubkey *osw_get_public_key_by_end(struct end *him)
+{
+    struct pubkey_list *p, **pp;
+    int pathlen;
+
+    pp = &pluto_pubkeys;
+
+    for (p = pluto_pubkeys; p != NULL; p = *pp)
+	{
+	    struct pubkey *key = p->key;
+
+	    if (key->alg == PUBKEY_ALG_RSA
+		&& same_id(&him->id, &key->id)
+                && trusted_ca(key->issuer, him->ca, &pathlen)) {
+                return key;
+            }
+	    pp = &p->next;
+        }
+    return NULL;
+}
+
 /* transfer public keys from *keys list to front of pubkeys list */
 void
 transfer_to_public_keys(struct gw_info *gateways_from_dns

@@ -82,6 +82,9 @@ extern struct secret *osw_get_xauthsecret(const struct connection *c UNUSED
 /* check if a private key exists, by certificate-like blob */
 extern bool osw_has_private_key(struct secret *list_of_secrets, cert_t cert);
 
+extern struct pubkey *osw_get_public_key_by_end(struct end *him);
+
+
 /* keys from ipsec.conf */
 extern struct pubkey_list *pluto_pubkeys;
 

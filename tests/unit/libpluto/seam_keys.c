@@ -28,3 +28,12 @@ void transfer_to_public_keys(struct gw_info *gateways_from_dns
 
 struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 struct secret *pluto_secrets = NULL;
+
+struct pubkey *osw_get_public_key_by_end(struct end *him)
+{
+  return NULL;
+}
+bool has_private_rawkey(struct pubkey *pk)
+{
+  return FALSE;
+}
