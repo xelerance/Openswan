@@ -36,6 +36,7 @@ check:
 	@strings ${OUTPUTS}/parkerrecord.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep parker1--jj2 >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep ikev2:parker--jj >/dev/null
+	@strings ${OUTPUTS}/parkerrecord.whack | grep parker01.emmjay.credil.org >/dev/null
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt

@@ -96,28 +96,13 @@ static struct option const longopts[] =
 	{0, 0, 0, 0}
 };
 
-
-static void write_whack_pubkey (struct starter_config *cfg,
-                               struct starter_conn *conn,
-                               struct starter_end *end, const char *lr)
+static int send_whack_msg_to_file(struct starter_config *cfg, struct whack_message *msg)
 {
-	struct whack_message msg;
-
-	init_whack_msg(&msg);
-        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      1, end->rsakey1_type, end->rsakey1, lr)==1) {
-            unsigned int len = serialize_whack_msg(&msg);
-            writewhackrecord((char *)&msg, len);
-        }
-
-	init_whack_msg(&msg);
-        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      2, end->rsakey2_type, end->rsakey2, lr)==1) {
-            unsigned int len = serialize_whack_msg(&msg);
-            writewhackrecord((char *)&msg, len);
-        }
+    fprintf(stderr, "writing record to whack file\n");
+    unsigned int len = serialize_whack_msg(msg);
+    writewhackrecord((char *)msg, len);
+    return 0;
 }
-
 
 int
 main(int argc, char *argv[])
@@ -234,8 +219,10 @@ main(int argc, char *argv[])
             perror(whackfile);
             exit(5);
         }
-        /* load all conns marked as auto=add or better */
+        /* use file writer above */
+        cfg->send_whack_msg = send_whack_msg_to_file;
 
+        /* load all conns marked as auto=add or better, and save them. */
         argv+=optind;
         argc-=optind;
         for(; argc>0; argc--, argv++) {
@@ -248,19 +235,7 @@ main(int argc, char *argv[])
                         printf("processing conn: %s vs %s\n", conn_name, conn->name);
                     }
                     if(strcasecmp(conn->name, conn_name)==0) {
-                        struct whack_message msg1;
-
-                        init_whack_msg(&msg1);
-
-                        if(starter_whack_build_basic_conn(cfg, &msg1, conn)==0) {
-                            unsigned int len = serialize_whack_msg(&msg1);
-                            writewhackrecord((char *)&msg1, len);
-
-                            if (conn->policy & POLICY_RSASIG) {
-                                write_whack_pubkey (cfg, conn, &conn->left,  "left");
-                                write_whack_pubkey (cfg, conn, &conn->right, "right");
-                            }
-                        } else {
+                        if(starter_whack_add_conn(cfg, conn) != 0) {
                             fprintf(stderr, "failed to load conn: %s\n", conn_name);
                         }
                     }

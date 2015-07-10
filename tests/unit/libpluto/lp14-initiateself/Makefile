@@ -104,3 +104,8 @@ clean: OUTPUT
 OUTPUT:
 	@mkdir -p OUTPUT
 
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#

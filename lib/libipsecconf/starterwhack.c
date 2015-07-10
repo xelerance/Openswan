@@ -207,7 +207,15 @@ int serialize_whack_msg(struct whack_message *msg)
         return len;
 }
 
-static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+static int send_whack_msg(struct starter_config *cfg, struct whack_message *msg)
+{
+  if(cfg->send_whack_msg) {
+    return cfg->send_whack_msg(cfg, msg);
+  }
+  return -1;
+}
+
+static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_message *msg)
 {
 	struct sockaddr_un ctl_addr =
 	    { .sun_family = AF_UNIX };
@@ -216,7 +224,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	int ret;
 
 	/* copy socket location */
-	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
+	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
 
         len = serialize_whack_msg(msg);
         if(len == -1) return -1;   /* already logged error */
@@ -471,14 +479,14 @@ static int starter_whack_add_pubkey (struct starter_config *cfg,
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
                                       1, end->rsakey1_type, end->rsakey1, lr)==0) {
-          ret = send_whack_msg(&msg, cfg->ctlbase);
+          ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
                                       2, end->rsakey2_type, end->rsakey2, lr)==0) {
-          ret = send_whack_msg(&msg, cfg->ctlbase);
+          ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }
 
@@ -607,13 +615,15 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	init_whack_msg(&msg);
         r = starter_whack_build_basic_conn(cfg, &msg, conn);
         if(r != 0) return r;
-	r =  send_whack_msg(&msg, cfg->ctlbase);
+	r =  send_whack_msg(cfg, &msg);
 
 	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
-	    r=starter_whack_add_pubkey (cfg, conn, &conn->left,  "left");
-	    if(r==0) {
-	      r=starter_whack_add_pubkey (cfg, conn, &conn->right, "right");
-	    }
+          starter_log(LOG_LEVEL_DEBUG, "conn: \"%s\" sending RSA keys for left", conn->name);
+          r=starter_whack_add_pubkey (cfg, conn, &conn->left,  "left");
+          if(r==0) {
+            starter_log(LOG_LEVEL_DEBUG, "conn: \"%s\" sending RSA keys for right", conn->name);
+            r=starter_whack_add_pubkey (cfg, conn, &conn->right, "right");
+          }
 	}
 
 	return r;
@@ -798,7 +808,7 @@ int starter_whack_basic_del_conn (struct starter_config *cfg
 	init_whack_msg(&msg);
 	msg.whack_delete = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_del_conn(struct starter_config *cfg
@@ -821,7 +831,7 @@ int starter_whack_basic_route_conn (struct starter_config *cfg
 	init_whack_msg(&msg);
 	msg.whack_route = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_route_conn(struct starter_config *cfg
@@ -845,7 +855,7 @@ int starter_whack_initiate_conn (struct starter_config *cfg
 	msg.whack_initiate = TRUE;
 	msg.whack_async = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_listen (struct starter_config *cfg)
@@ -853,7 +863,7 @@ int starter_whack_listen (struct starter_config *cfg)
 	struct whack_message msg;
 	init_whack_msg(&msg);
 	msg.whack_listen = TRUE;
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_shutdown (struct starter_config *cfg)
@@ -861,6 +871,10 @@ int starter_whack_shutdown (struct starter_config *cfg)
 	struct whack_message msg;
 	init_whack_msg(&msg);
 	msg.whack_shutdown = TRUE;
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
+void starter_whack_init_cfg(struct starter_config *cfg)
+{
+  cfg->send_whack_msg = send_whack_msg_to_socket;
+}

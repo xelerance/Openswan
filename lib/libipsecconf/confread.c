@@ -42,6 +42,7 @@
 #include "ipsecconf/confread.h"
 #include "ipsecconf/interfaces.h"
 #include "ipsecconf/starterlog.h"
+#include "ipsecconf/starterwhack.h"
 #include "ipsecconf/oeconns.h"
 
 #ifdef HAVE_LIBNSS
@@ -1274,6 +1275,7 @@ struct starter_config *confread_load(const char *file
 	if(ctlbase) {
 	    pfree(cfg->ctlbase);
 	    cfg->ctlbase = clone_str(ctlbase, "control socket");
+            starter_whack_init_cfg(cfg);     /* set default sender to send to socket */
 	}
 
 	/**
