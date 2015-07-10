@@ -11,11 +11,6 @@ const struct RSA_private_key *get_RSA_private_key(const struct connection *c) {
 void list_public_keys(bool utc, bool check_pub_keys) {}
 void list_psks(void) {}
 
-void gw_addref(struct gw_info *gw) {}
-void gw_delref(struct gw_info **gwp) {}
-
-bool in_pending_use(struct connection *c) { return FALSE; }
-
 err_t add_public_key(const struct id *id
 		     , enum dns_auth_level dns_auth_level
 		     , enum pubkey_alg alg
