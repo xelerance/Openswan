@@ -30,4 +30,6 @@ clean check:
 	@${MAKE} -C lp12-parentR2    $@
 	@${MAKE} -C lp13-parentI3    $@
 	@${MAKE} -C lp14-initiateself $@
+	@${MAKE} -C lp15-respondself $@
+
 
