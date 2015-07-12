@@ -1,4 +1,4 @@
-This test case is an IKEv2 responder.
+This test case is an IKEv2 initiator.
 In this test case, the policy is to permit an initiator from %any to propose
 a tunnel to that end point (the /32).
 

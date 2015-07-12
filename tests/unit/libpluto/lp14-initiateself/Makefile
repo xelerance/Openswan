@@ -91,7 +91,7 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
 	tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
-${WHACKFILE}: OUTPUT
+${WHACKFILE}: OUTPUT ${SAMPLEDIR}/rw.conf
 	${READWRITE} --rootdir=${SAMPLEDIR}/rw --config ${SAMPLEDIR}/rw.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: OUTPUT
