@@ -29,7 +29,7 @@ void recv_pcap_packet_gen(u_char *user
     struct iphdr  *ip;
     struct udphdr *udp;
     u_char    *ike;
-    const struct iface_port *ifp = &if1;
+    const struct iface_port *ifp = interfaces;  /* take first interface */
     int packet_len;
     err_t from_ugh;
     union
