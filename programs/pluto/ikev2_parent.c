@@ -583,6 +583,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
+        st->st_remoteaddr = md->sender;
+        st->st_remoteport = md->sender_port;
 	change_state(st, STATE_PARENT_R1);
 
         md->st = st;
