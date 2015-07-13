@@ -29,4 +29,5 @@ clean check:
 	@${MAKE} -C lp11-parentI2dup $@
 	@${MAKE} -C lp12-parentR2    $@
 	@${MAKE} -C lp13-parentI3    $@
+	@${MAKE} -C lp14-initiateself $@
 

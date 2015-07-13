@@ -2,6 +2,8 @@
 #include "../lp02-parentI1/parentI1_head.c"
 #include "../seam_host_rw.c"
 
+#define TESTNAME "initiateselfI1"
+
 static void init_local_interface(void)
 {
     init_rw_interface();

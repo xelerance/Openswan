@@ -37,11 +37,12 @@ main(int argc, char *argv[])
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(11);
 
-    send_packet_setup_pcap("OUTPUT/parentI1.pcap");
+    send_packet_setup_pcap("OUTPUT/" TESTNAME ".pcap");
 
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
+    //list_public_keys(FALSE, FALSE);
     assert(orient(c1, 500));
     show_one_connection(c1);
 
