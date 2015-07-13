@@ -537,8 +537,14 @@ export OBJDIR
 export OBJDIRTOP
 
 
-# sometimes it is not available.
+# sometimes efence not available.
 LIBEFENCE?=-lefence
+ifeq (${LIBEFENCE},)
+HAVE_EFENCE=
+else
+HAVE_EFENCE=-DHAVE_EFENCE
+endif
+
 
 ### paths within the source tree
 

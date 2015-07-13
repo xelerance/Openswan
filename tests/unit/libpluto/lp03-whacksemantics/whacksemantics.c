@@ -64,7 +64,9 @@ main(int argc, char *argv[])
     struct starter_config *cfg = NULL;
     struct starter_conn *conn = NULL;
 
-    //EF_PROTECT_FREE=1;
+#ifdef HAVE_EFENCE
+    EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;

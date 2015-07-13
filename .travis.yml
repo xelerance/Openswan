@@ -42,5 +42,5 @@ install:
 script:
   - "cat Makefile.inc.local"
   - "make env | sort -f"
-  - "make programs ARCH=${BUILD_ARCH}"
-  - "make check ARCH=${BUILD_ARCH}"
+  - "make programs ARCH=${BUILD_ARCH} LIBEFENCE="
+  - "make check ARCH=${BUILD_ARCH} LIBEFENCE="
