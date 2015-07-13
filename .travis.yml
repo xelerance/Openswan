@@ -18,6 +18,7 @@ addons:
       - libpcap0.8
       - electric-fence
       - gcc-multilib
+      - tcpdump
 
 env:
   global:
