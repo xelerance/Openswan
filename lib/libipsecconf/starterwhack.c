@@ -610,14 +610,15 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 					, struct starter_conn *conn)
 {
 	struct whack_message msg;
-	int r;
+	int r = 0;
 
 	init_whack_msg(&msg);
-        r = starter_whack_build_basic_conn(cfg, &msg, conn);
-        if(r != 0) return r;
-	r =  send_whack_msg(cfg, &msg);
 
-	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
+        /*
+         * it seems smarter to load the keys required first, even though on error that might
+         * leave keys loaded which might never get used.
+         */
+	if (conn->policy & POLICY_RSASIG) {
           starter_log(LOG_LEVEL_DEBUG, "conn: \"%s\" sending RSA keys for left", conn->name);
           r=starter_whack_add_pubkey (cfg, conn, &conn->left,  "left");
           if(r==0) {
@@ -625,6 +626,11 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
             r=starter_whack_add_pubkey (cfg, conn, &conn->right, "right");
           }
 	}
+        if(r != 0) return r;
+
+        r = starter_whack_build_basic_conn(cfg, &msg, conn);
+        if(r != 0) return r;
+	r =  send_whack_msg(cfg, &msg);
 
 	return r;
 }
