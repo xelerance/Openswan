@@ -1,6 +1,7 @@
 #include "parentI1_head.c"
 #include "seam_keys.c"
 
+#include "seam_host_parker.c"
 #define TESTNAME "parentI1"
 
 static void init_local_interface(void)
