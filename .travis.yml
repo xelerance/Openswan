@@ -6,7 +6,7 @@ language: c
 compiler:
   - gcc
 
-sudo: false
+sudo: required
 addons:
   apt:
     packages:
@@ -35,6 +35,7 @@ before_install:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
+  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install electric-fence tcpdump; fi
   - "PATH=$HOME/bin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
