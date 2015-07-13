@@ -1,0 +1,11 @@
+OUTPUT
+core.*
+parentR1
+parentR1.o
+parentR1.pcap
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
+parentR2
+parentR2.o
