@@ -239,4 +239,4 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
 ./parentR1 leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

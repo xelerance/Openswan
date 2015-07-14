@@ -43,5 +43,5 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./orienttest leak: default conf ipsecd_dir, item size: X
 ./orienttest leak: default conf ipsec_conf_dir, item size: X
 ./orienttest leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 processing parker1--jj2

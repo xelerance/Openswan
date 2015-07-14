@@ -557,4 +557,4 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./parentI2duplicate leak: default conf ipsec_conf_dir, item size: X
 ./parentI2duplicate leak: 2 * hasher name, item size: X
 ./parentI2duplicate leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
