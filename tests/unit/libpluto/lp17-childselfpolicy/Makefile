@@ -76,7 +76,7 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 TESTNAME=respondselfR2
 CONNNAME=gateway--any
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2_allzero.pcap OUTPUT/parentR2_allzero.pcap
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2.pcap OUTPUT/parentR2.pcap
+UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2.pcap OUTPUT/parentR2.pcap
 
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
@@ -106,10 +106,14 @@ OUTPUT/R2-any.txt:	${WHACKFILE} ${TESTNAME}
 ${WHACKFILE}: ${SAMPLEDIR}/rw.conf OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/rw --config ${SAMPLEDIR}/rw.conf --whackout=${WHACKFILE} ${CONNNAME}
 
-update: update1
+update: update1 update2
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-dump.txt >R2-dump.txt
+
+update2:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
+	[ -f OUTPUT/R2-any.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-any.txt >R2-any.txt
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap

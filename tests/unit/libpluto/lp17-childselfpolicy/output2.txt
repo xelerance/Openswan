@@ -246,10 +246,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
 |   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
 |   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
-|   1b 96 00 54  b5 84 cf 58  27 06 6e 38  49 c3 a8 e7
-|   b4 48 ad b4  da 49 a5 c8  24 ba b5 23  bd fc be d5
-|   fb 3f e5 6b  9f 43 5b c1  f0 b0 90 31  95 b6 7c 6e
-|   ec 6c 05 f2  e7 1c ab af  18 8f c7 e7
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
+|   34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -299,11 +299,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
 |   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
 |   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
-|   1b 96 00 54  b5 84 cf 58  27 06 6e 38  49 c3 a8 e7
-|   b4 48 ad b4  da 49 a5 c8  24 ba b5 23  bd fc be d5
-|   fb 3f e5 6b  9f 43 5b c1  f0 b0 90 31  95 b6 7c 6e
-| R2 calculated auth:  ec 6c 05 f2  e7 1c ab af  18 8f c7 e7
-| R2  provided  auth:  ec 6c 05 f2  e7 1c ab af  18 8f c7 e7
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
+| R2 calculated auth:  34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
+| R2  provided  auth:  34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 | authenticator matched
 | data before decryption:
 |   e2 e7 56 4f  b8 f9 1e 31  2d 67 40 ce  dc 28 3e f6
@@ -330,9 +330,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
 |   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
 |   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
-|   1b 96 00 54  b5 84 cf 58  27 06 6e 38  49 c3 a8 e7
-|   b4 48 ad b4  da 49 a5 c8  24 ba b5 23  bd fc be d5
-|   fb 3f e5 6b  9f 43 5b c1  f0 b0 90 31  95 b6 7c 6e
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
 | decrypted payload:  27 00 00 13  02 00 00 00  65 78 61 6d  70 6c 65 2e
 |   63 6f 6d 21  00 00 c8 01  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
@@ -357,7 +357,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   00 00 00 00  00 00 24 04  03 04 03 12  34 56 78 03
 |   00 00 08 01  00 00 03 03  00 00 08 03  00 00 01 00
 |   00 00 08 05  00 00 00 2d  00 00 18 01  00 00 00 07
-|   00 00 10 00  00 ff ff 00  00 00 00 00  00 00 00 00
+|   00 00 10 00  00 ff ff 5d  b8 d8 22 5d  b8 d8 22 00
 |   00 00 18 01  00 00 00 07  00 00 10 00  00 ff ff 0a
 |   02 00 00 0a  02 ff ff 00  01 02 03 04  05 06 07 08
 | striping 9 bytes as pad
@@ -443,9 +443,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |    start port: 0
 |    end port: 65535
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
-| ipv4 ts  00 00 00 00
+| ipv4 ts  5d b8 d8 22
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
-| ipv4 ts  00 00 00 00
+| ipv4 ts  5d b8 d8 22
 | ***parse IKEv2 Traffic Selector:
 |    TS type: IKEv2_TS_IPV4_ADDR_RANGE
 |    IP Protocol ID: 0
@@ -457,8 +457,15 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| prefix range fit c gateway--any c->name was rejected by port matching
+|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
+|       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
+| bfit_n=ikev2_evaluate_connection_fit found better fit c gateway--any
+|    tsi[0] 0-65535: exact port match with 0.  fitness 65536
+|    tsr[0] 0-65535: exact port match with 0.  fitness 65536
+|     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
+|     port_fitness 131072
+| ikev2_evaluate_connection_port_fit found better fit c gateway--any, tsi[0],tsr[0]
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 |    match_id a=@example.com
@@ -466,14 +473,150 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |    results  matched
 |   trusted_ca called with a=(empty) b=(empty)
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
+|       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
 | prefix range fit d gateway--any d->name was rejected by port matching
-| ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
-| emitting 2 raw bytes of padding and length into cleartext
-| padding and length  00 01
+| duplicating state object #1
+| creating state object #2 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #2 bucket: 5
+| printing contents struct traffic_selector
+|   ts_type: IKEv2_TS_IPV4_ADDR_RANGE
+|   ipprotoid: 0
+|   startport: 0
+|   endport: 65535
+|   ip low: 10.2.0.0
+|   ip high: 10.2.255.255
+| printing contents struct traffic_selector
+|   ts_type: IKEv2_TS_IPV4_ADDR_RANGE
+|   ipprotoid: 0
+|   startport: 0
+|   endport: 65535
+|   ip low: 93.184.216.34
+|   ip high: 93.184.216.34
+| *****emit IKEv2 Security Association Payload:
+|    next payload type: ISAKMP_NEXT_v2TSi
+|    critical bit: none
+| empty esp_info, returning defaults
+| ***parse IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    length: 40
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
+| CHILD SA SPI  12 34 56 78
+| SPI received: 12345678
+| ****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| *****parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| ****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| ****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    length: 8
+|    transform type: 5
+|    transform ID: 0
+| ***parse IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    length: 40
+|    prop #: 2
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
+| CHILD SA SPI  12 34 56 78
+| SPI received: 12345678
+| ******emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
+| our spi  12 34 56 78
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| ********emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *******emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 5
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 40
+| emitting length of IKEv2 Security Association Payload: 44
+| *****emit IKEv2 Traffic Selector Payload:
+|    next payload type: ISAKMP_NEXT_v2TSr
+|    critical bit: none
+|    number of TS: 1
+| ******emit IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV4_ADDR_RANGE
+|    IP Protocol ID: 0
+|    start port: 0
+|    end port: 65535
+| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
+| ipv4 low  5d b8 d8 22
+| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
+| ipv4 high  5d b8 d8 22
+| emitting length of IKEv2 Traffic Selector: 16
+| emitting length of IKEv2 Traffic Selector Payload: 24
+| *****emit IKEv2 Traffic Selector Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    critical bit: none
+|    number of TS: 1
+| ******emit IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV4_ADDR_RANGE
+|    IP Protocol ID: 0
+|    start port: 0
+|    end port: 65535
+| emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
+| ipv4 low  0a 02 00 00
+| emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
+| ipv4 high  0a 02 ff ff
+| emitting length of IKEv2 Traffic Selector: 16
+| emitting length of IKEv2 Traffic Selector Payload: 24
+| prf+[1]:  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
+|   1a 76 a5 e4
+| prf+[2]:  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
+|   0f 77 b6 4a
+| prf+[3]:  6f 3d 81 fb  39 51 57 a1  df 92 21 c8  77 8f 8f 07
+|   5c ee d5 26
+| prf+[4]:  1e 9f 3d b0  17 f3 f7 fc  e8 5e 55 44  63 f0 30 94
+|   2f 4e 11 2a
+| our  keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
+|   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
+|   2a 58 ce d8
+| peer keymat  0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1  df 92 21 c8
+|   77 8f 8f 07  5c ee d5 26  1e 9f 3d b0  17 f3 f7 fc
+|   e8 5e 55 44
+| emitting 6 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 272
-| emitting length of ISAKMP Message: 300
+| emitting length of IKEv2 Encryption Payload: 368
+| emitting length of ISAKMP Message: 396
 | data before encryption:
 |   27 00 00 26  02 00 00 00  6a 61 6d 65  73 6a 6f 68
 |   6e 73 6f 6e  2e 65 6d 6d  6a 61 79 2e  63 72 65 64
@@ -489,7 +632,13 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 01
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 2c 00
+|   00 2c 00 00  00 28 01 03  04 03 12 34  56 78 03 00
+|   00 0c 01 00  00 0c 80 0e  00 80 03 00  00 08 03 00
+|   00 02 00 00  00 08 05 00  00 00 2d 00  00 18 01 00
+|   00 00 07 00  00 10 00 00  ff ff 5d b8  d8 22 5d b8
+|   d8 22 00 00  00 18 01 00  00 00 07 00  00 10 00 00
+|   ff ff 0a 02  00 00 0a 02  ff ff 00 01  02 03 04 05
 | data after encryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -505,9 +654,15 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   d8 07 00 68  9e b7 92 3d  47 93 37 e6  14 e0 48 0d
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
-|   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
+|   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
+|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
+|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
+|   e1 dc 76 77  c7 35 13 7d  55 ed df ce  33 4c 11 3d
+|   ce 25 46 d0  16 7d 92 94  0d a3 57 22  d0 2b 7f a0
+|   5d e3 c5 f8  55 3c 84 2d  0e 63 ce 8a  af 90 8a 6c
+|   a2 7b 7e 12  16 2d e1 13  78 4b 27 d1  ea 7d 30 e7
 | data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   2e 20 23 20  00 00 00 01  00 00 01 2c  24 00 01 10
+|   2e 20 23 20  00 00 00 01  00 00 01 8c  24 00 01 70
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -523,16 +678,23 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   d8 07 00 68  9e b7 92 3d  47 93 37 e6  14 e0 48 0d
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
-|   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
+|   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
+|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
+|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
+|   e1 dc 76 77  c7 35 13 7d  55 ed df ce  33 4c 11 3d
+|   ce 25 46 d0  16 7d 92 94  0d a3 57 22  d0 2b 7f a0
+|   5d e3 c5 f8  55 3c 84 2d  0e 63 ce 8a  af 90 8a 6c
+|   a2 7b 7e 12  16 2d e1 13  78 4b 27 d1  ea 7d 30 e7
 | out calculated auth:
-|   ef 87 94 81  a8 d6 f6 2e  a5 9b f7 3f
+|   ba cb 97 b7  b4 b5 fc 70  7f a3 81 e4
 | complete v2 state transition with STF_OK
 ./respondselfR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
-./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established (msgid: 00000000)
+./respondselfR2 negotiated tunnel [10.2.0.0,10.2.255.255:0-65535 0] -> [93.184.216.34,93.184.216.34:0-65535 0]
+./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #1)
+sending 396 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   2e 20 23 20  00 00 00 01  00 00 01 2c  24 00 01 10
+|   2e 20 23 20  00 00 00 01  00 00 01 8c  24 00 01 70
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -548,8 +710,48 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 |   d8 07 00 68  9e b7 92 3d  47 93 37 e6  14 e0 48 0d
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
-|   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
-|   ef 87 94 81  a8 d6 f6 2e  a5 9b f7 3f
+|   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
+|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
+|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
+|   e1 dc 76 77  c7 35 13 7d  55 ed df ce  33 4c 11 3d
+|   ce 25 46 d0  16 7d 92 94  0d a3 57 22  d0 2b 7f a0
+|   5d e3 c5 f8  55 3c 84 2d  0e 63 ce 8a  af 90 8a 6c
+|   a2 7b 7e 12  16 2d e1 13  78 4b 27 d1  ea 7d 30 e7
+|   ba cb 97 b7  b4 b5 fc 70  7f a3 81 e4
+| releasing whack for #X (sock=Y)
+| releasing whack for #X (sock=Y)
+./respondselfR2 leak: reply packet, item size: X
+./respondselfR2 leak: skeyseed_t1, item size: X
+./respondselfR2 leak: responder keys, item size: X
+./respondselfR2 leak: initiator keys, item size: X
+./respondselfR2 leak: db_v2_trans, item size: X
+./respondselfR2 leak: db_v2_prop_conj, item size: X
+./respondselfR2 leak: db_v2_prop, item size: X
+./respondselfR2 leak: db_v2_trans, item size: X
+./respondselfR2 leak: db_v2_prop_conj, item size: X
+./respondselfR2 leak: db_attrs, item size: X
+./respondselfR2 leak: db_v2_trans, item size: X
+./respondselfR2 leak: db_v2_prop_conj, item size: X
+./respondselfR2 leak: db_attrs, item size: X
+./respondselfR2 leak: db_v2_trans, item size: X
+./respondselfR2 leak: db_v2_prop_conj, item size: X
+./respondselfR2 leak: 4 * sa copy attrs array, item size: X
+./respondselfR2 leak: sa copy trans array, item size: X
+./respondselfR2 leak: sa copy prop array, item size: X
+./respondselfR2 leak: sa copy prop conj array, item size: X
+./respondselfR2 leak: sa copy prop_conj, item size: X
+./respondselfR2 leak: st_nr in duplicate_state, item size: X
+./respondselfR2 leak: st_ni in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_pr in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_pi in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_er in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_ei in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_ar in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_ai in duplicate_state, item size: X
+./respondselfR2 leak: st_skey_d in duplicate_state, item size: X
+./respondselfR2 leak: st_skeyseed in duplicate_state, item size: X
+./respondselfR2 leak: st_enc_key in duplicate_state, item size: X
+./respondselfR2 leak: struct state in new_state(), item size: X
 ./respondselfR2 leak: ikev2_inI2outR2 KE, item size: X
 ./respondselfR2 leak: ikev2_inI1outR1 KE, item size: X
 ./respondselfR2 leak: msg_digest, item size: X
