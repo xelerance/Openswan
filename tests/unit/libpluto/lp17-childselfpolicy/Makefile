@@ -75,7 +75,8 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=respondselfR2
 CONNNAME=gateway--any
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2_allzero.pcap OUTPUT/parentR2.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2_allzero.pcap OUTPUT/parentR2_allzero.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2.pcap OUTPUT/parentR2.pcap
 
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
@@ -84,14 +85,23 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRALIBS}
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
-check: OUTPUT/R2-dump.txt
+check: OUTPUT/R2-dump.txt OUTPUT/R2-any.txt
+
 OUTPUT/R2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
-	tcpdump -n -t -v -r OUTPUT/parentR2.pcap | tee OUTPUT/R2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-dump.txt
+	tcpdump -n -t -v -r OUTPUT/parentR2_allzero.pcap | tee OUTPUT/R2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-dump.txt
+
+OUTPUT/R2-any.txt:	${WHACKFILE} ${TESTNAME}
+	@mkdir -p OUTPUT
+	@echo "file ${TESTNAME}"          >.gdb2init
+	@echo "set args "${UNITTEST1ARGS} >>.gdb2init
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
+	tcpdump -n -t -v -r OUTPUT/parentR2.pcap | tee OUTPUT/R2-any.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-any.txt
 
 ${WHACKFILE}: ${SAMPLEDIR}/rw.conf OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/rw --config ${SAMPLEDIR}/rw.conf --whackout=${WHACKFILE} ${CONNNAME}
