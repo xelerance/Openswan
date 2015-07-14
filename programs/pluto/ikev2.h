@@ -136,6 +136,7 @@ extern void ikev2_derive_child_keys(struct state *st
 
 extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern int ikev2_evaluate_connection_fit(struct connection *d
+                                         , struct state *st
 				, struct spd_route *sr
 				, enum phase1_role role
 				, struct traffic_selector *tsi

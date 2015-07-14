@@ -2233,7 +2233,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         {
             struct spd_route *sra ;
             sra = &c->spd;
-            int bfit_n=ikev2_evaluate_connection_fit(c
+            int bfit_n=ikev2_evaluate_connection_fit(c, st
                                                      ,sra
                                                      ,INITIATOR
                                                      ,tsi   ,tsr

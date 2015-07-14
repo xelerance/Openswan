@@ -509,6 +509,7 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
 }
 
 int ikev2_evaluate_connection_fit(struct connection *d
+                                  , struct state *st
 				  , struct spd_route *sr
 				  , enum phase1_role role
 				  , struct traffic_selector *tsi
@@ -520,6 +521,7 @@ int ikev2_evaluate_connection_fit(struct connection *d
     int bestfit = -1;
     /* int best_tsr, best_tsi;  */
     struct end *ei, *er;
+    struct end fei, fer;
 
     if(role == INITIATOR) {
 	ei = &sr->this;
@@ -533,8 +535,33 @@ int ikev2_evaluate_connection_fit(struct connection *d
     {
 	char ei3[SUBNETTOT_BUF];
 	char er3[SUBNETTOT_BUF];
-	subnettot(&ei->client,  0, ei3, sizeof(ei3));
-	subnettot(&er->client,  0, er3, sizeof(er3));
+        if(ei->has_client) {
+            subnettot(&ei->client,  0, ei3, sizeof(ei3));
+        } else {
+            strcpy(ei3, "<noclient>");
+
+            /* here, fill in new end with actual client info from the state */
+            if(ei->host_type == KH_ANY) {
+                fei = *ei;
+                ei  = &fei;
+                strcpy(ei3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fei.client);
+            }
+        }
+
+        if(er->has_client) {
+            subnettot(&er->client,  0, er3, sizeof(er3));
+        } else {
+            strcpy(er3, "<noclient");
+
+            /* here, fill in new end with actual client info from the state */
+            if(er->host_type == KH_ANY) {
+                fer = *er;
+                er  = &fer;
+                strcpy(er3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fer.client);
+            }
+        }
 	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
 		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
@@ -672,7 +699,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	best_tsi_i =  best_tsr_i = -1;
 
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,sra,RESPONDER,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
@@ -728,7 +755,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,sr,RESPONDER
+                    newfit=ikev2_evaluate_connection_fit(d,st, sr,RESPONDER
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
