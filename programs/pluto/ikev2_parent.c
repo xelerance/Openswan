@@ -583,6 +583,8 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
+        st->st_localaddr  = md->iface->ip_addr;
+        st->st_localport  = md->iface->port;
         st->st_remoteaddr = md->sender;
         st->st_remoteport = md->sender_port;
 	change_state(st, STATE_PARENT_R1);
@@ -929,6 +931,13 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* record IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
     st->st_ike_min        = md->min;
+
+    if(isanyaddr(&st->st_localaddr) || st->st_localport == 0) {
+        /* record where packet arrived to */
+        st->st_localaddr  = md->iface->ip_addr;
+        st->st_localport  = md->iface->port;
+    }
+
 
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N]

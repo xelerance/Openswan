@@ -365,9 +365,9 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  00 00 00 00
+| ipv4 low  5d b8 d8 22
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  00 00 00 00
+| ipv4 high  5d b8 d8 22
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 | *****emit IKEv2 Traffic Selector Payload:
@@ -415,7 +415,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   00 00 00 00  00 00 24 04  03 04 03 12  34 56 78 03
 |   00 00 08 01  00 00 03 03  00 00 08 03  00 00 01 00
 |   00 00 08 05  00 00 00 2d  00 00 18 01  00 00 00 07
-|   00 00 10 00  00 ff ff 00  00 00 00 00  00 00 00 00
+|   00 00 10 00  00 ff ff 5d  b8 d8 22 5d  b8 d8 22 00
 |   00 00 18 01  00 00 00 07  00 00 10 00  00 ff ff 0a
 |   02 00 00 0a  02 ff ff 00  01 02 03 04  05 06 07 08
 | data after encryption:
@@ -443,9 +443,9 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
 |   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
 |   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
-|   1b 96 00 54  b5 84 cf 58  27 06 6e 38  49 c3 a8 e7
-|   b4 48 ad b4  da 49 a5 c8  24 ba b5 23  bd fc be d5
-|   fb 3f e5 6b  9f 43 5b c1  f0 b0 90 31  95 b6 7c 6e
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
 | complete v2 state transition with STF_OK
 ./initiateselfI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ./initiateselfI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001)
@@ -478,10 +478,10 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
 |   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
 |   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
-|   1b 96 00 54  b5 84 cf 58  27 06 6e 38  49 c3 a8 e7
-|   b4 48 ad b4  da 49 a5 c8  24 ba b5 23  bd fc be d5
-|   fb 3f e5 6b  9f 43 5b c1  f0 b0 90 31  95 b6 7c 6e
-|   ec 6c 05 f2  e7 1c ab af  18 8f c7 e7
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
+|   34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 ./initiateselfI2 leak: reply packet, item size: X
 ./initiateselfI2 leak: db_v2_trans, item size: X
 ./initiateselfI2 leak: db_v2_prop_conj, item size: X
@@ -604,4 +604,4 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./initiateselfI2 leak: secret, item size: X
 ./initiateselfI2 leak: 2 * hasher name, item size: X
 ./initiateselfI2 leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
