@@ -119,18 +119,18 @@ struct traffic_selector ikev2_end_to_ts(struct end *e)
 
     ts.ipprotoid = e->protocol;
 
-	/*
-	 * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
-	 * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58)
-	 *   we only support providing Type, not Code, eg protoport=1/1
-	 */
-	if(e->port == 0 || e->has_port_wildcard) {
-	   ts.startport = 0;
-	   ts.endport = 65535;
-	} else {
-	   ts.startport = e->port;
-	   ts.endport = e->port;
-	}
+    /*
+     * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
+     * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58)
+     *   we only support providing Type, not Code, eg protoport=1/1
+     */
+    if(e->port == 0 || e->has_port_wildcard) {
+        ts.startport = 0;
+        ts.endport = 65535;
+    } else {
+        ts.startport = e->port;
+        ts.endport = e->port;
+    }
 
     return ts;
 }
