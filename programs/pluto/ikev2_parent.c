@@ -1518,8 +1518,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
-	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this);
-	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that);
+	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
+	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
 

@@ -81,40 +81,58 @@ void ikev2_print_ts(struct traffic_selector *ts){
 
 
 /* rewrite me with addrbytesptr() */
-struct traffic_selector ikev2_end_to_ts(struct end *e)
+struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
+    ip_subnet clientnet;
 
     memset(&ts, 0, sizeof(ts));
 
-    switch(e->client.addr.u.v4.sin_family) {
+    clientnet = e->client;
+
+    if(!e->has_client) {
+        /* we propose the IP address of the interface that we are using. */
+        /*
+         * we could instead propose 0.0.0.0->255.255.255.255 and let the other
+         * end narrow the TS, but if one wants that, it is easy to just specify
+         * in the configuration file: rightsubnet=0.0.0.0/0.
+         *
+         * When there is NAT involved, we may really want a tunnel to the
+         * address that this end point thinks it is.  That works only when
+         * virtual_ip includes the IP involved.
+         *
+         */
+        addrtosubnet(&endpoint, &clientnet);
+    }
+
+    switch(clientnet.addr.u.v4.sin_family) {
     case AF_INET:
         ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-        ts.low   = e->client.addr;
-        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
-        ts.high  = e->client.addr;
-        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
+        ts.low   = clientnet.addr;
+        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(clientnet.maskbits).s_addr;
+        ts.high  = clientnet.addr;
+        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(clientnet.maskbits).s_addr;
         break;
 
     case AF_INET6:
-	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-	v6mask = bitstomask6(e->client.maskbits);
+        ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+        v6mask = bitstomask6(clientnet.maskbits);
 
-	ts.low   = e->client.addr;
-	ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
-	ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
-	ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
-	ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
+        ts.low   = clientnet.addr;
+        ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
+        ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
+        ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
+        ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
 
-	ts.high  = e->client.addr;
-	ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
-	ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
-	ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
-	ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
-	break;
+        ts.high  = clientnet.addr;
+        ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
+        ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
+        ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
+        ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
+        break;
 
-    /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
+        /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
     }
 
     ts.ipprotoid = e->protocol;
@@ -794,8 +812,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         st1 = duplicate_state(st);
         insert_state(st1);
 
-        st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
-        st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
+        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
+        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
         ikev2_print_ts(&st1->st_ts_this);
         ikev2_print_ts(&st1->st_ts_that);
     }
