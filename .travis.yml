@@ -19,6 +19,8 @@ addons:
       - electric-fence
       - gcc-multilib
       - tcpdump
+      - libnspr4-dev
+      - libnss3-dev
 
 env:
   global:
@@ -35,7 +37,7 @@ before_install:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install electric-fence tcpdump; fi
+  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install electric-fence tcpdump libnspr4-dev libnss3-dev; fi
   - "PATH=$HOME/bin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
