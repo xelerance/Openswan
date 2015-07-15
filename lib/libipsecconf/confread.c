@@ -1275,8 +1275,8 @@ struct starter_config *confread_load(const char *file
 	if(ctlbase) {
 	    pfree(cfg->ctlbase);
 	    cfg->ctlbase = clone_str(ctlbase, "control socket");
-            starter_whack_init_cfg(cfg);     /* set default sender to send to socket */
 	}
+        starter_whack_init_cfg(cfg); /* set default sender to send to socket */
 
 	/**
 	 * Load setup
