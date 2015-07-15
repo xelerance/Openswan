@@ -211,8 +211,10 @@ static int send_whack_msg(struct starter_config *cfg, struct whack_message *msg)
 {
   if(cfg->send_whack_msg) {
     return cfg->send_whack_msg(cfg, msg);
+  } else {
+    starter_log(LOG_LEVEL_ERR, "no send_whack_msg function defined");
+    return -1;
   }
-  return -1;
 }
 
 static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_message *msg)
