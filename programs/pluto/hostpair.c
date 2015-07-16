@@ -182,6 +182,8 @@ find_host_pair(const ip_address *myaddr
 	    }
         break;
     }
+    DBG(DBG_CONTROLMORE,
+        DBG_log("find_host_pair: concluded with %s", p && p->connections ? p->connections->name : "<none>"));
     return p;
 }
 
