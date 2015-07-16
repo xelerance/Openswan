@@ -12,6 +12,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0
+| find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
 ./parentI3 adding connection: "parker1--jj2"
 | fd68:c9f9:4157:2:0:1::/96===192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64

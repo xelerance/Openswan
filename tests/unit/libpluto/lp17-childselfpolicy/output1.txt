@@ -10,11 +10,13 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
 | orient gateway--any checking against if: eth0
+| find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./respondselfR2 adding connection: "gateway--any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@example.com]
@@ -98,6 +100,7 @@ RC=0 "gateway--any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: concluded with gateway--any
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:gateway--any
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (gateway--any)
@@ -460,6 +463,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | prefix range fit c gateway--any c->name was rejected by port matching
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: concluded with gateway--any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 |    match_id a=@example.com
 |             b=@example.com
