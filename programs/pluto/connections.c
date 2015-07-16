@@ -69,6 +69,7 @@
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "xauth.h"
+#include "pluto/libpluto.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
@@ -2661,12 +2662,12 @@ fc_try(const struct connection *c
 	{
 	    policy_prio_t prio;
 #ifdef DEBUG
-	    char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
+	    char s3[ENDCLIENTTOT_BUF],d3[ENDCLIENTTOT_BUF];
 
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		subnettot(&sr->this.client,  0, s3, sizeof(s3));
-		subnettot(&sr->that.client,  0, d3, sizeof(d3));
+                endclienttot(&sr->this, s3, sizeof(s3));
+                endclienttot(&sr->that, d3, sizeof(d3));
 		DBG_log("  fc_try trying "
 			"%s:%s:%d/%d -> %s:%d/%d%s vs %s:%s:%d/%d -> %s:%d/%d%s"
 			, c->name, s1, c->spd.this.protocol, c->spd.this.port
