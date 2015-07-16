@@ -683,21 +683,18 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    char buf[IDTOA_BUF];
 
 	    dntoa_or_null(buf, IDTOA_BUF, r->spd.this.ca, "%none");
-	    DBG_log("offered CA: '%s'", buf);
-	)
+	    DBG_log("offered CA: '%s'", buf));
 
-	if (r != c)
+        if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP) {
+            /* instantiate it, filling in peer's ID */
+            r = rw_instantiate(r, &c->spd.that.host_addr,
+                               NULL,
+                               &peer);
+        }
+
+        if (r != c)
 	{
-	    /* apparently, r is an improvement on c -- replace */
-
-	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
-	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
-	    {
-		/* instantiate it, filling in peer's ID */
-		r = rw_instantiate(r, &c->spd.that.host_addr,
-				   NULL,
-				   &peer);
-	    }
+            openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
 
 	    st->st_connection = r;	/* kill reference to c */
 
@@ -708,13 +705,6 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    }
 
 	    connection_discard(c);
-	}
-	else if (c->spd.that.has_id_wildcards)
-	{
-	    free_id_content(&c->spd.that.id);
-	    c->spd.that.id = peer;
-	    c->spd.that.has_id_wildcards = FALSE;
-	    unshare_id_content(&c->spd.that.id);
 	}
     }
 
