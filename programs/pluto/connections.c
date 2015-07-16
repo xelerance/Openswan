@@ -1199,13 +1199,19 @@ add_connection(const struct whack_message *wm)
 	    c->kind = CK_GROUP;
 	    add_group(c);
 	}
-	else if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
-		|| ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards ))
+	else if (c->spd.that.has_client_wildcard)
 	{
-	    DBG(DBG_CONTROL, DBG_log("based upon policy, the connection is a template."));
-
-	    /* Opportunistic or Road Warrior or wildcard client subnet
-	     * or wildcard ID */
+	    DBG(DBG_CONTROL, DBG_log("based upon client_wildcard policy, the connection is a template."));
+	    c->kind = CK_TEMPLATE;
+	}
+	else if (c->spd.that.has_port_wildcard)
+	{
+	    DBG(DBG_CONTROL, DBG_log("based upon port_wildcard policy, the connection is a template."));
+	    c->kind = CK_TEMPLATE;
+	}
+	else if ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards )
+	{
+	    DBG(DBG_CONTROL, DBG_log("based upon ID_wildcard policy, the connection is a template."));
 	    c->kind = CK_TEMPLATE;
 	}
 	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
