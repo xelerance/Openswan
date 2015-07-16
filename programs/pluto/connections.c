@@ -2941,10 +2941,10 @@ find_client_connection(struct connection *c
 #ifdef DEBUG
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
+		char s2[ENDCLIENTTOT_BUF],d2[ENDCLIENTTOT_BUF];
 
-		subnettot(&sra->this.client, 0, s2, sizeof(s2));
-		subnettot(&sra->that.client, 0, d2, sizeof(d2));
+		endclienttot(&sra->this, s2, sizeof(s2));
+		endclienttot(&sra->that, d2, sizeof(d2));
 
 		DBG_log("  checking hostpair %s -> %s is %s"
 			, s2, d2
