@@ -31,5 +31,7 @@ clean check:
 	@${MAKE} -C lp13-parentI3    $@
 	@${MAKE} -C lp14-initiateself $@
 	@${MAKE} -C lp15-respondself $@
+	@${MAKE} -C lp16-initiateselfI2 $@
+	@${MAKE} -C lp17-childselfpolicy $@
 
 
