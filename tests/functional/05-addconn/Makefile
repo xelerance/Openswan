@@ -25,19 +25,19 @@ SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdi
 OUTPUTS=OUTPUT
 
 step1:
-	${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
+	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
-	${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any
+	@${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any
 
 step3:
-	${WHACKBIN} ${CTLBASE} --shutdown
+	@${WHACKBIN} ${CTLBASE} --shutdown
 
 step4:
-	${WHACKBIN} ${CTLBASE} --status
+	@${WHACKBIN} ${CTLBASE} --status
 
 check: OUTPUT
-	(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base

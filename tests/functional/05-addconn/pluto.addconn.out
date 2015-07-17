@@ -1,5 +1,4 @@
-/whopping/t4248-wrongchildpolicy/OBJ.linux.x86_64/programs/pluto/pluto --nhelpers 1 --ctlbase OUTPUT/base --interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT 2>&1
-adjusting ipsec.d to /whopping/t4248-wrongchildpolicy/tests/functional/05-addconn/OUTPUT
+adjusting ipsec.d to XX
 Starting Pluto (Openswan Version VERSION
 LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
@@ -15,12 +14,10 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
-/whopping/t4248-wrongchildpolicy/OBJ.linux.x86_64/programs/addconn/addconn --verbose --ctlbase OUTPUT/base --config /whopping/t4248-wrongchildpolicy/tests/unit/libpluto/samples/rw.conf --rootdir /whopping/t4248-wrongchildpolicy/tests/unit/libpluto/samples/rw gateway--any
 adding connection: "gateway--any"
 002 adding connection: "gateway--any"
-setting rootdir=/whopping/t4248-wrongchildpolicy/tests/unit/libpluto/samples/rw
-opening file: /whopping/t4248-wrongchildpolicy/tests/unit/libpluto/samples/rw.conf
+setting rootdir=YY
+opening file: ZZ
 loading named conns: gateway--any
-/whopping/t4248-wrongchildpolicy/OBJ.linux.x86_64/programs/pluto/whack --ctlbase OUTPUT/base --shutdown
 "gateway--any": deleting connection
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
