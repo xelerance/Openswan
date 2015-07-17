@@ -40,7 +40,9 @@ main(int argc, char *argv[])
     struct state *st;
     char   eb1[256];  /* error buffer for pcap open */
 
+#ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;

@@ -73,7 +73,9 @@ main(int argc, char *argv[])
     struct connection *c1;
     struct state *st;
 
+#ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;

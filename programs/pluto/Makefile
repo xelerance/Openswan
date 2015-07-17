@@ -69,7 +69,7 @@ LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
 
 LIBSADNS = ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOPENSWAN}
-LIBSADNS += -lresolv # -lefence
+LIBSADNS += -lresolv # ${LIBEFENCE}
 
 RM = /bin/rm
 RMFLAGS = -f

@@ -19,6 +19,7 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
+
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
@@ -43,7 +44,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
@@ -70,25 +70,24 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTEST1ARGS=-r ${WHACKFILE} parker1--jj2 ../lp10-parentI2/parentR1.pcap parentR2.pcap
+UNITTEST1ARGS=${WHACKFILE} self1--jj2 selfI1.pcap selfI2.pcap OUTPUT/selfR2.pcap
 
-TESTNAME=parentI3
+TESTNAME=childselfpolicyR2
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
-	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@echo LD ${TESTNAME}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
-check: OUTPUT/${TESTNAME}_1.txt
-OUTPUT/${TESTNAME}_1.txt:	${WHACKFILE} ${TESTNAME}
+check: OUTPUT/R2-dump.txt
+OUTPUT/R2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
+	tcpdump -n -t -v -r OUTPUT/parentR2.pcap | tee OUTPUT/R2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-dump.txt
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
@@ -97,7 +96,7 @@ ${WHACKFILE}:
 update: update1
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
-	[ -f OUTPUT/I2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt
+	[ -f OUTPUT/R2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-dump.txt >R2-dump.txt
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
