@@ -687,7 +687,7 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 
         if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP) {
             /* instantiate it, filling in peer's ID */
-            r = rw_instantiate(r, &c->spd.that.host_addr,
+            r = rw_instantiate(r, &st->st_remoteaddr,
                                NULL,
                                &peer);
         }

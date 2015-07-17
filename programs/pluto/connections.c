@@ -1473,9 +1473,9 @@ instantiate(struct connection *c, const ip_address *him
 
 struct connection *
 rw_instantiate(struct connection *c
-, const ip_address *him
-, const ip_subnet *his_net
-, const struct id *his_id)
+               , const ip_address *him
+               , const ip_subnet *his_net
+               , const struct id *his_id)
 {
     struct connection *d = instantiate(c, him, his_id);
 
