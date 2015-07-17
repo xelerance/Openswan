@@ -2453,6 +2453,7 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 
     if(him.has_client == FALSE) {
         addrtosubnet(&st->st_remoteaddr, &him.client);
+        setportof(0, &him.client.addr);
     } else {
         if(c->kind != CK_PERMANENT && c->kind != CK_INSTANCE) {
             openswan_log("%s: policy of type: %s can not be installed into kernel"
