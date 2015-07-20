@@ -252,6 +252,14 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     return STF_OK;
 }
 
+#ifdef NEED_SIN_LEN
+#define SET_SIN_LEN(x)  (x).u.v4.sin_len = sizeof(struct sockaddr_in)
+#define SET_SIN6_LEN(x) (x).u.v6.sin_len = sizeof(struct sockaddr_in6)
+#else
+#define SET_SIN_LEN(x) do{}while(0)
+#define SET_SIN6_LEN(x) do{}while(0)
+#endif
+
 /* return number of traffic selectors found */
 int
 ikev2_parse_ts(struct payload_digest *const ts_pd
@@ -272,16 +280,12 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	    case IKEv2_TS_IPV4_ADDR_RANGE:
 		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 		array[i].low.u.v4.sin_family  = AF_INET;
-#ifdef NEED_SIN_LEN
-                array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
+                SET_SIN_LEN(array[i].low);
                 if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
                     return -1;
 
                 array[i].high.u.v4.sin_family = AF_INET;
-#ifdef NEED_SIN_LEN
-                array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
+                SET_SIN_LEN(array[i].high);
 
                 if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
                     return -1;
@@ -290,17 +294,13 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
             case IKEv2_TS_IPV6_ADDR_RANGE:
                 array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
                 array[i].low.u.v6.sin6_family  = AF_INET6;
-#ifdef NEED_SIN_LEN
-                array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
-#endif
+                SET_SIN6_LEN(array[i].low);
 
                 if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
                     return -1;
 
                 array[i].high.u.v6.sin6_family = AF_INET6;
-#ifdef NEED_SIN_LEN
-                array[i].high.u.v6.sin6_len = sizeof( struct sockaddr_in6);
-#endif
+                SET_SIN6_LEN(array[i].high);
 
                 if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
                     return -1;
