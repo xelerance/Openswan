@@ -71,12 +71,10 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-
-TESTNAME=respondselfR1
-CONNNAME=gateway--any
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/parentR1.pcap
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
+
+include Makefile.testcase
 
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
@@ -91,8 +89,8 @@ OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/parentR1.pcap | tee OUTPUT/R1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R1-dump.txt
 
-${WHACKFILE}: ${SAMPLEDIR}/rw.conf OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/rw --config ${SAMPLEDIR}/rw.conf --whackout=${WHACKFILE} ${CONNNAME}
+${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: update1
 update1:

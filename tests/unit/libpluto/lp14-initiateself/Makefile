@@ -78,7 +78,7 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
-check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c
+check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
