@@ -1,4 +1,6 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_host_jamesjohnson.c"
+#include "seam_x509.c"
 
 #define TESTNAME "respondselfR2"
 
