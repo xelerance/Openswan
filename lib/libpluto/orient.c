@@ -161,6 +161,17 @@ orient(struct connection *c, unsigned int pluto_port)
                           && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
                     c->interface = interfaces;
+                } else if(!osw_end_has_private_key(&sr->that)
+                          && sr->this.host_type==KH_DEFAULTROUTE) {
+                    /* if still not oriented, then look for an end that hasn't a key, but which
+                     * hasn't a private key, and defaultroute */
+                    c->interface = interfaces;
+                } else if(!osw_end_has_private_key(&sr->this)
+                          && sr->that.host_type==KH_DEFAULTROUTE) {
+                    /* if still not oriented, then look for an end that hasn't a key, but which
+                     * hasn't a private key, and defaultroute */
+                    swap_ends(sr);
+                    c->interface = interfaces;
                 }
             }
         }
