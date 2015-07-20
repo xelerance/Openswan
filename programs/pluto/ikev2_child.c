@@ -432,31 +432,31 @@ int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
 static int ikev2_match_port_range(u_int16_t port, struct traffic_selector ts,
 	bool superset_ok, bool subset_ok, const char *which, int index)
 {
-	u_int16_t low = port;
-	u_int16_t high = port == 0 ? 65535 : port;
-	int f = 0;	/* strength of match */
-	const char *m = "no";
+    u_int16_t low = port;
+    u_int16_t high = port == 0 ? 65535 : port;
+    int f = 0;	/* strength of match */
+    const char *m = "no";
 
-	if (ts.startport > ts.endport) {
-		m = "invalid range in";
-	} else if (ts.startport == low && ts.endport == high) {
-		f = 1 + (high - low);
-		m = "exact";
-	} else if (superset_ok && ts.startport <= low && high <= ts.endport) {
-		f = 1 + (high - low);
-		m = "superset";
-	} else if (subset_ok && low <= ts.startport && ts.endport <= high) {
-		f = 1 + (ts.endport - ts.startport);
-		m = "subset";
-	}
-	DBG(DBG_CONTROL,
-	    DBG_log("   %s[%d] %u-%u: %s port match with %u.  fitness %d",
-		    which, index,
-		    ts.startport, ts.endport,
-		    m,
-		    port,
-		    f));
-	return f;
+    if (ts.startport > ts.endport) {
+        m = "invalid range in";
+    } else if (ts.startport == low && ts.endport == high) {
+        f = 1 + (high - low);
+        m = "exact";
+    } else if (superset_ok && ts.startport <= low && high <= ts.endport) {
+        f = 1 + (high - low);
+        m = "superset";
+    } else if (subset_ok && low <= ts.startport && ts.endport <= high) {
+        f = 1 + (ts.endport - ts.startport);
+        m = "subset";
+    }
+    DBG(DBG_CONTROL,
+        DBG_log("   %s[%d] %u-%u: %s port match with %u.  fitness %d",
+                which, index,
+                ts.startport, ts.endport,
+                m,
+                port,
+                f));
+    return f;
 }
 
 /*
@@ -473,57 +473,57 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
 				       int *best_tsi_i,
 				       int *best_tsr_i)
 {
-	int tsi_ni;
-	int bestfit_p = -1;
-	const struct end *ei, *er;
-	int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
+    int tsi_ni;
+    int bestfit_p = -1;
+    const struct end *ei, *er;
+    int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
 
-	if (role == INITIATOR) {
-		ei = &sr->this;
-		er = &sr->that;
-	} else {
-		ei = &sr->that;
-		er = &sr->this;
-	}
-	/* compare tsi/r array to this/that, evaluating how well each port range fits */
-	/* ??? stupid n**2 algorithm */
-	for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
-		int tsr_ni;
-		int fitrange_i = ikev2_match_port_range(ei->port, tsi[tsi_ni],
-			role == RESPONDER && narrowing,
-			role == INITIATOR && narrowing,
-			"tsi", tsi_ni);
+    if (role == INITIATOR) {
+        ei = &sr->this;
+        er = &sr->that;
+    } else {
+        ei = &sr->that;
+        er = &sr->this;
+    }
+    /* compare tsi/r array to this/that, evaluating how well each port range fits */
+    /* ??? stupid n**2 algorithm */
+    for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+        int tsr_ni;
+        int fitrange_i = ikev2_match_port_range(ei->port, tsi[tsi_ni],
+                                                role == RESPONDER && narrowing,
+                                                role == INITIATOR && narrowing,
+                                                "tsi", tsi_ni);
 
-		if (fitrange_i == 0)
-			continue;	/* save effort! */
+        if (fitrange_i == 0)
+            continue;	/* save effort! */
 
-		for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
-			int fitrange_r = ikev2_match_port_range(er->port, tsr[tsr_ni],
-				role == RESPONDER && narrowing,
-				role == INITIATOR && narrowing,
-				"tsr", tsr_ni);
+        for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
+            int fitrange_r = ikev2_match_port_range(er->port, tsr[tsr_ni],
+                                                    role == RESPONDER && narrowing,
+                                                    role == INITIATOR && narrowing,
+                                                    "tsr", tsr_ni);
 
-			int matchiness;
+            int matchiness;
 
-			if (fitrange_r == 0)
-				continue;	/* no match */
+            if (fitrange_r == 0)
+                continue;	/* no match */
 
-			matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
+            matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
 
-			if (matchiness > bestfit_p) {
-				*best_tsi_i = tsi_ni;
-				*best_tsr_i = tsr_ni;
-				bestfit_p = matchiness;
-				DBG(DBG_CONTROL,
-				    DBG_log("    best ports fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
-					    *best_tsi_i, fitrange_i,
-					    *best_tsr_i, fitrange_r,
-					    matchiness));
-			}
-		}
-	}
-	DBG(DBG_CONTROL, DBG_log("    port_fitness %d", bestfit_p));
-	return bestfit_p;
+            if (matchiness > bestfit_p) {
+                *best_tsi_i = tsi_ni;
+                *best_tsr_i = tsr_ni;
+                bestfit_p = matchiness;
+                DBG(DBG_CONTROL,
+                    DBG_log("    best ports fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+                            *best_tsi_i, fitrange_i,
+                            *best_tsr_i, fitrange_r,
+                            matchiness));
+            }
+        }
+    }
+    DBG(DBG_CONTROL, DBG_log("    port_fitness %d", bestfit_p));
+    return bestfit_p;
 }
 
 int ikev2_evaluate_connection_fit(struct connection *d
