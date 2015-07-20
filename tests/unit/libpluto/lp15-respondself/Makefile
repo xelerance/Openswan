@@ -19,42 +19,42 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/demux.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/myid.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
@@ -76,9 +76,9 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
-programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
+programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check: OUTPUT/R1-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
@@ -98,7 +98,7 @@ update1:
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${TESTNAME}.o ${WHACKFILE} OUTPUT/*.pcap
 
 OUTPUT:
 	@mkdir -p OUTPUT
