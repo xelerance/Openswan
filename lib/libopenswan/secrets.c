@@ -778,7 +778,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 
     zero(&backuppass);
     if(pass == NULL) {
-        pass = backuppass;
+        pass = &backuppass;
     }
 
     memset(pass->secret, '\0', PROMPT_PASS_LEN);
