@@ -3123,6 +3123,17 @@ show_one_sr(struct connection *c
 #endif
 }
 
+char *fmt_connection_inst_name(struct connection *c
+                               , char *instname
+                               , unsigned int instname_len)
+{
+    instname[0] = '\0';
+    if (c->kind == CK_INSTANCE && c->instance_serial != 0)
+	snprintf(instname, instname_len, "%s[%lu]", c->name, c->instance_serial);
+
+    return instname;
+}
+
 void
 show_one_connection(struct connection *c)
 {
@@ -3131,10 +3142,7 @@ show_one_connection(struct connection *c)
     char prio[POLICY_PRIO_BUF];
 
     ifn = oriented(*c)? c->interface->ip_dev->id_rname : "";
-
-    instance[0] = '\0';
-    if (c->kind == CK_INSTANCE && c->instance_serial != 0)
-	snprintf(instance, sizeof(instance), "[%lu]", c->instance_serial);
+    fmt_connection_inst_name(c, instance, sizeof(instance));
 
     /* show topology */
     {
