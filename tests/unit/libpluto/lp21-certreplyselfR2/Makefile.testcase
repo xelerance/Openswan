@@ -1,0 +1,12 @@
+TESTNAME=certreplyselfR2
+CONNNAME=rw
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2.pcap OUTPUT/parentR2_allzero.pcap
+UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap parentI2.pcap OUTPUT/parentR2.pcap
+ENDNAME=gatewaycert
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#
+
