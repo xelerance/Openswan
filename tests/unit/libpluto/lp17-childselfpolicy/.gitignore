@@ -3,5 +3,5 @@ core.*
 *.o
 .gdb1init
 .gdbinit
-respondselfR2
 .gdb2init
+respondselfR2
