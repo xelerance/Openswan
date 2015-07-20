@@ -71,10 +71,8 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-CONNNAME=gateway--any
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/parentI2.pcap
+include Makefile.testcase
 
-TESTNAME=initiateselfI2
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
@@ -93,9 +91,9 @@ OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 	tcpdump -n -t -v -r OUTPUT/parentI2.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
-${WHACKFILE}:
+${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/rw --config ${SAMPLEDIR}/rw.conf --whackout=${WHACKFILE} ${CONNNAME}
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: update1
 update1:
