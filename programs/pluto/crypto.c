@@ -29,6 +29,7 @@
 
 #include "constants.h"
 #include "defs.h"
+#include "id.h"
 #include "state.h"
 #include "log.h"
 #include "md5.h"

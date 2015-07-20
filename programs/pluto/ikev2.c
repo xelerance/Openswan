@@ -716,7 +716,7 @@ process_v2_packet(struct msg_digest **mdp)
 bool
 ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 {
-    /* struct state *const st = md->st; */
+    struct state *const st = md->st;
     unsigned int hisID = (init==INITIATOR) ?
 	ISAKMP_NEXT_v2IDr : ISAKMP_NEXT_v2IDi;
     /* unsigned int myID  = initiator ? ISAKMP_NEXT_v2IDi: ISAKMP_NEXT_v2IDr;
@@ -725,7 +725,6 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     struct payload_digest *const id_him = md->chain[hisID];
     const pb_stream * id_pbs;
     struct ikev2_id * id;
-    struct id peer;
 
     if(!id_him) {
 	openswan_log("IKEv2 mode no peer ID (hisID)");
@@ -734,9 +733,9 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 
     id_pbs = &id_him->pbs;
     id = &id_him->payload.v2id;
-    peer.kind = id->isai_type;
+    st->ikev2.st_peer_id.kind = id->isai_type;
 
-    if(!extract_peer_id(&peer, id_pbs)) {
+    if(!extract_peer_id(&st->ikev2.st_peer_id, id_pbs)) {
 	openswan_log("IKEv2 mode peer ID extraction failed");
 	return FALSE;
     }
@@ -744,7 +743,7 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
     {
 	char buf[IDTOA_BUF];
 
-	idtoa(&peer, buf, sizeof(buf));
+	idtoa(&st->ikev2.st_peer_id, buf, sizeof(buf));
 	openswan_log("IKEv2 mode peer ID is %s: '%s'"
 		     , enum_show(&ident_names, id->isai_type), buf);
     }
