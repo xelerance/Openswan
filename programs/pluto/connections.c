@@ -3129,7 +3129,7 @@ char *fmt_connection_inst_name(struct connection *c
 {
     instname[0] = '\0';
     if (c->kind == CK_INSTANCE && c->instance_serial != 0)
-	snprintf(instname, instname_len, "%s[%lu]", c->name, c->instance_serial);
+	snprintf(instname, instname_len, "[%lu]", c->instance_serial);
 
     return instname;
 }

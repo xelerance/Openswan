@@ -21,9 +21,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
 ./certificateselfI2 adding connection: "home"
-| %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.1.0.0/16
+| %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "home": %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.1.0.0/16; unrouted; eroute owner: #0
+RC=0 "home": %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=carolCert.pem;
 RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
@@ -462,9 +462,9 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  0a 01 00 00
+| ipv4 low  0a 02 00 00
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  0a 01 ff ff
+| ipv4 high  0a 02 ff ff
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 | emitting 5 raw bytes of padding and length into cleartext
@@ -566,7 +566,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   00 00 01 00  00 00 08 05  00 00 00 2d  00 00 18 01
 |   00 00 00 07  00 00 10 00  00 ff ff 5d  b8 d8 22 5d
 |   b8 d8 22 00  00 00 18 01  00 00 00 07  00 00 10 00
-|   00 ff ff 0a  01 00 00 0a  01 ff ff 00  01 02 03 04
+|   00 ff ff 0a  02 00 00 0a  02 ff ff 00  01 02 03 04
 | data after encryption:
 |   04 64 22 ca  bd 8e 1c 3e  68 57 42 0a  71 2c c0 97
 |   44 e7 d8 17  b2 e9 29 61  7c 54 b5 d8  f0 13 b6 60
@@ -661,7 +661,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   c0 3d 76 a1  ec 5f 7b 24  cf 1c 65 f4  ee 61 95 4f
 |   45 ee 66 c6  48 2a 2a b7  d9 33 8e b6  79 5c cd e5
 |   40 04 af 99  3a e0 1d f7  e9 ab 69 e4  98 b2 7b 51
-|   9f cb aa a8  56 4e 1e 43  89 89 d6 40  2d 67 04 ee
+|   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
 | complete v2 state transition with STF_OK
 ./certificateselfI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ./certificateselfI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001)
@@ -763,8 +763,8 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 |   c0 3d 76 a1  ec 5f 7b 24  cf 1c 65 f4  ee 61 95 4f
 |   45 ee 66 c6  48 2a 2a b7  d9 33 8e b6  79 5c cd e5
 |   40 04 af 99  3a e0 1d f7  e9 ab 69 e4  98 b2 7b 51
-|   9f cb aa a8  56 4e 1e 43  89 89 d6 40  2d 67 04 ee
-|   84 1e 3c f5  10 df 49 cd  02 20 0d 69
+|   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
+|   b0 a8 65 15  ab ab 08 89  76 51 bb 4b
 ./certificateselfI2 leak: reply packet, item size: X
 ./certificateselfI2 leak: db_v2_trans, item size: X
 ./certificateselfI2 leak: db_v2_prop_conj, item size: X

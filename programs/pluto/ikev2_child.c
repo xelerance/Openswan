@@ -485,6 +485,15 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
         ei = &sr->that;
         er = &sr->this;
     }
+
+    DBG(DBG_CONTROL,
+        DBG_log("    evaluate_connection_port_fit tsi_n[%d], best=%d"
+                , tsi_n, bestfit_p));
+    // so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+    //                *best_tsi_i, fitrange_i,
+    //                *best_tsr_i, fitrange_r,
+    //matchiness));
+
     /* compare tsi/r array to this/that, evaluating how well each port range fits */
     /* ??? stupid n**2 algorithm */
     for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
@@ -493,6 +502,10 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
                                                 role == RESPONDER && narrowing,
                                                 role == INITIATOR && narrowing,
                                                 "tsi", tsi_ni);
+
+        DBG(DBG_CONTROL,
+            DBG_log("      evaluating_connection_port_fit tsi_n[%d], range_i=%d best=%d"
+                    , tsi_ni, fitrange_i, bestfit_p));
 
         if (fitrange_i == 0)
             continue;	/* save effort! */
@@ -504,6 +517,10 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
                                                     "tsr", tsr_ni);
 
             int matchiness;
+
+            DBG(DBG_CONTROL,
+                DBG_log("      evaluating_connection_port_fit tsi_n[%d] tsr_n[%d], range=%d/%d best=%d"
+                        , tsi_ni, tsr_ni, fitrange_i, fitrange_r, bestfit_p));
 
             if (fitrange_r == 0)
                 continue;	/* no match */
@@ -776,31 +793,64 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                     newfit=ikev2_evaluate_connection_fit(d,st, sr,RESPONDER
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
+                        int bfit_p;
+
                         DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
-                        int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
+
+                        /* we know that it's already a better fit */
+                        bestfit_n = newfit;
+                        b = d;
+                        bsr = sr;
+
+                        /* now look at port fit, it might be even better! */
+                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
                                                                           tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                         if (bfit_p > bestfit_p) {
                             DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
                                                          , d->name, best_tsi_i, best_tsr_i));
                             bestfit_p = bfit_p;
-                            bestfit_n = newfit;
-                            b = d;
-                            bsr = sr;
                         }
                     }
-                    else
-                        DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by port matching", d->name));
+                    else {
+                        DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by connection fit: %d > %d", d->name, newfit, bestfit_n));
+
+                    }
                 }
             }
         }
 
 	/*
-	 * now that we have found the best connection, copy the data into
-	 * the state structure as the tsi/tsr
+	 * now that we have found the best connection (in b), copy the data into
+	 * the state structure as the tsi/tsr, perhaps after instantiating it.
 	 *
 	 */
 
-	/*better connection*/
+        if (b->kind == CK_TEMPLATE || b->kind == CK_GROUP) {
+            /* instantiate it, filling in peer's ID */
+            b = rw_instantiate(b, &st->st_remoteaddr,
+                               NULL,
+                               &st->ikev2.st_peer_id);
+        }
+
+        if (b != c)
+	{
+            char instance[1 + 10 + 1];
+
+            openswan_log("switched from \"%s\" to \"%s\"%s", c->name, b->name
+                         , fmt_connection_inst_name(b, instance, sizeof(instance)));
+
+	    st->st_connection = b;	/* kill reference to c */
+
+	    /* this ensures we don't move cur_connection from NULL to
+	     * something, requiring a reset_cur_connection() */
+	    if (cur_connection == c) {
+		set_cur_connection(b);
+	    }
+
+	    connection_discard(c);
+	}
+
+	/* better connection */
 	c=b;
 
         if(bsr == NULL) {
