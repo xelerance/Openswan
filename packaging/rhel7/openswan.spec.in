@@ -22,7 +22,8 @@ Group: System Environment/Daemons
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Summary: Openswan - An IPsec and IKE implementation
 Group: System Environment/Daemons
-BuildRequires: gmp-devel bison flex redhat-rpm-config xmlto
+# lynx is there to make xmlto happy on RHEL6.
+BuildRequires: gmp-devel bison flex redhat-rpm-config xmlto elinks
 Conflicts: libreswan
 Obsoletes: openswan
 
