@@ -471,7 +471,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   trusted_ca called with a=(empty) b=(empty)
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| prefix range fit d gateway--any d->name was rejected by port matching
+| prefix range fit d gateway--any d->name was rejected by connection fit: -1 > -1
 | ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
 | emitting 2 raw bytes of padding and length into cleartext
 | padding and length  00 01
