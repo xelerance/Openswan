@@ -73,6 +73,18 @@ extern struct secret *osw_find_secret_by_public_key(struct secret *secrets
 extern struct secret *osw_get_xauthsecret(const struct connection *c UNUSED
 					  , char *xauthname);
 
+#define osw_asymmetric_key(cert) (cert.type == CERT_PKCS7_WRAPPED_X509 || \
+                                  cert.type == CERT_PGP ||              \
+                                  cert.type == CERT_DNS_SIGNED_KEY ||  \
+                                  cert.type == CERT_X509_SIGNATURE ||   \
+                                  cert.type == CERT_RAW_RSA)
+
+/* check if a private key exists, by certificate-like blob */
+extern bool osw_has_private_key(struct secret *list_of_secrets, cert_t cert);
+
+extern struct pubkey *osw_get_public_key_by_end(struct end *him);
+
+
 /* keys from ipsec.conf */
 extern struct pubkey_list *pluto_pubkeys;
 

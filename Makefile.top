@@ -78,6 +78,7 @@ packagingprep:
 		echo $$spec '->' $$d/$$f; \
 		sed "s/IPSECBASEVERSION/${IPSECBASEVERSION}/" $$spec > $$d/$$f; \
 	done
+	echo IPSECBASEVERSION=${IPSECBASEVERSION} > Makefile.ver
 
 distarchive: packagingprep
 	git archive --prefix=openswan-${IPSECBASEVERSION}/ -o ${HOME}/rpmbuild/SOURCES/openswan-${IPSECBASEVERSION}.tar.gz HEAD

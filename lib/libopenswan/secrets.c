@@ -774,9 +774,14 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 #ifndef HAVE_LIBNSS
     rsa_privkey_t *key = NULL;
 #endif
+    prompt_pass_t backuppass;
 
-    memset(filename,'\0', BUF_LEN);
-    memset(pass->secret,'\0', sizeof(pass->secret));
+    zero(&backuppass);
+    if(pass == NULL) {
+        pass = &backuppass;
+    }
+
+    memset(pass->secret, '\0', PROMPT_PASS_LEN);
 
     /* we expect the filename of a PKCS#1 private key file */
 
@@ -790,18 +795,18 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	/* we expect an appended passphrase or passphrase prompt*/
 	if (tokeqword("%prompt"))
 	{
-	    if (pass->fd == NULL_FD)
+	    if (pass && pass->fd == NULL_FD)
 		return "enter a passphrase using ipsec auto --rereadsecrets";
 	}
 	else if (*flp->tok == '"' || *flp->tok == '\'') /* quoted passphrase */
 	{
-	    memcpy(pass->secret, flp->tok+1, flp->cur - flp->tok - 2);
-	    pass->prompt=NULL;
+            memcpy(pass->secret, flp->tok+1, flp->cur - flp->tok - 2);
+            pass->prompt=NULL;
 	}
 	else
 	{
-	    memcpy(pass->secret, flp->tok, flp->cur - flp->tok);
-	    pass->prompt=NULL;
+            memcpy(pass->secret, flp->tok, flp->cur - flp->tok);
+            pass->prompt=NULL;
 	}
 
 	if (shift())

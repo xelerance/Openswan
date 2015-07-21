@@ -96,6 +96,11 @@ version|--version)
 	fixversion
 	echo "Linux Openswan $version"
 	echo "See \`ipsec --copyright' for copyright information."
+	if [ -f $IPSEC_LIBDIR/vendor.txt ]
+	then
+	    echo VENDOR is $(cat $IPSEC_LIBDIR/vendor.txt)
+	fi
+        # this might be provided by a packaging system.
 	if [ -f $IPSEC_LIBDIR/distro.txt ]
 	then
 	    cat $IPSEC_LIBDIR/distro.txt

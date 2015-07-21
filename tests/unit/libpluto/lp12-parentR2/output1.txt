@@ -7,9 +7,10 @@ processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| checking against if: eth0
+| orient parker1--jj2 checking against if: eth0
+| find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
-./parentR2 added connection description "parker1--jj2"
+./parentR2 adding connection: "parker1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
@@ -91,13 +92,14 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| find_host_pair: concluded with parker1--jj2
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:parker1--jj2
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (parker1--jj2)
 | find_host_connection2 returns parker1--jj2
 | found connection: parker1--jj2
 | creating state object #1 at Z
-| checking against if: eth0
+| orient parker1--jj2 checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -471,12 +473,16 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c parker1--jj2
+|     evaluate_connection_port_fit tsi_n[1], best=-1
 |    tsi[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0], range_i=65536 best=-1
 |    tsr[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0] tsr_n[0], range=65536/65536 best=-1
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
 | find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| find_host_pair: concluded with parker1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
 |    match_id a=@parker01.emmjay.credil.org
 |             b=@parker01.emmjay.credil.org
@@ -486,7 +492,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
-| prefix range fit d parker1--jj2 d->name was rejected by port matching
+| prefix range fit d parker1--jj2 d->name was rejected by connection fit: 32896 > 32896
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -740,8 +746,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
 |   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
-| releasing whack for #2 (sock=-1)
-| releasing whack for #1 (sock=-1)
+| releasing whack for #X (sock=Y)
+| releasing whack for #X (sock=Y)
 ./parentR2 leak: reply packet, item size: X
 ./parentR2 leak: skeyseed_t1, item size: X
 ./parentR2 leak: responder keys, item size: X
@@ -798,4 +804,4 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: default conf ipsec_conf_dir, item size: X
 ./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

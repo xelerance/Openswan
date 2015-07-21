@@ -144,7 +144,7 @@ struct end {
 	host_addr,
 	host_nexthop,
 	host_srcip;
-    ip_subnet client;
+    ip_subnet client;           /* consider replacing this with p2id from ikev1_quick.c */
 
     bool key_from_DNS_on_demand;
     bool has_client;
@@ -364,12 +364,8 @@ extern struct connection *refine_host_connection(const struct state *st
                                                  , const struct id *id
                                                  , bool initiator, bool aggrmode);
 extern struct connection *find_client_connection(struct connection *c
-                                                 , const ip_subnet *our_net
-                                                 , const ip_subnet *peer_net
-                                                 , const u_int8_t our_protocol
-                                                 , const u_int16_t out_port
-                                                 , const u_int8_t peer_protocol
-                                                 , const u_int16_t peer_port);
+                                                 , const struct end *our_end
+                                                 , const struct end *peer_end);
 extern struct connection *find_connection_by_reqid(uint32_t reqid);
 
 extern struct connection *
@@ -449,6 +445,9 @@ extern struct connection *eclipsed(struct connection *c, struct spd_route **);
 /* print connection status */
 
 extern void show_one_connection(struct connection *c);
+extern char *fmt_connection_inst_name(struct connection *c
+                                      , char *instname
+                                      , unsigned int instname_len);
 extern void show_connections_status(void);
 extern int  connection_compare(const struct connection *ca
 			       , const struct connection *cb);

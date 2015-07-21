@@ -29,6 +29,7 @@
 
 #include "constants.h"
 #include "defs.h"
+#include "id.h"
 #include "state.h"
 #include "log.h"
 #include "md5.h"
@@ -331,10 +332,6 @@ do_3des(u_int8_t *buf, size_t buf_len
 {
     passert(key != NULL);
 
-#ifdef HAVE_LIBNSS
-	do_3des_nss(buf, buf_len, key, key_size, iv, enc);
-#else
-
     des_key_schedule ks[3];
 
     passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
@@ -346,7 +343,6 @@ do_3des(u_int8_t *buf, size_t buf_len
     oswcrypto.des_ede3_cbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
                          ks[0], ks[1], ks[2],
                          (des_cblock *)iv, enc);
-#endif
 }
 
 /* hash and prf routines */

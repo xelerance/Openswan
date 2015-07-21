@@ -46,13 +46,11 @@
 #include "seam_keys.c"
 #include "seam_whack.c"
 #include "seam_exitlog.c"
+#include "seam_dnskey.c"
 
 char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
-
-long crl_check_interval = 0;
-struct secret *pluto_secrets = NULL;
 
 main(int argc, char *argv[])
 {
@@ -64,7 +62,9 @@ main(int argc, char *argv[])
     struct starter_config *cfg = NULL;
     struct starter_conn *conn = NULL;
 
-    //EF_PROTECT_FREE=1;
+#ifdef HAVE_EFENCE
+    EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;

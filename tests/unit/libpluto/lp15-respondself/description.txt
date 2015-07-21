@@ -1,0 +1,20 @@
+This test case is an IKEv2 responder.
+
+In this test case, the policy is to permit an initiator from %any to propose
+a tunnel to that end point (the /32).
+
+The initiator is coming from a random IP address, (right=%any), and is going
+to propose that IP address (/32) for the inside (rightsubnet=%self), but that's later in I2/R2.
+
+This case should create an R1 packet that can be sent back to the initiator
+for test case lp16-initiateselfchild.
+
+parentI1.pcap is copied from ../lp14-initiateself/OUTPUT/parentI1.pcap.
+
+
+
+
+
+
+
+

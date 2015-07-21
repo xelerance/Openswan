@@ -583,6 +583,10 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 	get_cookie(FALSE, st->st_rcookie, COOKIE_SIZE, &md->sender);
 	initialize_new_state(st, c, policy, 0, NULL_FD, pcim_stranger_crypto);
 	st->st_ikev2 = TRUE;
+        st->st_localaddr  = md->iface->ip_addr;
+        st->st_localport  = md->iface->port;
+        st->st_remoteaddr = md->sender;
+        st->st_remoteport = md->sender_port;
 	change_state(st, STATE_PARENT_R1);
 
         md->st = st;
@@ -927,6 +931,13 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
     /* record IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;
     st->st_ike_min        = md->min;
+
+    if(isanyaddr(&st->st_localaddr) || st->st_localport == 0) {
+        /* record where packet arrived to */
+        st->st_localaddr  = md->iface->ip_addr;
+        st->st_localport  = md->iface->port;
+    }
+
 
     /* check if the responder replied with v2N with DOS COOKIE */
     if( md->chain[ISAKMP_NEXT_v2N]
@@ -1516,8 +1527,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
-	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this);
-	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that);
+	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
+	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
 	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
 
@@ -2231,7 +2242,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         {
             struct spd_route *sra ;
             sra = &c->spd;
-            int bfit_n=ikev2_evaluate_connection_fit(c
+            int bfit_n=ikev2_evaluate_connection_fit(c, st
                                                      ,sra
                                                      ,INITIATOR
                                                      ,tsi   ,tsr

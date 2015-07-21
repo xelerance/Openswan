@@ -17,7 +17,7 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGLIBS=${WHACKLIB} ${LIBIPSECCONF}
-#EXTRALIBS=-lefence
+#EXTRALIBS=${LIBEFENCE}
 
 PROGRAM=addconn
 

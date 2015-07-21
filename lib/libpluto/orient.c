@@ -36,9 +36,38 @@
 #include "oswalloc.h"
 #include "oswtime.h"
 #include "oswlog.h"
+#include "pluto/keys.h"
 
 #include "pluto/server.h"
 #include "pluto/connections.h"	/* needs id.h */
+
+static void swap_ends(struct spd_route *sr)
+{
+    struct end t = sr->this;
+
+    sr->this = sr->that;
+    sr->that = t;
+}
+
+
+
+static bool osw_end_has_private_key(struct end *him)
+{
+    if(him->cert.type != CERT_NONE) {
+        return osw_asymmetric_key(him->cert)
+            && osw_has_private_key(pluto_secrets, him->cert);
+    } else {
+        /* in raw RSA case, the end has a name, and the key is associated with the name. */
+        struct pubkey * himkey = osw_get_public_key_by_end(him);
+
+        if(himkey) {
+            return has_private_rawkey(himkey);
+        } else {
+            return FALSE;
+        }
+    }
+}
+
 
 bool
 orient(struct connection *c, unsigned int pluto_port)
@@ -61,7 +90,7 @@ orient(struct connection *c, unsigned int pluto_port)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
-              DBG_log("checking against if: %s", p->ip_dev->id_rname);
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s", c->name, p->ip_dev->id_rname));
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
@@ -110,16 +139,44 @@ orient(struct connection *c, unsigned int pluto_port)
 		     * Only continue if the far side matches.
 		     * If both sides match, there is an error-out.
 		     */
-		    {
-			struct end t = sr->this;
-
-			sr->this = sr->that;
-			sr->that = t;
-		    }
+                    swap_ends(sr);
 		}
 	    }
-	}
+
+            if(!oriented(*c)) {
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s matching on public/private keys", c->name));
+
+                /* if %any, then check if we have a matching private key! */
+                if((sr->this.host_type == KH_DEFAULTROUTE
+                    || sr->this.host_type == KH_ANY)
+                   && osw_end_has_private_key(&sr->this)) {
+                    /*
+                     * orientated is determined by selecting an interface, and this will pick
+                     * first interface in the list...  want to pick wildcard outgoing interface.
+                     */
+                    c->interface = interfaces;
+
+                } else if((sr->that.host_type == KH_DEFAULTROUTE
+                           || sr->that.host_type == KH_ANY)
+                          && osw_end_has_private_key(&sr->that)) {
+                    swap_ends(sr);
+                    c->interface = interfaces;
+                } else if(!osw_end_has_private_key(&sr->that)
+                          && sr->this.host_type==KH_DEFAULTROUTE) {
+                    /* if still not oriented, then look for an end that hasn't a key, but which
+                     * hasn't a private key, and defaultroute */
+                    c->interface = interfaces;
+                } else if(!osw_end_has_private_key(&sr->this)
+                          && sr->that.host_type==KH_DEFAULTROUTE) {
+                    /* if still not oriented, then look for an end that hasn't a key, but which
+                     * hasn't a private key, and defaultroute */
+                    swap_ends(sr);
+                    c->interface = interfaces;
+                }
+            }
+        }
     }
+
     return oriented(*c);
 }
 

@@ -32,6 +32,8 @@ extern char rootdir2[PATH_MAX];       /* when evaluating paths, prefix this to t
 /* define an upper limit to number of times also= can be used */
 #define ALSO_LIMIT 32
 
+struct whack_message;
+
 enum keyword_set {
     k_unset   =FALSE,
     k_set     =TRUE,
@@ -142,6 +144,9 @@ struct starter_config {
     ip_address dnh; /* next hop value */
 
     char *ctlbase;  /* location of pluto control socket */
+
+    /* abstract the sending part for building unit tests */
+    int (*send_whack_msg)(struct starter_config *cfg, struct whack_message *msg);
 
     /* connections list (without %default) */
     TAILQ_HEAD(, starter_conn) conns;

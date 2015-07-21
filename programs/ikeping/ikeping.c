@@ -362,6 +362,7 @@ main(int argc, char **argv)
 		      optarg);
 	      exit(1);
 	  }
+          fprintf(stderr, "setting source port to %u\n", lport);
 	  continue;
 
       case 'w':
@@ -396,7 +397,7 @@ main(int argc, char **argv)
 	  continue;
 
       default:
-	  assert(FALSE);	/* unknown return value */
+          help();
       }
   }
 
@@ -411,8 +412,8 @@ main(int argc, char **argv)
 	  laddr.u.v4.sin_family= AF_INET;
 	  laddr.u.v4.sin_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v4, sizeof(laddr.u.v4)) < 0) {
-		  perror("v4 bind");
-		  exit(5);
+              fprintf(stderr, "warning, unable to bind v4 socket port %u: %s"
+                      , lport, strerror(errno));
 	  }
 	  break;
 
@@ -420,8 +421,8 @@ main(int argc, char **argv)
 	  laddr.u.v6.sin6_family= AF_INET6;
 	  laddr.u.v6.sin6_port = htons(lport);
 	  if(bind(s, (struct sockaddr *)&laddr.u.v6, sizeof(laddr.u.v6)) < 0) {
-		  perror("v6 bind");
-		  exit(5);
+              fprintf(stderr, "warning, unable to bind v6 socket to port %u: %s"
+                      , lport, strerror(errno));
 	  }
 	  break;
   }

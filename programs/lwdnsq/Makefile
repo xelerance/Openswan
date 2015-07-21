@@ -43,7 +43,7 @@ CFLAGS+=-I${srcdir}../../lib/liblwres/include
 
 # for debugging
 #CFLAGS+=-DEFENCE
-#LIBS+=-lefence
+#LIBS+=${LIBEFENCE}
 
 #USERCOMPILE=-g
 

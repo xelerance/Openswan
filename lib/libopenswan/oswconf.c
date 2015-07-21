@@ -196,26 +196,36 @@ bool Pluto_IsFIPS(void)
      char fips_flag[1];
      int n;
      FILE *fd=fopen("/proc/sys/crypto/fips_enabled","r");
+     static bool warned = FALSE;
 
      if(fd!=NULL) {
-	    n = fread ((void *)fips_flag, 1, 1, fd);
-		if(n==1) {
-		    if(fips_flag[0]=='1') {
-		    fclose(fd);
-		    return TRUE;
-		    }
-		    else {
-		    openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
-		    }
-		} else {
-			openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
-		}
-     fclose(fd);
+         n = fread ((void *)fips_flag, 1, 1, fd);
+         if(n==1) {
+             if(fips_flag[0]=='1') {
+                 fclose(fd);
+                 return TRUE;
+             }
+             else {
+                 if(!warned) {
+                     openswan_log("Non-fips mode set in /proc/sys/crypto/fips_enabled");
+                     warned = TRUE;
+                 }
+             }
+         } else {
+             if(!warned) {
+                 openswan_log("error in reading /proc/sys/crypto/fips_enabled, returning non-fips mode");
+                 warned = TRUE;
+             }
+         }
+         fclose(fd);
      }
      else {
-	openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode");
+         if(!warned) {
+             openswan_log("Not able to open /proc/sys/crypto/fips_enabled, returning non-fips mode");
+             warned = TRUE;
+         }
      }
-return FALSE;
+     return FALSE;
 }
 
 char *getNSSPassword(PK11SlotInfo *slot, PRBool retry, void *arg)
