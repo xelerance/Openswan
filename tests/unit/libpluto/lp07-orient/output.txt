@@ -1,15 +1,7 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| processing whack message of size: A
-processing whack msg time: X size: Y
-| processing whack message of size: A
-processing whack msg time: X size: Y
 ./orienttest adding connection: "parker1--jj2"
-| processing whack message of size: A
-processing whack msg time: X size: Y
-| processing whack message of size: A
-processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 ./orienttest adding connection: "ikev2:parker--jj"
