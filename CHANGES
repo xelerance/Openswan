@@ -4,126 +4,183 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.44rc1 (July 03, 2015)
+v2.6.44rc2 (July 23, 2015)
   Massive bug patch and IKEv2 processing fixes by MCR
 
- * Mark some SPD/SA creation code as debug (mcr)
- * Remove extensive but useless satype processing from netlink_raw_eroute (mcr)
- * Added state to eroute_connection so that peer address can be taken from there (mcr)
- * Just because right=%any, does not mean that it is a template (mcr)
- * Simplify the kernel SA add code to use src/dst where appropriate, and src_client/dst_client properly (mcr)
- * Updated natt port handling to pull from parent_st. (mcr)
- * Found potentially dead code in update_ipsec_sa() (mcr)
- * Log src/dst after it is inbound/outbound set (mcr)
- * Take IPsec SA end points from state rather than from policy (mcr)
+ *  Use a mcro to set SIN_LEN [MCR]
+ *  Added st_peer_id to store decode ID from inside I2 message [MCR]
+ *  Added fmt_connection_inst_name [MCR]
+ *  Add additional way to orient: me defaultroute with other end not having private key [MCR]
+ *  Make passing pass_prompt_t into key loading function officially optional [MCR]
+ *  Cope with a NULL prompt_pass, make something up to store passphrase if necessary [MCR]
+ *  Adopted some kernel_netkey.c fixes from libreswan, and added some debug of port numbers [MCR]
+ *  Reset the remote port number to 0, as lack of client should indicate lack of port numbers (XXX maybe not) [MCR]
+ *  rw_instantiate needs to take remote address from state [MCR]
+ *  Simplify evaluation of when we need to instantiate templates: all conns that 
+    are templates should be instantiated [MCR]
+ *  Log why connection was marked as a template [MCR]
+ *  Added explicit struct end that to ipsec installation to deal with rightsubnet=%self situation [MCR]
+ *  find_client_connection can use endclient too [MCR]
+ *  Note better when find_host_pair() is done [MCR]
+ *  Replace series of our_net/peer_net + protocol/port arguments with struct end. [MCR]
+ *  Use endclienttot() to format things in more places [MCR]
+ *  Use endclienttot() to print fc_try debug [MCR]
+ *  Added enddclienttot() function to format end->client, taking into account that the host_type might be %any [MCR]
+ *  Need to set send_whack_msg to a value even if ctlbase is going to default [MCR]
+ *  Log when there is no send_whack_msg function [MCR]
+ *  Do not even try to use libnss for certain non-critical PEM related 3DES operations [MCR]
+ *  Make sure that st_localaddr and st_localport is setup based upon where we observe traffic to flow
+    this information is used when has_client=0, and we are really proposing a conn for self. [MCR]
+ *  If end has no client, then set end to appropriate value from state [MCR]
+ *  Correctly return no proposal chosen when the initiator suggests 0.0.0.0->0.0.0.0, 
+    which previously matched encoding for %any [MCR]
+ *  When IKEv2 has right=%any, the remote address and port needs to be recorded into the state [MCR]
+ *  Use macro for -lefence so that it can be globablly turned off [MCR]
+ *  Write record number in debug output from readwriteconf [MCR]
+ *  Send public keys before policy [MCR]
+ *  Eliminate some testing specific code in readwriteconf that duplicated code from starterwhack.c [MCR]
+ *  Orient should be able to consider an end local if a private key is present for the public key indicated [MCR]
+ *  Orientation now takes into account which end has a private key (if no interface IP 
+    address could determine orientation) [MCR]
+ *  Split nss and non-nss signature routines [MCR]
+ *  Explain liboswkeys library [MCR]
+ *  Explain libpluto [MCR]
+ *  Make connection loading description a bit prettier [MCR]
+ *  Module mis-named, got an i in front of af_key [MCR]
+ *  Clean up orient info -- debug only [MCR]
+ *  Warn about FIPS mode only once [MCR]
+ *  libnss brings in some additional libraries that reveals that rsasigkey does not have exit_tool() defined [MCR]
+ *  Use NSS_LIBS and FIPS_LIBS defines properly [MCR]
+ *  Split off nss function to make files simpler to read [MCR]
+ *  Sort out LIBNSS nonsense in rsasigkey [MCR]
+ *  Mark rhel builds as using LIBNSS.
+    remove build_klips parts -- they are unmaintained on rhel7 [MCR]
+ *  Make ikeping diagnostics saner, and show help rather than aborting [MCR]
+ *  Update IPSECBASEVERSION in Makefile.ver for packagingprep target (simon)
+ *  Make ikeping diagnostics saner, and show help rather than aborting [MCR]
+ *  Clarify that whack_magic mismatch has nothing to do with klips [MCR]
+ *  Permit debug-netkey to be alias for debug-klips as well debug-xfrm [MCR]
+ *  Log the version that is placed into the version file [MCR]
+ * Mark some SPD/SA creation code as debug [MCR]
+ * Remove extensive but useless satype processing from netlink_raw_eroute [MCR]
+ * Added state to eroute_connection so that peer address can be taken from there [MCR]
+ * Just because right=%any, does not mean that it is a template [MCR]
+ * Simplify the kernel SA add code to use src/dst where appropriate, and src_client/dst_client properly [MCR]
+ * Updated natt port handling to pull from parent_st. [MCR]
+ * Found potentially dead code in update_ipsec_sa() [MCR]
+ * Log src/dst after it is inbound/outbound set [MCR]
+ * Take IPsec SA end points from state rather than from policy [MCR]
  * Pass parent state down in IPsec SA creation routines so that an accurate st_localaddr/st_remoteaddr is available.
-      Note should also add port numbers --- IKEv2 NAT work is probably still open (mcr)
- * Some debug of setup_half_ipsec_sa (mcr)
- * SA src/dst is not a subnet, but an address, so use appropriate structure (mcr)
- * Log algorithm lookup in KLIPS debug, and also IP address pairs of endpoint (mcr)
- * When responding in an error condition, keep the state around awhile in case there is a retransmit; but eventually remove it (mcr)
- * Always collect other peers SPI value, we need it. With this change, the spi=0000000 problem goes away (mcr)
- * Moved detection that responder has sent multiple proposals outside of block that matches them (mcr)
- * Role can never change in ikev2parent_inR2, it is always the initiator (mcr)
- * Added progress debug to setup_half_ipsec_sa so errors from kernel make more sense (mcr)
- * Removed role parameter from emit_ts, and move next_payload calculation to parent (mcr)
- * Removed note about duplicate_state --- state duplication occurs in ike_child_sa_respond (mcr)
- * Defend ikev2_encrypt_msg against possible bad inputs; might come from ikev2_delete_out (mcr)
- * Make code associated with being a responder not optional (mcr)
- * Removed role parameter from ike_child_sa_respond, as it never is called by initiator (mcr)
- * Set crypto importance once SA has been validated (mcr)
- * Log state numbers better, and log SPI# in network order (mcr)
- * Do not log a NAT change on first packet (mcr)
- * Log the msgid for parent and child IKEv2 SAs (mcr)
- * Added some notes about when parent state is relevant and when child is needed (mcr)
- * Try to log better in setup_half_ipsec_sa() so that errors are more easily associated (mcr)
- * R2 message was not being accepted because msgid replay counter was being compared on child SA, rather than parent (mcr)
- * Do not log NAT port changes if original address is 0.0.0.0 (mcr)
- * Import libreswan (2bc8abe3) netlink fixes (mcr)
- * Make sigusr1 handler static (mcr)
- * Added DEBUG_WITH_PAUSE to keep pluto from running away with retransmits when developer is thinking after a failure (mcr)
+      Note should also add port numbers --- IKEv2 NAT work is probably still open [MCR]
+ * Some debug of setup_half_ipsec_sa [MCR]
+ * SA src/dst is not a subnet, but an address, so use appropriate structure [MCR]
+ * Log algorithm lookup in KLIPS debug, and also IP address pairs of endpoint [MCR]
+ * When responding in an error condition, keep the state around awhile 
+   in case there is a retransmit; but eventually remove it [MCR]
+ * Always collect other peers SPI value, we need it. With this change, the spi=0000000 problem goes away [MCR]
+ * Moved detection that responder has sent multiple proposals outside of block that matches them [MCR]
+ * Role can never change in ikev2parent_inR2, it is always the initiator [MCR]
+ * Added progress debug to setup_half_ipsec_sa so errors from kernel make more sense [MCR]
+ * Removed role parameter from emit_ts, and move next_payload calculation to parent [MCR]
+ * Removed note about duplicate_state --- state duplication occurs in ike_child_sa_respond [MCR]
+ * Defend ikev2_encrypt_msg against possible bad inputs; might come from ikev2_delete_out [MCR]
+ * Make code associated with being a responder not optional [MCR]
+ * Removed role parameter from ike_child_sa_respond, as it never is called by initiator [MCR]
+ * Set crypto importance once SA has been validated [MCR]
+ * Log state numbers better, and log SPI# in network order [MCR]
+ * Do not log a NAT change on first packet [MCR]
+ * Log the msgid for parent and child IKEv2 SAs [MCR]
+ * Added some notes about when parent state is relevant and when child is needed [MCR]
+ * Try to log better in setup_half_ipsec_sa() so that errors are more easily associated [MCR]
+ * R2 message was not being accepted because msgid replay counter 
+   was being compared on child SA, rather than parent [MCR]
+ * Do not log NAT port changes if original address is 0.0.0.0 [MCR]
+ * Import libreswan (2bc8abe3) netlink fixes [MCR]
+ * Make sigusr1 handler static [MCR]
+ * Added DEBUG_WITH_PAUSE to keep pluto from running away with retransmits 
+   when developer is thinking after a failure [MCR]
  * Adopt a bunch of IKE algorithm definitions, and attempt to
-    find and quiet source of duplicate algorithm entries (mcr)
- * Refactor ESP creation into new function for readability (mcr)
+    find and quiet source of duplicate algorithm entries [MCR]
+ * Refactor ESP creation into new function for readability [MCR]
  * Pluto now accepts SIGUSR1: this presently does nothing (crypto subprocesses ignore it)
     it can be used with DEBUG_WITH_PAUSE to "single step" pluto interactions which are going
     too fast to figure manually inspect.
     In particular, one can do "ipsec whack --status" on the peer before letting the processing
-    proceed. (mcr)
- * Note in logs when parentSA is considered good (mcr)
- * Disentangle LIBNSS and non-LIBNSS code (mcr)
- * Convert some uses of whack_log to loglog() so that they go into system log too! (mcr)
- * Log the IKE version in state, and if v2-parent, log the msgid counters (mcr)
- * State_hash now returns the bucket number, which can aid in certain kinds of debugging (mcr)
+    proceed. [MCR]
+ * Note in logs when parentSA is considered good [MCR]
+ * Disentangle LIBNSS and non-LIBNSS code [MCR]
+ * Convert some uses of whack_log to loglog() so that they go into system log too! [MCR]
+ * Log the IKE version in state, and if v2-parent, log the msgid counters [MCR]
+ * State_hash now returns the bucket number, which can aid in certain kinds of debugging [MCR]
  * Some minor comments about msgid processing
-    make sure that if the msgid is too large or cookies do not match, that no further processing occurs (mcr)
- * Gave all the IKEv2 state microcodes a human readable name (mcr)
- * Found problems with mis-initialized st_msgid_nextuse, created new routing to allocate them from parent (mcr)
+    make sure that if the msgid is too large or cookies do not match, that no further processing occurs [MCR]
+ * Gave all the IKEv2 state microcodes a human readable name [MCR]
+ * Found problems with mis-initialized st_msgid_nextuse, created new routing to allocate them from parent [MCR]
  * Added record of IKE maj/min version to state structure.
     Collect it in into the msgdigest, and insert into stats on receive/create-state, and initialize
-    it when initiating. (mcr)
+    it when initiating. [MCR]
  * Found error in starter_whack_add_pubkey that resulted in public keys not loaded. This was
-    introduced in commit: 0783e455 by mcr (me!) (mcr)
- * Improve documentation of starter_whack_build_pkmsg (mcr)
- * Set LOOSE_ENUM_OTHER values appropriate, and debug the result if desired (mcr)
+    introduced in commit: 0783e455 by mcr (me!) [MCR]
+ * Improve documentation of starter_whack_build_pkmsg [MCR]
+ * Set LOOSE_ENUM_OTHER values appropriate, and debug the result if desired [MCR]
  * Parser_loose_enum used to return explicit "255", which matches LOOSE_ENUM_OTHER 
     as a value. But instead put the appropriate value into the keyword_def structure.
- * Not only is this more flexible, but it is much easier to understand (mcr)
- * Mark keyword_name() arg0 as const (mcr)
- * Adjust ikev1 for new find_host_connection ANY that takes histype (mcr)
- * Added KH_IPADDR to list of host type keywords (mcr)
- * Added histype to find_connection functions (mcr)
- * Some initial changes to put %any processing into host_pair code (mcr)
- * Log host type of remote side of conn in host_pair (mcr)
+ * Not only is this more flexible, but it is much easier to understand [MCR]
+ * Mark keyword_name() arg0 as const [MCR]
+ * Adjust ikev1 for new find_host_connection ANY that takes histype [MCR]
+ * Added KH_IPADDR to list of host type keywords [MCR]
+ * Added histype to find_connection functions [MCR]
+ * Some initial changes to put %any processing into host_pair code [MCR]
+ * Log host type of remote side of conn in host_pair [MCR]
  * Changes to link order cause liboswlog to be properly linked in; this requires exit_tool
-    and progname to be setup properly (mcr)
- * Import TS checking/narrowing code from libreswan into ikev2parent_inR2 (mcr)
- * Changed SEND_NOTIFICATION to SEND_V2_NOTIFICATION, from libreswan (mcr)
+    and progname to be setup properly [MCR]
+ * Import TS checking/narrowing code from libreswan into ikev2parent_inR2 [MCR]
+ * Changed SEND_NOTIFICATION to SEND_V2_NOTIFICATION, from libreswan [MCR]
  * Ikev2_log_parentSA should be used on initiator and responder.
-    It is a good candidate for a function that could be omitted when memory is tight (mcr)
- * Ikev2_process_payloads is wrong for processing and encrypted payload, do it inline (mcr)
- * Make sure that event is always deleted on free_state (mcr)
- * Added counter for number of retransmissions from responder seen (mcr)
- * Repeated payload problem fixed (mcr)
+    It is a good candidate for a function that could be omitted when memory is tight [MCR]
+ * Ikev2_process_payloads is wrong for processing and encrypted payload, do it inline [MCR]
+ * Make sure that event is always deleted on free_state [MCR]
+ * Added counter for number of retransmissions from responder seen [MCR]
+ * Repeated payload problem fixed [MCR]
  * Notification should go to whack log, with appropriate value
-    make sure to set the current state, and remove debugging of payloads seen (mcr)
- * Create a way to run parentI1 with calculations so that they can be saved (does not work yet) (mcr)
- * Always include RFC5144 groups, no more ifdef (mcr)
- * Split libnss code from non-libnss for better clarity (mcr)
+    make sure to set the current state, and remove debugging of payloads seen [MCR]
+ * Create a way to run parentI1 with calculations so that they can be saved (does not work yet) [MCR]
+ * Always include RFC5144 groups, no more ifdef [MCR]
+ * Split libnss code from non-libnss for better clarity [MCR]
     outR1 could well assign the header msgID from the initiator's messageID, 
     but since the I1 messageID is defined to be zero, it should all be the same.
-    The messageID is sequence in IKEv2, but in IKEv1, it's opaque, so handle htonl() here. (mcr)
- * Processing of v2N_INVALID_KE_PAYLOAD notify (mcr)
- * Now picks correct state when notify is seen (mcr)
- * ikeI1 state to deal with respondering sending a notify (mcr)
- * Add target to make assembly for examining underlying causes (mcr)
- * Do not delete state immediately, mark it as waiting to delete (mcr)
+    The messageID is sequence in IKEv2, but in IKEv1, it's opaque, so handle htonl() here. [MCR]
+ * Processing of v2N_INVALID_KE_PAYLOAD notify [MCR]
+ * Now picks correct state when notify is seen [MCR]
+ * ikeI1 state to deal with respondering sending a notify [MCR]
+ * Add target to make assembly for examining underlying causes [MCR]
+ * Do not delete state immediately, mark it as waiting to delete [MCR]
  * Permit the RHEL7 spec file to also build on RHEL6.5. xmlto otherwise can not resolve dependancy
-    for lynx vs elinks. RHEL7 does not seem to have lynx (mcr)
- * Change log of state deletion to not be a debug, log state name too (idea from libreswan) (mcr)
- * Move spd formatting routines to library (mcr)
- * Split orient() function into new file so it can be tested (mcr)
- * When processing conf files, a missing right=/left= should cause an error and the conn should not be loaded (mcr)
+    for lynx vs elinks. RHEL7 does not seem to have lynx [MCR]
+ * Change log of state deletion to not be a debug, log state name too (idea from libreswan) [MCR]
+ * Move spd formatting routines to library [MCR]
+ * Split orient() function into new file so it can be tested [MCR]
+ * When processing conf files, a missing right=/left= should cause an error and the conn should not be loaded [MCR]
  * Move orient function to libpluto.
-    Pass it the pluto_port number to use, rather than reference a global (mcr)
+    Pass it the pluto_port number to use, rather than reference a global [MCR]
  * Change pluto_port -> pluto_port500,
     introduce pluto_port4500. Make setting the pluto_port also set the NAT traversal port to +4000 of it.
-    Do not hard code the port 4500, use IETF name for port 4500 (mcr)
- * New function: ikev2parent_outI1_withstate permits IKEv2 to start with some state (mcr)
- * Refactor pubkey addition process, add this to whack write (mcr)
- * Include option to create whack files from loaded conns (mcr)
- * Refactor serialization of whack message to reuse in readwriteconf (mcr)
- * Return count of messages read so that failures can more easily be diagnosed (mcr)
- * Move whack msg write functions to libpluto (mcr)
- * Make sure that the --secctx_attr_value is always accepted, and if appropriate, ignored (mcr)
- * Permit an explicit nhelpers=-1 (mcr)
- * Added family2str to decode AF_INET/AF_INET6 nicely (mcr)
- * Moved defs.h to include/pluto/defs.h, so change the include slightly (mcr)
- * Change some more variables to LIBFOO from FOOLIB (mcr)
+    Do not hard code the port 4500, use IETF name for port 4500 [MCR]
+ * New function: ikev2parent_outI1_withstate permits IKEv2 to start with some state [MCR]
+ * Refactor pubkey addition process, add this to whack write [MCR]
+ * Include option to create whack files from loaded conns [MCR]
+ * Refactor serialization of whack message to reuse in readwriteconf [MCR]
+ * Return count of messages read so that failures can more easily be diagnosed [MCR]
+ * Move whack msg write functions to libpluto [MCR]
+ * Make sure that the --secctx_attr_value is always accepted, and if appropriate, ignored [MCR]
+ * Permit an explicit nhelpers=-1 [MCR]
+ * Added family2str to decode AF_INET/AF_INET6 nicely [MCR]
+ * Moved defs.h to include/pluto/defs.h, so change the include slightly [MCR]
+ * Change some more variables to LIBFOO from FOOLIB [MCR]
  * A batch of libreswan configuration code was ported as it was noticed that there was some
     mix of strdup/clone_str already.
-    Some keywords were imported, many were not yet imported.  The code is formatted vastly differently (mcr)
- * Refactor key building whack message processing (mcr)
+    Some keywords were imported, many were not yet imported.  The code is formatted vastly differently [MCR]
+ * Refactor key building whack message processing [MCR]
 
 v2.6.43 (March 13, 2015)
   Bugfixes and Certificate handling improvements
@@ -1758,7 +1815,7 @@ v2.1.2
 
 v2.1.1
 * Fix _pluto_adns installation path (kb)
-* Fix sending of X.509 CR's when no CA present (mcr)
+* Fix sending of X.509 CR's when no CA present [MCR]
 
 v2.1.0
 * NAT-T support (Mathieu Lafon - Arkoon)
