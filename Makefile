@@ -209,7 +209,7 @@ install:: checkv199install
 
 install::
 	mkdir -p ${LIBEXECDIR}
-	if [ -n '${VENDOR}' ]; then echo '${VENDOR} ' >${LIBEXECDIR}/vendor; fi
+	if [ -n '${VENDOR}' ]; then echo '${VENDOR} ' >${LIBDIR}/vendor.txt; fi
 
 
 clean::

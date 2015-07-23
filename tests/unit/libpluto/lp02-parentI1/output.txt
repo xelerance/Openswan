@@ -1,12 +1,15 @@
+./parentI1 loading secrets from "../samples/parker.secrets"
+./parentI1 loaded private key for keyid: PPK_RSA:AQN7wUerV
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| checking against if: eth0
+| orient parker1--jj2 checking against if: eth0
+| find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
-./parentI1 added connection description "parker1--jj2"
+./parentI1 adding connection: "parker1--jj2"
 | fd68:c9f9:4157:2:0:1::/96===192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
@@ -15,7 +18,7 @@ RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; 
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | creating state object #1 at Z
-| checking against if: eth0
+| orient parker1--jj2 checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -528,4 +531,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./parentI1 leak: default conf conffile, item size: X
 ./parentI1 leak: default conf ipsecd_dir, item size: X
 ./parentI1 leak: default conf ipsec_conf_dir, item size: X
+./parentI1 leak: 2 * id list, item size: X
+./parentI1 leak: secret, item size: X
 ./parentI1 leak detective found Z leaks, total size X

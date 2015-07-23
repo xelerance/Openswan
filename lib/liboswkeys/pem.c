@@ -197,11 +197,9 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     u_char digest[MD5_DIGEST_SIZE];
     u_char key[24];
 
-#ifndef HAVE_LIBNSS
     u_char des_iv[DES_CBC_BLOCK_SIZE];
     des_cblock *deskey = (des_cblock *)key;
     des_key_schedule ks[3];
-#endif
     u_char padding, *last_padding_pos, *first_padding_pos;
 
     /* Convert passphrase to 3des key */
@@ -219,10 +217,6 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
 
     memcpy(key + MD5_DIGEST_SIZE, digest, 24 - MD5_DIGEST_SIZE);
 
-#ifdef HAVE_LIBNSS
-   do_3des_nss(blob->ptr, blob->len,
-        key, DES_CBC_BLOCK_SIZE * 3 , (u_int8_t*)iv, FALSE);
-#else
     (void) oswcrypto.des_set_key(&deskey[0], ks[0]);
     (void) oswcrypto.des_set_key(&deskey[1], ks[1]);
     (void) oswcrypto.des_set_key(&deskey[2], ks[2]);
@@ -231,7 +225,6 @@ pem_decrypt_3des(chunk_t *blob, chunk_t *iv, const char *passphrase)
     memcpy(des_iv, iv->ptr, DES_CBC_BLOCK_SIZE);
     oswcrypto.des_ede3_cbc_encrypt((des_cblock *)blob->ptr, (des_cblock *)blob->ptr,
 	blob->len, ks[0], ks[1], ks[2], (des_cblock *)des_iv, FALSE);
-#endif
 
     /* determine amount of padding */
     last_padding_pos = blob->ptr + blob->len - 1;
@@ -478,76 +471,3 @@ pemtobin(chunk_t *blob, prompt_pass_t *pass, const char* label, bool *pgp)
 	return NULL;
 }
 
-#ifdef HAVE_LIBNSS
-void do_3des_nss(u_int8_t *buf, size_t buf_len
-       , u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
-{
-    passert(key != NULL);
-    /*passert(key_size==(DES_CBC_BLOCK_SIZE * 3));*/
-
-    u_int8_t *tmp_buf;
-    u_int8_t *new_iv;
-
-    CK_MECHANISM_TYPE  ciphermech;
-    SECItem            ivitem;
-    SECItem*           secparam = NULL;
-    PK11SymKey*        symkey = NULL;
-    PK11Context*       enccontext = NULL;
-    SECStatus          rv;
-    int                outlen;
-
-    DBG(DBG_CRYPT, DBG_log("NSS: do_3des init start"));
-    ciphermech = CKM_DES3_CBC; /*openswan provides padding*/
-
-    memcpy(&symkey, key, key_size);
-    if (symkey == NULL) {
-	loglog(RC_LOG_SERIOUS, "do_3des: NSS derived enc key is NULL \n");
-	abort();
-    }
-
-    ivitem.type = siBuffer;
-    ivitem.data = iv;
-    ivitem.len = DES_CBC_BLOCK_SIZE;
-
-    secparam = PK11_ParamFromIV(ciphermech, &ivitem);
-    if (secparam == NULL) {
-	loglog(RC_LOG_SERIOUS, "do_3des: Failure to set up PKCS11 param (err %d)\n",PR_GetError());
-	abort();
-    }
-
-    outlen = 0;
-    tmp_buf= PR_Malloc((PRUint32)buf_len);
-    new_iv=(u_int8_t*)PR_Malloc((PRUint32)DES_CBC_BLOCK_SIZE);
-
-    if (!enc) {
-	memcpy(new_iv, (char*) buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
-    }
-
-    enccontext = PK11_CreateContextBySymKey(ciphermech, enc? CKA_ENCRYPT: CKA_DECRYPT, symkey, secparam);
-    if (enccontext == NULL) {
-        loglog(RC_LOG_SERIOUS, "do_3des: PKCS11 context creation failure (err %d)\n", PR_GetError());
-        abort();
-    }
-    rv = PK11_CipherOp(enccontext, tmp_buf, &outlen, buf_len, buf, buf_len);
-    if (rv != SECSuccess) {
-        loglog(RC_LOG_SERIOUS, "do_3des: PKCS11 operation failure (err %d)\n", PR_GetError());
-        abort();
-    }
-
-    if(enc) {
-	memcpy(new_iv, (char*) tmp_buf + buf_len-DES_CBC_BLOCK_SIZE, DES_CBC_BLOCK_SIZE);
-    }
-
-    memcpy(buf,tmp_buf,buf_len);
-    memcpy(iv,new_iv,DES_CBC_BLOCK_SIZE);
-    PK11_DestroyContext(enccontext, PR_TRUE);
-    PR_Free(tmp_buf);
-    PR_Free(new_iv);
-
-    if (secparam) {
-	SECITEM_FreeItem(secparam, PR_TRUE);
-    }
-
-    DBG(DBG_CRYPT, DBG_log("NSS: do_3des init end"));
-}
-#endif

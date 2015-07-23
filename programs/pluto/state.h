@@ -27,6 +27,7 @@
 #include <time.h>
 #include <gmp.h>    /* GNU MP library */
 #include "quirks.h"
+#include "id.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -190,6 +191,9 @@ struct xfrm_user_sec_ctx_ike {
  * - each state object will be in statetable exactly once.
  * - each state object will always have a pending event.
  *   This prevents leaks.
+ *
+ * - should eventually move all ikev1 specific stuff into "ikev1" struct
+ *   and ikev2 stuff too.
  */
 struct state
 {
@@ -254,6 +258,10 @@ struct state
     struct msgid_list  *st_used_msgids;        /* used-up msgids */
 
     /* IKEv2 things */
+    struct {
+        struct id      st_peer_id;             /* stores decoded peer ID */
+    } ikev2;
+
     /* counters */
     unsigned           st_msg_retransmitted;   /* total number of retransmissions seen */
     unsigned           st_msg_badmsgid_recv;   /* out of order messages */

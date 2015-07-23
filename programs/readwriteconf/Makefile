@@ -15,7 +15,7 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
-#EXTRALIBS=-lefence
+#EXTRALIBS=${LIBEFENCE}
 
 PROGRAM=readwriteconf
 NOINSTALL=true

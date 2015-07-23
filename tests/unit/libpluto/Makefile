@@ -29,4 +29,14 @@ clean check:
 	@${MAKE} -C lp11-parentI2dup $@
 	@${MAKE} -C lp12-parentR2    $@
 	@${MAKE} -C lp13-parentI3    $@
+	@${MAKE} -C lp14-initiateself $@
+	@${MAKE} -C lp15-respondself $@
+	@${MAKE} -C lp16-initiateselfI2 $@
+	@${MAKE} -C lp17-childselfpolicy $@
+	@${MAKE} -C lp18-certificateselfI1 $@
+	@${MAKE} -C lp19-certreplyselfR1 $@
+	@${MAKE} -C lp20-certificateselfI2 $@
+	@${MAKE} -C lp21-certreplyselfR2 $@
+
+
 

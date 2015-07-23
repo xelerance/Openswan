@@ -23,7 +23,7 @@
 #include "seam_rnd.c"
 #include "seam_log.c"
 #include "seam_xauth.c"
-#include "seam_parker.c"
+#include "seam_host_parker.c"
 #include "seam_terminate.c"
 #include "seam_x509.c"
 #include "seam_spdbstruct.c"
@@ -31,6 +31,7 @@
 #include "seam_whack.c"
 #include "seam_keys.c"
 #include "seam_exitlog.c"
+#include "seam_dnskey.c"
 #include "seam_natt.c"
 
 #include "seam_gi_sha1.c"
@@ -47,7 +48,9 @@ main(int argc, char *argv[])
     struct connection *c1;
     struct state *st;
 
+#ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;

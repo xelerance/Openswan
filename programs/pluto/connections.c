@@ -69,6 +69,7 @@
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "xauth.h"
+#include "pluto/libpluto.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
@@ -583,7 +584,7 @@ load_end_certificate(const char *filename, struct end *dst)
 	return;
     }
 
-    openswan_log("loading certificate from %s\n", filename);
+    openswan_log("  loading certificate from %s\n", filename);
     dst->cert_filename = clone_str(filename, "certificate filename");
 
 	{
@@ -1198,13 +1199,19 @@ add_connection(const struct whack_message *wm)
 	    c->kind = CK_GROUP;
 	    add_group(c);
 	}
-	else if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
-		|| ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards ))
+	else if (c->spd.that.has_client_wildcard)
 	{
-	    DBG(DBG_CONTROL, DBG_log("based upon policy, the connection is a template."));
-
-	    /* Opportunistic or Road Warrior or wildcard client subnet
-	     * or wildcard ID */
+	    DBG(DBG_CONTROL, DBG_log("based upon client_wildcard policy, the connection is a template."));
+	    c->kind = CK_TEMPLATE;
+	}
+	else if (c->spd.that.has_port_wildcard)
+	{
+	    DBG(DBG_CONTROL, DBG_log("based upon port_wildcard policy, the connection is a template."));
+	    c->kind = CK_TEMPLATE;
+	}
+	else if ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards )
+	{
+	    DBG(DBG_CONTROL, DBG_log("based upon ID_wildcard policy, the connection is a template."));
 	    c->kind = CK_TEMPLATE;
 	}
 	else if ((wm->left.virt != NULL) || (wm->right.virt != NULL))
@@ -1246,7 +1253,7 @@ add_connection(const struct whack_message *wm)
 	connect_to_host_pair(c);
 
 	/* log all about this connection */
-	openswan_log("added connection description \"%s\"", c->name);
+	openswan_log("adding connection: \"%s\"", c->name);
 	DBG(DBG_CONTROL,
 	    char topo[CONN_BUF_LEN];
 
@@ -1466,9 +1473,9 @@ instantiate(struct connection *c, const ip_address *him
 
 struct connection *
 rw_instantiate(struct connection *c
-, const ip_address *him
-, const ip_subnet *his_net
-, const struct id *his_id)
+               , const ip_address *him
+               , const ip_subnet *his_net
+               , const struct id *his_id)
 {
     struct connection *d = instantiate(c, him, his_id);
 
@@ -2608,23 +2615,20 @@ static struct connection *
 fc_try(const struct connection *c
        , struct host_pair *hp
        , const struct id *peer_id UNUSED
-       , const ip_subnet *our_net
-       , const ip_subnet *peer_net
-       , const u_int8_t our_protocol
-       , const u_int16_t our_port
-       , const u_int8_t peer_protocol
-       , const u_int16_t peer_port)
+       , const struct end *our_end
+       , const struct end *peer_end)
 {
     struct connection *d;
     struct connection *best = NULL;
     policy_prio_t best_prio = BOTTOM_PRIO;
     int wildcards, pathlen;
-    const bool peer_net_is_host = subnetisaddr(peer_net, &c->spd.that.host_addr);
     err_t virtualwhy = NULL;
-    char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+    char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
+    const bool peer_net_is_host = subnetisaddr(&peer_end->client, &c->spd.that.host_addr) ||
+        (c->spd.that.host_type == KH_ANY && c->spd.that.has_client == FALSE);
 
-    subnettot(our_net,  0, s1, sizeof(s1));
-    subnettot(peer_net, 0, d1, sizeof(d1));
+    endclienttot(our_end,  s1, sizeof(s1));
+    endclienttot(peer_end, d1, sizeof(d1));
 
     for (d = hp->connections; d != NULL; d = d->hp_next)
     {
@@ -2639,10 +2643,10 @@ fc_try(const struct connection *c
 	    continue;
 
     	/* compare protocol and ports */
-	if (d->spd.this.protocol != our_protocol
-	    ||  (d->spd.this.port && d->spd.this.port != our_port)
-	    ||  d->spd.that.protocol != peer_protocol
-            || (d->spd.that.port != peer_port && !d->spd.that.has_port_wildcard))
+	if (d->spd.this.protocol != our_end->protocol
+	    ||  (d->spd.this.port && d->spd.this.port != our_end->port)
+	    ||  d->spd.that.protocol != peer_end->protocol
+            || (d->spd.that.port != peer_end->port && !d->spd.that.has_port_wildcard))
 	    continue;
 
 	/* non-Opportunistic case:
@@ -2661,24 +2665,22 @@ fc_try(const struct connection *c
 	{
 	    policy_prio_t prio;
 #ifdef DEBUG
-	    char s3[SUBNETTOT_BUF],d3[SUBNETTOT_BUF];
+	    char s3[ENDCLIENTTOT_BUF],d3[ENDCLIENTTOT_BUF];
 
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		subnettot(&sr->this.client,  0, s3, sizeof(s3));
-		subnettot(&sr->that.client,  0, d3, sizeof(d3));
+                endclienttot(&sr->this, s3, sizeof(s3));
+                endclienttot(&sr->that, d3, sizeof(d3));
 		DBG_log("  fc_try trying "
-			"%s:%s:%d/%d -> %s:%d/%d%s vs %s:%s:%d/%d -> %s:%d/%d%s"
-			, c->name, s1, c->spd.this.protocol, c->spd.this.port
-				 , d1, c->spd.that.protocol, c->spd.that.port
+			"%s:%s -> %s%s vs %s:%s -> %s%s"
+			, c->name, s1, d1
 			, is_virtual_connection(c) ? "(virt)" : ""
-			, d->name, s3, sr->this.protocol, sr->this.port
-				 , d3, sr->that.protocol, sr->that.port
+			, d->name, s3, d3
 			, is_virtual_sr(sr) ? "(virt)" : "");
 	    }
 #endif /* DEBUG */
 
-	    if (!samesubnet(&sr->this.client, our_net)) {
+	    if (!samesubnet(&sr->this.client, &our_end->client)) {
 		DBG(DBG_CONTROLMORE
 		     , DBG_log("   our client(%s) not in our_net (%s)"
 			       , s3, s1));
@@ -2689,10 +2691,10 @@ fc_try(const struct connection *c
 	    if (sr->that.has_client)
 	    {
 		if (sr->that.has_client_wildcard) {
-		    if (!subnetinsubnet(peer_net, &sr->that.client))
+		    if (!subnetinsubnet(&peer_end->client, &sr->that.client))
 			continue;
 		} else {
-		    if ((!samesubnet(&sr->that.client, peer_net))
+		    if ((!samesubnet(&sr->that.client, &peer_end->client))
 			&& (!is_virtual_sr(sr))
 			) {
 			DBG(DBG_CONTROLMORE
@@ -2701,11 +2703,12 @@ fc_try(const struct connection *c
 			continue;
 		    }
 
-		    virtualwhy=is_virtual_net_allowed(d, peer_net, &sr->that.host_addr);
+                    /* XXX */
+		    virtualwhy=is_virtual_net_allowed(d, &peer_end->client, &sr->that.host_addr);
 
 		    if ((is_virtual_sr(sr)) &&
 			( (virtualwhy != NULL) ||
-			  (is_virtual_net_used(d, peer_net, peer_id?peer_id:&sr->that.id)) )) {
+			  (is_virtual_net_used(d, &peer_end->client, peer_id?peer_id:&sr->that.id)) )) {
 			DBG(DBG_CONTROLMORE
 			     , DBG_log("   virtual net not allowed"));
 			continue;
@@ -2856,12 +2859,8 @@ fc_try_oppo(const struct connection *c
 
 struct connection *
 find_client_connection(struct connection *c
-		       , const ip_subnet *our_net
-		       , const ip_subnet *peer_net
-		       , const u_int8_t our_protocol
-		       , const u_int16_t our_port
-		       , const u_int8_t peer_protocol
-		       , const u_int16_t peer_port)
+                       , const struct end *our_end
+                       , const struct end *peer_end)
 {
     struct connection *d;
     struct spd_route *sr;
@@ -2869,16 +2868,15 @@ find_client_connection(struct connection *c
 #ifdef DEBUG
     if (DBGP(DBG_CONTROLMORE))
     {
-	char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+	char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
 
-	subnettot(our_net,  0, s1, sizeof(s1));
-	subnettot(peer_net, 0, d1, sizeof(d1));
+	endclienttot(our_end,  s1, sizeof(s1));
+	endclienttot(peer_end, d1, sizeof(d1));
 
 	DBG_log("find_client_connection starting with %s"
 	    , (c ? c->name : "(none)"));
-	DBG_log("  looking for %s:%d/%d -> %s:%d/%d"
-	    , s1, our_protocol, our_port
-	    , d1, peer_protocol, peer_port);
+	DBG_log("  looking for %s -> %s"
+	    , s1, d1);
     }
 #endif /* DEBUG */
 
@@ -2905,12 +2903,12 @@ find_client_connection(struct connection *c
 	    }
 #endif /* DEBUG */
 
-	    if (samesubnet(&sr->this.client, our_net)
-		&& samesubnet(&sr->that.client, peer_net)
-		&& (sr->this.protocol == our_protocol)
-		&& (!sr->this.port || (sr->this.port == our_port))
-		&& (sr->that.protocol == peer_protocol)
-		&& (!sr->that.port || (sr->that.port == peer_port)))
+	    if (samesubnet(&sr->this.client,    &our_end->client)
+		&& samesubnet(&sr->that.client, &peer_end->client)
+		&& (sr->this.protocol == our_end->protocol)
+		&& (!sr->this.port || (sr->this.port == our_end->port))
+		&& (sr->that.protocol == peer_end->protocol)
+		&& (!sr->that.port || (sr->that.port == peer_end->port)))
 	    {
 		passert(oriented(*c));
 		if (routed(sr->routing))
@@ -2921,8 +2919,7 @@ find_client_connection(struct connection *c
 	}
 
 	/* exact match? */
-	d = fc_try(c, c->host_pair, NULL, our_net, peer_net
-	    , our_protocol, our_port, peer_protocol, peer_port);
+	d = fc_try(c, c->host_pair, NULL, our_end, peer_end);
 
 	DBG(DBG_CONTROLMORE,
 	    DBG_log("  fc_try %s gives %s"
@@ -2950,10 +2947,10 @@ find_client_connection(struct connection *c
 #ifdef DEBUG
 	    if (DBGP(DBG_CONTROLMORE))
 	    {
-		char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
+		char s2[ENDCLIENTTOT_BUF],d2[ENDCLIENTTOT_BUF];
 
-		subnettot(&sra->this.client, 0, s2, sizeof(s2));
-		subnettot(&sra->that.client, 0, d2, sizeof(d2));
+		endclienttot(&sra->this, s2, sizeof(s2));
+		endclienttot(&sra->that, d2, sizeof(d2));
 
 		DBG_log("  checking hostpair %s -> %s is %s"
 			, s2, d2
@@ -2965,19 +2962,18 @@ find_client_connection(struct connection *c
 	if (hp != NULL)
 	{
 	    /* RW match with actual peer_id or abstract peer_id? */
-	    d = fc_try(c, hp, NULL, our_net, peer_net
-		, our_protocol, our_port, peer_protocol, peer_port);
+	    d = fc_try(c, hp, NULL, our_end, peer_end);
 
 	    if (d == NULL
-	    && subnetishost(our_net)
-	    && subnetishost(peer_net))
+	    && subnetishost(&our_end->client)
+	    && subnetishost(&peer_end->client))
 	    {
 		/* Opportunistic match?
 		 * Always use abstract peer_id.
 		 * Note that later instantiation will result in the same peer_id.
 		 */
-		d = fc_try_oppo(c, hp, our_net, peer_net
-		    , our_protocol, our_port, peer_protocol, peer_port);
+		d = fc_try_oppo(c, hp, &our_end->client, &peer_end->client
+                                , our_end->protocol, our_end->port, peer_end->protocol, peer_end->port);
 	    }
 	}
     }
@@ -3127,6 +3123,17 @@ show_one_sr(struct connection *c
 #endif
 }
 
+char *fmt_connection_inst_name(struct connection *c
+                               , char *instname
+                               , unsigned int instname_len)
+{
+    instname[0] = '\0';
+    if (c->kind == CK_INSTANCE && c->instance_serial != 0)
+	snprintf(instname, instname_len, "[%lu]", c->instance_serial);
+
+    return instname;
+}
+
 void
 show_one_connection(struct connection *c)
 {
@@ -3135,10 +3142,7 @@ show_one_connection(struct connection *c)
     char prio[POLICY_PRIO_BUF];
 
     ifn = oriented(*c)? c->interface->ip_dev->id_rname : "";
-
-    instance[0] = '\0';
-    if (c->kind == CK_INSTANCE && c->instance_serial != 0)
-	snprintf(instance, sizeof(instance), "[%lu]", c->instance_serial);
+    fmt_connection_inst_name(c, instance, sizeof(instance));
 
     /* show topology */
     {

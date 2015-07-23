@@ -673,9 +673,9 @@ netlink_raw_eroute(const ip_address *this_host
     int policy;
     bool ok;
     bool enoent_ok;
-    ip_subnet local_that_client;
+    ip_subnet local_client;
 
-    if(DBGP(DBG_NETKEY)) {
+    if(DBGP(DBG_NETKEY) || 1) {
         char sa_this[ADDRTOT_BUF];
         char sa_that[ADDRTOT_BUF];
 
@@ -719,49 +719,36 @@ netlink_raw_eroute(const ip_address *this_host
 	   DBG_log("warning: NETKEY/XFRM in transport mode accepts ALL encrypted protoport packets between the hosts in violation of RFC 4301, Section 5.2");
     }
 
+    if (sadb_op == ERO_ADD_INBOUND || sadb_op == ERO_DEL_INBOUND)
+        dir = XFRM_POLICY_IN;
+    else
+        dir = XFRM_POLICY_OUT;
+
     /* Bug #1004 fix.
      * There really isn't "client" with NETKEY and transport mode
      * so eroute must be done to natted, visible ip. If we don't hide
      * internal IP, communication doesn't work.
      */
-    if((proto == ET_ESP || proto == ET_IPCOMP)
-	&& !addrinsubnet(that_host, that_client)
-	&& !isanyaddr(that_host))
-    {
-	addrtosubnet(that_host, &local_that_client);
-	DBG(DBG_NETKEY,
-	    {
-		char that_client_t[SUBNETTOT_BUF];
-		char local_that_client_t[SUBNETTOT_BUF];
+    if (esatype == ET_ESP || esatype == ET_IPCOMP || proto == SA_ESP) {
+        /*
+         * Variable "that" should be remote, but here it's not.
+         * We must check "dir" to find out remote address.
+         */
+        int local_port;
 
-		subnettot(that_client, 0, that_client_t
-		    , sizeof(that_client_t));
-		subnettot(&local_that_client, 0, local_that_client_t
-		    , sizeof(local_that_client_t));
-		DBG_log(
-		    "netlink_raw_eroute: proto = %u,"
-		    " substituting %s with %s"
-		    , proto, that_client_t, local_that_client_t);
-	    });
-
-	/* We have a bug somewhere in the code where NATD port of remote
-	 * gets applied to protoport port of host. Happily it only seem
-	 * to affect natted transport mode so we can undo that corruption
-	 * here. This corruption of that_host port is random and we couldn't
-	 * find the place where it happens. Port of that_client is anyway the
-	 * port we should use here.
-	 * Bug #1101. Tuomo
-	 */
-	if(portof(&that_client->addr) != portof(that_host)) {
-	    openswan_log("%s: WARNING: that_client port %u and that_host"
-			 " port %u don't match. Using that_client port."
-			 , __FUNCTION__
-			 , ntohs(portof(&that_client->addr))
-			 , ntohs(portof(that_host)));
-	    setportof(portof(&that_client->addr), &local_that_client.addr);
-	}
-
- 	that_client = &local_that_client;
+        if (dir == XFRM_POLICY_OUT) {
+            local_port = portof(&that_client->addr);
+            addrtosubnet(that_host, &local_client);
+            that_client = &local_client;
+        } else {
+            local_port = portof(&this_client->addr);
+            addrtosubnet(this_host, &local_client);
+            this_client = &local_client;
+        }
+        setportof(local_port, &local_client.addr);
+        DBG(DBG_NETKEY
+            ,DBG_log("%s: using host address instead of client subnet",
+                    __func__));
     }
 
     memset(&req, 0, sizeof(req));

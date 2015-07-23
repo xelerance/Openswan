@@ -32,7 +32,9 @@ main(int argc, char *argv[])
     time_t until;
 
     /* sadly, this is actually too late */
+#ifdef HAVE_EFENCE
     EF_DISABLE_BANNER = 1;
+#endif
     progname = argv[0];
     leak_detective=1;
 

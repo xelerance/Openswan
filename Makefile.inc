@@ -199,7 +199,7 @@ USERCOMPILE?=-g -O3 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -
 #USERCOMPILE?=-g -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4  -m64 -mtune=generic -fPIE -pie -DSUPPORT_BROKEN_ANDROID_ICS
 KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
-#USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
+#USERCOMPILE?=-g -DLEAK_DETECTIVE ${LIBEFENCE}
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
 
@@ -535,6 +535,15 @@ endif
 #  Paranoia says to export these just to sure:
 export OBJDIR
 export OBJDIRTOP
+
+
+# sometimes efence not available.
+LIBEFENCE?=-lefence
+ifeq (${LIBEFENCE},)
+HAVE_EFENCE=
+else
+HAVE_EFENCE=-DHAVE_EFENCE
+endif
 
 
 ### paths within the source tree

@@ -209,6 +209,7 @@ help(void)
 	    " [--debug-control]"
 	    " [--debug-controlmore]"
 	    " [--debug-klips]"
+	    " [--debug-netkey]"
 	    " [--debug-dns]"
 	    " [--debug-pfkey]"
 	    " [--debug-dpd]"
@@ -740,7 +741,9 @@ static const struct option long_opts[] = {
     { "debug-emitting", no_argument, NULL, DBGOPT_EMITTING + OO },
     { "debug-control", no_argument, NULL, DBGOPT_CONTROL + OO },
     { "debug-lifecycle", no_argument, NULL, DBGOPT_LIFECYCLE + OO },
-    { "debug-klips", no_argument, NULL, DBGOPT_KLIPS + OO },
+    { "debug-klips",  no_argument, NULL, DBGOPT_KLIPS + OO },
+    { "debug-netkey", no_argument, NULL, DBGOPT_KLIPS + OO },
+    { "debug-xfrm",   no_argument, NULL, DBGOPT_KLIPS + OO },
     { "debug-dns", no_argument, NULL, DBGOPT_DNS + OO },
     { "debug-oppo", no_argument, NULL, DBGOPT_OPPO + OO },
     { "debug-oppoinfo", no_argument, NULL, DBGOPT_OPPOINFO + OO },

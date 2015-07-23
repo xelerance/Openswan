@@ -52,11 +52,11 @@ extern const rsa_privkey_t empty_rsa_privkey;
  */
 typedef struct {
     bool                 forced;
-    enum ipsec_cert_type type;       
+    enum ipsec_cert_type type;  /* in openswan/ipsec_policy.h */
     union {
       x509cert_t *x509;
       pgpcert_t  *pgp;
-      chunk_t    blob;
+        chunk_t    blob;     /* raw rsa key: CERT_RAW_RSA */
     } u;
 } cert_t;
 

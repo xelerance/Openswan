@@ -1,0 +1,6 @@
+CONNNAME=home
+ENDNAME=rwcert
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+
+TESTNAME=certificateselfI1
+

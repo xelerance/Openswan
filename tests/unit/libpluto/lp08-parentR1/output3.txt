@@ -4,13 +4,15 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection any1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| checking against if: eth0
+| orient any1--jj2 checking against if: eth0
+| find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-./parentR1 added connection description "any1--jj2"
+./parentR1 adding connection: "any1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
@@ -92,13 +94,14 @@ RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=10.10.5.4:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: concluded with any1--jj2
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/10.10.5.4:500 -> hp:any1--jj2
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (any1--jj2)
 | find_host_connection2 returns any1--jj2
 | found connection: any1--jj2
 | creating state object #1 at Z
-| checking against if: eth0
+| orient any1--jj2 checking against if: eth0
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  a9 e1 ff 4d  1c 8b b8 19
 | state hash entry 12
@@ -186,8 +189,8 @@ RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | complete v2 state transition with STF_OK
 ./parentR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./parentR1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
-| sending reply packet to 0.0.0.0:500 (from port 500)
-sending 376 bytes for STATE_IKEv2_START through eth0:500 to 0.0.0.0:500 (using #1)
+| sending reply packet to 10.10.5.4:500 (from port 500)
+sending 376 bytes for STATE_IKEv2_START through eth0:500 to 10.10.5.4:500 (using #1)
 |   56 11 47 13  4b 1d 6d 52  a9 e1 ff 4d  1c 8b b8 19
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
@@ -235,4 +238,4 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 0.0.0.0:500 (using #
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
 ./parentR1 leak detective found Z leaks, total size X
-Pre-amble (offset: 65): #!-pluto-whack-file- recorded on FOO
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

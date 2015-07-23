@@ -134,8 +134,8 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 extern void ikev2_derive_child_keys(struct state *st
 				    , enum phase1_role role);
 
-extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern int ikev2_evaluate_connection_fit(struct connection *d
+                                         , struct state *st
 				, struct spd_route *sr
 				, enum phase1_role role
 				, struct traffic_selector *tsi
@@ -182,7 +182,7 @@ extern int ikev2_parse_ts(struct payload_digest *ts_pd
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
 					 , pb_stream *outpbs);
 
-extern struct traffic_selector ikev2_end_to_ts(struct end *e);
+extern struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint);
 extern void ikev2_update_counters(struct msg_digest *md);
 extern void ikev2_print_ts(struct traffic_selector *ts);
 

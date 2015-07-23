@@ -630,7 +630,7 @@ whack_handle(int whackctlfd)
 	    }
 	    else
 	    {
-		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and KLIPS code."
+		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and PLUTO code."
                                 , msg.magic, WHACK_MAGIC);
 	    }
 	}
