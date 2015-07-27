@@ -733,6 +733,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
             int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
@@ -779,6 +780,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             for (d = hp->connections; d != NULL; d = d->hp_next) {
                 struct spd_route *sr;
                 int wildcards, pathlen;  /* XXX */
+
+                /* if already best fit, do not try again */
+                if(d == c) continue;
 
                 if (d->policy & POLICY_GROUP)
                     continue;

@@ -472,6 +472,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
 | parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
+| ikev2_evaluate_connection_fit, evaluating base fit for parker1--jj2
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
@@ -488,15 +489,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
 | find_host_pair: concluded with parker1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
-|    match_id a=@parker01.emmjay.credil.org
-|             b=@parker01.emmjay.credil.org
-|    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
-|   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
-| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
-|       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
-| prefix range fit d parker1--jj2 d->name was rejected by connection fit: 32896 > 32896
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
