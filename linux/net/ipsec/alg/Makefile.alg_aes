@@ -16,5 +16,5 @@ $(MOD_AES): $(AES_OBJS)
 
 $(LIBCRYPTO)/libaes/libaes.a:
 	@echo MAKE `basename $<` 
-        @$(MAKE) -C $(LIBCRYPTO)/libaes CC='$(CC)' 'ARCH_ASM=$(ARCH_ASM)' CFLAGS='$(CFLAGS) $(EXTRA_CFLAGS)' libaes.a
+	@$(MAKE) -C $(LIBCRYPTO)/libaes CC='$(CC)' 'ARCH_ASM=$(ARCH_ASM)' CFLAGS='$(CFLAGS) $(EXTRA_CFLAGS)' libaes.a
 
