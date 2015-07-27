@@ -200,7 +200,8 @@ LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP} ${NSS_LIBS} ${FIPS_LIB
 include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 
 %.i: %.c
-	$(CC) $(CFLAGS) -E -o $@ $<
+	@echo CC  $(notdir $<)
+	@$(CC) $(CFLAGS) -E -o $@ $<
 
 TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
@@ -221,13 +222,13 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 
 
 %: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'IN' `basename $<` '->' $@
+	@echo  'IN' $(notdir $<) '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
 
 %: ${srcdir}%.pl ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'PL' `basename $<` '->' $@
+	@echo  'PL' $(notdir $<) '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.pl" = $< ]; then chmod +x $@; fi

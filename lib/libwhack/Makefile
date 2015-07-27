@@ -106,9 +106,15 @@ install_file_list:
 	done
 
 $(LIB): $(OBJS)
-	$(AR) $(ARFLAGS) $(LIB) $(OBJS)
+	@echo AR $(notdir $<)
+	@$(AR) $(ARFLAGS) $(LIB) $(OBJS)
+
 
 $(OBJS):	$(HDRS)
+
+%.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 cleanall:
 	rm -rf ${OBJS} $(LIB)

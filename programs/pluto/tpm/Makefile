@@ -65,15 +65,20 @@ install_file_list:
 	done;
 
 $(LIBA): $(OBJS)
-	$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
+	@echo AR $(notdir $<)
+	@$(AR) $(ARFLAGS) $(LIBA) $(OBJS)
 
 $(LIBL): $(LOGOBJS)
-	$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
+        @echo AR $(notdir $<)
+	@$(AR) $(ARFLAGS) $(LIBL) $(LOGOBJS)
 
 $(OBJS):	$(HDRS)
+       @echo CC  $(notdir $<)
+       @$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 $(LOGOBJS):	$(HDRS)
-
+       @echo CC  $(notdir $<)
+       @$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 cleanall:
 	rm -f *.o state_wrap.c libtpm.a
 

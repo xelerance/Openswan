@@ -1,3 +1,5 @@
+# -*- makefile -*-
+
 ALG:=blowfish
 CONFIG_YES:=$(CONFIG_IKE_ALG_BLOWFISH)
 DIR_BLOWFISH:=$(LIBCRYPTO)/libblowfish
@@ -10,4 +12,5 @@ $(DIR_BLOWFISH)/libblowfish.a:
 	make -C $(DIR_BLOWFISH) CFLAGS="$(CFLAGS)" libblowfish.a
 
 ike_alg_$(ALG).o: ike_alg_$(ALG).c
-	$(CC) -I $(LIBCRYPTO) -I$(DIR_BLOWFISH) $(COPTS) $(ALLFLAGS) -c $<
+	@echo CC $(notdir $<)
+	@$(CC) -I $(LIBCRYPTO) -I$(DIR_BLOWFISH) $(COPTS) $(ALLFLAGS) -c $<

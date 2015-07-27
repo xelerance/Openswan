@@ -11,4 +11,5 @@ endif
 
 CRYPTOAPI_OBJS := ipsec_alg_cryptoapi.o 
 $(MOD_CRYPTOAPI): $(CRYPTOAPI_OBJS)
-	$(LD) -r $(CRYPTOAPI_OBJS) -o $@
+	@echo LD ${MOD_CRYPTOAPI}
+	@$(LD) -r $(CRYPTOAPI_OBJS) -o $@

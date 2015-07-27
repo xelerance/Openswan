@@ -11,8 +11,9 @@ AES_OBJS := ipsec_alg_aes.o $(LIBCRYPTO)/libaes/libaes.a
 
 
 $(MOD_AES): $(AES_OBJS) 
-	$(LD) $(EXTRA_LDFLAGS) -r $(AES_OBJS) -o $@
+	@echo LD `basename $<`
+	@$(LD) $(EXTRA_LDFLAGS) -r $(AES_OBJS) -o $@
 
 $(LIBCRYPTO)/libaes/libaes.a: 
-        $(MAKE) -C $(LIBCRYPTO)/libaes CC='$(CC)' 'ARCH_ASM=$(ARCH_ASM)' CFLAGS='$(CFLAGS) $(EXTRA_CFLAGS)' libaes.a
+        @$(MAKE) -C $(LIBCRYPTO)/libaes CC='$(CC)' 'ARCH_ASM=$(ARCH_ASM)' CFLAGS='$(CFLAGS) $(EXTRA_CFLAGS)' libaes.a
 

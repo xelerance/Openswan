@@ -82,7 +82,8 @@ TARGETS =	timestamp
 @BIND9_MAKE_RULES@
 
 version.@O@: version.c
-	${LIBTOOL_MODE_COMPILE} ${CC} ${ALL_CFLAGS} \
+	@echo CC $(notdir $<)
+	@${LIBTOOL_MODE_COMPILE} ${CC} ${ALL_CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
@@ -90,11 +91,13 @@ version.@O@: version.c
 		-c ${srcdir}/version.c
 
 libisc.@SA@: ${OBJS}
-	${AR} ${ARFLAGS} $@ ${OBJS}
-	${RANLIB} $@
+	@echo AR $(notdir $<)
+	@${AR} ${ARFLAGS} $@ ${OBJS}
+	@${RANLIB} $@
 
 libisc.la: ${OBJS}
-	${LIBTOOL_MODE_LINK} \
+	@echo CC $(notdir $<)
+	@${LIBTOOL_MODE_LINK} \
 		${CC} ${ALL_CFLAGS} ${LDFLAGS} -o libisc.la -rpath ${libdir} \
 		-version-info ${LIBINTERFACE}:${LIBREVISION}:${LIBAGE} \
 		${OBJS} ${LIBS}
@@ -103,10 +106,12 @@ timestamp: libisc.@A@
 	touch timestamp
 
 installdirs:
-	$(SHELL) ${top_srcdir}/mkinstalldirs ${DESTDIR}${libdir}
+	@echo CC `basename $<`
+	@$(SHELL) ${top_srcdir}/mkinstalldirs ${DESTDIR}${libdir}
 
 install:: timestamp installdirs
-	${LIBTOOL_MODE_INSTALL} ${INSTALL_DATA} libisc.@A@ ${DESTDIR}${libdir}
+	@echo CC `basename $<`
+	@${LIBTOOL_MODE_INSTALL} ${INSTALL_DATA} libisc.@A@ ${DESTDIR}${libdir}
 
 clean distclean::
 	rm -f libisc.@A@ libisc.la timestamp

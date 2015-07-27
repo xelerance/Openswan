@@ -6,7 +6,8 @@ SOURCE=saref.c
 TARGET=libsaref.so
 
 ${TARGET}: ${SOURCE}
-	$(CC) ${CFLAGS} -fPIC -o $@ -shared -ldl ${SOURCE}
+	@echo CC  $(notdir $<)
+	@$(CC) ${CFLAGS} -fPIC -o $@ -shared -ldl ${SOURCE}
 
 .PHONY: clean
 clean:

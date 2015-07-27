@@ -268,15 +268,16 @@ check:
 checkprograms:
 
 .c.o:
-	@echo CC `basename $<`
+	@echo CC $(notdir $<)
 	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
 
 %.s: %.c
-	@echo CC-TO-AS `basename $<`
+	@echo CC-TO-AS $(notdir $<)
 	@$(CC) -S $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
 
 %.i: %.c
-	$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -E -o $@ $<
+	@echo CC $(notdir $<)
+	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -E -o $@ $<
 
 
 # Gather dependencies caused by explicit #includes within .c files
