@@ -6,7 +6,7 @@
 processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
-| Added new connection rw with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certreplyselfR1   loading certificate from moonCert.pem
 ./certreplyselfR1   could not open host cert file '/etc/ipsec.d/certs/moonCert.pem'
 RC=37 can not load certificate file moonCert.pem
@@ -14,17 +14,17 @@ RC=37 can not load certificate file moonCert.pem
 | counting wild cards for (none) is 15
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-./certreplyselfR1 adding connection: "rw"
+./certreplyselfR1 adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "rw": 10.2.0.0/16===132.213.238.7<132.213.238.7>...%any; unrouted; eroute owner: #0
-RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>...%any; unrouted; eroute owner: #0
+RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -99,14 +99,14 @@ RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw
+| find_host_pair: concluded with rw-any
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-any
 | searching for connection with policy = IKEv2ALLOW
-| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw)
-| find_host_connection2 returns rw
-| found connection: rw
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw-any)
+| find_host_connection2 returns rw-any
+| found connection: rw-any
 | creating state object #1 at Z
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5

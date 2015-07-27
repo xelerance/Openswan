@@ -8,25 +8,25 @@
 processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
-| Added new connection rw with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certreplyselfR2   loading certificate from moonCert.pem
 ./certreplyselfR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-./certreplyselfR2 adding connection: "rw"
+./certreplyselfR2 adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "rw": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
-RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
-RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
+RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -101,14 +101,14 @@ RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw
+| find_host_pair: concluded with rw-any
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-any
 | searching for connection with policy = IKEv2ALLOW
-| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw)
-| find_host_connection2 returns rw
-| found connection: rw
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw-any)
+| find_host_connection2 returns rw-any
+| found connection: rw-any
 | creating state object #1 at Z
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -913,11 +913,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
-|   ikev2_evaluate_connection_fit evaluating our I=rw:<self>:0/0 R=10.2.0.0/16:0/0  to their:
+|   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
-| bfit_n=ikev2_evaluate_connection_fit found better fit c rw
+| bfit_n=ikev2_evaluate_connection_fit found better fit c rw-any
 |     evaluate_connection_port_fit tsi_n[1], best=-1
 |    tsi[0] 0-65535: exact port match with 0.  fitness 65536
 |       evaluating_connection_port_fit tsi_n[0], range_i=65536 best=-1
@@ -925,27 +925,27 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |       evaluating_connection_port_fit tsi_n[0] tsr_n[0], range=65536/65536 best=-1
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
-| ikev2_evaluate_connection_port_fit found better fit c rw, tsi[0],tsr[0]
+| ikev2_evaluate_connection_port_fit found better fit c rw-any, tsi[0],tsr[0]
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
+| find_host_pair: concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 |    match_id a=(none)
 |             b=(none)
 |    results  matched
 |   trusted_ca called with a=(empty) b=(empty)
-|   ikev2_evaluate_connection_fit evaluating our I=rw:<self>:0/0 R=10.2.0.0/16:0/0  to their:
+|   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
-| prefix range fit d rw d->name was rejected by connection fit: 8224 > 8224
+| prefix range fit d rw-any d->name was rejected by connection fit: 8224 > 8224
 |    match_id a=carol@strongswan.org
 |             b=(none)
 |    results  matched
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
-| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:rw
-| instantiated "rw" for 93.184.216.34
-./certreplyselfR2 switched from "rw" to "rw"[1]
+| find_host_pair: concluded with rw-any
+| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:rw-any
+| instantiated "rw-any" for 93.184.216.34
+./certreplyselfR2 switched from "rw-any" to "rw-any"[1]
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
