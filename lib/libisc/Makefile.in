@@ -106,12 +106,10 @@ timestamp: libisc.@A@
 	touch timestamp
 
 installdirs:
-	@echo CC `basename $<`
-	@$(SHELL) ${top_srcdir}/mkinstalldirs ${DESTDIR}${libdir}
+	$(SHELL) ${top_srcdir}/mkinstalldirs ${DESTDIR}${libdir}
 
 install:: timestamp installdirs
-	@echo CC `basename $<`
-	@${LIBTOOL_MODE_INSTALL} ${INSTALL_DATA} libisc.@A@ ${DESTDIR}${libdir}
+	${LIBTOOL_MODE_INSTALL} ${INSTALL_DATA} libisc.@A@ ${DESTDIR}${libdir}
 
 clean distclean::
 	rm -f libisc.@A@ libisc.la timestamp

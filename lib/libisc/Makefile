@@ -48,7 +48,7 @@ SRCS +=		task.c event.c errno2result.c strerror.c
 SRCS +=		rwlock.c random.c inet_aton.c inet_ntop.c
 
 programs all: ${LIB}.a
-	@echo CC `basename $<`
+
 version.o: version.c
 	@echo CC $(notdir $<)
 	@${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
