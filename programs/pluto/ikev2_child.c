@@ -823,6 +823,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             }
         }
 
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*
 	 * now that we have found the best connection (in b), copy the data into
 	 * the state structure as the tsi/tsr, perhaps after instantiating it.

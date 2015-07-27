@@ -476,6 +476,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 | find_host_pair: concluded with gateway--any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
+| ikev2_evaluate_connection_fit, concluded with gateway--any
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07

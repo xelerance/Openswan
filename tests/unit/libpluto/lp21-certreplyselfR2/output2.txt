@@ -920,6 +920,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 | find_host_pair: concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
+| ikev2_evaluate_connection_fit, concluded with rw-any
 |    match_id a=carol@strongswan.org
 |             b=(none)
 |    results  matched
