@@ -77,9 +77,14 @@ install_file_list:
 	done
 
 $(LIB):	$(OBJS)
-	$(AR) $(ARFLAGS) $(LIB) $(OBJS)
+	@echo AR $(notdir $<)
+	@$(AR) $(ARFLAGS) $(LIB) $(OBJS)
 
 $(OBJS):	$(HDRS)
+
+%.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver

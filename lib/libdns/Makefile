@@ -53,7 +53,8 @@ SRCS +=         time.c key.c lib.c
 programs all: ${LIB}.a
 
 version.o: version.c
-	${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
+	@echo LIBTOOL $(notdir $<)
+	@${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
@@ -62,7 +63,8 @@ version.o: version.c
 		-c ${srcdir}/version.c
 
 ${LIB}.a: ${OBJS} version.o
-	${AR} ${ARFLAGS} $@ ${OBJS} version.o
+	@echo AR $(notdir $<)
+	@${AR} ${ARFLAGS} $@ ${OBJS} version.o
 
 timestamp: ${LIB}.a
 	touch timestamp
@@ -77,8 +79,9 @@ TAGS: ${SRCS}
 	etags ${SRCS}
 
 rdata.o: code.h
+	@echo CC $(notdir $<)
 name.o: ${HDRS}
-
+	@echo CC $(notdir $<)
 include/dns/enumtype.h: gen
 	mkdir -p include/dns
 	./gen -s ${srcdir} -t > $@
@@ -102,5 +105,6 @@ code.h:	gen
 # cross-compiled!
 HOSTCC?=cc
 gen: gen.c
-	${HOSTCC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
+	@echo HOSTCC $(notdir $<)
+	@${HOSTCC} ${HOSTCINCLUDES} ${LDFLAGS} -o $@ ${srcdir}gen.c ${LIBS}
 

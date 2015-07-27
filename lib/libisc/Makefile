@@ -48,9 +48,10 @@ SRCS +=		task.c event.c errno2result.c strerror.c
 SRCS +=		rwlock.c random.c inet_aton.c inet_ntop.c
 
 programs all: ${LIB}.a
-
+	@echo CC `basename $<`
 version.o: version.c
-	${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
+	@echo CC $(notdir $<)
+	@${LIBTOOL} --mode=compile ${CC} ${ALL_CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
@@ -59,7 +60,8 @@ version.o: version.c
 		-c ${srcdir}version.c
 
 ${LIB}.a: ${OBJS} version.o
-	${AR} ${ARFLAGS} $@ ${OBJS} version.o
+	@echo CC $(notdir $<)
+	@${AR} ${ARFLAGS} $@ ${OBJS} version.o
 
 timestamp: ${LIB}.a
 	touch timestamp

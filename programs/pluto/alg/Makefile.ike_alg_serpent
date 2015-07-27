@@ -1,3 +1,5 @@
+# -*- makefile -*-
+
 ALG:=serpent
 CONFIG_YES:=$(CONFIG_IKE_ALG_SERPENT)
 DIR_SERPENT:=$(LIBCRYPTO)/libserpent
@@ -10,4 +12,5 @@ $(DIR_SERPENT)/libserpent.a:
 	make -C $(DIR_SERPENT) CFLAGS="$(CFLAGS)" libserpent.a
 
 ike_alg_$(ALG).o: ike_alg_$(ALG).c
-	$(CC) -I $(LIBCRYPTO) -I$(DIR_SERPENT) $(COPTS) $(ALLFLAGS) -c $<
+	@echo CC $(notdir $<)
+	@$(CC) -I $(LIBCRYPTO) -I$(DIR_SERPENT) $(COPTS) $(ALLFLAGS) -c $<

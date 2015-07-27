@@ -55,10 +55,12 @@ include ${srcdir}../Makefile.library
 keywords.c: parser.tab.h
 
 lex.yy.c: parser.tab.c parser.l parser.y
-	$(LEX) ${srcdir}parser.l
+	@echo LEX $(notdir $<)
+	@$(LEX) ${srcdir}parser.l
 
 parser.tab.h parser.tab.c: parser.l parser.y
-	$(BISON) ${BISONOSFLAGS} -v -d ${srcdir}parser.y
+	@echo BISON $(notdir $<)
+	@$(BISON) ${BISONOSFLAGS} -v -d ${srcdir}parser.y
 
 cleanall::
 	$(RM) -f parser.tab.* lex.yy.*

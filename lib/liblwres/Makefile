@@ -55,7 +55,8 @@ ONEFILE=async.c
 all: programs
 
 version.o: version.c
-	${LIBTOOL} --mode=compile ${CC} ${CFLAGS} \
+	@echo LIBTOOL $(notdir $<)
+	@${LIBTOOL} --mode=compile ${CC} ${CFLAGS} \
 		-DVERSION=\"${VERSION}\" \
 		-DLIBINTERFACE=${LIBINTERFACE} \
 		-DLIBREVISION=${LIBREVISION} \
@@ -67,6 +68,10 @@ timestamp: liblwres.a
 	touch timestamp
 
 $(OBJS):	$(HDRS)
+
+%.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
 
 check:
 	echo no checks in lib right now.
