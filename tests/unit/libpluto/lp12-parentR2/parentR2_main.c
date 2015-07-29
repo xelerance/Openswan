@@ -41,6 +41,13 @@ void recv_pcap_packet2(u_char *user
 
 }
 
+#ifndef PCAP_INPUT_COUNT
+#define PCAP_INPUT_COUNT 2
+recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
+    recv_pcap_packet,
+    recv_pcap_packet2,
+};
+#endif
 
 
 main(int argc, char *argv[])
@@ -48,8 +55,8 @@ main(int argc, char *argv[])
     int   len;
     char *infile;
     char *conn_name;
-    char *pcap1in;
-    char *pcap2in;
+    char *pcapin[PCAP_INPUT_COUNT];
+    int   i;
     char *pcap_out;
     int  lineno=0;
     int regression;
@@ -62,6 +69,7 @@ main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
+    zero(pcapin);
 
     /* skip argv0 */
     argc--; argv++;
@@ -86,9 +94,10 @@ main(int argc, char *argv[])
 
     infile = argv[0];
     conn_name = argv[1];
-    pcap1in   = argv[2];
-    pcap2in   = argv[3];
-    pcap_out  = argv[4];
+    pcap_out  = argv[2];
+    for(i=0; i<PCAP_INPUT_COUNT; i++) {
+        pcapin[i] = argv[3+i];
+    }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(10);
@@ -97,26 +106,28 @@ main(int argc, char *argv[])
 
     assert(orient(c1, 500));
     show_one_connection(c1);
+    init_loaded();
 
-    /* omit the R1 reply */
-    send_packet_setup_pcap("/dev/null");
+    for(i=0; i<PCAP_INPUT_COUNT; i++) {
+        if((i+1) < PCAP_INPUT_COUNT) {
+            /* omit the R1 reply */
+            send_packet_setup_pcap("/dev/null");
+        } else {
+            printf("%u: output to %s\n", i, pcap_out);
+            send_packet_setup_pcap(pcap_out);
+        }
 
-    /* setup to process the I1 packet */
-    recv_pcap_setup(pcap1in);
+        /* setup to process the n'th packet */
+        printf("%u: input from %s\n", i, pcapin[i]);
+        recv_pcap_setup(pcapin[i]);
 
-    /* process first I1 packet */
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-    pcap_dispatch(pt, 1, recv_pcap_packet, NULL);
+        /* process first I1 packet */
+        cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+        pcap_dispatch(pt, 1, recv_inputs[i], NULL);
 
-    /* set up output file */
-    send_packet_setup_pcap(pcap_out);
-    pcap_close(pt);
-
-    /* now process the I2 packet */
-    recv_pcap_setup(pcap2in);
-
-    cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-    pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);
+        /* set up output file */
+        pcap_close(pt);
+    }
 
     /* clean up so that we can see any leaks */
     st = state_with_serialno(1);

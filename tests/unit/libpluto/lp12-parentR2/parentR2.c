@@ -15,6 +15,9 @@ static void init_fake_secrets(void)
     /* nothing for parentR2 */
 }
 
+static void init_loaded(void)
+{   /* nothing */ }
+
 #include "parentR2_main.c"
 
  /*

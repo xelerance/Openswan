@@ -17,6 +17,9 @@ static void init_fake_secrets(void)
 			       , NULL);
 }
 
+static void init_loaded(void)
+{   /* nothing */ }
+
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*

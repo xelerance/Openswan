@@ -784,3 +784,6 @@ sending 396 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+0: input from parentI1.pcap
+1: output to OUTPUT/parentR2.pcap
+1: input from parentI2.pcap
