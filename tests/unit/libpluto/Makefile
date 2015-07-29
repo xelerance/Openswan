@@ -37,6 +37,5 @@ clean check:
 	@${MAKE} -C lp19-certreplyselfR1 $@
 	@${MAKE} -C lp20-certificateselfI2 $@
 	@${MAKE} -C lp21-certreplyselfR2 $@
-
-
-
+	@${MAKE} -C lp22-certreplymanyR2  $@
+	@${MAKE} -C lp23-davecertI1       $@

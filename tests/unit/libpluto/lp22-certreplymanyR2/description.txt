@@ -4,7 +4,7 @@ This test case loads multiple conns with different names, and it should
 bind only the conn that matches the actual name.
 
 It is otherwise identical to lp17 and lp21, except it loads rw-carol and
-rw-dave.
+rw-dave in order to cause "confusion".
 
 
 
