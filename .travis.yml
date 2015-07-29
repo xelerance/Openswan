@@ -6,7 +6,7 @@ language: c
 compiler:
   - gcc
 
-sudo: required
+sudo: false
 addons:
   apt:
     packages:
@@ -22,6 +22,10 @@ addons:
       - libnspr4-dev
       - libnss3-dev
 
+cache:
+  directories:
+  - $HOME/stuff
+
 env:
   global:
     - IPSECVERSION=0.0.0
@@ -30,20 +34,21 @@ env:
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
 before_install:
-  - uname -a
-  - env | sort -f
   - if [ -z "$TRAVIS_OS_NAME" ]; then TRAVIS_OS_NAME=linux; fi
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew update; fi
 
+before_script:
+  - tests/utils/testsetup.sh
+
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
-  - if [ "$TRAVIS_OS_NAME" = linux ]; then sudo apt-get install electric-fence tcpdump libnspr4-dev libnss3-dev; fi
   - "PATH=$HOME/bin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi
 
 script:
+  - export PATH=$PATH:$HOME/stuff/bin
   - "cat Makefile.inc.local"
   - "make env | sort -f"
   - "make programs ARCH=${BUILD_ARCH} LIBEFENCE="
