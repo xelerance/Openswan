@@ -30,13 +30,16 @@ processing whack msg time: X size: Y
 ./certreplydaveR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
-| counting wild cards for carol@strongswan.org is 0
+./certreplydaveR2   loading certificate from carolCert.pem
+./certreplydaveR2   loaded host cert file '../samples/gatewaycert/certs/carolCert.pem' (1493 bytes)
+| certificate is valid
+| counting wild cards for 93.184.216.34 is 0
 | orient rw-carol checking against if: eth0
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 | find_host_pair: concluded with rw-any
 | connect_to_host_pair: 132.213.238.7:500 %address 93.184.216.34:500 -> hp:rw-any
 ./certreplydaveR2 adding connection: "rw-carol"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>[carol@strongswan.org]
+| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -45,13 +48,13 @@ processing whack msg time: X size: Y
 ./certreplydaveR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
-| counting wild cards for dave@openswan.org is 0
+| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
 | orient rw-dave checking against if: eth0
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 | find_host_pair: concluded with rw-carol
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.0.200:500 -> hp:rw-carol
 ./certreplydaveR2 adding connection: "rw-dave"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[dave@openswan.org]
+| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
@@ -61,13 +64,13 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Changed path to directory '../samples/gatewaycert/cacerts'
 ./certreplydaveR2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
-RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>[carol@strongswan.org]; unrouted; eroute owner: #0
-RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>; unrouted; eroute owner: #0
+RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=carolCert.pem;
 RC=0 "rw-carol":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-carol":   newest ISAKMP SA: #0; newest IPsec SA: #0;
-RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[dave@openswan.org]; unrouted; eroute owner: #0
+RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-dave":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
@@ -873,6 +876,16 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |
 | List of X.509 End Certificates:
 |
+| NOW, count: 1
+|        subject: 'C=CH, O=Linux strongSwan, OU=Research, CN=carol@strongswan.org'
+|        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|        serial:   30
+|        pubkey:   2048 RSA Key AwEAAbfz1
+|        validity: not before Aug 27 15:05:36 UTC 2014 ok
+|                  not after  Aug 26 15:05:36 UTC 2019 ok
+|        subjkey:  5c:59:70:62:57:2d:2a:24:9c:5c:94:56:9b:89:5e:e5:c5:05:b6:bd
+|        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|        aserial:  00
 | NOW, count: 3
 |        subject: 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
 |        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
@@ -1032,10 +1045,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
 | find_host_pair: concluded with rw-dave
 |   checking hostpair 10.2.0.0/16 -> 192.168.0.200/32 is found
-|    match_id a=dave@openswan.org
-|             b=carol@strongswan.org
+|    match_id a=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
+|             b=93.184.216.34
 |    results  fail
-|    match_id a=dave@openswan.org
+|    match_id a=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
 |             b=(none)
 |    results  matched
 |   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
@@ -2397,6 +2410,16 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |
 | List of X.509 End Certificates:
 |
+| NOW, count: 1
+|        subject: 'C=CH, O=Linux strongSwan, OU=Research, CN=carol@strongswan.org'
+|        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|        serial:   30
+|        pubkey:   2048 RSA Key AwEAAbfz1
+|        validity: not before Aug 27 15:05:36 UTC 2014 ok
+|                  not after  Aug 26 15:05:36 UTC 2019 ok
+|        subjkey:  5c:59:70:62:57:2d:2a:24:9c:5c:94:56:9b:89:5e:e5:c5:05:b6:bd
+|        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|        aserial:  00
 | NOW, count: 4
 |        subject: 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
 |        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
@@ -2567,15 +2590,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 | find_host_pair: concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 93.184.216.34/32 is found
 |    match_id a=carol@strongswan.org
-|             b=dave@openswan.org
+|             b=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
 |    results  fail
 |    match_id a=carol@strongswan.org
-|             b=carol@strongswan.org
-|    results  matched
-|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
-|   ikev2_evaluate_connection_fit evaluating our I=rw-carol:<noclient>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.35/93.184.216.35 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| prefix range fit d rw-carol d->name was rejected by connection fit: -1 > 8224
+|             b=93.184.216.34
+|    results  fail
 |    match_id a=carol@strongswan.org
 |             b=(none)
 |    results  matched
@@ -3256,12 +3275,17 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: alg_info_ike, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
-./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: connection name, item size: X
-./certreplydaveR2 leak: certificate filename, item size: X
+./certreplydaveR2 leak: issuer dn, item size: X
+./certreplydaveR2 leak: pubkey entry, item size: X
+./certreplydaveR2 leak: pubkey, item size: X
+./certreplydaveR2 leak: 2 * generalName, item size: X
+./certreplydaveR2 leak: x509cert, item size: X
+./certreplydaveR2 leak: host cert, item size: X
+./certreplydaveR2 leak: 2 * certificate filename, item size: X
 ./certreplydaveR2 leak: struct connection, item size: X
 ./certreplydaveR2 leak: alg_info_ike, item size: X
 ./certreplydaveR2 leak: host_pair, item size: X
