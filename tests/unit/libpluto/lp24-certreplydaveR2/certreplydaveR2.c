@@ -21,6 +21,7 @@ static void init_fake_secrets(void)
 			       , &pass);
 }
 
+/* this step is an INIT, so no state, but need KE values */
 void recv_pcap_packet3(u_char *user
                       , const struct pcap_pkthdr *h
                       , const u_char *bytes)
@@ -32,16 +33,25 @@ void recv_pcap_packet3(u_char *user
 
     /* find st involved */
     st = state_with_serialno(3);
-    assert(strcmp(st->st_connection->name, "rw-dave"));
-    st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    if(st) {
+        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
-    run_continuation(crypto_req);
+        /* now fill in the KE values from a constant.. not calculated */
+        clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
 
+        run_continuation(crypto_req);
+    }
 }
 
 static void init_loaded(void)
 {
     struct connection *c;
+
+    /* loading X.509 CA certificates */
+    load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
+
     c = con_by_name("rw-carol", TRUE);
     assert(c != NULL);
     show_one_connection(c);

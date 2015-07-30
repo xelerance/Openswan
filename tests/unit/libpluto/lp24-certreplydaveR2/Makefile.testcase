@@ -2,10 +2,10 @@
 TESTNAME=certreplydaveR2
 CONNNAME1=rw-any
 CONNNAME=${CONNNAME1} rw-carol rw-dave
-UNITTEST1PCAP=OUTPUT/parentR2.pcap
-UNITTEST2PCAP=
+UNITTEST1PCAP=OUTPUT/parentR1dave.pcap
+UNITTEST2PCAP=OUTPUT/parentR2dave.pcap
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME1} ${UNITTEST1PCAP} carolI1.pcap carolI2.pcap davecertI1.pcap
-UNITTEST2ARGS=
+UNITTEST2ARGS=${WHACKFILE} ${CONNNAME1} ${UNITTEST1PCAP} carolI1.pcap carolI2.pcap davecertI1.pcap davecertI2.pcap
 ENDNAME=gatewaycert
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 

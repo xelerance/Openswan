@@ -55,19 +55,21 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+| Changed path to directory '../samples/gatewaycert/cacerts'
+./certreplydaveR2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
 RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>[carol@strongswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw-carol":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-carol":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-carol":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[dave@strongswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw-dave":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-dave":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 RC=0 "rw-dave":   newest ISAKMP SA: #0; newest IPsec SA: #0;
@@ -816,8 +818,74 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | L3 - algorithm:
 |   'sha256WithRSAEncryption'
 | L1 - signatureValue:
-./certreplydaveR2 issuer cacert not found
-./certreplydaveR2 X.509 certificate rejected
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  3a 7b 01 8d  c6 5f e2 16  ac b2 73 aa  30 f3 7f 1c
+|   d0 44 a1 3c  de dd 68 b1  d7 c2 2e 90  8e 84 8d fe
+| decrypt_sig() decrypted signature:
+|   00 00 01 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff 00 30 31
+|   30 0d 06 09  60 86 48 01  65 03 04 02  01 05 00 04
+|   20 3a 7b 01  8d c6 5f e2  16 ac b2 73  aa 30 f3 7f
+|   1c d0 44 a1  3c de dd 68  b1 d7 c2 2e  90 8e 84 8d
+|   fe
+./certreplydaveR2 no crl from issuer "C=CH, O=Linux strongSwan, CN=strongSwan Root CA" found (strict=no)
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  63 33 5c 1c  04 4c 3c 18  f3 3c c9 ae  27 67 2e 3d
+|   6e cc 19 9e  c2 d1 9f 9d  ee 43 7f 8c  44 e9 6d a5
+| decrypt_sig() decrypted signature:
+|   00 00 01 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff 00 30 31
+|   30 0d 06 09  60 86 48 01  65 03 04 02  01 05 00 04
+|   20 63 33 5c  1c 04 4c 3c  18 f3 3c c9  ae 27 67 2e
+|   3d 6e cc 19  9e c2 d1 9f  9d ee 43 7f  8c 44 e9 6d
+|   a5
+| reached self-signed root ca
+| Public key validated
+|  keyid: *AwEAAbfz1
+|  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
+|  PublicExponent: 10001
+|  keyid: *AwEAAbfz1
+|  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
+|  PublicExponent: 10001
+| ikev2 verify required CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|
+| List of X.509 End Certificates:
+|
+| NOW, count: 3
+|        subject: 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
+|        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|        serial:   2b
+|        pubkey:   2048 RSA Key AwEAAaR8B
+|        validity: not before Aug 27 14:44:56 UTC 2014 ok
+|                  not after  Aug 26 14:44:56 UTC 2019 ok
+|        subjkey:  d8:26:3d:21:ec:7c:db:be:5a:39:0c:5b:70:cb:03:80:21:de:ae:13
+|        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|        aserial:  00
+| checking alg=1 == 1, same_id=1
+|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
+| key issuer CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -970,7 +1038,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |    match_id a=dave@strongswan.org
 |             b=(none)
 |    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
 |   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
@@ -1600,44 +1668,6 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 | ***emit IKEv2 Security Association Payload:
 |    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
-| no IKE algorithms for this connection
-| ****parse IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    length: 44
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| ****parse IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    length: 44
-|    prop #: 2
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
 | ****emit IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
@@ -1670,54 +1700,68 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 48
-| DH public value received:
-|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
-|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
-|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
-|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
-|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
-|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
-|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
-|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
-|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
-|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
-|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 | ***emit IKEv2 Key Exchange Payload:
 |    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
-| emitting 0 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
-| ikev2 g^x
-| emitting length of IKEv2 Key Exchange Payload: 8
+| emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+| emitting length of IKEv2 Key Exchange Payload: 264
 | ***emit IKEv2 Nonce Payload:
 |    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
-| IKEv2 nonce  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+| IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
 |    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 120
+| emitting length of ISAKMP Message: 376
 | complete v2 state transition with STF_OK
 ./certreplydaveR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./certreplydaveR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
 | sending reply packet to 93.184.216.35:500 (from port 500)
-sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (using #3)
+sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (using #3)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
-|   21 20 22 20  00 00 00 00  00 00 00 78  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 00 08
-|   00 0e 00 00  2b 00 00 14  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 00 10  4f 45 70 6c
+|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
+|   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
+|   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
+|   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
+|   b1 53 18 07  81 e8 1d 07  c6 19 1c de  dc 1f 2c 26
+|   d2 0b 59 f9  67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d
+|   8e d0 30 08  0b ed 95 b0  65 2f 5c a6  36 7e 92 2d
+|   da cb 88 54  e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29
+|   be 2c a4 55  68 01 45 bc  56 a9 84 b9  2b 1b bf 9a
+|   fc 84 67 5f  d3 04 79 90  b7 fa 89 5b  04 06 d5 9a
+|   50 92 16 4b  d6 33 40 be  2a 44 94 74  33 a7 a5 c1
+|   1f 88 5b eb  4e d2 bb 94  b9 22 db e3  b6 5a 8c f9
+|   d6 43 5d 5e  5d c9 19 b8  c8 81 53 01  95 09 02 7b
+|   c0 2a b0 c8  5d 2c 69 78  6c e8 f6 5d  e4 90 43 83
+|   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
+|   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
+|   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
+|   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
+|   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
 ./certreplydaveR2 leak: reply packet, item size: X
 ./certreplydaveR2 leak: saved first packet, item size: X
@@ -1797,16 +1841,28 @@ sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./certreplydaveR2 leak: st_skeyseed in duplicate_state, item size: X
 ./certreplydaveR2 leak: st_enc_key in duplicate_state, item size: X
 ./certreplydaveR2 leak: struct state in new_state(), item size: X
+./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: connection name, item size: X
 ./certreplydaveR2 leak: temporary connection, item size: X
+./certreplydaveR2 leak: issuer dn, item size: X
+./certreplydaveR2 leak: keep id name, item size: X
+./certreplydaveR2 leak: pubkey entry, item size: X
+./certreplydaveR2 leak: pubkey, item size: X
+./certreplydaveR2 leak: issuer dn, item size: X
+./certreplydaveR2 leak: keep id name, item size: X
+./certreplydaveR2 leak: pubkey entry, item size: X
+./certreplydaveR2 leak: pubkey, item size: X
 ./certreplydaveR2 leak: ikev2_inI2outR2 KE, item size: X
 ./certreplydaveR2 leak: ikev2_inI1outR1 KE, item size: X
 ./certreplydaveR2 leak: msg_digest, item size: X
+./certreplydaveR2 leak: x509cert, item size: X
+./certreplydaveR2 leak: CA cert, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
+./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
@@ -1824,6 +1880,7 @@ sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./certreplydaveR2 leak: struct connection, item size: X
 ./certreplydaveR2 leak: alg_info_ike, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
+./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
@@ -1833,6 +1890,7 @@ sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./certreplydaveR2 leak: struct connection, item size: X
 ./certreplydaveR2 leak: alg_info_ike, item size: X
 ./certreplydaveR2 leak: host_pair, item size: X
+./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: host ip, item size: X
 ./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
@@ -1854,14 +1912,22 @@ sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./certreplydaveR2 leak: cacert path, item size: X
 ./certreplydaveR2 leak: acert path, item size: X
 ./certreplydaveR2 leak: override ipsec.d, item size: X
+./certreplydaveR2 leak: 2 * hasher name, item size: X
+./certreplydaveR2 leak: policies path, item size: X
+./certreplydaveR2 leak: ocspcerts path, item size: X
+./certreplydaveR2 leak: aacerts path, item size: X
+./certreplydaveR2 leak: certs path, item size: X
+./certreplydaveR2 leak: private path, item size: X
+./certreplydaveR2 leak: crls path, item size: X
+./certreplydaveR2 leak: cacert path, item size: X
+./certreplydaveR2 leak: acert path, item size: X
 ./certreplydaveR2 leak: default conf var_dir, item size: X
 ./certreplydaveR2 leak: default conf conffile, item size: X
 ./certreplydaveR2 leak: default conf ipsecd_dir, item size: X
 ./certreplydaveR2 leak: default conf ipsec_conf_dir, item size: X
-./certreplydaveR2 leak: 2 * hasher name, item size: X
 ./certreplydaveR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 0: input from carolI1.pcap
 1: input from carolI2.pcap
-2: output to OUTPUT/parentR2.pcap
+2: output to OUTPUT/parentR1dave.pcap
 2: input from davecertI1.pcap
