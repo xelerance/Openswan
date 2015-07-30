@@ -537,7 +537,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | Now lets proceed with state specific processing
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 ./parentI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
-| required CA is '%any'
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, same_id=1
 |   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 |  check narrowing - we are responding to I2

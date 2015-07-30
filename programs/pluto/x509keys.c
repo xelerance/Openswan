@@ -136,8 +136,8 @@ ikev2_decode_cert(struct msg_digest *md)
 		{
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
-		    )
-			add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
+                        );
+                    add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
 		}
 		else
 		{

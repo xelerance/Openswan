@@ -294,9 +294,9 @@ RSA_check_signature_gen(struct state *st
 	{
 	    struct pubkey *key = p->key;
 
-	    if (key->alg == PUBKEY_ALG_RSA
-		&& same_id(&c->spd.that.id, &key->id)
-		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+            if (key->alg == PUBKEY_ALG_RSA
+                && same_id(&st->ikev2.st_peer_id, &key->id)
+                && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
 		time_t tnow;
 

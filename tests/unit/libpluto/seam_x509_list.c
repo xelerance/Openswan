@@ -38,47 +38,46 @@ list_x509cert_chain(const char *caption, x509cert_t* cert, u_char auth_flags
 
 	    if (first)
 	    {
-		printf( " \n");
-		printf( "List of X.509 %s Certificates:\n", caption);
-		printf( " \n");
+		DBG_log( " ");
+		DBG_log( "List of X.509 %s Certificates:", caption);
+		DBG_log( " ");
 		first = FALSE;
 	    }
 
-	    printf( "%s, count: %d\n", timetoa(&cert->installed, utc, tbuf, sizeof(tbuf)),
-		      cert->count);
+	    DBG_log( "NOW, count: %d", cert->count);
 	    dntoa(buf, ASN1_BUF_LEN, cert->subject);
-	    printf( "       subject: '%s'\n", buf);
+	    DBG_log( "       subject: '%s'", buf);
 	    dntoa(buf, ASN1_BUF_LEN, cert->issuer);
-	    printf( "       issuer:  '%s'\n", buf);
+	    DBG_log( "       issuer:  '%s'", buf);
 	    datatot(cert->serialNumber.ptr, cert->serialNumber.len, ':'
 		, buf, ASN1_BUF_LEN);
-	    printf( "       serial:   %s\n", buf);
+	    DBG_log( "       serial:   %s", buf);
 	    form_keyid(cert->publicExponent, cert->modulus, keyid, &keysize);
-	    printf( "       pubkey:   %4d RSA Key %s\n"
+	    DBG_log( "       pubkey:   %4d RSA Key %s"
                     , 8*keysize, keyid);
-	    printf( "       validity: not before %s %s\n",
+	    DBG_log( "       validity: not before %s %s",
 		timetoa(&cert->notBefore, utc, tbuf, sizeof(tbuf)),
 		(cert->notBefore < tnow)?"ok":"fatal (not valid yet)");
-	    printf( "                 not after  %s %s\n",
+	    DBG_log( "                 not after  %s %s",
 		timetoa(&cert->notAfter, utc, tbuf, sizeof(tbuf)),
 		check_expiry(cert->notAfter, CA_CERT_WARNING_INTERVAL, TRUE));
 	    if (cert->subjectKeyID.ptr != NULL)
 	    {
 		datatot(cert->subjectKeyID.ptr, cert->subjectKeyID.len, ':'
 		    , buf, ASN1_BUF_LEN);
-		printf( "       subjkey:  %s\n", buf);
+		DBG_log( "       subjkey:  %s", buf);
 	    }
 	    if (cert->authKeyID.ptr != NULL)
 	    {
 		datatot(cert->authKeyID.ptr, cert->authKeyID.len, ':'
 		    , buf, ASN1_BUF_LEN);
-		printf( "       authkey:  %s\n", buf);
+		DBG_log( "       authkey:  %s", buf);
 	    }
 	    if (cert->authKeySerialNumber.ptr != NULL)
 	    {
 		datatot(cert->authKeySerialNumber.ptr, cert->authKeySerialNumber.len
 		    , ':', buf, ASN1_BUF_LEN);
-		printf( "       aserial:  %s\n", buf);
+		DBG_log( "       aserial:  %s", buf);
 	    }
 	}
 	cert = cert->next;

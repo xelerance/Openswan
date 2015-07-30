@@ -22,7 +22,10 @@ static void init_fake_secrets(void)
 }
 
 static void init_loaded(void)
-{   /* nothing */ }
+{
+    /* loading X.509 CA certificates */
+    load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
+}
 
 #include "../lp12-parentR2/parentR2_main.c"
 

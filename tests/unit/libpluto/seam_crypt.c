@@ -100,7 +100,7 @@ ikev2_verify_rsa_sha1(struct state *st
     DBG(DBG_CONTROL,
         char buf[IDTOA_BUF];
         dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
-        DBG_log("required CA is '%s'", buf));
+        DBG_log("ikev2 verify required CA is '%s'", buf));
   }
 
   {
@@ -114,7 +114,7 @@ ikev2_verify_rsa_sha1(struct state *st
       struct pubkey *key = p->key;
       pp = &p->next;
 
-      printf("checking alg=%d == %d, same_id=%u\n",
+      DBG_log("checking alg=%d == %d, same_id=%u\n",
              key->alg, PUBKEY_ALG_RSA, same_id(&st->ikev2.st_peer_id, &key->id));
       if (key->alg == PUBKEY_ALG_RSA
           && same_id(&st->ikev2.st_peer_id, &key->id)

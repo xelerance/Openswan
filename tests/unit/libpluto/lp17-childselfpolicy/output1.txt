@@ -397,7 +397,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
-| required CA is '%any'
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, same_id=1
 |   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
@@ -567,6 +568,9 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: keep id name, item size: X
 ./respondselfR2 leak: pubkey entry, item size: X
 ./respondselfR2 leak: pubkey, item size: X
+./respondselfR2 leak: 2 * id list, item size: X
+./respondselfR2 leak: secret, item size: X
+./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak: policies path, item size: X
 ./respondselfR2 leak: ocspcerts path, item size: X
 ./respondselfR2 leak: aacerts path, item size: X
@@ -579,12 +583,8 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: default conf conffile, item size: X
 ./respondselfR2 leak: default conf ipsecd_dir, item size: X
 ./respondselfR2 leak: default conf ipsec_conf_dir, item size: X
-./respondselfR2 leak: 2 * id list, item size: X
-./respondselfR2 leak: secret, item size: X
-./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 0: input from parentI1.pcap
 1: output to OUTPUT/parentR2_allzero.pcap
 1: input from parentI2_allzero.pcap
-checking alg=1 == 1, same_id=1
