@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
+#include "oswconf.h"
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"
@@ -39,4 +40,5 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 #include "seam_finish.c"
 
 #include "ikev2sendI1.c"
+
 

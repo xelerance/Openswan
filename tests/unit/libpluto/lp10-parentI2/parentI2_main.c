@@ -48,6 +48,7 @@ main(int argc, char *argv[])
         argc--; argv++;
     }
 
+    oco = osw_init_options();
     tool_init_log();
     init_crypto();
     load_oswcrypto();
@@ -72,6 +73,7 @@ main(int argc, char *argv[])
 
     assert(orient(c1, 500));
     show_one_connection(c1);
+    init_loaded();
 
     st = sendI1(c1, DBG_CONTROL, regression == 0);
 

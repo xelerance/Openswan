@@ -18,6 +18,9 @@ static void init_fake_secrets(void)
 			       , NULL);
 }
 
+static void init_loaded(void)
+{   /* nothing */ }
+
 #include "parentI2_main.c"
 
  /*

@@ -38,6 +38,4 @@
 
 #include "seam_gr_sha1_group14.c"
 
-typedef void (*recv_pcap)(u_char *user, const struct pcap_pkthdr *h, const u_char *);
-const struct osw_conf_options *oco;
 
