@@ -57,6 +57,18 @@ RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>[carol@strongswan.org]; unrouted; eroute owner: #0
+RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-carol":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "rw-carol":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[dave@strongswan.org]; unrouted; eroute owner: #0
+RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-dave":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "rw-dave":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -1486,6 +1498,271 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 |   8e 06 1e 5b  f8 cf 41 bb  7e 82 0c 9b
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+| *received 836 bytes from 93.184.216.35:500 on eth0 (port=500)
+|   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
+|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
+|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
+| I am IKE SA Responder
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found in hash 4
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| considering state entry: 0
+|   reject:state needed and state unavailable
+| considering state entry: 1
+|   reject:state needed and state unavailable
+| considering state entry: 2
+|   reject:state needed and state unavailable
+| considering state entry: 3
+| Now lets proceed with state specific processing
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.35:500 policy=IKEv2ALLOW
+| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: concluded with rw-any
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.35:500 -> hp:rw-any
+| searching for connection with policy = IKEv2ALLOW
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw-any)
+| find_host_connection2 returns rw-any
+| found connection: rw-any
+| creating state object #3 at Z
+| orient rw-any checking against if: eth0
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
+| state hash entry 15
+| inserting state object #3 bucket: 15
+| will not send/process a dcookie
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   8d 0e 0f 10  11 12 13 14
+|    responder cookie:
+|   5d 73 ce 75  3d b1 db 6d
+|    next payload type: ISAKMP_NEXT_v2SA
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_RESPONSE
+|    message ID:  00 00 00 00
+| ***emit IKEv2 Security Association Payload:
+|    next payload type: ISAKMP_NEXT_v2KE
+|    critical bit: none
+| no IKE algorithms for this connection
+| ****parse IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| *****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    length: 8
+|    transform type: 2
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| ****parse IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_P
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| ****emit IKEv2 Proposal Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 1
+|    transform ID: 12
+| ******emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 3
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_T
+|    transform type: 2
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Security Association Payload: 48
+| DH public value received:
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+| ***emit IKEv2 Key Exchange Payload:
+|    next payload type: ISAKMP_NEXT_v2Ni
+|    critical bit: none
+|    transform type: 14
+| emitting 0 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x
+| emitting length of IKEv2 Key Exchange Payload: 8
+| ***emit IKEv2 Nonce Payload:
+|    next payload type: ISAKMP_NEXT_v2V
+|    critical bit: none
+| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
+| IKEv2 nonce  00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+| emitting length of IKEv2 Nonce Payload: 20
+| ***emit ISAKMP Vendor ID Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| emitting length of ISAKMP Message: 120
+| complete v2 state transition with STF_OK
+./certreplydaveR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
+./certreplydaveR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+| sending reply packet to 93.184.216.35:500 (from port 500)
+sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (using #3)
+|   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
+|   21 20 22 20  00 00 00 00  00 00 00 78  22 00 00 30
+|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 00 08
+|   00 0e 00 00  2b 00 00 14  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30
+./certreplydaveR2 leak: reply packet, item size: X
+./certreplydaveR2 leak: saved first packet, item size: X
+./certreplydaveR2 leak: initiator nonce, item size: X
+./certreplydaveR2 leak: long term secret, item size: X
+./certreplydaveR2 leak: saved gi value, item size: X
+./certreplydaveR2 leak: nonce, item size: X
+./certreplydaveR2 leak: Gi, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_prop, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: db_attrs, item size: X
+./certreplydaveR2 leak: db_v2_trans, item size: X
+./certreplydaveR2 leak: db_v2_prop_conj, item size: X
+./certreplydaveR2 leak: 12 * sa copy attrs array, item size: X
+./certreplydaveR2 leak: sa copy trans array, item size: X
+./certreplydaveR2 leak: sa copy prop array, item size: X
+./certreplydaveR2 leak: sa copy prop conj array, item size: X
+./certreplydaveR2 leak: sa copy prop_conj, item size: X
+./certreplydaveR2 leak: saved first received packet, item size: X
+./certreplydaveR2 leak: ikev2_inI1outR1 KE, item size: X
+./certreplydaveR2 leak: struct state in new_state(), item size: X
 ./certreplydaveR2 leak: reply packet, item size: X
 ./certreplydaveR2 leak: skeyseed_t1, item size: X
 ./certreplydaveR2 leak: responder keys, item size: X
@@ -1580,3 +1857,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplydaveR2 leak: 2 * hasher name, item size: X
 ./certreplydaveR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+0: input from carolI1.pcap
+1: input from carolI2.pcap
+2: output to OUTPUT/parentR2.pcap
+2: input from davecertI1.pcap

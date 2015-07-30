@@ -79,8 +79,8 @@ main(int argc, char *argv[])
         argc--; argv++;
     }
 
-    if(argc != 5) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin1> <pcapin2> <pcapout>\n", progname);
+    if(argc != 3+PCAP_INPUT_COUNT) {
+	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", progname);
 	exit(10);
     }
 
