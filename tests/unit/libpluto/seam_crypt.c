@@ -111,11 +111,15 @@ ikev2_verify_rsa_sha1(struct state *st
 
   for (p = pluto_pubkeys; p != NULL; p = *pp)
     {
+      char keyname[IDTOA_BUF];
       struct pubkey *key = p->key;
       pp = &p->next;
 
-      DBG_log("checking alg=%d == %d, same_id=%u\n",
-             key->alg, PUBKEY_ALG_RSA, same_id(&st->ikev2.st_peer_id, &key->id));
+      idtoa(&key->id, keyname, IDTOA_BUF);
+      DBG_log("checking alg=%d == %d, keyid=%s same_id=%u\n"
+              , key->alg, PUBKEY_ALG_RSA
+              , keyname
+              , same_id(&st->ikev2.st_peer_id, &key->id));
       if (key->alg == PUBKEY_ALG_RSA
           && same_id(&st->ikev2.st_peer_id, &key->id)
           && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))

@@ -45,6 +45,24 @@ void recv_pcap_packet3(u_char *user
     }
 }
 
+void recv_pcap_packet4(u_char *user
+                      , const struct pcap_pkthdr *h
+                      , const u_char *bytes)
+{
+    struct state *st;
+    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+
+    recv_pcap_packet_gen(user, h, bytes);
+
+    /* find st involved */
+    st = state_with_serialno(3);
+    assert(st!=NULL);
+    st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+
+    run_continuation(crypto_req);
+}
+
+
 static void init_loaded(void)
 {
     struct connection *c;
@@ -63,14 +81,15 @@ static void init_loaded(void)
 
 
 
-#define PCAP_INPUT_COUNT 3
+#define PCAP_INPUT_COUNT 4
 void recv_pcap_packet(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes);
 void recv_pcap_packet2(u_char *user, const struct pcap_pkthdr *h, const u_char *bytes);
 
 recv_pcap recv_inputs[]={
     recv_pcap_packet,
     recv_pcap_packet2,
-    recv_pcap_packet3
+    recv_pcap_packet3,
+    recv_pcap_packet4
 };
 
 #include "../lp12-parentR2/parentR2_main.c"

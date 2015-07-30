@@ -1,7 +1,8 @@
 This test case is an IKEv2 initiator -- this is the second certificate client
 (dave) that will initiate at the same time as Carol.
 
-It may be that some IKEv2 cookies will need to be adjusted?
+
+
 
 
 
