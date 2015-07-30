@@ -776,7 +776,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 #endif
     prompt_pass_t backuppass;
 
-    zero(&backuppass);
+    zero(&backuppass);    zero(filename);
     if(pass == NULL) {
         pass = &backuppass;
     }
@@ -785,10 +785,14 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 
     /* we expect the filename of a PKCS#1 private key file */
 
-    if (*flp->tok == '"' || *flp->tok == '\'')  /* quoted filename */
+    /* quoted filename */
+    if (*flp->tok == '"' || *flp->tok == '\'')  {
 	memcpy(filename, flp->tok+1, flp->cur - flp->tok - 2);
-    else
+        filename[flp->cur - flp->tok - 2]='\0';
+    } else {
     	memcpy(filename, flp->tok, flp->cur - flp->tok);
+        filename[flp->cur - flp->tok]='\0';
+    }
 
     if (shift())
     {
