@@ -24,6 +24,15 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
+#define FINISH_PCAP 1
+void finish_pcap(void) {
+    time_t n;
+    n = 1438262454;   /* Thu Jul 30 09:21:01 EDT 2015 in seconds */
+    list_certs(n);
+}
+
+
+
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*

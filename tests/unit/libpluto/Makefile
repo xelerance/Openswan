@@ -39,3 +39,6 @@ clean check:
 	@${MAKE} -C lp21-certreplyselfR2 $@
 	@${MAKE} -C lp22-certreplymanyR2  $@
 	@${MAKE} -C lp23-davecertI1       $@
+	@${MAKE} -C lp24-certreplydaveR1  $@
+	@${MAKE} -C lp25-wrongcacert      $@
+
