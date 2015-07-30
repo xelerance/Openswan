@@ -14,11 +14,11 @@ static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
-    osw_init_ipsecdir("../samples/gatewaycert");
+    osw_init_ipsecdir("../samples/wrongcert");
 
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
-			       , "../samples/gatewaycert.secrets"
+			       , "../samples/gateway.secrets"
 			       , &pass);
 }
 #include "../lp08-parentR1/parentR1_main.c"

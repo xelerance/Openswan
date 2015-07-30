@@ -2,7 +2,9 @@
 ./certreplydaveR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./certreplydaveR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./certreplydaveR2 adjusting ipsec.d to ../samples/gatewaycert
-./certreplydaveR2 no secrets filename matched "../samples/gateway.secrets"
+./certreplydaveR2 loading secrets from "../samples/gatewaycert.secrets"
+./certreplydaveR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
+./certreplydaveR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -1841,6 +1843,8 @@ sending 120 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./certreplydaveR2 leak: certificate filename, item size: X
 ./certreplydaveR2 leak: struct connection, item size: X
 ./certreplydaveR2 leak: alg_info_ike, item size: X
+./certreplydaveR2 leak: 2 * id list, item size: X
+./certreplydaveR2 leak: secret, item size: X
 ./certreplydaveR2 leak: policies path, item size: X
 ./certreplydaveR2 leak: ocspcerts path, item size: X
 ./certreplydaveR2 leak: aacerts path, item size: X

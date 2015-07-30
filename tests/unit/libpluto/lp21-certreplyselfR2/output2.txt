@@ -2,7 +2,9 @@
 ./certreplyselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./certreplyselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./certreplyselfR2 adjusting ipsec.d to ../samples/gatewaycert
-./certreplyselfR2 no secrets filename matched "../samples/gateway.secrets"
+./certreplyselfR2 loading secrets from "../samples/gatewaycert.secrets"
+./certreplyselfR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
+./certreplyselfR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -1303,6 +1305,8 @@ sending 1356 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyselfR2 leak: certificate filename, item size: X
 ./certreplyselfR2 leak: struct connection, item size: X
 ./certreplyselfR2 leak: alg_info_ike, item size: X
+./certreplyselfR2 leak: 2 * id list, item size: X
+./certreplyselfR2 leak: secret, item size: X
 ./certreplyselfR2 leak: policies path, item size: X
 ./certreplyselfR2 leak: ocspcerts path, item size: X
 ./certreplyselfR2 leak: aacerts path, item size: X
