@@ -798,6 +798,9 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: keep id name, item size: X
 ./parentR2 leak: pubkey entry, item size: X
 ./parentR2 leak: pubkey, item size: X
+./parentR2 leak: 2 * id list, item size: X
+./parentR2 leak: secret, item size: X
+./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak: policies path, item size: X
 ./parentR2 leak: ocspcerts path, item size: X
 ./parentR2 leak: aacerts path, item size: X
@@ -810,9 +813,6 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: default conf conffile, item size: X
 ./parentR2 leak: default conf ipsecd_dir, item size: X
 ./parentR2 leak: default conf ipsec_conf_dir, item size: X
-./parentR2 leak: 2 * id list, item size: X
-./parentR2 leak: secret, item size: X
-./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 0: input from parentI1.pcap

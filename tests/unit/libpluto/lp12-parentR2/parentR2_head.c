@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
+#include "oswconf.h"
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"
@@ -38,3 +39,5 @@
 #include "seam_gr_sha1_group14.c"
 
 typedef void (*recv_pcap)(u_char *user, const struct pcap_pkthdr *h, const u_char *);
+const struct osw_conf_options *oco;
+

@@ -53,7 +53,6 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 void finish_pcap(void) {}
 #endif
 
-
 main(int argc, char *argv[])
 {
     int   len;
@@ -88,6 +87,7 @@ main(int argc, char *argv[])
 	exit(10);
     }
 
+    oco = osw_init_options();
     tool_init_log();
     init_crypto();
     load_oswcrypto();
