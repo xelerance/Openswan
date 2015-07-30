@@ -30,7 +30,6 @@
 #include "seam_demux.c"
 #include "seam_commhandle.c"
 #include "seam_whack.c"
-#include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
 #include "seam_dnskey.c"
@@ -118,6 +117,10 @@ main(int argc, char *argv[])
     init_fake_vendorid();
     init_parker_interface();
     init_seam_kernelalgs();
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL);
 
     infile = argv[0];
     conn_name = argv[1];

@@ -397,6 +397,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| required CA is '%any'
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -787,3 +790,4 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 0: input from parentI1.pcap
 1: output to OUTPUT/parentR2.pcap
 1: input from parentI2.pcap
+checking alg=1 == 1, same_id=1

@@ -1,5 +1,18 @@
+# -*- makefile -*-
+
 TESTNAME=wrongcacert
 CONNNAME=rw-any
 ENDNAME=gatewaycert
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/parentR1.pcap
+UNITTEST1PCAP=OUTPUT/parentR2.pcap
+UNITTEST2PCAP=
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2.pcap
+UNITTEST2ARGS=
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+
+# Local Variables:
+# gdb-command: "gud-gdb wrongcacert"
+# End Variables:
+#
+
+
 

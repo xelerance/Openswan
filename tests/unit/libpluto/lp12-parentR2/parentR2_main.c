@@ -49,6 +49,10 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 };
 #endif
 
+#ifndef FINISH_PCAP
+void finish_pcap(void) {}
+#endif
+
 
 main(int argc, char *argv[])
 {
@@ -74,7 +78,7 @@ main(int argc, char *argv[])
     /* skip argv0 */
     argc--; argv++;
 
-    if(strcmp(argv[0], "-r")==0) {
+    if(argc > 0 && strcmp(argv[0], "-r")==0) {
         regression = 1;
         argc--; argv++;
     }
@@ -128,6 +132,8 @@ main(int argc, char *argv[])
         /* set up output file */
         pcap_close(pt);
     }
+
+    finish_pcap();
 
     /* clean up so that we can see any leaks */
     st = state_with_serialno(1);

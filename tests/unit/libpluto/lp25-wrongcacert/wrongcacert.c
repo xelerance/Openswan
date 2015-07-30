@@ -1,9 +1,8 @@
-/* repeats existing test case */
-#include "../lp08-parentR1/parentR1_head.c"
-#include "../seam_host_jamesjohnson.c"
+#include "../lp12-parentR2/parentR2_head.c"
+#include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 
-#define TESTNAME "certreplytselffR1"
+#define TESTNAME "wrongcacert"
 
 static void init_local_interface(void)
 {
@@ -18,20 +17,14 @@ static void init_fake_secrets(void)
 
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
-			       , "../samples/gateway.secrets"
+			       , "../samples/gatewaycert.secrets"
 			       , &pass);
 }
-#include "../lp08-parentR1/parentR1_main.c"
 
+static void init_loaded(void)
+{   /* nothing */ }
 
- /*
- * Local Variables:
- * c-style: pluto
- * c-basic-offset: 4
- * compile-command: "make check"
- * End:
- */
-
+#include "../lp12-parentR2/parentR2_main.c"
 
  /*
  * Local Variables:

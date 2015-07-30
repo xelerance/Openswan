@@ -1,6 +1,8 @@
 ./parentR2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentR2 loading secrets from "../samples/jj.secrets"
+./parentR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -410,6 +412,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
+| required CA is '%any'
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -787,6 +792,12 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: keep id name, item size: X
 ./parentR2 leak: connection name, item size: X
 ./parentR2 leak: struct connection, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: pubkey, item size: X
 ./parentR2 leak: policies path, item size: X
 ./parentR2 leak: ocspcerts path, item size: X
 ./parentR2 leak: aacerts path, item size: X
@@ -799,9 +810,12 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: default conf conffile, item size: X
 ./parentR2 leak: default conf ipsecd_dir, item size: X
 ./parentR2 leak: default conf ipsec_conf_dir, item size: X
+./parentR2 leak: 2 * id list, item size: X
+./parentR2 leak: secret, item size: X
 ./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 0: input from parentI1.pcap
 1: output to OUTPUT/parentR2.pcap
 1: input from parentI2.pcap
+checking alg=1 == 1, same_id=1

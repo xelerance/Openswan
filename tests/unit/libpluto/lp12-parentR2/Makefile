@@ -35,6 +35,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
@@ -58,8 +59,6 @@ EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
 EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
@@ -90,7 +89,7 @@ OUTPUT/R2-dump.txt:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} ${CONNNAME}
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: update1
 update1:

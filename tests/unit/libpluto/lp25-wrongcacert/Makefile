@@ -1,9 +1,7 @@
-include ../lp15-respondself/Makefile
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
-include Makefile.testcase
-
+include ../lp17-childselfpolicy/Makefile
 
 # Local Variables:
 # gdb-command: ""
+# compile-command: "make clean check"
 # End Variables:
 #
