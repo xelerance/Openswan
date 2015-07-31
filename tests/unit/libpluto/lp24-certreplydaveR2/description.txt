@@ -1,0 +1,10 @@
+This test case is an IKEv2 responder -- it uses a certificate with a wildcard
+right= policy that accepts any ID that is properly validated.
+
+This is exactly like lp21-certreplyselfR2, and in fact starts out
+identically, getting carol all hooked up, but then it accepts a packet
+from *Dave*, and replies to it.
+
+carolI1.pcap is copied from ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap
+carolI2.pcap is copied from ../lp20-certificateselfI2/OUTPUT/certificateselfI2.pcap
+

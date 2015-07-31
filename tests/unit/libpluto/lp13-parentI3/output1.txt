@@ -1,6 +1,8 @@
 ./parentI3 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentI3 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentI3 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentI3 loading secrets from "../samples/parker.secrets"
+./parentI3 loaded private key for keyid: PPK_RSA:AQN7wUerV
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -12,6 +14,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0
+| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
 ./parentI3 adding connection: "parker1--jj2"
@@ -132,7 +135,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_I1
+| v2 state object #1 (parker1--jj2) found, in STATE_PARENT_I1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -535,6 +538,10 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | Now lets proceed with state specific processing
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 ./parentI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
 |  check narrowing - we are responding to I2
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
@@ -697,6 +704,12 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: keep id name, item size: X
 ./parentI3 leak: connection name, item size: X
 ./parentI3 leak: struct connection, item size: X
+./parentI3 leak: keep id name, item size: X
+./parentI3 leak: pubkey entry, item size: X
+./parentI3 leak: pubkey, item size: X
+./parentI3 leak: keep id name, item size: X
+./parentI3 leak: pubkey entry, item size: X
+./parentI3 leak: pubkey, item size: X
 ./parentI3 leak: policies path, item size: X
 ./parentI3 leak: ocspcerts path, item size: X
 ./parentI3 leak: aacerts path, item size: X
@@ -709,5 +722,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: default conf conffile, item size: X
 ./parentI3 leak: default conf ipsecd_dir, item size: X
 ./parentI3 leak: default conf ipsec_conf_dir, item size: X
+./parentI3 leak: 2 * id list, item size: X
+./parentI3 leak: secret, item size: X
 ./parentI3 leak: 2 * hasher name, item size: X
 ./parentI3 leak detective found Z leaks, total size X

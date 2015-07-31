@@ -2,31 +2,37 @@
 ./certreplyselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./certreplyselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./certreplyselfR2 adjusting ipsec.d to ../samples/gatewaycert
-./certreplyselfR2 no secrets filename matched "../samples/gateway.secrets"
+./certreplyselfR2 loading secrets from "../samples/gatewaycert.secrets"
+./certreplyselfR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
+./certreplyselfR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
-| Added new connection rw with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certreplyselfR2   loading certificate from moonCert.pem
 ./certreplyselfR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-./certreplyselfR2 adding connection: "rw"
+./certreplyselfR2 adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "rw": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
-RC=0 "rw":     myip=unset; hisip=unset; mycert=moonCert.pem;
-RC=0 "rw":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
-RC=0 "rw":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "rw":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
+RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
+RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
+RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+| Changed path to directory '../samples/gatewaycert/cacerts'
+./certreplyselfR2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -100,15 +106,16 @@ RC=0 "rw":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with rw-any
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-any
 | searching for connection with policy = IKEv2ALLOW
-| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw)
-| find_host_connection2 returns rw
-| found connection: rw
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw-any)
+| find_host_connection2 returns rw-any
+| found connection: rw-any
 | creating state object #1 at Z
-| orient rw checking against if: eth0
+| orient rw-any checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -327,7 +334,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_R1
+| v2 state object #1 (rw-any) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
@@ -772,8 +779,74 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | L3 - algorithm:
 |   'sha256WithRSAEncryption'
 | L1 - signatureValue:
-./certreplyselfR2 issuer cacert not found
-./certreplyselfR2 X.509 certificate rejected
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  3a 7b 01 8d  c6 5f e2 16  ac b2 73 aa  30 f3 7f 1c
+|   d0 44 a1 3c  de dd 68 b1  d7 c2 2e 90  8e 84 8d fe
+| decrypt_sig() decrypted signature:
+|   00 00 01 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff 00 30 31
+|   30 0d 06 09  60 86 48 01  65 03 04 02  01 05 00 04
+|   20 3a 7b 01  8d c6 5f e2  16 ac b2 73  aa 30 f3 7f
+|   1c d0 44 a1  3c de dd 68  b1 d7 c2 2e  90 8e 84 8d
+|   fe
+./certreplyselfR2 no crl from issuer "C=CH, O=Linux strongSwan, CN=strongSwan Root CA" found (strict=no)
+| signature algorithm: 'sha256WithRSAEncryption'
+|   digest:  63 33 5c 1c  04 4c 3c 18  f3 3c c9 ae  27 67 2e 3d
+|   6e cc 19 9e  c2 d1 9f 9d  ee 43 7f 8c  44 e9 6d a5
+| decrypt_sig() decrypted signature:
+|   00 00 01 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff 00 30 31
+|   30 0d 06 09  60 86 48 01  65 03 04 02  01 05 00 04
+|   20 63 33 5c  1c 04 4c 3c  18 f3 3c c9  ae 27 67 2e
+|   3d 6e cc 19  9e c2 d1 9f  9d ee 43 7f  8c 44 e9 6d
+|   a5
+| reached self-signed root ca
+| Public key validated
+|  keyid: *AwEAAbfz1
+|  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
+|  PublicExponent: 10001
+|  keyid: *AwEAAbfz1
+|  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
+|  PublicExponent: 10001
+| ikev2 verify required CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|
+| List of X.509 End Certificates:
+|
+| NOW, count: 1
+|        subject: 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
+|        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|        serial:   2b
+|        pubkey:   2048 RSA Key AwEAAaR8B
+|        validity: not before Aug 27 14:44:56 UTC 2014 ok
+|                  not after  Aug 26 14:44:56 UTC 2019 ok
+|        subjkey:  d8:26:3d:21:ec:7c:db:be:5a:39:0c:5b:70:cb:03:80:21:de:ae:13
+|        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|        aserial:  00
+| checking alg=1 == 1, keyid=carol@strongswan.org same_id=1
+|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
+| key issuer CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -913,11 +986,12 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
-|   ikev2_evaluate_connection_fit evaluating our I=rw:<self>:0/0 R=10.2.0.0/16:0/0  to their:
+| ikev2_evaluate_connection_fit, evaluating base fit for rw-any
+|   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
-| bfit_n=ikev2_evaluate_connection_fit found better fit c rw
+| bfit_n=ikev2_evaluate_connection_fit found better fit c rw-any
 |     evaluate_connection_port_fit tsi_n[1], best=-1
 |    tsi[0] 0-65535: exact port match with 0.  fitness 65536
 |       evaluating_connection_port_fit tsi_n[0], range_i=65536 best=-1
@@ -925,27 +999,21 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |       evaluating_connection_port_fit tsi_n[0] tsr_n[0], range=65536/65536 best=-1
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
-| ikev2_evaluate_connection_port_fit found better fit c rw, tsi[0],tsr[0]
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
+| ikev2_evaluate_connection_port_fit found better fit c rw-any, tsi[0],tsr[0]
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
-|    match_id a=(none)
-|             b=(none)
-|    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
-|   ikev2_evaluate_connection_fit evaluating our I=rw:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
-|       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
-| prefix range fit d rw d->name was rejected by connection fit: 8224 > 8224
+| ikev2_evaluate_connection_fit, concluded with rw-any
 |    match_id a=carol@strongswan.org
 |             b=(none)
 |    results  matched
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw
-| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:rw
-| instantiated "rw" for 93.184.216.34
-./certreplyselfR2 switched from "rw" to "rw"[1]
+| find_host_pair: looking for me=132.213.238.7:500 %any him=93.184.216.34:500 exact-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:none
+| instantiated "rw-any" for 93.184.216.34
+./certreplyselfR2 switched from "rw-any" to "rw-any"[1]
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -1485,16 +1553,29 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyselfR2 leak: st_skeyseed in duplicate_state, item size: X
 ./certreplyselfR2 leak: st_enc_key in duplicate_state, item size: X
 ./certreplyselfR2 leak: struct state in new_state(), item size: X
+./certreplyselfR2 leak: host_pair, item size: X
+./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
 ./certreplyselfR2 leak: host ip, item size: X
 ./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
 ./certreplyselfR2 leak: connection name, item size: X
 ./certreplyselfR2 leak: temporary connection, item size: X
+./certreplyselfR2 leak: issuer dn, item size: X
+./certreplyselfR2 leak: keep id name, item size: X
+./certreplyselfR2 leak: pubkey entry, item size: X
+./certreplyselfR2 leak: pubkey, item size: X
+./certreplyselfR2 leak: issuer dn, item size: X
+./certreplyselfR2 leak: keep id name, item size: X
+./certreplyselfR2 leak: pubkey entry, item size: X
+./certreplyselfR2 leak: pubkey, item size: X
 ./certreplyselfR2 leak: ikev2_inI2outR2 KE, item size: X
 ./certreplyselfR2 leak: ikev2_inI1outR1 KE, item size: X
 ./certreplyselfR2 leak: msg_digest, item size: X
+./certreplyselfR2 leak: x509cert, item size: X
+./certreplyselfR2 leak: CA cert, item size: X
 ./certreplyselfR2 leak: host_pair, item size: X
+./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: host ip, item size: X
 ./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
@@ -1513,6 +1594,8 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyselfR2 leak: certificate filename, item size: X
 ./certreplyselfR2 leak: struct connection, item size: X
 ./certreplyselfR2 leak: alg_info_ike, item size: X
+./certreplyselfR2 leak: 2 * id list, item size: X
+./certreplyselfR2 leak: secret, item size: X
 ./certreplyselfR2 leak: policies path, item size: X
 ./certreplyselfR2 leak: ocspcerts path, item size: X
 ./certreplyselfR2 leak: aacerts path, item size: X
@@ -1522,10 +1605,21 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyselfR2 leak: cacert path, item size: X
 ./certreplyselfR2 leak: acert path, item size: X
 ./certreplyselfR2 leak: override ipsec.d, item size: X
+./certreplyselfR2 leak: 2 * hasher name, item size: X
+./certreplyselfR2 leak: policies path, item size: X
+./certreplyselfR2 leak: ocspcerts path, item size: X
+./certreplyselfR2 leak: aacerts path, item size: X
+./certreplyselfR2 leak: certs path, item size: X
+./certreplyselfR2 leak: private path, item size: X
+./certreplyselfR2 leak: crls path, item size: X
+./certreplyselfR2 leak: cacert path, item size: X
+./certreplyselfR2 leak: acert path, item size: X
 ./certreplyselfR2 leak: default conf var_dir, item size: X
 ./certreplyselfR2 leak: default conf conffile, item size: X
 ./certreplyselfR2 leak: default conf ipsecd_dir, item size: X
 ./certreplyselfR2 leak: default conf ipsec_conf_dir, item size: X
-./certreplyselfR2 leak: 2 * hasher name, item size: X
 ./certreplyselfR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+0: input from parentI1.pcap
+1: output to OUTPUT/parentR2.pcap
+1: input from parentI2.pcap

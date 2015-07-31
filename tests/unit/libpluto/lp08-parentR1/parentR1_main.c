@@ -56,6 +56,7 @@ main(int argc, char *argv[])
     tool_init_log();
     init_crypto();
     init_fake_vendorid();
+    init_fake_secrets();
     init_jamesjohnson_interface();
 
     infile = argv[1];

@@ -1,13 +1,20 @@
 ./parentR2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentR2 loading secrets from "../samples/jj.secrets"
+./parentR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
 | processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
 ./parentR2 adding connection: "parker1--jj2"
@@ -91,7 +98,8 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with parker1--jj2
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:parker1--jj2
 | searching for connection with policy = IKEv2ALLOW
@@ -255,7 +263,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_R1
+| v2 state object #1 (parker1--jj2) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
@@ -406,6 +414,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -468,6 +480,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
 | parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
+| ikev2_evaluate_connection_fit, evaluating base fit for parker1--jj2
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
@@ -481,18 +494,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with parker1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
-|    match_id a=@parker01.emmjay.credil.org
-|             b=@parker01.emmjay.credil.org
-|    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
-|   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
-| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
-|       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
-| prefix range fit d parker1--jj2 d->name was rejected by connection fit: 32896 > 32896
+| ikev2_evaluate_connection_fit, concluded with parker1--jj2
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -790,6 +796,15 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: keep id name, item size: X
 ./parentR2 leak: connection name, item size: X
 ./parentR2 leak: struct connection, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: keep id name, item size: X
+./parentR2 leak: pubkey entry, item size: X
+./parentR2 leak: pubkey, item size: X
+./parentR2 leak: 2 * id list, item size: X
+./parentR2 leak: secret, item size: X
+./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak: policies path, item size: X
 ./parentR2 leak: ocspcerts path, item size: X
 ./parentR2 leak: aacerts path, item size: X
@@ -802,6 +817,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: default conf conffile, item size: X
 ./parentR2 leak: default conf ipsecd_dir, item size: X
 ./parentR2 leak: default conf ipsec_conf_dir, item size: X
-./parentR2 leak: 2 * hasher name, item size: X
 ./parentR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+0: input from parentI1.pcap
+1: output to OUTPUT/parentR2.pcap
+1: input from parentI2.pcap

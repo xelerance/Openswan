@@ -36,6 +36,7 @@
 #include "state.h"
 #include "id.h"
 #include "pluto/connections.h"
+#include "hostpair.h"
 
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
@@ -537,7 +538,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
-    struct connection *c = find_host_connection(&md->iface->ip_addr
+    struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , md->iface->port
                                                 , KH_IPADDR
                                                 , &md->sender

@@ -5,6 +5,7 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -15,6 +16,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @moon.strongswan.org is 0
 | orient home checking against if: eth0
 | orient home matching on public/private keys
+| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
 ./certificateselfI1 adding connection: "home"

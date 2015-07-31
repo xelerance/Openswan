@@ -89,6 +89,62 @@ ikev2_verify_rsa_sha1(struct state *st
 			    , const struct gw_info *gateways_from_dns
 			    , pb_stream *sig_pbs)
 {
-	return STF_OK;
+  struct pubkey_list *p, **pp;
+  struct connection *c = st->st_connection;
+  int pathlen;
+
+  pp = &pluto_pubkeys;
+
+  {
+
+    DBG(DBG_CONTROL,
+        char buf[IDTOA_BUF];
+        dntoa_or_null(buf, IDTOA_BUF, c->spd.that.ca, "%any");
+        DBG_log("ikev2 verify required CA is '%s'", buf));
+  }
+
+  {
+    time_t n;
+    n = 1438262454;   /* Thu Jul 30 09:21:01 EDT 2015 in seconds */
+    list_certs(n);
+  }
+
+  for (p = pluto_pubkeys; p != NULL; p = *pp)
+    {
+      char keyname[IDTOA_BUF];
+      struct pubkey *key = p->key;
+      pp = &p->next;
+
+      idtoa(&key->id, keyname, IDTOA_BUF);
+      DBG_log("checking alg=%d == %d, keyid=%s same_id=%u\n"
+              , key->alg, PUBKEY_ALG_RSA
+              , keyname
+              , same_id(&st->ikev2.st_peer_id, &key->id));
+      if (key->alg == PUBKEY_ALG_RSA
+          && same_id(&st->ikev2.st_peer_id, &key->id)
+          && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+        {
+          time_t tnow;
+
+          DBG(DBG_CONTROL,
+              char buf[IDTOA_BUF];
+              dntoa_or_null(buf, IDTOA_BUF, key->issuer, "%any");
+              DBG_log("key issuer CA is '%s'", buf));
+
+          /* check if found public key has expired */
+          time(&tnow);
+          if (key->until_time != UNDEFINED_TIME && key->until_time < tnow)
+            {
+              loglog(RC_LOG_SERIOUS,
+                     "cached RSA public key has expired and has been deleted");
+              *pp = free_public_keyentry(p);
+              continue; /* continue with next public key */
+            }
+
+          return STF_OK;
+        }
+    }
+
+  return STF_FAIL + INVALID_KEY_INFORMATION;
 }
 

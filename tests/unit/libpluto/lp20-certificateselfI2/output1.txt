@@ -8,6 +8,7 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -18,6 +19,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @moon.strongswan.org is 0
 | orient home checking against if: eth0
 | orient home matching on public/private keys
+| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
 ./certificateselfI2 adding connection: "home"
@@ -140,7 +142,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_I1
+| v2 state object #1 (home) found, in STATE_PARENT_I1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -890,10 +892,18 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: cacert path, item size: X
 ./certificateselfI2 leak: acert path, item size: X
 ./certificateselfI2 leak: override ipsec.d, item size: X
+./certificateselfI2 leak: 2 * hasher name, item size: X
+./certificateselfI2 leak: policies path, item size: X
+./certificateselfI2 leak: ocspcerts path, item size: X
+./certificateselfI2 leak: aacerts path, item size: X
+./certificateselfI2 leak: certs path, item size: X
+./certificateselfI2 leak: private path, item size: X
+./certificateselfI2 leak: crls path, item size: X
+./certificateselfI2 leak: cacert path, item size: X
+./certificateselfI2 leak: acert path, item size: X
 ./certificateselfI2 leak: default conf var_dir, item size: X
 ./certificateselfI2 leak: default conf conffile, item size: X
 ./certificateselfI2 leak: default conf ipsecd_dir, item size: X
 ./certificateselfI2 leak: default conf ipsec_conf_dir, item size: X
-./certificateselfI2 leak: 2 * hasher name, item size: X
 ./certificateselfI2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

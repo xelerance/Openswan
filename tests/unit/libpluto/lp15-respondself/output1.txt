@@ -1,6 +1,8 @@
 ./respondselfR1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./respondselfR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./respondselfR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./respondselfR1 loading secrets from "../samples/jj.secrets"
+./respondselfR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -8,12 +10,14 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
 | orient gateway--any checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./respondselfR1 adding connection: "gateway--any"
@@ -97,7 +101,8 @@ RC=0 "gateway--any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with gateway--any
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:gateway--any
 | searching for connection with policy = IKEv2ALLOW
@@ -240,6 +245,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 ./respondselfR1 leak: default conf conffile, item size: X
 ./respondselfR1 leak: default conf ipsecd_dir, item size: X
 ./respondselfR1 leak: default conf ipsec_conf_dir, item size: X
+./respondselfR1 leak: 2 * id list, item size: X
+./respondselfR1 leak: secret, item size: X
 ./respondselfR1 leak: 2 * hasher name, item size: X
 ./respondselfR1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

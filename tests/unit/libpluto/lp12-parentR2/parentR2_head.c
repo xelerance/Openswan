@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "whack.h"
+#include "oswconf.h"
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"
@@ -36,4 +37,5 @@
 #include "seam_kernelalgs.c"
 
 #include "seam_gr_sha1_group14.c"
+
 

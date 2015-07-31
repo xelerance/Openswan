@@ -35,6 +35,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/demux.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
@@ -58,8 +59,6 @@ EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
 EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
@@ -69,10 +68,9 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
-WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentI1.pcap parentI2.pcap OUTPUT/parentR2.pcap
 
-TESTNAME=parentR2
+include Makefile.testcase
+
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
@@ -91,7 +89,7 @@ OUTPUT/R2-dump.txt:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: update1
 update1:

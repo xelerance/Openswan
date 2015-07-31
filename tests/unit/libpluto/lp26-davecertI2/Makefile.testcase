@@ -1,0 +1,10 @@
+CONNNAME=home
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1dave.pcap      OUTPUT/parentI2.pcap
+ENDNAME=davecert
+
+TESTNAME=davecertI2
+
+
+
+
+

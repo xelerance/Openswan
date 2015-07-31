@@ -1,0 +1,316 @@
+./davecertI2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./davecertI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./davecertI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecertI2 adjusting ipsec.d to ../samples/davecert
+./davecertI2 loading secrets from "../samples/davecert.secrets"
+./davecertI2   loaded private key file '../samples/davecert/private/daveKey.pem' (1679 bytes)
+./davecertI2 loaded private key for keyid: PPK_RSA:AwEAAeOoT
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
+| Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+./davecertI2   loading certificate from daveCert.pem
+./davecertI2   loaded host cert file '../samples/davecert/certs/daveCert.pem' (1489 bytes)
+| certificate is valid
+| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
+| counting wild cards for @moon.strongswan.org is 0
+| orient home checking against if: eth0
+| orient home matching on public/private keys
+| find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+./davecertI2 adding connection: "home"
+| %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+RC=0 "home": %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
+RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "home":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+| Changed path to directory '../samples/davecert/cacerts'
+./davecertI2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
+| creating state object #1 at Z
+| orient home checking against if: eth0
+| orient home matching on public/private keys
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| inserting state object #1 bucket: 4
+./davecertI2 initiating v2 parent SA
+./davecertI2 STATE_PARENT_I1: initiate
+sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.7:500 (using #1)
+|   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
+|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
+|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
+./davecertI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+./davecertI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+| *received 1452 bytes from 132.213.238.7:500 on eth0 (port=500)
+|   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
+|   2e 20 23 20  00 00 00 01  00 00 05 ac  24 00 05 90
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   43 7c 3d 20  ea fd 4f 2b  b4 cb 11 72  c0 c1 74 00
+|   eb 80 4a cf  06 b3 c3 7a  28 c7 95 e7  4f d4 42 8e
+|   ad ab 4f c0  73 e3 9a 64  68 cb f6 60  53 d2 11 71
+|   70 fb 40 c9  23 52 6c 35  ff 33 5b 58  46 74 27 ff
+|   56 c8 59 b0  db 1d b5 3d  b5 89 5f fb  12 34 10 52
+|   9f 11 a4 44  7f 8e a6 47  1f 2c 5a 0b  a7 d6 1c 71
+|   aa 37 38 cf  3c 99 83 5b  a2 bd 00 26  17 c6 70 e7
+|   36 e0 df 78  ce 2c ed 7b  88 b8 9a 98  a8 a4 69 c4
+|   a6 f7 d0 90  d0 bc c1 25  dd d3 81 32  ba 14 4a 84
+|   a5 c7 f5 f1  53 72 99 19  78 71 b5 8e  e0 86 f1 86
+|   be 05 36 dc  bc bb c4 9f  36 16 67 c4  9b e8 b0 e2
+|   07 10 57 71  0c c7 f5 9e  a4 ab f6 d4  f0 2a c8 1a
+|   46 3b f1 0e  c0 96 0f b1  6f 67 5e de  1a f6 8b 0b
+|   74 0c d1 49  f5 3c b6 f2  c9 cd d6 04  62 c5 6f b6
+|   ff 21 ee 7e  1a c5 e5 dc  fe cd 13 24  2a ab 69 8a
+|   67 d4 74 3c  02 69 49 45  ff e4 46 8d  6e a3 47 f4
+|   50 a3 46 98  5a 1b b3 e3  91 36 30 9a  62 f2 3d 5a
+|   59 7a d3 06  e1 30 1b 1b  58 4f 1e b7  aa 91 ae e9
+|   e1 db 9b 7e  c4 4c 21 19  20 03 88 7f  ed e8 58 cd
+|   6d ba 9d 52  22 25 a7 47  15 13 1f 27  cd ce e7 5d
+|   be 82 11 64  d9 0f 75 58  e2 4a f8 60  90 4e 25 d4
+|   b9 3f 65 e1  31 6f 51 51  a9 a3 d3 5f  7f 3e 68 01
+|   8a e3 bb ce  da 12 1e a0  c8 c7 46 2e  b2 c8 aa 8e
+|   b7 c9 2d 42  53 0f 56 08  3b 4d b6 7c  97 18 3f 15
+|   3d 6d 8e a4  66 2a 6f 67  a8 5b 9f d7  df d2 6c 39
+|   28 4f 8a 2d  c4 8d a0 e5  31 06 ea 20  0b 03 72 fb
+|   44 5b 88 85  e0 81 a5 41  2d 9c 19 25  0b a1 63 da
+|   e6 7f c2 84  1d 80 43 a8  bd b9 43 64  d0 51 a6 c3
+|   c2 11 e4 8e  60 9c 78 95  9a 16 42 ca  62 15 11 aa
+|   a7 4a 7c 71  23 77 04 c6  f8 04 15 7f  27 7c 00 15
+|   49 d6 23 94  04 20 13 79  7f 09 03 f8  16 50 0b 88
+|   00 d9 e5 45  1e 4c 34 0e  2d c8 bd 1d  a8 52 4b fc
+|   a6 33 6e 11  a9 58 33 f1  1a b3 0c 40  2e 44 6e c1
+|   d1 27 f7 98  80 e5 38 54  98 10 31 e4  02 8b f8 41
+|   ef 23 86 4c  7a fd 1c 7d  a0 51 d7 cd  6f 91 b7 67
+|   b4 fe 4f f0  e6 14 05 97  e0 46 66 fb  7d a4 91 89
+|   51 8c 67 36  f1 70 6b b0  81 9b 0e 6f  51 f3 c7 11
+|   15 16 84 23  df e3 d9 4f  00 b1 b0 91  f8 22 ea 5c
+|   89 0f fb 81  d1 52 c8 77  5a 79 6d ce  96 d0 e9 c8
+|   d4 59 4c ee  ea 57 8f a0  c0 9a 5d 29  3e f7 70 a6
+|   de ed f4 7c  6c c5 50 3a  db ad 15 52  2f 4a be 1d
+|   ee de 6a fb  b8 40 a4 23  36 18 83 ac  47 03 81 83
+|   ca cd 71 63  97 d2 c5 36  94 18 21 3d  dc 49 52 b9
+|   6f 6e a3 0c  d3 8c 89 2a  ee 83 ab 43  2f 43 af a7
+|   c8 96 b8 7b  46 c5 3d 69  a9 10 5e 4e  7a 2f 3b 2c
+|   f8 a6 f6 05  d4 e5 41 25  df 2c 90 f1  fe 38 4c 83
+|   ee 95 51 63  a2 5c c8 21  b6 43 7b 4e  17 7b 74 2b
+|   a1 b2 28 d9  0c eb 17 7d  e8 ca 22 cb  21 69 3f e6
+|   30 41 66 b4  75 93 59 bc  a3 33 70 f7  72 a1 bc 60
+|   8a be 4c 1c  04 b4 55 3b  0a cb 29 4e  24 51 b0 7a
+|   65 da 30 46  e9 32 1d b8  e2 00 fb 97  ce f7 07 90
+|   0b 26 79 d3  be ed 86 33  6f fc 7d 9b  cf c7 35 5a
+|   33 87 9e 87  5e eb 72 ce  dd b9 c8 fa  e6 89 81 2c
+|   b1 f2 1b 50  d4 f9 cb 58  8a 0a ce 35  77 fb 18 dc
+|   2a 82 69 d9  a0 34 cf 6b  62 c8 44 eb  64 06 49 2a
+|   71 1b 64 d6  9d a1 54 2e  36 7b d8 fc  89 94 1f fb
+|   51 05 fd d9  3e f1 5b 6f  cc 41 5e 9b  91 8c f0 16
+|   ba 09 ee 4c  fd 1c 94 99  d9 76 c9 8f  41 ae b3 2c
+|   40 73 26 d0  30 b1 0e a9  f6 21 0f 18  e0 cf ef a1
+|   99 69 8c ed  84 f1 5d e5  b2 62 18 c0  12 63 f5 f3
+|   0e 40 6d 4d  a9 1c 94 d4  f5 42 b5 87  6d ac 25 1f
+|   b6 51 e4 aa  70 52 62 5e  6c 20 fd 32  75 43 e5 b7
+|   26 74 41 5a  0c fc 92 d2  1e 66 e9 89  fd a1 48 b7
+|   8d 0c a7 9f  4a 6e cd 8a  91 3e 9a 4e  2d 60 63 cb
+|   54 03 1c 8d  1a 4e 02 ff  0b d8 9a b0  1d 8e 99 5f
+|   61 4a 98 2c  11 01 b6 fd  2f 3e be 9e  1a 81 63 34
+|   d9 25 7a 7d  7e 06 36 b2  0d d3 5f 35  78 b1 6d 9d
+|   6c 2d 3f ac  77 89 ee 58  3c e7 57 b9  85 70 4b 40
+|   67 b8 ca e0  c4 97 14 c9  d4 27 b9 1f  80 4d 34 27
+|   96 d0 73 7d  e7 80 eb 1e  b7 86 6f 41  6d f0 5c ac
+|   a4 c0 12 de  8b 97 56 b3  cd 1f 93 cd  3d be f3 0f
+|   60 6c 76 3c  f4 4c 0c c7  09 2e 95 31  53 1f 3f 9f
+|   ce eb 48 25  c0 05 8f a0  7d 29 11 40  8b ae b8 8b
+|   d0 51 34 fb  53 a8 56 f3  d5 fd 39 ac  b5 c8 94 a3
+|   1f 7b 4a 8a  63 2f d4 66  1a 63 2a fc  77 d2 aa e4
+|   d3 9d 46 c6  96 0a 2b dc  d8 77 85 c1  c3 4d e3 93
+|   62 14 65 8c  a7 38 5a da  79 e1 36 3e  e0 92 f4 a5
+|   ed 76 54 c6  52 5a 9c 14  3a 11 ec b7  62 22 04 2d
+|   cc 98 53 41  df 52 f0 06  33 29 cb 17  e0 fc 62 1b
+|   38 6b f0 91  27 9e 1f be  15 57 53 99  46 09 69 a0
+|   f2 9a 2f 84  03 f0 6c e9  ad 02 4f 58  f5 22 d4 58
+|   7e a7 26 83  02 10 8f a5  23 9d 77 47  75 dd 42 3b
+|   0b ae 75 46  e5 f5 89 65  1a 8c b5 5b  b7 e1 ff 17
+|   27 1d 8f 0c  ab 0c f2 4c  2f d7 11 77  9d a3 23 8a
+|   57 8f c0 18  d2 6a fb aa  f4 0e 0b a3  61 43 1c ba
+|   a4 f6 f2 38  20 df 6c 6c  78 c0 ad 51  c2 51 f7 cc
+|   68 94 e5 7d  17 c6 9d 51  36 a3 cb 03  b2 6f de a4
+|   2d bc 51 06  21 1a 26 33  1b c3 d9 bf
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   8d 0e 0f 10  11 12 13 14
+|    responder cookie:
+|   5d 73 ce 75  3d b1 db 6d
+|    next payload type: ISAKMP_NEXT_v2E
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_AUTH
+|    flags: ISAKMP_FLAG_RESPONSE
+|    message ID:  00 00 00 01
+|    length: 1452
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
+| I am IKE SA Initiator
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
+| state hash entry 15
+| v2 state object not found
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
+| state hash entry 15
+| v2 state object not found in hash 15
+| ***parse IKEv2 Encryption Payload:
+|    next payload type: ISAKMP_NEXT_v2IDr
+|    critical bit: none
+|    length: 1424
+| processing payload: ISAKMP_NEXT_v2E (len=1424)
+| considering state entry: 0
+|   reject:state needed and state unavailable
+| considering state entry: 1
+|   reject:state needed and state unavailable
+| considering state entry: 2
+|   reject:state needed and state unavailable
+| considering state entry: 3
+|   reject: recv_type: ISAKMP_v2_AUTH, needs ISAKMP_v2_SA_INIT
+| considering state entry: 4
+|   reject:state needed and state unavailable
+| considering state entry: 5
+|   reject:state needed and state unavailable
+| considering state entry: 6
+|   reject:state needed and state unavailable
+| considering state entry: 7
+|   reject:state needed and state unavailable
+| considering state entry: 8
+|   reject:state needed and state unavailable
+| considering state entry: 9
+|   reject:state needed and state unavailable
+| did not found valid state; ended up with STATE_IKEv2_ROOF
+./davecertI2 leak: msg_digest, item size: X
+./davecertI2 leak: ikev2_outI1 KE, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_prop, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: db_attrs, item size: X
+./davecertI2 leak: db_v2_trans, item size: X
+./davecertI2 leak: db_v2_prop_conj, item size: X
+./davecertI2 leak: x509cert, item size: X
+./davecertI2 leak: CA cert, item size: X
+./davecertI2 leak: host_pair, item size: X
+./davecertI2 leak: ca string, item size: X
+./davecertI2 leak: keep id name, item size: X
+./davecertI2 leak: host ip, item size: X
+./davecertI2 leak: keep id name, item size: X
+./davecertI2 leak: connection name, item size: X
+./davecertI2 leak: issuer dn, item size: X
+./davecertI2 leak: keep id name, item size: X
+./davecertI2 leak: pubkey entry, item size: X
+./davecertI2 leak: pubkey, item size: X
+./davecertI2 leak: generalName, item size: X
+./davecertI2 leak: x509cert, item size: X
+./davecertI2 leak: host cert, item size: X
+./davecertI2 leak: certificate filename, item size: X
+./davecertI2 leak: struct connection, item size: X
+./davecertI2 leak: alg_info_ike, item size: X
+./davecertI2 leak: 2 * id list, item size: X
+./davecertI2 leak: secret, item size: X
+./davecertI2 leak: policies path, item size: X
+./davecertI2 leak: ocspcerts path, item size: X
+./davecertI2 leak: aacerts path, item size: X
+./davecertI2 leak: certs path, item size: X
+./davecertI2 leak: private path, item size: X
+./davecertI2 leak: crls path, item size: X
+./davecertI2 leak: cacert path, item size: X
+./davecertI2 leak: acert path, item size: X
+./davecertI2 leak: override ipsec.d, item size: X
+./davecertI2 leak: 2 * hasher name, item size: X
+./davecertI2 leak: policies path, item size: X
+./davecertI2 leak: ocspcerts path, item size: X
+./davecertI2 leak: aacerts path, item size: X
+./davecertI2 leak: certs path, item size: X
+./davecertI2 leak: private path, item size: X
+./davecertI2 leak: crls path, item size: X
+./davecertI2 leak: cacert path, item size: X
+./davecertI2 leak: acert path, item size: X
+./davecertI2 leak: default conf var_dir, item size: X
+./davecertI2 leak: default conf conffile, item size: X
+./davecertI2 leak: default conf ipsecd_dir, item size: X
+./davecertI2 leak: default conf ipsec_conf_dir, item size: X
+./davecertI2 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

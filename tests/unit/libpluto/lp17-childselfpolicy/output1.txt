@@ -10,12 +10,14 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
 | orient gateway--any checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./respondselfR2 adding connection: "gateway--any"
@@ -99,7 +101,8 @@ RC=0 "gateway--any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with gateway--any
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:gateway--any
 | searching for connection with policy = IKEv2ALLOW
@@ -259,7 +262,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_R1
+| v2 state object #1 (gateway--any) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
@@ -397,6 +400,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, keyid=@example.com same_id=1
+|   trusted_ca called with a=(empty) b=(empty)
+| key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -459,19 +466,15 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
+| ikev2_evaluate_connection_fit, evaluating base fit for gateway--any
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | prefix range fit c gateway--any c->name was rejected by port matching
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with gateway--any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
-|    match_id a=@example.com
-|             b=@example.com
-|    results  matched
-|   trusted_ca called with a=(empty) b=(empty)
-|   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| prefix range fit d gateway--any d->name was rejected by connection fit: -1 > -1
+| ikev2_evaluate_connection_fit, concluded with gateway--any
 | ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
 | emitting 2 raw bytes of padding and length into cleartext
 | padding and length  00 01
@@ -569,6 +572,9 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: keep id name, item size: X
 ./respondselfR2 leak: pubkey entry, item size: X
 ./respondselfR2 leak: pubkey, item size: X
+./respondselfR2 leak: 2 * id list, item size: X
+./respondselfR2 leak: secret, item size: X
+./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak: policies path, item size: X
 ./respondselfR2 leak: ocspcerts path, item size: X
 ./respondselfR2 leak: aacerts path, item size: X
@@ -581,8 +587,8 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: default conf conffile, item size: X
 ./respondselfR2 leak: default conf ipsecd_dir, item size: X
 ./respondselfR2 leak: default conf ipsec_conf_dir, item size: X
-./respondselfR2 leak: 2 * id list, item size: X
-./respondselfR2 leak: secret, item size: X
-./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+0: input from parentI1.pcap
+1: output to OUTPUT/parentR2_allzero.pcap
+1: input from parentI2_allzero.pcap

@@ -13,14 +13,16 @@ struct host_pair {
 extern struct host_pair *host_pairs;
 
 extern void connect_to_host_pair(struct connection *c);
-extern struct connection *find_host_pair_connections(const char *func
+#define EXACT_MATCH TRUE
+#define ANY_MATCH   FALSE
+extern struct connection *find_host_pair_connections(const char *func, bool exact
 						     , const ip_address *myaddr
 						     , u_int16_t myport
                                                      , enum keyword_host histype
 						     , const ip_address *hisaddr
 						     , u_int16_t hisport);
 
-extern struct host_pair *find_host_pair(const ip_address *myaddr
+extern struct host_pair *find_host_pair(bool exact, const ip_address *myaddr
 					, u_int16_t myport
                                         , enum keyword_host histype
 					, const ip_address *hisaddr

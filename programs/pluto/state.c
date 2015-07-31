@@ -1102,9 +1102,9 @@ find_state_ikev2_parent(const u_char *icookie
 	if (st == NULL)
 	    DBG_log("v2 state object not found in hash %u", bucket);
 	else
-	    DBG_log("v2 state object #%lu found, in %s"
-		, st->st_serialno
-		, enum_show(&state_names, st->st_state)));
+	    DBG_log("v2 state object #%lu (%s) found, in %s"
+                    , st->st_serialno, st->st_connection->name
+                    , enum_show(&state_names, st->st_state)));
 
     return st;
 }
@@ -1635,6 +1635,18 @@ show_states_status(void)
 	/* free the array */
 	pfree(array);
     }
+}
+
+void dump_one_state(struct state *st)
+{
+    char state_buf[LOG_WIDTH];
+    char state_buf2[LOG_WIDTH];
+
+    fmt_state(st, 1, state_buf, sizeof(state_buf)
+              , state_buf2, sizeof(state_buf2));
+    DBG_log("%s", state_buf);
+    if (state_buf2[0] != '\0')
+        DBG_log("%s", state_buf2);
 }
 
 /* Given that we've used up a range of unused CPI's,

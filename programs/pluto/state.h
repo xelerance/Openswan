@@ -472,6 +472,8 @@ extern void initialize_new_state(struct state *st
 			       , enum crypto_importance importance);
 
 extern void show_states_status(void);
+extern void dump_one_state(struct state *st);
+
 
 #if 1
 void for_each_state(void *(f)(struct state *, void *data), void *data);

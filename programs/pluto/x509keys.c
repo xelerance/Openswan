@@ -47,6 +47,7 @@
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
 #include "pluto/connections.h"
+#include "hostpair.h"
 #include "state.h"
 #include "md2.h"
 #include "md5.h"
@@ -136,8 +137,8 @@ ikev2_decode_cert(struct msg_digest *md)
 		{
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
-		    )
-			add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
+                        );
+                    add_x509_public_key(NULL, &cert2, valid_until, DAL_SIGNED);
 		}
 		else
 		{
@@ -312,7 +313,7 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
-    struct connection *d = find_host_connection(&md->iface->ip_addr
+    struct connection *d = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , pluto_port500
                                                 , KH_ANY
                                                 ,(ip_address*)NULL, md->sender_port, LEMPTY);

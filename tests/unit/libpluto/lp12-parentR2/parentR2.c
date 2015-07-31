@@ -1,6 +1,5 @@
 #include "parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
-#include "seam_keys.c"
 #include "seam_x509.c"
 
 #define TESTNAME "parentR2"
@@ -12,8 +11,14 @@ static void init_local_interface(void)
 
 static void init_fake_secrets(void)
 {
-    /* nothing for parentR2 */
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/jj.secrets"
+			       , NULL);
 }
+
+static void init_loaded(void)
+{   /* nothing */ }
 
 #include "parentR2_main.c"
 

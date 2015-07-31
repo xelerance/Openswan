@@ -733,6 +733,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
             int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
@@ -755,7 +756,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         }
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
-            hp = find_host_pair(&sra->this.host_addr
+            hp = find_host_pair(ANY_MATCH
+                                , &sra->this.host_addr
                                 , sra->this.host_port
                                 , sra->that.host_type
                                 , &sra->that.host_addr
@@ -779,6 +781,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             for (d = hp->connections; d != NULL; d = d->hp_next) {
                 struct spd_route *sr;
                 int wildcards, pathlen;  /* XXX */
+
+                /* if already best fit, do not try again */
+                if(d == c) continue;
 
                 if (d->policy & POLICY_GROUP)
                     continue;
@@ -819,6 +824,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             }
         }
 
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*
 	 * now that we have found the best connection (in b), copy the data into
 	 * the state structure as the tsi/tsr, perhaps after instantiating it.
