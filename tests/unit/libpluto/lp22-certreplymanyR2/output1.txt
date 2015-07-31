@@ -8,6 +8,7 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -18,6 +19,7 @@ processing whack msg time: X size: Y
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
 | orient rw-any checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./certreplyR2 adding connection: "rw-any"
@@ -30,13 +32,14 @@ processing whack msg time: X size: Y
 ./certreplyR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
-| counting wild cards for dave@strongswan.org is 0
+| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
 | orient rw-dave checking against if: eth0
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw-any
-| connect_to_host_pair: 132.213.238.7:500 %address 192.168.0.200:500 -> hp:rw-any
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.0.200:500 exact-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %address 192.168.0.200:500 -> hp:none
 ./certreplyR2 adding connection: "rw-dave"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[dave@strongswan.org]
+| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -45,13 +48,18 @@ processing whack msg time: X size: Y
 ./certreplyR2   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
-| counting wild cards for carol@strongswan.org is 0
+./certreplyR2   loading certificate from carolCert.pem
+./certreplyR2   loaded host cert file '../samples/gatewaycert/certs/carolCert.pem' (1493 bytes)
+| certificate is valid
+| counting wild cards for 93.184.216.34 is 0
 | orient rw-carol checking against if: eth0
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw-dave
-| connect_to_host_pair: 132.213.238.7:500 %address 93.184.216.34:500 -> hp:rw-dave
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 exact-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.0.200:500
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %address 93.184.216.34:500 -> hp:none
 ./certreplyR2 adding connection: "rw-carol"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>[carol@strongswan.org]
+| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
@@ -134,7 +142,8 @@ RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=93.184.216.34:500
 | find_host_pair: concluded with rw-carol
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-carol
 | searching for connection with policy = IKEv2ALLOW
@@ -361,7 +370,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_R1
+| v2 state object #1 (rw-carol) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
@@ -861,6 +870,16 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |
 | List of X.509 End Certificates:
 |
+| NOW, count: 1
+|        subject: 'C=CH, O=Linux strongSwan, OU=Research, CN=carol@strongswan.org'
+|        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+|        serial:   30
+|        pubkey:   2048 RSA Key AwEAAbfz1
+|        validity: not before Aug 27 15:05:36 UTC 2014 ok
+|                  not after  Aug 26 15:05:36 UTC 2019 ok
+|        subjkey:  5c:59:70:62:57:2d:2a:24:9c:5c:94:56:9b:89:5e:e5:c5:05:b6:bd
+|        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
+|        aserial:  00
 | NOW, count: 3
 |        subject: 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
 |        issuer:  'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
@@ -871,7 +890,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |        subjkey:  d8:26:3d:21:ec:7c:db:be:5a:39:0c:5b:70:cb:03:80:21:de:ae:13
 |        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
 |        aserial:  00
-| checking alg=1 == 1, same_id=1
+| checking alg=1 == 1, keyid=carol@strongswan.org same_id=1
 |   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
 | key issuer CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 | PARENT SA now authenticated, building child and reply
@@ -1027,21 +1046,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c rw-carol, tsi[0],tsr[0]
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=93.184.216.34:500
 | find_host_pair: concluded with rw-carol
 |   checking hostpair 10.2.0.0/16 -> 93.184.216.34/32 is found
-|    match_id a=carol@strongswan.org
-|             b=dave@strongswan.org
-|    results  fail
-|    match_id a=carol@strongswan.org
-|             b=(none)
-|    results  matched
-|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
-|   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
-| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
-|       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
-| prefix range fit d rw-any d->name was rejected by connection fit: 8224 > 8224
 | ikev2_evaluate_connection_fit, concluded with rw-carol
 | duplicating state object #1
 | creating state object #2 at Z
@@ -1595,13 +1603,20 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: msg_digest, item size: X
 ./certreplyR2 leak: x509cert, item size: X
 ./certreplyR2 leak: CA cert, item size: X
+./certreplyR2 leak: host_pair, item size: X
 ./certreplyR2 leak: host ip, item size: X
 ./certreplyR2 leak: ca string, item size: X
-./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: host ip, item size: X
 ./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: connection name, item size: X
+./certreplyR2 leak: issuer dn, item size: X
+./certreplyR2 leak: pubkey entry, item size: X
+./certreplyR2 leak: pubkey, item size: X
+./certreplyR2 leak: 2 * generalName, item size: X
+./certreplyR2 leak: x509cert, item size: X
+./certreplyR2 leak: host cert, item size: X
+./certreplyR2 leak: certificate filename, item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
@@ -1613,6 +1628,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: certificate filename, item size: X
 ./certreplyR2 leak: struct connection, item size: X
 ./certreplyR2 leak: alg_info_ike, item size: X
+./certreplyR2 leak: host_pair, item size: X
 ./certreplyR2 leak: host ip, item size: X
 ./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X

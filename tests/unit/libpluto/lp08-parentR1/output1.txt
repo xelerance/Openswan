@@ -14,6 +14,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
 ./parentR1 adding connection: "parker1--jj2"
@@ -93,7 +94,8 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %address 192.168.1.1:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with parker1--jj2
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:parker1--jj2
 | searching for connection with policy = IKEv2ALLOW

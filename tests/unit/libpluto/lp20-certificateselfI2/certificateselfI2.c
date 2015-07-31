@@ -20,6 +20,7 @@ static void init_fake_secrets(void)
 			       , "../samples/rwcert.secrets"
 			       , &pass);
 }
+static void init_loaded(void) {}
 
 #include "../lp10-parentI2/parentI2_main.c"
 

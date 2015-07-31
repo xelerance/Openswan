@@ -11,6 +11,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0
+| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
 ./parentI1 adding connection: "parker1--jj2"

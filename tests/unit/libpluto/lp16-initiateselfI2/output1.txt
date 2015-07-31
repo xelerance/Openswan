@@ -10,6 +10,7 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -18,6 +19,7 @@ processing whack msg time: X size: Y
 | orient gateway--any checking against if: eth0
 | orient gateway--any matching on public/private keys
 |   trusted_ca called with a=(empty) b=(empty)
+| find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
 ./initiateselfI2 adding connection: "gateway--any"
@@ -140,7 +142,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_I1
+| v2 state object #1 (gateway--any) found, in STATE_PARENT_I1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -590,6 +592,9 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./initiateselfI2 leak: keep id name, item size: X
 ./initiateselfI2 leak: pubkey entry, item size: X
 ./initiateselfI2 leak: pubkey, item size: X
+./initiateselfI2 leak: 2 * id list, item size: X
+./initiateselfI2 leak: secret, item size: X
+./initiateselfI2 leak: 2 * hasher name, item size: X
 ./initiateselfI2 leak: policies path, item size: X
 ./initiateselfI2 leak: ocspcerts path, item size: X
 ./initiateselfI2 leak: aacerts path, item size: X
@@ -602,8 +607,5 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./initiateselfI2 leak: default conf conffile, item size: X
 ./initiateselfI2 leak: default conf ipsecd_dir, item size: X
 ./initiateselfI2 leak: default conf ipsec_conf_dir, item size: X
-./initiateselfI2 leak: 2 * id list, item size: X
-./initiateselfI2 leak: secret, item size: X
-./initiateselfI2 leak: 2 * hasher name, item size: X
 ./initiateselfI2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

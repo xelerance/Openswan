@@ -8,6 +8,7 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
 | Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -18,6 +19,7 @@ processing whack msg time: X size: Y
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
 | orient rw-any checking against if: eth0
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
 ./certreplyselfR2 adding connection: "rw-any"
@@ -104,7 +106,8 @@ RC=0 "rw-any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | considering state entry: 3
 | Now lets proceed with state specific processing
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with rw-any
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-any
 | searching for connection with policy = IKEv2ALLOW
@@ -331,7 +334,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
 | v2 peer and cookies match on #1
-| v2 state object #1 found, in STATE_PARENT_R1
+| v2 state object #1 (rw-any) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
@@ -841,7 +844,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |        subjkey:  d8:26:3d:21:ec:7c:db:be:5a:39:0c:5b:70:cb:03:80:21:de:ae:13
 |        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
 |        aserial:  00
-| checking alg=1 == 1, same_id=1
+| checking alg=1 == 1, keyid=carol@strongswan.org same_id=1
 |   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
 | key issuer CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 | PARENT SA now authenticated, building child and reply
@@ -987,16 +990,18 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.1.0.0/10.1.255.255 proto=0 portrange 0-65535
 | prefix range fit c rw-any c->name was rejected by port matching
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
+| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with rw-any
 |    match_id a=carol@strongswan.org
 |             b=(none)
 |    results  matched
-| find_host_pair: comparing to 132.213.238.7:500 %any 0.0.0.0:500
-| find_host_pair: concluded with rw-any
-| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:rw-any
+| find_host_pair: looking for me=132.213.238.7:500 %any him=93.184.216.34:500 exact-match
+| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:none
 | instantiated "rw-any" for 93.184.216.34
 ./certreplyselfR2 switched from "rw-any" to "rw-any"[1]
 | ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
@@ -1345,6 +1350,7 @@ sending 1356 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 |   38 6b f0 91  27 9e 1f be  15 57 53 99  46 09 69 a0
 |   c8 3f 23 f4  b2 77 41 cc  c5 ad a7 29  d8 d0 35 32
 |   ed 24 a7 23  8a f3 6d 39  b8 e4 6e c1
+./certreplyselfR2 leak: host_pair, item size: X
 ./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
 ./certreplyselfR2 leak: host ip, item size: X
