@@ -60,6 +60,20 @@ void recv_pcap_packet4(u_char *user
     st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
     run_continuation(crypto_req);
+
+    {
+        struct state *st1 = state_with_serialno(1);
+        dump_one_state(st1);
+    }
+    {
+        struct state *st2 = state_with_serialno(2);
+        dump_one_state(st2);
+    }
+    dump_one_state(st);
+    {
+        struct state *st4 = state_with_serialno(4);
+        dump_one_state(st4);
+    }
 }
 
 
