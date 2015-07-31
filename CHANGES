@@ -4,9 +4,15 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.44rc2 (July 23, 2015)
+v2.6.44rc3 (July 31, 2015)
   Massive bug patch and IKEv2 processing fixes by MCR
 
+ *  Using short notation, using GNUmakefile notdir, and making sure that $< will 
+    reference the right file by making explicit %.c->%.o rule. [Jason]
+ *  Show the connection name when the state is found, provide a way to nicely dump a single state to debug log [MCR]
+ *  Change find_host_pair so that it knows if it is creating a new host pair, as host pairs that have right=%any will always match [MCR]
+ *  Tweak CA business so that correct CA is loaded, it is referenced correctly, the correct ID is used to lookup the CA [MCR]
+ *  Make sure that certificate file name is properly terminated [MCR]
  *  Use a mcro to set SIN_LEN [MCR]
  *  Added st_peer_id to store decode ID from inside I2 message [MCR]
  *  Added fmt_connection_inst_name [MCR]
