@@ -126,7 +126,8 @@ same_peer_ids(const struct connection *c, const struct connection *d
  *
  */
 struct host_pair *
-find_host_pair(const ip_address *myaddr
+find_host_pair(bool exact
+               , const ip_address *myaddr
 	       , u_int16_t myport
                , enum keyword_host histype
 	       , const ip_address *hisaddr
@@ -147,13 +148,24 @@ find_host_pair(const ip_address *myaddr
     if(myport == pluto_port4500)   myport=pluto_port500;
     if(hisport== pluto_port4500)   hisport=pluto_port500;
 
+    DBG(DBG_CONTROLMORE,
+        char b1[ADDRTOT_BUF];
+        char b2[ADDRTOT_BUF];
+        char himtypebuf[KEYWORD_NAME_BUFLEN];
+        DBG_log("find_host_pair: looking for me=%s:%d %s him=%s:%d %s\n"
+                , myaddr ? (addrtot(myaddr, 0, b1, sizeof(b1)), b1) : "<none>"
+                , myport
+                , keyword_name(&kw_host_list, histype, himtypebuf)
+                , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "<none>"
+                , hisport, exact ? "exact-match" : "any-match"));
+
     for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
     {
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
 	    char b2[ADDRTOT_BUF];
             char himtypebuf[KEYWORD_NAME_BUFLEN];
-	    DBG_log("find_host_pair: comparing to %s:%d %s %s:%d\n"
+	    DBG_log("find_host_pair: comparing to me=%s:%d %s him=%s:%d\n"
                     , (addrtot(&p->me.addr, 0, b1, sizeof(b1)), b1)
                     , p->me.host_port
                     , keyword_name(&kw_host_list, p->him.host_type, himtypebuf)
@@ -165,13 +177,16 @@ find_host_pair(const ip_address *myaddr
         if(p->me.host_port_specific && p->me.host_port != myport) continue;
 
         /* if we are looking for %any, then it *MUST* match that */
-        if(histype == KH_ANY && p->him.host_type != KH_ANY) continue;
+        if(!exact && histype == KH_ANY && p->him.host_type != KH_ANY) continue;
 
         /* if hisport is specific, then it must match */
         if(p->him.host_port_specific && p->him.host_port != hisport) continue;
 
-        /* finally, it must either match address, or conn is %any */
-        if(p->him.host_type != KH_ANY && !sameaddr(&p->him.addr, hisaddr)) continue;
+        /* finally, it must either match address, or conn is %any (if !exact) */
+        if(histype == KH_ANY || !sameaddr(&p->him.addr, hisaddr)) {
+            if(exact) continue;
+            if(p->him.host_type != KH_ANY) continue;
+        }
 
 	/* now it matches: but a future version might want to try for bestfit */
         if (prev != NULL)
@@ -194,12 +209,12 @@ void remove_host_pair(struct host_pair *hp)
 
 /* find head of list of connections with this pair of hosts */
 struct connection *
-find_host_pair_connections(const char *func
+find_host_pair_connections(const char *func, bool exact
 			   , const ip_address *myaddr, u_int16_t myport
                            , enum keyword_host histype
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
-    struct host_pair *hp = find_host_pair(myaddr, myport, histype, hisaddr, hisport);
+    struct host_pair *hp = find_host_pair(exact, myaddr, myport, histype, hisaddr, hisport);
 
     DBG(DBG_CONTROLMORE,
 	char b1[ADDRTOT_BUF];
@@ -222,7 +237,7 @@ connect_to_host_pair(struct connection *c)
 {
     if (oriented(*c))
     {
-	struct host_pair *hp = find_host_pair(&c->spd.this.host_addr
+	struct host_pair *hp = find_host_pair(EXACT_MATCH, &c->spd.this.host_addr
 					      , c->spd.this.host_port
                                               , c->spd.that.host_type
 					      , &c->spd.that.host_addr

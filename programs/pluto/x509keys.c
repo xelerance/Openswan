@@ -47,6 +47,7 @@
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
 #include "pluto/connections.h"
+#include "hostpair.h"
 #include "state.h"
 #include "md2.h"
 #include "md5.h"
@@ -312,7 +313,7 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
-    struct connection *d = find_host_connection(&md->iface->ip_addr
+    struct connection *d = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , pluto_port500
                                                 , KH_ANY
                                                 ,(ip_address*)NULL, md->sender_port, LEMPTY);

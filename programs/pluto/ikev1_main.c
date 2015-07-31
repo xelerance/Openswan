@@ -53,6 +53,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
+#include "hostpair.h"
 #include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
@@ -761,7 +762,7 @@ main_inI1_outR1(struct msg_digest *md)
 
 
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(&md->iface->ip_addr, pluto_port500
+    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                              , KH_IPADDR
 			     , &md->sender
 			     , md->sender_port, LEMPTY);
@@ -789,7 +790,7 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(&md->iface->ip_addr, pluto_port500
+	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                                      , KH_ANY
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);

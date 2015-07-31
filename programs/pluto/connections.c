@@ -842,6 +842,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	    const struct connection *c = NULL;
 
 	    c = find_host_pair_connections(__FUNCTION__
+                                           , ANY_MATCH
 					   , &this->host_addr
 					   , this->host_port
                                            , KH_ANY
@@ -1925,7 +1926,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 	 * We cannot know what port the peer would use, so we assume
 	 * that it is pluto_port (makes debugging easier).
 	 */
-	struct connection *c = find_host_pair_connections(__FUNCTION__, &p->ip_addr
+	struct connection *c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, &p->ip_addr
 							  , pluto_port500
                                                           , KH_ANY
 							  , (ip_address *)NULL
@@ -2123,7 +2124,7 @@ route_owner(struct connection *c
  * ??? no longer usefully different from find_host_pair_connections
  */
 struct connection *
-find_host_connection2(const char *func
+find_host_connection2(const char *func, bool exact
                       , const ip_address *me, u_int16_t my_port
                       , enum keyword_host histype
                       , const ip_address *him, u_int16_t his_port, lset_t policy)
@@ -2136,7 +2137,7 @@ find_host_connection2(const char *func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
 		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"
 		, his_port , bitnamesof(sa_policy_bit_names, policy)));
-    c = find_host_pair_connections(__FUNCTION__, me, my_port, histype, him, his_port);
+    c = find_host_pair_connections(__FUNCTION__, exact, me, my_port, histype, him, his_port);
 
     if (policy != LEMPTY) {
 	/*
@@ -2166,7 +2167,7 @@ find_host_connection2(const char *func
     for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
 
     if(c == NULL) {
-        c = find_host_pair_connections(__FUNCTION__, me, my_port, KH_ANY, NULL, pluto_port500);
+        c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, pluto_port500);
 
         if (policy != LEMPTY) {
             DBG(DBG_CONTROLMORE,
@@ -2490,7 +2491,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	 * instantiated: Road Warrior or Opportunistic.
 	 * Look on list of connections for host pair with wildcard Peer IP
 	 */
-	d = find_host_pair_connections(__FUNCTION__, &c->spd.this.host_addr
+	d = find_host_pair_connections(__FUNCTION__, ANY_MATCH, &c->spd.this.host_addr
 				       , c->spd.this.host_port
                                        , KH_ANY
 				       , (ip_address *)NULL
@@ -2939,7 +2940,7 @@ find_client_connection(struct connection *c
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
 	{
-	    hp = find_host_pair(&sra->this.host_addr
+	    hp = find_host_pair(/*exact*/FALSE, &sra->this.host_addr
 				, sra->this.host_port
                                 , KH_ANY                  /* XXX maybe some other types too */
 				, NULL

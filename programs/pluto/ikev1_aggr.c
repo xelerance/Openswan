@@ -42,6 +42,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
+#include "hostpair.h"
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -225,7 +226,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
     struct state *st;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_SA];
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
-    struct connection *c = find_host_connection(&md->iface->ip_addr
+    struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
 						, md->iface->port
                                                 , KH_ANY
 						, &md->sender
@@ -247,7 +248,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	/* see if a wildcarded connection can be found */
  	pb_stream pre_sa_pbs = sa_pd->pbs;
  	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs) | POLICY_AGGRESSIVE;
-	c = find_host_connection(&md->iface->ip_addr, pluto_port500
+	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
 				 , KH_ANY, (ip_address*)NULL, md->sender_port, policy);
 	if (c == NULL || (c->policy & POLICY_AGGRESSIVE) == 0) {
 	    loglog(RC_LOG_SERIOUS, "initial Aggressive Mode message from %s"

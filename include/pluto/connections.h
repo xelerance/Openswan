@@ -352,8 +352,9 @@ struct state;	/* forward declaration of tag (defined in state.h) */
 extern struct connection
 *con_by_name(const char *nm, bool strict);
 
-#define find_host_connection(me, my_port, histype, him, his_port, policy) find_host_connection2(__FUNCTION__, me, my_port, histype, him, his_port, policy)
+#define find_host_connection(exact, me, my_port, histype, him, his_port, policy) find_host_connection2(__FUNCTION__, exact, me, my_port, histype, him, his_port, policy)
 extern struct connection *find_host_connection2(const char *func
+                                                , bool exact
                                                 , const ip_address *me
                                                 , u_int16_t my_port
                                                 , enum keyword_host histype
