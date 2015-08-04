@@ -1,6 +1,6 @@
 /*
  * Openswan config file parser (keywords.c)
- * Copyright (C) 2003-2006,2014 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2006,2015 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
  * Copyright (C) 2013 Paul Wouters <pwouters@redhat.com>
@@ -633,7 +633,7 @@ unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list)
     return valresult;
 }
 
-unsigned int parser_loose_enum(struct keyword *k, const char *s)
+unsigned int parser_loose_enum_arg(struct keyword *k, const char *s, char **rest)
 {
     struct keyword_def *kd = k->keydef;
     int   kevcount;
@@ -642,6 +642,14 @@ unsigned int parser_loose_enum(struct keyword *k, const char *s)
 
     assert(kd->type == kt_loose_enum || kd->type == kt_rsakey);
     assert(kd->validenum != NULL && kd->validenum->values != NULL);
+
+    if(kd->deliminator != '\0') {
+        char *nl = strchr(s, kd->deliminator);
+        if(nl) *nl='\0';
+        nl++;
+        if(rest) *rest = nl;
+
+    }
 
     for(kevcount = kd->validenum->valuesize, kev = kd->validenum->values;
 	kevcount > 0 && strcasecmp(s, kev->name)!=0;
