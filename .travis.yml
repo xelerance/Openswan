@@ -42,7 +42,8 @@ before_script:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
-  - "PATH=$HOME/bin:$PATH export PATH"
+  - "PATH=$HOME/stuff/bin:$PATH export PATH"
+  - which tcpdump
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi
