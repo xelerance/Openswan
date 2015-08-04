@@ -1,12 +1,12 @@
 /*
  * A program to read the configuration file and load a single conn
  * Copyright (C) 2005 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -65,7 +65,7 @@ static const char *usage_string = ""
     "               [--configsetup] \n"
     "               {--checkconfig] \n"
     "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
-    
+
     "               names\n";
 
 
@@ -131,7 +131,7 @@ main(int argc, char *argv[])
     EF_PROTECT_BELOW=1;
     EF_PROTECT_FREE=1;
 #endif
-    
+
 
     progname = argv[0];
     rootdir[0]='\0';
@@ -231,7 +231,7 @@ main(int argc, char *argv[])
     {
 	confdir = IPSEC_CONFDIR;
     }
-	
+
     if(!configfile) {
 	configfile = alloc_bytes(strlen(confdir)+sizeof("/ipsec.conf")+2,"conf file");
 
@@ -259,7 +259,7 @@ main(int argc, char *argv[])
 	resolvip=FALSE;
     }
     cfg = confread_load(configfile, &err, resolvip, ctlbase,typeexport);
-    
+
     if(cfg == NULL) {
 	fprintf(stderr, "can not load config '%s': %s\n",
 		configfile, err);
@@ -302,7 +302,7 @@ main(int argc, char *argv[])
 	}
     }
 
-    if(all) 
+    if(all)
     {
 	if(verbose) {
 	    printf("loading all conns:");
@@ -356,7 +356,7 @@ main(int argc, char *argv[])
 
 	printf("%s_confreadstatus=\n", varprefix);
 	printf("%s_confreadnames=\"",varprefix);
-	
+
 	/* find conn names that have value set */
 	for(conn = cfg->conns.tqh_first;
 	    conn != NULL;
@@ -454,7 +454,7 @@ main(int argc, char *argv[])
 		    break;
 		}
 	    }
-	    
+
 	    if(conn == NULL) {
 		/* only if we don't find it, do we now look for aliases */
 
@@ -491,7 +491,7 @@ main(int argc, char *argv[])
 	if(verbose) printf("\n");
     }
 
-    confread_free(cfg);    
+    confread_free(cfg);
     exit(exit_status);
 }
 
