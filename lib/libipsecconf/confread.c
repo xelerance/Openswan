@@ -623,20 +623,25 @@ bool translate_conn (struct starter_conn *conn
 
     for ( ; kw; kw=kw->next)
     {
+        char keyname[128];
+
 	i++;
 	the_strings = &conn->strings;
 	set_strings = &conn->strings_set;
 	the_options = &conn->options;
 	set_options = &conn->options_set;
 
-	if((kw->keyword.keydef->validity & kv_conn) == 0)
+        /* initialize with base value */
+        strcpy(keyname, kw->keyword.keydef->keyname);
+
+        if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
 	    *error = (const char *)tmp_err;
 
 	    snprintf(tmp_err, sizeof(tmp_err),
 		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
-		     kw->keyword.keydef->keyname, sl->name, i);
+		     keyname, sl->name, i);
 	    starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
 	    continue;
 	}
@@ -653,11 +658,13 @@ bool translate_conn (struct starter_conn *conn
 
 	    if(kw->keyword.keyleft)
 	    {
+                snprintf(keyname, sizeof(keyname), "left%s", kw->keyword.keydef->keyname);
 		the_strings = &left->strings;
 		the_options = &left->options;
 		set_strings = &left->strings_set;
 		set_options = &left->options_set;
 	    } else {
+                snprintf(keyname, sizeof(keyname), "right%s", kw->keyword.keydef->keyname);
 		the_strings = &right->strings;
 		the_options = &right->options;
 		set_strings = &right->strings_set;
@@ -669,7 +676,7 @@ bool translate_conn (struct starter_conn *conn
 
 #ifdef PARSER_TYPE_DEBUG
 	starter_log(LOG_LEVEL_DEBUG, "#analyzing %s[%d] kwtype=%d\n",
-		    kw->keyword.keydef->keyname, field,
+		    keyname, field,
 		    kw->keyword.keydef->type);
 #endif
 
@@ -689,9 +696,10 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		*error = tmp_err;
 
+                /* keyname[0] test looks for left=/right= */
 		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , kw->keyword.keydef->keyname
+			 , "duplicate key '%s' in conn %s while processing def %s (ignored)"
+			 , keyname
 			 , conn->name
 			 , sl->name);
 
@@ -711,7 +719,7 @@ bool translate_conn (struct starter_conn *conn
 
 		snprintf(tmp_err, sizeof(tmp_err)
 			 , "Invalid %s value"
-			 , kw->keyword.keydef->keyname);
+			 , keyname);
 		    err++;
 		    break;
             }
@@ -754,7 +762,7 @@ bool translate_conn (struct starter_conn *conn
 		*error = tmp_err;
 		snprintf(tmp_err, sizeof(tmp_err)
 			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , kw->keyword.keydef->keyname
+			 , keyname
 			 , conn->name
 			 , sl->name);
 
@@ -802,7 +810,7 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		starter_log(LOG_LEVEL_INFO
                             , "duplicate key '%s' in conn %s while processing def %s"
-                            , kw->keyword.keydef->keyname, conn->name, sl->name);
+                            , keyname, conn->name, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -812,7 +820,7 @@ bool translate_conn (struct starter_conn *conn
 
 #if 0
 	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u\n",
-			kw->keyword.keydef->keyname, field, kw->number);
+			keyname, field, kw->number);
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
