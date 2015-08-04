@@ -39,11 +39,12 @@ before_install:
 
 before_script:
   - tests/utils/testsetup.sh
+  - "PATH=$HOME/stuff/sbin:$PATH export PATH"
+  - which tcpdump
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
-  - "PATH=$HOME/stuff/bin:$PATH export PATH"
-  - which tcpdump
+  - "PATH=$HOME/stuff/sbin:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi
