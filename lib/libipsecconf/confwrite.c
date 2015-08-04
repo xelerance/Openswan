@@ -64,6 +64,7 @@ void confwrite_int(FILE *out,
 	/* do not output policy settings handled elsewhere */
 	if(k->validity & kv_policy) continue;
 	if(k->validity & kv_processed) continue;
+        if(k->validity & kv_obsolete)  continue;
 
 #if 0
 	printf("#side: %s  %s validity: %08x & %08x=%08x vs %08x\n", side,
@@ -154,9 +155,6 @@ void confwrite_int(FILE *out,
 
 	case kt_comment:
 	    continue;
-
-	case kt_obsolete:
-	    continue;
 	}
 
 	if(options_set[k->field]) {
@@ -225,9 +223,6 @@ void confwrite_str(FILE *out,
 	    continue;
 
 	case kt_comment:
-	    continue;
-
-	case kt_obsolete:
 	    continue;
 	}
 
@@ -301,6 +296,7 @@ void confwrite_side(FILE *out,
     case KH_IPADDR:
 	addrtot(&end->addr, 0, databuf, ADDRTOT_BUF);
 	fprintf(out, "\t%s=%s", side, databuf);
+        addrargument = FALSE;
 	break;
     }
     if(addrargument && end->strings_set[KSCF_IP]) {

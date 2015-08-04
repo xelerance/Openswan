@@ -278,6 +278,12 @@ static bool load_setup(struct starter_config *cfg,
          */
         assert(kw->keyword.keydef->validity & kv_config);
 
+        if(kw->keyword.keydef->validity & kv_obsolete) {
+            starter_log(LOG_LEVEL_INFO,
+                        "Warning: obsolete keyword '%s' ignored on read",
+                        kw->keyword.keydef->keyname);
+        }
+
         switch (kw->keyword.keydef->type) {
         case kt_string:
         case kt_filename:
@@ -324,11 +330,6 @@ static bool load_setup(struct starter_config *cfg,
         case kt_comment:
             break;
 
-        case kt_obsolete:
-            starter_log(LOG_LEVEL_INFO,
-                        "Warning: ignored obsolete keyword '%s'",
-                        kw->keyword.keydef->keyname);
-            break;
         }
     }
 
@@ -646,7 +647,11 @@ bool translate_conn (struct starter_conn *conn
 	    continue;
 	}
 
-	if(kw->keyword.keydef->validity & kv_leftright)
+        if(kw->keyword.keydef->validity & kv_obsolete) {
+	    starter_log(LOG_LEVEL_DEBUG,"Warning: obsolete keyword %s ignored\n",kw->keyword.keydef->keyname);
+        }
+
+        if(kw->keyword.keydef->validity & kv_leftright)
 	{
             struct starter_end *left, *right;
             left  = &conn->left;
@@ -828,9 +833,6 @@ bool translate_conn (struct starter_conn *conn
 	    break;
 
 	case kt_comment:
-	    break;
-	case kt_obsolete:
-	    starter_log(LOG_LEVEL_DEBUG,"Warning: obsolete keyword %s ignored\n",kw->keyword.keydef->keyname);
 	    break;
 	}
     }

@@ -537,8 +537,6 @@ void process_keyword_equal(struct keyword kw, struct kw_list *new, const char *c
         break;
     case kt_comment:
         break;
-    case kt_obsolete:
-        break;
     }
 }
 

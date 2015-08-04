@@ -62,7 +62,6 @@ static const struct keyword_enum_value kt_values[]={
     KEV_LITERAL(kt_idtype),
     KEV_LITERAL(kt_bitstring),
     KEV_LITERAL(kt_comment),
-    KEV_LITERAL(kt_obsolete),
 };
 static const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
 
@@ -356,8 +355,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
     {"secctx_attr_value",kv_config,kt_number, KBF_SECCTX, NOT_ENUM},
     /* these two options are obsoleted. Don't die on them */
-    {"forwardcontrol", kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
-    {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
+    {"forwardcontrol", kv_config|kv_obsolete, kt_string, KBF_WARNIGNORE,NOT_ENUM},
+    {"rp_filter",      kv_config|kv_obsolete, kt_string, KBF_WARNIGNORE,NOT_ENUM},
 
     /* this is "left=" and "right=" */
     {"",               kv_conn|kv_leftright, kt_loose_enumarg, KSCF_IP, &kw_host_list, LOOSE_ENUM_OTHER, '/'},
@@ -368,7 +367,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"subnets",        kv_conn|kv_auto|kv_leftright, kt_appendlist, KSCF_SUBNETS,NOT_ENUM},
     {"sourceip",       kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM},
     {"nexthop",        kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
-    {"firewall",       kv_conn|kv_auto|kv_leftright|kt_obsolete, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
+    {"firewall",       kv_conn|kv_auto|kv_leftright|kv_obsolete, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
     {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
     {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
     {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list, PUBKEY_PREEXCHANGED},
@@ -455,7 +454,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM},
 
     /* some things from libreswan, which we will probably accept */
-    { "plutofork",      kv_config, kt_obsolete /*kt_bool*/,      KBF_PLUTOFORK,  NOT_ENUM },
+    { "plutofork",      kv_config|kv_obsolete, kt_bool,      KBF_PLUTOFORK,  NOT_ENUM },
 
     {NULL, 0, 0, 0, NOT_ENUM}
 };

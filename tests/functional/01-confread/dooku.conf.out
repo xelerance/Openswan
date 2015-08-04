@@ -15,8 +15,10 @@ config setup
 # begin conn dooku--cassidy-net
 conn dooku--cassidy-net
 	#also = dooku-base cassidy-base
+	left=%myip
 	leftid="@dooku.sandelman.ca"
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
+	right=%dns/cassidy.sandelman.ca
 	rightid="@cassidy.sandelman.ca"
 	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	auto=ignore
@@ -31,6 +33,7 @@ conn dooku--cassidy-net
 
 # begin conn dooku-base
 conn dooku-base
+	left=%myip
 	leftid="@dooku.sandelman.ca"
 	leftrsakey=0sAQO7PkzqAdbrg6VLeAW1Q3zAS5Hg10e07tkPcE3P3nxxTavoLv2QsNTj/PdhW9ulSHMpGOKfMyeIJuBa3Qy+jsPi4q6X4WZ+3u8I2e119OKGhA+dY0X+8mXeYhqDN2tFFIQnuvKqfpZjtx8KAOjndcN2Zvul3Y9Gc5XaM9nkewi6olX7x6P0ocl6QyWYyjGlVJTRDnwacIbmChTxa1y3pNLetNvudKQNSspa+5eEHQe8EVYaeTGj/GBkfBpDg5S1xg9geSRGRlVZ7+YUKNstLG1Vu3IO1D5wkX+kmMhM4ZdfAoHv5OdKAxhb6fcE0mYu7n4UzmaNkauexxOQRQBob8jV5lcxMi8ASDzeIaX971uiwsj9
 	#right= not set
@@ -47,6 +50,7 @@ conn dooku-base
 # begin conn cassidy-base
 conn cassidy-base
 	#left= not set
+	right=%dns/cassidy.sandelman.ca
 	rightid="@cassidy.sandelman.ca"
 	rightrsakey=0sAQO05ofzFZvwiKLSLgV7blktNvBMNrl5w1vlruBxUES2B27u24vhHdEUrPPMqz+JcYQ54xnnlVdw6PNrSV4+DaCAKm2sTBN6IiYGFqlGozzuhG7F3NVzTLSgUIceDkmexuCxnREkyXIw8EOpbaWQOuJjZYnspWd77rYewhu+u8j4E4+ZNPjMbdqAXciKga/tbADLKFs8w94142R0tQ4sceu5vI5CvFeR8x2x0LxALUPZ0APyA51Z6tOuXOeTfSTyueKLoB0tSuzJOPX+7nk+Ofc/ib2wGWNU2GbJpG5IPgs40P0TQZPNwdZNDwtmolY9xWkX9n3M5gyLMljfWPxmz1jt
 	auto=ignore
