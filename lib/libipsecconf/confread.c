@@ -267,80 +267,79 @@ static char **new_list(char *value)
 static bool load_setup(struct starter_config *cfg,
 		      struct config_parsed *cfgp)
 {
-	bool err = FALSE;
-	struct kw_list *kw;
+    bool err = FALSE;
+    struct kw_list *kw;
 
-	for (kw = cfgp->config_setup; kw; kw = kw->next) {
+    for (kw = cfgp->config_setup; kw; kw = kw->next) {
 
-		/**
-		 * the parser already made sure that only config keywords were used,
-		 * but we double check!
-		 */
-		assert(kw->keyword.keydef->validity & kv_config);
+        /**
+         * the parser already made sure that only config keywords were used,
+         * but we double check!
+         */
+        assert(kw->keyword.keydef->validity & kv_config);
 
-		switch (kw->keyword.keydef->type) {
-		case kt_string:
-		case kt_filename:
-		case kt_dirname:
-		case kt_loose_enum:
-			/* all treated as strings for now */
-			assert(kw->keyword.keydef->field <
-			       sizeof(cfg->setup.strings));
-			pfreeany(cfg->setup.strings[kw->keyword.keydef->
-							field]);
-			cfg->setup.strings[kw->keyword.keydef->field] =
-				clone_str(kw->string, "kt_loose_enum kw->string");
-			cfg->setup.strings_set[kw->keyword.keydef->field] =
-				TRUE;
-			break;
+        switch (kw->keyword.keydef->type) {
+        case kt_string:
+        case kt_filename:
+        case kt_dirname:
+        case kt_loose_enum:
+        case kt_loose_enumarg:
+            /* all treated as strings for now */
+            assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
+            pfreeany(cfg->setup.strings[kw->keyword.keydef->field]);
+            cfg->setup.strings[kw->keyword.keydef->field] =
+                clone_str(kw->string, "kt_loose_enum kw->string");
+            cfg->setup.strings_set[kw->keyword.keydef->field] =TRUE;
+            break;
 
-		case kt_list:
-		case kt_bool:
-		case kt_invertbool:
-		case kt_enum:
-		case kt_number:
-		case kt_time:
-		case kt_percent:
-			/* all treated as a number for now */
-			assert(kw->keyword.keydef->field <
-			       sizeof(cfg->setup.options));
-			cfg->setup.options[kw->keyword.keydef->field] =
-				kw->number;
-			cfg->setup.options_set[kw->keyword.keydef->field] =
-				TRUE;
-			break;
+        case kt_list:
+        case kt_bool:
+        case kt_invertbool:
+        case kt_enum:
+        case kt_number:
+        case kt_time:
+        case kt_percent:
+            /* all treated as a number for now */
+            assert(kw->keyword.keydef->field <
+                   sizeof(cfg->setup.options));
+            cfg->setup.options[kw->keyword.keydef->field] =
+                kw->number;
+            cfg->setup.options_set[kw->keyword.keydef->field] =
+                TRUE;
+            break;
 
-		case kt_bitstring:
-		case kt_rsakey:
-		case kt_ipaddr:
-		case kt_subnet:
-                /* case kt_range: */
-		case kt_idtype:
-			err = TRUE;
-			break;
+        case kt_bitstring:
+        case kt_rsakey:
+        case kt_ipaddr:
+        case kt_subnet:
+            /* case kt_range: */
+        case kt_idtype:
+            err = TRUE;
+            break;
 
-		case kt_comment:
-			break;
+        case kt_appendstring:
+        case kt_appendlist:
+            /* XXX not yet implemented */
+            break;
+        case kt_comment:
+            break;
 
-		case kt_obsolete:
-			starter_log(LOG_LEVEL_INFO,
-				    "Warning: ignored obsolete keyword '%s'",
-				    kw->keyword.keydef->keyname);
-			break;
-		default:
-		    /* NEVER HAPPENS */
-		    break;
-		}
-	}
+        case kt_obsolete:
+            starter_log(LOG_LEVEL_INFO,
+                        "Warning: ignored obsolete keyword '%s'",
+                        kw->keyword.keydef->keyname);
+            break;
+        }
+    }
 
-	/* now process some things with specific values */
+    /* now process some things with specific values */
 
-	/* interfaces has to be chopped up */
-	if (cfg->setup.interfaces)
-		FREE_LIST(cfg->setup.interfaces);
-	cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
+    /* interfaces has to be chopped up */
+    if (cfg->setup.interfaces)
+        FREE_LIST(cfg->setup.interfaces);
+    cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
 
-	return err;
+    return err;
 }
 
 /**
@@ -389,6 +388,7 @@ static bool validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_IPADDR:
+        /* right=/left= */
 	assert(end->strings[KSCF_IP] != NULL);
 
 	if (end->strings[KSCF_IP][0]=='%') {
@@ -430,7 +430,7 @@ static bool validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_IPHOSTNAME:
-	/* generally, this doesn't show up at this stage */
+        /* XXX */
 	break;
 
     case KH_DEFAULTROUTE:
@@ -745,6 +745,7 @@ bool translate_conn (struct starter_conn *conn
 
 	case kt_rsakey:
 	case kt_loose_enum:
+	case kt_loose_enumarg:
 	    assert(field < KEY_STRINGS_MAX);
 	    assert(field < KEY_NUMERIC_MAX);
 
@@ -778,7 +779,12 @@ bool translate_conn (struct starter_conn *conn
 		assert(kw->keyword.string != NULL);
                 pfreeany((*the_strings)[field]);
                 (*the_strings)[field] = clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
-	    }
+	    } else if(kw->keyword.keydef->type == kt_loose_enumarg) {
+		assert(kw->keyword.string != NULL);
+                pfreeany((*the_strings)[field]);
+                (*the_strings)[field] = clone_str(kw->argument, "kt_loose_enum kw->keyword.argument");
+            }
+
 	    (*set_options)[field] = assigned_value;
 	    break;
 

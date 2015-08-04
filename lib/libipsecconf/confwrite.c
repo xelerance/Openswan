@@ -1,6 +1,6 @@
 /*
  * Openswan config file writer (confwrite.c)
- * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2015 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -106,12 +106,13 @@ void confwrite_int(FILE *out,
 
 	case kt_enum:
 	case kt_loose_enum:
+	case kt_loose_enumarg:
 	    /* special enumeration */
 	    if(options_set[k->field]) {
 		int val = options[k->field];
 		fprintf(out, "\t%s%s=",side, k->keyname);
 
-		if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
+                if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
 		    fprintf(out, "%s\n", strings[k->field]);
 		} else {
 		    const struct keyword_enum_values *kevs = k->validenum;
@@ -125,6 +126,10 @@ void confwrite_int(FILE *out,
 			}
 			i++;
 		    }
+                    if(k->type == kt_loose_enumarg && strings[k->field]) {
+                        fprintf(out, "%c%s", k->deliminator, strings[k->field]);
+                    }
+
 		    fprintf(out, "\n");
 		}
 	    }
@@ -207,6 +212,7 @@ void confwrite_str(FILE *out,
 	case kt_enum:
 	case kt_list:
 	case kt_loose_enum:
+	case kt_loose_enumarg:
 	    /* special enumeration */
 	    continue;
 
