@@ -381,6 +381,10 @@ main(int argc, char *argv[])
 	printf("export %sconfreadstatus=''\n", varprefix);
 	for(kd=ipsec_conf_keywords_v2; kd->keyname != NULL; kd++) {
 	    if((kd->validity & kv_config)==0) continue;
+	    if(kd->validity & kv_obsolete) {
+		printf("# obsolete option '%s%s' ignored\n", varprefix, kd->keyname);
+                continue;
+            }
 
 	    switch(kd->type) {
 	    case kt_string:
@@ -405,10 +409,6 @@ main(int argc, char *argv[])
 		       varprefix, kd->keyname);
 		confwrite_list(stdout, "", cfg->setup.options[kd->field], kd);
 		printf("'\n");
-		break;
-
-	    case kt_obsolete:
-		printf("# obsolete option '%s%s' ignored\n", varprefix, kd->keyname);
 		break;
 
 	    default:
