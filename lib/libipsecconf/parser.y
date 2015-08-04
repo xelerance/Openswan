@@ -445,7 +445,8 @@ static void parser_free_kwlist (struct kw_list *list)
 	while (list) {
 		elt = list;
 		list = list->next;
-		if (elt->string) free(elt->string);
+		if (elt->string)   free(elt->string);
+		if (elt->argument) free(elt->argument);
 		free(elt);
 	}
 }
@@ -510,7 +511,9 @@ void process_keyword_equal(struct keyword kw, struct kw_list *new, const char *c
         break;
     case kt_loose_enumarg:
         new->number = parser_loose_enum_arg(&new->keyword, string, &rest);
-        new->argument=strdup(rest);
+        if(rest) {
+            new->argument=strdup(rest);
+        }
         break;
     case kt_string:
     case kt_appendstring:
@@ -521,7 +524,7 @@ void process_keyword_equal(struct keyword kw, struct kw_list *new, const char *c
     case kt_bitstring:
     case kt_idtype:
     case kt_subnet:
-        new->string = string;
+        new->string = strdup(string);
         break;
 
     case kt_bool:
