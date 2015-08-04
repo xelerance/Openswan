@@ -1470,7 +1470,8 @@ struct keyword_enum_value kw_host_values[]={
     { "%oppogroup",     KH_OPPOGROUP },
     { "%group",         KH_GROUP },
     { "%address",       KH_IPADDR },
-    { "%hostname",      KH_IPHOSTNAME },  /* makes no sense on input */
+    { "%dns",           KH_IPHOSTNAME },
+    { "%hostname",      KH_IPHOSTNAME },  /* alias for above */
 };
 
 struct keyword_enum_values kw_host_list=

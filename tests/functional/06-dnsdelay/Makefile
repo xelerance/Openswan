@@ -26,5 +26,6 @@ update:
 	cp ../OUTPUTS/client.conf.raw     client.conf.out
 
 
-
-
+# Local Variables:
+# compile-command: "(cd ../../../programs/readwriteconf && make clean && make programs) && make check"
+# End:
