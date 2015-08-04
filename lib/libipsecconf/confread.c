@@ -787,10 +787,11 @@ bool translate_conn (struct starter_conn *conn
 		assert(kw->keyword.string != NULL);
                 pfreeany((*the_strings)[field]);
                 (*the_strings)[field] = clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
-	    } else if(kw->keyword.keydef->type == kt_loose_enumarg) {
-		assert(kw->keyword.string != NULL);
+                (*set_strings)[field] = TRUE;
+	    } else if(kw->keyword.keydef->type == kt_loose_enumarg && kw->argument != NULL) {
                 pfreeany((*the_strings)[field]);
                 (*the_strings)[field] = clone_str(kw->argument, "kt_loose_enum kw->keyword.argument");
+                (*set_strings)[field] = TRUE;
             }
 
 	    (*set_options)[field] = assigned_value;

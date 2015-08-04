@@ -9,6 +9,7 @@ config setup
 # begin conn concentrator
 conn concentrator
 	#left= not set
+	right=%dns/example.com/93.184.216.34
 	rightid="@example.com"
 	rightsubnet=10.2.0.0/16
 	auto=ignore
@@ -23,10 +24,13 @@ conn concentrator
 
 # begin conn cpe
 conn cpe
+	#also = concentrator
 	left=%defaultroute
+	leftid="@cpe.example.com"
 	leftnexthop=%defaultroute
 	right=%dns/example.com/93.184.216.34
-	rightid="@cpe.example.com"
+	rightid="@example.com"
+	rightsubnet=10.2.0.0/16
 	auto=add
 	type=tunnel
 	compress=no

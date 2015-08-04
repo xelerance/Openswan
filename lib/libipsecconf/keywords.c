@@ -360,7 +360,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
 
     /* this is "left=" and "right=" */
-    {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list, LOOSE_ENUM_OTHER},
+    {"",               kv_conn|kv_leftright, kt_loose_enumarg, KSCF_IP, &kw_host_list, LOOSE_ENUM_OTHER, '/'},
 
     {"ike",            kv_conn|kv_auto, kt_string, KSF_IKE,NOT_ENUM},
 
@@ -640,15 +640,16 @@ unsigned int parser_loose_enum_arg(struct keyword *k, const char *s, char **rest
     const struct keyword_enum_value *kev;
     unsigned int valresult;
 
-    assert(kd->type == kt_loose_enum || kd->type == kt_rsakey);
+    assert(kd->type == kt_loose_enum || kd->type == kt_loose_enumarg || kd->type == kt_rsakey);
     assert(kd->validenum != NULL && kd->validenum->values != NULL);
 
     if(kd->deliminator != '\0') {
         char *nl = strchr(s, kd->deliminator);
-        if(nl) *nl='\0';
-        nl++;
-        if(rest) *rest = nl;
-
+        if(nl) {
+            *nl='\0';
+            nl++;
+            if(rest) *rest = nl;
+        }
     }
 
     for(kevcount = kd->validenum->valuesize, kev = kd->validenum->values;
