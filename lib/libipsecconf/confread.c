@@ -288,7 +288,7 @@ static bool load_setup(struct starter_config *cfg,
             assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
             pfreeany(cfg->setup.strings[kw->keyword.keydef->field]);
             cfg->setup.strings[kw->keyword.keydef->field] =
-                clone_str(kw->string, "kt_loose_enum kw->string");
+                clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
             cfg->setup.strings_set[kw->keyword.keydef->field] =TRUE;
             break;
 
@@ -714,7 +714,7 @@ bool translate_conn (struct starter_conn *conn
 	    }
             pfreeany((*the_strings)[field]);
 
-	    if(kw->string == NULL) {
+	    if(kw->keyword.string == NULL) {
 		*error = tmp_err;
 
 		snprintf(tmp_err, sizeof(tmp_err)
@@ -724,7 +724,7 @@ bool translate_conn (struct starter_conn *conn
 		    break;
             }
 
-            (*the_strings)[field] = clone_str(kw->string,"kt_idtype kw->string");
+            (*the_strings)[field] = clone_str(kw->keyword.string,"kt_idtype kw->keyword.string");
 	    (*set_strings)[field] = assigned_value;
 	    break;
 
@@ -734,17 +734,17 @@ bool translate_conn (struct starter_conn *conn
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
 	    {
-                (*the_strings)[field] = clone_str(kw->string, "kt_appendlist kw->string");
+                (*the_strings)[field] = clone_str(kw->keyword.string, "kt_appendlist kw->keyword.string");
 	    } else {
                 char *s = (*the_strings)[field];
                 size_t old_len = strlen(s);	/* excludes '\0' */
-                size_t new_len = strlen(kw->string);
+                size_t new_len = strlen(kw->keyword.string);
                 char *n;
 
                 n = alloc_bytes(old_len + 1 + new_len + 1, "kt_appendlist");
                 memcpy(n, s, old_len);
                 n[old_len] = ' ';
-                memcpy(n + old_len + 1, kw->string, new_len + 1);	/* includes '\0' */
+                memcpy(n + old_len + 1, kw->keyword.string, new_len + 1);	/* includes '\0' */
                 (*the_strings)[field] = n;
                 pfree(s);
 	    }

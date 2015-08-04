@@ -273,10 +273,10 @@ struct keyword {
 struct kw_list {
     struct kw_list *next;
     struct keyword  keyword;
-    char        *string;
-    double       decimal;
-    unsigned int number;
-    char        *argument;
+    /* char *string is buried in above keyword, because lexer returns "keyword" structures */
+    double          decimal;
+    unsigned int    number;
+    char           *argument;
 };
 
 struct starter_comments {
