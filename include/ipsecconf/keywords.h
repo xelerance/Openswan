@@ -201,6 +201,8 @@ enum keyword_valid {
     kv_policy = LELEM(6),     /* is a policy affecting verb, processed specially */
     kv_processed = LELEM(7),  /* is processed, do not output literal string */
     kv_duplicateok = LELEM(8),  /* it is okay if also= items are duplicated */
+    kv_obsolete    = LELEM(9),  /* option that is obsoleted, allow keyword but warn and ignore */
+
 };
 #define KV_CONTEXT_MASK (kv_config|kv_conn|kv_leftright)
 
@@ -249,7 +251,6 @@ enum keyword_type {
     kt_idtype,             /* an ID type */
     kt_bitstring,          /* an encryption/authentication key */
     kt_comment,            /* a value which is a cooked comment */
-    kt_obsolete,           /* option that is obsoleted, allow keyword but warn and ignore */
 };
 
 #define NOT_ENUM NULL
