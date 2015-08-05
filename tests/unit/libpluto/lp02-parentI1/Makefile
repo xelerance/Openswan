@@ -103,3 +103,7 @@ clean: OUTPUT
 OUTPUT:
 	@mkdir -p OUTPUT
 
+# Local Variables:
+# compile-command: "make check"
+# End:
+#
