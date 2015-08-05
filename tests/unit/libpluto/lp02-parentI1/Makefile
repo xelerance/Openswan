@@ -90,8 +90,7 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
-endif
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: OUTPUT
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
@@ -103,3 +102,7 @@ clean: OUTPUT
 OUTPUT:
 	@mkdir -p OUTPUT
 
+# Local Variables:
+# compile-command: "make check"
+# End:
+#
