@@ -292,6 +292,41 @@ static char *connection_name (struct starter_conn *conn)
 	}
 }
 
+static char *split_dns_hostname(struct starter_conn *conn
+                                , char *lr
+                                , char *dnsname
+                                , ip_address *host_addr)
+{
+  char *slash = strchr(dnsname, '/');
+  ip_address tmp;
+  err_t e;
+  if(slash) {
+    char *ip;
+    *slash = '\0';
+    slash++;
+
+    ip = slash;
+    slash = strchr(slash, '/');
+    if(slash) {
+      *slash = '\0';
+      slash++;
+    }
+    /* now convert to IP address */
+    e = ttoaddr(ip, 0, 0, &tmp);
+    if(!e) {
+      /* avoid trashing host_addr on error */
+      *host_addr = tmp;
+    } else {
+      starter_log(LOG_LEVEL_DEBUG, "conn %s, %s= %dns hint(%s) failed to parse as IPv4/IPv6 address, ignored",
+                  connection_name(conn), lr, ip);
+    }
+  }
+
+  /* return first part as DNS name */
+  return dnsname;
+}
+
+
 static int set_whack_end(struct starter_config *cfg
                           , struct starter_conn *conn
 			  , char *lr
@@ -300,6 +335,10 @@ static int set_whack_end(struct starter_config *cfg
 {
 	w->id = l->id;
 	w->host_type = l->addrtype;
+
+        /* may get overridden if IPHOSTNAME */
+	w->host_addr_name = l->strings[KSCF_IP];
+        anyaddr(l->addr_family, &w->host_addr);
 
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
@@ -315,9 +354,11 @@ static int set_whack_end(struct starter_config *cfg
 		break;
 
 	case KH_IPHOSTNAME:
-		/* note: we always copy the name string below */
-		anyaddr(l->addr_family, &w->host_addr);
-		break;
+          /* go split the string up into DNS part, and one or more hints */
+          w->host_addr_name = split_dns_hostname(conn, lr
+                                                 , l->strings[KSCF_IP]
+                                                 , &w->host_addr);
+          break;
 
 	case KH_OPPO:
 	case KH_GROUP:
@@ -338,7 +379,6 @@ static int set_whack_end(struct starter_config *cfg
           printf("%s %s: do something with host case: %d\n", conn->name, lr, l->addrtype);
 		break;
 	}
-	w->host_addr_name = l->strings[KSCF_IP];
 
 	switch(l->nexttype) {
 	case KH_DEFAULTROUTE:

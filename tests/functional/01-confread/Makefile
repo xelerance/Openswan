@@ -31,6 +31,6 @@ update:
 	cp ../OUTPUTS/dooku.conf.raw         dooku.conf.out
 	cp ../OUTPUTS/cassidy.conf.raw       cassidy.conf.out
 
-
-
-
+# Local Variables:
+# compile-command: "(cd ../../../programs/readwriteconf && make clean && make programs) && make check"
+# End:

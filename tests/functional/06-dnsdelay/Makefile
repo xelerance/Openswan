@@ -21,6 +21,7 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 check:
 	mkdir -p ../OUTPUTS
 	${READWRITE} --config client.conf | tee ../OUTPUTS/client.conf.raw | diff - client.conf.out
+	${READWRITE} --config client.conf --whackout=../OUTPUTS/client.conf.whack cpe
 
 update:
 	cp ../OUTPUTS/client.conf.raw     client.conf.out
