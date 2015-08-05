@@ -1,0 +1,6 @@
+./dnscpeI1 loading secrets from "../samples/parker.secrets"
+./dnscpeI1 loaded private key for keyid: PPK_RSA:AQN7wUerV
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+XXX ./dnscpeI1 connection must specify host IP address for our side
