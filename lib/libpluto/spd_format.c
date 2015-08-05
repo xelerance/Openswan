@@ -251,7 +251,11 @@ format_end(char *buf
     /* [---hop] */
     hop[0] = '\0';
     hop_sep = "";
-    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr))
+    /* do not format if nexthop is invalid.
+     * skip if nexhop is actually right=
+     */
+    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr)
+        && addrbytesptr(&this->host_nexthop, NULL)!=0)
     {
 	addrtot(&this->host_nexthop, 0, hop, sizeof(hop));
 	hop_sep = "---";
