@@ -73,7 +73,7 @@ version:
 baseversion:
 	@echo ${IPSECBASEVERSION}
 
-packagingprep: 
+packagingprep:
 	sed "s/IPSECBASEVERSION/${IPSECBASEVERSION}/" debian/changelog.in > debian/changelog
 	cp debian/changelog debian/NEWS
 	@for spec in packaging/*/openswan.spec.in; do \
