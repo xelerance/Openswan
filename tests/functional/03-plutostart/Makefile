@@ -17,7 +17,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/functional/01-confread
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
-WHACKBIN=${OBJDIRTOP}/programs/pluto/whack
+WHACKBIN=${OBJDIRTOP}/programs/whack/whack
 CTLBASE=--ctlbase OUTPUT
 SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=OUTPUT
 OUTPUTS=../OUTPUTS

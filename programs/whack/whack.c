@@ -40,7 +40,7 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#include "defs.h"
+#include "pluto/defs.h"
 #include "whack.h"
 
 /**
