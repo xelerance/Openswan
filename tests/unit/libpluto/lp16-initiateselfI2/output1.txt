@@ -25,9 +25,9 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=@example.com him=@jamesjohnson.emmjay.credil.org (exact)
 |   concluded with <none>
 ./initiateselfI2 adding connection: "gateway--any"
-| %any[@example.com]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16
+| %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "gateway--any": %any[@example.com]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "gateway--any": %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "gateway--any":     myip=unset; hisip=unset;
 RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
