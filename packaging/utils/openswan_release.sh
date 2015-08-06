@@ -47,7 +47,7 @@ gzip openswan-$1.kernel-2.4-natt.patch
 gzip openswan-$1.kernel-2.6-klips.patch
 gzip openswan-$1.kernel-2.6-natt.patch
 # Sign binaries
-gpg -sba openswan-$1.tar.gz 
+gpg -sba openswan-$1.tar.gz
 gpg -sba openswan-$1.kernel-2.4-klips.patch.gz
 gpg -sba openswan-$1.kernel-2.4-natt.patch.gz
 gpg -sba openswan-$1.kernel-2.6-klips.patch.gz
@@ -59,5 +59,5 @@ scp openswan-$1.*.gz* $OS_FTP
 scp openswan-$1/CHANGES $OS_FTP
 
 # Move to old/ since we're done.
-mv openswan-$1* old/ 
+mv openswan-$1* old/
 echo "Releasing Process Done"
