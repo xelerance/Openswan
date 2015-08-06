@@ -45,6 +45,7 @@ clean check:
 	@${MAKE} -C lp25-wrongcacert      $@
 	@${MAKE} -C lp26-davecertI2       $@
 	@${MAKE} -C lp27-IDhostpair       $@
+	@${MAKE} -C lp27-dnsloadI1        $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp34-orientafterlisten  $@
 	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
