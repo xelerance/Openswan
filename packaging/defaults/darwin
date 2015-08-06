@@ -8,7 +8,6 @@ USE_KLIPS=false
 USE_NETKEY=false
 USE_WIN2K=false
 BUILD_KLIPS=false
-USE_LWRES=false
 # no longer needed now the bison/yacc options got updated
 USE_YACC=false
 

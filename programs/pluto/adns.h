@@ -15,8 +15,6 @@
 #ifndef _ADNS_H
 #define _ADNS_H
 
-#ifndef USE_LWRES	/* whole file! */
-
 #include <resolv.h>
 
 /* The interface in RHL6.x and BIND distribution 8.2.2 are different,
@@ -74,7 +72,5 @@ enum helper_exit_status {
     HES_BAD_LEN,	/* implausible .len field */
     HES_BAD_MAGIC,	/* .magic field wrong */
 };
-
-#endif /* !USE_LWRES */
 
 #endif /* _ADNS_H */

@@ -15,7 +15,6 @@ USE_MAST=false
 USE_KLIPS=false
 USE_NETKEY=false
 USE_WIN2K=false
-USE_LWRES=false
 USE_YACC=false
 
 

@@ -88,7 +88,7 @@ distarchive: packagingprep
 
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them
-export USE_LWRES USE_IPSECPOLICY USE_IKEPING
+export USE_IPSECPOLICY USE_IKEPING
 export USE_KEYRR USE_KLIPS USE_NETKEY USE_VENDORID
 export USE_AGGRESSIVE USE_XAUTH USE_XAUTHPAM
 export USE_NAT_TRAVERSAL USE_NAT_TRAVERSAL_TRANSPORT_MODE USE_LDAP
