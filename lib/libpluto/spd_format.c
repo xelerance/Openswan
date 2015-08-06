@@ -142,7 +142,9 @@ format_end(char *buf
     {
 	addrtot(&this->host_addr, 0, host_space, sizeof(host_space));
 	host = host_space;
-	dohost_name=TRUE;
+        if(this->host_type != KH_IPADDR) {
+            dohost_name=TRUE;
+        }
     }
 
     if(dohost_name) {
