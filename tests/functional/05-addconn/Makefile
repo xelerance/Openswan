@@ -18,7 +18,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
 ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
-WHACKBIN=${OBJDIRTOP}/programs/pluto/whack
+WHACKBIN=${OBJDIRTOP}/programs/whack/whack
 SAMPLES=${OPENSWANSRCDIR}/tests/unit/libpluto/samples
 CTLBASE=--ctlbase OUTPUT/base
 SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT
