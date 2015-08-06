@@ -13,10 +13,6 @@ cvs -z9 -d $OS_CVS co openswan-2
 mv openswan-2 openswan-$1
 cd openswan-$1
 
-echo "Fixing Makefile.inc..."
-cat Makefile.inc | sed s/^USE_LWRES.*/USE_LWRES?=false/ > Makefile.inc2 && mv Makefile.inc2 Makefile.inc
-
-
 echo "I am setting the Version info..."
 cat Makefile.ver | sed s/2.CVSHEAD/$1/ > Makefile.ver2 && mv Makefile.ver2 Makefile.ver
 cat packaging/redhat/openswan.26spec | sed s/2.CVSHEAD/$1/ > n && mv n packaging/redhat/openswan.26spec

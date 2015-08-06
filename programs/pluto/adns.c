@@ -12,8 +12,6 @@
  * for more details.
  */
 
-#ifndef USE_LWRES	/* whole file! */
-
 /* This program executes as multiple processes.  The Master process
  * receives queries (struct adns_query messages) from Pluto and distributes
  * them amongst Worker processes.  These Worker processes are created
@@ -620,4 +618,3 @@ void exit_tool(int val)
   exit(val);
 }
 
-#endif /* !USE_LWRES */

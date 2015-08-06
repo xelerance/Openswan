@@ -280,14 +280,6 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 # HAVE_ variables let you tell Openswan what system related libraries
 #       you may or maynot have
 
-# LWRES is the lightweight resolver, part of BIND9
-# We test with LWRES, but ship with it off, as it requires
-# additional headers not present on most systems.
-# Note you need a locally running bind9 nameserver with lwres{} enabled
-# to use this, or have the "lwres" package installed and running.
-# This only affects conns that use DNS for keys in lookups.
-USE_LWRES?=false
-
 # Do a new lookup every time a connection is (re)started. This works better
 # on hosts with some dyndns service, since DPD will cause a new dns lookup,
 # but it could be a potential security issue if receiving spoofed dns.
@@ -466,12 +458,7 @@ endif
 HAVE_BROKEN_POPEN?=false
 
 # For systems with no fork (uclibc nommu)
-# requires  USE_LWRES=false
 HAVE_NO_FORK?=false
-
-ifeq ($(HAVE_NO_FORK),true)
-USE_LWRES=false
-endif
 
 NONINTCONFIG=oldconfig
 
@@ -560,10 +547,6 @@ PLUTOLIB=${LIBPLUTO}
 LIBOSWLOG=${OBJDIRTOP}/lib/liboswlog/liboswlog.a
 LIBOSWKEYS=${OBJDIRTOP}/lib/liboswkeys/liboswkeys.a
 
-LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
-LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
-LIBDNS=${OBJDIRTOP}/lib/libdns/libdns.a
-LIBISC=${OBJDIRTOP}/lib/libisc/libisc.a
 LIBBSDPFKEY=${OBJDIRTOP}/lib/libbsdpfkey/libbsdpfkey.a
 
 # point at your libgmp.a if you don't have a system one.
@@ -637,8 +620,7 @@ COREULIMIT?=/bin/true
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE
 export LIBOPENSWANDIR LIBOPENSWAN LIBOSWLOG LIBPLUTO LIBOSWKEYS PLUTOLIB
-export LWRESDIR LIBLWRES LIBDNS
-export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
+export ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
 export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
 export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB LIBIPSECCONF
 export LIBOSWCRYPTO LIBGMP
