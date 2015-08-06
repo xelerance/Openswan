@@ -23,7 +23,7 @@ ifeq ($(USE_IPSECPOLICY),true)
 SUBDIRS+=showpolicy
 endif
 
-SUBDIRS+=proc pluto addconn
+SUBDIRS+=proc pluto addconn whack
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _updown
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets initnss

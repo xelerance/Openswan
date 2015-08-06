@@ -133,6 +133,7 @@
 ./usr/local/man/man8/ipsec_spigrp.8
 ./usr/local/man/man8/ipsec_tncfg.8
 ./usr/local/man/man8/ipsec_verify.8
+./usr/local/man/man8/ipsec_whack.8
 ./usr/local/sbin/ipsec
 ./usr/local/sbin/ipsec.old
 ./usr/local/share/doc/openswan/ipsec.conf-sample
