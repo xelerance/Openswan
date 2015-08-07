@@ -63,7 +63,7 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
  * #include "ipsecconf/interfaces.h"
  * #include "ipsecconf/keywords.h" */
 
-char *progname;
+const char *progname;
 int verbose=0;
 int warningsarefatal = 0;
 

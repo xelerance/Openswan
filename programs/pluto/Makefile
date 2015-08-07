@@ -30,7 +30,6 @@ PMANDIR=$(MANTREE)/man8
 
 BINNAMEPLUTO = pluto
 BINNAMEWHACKINIT = whackinit
-BINNAMEADNS = _pluto_adns
 
 OSDEP?=$(shell uname -s | tr 'A-Z' 'a-z')
 SYSDEP_SRC=sysdep_${OSDEP}.c
@@ -66,9 +65,6 @@ ALLFLAGS = $(CPPFLAGS) $(CFLAGS) ${CROSSFLAGS}
 ifneq ($(LD_LIBRARY_PATH),)
 LDFLAGS+=-L$(LD_LIBRARY_PATH)
 endif
-
-LIBSADNS = ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOPENSWAN}
-LIBSADNS += -lresolv # ${LIBEFENCE}
 
 RM = /bin/rm
 RMFLAGS = -f
@@ -164,8 +160,7 @@ OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
-
-OBJSADNS = adns.o
+OBJSPLUTO += adns.o
 
 OBJSWHACKINIT = whackinit.o
 
@@ -175,8 +170,8 @@ ifeq ($(SHOULDWERESTART),trueplutomain.c)
 all programs clean install:
 	cd ${OPENSWANSRCDIR} && cd ${OBJDIRTOP}/programs/pluto && $(MAKE) $@
 else
-all: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) #$(BINNAMEWHACKINIT)
-programs: $(BINNAMEPLUTO) $(BINNAMEADNSIFNEEDED) #$(BINNAMEWHACKINIT)
+all: $(BINNAMEPLUTO) #$(BINNAMEWHACKINIT)
+programs: $(BINNAMEPLUTO) #$(BINNAMEWHACKINIT)
 clean:	cleanall
 install: doinstall
 endif
@@ -193,7 +188,6 @@ doinstall: all
 	mkdir -p -m 700 $(VARDIR)/run/pluto
 	$(INSTALL) $(INSTBINFLAGS) $(BINNAMEPLUTO) $(LIBEXECDIR)
 	#$(INSTALL) $(INSTSUIDFLAGS) $(BINNAMEWHACKINIT) $(LIBEXECDIR)
-	if $(USE_ADNS) ; then $(INSTALL) $(INSTBINFLAGS) $(BINNAMEADNS)  $(LIBEXECDIR) ; fi
 	$(INSTALL) $(INSTMANFLAGS) ${srcdir}pluto.8 $(PMANDIR)/ipsec_pluto.8
 	sh ${OPENSWANSRCDIR}/packaging/utils/manlink ${srcdir}pluto.8 | \
 		while read from to ; \
@@ -209,7 +203,6 @@ doinstall: all
 
 install_file_list:
 	@echo $(LIBEXECDIR)/$(BINNAMEPLUTO)
-	@if $(USE_ADNS) ; then echo $(LIBDIR)/$(BINNAMEADNS) ; fi
 	@echo $(PMANDIR)/ipsec_pluto.8
 	@sh ${OPENSWANSRCDIR}/packaging/utils/manlink pluto.8 | \
 		while read from to; \
@@ -233,10 +226,6 @@ $(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
-$(BINNAMEADNS): $(OBJSADNS)
-	@echo LD ${BINNAMEADNS}
-	@$(CC) -o $(BINNAMEADNS) $(LDFLAGS) $(OBJSADNS) $(USERLINK) ${LIBSADNS} ${ADNSMINUSL}
-
 $(BINNAMEWHACKINIT): $(OBJSWHACKINIT)
 	@echo LD ${BINNAMEWHACKINIT}
 	@$(CC) -o $(BINNAMEWHACKINIT) $(LDFLAGS) $(OBJSWHACKINIT) $(USERLINK) $(LIBSWHACK)
@@ -246,8 +235,7 @@ distlist:
 
 cleanall:
 	$(RM) $(RMFLAGS) *.core core *~ a.out ktrace.out \
-		$(OBJSPLUTO) $(BINNAMEPLUTO) \
-		$(OBJSADNS) $(BINNAMEADNS)
+		$(OBJSPLUTO) $(BINNAMEPLUTO)
 
 distclean: clean
 

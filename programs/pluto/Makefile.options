@@ -17,9 +17,8 @@
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
-ifeq ($(USE_DYNAMICDNS),true)
+# XXX remove me.
 DYNAMICDNSDEF=-DDYNAMICDNS
-endif
 
 ifeq ($(USE_LDAP),true)
 # Everyone (should) be using LDAPv3, however LDAP_VERSION=2 is an option
@@ -88,9 +87,6 @@ HDRDIRS+= -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
 #    and basename for pluto's lockfile (.pid) and control socket (.ctl).
 #    Double quoting may be needed.
 
-
-USE_ADNS=true
-BINNAMEADNSIFNEEDED=$(BINNAMEADNS)
 
 IPSECPOLICY_DIST_SRCS=rcv_info.c
 ifeq ($(USE_IPSECPOLICY),true)
@@ -303,7 +299,7 @@ LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} $(LIBSHA2)
 LIBSPLUTO+=${WHACKLIB} ${PLUTOLIB} ${BSDKAME_LIBS}
 PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS}
 PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}
-PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} # -lefence
+PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} -lresolv # -lefence
 
 # Solaris needs -lsocket -lnsl
 LIBSWHACK+= ${WHACKLIB} ${LIBOPENSWAN} ${LIBOSWLOG}  ${LIBOPENSWAN}
