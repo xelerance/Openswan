@@ -89,67 +89,8 @@ bool adns_reapchild(pid_t pid, int status UNUSED)
 void
 init_adns(void)
 {
-    const char *adns_path = pluto_adns_option;
-    const char *helper_bin_dir = getenv("IPSEC_EXECDIR");
-    static const char adns_name[] = "_pluto_adns";
-    char adns_path_space[4096];	/* plenty long? */
     int qfds[2];
     int afds[2];
-
-    /* find a pathname to the ADNS program */
-    if (adns_path == NULL)
-    {
-	/* pathname was not specified as an option: build it.
-	 * First, figure out the directory to be used.
-	 */
-	ssize_t n=0;
-
-	if (helper_bin_dir != NULL)
-	{
-	    n = strlen(helper_bin_dir);
-	    if ((size_t)n <= sizeof(adns_path_space) - sizeof(adns_name))
-	    {
-		strcpy(adns_path_space, helper_bin_dir);
-		if (n > 0 && adns_path_space[n -1] != '/')
-		    adns_path_space[n++] = '/';
-	    }
-	}
-	else
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-	{
-	    /* The program will be in the same directory as Pluto,
-	     * so we use the sympolic link /proc/self/exe to
-	     * tell us of the path prefix.
-	     */
-	    n = readlink("/proc/self/exe", adns_path_space, sizeof(adns_path_space));
-
-	    if (n < 0)
-# ifdef __uClibc__
-		/* on some nommu we have no proc/self/exe, try without path */
-		*adns_path_space = '\0', n = 0;
-# else
-		exit_log_errno((e
-		    , "readlink(\"/proc/self/exe\") failed in init_adns()"));
-# endif
-
-	}
-#else
-	/* This is wrong. Should end up in a resource_dir on MacOSX -- Paul */
-	adns_path="/usr/local/libexec/ipsec/lwdnsq";
-#endif
-
-
-	if ((size_t)n > sizeof(adns_path_space) - sizeof(adns_name))
-	    exit_log("path to %s is too long", adns_name);
-
-	while (n > 0 && adns_path_space[n - 1] != '/')
-	    n--;
-
-	strcpy(adns_path_space + n, adns_name);
-	adns_path = adns_path_space;
-    }
-    if (access(adns_path, X_OK) < 0)
-	exit_log_errno((e, "%s missing or not executable", adns_path));
 
     if (pipe(qfds) != 0 || pipe(afds) != 0)
 	exit_log_errno((e, "pipe(2) failed in init_adns()"));
@@ -187,10 +128,7 @@ init_adns(void)
 	    if (afds[1] > 1)
 		close(afds[1]);
 
-	    DBG(DBG_DNS, execlp(adns_path, adns_name, "-d", NULL));
-
-	    execlp(adns_path, adns_name, NULL);
-	    exit_log_errno((e, "execlp of %s failed", adns_path));
+            adns_main(TRUE);
 	}
 
     default:

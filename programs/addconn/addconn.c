@@ -53,7 +53,7 @@
 #include "ipsecconf/starterwhack.h"
 #include "ipsecconf/keywords.h"
 
-char *progname;
+const char *progname;
 int verbose=0;
 int warningsarefatal = 0;
 

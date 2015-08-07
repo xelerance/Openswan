@@ -54,7 +54,7 @@
 #include <stdio.h>
 #include <getopt.h>
 
-char *progname;
+const char *progname;
 char me[] = "ipsec eroute";
 extern char *optarg;
 extern int optind, opterr, optopt;
@@ -83,7 +83,7 @@ uint32_t pfkey_seq = 0;
 #define EMT_INREPLACEROUTE	15	/* replace incoming policy for IPIP on a chain */
 
 static void
-usage(char* arg)
+usage(const char* arg)
 {
 	fprintf(stdout, "usage: %s --{add,addin,replace,replacein} --eraf <inet | inet6> --src <src>/<srcmaskbits>|<srcmask> --dst <dst>/<dstmaskbits>|<dstmask> [ --transport-proto <protocol> ] [ --src-port <source-port> ] [ --dst-port <dest-port> ] <SA>\n", arg);
 	fprintf(stdout, "            where <SA> is '--af <inet | inet6> --edst <edst> --spi <spi> --proto <proto>'\n");
@@ -418,12 +418,15 @@ main(int argc, char **argv)
 			dst_port_opt = optarg;
 			break;
 		case 'l':
-			progname = malloc(strlen(argv[0])
+                    {
+                        char *toolname= malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(progname, "%s --label %s",
+			sprintf(toolname, "%s --label %s",
 				argv[0],
 				optarg);
+                        progname = toolname;
+                    }
 			argcount -= 2;
 			break;
 		case 'i': /* specifies the address family of the SAID, stored in said_af */

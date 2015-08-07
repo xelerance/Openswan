@@ -623,7 +623,8 @@ load_end_certificate(const char *filename, struct end *dst)
 }
 
 static bool
-extract_end(struct end *dst, const struct whack_end *src, const char *which)
+extract_end(struct connection *conn UNUSED
+            , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
 
@@ -959,11 +960,6 @@ add_connection(const struct whack_message *wm)
 	c->cisco_domain_info = NULL;
 	c->cisco_banner = NULL;
 #endif
-#ifdef DYNAMICDNS
-	c->dnshostname = NULL;
-	if (wm->dnshostname)
-		c->dnshostname = wm->dnshostname;
-#endif /* DYNAMICDNS */
 
 	c->policy = wm->policy;
 
@@ -1112,8 +1108,8 @@ add_connection(const struct whack_message *wm)
 
 	c->requested_ca = NULL;
 
-	same_leftca  = extract_end(&c->spd.this, &wm->left, "left");
-	same_rightca = extract_end(&c->spd.that, &wm->right, "right");
+	same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
+	same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
 
 	if (c->spd.this.xauth_server || c->spd.that.xauth_server)
 	{

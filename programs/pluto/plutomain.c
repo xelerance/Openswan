@@ -119,6 +119,7 @@
 
 const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
+const char *progname = NULL;
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -171,7 +172,6 @@ usage(const char *mess)
 	    "[--secretsfile <secrets-file>] "
 	    "[--ipsecdir <ipsec-dir>] "
 	    "\n\t"
-	    "[--adns <pathname>] "
 	    "[--nhelpers <number>] "
 	    " \n\t"
 	    "[--secctx_attr_value <number>]  "
@@ -372,6 +372,9 @@ main(int argc, char **argv)
     leak_detective=0;
 #endif
 
+    progname = argv[0];
+
+
 #ifdef HAVE_LIBCAP_NG
 	/* Drop capabilities */
 	capng_clear(CAPNG_SELECT_BOTH);
@@ -441,7 +444,6 @@ main(int argc, char **argv)
 	    { "coredir", required_argument, NULL, 'C' },
 	    { "ipsecdir", required_argument, NULL, 'f' },
 	    { "ipsec_dir", required_argument, NULL, 'f' },
-	    { "adns", required_argument, NULL, 'a' },
 #ifdef NAT_TRAVERSAL
 	    { "nat_traversal", no_argument, NULL, '1' },
 	    { "keep_alive", required_argument, NULL, '2' },
@@ -705,10 +707,6 @@ main(int argc, char **argv)
 	    (void)osw_init_ipsecdir(optarg);
 	    continue;
 
-	case 'a':	/* --adns <pathname> */
-	    pluto_adns_option = optarg;
-	    continue;
-
 #ifdef DEBUG
 	case 'N':	/* --debug-none */
 	    base_debugging = DBG_NONE;
@@ -925,7 +923,6 @@ main(int argc, char **argv)
 					IPSECLIBDIR"/look",
 					IPSECLIBDIR"/newhostkey",
 					IPSECLIBDIR"/pf_key",
-					IPSECLIBDIR"/_pluto_adns",
 					IPSECLIBDIR"/_plutoload",
 					IPSECLIBDIR"/_plutorun",
 					IPSECLIBDIR"/ranbits",

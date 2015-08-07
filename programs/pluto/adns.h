@@ -73,4 +73,5 @@ enum helper_exit_status {
     HES_BAD_MAGIC,	/* .magic field wrong */
 };
 
+extern int adns_main(bool debugval);
 #endif /* _ADNS_H */

@@ -284,7 +284,7 @@ help(void)
 
 static const char *label = NULL;	/* --label operand, saved for diagnostics */
 
-char *progname = NULL;
+const char *progname = NULL;
 static const char *name = NULL;	/* --name operand, saved for diagnostics */
 
 /** Print a string as a diagnostic, then exit whack unhappily

@@ -71,8 +71,6 @@
 
 /* shared by all processes */
 
-char *progname;	/* program name, for messages */
-
 static bool debug = FALSE;
 
 /* Read a variable-length record from a pipe (and no more!).
@@ -572,49 +570,11 @@ master(void)
     }
 }
 
-/* Not to be invoked by strangers -- user hostile.
- * Mandatory args: query-fd answer-fd
- * Optional arg: -d, signifying "debug".
- */
-
-static void
-adns_usage(const char *fmt, const char *arg)
+int adns_main(int debugval)
 {
-    fprintf(stderr, "INTERNAL TO PLUTO: DO NOT EXECUTE\n");
-
-    fprintf(stderr, fmt, arg);
-    fprintf(stderr, "\n%s\n", ipsec_version_string());
-
-    syslog(LOG_ERR, fmt, arg);
-    exit(HES_INVOCATION);
+  progname = "_pluto_adns";  /* stupid const pointers */
+  debug = debugval;
+  return master();
 }
 
-int
-main(int argc UNUSED, char **argv)
-{
-    int i = 1;
-
-    progname = argv[0];
-
-    while (i < argc)
-    {
-	if (streq(argv[i], "-d"))
-	{
-	    i++;
-	    debug = TRUE;
-	}
-	else
-	{
-	    adns_usage("unexpected argument \"%s\"", argv[i]);
-	    /*NOTREACHED*/
-	}
-    }
-
-    return master();
-}
-
-void exit_tool(int val)
-{
-  exit(val);
-}
 

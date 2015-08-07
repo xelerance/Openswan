@@ -68,7 +68,7 @@
 
 struct encap_msghdr *em;
 
-char *progname;
+const char *progname;
 int debug = 0;
 int dumpsaref = 0;
 int saref_him = 0;
@@ -154,7 +154,7 @@ spi --comp <algo> <SA>\n\
 
 
 static void
-usage(char *s, FILE *f)
+usage(const char *s, FILE *f)
 {
 	/* s argument is actually ignored, at present */
 	fprintf(f, "%s:%s", s, usage_string);
@@ -601,12 +601,15 @@ main(int argc, char *argv[])
 			break;
 
 		case 'l':
-			progname = malloc(strlen(argv[0])
+                    {
+                        char *toolname= malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(progname, "%s --label %s",
+			sprintf(toolname, "%s --label %s",
 				argv[0],
 				optarg);
+                        progname = toolname;
+                    }
 			tool_close_log();
 			tool_init_log();
 
