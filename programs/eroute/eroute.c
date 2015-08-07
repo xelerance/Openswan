@@ -2,12 +2,12 @@
  * manipulate eroutes
  * Copyright (C) 1996  John Ioannidis.
  * Copyright (C) 1997, 1998, 1999, 2000, 2001  Richard Guy Briggs.
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -145,7 +145,7 @@ main(int argc, char **argv)
 
 	int error = 0;
 
-	char ipaddr_txt[ADDRTOT_BUF];                
+	char ipaddr_txt[ADDRTOT_BUF];
 	struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 	struct sadb_msg *pfkey_msg;
 	ip_address pfkey_address_s_ska;
@@ -240,12 +240,12 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, edst_opt);
 				exit (1);
-			}				
+			}
 			error_s = ttoaddr(optarg, 0, said_af, &said.dst);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --edst argument:%s\n",
@@ -263,12 +263,12 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, spi_opt);
 				exit (1);
-			}				
+			}
 			said.spi = htonl(strtoul(optarg, &endptr, 0));
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in SPI parameter: %s\n",
@@ -287,7 +287,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, proto_opt);
@@ -320,7 +320,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, SAID parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined in SA:%s, already defined as:%s\n",
 					progname, optarg, proto_opt);
@@ -363,7 +363,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, --dst parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, dst_opt);
 				exit (1);
-			}				
+			}
 			error_s = ttosubnet(optarg, 0, eroute_af, &d_subnet);
 			if (error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --dst argument: %s\n",
@@ -377,7 +377,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, --src parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, src_opt);
 				exit (1);
-			}				
+			}
 			error_s = ttosubnet(optarg, 0, eroute_af, &s_subnet);
 			if (error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --src argument: %s\n",
@@ -434,7 +434,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, address family of SAID redefined:%s, already defined as:%s\n",
 					progname, optarg, said_af_opt);
 				exit (1);
-			}				
+			}
 			if(!strcmp(optarg, "inet"))
 				said_af = AF_INET;
 			if(!strcmp(optarg, "inet6"))
@@ -451,7 +451,7 @@ main(int argc, char **argv)
 				fprintf(stderr, "%s: Error, address family of eroute redefined:%s, already defined as:%s\n",
 					progname, optarg, eroute_af_opt);
 				exit (1);
-			}				
+			}
 			if(!strcmp(optarg, "inet"))
 				eroute_af = AF_INET;
 			if(!strcmp(optarg, "inet6"))
@@ -475,7 +475,7 @@ main(int argc, char **argv)
 	if(debug) {
 		fprintf(stdout, "%s: DEBUG: argc=%d\n", progname, argc);
 	}
-	
+
         if(argcount == 1) {
                 struct stat sts;
                 if ( ((stat ("/proc/net/pfkey", &sts)) == 0) )  {
@@ -494,7 +494,7 @@ main(int argc, char **argv)
 			exit(ret);
                 }
         }
-	
+
 
 	/* Sanity checks */
 
@@ -508,7 +508,7 @@ main(int argc, char **argv)
 		  transport_proto = proto->p_proto;
 	     } else {
 		  transport_proto = strtoul(transport_proto_opt, &endptr, 0);
-		  if ((*endptr != '\0') 
+		  if ((*endptr != '\0')
 		      || (transport_proto == 0 && endptr == transport_proto_opt)) {
 		       fprintf(stderr, "%s: Invalid character in --transport-proto parameter: %s\n",
 			       progname, transport_proto_opt);
@@ -713,7 +713,7 @@ main(int argc, char **argv)
 	default:
 		break;
 	}
-	
+
 	switch(action_type) {
 	case EMT_SETEROUTE:
 	case EMT_REPLACEROUTE:
@@ -736,7 +736,7 @@ main(int argc, char **argv)
 		if(debug) {
 			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src flow.\n", progname);
 		}
-	
+
 		networkof(&d_subnet, &pfkey_address_dflow_ska); /* dst flow */
 		add_port(eroute_af, &pfkey_address_dflow_ska, dst_port);
 		if((error = pfkey_address_build(&extensions[SADB_X_EXT_ADDRESS_DST_FLOW],
@@ -753,7 +753,7 @@ main(int argc, char **argv)
 		if(debug) {
 			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst flow.\n", progname);
 		}
-		
+
 		maskof(&s_subnet, &pfkey_address_smask_ska); /* src mask */
 		add_port(eroute_af, &pfkey_address_smask_ska, src_port ? ~0:0);
 		if((error = pfkey_address_build(&extensions[SADB_X_EXT_ADDRESS_SRC_MASK],
@@ -770,7 +770,7 @@ main(int argc, char **argv)
 		if(debug) {
 			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for src mask.\n", progname);
 		}
-		
+
 		maskof(&d_subnet, &pfkey_address_dmask_ska); /* dst mask */
 		add_port(eroute_af, &pfkey_address_dmask_ska, dst_port ? ~0:0);
 		if((error = pfkey_address_build(&extensions[SADB_X_EXT_ADDRESS_DST_MASK],
@@ -788,7 +788,7 @@ main(int argc, char **argv)
 			fprintf(stdout, "%s: DEBUG: pfkey_address_build successful for dst mask.\n", progname);
 		}
 	}
-	
+
 	if (transport_proto != 0) {
 		if ((error = pfkey_x_protocol_build(&extensions[SADB_X_EXT_PROTOCOL],
 						    transport_proto))) {
