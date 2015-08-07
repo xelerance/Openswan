@@ -549,11 +549,13 @@ enum routability {
 };
 
 static enum routability
-could_route(struct connection *c)
+could_route(struct connection *c, struct spd_route *dsr)
 {
     struct spd_route *esr, *rosr;
-    struct connection *ero      /* who, if anyone, owns our eroute? */
-        , *ro = route_owner(c, &c->spd, &rosr, &ero, &esr); /* who owns our route? */
+    struct connection *ero, *ro;
+
+    /* who, if anyone, owns our eroute? */
+    ro = route_owner(c, dsr, &rosr, &ero, &esr); /* who owns our route? */
 
     DBG(DBG_CONTROL,
         DBG_log("could_route called for %s (kind=%s)"
@@ -726,7 +728,7 @@ could_route(struct connection *c)
 bool
 trap_connection(struct connection *c)
 {
-    switch (could_route(c))
+    switch (could_route(c, &c->spd))
     {
     case route_impossible:
         return FALSE;
@@ -1618,7 +1620,9 @@ static err_t setup_esp_sa(struct connection *c
  *
  */
 static bool
-setup_half_ipsec_sa(struct state *parent_st, struct state *st, struct end *that, bool inbound)
+setup_half_ipsec_sa(struct state *parent_st
+                    , struct state *st, struct spd_route *sr
+                    , bool inbound)
 {
     /* Build an inbound or outbound SA */
     err_t err = NULL;
@@ -1653,28 +1657,32 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, struct end *that,
     {
         src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
         dst = parent_st->st_localaddr;    dstport = parent_st->st_localport;
-        src_client = that->client;
-        dst_client = c->spd.this.client;
+        src_client = sr->that.client;
+        dst_client = sr->this.client;
     }
     else
     {
         src = parent_st->st_localaddr;    srcport = parent_st->st_localport;
         dst = parent_st->st_remoteaddr;   dstport = parent_st->st_remoteport;
-        src_client = c->spd.this.client;
-        dst_client = that->client;
+        src_client = sr->this.client;
+        dst_client = sr->that.client;
     }
 
     if(DBGP(DBG_KLIPS)) {
         char sa_src[ADDRTOT_BUF];
         char sa_dst[ADDRTOT_BUF];
+        char tun_src[SUBNETTOT_BUF];
+        char tun_dst[SUBNETTOT_BUF];
 
         addrtot(&src, 0, sa_src, sizeof(sa_src));
         addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
-        DBG_log("state #%lu: setup %s ipsec keys for %s, between %s<->%s"
-                , st->st_serialno
+        subnettot(&src_client, 0, tun_src, sizeof(tun_src));
+        subnettot(&dst_client, 0, tun_dst, sizeof(tun_dst));
+        DBG_log("state #%lu(%s): setup %s ipsec between %s<->%s for %s...%s"
+                , st->st_serialno, c->name
                 , inbound_str
-                , c->name
-                , sa_src, sa_dst);
+                , sa_src, sa_dst
+                , tun_src, tun_dst);
     }
 
     encapsulation = ENCAPSULATION_MODE_TRANSPORT;
@@ -1722,7 +1730,7 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, struct end *that,
         }
 
         set_text_said(text_said
-                      , &that->host_addr, ipip_spi, SA_IPIP);
+                      , &sr->that.host_addr, ipip_spi, SA_IPIP);
 
         said_next->src = &src;
         said_next->natt_sport = srcport;
@@ -2076,10 +2084,10 @@ setup_half_ipsec_sa(struct state *parent_st, struct state *st, struct end *that,
             }
 
             /* MCR - should be passed a spd_eroute structure here */
-            (void) raw_eroute(&that->host_addr   /* this_host */
-			      , &that->client    /* this_client */
-                              , &c->spd.this.host_addr /* that_host */
-			      , &c->spd.this.client    /* that_client */
+            (void) raw_eroute(&sr->that.host_addr   /* this_host */
+			      , &sr->that.client    /* this_client */
+                              , &sr->this.host_addr /* that_host */
+			      , &sr->this.client    /* that_client */
                               , inner_spi              /* spi */
 			      , proto                  /* proto */
                               , c->spd.this.protocol   /* transport_proto */
@@ -2433,6 +2441,16 @@ static void look_for_replacement_state(struct state *st)
     }
 }
 
+static void
+build_desired_sr(struct state *st, struct spd_route *desired_sr)
+{
+    /* we started with a copy of the policy */
+    if(desired_sr->that.has_client == FALSE) {
+        addrtosubnet(&st->st_remoteaddr, &desired_sr->that.client);
+        setportof(0, &desired_sr->that.client.addr);
+    }
+}
+
 
 /* Note: install_inbound_ipsec_sa is only used by the Responder.
  * The Responder will subsequently use install_ipsec_sa for the outbound.
@@ -2442,6 +2460,7 @@ bool
 install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 {
     struct connection *const c = st->st_connection;
+    struct spd_route   desired_sr;
 
     /* If our peer has a fixed-address client, check if we already
      * have a route for that client that conflicts.  We will take this
@@ -2449,32 +2468,30 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
      * obsolete and should be eliminated.  Interestingly, this is
      * the only case in which we can tell that a connection is obsolete.
      */
-    struct end him = c->spd.that;
+    struct end *him;
+    desired_sr = c->spd;
+    build_desired_sr(st, &desired_sr);
+    him = &desired_sr.that;
 
-    if(him.has_client == FALSE) {
-        addrtosubnet(&st->st_remoteaddr, &him.client);
-        setportof(0, &him.client.addr);
-    } else {
-        if(c->kind != CK_PERMANENT && c->kind != CK_INSTANCE) {
-            openswan_log("%s: policy of type: %s can not be installed into kernel"
-                         , c->name
-                         , enum_show(&connection_kind_names, c->kind));
-            return FALSE;
-        }
+    if(c->kind != CK_PERMANENT && c->kind != CK_INSTANCE) {
+        openswan_log("%s: policy of type: %s can not be installed into kernel"
+                     , c->name
+                     , enum_show(&connection_kind_names, c->kind));
+        return FALSE;
     }
 
-    if (him.has_client)
+    if (him->has_client)
     {
         for (;;)
         {
             struct spd_route *esr;
-            struct connection *o = route_owner(c, &c->spd, &esr, NULL, NULL);
+            struct connection *o = route_owner(c, &desired_sr, &esr, NULL, NULL);
 
             if (o == NULL || c==o)
                 break;  /* nobody interesting has a route */
 
             /* note: we ignore the client addresses at this end */
-            if (sameaddr(&o->spd.that.host_addr, &him.host_addr)
+            if (sameaddr(&o->spd.that.host_addr, &him->host_addr)
 		&& o->interface == c->interface)
                 break;  /* existing route is compatible */
 
@@ -2504,7 +2521,7 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 
     DBG(DBG_CONTROL, DBG_log("install_inbound_ipsec_sa() checking if we can route"));
     /* check that we will be able to route and eroute */
-    switch (could_route(c))
+    switch (could_route(c, &desired_sr))
     {
     case route_easy:
     case route_nearconflict:
@@ -2535,7 +2552,7 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
 	if(!st->st_connection->loopback) {
 #endif
             DBG(DBG_CONTROL, DBG_log("installing outgoing SA now as refhim=%u", st->st_refhim));
-            if(!setup_half_ipsec_sa(parent_st, st, &him, FALSE)) {
+            if(!setup_half_ipsec_sa(parent_st, st, &desired_sr, FALSE)) {
                 DBG_log("failed to install outgoing SA: %u", st->st_refhim);
                 return FALSE;
             }
@@ -2557,7 +2574,7 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
     if(!st->st_connection->loopback)
 #endif
         {
-            return setup_half_ipsec_sa(parent_st, st, &him, TRUE);
+            return setup_half_ipsec_sa(parent_st, st, &desired_sr, TRUE);
         }
 
 #ifdef HAVE_LABELED_IPSEC
@@ -2882,6 +2899,8 @@ install_ipsec_sa(struct state *parent_st
                  , struct state *st
                  , bool inbound_also USED_BY_KLIPS)
 {
+    struct connection *const c = st->st_connection;
+    struct spd_route desired_sr;
     struct spd_route *sr;
     enum routability rb;
 
@@ -2895,7 +2914,17 @@ install_ipsec_sa(struct state *parent_st
     }
 #endif
 
-    rb = could_route(st->st_connection);
+    sr = &c->spd;
+    /* skip the first SPD_ROUTE... how do we get multiple? */
+    if (st->st_connection->remotepeertype == CISCO) {
+        sr = sr->next;
+    }
+    desired_sr = *sr;
+
+    build_desired_sr(st, &desired_sr);
+    sr = &desired_sr;
+
+    rb = could_route(st->st_connection, sr);
     switch (rb)
     {
     case route_easy:
@@ -2907,16 +2936,13 @@ install_ipsec_sa(struct state *parent_st
         return FALSE;
     }
 
-    /* (attempt to) actually set up the SA group */
-    sr = &st->st_connection->spd;
-
     /* setup outgoing SA if we haven't already */
     if(!st->st_outbound_done
 #ifdef HAVE_LABELED_IPSEC
 	&& !st->st_connection->loopback
 #endif
        ) {
-	if(!setup_half_ipsec_sa(parent_st, st, &sr->that, FALSE)) {
+	if(!setup_half_ipsec_sa(parent_st, st, sr, FALSE)) {
             loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup outgoing SA", st->st_serialno);
 	    return FALSE;
 	}
@@ -2927,7 +2953,7 @@ install_ipsec_sa(struct state *parent_st
     DBG(DBG_KLIPS, DBG_log("state #%lu: now setting up incoming SA", st->st_serialno));
     /* now setup inbound SA */
     if(st->st_ref == IPSEC_SAREF_NULL && inbound_also) {
-	if(!setup_half_ipsec_sa(parent_st, st, &sr->that, TRUE)) {
+	if(!setup_half_ipsec_sa(parent_st, st, sr, TRUE)) {
             loglog(RC_LOG_SERIOUS, "state #%lu: failed to setup incoming SA", st->st_serialno);
 	    return FALSE;
 	}
@@ -2938,10 +2964,6 @@ install_ipsec_sa(struct state *parent_st
 	return TRUE;
     }
 
-
-    if (st->st_connection->remotepeertype == CISCO) {
-        sr = sr->next;
-    }
 
     /* for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) */
     for (; sr != NULL; sr = sr->next)
