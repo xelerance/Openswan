@@ -17,9 +17,8 @@
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
-ifeq ($(USE_DYNAMICDNS),true)
+# XXX remove me.
 DYNAMICDNSDEF=-DDYNAMICDNS
-endif
 
 ifeq ($(USE_LDAP),true)
 # Everyone (should) be using LDAPv3, however LDAP_VERSION=2 is an option

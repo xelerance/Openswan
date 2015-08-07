@@ -1001,11 +1001,6 @@ add_connection(const struct whack_message *wm)
 	c->cisco_domain_info = NULL;
 	c->cisco_banner = NULL;
 #endif
-#ifdef DYNAMICDNS
-	c->dnshostname = NULL;
-	if (wm->dnshostname)
-		c->dnshostname = wm->dnshostname;
-#endif /* DYNAMICDNS */
 
 	c->policy = wm->policy;
 
