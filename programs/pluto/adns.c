@@ -71,9 +71,8 @@
 
 /* shared by all processes */
 
-char *progname;	/* program name, for messages */
-
 static bool debug = FALSE;
+const char *progname = NULL;
 
 /* Read a variable-length record from a pipe (and no more!).
  * First bytes must be a size_t containing the length.

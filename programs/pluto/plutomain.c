@@ -119,6 +119,7 @@
 
 const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
+const char *progname = NULL;
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;

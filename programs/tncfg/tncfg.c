@@ -47,11 +47,11 @@
 
 #include "openswan/ipsec_tunnel.h"
 
-char *progname;
+const char *progname;
 
 static void
-usage(char *name)
-{	
+usage(const char *name)
+{
 	fprintf(stdout,"%s --create <virtual>\n", name);
 	fprintf(stdout,"%s --delete <virtual>\n", name);
 	fprintf(stdout,"%s --attach --virtual <virtual-device> --physical <physical-device>\n",
@@ -236,14 +236,17 @@ main(int argc, char *argv[])
 			strncpy(shc.cf_name, optarg, sizeof(shc.cf_name));
 			break;
 		case 'l':
-			progname = malloc(strlen(argv[0])
-					      + 10 /* update this when changing the sprintf() */
-					      + strlen(optarg));
-			sprintf(progname, "%s --label %s",
-				argv[0],
-				optarg);
-			argcount -= 2;
-			break;
+                  {
+                    char *progbuf =malloc(strlen(argv[0])
+                                          + 10 /* update this when changing the sprintf() */
+                                          + strlen(optarg));
+                    sprintf(progbuf, "%s --label %s",
+                            argv[0],
+                            optarg);
+                    progname = progbuf;
+                  }
+                  argcount -= 2;
+                  break;
 		case '+': /* optionsfrom */
 			optionsfrom(optarg, &argc, &argv, optind, stderr);
 			/* no return on error */
