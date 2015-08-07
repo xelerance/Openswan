@@ -39,7 +39,7 @@ typedef void (*cont_fn_t)(struct adns_continuation *cr, err_t ugh);
 
 struct adns_continuation {
     unsigned long qtid;	/* query transaction id number */
-    int type;	/* T_TXT or T_KEY, selecting rr type of interest */
+    int type;	        /* T_TXT or T_KEY, selecting rr type of interest */
     cont_fn_t cont_fn;	/* function to carry on suspended work */
     struct id id;	/* subject of query */
     bool sgw_specified;
@@ -77,6 +77,8 @@ extern void gw_addref(struct gw_info *gw)
     , gw_delref(struct gw_info **gwp);
 
 extern void reset_adns_restart_count(void);
+
+extern void kick_adns_connection_lookup(struct connection *c, struct end *end);
 
 #define _DNSKEY_H_
 #endif /* _DNSKEY_H_ */
