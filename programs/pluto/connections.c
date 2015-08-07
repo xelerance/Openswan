@@ -726,31 +726,11 @@ extract_end(struct connection *conn UNUSED
 
     dst->sendcert =  src->sendcert;
 
-    /* see if we can resolve the DNS name right now */
-    /* XXX this is WRONG, we should do this asynchronously, as part of
-     * the normal loading process
-     */
-    {
-	err_t er;
-	int port;
-
-	switch(dst->host_type) {
-	case KH_IPHOSTNAME:
-	    er = ttoaddr(dst->host_addr_name, 0, 0, &dst->host_addr);
-
-	    /*The above call wipes out the port, put it again*/
-	    port = htons(dst->port);
-	    setportof(port, &dst->host_addr);
-
-	    if(er) {
-		loglog(RC_COMMENT, "failed to convert '%s' at load time: %s"
-		       , dst->host_addr_name, er);
-	    }
-	    break;
-
-	default:
-	    break;
-	}
+    /* see if we should try to resolve the DNS name */
+    /* dst->host_addr may already have a hint, do not destroy it */
+    if(dst->host_type == KH_IPHOSTNAME
+       && strlen(dst->host_addr_name) > 0) {
+        kick_adns_connection_lookup(conn, dst);
     }
 
     return same_ca;

@@ -1634,3 +1634,16 @@ handle_adns_answer(void)
 	memmove((unsigned char *)&buf, (unsigned char *)&buf + buf.len, buflen);
     }
 }
+
+void kick_adns_connection_lookup(struct connection *c UNUSED
+                                 , struct end *end UNUSED)
+{
+  /* XXX */
+}
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
