@@ -46,6 +46,7 @@
 #include <openswan/pfkey.h>
 
 #include "sysdep.h"
+#include "setproctitle.h"
 #include "constants.h"
 #include "oswconf.h"
 #include "defs.h"
@@ -323,8 +324,6 @@ bool force_busy = FALSE;
 /* whether or not to use klips */
 enum kernel_interface kern_interface = AUTO_PICK;
 
-char **global_argv;
-int    global_argc;
 bool   log_to_stderr_desired = FALSE;
 bool   log_with_timestamp_desired = FALSE;
 
@@ -389,11 +388,11 @@ main(int argc, char **argv)
 #endif
 
 
-    global_argv = argv;
-    global_argc = argc;
 #ifdef DEBUG
     openswan_passert_fail = passert_fail;
 #endif
+
+    initproctitle(argc, argv);
 
     /* see if there is an environment variable */
     coredir = getenv("PLUTO_CORE_DIR");

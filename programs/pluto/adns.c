@@ -65,6 +65,7 @@
 # define UNUSED /* ignore */
 #endif
 
+#include "setproctitle.h"
 #include "constants.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "osw_select.h"
@@ -133,6 +134,7 @@ write_pipe(int fd, const unsigned char *stuff)
     size_t len = *(const size_t *)(const void *)stuff;
     size_t n = 0;
 
+    setproctitle(progname, "answering");
     do {
 	ssize_t m = write(fd, stuff + n, len - n);
 
@@ -212,6 +214,7 @@ worker(int qfd, int afd)
     {
 	struct adns_query q;
 	struct adns_answer a;
+        char status[1024];
 
 	enum helper_exit_status r = read_pipe(qfd, (unsigned char *)&q
 	    , sizeof(q), sizeof(q));
@@ -228,6 +231,8 @@ worker(int qfd, int afd)
 	a.amagic = ADNS_A_MAGIC;
 	a.serial = q.serial;
 
+        snprintf(status, sizeof(status), "query: %s", q.name_buf);
+        setproctitle(progname, status);
 	a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
 	a.h_errno_val = h_errno;
 
@@ -507,6 +512,7 @@ answer(struct worker_info *w)
 
 	if (rs != HES_CONTINUE)
 	    exit(rs);
+        setproctitle(progname, "<idle>");
 	w->busy = FALSE;
 	forward_query(w);
     }
@@ -544,7 +550,8 @@ master(void)
 	    return HES_OK;	/* done! */
 
 	do {
-	    ndes = osw_select(maxfd + 1, &readfds, NULL, NULL, NULL);
+            setproctitle(progname, "<idle>");
+            ndes = osw_select(maxfd + 1, &readfds, NULL, NULL, NULL);
 	} while (ndes == -1 && errno == EINTR);
 	if (ndes == -1)
 	{
@@ -573,8 +580,17 @@ master(void)
 int adns_main(int debugval)
 {
   progname = "_pluto_adns";  /* stupid const pointers */
+
+  setproctitle(progname, "<idle>");
+
   debug = debugval;
   return master();
 }
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
 
