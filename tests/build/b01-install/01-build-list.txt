@@ -27,7 +27,6 @@
 ./usr/local/lib/ipsec/_updown.klips
 ./usr/local/lib/ipsec/_updown.mast
 ./usr/local/lib/ipsec/_updown.netkey
-./usr/local/libexec/ipsec/_pluto_adns
 ./usr/local/libexec/ipsec/addconn
 ./usr/local/libexec/ipsec/auto
 ./usr/local/libexec/ipsec/barf
