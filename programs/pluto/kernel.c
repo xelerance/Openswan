@@ -60,6 +60,10 @@
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
+#ifdef KLIPS_MAST
+#include <ipsec_saref.h>
+#endif
+
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
@@ -3269,6 +3273,33 @@ get_sa_info(struct state *st, bool inbound, time_t *ago)
     }
     return TRUE;
 }
+
+void saref_init(void)
+{
+    int e, sk, saref;
+    saref = 1;
+    errno=0;
+
+    sk = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_REFINFO, &saref, sizeof(saref));
+    if (e == -1 ) {
+        openswan_log("SAref support [disabled]: %s" , strerror(errno));
+    }
+    else {
+        openswan_log("SAref support [enabled]");
+    }
+    errno=0;
+    e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_BINDREF, &saref, sizeof(saref));
+    if (e == -1 ) {
+        openswan_log("SAbind support [disabled]: %s" , strerror(errno));
+    }
+    else {
+        openswan_log("SAbind support [enabled]");
+    }
+
+    close(sk);
+}
+
 /*
  * Local Variables:
  * c-basic-offset:4
