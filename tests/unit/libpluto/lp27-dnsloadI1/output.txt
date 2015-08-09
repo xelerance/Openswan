@@ -11,13 +11,13 @@ processing whack msg time: X size: Y
 | counting wild cards for @example.com is 0
 | orient cpe checking against if: eth0
 | orient cpe matching on public/private keys
-| find_host_pair: looking for me=<invalid>:500 %dns him=2606:2800:220:1:248:1893:25c8:1946:500 exact-match
+| find_host_pair: looking for me=<invalid>:500 %dns him=93.184.216.34:500 exact-match
 | find_host_pair: concluded with <none>
-| connect_to_host_pair: <invalid>:500 %dns 2606:2800:220:1:248:1893:25c8:1946:500 -> hp:none
+| connect_to_host_pair: <invalid>:500 %dns 93.184.216.34:500 -> hp:none
 ./dnscpeI1 adding connection: "cpe"
-| %any[@cpe.example.com]---<invalid>...2606:2800:220:1:248:1893:25c8:1946<example.com>[@example.com]===10.2.0.0/16
+| %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "cpe": %any[@cpe.example.com]---<invalid>...2606:2800:220:1:248:1893:25c8:1946<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "cpe": %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "cpe":     myip=unset; hisip=unset;
 RC=0 "cpe":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "cpe":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
@@ -428,7 +428,7 @@ RC=0 "cpe":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 836
-sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 2606:2800:220:1:248:1893:25c8:1946:500 (using #1)
+sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
