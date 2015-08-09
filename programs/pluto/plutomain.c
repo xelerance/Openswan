@@ -996,6 +996,9 @@ main(int argc, char **argv)
 	openswan_log("core dump dir: %s", coredir);
     }
 
+    /* do this really early so that child process is as small as possible */
+    init_adns();
+
     /* establish SIGUSR1 handler */
     signal(SIGUSR1, pluto_sigusr1);
 
@@ -1080,7 +1083,6 @@ main(int argc, char **argv)
     load_oswcrypto();
     init_demux();
     init_kernel();
-    init_adns();
     init_id();
 
 #ifdef TPM

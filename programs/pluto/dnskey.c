@@ -129,6 +129,7 @@ init_adns(void)
 		close(afds[1]);
 
             adns_main(TRUE);
+            exit(0);
 	}
 
     default:
