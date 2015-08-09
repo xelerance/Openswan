@@ -1,3 +1,5 @@
+#include "pluto/x509lists.h"
+
 /** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;
 
