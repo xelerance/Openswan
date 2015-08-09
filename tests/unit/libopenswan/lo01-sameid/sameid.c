@@ -7,7 +7,7 @@
 #include "oswalloc.h"
 #include "oswlog.h"
 #include "id.h"
-char *progname;
+const char *progname;
 
 void exit_tool(int stat)
 {

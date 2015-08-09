@@ -1,4 +1,4 @@
-char *progname;
+const char *progname;
 #include "x509.h"
 #include "ac.h"
 
