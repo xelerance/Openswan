@@ -1,3 +1,4 @@
+#include "kernel.h"
 void delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS) {}
 
 bool install_inbound_ipsec_sa(struct state *parent_st, struct state *st) { return TRUE; }
@@ -34,6 +35,9 @@ bool get_sa_info(struct state *st, bool inbound, time_t *ago)
 	return FALSE;
 }
 
+/* empty structure */
+static struct kernel_ops unit_kernel_ops;
+const struct kernel_ops *kernel_ops = &unit_kernel_ops;
 
 
 

@@ -1,0 +1,4 @@
+This unit test case exercises the kick_adns_connection_lookup() method to
+either do a new DNS lookup, or find a new IP address to use for a connection
+that *might* be experiencing problems.
+
