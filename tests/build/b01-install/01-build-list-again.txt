@@ -41,8 +41,6 @@
 ./usr/local/lib/ipsec/_updown.netkey
 ./usr/local/lib/ipsec/_updown.netkey.old
 ./usr/local/lib/ipsec/_updown.old
-./usr/local/libexec/ipsec/_pluto_adns
-./usr/local/libexec/ipsec/_pluto_adns.old
 ./usr/local/libexec/ipsec/addconn
 ./usr/local/libexec/ipsec/addconn.old
 ./usr/local/libexec/ipsec/auto
