@@ -769,7 +769,7 @@ extract_end(struct connection *conn UNUSED
     dst->sendcert =  src->sendcert;
 
     /* see if we should try to resolve the DNS name */
-    /* dst->host_addr may already have a hint, do not destroy it */
+    /* dst->host_addr may already have a hint, do not destroy it! */
     if(dst->host_type == KH_IPHOSTNAME
        && strlen(dst->host_addr_name) > 0) {
         kick_adns_connection_lookup(conn, dst);

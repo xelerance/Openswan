@@ -1636,6 +1636,10 @@ handle_adns_answer(void)
     }
 }
 
+/*
+ * this routing picks a new DNS result, or if there are none, performs
+ * a new DNS lookup, in an attempt to find a useable peer address.
+ */
 void kick_adns_connection_lookup(struct connection *c UNUSED
                                  , struct end *end UNUSED)
 {
