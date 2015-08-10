@@ -30,6 +30,7 @@ extern void stop_adns(void);
 extern void handle_adns_answer(void);
 
 extern bool unsent_ADNS_queries;
+extern bool adns_any_in_flight(void);        /* for unit testing */
 extern void send_unsent_ADNS_queries(void);
 
 /* (common prefix of) stuff remembered between async query and answer.
@@ -53,6 +54,7 @@ struct adns_continuation {
 #ifdef USE_KEYRR
     struct pubkey_list *keys_from_dns;	/* answer, if looking for KEY rrs */
 #endif
+  //struct addrinfo *addresses_from_dns;  /* answer, if looking for A/AAAA rrs */
     struct adns_continuation *previous, *next;
     struct pubkey *last_info;  /* the last structure we accumulated */
     struct adns_query query;

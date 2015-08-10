@@ -10,6 +10,8 @@
 #include <sys/resource.h>
 #include <signal.h>
 #include <errno.h>
+#include <arpa/nameser.h>
+#include <poll.h>
 #include "sysdep.h"
 #include "efencedef.h"
 #include "constants.h"
@@ -22,6 +24,7 @@
 #include "dnskey.h"
 #include "pluto/defs.h"
 #include "demux.h"
+#include "log.h"
 
 /* seams */
 #include "whackmsgtestlib.c"
@@ -64,21 +67,35 @@ childhandler(int sig UNUSED)
     reapchildren();
 }
 
+void moon_continue(struct adns_continuation *cr, err_t ugh)
+{
+    DBG_log("moon continue with: %s", ugh ? ugh : "no-error");
+}
+
+void cassidy_continue(struct adns_continuation *cr, err_t ugh)
+{
+    DBG_log("cassidy continue with: %s", ugh ? ugh : "no-error");
+}
+
 
 main(int argc, char *argv[])
 {
     bool  recalculate = FALSE;
     int   len;
+    err_t e;
     err_t err = NULL;
     char *infile;
     char *conn_name;
     int  lineno=0;
     struct connection *c1 = NULL;
+    struct id moon, cassidy;
+    struct adns_continuation *cr1 = NULL;
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
 #endif
 
+    initproctitle(argc, argv);
     progname = argv[0];
     leak_detective = 1;
 
@@ -95,6 +112,7 @@ main(int argc, char *argv[])
     }
 
     tool_init_log();
+    cur_debugging |= DBG_DNS;
     init_adns();
 
     {
@@ -108,8 +126,38 @@ main(int argc, char *argv[])
     }
 
     /* setup a query */
+    cr1 = alloc_thing(struct adns_continuation, "moon lookup");
+    moon.kind = ID_FQDN;
+    strtochunk(moon.name, "moon.testing.openswan.org", "dns name");
+    e = start_adns_query(&moon, NULL, ns_t_key,
+                         moon_continue, cr1);
 
-    while(unsent_ADNS_queries) {
+    cr1 = alloc_thing(struct adns_continuation, "cassidy lookup");
+    cassidy.kind = ID_FQDN;
+    strtochunk(cassidy.name, "cassidy.sandelman.ca", "dns name 2");
+    e = start_adns_query(&cassidy, NULL, ns_t_key,
+                         cassidy_continue, cr1);
+
+    reset_globals();
+    send_unsent_ADNS_queries();
+
+    while(adns_any_in_flight()) {
+        struct pollfd one;
+        struct timespec waiting;
+        int n;
+
+        one.fd = adns_afd;
+        one.events = POLLIN;
+        waiting.tv_sec = 30;
+        waiting.tv_nsec= 0;
+        n = ppoll(&one, 1, &waiting, NULL);
+        if(n==1 && one.revents & POLLIN) {
+            handle_adns_answer();
+        } else {
+            DBG_log("poll failed with: %d", n);
+            exit(5);
+        }
+
         send_unsent_ADNS_queries();
     }
 
