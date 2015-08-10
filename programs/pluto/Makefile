@@ -252,6 +252,10 @@ checkprograms:
 	@echo CC $(notdir $<)
 	@$(CC) $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
 
+%.E: %.c
+	@echo CPP $(notdir $<)
+	@$(CC) -E $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $< -o $@
+
 %.s: %.c
 	@echo CC-TO-AS $(notdir $<)
 	@$(CC) -S $(USERCOMPILE) ${PORTINCLUDE} $(COPTS) $(ALLFLAGS) -c $<
