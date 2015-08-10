@@ -1345,17 +1345,8 @@ release_all_continuations()
     adns_in_flight-=num_released;
 }
 
-err_t
-start_adns_query(const struct id *id	/* domain to query */
-, const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
-, int type	/* T_TXT or T_KEY, selecting rr type of interest */
-, cont_fn_t cont_fn
-, struct adns_continuation *cr)
+static void init_generic_adns_query(struct adns_continuation *cr)
 {
-    static unsigned long qtid = 1;	/* query transaction id; NOTE: static */
-    const char *typename = rr_typename(type);
-    char gwidb[IDTOA_BUF];
-
     if(adns_pid == 0
     && adns_restart_count < ADNS_RESTART_MAX)
     {
@@ -1375,15 +1366,15 @@ start_adns_query(const struct id *id	/* domain to query */
 	continuations->next = cr;
     }
     continuations = cr;
+}
+
+static void start_generic_adns_query(int type	/* T_TXT or T_KEY, selecting rr type of interest */
+                         , struct adns_continuation *cr)
+{
+    static unsigned long qtid = 1;	/* query transaction id; NOTE: static */
 
     cr->qtid = qtid++;
     cr->type = type;
-    cr->cont_fn = cont_fn;
-    cr->id = *id;
-    unshare_id_content(&cr->id);
-    cr->sgw_specified = sgw_id != NULL;
-    cr->sgw_id = cr->sgw_specified? *sgw_id : empty_id;
-    unshare_id_content(&cr->sgw_id);
     cr->gateways_from_dns = NULL;
 #ifdef USE_KEYRR
     cr->keys_from_dns = NULL;
@@ -1395,6 +1386,31 @@ start_adns_query(const struct id *id	/* domain to query */
     cr->debugging = LEMPTY;
 #endif
 
+    if (next_query == NULL)
+	next_query = cr;
+
+    unsent_ADNS_queries = TRUE;
+}
+
+err_t
+start_adns_query(const struct id *id	/* domain to query */
+                 , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
+                 , int type	/* T_TXT or T_KEY, selecting rr type of interest */
+                 , cont_fn_t cont_fn
+                 , struct adns_continuation *cr)
+{
+    char gwidb[IDTOA_BUF];
+    const char *typename = rr_typename(type);
+
+    /* link it in so it's all sane */
+    init_generic_adns_query(cr);
+
+    cr->cont_fn = cont_fn;
+    cr->id = *id;
+    unshare_id_content(&cr->id);
+    cr->sgw_specified = sgw_id != NULL;
+    cr->sgw_id = cr->sgw_specified? *sgw_id : empty_id;
+    unshare_id_content(&cr->sgw_id);
     idtoa(&cr->sgw_id, gwidb, sizeof(gwidb));
 
     zero(&cr->query);
@@ -1410,11 +1426,7 @@ start_adns_query(const struct id *id	/* domain to query */
 	}
     }
 
-    if (next_query == NULL)
-	next_query = cr;
-
-    unsent_ADNS_queries = TRUE;
-
+    start_generic_adns_query(type, cr);
     return NULL;
 }
 
