@@ -1,4 +1,5 @@
 const char *progname;
+#include "pluto/connections.h"
 #include "x509.h"
 #include "ac.h"
 
@@ -10,19 +11,6 @@ void flush_pending_by_connection(struct connection *c) {}
 void unroute_connection(struct connection *c) {}
 bool trap_connection(struct connection *c) { return TRUE; }
 void perpeer_logfree(struct connection *c) {}
-
-#include "dnskey.h"
-err_t start_adns_query(const struct id *id	/* domain to query */
-		       , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
-		       , int type	/* T_TXT or T_KEY, selecting rr type of interest */
-		       , cont_fn_t cont_fn
-		       , struct adns_continuation *cr) {
-    return NULL;   /* no error */
-    /* SHOULD call continuation immediately with "NOT FOUND" */
-}
-
-/* dnskey.c SEAM */
-void reset_adns_restart_count(void) {}
 
 /* server.c SEAM */
 void find_ifaces(void) {}

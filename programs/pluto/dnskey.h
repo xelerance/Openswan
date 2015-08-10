@@ -16,6 +16,10 @@
 
 #include <resolv.h>
 #include "adns.h"	/* needs <resolv.h> */
+#include "id.h"
+
+/* forward reference */
+struct connection;
 
 extern int
     adns_qfd,	/* file descriptor for sending queries to adns */
