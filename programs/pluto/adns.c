@@ -48,7 +48,6 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-#include <syslog.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
@@ -94,7 +93,7 @@ read_pipe(int fd, unsigned char *stuff, size_t minlen, size_t maxlen)
 	{
 	    if (errno != EINTR)
 	    {
-		syslog(LOG_ERR, "Input error on pipe: %s", strerror(errno));
+		openswan_log("Input error on pipe: %s", strerror(errno));
 		return HES_IO_ERROR_IN;
 	    }
 	}
@@ -143,7 +142,7 @@ write_pipe(int fd, const unsigned char *stuff)
 	    /* error, but ignore and retry if EINTR */
 	    if (errno != EINTR)
 	    {
-		syslog(LOG_ERR, "Output error from master: %s", strerror(errno));
+		openswan_log("Output error from master: %s", strerror(errno));
 		return HES_IO_ERROR_OUT;
 	    }
 	}
@@ -201,7 +200,7 @@ worker(int qfd, int afd)
 
 	if (r != 0)
 	{
-	    syslog(LOG_ERR, "cannot initialize resolver");
+	    openswan_log("cannot initialize resolver");
 	    return HES_RES_INIT;
 	}
 #ifndef OLD_RESOLVER
@@ -224,7 +223,7 @@ worker(int qfd, int afd)
 
 	if (q.qmagic != ADNS_Q_MAGIC)
 	{
-	    syslog(LOG_ERR, "error in input from master: bad magic");
+	    openswan_log("error in input from master: bad magic");
 	    return HES_BAD_MAGIC;
 	}
 
@@ -293,7 +292,7 @@ spawn_worker(void)
 
     if (pipe(qfds) != 0 || pipe(afds) != 0)
     {
-	syslog(LOG_ERR, "pipe(2) failed: %s", strerror(errno));
+	openswan_log("pipe(2) failed: %s", strerror(errno));
 	exit(HES_PIPE);
     }
 
@@ -306,7 +305,7 @@ spawn_worker(void)
 	/* fork failed: ignore if at least one worker exists */
 	if (wi_roof == wi)
 	{
-	    syslog(LOG_ERR, "fork(2) error creating first worker: %s", strerror(errno));
+	    openswan_log("fork(2) error creating first worker: %s", strerror(errno));
 	    exit(HES_FORK);
 	}
 	close(qfds[0]);
@@ -359,7 +358,7 @@ send_eof(struct worker_info *w)
     p = waitpid(w->pid, &status, 0);
     /* ignore result -- what could we do with it? */
     if(p == -1) {
-	    syslog(LOG_ERR, "waitpid(2) failed, ignored");
+	    openswan_log("waitpid(2) failed, ignored");
     }
 }
 
@@ -401,7 +400,7 @@ query(void)
 	q = malloc(sizeof(*q));
 	if (q == NULL)
 	{
-	    syslog(LOG_ERR, "malloc(3) failed");
+	    openswan_log("malloc(3) failed");
 	    exit(HES_MALLOC);
 	}
     }
@@ -436,7 +435,7 @@ query(void)
     }
     else if (q->aq.qmagic != ADNS_Q_MAGIC)
     {
-	syslog(LOG_ERR, "error in query from Pluto: bad magic");
+	openswan_log("error in query from Pluto: bad magic");
 	exit(HES_BAD_MAGIC);
     }
     else
@@ -486,7 +485,7 @@ answer(struct worker_info *w)
     if (r == HES_OK)
     {
 	/* unexpected EOF */
-	syslog(LOG_ERR, "unexpected EOF from worker");
+	openswan_log("unexpected EOF from worker");
 	exit(HES_IO_ERROR_IN);
     }
     else if (r != HES_CONTINUE)
@@ -495,13 +494,13 @@ answer(struct worker_info *w)
     }
     else if (a.amagic != ADNS_A_MAGIC)
     {
-	syslog(LOG_ERR, "Input from worker error: bad magic");
+	openswan_log("Input from worker error: bad magic");
 	exit(HES_BAD_MAGIC);
     }
     else if (a.continuation != w->continuation)
     {
 	/* answer doesn't match query */
-	syslog(LOG_ERR, "Input from worker error: continuation mismatch");
+	openswan_log("Input from worker error: continuation mismatch");
 	exit(HES_SYNC);
     }
     else
@@ -555,7 +554,7 @@ master(void)
 	} while (ndes == -1 && errno == EINTR);
 	if (ndes == -1)
 	{
-	    syslog(LOG_ERR, "select(2) error: %s", strerror(errno));
+	    openswan_log("select(2) error: %s", strerror(errno));
 	    exit(HES_IO_ERROR_SELECT);
 	}
 	else if (ndes > 0)
