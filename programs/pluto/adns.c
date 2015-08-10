@@ -195,6 +195,7 @@ static res_state statp = &my_res_state;
 static int
 worker(int qfd, int afd)
 {
+    setproctitle(progname, "worker");
     {
 	int r = res_ninit(statp);
 
@@ -266,7 +267,6 @@ struct worker_info {
     int afd;	/* answer pipe's file descriptor */
     pid_t pid;
     bool busy;
-    void *continuation;	/* of outstanding request */
 };
 
 static struct worker_info wi[MAX_WORKERS];
@@ -393,7 +393,7 @@ query(void)
 {
     struct query_list *q = free_queries;
     enum helper_exit_status r;
-
+    setproctitle(progname, "processing query");
     /* find an unused queue entry */
     if (q == NULL)
     {
@@ -496,12 +496,6 @@ answer(struct worker_info *w)
     {
 	openswan_log("Input from worker error: bad magic");
 	exit(HES_BAD_MAGIC);
-    }
-    else if (a.continuation != w->continuation)
-    {
-	/* answer doesn't match query */
-	openswan_log("Input from worker error: continuation mismatch");
-	exit(HES_SYNC);
     }
     else
     {

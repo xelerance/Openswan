@@ -1535,6 +1535,11 @@ void reset_adns_restart_count(void)
     adns_restart_count=0;
 }
 
+bool adns_any_in_flight(void)
+{
+    return adns_in_flight > 0;
+}
+
 void
 handle_adns_answer(void)
 {
