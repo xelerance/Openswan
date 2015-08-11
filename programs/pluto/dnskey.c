@@ -985,8 +985,8 @@ process_answer_section(pb_stream *pbs
 /* process DNS answer -- TXT or KEY query */
 
 static err_t
-process_dns_answer(struct adns_continuation *const cr
-, u_char ans[], int anslen)
+process_dns_rr_answer(struct adns_continuation *const cr
+                   , u_char ans[], int anslen)
 {
     const int type = cr->query.type;	/* type of record being sought */
     int r;	/* all-purpose return value holder */
@@ -1135,6 +1135,40 @@ process_dns_answer(struct adns_continuation *const cr
 
     return process_answer_section(&pbs, TRUE, &dns_auth_level
 	, qr_header.ancount, cr);
+}
+
+/*
+ * Note: this could be done with getaddrinfo_a(), but before involving
+ * pluto main in dns requests, need to change the key/txt(ipseckey)
+ * lookups to work with that, and getaddrinfo_a() uses threads!
+ */
+static err_t
+process_dns_sockaddr_answer(struct adns_continuation *const cr
+                            , u_char ans[], int anslen)
+{
+    /* unserialize the results from the ans buffer */
+    /* serialize/unserialize routine is at top of adns.c */
+    cr->ipanswers = deserialize_addr_info(ans, anslen);
+    return NULL;
+}
+
+static err_t
+process_dns_answer(struct adns_continuation *const cr
+                   , u_char ans[], int anslen)
+{
+    switch(cr->type) {
+    case ns_t_txt:
+    case ns_t_key:
+        /* raw DNS reply */
+        return process_dns_rr_answer(cr, ans, anslen);
+
+    case ns_t_a:
+        /* cooked getaddrinfo reply, ans contains a bunch of sockaddr */
+        return process_dns_sockaddr_answer(cr, ans, anslen);
+
+    default:
+        return "not A, TXT or KEY query";
+    }
 }
 
 
@@ -1321,6 +1355,10 @@ release_adns_continuation(struct adns_continuation *cr)
 	cr->previous->next = cr->next;
     }
 
+    if(cr->ipanswers != NULL) {
+        osw_freeaddrinfo(cr->ipanswers);
+    }
+
     pfree(cr);
 }
 
@@ -1427,6 +1465,34 @@ start_adns_query(const struct id *id	/* domain to query */
     }
 
     start_generic_adns_query(type, cr);
+    return NULL;
+}
+
+err_t
+start_adns_hostname(const struct id *id	/* domain to query */
+                    , cont_fn_t cont_fn
+                    , struct adns_continuation *cr)
+{
+    /* link it in so it's all sane */
+    init_generic_adns_query(cr);
+
+    cr->cont_fn = cont_fn;
+    cr->id = *id;
+    unshare_id_content(&cr->id);
+    zero(&cr->query);
+
+    {
+	err_t ugh = build_dns_name(cr->query.name_buf, cr->qtid
+				   , id, "host", "none");
+
+	if (ugh != NULL)
+	{
+	    release_adns_continuation(cr);
+	    return ugh;
+	}
+    }
+
+    start_generic_adns_query(ns_t_a, cr);
     return NULL;
 }
 
