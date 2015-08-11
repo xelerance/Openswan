@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 
     //list_public_keys(FALSE, FALSE);
     assert(orient(c1, 500));
-    show_one_connection(c1);
+    show_one_connection(c1, whack_log);
 
     kick_adns_connection_lookup(c1, &c1->spd.that);
 

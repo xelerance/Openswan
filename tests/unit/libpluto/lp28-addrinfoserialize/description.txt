@@ -1,0 +1,5 @@
+This is a unit test case for the serialization/deserialization code use by
+adns.c and dnskey.c.  It serializes a getaddrinfo() result in and out.
+
+
+
