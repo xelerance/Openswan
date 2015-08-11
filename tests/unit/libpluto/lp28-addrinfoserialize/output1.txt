@@ -1,0 +1,33 @@
+./serialaddrinfo leak: addrinfo sockaddr, item size: X
+./serialaddrinfo leak: addrinfo, item size: X
+./serialaddrinfo leak: addrinfo sockaddr, item size: X
+./serialaddrinfo leak: addrinfo, item size: X
+./serialaddrinfo leak: addrinfo sockaddr, item size: X
+./serialaddrinfo leak: addrinfo, item size: X
+./serialaddrinfo leak: addrinfo sockaddr, item size: X
+./serialaddrinfo leak: addrinfo, item size: X
+./serialaddrinfo leak detective found Z leaks, total size X
+looking up: example.com
+ans 000 canonname=(null) protocol=17 family=10 len=28
+        result=2606:2800:220:1:248:1893:25c8:1946
+ans 001 canonname=(null) protocol=17 family=2 len=16
+        result=93.184.216.34
+serialized size=68
+ans 000 canonname=(null) protocol=17 family=10 len=28
+        result=2606:2800:220:1:248:1893:25c8:1946
+ans 001 canonname=(null) protocol=17 family=2 len=16
+        result=93.184.216.34
+looking up: cassidy.sandelman.ca
+ans 000 canonname=(null) protocol=17 family=10 len=28
+        result=2607:f0b0:f:2:216:3eff:fe11:22e4
+ans 001 canonname=(null) protocol=17 family=2 len=16
+        result=209.87.249.25
+serialized size=68
+ans 000 canonname=(null) protocol=17 family=10 len=28
+        result=2607:f0b0:f:2:216:3eff:fe11:22e4
+ans 001 canonname=(null) protocol=17 family=2 len=16
+        result=209.87.249.25
+looking up: moon.testing.openswan.org
+lookup: moon.testing.openswan.org a/aaaa lookup error: Name or service not known
+looking up: nonexistant.testing.openswan.org
+lookup: nonexistant.testing.openswan.org a/aaaa lookup error: Name or service not known

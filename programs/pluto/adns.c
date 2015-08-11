@@ -52,7 +52,9 @@
 #include <sys/wait.h>
 #include <netinet/in.h>
 #include <resolv.h>
-#include <netdb.h>	/* ??? for h_errno */
+#include <sys/socket.h>
+#define __USE_GNU       /* enables additional EAI_* */
+#include <netdb.h>	/* for h_errno and getaddrinfo */
 
 #include <openswan.h>
 #include <oswlog.h>
@@ -68,6 +70,7 @@
 #include "constants.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "osw_select.h"
+#include "oswalloc.h"
 
 /* shared by all processes */
 
@@ -192,6 +195,85 @@ static res_state statp = &my_res_state;
 
 #endif /* !OLD_RESOLVER */
 
+#define SIZEOF_PREAMBLE sizeof(ai->ai_addrlen)+sizeof(ai->ai_protocol)+sizeof(ai->ai_family)
+int serialize_addr_info(struct addrinfo *result
+                        , u_char *ansbuf
+                        , int     ansbuf_len)
+{
+    volatile unsigned int size_left = ansbuf_len;
+    struct addrinfo *ai;
+
+#define SERIALIZE_THING_LEN(thing, thing_size) do {   \
+        memcpy(ansbuf, thing, thing_size); \
+        ansbuf     += thing_size; \
+        size_left  -= thing_size; } while(0)
+#define SERIALIZE_THING(thing) SERIALIZE_THING_LEN(thing, sizeof(*thing))
+
+    /* start by counting how many there are */
+    for(ai=result; ai!=NULL; ai = ai->ai_next) {
+        if(size_left > (SIZEOF_PREAMBLE+ai->ai_addrlen)) {
+            SERIALIZE_THING(&ai->ai_protocol);
+            SERIALIZE_THING(&ai->ai_family);
+            SERIALIZE_THING(&ai->ai_addrlen);
+            SERIALIZE_THING_LEN(ai->ai_addr, ai->ai_addrlen);
+        }
+    }
+#undef SERIALIZE_THING
+#undef SERIALIZE_THING_LEN
+
+    return (ansbuf_len - size_left);
+}
+
+/*
+ * undo above encoding, and return an object mostly just like getaddrinfo()
+ */
+struct addrinfo *deserialize_addr_info(u_char *ansbuf
+                                       , int     ansbuf_len)
+{
+    unsigned int size_left = ansbuf_len;
+    struct addrinfo *ai1, *ai, **ainext;
+
+#define DESERIALIZE_THING_LEN(thing, thing_size) do {   \
+        memcpy(thing, ansbuf, thing_size);        \
+        ansbuf     += thing_size; \
+        size_left  -= thing_size; } while(0)
+#define DESERIALIZE_THING(thing) DESERIALIZE_THING_LEN(thing, sizeof(*thing))
+
+    ai = NULL;
+    ai1= NULL;
+    ainext = &ai;
+    /* deserialize until nothing can be got out of it */
+    while(size_left >= SIZEOF_PREAMBLE) {
+        struct addrinfo t1;
+
+        DESERIALIZE_THING(&t1.ai_protocol);
+        DESERIALIZE_THING(&t1.ai_family);
+        DESERIALIZE_THING(&t1.ai_addrlen);
+
+        if(size_left >= t1.ai_addrlen
+           && t1.ai_addrlen < 1024         /* impose arbitrary big maximum */
+           && t1.ai_addrlen > 0) {
+            ai1 = alloc_thing(*ai1, "addrinfo");
+            zero(ai1);
+            if(ainext) *ainext = ai1;
+            *ai1 = t1;
+
+            ai1->ai_addr = alloc_bytes(ai1->ai_addrlen, "addrinfo sockaddr");
+            if(ai->ai_addr) {
+                DESERIALIZE_THING_LEN(ai1->ai_addr, ai1->ai_addrlen);
+            }
+        }
+        if(ai1->ai_addr == NULL) {
+            openswan_log("failed to allocated %d bytes in deserialize_addr_info", ai->ai_addrlen);
+            break;
+        }
+        ainext = &ai1->ai_next;
+    }
+#undef DESERIALIZE_THING
+#undef DESERIALIZE_THING_LEN
+    return ai;
+}
+
 static int
 worker(int qfd, int afd)
 {
@@ -214,6 +296,9 @@ worker(int qfd, int afd)
     {
 	struct adns_query q;
 	struct adns_answer a;
+        struct addrinfo *result;
+        struct addrinfo hints;
+        int s;
         char status[1024];
 
 	enum helper_exit_status r = read_pipe(qfd, (unsigned char *)&q
@@ -233,10 +318,44 @@ worker(int qfd, int afd)
 
         snprintf(status, sizeof(status), "query: %s", q.name_buf);
         setproctitle(progname, status);
-	a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
-	a.h_errno_val = h_errno;
 
-	a.len = offsetof(struct adns_answer, ans) + (a.result < 0? 0 : a.result);
+        switch(q.type) {
+        case ns_t_txt:
+        case ns_t_key:
+            a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
+            a.h_errno_val = h_errno;
+
+            a.len = offsetof(struct adns_answer, ans) + (a.result < 0? 0 : a.result);
+            break;
+
+        case ns_t_a:
+            /* actually, use getaddrinfo() to do lookup */
+            hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+            hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+            hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+            hints.ai_protocol = 0;          /* Any protocol */
+            hints.ai_canonname = NULL;
+            hints.ai_addr = NULL;
+            hints.ai_next = NULL;
+
+            s = getaddrinfo(q.name_buf, NULL, &hints, &result);
+            switch(s) {
+            case 0: /* success! */
+                a.len = offsetof(struct adns_answer, ans)
+                    + serialize_addr_info(result, a.ans, ADNS_ANS_SIZE);
+                break;
+
+            case EAI_NODATA:
+                /* not found */
+                a.h_errno_val = s;
+                break;
+            default:
+                openswan_log("adns lookup: %s a/aaaa lookup error: %s"
+                             , q.name_buf, gai_strerror(s));
+                a.h_errno_val = s;
+                break;
+            }
+        }
 
 #ifdef DEBUG
 	if (((q.debugging & IMPAIR_DELAY_ADNS_KEY_ANSWER) && q.type == ns_t_key)
