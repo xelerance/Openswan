@@ -46,6 +46,8 @@ clean check:
 	@${MAKE} -C lp26-davecertI2       $@
 	@${MAKE} -C lp27-IDhostpair       $@
 	@${MAKE} -C lp27-dnsloadI1        $@
+	@${MAKE} -C lp28-addrinfoserialize $@
+
 
 
 
