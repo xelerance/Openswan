@@ -1,9 +1,13 @@
 | DNS query 0 for KEY for moon.testing.openswan.org (gw: (none))
 | DNS query 0 for KEY for cassidy.sandelman.ca (gw: (none))
+| DNS query 0 for host for cassidy.sandelman.ca (gw: none)
 | moon continue with: no host moon.testing.openswan.org for KEY record
-| cassidy continue with: no-error
-./adnstest leak: 3 * keep id name, item size: X
+./adnstest leak: 5 * keep id name, item size: X
 ./adnstest leak: dns name 2, item size: X
 ./adnstest leak: keep id name, item size: X
 ./adnstest leak: dns name, item size: X
 ./adnstest leak detective found Z leaks, total size X
+ans 000 canonname=(null) protocol=17 family=10 len=28
+        result=2607:f0b0:f:2:216:3eff:fe11:22e4
+ans 001 canonname=(null) protocol=17 family=2 len=16
+        result=209.87.249.25

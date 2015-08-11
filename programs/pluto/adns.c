@@ -337,7 +337,6 @@ worker(int qfd, int afd)
             a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
             a.h_errno_val = h_errno;
 
-            a.len = offsetof(struct adns_answer, ans) + (a.result < 0? 0 : a.result);
             break;
 
         case ns_t_a:
@@ -353,13 +352,13 @@ worker(int qfd, int afd)
             s = getaddrinfo(q.name_buf, NULL, &hints, &result);
             switch(s) {
             case 0: /* success! */
-                a.len = offsetof(struct adns_answer, ans)
-                    + serialize_addr_info(result, a.ans, ADNS_ANS_SIZE);
+                a.result = serialize_addr_info(result, a.ans, ADNS_ANS_SIZE);
                 break;
 
             case EAI_NODATA:
                 /* not found */
                 a.h_errno_val = s;
+                a.result = 0;
                 break;
             default:
                 openswan_log("adns lookup: %s a/aaaa lookup error: %s"
@@ -368,6 +367,7 @@ worker(int qfd, int afd)
                 break;
             }
         }
+        a.len = offsetof(struct adns_answer, ans) + (a.result < 0? 0 : a.result);
 
 #ifdef DEBUG
 	if (((q.debugging & IMPAIR_DELAY_ADNS_KEY_ANSWER) && q.type == ns_t_key)

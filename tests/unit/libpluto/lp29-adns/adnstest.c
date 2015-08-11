@@ -67,6 +67,8 @@ childhandler(int sig UNUSED)
     reapchildren();
 }
 
+#include "seam_dumpaddrinfo.c"
+
 void moon_continue(struct adns_continuation *cr, err_t ugh)
 {
     DBG_log("moon continue with: %s", ugh ? ugh : "no-error");
@@ -74,7 +76,21 @@ void moon_continue(struct adns_continuation *cr, err_t ugh)
 
 void cassidy_continue(struct adns_continuation *cr, err_t ugh)
 {
-    DBG_log("cassidy continue with: %s", ugh ? ugh : "no-error");
+    if(ugh) {
+        DBG_log("cassidy error: %s", ugh);
+        /* continuation is freed by dnskey */
+        return;
+    }
+}
+
+void cassidy_host_continue(struct adns_continuation *cr, err_t ugh)
+{
+    if(ugh) {
+        DBG_log("cassidy error: %s", ugh);
+        /* continuation is freed by dnskey */
+        return;
+    }
+    dump_addr_info(cr->ipanswers);
 }
 
 
@@ -137,6 +153,10 @@ main(int argc, char *argv[])
     strtochunk(cassidy.name, "cassidy.sandelman.ca", "dns name 2");
     e = start_adns_query(&cassidy, NULL, ns_t_key,
                          cassidy_continue, cr1);
+
+    /* re-use cassidy */
+    cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
+    e = start_adns_hostname(&cassidy, cassidy_host_continue, cr1);
 
     reset_globals();
     send_unsent_ADNS_queries();
