@@ -1,12 +1,4 @@
-./serialaddrinfo leak: addrinfo sockaddr, item size: X
-./serialaddrinfo leak: addrinfo, item size: X
-./serialaddrinfo leak: addrinfo sockaddr, item size: X
-./serialaddrinfo leak: addrinfo, item size: X
-./serialaddrinfo leak: addrinfo sockaddr, item size: X
-./serialaddrinfo leak: addrinfo, item size: X
-./serialaddrinfo leak: addrinfo sockaddr, item size: X
-./serialaddrinfo leak: addrinfo, item size: X
-./serialaddrinfo leak detective found Z leaks, total size X
+./serialaddrinfo leak detective found Z leaks
 looking up: example.com
 ans 000 canonname=(null) protocol=17 family=10 len=28
         result=2606:2800:220:1:248:1893:25c8:1946

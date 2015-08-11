@@ -106,6 +106,8 @@ main(int argc, char *argv[])
         printf("serialized size=%u\n", serial_size);
         result2 = deserialize_addr_info(buffer1, serial_size);
         dump_addr_info(result2);
+
+        osw_freeaddrinfo(result2);
     }
 
     report_leaks();

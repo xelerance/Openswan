@@ -83,6 +83,7 @@ extern int serialize_addr_info(struct addrinfo *result
 extern struct addrinfo *deserialize_addr_info(u_char *ansbuf
                                               , int     ansbuf_len);
 
+extern void osw_freeaddrinfo(struct addrinfo *ai);
 
 extern int adns_main(bool debugval);
 #endif /* _ADNS_H */
