@@ -274,6 +274,18 @@ struct addrinfo *deserialize_addr_info(u_char *ansbuf
     return ai;
 }
 
+/* this routine is needed because above routine uses alloc_bytes, rather than malloc */
+void osw_freeaddrinfo(struct addrinfo *ai)
+{
+    struct addrinfo *ain = NULL;
+    while(ai != NULL) {
+        ain = ai->ai_next;
+        pfreeany(ai->ai_addr);
+        pfree(ai);
+        ai  = ain;
+    }
+}
+
 static int
 worker(int qfd, int afd)
 {
