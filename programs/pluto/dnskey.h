@@ -58,6 +58,9 @@ struct adns_continuation {
     struct adns_continuation *previous, *next;
     struct pubkey *last_info;  /* the last structure we accumulated */
     struct adns_query query;
+  struct addrinfo *ipanswers;  /* the result of the async getaddrinfo() call
+                                * this is a freshly malloc, and does not need to be copied
+                                */
 };
 
 extern err_t start_adns_query(const struct id *id	/* domain to query */
@@ -65,6 +68,11 @@ extern err_t start_adns_query(const struct id *id	/* domain to query */
     , int type	/* T_TXT or T_KEY, selecting rr type of interest */
     , cont_fn_t cont_fn	/* continuation function */
     , struct adns_continuation *cr);
+
+extern err_t start_adns_hostname(const struct id *id	/* domain to query */
+                                 , cont_fn_t cont_fn
+                                 , struct adns_continuation *cr);
+
 
 
 /* Gateway info gleaned from reverse DNS of client */
