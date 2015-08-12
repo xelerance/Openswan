@@ -74,7 +74,7 @@ main(int argc, char *argv[])
     }
 
     for(i=1; i < argc; i++) {
-        printf("looking up: %s\n", argv[i]);
+        DBG_log("looking up: %s\n", argv[i]);
         s = getaddrinfo(argv[i], NULL, &hints, &result1);
         if(s!=0) {
             printf("lookup: %s a/aaaa lookup error: %s\n"
@@ -87,7 +87,7 @@ main(int argc, char *argv[])
         serial_size = serialize_addr_info(result1, buffer1, buffer1_len);
         freeaddrinfo(result1);
 
-        printf("serialized size=%u\n", serial_size);
+        DBG_log("serialized size=%u\n", serial_size);
         result2 = deserialize_addr_info(buffer1, serial_size);
         dump_addr_info(result2);
 
