@@ -246,6 +246,7 @@ find_host_pair(bool exact
     return bestpair;
 }
 
+/* this removes a host pair header from the list of host pairs */
 void remove_IPhost_pair(struct IPhost_pair *hp)
 {
     list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
@@ -258,6 +259,28 @@ void remove_IDhost_pair(struct IDhost_pair *hp)
         free_id_content(&hp->me_who);
         free_id_content(&hp->him_who);
     }
+}
+
+/*
+ * this removes a connection from a list of IP host pairs
+ */
+void remove_connection_from_IPhost_pair(struct connection *c)
+{
+    struct IPhost_pair *p = c->IPhost_pair;
+
+    /* used by update_host_pairs */
+    list_rm(struct connection, IPhp_next, c, p->connections);
+}
+
+/*
+ * this removes a connection from a list of ID host pairs
+ */
+void remove_connection_from_IDhost_pair(struct connection *c)
+{
+    struct IDhost_pair *p = c->IDhost_pair;
+
+    /* used by update_host_pairs */
+    list_rm(struct connection, IDhp_next, c, p->connections);
 }
 
 /* find head of list of connections with this pair of hosts */

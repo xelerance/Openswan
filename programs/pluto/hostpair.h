@@ -27,6 +27,8 @@ extern struct IDhost_pair *IDhost_pairs;
 extern void connect_to_IPhost_pair(struct connection *c);
 extern void connect_to_IDhost_pair(struct connection *c);
 extern void connect_to_host_pair(struct connection *c);
+extern void remove_connection_from_IPhost_pair(struct connection *c);
+extern void remove_connection_from_IDhost_pair(struct connection *c);
 #define EXACT_MATCH TRUE
 #define ANY_MATCH   FALSE
 extern struct connection *find_host_pair_connections(const char *func, bool exact
