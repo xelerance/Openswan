@@ -14,6 +14,7 @@
  * for more details.
  */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -1766,9 +1767,59 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
     dump_addr_info(cr->ipanswers);
 }
 
+/*
+ * sort addrinfo structures.
+ * this is useful when doing regression tests where gai.conf might differ
+ * and is otherwise stupid.
+ */
+static int ai_compare(const void *a, const void *b, void *arg UNUSED)
+{
+    const struct addrinfo * const *aip;
+    const struct addrinfo * const *bip;
+    const struct addrinfo *ai,*bi;
+    aip = a; ai = *aip;
+    bip = b; bi = *bip;
+    if(!ai->ai_addr) return -1;
+    if(!bi->ai_addr) return -1;
+    if(ai->ai_addrlen < bi->ai_addrlen) return -1;
+    if(ai->ai_addrlen > bi->ai_addrlen) return 1;
+    return memcmp(ai->ai_addr, bi->ai_addr, ai->ai_addrlen);
+}
+
+struct addrinfo *sort_addr_info(struct addrinfo *ai)
+{
+    int ai_count, i;
+    struct addrinfo *ai1;
+    struct addrinfo **array;
+
+    /* first figure out how many there are */
+    for(ai_count=0,ai1 = ai; ai1 != NULL; ai1=ai1->ai_next, ai_count++);
+
+    /* now make an array */
+    array = (struct addrinfo **)alloca(sizeof(struct addrinfo *)*ai_count);
+    for(i=0,ai1 = ai; ai1 != NULL; ai1=ai1->ai_next, i++) {
+        array[i] = ai1;
+    }
+
+    /* now sort it */
+    qsort_r(array, ai_count, sizeof(struct addrinfo *), ai_compare, NULL);
+
+    /* now put them back into the linked list */
+    ai = array[0];
+    if(ai_count > 1) {
+        for(i=0; i < ai_count-1; i++) {
+            array[i]->ai_next = array[i+1];
+        }
+    }
+    array[ai_count-1]->ai_next = NULL;
+
+    return ai;
+}
+
 void dump_addr_info(struct addrinfo *ans)
 {
     unsigned int ansnum = 0;
+
     while(ans) {
         char addrbuf[ADDRTOT_BUF];
         DBG_log("ans %03u canonname=%s protocol=%u family=%u len=%u\n"

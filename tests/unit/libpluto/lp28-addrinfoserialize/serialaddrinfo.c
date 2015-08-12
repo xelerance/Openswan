@@ -81,6 +81,8 @@ main(int argc, char *argv[])
                              , argv[i], gai_strerror(s));
             continue;
         }
+        /* sort things so they come out consistently */
+        result1 = sort_addr_info(result1);
         dump_addr_info(result1);
 
         /* now serialize it into the buffer */

@@ -94,6 +94,8 @@ extern void reset_adns_restart_count(void);
 
 extern bool kick_adns_connection_lookup(struct connection *c, struct end *end);
 extern void dump_addr_info(struct addrinfo *ans);
+extern struct addrinfo *sort_addr_info(struct addrinfo *ai);
+
 
 struct iphostname_continuation {
   struct adns_continuation ac;	/* common prefix */
