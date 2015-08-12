@@ -47,6 +47,9 @@ clean check:
 	@${MAKE} -C lp27-IDhostpair       $@
 	@${MAKE} -C lp27-dnsloadI1        $@
 	@${MAKE} -C lp28-addrinfoserialize $@
+	@${MAKE} -C lp29-adns              $@
+	@${MAKE} -C lp30-dnskick           $@
+
 
 
 

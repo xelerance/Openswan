@@ -84,14 +84,14 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
-	sed -f ${TESTUTILS}/leak-detective.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 
 
 ${WHACKFILE}: OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update:
-	sed -f ${TESTUTILS}/leak-detective.sed  OUTPUT/${TESTNAME}1.txt >output1.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed  OUTPUT/${TESTNAME}1.txt >output1.txt
 
 clean: OUTPUT
 	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
