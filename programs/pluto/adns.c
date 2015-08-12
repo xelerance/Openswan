@@ -245,6 +245,7 @@ struct addrinfo *deserialize_addr_info(u_char *ansbuf
     /* deserialize until nothing can be got out of it */
     while(size_left >= SIZEOF_PREAMBLE) {
         struct addrinfo t1;
+	zero(&t1);
 
         DESERIALIZE_THING(&t1.ai_protocol);
         DESERIALIZE_THING(&t1.ai_family);
