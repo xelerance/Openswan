@@ -69,7 +69,7 @@ extern err_t start_adns_query(const struct id *id	/* domain to query */
     , cont_fn_t cont_fn	/* continuation function */
     , struct adns_continuation *cr);
 
-extern err_t start_adns_hostname(const struct id *id	/* domain to query */
+extern err_t start_adns_hostname(const char *hostname
                                  , cont_fn_t cont_fn
                                  , struct adns_continuation *cr);
 
@@ -92,7 +92,17 @@ extern void gw_addref(struct gw_info *gw)
 
 extern void reset_adns_restart_count(void);
 
-extern void kick_adns_connection_lookup(struct connection *c, struct end *end);
+extern bool kick_adns_connection_lookup(struct connection *c, struct end *end);
+extern void dump_addr_info(struct addrinfo *ans);
+
+struct iphostname_continuation {
+  struct adns_continuation ac;	/* common prefix */
+  struct connection        *c;
+};
+extern void iphostname_continuation(struct adns_continuation *cr, err_t ugh);
+
+
+
 
 #define _DNSKEY_H_
 #endif /* _DNSKEY_H_ */

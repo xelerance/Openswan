@@ -1469,7 +1469,7 @@ start_adns_query(const struct id *id	/* domain to query */
 }
 
 err_t
-start_adns_hostname(const struct id *id	/* domain to query */
+start_adns_hostname(const char *hostname
                     , cont_fn_t cont_fn
                     , struct adns_continuation *cr)
 {
@@ -1477,13 +1477,13 @@ start_adns_hostname(const struct id *id	/* domain to query */
     init_generic_adns_query(cr);
 
     cr->cont_fn = cont_fn;
-    cr->id = *id;
-    unshare_id_content(&cr->id);
+    cr->id.kind = ID_FQDN;
+    strtochunk(cr->id.name, hostname, "adns hostname");
     zero(&cr->query);
 
     {
 	err_t ugh = build_dns_name(cr->query.name_buf, cr->qtid
-				   , id, "host", "none");
+				   , &cr->id, "host", "none");
 
 	if (ugh != NULL)
 	{
@@ -1722,11 +1722,95 @@ handle_adns_answer(void)
 /*
  * this routing picks a new DNS result, or if there are none, performs
  * a new DNS lookup, in an attempt to find a useable peer address.
+ *
+ * Ideally, one would try all the addresses for *SELF* and also for *REMOTE*
+ * as this gets around BCP38 filtering, and is what RFC3484 says we should do.
+ *
+ * Return true if there was a change that can be acted on now.
  */
-void kick_adns_connection_lookup(struct connection *c UNUSED
-                                 , struct end *end UNUSED)
+static bool advance_end_dns_list(struct connection *c
+                          , struct end *end)
 {
-  /* XXX */
+    unsigned int len = sizeof(end->host_addr);
+    struct addrinfo *ai = end->host_address_list.next_address;
+    /* try next address in the list */
+
+    if(ai == NULL) return FALSE;
+
+    /* copy the address into the host_addr structure, and kick this conn */
+    /* structures are not identically names, but equivalent; both contain sockaddr */
+    if(len < ai->ai_addrlen) len = ai->ai_addrlen;
+    memcpy(&end->host_addr, ai->ai_addr, len);
+
+    update_host_pairs(c);
+
+    /* advance pointer */
+    end->host_address_list.next_address = ai->ai_next;
+    return TRUE;
+}
+
+static void reset_end_dns_list(struct dns_end_list *del)
+{
+    del->next_address = del->address_list;
+}
+
+void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
+{
+    struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
+    DBG_log("iphostname_continuation: %s", iph_c->c->name);
+    if(ugh) {
+        DBG_log("iphostname error: %s", ugh);
+        /* continuation is freed by dnskey */
+        return;
+    }
+    dump_addr_info(cr->ipanswers);
+}
+
+void dump_addr_info(struct addrinfo *ans)
+{
+    unsigned int ansnum = 0;
+    while(ans) {
+        char addrbuf[ADDRTOT_BUF];
+        DBG_log("ans %03u canonname=%s protocol=%u family=%u len=%u\n"
+               , ansnum, ans->ai_canonname, ans->ai_protocol, ans->ai_family, ans->ai_addrlen);
+        if(ans->ai_addrlen && ans->ai_addr) {
+            sin_addrtot(ans->ai_addr, 0, addrbuf, sizeof(addrbuf));
+            DBG_log("        result=%s\n", addrbuf);
+        }
+
+        ans = ans->ai_next;
+        ansnum++;
+    }
+}
+
+
+bool kick_adns_connection_lookup(struct connection *c
+                                 , struct end *end)
+{
+    struct iphostname_continuation *iph_c;
+
+    err_t e;
+
+    /* first look for a new IP address to try: see if there a new one. */
+    if(end->host_address_list.address_list != NULL  /* some addresses found */
+       && end->host_address_list.next_address != NULL) {
+        return advance_end_dns_list(c, end);
+    }
+
+    /*
+     * no new address to try, initiate a new DNS lookup, but in the meantime,
+     * also reset the pointer to beginning, and try again.
+     */
+    iph_c = alloc_thing(struct iphostname_continuation, "kick adns");
+    iph_c->c = c;
+    e = start_adns_hostname(end->host_addr_name, iphostname_continuation, &iph_c->ac);
+
+    if(e) {
+        openswan_log("failed to initiate DNS lookup on %s: %s", end->host_addr_name, e);
+        return FALSE;
+    }
+    reset_end_dns_list(&end->host_address_list);
+    return advance_end_dns_list(c, end);
 }
 
 /*
