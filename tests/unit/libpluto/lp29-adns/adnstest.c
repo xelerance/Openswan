@@ -93,6 +93,28 @@ void cassidy_host_continue(struct adns_continuation *cr, err_t ugh)
     dump_addr_info(ai);
 }
 
+void process_dns_results(void) {
+    send_unsent_ADNS_queries();
+    while(adns_any_in_flight()) {
+        struct pollfd one;
+        struct timespec waiting;
+        int n;
+
+        one.fd = adns_afd;
+        one.events = POLLIN;
+        waiting.tv_sec = 30;
+        waiting.tv_nsec= 0;
+        n = ppoll(&one, 1, &waiting, NULL);
+        if(n==1 && one.revents & POLLIN) {
+            handle_adns_answer();
+        } else {
+            DBG_log("poll failed with: %d", n);
+            exit(5);
+        }
+
+        send_unsent_ADNS_queries();
+    }
+}
 
 main(int argc, char *argv[])
 {
@@ -141,45 +163,27 @@ main(int argc, char *argv[])
 	passert(r == 0);
     }
 
+    reset_globals();
+
     /* setup a query */
     cr1 = alloc_thing(struct adns_continuation, "moon lookup");
     moon.kind = ID_FQDN;
     strtochunk(moon.name, "moon.testing.openswan.org", "dns name");
     e = start_adns_query(&moon, NULL, ns_t_key,
                          moon_continue, cr1);
+    process_dns_results();
 
     cr1 = alloc_thing(struct adns_continuation, "cassidy lookup");
     cassidy.kind = ID_FQDN;
     strtochunk(cassidy.name, "cassidy.sandelman.ca", "dns name 2");
     e = start_adns_query(&cassidy, NULL, ns_t_key,
                          cassidy_continue, cr1);
+    process_dns_results();
 
     /* re-use cassidy */
     cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
     e = start_adns_hostname("cassidy.sandelman.ca", cassidy_host_continue, cr1);
-
-    reset_globals();
-    send_unsent_ADNS_queries();
-
-    while(adns_any_in_flight()) {
-        struct pollfd one;
-        struct timespec waiting;
-        int n;
-
-        one.fd = adns_afd;
-        one.events = POLLIN;
-        waiting.tv_sec = 30;
-        waiting.tv_nsec= 0;
-        n = ppoll(&one, 1, &waiting, NULL);
-        if(n==1 && one.revents & POLLIN) {
-            handle_adns_answer();
-        } else {
-            DBG_log("poll failed with: %d", n);
-            exit(5);
-        }
-
-        send_unsent_ADNS_queries();
-    }
+    process_dns_results();
 
     report_leaks();
 
