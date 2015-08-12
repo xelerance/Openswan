@@ -89,7 +89,8 @@ void cassidy_host_continue(struct adns_continuation *cr, err_t ugh)
         /* continuation is freed by dnskey */
         return;
     }
-    dump_addr_info(cr->ipanswers);
+    struct addrinfo *ai = sort_addr_info(cr->ipanswers);
+    dump_addr_info(ai);
 }
 
 
