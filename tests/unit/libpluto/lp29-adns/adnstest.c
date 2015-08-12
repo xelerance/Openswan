@@ -67,8 +67,6 @@ childhandler(int sig UNUSED)
     reapchildren();
 }
 
-#include "seam_dumpaddrinfo.c"
-
 void moon_continue(struct adns_continuation *cr, err_t ugh)
 {
     DBG_log("moon continue with: %s", ugh ? ugh : "no-error");
@@ -156,7 +154,7 @@ main(int argc, char *argv[])
 
     /* re-use cassidy */
     cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
-    e = start_adns_hostname(&cassidy, cassidy_host_continue, cr1);
+    e = start_adns_hostname("cassidy.sandelman.ca", cassidy_host_continue, cr1);
 
     reset_globals();
     send_unsent_ADNS_queries();

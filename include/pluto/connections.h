@@ -136,6 +136,11 @@ struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
 struct IPhost_pair;    /* opaque type */
 struct IDhost_pair;    /* opaque type */
 
+struct dns_end_list {
+    struct addrinfo *address_list;  /* the list of all results returned */
+    struct addrinfo *next_address;  /* next one to try */
+};
+
 struct end {
     struct id id;
     bool      left;
@@ -147,6 +152,8 @@ struct end {
 	host_nexthop,
 	host_srcip;
     ip_subnet client;           /* consider replacing this with p2id from ikev1_quick.c */
+    ip_address saved_hint_addr;  /* the address we got from the cfg file if IPHOSTNAME */
+    struct dns_end_list host_address_list;
 
     bool key_from_DNS_on_demand;
     bool has_client;
@@ -273,9 +280,6 @@ struct connection {
 #ifdef XAUTH_USEPAM
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif
-#ifdef DYNAMICDNS
-    char *dnshostname;
-#endif /* DYNAMICDNS */
 #ifdef XAUTH
 # ifdef MODECFG
     ip_address modecfg_dns1;
@@ -299,6 +303,7 @@ extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern bool same_peer_ids(const struct connection *c
     , const struct connection *d, const struct id *his_id);
+extern bool compare_end_addr_names(struct end *a, struct end *b);
 
 /* Format the topology of a connection end, leaving out defaults.
  * Largest left end looks like: client === host : port [ host_id ] --- hop
