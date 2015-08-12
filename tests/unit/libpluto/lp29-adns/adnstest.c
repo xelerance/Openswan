@@ -39,33 +39,12 @@ int warningsarefatal = 0;
 
 #define TESTNAME "adnstest"
 
-/* perform wait4() on all children */
-static void
-reapchildren(void)
-{
-    pid_t child;
-    int status;
-    struct rusage r;
-
-    errno=0;
-
-    while((child = wait3(&status, WNOHANG, &r)) > 0) {
-	/* got a child to reap */
-	if(adns_reapchild(child, status)) continue;
-
-	openswan_log("child pid=%d (status=%d) is not my child!", child, status);
-    }
-
-    if(child == -1) {
-	openswan_log("reapchild failed with errno=%d %s",
-		     errno, strerror(errno));
-    }
-}
+int children_exited = 0;
 
 static void
 childhandler(int sig UNUSED)
 {
-    reapchildren();
+    children_exited++;
 }
 
 void moon_continue(struct adns_continuation *cr, err_t ugh)
@@ -91,6 +70,7 @@ void cassidy_host_continue(struct adns_continuation *cr, err_t ugh)
     }
     struct addrinfo *ai = sort_addr_info(cr->ipanswers);
     dump_addr_info(ai);
+    cr->ipanswers = ai;
 }
 
 void process_dns_results(void) {
@@ -171,6 +151,7 @@ main(int argc, char *argv[])
     strtochunk(moon.name, "moon.testing.openswan.org", "dns name");
     e = start_adns_query(&moon, NULL, ns_t_key,
                          moon_continue, cr1);
+    freeanychunk(moon.name);
     process_dns_results();
 
     cr1 = alloc_thing(struct adns_continuation, "cassidy lookup");
@@ -178,6 +159,7 @@ main(int argc, char *argv[])
     strtochunk(cassidy.name, "cassidy.sandelman.ca", "dns name 2");
     e = start_adns_query(&cassidy, NULL, ns_t_key,
                          cassidy_continue, cr1);
+    freeanychunk(cassidy.name);
     process_dns_results();
 
     /* re-use cassidy */
@@ -185,6 +167,7 @@ main(int argc, char *argv[])
     e = start_adns_hostname("cassidy.sandelman.ca", cassidy_host_continue, cr1);
     process_dns_results();
 
+    stop_adns();
     report_leaks();
 
     tool_close_log();
@@ -199,5 +182,6 @@ main(int argc, char *argv[])
  * compile-command: "make check"
  * End:
  */
+
 
 
