@@ -51,7 +51,7 @@ check:	OUTPUT ${EXTRAOBJS}
 	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
+	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1 || cat OUTPUT/${TESTNAME}1.txt
 	sed -f ${TESTUTILS}/leak-detective.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 
 update:
