@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.44rc4 (August 12, 2015)
+v2.6.44 (August 13, 2015)
   Massive bug patch and IKEv2 processing fixes by MCR
 
  * Potential fix for #4285 - make sure kernel.c uses correct destination for outgoing SPD when responding to an initiator/32 [MCR]
