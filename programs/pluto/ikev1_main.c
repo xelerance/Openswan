@@ -1333,6 +1333,9 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
     }
 
     finish_dh_secretiv(st, r);
+    if(!r->pcr_success) {
+        return STF_FAIL + INVALID_KEY_INFORMATION;
+    }
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
@@ -1588,6 +1591,9 @@ main_inR2_outI3_continue(struct msg_digest *md
     cert_t mycert = st->st_connection->spd.this.cert;
 
     finish_dh_secretiv(st, r);
+    if(!r->pcr_success) {
+        return STF_FAIL + INVALID_KEY_INFORMATION;
+    }
 
     /* decode certificate requests */
     decode_cr(md, &requested_ca);
