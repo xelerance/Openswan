@@ -404,6 +404,9 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
      */
 
     finish_dh_secretiv(st, r);
+    if(!r->pcr_success) {
+        return STF_FAIL + INVALID_KEY_INFORMATION;
+    }
 
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
@@ -675,6 +678,9 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
   st->st_calculating = FALSE;
 
   finish_dh_secretiv(st, r);
+  if(!r->pcr_success) {
+      return STF_FAIL + INVALID_KEY_INFORMATION;
+  }
 
   e = aggr_inR1_outI2_tail(md, NULL);
 

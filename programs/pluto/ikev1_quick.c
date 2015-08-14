@@ -2254,7 +2254,9 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
 	    return STF_INTERNAL_ERROR;
 
 	finish_dh_secret(st, r);
-
+        if(!r->pcr_success) {
+            return STF_FAIL + INVALID_KEY_INFORMATION;
+        }
     }
 
     /* [ IDci, IDcr ] out */
@@ -2422,6 +2424,9 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 
     if (st->st_pfs_group != NULL && r!=NULL) {
 	finish_dh_secret(st, r);
+        if(!r->pcr_success) {
+            return STF_FAIL + INVALID_KEY_INFORMATION;
+        }
     }
 
 #ifdef NAT_TRAVERSAL

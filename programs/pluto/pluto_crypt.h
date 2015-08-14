@@ -134,6 +134,7 @@ struct pluto_crypto_req {
   pcr_req_id                 pcr_id;
   enum crypto_importance     pcr_pcim;
   int                        pcr_slot;
+  int                        pcr_success;
   union {
       struct pcr_kenonce      kn;
       struct pcr_skeyid_q     dhq;
