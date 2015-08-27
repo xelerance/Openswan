@@ -684,10 +684,10 @@ aggr_inR1_outI2_crypto_continue(struct pluto_crypto_req_cont *pcrc
 
   finish_dh_secretiv(st, r);
   if(!r->pcr_success) {
-      return STF_FAIL + INVALID_KEY_INFORMATION;
+      e = STF_FAIL + INVALID_KEY_INFORMATION;
+  } else {
+      e = aggr_inR1_outI2_tail(md, NULL);
   }
-
-  e = aggr_inR1_outI2_tail(md, NULL);
 
   if(dh->md != NULL) {
       complete_v1_state_transition(&dh->md, e);

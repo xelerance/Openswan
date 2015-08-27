@@ -269,6 +269,7 @@ calc_dh_shared(chunk_t *shared, const chunk_t g
 #endif
 
     DBG_cond_dump_chunk(DBG_CRYPT, "DH shared-secret:\n", *shared);
+    return TRUE;
 }
 #endif
 
@@ -1191,9 +1192,9 @@ void calc_dh(struct pluto_crypto_req *r)
     DBG(DBG_CRYPT, DBG_dump_chunk("peer's g: ", g));
 
 #ifdef HAVE_LIBNSS
-    r->success = calc_dh_shared(&shared, g, ltsecret, group, pubk);
+    r->pcr_success = calc_dh_shared(&shared, g, ltsecret, group, pubk);
 #else
-    r->success = calc_dh_shared(&shared, g, &sec, group);
+    r->pcr_success = calc_dh_shared(&shared, g, &sec, group);
     mpz_clear (&sec);
 #endif
 
@@ -1620,11 +1621,11 @@ void calc_dh_v2(struct pluto_crypto_req *r)
     DBG(DBG_CRYPT, DBG_dump_chunk("peer's g: ", g));
 
 #ifndef HAVE_LIBNSS
-    r->success = calc_dh_shared(&shared, g, &sec, group);
+    r->pcr_success = calc_dh_shared(&shared, g, &sec, group);
 #else
-    r->success = calc_dh_shared(&shared, g, ltsecret, group, pubk);
+    r->pcr_success = calc_dh_shared(&shared, g, ltsecret, group, pubk);
 #endif
-    if(!r->success) return;
+    if(!r->pcr_success) return;
 
     memset(&skeyseed,  0, sizeof(skeyseed));
     memset(&SK_d,      0, sizeof(SK_d));
@@ -1670,7 +1671,7 @@ void calc_dh_v2(struct pluto_crypto_req *r)
     freeanychunk(SK_pi);
     freeanychunk(SK_pr);
 
-    r->success = TRUE;
+    r->pcr_success = TRUE;
     return;
 }
 

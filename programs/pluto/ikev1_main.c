@@ -1334,7 +1334,8 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
 
     finish_dh_secretiv(st, r);
     if(!r->pcr_success) {
-        return STF_FAIL + INVALID_KEY_INFORMATION;
+        loglog(RC_LOG_SERIOUS, "DH crypto failed, invalid keys");
+        return;
     }
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
