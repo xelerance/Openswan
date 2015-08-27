@@ -4,6 +4,13 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.45 (August 27, 2015)
+  This release fixes CVE-2015-3240 (IKE DoS)
+
+ * Minor compile tweaks that were missed at cottage [MCR]
+ * Possible fix for CVE-2015-3240: if KE payload is 0, then
+   exponentiation fails, tripping a passert for nss [MCR]
+
 v2.6.44 (August 13, 2015)
   Massive bug patch and IKEv2 processing fixes by MCR
 
