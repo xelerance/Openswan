@@ -841,6 +841,96 @@ static int load_conn_basic(struct starter_conn *conn
     return err;
 }
 
+char **process_alsos(struct starter_config *cfg
+                     , struct starter_conn *conn
+                     , struct config_parsed *cfgp
+                     , char **alsos, int alsosize
+                     , bool alsoflip
+                     , err_t *perr)
+{
+    int   alsoplace;
+    unsigned int err;
+    alsoplace = 0;
+
+    /*alsos is equal to conn->alsos that has been already veirfied for NULL*/
+    while(alsoplace < alsosize && alsos[alsoplace] != NULL
+          && alsoplace < ALSO_LIMIT) {
+        struct section_list *sl1;
+
+        /*
+         * for each also= listed, go find this section's keyword list, and
+         * load it as well. This may extend the also= list (and the end),
+         * which we handle by zeroing the also list, and adding to it after
+         * checking for duplicates.
+         */
+        for(sl1 = cfgp->sections.tqh_first;
+            sl1 != NULL && strcasecmp(alsos[alsoplace], sl1->name) != 0;
+            sl1 = sl1->link.tqe_next);
+
+        starter_log(LOG_LEVEL_DEBUG, "\twhile loading conn '%s' also including '%s'"
+                    , conn->name, alsos[alsoplace]);
+
+        /*
+         * if we found something that matches by name, and we haven't been
+         * there, then process it.
+         */
+        if(sl1 && !sl1->beenhere)  {
+            conn->strings_set[KSF_ALSO]=FALSE;
+            pfreeany(conn->strings[KSF_ALSO]);
+            conn->strings[KSF_ALSO]=NULL;
+            sl1->beenhere = TRUE;
+
+            /* translate things, but do not replace earlier settings!*/
+            err += translate_conn(conn, sl1, k_set, perr);
+
+            if(conn->strings[KSF_ALSO]) {
+                char **newalsos;
+                int   newalsoplace;
+
+                /* now, check out the KSF_ALSO, and extend list if we need to */
+                newalsos = new_list(conn->strings[KSF_ALSO]);
+
+                if(newalsos && newalsos[0]!=NULL) {
+                    char **ra;
+                    /* count them */
+                    for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
+
+                    /* extend conn->alsos */
+                    ra = alloc_bytes((alsosize + newalsoplace + 1) * sizeof(char *),
+                                     "conn->alsos");
+                    memcpy(ra, alsos, alsosize * sizeof(char *));
+                    pfree(alsos);
+                    alsos = ra;
+
+                    for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++) {
+                        assert(conn != NULL);
+                        assert(conn->name != NULL);
+                        starter_log(LOG_LEVEL_DEBUG
+                                    , "\twhile processing section '%s' added also=%s"
+                                    , sl1->name, newalsos[newalsoplace]);
+
+                        alsos[alsosize++] = clone_str(newalsos[newalsoplace], "alsos");
+                    }
+                    alsos[alsosize]=NULL;
+                }
+                FREE_LIST(newalsos);
+            }
+        }
+
+        alsoplace++;
+	if(alsoplace >= ALSO_LIMIT)
+	{
+	    starter_log(LOG_LEVEL_INFO
+			, "while loading conn '%s', too many also= used at section %s. Limit is %d"
+			, conn->name
+			, conn->alsos[alsoplace]
+			, ALSO_LIMIT);
+            *perr = "too many also";
+	    return NULL;
+	}
+    }
+    return alsos;
+}
 
 
 static int load_conn (struct starter_config *cfg
@@ -853,12 +943,6 @@ static int load_conn (struct starter_config *cfg
 		      , err_t *perr)
 {
     unsigned int err;
-    char **newalsos;
-    int   newalsoplace;
-    int   alsoplace;
-    int   alsosize;
-    struct section_list *sl1;
-
     err = 0;
 
     err += load_conn_basic(conn, sl, defaultconn ? k_default : k_set, perr);
@@ -882,98 +966,23 @@ static int load_conn (struct starter_config *cfg
 
     if(alsoprocessing && conn->alsos)
     {
+        unsigned int alsosize;
         char **alsos;
-	/* reset all of the "beenhere" flags */
+        struct section_list *sl1;
+
+	/* reset all of the "beenhere" flags: can not also= and alsoflip= the same conn, btw. */
 	for(sl1 = cfgp->sections.tqh_first; sl1 != NULL; sl1 = sl1->link.tqe_next)
 	{
 	    sl1->beenhere = FALSE;
 	}
 	sl->beenhere = TRUE;
 
-	/* count them */
-	alsos = conn->alsos;
-	conn->alsos = NULL;
-	for(alsosize=0; alsos[alsosize]!=NULL; alsosize++);
+        /* count them */
+        alsos = conn->alsos;
+        conn->alsos = NULL;
+        for(alsosize=0; alsos[alsosize]!=NULL; alsosize++);
 
-	alsoplace = 0;
-	/*alsos is equal to conn->alsos that has been already veirfied for NULL*/
-	while(alsoplace < alsosize && alsos[alsoplace] != NULL
-	      && alsoplace < ALSO_LIMIT)
-	{
-	    /*
-	     * for each also= listed, go find this section's keyword list, and
-	     * load it as well. This may extend the also= list (and the end),
-	     * which we handle by zeroing the also list, and adding to it after
-	     * checking for duplicates.
-	     */
-	    for(sl1 = cfgp->sections.tqh_first;
-		sl1 != NULL && strcasecmp(alsos[alsoplace], sl1->name) != 0;
-		sl1 = sl1->link.tqe_next);
-
-	    starter_log(LOG_LEVEL_DEBUG, "\twhile loading conn '%s' also including '%s'"
-			, conn->name, alsos[alsoplace]);
-
-	    /*
-	     * if we found something that matches by name, and we haven't been
-	     * there, then process it.
-	     */
-	    if(sl1 && !sl1->beenhere)
-	    {
-		conn->strings_set[KSF_ALSO]=FALSE;
-		pfreeany(conn->strings[KSF_ALSO]);
-		conn->strings[KSF_ALSO]=NULL;
-		sl1->beenhere = TRUE;
-
-		/* translate things, but do not replace earlier settings!*/
-		err += translate_conn(conn, sl1, k_set, perr);
-
-		if(conn->strings[KSF_ALSO])
-		{
-		    /* now, check out the KSF_ALSO, and extend list if we need to */
-		    newalsos = new_list(conn->strings[KSF_ALSO]);
-
-		    if(newalsos && newalsos[0]!=NULL)
-		    {
-                        char **ra;
-                        /* count them */
-			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++);
-
-			/* extend conn->alsos */
-                        ra = alloc_bytes((alsosize + newalsoplace + 1) * sizeof(char *),
-                                         "conn->alsos");
-                        memcpy(ra, alsos, alsosize * sizeof(char *));
-                        pfree(alsos);
-                        alsos = ra;
-
-			for(newalsoplace=0; newalsos[newalsoplace]!=NULL; newalsoplace++)
-			{
-			    assert(conn != NULL);
-			    assert(conn->name != NULL);
-			    starter_log(LOG_LEVEL_DEBUG
-					, "\twhile processing section '%s' added also=%s"
-					, sl1->name, newalsos[newalsoplace]);
-
-                            alsos[alsosize++] = clone_str(newalsos[newalsoplace], "alsos");
-			}
-			alsos[alsosize]=NULL;
-		    }
-		    FREE_LIST(newalsos);
-		}
-	    }
-	    alsoplace++;
-	}
-        conn->alsos = alsos;
-
-	if(alsoplace >= ALSO_LIMIT)
-	{
-	    starter_log(LOG_LEVEL_INFO
-			, "while loading conn '%s', too many also= used at section %s. Limit is %d"
-			, conn->name
-			, conn->alsos[alsoplace]
-			, ALSO_LIMIT);
-	    return 1;
-	}
-	conn->alsos = alsos;
+        conn->alsos = process_alsos(cfg, conn, cfgp, conn->alsos, alsosize, FALSE, perr);
     }
 
 #ifdef PARSER_TYPE_DEBUG
