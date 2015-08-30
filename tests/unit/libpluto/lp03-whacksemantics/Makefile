@@ -77,11 +77,11 @@ check:
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
-	sed -f ${TESTUTILS}/leak-detective.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}2.txt 2>&1
-	sed -f ${TESTUTILS}/leak-detective.sed OUTPUT/${TESTNAME}2.txt | diff - output2.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}2.txt | diff - output2.txt
 
 update:
-	sed -f ${TESTUTILS}/leak-detective.sed  OUTPUT/${TESTNAME}1.txt >output1.txt
-	sed -f ${TESTUTILS}/leak-detective.sed  OUTPUT/${TESTNAME}2.txt >output2.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}2.txt >output2.txt
 
