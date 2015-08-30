@@ -607,7 +607,8 @@ static bool validate_end(struct starter_conn *conn_st
 bool translate_conn (struct starter_conn *conn
 		     , struct section_list *sl
 		     , enum keyword_set   assigned_value
-		     , err_t *error)
+		     , err_t *error
+                     , bool alsoflip)
 {
     unsigned int err, field;
     ksf    *the_strings;
@@ -642,17 +643,25 @@ bool translate_conn (struct starter_conn *conn
 
 	if(kw->keyword.keydef->validity & kv_leftright)
 	{
+            struct starter_end *left, *right;
+            left  = &conn->left;
+            right = &conn->right;
+            if(alsoflip) {
+                left = &conn->right;
+                right= &conn->left;
+            }
+
 	    if(kw->keyword.keyleft)
 	    {
-		the_strings = &conn->left.strings;
-		the_options = &conn->left.options;
-		set_strings = &conn->left.strings_set;
-		set_options = &conn->left.options_set;
+		the_strings = &left->strings;
+		the_options = &left->options;
+		set_strings = &left->strings_set;
+		set_options = &left->options_set;
 	    } else {
-		the_strings = &conn->right.strings;
-		the_options = &conn->right.options;
-		set_strings = &conn->right.strings_set;
-		set_options = &conn->right.options_set;
+		the_strings = &right->strings;
+		the_options = &right->options;
+		set_strings = &right->strings_set;
+ 		set_options = &right->options_set;
 	    }
 	}
 
@@ -836,7 +845,7 @@ static int load_conn_basic(struct starter_conn *conn
     int err;
 
     /*turn all of the keyword/value pairs into options/strings in left/right */
-    err = translate_conn(conn, sl, assigned_value, perr);
+    err = translate_conn(conn, sl, assigned_value, perr, FALSE);
 
     return err;
 }
@@ -881,7 +890,7 @@ char **process_alsos(struct starter_config *cfg
             sl1->beenhere = TRUE;
 
             /* translate things, but do not replace earlier settings!*/
-            err += translate_conn(conn, sl1, k_set, perr);
+            err += translate_conn(conn, sl1, k_set, perr, alsoflip);
 
             if(conn->strings[KSF_ALSO]) {
                 char **newalsos;
@@ -982,7 +991,16 @@ static int load_conn (struct starter_config *cfg
         conn->alsos = NULL;
         for(alsosize=0; alsos[alsosize]!=NULL; alsosize++);
 
-        conn->alsos = process_alsos(cfg, conn, cfgp, conn->alsos, alsosize, FALSE, perr);
+        starter_log(LOG_LEVEL_DEBUG, "# conn %s processing alsos", conn->name);
+        conn->alsos = process_alsos(cfg, conn, cfgp, alsos, alsosize, FALSE, perr);
+
+        if(conn->strings[KSF_ALSOFLIP]) {
+            alsos = new_list(conn->strings[KSF_ALSOFLIP]);
+            for(alsosize=0; alsos[alsosize]!=NULL; alsosize++);
+
+            starter_log(LOG_LEVEL_DEBUG, "# conn %s processing alsoflips", conn->name);
+            conn->also_flips = process_alsos(cfg, conn, cfgp, alsos, alsosize, TRUE, perr);
+        }
     }
 
 #ifdef PARSER_TYPE_DEBUG

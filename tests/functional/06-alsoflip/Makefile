@@ -11,15 +11,20 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/functional
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/functional/01-confread
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
+
 check:
-	@${MAKE} -C 01-confread check
-	@${MAKE} -C 03-plutostart check
-	@${MAKE} -C 04-whackwrite check
-	@${MAKE} -C 05-addconn check
-	@${MAKE} -C 06-alsoflip check
+	mkdir -p ../OUTPUTS
+	${READWRITE} --debug --config alsoflip.conf | tee ../OUTPUTS/alsoflip.conf.raw | diff - alsoflip.conf.out
+
+update:
+	cp ../OUTPUTS/alsoflip.conf.raw     alsoflip.conf.out
+
+
+
 
