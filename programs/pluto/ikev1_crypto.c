@@ -99,6 +99,7 @@ try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
     /* decrypt the signature -- reversing RSA_sign_hash */
     if (sig_len != k->k)
     {
+      DBG_log("sig_len: %u != k->k: %u", (unsigned int)sig_len, (unsigned int)k->k);
 	/* XXX notification: INVALID_KEY_INFORMATION */
 	return "1" "SIG length does not match public key length";
     }
