@@ -102,6 +102,7 @@ DISTSRC = \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
+	ikev1_crypto.c ikev1_nss.c \
         ikev2.c ikev2_parent.c ikev2_child.c ikev2_crypto.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
 	kernel.c kernel.h \
@@ -160,7 +161,7 @@ OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
 OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o
 OBJSPLUTO += ${XAUTH_OBJS}
-OBJSPLUTO += ${AGGRESSIVE_OBJS}
+OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o
