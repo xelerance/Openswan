@@ -651,7 +651,7 @@ main_inI1_outR1(struct msg_digest *md)
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);
 
-	    for (; d != NULL; d = d->hp_next)
+	    for (; d != NULL; d = d->IPhp_next)
 	    {
 		if (d->kind == CK_GROUP)
 		{

@@ -792,7 +792,7 @@ informational(struct msg_digest *md)
                     }
                    );
 
-		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
+		tmp_c->IPhost_pair->him.addr = tmp_c->spd.that.host_addr;
 
 		/*Initiating connection to the redirected peer*/
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);

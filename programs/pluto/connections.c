@@ -150,11 +150,11 @@ void
 update_host_pairs(struct connection *c)
 {
     struct connection *d = NULL, *conn_next_tmp = NULL, *conn_list = NULL;
-    struct host_pair *p = NULL;
+    struct IPhost_pair *p = NULL;
     ip_address new_addr;
     char *dnshostname;
 
-    p = c->host_pair;
+    p = c->IPhost_pair;
     d = p ? p->connections : NULL;
 
     if (d == NULL
@@ -169,7 +169,7 @@ update_host_pairs(struct connection *c)
 
     for (; d != NULL; d = conn_next_tmp)
     {
-	conn_next_tmp = d->hp_next;
+	conn_next_tmp = d->IPhp_next;
 	if (d->dnshostname && strcmp(d->dnshostname, dnshostname) == 0)
 	{
 	      /*
@@ -177,9 +177,9 @@ update_host_pairs(struct connection *c)
 	      * change the connection's remote host address and remove the connection from the host pair.
 	      */
 	      d->spd.that.host_addr = new_addr;
-	      list_rm(struct connection, hp_next, d, d->host_pair->connections);
+	      list_rm(struct connection,IPhp_next,d, d->IPhost_pair->connections);
 
-	      d->hp_next = conn_list;
+	      d->IPhp_next = conn_list;
 	      conn_list = d;
 	}
     }
@@ -190,17 +190,17 @@ update_host_pairs(struct connection *c)
 	for (; d != NULL; d = conn_next_tmp)
 	{
 	    /*
-	     * connect the connection to the new host_pair
+	     * connect the connection to the new IP host_pair
 	     */
-	    conn_next_tmp = d->hp_next;
-	    connect_to_host_pair(d);
+	    conn_next_tmp = d->IPhp_next;
+	    connect_to_IPhost_pair(d);
 	}
     }
 
     if (p->connections == NULL)
     {
 	passert(p->pending == NULL);	/* ??? must deal with this! */
-	list_rm(struct host_pair, next, p, host_pairs);
+	list_rm(struct IPhost_pair, next, p, IPhost_pairs);
 	pfree(p);
     }
 }
@@ -294,16 +294,16 @@ delete_connection(struct connection *c, bool relations)
     cur_connection = old_cur_connection;
 
     /* find and delete c from the host pair list */
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
     {
-	list_rm(struct connection, hp_next, c, unoriented_connections);
+	list_rm(struct connection,IPhp_next, c, unoriented_connections);
     }
     else
     {
-	struct host_pair *hp = c->host_pair;
+	struct IPhost_pair *hp = c->IPhost_pair;
 
-	list_rm(struct connection, hp_next, c, hp->connections);
-	c->host_pair = NULL;	/* redundant, but safe */
+	list_rm(struct connection, IPhp_next, c, hp->connections);
+	c->IPhost_pair = NULL;	/* redundant, but safe */
 
 	/* if there are no more connections with this host_pair
 	 * and we haven't even made an initial contact, let's delete
@@ -312,7 +312,7 @@ delete_connection(struct connection *c, bool relations)
 	if (hp->connections == NULL)
 	{
 	    passert(hp->pending == NULL);	/* ??? must deal with this! */
-	    remove_host_pair(hp);
+	    remove_IPhost_pair(hp);
 	    pfree(hp);
 	}
     }
@@ -416,10 +416,10 @@ check_orientations(void)
 
 	while (c != NULL)
 	{
-	    struct connection *nxt = c->hp_next;
+	    struct connection *nxt = c->IPhp_next;
 
 	    (void)orient(c, pluto_port500);
-	    connect_to_host_pair(c);
+	    connect_to_IPhost_pair(c);
 	    c = nxt;
 	}
     }
@@ -434,9 +434,9 @@ check_orientations(void)
 	{
 	    if (i->change == IFN_ADD)
 	    {
-		struct host_pair *hp;
+		struct IPhost_pair *hp;
 
-		for (hp = host_pairs; hp != NULL; hp = hp->next)
+		for (hp = IPhost_pairs; hp != NULL; hp = hp->next)
 		{
 		    if (sameaddr(&hp->him.addr, &i->ip_addr)
 			&& (kern_interface!=NO_KERNEL || hp->him.host_port == pluto_port500))
@@ -445,8 +445,8 @@ check_orientations(void)
 			 * hanging off this host pair has both sides
 			 * matching an interface.
 			 * We'll get rid of them, using orient and
-			 * connect_to_host_pair.  But we'll be lazy
-			 * and not ditch the host_pair itself (the
+			 * connect_to_IPhost_pair.  But we'll be lazy
+			 * and not ditch the IPhost_pair itself (the
 			 * cost of leaving it is slight and cannot
 			 * be induced by a foe).
 			 */
@@ -455,11 +455,11 @@ check_orientations(void)
 			hp->connections = NULL;
 			while (c != NULL)
 			{
-			    struct connection *nxt = c->hp_next;
+			    struct connection *nxt = c->IPhp_next;
 
 			    c->interface = NULL;
 			    (void)orient(c, pluto_port500);
-			    connect_to_host_pair(c);
+			    connect_to_IPhost_pair(c);
 			    c = nxt;
 			}
 		    }
@@ -849,7 +849,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 					   , (const ip_address *)NULL
 					   , that->host_port);
 
-	    for (; c != NULL; c = c->hp_next)
+	    for (; c != NULL; c = c->IPhp_next)
 	    {
 		if (c->policy & POLICY_AGGRESSIVE)
 			continue;
@@ -1251,7 +1251,7 @@ add_connection(const struct whack_message *wm)
 	unshare_connection_strings(c);
 
 	(void)orient(c, pluto_port500);
-	connect_to_host_pair(c);
+	connect_to_IPhost_pair(c);
 
 	/* log all about this connection */
 	openswan_log("adding connection: \"%s\"", c->name);
@@ -1382,7 +1382,7 @@ add_group_instance(struct connection *group, const ip_subnet *target)
 	connections = t;
 
 	/* same host_pair as parent: stick after parent on list */
-	group->hp_next = t;
+	group->IPhp_next = t;
 
 	/* route if group is routed */
 	if (group->policy & POLICY_GROUTED)
@@ -1467,7 +1467,7 @@ instantiate(struct connection *c, const ip_address *him
     d->log_file = NULL;
     d->log_file_err = FALSE;
 
-    connect_to_host_pair(d);
+    connect_to_IPhost_pair(d);
 
     return d;
 }
@@ -1932,7 +1932,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
 							  , (ip_address *)NULL
 							  , pluto_port500);
 
-	for (; c != NULL; c = c->hp_next)
+	for (; c != NULL; c = c->IPhp_next)
 	{
 	    DBG(DBG_OPPO,
 		DBG_log("checking %s", c->name));
@@ -2147,7 +2147,7 @@ find_host_connection2(const char *func, bool exact
 	DBG(DBG_CONTROLMORE,
 		DBG_log("searching for connection with policy = %s"
 			, bitnamesof(sa_policy_bit_names, policy)));
-	for (; c != NULL; c = c->hp_next) {
+	for (; c != NULL; c = c->IPhp_next) {
 	    DBG(DBG_CONTROLMORE,
 		DBG_log("found policy = %s (%s)"
 			, bitnamesof(sa_policy_bit_names, c->policy)
@@ -2164,7 +2164,7 @@ find_host_connection2(const char *func, bool exact
     }
 
     /* need to check for NEVER_NEGOTIATE, because policy might not be set */
-    for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+    for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->IPhp_next);
 
     if(c == NULL) {
         c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, pluto_port500);
@@ -2173,7 +2173,7 @@ find_host_connection2(const char *func, bool exact
             DBG(DBG_CONTROLMORE,
 		DBG_log("searching for %%any connection with policy = %s"
 			, bitnamesof(sa_policy_bit_names, policy)));
-            for (; c != NULL; c = c->hp_next) {
+            for (; c != NULL; c = c->IPhp_next) {
                 DBG(DBG_CONTROLMORE,
                     DBG_log("found policy = %s (%s)"
                             , bitnamesof(sa_policy_bit_names, c->policy)
@@ -2187,7 +2187,7 @@ find_host_connection2(const char *func, bool exact
                     break;
             }
         }
-        for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->hp_next);
+        for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->IPhp_next);
     }
 
 
@@ -2371,10 +2371,10 @@ refine_host_connection(const struct state *st, const struct id *peer_id
      *   + our RSA key must not change (we used in in previous message)
      */
     passert(c != NULL);
-    d = c->host_pair->connections;
+    d = c->IPhost_pair->connections;
     for (wcpip = FALSE; ; wcpip = TRUE)
     {
-	for (; d != NULL; d = d->hp_next)
+	for (; d != NULL; d = d->IPhp_next)
 	{
 	    bool match1 = match_id(peer_id, &d->spd.that.id, &wildcards);
 	    bool match2 = trusted_ca(peer_ca, d->spd.that.ca, &peer_pathlen);
@@ -2614,7 +2614,7 @@ is_virtual_net_used(struct connection *c, const ip_subnet *peer_net, const struc
 /* fc_try: a helper function for find_client_connection */
 static struct connection *
 fc_try(const struct connection *c
-       , struct host_pair *hp
+       , struct IPhost_pair *hp
        , const struct id *peer_id UNUSED
        , const struct end *our_end
        , const struct end *peer_end)
@@ -2631,7 +2631,7 @@ fc_try(const struct connection *c
     endclienttot(our_end,  s1, sizeof(s1));
     endclienttot(peer_end, d1, sizeof(d1));
 
-    for (d = hp->connections; d != NULL; d = d->hp_next)
+    for (d = hp->connections; d != NULL; d = d->IPhp_next)
     {
 	struct spd_route *sr;
 
@@ -2762,7 +2762,7 @@ fc_try(const struct connection *c
 
 static struct connection *
 fc_try_oppo(const struct connection *c
-, struct host_pair *hp
+, struct IPhost_pair *hp
 , const ip_subnet *our_net
 , const ip_subnet *peer_net
 , const u_int8_t our_protocol
@@ -2775,7 +2775,7 @@ fc_try_oppo(const struct connection *c
     policy_prio_t best_prio = BOTTOM_PRIO;
     int wildcards, pathlen;
 
-    for (d = hp->connections; d != NULL; d = d->hp_next)
+    for (d = hp->connections; d != NULL; d = d->IPhp_next)
     {
 	struct spd_route *sr;
 	policy_prio_t prio;
@@ -2798,7 +2798,7 @@ fc_try_oppo(const struct connection *c
 	/* Opportunistic case:
 	 * our_net must be inside d->spd.this.client
 	 * and peer_net must be inside d->spd.that.client
-	 * Note: this host_pair chain also has shunt
+	 * Note: this IPhost_pair chain also has shunt
 	 * eroute conns (clear, drop), but they won't
 	 * be marked as opportunistic.
 	 */
@@ -2920,7 +2920,7 @@ find_client_connection(struct connection *c
 	}
 
 	/* exact match? */
-	d = fc_try(c, c->host_pair, NULL, our_end, peer_end);
+	d = fc_try(c, c->IPhost_pair, NULL, our_end, peer_end);
 
 	DBG(DBG_CONTROLMORE,
 	    DBG_log("  fc_try %s gives %s"
@@ -2936,7 +2936,7 @@ find_client_connection(struct connection *c
     {
 	/* look for an abstract connection to match */
 	struct spd_route *sra;
-	struct host_pair *hp = NULL;
+	struct IPhost_pair *hp = NULL;
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
 	{

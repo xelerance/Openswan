@@ -318,7 +318,7 @@ collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
                                                 , KH_ANY
                                                 ,(ip_address*)NULL, md->sender_port, LEMPTY);
 
-    for (; d != NULL; d = d->hp_next)
+    for (; d != NULL; d = d->IPhp_next)
     {
 	/* must be a road warrior connection */
 	if (d->kind == CK_TEMPLATE && !(d->policy & POLICY_OPPO)

@@ -202,11 +202,11 @@ restart_connections_by_peer(struct connection *c)
 {
     struct connection *d;
 
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
    	   return;
 
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
 	   if (
 #ifdef DYNAMICDNS
 	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
@@ -224,10 +224,10 @@ restart_connections_by_peer(struct connection *c)
     update_host_pairs(c);
 #endif /* DYNAMICDNS */
 
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
     	   return;
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
     	   if (
 #ifdef DYNAMICDNS
 	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
@@ -1596,11 +1596,11 @@ static void connection_check_ddns1(struct connection *c)
     initiate_connection(c->name, NULL_FD, 0, pcim_demand_crypto);
 
     /* no host pairs,  no more to do */
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
 	return;
 
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
 	/* just in case we see ourselves */
 	if (c == d)
 	    continue;

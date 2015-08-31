@@ -725,7 +725,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	struct connection *d;
 	int bestfit_n, newfit, bestfit_p;
 	struct spd_route *sra, *bsr;
-	struct host_pair *hp = NULL;
+	struct IPhost_pair *hp = NULL;
 	int best_tsi_i ,  best_tsr_i;
 
 	bsr = NULL;
@@ -778,7 +778,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
             if(!hp) continue;
 
-            for (d = hp->connections; d != NULL; d = d->hp_next) {
+            for (d = hp->connections; d != NULL; d = d->IPhp_next) {
                 struct spd_route *sr;
                 int wildcards, pathlen;  /* XXX */
 

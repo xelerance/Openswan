@@ -1299,7 +1299,7 @@ find_phase2_state_to_delete(const struct state *p1st
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
 	{
 	    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	    && p1st->st_connection->host_pair == st->st_connection->host_pair
+	    && p1st->st_connection->IPhost_pair == st->st_connection->IPhost_pair
 	    && same_peer_ids(p1st->st_connection, st->st_connection, NULL))
 	    {
 		struct ipsec_proto_info *pr = protoid == PROTO_IPSEC_AH
@@ -1331,7 +1331,7 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
     for (i = 0; i < STATE_TABLE_SIZE; i++) {
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
 	    if (LHAS(ok_states, st->st_state)
-		&& c->host_pair == st->st_connection->host_pair
+		&& c->IPhost_pair == st->st_connection->IPhost_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
 		&& (best == NULL
 		    || best->st_serialno < st->st_serialno))

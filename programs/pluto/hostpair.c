@@ -80,31 +80,34 @@
 #include "hostpair.h"
 
 /* struct host_pair: a nexus of information about a pair of hosts.
- * A host is an IP address, UDP port pair.  This is a debatable choice:
-
- * - should port be considered (no choice of port in standard)?
- * - should ID be considered (hard because not always known)?
- * - should IP address matter on our end (we don't know our end)?
+ *
+ * An IPhostpair is an IP address, UDP port pair.
+ *   - this is the primary index, because that is all we have
+ *     from looking at a packet.
+ *
+ * An IDhostpair is a pair of IDs, and has a seperate index/chain.
+ *
  * Only oriented connections are registered.
+ *
  * Unoriented connections are kept on the unoriented_connections
  * linked list (using hp_next).  For them, host_pair is NULL.
  */
 
-struct host_pair *host_pairs = NULL;
+struct IPhost_pair *IPhost_pairs = NULL;
 
 void host_pair_enqueue_pending(const struct connection *c
 			       , struct pending *p
 			       , struct pending **pnext)
 {
-    *pnext = c->host_pair->pending;
-    c->host_pair->pending = p;
+    *pnext = c->IPhost_pair->pending;
+    c->IPhost_pair->pending = p;
 }
 
 struct pending **host_pair_first_pending(const struct connection *c)
 {
-    if(c->host_pair == NULL) return NULL;
+    if(c->IPhost_pair == NULL) return NULL;
 
-    return &c->host_pair->pending;
+    return &c->IPhost_pair->pending;
 }
 
 
@@ -125,7 +128,7 @@ same_peer_ids(const struct connection *c, const struct connection *d
  * found faster next time.
  *
  */
-struct host_pair *
+struct IPhost_pair *
 find_host_pair(bool exact
                , const ip_address *myaddr
 	       , u_int16_t myport
@@ -133,7 +136,7 @@ find_host_pair(bool exact
 	       , const ip_address *hisaddr
 	       , u_int16_t hisport)
 {
-    struct host_pair *p, *prev;
+    struct IPhost_pair *p, *prev;
 
     /*
      * look for a host-pair that has the right set of ports/address,
@@ -159,7 +162,7 @@ find_host_pair(bool exact
                 , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "<none>"
                 , hisport, exact ? "exact-match" : "any-match"));
 
-    for (prev = NULL, p = host_pairs; p != NULL; prev = p, p = p->next)
+    for (prev = NULL, p = IPhost_pairs; p != NULL; prev = p, p = p->next)
     {
 	DBG(DBG_CONTROLMORE,
 	    char b1[ADDRTOT_BUF];
@@ -192,8 +195,8 @@ find_host_pair(bool exact
         if (prev != NULL)
 	    {
 		prev->next = p->next;	/* remove p from list */
-		p->next = host_pairs;	/* and stick it on front */
-		host_pairs = p;
+		p->next = IPhost_pairs;	/* and stick it on front */
+		IPhost_pairs = p;
 	    }
         break;
     }
@@ -202,9 +205,9 @@ find_host_pair(bool exact
     return p;
 }
 
-void remove_host_pair(struct host_pair *hp)
+void remove_IPhost_pair(struct IPhost_pair *hp)
 {
-    list_rm(struct host_pair, next, hp, host_pairs);
+    list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
 }
 
 /* find head of list of connections with this pair of hosts */
@@ -214,7 +217,7 @@ find_host_pair_connections(const char *func, bool exact
                            , enum keyword_host histype
 			   , const ip_address *hisaddr, u_int16_t hisport)
 {
-    struct host_pair *hp = find_host_pair(exact, myaddr, myport, histype, hisaddr, hisport);
+    struct IPhost_pair *hp = find_host_pair(exact, myaddr, myport, histype, hisaddr, hisport);
 
     DBG(DBG_CONTROLMORE,
 	char b1[ADDRTOT_BUF];
@@ -233,11 +236,11 @@ find_host_pair_connections(const char *func, bool exact
 }
 
 void
-connect_to_host_pair(struct connection *c)
+connect_to_IPhost_pair(struct connection *c)
 {
     if (oriented(*c))
     {
-	struct host_pair *hp = find_host_pair(EXACT_MATCH, &c->spd.this.host_addr
+	struct IPhost_pair *hp= find_host_pair(EXACT_MATCH, &c->spd.this.host_addr
 					      , c->spd.this.host_port
                                               , c->spd.that.host_type
 					      , &c->spd.that.host_addr
@@ -259,7 +262,7 @@ connect_to_host_pair(struct connection *c)
 	if (hp == NULL)
 	{
 	    /* no suitable host_pair -- build one */
-	    hp = alloc_thing(struct host_pair, "host_pair");
+	    hp = alloc_thing(struct IPhost_pair, "host_pair");
 	    hp->me.addr = c->spd.this.host_addr;
 	    hp->him.addr = c->spd.that.host_addr;
 	    hp->him.host_type = c->spd.that.host_type;
@@ -272,11 +275,11 @@ connect_to_host_pair(struct connection *c)
 #endif
 	    hp->connections = NULL;
 	    hp->pending = NULL;
-	    hp->next = host_pairs;
-	    host_pairs = hp;
+	    hp->next = IPhost_pairs;
+	    IPhost_pairs = hp;
 	}
-	c->host_pair = hp;
-	c->hp_next = hp->connections;
+	c->IPhost_pair = hp;
+	c->IPhp_next = hp->connections;
 	hp->connections = c;
     }
     else
@@ -284,8 +287,8 @@ connect_to_host_pair(struct connection *c)
 	/* since this connection isn't oriented, we place it
 	 * in the unoriented_connections list instead.
 	 */
-	c->host_pair = NULL;
-	c->hp_next = unoriented_connections;
+	c->IPhost_pair = NULL;
+	c->IPhp_next = unoriented_connections;
 	unoriented_connections = c;
     }
 }
@@ -293,9 +296,9 @@ connect_to_host_pair(struct connection *c)
 void
 release_dead_interfaces(void)
 {
-    struct host_pair *hp;
+    struct IPhost_pair *hp;
 
-    for (hp = host_pairs; hp != NULL; hp = hp->next)
+    for (hp = IPhost_pairs; hp != NULL; hp = hp->next)
     {
 	struct connection **pp
 	    , *p;
@@ -319,9 +322,9 @@ release_dead_interfaces(void)
 		    terminate_connection(p->name);
 		    p->interface = NULL;
 
-		    *pp = p->hp_next;	/* advance *pp */
-		    p->host_pair = NULL;
-		    p->hp_next = unoriented_connections;
+		    *pp = p->IPhp_next;	/* advance *pp */
+		    p->IPhost_pair = NULL;
+		    p->IPhp_next = unoriented_connections;
 		    unoriented_connections = p;
 		}
 		else
@@ -334,7 +337,7 @@ release_dead_interfaces(void)
 	    }
 	    else
 	    {
-		pp = &p->hp_next;	/* advance pp */
+		pp = &p->IPhp_next;	/* advance pp */
 	    }
 	}
     }
