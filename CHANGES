@@ -4,6 +4,12 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.43.1 (September 4, 2015)
+  CVE fix applied directly to 2.6.43
+  This is a backport form 2.6.44
+
+ *  Fix for CVE-2015-3240: if KE payload is 0, then exponentiation fails, tripping a passert for NSS [MCR]
+
 v2.6.43 (March 13, 2015)
   Bugfixes and Certificate handling improvements
 
