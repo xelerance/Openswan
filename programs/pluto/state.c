@@ -1385,6 +1385,15 @@ state_eroute_usage(ip_subnet *ours, ip_subnet *his
 	});
 }
 
+static long msgid_invalid(msgid_t thing)
+{
+    if(thing == INVALID_MSGID) {
+        return -1;
+    } else {
+        return thing;
+    }
+}
+
 void fmt_state(struct state *st, const time_t n
 , char *state_buf, const size_t state_buf_len
 , char *state_buf2, const size_t state_buf2_len)
@@ -1434,13 +1443,13 @@ void fmt_state(struct state *st, const time_t n
                 snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld; msgid=%ld"
                      , (long)st->st_msg_retransmitted
                      , (long)st->st_msg_badmsgid_recv
-                     , (long)st->st_msgid_lastack
-                     , (long)st->st_msgid_nextuse
-                     , (long)st->st_msgid_lastrecv
-                     , (long)st->st_msgid);
+                         , msgid_invalid(st->st_msgid_lastack)
+                         , msgid_invalid(st->st_msgid_nextuse)
+                         , msgid_invalid(st->st_msgid_lastrecv)
+                         , msgid_invalid(st->st_msgid));
             } else {
                 snprintf(msgidbuf, sizeof(msgidbuf), "; msgid=%ld"
-                         , (long)st->st_msgid);
+                         , msgid_invalid(st->st_msgid));
             }
         }
     }
