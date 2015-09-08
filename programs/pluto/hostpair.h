@@ -20,7 +20,7 @@ extern struct IPhost_pair *IPhost_pairs;
 struct IDhost_pair {
     struct id           me_who, him_who;
     struct connection  *connections;	/* connections with this pair */
-    struct IDhost_pair *next;
+    struct IDhost_pair *next;           /* maybe HASH later */
 };
 extern struct IDhost_pair *IDhost_pairs;
 
@@ -41,6 +41,10 @@ extern struct IPhost_pair *find_host_pair(bool exact, const ip_address *myaddr
                                         , enum keyword_host histype
 					, const ip_address *hisaddr
 					, u_int16_t hisport);
+
+extern struct IDhost_pair *find_ID_host_pair(bool exact
+                                             , const struct id me
+                                             , const struct id him);
 
 #define list_rm(etype, enext, e, ehead) { \
 	etype **ep; \

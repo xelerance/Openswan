@@ -1,4 +1,11 @@
 /* information about connections between hosts and clients
+ *
+ * A policy is always on the IPhost_pair list; as all connections
+ * (even right=%any), always have some kind of IP address, even if unknown.
+ * A policy is almost always on the IDhost_pair list: all connections with
+ * known identities are there; the exception is policies which have an ID
+ * wildcard (rightca=) which are not on this list, but their INSTANCEs will be.
+ *
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
  * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007 Ken Bantoft <ken@xelerance.com>
@@ -96,6 +103,11 @@
 struct IPhost_pair *IPhost_pairs = NULL;
 struct IDhost_pair *IDhost_pairs = NULL;
 
+/*
+ * the pending list is a set of related connections which
+ * depend upon this conn to be activated before they can
+ * be kicked off.
+ */
 void host_pair_enqueue_pending(const struct connection *c
 			       , struct pending *p
 			       , struct pending **pnext)
@@ -115,7 +127,7 @@ struct pending **host_pair_first_pending(const struct connection *c)
 /* check to see that Ids of peers match */
 bool
 same_peer_ids(const struct connection *c, const struct connection *d
-, const struct id *his_id)
+              , const struct id *his_id)
 {
     return same_id(&c->spd.this.id, &d->spd.this.id)
 	&& same_id(his_id == NULL? &c->spd.that.id : his_id, &d->spd.that.id);
@@ -294,6 +306,84 @@ connect_to_IPhost_pair(struct connection *c)
     }
 }
 
+/** returns a host pair based upon addresses.
+ *
+ * find_host_pair is given a pair of addresses, plus UDP ports, and
+ * returns a host_pair entry that covers it. It also moves the relevant
+ * pair description to the beginning of the list, so that it can be
+ * found faster next time.
+ *
+ */
+struct IDhost_pair *
+find_ID_host_pair(bool exact UNUSED
+                  , const struct id me
+                  , const struct id him)
+{
+    struct IDhost_pair *p;
+    char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
+    char thisid[IDTOA_BUF], thatid[IDTOA_BUF];
+
+    /*
+     * look for a host-pair that has the right set of local ID/remote ID.
+     * It is not legal to get him=ID_NONE, but it is legal for me=ID_MYID.
+     *
+     */
+    if(DBGP(DBG_CONTROLMORE)) {
+        idtoa(&me,  mebuf,  sizeof(mebuf));
+        idtoa(&him, himbuf, sizeof(himbuf));
+    }
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s\n"
+                  , mebuf, himbuf));
+
+    for (p = IDhost_pairs; p != NULL; p = p->next)
+    {
+	DBG(DBG_CONTROLMORE,
+            idtoa(&p->me_who, thisid, sizeof(thisid));
+            idtoa(&p->him_who,thatid, sizeof(thatid));
+            DBG_log("                  comparing to me=%s him=%s\n"
+                    , thisid, thatid));
+
+        /* kick out if it does not match:
+         * easier to understand than positive/convuluted logic
+         */
+        if(!same_id(&me,  &p->me_who))  continue;
+        if(!same_id(&him, &p->him_who)) continue;
+
+        break;
+    }
+    DBG(DBG_CONTROLMORE,
+        DBG_log("  concluded with %s", p && p->connections ? p->connections->name : "<none>"));
+    return p;
+}
+
+void
+connect_to_IDhost_pair(struct connection *c)
+{
+    struct IDhost_pair *hp= find_ID_host_pair(EXACT_MATCH
+                                              , c->spd.this.id
+					      , c->spd.that.id);
+
+    if (hp == NULL) {
+        /* no suitable host_pair -- build one */
+        hp = alloc_thing(struct IDhost_pair, "ID host_pair");
+        hp->me_who   = c->spd.this.id;
+        hp->him_who  = c->spd.that.id;
+        unshare_id_content(&hp->me_who);
+        unshare_id_content(&hp->him_who);
+
+        hp->connections = NULL;
+        hp->next = IDhost_pairs;
+        IDhost_pairs = hp;
+    }
+
+    /* add this connection to front of ID host pair connection list */
+    c->IDhost_pair = hp;
+    c->IDhp_next = hp->connections;
+    hp->connections = c;
+}
+
 void
 release_dead_interfaces(void)
 {
@@ -350,10 +440,10 @@ release_dead_interfaces(void)
 void
 hostpair_list(void)
 {
-    struct IDhost_pair *p;
+    struct IPhost_pair *p;
 
     whack_log(RC_LOG, "IP hostpairs: ");
-    for (p = IDhost_pairs; p != NULL; p = p->next)
+    for (p = IPhost_pairs; p != NULL; p = p->next)
     {
         char b1[ADDRTOT_BUF];
         char b2[ADDRTOT_BUF];
