@@ -1252,6 +1252,7 @@ add_connection(const struct whack_message *wm)
 
 	(void)orient(c, pluto_port500);
 	connect_to_IPhost_pair(c);
+        connect_to_IDhost_pair(c);
 
 	/* log all about this connection */
 	openswan_log("adding connection: \"%s\"", c->name);
