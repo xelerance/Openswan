@@ -42,5 +42,6 @@ clean check:
 	@${MAKE} -C lp24-certreplydaveR2  $@
 	@${MAKE} -C lp25-wrongcacert      $@
 	@${MAKE} -C lp26-davecertI2       $@
+	@${MAKE} -C lp27-IDhostpair       $@
 
 
