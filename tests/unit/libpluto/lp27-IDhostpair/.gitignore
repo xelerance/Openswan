@@ -1,0 +1,5 @@
+OUTPUT
+core.*
+IDhostpair
+IDhostpair.o
+.gdbinit
