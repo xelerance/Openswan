@@ -413,6 +413,7 @@ enum option_enums {
     LST_CARDS,
     LST_PSKS,
     LST_EVENTS,
+    LST_HOSTPAIRS,
     LST_ALL,
 
 #   define LST_LAST LST_ALL    /* last list option */
@@ -628,6 +629,7 @@ static const struct option long_opts[] = {
     { "listocsp", no_argument, NULL, LST_OCSP + OO },
     { "listpsks", no_argument, NULL, LST_PSKS + OO },
     { "listevents", no_argument, NULL, LST_EVENTS + OO },
+    { "listhostpairs", no_argument, NULL, LST_HOSTPAIRS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
 
 
@@ -1248,7 +1250,8 @@ main(int argc, char **argv)
         case LST_CRLS:          /* --listcrls */
         case LST_OCSP:          /* --listocsp */
         case LST_PSKS:          /* --listpsks */
-        case LST_EVENTS:         /* --listevents */
+        case LST_EVENTS:        /* --listevents */
+        case LST_HOSTPAIRS:     /* --listhostpairs */
             msg.whack_list |= LELEM(c - LST_PUBKEYS);
             continue;
 

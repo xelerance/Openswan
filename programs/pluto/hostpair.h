@@ -50,6 +50,7 @@ extern struct IPhost_pair *find_host_pair(bool exact, const ip_address *myaddr
     }
 
 extern void remove_IPhost_pair(struct IPhost_pair *hp);
+extern void hostpair_list(void);
 
 extern struct connection *connections;
 /*

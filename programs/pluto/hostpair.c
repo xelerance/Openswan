@@ -94,6 +94,7 @@
  */
 
 struct IPhost_pair *IPhost_pairs = NULL;
+struct IDhost_pair *IDhost_pairs = NULL;
 
 void host_pair_enqueue_pending(const struct connection *c
 			       , struct pending *p
@@ -343,7 +344,38 @@ release_dead_interfaces(void)
     }
 }
 
+/*
+ * dump list of hostpairs to whacklog
+ */
+void
+hostpair_list(void)
+{
+    struct IDhost_pair *p;
 
+    whack_log(RC_LOG, "IP hostpairs: ");
+    for (p = IDhost_pairs; p != NULL; p = p->next)
+    {
+        char b1[ADDRTOT_BUF];
+        char b2[ADDRTOT_BUF];
+        char instance[1 + 10 + 1];
+        char himtypebuf[KEYWORD_NAME_BUFLEN];
+        struct connection *c = p->connections;
+
+        addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
+        addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
+        keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
+
+        whack_log(RC_LOG, "  hostpair: %s:%d %s %s:%d"
+                  , b1, c->spd.this.host_port, himtypebuf
+                  , b2, c->spd.that.host_port);
+        while(c != NULL) {
+            fmt_connection_inst_name(c, instance, sizeof(instance));
+            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
+
+            c = c->IPhp_next;
+        }
+    }
+}
 
 /*
  * Local Variables:
