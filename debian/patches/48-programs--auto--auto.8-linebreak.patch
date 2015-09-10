@@ -1,14 +1,9 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## /tmp/programs--auto--auto.8-linebreak.patch.dpatch by  <jari.aalto@cante.net>
-##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP:
 ## DP: Author: Jari Aalto <jari.aalto@cante.net>
 ## DP:
 ## DP:
 ## DP: warning [p 1, 4.3i]: can't break line
-
-@DPATCH@
 
 diff --git a/programs/auto/auto.8 b/programs/auto/auto.8
 index a5ffded..ab1343d 100644
