@@ -1,14 +1,9 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## /tmp/initd-header.patch.dpatch by Harald Jenny <harald@a-little-linux-box.at>
-##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: fdebd
 ## DP: Author: Harald Jenny <harald@a-little-linux-box.at>
-## DP: 
-## DP: 
+## DP:
+## DP:
 ## DP:     programs/setup/setup.in: Populate Default-Start
-
-@DPATCH@
 
 diff --git a/programs/setup/setup.in b/programs/setup/setup.in
 index 44d99b1..21b1bdd 100755

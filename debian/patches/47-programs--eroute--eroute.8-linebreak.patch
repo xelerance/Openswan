@@ -1,14 +1,9 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## /tmp/programs--eroute--eroute.8-linebreak.patch.dpatch by  <jari.aalto@cante.net>
-##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP:
 ## DP: Author: Jari Aalto <jari.aalto@cante.net>
 ## DP:
 ## DP:
 ## DP: groff warning [p 1, 1.5i]: can't break line
-
-@DPATCH@
 
 diff --git a/programs/eroute/eroute.8 b/programs/eroute/eroute.8
 index 2c36b0b..4b1ee90 100644

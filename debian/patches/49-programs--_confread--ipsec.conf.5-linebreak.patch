@@ -1,14 +1,9 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## /tmp/programs--_confread--ipsec.conf.5-linebreak.patch.dpatch by Harald Jenny <harald@a-little-linux-box.at>
-##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: fdebd
 ## DP: Author: Harald Jenny <harald@a-little-linux-box.at>
 ## DP:
 ## DP:
 ## DP:     fix manpage to allow line break
-
-@DPATCH@
 
 diff --git a/programs/_confread/ipsec.conf.5 b/programs/_confread/ipsec.conf.5
 index 0a6f41b..fd22a78 100644
