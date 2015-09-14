@@ -1549,7 +1549,7 @@ static void connection_check_ddns1(struct connection *c)
 
     if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
 	    || ((c->policy & POLICY_SHUNT_MASK) == 0 &&
-	    c->spd.that.has_id_wildcards)) {
+	    c->spd.that.id.has_wildcards)) {
 	DBG(DBG_CONTROL,
 	    DBG_log("pending ddns: connection \"%s\" with wildcard not started",
 	    c->name));

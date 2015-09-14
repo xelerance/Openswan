@@ -101,6 +101,8 @@ extern stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
 
 extern bool ikev2_decode_peer_id(struct msg_digest *md
 				 , enum phase1_role initiator);
+extern bool ikev2_decode_local_id(struct msg_digest *md
+                               , enum phase1_role initiator);
 extern void ikev2_log_parentSA(struct state *st);
 
 extern bool ikev2_calculate_rsa_sha1(struct state *st

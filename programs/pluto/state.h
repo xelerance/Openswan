@@ -260,6 +260,9 @@ struct state
     /* IKEv2 things */
     struct {
         struct id      st_peer_id;             /* stores decoded peer ID */
+	char           st_peer_buf[IDTOA_BUF];
+        struct id      st_local_id;            /* stores decoded ID for me */
+	char           st_local_buf[IDTOA_BUF];
     } ikev2;
 
     /* counters */

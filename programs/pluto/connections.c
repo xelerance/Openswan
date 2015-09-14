@@ -483,7 +483,7 @@ default_end(struct end *e, ip_address *dflt_nexthop)
     {
 	e->id.kind = afi->id_addr;
 	e->id.ip_addr = e->host_addr;
-	e->has_id_wildcards = FALSE;
+	e->id.has_wildcards = FALSE;
     }
 
     /* default nexthop to other side */
@@ -707,7 +707,7 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
     }
 
     /* does id has wildcards? */
-    dst->has_id_wildcards = id_count_wildcards(&dst->id) > 0;
+    dst->id.has_wildcards = id_count_wildcards(&dst->id) > 0;
 
     /* decode group attributes, if any */
     decode_groups(src->groups, &dst->groups);
@@ -1168,7 +1168,7 @@ add_connection(const struct whack_message *wm)
 	 * or any wildcard ID to that end
 	 */
 	if (isanyaddr(&c->spd.this.host_addr) || c->spd.this.has_client_wildcard
-	|| c->spd.this.has_port_wildcard || c->spd.this.has_id_wildcards)
+            || c->spd.this.has_port_wildcard || c->spd.this.id.has_wildcards)
 	{
 	    struct end t = c->spd.this;
 
@@ -1210,7 +1210,7 @@ add_connection(const struct whack_message *wm)
 	    DBG(DBG_CONTROL, DBG_log("based upon port_wildcard policy, the connection is a template."));
 	    c->kind = CK_TEMPLATE;
 	}
-	else if ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.has_id_wildcards )
+	else if ((c->policy & POLICY_SHUNT_MASK) == 0  && c->spd.that.id.has_wildcards )
 	{
 	    DBG(DBG_CONTROL, DBG_log("based upon ID_wildcard policy, the connection is a template."));
 	    c->kind = CK_TEMPLATE;
@@ -1434,7 +1434,7 @@ instantiate(struct connection *c, const ip_address *him
     {
 	passert(match_id(his_id, &d->spd.that.id, &wildcards));
 	d->spd.that.id = *his_id;
-	d->spd.that.has_id_wildcards = FALSE;
+	d->spd.that.id.has_wildcards = FALSE;
     }
     unshare_connection_strings(d);
     unshare_ietfAttrList(&d->spd.this.groups);

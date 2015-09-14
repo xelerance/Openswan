@@ -43,8 +43,8 @@ extern struct IPhost_pair *find_host_pair(bool exact, const ip_address *myaddr
 					, u_int16_t hisport);
 
 extern struct IDhost_pair *find_ID_host_pair(bool exact
-                                             , const struct end me
-                                             , const struct end him);
+                                             , const struct id me
+                                             , const struct id him);
 
 #define list_rm(etype, enext, e, ehead) { \
 	etype **ep; \

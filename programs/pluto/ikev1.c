@@ -739,7 +739,7 @@ informational(struct msg_digest *md)
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client: %d", tmp_spd->that.has_client));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client_wildcard: %d", tmp_spd->that.has_client_wildcard));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_port_wildcard: %d", tmp_spd->that.has_port_wildcard));
-                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.has_id_wildcards));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.id.has_wildcards));
 
                 tmp_spd = tmp_spd->next;
                 } while(tmp_spd!=NULL);

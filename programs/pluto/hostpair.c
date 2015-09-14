@@ -316,8 +316,8 @@ connect_to_IPhost_pair(struct connection *c)
  */
 struct IDhost_pair *
 find_ID_host_pair(bool exact UNUSED
-                  , const struct end me
-                  , const struct end him)
+                  , const struct id me
+                  , const struct id him)
 {
     struct IDhost_pair *p;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
@@ -331,11 +331,11 @@ find_ID_host_pair(bool exact UNUSED
     if(DBGP(DBG_CONTROLMORE)) {
         strcpy(mebuf,  "<any>");
         strcpy(himbuf, "<any>");
-        if(me.has_id_wildcards == 0) {
-            idtoa(&me.id,  mebuf,  sizeof(mebuf));
+        if(me.has_wildcards == 0) {
+            idtoa(&me,  mebuf,  sizeof(mebuf));
         }
-        if(him.has_id_wildcards == 0) {
-            idtoa(&him.id, himbuf, sizeof(himbuf));
+        if(him.has_wildcards == 0) {
+            idtoa(&him, himbuf, sizeof(himbuf));
         }
     }
 
@@ -354,8 +354,8 @@ find_ID_host_pair(bool exact UNUSED
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
-        if(!same_id(&me.id,  &p->me_who))  continue;
-        if(!same_id(&him.id, &p->him_who)) continue;
+        if(!same_id(&me,  &p->me_who))  continue;
+        if(!same_id(&him, &p->him_who)) continue;
 
         break;
     }
@@ -368,8 +368,8 @@ void
 connect_to_IDhost_pair(struct connection *c)
 {
     struct IDhost_pair *hp= find_ID_host_pair(EXACT_MATCH
-                                              , c->spd.this
-					      , c->spd.that);
+                                              , c->spd.this.id
+					      , c->spd.that.id);
 
     if (hp == NULL) {
         /* no suitable host_pair -- build one */

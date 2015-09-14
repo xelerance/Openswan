@@ -151,7 +151,6 @@ struct end {
     bool has_client;
     bool has_client_wildcard;
     bool has_port_wildcard;
-    bool has_id_wildcards;
     char *updown;
     u_int16_t host_port;	/* where the IKE port is */
     bool      host_port_specific; /* if TRUE, then IKE ports are tested for*/
