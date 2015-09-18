@@ -22,6 +22,8 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=carol@strongswan.org him=@moon.strongswan.org
+|   concluded with <none>
 ./certificateselfI2 adding connection: "home"
 | %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -767,6 +769,61 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 |   40 04 af 99  3a e0 1d f7  e9 ab 69 e4  98 b2 7b 51
 |   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
 |   b0 a8 65 15  ab ab 08 89  76 51 bb 4b
+./certificateselfI2 deleting connection
+./certificateselfI2 deleting state (STATE_PARENT_I2)
+./certificateselfI2 deleting state #2 (STATE_PARENT_I2)
+| received request to delete child state
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+./certificateselfI2 deleting state (STATE_PARENT_I2)
+./certificateselfI2 deleting state #1 (STATE_PARENT_I2)
+| considering request to delete IKE parent state
+| sending IKE SA delete request
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    next payload type: ISAKMP_NEXT_v2E
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_INFORMATIONAL
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 02
+| ***emit IKEv2 Encryption Payload:
+|    next payload type: ISAKMP_NEXT_v2D
+|    critical bit: none
+| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
+| *****emit IKEv2 Delete Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    critical bit: none
+|    protocol ID: 1
+|    SPI size: 0
+|    number of SPIs: 0
+| emitting length of IKEv2 Delete Payload: 8
+| emitting 8 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07
+| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 48
+| emitting length of ISAKMP Message: 76
+| data before encryption:
+|   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
+| data after encryption:
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+|   5e c0 be 04  65 78 5e 79  df 5f d5 d2
+./certificateselfI2 deleting state (STATE_IKEv2_ROOF)
+./certificateselfI2 deleting state #1 (STATE_IKEv2_ROOF)
+| considering request to delete IKE parent state
+| now deleting the IKE (or parent) state
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+./certificateselfI2 leak: request packet for informational exchange, item size: X
 ./certificateselfI2 leak: reply packet, item size: X
 ./certificateselfI2 leak: db_v2_trans, item size: X
 ./certificateselfI2 leak: db_v2_prop_conj, item size: X
@@ -784,6 +841,7 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: sa copy prop array, item size: X
 ./certificateselfI2 leak: sa copy prop conj array, item size: X
 ./certificateselfI2 leak: sa copy prop_conj, item size: X
+./certificateselfI2 leak: saved first received packet, item size: X
 ./certificateselfI2 leak: st_nr in duplicate_state, item size: X
 ./certificateselfI2 leak: st_ni in duplicate_state, item size: X
 ./certificateselfI2 leak: st_skey_pr in duplicate_state, item size: X
@@ -796,6 +854,14 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: st_skeyseed in duplicate_state, item size: X
 ./certificateselfI2 leak: st_enc_key in duplicate_state, item size: X
 ./certificateselfI2 leak: struct state in new_state(), item size: X
+./certificateselfI2 leak: calculated skey_prshared secret, item size: X
+./certificateselfI2 leak: calculated skey_pishared secret, item size: X
+./certificateselfI2 leak: calculated skey_ershared secret, item size: X
+./certificateselfI2 leak: calculated skey_eishared secret, item size: X
+./certificateselfI2 leak: calculated skey_arshared secret, item size: X
+./certificateselfI2 leak: calculated skey_aishared secret, item size: X
+./certificateselfI2 leak: calculated skey_dshared secret, item size: X
+./certificateselfI2 leak: calculated sharedshared secret, item size: X
 ./certificateselfI2 leak: ikev2_inR1outI2 KE, item size: X
 ./certificateselfI2 leak: db_attrs, item size: X
 ./certificateselfI2 leak: db_v2_trans, item size: X
@@ -828,6 +894,44 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: db_attrs, item size: X
 ./certificateselfI2 leak: db_v2_trans, item size: X
 ./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: nonce, item size: X
+./certificateselfI2 leak: Gr, item size: X
+./certificateselfI2 leak: saved first packet, item size: X
+./certificateselfI2 leak: sa in main_outI1, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_prop, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: db_attrs, item size: X
+./certificateselfI2 leak: db_v2_trans, item size: X
+./certificateselfI2 leak: db_v2_prop_conj, item size: X
+./certificateselfI2 leak: initiator nonce, item size: X
+./certificateselfI2 leak: long term secret, item size: X
+./certificateselfI2 leak: saved gi value, item size: X
 ./certificateselfI2 leak: msg_digest, item size: X
 ./certificateselfI2 leak: ikev2_outI1 KE, item size: X
 ./certificateselfI2 leak: db_attrs, item size: X
@@ -861,12 +965,12 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: db_attrs, item size: X
 ./certificateselfI2 leak: db_v2_trans, item size: X
 ./certificateselfI2 leak: db_v2_prop_conj, item size: X
-./certificateselfI2 leak: host_pair, item size: X
-./certificateselfI2 leak: ca string, item size: X
-./certificateselfI2 leak: keep id name, item size: X
-./certificateselfI2 leak: host ip, item size: X
-./certificateselfI2 leak: keep id name, item size: X
-./certificateselfI2 leak: connection name, item size: X
+./certificateselfI2 leak: 12 * sa copy attrs array, item size: X
+./certificateselfI2 leak: sa copy trans array, item size: X
+./certificateselfI2 leak: sa copy prop array, item size: X
+./certificateselfI2 leak: sa copy prop conj array, item size: X
+./certificateselfI2 leak: sa copy prop_conj, item size: X
+./certificateselfI2 leak: struct state in new_state(), item size: X
 ./certificateselfI2 leak: issuer dn, item size: X
 ./certificateselfI2 leak: keep id name, item size: X
 ./certificateselfI2 leak: pubkey entry, item size: X
@@ -875,11 +979,7 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: keep id name, item size: X
 ./certificateselfI2 leak: pubkey entry, item size: X
 ./certificateselfI2 leak: pubkey, item size: X
-./certificateselfI2 leak: 2 * generalName, item size: X
-./certificateselfI2 leak: x509cert, item size: X
-./certificateselfI2 leak: host cert, item size: X
 ./certificateselfI2 leak: certificate filename, item size: X
-./certificateselfI2 leak: struct connection, item size: X
 ./certificateselfI2 leak: alg_info_ike, item size: X
 ./certificateselfI2 leak: 2 * id list, item size: X
 ./certificateselfI2 leak: secret, item size: X
@@ -906,4 +1006,3 @@ sending 1564 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (us
 ./certificateselfI2 leak: default conf ipsecd_dir, item size: X
 ./certificateselfI2 leak: default conf ipsec_conf_dir, item size: X
 ./certificateselfI2 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

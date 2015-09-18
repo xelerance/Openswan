@@ -300,20 +300,35 @@ delete_connection(struct connection *c, bool relations)
     }
     else
     {
-	struct IPhost_pair *hp = c->IPhost_pair;
+        /* XXX this does not belong here */
+	struct IPhost_pair *IPhp = c->IPhost_pair;
 
-	list_rm(struct connection, IPhp_next, c, hp->connections);
+	list_rm(struct connection, IPhp_next, c, IPhp->connections);
 	c->IPhost_pair = NULL;	/* redundant, but safe */
 
 	/* if there are no more connections with this host_pair
 	 * and we haven't even made an initial contact, let's delete
 	 * this guy in case we were created by an attempted DOS attack.
 	 */
-	if (hp->connections == NULL)
+	if (IPhp->connections == NULL)
 	{
-	    passert(hp->pending == NULL);	/* ??? must deal with this! */
-	    remove_IPhost_pair(hp);
-	    pfree(hp);
+	    passert(IPhp->pending == NULL);	/* ??? must deal with this! */
+	    remove_IPhost_pair(IPhp);
+	    pfree(IPhp);
+	}
+    }
+
+    {
+        /* XXX this does not belong here: should be handled in hostpair.c */
+	struct IDhost_pair *IDhp = c->IDhost_pair;
+
+	list_rm(struct connection, IDhp_next, c, IDhp->connections);
+	c->IDhost_pair = NULL;	/* redundant, but safe */
+
+	if(IDhp->connections == NULL)
+	{
+	    remove_IDhost_pair(IDhp);
+	    pfree(IDhp);
 	}
     }
 

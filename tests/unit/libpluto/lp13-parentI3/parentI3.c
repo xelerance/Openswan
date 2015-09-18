@@ -152,6 +152,10 @@ main(int argc, char *argv[])
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);
 
+    /* dump the delete message that comes out */
+    send_packet_setup_pcap("/dev/null");
+    delete_connection(c1, TRUE);
+
     st = state_with_serialno(1);
     if(st!=NULL) {
         free_state(st);

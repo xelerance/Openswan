@@ -19,6 +19,8 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org him=@moon.strongswan.org
+|   concluded with <none>
 ./davecertI1 adding connection: "home"
 | %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -491,6 +493,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./davecertI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
 ./davecertI1 deleting state #1 (STATE_PARENT_I1)
+./davecertI1 deleting connection
 ./davecertI1 leak: msg_digest, item size: X
 ./davecertI1 leak: ikev2_outI1 KE, item size: X
 ./davecertI1 leak: db_attrs, item size: X
@@ -524,21 +527,11 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./davecertI1 leak: db_attrs, item size: X
 ./davecertI1 leak: db_v2_trans, item size: X
 ./davecertI1 leak: db_v2_prop_conj, item size: X
-./davecertI1 leak: host_pair, item size: X
-./davecertI1 leak: ca string, item size: X
-./davecertI1 leak: keep id name, item size: X
-./davecertI1 leak: host ip, item size: X
-./davecertI1 leak: keep id name, item size: X
-./davecertI1 leak: connection name, item size: X
 ./davecertI1 leak: issuer dn, item size: X
 ./davecertI1 leak: keep id name, item size: X
 ./davecertI1 leak: pubkey entry, item size: X
 ./davecertI1 leak: pubkey, item size: X
-./davecertI1 leak: generalName, item size: X
-./davecertI1 leak: x509cert, item size: X
-./davecertI1 leak: host cert, item size: X
 ./davecertI1 leak: certificate filename, item size: X
-./davecertI1 leak: struct connection, item size: X
 ./davecertI1 leak: alg_info_ike, item size: X
 ./davecertI1 leak: 2 * id list, item size: X
 ./davecertI1 leak: secret, item size: X

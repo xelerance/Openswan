@@ -134,7 +134,7 @@ RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (maryjane1--jj2)
 | find_host_connection2 returns maryjane1--jj2
-| found connection: maryjane1--jj2
+./parentR2anychoice tentatively considering connection: maryjane1--jj2
 | creating state object #1 at Z
 | orient maryjane1--jj2 checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -439,6 +439,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./parentR2anychoice IKEv2 mode peer ID is ID_FQDN: '@parker01.emmjay.credil.org'
+| find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|   concluded with any1--jj2
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
@@ -514,10 +518,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | ikev2_evaluate_connection_fit, evaluating base fit for maryjane1--jj2
 |   ikev2_evaluate_connection_fit evaluating our I=maryjane1--jj2:fd68:c9f9:4157:3:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
-| prefix range fit c maryjane1--jj2 c->name was rejected by port matching
-| find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
-| find_host_pair: concluded with maryjane1--jj2
+| prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+|   concluded with maryjane1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:3:0:1::/96 is found
 | ikev2_evaluate_connection_fit, concluded with maryjane1--jj2
 | ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN

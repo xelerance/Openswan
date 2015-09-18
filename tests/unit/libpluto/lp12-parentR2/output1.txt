@@ -17,6 +17,8 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|   concluded with <none>
 ./parentR2 adding connection: "parker1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...192.168.1.1<192.168.1.1>[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -105,7 +107,7 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (parker1--jj2)
 | find_host_connection2 returns parker1--jj2
-| found connection: parker1--jj2
+./parentR2 tentatively considering connection: parker1--jj2
 | creating state object #1 at Z
 | orient parker1--jj2 checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -410,6 +412,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./parentR2 IKEv2 mode peer ID is ID_FQDN: '@parker01.emmjay.credil.org'
+| find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|   concluded with parker1--jj2
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash verify I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
@@ -494,9 +499,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
-| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
-| find_host_pair: concluded with parker1--jj2
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|   concluded with parker1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
 | ikev2_evaluate_connection_fit, concluded with parker1--jj2
 | duplicating state object #1
@@ -789,6 +794,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: ikev2_inI2outR2 KE, item size: X
 ./parentR2 leak: ikev2_inI1outR1 KE, item size: X
 ./parentR2 leak: msg_digest, item size: X
+./parentR2 leak: 2 * keep id name, item size: X
+./parentR2 leak: ID host_pair, item size: X
 ./parentR2 leak: host_pair, item size: X
 ./parentR2 leak: host ip, item size: X
 ./parentR2 leak: keep id name, item size: X

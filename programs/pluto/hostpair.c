@@ -223,6 +223,15 @@ void remove_IPhost_pair(struct IPhost_pair *hp)
     list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
 }
 
+void remove_IDhost_pair(struct IDhost_pair *hp)
+{
+    list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
+    if(hp->connections == NULL) {
+        free_id_content(&hp->me_who);
+        free_id_content(&hp->him_who);
+    }
+}
+
 /* find head of list of connections with this pair of hosts */
 struct connection *
 find_host_pair_connections(const char *func, bool exact
@@ -313,13 +322,17 @@ connect_to_IPhost_pair(struct connection *c)
  * pair description to the beginning of the list, so that it can be
  * found faster next time.
  *
+ * if exact=FALSE, then me does not have to match.
+ *
+ *
  */
 struct IDhost_pair *
-find_ID_host_pair(bool exact UNUSED
+find_ID_host_pair(bool exact
                   , const struct id me
                   , const struct id him)
 {
-    struct IDhost_pair *p;
+    struct IDhost_pair *p, *pbest = NULL;
+    bool exactmatch = FALSE;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
     char thisid[IDTOA_BUF], thatid[IDTOA_BUF];
 
@@ -354,14 +367,28 @@ find_ID_host_pair(bool exact UNUSED
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
-        if(!same_id(&me,  &p->me_who))  continue;
         if(!same_id(&him, &p->him_who)) continue;
-
-        break;
+        if(exact) {
+            if(!same_id(&me,  &p->me_who))  continue;
+        } else {
+            if(same_id(&me,  &p->me_who)) {
+                pbest = p;
+                exactmatch = TRUE;
+                break;
+            } else {
+                pbest = p;
+                exactmatch = FALSE;
+            }
+        }
+        if(!exact && !exactmatch) {
+            pbest = p;
+            break;
+        }
+        /* loop looking for better matches */
     }
     DBG(DBG_CONTROLMORE,
-        DBG_log("  concluded with %s", p && p->connections ? p->connections->name : "<none>"));
-    return p;
+        DBG_log("  concluded with %s", pbest && pbest->connections ? pbest->connections->name : "<none>"));
+    return pbest;
 }
 
 void
