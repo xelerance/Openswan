@@ -485,6 +485,7 @@ hostpair_list(void)
         char himtypebuf[KEYWORD_NAME_BUFLEN];
         struct connection *c = pi->connections;
 
+        himtypebuf[0]='\0';
         addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
         addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
         keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
