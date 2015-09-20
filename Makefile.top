@@ -70,6 +70,9 @@ check: checkprograms
 version:
 	@echo ${IPSECVERSION}
 
+baseversion:
+	@echo ${IPSECBASEVERSION}
+
 packagingprep: 
 	sed "s/IPSECBASEVERSION/${IPSECBASEVERSION}/" debian/changelog.in > debian/changelog
 	cp debian/changelog debian/NEWS

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# this script looks for the tag corresponding to the version in Makefile.ver
+# it then checks each version out between that version and this version in this
+# directory and builds each one.
+
+# it uses the directory $BUILDTMP if set, if not then it makes a directory .buildtmp and uses
+# that to checkout the code.
+
+BUILDTMP=${BUILDTMP-.buildtmp}
+mkdir -p ${BUILDTMP}
+startingcommit=v$(make baseversion)
+git log --oneline ${startingcommit}.. | tac | \
+    while read commit stuff
+    do
+        echo Working on $commit "(${stuff})"
+        rm -rf ${BUILDTMP}/code
+        if git clone -q -n --shared . ${BUILDTMP}/code && (cd $BUILDTMP/code && git checkout ${commit} && make programs >/dev/null)
+        then
+            echo success
+        else
+            exit 1
+        fi
+    done
+
+
+
