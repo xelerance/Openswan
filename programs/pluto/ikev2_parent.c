@@ -1788,7 +1788,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     strcpy(st->ikev2.st_local_buf, "<myid>");
 
     if(!ikev2_decode_peer_id(md, RESPONDER)) {
-        return STF_FAIL + INVALID_ID_INFORMATION;
+        return STF_FAIL + v2N_AUTHENTICATION_FAILED;
     }
 
     ikev2_decode_local_id(md, RESPONDER);
@@ -1805,7 +1805,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     if(hp == NULL) {
         loglog(RC_LOG_SERIOUS, "No policy for initiator with id=%s (me:%s)"
                , st->ikev2.st_peer_buf, st->ikev2.st_local_buf);
-        return STF_FAIL + INVALID_ID_INFORMATION;
+        return STF_FAIL + v2N_AUTHENTICATION_FAILED;
     }
 
     {
