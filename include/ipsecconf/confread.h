@@ -91,6 +91,7 @@ struct starter_conn {
 
     lset_t policy;
     char **alsos;
+    char **also_flips;
 
     struct starter_end left, right;
 

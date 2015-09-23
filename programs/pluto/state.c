@@ -1299,7 +1299,7 @@ find_phase2_state_to_delete(const struct state *p1st
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
 	{
 	    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	    && p1st->st_connection->host_pair == st->st_connection->host_pair
+	    && p1st->st_connection->IPhost_pair == st->st_connection->IPhost_pair
 	    && same_peer_ids(p1st->st_connection, st->st_connection, NULL))
 	    {
 		struct ipsec_proto_info *pr = protoid == PROTO_IPSEC_AH
@@ -1331,7 +1331,7 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
     for (i = 0; i < STATE_TABLE_SIZE; i++) {
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
 	    if (LHAS(ok_states, st->st_state)
-		&& c->host_pair == st->st_connection->host_pair
+		&& c->IPhost_pair == st->st_connection->IPhost_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
 		&& (best == NULL
 		    || best->st_serialno < st->st_serialno))
@@ -1385,6 +1385,15 @@ state_eroute_usage(ip_subnet *ours, ip_subnet *his
 	});
 }
 
+static long msgid_invalid(msgid_t thing)
+{
+    if(thing == INVALID_MSGID) {
+        return -1;
+    } else {
+        return thing;
+    }
+}
+
 void fmt_state(struct state *st, const time_t n
 , char *state_buf, const size_t state_buf_len
 , char *state_buf2, const size_t state_buf2_len)
@@ -1434,13 +1443,13 @@ void fmt_state(struct state *st, const time_t n
                 snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld; msgid=%ld"
                      , (long)st->st_msg_retransmitted
                      , (long)st->st_msg_badmsgid_recv
-                     , (long)st->st_msgid_lastack
-                     , (long)st->st_msgid_nextuse
-                     , (long)st->st_msgid_lastrecv
-                     , (long)st->st_msgid);
+                         , msgid_invalid(st->st_msgid_lastack)
+                         , msgid_invalid(st->st_msgid_nextuse)
+                         , msgid_invalid(st->st_msgid_lastrecv)
+                         , msgid_invalid(st->st_msgid));
             } else {
                 snprintf(msgidbuf, sizeof(msgidbuf), "; msgid=%ld"
-                         , (long)st->st_msgid);
+                         , msgid_invalid(st->st_msgid));
             }
         }
     }

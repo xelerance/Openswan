@@ -20,6 +20,8 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com
+|   concluded with <none>
 ./respondselfR1 adding connection: "gateway--any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@example.com]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -108,7 +110,7 @@ RC=0 "gateway--any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (gateway--any)
 | find_host_connection2 returns gateway--any
-| found connection: gateway--any
+./respondselfR1 tentatively considering connection: gateway--any
 | creating state object #1 at Z
 | orient gateway--any checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -225,14 +227,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
 ./respondselfR1 deleting state #1 (STATE_PARENT_R1)
+./respondselfR1 deleting connection
 ./respondselfR1 leak: ikev2_inI1outR1 KE, item size: X
 ./respondselfR1 leak: msg_digest, item size: X
-./respondselfR1 leak: host_pair, item size: X
-./respondselfR1 leak: keep id name, item size: X
-./respondselfR1 leak: host ip, item size: X
-./respondselfR1 leak: keep id name, item size: X
-./respondselfR1 leak: connection name, item size: X
-./respondselfR1 leak: struct connection, item size: X
 ./respondselfR1 leak: policies path, item size: X
 ./respondselfR1 leak: ocspcerts path, item size: X
 ./respondselfR1 leak: aacerts path, item size: X

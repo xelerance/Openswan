@@ -83,6 +83,8 @@ main(int argc, char *argv[])
         assert(orient(c1, pluto_port500));
     }
 
+    delete_connection(c1, TRUE);
+
     report_leaks();
 
     tool_close_log();

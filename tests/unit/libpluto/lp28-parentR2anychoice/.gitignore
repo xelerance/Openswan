@@ -1,0 +1,8 @@
+OUTPUT
+core.*
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
+parentR2anychoice
+parentR2anychoice.o

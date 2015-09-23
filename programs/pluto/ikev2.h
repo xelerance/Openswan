@@ -101,6 +101,8 @@ extern stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
 
 extern bool ikev2_decode_peer_id(struct msg_digest *md
 				 , enum phase1_role initiator);
+extern bool ikev2_decode_local_id(struct msg_digest *md
+                               , enum phase1_role initiator);
 extern void ikev2_log_parentSA(struct state *st);
 
 extern bool ikev2_calculate_rsa_sha1(struct state *st
@@ -208,3 +210,14 @@ extern bool force_busy;  /* config option to emulate responder under DOS */
 
 /* allocate a transmit slot */
 extern stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p);
+
+extern err_t try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
+                                  , size_t hash_len
+                                  , const pb_stream *sig_pbs, struct pubkey *kr
+                                  , struct state *st);
+
+extern void ikev2_calculate_sighash(struct state *st
+                                    , enum phase1_role role
+                                    , unsigned char *idhash
+                                    , chunk_t firstpacket
+                                    , unsigned char *sig_octets);

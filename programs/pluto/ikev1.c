@@ -739,7 +739,7 @@ informational(struct msg_digest *md)
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client: %d", tmp_spd->that.has_client));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client_wildcard: %d", tmp_spd->that.has_client_wildcard));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_port_wildcard: %d", tmp_spd->that.has_port_wildcard));
-                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.has_id_wildcards));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.id.has_wildcards));
 
                 tmp_spd = tmp_spd->next;
                 } while(tmp_spd!=NULL);
@@ -792,7 +792,7 @@ informational(struct msg_digest *md)
                     }
                    );
 
-		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
+		tmp_c->IPhost_pair->him.addr = tmp_c->spd.that.host_addr;
 
 		/*Initiating connection to the redirected peer*/
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);

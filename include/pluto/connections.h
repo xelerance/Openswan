@@ -132,7 +132,8 @@ struct virtual_t;
 #endif
 
 struct ietfAttr;	/* forward declaration of ietfAttr defined in ac.h */
-struct host_pair;    /* opaque type */
+struct IPhost_pair;    /* opaque type */
+struct IDhost_pair;    /* opaque type */
 
 struct end {
     struct id id;
@@ -150,7 +151,6 @@ struct end {
     bool has_client;
     bool has_client_wildcard;
     bool has_port_wildcard;
-    bool has_id_wildcards;
     char *updown;
     u_int16_t host_port;	/* where the IKE port is */
     bool      host_port_specific; /* if TRUE, then IKE ports are tested for*/
@@ -261,8 +261,10 @@ struct connection {
     struct alg_info_esp *alg_info_esp;
     struct alg_info_ike *alg_info_ike;
 
-    struct host_pair *host_pair;            /* opaque type outside of connections.c/hostpair.c */
-    struct connection *hp_next;	/* host pair list link */
+    struct IPhost_pair *IPhost_pair;   /* opaque from connections.c/hostpair.c */
+    struct IDhost_pair *IDhost_pair;   /* opaque from connections.c/hostpair.c */
+    struct connection *IPhp_next;	/* host pair list link */
+    struct connection *IDhp_next;	/* host pair list link */
 
     struct connection *ac_next;	/* all connections list link */
 

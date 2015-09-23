@@ -20,6 +20,8 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|   concluded with <none>
 ./parentR1 adding connection: "any1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -108,7 +110,7 @@ RC=0 "any1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | searching for connection with policy = IKEv2ALLOW
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (any1--jj2)
 | find_host_connection2 returns any1--jj2
-| found connection: any1--jj2
+./parentR1 tentatively considering connection: any1--jj2
 | creating state object #1 at Z
 | orient any1--jj2 checking against if: eth0
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
@@ -225,14 +227,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 10.10.5.4:500 (using
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
 ./parentR1 deleting state #1 (STATE_PARENT_R1)
+./parentR1 deleting connection
 ./parentR1 leak: ikev2_inI1outR1 KE, item size: X
 ./parentR1 leak: msg_digest, item size: X
-./parentR1 leak: host_pair, item size: X
-./parentR1 leak: keep id name, item size: X
-./parentR1 leak: host ip, item size: X
-./parentR1 leak: keep id name, item size: X
-./parentR1 leak: connection name, item size: X
-./parentR1 leak: struct connection, item size: X
 ./parentR1 leak: policies path, item size: X
 ./parentR1 leak: ocspcerts path, item size: X
 ./parentR1 leak: aacerts path, item size: X

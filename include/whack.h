@@ -295,9 +295,10 @@ struct whack_message {
 #define LIST_OCSP	0x0100	/* list all ocsp cache entries */
 #define LIST_PSKS       0x0400  /* list all preshared keys (by name) */
 #define LIST_EVENTS     0x0800  /* list all queued events */
+#define LIST_HOSTPAIRS  0x1000  /* list all hostpair events */
 
 /* omit events from listing options */
-#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_PSKS)  /* all list options */
+#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_PSKS)  /* all list options: omits: events/hostpairs */
 
 /* options of whack --reread*** command */
 

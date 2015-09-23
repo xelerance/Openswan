@@ -21,4 +21,5 @@ check:
 	@${MAKE} -C 03-plutostart check
 	@${MAKE} -C 04-whackwrite check
 	@${MAKE} -C 05-addconn check
+	@${MAKE} -C 06-alsoflip check
 

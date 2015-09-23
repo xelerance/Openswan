@@ -380,8 +380,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* these are conn statements which are not left/right */
     {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
-    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
-    {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
+    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,    NOT_ENUM},
+    {"alsoflip",       kv_conn,         kt_appendstring, KSF_ALSOFLIP,NOT_ENUM},
     {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,     &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},

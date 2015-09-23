@@ -67,6 +67,7 @@
 #include "fetch.h"
 #include "ocsp.h"
 #include "timer.h"
+#include "hostpair.h"
 
 #include "kernel_alg.h"
 #include "ike_alg.h"
@@ -458,6 +459,11 @@ void whack_process(int whackfd, struct whack_message msg)
        list_ocsp_fetch_requests(msg.whack_utc);
     }
 #endif
+
+    if (msg.whack_list & LIST_HOSTPAIRS)
+    {
+	hostpair_list();
+    }
 
     if (msg.whack_list & LIST_EVENTS)
     {

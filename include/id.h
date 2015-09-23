@@ -15,7 +15,9 @@
 #ifndef _ID_H
 #define _ID_H
 
+/* see ipsec_policy.h for ID_* values, which are used in the kernel too */
 struct id {
+    bool       has_wildcards;  /* if there is wildcard buired in DN */
     int kind;		/* ID_* value */
     ip_address ip_addr;	/* ID_IPV4_ADDR, ID_IPV6_ADDR */
     chunk_t name;	/* ID_FQDN, ID_USER_FQDN (with @) */
@@ -78,3 +80,9 @@ extern const char *pluto_ip_str(const ip_address *src);
 
 #endif /* _ID_H */
 
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

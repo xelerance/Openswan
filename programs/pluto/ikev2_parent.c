@@ -574,7 +574,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
     }
 
 
-    DBG_log("found connection: %s\n", c ? c->name : "<none>");
+    loglog(RC_COMMENT, "tentatively considering connection: %s\n", c ? c->name : "<none>");
 
     if(!st) {
 	st = new_state();
@@ -1756,6 +1756,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md  = dh->md;
     struct state *const st = md->st;
     struct connection *c   = st->st_connection;
+    struct IDhost_pair *hp = NULL;
     unsigned char *idhash_in, *idhash_out;
     unsigned char *authstart;
     unsigned int np;
@@ -1783,8 +1784,28 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         return STF_FAIL;
     }
 
+    strcpy(st->ikev2.st_peer_buf, "<unknown>");
+    strcpy(st->ikev2.st_local_buf, "<myid>");
+
     if(!ikev2_decode_peer_id(md, RESPONDER)) {
-        return STF_FAIL + INVALID_ID_INFORMATION;
+        return STF_FAIL + v2N_AUTHENTICATION_FAILED;
+    }
+
+    ikev2_decode_local_id(md, RESPONDER);
+
+    /* here we have to see if we can find a better SA now that we know the ID */
+    hp = find_ID_host_pair(ANY_MATCH
+                           , st->ikev2.st_local_id
+                           , st->ikev2.st_peer_id);
+
+    /*
+     * now we should have at least one conn that matches the actual
+     * ID values. It might be a template, though.
+     */
+    if(hp == NULL) {
+        loglog(RC_LOG_SERIOUS, "No policy for initiator with id=%s (me:%s)"
+               , st->ikev2.st_peer_buf, st->ikev2.st_local_buf);
+        return STF_FAIL + v2N_AUTHENTICATION_FAILED;
     }
 
     {
@@ -2118,6 +2139,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     if(!ikev2_decode_peer_id(md, INITIATOR)) {
         return STF_FAIL + INVALID_ID_INFORMATION;
     }
+
+    ikev2_decode_local_id(md, INITIATOR);
 
     {
         struct hmac_ctx id_ctx;

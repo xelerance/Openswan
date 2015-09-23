@@ -85,6 +85,8 @@ main(int argc, char *argv[])
         free_state(st);
     }
 
+    delete_connection(c1, TRUE);
+
     report_leaks();
 
     tool_close_log();

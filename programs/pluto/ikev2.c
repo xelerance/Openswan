@@ -740,16 +740,51 @@ ikev2_decode_peer_id(struct msg_digest *md, enum phase1_role init)
 	return FALSE;
     }
 
-    {
-	char buf[IDTOA_BUF];
-
-	idtoa(&st->ikev2.st_peer_id, buf, sizeof(buf));
-	openswan_log("IKEv2 mode peer ID is %s: '%s'"
-		     , enum_show(&ident_names, id->isai_type), buf);
-    }
+    idtoa(&st->ikev2.st_peer_id, st->ikev2.st_peer_buf, sizeof(st->ikev2.st_peer_buf));
+    openswan_log("IKEv2 mode peer ID is %s: '%s'"
+                 , enum_show(&ident_names, id->isai_type), st->ikev2.st_peer_buf);
 
     return TRUE;
 }
+
+
+/*
+ * this routine looks for an appropriate ID that was specified
+ * by the peer as the name for this side.  This is not always present
+ * in the I2/R2, but when it is, it permits us to distinguish what
+ * ID the peer expects us to respond with, and also helps us to find
+ * the correct policy to enforce.
+ */
+bool
+ikev2_decode_local_id(struct msg_digest *md, enum phase1_role init)
+{
+    struct state *const st = md->st;
+    unsigned int localID = (init==INITIATOR) ?
+	ISAKMP_NEXT_v2IDi : ISAKMP_NEXT_v2IDr;
+    struct payload_digest *const id_me  = md->chain[localID];
+    const pb_stream * id_pbs;
+    struct ikev2_id * id;
+
+    if(!id_me) {
+        return FALSE;
+    }
+
+    id_pbs = &id_me->pbs;
+    id = &id_me->payload.v2id;
+    st->ikev2.st_local_id.kind = id->isai_type;
+
+    if(!extract_peer_id(&st->ikev2.st_local_id, id_pbs)) {
+	openswan_log("IKEv2 mode me ID extraction failed");
+	return FALSE;
+    }
+
+    idtoa(&st->ikev2.st_local_id, st->ikev2.st_local_buf, sizeof(st->ikev2.st_local_buf));
+    openswan_log("IKEv2 mode me ID is %s: '%s'"
+		     , enum_show(&ident_names, id->isai_type), st->ikev2.st_local_buf);
+
+    return TRUE;
+}
+
 
 /*
  * this logs to the main log (including peerlog!) the authentication

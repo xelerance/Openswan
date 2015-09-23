@@ -93,6 +93,12 @@ RSA_sign_hash(struct connection *c
 	      , u_char sig_val[RSA_MAX_OCTETS]
 	      , const u_char *hash_val, size_t hash_len);
 
+extern err_t
+try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
+                     , const pb_stream *sig_pbs, struct pubkey *kr
+                     , struct state *st);
+
+
 extern size_t	/* length of hash */
 main_mode_hash(struct state *st
 	       , u_char *hash_val	/* resulting bytes */

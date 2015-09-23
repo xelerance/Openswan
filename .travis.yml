@@ -1,10 +1,14 @@
 os:
   - linux
-  - osx
 
 language: c
 compiler:
   - gcc
+
+env:
+  matrix:
+    - BUILD_HISTORY_REVS=true
+    - BUILD_HISTORY_REVS=false
 
 sudo: false
 addons:
@@ -29,8 +33,11 @@ cache:
 env:
   global:
     - IPSECVERSION=0.0.0
-  matrix:
     - BUILD_ARCH=amd64
+  matrix:
+    - BUILD_HISTORY_REVS=true
+    - BUILD_HISTORY_REVS=false
+
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
 before_install:
@@ -53,5 +60,7 @@ script:
   - export PATH=$PATH:$HOME/stuff/bin
   - "cat Makefile.inc.local"
   - "make env | sort -f"
-  - "make programs ARCH=${BUILD_ARCH} LIBEFENCE="
-  - "make check ARCH=${BUILD_ARCH} LIBEFENCE="
+  - git --version
+  - "[ \"$BUILD_HISTORY_REVS\" = true ] || make programs ARCH=${BUILD_ARCH} LIBEFENCE="
+  - "[ \"$BUILD_HISTORY_REVS\" = true ] || make check ARCH=${BUILD_ARCH} LIBEFENCE="
+  - "[ \"$BUILD_HISTORY_REVS\" = false ] || tests/utils/build-every-version"

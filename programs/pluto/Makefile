@@ -102,7 +102,8 @@ DISTSRC = \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
-        ikev2.c ikev2_parent.c ikev2_child.c ikev2_crypto.c \
+	ikev1_crypto.c ikev1_nss.c \
+        ikev2.c ikev2_parent.c ikev2_child.c ikev2_derived_keys.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
@@ -153,14 +154,14 @@ OBJSPLUTO += $(NETKEY_OBJS) $(BSDKAME_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_O
 OBJSPLUTO += kernel_noklips.o rcv_whack.o
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keys.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o build_ke.o crypt_ke.o crypt_dh.o crypt_start_dh.o
-OBJSPLUTO += ikev2_crypto.o ikev2_prfplus.o
+OBJSPLUTO += ikev2_derived_keys.o ikev2_prfplus.o
 OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
 OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o
 OBJSPLUTO += ${XAUTH_OBJS}
-OBJSPLUTO += ${AGGRESSIVE_OBJS}
+OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
 OBJSPLUTO += ${OBJSLIBPLUTO}
 OBJSPLUTO += ${SYSDEP_OBJ} stubs.o

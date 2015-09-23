@@ -725,7 +725,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	struct connection *d;
 	int bestfit_n, newfit, bestfit_p;
 	struct spd_route *sra, *bsr;
-	struct host_pair *hp = NULL;
+	struct IDhost_pair *hp = NULL;
 	int best_tsi_i ,  best_tsr_i;
 
 	bsr = NULL;
@@ -751,17 +751,14 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                 }
             }
             else
-                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
+                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
                                              , c->name));
         }
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
-            hp = find_host_pair(ANY_MATCH
-                                , &sra->this.host_addr
-                                , sra->this.host_port
-                                , sra->that.host_type
-                                , &sra->that.host_addr
-                                , sra->that.host_port);
+            hp = find_ID_host_pair(ANY_MATCH
+                                   , sra->this.id
+                                   , sra->that.id);
 
 #ifdef DEBUG
             if (DBGP(DBG_CONTROLMORE))  {
@@ -778,7 +775,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
             if(!hp) continue;
 
-            for (d = hp->connections; d != NULL; d = d->hp_next) {
+            for (d = hp->connections; d != NULL; d = d->IDhp_next) {
                 struct spd_route *sr;
                 int wildcards, pathlen;  /* XXX */
 
