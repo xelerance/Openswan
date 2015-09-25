@@ -5,5 +5,5 @@
 |         result=2607:f0b0:f:2:216:3eff:fe11:22e4 
 ./adnstest leak: keep id name, item size: X
 ./adnstest leak: adns hostname, item size: X
-./adnstest leak: 4 * keep id name, item size: X
+./adnstest leak: 2 * keep id name, item size: X
 ./adnstest leak detective found Z leaks, total size X
