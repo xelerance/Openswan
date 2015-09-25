@@ -154,6 +154,7 @@ main(int argc, char *argv[])
     freeanychunk(moon.name);
     process_dns_results();
 
+#if 0
     cr1 = alloc_thing(struct adns_continuation, "cassidy lookup");
     cassidy.kind = ID_FQDN;
     strtochunk(cassidy.name, "cassidy.sandelman.ca", "dns name 2");
@@ -161,6 +162,7 @@ main(int argc, char *argv[])
                          cassidy_continue, cr1);
     freeanychunk(cassidy.name);
     process_dns_results();
+#endif
 
     /* re-use cassidy */
     cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
