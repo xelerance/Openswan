@@ -49,6 +49,7 @@ clean check:
 	@${MAKE} -C lp29-adns              $@
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
+	@${MAKE} -C lp32-parentR2anychoice $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp34-orientafterlisten  $@
 	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
