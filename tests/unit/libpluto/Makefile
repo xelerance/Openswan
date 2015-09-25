@@ -49,6 +49,7 @@ clean check:
 	@${MAKE} -C lp29-adns              $@
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
+	@${MAKE} -C lp32-parentR2anychoice $@
 
 
 
