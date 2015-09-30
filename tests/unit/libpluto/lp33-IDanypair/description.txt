@@ -1,0 +1,6 @@
+This test case loads a series of connection definitions from a config file,
+and validates that they are placed into the correct IP and ID host pairs
+lists.  It does not send or receive any packets.
+
+
+
