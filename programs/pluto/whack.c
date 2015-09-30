@@ -240,6 +240,7 @@ help(void)
 	    " [--listcrls]"
             " [--listocsp]"
 
+            " [--listhostpairs]"
 	    " [--listpsks]"
 	    " [--listall]"
 	    "\n\n"
@@ -629,6 +630,7 @@ static const struct option long_opts[] = {
     { "listocsp", no_argument, NULL, LST_OCSP + OO },
     { "listpsks", no_argument, NULL, LST_PSKS + OO },
     { "listevents", no_argument, NULL, LST_EVENTS + OO },
+    { "listpairs",     no_argument, NULL, LST_HOSTPAIRS + OO },
     { "listhostpairs", no_argument, NULL, LST_HOSTPAIRS + OO },
     { "listall", no_argument, NULL, LST_ALL + OO },
 
