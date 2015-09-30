@@ -21,6 +21,8 @@ OUTPUTS=../OUTPUTS
 SAMPLEDIR=../01-confread
 SAMPLE2DIR=../../unit/libpluto/samples
 
+TEST3ARGS=--rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord2.whack --all
+
 check:
 	@mkdir -p ${OUTPUTS}
 	@echo processing ${SAMPLEDIR}/dooku.conf
@@ -37,6 +39,14 @@ check:
 	@strings ${OUTPUTS}/parkerrecord.whack | grep parker1--jj2 >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep ikev2:parker--jj >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep parker01.emmjay.credil.org >/dev/null
+	@echo testing ${SAMPLEDIR}/parker.conf with --all
+	@echo >.gdbinit3 "file ${READWRITE} "
+	@echo >>.gdbinit3 "set args ${TEST3ARGS}"
+	@${READWRITE} ${TEST3ARGS} | tee ${OUTPUTS}/parkerload2.out | diff - /dev/null
+	@strings ${OUTPUTS}/parkerrecord2.whack | grep pluto-whack-file >/dev/null
+	@strings ${OUTPUTS}/parkerrecord2.whack | grep parker1--jj2 >/dev/null
+	@strings ${OUTPUTS}/parkerrecord2.whack | grep ikev2:parker--jj >/dev/null
+	@strings ${OUTPUTS}/parkerrecord2.whack | grep parker01.emmjay.credil.org >/dev/null
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt
