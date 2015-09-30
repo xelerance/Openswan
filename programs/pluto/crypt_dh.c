@@ -1365,7 +1365,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		PR_ASSERT(tkey2!=NULL);
 
 
-		keyhandle=PK11_GetSymKeyHandle(tkey11);
+		keyhandle=PK11_GetSymKeyHandle(tkey2);
 		param.data=(unsigned char*)&keyhandle;
 		param.len=sizeof(keyhandle);
 
