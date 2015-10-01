@@ -47,17 +47,17 @@ processing whack msg time: X size: Y
 | 192.168.1.1<192.168.1.1>[@openswan.testing.xelerance.com]---192.139.46.65...%any[@oswclient2]
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 RC=2 IP hostpairs:
-RC=2   hostpair: 192.168.1.1:500  0.0.0.0:500
+RC=2   IPpair: 192.168.1.1:500  0.0.0.0:500
 RC=2      mytunnel2[]
 
 RC=2   hostpair: 192.168.1.1:500  0.0.0.0:500
 RC=2      mytunnel[]
 
 RC=2 ID hostpairs:
-RC=2   hostpair: @openswan.testing.xelerance.com @oswclient2
+RC=2   IDpair: @openswan.testing.xelerance.com @oswclient2
 RC=2      mytunnel2[]
 
-RC=2   hostpair: @openswan.testing.xelerance.com @dnsh2h2
+RC=2   IDpair: @openswan.testing.xelerance.com @dnsh2h2
 RC=2      mytunnel[]
 
 ./IDhostpair leak: 2 * keep id name, item size: X

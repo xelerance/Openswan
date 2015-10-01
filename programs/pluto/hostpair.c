@@ -490,7 +490,7 @@ hostpair_list(void)
         addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
         keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
 
-        whack_log(RC_LOG, "  hostpair: %s:%d %s %s:%d"
+        whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
                   , b1, c->spd.this.host_port, himtypebuf
                   , b2, c->spd.that.host_port);
         while(c != NULL) {
@@ -512,7 +512,7 @@ hostpair_list(void)
         idtoa(&c->spd.this.id, b1,sizeof(b1));
         idtoa(&c->spd.that.id, b2,sizeof(b2));
 
-        whack_log(RC_LOG, "  hostpair: %s %s"
+        whack_log(RC_LOG, "  IDpair: %s %s"
                   , b1, b2);
         while(c != NULL) {
             fmt_connection_inst_name(c, instance, sizeof(instance));
