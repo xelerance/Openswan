@@ -188,23 +188,29 @@ find_host_pair(bool exact
                     , (addrtot(&p->him.addr, 0, b2, sizeof(b2)), b2)
                     , p->him.host_port));
 
-        /* kick out if it does not match: easier to understand than positive/convuluted logic */
-	if (!sameaddr(&p->me.addr, myaddr))  continue;
-        if(p->me.host_port_specific && p->me.host_port != myport) continue;
+#if 0
+#define FAIL_TO_MATCH_IF(cond) do if(cond) { DBG_log("     failed to match " #cond ); continue; } while(0)
+#else
+#define FAIL_TO_MATCH_IF(cond) do if(cond) { continue; } while(0)
+#endif
 
-        /* if we are looking for %any, then it *MUST* match that */
-        if(!exact && histype == KH_ANY && p->him.host_type != KH_ANY) continue;
+        /* kick out if it does not match: easier to understand than positive/convuluted logic */
+	FAIL_TO_MATCH_IF(!sameaddr(&p->me.addr, myaddr));
+        FAIL_TO_MATCH_IF(p->me.host_port_specific && p->me.host_port != myport);
+
+        /* if we are looking to match against %any, then it *MUST* match that */
+        FAIL_TO_MATCH_IF(histype == KH_ANY && p->him.host_type != KH_ANY);
 
         /* if hisport is specific, then it must match */
-        if(p->him.host_port_specific && p->him.host_port != hisport) continue;
+        FAIL_TO_MATCH_IF(p->him.host_port_specific && p->him.host_port != hisport);
 
-        /* finally, it must either match address, or conn is %any (if !exact) */
-        if(histype == KH_ANY || !sameaddr(&p->him.addr, hisaddr)) {
-            if(exact) continue;
-            if(p->him.host_type != KH_ANY) continue;
-        }
+        /* when exact = TRUE, we will not match against KH_ANY, unless looking for KH_ANY */
+        FAIL_TO_MATCH_IF(exact && p->him.host_type == KH_ANY && histype != KH_ANY);
 
-	/* now it matches: but a future version might want to try for bestfit */
+        /* now, we have eliminated all cases where KH_ANY can not match: so let it try match */
+        FAIL_TO_MATCH_IF(p->him.host_type != KH_ANY && !sameaddr(&p->him.addr, hisaddr));
+
+        /* now it matches: but a future version might want to try for bestfit */
         if (prev != NULL)
 	    {
 		prev->next = p->next;	/* remove p from list */
