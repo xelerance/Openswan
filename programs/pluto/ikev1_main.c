@@ -1217,6 +1217,10 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
     return;
 }
 
+/*
+ * this routine gets called after any DH exponentiation that needs to be done
+ * has been done, and we are ready to send our g^y.
+ */
 stf_status
 main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 		     , struct pluto_crypto_req *r)

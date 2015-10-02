@@ -1376,7 +1376,6 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		tkey3 = pk11_derive_wrapper_osw(tkey12, CKM_CONCATENATE_BASE_AND_DATA
 			, vpss.ni, CKM_CONCATENATE_BASE_AND_DATA, CKA_DERIVE, 0);
 		PK11_FreeSymKey(tkey2);
-		PK11_FreeSymKey(tkey11);
 		PK11_FreeSymKey(tkey12);
 	   }
 

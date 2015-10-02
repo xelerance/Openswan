@@ -568,6 +568,11 @@ extract_peer_id(struct id *peer, const pb_stream *id_pbs)
     return TRUE;
 }
 
+/*
+ * this routine is called from IKEv1 Main and Aggressive mode to
+ * extract the ID payload, and then, using it, find a more suitable
+ * connection policy to use.
+ */
 bool
 decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 {

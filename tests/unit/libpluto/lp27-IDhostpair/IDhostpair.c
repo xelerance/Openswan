@@ -108,13 +108,3 @@ main(int argc, char *argv[])
  * compile-command: "make check"
  * End:
  */
-
-
-
- /*
- * Local Variables:
- * c-style: pluto
- * c-basic-offset: 4
- * compile-command: "make check"
- * End:
- */

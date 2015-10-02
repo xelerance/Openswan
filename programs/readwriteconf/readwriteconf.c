@@ -72,7 +72,8 @@ static const char *usage_string = ""
     "       [--rootdir X] [--rootdir2 Y]   -- also look here for files\n"
     "       [--debug] [--verbose]          -- enable debugging or verbose\n"
     "       [--text]                       -- enable text output\n"
-    "       [--whackout=file]       -- enable generating messages out\n";
+    "       [--whackout=file]       -- enable generating messages out\n"
+    "       [--all] [conns...]      -- which conns to send to whack file\n";
 
 
 static void usage(void)
@@ -89,6 +90,7 @@ static struct option const longopts[] =
 	{"verbose",             no_argument, NULL, 'D'},
 	{"warningsarefatal",    no_argument, NULL, 'W'},
 	{"whackout",            required_argument, NULL, 'w'},
+	{"all",                 no_argument, NULL, 'A'},
 	{"text",                no_argument, NULL, 'T'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"rootdir2",            required_argument, NULL, 'S'},
@@ -118,6 +120,7 @@ main(int argc, char *argv[])
     char *confdir = NULL;
     char *configfile = NULL;
     struct starter_conn *conn = NULL;
+    int whackall = 0;
 
     progname = argv[0];
     rootdir[0]='\0';
@@ -126,6 +129,7 @@ main(int argc, char *argv[])
 
     while((opt = getopt_long(argc, argv, "", longopts, 0)) != EOF) {
 	switch(opt) {
+        default:
 	case 'h':
 	    /* usage: */
 	    usage();
@@ -133,6 +137,10 @@ main(int argc, char *argv[])
 
         case 'T':
             textout = 1;
+            break;
+
+        case 'A':
+            whackall = 1;
             break;
 
         case 'w':
@@ -225,24 +233,41 @@ main(int argc, char *argv[])
         cfg->send_whack_msg = send_whack_msg_to_file;
 
         /* load all conns marked as auto=add or better, and save them. */
-        argv+=optind;
-        argc-=optind;
-        for(; argc>0; argc--, argv++) {
-            char *conn_name = *argv;
+        if(whackall) {
             for(conn = cfg->conns.tqh_first;
                 conn != NULL;
-                conn = conn->link.tqe_next)
-                {
-                    if(verbose) {
-                        printf("processing conn: %s vs %s\n", conn_name, conn->name);
-                    }
-                    if(strcasecmp(conn->name, conn_name)==0) {
-                        if(starter_whack_add_conn(cfg, conn) != 0) {
-                            fprintf(stderr, "failed to load conn: %s\n", conn_name);
-                        }
+                conn = conn->link.tqe_next) {
+                if(verbose) {
+                    printf("processing conn: %s \n", conn->name);
+                }
+                if(conn->desired_state == STARTUP_ADD
+                   || conn->desired_state == STARTUP_ROUTE
+                   || conn->desired_state == STARTUP_START) {
+                    if(starter_whack_add_conn(cfg, conn) != 0) {
+                        fprintf(stderr, "failed to load conn: %s\n", conn->name);
                     }
                 }
             }
+        } else {
+            argv+=optind;
+            argc-=optind;
+            for(; argc>0; argc--, argv++) {
+                char *conn_name = *argv;
+                for(conn = cfg->conns.tqh_first;
+                    conn != NULL;
+                    conn = conn->link.tqe_next)
+                    {
+                        if(verbose) {
+                            printf("processing conn: %s vs %s\n", conn_name, conn->name);
+                        }
+                        if(strcasecmp(conn->name, conn_name)==0) {
+                            if(starter_whack_add_conn(cfg, conn) != 0) {
+                                fprintf(stderr, "failed to load conn: %s\n", conn_name);
+                            }
+                        }
+                    }
+            }
+        }
     }
     confread_free(cfg);
     exit(0);
@@ -255,8 +280,6 @@ void exit_tool(int x)
 }
 
 /*
- * $Log: spi.c,v $
- *
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto
