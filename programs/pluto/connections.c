@@ -777,7 +777,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
     if (that->host_type != KH_IPHOSTNAME && isanyaddr(&that->host_addr))
     {
 	/* other side is wildcard: we must check if other conditions met */
-	if (that->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
+	if (this->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
 	{
 	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
 	    return FALSE;
