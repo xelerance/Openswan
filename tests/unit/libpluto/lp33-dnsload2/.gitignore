@@ -1,0 +1,5 @@
+OUTPUT
+core.*
+*.o
+dnscpeI1
+.gdbinit
