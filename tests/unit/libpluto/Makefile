@@ -50,11 +50,13 @@ clean check:
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
 	@${MAKE} -C lp32-parentR2anychoice $@
+	@${MAKE} -C lp33-dnsload2          $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp34-orientafterlisten  $@
 	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
 	@${MAKE} -C lp36-h2hI1            $@
 	@${MAKE} -C lp40-orientafterprivate $@
+
 
 
 
