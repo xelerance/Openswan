@@ -1,0 +1,5 @@
+This test case initiates a connection from a client to a gateway.
+The gateway is given by a DNS name using %dns, but without any hint.
+The connection must do the DNS lookup first (vs trying against empty address:0.0.0.0).
+
+

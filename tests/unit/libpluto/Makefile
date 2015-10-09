@@ -50,6 +50,7 @@ clean check:
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
 	@${MAKE} -C lp32-parentR2anychoice $@
+	@${MAKE} -C lp33-dnsload2          $@
 
 
 
