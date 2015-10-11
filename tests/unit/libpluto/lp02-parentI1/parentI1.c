@@ -1,4 +1,5 @@
 #include "parentI1_head.c"
+#include "seam_dnskey.c"
 #include "seam_x509.c"
 #include "seam_keys.c"
 

@@ -1,6 +1,7 @@
 /* repeats existing test case */
 #include "../lp02-parentI1/parentI1_head.c"
 #include "../seam_host_dave.c"
+#include "seam_dnskey.c"
 #include "seam_x509_list.c"
 
 #define TESTNAME "davecertI1"
