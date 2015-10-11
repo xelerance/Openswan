@@ -1,6 +1,7 @@
 /* repeats existing test case */
 #include "../lp02-parentI1/parentI1_head.c"
 #include "../seam_host_rw.c"
+#include "seam_dnskey.c"
 #include "seam_x509.c"
 
 #define TESTNAME "initiateselfI1"
