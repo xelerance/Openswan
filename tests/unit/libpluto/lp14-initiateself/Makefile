@@ -23,6 +23,7 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
@@ -48,6 +49,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
