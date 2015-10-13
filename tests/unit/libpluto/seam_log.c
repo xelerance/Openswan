@@ -37,3 +37,9 @@ char *oswtimestr(void)
 }
 
 
+bool
+    logged_myid_fqdn_txt_warning = FALSE,
+    logged_myid_ip_txt_warning   = FALSE,
+    logged_myid_fqdn_key_warning = FALSE,
+    logged_myid_ip_key_warning   = FALSE;
+
