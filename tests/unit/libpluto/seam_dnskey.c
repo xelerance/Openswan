@@ -5,7 +5,10 @@ void gw_delref(struct gw_info **gwp) {}
 
 bool in_pending_use(struct connection *c) { return FALSE; }
 bool kick_adns_connection_lookup(struct connection *c UNUSED
-                                 , struct end *end UNUSED) { return FALSE;}
+                                 , struct end *end UNUSED) {
+  end->host_address_list.addresses_available = TRUE;
+  return FALSE;
+}
 
 err_t start_adns_query(const struct id *id	/* domain to query */
 		       , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */

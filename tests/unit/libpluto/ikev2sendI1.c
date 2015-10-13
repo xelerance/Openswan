@@ -43,6 +43,8 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 	/* find st involved */
 	st = state_with_serialno(1);
 
+        if(st == NULL) return NULL;
+
 	cur_debugging = debugging;
 	c1->extra_debugging = debugging;
 
