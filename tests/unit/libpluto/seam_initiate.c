@@ -24,19 +24,19 @@ bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 					c->interface = NULL;	/* withdraw orientation */
 					return FALSE;
 				}
-				
+
 				DBG_log("interface \"%s\" matched %s side"
 					, p->ip_dev->id_rname
 					, (sr->this.left ? "left" : "right"));
 				c->interface = p;
 			}
-			
+
 			/* done with this interface if it doesn't match that end */
 			if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
 			      && (kern_interface!=NO_KERNEL
 				  || sr->that.host_port == pluto_port)))
 				break;
-			
+
 			/* swap ends and try again.
 			 * It is a little tricky to see that this loop will stop.
 			 * Only continue if the far side matches.
@@ -44,7 +44,7 @@ bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 			 */
 			{
 				struct end t = sr->this;
-				
+
 				sr->this = sr->that;
 				sr->that = t;
 			}
