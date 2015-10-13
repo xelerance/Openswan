@@ -198,6 +198,39 @@ initiate_connection(const char *name, int whackfd
     close_any(is.whackfd);
 }
 
+bool kick_adns_connection(struct connection *c)
+{
+    bool kicknow = FALSE;
+    struct state *st = state_with_serialno(c->newest_isakmp_sa);
+
+    if(st != NULL
+       && (IS_ISAKMP_SA_ESTABLISHED(st->st_state) || IS_PARENT_SA_ESTABLISHED(st->st_state))) {
+
+        /* the connection is up, no point in doing it again */
+        return FALSE;
+    }
+
+
+    /* arrange to rekey the phase 1, if there was one. */
+    if (c->spd.that.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that);
+    }
+    if (!kicknow && c->spd.this.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
+    }
+
+    if(kicknow) {
+        struct initiate_stuff is;
+        is.whackfd   = NULL_FD;
+        is.moredebug = 0;
+        is.importance= pcim_ongoing_crypto;
+	initiate_a_connection(c, &is);
+    }
+
+    return kicknow;
+}
+
+
 void
 restart_connections_by_peer(struct connection *c)
 {
