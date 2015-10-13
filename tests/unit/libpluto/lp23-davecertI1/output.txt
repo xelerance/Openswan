@@ -532,7 +532,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./davecertI1 leak: pubkey entry, item size: X
 ./davecertI1 leak: pubkey, item size: X
 ./davecertI1 leak: certificate filename, item size: X
-./davecertI1 leak: alg_info_ike, item size: X
 ./davecertI1 leak: 2 * id list, item size: X
 ./davecertI1 leak: secret, item size: X
 ./davecertI1 leak: policies path, item size: X
