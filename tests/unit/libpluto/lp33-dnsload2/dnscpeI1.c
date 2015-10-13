@@ -2,7 +2,7 @@
 #include "seam_x509.c"
 #include "seam_whack.c"
 #include "seam_host_parker.c"
-#define TESTNAME "parentI1"
+#define TESTNAME "dnscpeI1"
 
 static void init_local_interface(void)
 {
@@ -77,6 +77,9 @@ main(int argc, char *argv[])
 
     /* now process returned DNS packets */
     handle_adns_answer();
+
+    /* and now see about running continuations */
+    st = sendI1b(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
 
     st = state_with_serialno(1);
     if(st!=NULL) {
