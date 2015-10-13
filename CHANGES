@@ -4,6 +4,31 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.46dr1 (October 11, 2015)
+
+*  Fixed find_host_pair so that it finds right=%any matches correctly [MCR]
+*  Change listing to give IP/ID type on every bucket [MCR]
+*  Added option to readwriteconf to load all conns marked add/route/up [MCR]
+*  Document --listhostpairs debug option [MCR]
+*  Possible fix for IKEv2 issues when built with libnss [MCR]
+*  Return proper IKEv2 Notify when authentication fails due to wrong ID [MCR]
+*  Make sure that host_type is initialized [MCR]
+*  Take care of deleting IDhostpair when connection is deleted [MCR]
+*  Use IDhost_pair list to find appropriate conn by ID [MCR]
+*  Added IDhostpair support [MCR]
+*  Initial work on creating a hostpair list by ID [MCR]
+*  Added listing of hostpairs to available whack debugs [MCR]
+*  INVALID_MSGID becomes -1 on 32-bit, but not on 64, so translate it better [MCR]
+*  Rename host_pair to IPhost_pair in preperation to adding IDhost_pair [MCR]
+*  Remove file that was accidentally committed [Simon Deziel]
+*  Debian: update patch list file [Simon Deziel]
+*  Debian: bump standards version to 3.9.6 (no change required) [Simon Deziel]
+*  Debian: drop dpatch (obsolete) [Simon Deziel]
+*  Split up IKEv2 RSA verification into nss and non-nss versions [MCR]
+*  Move try_RSA_signature_v1 to seperate file [MCR]
+*  When loading conn, process alsoflip= as well [MCR]
+*  Refactor also processing so it can be applied to alsoflip [MCR]
+
 v2.6.45 (August 27, 2015)
   This release fixes CVE-2015-3240 (IKE DoS)
 
