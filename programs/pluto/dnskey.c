@@ -1742,6 +1742,7 @@ static bool advance_end_dns_list(struct connection *c
     /* structures are not identically names, but equivalent; both contain sockaddr */
     if(len < ai->ai_addrlen) len = ai->ai_addrlen;
     memcpy(&end->host_addr, ai->ai_addr, len);
+    end->host_address_list.addresses_available = TRUE;
 
     update_host_pairs(c);
 

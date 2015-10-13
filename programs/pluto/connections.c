@@ -728,8 +728,11 @@ extract_end(struct connection *conn UNUSED
     /* see if we should try to resolve the DNS name */
     /* dst->host_addr may already have a hint, do not destroy it! */
     if(dst->host_type == KH_IPHOSTNAME
-       && strlen(dst->host_addr_name) > 0) {
+       && dst->host_addr_name!=NULL && strlen(dst->host_addr_name) > 0) {
+        dst->host_address_list.addresses_available = FALSE;
         kick_adns_connection_lookup(conn, dst);
+    } else {
+        dst->host_address_list.addresses_available = TRUE;
     }
 
     return same_ca;

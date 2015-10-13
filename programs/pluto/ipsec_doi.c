@@ -356,6 +356,11 @@ ipsecdoi_initiate(int whack_sock
 
     if (st == NULL)
     {
+        if(!c->spd.that.host_address_list.addresses_available) {
+            loglog(RC_LOG_SERIOUS, "Can not initiate: no remote address available (yet)");
+            return;
+        }
+
 	initiator_function *initiator = pick_initiator(c, policy);
 
 	if(initiator) {
