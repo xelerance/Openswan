@@ -7,7 +7,6 @@ struct pcap_pkthdr;
 typedef void (*recv_pcap)(u_char *user, const struct pcap_pkthdr *h, const u_char *);
 const struct osw_conf_options *oco;
 
-void flush_pending_by_connection(struct connection *c) {}
 void unroute_connection(struct connection *c) {}
 bool trap_connection(struct connection *c) { return TRUE; }
 void perpeer_logfree(struct connection *c) {}

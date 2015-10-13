@@ -60,7 +60,6 @@
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
-#include "seam_pending.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
 #include "seam_kernel.c"
@@ -70,7 +69,6 @@
 #include "seam_terminate.c"
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
-#include "seam_whack.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
 

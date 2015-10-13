@@ -1,7 +1,6 @@
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_x509.c"
-#include "seam_keys.c"
-
+#include "seam_whack.c"
 #include "seam_host_parker.c"
 #define TESTNAME "parentI1"
 
