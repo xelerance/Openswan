@@ -27,23 +27,10 @@ struct state *sendI1_short(struct connection *c1, int debugging)
 	return st;
 }
 
-struct state *sendI1(struct connection *c1, int debugging, int calculate)
+struct state *sendI1b(struct connection *c1, int debugging, int calculate)
 {
 	struct state *st;
 	struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;  /* r is a global in the seams */
-
-	c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-	ipsecdoi_initiate(/* whack-sock=stdout */1
-			  , c1
-			  , c1->policy
-			  , 0
-			  , FALSE
-			  , pcim_demand_crypto, USER_SEC_CTX_NULL);
-
-	/* find st involved */
-	st = state_with_serialno(1);
-
-        if(st == NULL) return NULL;
 
 	cur_debugging = debugging;
 	c1->extra_debugging = debugging;
@@ -61,5 +48,28 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 
 	run_continuation(crypto_req);
 
+	/* find st involved */
+	st = state_with_serialno(1);
 	return st;
 }
+
+struct state *sendI1(struct connection *c1, int debugging, int calculate)
+{
+	struct state *st;
+
+	c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+	ipsecdoi_initiate(/* whack-sock=stdout */1
+			  , c1
+			  , c1->policy
+			  , 0
+			  , FALSE
+			  , pcim_demand_crypto, USER_SEC_CTX_NULL);
+
+	/* find st involved */
+	st = state_with_serialno(1);
+
+        if(st == NULL) return NULL;
+
+        return sendI1b(c1, debugging, calculate);
+}
+
