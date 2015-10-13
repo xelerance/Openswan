@@ -136,6 +136,7 @@ struct IPhost_pair;    /* opaque type */
 struct IDhost_pair;    /* opaque type */
 
 struct dns_end_list {
+    bool             addresses_available;
     struct addrinfo *address_list;  /* the list of all results returned */
     struct addrinfo *next_address;  /* next one to try */
 };
