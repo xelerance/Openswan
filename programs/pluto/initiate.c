@@ -1598,7 +1598,6 @@ void connection_check_ddns(void)
 }
 #endif /* DYNAMICDNS */
 
-
 #define PENDING_PHASE2_INTERVAL (60*2) /*time between scans of pending phase2*/
 
 /*
@@ -1639,19 +1638,9 @@ void connection_check_phase2(void)
 	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
 
 	    if(p1st) {
-                bool kicknow = FALSE;
+                bool kicknow = kick_adns_connection(c);
 
-		/* arrange to rekey the phase 1, if there was one. */
-                if (c->spd.that.host_type == KH_IPHOSTNAME) {
-                    kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that);
-                }
-                if (!kicknow && c->spd.this.host_type == KH_IPHOSTNAME) {
-                    kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
-                }
-                if(kicknow) {
-                    restart_connections_by_peer(c);
-                }
-                else {
+                if(!kicknow) {
                     delete_event(p1st);
                     event_schedule(EVENT_SA_REPLACE, 0, p1st);
                 }

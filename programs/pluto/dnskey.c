@@ -1770,6 +1770,12 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
         return;
     }
     dump_addr_info(cr->ipanswers);
+
+    /* now move results to connection structure */
+    iph_c->c->spd.that.host_address_list.address_list = iph_c->ac.ipanswers;
+    iph_c->ac.ipanswers = NULL;
+
+    kick_adns_connection(iph_c->c);
 }
 
 /*
@@ -1839,6 +1845,23 @@ void dump_addr_info(struct addrinfo *ans)
     }
 }
 
+bool kick_adns_connection(struct connection *c)
+{
+    bool kicknow = FALSE;
+
+    /* arrange to rekey the phase 1, if there was one. */
+    if (c->spd.that.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that);
+    }
+    if (!kicknow && c->spd.this.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
+    }
+    if(kicknow) {
+        restart_connections_by_peer(c);
+    }
+
+    return kicknow;
+}
 
 bool kick_adns_connection_lookup(struct connection *c
                                  , struct end *end)
