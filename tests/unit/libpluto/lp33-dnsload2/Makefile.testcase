@@ -8,4 +8,5 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/dnskey.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/adns.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/pending.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/initiate.o
 EXTRALIBS+=-lresolv
