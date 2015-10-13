@@ -451,6 +451,10 @@ rr_typename(int type)
 	return "TXT";
     case ns_t_key:
 	return "KEY";
+    case ns_t_a:
+	return "A";
+    case ns_t_aaaa:
+	return "AAAA";
     default:
 	return "???";
     }
