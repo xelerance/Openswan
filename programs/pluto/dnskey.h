@@ -59,7 +59,7 @@ struct adns_continuation {
     struct pubkey *last_info;  /* the last structure we accumulated */
     struct adns_query query;
   struct addrinfo *ipanswers;  /* the result of the async getaddrinfo() call
-                                * this is a freshly malloc, and does not need to be copied
+                                * this is a fresh malloc, and does not need to be copied
                                 */
 };
 
