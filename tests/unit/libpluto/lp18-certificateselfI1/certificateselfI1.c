@@ -3,6 +3,7 @@
 #include "../seam_host_rw.c"
 #include "seam_pending.c"
 #include "seam_whack.c"
+#include "seam_initiate.c"
 #include "seam_dnskey.c"
 #include "seam_x509_list.c"
 
