@@ -1412,11 +1412,14 @@ static void init_generic_adns_query(struct adns_continuation *cr)
     continuations = cr;
 }
 
-static void start_generic_adns_query(int type	/* T_TXT or T_KEY, selecting rr type of interest */
-                         , struct adns_continuation *cr)
+/* type: T_TXT or T_KEY, selecting rr type of interest */
+static void start_generic_adns_query(int type
+                                     , struct adns_continuation *cr
+                                     , sa_family_t addr_family)
 {
     static unsigned long qtid = 1;	/* query transaction id; NOTE: static */
 
+    cr->query.addr_family = addr_family;
     cr->qtid = qtid++;
     cr->type = type;
     cr->gateways_from_dns = NULL;
@@ -1470,12 +1473,13 @@ start_adns_query(const struct id *id	/* domain to query */
 	}
     }
 
-    start_generic_adns_query(type, cr);
+    start_generic_adns_query(type, cr, AF_UNSPEC);
     return NULL;
 }
 
 err_t
-start_adns_hostname(const char *hostname
+start_adns_hostname(sa_family_t addr_family
+                    , const char *hostname
                     , cont_fn_t cont_fn
                     , struct adns_continuation *cr)
 {
@@ -1498,7 +1502,8 @@ start_adns_hostname(const char *hostname
 	}
     }
 
-    start_generic_adns_query(ns_t_a, cr);
+    start_generic_adns_query(ns_t_a, cr, addr_family);
+
     return NULL;
 }
 
@@ -1745,7 +1750,7 @@ static bool advance_end_dns_list(struct connection *c
 
     /* copy the address into the host_addr structure, and kick this conn */
     /* structures are not identically names, but equivalent; both contain sockaddr */
-    if(len < ai->ai_addrlen) len = ai->ai_addrlen;
+    if(len > ai->ai_addrlen) len = ai->ai_addrlen;
     memcpy(&end->host_addr, ai->ai_addr, len);
     end->host_address_list.addresses_available = TRUE;
 
@@ -1866,7 +1871,8 @@ bool kick_adns_connection_lookup(struct connection *c
      */
     iph_c = alloc_thing(struct iphostname_continuation, "kick adns");
     iph_c->c = c;
-    e = start_adns_hostname(end->host_addr_name, iphostname_continuation, &iph_c->ac);
+    e = start_adns_hostname(c->addr_family, end->host_addr_name,
+                            iphostname_continuation, &iph_c->ac);
 
     if(e) {
         openswan_log("failed to initiate DNS lookup on %s: %s", end->host_addr_name, e);

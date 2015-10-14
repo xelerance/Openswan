@@ -68,6 +68,8 @@ main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1, whack_log);
 
+    assert(c1->addr_family == AF_INET);
+
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
     reset_globals();

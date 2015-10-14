@@ -167,7 +167,7 @@ main(int argc, char *argv[])
 
     /* re-use cassidy */
     cr1 = alloc_thing(struct adns_continuation, "cassidy A lookup");
-    e = start_adns_hostname("cassidy.sandelman.ca", cassidy_host_continue, cr1);
+    e = start_adns_hostname(AF_UNSPEC, "cassidy.sandelman.ca", cassidy_host_continue, cr1);
     process_dns_results();
 
     stop_adns();
