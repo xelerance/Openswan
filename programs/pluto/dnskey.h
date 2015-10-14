@@ -69,7 +69,8 @@ extern err_t start_adns_query(const struct id *id	/* domain to query */
     , cont_fn_t cont_fn	/* continuation function */
     , struct adns_continuation *cr);
 
-extern err_t start_adns_hostname(const char *hostname
+extern err_t start_adns_hostname(sa_family_t addr_family
+                                 , const char *hostname
                                  , cont_fn_t cont_fn
                                  , struct adns_continuation *cr);
 

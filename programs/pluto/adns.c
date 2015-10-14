@@ -342,7 +342,7 @@ worker(int qfd, int afd)
 
         case ns_t_a:
             /* actually, use getaddrinfo() to do lookup */
-            hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+            hints.ai_family = q.addr_family;     /* Allow IPv4 or IPv6 */
             hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
             hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
             hints.ai_protocol = 0;          /* Any protocol */
