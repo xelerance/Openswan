@@ -37,6 +37,7 @@
 #include "seam_keys.c"
 #include "seam_crypt.c"
 #include "seam_whack.c"
+#include "seam_initiate.c"
 #include "seam_ipsecdoi.c"
 #include "seam_exitlog.c"
 #include "seam_dnskey.c"
