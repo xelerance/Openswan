@@ -150,6 +150,9 @@ find_host_pair(bool exact
 	       , u_int16_t hisport)
 {
     struct IPhost_pair *p, *prev;
+    struct IPhost_pair *bestpair = NULL;
+    struct IPhost_pair *bestpair_prev = NULL;
+    unsigned int bestpair_prio = 0;
 
     /*
      * look for a host-pair that has the right set of ports/address,
@@ -189,6 +192,7 @@ find_host_pair(bool exact
                     , p->him.host_port));
 
 #if 0
+        /* enable to get way too verbose debug of this function */
 #define FAIL_TO_MATCH_IF(cond) do if(cond) { DBG_log("     failed to match " #cond ); continue; } while(0)
 #else
 #define FAIL_TO_MATCH_IF(cond) do if(cond) { continue; } while(0)
@@ -198,30 +202,48 @@ find_host_pair(bool exact
 	FAIL_TO_MATCH_IF(!sameaddr(&p->me.addr, myaddr));
         FAIL_TO_MATCH_IF(p->me.host_port_specific && p->me.host_port != myport);
 
-        /* if we are looking to match against %any, then it *MUST* match that */
-        FAIL_TO_MATCH_IF(histype == KH_ANY && p->him.host_type != KH_ANY);
+        if(histype == KH_ANY && p->him.host_type == KH_ANY) {
+            /* no bestpair_prio, it's an exact match */
+            bestpair = p;
+            bestpair_prev = prev;
+            break;
+        }
 
         /* if hisport is specific, then it must match */
         FAIL_TO_MATCH_IF(p->him.host_port_specific && p->him.host_port != hisport);
 
-        /* when exact = TRUE, we will not match against KH_ANY, unless looking for KH_ANY */
-        FAIL_TO_MATCH_IF(exact && p->him.host_type == KH_ANY && histype != KH_ANY);
+        if(exact == TRUE) {
+            /* when matching exactly, we ignore KH_ANY entries.  If an %any match
+             * was desired, then it would be caught above */
+            if(p->him.host_type == KH_ANY) continue;
+            if(sameaddr(&p->him.addr, hisaddr)) {
+                bestpair = p;
+                bestpair_prev = prev;
+                break;
+            }
+        } else if(p->him.host_type == KH_ANY && bestpair_prio < 1) {
+            /* matched against %any, and did not have a tighter match */
+            bestpair = p;
+            bestpair_prev = prev;
+            bestpair_prio = 1;
+        } else if(histype != KH_ANY && sameaddr(&p->him.addr, hisaddr) && bestpair_prio < 2) {
+            bestpair = p;
+            bestpair_prev = prev;
+            bestpair_prio = 2;
+            /* highest match, so break */
+            break;
+        }
+        /* not a good match, continue loop */
+    }
 
-        /* now, we have eliminated all cases where KH_ANY can not match: so let it try match */
-        FAIL_TO_MATCH_IF(p->him.host_type != KH_ANY && !sameaddr(&p->him.addr, hisaddr));
-
-        /* now it matches: but a future version might want to try for bestfit */
-        if (prev != NULL)
-	    {
-		prev->next = p->next;	/* remove p from list */
-		p->next = IPhost_pairs;	/* and stick it on front */
-		IPhost_pairs = p;
-	    }
-        break;
+    if (bestpair_prev != NULL) {
+        bestpair_prev->next = bestpair->next;	/* remove p from list */
+        bestpair->next = IPhost_pairs;	/* and stick it on front */
+        IPhost_pairs = bestpair;
     }
     DBG(DBG_CONTROLMORE,
-        DBG_log("find_host_pair: concluded with %s", p && p->connections ? p->connections->name : "<none>"));
-    return p;
+        DBG_log("find_host_pair: concluded with %s", bestpair && bestpair->connections ? bestpair->connections->name : "<none>"));
+    return bestpair;
 }
 
 void remove_IPhost_pair(struct IPhost_pair *hp)

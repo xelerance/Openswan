@@ -91,6 +91,8 @@ static void init_loaded(void)
     c = con_by_name("rw-dave", TRUE);
     assert(c != NULL);
     show_one_connection(c);
+
+    hostpair_list();
 }
 
 
