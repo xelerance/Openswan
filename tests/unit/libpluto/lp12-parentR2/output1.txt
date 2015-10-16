@@ -413,7 +413,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./parentR2 IKEv2 mode peer ID is ID_FQDN: '@parker01.emmjay.credil.org'
 | find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker1--jj2)
 |   concluded with parker1--jj2
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -500,7 +500,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker1--jj2)
 |   concluded with parker1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
 | ikev2_evaluate_connection_fit, concluded with parker1--jj2

@@ -41,10 +41,10 @@ processing whack msg time: X size: Y
 | orient maryjane1--jj2 checking against if: eth0
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
-| find_host_pair: concluded with <none>
-| connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
+| find_host_pair: concluded with any1--jj2
+| connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:any1--jj2
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
 |   concluded with <none>
 ./parentR2anychoice adding connection: "maryjane1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@maryjane01.emmjay.credil.org]===fd68:c9f9:4157:3:0:1::/96
@@ -440,8 +440,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./parentR2anychoice IKEv2 mode peer ID is ID_FQDN: '@parker01.emmjay.credil.org'
 | find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
 |   concluded with any1--jj2
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -520,7 +520,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
 |   concluded with maryjane1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:3:0:1::/96 is found
 | ikev2_evaluate_connection_fit, concluded with maryjane1--jj2
@@ -611,7 +611,6 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2anychoice leak: msg_digest, item size: X
 ./parentR2anychoice leak: 2 * keep id name, item size: X
 ./parentR2anychoice leak: ID host_pair, item size: X
-./parentR2anychoice leak: host_pair, item size: X
 ./parentR2anychoice leak: keep id name, item size: X
 ./parentR2anychoice leak: host ip, item size: X
 ./parentR2anychoice leak: keep id name, item size: X

@@ -679,7 +679,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./certreplyselfR2 IKEv2 mode peer ID is ID_USER_FQDN: 'carol@strongswan.org'
 | find_ID_host_pair: looking for me=(none) him=carol@strongswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -996,7 +996,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.1.0.0/10.1.255.255 proto=0 portrange 0-65535
 | prefix range fit c rw-any c->name was rejected by Traffic Selectors
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=<any>
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with rw-any

@@ -389,8 +389,8 @@ find_ID_host_pair(bool exact
 	DBG(DBG_CONTROLMORE,
             idtoa(&p->me_who, thisid, sizeof(thisid));
             idtoa(&p->him_who,thatid, sizeof(thatid));
-            DBG_log("                  comparing to me=%s him=%s\n"
-                    , thisid, thatid));
+            DBG_log("                  comparing to me=%s him=%s (%s)\n"
+                    , thisid, thatid, p->connections->name));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic

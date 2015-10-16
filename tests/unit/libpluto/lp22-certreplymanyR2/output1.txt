@@ -41,7 +41,7 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 192.168.0.200:500 -> hp:none
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with <none>
 ./certreplyR2 adding connection: "rw-dave"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
@@ -64,8 +64,8 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %address 93.184.216.34:500 -> hp:none
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=93.184.216.34
-|                   comparing to me=@moon.strongswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org (rw-dave)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with <none>
 ./certreplyR2 adding connection: "rw-carol"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>
@@ -722,9 +722,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./certreplyR2 IKEv2 mode peer ID is ID_USER_FQDN: 'carol@strongswan.org'
 | find_ID_host_pair: looking for me=(none) him=carol@strongswan.org
-|                   comparing to me=@moon.strongswan.org him=93.184.216.34
-|                   comparing to me=@moon.strongswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=93.184.216.34 (rw-carol)
+|                   comparing to me=@moon.strongswan.org him=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org (rw-dave)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -1061,7 +1061,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c rw-carol, tsi[0],tsr[0]
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=93.184.216.34
-|                   comparing to me=@moon.strongswan.org him=93.184.216.34
+|                   comparing to me=@moon.strongswan.org him=93.184.216.34 (rw-carol)
 |   concluded with rw-carol
 |   checking hostpair 10.2.0.0/16 -> 93.184.216.34/32 is found
 | ikev2_evaluate_connection_fit, concluded with rw-carol
