@@ -1,0 +1,9 @@
+OUTPUT
+core.*
+parentI1.pcap
+parentI1
+parentI1.o
+.gdbinit
+orienttest
+core
+*.o
