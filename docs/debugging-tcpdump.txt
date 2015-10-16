@@ -1,8 +1,8 @@
 How to debug connections with tcpdump.
 
-This write up assumes that you have two openswan systems connected.
+This write up assumes that you have two Openswan systems connected.
 If you have another system at one end, then likely it provides no useful
-debugging. (This is particularly true to windows and cisco boxes)
+debugging. (This is particularly true to Windows and Cisco boxes)
 
 This write up also documents use of tcpdump. ethereal or tethereal can
 also be used, as they use libpcap, and therefore the same expressions.
@@ -17,7 +17,7 @@ the external interface. If PPPoE is involved, then one should dump on the
 selection expressions to work. Tcpdump can decode PPPoE packets, but can not
 select based upon the encapsulated UDP port numbers in that situation.
 
-If you have never built an openswan to openswan tunnel, you should do so
+If you have never built an Openswan to Openswan tunnel, you should do so
 using raw RSA keys to confirm that you can configure both ends properly.
 
 The network should look like:
@@ -54,7 +54,7 @@ Situation (b) is often due to failure to authenticated, but can also be due
 
 Situation (c) is often due to mis-matched policy.
 
-Sitaution (d) can be due to a number of things, including: firewall'ed 
+Situation (d) can be due to a number of things, including: firewall'ed
 	  ESP packets, firewall'ed port-4500 packets, Path MTU issues,
 	  local or remote system mis-configuration: such as a missing "ip"
 	  command, errors from the _updown scripts, mis-compiled kernels
@@ -82,7 +82,7 @@ If everything is operating correctly, then each packet that leaves sg1 should
 arrive on sg2.
 
 If there are many tunnels, then it may become confusing, and it is worth
-addint new expressions to the filter:
+adding new expressions to the filter:
 
 sg1# tcpdump -i eth1 -n -p ip host 1.2.3.4 and '(' udp port 500 or udp port 4500 ')'
 sg2# tcpdump -i eth1 -n -p ip host 5.6.7.8 and '(' udp port 500 or udp port 4500 ')'

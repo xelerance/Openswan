@@ -2,7 +2,7 @@
 	A Traffic-Based Method of Detecting Dead IKE Peers 
 
 
-The DPD feacture provides support for RFC3706 Dead Peer Detection. 
+The DPD feature provides support for RFC3706 Dead Peer Detection.
 
 DPD works using a keepalive system, where when a tunnel is idle
 (established, but no traffic has traversed it for N period (dpddelay=N1)

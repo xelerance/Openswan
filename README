@@ -56,7 +56,7 @@ NETKEY (Native linux IPsec stack)
 To use Openswan with the linux native (builtin) IPsec stack,  then the
 following steps should be all that are needed. Please use at least kernel
 version 2.6.9, as prior versions of the kernel have serious bugs in the
-native IPsec stack.  From the openswan directory:
+native IPsec stack.  From the Openswan directory:
 
     make programs
     sudo make install
@@ -71,7 +71,7 @@ KLIPS/KLIPSNG (Openswan IPsec stack)
 
 To use the Openswan KLIPS IPsec stack (ipsec0 devices) for Linux
 Kernels 2.6.23 and higher, the following steps should work.  From the
-openswan directory:
+Openswan directory:
 
     make programs
     make KERNELSRC=/lib/modules/`uname -r`/build module
@@ -201,7 +201,7 @@ The most up to date docs are at https://github.com/xelerance/Openswan/wiki
 
 Several high-level documents are in the doc directory.  Most are in HTML
 format; See doc/index.html for the top level index.  These are now
-considered obselete.
+considered obsolete.
 
 To build from source, you will need at least 60MB free (Source tree is 
 currently 40MB)
