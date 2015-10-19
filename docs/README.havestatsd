@@ -1,7 +1,7 @@
 
 Openswan can be compiled using HAVE_STATSD=true
 
-This will cause openswan to log all state changes by calling a
+This will cause Openswan to log all state changes by calling a
 binary, currently hardcoded to /bin/openswan-statsd
 
 It will log the state changes as arguments to that binary which is called

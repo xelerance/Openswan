@@ -683,7 +683,7 @@ Research and Sales intermediate CAs. If no rightca parameter is present
 then any valid certificate issued by one of the trusted CAs in
 /etc/ipsec.d/cacerts can be used by the peer.
 
-The leftca parameter usually doesn't have to be set explicitely because
+The leftca parameter usually doesn't have to be set explicitly because
 by default it is set to the issuer field of the certificate loaded via
 leftcert. The statement
 
@@ -1315,7 +1315,7 @@ The pkcs15-tool can now be used to verify the contents of the smartcard.
 
    pkcs15-tool --list-pins --list-keys --list-certificates
 
-If everything is ok then you are ready to use the generated PKCS#15
+If everything is OK then you are ready to use the generated PKCS#15
 structure with FreeS/WAN.
 
 
