@@ -239,6 +239,25 @@ key_add_request(const struct whack_message *msg)
 }
 
 /*
+ * handle a whack --listen: may also be called on SIGHUP eventually,
+ *               or when routing socket is added.
+ */
+void whack_listen(void) {
+    fflush(stderr);
+    fflush(stdout);
+    close_peerlog();    /* close any open per-peer logs */
+    openswan_log("listening for IKE messages");
+    listening = TRUE;
+    daily_log_reset();
+    reset_adns_restart_count();
+    set_myFQDN();
+    find_ifaces();
+    check_orientations();
+    load_preshared_secrets(NULL_FD);
+    load_groups();
+}
+
+/*
  * handle a whack message.
  */
 void whack_process(int whackfd, struct whack_message msg)
@@ -331,17 +350,7 @@ void whack_process(int whackfd, struct whack_message msg)
     /* process "listen" before any operation that could require it */
     if (msg.whack_listen)
     {
-	fflush(stderr);
-	fflush(stdout);
-	close_peerlog();    /* close any open per-peer logs */
-	openswan_log("listening for IKE messages");
-	listening = TRUE;
-	daily_log_reset();
-	reset_adns_restart_count();
-	set_myFQDN();
-	find_ifaces();
-	load_preshared_secrets(NULL_FD);
-	load_groups();
+        whack_listen();
     }
     if (msg.whack_unlisten)
     {

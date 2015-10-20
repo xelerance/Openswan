@@ -677,7 +677,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./wrongcacert IKEv2 mode peer ID is ID_USER_FQDN: 'carol@strongswan.org'
 | find_ID_host_pair: looking for me=(none) him=carol@strongswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e

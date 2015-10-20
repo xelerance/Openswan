@@ -400,7 +400,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./respondselfR2 IKEv2 mode peer ID is ID_FQDN: '@example.com'
 | find_ID_host_pair: looking for me=(none) him=@example.com
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -476,7 +476,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | prefix range fit c gateway--any c->name was rejected by Traffic Selectors
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with gateway--any

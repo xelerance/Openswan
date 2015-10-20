@@ -41,7 +41,7 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with mytunnel
 | connect_to_host_pair: 192.168.1.1:500 %any 0.0.0.0:500 -> hp:mytunnel
 | find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@oswclient2
-|                   comparing to me=@openswan.testing.xelerance.com him=@dnsh2h2
+|                   comparing to me=@openswan.testing.xelerance.com him=@dnsh2h2 (mytunnel)
 |   concluded with <none>
 ./IDhostpair adding connection: "mytunnel2"
 | 192.168.1.1<192.168.1.1>[@openswan.testing.xelerance.com]---192.139.46.65...%any[@oswclient2]

@@ -679,7 +679,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./certreplyselfR2 IKEv2 mode peer ID is ID_USER_FQDN: 'carol@strongswan.org'
 | find_ID_host_pair: looking for me=(none) him=carol@strongswan.org
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
@@ -1006,7 +1006,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c rw-any, tsi[0],tsr[0]
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=<any>
-|                   comparing to me=@moon.strongswan.org him=(none)
+|                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with rw-any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with rw-any
@@ -1015,8 +1015,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |    results  matched
 | find_host_pair: looking for me=132.213.238.7:500 %any him=93.184.216.34:500 exact-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
-| find_host_pair: concluded with <none>
-| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:none
+| find_host_pair: concluded with rw-any
+| connect_to_host_pair: 132.213.238.7:500 %any 93.184.216.34:500 -> hp:rw-any
 | instantiated "rw-any" for 93.184.216.34
 ./certreplyselfR2 switched from "rw-any" to "rw-any"[1]
 | duplicating state object #1
@@ -1558,7 +1558,6 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyselfR2 leak: st_skeyseed in duplicate_state, item size: X
 ./certreplyselfR2 leak: st_enc_key in duplicate_state, item size: X
 ./certreplyselfR2 leak: struct state in new_state(), item size: X
-./certreplyselfR2 leak: host_pair, item size: X
 ./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
 ./certreplyselfR2 leak: host ip, item size: X
