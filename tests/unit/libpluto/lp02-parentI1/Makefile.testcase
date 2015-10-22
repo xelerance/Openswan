@@ -1,0 +1,4 @@
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTESTARGS=-r ${WHACKFILE} parker1--jj2
+
+TESTNAME=parentI1
