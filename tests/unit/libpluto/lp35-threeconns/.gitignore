@@ -1,0 +1,4 @@
+threeconns
+*.o
+OUTPUT
+.gdbinit
