@@ -45,9 +45,12 @@ main(int argc, char *argv[])
     assert(c1 != NULL);
 
     //list_public_keys(FALSE, FALSE);
+#ifndef SKIP_ORIENT_ASSERT
     assert(orient(c1, 500));
+#endif
     show_one_connection(c1);
 
+#ifndef SKIP_INITIATE
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
 
@@ -56,6 +59,7 @@ main(int argc, char *argv[])
         delete_state(st);
         free_state(st);
     }
+#endif
 
     delete_connection(c1, TRUE);
 

@@ -1,0 +1,95 @@
+./threeconns loading secrets from "../samples/parker.secrets"
+./threeconns loaded private key for keyid: PPK_RSA:AQN7wUerV
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection vzhost1-vzhost-mondev with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| counting wild cards for @vzhost1.xelerance.com is 0
+| counting wild cards for @vzhost-mondev.xelerance.com is 0
+| orient vzhost1-vzhost-mondev checking against if: eth0
+| orient vzhost1-vzhost-mondev matching on public/private keys
+| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com
+|   concluded with <none>
+./threeconns adding connection: "vzhost1-vzhost-mondev"
+| 10.153.139.0/24===192.168.134.179<192.168.134.179>[@vzhost1.xelerance.com]...192.168.135.215<192.168.135.215>[@vzhost-mondev.xelerance.com]===10.153.140.0/24
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection patrickn-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+| counting wild cards for @vzhost1 is 0
+| counting wild cards for @patrickn is 0
+| orient patrickn-vzhost1 checking against if: eth0
+| find_host_pair: looking for me=173.230.133.71:500 %address him=69.165.217.138:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 173.230.133.71:500 %address 69.165.217.138:500 -> hp:none
+| find_ID_host_pair: looking for me=@vzhost1 him=@patrickn
+|                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
+|   concluded with <none>
+./threeconns adding connection: "patrickn-vzhost1"
+| 10.153.139.0/24===173.230.133.71<173.230.133.71>[@vzhost1]...69.165.217.138<69.165.217.138>[@patrickn]===192.168.88.0/24
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=173.230.133.71:500 %any him=<none>:500 any-match
+| find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): 173.230.133.71:500 %any/%any:500 -> hp:none
+| Added new connection jason-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| counting wild cards for @jason is 0
+| counting wild cards for @vzhost1.xelerance.com is 0
+| orient jason-vzhost1 checking against if: eth0
+| find_host_pair: looking for me=173.230.133.71:500 %any him=0.0.0.0:500 exact-match
+| find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 173.230.133.71:500 %any 0.0.0.0:500 -> hp:none
+| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@jason
+|                   comparing to me=@vzhost1 him=@patrickn (patrickn-vzhost1)
+|                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
+|   concluded with <none>
+./threeconns adding connection: "jason-vzhost1"
+| 10.153.139.0/24===173.230.133.71<173.230.133.71>[@vzhost1.xelerance.com]...%any[@jason]===192.168.1.248/32
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+RC=0 "vzhost1-vzhost-mondev": 10.153.139.0/24===192.168.134.179<192.168.134.179>[@vzhost1.xelerance.com]...192.168.135.215<192.168.135.215>[@vzhost-mondev.xelerance.com]===10.153.140.0/24; unrouted; eroute owner: #0
+RC=0 "vzhost1-vzhost-mondev":     myip=10.153.139.1; hisip=10.153.140.1;
+RC=0 "vzhost1-vzhost-mondev":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "vzhost1-vzhost-mondev":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 24,24; interface: ; kind=CK_PERMANENT
+RC=0 "vzhost1-vzhost-mondev":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+./threeconns deleting connection
+./threeconns leak: 2 * keep id name, item size: X
+./threeconns leak: ID host_pair, item size: X
+./threeconns leak: host_pair, item size: X
+./threeconns leak: keep id name, item size: X
+./threeconns leak: host ip, item size: X
+./threeconns leak: keep id name, item size: X
+./threeconns leak: connection name, item size: X
+./threeconns leak: struct connection, item size: X
+./threeconns leak: 2 * keep id name, item size: X
+./threeconns leak: ID host_pair, item size: X
+./threeconns leak: host_pair, item size: X
+./threeconns leak: host ip, item size: X
+./threeconns leak: keep id name, item size: X
+./threeconns leak: host ip, item size: X
+./threeconns leak: keep id name, item size: X
+./threeconns leak: connection name, item size: X
+./threeconns leak: struct connection, item size: X
+./threeconns leak: alg_info_ike, item size: X
+./threeconns leak: policies path, item size: X
+./threeconns leak: ocspcerts path, item size: X
+./threeconns leak: aacerts path, item size: X
+./threeconns leak: certs path, item size: X
+./threeconns leak: private path, item size: X
+./threeconns leak: crls path, item size: X
+./threeconns leak: cacert path, item size: X
+./threeconns leak: acert path, item size: X
+./threeconns leak: default conf var_dir, item size: X
+./threeconns leak: default conf conffile, item size: X
+./threeconns leak: default conf ipsecd_dir, item size: X
+./threeconns leak: default conf ipsec_conf_dir, item size: X
+./threeconns leak: 2 * id list, item size: X
+./threeconns leak: secret, item size: X
+./threeconns leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

@@ -1,6 +1,5 @@
 # FreeS/WAN testing makefile
-# Copyright (C) 2014 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2002 Michael Richardson <mcr@freeswan.org>
+# Copyright (C) 2015 Michael Richardson <mcr@xelerance.com>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -71,33 +70,35 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
-WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTESTARGS=-r ${WHACKFILE} parker1--jj2
 
-TESTNAME=parentI1
+include Makefile.testcase
+
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-
-check:	${WHACKFILE} OUTPUT ${EXTRAOBJS}
+programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS}
 	@echo CC ${TESTNAME}.c
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
+	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+
+check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
-	tcpdump -n -t -v -r OUTPUT/parentI1.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
+	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
+ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+endif
 
 update: OUTPUT
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/${TESTNAME}.pcap *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT
