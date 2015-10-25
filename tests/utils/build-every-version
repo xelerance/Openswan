@@ -13,7 +13,8 @@ git fetch --unshallow
 
 BUILDTMP=${BUILDTMP-.buildtmp}
 mkdir -p ${BUILDTMP}
-startingcommit=v$(make baseversion)
+basecommit=v$(make baseversion)
+startingcommit=${1-${basecommit}}
 git log --oneline ${startingcommit}.. | tac | \
     while read commit stuff
     do
