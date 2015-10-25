@@ -976,6 +976,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./certificateselfI2 leak: pubkey entry, item size: X
 ./certificateselfI2 leak: pubkey, item size: X
 ./certificateselfI2 leak: certificate filename, item size: X
+./certificateselfI2 leak: alg_info_ike, item size: X
 ./certificateselfI2 leak: 2 * id list, item size: X
 ./certificateselfI2 leak: secret, item size: X
 ./certificateselfI2 leak: policies path, item size: X
