@@ -37,8 +37,8 @@ env:
     - IPSECVERSION=0.0.0
     - BUILD_ARCH=amd64
   matrix:
-    - BUILD_HISTORY_REVS=true
     - BUILD_HISTORY_REVS=false
+    - BUILD_HISTORY_REVS=true
 
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
