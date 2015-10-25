@@ -3,7 +3,7 @@
 #include "seam_keys.c"
 
 #include "seam_host_parker.c"
-#define TESTNAME "parentI1"
+#define TESTNAME "dnscpeI1"
 
 static void init_local_interface(void)
 {
