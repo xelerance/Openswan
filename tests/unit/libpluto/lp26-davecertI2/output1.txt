@@ -1013,6 +1013,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./davecertI2 leak: pubkey entry, item size: X
 ./davecertI2 leak: pubkey, item size: X
 ./davecertI2 leak: certificate filename, item size: X
+./davecertI2 leak: alg_info_ike, item size: X
 ./davecertI2 leak: 2 * id list, item size: X
 ./davecertI2 leak: secret, item size: X
 ./davecertI2 leak: policies path, item size: X

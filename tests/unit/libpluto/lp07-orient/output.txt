@@ -21,12 +21,12 @@ RC=0 "parker1--jj2":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./orienttest deleting connection
 ./orienttest leak: 2 * keep id name, item size: X
 ./orienttest leak: ID host_pair, item size: X
-./orienttest leak: host_pair, item size: X
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: host ip, item size: X
 ./orienttest leak: keep id name, item size: X
 ./orienttest leak: connection name, item size: X
 ./orienttest leak: struct connection, item size: X
+./orienttest leak: host_pair, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X
