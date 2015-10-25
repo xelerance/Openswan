@@ -53,4 +53,6 @@ OUTPUT:
 update:
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.addconn.raw >pluto.addconn.out
 
+clean:
+	rm -rf OUTPUT OUTPUT.pid
 
