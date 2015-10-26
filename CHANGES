@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.46dr1 (October 11, 2015)
+v2.6.46dr2 (October 26, 2015)
 
 *  Fixed find_host_pair so that it finds right=%any matches correctly [MCR]
 *  Change listing to give IP/ID type on every bucket [MCR]
@@ -28,6 +28,14 @@ v2.6.46dr1 (October 11, 2015)
 *  Move try_RSA_signature_v1 to seperate file [MCR]
 *  When loading conn, process alsoflip= as well [MCR]
 *  Refactor also processing so it can be applied to alsoflip [MCR]
+*  Fixing minor typo and spelling mistakes. [Samir Hussain]
+*  Refactor whack_listen processing to seperate function for unit testing
+   Added called to check_orientations() after discovery of new interfaces [MCR]
+*  Log the connection name for each IPhostpair that is being compared to [MCR]
+*  lp24-certreply dave discovered that find_host_pair was still wrong.
+   Rewrote find_host_pair again to with bestpair mechanism to get it right [MCR]
+*  Updating man page in order to remove manual option from auto keyword
+   (it is no longer supported) [Samir Hussain]
 
 v2.6.45 (August 27, 2015)
   This release fixes CVE-2015-3240 (IKE DoS)
