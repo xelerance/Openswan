@@ -14,6 +14,7 @@ struct qke_continuation {
 typedef stf_status initiator_function(int whack_sock
 				      , struct connection *c
 				      , struct state *predecessor
+                                      , so_serial_t  *newstateno
 				      , lset_t policy
 				      , unsigned long try
 				      , enum crypto_importance importance

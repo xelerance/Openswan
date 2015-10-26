@@ -334,7 +334,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
     }
 }
 
-void
+so_serial_t
 ipsecdoi_initiate(int whack_sock
 		  , struct connection *c
 		  , lset_t policy
@@ -351,6 +351,7 @@ ipsecdoi_initiate(int whack_sock
      * other issues around intent might matter).
      * Note: there is no way to initiate with a Road Warrior.
      */
+    so_serial_t created;
     struct state *st = find_phase1_state(c
 	, ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
 
@@ -358,16 +359,16 @@ ipsecdoi_initiate(int whack_sock
     {
         if(!c->spd.that.host_address_list.addresses_available) {
             loglog(RC_LOG_SERIOUS, "Can not initiate: no remote address available (yet)");
-            return;
+            return SOS_NOBODY;
         }
 
 	initiator_function *initiator = pick_initiator(c, policy);
 
 	if(initiator) {
-	    (void) initiator(whack_sock, c, NULL, policy, try, importance
+	    (void) initiator(whack_sock, c, NULL, &created, policy, try, importance
                              , uctx
                              );
-	    return;
+	    return created;
 	}
     }
     else if (HAS_IPSEC_POLICY(policy)) {
@@ -381,7 +382,7 @@ ipsecdoi_initiate(int whack_sock
 		    , replacing
 		    , uctx
 		   );
-	return;
+	return st->st_serialno;
       }
       else {
 	/* ??? we assume that peer_nexthop_sin isn't important:
@@ -392,12 +393,14 @@ ipsecdoi_initiate(int whack_sock
 			   , replacing
 			   , uctx
 			  );
-	return;
+	return st->st_serialno;
       }
     }
 
     /* fall through in the case of error */
     close_any(whack_sock);
+
+    return SOS_NOBODY;
 }
 
 /* Replace SA with a fresh one that is similar
@@ -417,6 +420,7 @@ ipsecdoi_replace(struct state *st
 	initiator_function *initiator;
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
+    so_serial_t  newstateno;
 
     if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state) || (st->st_state == STATE_PARENT_I2))
     {
@@ -428,7 +432,7 @@ ipsecdoi_replace(struct state *st
 	initiator = pick_initiator(c, policy);
 	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
-	    (void) initiator(whack_sock, st->st_connection, st, policy
+	    (void) initiator(whack_sock, st->st_connection, st, &newstateno, policy
 			     , try, st->st_import
 			     , st->sec_ctx);
 	}
