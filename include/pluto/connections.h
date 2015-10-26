@@ -253,9 +253,10 @@ struct connection {
     bool initiated;
     bool failed_ikev2;                  /* tried ikev2, but failed */
 
-    so_serial_t	/* state object serial number */
-	newest_isakmp_sa,
-	newest_ipsec_sa;
+    /* state object serial number: weak pointers */
+    so_serial_t	prospective_parent_sa;  /* state we are still negotiating */
+    so_serial_t newest_isakmp_sa;       /* state that is negotiated/up */
+    so_serial_t newest_ipsec_sa;        /* child SA state (should be array!) */
 
     lset_t extra_debugging;
 

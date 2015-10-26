@@ -368,6 +368,7 @@ ipsecdoi_initiate(int whack_sock
 	    (void) initiator(whack_sock, c, NULL, &created, policy, try, importance
                              , uctx
                              );
+            c->prospective_parent_sa = created;
 	    return created;
 	}
     }
