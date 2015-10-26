@@ -27,30 +27,27 @@ struct state *sendI1_short(struct connection *c1, int debugging)
 	return st;
 }
 
-struct state *sendI1b(struct connection *c1, int debugging, int calculate)
+void sendI1b(struct connection *c1, int debugging, int calculate)
 {
-	struct state *st;
 	struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;  /* r is a global in the seams */
 
 	cur_debugging = debugging;
 	c1->extra_debugging = debugging;
 
-        if(calculate) {
-          calc_ke(crypto_req);
-          calc_nonce(crypto_req);
-        } else {
-          passert(kn->oakley_group == tc14_oakleygroup);
-          /* now fill in the KE values from a constant.. not calculated */
-          clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-          clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);
-          clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+        if(continuation) {
+          if(calculate) {
+            calc_ke(crypto_req);
+            calc_nonce(crypto_req);
+          } else {
+            passert(kn->oakley_group == tc14_oakleygroup);
+            /* now fill in the KE values from a constant.. not calculated */
+            clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
+            clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);
+            clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+          }
         }
 
 	run_continuation(crypto_req);
-
-	/* find st involved */
-	st = state_with_serialno(1);
-	return st;
 }
 
 struct state *sendI1(struct connection *c1, int debugging, int calculate)
@@ -71,6 +68,8 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 
         if(st == NULL) return NULL;
 
-        return sendI1b(c1, debugging, calculate);
+        sendI1b(c1, debugging, calculate);
+
+        return st;
 }
 

@@ -210,6 +210,12 @@ bool kick_adns_connection(struct connection *c)
         return FALSE;
     }
 
+    if(st == NULL ) {
+        st = state_with_serialno(c->prospective_parent_sa);
+
+        /* might need to put some state restrictions on this, or look at how many retries */
+        if(st != NULL) return FALSE;
+    }
 
     /* arrange to rekey the phase 1, if there was one. */
     if (c->spd.that.host_type == KH_IPHOSTNAME) {
@@ -219,11 +225,19 @@ bool kick_adns_connection(struct connection *c)
         kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
     }
 
-    if(kicknow) {
+    if(kicknow && c->policy & POLICY_UP) {
         struct initiate_stuff is;
+        char targetaddr[ADDRTOT_BUF];
         is.whackfd   = NULL_FD;
         is.moredebug = 0;
         is.importance= pcim_ongoing_crypto;
+
+        set_cur_connection(c);
+        addrtot(&c->spd.that.host_addr, 0, targetaddr, sizeof(targetaddr));
+        loglog(RC_NOPEERIP, "trying to initiate to address %s (name=%s)"
+               , targetaddr
+               , c->spd.that.host_addr_name);
+
 	initiate_a_connection(c, &is);
     }
 
