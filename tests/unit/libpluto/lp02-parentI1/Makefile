@@ -78,7 +78,7 @@ include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS}
+programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 	@echo CC ${TESTNAME}.c
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
@@ -96,6 +96,9 @@ ${TESTNAME}.E:
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+else
+${WHACKFILE}: ${WHACKREFFILE}
+	cp ${WHACKREFFILE} ${WHACKFILE}
 endif
 
 update: OUTPUT
