@@ -72,18 +72,31 @@ main(int argc, char *argv[])
 
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
-    reset_globals();
 
+    /* should have not created any state, no IP address yet */
+    assert(st == NULL);
+
+    reset_globals();
     send_unsent_ADNS_queries();
 
-
-    /* now process returned DNS packets */
+    /* now process returned DNS packets (NOTES: needs example.com to be alive!) */
+    /* XXX -- mock out the DNS system */
     handle_adns_answer();
 
-    /* and now see about running continuations */
-    st = sendI1b(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
+    /* should be no continuations created... */
+    assert(continuation == NULL);
 
-    st = state_with_serialno(1);
+    /* and now see about running continuations */
+    sendI1b(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
+
+    show_states_status();
+
+    /* should still be no continuations created */
+    assert(continuation == NULL);
+
+    /* so give it some attention */
+    c1->policy |= POLICY_UP;
+    st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
     if(st!=NULL) {
         delete_state(st);
         free_state(st);
