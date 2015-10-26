@@ -8,14 +8,19 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection vzhost1-vzhost-mondev with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| from whack: got --esp=aes128-sha2_256;modp4096
+| esp string values: AES(12)_128-SHA2_256(5)_000; pfsgroup=MODP4096(16); flags=-strict
+| ike (phase1) algorihtm values: AES_CBC(7)_128-SHA2_256(4)_000-MODP4096(16); flags=strict
 | counting wild cards for @vzhost1.xelerance.com is 0
 | counting wild cards for @vzhost-mondev.xelerance.com is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
 | orient vzhost1-vzhost-mondev checking against if: eth0
 | orient vzhost1-vzhost-mondev matching on public/private keys
 | find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com
 |   concluded with <none>
 ./threeconns adding connection: "vzhost1-vzhost-mondev"
-| 10.153.139.0/24===192.168.134.179<192.168.134.179>[@vzhost1.xelerance.com]...192.168.135.215<192.168.135.215>[@vzhost-mondev.xelerance.com]===10.153.140.0/24
+| 10.153.139.0/24===192.168.134.179[@vzhost1.xelerance.com]...192.168.135.215[@vzhost-mondev.xelerance.com]===10.153.140.0/24
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -30,7 +35,7 @@ processing whack msg time: X size: Y
 |                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
 |   concluded with <none>
 ./threeconns adding connection: "patrickn-vzhost1"
-| 10.153.139.0/24===173.230.133.71<173.230.133.71>[@vzhost1]...69.165.217.138<69.165.217.138>[@patrickn]===192.168.88.0/24
+| 10.153.139.0/24===173.230.133.71[@vzhost1]...69.165.217.138[@patrickn]===192.168.88.0/24
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -51,14 +56,23 @@ processing whack msg time: X size: Y
 |                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
 |   concluded with <none>
 ./threeconns adding connection: "jason-vzhost1"
-| 10.153.139.0/24===173.230.133.71<173.230.133.71>[@vzhost1.xelerance.com]...%any[@jason]===192.168.1.248/32
+| 10.153.139.0/24===173.230.133.71[@vzhost1.xelerance.com]...%any[@jason]===192.168.1.248/32
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
-RC=0 "vzhost1-vzhost-mondev": 10.153.139.0/24===192.168.134.179<192.168.134.179>[@vzhost1.xelerance.com]...192.168.135.215<192.168.135.215>[@vzhost-mondev.xelerance.com]===10.153.140.0/24; unrouted; eroute owner: #0
+RC=0 "vzhost1-vzhost-mondev": 10.153.139.0/24===192.168.134.179[@vzhost1.xelerance.com]...192.168.135.215[@vzhost-mondev.xelerance.com]===10.153.140.0/24; unrouted; eroute owner: #0
 RC=0 "vzhost1-vzhost-mondev":     myip=10.153.139.1; hisip=10.153.140.1;
 RC=0 "vzhost1-vzhost-mondev":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "vzhost1-vzhost-mondev":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 24,24; interface: ; kind=CK_PERMANENT
 RC=0 "vzhost1-vzhost-mondev":   newest ISAKMP SA: #0; newest IPsec SA: #0;
+RC=0 "vzhost1-vzhost-mondev":   IKE algorithms wanted: AES_CBC(7)_128-SHA2_256(4)_000-MODP4096(16); flags=strict
+RC=0 "vzhost1-vzhost-mondev":   IKE algorithms found:  AES_CBC(7)_128-SHA2_256(4)_000-MODP4096(16); flags=strict
+RC=0 "vzhost1-vzhost-mondev":   ESP algorithms wanted: AES(12)_128-SHA2_256(5)_000; pfsgroup=MODP4096(16); flags=-strict
+| auth algid=5 not available
+RC=0 "vzhost1-vzhost-mondev":   ESP algorithms loaded: none
 ./threeconns deleting connection
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
 ./threeconns leak: 2 * keep id name, item size: X
 ./threeconns leak: ID host_pair, item size: X
 ./threeconns leak: host_pair, item size: X
@@ -76,7 +90,6 @@ RC=0 "vzhost1-vzhost-mondev":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./threeconns leak: keep id name, item size: X
 ./threeconns leak: connection name, item size: X
 ./threeconns leak: struct connection, item size: X
-./threeconns leak: alg_info_ike, item size: X
 ./threeconns leak: policies path, item size: X
 ./threeconns leak: ocspcerts path, item size: X
 ./threeconns leak: aacerts path, item size: X
