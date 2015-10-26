@@ -1002,6 +1002,7 @@ stf_status
 aggr_outI1(int whack_sock,
 	   struct connection *c,
 	   struct state *predecessor,
+           so_serial_t  *newstateno,
 	   lset_t policy,
 	   unsigned long try
 	   , enum crypto_importance importance
@@ -1013,6 +1014,8 @@ aggr_outI1(int whack_sock,
 
     /* set up new state */
     cur_state = st = new_state();
+    if(newstateno) *newstateno = st->st_serialno;
+
     st->st_connection = c;
 #ifdef HAVE_LABELED_IPSEC
     st->sec_ctx = NULL;

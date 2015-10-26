@@ -109,6 +109,7 @@ stf_status
 main_outI1(int whack_sock
 	   , struct connection *c
 	   , struct state *predecessor
+           , so_serial_t  *newstateno
 	   , lset_t policy
 	   , unsigned long try
 	   , enum crypto_importance importance
@@ -136,6 +137,7 @@ main_outI1(int whack_sock
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
+    if(newstateno) *newstateno = st->st_serialno;
 
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv1_MAJOR_VERSION;
