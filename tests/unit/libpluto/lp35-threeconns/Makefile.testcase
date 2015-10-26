@@ -1,6 +1,6 @@
 CONNNAME=vzhost1-vzhost-mondev
 ENDNAME=vzhost1
-WHACKFILE=threeconns.whack
+WHACKFILE=OUTPUT/threeconns.whack
 WHACKREFFILE=threeconns.whack
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 
