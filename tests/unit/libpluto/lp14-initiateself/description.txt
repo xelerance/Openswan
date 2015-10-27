@@ -1,0 +1,13 @@
+This test case is an IKEv2 initiator.
+In this test case, the policy is to permit an initiator from %any to propose
+a tunnel to that end point (the /32).
+
+This test case receives a second (I2) packet from the initiator, which is
+where the CHILD SA policy is processed.  An associated lp14-initiatorany
+test case sets up the PARENT SA policy.
+
+
+
+
+
+

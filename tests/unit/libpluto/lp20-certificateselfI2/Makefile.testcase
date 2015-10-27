@@ -1,0 +1,6 @@
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+CONNNAME=home
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/parentI2.pcap
+ENDNAME=rwcert
+
+TESTNAME=certificateselfI2

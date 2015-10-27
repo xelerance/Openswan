@@ -1,7 +1,9 @@
-/* IKEv2 - more cryptographic calculations
+/* do RSA calculations operations for IKEv2
  *
- * Copyright (C) 2007 Michael Richardson <mcr@xelerance.com>
- * Copyright (C) 2008-2010 Paul Wouters <paul@xelerance.com>
+ * Copyright (C) 2015 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
+ * Copyright (C) 2009 Avesh Agarwal <avagarwa@redhat.com>
+ * Copyright (C) 2003-2010 Paul Wouters <paul@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -31,7 +33,6 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "oswlog.h"
-#include "libopenswan.h"
 
 #include "defs.h"
 #include "cookie.h"
@@ -39,100 +40,154 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "connections.h"	/* needs id.h */
+#ifdef XAUTH_USEPAM
+#include <security/pam_appl.h>
+#endif
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
-#include "demux.h"
-#include "ikev2.h"
-#include "ikev2_prfplus.h"
 #include "ike_alg.h"
-#include "alg_info.h"
-#include "kernel_alg.h"
+#include "log.h"
+#include "demux.h"	/* needs packet.h */
+#include "ikev2.h"
+#include "pluto/server.h"
+#include "vendor.h"
+#include "dpd.h"
+#include "keys.h"
 
-void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
+#include "oswcrypto.h"
+
+static u_char der_digestinfo[]={
+    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
+    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
+};
+static int der_digestinfo_len=sizeof(der_digestinfo);
+
+bool ikev2_calculate_rsa_sha1(struct state *st
+			      , enum phase1_role role
+			      , unsigned char *idhash
+			      , pb_stream *a_pbs)
 {
-	struct v2prf_stuff childsacalc;
+	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
+	size_t         signed_len;
+	const struct connection *c = st->st_connection;
+	const struct RSA_private_key *k = get_RSA_private_key(c);
+	unsigned int sz;
 
-	chunk_t ikeymat,rkeymat;
-	struct ipsec_proto_info *ipi = &st->st_esp;
+	if (k == NULL)
+	    return 0;	/* failure: no key to use */
 
-	ipi->attrs.transattrs.ei=kernel_alg_esp_info(
-		ipi->attrs.transattrs.encrypt,
-		ipi->attrs.transattrs.enckeylen,
-		ipi->attrs.transattrs.integ_hash);
+	sz = k->pub.k;
 
-	passert(ipi->attrs.transattrs.ei != NULL);
-	memset(&childsacalc, 0, sizeof(childsacalc));
-	childsacalc.prf_hasher = (struct hash_desc *)
-		ike_alg_ikev2_find(IKE_ALG_HASH
-				   , IKEv2_PRF_HMAC_SHA1, 0);
+        /*
+         * this is the prefix of the ASN/DER goop that lives inside RSA-SHA1
+         * signatures.  If the signing hash changes, this needs to change
+         * too, but this function is specific to RSA-SHA1.
+         */
+	memcpy(signed_octets, der_digestinfo, der_digestinfo_len);
 
-	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
-	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);
-	childsacalc.spii.len=0;
-	childsacalc.spir.len=0;
+	ikev2_calculate_sighash(st, role, idhash
+				, st->st_firstpacket_me
+				, signed_octets+der_digestinfo_len);
+	signed_len = der_digestinfo_len + SHA1_DIGEST_SIZE;
 
-	childsacalc.counter[0] = 1;
-	childsacalc.skeyseed = &st->st_skey_d;
+	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
 
-	st->st_esp.present = TRUE;
-	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei->enckeylen+
-		st->st_esp.attrs.transattrs.ei->authkeylen;
+	DBG(DBG_CRYPT
+	    , DBG_dump("v2rsa octets", signed_octets, signed_len));
 
+	{
+		u_char sig_val[RSA_MAX_OCTETS];
 
-/*
- *
- * Keying material MUST be taken from the expanded KEYMAT in the
- * following order:
- *
- *    All keys for SAs carrying data from the initiator to the responder
- *    are taken before SAs going in the reverse direction.
- *
- *    If multiple IPsec protocols are negotiated, keying material is
- *    taken in the order in which the protocol headers will appear in
- *    the encapsulated packet.
- *
- *    If a single protocol has both encryption and authentication keys,
- *    the encryption key is taken from the first octets of KEYMAT and
- *    the authentication key is taken from the next octets.
- *
- */
-
-	v2genbytes(&ikeymat, st->st_esp.keymat_len
-		   , "initiator keys", &childsacalc);
-
-	v2genbytes(&rkeymat, st->st_esp.keymat_len
-		   , "responder keys", &childsacalc);
-
-	/* This should really be role == INITIATOR, but then our keys are
-	 * installed reversed. This is a workaround until we locate the
-	 * real problem. It's better not to release copies of our code
-	 * that will be incompatible with everything else, including our
-	 * own updated version
-	 * Found by Herbert Xu
-	 * if(role == INITIATOR) {
-	 */
-	if(role != INITIATOR) {
-	    DBG(DBG_CRYPT,
-		DBG_dump_chunk("our  keymat", ikeymat);
-		DBG_dump_chunk("peer keymat", rkeymat);
-	    );
-	    st->st_esp.our_keymat = ikeymat.ptr;
-	    st->st_esp.peer_keymat= rkeymat.ptr;
-	} else {
-	    DBG(DBG_CRYPT,
-		DBG_dump_chunk("our  keymat", rkeymat);
-		DBG_dump_chunk("peer keymat", ikeymat);
-	    );
-	    st->st_esp.peer_keymat= ikeymat.ptr;
-	    st->st_esp.our_keymat = rkeymat.ptr;
+		/* now generate signature blob */
+		sign_hash(k, signed_octets, signed_len
+			  , sig_val, sz);
+		out_raw(sig_val, sz, a_pbs, "rsa signature");
 	}
 
+	return TRUE;
 }
 
+err_t
+try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
+		     , size_t hash_len
+		     , const pb_stream *sig_pbs, struct pubkey *kr
+		     , struct state *st)
+{
+    const u_char *sig_val = sig_pbs->cur;
+    size_t sig_len = pbs_left(sig_pbs);
+    u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
+    u_char *sig;
+    unsigned int padlen;
+    const struct RSA_public_key *k = &kr->u.rsa;
+
+    if (k == NULL)
+	return "1""no key available";	/* failure: no key to use */
+
+    /* decrypt the signature -- reversing RSA_sign_hash */
+    if (sig_len != k->k)
+    {
+        DBG_log("sig_len: %u != k->k: %u"
+                , (unsigned int)sig_len, (unsigned int)k->k);
+	return "1""SIG length does not match public key length";
+    }
+
+    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
+    {
+	chunk_t temp_s;
+	MP_INT c;
+
+	n_to_mpz(&c, sig_val, sig_len);
+	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
+
+	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
+	memcpy(s, temp_s.ptr, sig_len);
+	pfree(temp_s.ptr);
+	mpz_clear(&c);
+    }
+
+    /* check signature contents */
+    /* verify padding */
+    padlen = sig_len - 3 - (hash_len+der_digestinfo_len);
+    /* now check padding */
+    sig = s;
+
+    DBG(DBG_CRYPT,
+	DBG_dump("v2rsa decrypted SIG1:", sig, sig_len));
+
+    if(sig[0]    != 0x00
+       || sig[1] != 0x01
+       || sig[padlen+2] != 0x00) {
+	return "2""SIG padding does not check out";
+    }
+
+    /* skip padding */
+    sig += padlen+3;
+
+    /* 2 verify that the has was done with SHA1 */
+    if(memcmp(der_digestinfo, sig, der_digestinfo_len)!=0) {
+	return "SIG not performed with SHA1";
+    }
+
+    sig += der_digestinfo_len;
+
+    DBG(DBG_CRYPT,
+	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
+	DBG_dump("v2rsa computed hash:", sig, hash_len);
+    );
+
+    if(memcmp(sig, hash_val, hash_len) != 0) {
+	return "9""authentication failure: received SIG does not match computed HASH, but message is well-formed";
+    }
+
+    unreference_key(&st->st_peer_pubkey);
+    st->st_peer_pubkey = reference_key(kr);
+
+    return NULL;
+}
 
 /*
  * Local Variables:
@@ -140,4 +195,3 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
  * c-style: pluto
  * End:
  */
-

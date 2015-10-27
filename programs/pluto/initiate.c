@@ -54,7 +54,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -62,7 +62,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -80,91 +80,9 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "hostpair.h"
-
-bool
-orient(struct connection *c)
-{
-    struct spd_route *sr;
-
-    if (!oriented(*c))
-    {
-	struct iface_port *p;
-
-	for (sr = &c->spd; sr; sr = sr->next)
-	{
-	    /* There can be more then 1 spd policy associated - required
-	     * for cisco split networking when remote_peer_type=cisco
-	     */
-	    if(c->remotepeertype == CISCO && sr != &c->spd ) continue;
-
-	    /* Note: this loop does not stop when it finds a match:
-	     * it continues checking to catch any ambiguity.
-	     */
-	    for (p = interfaces; p != NULL; p = p->next)
-	    {
-#ifdef NAT_TRAVERSAL
-		if (p->ike_float) continue;
-#endif
-
-#ifdef HAVE_LABELED_IPSEC
-		if (c->loopback && sameaddr(&sr->this.host_addr, &p->ip_addr)) {
-		DBG(DBG_CONTROLMORE,
-			DBG_log("loopback connections \"%s\" with interface %s!"
-			 , c->name, p->ip_dev->id_rname));
-			c->interface = p;
-			break;
-		}
-#endif
-
-		for (;;)
-		{
-		    /* check if this interface matches this end */
-		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
-			&& (kern_interface != NO_KERNEL
-			    || sr->this.host_port == pluto_port))
-		    {
-			if (oriented(*c))
-			{
-			    if (c->interface->ip_dev == p->ip_dev)
-				loglog(RC_LOG_SERIOUS
-				       , "both sides of \"%s\" are our interface %s!"
-				       , c->name, p->ip_dev->id_rname);
-			    else
-				loglog(RC_LOG_SERIOUS, "two interfaces match \"%s\" (%s, %s)"
-				       , c->name, c->interface->ip_dev->id_rname, p->ip_dev->id_rname);
-			    terminate_connection(c->name);
-			    c->interface = NULL;	/* withdraw orientation */
-			    return FALSE;
-			}
-			c->interface = p;
-		    }
-
-		    /* done with this interface if it doesn't match that end */
-		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
-			  && (kern_interface!=NO_KERNEL
-			      || sr->that.host_port == pluto_port)))
-			break;
-
-		    /* swap ends and try again.
-		     * It is a little tricky to see that this loop will stop.
-		     * Only continue if the far side matches.
-		     * If both sides match, there is an error-out.
-		     */
-		    {
-			struct end t = sr->this;
-
-			sr->this = sr->that;
-			sr->that = t;
-		    }
-		}
-	    }
-	}
-    }
-    return oriented(*c);
-}
 
 struct initiate_stuff {
     int    whackfd;
@@ -199,19 +117,20 @@ initiate_a_connection(struct connection *c
     else if (c->kind != CK_PERMANENT)
     {
 	if (isanyaddr(&c->spd.that.host_addr)) {
-#ifdef DYNAMICDNS
-	    if (c->dnshostname != NULL) {
-		loglog(RC_NOPEERIP, "cannot initiate connection without resolved dynamic peer IP address, will keep retrying");
-		success = 1;
+            if(c->spd.that.host_type == KH_IPHOSTNAME
+               && c->spd.that.host_address_list.address_list == NULL) {
+                loglog(RC_NOPEERIP, "dns resolution for %s not yet complete, still trying"
+                       , c->spd.that.host_addr_name);
+                success = 1;
 		c->policy |= POLICY_UP;
-	    } else
-#endif
+            } else {
 		loglog(RC_NOPEERIP, "cannot initiate connection without knowing peer IP address (kind=%s)"
 		       , enum_show(&connection_kind_names, c->kind));
-	} else
-	    loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
-		   , enum_show(&connection_kind_names, c->kind));
-    }
+            }
+        } else
+            loglog(RC_WILDCARD, "cannot initiate connection with ID wildcards (kind=%s)"
+                   , enum_show(&connection_kind_names, c->kind));
+        }
     else
     {
 	/* We will only request an IPsec SA if policy isn't empty
@@ -279,48 +198,90 @@ initiate_connection(const char *name, int whackfd
     close_any(is.whackfd);
 }
 
+bool kick_adns_connection(struct connection *c)
+{
+    bool kicknow = FALSE;
+    struct state *st = state_with_serialno(c->newest_isakmp_sa);
+
+    if(st != NULL
+       && (IS_ISAKMP_SA_ESTABLISHED(st->st_state) || IS_PARENT_SA_ESTABLISHED(st->st_state))) {
+
+        /* the connection is up, no point in doing it again */
+        DBG(DBG_DNS
+            , DBG_log("  DNS already connected, do not reinit"));
+        return FALSE;
+    }
+
+    if(st == NULL ) {
+        st = state_with_serialno(c->prospective_parent_sa);
+
+        /* might need to put some state restrictions on this, or look at how many retries */
+        if(st != NULL) {
+            DBG(DBG_DNS
+                , DBG_log("  DNS connection attempt in progress, do not restart"));
+            return FALSE;
+        }
+    }
+
+    /* arrange to rekey the phase 1, if there was one. */
+    if (c->spd.that.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that);
+    }
+    if (!kicknow && c->spd.this.host_type == KH_IPHOSTNAME) {
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
+    }
+
+    if(kicknow && c->policy & POLICY_UP) {
+        struct initiate_stuff is;
+        char targetaddr[ADDRTOT_BUF];
+        is.whackfd   = NULL_FD;
+        is.moredebug = 0;
+        is.importance= pcim_ongoing_crypto;
+
+        DBG(DBG_DNS
+            , DBG_log("  attempting to reinit"));
+
+        set_cur_connection(c);
+        addrtot(&c->spd.that.host_addr, 0, targetaddr, sizeof(targetaddr));
+        loglog(RC_NOPEERIP, "trying to initiate to address %s (name=%s)"
+               , targetaddr
+               , c->spd.that.host_addr_name);
+
+	initiate_a_connection(c, &is);
+    } else {
+        DBG(DBG_DNS
+            , DBG_log("  no additional DNS answers,  not re-attempting"));
+    }
+
+    return kicknow;
+}
+
+
 void
 restart_connections_by_peer(struct connection *c)
 {
     struct connection *d;
 
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
    	   return;
 
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
-	   if (
-#ifdef DYNAMICDNS
-	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-	   	|| (c->dnshostname == NULL && d->dnshostname == NULL &&
-#endif /* DYNAMICDNS */
-		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
-#ifdef DYNAMICDNS
-		)
-#endif /* DYNAMICDNS */
-		)
-	       terminate_connection(d->name);
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
+        if(compare_end_addr_names(&c->spd.that, &d->spd.that)) {
+                terminate_connection(d->name);
+        }
     }
 
-#ifdef DYNAMICDNS
     update_host_pairs(c);
-#endif /* DYNAMICDNS */
 
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
     	   return;
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
-    	   if (
-#ifdef DYNAMICDNS
-	       (c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-	   	|| (c->dnshostname == NULL && d->dnshostname == NULL &&
-#endif /* DYNAMICDNS */
-		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)
-#ifdef DYNAMICDNS
-		)
-#endif /* DYNAMICDNS */
-		)
-	       initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
+
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
+        if (compare_end_addr_names(&c->spd.that, &d->spd.that)) {
+            initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
+        }
     }
 }
 
@@ -1563,12 +1524,11 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr)
 		|| (c->spd.that.host_port != d->spd.that.host_port))
-#ifdef DYNAMICDNS
-	    && !(c->dnshostname && d->dnshostname && (strcmp(c->dnshostname, d->dnshostname) == 0))
-#endif /* DYNAMICDNS */
+	    && !(c->spd.that.host_type == KH_IPHOSTNAME
+                 && d->spd.that.host_type == KH_IPHOSTNAME
+                 && (strcasecmp(c->spd.that.host_addr_name, d->spd.that.host_addr_name) == 0))
 	       )
-
-	    {
+                {
 		release_connection(d, FALSE);
 	    }
 	    d = next;
@@ -1612,15 +1572,13 @@ shunt_owner(const ip_subnet *ours, const ip_subnet *his)
 static void connection_check_ddns1(struct connection *c)
 {
     struct connection *d;
-    ip_address new_addr;
-    /* const struct af_info afi; */
-    const char *e;
 
     if (NEVER_NEGOTIATE(c->policy))
 	return;
 
-    if (c->dnshostname == NULL)
-	return;
+    if (c->spd.this.host_type != KH_IPHOSTNAME
+        && c->spd.that.host_type != KH_IPHOSTNAME)
+        return;
 
     if (!isanyaddr(&c->spd.that.host_addr)) {
 	DBG(DBG_CONTROLMORE,
@@ -1631,44 +1589,33 @@ static void connection_check_ddns1(struct connection *c)
 
     if (c->spd.that.has_client_wildcard || c->spd.that.has_port_wildcard
 	    || ((c->policy & POLICY_SHUNT_MASK) == 0 &&
-	    c->spd.that.has_id_wildcards)) {
+	    c->spd.that.id.has_wildcards)) {
 	DBG(DBG_CONTROL,
 	    DBG_log("pending ddns: connection \"%s\" with wildcard not started",
 	    c->name));
 	return;
     }
 
-
-    e = ttoaddr(c->dnshostname, 0, 0, &new_addr);
-    if (e != NULL) {
+    if (c->spd.this.host_type != KH_IPHOSTNAME
+         && isanyaddr(&c->spd.this.host_addr)) {
 	DBG(DBG_CONTROL,
-	    DBG_log("pending ddns: connection \"%s\" lookup of \"%s\" failed: %s",
-	    c->name, c->dnshostname, e));
+	    DBG_log("pending ddns: connection \"%s\" still no this address for \"%s\"",
+	    c->name, c->spd.this.host_addr_name));
 	return;
     }
 
-    if (isanyaddr(&new_addr)) {
+    if (c->spd.that.host_type != KH_IPHOSTNAME
+         && isanyaddr(&c->spd.that.host_addr)) {
 	DBG(DBG_CONTROL,
-	    DBG_log("pending ddns: connection \"%s\" still no address for \"%s\"",
-	    c->name, c->dnshostname));
+	    DBG_log("pending ddns: connection \"%s\" still no that address for \"%s\"",
+	    c->name, c->spd.that.host_addr_name));
 	return;
     }
-
-    /* I think this is ok now we check everything above ? */
-    c->kind = CK_PERMANENT;
-    c->spd.that.host_addr = new_addr;
 
     /* a small bit of code from default_end to fixup the end point */
     /* default nexthop to other side */
     if (isanyaddr(&c->spd.this.host_nexthop))
 	c->spd.this.host_nexthop = c->spd.that.host_addr;
-
-    /* default client to subnet containing only self
-     * XXX This may mean that the client's address family doesn't match
-     * tunnel_addr_family.
-     */
-    if (!c->spd.that.has_client)
-	addrtosubnet(&c->spd.that.host_addr, &c->spd.that.client);
 
     /*
      * reduce the work we do by updating all connections waiting for this
@@ -1678,18 +1625,15 @@ static void connection_check_ddns1(struct connection *c)
     initiate_connection(c->name, NULL_FD, 0, pcim_demand_crypto);
 
     /* no host pairs,  no more to do */
-    if (c->host_pair == NULL)
+    if (c->IPhost_pair == NULL)
 	return;
 
-    d = c->host_pair->connections;
-    for (; d != NULL; d = d->hp_next) {
+    d = c->IPhost_pair->connections;
+    for (; d != NULL; d = d->IPhp_next) {
 	/* just in case we see ourselves */
 	if (c == d)
 	    continue;
-	if ((c->dnshostname && d->dnshostname &&
-		(strcmp(c->dnshostname, d->dnshostname) == 0))
-		|| (c->dnshostname == NULL && d->dnshostname == NULL &&
-		sameaddr(&d->spd.that.host_addr, &c->spd.that.host_addr)))
+	if (compare_end_addr_names(&c->spd.that, &d->spd.that))
 	    initiate_connection(d->name, NULL_FD, 0, pcim_demand_crypto);
     }
 }
@@ -1713,7 +1657,6 @@ void connection_check_ddns(void)
     check_orientations();
 }
 #endif /* DYNAMICDNS */
-
 
 #define PENDING_PHASE2_INTERVAL (60*2) /*time between scans of pending phase2*/
 
@@ -1755,19 +1698,12 @@ void connection_check_phase2(void)
 	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
 
 	    if(p1st) {
-		/* arrange to rekey the phase 1, if there was one. */
-#ifdef DYNAMICDNS
-	    if (c->dnshostname != NULL)
-		restart_connections_by_peer(c);
-	    else
-	    {
-#endif /* DYNAMICDNS */
-		delete_event(p1st);
-		event_schedule(EVENT_SA_REPLACE, 0, p1st);
-#ifdef DYNAMICDNS
-	    }
-#endif /* DYNAMICDNS */
+                bool kicknow = kick_adns_connection(c);
 
+                if(!kicknow) {
+                    delete_event(p1st);
+                    event_schedule(EVENT_SA_REPLACE, 0, p1st);
+                }
 	    } else {
 		/* start a new connection. Something wanted it up */
 		struct initiate_stuff is;
@@ -1784,9 +1720,7 @@ void connection_check_phase2(void)
 
 void init_connections(void)
 {
-#ifdef DYNAMICDNS
     event_schedule(EVENT_PENDING_DDNS, PENDING_DDNS_INTERVAL, NULL);
-#endif
     event_schedule(EVENT_PENDING_PHASE2, PENDING_PHASE2_INTERVAL, NULL);
 }
 

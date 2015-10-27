@@ -422,6 +422,8 @@ load_crls(void)
     int n;
     const struct osw_conf_options *oco = osw_init_options();
 
+    filelist = NULL;
+
     /* change directory to specified path */
     save_dir = getcwd(buf, PATH_MAX);
     if (chdir(oco->crls_dir) == -1)
@@ -430,8 +432,8 @@ load_crls(void)
     }
     else
     {
-	DBG(DBG_CONTROL, DBG_log("Changing to directory '%s'", oco->crls_dir));
 	n = scandir(oco->crls_dir, &filelist, (void *) file_select, alphasort);
+	DBG(DBG_CONTROL, DBG_log("Found %d items in directory '%s'", n, oco->crls_dir));
 
 	if (n > 0)
 	{

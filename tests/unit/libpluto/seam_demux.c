@@ -2,13 +2,21 @@
 #include <netinet/ip.h>
 #include <netinet/udp.h>
 
+#include "log.h"
+#include "id.h"
+
 pb_stream      reply_stream;
 time_t         packet_time=0;
-pcap_dumper_t *packet_save;
+pcap_dumper_t *packet_save = NULL;
 
 void send_packet_setup_pcap(char *file)
 {
 	pcap_t *pt;
+
+        if(packet_save != NULL) {
+          pcap_dump_close(packet_save);
+          packet_save = NULL;
+        }
 
 	pt = pcap_open_dead(DLT_NULL, 9000);
 	packet_save = pcap_dump_open(pt, file);

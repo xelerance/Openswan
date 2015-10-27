@@ -1,0 +1,5 @@
+TESTNAME=certreplyselfR1
+CONNNAME=rw-any
+ENDNAME=gatewaycert
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/parentR1.pcap
+

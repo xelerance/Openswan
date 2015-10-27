@@ -290,7 +290,7 @@
  * To avoid combinatorial explosion, we leave out DES_CBC_BLOCK_SIZE.
  */
 #define MAX_DIGEST_LEN_OLD (MD5_DIGEST_SIZE > SHA1_DIGEST_SIZE? MD5_DIGEST_SIZE : SHA1_DIGEST_SIZE)
-  
+
 /* for max: SHA2_512 */
 #define MAX_DIGEST_LEN (512/BITS_PER_BYTE)
 
@@ -300,11 +300,15 @@
 /* RFC 2403 "HMAC-MD5-96" section 3 */
 #define HMAC_MD5_KEY_LEN    MD5_DIGEST_SIZE
 
-#define IKE_UDP_PORT	500
+#define IKE_UDP_PORT	  500
+#define NAT_IKE_UDP_PORT 4500 /* RFC-3947 */
 
-/* Version numbers - IKEv1 */
-#define ISAKMP_MAJOR_VERSION   0x1
-#define ISAKMP_MINOR_VERSION   0x0
+/* Version numbers - IKEv1 --- never got bumped, protocol was not upgradeable */
+#define IKEv1_MAJOR_VERSION   0x1
+#define IKEv1_MINOR_VERSION   0x0
+/* should obsolete these */
+#define ISAKMP_MAJOR_VERSION   IKEv1_MAJOR_VERSION
+#define ISAKMP_MINOR_VERSION   IKEv1_MINOR_VERSION
 
 /* version numbers - IKEv2 */
 #define IKEv2_MAJOR_VERSION    0x2
@@ -390,7 +394,7 @@ enum next_payload_types {
 
 #define ISAKMP_v2PAYLOAD_TYPE_BASE     ISAKMP_NEXT_v2SA        /* lowest value of a v2 payload type */
 
-/* These values are to be used within the Type field of an Attribute (14) 
+/* These values are to be used within the Type field of an Attribute (14)
  *    ISAKMP payload.  */
 #define ISAKMP_CFG_REQUEST         1
 #define ISAKMP_CFG_REPLY           2
@@ -539,7 +543,7 @@ extern const char *const critical_names[];
 
 /*
  * IKEv2 proposal
- * See http://www.iana.org/assignments/ikev2-parameters 
+ * See http://www.iana.org/assignments/ikev2-parameters
  */
 enum ikev2_trans_type {
 	IKEv2_TRANS_TYPE_ENCR = 1,
@@ -618,7 +622,7 @@ enum ikev2_trans_type_esn {
 	IKEv2_ESN_ENABLED  = 1,
 };
 
-/* RFC 4306 Section 3.3.5 */	
+/* RFC 4306 Section 3.3.5 */
 enum ikev2_trans_attr_type {
 	IKEv2_KEY_LENGTH = 14,
 };
@@ -626,7 +630,7 @@ enum ikev2_trans_attr_type {
 /* RFC 5966 Section 3.13.1 */
 enum ikev2_ts_type {
 	/* 0-6 RESERVED */
-	IKEv2_TS_IPV4_ADDR_RANGE = 7, 
+	IKEv2_TS_IPV4_ADDR_RANGE = 7,
 	IKEv2_TS_IPV6_ADDR_RANGE = 8,
 	IKEv2_TS_FC_ADDR_RANGE = 9, /* RFC4595, not implemented */
 	/* 10-240 Unassigned */
@@ -682,7 +686,7 @@ typedef u_int16_t cpi_t;
 /*
   extern enum_names cert_type_names;
 */
-  
+
 
 /* Oakley transform attributes
  * draft-ietf-ipsec-ike-01.txt appendix A
@@ -955,7 +959,7 @@ enum ike_trans_type_dh {
  */
 
 /*
- * IKEv1 RFC2408 http://www.iana.org/assignments/ipsec-registry 
+ * IKEv1 RFC2408 http://www.iana.org/assignments/ipsec-registry
  * extern enum_names notification_names;
  * extern enum_names ipsec_notification_names;
  */
@@ -1018,7 +1022,7 @@ typedef enum {
     ISAKMP_N_CISCO_UNKNOWN_40502 = 40502,
     ISAKMP_N_CISCO_PRESHARED_KEY_HASH = 40503,
 
-    /* RFC 3706 DPD */ 
+    /* RFC 3706 DPD */
     R_U_THERE =       36136,
     R_U_THERE_ACK =   36137,
 

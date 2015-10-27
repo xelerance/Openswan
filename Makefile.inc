@@ -199,7 +199,7 @@ USERCOMPILE?=-g -O3 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -
 #USERCOMPILE?=-g -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fstack-protector --param=ssp-buffer-size=4  -m64 -mtune=generic -fPIE -pie -DSUPPORT_BROKEN_ANDROID_ICS
 KLIPSCOMPILE=-O2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wformat -Wformat-security -Werror=format-security -D_FORTIFY_SOURCE=2 -DCONFIG_KLIPS_ALG -DDISABLE_UDP_CHECKSUM
 # Additional debugging for developers (warning: can crash openswan!)
-#USERCOMPILE?=-g -DLEAK_DETECTIVE -lefence
+#USERCOMPILE?=-g -DLEAK_DETECTIVE ${LIBEFENCE}
 # You can also run this before starting openswan on glibc systems:
 #export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
 
@@ -279,19 +279,6 @@ RH_KERNELSRC?=/lib/modules/2.6.9-1.681_FC3/build
 #       these let you turn on/off specific features
 # HAVE_ variables let you tell Openswan what system related libraries
 #       you may or maynot have
-
-# LWRES is the lightweight resolver, part of BIND9
-# We test with LWRES, but ship with it off, as it requires
-# additional headers not present on most systems.
-# Note you need a locally running bind9 nameserver with lwres{} enabled
-# to use this, or have the "lwres" package installed and running.
-# This only affects conns that use DNS for keys in lookups.
-USE_LWRES?=false
-
-# Do a new lookup every time a connection is (re)started. This works better
-# on hosts with some dyndns service, since DPD will cause a new dns lookup,
-# but it could be a potential security issue if receiving spoofed dns.
-USE_DYNAMICDNS?=true
 
 # Do we want all the configuration files like ipsec.conf and ipsec.secrets
 # and any certificates to be in a single directory defined by
@@ -466,12 +453,7 @@ endif
 HAVE_BROKEN_POPEN?=false
 
 # For systems with no fork (uclibc nommu)
-# requires  USE_LWRES=false
 HAVE_NO_FORK?=false
-
-ifeq ($(HAVE_NO_FORK),true)
-USE_LWRES=false
-endif
 
 NONINTCONFIG=oldconfig
 
@@ -537,6 +519,15 @@ export OBJDIR
 export OBJDIRTOP
 
 
+# sometimes efence not available.
+LIBEFENCE?=-lefence
+ifeq (${LIBEFENCE},)
+HAVE_EFENCE=
+else
+HAVE_EFENCE=-DHAVE_EFENCE
+endif
+
+
 ### paths within the source tree
 
 KLIPSINC=${OPENSWANSRCDIR}/linux/include
@@ -551,10 +542,6 @@ PLUTOLIB=${LIBPLUTO}
 LIBOSWLOG=${OBJDIRTOP}/lib/liboswlog/liboswlog.a
 LIBOSWKEYS=${OBJDIRTOP}/lib/liboswkeys/liboswkeys.a
 
-LWRESDIR=${OPENSWANSRCDIR}/lib/liblwres
-LIBLWRES=${OBJDIRTOP}/lib/liblwres/liblwres.a
-LIBDNS=${OBJDIRTOP}/lib/libdns/libdns.a
-LIBISC=${OBJDIRTOP}/lib/libisc/libisc.a
 LIBBSDPFKEY=${OBJDIRTOP}/lib/libbsdpfkey/libbsdpfkey.a
 
 # point at your libgmp.a if you don't have a system one.
@@ -614,8 +601,13 @@ endif
 LIBPOLICYDIR=${OPENSWANSRCDIR}/linux/lib/libipsecpolicy
 POLICYLIB=${OBJDIRTOP}/lib/libipsecpolicy/libipsecpolicy.a
 
-WHACKLIB=${OBJDIRTOP}/lib/libwhack/libwhack.a
+LIBWHACK=${OBJDIRTOP}/lib/libwhack/libwhack.a
+WHACKLIB=${LIBWHACK}
 LIBIPSECCONF=${OBJDIRTOP}/lib/libipsecconf/libipsecconf.a
+
+
+# for testing
+TESTUTILS=${OPENSWANSRCDIR}/tests/utils
 
 # set this to "ulimit -c unlimited" if you want core dumps from unit tests.
 COREULIMIT?=/bin/true
@@ -623,10 +615,9 @@ COREULIMIT?=/bin/true
 # export everything so that scripts can use them.
 export LIBOPENSWANDIR OPENSWANSRCDIR ARCH PORTINCLUDE
 export LIBOPENSWANDIR LIBOPENSWAN LIBOSWLOG LIBPLUTO LIBOSWKEYS PLUTOLIB
-export LWRESDIR LIBLWRES LIBDNS
-export LIBISC ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
+export ISCARCH ISCHOSTARCH LIBDESSRCDIR LIBDESLITE LIBAES
 export LIBMD5 LIBMD2 LIBSHA1 LIBBLOWFISH LIBTWOFISH LIBSERPENT
-export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB IPSECCONFLIB
+export LIBSHA2 CRYPTOLIBS LIBPOLICYDIR POLICYLIB WHACKLIB LIBIPSECCONF
 export LIBOSWCRYPTO LIBGMP
 
 #KERNELBUILDMFLAGS=--debug=biv V=1

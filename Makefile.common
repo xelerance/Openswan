@@ -1,3 +1,4 @@
+# -*- makefile -*-
 # some files have issues with cpp, and need -Wno-error=cpp, but only for
 # newer versions of gcc.
 # Check if GCC's version is recent enough
@@ -16,7 +17,7 @@ endif
 ifeq ($(V),1)
 	${CC} -c ${CFLAGS} $<
 else
-	@echo CC `basename $<`
+	@echo CC $(notdir $<)
 	@${CC} -c ${CFLAGS} $<
 endif
 

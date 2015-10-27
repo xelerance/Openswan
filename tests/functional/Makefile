@@ -18,4 +18,9 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 check:
 	@${MAKE} -C 01-confread check
+	@${MAKE} -C 03-plutostart check
+	@${MAKE} -C 04-whackwrite check
+	@${MAKE} -C 05-addconn check
+	@${MAKE} -C 06-alsoflip check
+	@${MAKE} -C 06-dnsdelay check
 

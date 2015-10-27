@@ -48,7 +48,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "whack.h"	/* needs connections.h */
 #include "packet.h"
@@ -57,15 +57,17 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "kernel.h"	/* needs connections.h */
 #include "rcv_whack.h"
+#include "pluto/whackfile.h"
 #include "log.h"
 #include "keys.h"
 #include "secrets.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "fetch.h"
 #include "ocsp.h"
 #include "timer.h"
+#include "hostpair.h"
 
 #include "kernel_alg.h"
 #include "ike_alg.h"
@@ -127,92 +129,6 @@ key_add_merge(struct key_add_common *oc, const struct id *keyid)
 	pfree(oc);
     }
 }
-
-static char whackrecordname[PATH_MAX];
-static FILE *whackrecordfile=NULL;
-
-/*
- * writes out 64-bit time, even though we actually
- * only have 32-bit time here. Assumes that time will
- * be written out in big-endian format, with MSB word
- * being first.
- *
- */
-static bool writewhackrecord(char *buf, int buflen)
-{
-    u_int32_t header[3];
-    time_t n;
-
-    /* round up buffer length */
-    int abuflen = (buflen + 3) & ~0x3;
-
-    /* bail if we aren't writing anything */
-    if(whackrecordfile == NULL) return TRUE;
-
-    header[0]=buflen + sizeof(u_int32_t)*3;
-    header[1]=0;
-    time(&n);
-    header[2]=n;
-
-    DBG(DBG_CONTROL
-	, DBG_log("writewhack record buflen: %u abuflen: %u\n", header[0], abuflen));
-
-    if(fwrite(header, sizeof(u_int32_t)*3, 1, whackrecordfile) < 1) {
-	DBG_log("writewhackrecord: fwrite error when writing header");
-    }
-
-    if(fwrite(buf, abuflen, 1, whackrecordfile) < 1) {
-	DBG_log("writewhackrecord: fwrite error when writing buf");
-    }
-    fflush(whackrecordfile);
-
-    return TRUE;
-}
-
-
-/*
- * we write out an empty record with the right WHACK magic.
- * this should permit a later mechanism to figure out the
- * endianess of the file, since we will get records from
- * other systems for analysis eventually.
- */
-static bool openwhackrecordfile(char *file)
-{
-    char when[256];
-    char FQDN[HOST_NAME_MAX + 1];
-    u_int32_t magic;
-    struct tm tm1, *tm;
-    time_t n;
-
-    strcpy(FQDN, "unknown host");
-    gethostname(FQDN, sizeof(FQDN));
-
-    strncpy(whackrecordname, file, sizeof(whackrecordname));
-    whackrecordfile = fopen(whackrecordname, "w");
-    if(whackrecordfile==NULL) {
-	openswan_log("Failed to open whack record file: '%s'\n"
-		     , whackrecordname);
-	return FALSE;
-    }
-
-    time(&n);
-    tm = localtime_r(&n, &tm1);
-    strftime(when, sizeof(when), "%F %T", tm);
-
-    fprintf(whackrecordfile, "#!-pluto-whack-file- recorded on %s on %s\n",
-	    FQDN, when);
-
-    magic = WHACK_BASIC_MAGIC;
-    writewhackrecord((char *)&magic, 4);
-    fflush(whackrecordfile);
-
-    DBG(DBG_CONTROL
-	, DBG_log("writewhack started recording whack messages to %s\n"
-		  , whackrecordname));
-    return TRUE;
-}
-
-
 
 static void
 key_add_continue(struct adns_continuation *ac, err_t ugh)
@@ -323,6 +239,25 @@ key_add_request(const struct whack_message *msg)
 }
 
 /*
+ * handle a whack --listen: may also be called on SIGHUP eventually,
+ *               or when routing socket is added.
+ */
+void whack_listen(void) {
+    fflush(stderr);
+    fflush(stdout);
+    close_peerlog();    /* close any open per-peer logs */
+    openswan_log("listening for IKE messages");
+    listening = TRUE;
+    daily_log_reset();
+    reset_adns_restart_count();
+    set_myFQDN();
+    find_ifaces();
+    check_orientations();
+    load_preshared_secrets(NULL_FD);
+    load_groups();
+}
+
+/*
  * handle a whack message.
  */
 void whack_process(int whackfd, struct whack_message msg)
@@ -368,27 +303,14 @@ void whack_process(int whackfd, struct whack_message msg)
 
 	case WHACK_STARTWHACKRECORD:
 	    /* close old filename */
-	    if(whackrecordfile) {
-		DBG(DBG_CONTROL
-		    , DBG_log("stopped recording whack messages to %s\n"
-			      , whackrecordname));
-		fclose(whackrecordfile);
-	    }
-	    whackrecordfile=NULL;
+            close_whackrecordfile();
 
 	    openwhackrecordfile(msg.string1);
-
 	    /* do not do any other processing for these */
 	    goto done;
 
 	case WHACK_STOPWHACKRECORD:
-	    if(whackrecordfile) {
-		DBG(DBG_CONTROL
-		    , DBG_log("stopped recording whack messages to %s\n"
-			      , whackrecordname));
-		fclose(whackrecordfile);
-	    }
-	    whackrecordfile=NULL;
+            close_whackrecordfile();
 	    /* do not do any other processing for these */
 	    goto done;
 	}
@@ -428,17 +350,7 @@ void whack_process(int whackfd, struct whack_message msg)
     /* process "listen" before any operation that could require it */
     if (msg.whack_listen)
     {
-	fflush(stderr);
-	fflush(stdout);
-	close_peerlog();    /* close any open per-peer logs */
-	openswan_log("listening for IKE messages");
-	listening = TRUE;
-	daily_log_reset();
-	reset_adns_restart_count();
-	set_myFQDN();
-	find_ifaces();
-	load_preshared_secrets(NULL_FD);
-	load_groups();
+        whack_listen();
     }
     if (msg.whack_unlisten)
     {
@@ -556,6 +468,11 @@ void whack_process(int whackfd, struct whack_message msg)
        list_ocsp_fetch_requests(msg.whack_utc);
     }
 #endif
+
+    if (msg.whack_list & LIST_HOSTPAIRS)
+    {
+	hostpair_list();
+    }
 
     if (msg.whack_list & LIST_EVENTS)
     {
@@ -728,7 +645,7 @@ whack_handle(int whackctlfd)
 	    }
 	    else
 	    {
-		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and KLIPS code."
+		ugh = builddiag("ignoring message from whack with bad magic %08x; should be %08x; Mismatched versions of userland tools and PLUTO code."
                                 , msg.magic, WHACK_MAGIC);
 	    }
 	}

@@ -1,0 +1,10 @@
+This test case is an IKEv2 initiator -- this is the second certificate client
+(dave) that will initiate at the same time as Carol.
+
+This is the important I2 phase where the certificate and ID is sent.
+
+The file parentR1dave.pcap is copied from ../lp24-certreplydaveR2/OUTPUT/parentR1dave.pcap
+
+
+
+

@@ -13,10 +13,6 @@ cvs -z9 -d $OS_CVS co openswan-2
 mv openswan-2 openswan-$1
 cd openswan-$1
 
-echo "Fixing Makefile.inc..."
-cat Makefile.inc | sed s/^USE_LWRES.*/USE_LWRES?=false/ > Makefile.inc2 && mv Makefile.inc2 Makefile.inc
-
-
 echo "I am setting the Version info..."
 cat Makefile.ver | sed s/2.CVSHEAD/$1/ > Makefile.ver2 && mv Makefile.ver2 Makefile.ver
 cat packaging/redhat/openswan.26spec | sed s/2.CVSHEAD/$1/ > n && mv n packaging/redhat/openswan.26spec
@@ -51,7 +47,7 @@ gzip openswan-$1.kernel-2.4-natt.patch
 gzip openswan-$1.kernel-2.6-klips.patch
 gzip openswan-$1.kernel-2.6-natt.patch
 # Sign binaries
-gpg -sba openswan-$1.tar.gz 
+gpg -sba openswan-$1.tar.gz
 gpg -sba openswan-$1.kernel-2.4-klips.patch.gz
 gpg -sba openswan-$1.kernel-2.4-natt.patch.gz
 gpg -sba openswan-$1.kernel-2.6-klips.patch.gz
@@ -63,5 +59,5 @@ scp openswan-$1.*.gz* $OS_FTP
 scp openswan-$1/CHANGES $OS_FTP
 
 # Move to old/ since we're done.
-mv openswan-$1* old/ 
+mv openswan-$1* old/
 echo "Releasing Process Done"

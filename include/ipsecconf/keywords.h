@@ -23,6 +23,7 @@
 #include "openswan.h"
 #include "constants.h"
 #endif
+#include "sysqueue.h"
 
 
 /*
@@ -55,6 +56,10 @@ enum keyword_string_config_field {
     KSF_CONNALIAS,
     KSF_LISTEN,
     KSF_POLICY_LABEL,
+    KSF_MODECFGDNS1,
+    KSF_MODECFGDNS2,
+    KSF_MODECFGDOMAIN,
+    KSF_MODECFGBANNER,
     KSF_MAX
 };
 
@@ -115,6 +120,16 @@ enum keyword_numeric_config_field {
     KBF_SAREFTRACK, /* saref tracking paramter for _updown */
     KBF_WARNIGNORE, /* to ignore obsoleted keywords */
     KBF_SECCTX, /*security context attribute value for labeled ipsec*/
+
+    /* some keywords which are not yet valid for openswan */
+    KBF_PLUTOFORK,
+    KBF_NATIKEPORT,
+    KBF_IKEPORT,
+    KBF_NAT_KEEPALIVE,      /* per conn enabling/disabling of sending keep-alives */
+    KBF_INITIAL_CONTACT,
+    KBF_SEND_VENDORID,      /* per conn sending of our own libreswan vendorid */
+    KBF_IKEV1_NATT,	    /* ikev1 NAT-T payloads to send/process */
+
     KBF_MAX
 };
 
@@ -186,6 +201,8 @@ enum keyword_valid {
     kv_policy = LELEM(6),     /* is a policy affecting verb, processed specially */
     kv_processed = LELEM(7),  /* is processed, do not output literal string */
     kv_duplicateok = LELEM(8),  /* it is okay if also= items are duplicated */
+    kv_obsolete    = LELEM(9),  /* option that is obsoleted, allow keyword but warn and ignore */
+
 };
 #define KV_CONTEXT_MASK (kv_config|kv_conn|kv_leftright)
 
@@ -224,6 +241,7 @@ enum keyword_type {
     kt_enum,               /* value is from a set of key words */
     kt_list,               /* a set of values from a set of key words */
     kt_loose_enum,         /* either a string, or a %-prefixed enum */
+    kt_loose_enumarg,      /* either a string, or a %-prefixed enum w/option*/
     kt_rsakey,             /* a key, or set of values */
     kt_number,             /* an integer */
     kt_time,               /* a number representing time */
@@ -233,7 +251,6 @@ enum keyword_type {
     kt_idtype,             /* an ID type */
     kt_bitstring,          /* an encryption/authentication key */
     kt_comment,            /* a value which is a cooked comment */
-    kt_obsolete,           /* option that is obsoleted, allow keyword but warn and ignore */
 };
 
 #define NOT_ENUM NULL
@@ -244,6 +261,8 @@ struct keyword_def {
     enum keyword_type  type;
     unsigned int       field;          /* one of keyword_*_field */
     const struct keyword_enum_values *validenum;
+    unsigned int       loose_enum_value;  /* what value to use if the for a literal type */
+    char               deliminator;       /* for enum types, a deliminator */
 };
 
 struct keyword {
@@ -255,9 +274,10 @@ struct keyword {
 struct kw_list {
     struct kw_list *next;
     struct keyword  keyword;
-    char        *string;
-    double       decimal;
-    unsigned int number;
+    /* char *string is buried in above keyword, because lexer returns "keyword" structures */
+    double          decimal;
+    unsigned int    number;
+    char           *argument;
 };
 
 struct starter_comments {
@@ -293,7 +313,8 @@ extern struct keyword_def ipsec_conf_keywords_v2[];
 extern const int ipsec_conf_keywords_v2_count;
 
 extern unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list);
-extern unsigned int parser_loose_enum(struct keyword *k, const char *s);
+#define parser_loose_enum(X,Y) parser_loose_enum_arg(X,Y,NULL)
+extern unsigned int parser_loose_enum_arg(struct keyword *k, const char *s,char **rest);
 
 
 #endif /* _KEYWORDS_H_ */

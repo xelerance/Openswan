@@ -17,9 +17,8 @@
 
 # All of the USE_ and HAVE_ variables are controlled from openswan/Makefile.inc
 
-ifeq ($(USE_DYNAMICDNS),true)
+# XXX remove me.
 DYNAMICDNSDEF=-DDYNAMICDNS
-endif
 
 ifeq ($(USE_LDAP),true)
 # Everyone (should) be using LDAPv3, however LDAP_VERSION=2 is an option
@@ -88,15 +87,6 @@ HDRDIRS+= -I$(OPENSWANSRCDIR)/lib/libcrypto -I$(KLIPSINC)
 #    and basename for pluto's lockfile (.pid) and control socket (.ctl).
 #    Double quoting may be needed.
 
-
-ifeq ($(USE_LWRES),true)
-LWRESDEF=-DUSE_LWRES
-USE_ADNS=false
-BINNAMEADNSIFNEEDED=
-else
-USE_ADNS=true
-BINNAMEADNSIFNEEDED=$(BINNAMEADNS)
-endif
 
 IPSECPOLICY_DIST_SRCS=rcv_info.c
 ifeq ($(USE_IPSECPOLICY),true)
@@ -275,7 +265,6 @@ DEFINES = $(EXTRA_DEFINES) \
 	$(IPSECPOLICY_DEFINES) ${VENDORID} \
 	$(KEYRR_DEFINES) \
 	$(BYTE_ORDER) \
-	$(LWRESDEF) \
 	$(DYNAMICDNSDEF) \
 	$(NETKEY_DEFS) \
 	$(X509_DEFS) \
@@ -310,15 +299,20 @@ LIBSPLUTO+=${EXTRA_CRYPTO_LIBS} $(LIBSHA2)
 LIBSPLUTO+=${WHACKLIB} ${PLUTOLIB} ${BSDKAME_LIBS}
 PLUTOMINUSL+= ${X509_LLIBS} ${CURL_LLIBS} ${TPM_LLIBS} ${HAVE_THREADS_LLIBS}
 PLUTOMINUSL+= ${XAUTH_LLIBS} ${XAUTHPAM_LIBS}
-PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} # -lefence
+PLUTOMINUSL+= ${OPENSSL_LIBS} ${LIBCRYPT} ${LIBGMP} -lresolv #-lefence
 
 # Solaris needs -lsocket -lnsl
-LIBSWHACK+= ${WHACKLIB} ${LIBOPENSWAN}
+LIBSWHACK+= ${WHACKLIB} ${LIBOPENSWAN} ${LIBOSWLOG}  ${LIBOPENSWAN}
 
 # NSS things
 DEFINES+=${NSS_FLAGS}    ${FIPS_FLAGS}
 PLUTOMINUSL+=${NSS_LIBS} ${FIPS_LIBS}
 HDRDIRS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+ifeq ($(USE_NSS),true)
+CRYPTO_OBJS=ikev1_nss.c ikev2_nss.c
+else
+CRYPTO_OBJS=ikev1_crypto.o ikev2_crypto.o
+endif
 
 
 # Use MODP group described in RFC 5114

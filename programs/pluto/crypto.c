@@ -29,6 +29,7 @@
 
 #include "constants.h"
 #include "defs.h"
+#include "id.h"
 #include "state.h"
 #include "log.h"
 #include "md5.h"
@@ -59,20 +60,16 @@ static MP_INT
     modp6144_modulus,
     modp8192_modulus;
 
-#ifdef USE_MODP_RFC5114
 static MP_INT
     dh22_modulus,
     dh23_modulus,
     dh24_modulus;
-#endif
 
 MP_INT groupgenerator;  /* MODP group generator (2) */
 
-#ifdef USE_MODP_RFC5114
 MP_INT generator_dh22,
        generator_dh23,
        generator_dh24;
-#endif
 
 #ifdef IKE_ALG
 
@@ -187,11 +184,9 @@ void
 init_crypto(void)
 {
     if (mpz_init_set_str(&groupgenerator, MODP_GENERATOR, 10) != 0
-#ifdef USE_MODP_RFC5114
     ||  mpz_init_set_str(&generator_dh22, MODP_GENERATOR_DH22, 16) != 0
     ||  mpz_init_set_str(&generator_dh23, MODP_GENERATOR_DH23, 16) != 0
     ||  mpz_init_set_str(&generator_dh24, MODP_GENERATOR_DH24, 16) != 0
-#endif
 #if defined(USE_VERYWEAK_DH1)	                        /* modp768 not sufficiently strong */
     || mpz_init_set_str(&modp768_modulus, MODP768_MODULUS, 16) != 0
 #endif
@@ -202,11 +197,9 @@ init_crypto(void)
     || mpz_init_set_str(&modp4096_modulus, MODP4096_MODULUS, 16) != 0
     || mpz_init_set_str(&modp6144_modulus, MODP6144_MODULUS, 16) != 0
     || mpz_init_set_str(&modp8192_modulus, MODP8192_MODULUS, 16) != 0
-#ifdef USE_MODP_RFC5114
     || mpz_init_set_str(&dh22_modulus, MODP1024_MODULUS_DH22, 16) != 0
     || mpz_init_set_str(&dh23_modulus, MODP2048_MODULUS_DH23, 16) != 0
     || mpz_init_set_str(&dh24_modulus, MODP2048_MODULUS_DH24, 16) != 0
-#endif
       ) {
 	exit_log("mpz_init_set_str() failed in init_crypto()");
      }
@@ -235,7 +228,7 @@ init_crypto(void)
 
 #ifdef USE_3DES
 	    {
-		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des);
+		ike_alg_add((struct ike_alg *) &crypto_encrypter_3des, FALSE);
 	    }
 #endif
 
@@ -260,10 +253,10 @@ init_crypto(void)
 	    }
 #endif
 
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1);
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_md5);
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1, FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1,  FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5,  FALSE);
+	    ike_alg_add((struct ike_alg *) &crypto_integ_md5,   FALSE);
 	}
 #endif
 }
@@ -273,22 +266,6 @@ init_crypto(void)
  * See RFC2409 "The Internet key exchange (IKE)" 6.
  */
 
-#ifndef USE_MODP_RFC5114
-const struct oakley_group_desc unset_group = {0, NULL, 0};	/* magic signifier */
-
-const struct oakley_group_desc oakley_group[] = {
-#if defined(USE_VERYWEAK_DH1)    	/* modp768 not sufficiently strong */
-    { OAKLEY_GROUP_MODP768, &modp768_modulus, BYTES_FOR_BITS(768) },
-#endif
-    { OAKLEY_GROUP_MODP1024, &modp1024_modulus, BYTES_FOR_BITS(1024) },
-    { OAKLEY_GROUP_MODP1536, &modp1536_modulus, BYTES_FOR_BITS(1536) },
-    { OAKLEY_GROUP_MODP2048, &modp2048_modulus, BYTES_FOR_BITS(2048) },
-    { OAKLEY_GROUP_MODP3072, &modp3072_modulus, BYTES_FOR_BITS(3072) },
-    { OAKLEY_GROUP_MODP4096, &modp4096_modulus, BYTES_FOR_BITS(4096) },
-    { OAKLEY_GROUP_MODP6144, &modp6144_modulus, BYTES_FOR_BITS(6144) },
-    { OAKLEY_GROUP_MODP8192, &modp8192_modulus, BYTES_FOR_BITS(8192) },
-};
-#else
 const struct oakley_group_desc unset_group = {0, NULL, NULL, 0};      /* magic signifier */
 
 const struct oakley_group_desc oakley_group[] = {
@@ -307,7 +284,6 @@ const struct oakley_group_desc oakley_group[] = {
     { OAKLEY_GROUP_DH24, &generator_dh24, &dh24_modulus, BYTES_FOR_BITS(2048) },
 
 };
-#endif
 
 const unsigned int oakley_group_size = elemsof(oakley_group);
 
@@ -356,10 +332,6 @@ do_3des(u_int8_t *buf, size_t buf_len
 {
     passert(key != NULL);
 
-#ifdef HAVE_LIBNSS
-	do_3des_nss(buf, buf_len, key, key_size, iv, enc);
-#else
-
     des_key_schedule ks[3];
 
     passert(key_size==(DES_CBC_BLOCK_SIZE * 3));
@@ -371,7 +343,6 @@ do_3des(u_int8_t *buf, size_t buf_len
     oswcrypto.des_ede3_cbc_encrypt((des_cblock *)buf, (des_cblock *)buf, buf_len,
                          ks[0], ks[1], ks[2],
                          (des_cblock *)iv, enc);
-#endif
 }
 
 /* hash and prf routines */

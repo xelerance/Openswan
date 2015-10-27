@@ -1,0 +1,15 @@
+# -*- makefile -*-
+TESTNAME=certreplyR2
+CONNNAME=rw-any rw-dave rw-carol
+UNITTEST1PCAP=OUTPUT/parentR2.pcap
+UNITTEST2PCAP=
+UNITTEST1ARGS=${WHACKFILE} rw-any ${UNITTEST1PCAP} parentI1.pcap parentI2.pcap
+UNITTEST2ARGS=
+ENDNAME=gatewaycert
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#
+

@@ -32,7 +32,8 @@ TESTNAME=lp01-spdbtest
 
 check:
 	@mkdir -p OUTPUT
-	${CC} -o lp01-spdbtest ${EXTRAFLAGS} spdbtest.c ${EXTRALIBS}
+	@echo CC ${TESTNAME}.c
+	@${CC} -o lp01-spdbtest ${EXTRAFLAGS} spdbtest.c ${EXTRALIBS}
 	@echo "file ../$testobj"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	${COREULIMIT} && ./lp01-spdbtest ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1

@@ -42,15 +42,15 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
-#include "state.h"
 #include "id.h"
+#include "state.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "packet.h"
 #include "keys.h"
 #include "demux.h"	/* needs packet.h */
@@ -59,7 +59,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -88,7 +88,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "dpd.h"
 #include "x509more.h"
 
@@ -334,7 +334,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
     }
 }
 
-void
+so_serial_t
 ipsecdoi_initiate(int whack_sock
 		  , struct connection *c
 		  , lset_t policy
@@ -351,18 +351,25 @@ ipsecdoi_initiate(int whack_sock
      * other issues around intent might matter).
      * Note: there is no way to initiate with a Road Warrior.
      */
+    so_serial_t created;
     struct state *st = find_phase1_state(c
 	, ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
 
     if (st == NULL)
     {
+        if(!c->spd.that.host_address_list.addresses_available) {
+            loglog(RC_LOG_SERIOUS, "Can not initiate: no remote address available (yet)");
+            return SOS_NOBODY;
+        }
+
 	initiator_function *initiator = pick_initiator(c, policy);
 
 	if(initiator) {
-	    (void) initiator(whack_sock, c, NULL, policy, try, importance
+	    (void) initiator(whack_sock, c, NULL, &created, policy, try, importance
                              , uctx
                              );
-	    return;
+            c->prospective_parent_sa = created;
+	    return created;
 	}
     }
     else if (HAS_IPSEC_POLICY(policy)) {
@@ -376,7 +383,7 @@ ipsecdoi_initiate(int whack_sock
 		    , replacing
 		    , uctx
 		   );
-	return;
+	return st->st_serialno;
       }
       else {
 	/* ??? we assume that peer_nexthop_sin isn't important:
@@ -387,12 +394,14 @@ ipsecdoi_initiate(int whack_sock
 			   , replacing
 			   , uctx
 			  );
-	return;
+	return st->st_serialno;
       }
     }
 
     /* fall through in the case of error */
     close_any(whack_sock);
+
+    return SOS_NOBODY;
 }
 
 /* Replace SA with a fresh one that is similar
@@ -412,6 +421,7 @@ ipsecdoi_replace(struct state *st
 	initiator_function *initiator;
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
+    so_serial_t  newstateno;
 
     if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state) || (st->st_state == STATE_PARENT_I2))
     {
@@ -423,7 +433,7 @@ ipsecdoi_replace(struct state *st
 	initiator = pick_initiator(c, policy);
 	passert(!HAS_IPSEC_POLICY(policy));
 	if(initiator) {
-	    (void) initiator(whack_sock, st->st_connection, st, policy
+	    (void) initiator(whack_sock, st->st_connection, st, &newstateno, policy
 			     , try, st->st_import
 			     , st->sec_ctx);
 	}
@@ -568,6 +578,11 @@ extract_peer_id(struct id *peer, const pb_stream *id_pbs)
     return TRUE;
 }
 
+/*
+ * this routine is called from IKEv1 Main and Aggressive mode to
+ * extract the ID payload, and then, using it, find a more suitable
+ * connection policy to use.
+ */
 bool
 decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 {
@@ -683,21 +698,18 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    char buf[IDTOA_BUF];
 
 	    dntoa_or_null(buf, IDTOA_BUF, r->spd.this.ca, "%none");
-	    DBG_log("offered CA: '%s'", buf);
-	)
+	    DBG_log("offered CA: '%s'", buf));
 
-	if (r != c)
+        if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP) {
+            /* instantiate it, filling in peer's ID */
+            r = rw_instantiate(r, &st->st_remoteaddr,
+                               NULL,
+                               &peer);
+        }
+
+        if (r != c)
 	{
-	    /* apparently, r is an improvement on c -- replace */
-
-	    openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
-	    if (r->kind == CK_TEMPLATE || r->kind == CK_GROUP)
-	    {
-		/* instantiate it, filling in peer's ID */
-		r = rw_instantiate(r, &c->spd.that.host_addr,
-				   NULL,
-				   &peer);
-	    }
+            openswan_log("switched from \"%s\" to \"%s\"", c->name, r->name);
 
 	    st->st_connection = r;	/* kill reference to c */
 
@@ -708,13 +720,6 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	    }
 
 	    connection_discard(c);
-	}
-	else if (c->spd.that.has_id_wildcards)
-	{
-	    free_id_content(&c->spd.that.id);
-	    c->spd.that.id = peer;
-	    c->spd.that.has_id_wildcards = FALSE;
-	    unshare_id_content(&c->spd.that.id);
 	}
     }
 
@@ -740,6 +745,8 @@ void initialize_new_state(struct state *st
     st->st_try   = try;
 
     st->st_import = importance;
+    st->st_msgid_nextuse = 1;     /* first non-INIT message is 1 */
+    st->st_msgid_lastack = INVALID_MSGID;
 
     for(sr=&c->spd; sr!=NULL; sr=sr->next) {
 	if(sr->this.xauth_client) {

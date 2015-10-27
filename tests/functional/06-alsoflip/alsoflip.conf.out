@@ -1,0 +1,60 @@
+opening file: alsoflip.conf
+#conn dnsh2h2 loaded
+#conn openswan loaded
+#conn mytunnel loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn dnsh2h2
+conn dnsh2h2
+	left=10.10.4.183
+	leftrsakey=0sAQOlNrkoUJzMT91XouFC6EA9qnHOVJiOAy2MseUOd4FA1meE7zKmd9zf81Be6J8oHjlXyKbHmVMt36SI666UyUxkDNttv5v/kJU8wgvK5MH65JYB1ctrKogd+nB/igzdkyLl49mpySYzv/MiOi7SSe/UV7zWSt+MCEQJJG7QpQKCKZqzp7f2osEODTxOhoYdD/lwL98n13TCQWlLoNrki9/Wngu/wHRkBmhYp23mbPwyIQ6g6jzTGPmO0D2GolPFQdWWPPlBE9K/nNh2CCvCgrI0IxrzhS9G1zaC/Z6zsekqPqOpfVphS4csXaA7L9K+CsiUscbkiEHauAtjpZ4eMwy2RH0NCwflwfYOGzWyZPkxkV27OSRoNGXGTflfiAnKkjkPtL//CQghqkOFe5UDXe/M3wqHaIbavg1w+RrEGDz5AX3Ii64FBxc29feInCSfeHw4DhYl9rIV9PUP6wcXf2rYO3gXOFe+PWOHFlzBNFGSrHt62bOVzSiRDlVH0N6FpDsB9/t0UFUq+ilb3WAIBbHKw/1YVSa0gIL10HKUXtF0DOy4CAAs7NSLjTVxkq+XAf/fBv3Tutli4p6uu9L/g4rj78bwNGll4OUCOxtkOXJCGqvjVrqo2TaRfbUzEmUxFLEJXxTUqozwls+pIL2KqmZumS5LoyDB/GHrOYI5jaPzYQ==
+	#right= not set
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn dnsh2h2
+
+# begin conn openswan
+conn openswan
+	left=192.139.46.81
+	leftid="@openswan.testing.xelerance.com"
+	leftrsakey=0sAQOAQyMdHZds6nHXwqSpuElAD2VgUwfEX/riI4+vI7eJ0hjhTI66pe/hCVW0K3pLssO3QSsNG1Dbu8EJHAdwtkMJJvEeZtUh3wFxV4z5jiRnIOFf7OJ4aexov1YkWvtFGl+mutzO4m8D4wqmRnNxgdSVs/g7E2HSFow2Ww4fyW7qDyPU5jUisjbU+FpWdmCcVTM98U2JE3x6iUwsuiJ5ud75vsqgwZqI+wmAn+hWcnYlddXaKe+CJjspMEKAdXuRKL03b/0AdpPCjINbsIzpsIw2N65PfrcApeT0sKA25hJ2wVDjLU4IHrtimITpLd4Qx+6d+X8wpTWedFB1M5gl2wdWsjFYPpABlyFh56BjGMHy3nFr
+	#right= not set
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn openswan
+
+# begin conn mytunnel
+conn mytunnel
+	#also = openswan
+	left=192.139.46.81
+	leftid="@openswan.testing.xelerance.com"
+	leftrsakey=0sAQOAQyMdHZds6nHXwqSpuElAD2VgUwfEX/riI4+vI7eJ0hjhTI66pe/hCVW0K3pLssO3QSsNG1Dbu8EJHAdwtkMJJvEeZtUh3wFxV4z5jiRnIOFf7OJ4aexov1YkWvtFGl+mutzO4m8D4wqmRnNxgdSVs/g7E2HSFow2Ww4fyW7qDyPU5jUisjbU+FpWdmCcVTM98U2JE3x6iUwsuiJ5ud75vsqgwZqI+wmAn+hWcnYlddXaKe+CJjspMEKAdXuRKL03b/0AdpPCjINbsIzpsIw2N65PfrcApeT0sKA25hJ2wVDjLU4IHrtimITpLd4Qx+6d+X8wpTWedFB1M5gl2wdWsjFYPpABlyFh56BjGMHy3nFr
+	right=10.10.4.183
+	rightrsakey=0sAQOlNrkoUJzMT91XouFC6EA9qnHOVJiOAy2MseUOd4FA1meE7zKmd9zf81Be6J8oHjlXyKbHmVMt36SI666UyUxkDNttv5v/kJU8wgvK5MH65JYB1ctrKogd+nB/igzdkyLl49mpySYzv/MiOi7SSe/UV7zWSt+MCEQJJG7QpQKCKZqzp7f2osEODTxOhoYdD/lwL98n13TCQWlLoNrki9/Wngu/wHRkBmhYp23mbPwyIQ6g6jzTGPmO0D2GolPFQdWWPPlBE9K/nNh2CCvCgrI0IxrzhS9G1zaC/Z6zsekqPqOpfVphS4csXaA7L9K+CsiUscbkiEHauAtjpZ4eMwy2RH0NCwflwfYOGzWyZPkxkV27OSRoNGXGTflfiAnKkjkPtL//CQghqkOFe5UDXe/M3wqHaIbavg1w+RrEGDz5AX3Ii64FBxc29feInCSfeHw4DhYl9rIV9PUP6wcXf2rYO3gXOFe+PWOHFlzBNFGSrHt62bOVzSiRDlVH0N6FpDsB9/t0UFUq+ilb3WAIBbHKw/1YVSa0gIL10HKUXtF0DOy4CAAs7NSLjTVxkq+XAf/fBv3Tutli4p6uu9L/g4rj78bwNGll4OUCOxtkOXJCGqvjVrqo2TaRfbUzEmUxFLEJXxTUqozwls+pIL2KqmZumS5LoyDB/GHrOYI5jaPzYQ==
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn mytunnel
+
+# end of config

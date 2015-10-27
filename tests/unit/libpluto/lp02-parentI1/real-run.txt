@@ -1,0 +1,386 @@
+Apr 15 13:26:24 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:26:24 parker pluto[4118]: ! helper 0 doing build_kenonce op id: 3
+Apr 15 13:26:24 parker pluto[4118]: ! Local DH secret:
+Apr 15 13:26:24 parker pluto[4118]: !   87 5a 1b 5e  b4 7f 40 bd  2b 4d 38 79  06 71 25 ca
+Apr 15 13:26:24 parker pluto[4118]: !   ab 3e 8d 19  19 d1 8f d0  53 78 09 d9  4e 8f d4 b2
+Apr 15 13:26:24 parker pluto[4118]: ! Public DH value sent:
+Apr 15 13:26:24 parker pluto[4118]: !   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+Apr 15 13:26:24 parker pluto[4118]: !   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+Apr 15 13:26:24 parker pluto[4118]: !   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+Apr 15 13:26:24 parker pluto[4118]: !   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+Apr 15 13:26:24 parker pluto[4118]: !   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+Apr 15 13:26:24 parker pluto[4118]: !   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+Apr 15 13:26:24 parker pluto[4118]: !   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+Apr 15 13:26:24 parker pluto[4118]: !   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+Apr 15 13:26:24 parker pluto[4118]: !   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+Apr 15 13:26:24 parker pluto[4118]: !   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+Apr 15 13:26:24 parker pluto[4118]: !   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+Apr 15 13:26:24 parker pluto[4118]: !   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+Apr 15 13:26:24 parker pluto[4118]: !   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+Apr 15 13:26:24 parker pluto[4118]: !   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+Apr 15 13:26:24 parker pluto[4118]: !   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+Apr 15 13:26:24 parker pluto[4118]: !   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+Apr 15 13:26:24 parker pluto[4118]: ! Generated nonce:
+Apr 15 13:26:24 parker pluto[4118]: !   20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+
+Apr 15 13:26:24 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:26:24 parker pluto[4118]: ! helper 0 doing compute dh+iv op id: 4
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   8e 74 15 9e  b8 b1 25 1f  68 da 4f a5  2f 9a 5f fe
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   4a cb b3 df  2a a7 ae d4  6d 98 ab e7  96 b2 df 07
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   68 42 25 cb  06 88 dd 29  6f f8 21 10  b0 49 86 74
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   6c c1 1b ff  90 6f fb 77  db ba 07 13  b1 52 05 32
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   f8 5b 31 76  68 0f 48 34  3e 76 d5 9e  5a 83 98 45
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   77 44 b4 93  57 aa 8c 31  15 b1 4a 67  73 7d 75 43
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   3e f1 29 d9  26 04 83 64  b8 28 eb c1  ef c3 da 70
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   11 8b 00 a9  1c 0e 29 42  3c 2c b2 25  77 8e 1c 0d
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   5f bd 55 9f  6b b4 32 8a  bb 29 d4 1a  d9 8c 7d 73
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   b3 c8 10 1e  82 bf b1 40  ab b8 c8 b9  60 17 d0 8c
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   36 02 76 e7  7c 3e 13 9b  5e 63 bf 7d  5d b0 1e f9
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   8f d3 d4 0f  74 9d 92 d5  69 5d 07 2a  cc 92 9e 4f
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   9f 45 3a 26  87 0c eb 91  c2 49 ff e1  c2 54 83 bf
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   45 1f 07 49  02 bf f7 f4  3a 20 5d 0a  d0 00 11 0c
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   e5 a9 b6 c3  9a a7 8e 6e  45 86 50 6b  b0 4d 70 34
+Apr 15 13:26:24 parker pluto[4118]: ! peer's g:   38 4c 85 79  02 0a 9a d5  93 be 69 f4  8b 94 12 45
+Apr 15 13:26:24 parker pluto[4118]: ! long term secret:   87 5a 1b 5e  b4 7f 40 bd  2b 4d 38 79  06 71 25 ca
+Apr 15 13:26:24 parker pluto[4118]: ! long term secret:   ab 3e 8d 19  19 d1 8f d0  53 78 09 d9  4e 8f d4 b2
+Apr 15 13:26:24 parker pluto[4118]: ! calc_dh_shared(): time elapsed (OAKLEY_GROUP_MODP2048): 968 usec
+Apr 15 13:26:24 parker pluto[4118]: ! DH shared-secret:
+Apr 15 13:26:24 parker pluto[4118]: !   97 6b 9c 68  ad d6 48 17  09 a4 64 00  fd 89 94 ff
+Apr 15 13:26:24 parker pluto[4118]: !   7d 5a 01 2b  f2 df 04 d9  df 05 7d ef  10 e2 9d fb
+Apr 15 13:26:24 parker pluto[4118]: !   71 41 8f 0a  3a cb 94 ba  05 8b c7 71  d4 b4 cc 41
+Apr 15 13:26:24 parker pluto[4118]: !   a0 38 e6 b8  6c 0d 77 4e  f4 ae ed 5d  28 ce a2 40
+Apr 15 13:26:24 parker pluto[4118]: !   6f 8a 1f 90  c9 9c 99 52  2f 92 3f d5  49 de a6 1a
+Apr 15 13:26:24 parker pluto[4118]: !   7e cf f8 7f  c5 0b 82 10  15 10 fa 0b  86 e6 20 97
+Apr 15 13:26:24 parker pluto[4118]: !   dd 28 06 65  fc fe 7c b9  50 02 41 cb  b4 08 52 cd
+Apr 15 13:26:24 parker pluto[4118]: !   73 fc b2 04  98 7a 8f bc  20 a8 ea e1  96 87 c4 66
+Apr 15 13:26:24 parker pluto[4118]: !   74 7e 8f 26  72 a3 9e 06  c8 4a 02 a3  91 0d c4 47
+Apr 15 13:26:24 parker pluto[4118]: !   2e 82 d5 5a  20 93 49 1b  b0 7f 29 ca  e6 10 b8 48
+Apr 15 13:26:24 parker pluto[4118]: !   93 7e c0 ff  2b b9 54 1b  bd b9 44 27  7e 84 6a 51
+Apr 15 13:26:24 parker pluto[4118]: !   fa d1 df 84  42 7d 30 dc  97 cc 60 a9  37 c5 f2 80
+Apr 15 13:26:24 parker pluto[4118]: !   d2 f4 8a b4  89 b2 cc f4  6e b1 d2 43  ac 14 b5 75
+Apr 15 13:26:24 parker pluto[4118]: !   f5 5b bf b6  70 14 ee b9  56 e3 37 ec  de cb 2f 0a
+Apr 15 13:26:24 parker pluto[4118]: !   d0 9d e6 ab  79 8f a9 cd  d8 12 73 97  18 52 92 39
+Apr 15 13:26:24 parker pluto[4118]: !   e3 9e cb 98  d3 fd 5a fd  cf 96 e1 c9  8a 45 fb 0a
+Apr 15 13:26:24 parker pluto[4118]: ! skeyid inputs (digi+NI+NR+shared) hasher: oakley_sha
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   97 6b 9c 68  ad d6 48 17  09 a4 64 00  fd 89 94 ff
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   7d 5a 01 2b  f2 df 04 d9  df 05 7d ef  10 e2 9d fb
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   71 41 8f 0a  3a cb 94 ba  05 8b c7 71  d4 b4 cc 41
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   a0 38 e6 b8  6c 0d 77 4e  f4 ae ed 5d  28 ce a2 40
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   6f 8a 1f 90  c9 9c 99 52  2f 92 3f d5  49 de a6 1a
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   7e cf f8 7f  c5 0b 82 10  15 10 fa 0b  86 e6 20 97
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   dd 28 06 65  fc fe 7c b9  50 02 41 cb  b4 08 52 cd
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   73 fc b2 04  98 7a 8f bc  20 a8 ea e1  96 87 c4 66
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   74 7e 8f 26  72 a3 9e 06  c8 4a 02 a3  91 0d c4 47
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   2e 82 d5 5a  20 93 49 1b  b0 7f 29 ca  e6 10 b8 48
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   93 7e c0 ff  2b b9 54 1b  bd b9 44 27  7e 84 6a 51
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   fa d1 df 84  42 7d 30 dc  97 cc 60 a9  37 c5 f2 80
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   d2 f4 8a b4  89 b2 cc f4  6e b1 d2 43  ac 14 b5 75
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   f5 5b bf b6  70 14 ee b9  56 e3 37 ec  de cb 2f 0a
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   d0 9d e6 ab  79 8f a9 cd  d8 12 73 97  18 52 92 39
+Apr 15 13:26:24 parker pluto[4118]: ! shared-secret:   e3 9e cb 98  d3 fd 5a fd  cf 96 e1 c9  8a 45 fb 0a
+Apr 15 13:26:24 parker pluto[4118]: ! ni:   20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+Apr 15 13:26:24 parker pluto[4118]: ! nr:   cc d6 c1 1a  37 7e 6f 4e  6a 2d eb 7a  2d 6a d8 df
+Apr 15 13:26:24 parker pluto[4118]: ! keyid:   40 51 c2 aa  c8 9c be 2d  c3 05 94 96  92 1c 7a 4e
+Apr 15 13:26:24 parker pluto[4118]: ! keyid:   ab 67 86 d4
+Apr 15 13:26:24 parker pluto[4118]: ! NSS: end of key computation
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+Apr 15 13:26:24 parker pluto[4118]: ! DH_i:  89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  8e 74 15 9e  b8 b1 25 1f  68 da 4f a5  2f 9a 5f fe
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  4a cb b3 df  2a a7 ae d4  6d 98 ab e7  96 b2 df 07
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  68 42 25 cb  06 88 dd 29  6f f8 21 10  b0 49 86 74
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  6c c1 1b ff  90 6f fb 77  db ba 07 13  b1 52 05 32
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  f8 5b 31 76  68 0f 48 34  3e 76 d5 9e  5a 83 98 45
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  77 44 b4 93  57 aa 8c 31  15 b1 4a 67  73 7d 75 43
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  3e f1 29 d9  26 04 83 64  b8 28 eb c1  ef c3 da 70
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  11 8b 00 a9  1c 0e 29 42  3c 2c b2 25  77 8e 1c 0d
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  5f bd 55 9f  6b b4 32 8a  bb 29 d4 1a  d9 8c 7d 73
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  b3 c8 10 1e  82 bf b1 40  ab b8 c8 b9  60 17 d0 8c
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  36 02 76 e7  7c 3e 13 9b  5e 63 bf 7d  5d b0 1e f9
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  8f d3 d4 0f  74 9d 92 d5  69 5d 07 2a  cc 92 9e 4f
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  9f 45 3a 26  87 0c eb 91  c2 49 ff e1  c2 54 83 bf
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  45 1f 07 49  02 bf f7 f4  3a 20 5d 0a  d0 00 11 0c
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  e5 a9 b6 c3  9a a7 8e 6e  45 86 50 6b  b0 4d 70 34
+Apr 15 13:26:24 parker pluto[4118]: ! DH_r:  38 4c 85 79  02 0a 9a d5  93 be 69 f4  8b 94 12 45
+Apr 15 13:26:24 parker pluto[4118]: ! end of IV generation
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid:    40 51 c2 aa  c8 9c be 2d  c3 05 94 96  92 1c 7a 4e
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid:    ab 67 86 d4
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_d:  a2 29 47 39  64 70 38 3a  73 bb 8c 2d  4c c9 c6 20
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_d:  62 ef 3d bf
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_a:  e6 7d 59 83  74 76 a6 a4  ef 01 29 62  14 c2 42 e1
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_a:  f8 f4 d1 15
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_e:  3c ef 94 76  43 09 a5 b8  c3 71 eb 81  ff 7c f0 e8
+Apr 15 13:26:24 parker pluto[4118]: ! Skeyid_e:  4a 05 cc 93
+Apr 15 13:26:24 parker pluto[4118]: ! enc key:  3c ef 94 76  43 09 a5 b8  c3 71 eb 81  ff 7c f0 e8
+Apr 15 13:26:24 parker pluto[4118]: ! IV:  84 4a 71 8d  50 8d ae df  43 67 24 36  fe 7b cd e6
+Apr 15 13:26:24 parker pluto[4118]: ! IV:  5b 2b 32 e5
+Apr 15 13:27:34 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:27:34 parker pluto[4118]: ! helper 0 doing build_kenonce op id: 5
+Apr 15 13:27:34 parker pluto[4118]: ! Local DH secret:
+Apr 15 13:27:34 parker pluto[4118]: !   c5 81 b8 0f  96 91 a0 aa  02 19 8d e0  b2 12 2f c6
+Apr 15 13:27:34 parker pluto[4118]: !   b5 05 a6 e8  61 30 6c b9  46 d8 7e 85  a2 95 03 e4
+Apr 15 13:27:34 parker pluto[4118]: ! Public DH value sent:
+Apr 15 13:27:34 parker pluto[4118]: !   44 55 4f d8  1c bb 3e 5d  2f ba f9 c8  2a f6 f1 0d
+Apr 15 13:27:34 parker pluto[4118]: !   2c 6c 78 96  d8 26 42 19  d5 33 e9 01  04 ed d4 a8
+Apr 15 13:27:34 parker pluto[4118]: !   15 8b ee b1  09 b7 27 08  05 e1 5d 54  aa 1b 06 b2
+Apr 15 13:27:34 parker pluto[4118]: !   9e 9c 0a ed  70 75 d8 45  0e 38 cb 44  74 97 f0 2d
+Apr 15 13:27:34 parker pluto[4118]: !   2d f5 c0 8e  46 93 e5 34  48 2d 42 21  e9 54 67 6f
+Apr 15 13:27:34 parker pluto[4118]: !   cf 8a 58 9c  f3 59 22 63  db df 95 d9  b6 d1 72 5b
+Apr 15 13:27:34 parker pluto[4118]: !   ab 12 e6 96  5b f3 04 81  f6 28 c2 eb  7f ca 0c 98
+Apr 15 13:27:34 parker pluto[4118]: !   cc 5d 54 75  64 95 c5 9a  d1 8f ba 17  3e ca b8 5a
+Apr 15 13:27:34 parker pluto[4118]: !   56 52 a3 1d  5f 13 d0 c8  6b 6a 06 2b  8f 48 d3 db
+Apr 15 13:27:34 parker pluto[4118]: !   39 1f de b1  f4 56 cb 78  bc 6e 03 1b  ea 09 7d a1
+Apr 15 13:27:34 parker pluto[4118]: !   c3 9c 88 69  21 65 01 35  91 01 4a d4  3d dd d5 5a
+Apr 15 13:27:34 parker pluto[4118]: !   5e 20 90 f8  99 ea a5 50  e8 28 6c 8c  72 1c 33 37
+Apr 15 13:27:34 parker pluto[4118]: !   ed 90 bf f3  3a 43 8c ea  ec e6 90 40  5c b5 9a 87
+Apr 15 13:27:34 parker pluto[4118]: !   0e ef 21 3b  a2 2e 96 0c  ae 75 ed 62  54 a0 3a 17
+Apr 15 13:27:34 parker pluto[4118]: !   37 09 bb bd  3b ff c2 ab  5a 43 b8 f1  73 8b d9 f4
+Apr 15 13:27:34 parker pluto[4118]: !   d9 ec a3 a6  78 30 5b cf  34 7e 99 f1  10 fc a7 31
+Apr 15 13:27:34 parker pluto[4118]: ! Generated nonce:
+Apr 15 13:27:34 parker pluto[4118]: !   90 85 a0 06  e5 73 78 2f  69 65 bc ac  b5 b7 21 86
+Apr 15 13:27:34 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:27:34 parker pluto[4118]: ! helper 0 doing compute dh+iv op id: 6
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+Apr 15 13:27:34 parker pluto[4118]: ! peer's g:   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+Apr 15 13:27:34 parker pluto[4118]: ! long term secret:   c5 81 b8 0f  96 91 a0 aa  02 19 8d e0  b2 12 2f c6
+Apr 15 13:27:34 parker pluto[4118]: ! long term secret:   b5 05 a6 e8  61 30 6c b9  46 d8 7e 85  a2 95 03 e4
+Apr 15 13:27:34 parker pluto[4118]: ! calc_dh_shared(): time elapsed (OAKLEY_GROUP_MODP2048): 1028 usec
+Apr 15 13:27:34 parker pluto[4118]: ! DH shared-secret:
+Apr 15 13:27:34 parker pluto[4118]: !   96 61 13 07  d4 f0 fe 79  53 77 ab 31  a7 e6 91 c2
+Apr 15 13:27:34 parker pluto[4118]: !   45 20 97 35  16 f0 6f fb  bf fd ee 6a  a0 7e 1b 5d
+Apr 15 13:27:34 parker pluto[4118]: !   be f7 97 25  a0 e0 1f aa  d2 78 44 10  91 c7 94 75
+Apr 15 13:27:34 parker pluto[4118]: !   cd 86 a3 b1  31 b3 7f 72  5a c5 04 3c  a8 27 5c b4
+Apr 15 13:27:34 parker pluto[4118]: !   b9 22 45 bc  d8 37 bf a4  ed cc df c8  f3 c9 8f 62
+Apr 15 13:27:34 parker pluto[4118]: !   31 b7 b6 7b  90 94 e1 6f  d8 b4 2a 75  f4 37 2c cb
+Apr 15 13:27:34 parker pluto[4118]: !   78 a8 f8 c2  fc 11 3b fa  3c 34 dc 44  65 98 0b 86
+Apr 15 13:27:34 parker pluto[4118]: !   70 8b 2d 4e  bc 78 08 7d  e9 08 3d 0a  c8 9b a7 ee
+Apr 15 13:27:34 parker pluto[4118]: !   b3 34 61 62  52 a7 1f 89  8e 34 e6 27  55 26 85 c9
+Apr 15 13:27:34 parker pluto[4118]: !   11 21 b6 a8  88 27 0e 82  dc 40 ec 69  d9 fe d2 94
+Apr 15 13:27:34 parker pluto[4118]: !   67 58 1a 33  97 2c 11 1a  72 72 d1 20  40 9d 93 bd
+Apr 15 13:27:34 parker pluto[4118]: !   92 db da 35  fa d3 c5 45  59 f5 3d 66  9b 24 d7 4c
+Apr 15 13:27:34 parker pluto[4118]: !   59 87 a9 19  7c 81 05 75  2c b1 d9 49  81 b0 81 70
+Apr 15 13:27:34 parker pluto[4118]: !   21 d7 48 ab  3a d7 70 a0  83 88 cf 6b  c5 52 44 2a
+Apr 15 13:27:34 parker pluto[4118]: !   58 76 64 64  cc 7d 0c b0  98 40 45 29  62 26 42 aa
+Apr 15 13:27:34 parker pluto[4118]: !   71 4e 7b 23  1e 5b 91 52  19 fe 1f cd  fa 80 85 34
+Apr 15 13:27:34 parker pluto[4118]: ! skeyid inputs (digi+NI+NR+shared) hasher: oakley_sha
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   96 61 13 07  d4 f0 fe 79  53 77 ab 31  a7 e6 91 c2
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   45 20 97 35  16 f0 6f fb  bf fd ee 6a  a0 7e 1b 5d
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   be f7 97 25  a0 e0 1f aa  d2 78 44 10  91 c7 94 75
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   cd 86 a3 b1  31 b3 7f 72  5a c5 04 3c  a8 27 5c b4
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   b9 22 45 bc  d8 37 bf a4  ed cc df c8  f3 c9 8f 62
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   31 b7 b6 7b  90 94 e1 6f  d8 b4 2a 75  f4 37 2c cb
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   78 a8 f8 c2  fc 11 3b fa  3c 34 dc 44  65 98 0b 86
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   70 8b 2d 4e  bc 78 08 7d  e9 08 3d 0a  c8 9b a7 ee
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   b3 34 61 62  52 a7 1f 89  8e 34 e6 27  55 26 85 c9
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   11 21 b6 a8  88 27 0e 82  dc 40 ec 69  d9 fe d2 94
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   67 58 1a 33  97 2c 11 1a  72 72 d1 20  40 9d 93 bd
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   92 db da 35  fa d3 c5 45  59 f5 3d 66  9b 24 d7 4c
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   59 87 a9 19  7c 81 05 75  2c b1 d9 49  81 b0 81 70
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   21 d7 48 ab  3a d7 70 a0  83 88 cf 6b  c5 52 44 2a
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   58 76 64 64  cc 7d 0c b0  98 40 45 29  62 26 42 aa
+Apr 15 13:27:34 parker pluto[4118]: ! shared-secret:   71 4e 7b 23  1e 5b 91 52  19 fe 1f cd  fa 80 85 34
+Apr 15 13:27:34 parker pluto[4118]: ! ni:   90 85 a0 06  e5 73 78 2f  69 65 bc ac  b5 b7 21 86
+Apr 15 13:27:34 parker pluto[4118]: ! nr:   c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+Apr 15 13:27:34 parker pluto[4118]: ! keyid:   b2 cb 85 6a  e8 22 c6 58  8c 72 a1 b5  8a 13 74 d8
+Apr 15 13:27:34 parker pluto[4118]: ! keyid:   16 97 36 5f
+Apr 15 13:27:34 parker pluto[4118]: ! NSS: end of key computation
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  44 55 4f d8  1c bb 3e 5d  2f ba f9 c8  2a f6 f1 0d
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  2c 6c 78 96  d8 26 42 19  d5 33 e9 01  04 ed d4 a8
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  15 8b ee b1  09 b7 27 08  05 e1 5d 54  aa 1b 06 b2
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  9e 9c 0a ed  70 75 d8 45  0e 38 cb 44  74 97 f0 2d
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  2d f5 c0 8e  46 93 e5 34  48 2d 42 21  e9 54 67 6f
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  cf 8a 58 9c  f3 59 22 63  db df 95 d9  b6 d1 72 5b
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  ab 12 e6 96  5b f3 04 81  f6 28 c2 eb  7f ca 0c 98
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  cc 5d 54 75  64 95 c5 9a  d1 8f ba 17  3e ca b8 5a
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  56 52 a3 1d  5f 13 d0 c8  6b 6a 06 2b  8f 48 d3 db
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  39 1f de b1  f4 56 cb 78  bc 6e 03 1b  ea 09 7d a1
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  c3 9c 88 69  21 65 01 35  91 01 4a d4  3d dd d5 5a
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  5e 20 90 f8  99 ea a5 50  e8 28 6c 8c  72 1c 33 37
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  ed 90 bf f3  3a 43 8c ea  ec e6 90 40  5c b5 9a 87
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  0e ef 21 3b  a2 2e 96 0c  ae 75 ed 62  54 a0 3a 17
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  37 09 bb bd  3b ff c2 ab  5a 43 b8 f1  73 8b d9 f4
+Apr 15 13:27:34 parker pluto[4118]: ! DH_i:  d9 ec a3 a6  78 30 5b cf  34 7e 99 f1  10 fc a7 31
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+Apr 15 13:27:34 parker pluto[4118]: ! DH_r:  69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+Apr 15 13:27:34 parker pluto[4118]: ! end of IV generation
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid:    b2 cb 85 6a  e8 22 c6 58  8c 72 a1 b5  8a 13 74 d8
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid:    16 97 36 5f
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_d:  e0 ab 83 53  29 c1 cd f9  3e dc d1 db  05 e5 ae 82
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_d:  c1 e7 c1 d6
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_a:  74 e6 b2 93  f0 fa 04 e7  f3 bf 53 72  28 03 f8 da
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_a:  bc 80 04 95
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_e:  31 12 95 9c  d1 e2 01 61  70 07 78 2d  e6 c4 e4 98
+Apr 15 13:27:34 parker pluto[4118]: ! Skeyid_e:  dc f1 2b c1
+Apr 15 13:27:34 parker pluto[4118]: ! enc key:  31 12 95 9c  d1 e2 01 61  70 07 78 2d  e6 c4 e4 98
+Apr 15 13:27:34 parker pluto[4118]: ! IV:  1d a6 7c aa  a5 c0 ad 9a  e5 a3 84 d1  7c 48 e0 f5
+Apr 15 13:27:34 parker pluto[4118]: ! IV:  bb 4e bf 21
+Apr 15 13:28:44 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:28:44 parker pluto[4118]: ! helper 0 doing build_kenonce op id: 7
+Apr 15 13:28:44 parker pluto[4118]: ! Local DH secret:
+Apr 15 13:28:44 parker pluto[4118]: !   c7 4f b0 1e  9b 6c 96 14  f7 03 d0 55  1b 0f af 33
+Apr 15 13:28:44 parker pluto[4118]: !   5c 9a 87 8d  04 31 1a 7e  66 07 0f fb  a0 6a 46 d3
+Apr 15 13:28:44 parker pluto[4118]: ! Public DH value sent:
+Apr 15 13:28:44 parker pluto[4118]: !   6c 48 fb dd  80 bb 15 66  18 a3 14 96  b7 5f 17 56
+Apr 15 13:28:44 parker pluto[4118]: !   ce 91 a9 df  b5 3c 6d 1a  11 31 b0 c4  da f7 41 7b
+Apr 15 13:28:44 parker pluto[4118]: !   9a e9 79 d6  12 36 6e eb  b8 00 5a 02  37 57 cc b2
+Apr 15 13:28:44 parker pluto[4118]: !   42 1a c8 50  54 72 f1 76  81 ec ca ba  ea c6 bb 87
+Apr 15 13:28:44 parker pluto[4118]: !   e5 bc 3c 41  38 a9 af a9  66 ec 27 c3  33 cc 06 55
+Apr 15 13:28:44 parker pluto[4118]: !   c0 bd d8 23  10 ae 71 3a  ee f6 9a fa  07 d2 66 bb
+Apr 15 13:28:44 parker pluto[4118]: !   22 df ae 49  24 2a d1 b4  66 dc dc 77  02 bf 7b a7
+Apr 15 13:28:44 parker pluto[4118]: !   47 24 4e cc  bd e9 77 58  4f 83 3f e0  5a d7 60 c5
+Apr 15 13:28:44 parker pluto[4118]: !   35 71 b8 f1  29 0e 4d eb  b3 21 77 89  b4 3c ff d0
+Apr 15 13:28:44 parker pluto[4118]: !   03 7c b4 54  06 fe 77 9d  b0 a0 7d 14  31 d7 73 e9
+Apr 15 13:28:44 parker pluto[4118]: !   0b ed 0e e0  a9 51 db 7b  0f d4 ab 0a  6d 87 ce a9
+Apr 15 13:28:44 parker pluto[4118]: !   f4 93 b6 3c  d2 cc 59 03  94 b2 34 18  d6 37 eb 5a
+Apr 15 13:28:44 parker pluto[4118]: !   40 28 e2 c5  20 be 26 9f  d7 ff c3 55  56 56 39 1c
+Apr 15 13:28:44 parker pluto[4118]: !   a0 77 48 0f  ee 1d e3 b5  1d 6f 70 49  ce 60 b4 63
+Apr 15 13:28:44 parker pluto[4118]: !   ec 39 d7 16  f1 2a 22 50  40 d3 cc 64  f5 28 7e 87
+Apr 15 13:28:44 parker pluto[4118]: !   e0 1e 2f d5  37 3a b4 dc  fa 3a b3 d3  a3 3a cf c1
+Apr 15 13:28:44 parker pluto[4118]: ! Generated nonce:
+Apr 15 13:28:44 parker pluto[4118]: !   b3 23 37 10  fc fb b7 15  dd 24 d2 b3  cb e2 0b 52
+Apr 15 13:28:44 parker pluto[4118]: ! helper 0 read 2744+4/2752 bytesfd: 7
+Apr 15 13:28:44 parker pluto[4118]: ! helper 0 doing compute dh+iv op id: 8
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   b1 30 b0 10  1a 65 a7 57  01 95 34 b5  58 72 8a aa
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   b7 78 a3 7b  44 d3 2a 2d  31 36 6f f8  0f ce 01 ea
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   61 a1 02 05  7e 65 30 80  4c b0 15 52  4c 1f 4d 55
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   9e b6 ed d6  fc 30 19 38  fb eb cd 62  6c 66 10 83
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   b6 8d eb db  24 0c 84 9b  38 69 8d b8  1f 16 23 a4
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   48 2f 9d b8  c5 f6 5f be  93 45 be 61  62 e5 e6 25
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   01 fa e1 d5  11 59 d4 ab  a2 23 1a c1  be 85 cb 20
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   54 9f a1 7a  36 c2 84 de  f5 6a a0 a4  9b 69 36 2d
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   40 3f f7 78  2c 1d 34 82  40 8a dc d8  76 2e de 99
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   98 7e be 35  4f c3 98 cf  0b 24 3c 96  6d 9e 16 1e
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   ca 2d 2e 6f  e5 b1 9c ba  25 0a 76 55  a5 8f c0 6b
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   05 c6 0e d0  61 fa c0 40  68 64 0a 8e  bc 13 40 a2
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   3c 73 91 bd  a6 ca 4b 2b  38 26 88 98  34 20 59 17
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   65 32 68 8f  c5 c1 aa 29  8d 9d 4b ba  6e 77 e2 5d
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   bf ca cc bf  56 30 f1 f8  27 f0 87 81  d4 e9 a4 14
+Apr 15 13:28:44 parker pluto[4118]: ! peer's g:   fa 1e bf d9  4e 4e b5 dc  0f 24 c1 fb  6e a9 27 13
+Apr 15 13:28:44 parker pluto[4118]: ! long term secret:   c7 4f b0 1e  9b 6c 96 14  f7 03 d0 55  1b 0f af 33
+Apr 15 13:28:44 parker pluto[4118]: ! long term secret:   5c 9a 87 8d  04 31 1a 7e  66 07 0f fb  a0 6a 46 d3
+Apr 15 13:28:44 parker pluto[4118]: ! calc_dh_shared(): time elapsed (OAKLEY_GROUP_MODP2048): 1040 usec
+Apr 15 13:28:44 parker pluto[4118]: ! DH shared-secret:
+Apr 15 13:28:44 parker pluto[4118]: !   74 70 b4 30  2a 5a 5a 6d  8b 70 05 65  f6 c9 55 71
+Apr 15 13:28:44 parker pluto[4118]: !   97 f0 c1 57  39 42 db a4  a7 dc 77 a7  36 a8 a6 bb
+Apr 15 13:28:44 parker pluto[4118]: !   c0 1d 33 02  c5 6a 3a 48  db c3 c5 c4  34 7f c9 55
+Apr 15 13:28:44 parker pluto[4118]: !   f8 3d 22 5b  55 83 cb d3  11 5b 04 7b  42 3d 3c 5a
+Apr 15 13:28:44 parker pluto[4118]: !   e9 e6 35 39  cf 6c fd 0e  d5 fc 92 64  f7 c3 eb b3
+Apr 15 13:28:44 parker pluto[4118]: !   19 f6 3f 55  6a e4 7b 7f  8c 0c 62 de  ad 2a 00 91
+Apr 15 13:28:44 parker pluto[4118]: !   b5 ff 9b ef  54 eb f8 62  87 d6 97 49  f3 cc 50 58
+Apr 15 13:28:44 parker pluto[4118]: !   b6 d0 94 a9  ac 99 50 6b  98 d3 eb dc  b1 da 1e 38
+Apr 15 13:28:44 parker pluto[4118]: !   15 fa a0 3e  4f 8c 70 49  86 8d 45 dd  01 a4 70 a7
+Apr 15 13:28:44 parker pluto[4118]: !   ae ac f6 22  d6 cd f3 e9  71 7d b4 92  f2 8c 71 ec
+Apr 15 13:28:44 parker pluto[4118]: !   ac e7 67 f4  b3 2d 79 8c  0a 44 df f2  da e5 ac 80
+Apr 15 13:28:44 parker pluto[4118]: !   90 38 c2 4c  f9 da 43 45  b7 36 75 c4  c9 7b 24 ef
+Apr 15 13:28:44 parker pluto[4118]: !   3a 0d bd c3  dd ed 4f 4c  d9 10 77 a4  e5 b1 fe 41
+Apr 15 13:28:44 parker pluto[4118]: !   19 8b 61 ac  5c 8f 08 f5  f6 a1 c3 d2  41 d0 0a 44
+Apr 15 13:28:44 parker pluto[4118]: !   3e d7 53 6d  17 54 5d 2a  5f dd 74 23  48 f4 82 d2
+Apr 15 13:28:44 parker pluto[4118]: !   67 8a 79 08  f4 b0 c9 89  82 0d 65 27  d5 96 76 2b
+Apr 15 13:28:44 parker pluto[4118]: ! skeyid inputs (digi+NI+NR+shared) hasher: oakley_sha
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   74 70 b4 30  2a 5a 5a 6d  8b 70 05 65  f6 c9 55 71
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   97 f0 c1 57  39 42 db a4  a7 dc 77 a7  36 a8 a6 bb
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   c0 1d 33 02  c5 6a 3a 48  db c3 c5 c4  34 7f c9 55
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   f8 3d 22 5b  55 83 cb d3  11 5b 04 7b  42 3d 3c 5a
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   e9 e6 35 39  cf 6c fd 0e  d5 fc 92 64  f7 c3 eb b3
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   19 f6 3f 55  6a e4 7b 7f  8c 0c 62 de  ad 2a 00 91
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   b5 ff 9b ef  54 eb f8 62  87 d6 97 49  f3 cc 50 58
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   b6 d0 94 a9  ac 99 50 6b  98 d3 eb dc  b1 da 1e 38
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   15 fa a0 3e  4f 8c 70 49  86 8d 45 dd  01 a4 70 a7
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   ae ac f6 22  d6 cd f3 e9  71 7d b4 92  f2 8c 71 ec
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   ac e7 67 f4  b3 2d 79 8c  0a 44 df f2  da e5 ac 80
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   90 38 c2 4c  f9 da 43 45  b7 36 75 c4  c9 7b 24 ef
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   3a 0d bd c3  dd ed 4f 4c  d9 10 77 a4  e5 b1 fe 41
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   19 8b 61 ac  5c 8f 08 f5  f6 a1 c3 d2  41 d0 0a 44
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   3e d7 53 6d  17 54 5d 2a  5f dd 74 23  48 f4 82 d2
+Apr 15 13:28:44 parker pluto[4118]: ! shared-secret:   67 8a 79 08  f4 b0 c9 89  82 0d 65 27  d5 96 76 2b
+Apr 15 13:28:44 parker pluto[4118]: ! ni:   b3 23 37 10  fc fb b7 15  dd 24 d2 b3  cb e2 0b 52
+Apr 15 13:28:44 parker pluto[4118]: ! nr:   6c e9 b1 de  26 65 87 67  6b c1 89 c3  ab 50 bf 13
+Apr 15 13:28:44 parker pluto[4118]: ! keyid:   45 ca 0a 69  b8 32 ea 0b  21 ac fe 90  d4 16 c6 68
+Apr 15 13:28:44 parker pluto[4118]: ! keyid:   33 3b 55 9a
+Apr 15 13:28:44 parker pluto[4118]: ! NSS: end of key computation
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  6c 48 fb dd  80 bb 15 66  18 a3 14 96  b7 5f 17 56
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  ce 91 a9 df  b5 3c 6d 1a  11 31 b0 c4  da f7 41 7b
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  9a e9 79 d6  12 36 6e eb  b8 00 5a 02  37 57 cc b2
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  42 1a c8 50  54 72 f1 76  81 ec ca ba  ea c6 bb 87
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  e5 bc 3c 41  38 a9 af a9  66 ec 27 c3  33 cc 06 55
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  c0 bd d8 23  10 ae 71 3a  ee f6 9a fa  07 d2 66 bb
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  22 df ae 49  24 2a d1 b4  66 dc dc 77  02 bf 7b a7
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  47 24 4e cc  bd e9 77 58  4f 83 3f e0  5a d7 60 c5
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  35 71 b8 f1  29 0e 4d eb  b3 21 77 89  b4 3c ff d0
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  03 7c b4 54  06 fe 77 9d  b0 a0 7d 14  31 d7 73 e9
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  0b ed 0e e0  a9 51 db 7b  0f d4 ab 0a  6d 87 ce a9
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  f4 93 b6 3c  d2 cc 59 03  94 b2 34 18  d6 37 eb 5a
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  40 28 e2 c5  20 be 26 9f  d7 ff c3 55  56 56 39 1c
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  a0 77 48 0f  ee 1d e3 b5  1d 6f 70 49  ce 60 b4 63
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  ec 39 d7 16  f1 2a 22 50  40 d3 cc 64  f5 28 7e 87
+Apr 15 13:28:44 parker pluto[4118]: ! DH_i:  e0 1e 2f d5  37 3a b4 dc  fa 3a b3 d3  a3 3a cf c1
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  b1 30 b0 10  1a 65 a7 57  01 95 34 b5  58 72 8a aa
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  b7 78 a3 7b  44 d3 2a 2d  31 36 6f f8  0f ce 01 ea
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  61 a1 02 05  7e 65 30 80  4c b0 15 52  4c 1f 4d 55
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  9e b6 ed d6  fc 30 19 38  fb eb cd 62  6c 66 10 83
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  b6 8d eb db  24 0c 84 9b  38 69 8d b8  1f 16 23 a4
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  48 2f 9d b8  c5 f6 5f be  93 45 be 61  62 e5 e6 25
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  01 fa e1 d5  11 59 d4 ab  a2 23 1a c1  be 85 cb 20
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  54 9f a1 7a  36 c2 84 de  f5 6a a0 a4  9b 69 36 2d
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  40 3f f7 78  2c 1d 34 82  40 8a dc d8  76 2e de 99
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  98 7e be 35  4f c3 98 cf  0b 24 3c 96  6d 9e 16 1e
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  ca 2d 2e 6f  e5 b1 9c ba  25 0a 76 55  a5 8f c0 6b
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  05 c6 0e d0  61 fa c0 40  68 64 0a 8e  bc 13 40 a2
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  3c 73 91 bd  a6 ca 4b 2b  38 26 88 98  34 20 59 17
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  65 32 68 8f  c5 c1 aa 29  8d 9d 4b ba  6e 77 e2 5d
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  bf ca cc bf  56 30 f1 f8  27 f0 87 81  d4 e9 a4 14
+Apr 15 13:28:44 parker pluto[4118]: ! DH_r:  fa 1e bf d9  4e 4e b5 dc  0f 24 c1 fb  6e a9 27 13
+Apr 15 13:28:44 parker pluto[4118]: ! end of IV generation
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid:    45 ca 0a 69  b8 32 ea 0b  21 ac fe 90  d4 16 c6 68
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid:    33 3b 55 9a
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_d:  8e 7b 0f 2a  8b 68 46 c9  f4 42 9f c4  41 51 22 9c
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_d:  14 9a fa 77
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_a:  1d 2d a5 65  14 fd 9a fb  d1 03 07 ec  92 4a 4f da
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_a:  7b 3d a5 99
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_e:  fb f3 dd ec  30 c4 19 f2  42 24 35 88  73 e4 9f bb
+Apr 15 13:28:44 parker pluto[4118]: ! Skeyid_e:  cf 03 2d ce
+Apr 15 13:28:44 parker pluto[4118]: ! enc key:  fb f3 dd ec  30 c4 19 f2  42 24 35 88  73 e4 9f bb
+Apr 15 13:28:44 parker pluto[4118]: ! IV:  c7 a7 aa ab  80 99 05 ae  2c 6c 69 db  a5 64 fb 87
+Apr 15 13:28:44 parker pluto[4118]: ! IV:  d8 8c ec 28
+Apr 15 13:29:08 parker sshd[4598]: Address 10.10.5.40 maps to knothole.local, but this does not map back to the address - POSSIBLE BREAK-IN ATTEMPT!

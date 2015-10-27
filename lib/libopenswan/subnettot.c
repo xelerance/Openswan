@@ -47,6 +47,8 @@ bool isvalidsubnet(const ip_subnet *sub)
 
 /*
  - subnettot - convert subnet to text "addr/bitcount"
+ * returns number of characters that is printed, or if buffer is exceeded, like
+ * snprintf(), returns how many would be needed, without actually exceeding the buffer.
  */
 size_t				/* space needed for full conversion */
 subnettot(sub, format, dst, dstlen)
@@ -114,3 +116,4 @@ size_t dstlen;
 
   return len;
 }
+

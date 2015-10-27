@@ -1,0 +1,17 @@
+This test case is an IKEv2 responder -- it receives an I1 message
+from carol, but it has the wrong CAcertificate anchor, and this should
+result in a failure to authenticate.
+
+In fact, because the RSA auth operations are mock'ed, the authentication does
+not fail, because it isn't performed at all.
+
+parentI1.pcap is copied from ../lp15-certificateselfI1/OUTPUT/certificateselfI1.pcap
+
+
+
+
+
+
+
+
+

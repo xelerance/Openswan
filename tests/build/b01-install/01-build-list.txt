@@ -27,7 +27,6 @@
 ./usr/local/lib/ipsec/_updown.klips
 ./usr/local/lib/ipsec/_updown.mast
 ./usr/local/lib/ipsec/_updown.netkey
-./usr/local/libexec/ipsec/_pluto_adns
 ./usr/local/libexec/ipsec/addconn
 ./usr/local/libexec/ipsec/auto
 ./usr/local/libexec/ipsec/barf
@@ -96,5 +95,6 @@
 ./usr/local/man/man8/ipsec_spigrp.8
 ./usr/local/man/man8/ipsec_tncfg.8
 ./usr/local/man/man8/ipsec_verify.8
+./usr/local/man/man8/ipsec_whack.8
 ./usr/local/sbin/ipsec
 ./usr/local/share/doc/openswan/ipsec.conf-sample

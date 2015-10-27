@@ -1,0 +1,28 @@
+Usage: pluto  [--help] [--version] [--optionsfrom <filename>] 
+	[--nofork] [--stderrlog] [--plutostderrlogtime] [--force_busy] 
+	[--nocrsend] [--strictcrlpolicy] [--crlcheckinterval] [--ocspuri] [--uniqueids] [--noretransmits] 
+
+IPsec stack options
+	[--use-auto] [--use-klips] [--use-netkey] [--use-mast] [--use-bsdkame] [--use-nostack]
+
+Connection options
+	[--interface <ifname|ifaddr>] [--ikeport <port-number>] [--listen <ifaddr>] 
+
+File/Directory settings
+	[--ctlbase <path>] 
+	[--perpeerlogbase <path>] [--perpeerlog]  
+	[--coredir <dirname>]
+	[--secretsfile <secrets-file>] [--ipsecdir <ipsec-dir>] 
+	[--nhelpers <number>]  
+	[--secctx_attr_value <number>]  (unavailable)   
+
+Debug Options
+	[--debug-none] [--debug-all] 
+	[--debug-raw] [--debug-crypt] [--debug-crypto] [--debug-parsing] [--debug-emitting] 
+	[--debug-control] [--debug-lifecycle] [--debug-klips] [--debug-netkey] [--debug-x509] [ --debug-nat-t] 
+	[--debug-dns] [--debug-oppo] [--debug-oppoinfo] [--debug-dpd] [ --debug-private] [ --debug-pfkey] 
+	 
+	[--nat_traversal] [--keep_alive <delay_sec>]  
+	[--force_keepalive] [--disable_port_floating]  
+	[--virtual_private <network_list>] 
+Openswan VERSION

@@ -42,7 +42,7 @@
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"
-#include "connections.h"        /* needs id.h */
+#include "pluto/connections.h"        /* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -55,32 +55,14 @@
 #include "ipsec_doi.h"        /* needs demux.h and state.h */
 #include "timer.h"
 #include "whack.h"        /* requires connections.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "vendor.h"
 #include "dpd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 #include "kernel.h"
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "hostpair.h"
-
-#if 0
-static void print_ikev2_ts(struct traffic_selector *ts){
-        char lbx[ADDRTOT_BUF];
-        char hbx[ADDRTOT_BUF];
-
-	DBG_log("PAUL marker ------------------------");
-        DBG_log("ts_type: %s", enum_name(&ikev2_ts_type_names, ts->ts_type));
-        DBG_log("ipprotoid: %d", ts->ipprotoid);
-        DBG_log("startport: %d", ts->startport);
-        DBG_log("endport: %d", ts->endport);
-        addrtot(&ts->low,  0, lbx, sizeof(lbx));
-        addrtot(&ts->high, 0, hbx, sizeof(hbx));
-        DBG_log("ip low: %s", lbx);
-        DBG_log("ip high: %s", hbx);
-	DBG_log("PAUL marker ------------------------");
-}
-#endif
 
 void ikev2_print_ts(struct traffic_selector *ts){
 	char lbx[ADDRTOT_BUF];
@@ -99,56 +81,74 @@ void ikev2_print_ts(struct traffic_selector *ts){
 
 
 /* rewrite me with addrbytesptr() */
-struct traffic_selector ikev2_end_to_ts(struct end *e)
+struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint)
 {
     struct traffic_selector ts;
     struct in6_addr v6mask;
+    ip_subnet clientnet;
 
     memset(&ts, 0, sizeof(ts));
 
-    switch(e->client.addr.u.v4.sin_family) {
+    clientnet = e->client;
+
+    if(!e->has_client) {
+        /* we propose the IP address of the interface that we are using. */
+        /*
+         * we could instead propose 0.0.0.0->255.255.255.255 and let the other
+         * end narrow the TS, but if one wants that, it is easy to just specify
+         * in the configuration file: rightsubnet=0.0.0.0/0.
+         *
+         * When there is NAT involved, we may really want a tunnel to the
+         * address that this end point thinks it is.  That works only when
+         * virtual_ip includes the IP involved.
+         *
+         */
+        addrtosubnet(&endpoint, &clientnet);
+    }
+
+    switch(clientnet.addr.u.v4.sin_family) {
     case AF_INET:
         ts.ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
-        ts.low   = e->client.addr;
-        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(e->client.maskbits).s_addr;
-        ts.high  = e->client.addr;
-        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(e->client.maskbits).s_addr;
+        ts.low   = clientnet.addr;
+        ts.low.u.v4.sin_addr.s_addr  &= bitstomask(clientnet.maskbits).s_addr;
+        ts.high  = clientnet.addr;
+        ts.high.u.v4.sin_addr.s_addr |= ~bitstomask(clientnet.maskbits).s_addr;
         break;
 
     case AF_INET6:
-	ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
-	v6mask = bitstomask6(e->client.maskbits);
+        ts.ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
+        v6mask = bitstomask6(clientnet.maskbits);
 
-	ts.low   = e->client.addr;
-	ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
-	ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
-	ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
-	ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
+        ts.low   = clientnet.addr;
+        ts.low.u.v6.sin6_addr.s6_addr32[0] &= v6mask.s6_addr32[0];
+        ts.low.u.v6.sin6_addr.s6_addr32[1] &= v6mask.s6_addr32[1];
+        ts.low.u.v6.sin6_addr.s6_addr32[2] &= v6mask.s6_addr32[2];
+        ts.low.u.v6.sin6_addr.s6_addr32[3] &= v6mask.s6_addr32[3];
 
-	ts.high  = e->client.addr;
-	ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
-	ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
-	ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
-	ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
-	break;
+        ts.high  = clientnet.addr;
+        ts.high.u.v6.sin6_addr.s6_addr32[0]|= ~v6mask.s6_addr32[0];
+        ts.high.u.v6.sin6_addr.s6_addr32[1]|= ~v6mask.s6_addr32[1];
+        ts.high.u.v6.sin6_addr.s6_addr32[2]|= ~v6mask.s6_addr32[2];
+        ts.high.u.v6.sin6_addr.s6_addr32[3]|= ~v6mask.s6_addr32[3];
+        break;
 
-    /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
+        /* Setting ts_type IKEv2_TS_FC_ADDR_RANGE (RFC-4595) not yet supproted */
     }
 
     ts.ipprotoid = e->protocol;
 
-	/*
-	 * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
-	 * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58)
-	 *   we only support providing Type, not Code, eg protoport=1/1
-	 */
-	if(e->port == 0 || e->has_port_wildcard) {
-	   ts.startport = 0;
-	   ts.endport = 65535;
-	} else {
-	   ts.startport = e->port;
-	   ts.endport = e->port;
-	}
+    /*
+     * if port is %any or 0 we mean all ports (or all iccmp/icmpv6
+     * See RFC-5996 Section 3.13.1 handling for ICMP(1) and ICMPv6(58)
+     *   we only support providing Type, not Code, eg protoport=1/1
+     */
+    if(e->port == 0 || e->has_port_wildcard) {
+        ts.startport = 0;
+        ts.endport = 65535;
+    } else {
+        ts.startport = e->port;
+        ts.endport = e->port;
+    }
 
     return ts;
 }
@@ -156,8 +156,7 @@ struct traffic_selector ikev2_end_to_ts(struct end *e)
 stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 			 , pb_stream *outpbs
 			 , unsigned int np
-			 , struct traffic_selector *ts
-			 , enum phase1_role role UNUSED)
+			 , struct traffic_selector *ts)
 {
     struct ikev2_ts its;
     struct ikev2_ts1 its1;
@@ -223,6 +222,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			      , pb_stream *outpbs
 			      , enum phase1_role role
+                              , unsigned int next_payload
 			      , struct connection *c0
 			      , lset_t policy UNUSED)
 {
@@ -242,36 +242,23 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr
-			    , ts_i, INITIATOR);
+	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr, ts_i);
 	if(ret!=STF_OK) return ret;
 
-	if(role == INITIATOR) {
-	ret = ikev2_emit_ts(md, outpbs, st->st_connection->policy & POLICY_TUNNEL ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_v2N
-			    , ts_r, RESPONDER);
-	}
-	else {
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-			DBG_log("Received v2N_USE_TRANSPORT_MODE from the other end, next payload is v2N_USE_TRANSPORT_MODE notification");
-			ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2N
-						, ts_r, RESPONDER);
-			break;
-			}
-		}
-		if(!p){
-                        ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_NONE
-                                                , ts_r, RESPONDER);
-                }
-        }
-
+        ret = ikev2_emit_ts(md, outpbs, next_payload, ts_r);
 	if(ret!=STF_OK) return ret;
     }
 
     return STF_OK;
 }
+
+#ifdef NEED_SIN_LEN
+#define SET_SIN_LEN(x)  (x).u.v4.sin_len = sizeof(struct sockaddr_in)
+#define SET_SIN6_LEN(x) (x).u.v6.sin_len = sizeof(struct sockaddr_in6)
+#else
+#define SET_SIN_LEN(x) do{}while(0)
+#define SET_SIN6_LEN(x) do{}while(0)
+#endif
 
 /* return number of traffic selectors found */
 int
@@ -293,16 +280,12 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
 	    case IKEv2_TS_IPV4_ADDR_RANGE:
 		array[i].ts_type = IKEv2_TS_IPV4_ADDR_RANGE;
 		array[i].low.u.v4.sin_family  = AF_INET;
-#ifdef NEED_SIN_LEN
-                array[i].low.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
+                SET_SIN_LEN(array[i].low);
                 if(!in_raw(&array[i].low.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
                     return -1;
 
                 array[i].high.u.v4.sin_family = AF_INET;
-#ifdef NEED_SIN_LEN
-                array[i].high.u.v4.sin_len = sizeof( struct sockaddr_in);
-#endif
+                SET_SIN_LEN(array[i].high);
 
                 if(!in_raw(&array[i].high.u.v4.sin_addr.s_addr, 4, &addr, "ipv4 ts"))
                     return -1;
@@ -311,17 +294,13 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
             case IKEv2_TS_IPV6_ADDR_RANGE:
                 array[i].ts_type = IKEv2_TS_IPV6_ADDR_RANGE;
                 array[i].low.u.v6.sin6_family  = AF_INET6;
-#ifdef NEED_SIN_LEN
-                array[i].low.u.v6.sin6_len = sizeof( struct sockaddr_in6);
-#endif
+                SET_SIN6_LEN(array[i].low);
 
                 if(!in_raw(&array[i].low.u.v6.sin6_addr.s6_addr, 16, &addr, "ipv6 ts"))
                     return -1;
 
                 array[i].high.u.v6.sin6_family = AF_INET6;
-#ifdef NEED_SIN_LEN
-                array[i].high.u.v6.sin6_len = sizeof( struct sockaddr_in6);
-#endif
+                SET_SIN6_LEN(array[i].high);
 
                 if(!in_raw(&array[i].high.u.v6.sin6_addr.s6_addr,16, &addr, "ipv6 ts"))
                     return -1;
@@ -341,153 +320,231 @@ ikev2_parse_ts(struct payload_digest *const ts_pd
     return i;
 }
 
-int ikev2_evaluate_connection_port_fit(struct connection *d
-				  , struct spd_route *sr
-				  , enum phase1_role role
-				  , struct traffic_selector *tsi
-				  , struct traffic_selector *tsr
-				  , unsigned int tsi_n
-				  , unsigned int tsr_n
-				  , unsigned int *best_tsi_i
-				  , unsigned int *best_tsr_i)
+/*
+ * Check if our policy's protocol (proto) matches
+ * the Traffic Selector protocol (ts_proto).
+ * If superset_ok, narrowing ts_proto 0 to our proto is OK (responder narrowing)
+ * If subset_ok, narrowing our proto 0 to ts_proto is OK (initiator narrowing).
+ * Returns 0 for no match, 1 for narrowed match, 255 for exact match.
+ */
+static int ikev2_match_protocol(u_int8_t proto, u_int8_t ts_proto
+                                , bool superset_ok
+                                , bool subset_ok, const char *which, int index)
 {
-	unsigned int tsi_ni, tsr_ni;
-	int bestfit_p = -1;
-	struct end *ei, *er;
-	int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
+    int f = 0;	/* strength of match */
+    const char *m = "no";
 
-	if(role == INITIATOR) {
-		ei = &sr->this;
-		er = &sr->that;
-	} else {
-		ei = &sr->that;
-		er = &sr->this;
-	}
-	/* compare tsi/r array to this/that, evaluating port ranges how well it fits */
-	for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
-		for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
-			int fitrange1 = 0;
-			int fitrange2 = 0;
+    if (proto == ts_proto) {
+        f = 255;	/* ??? odd value */
+        m = "exact";
+    } else if (superset_ok && ts_proto == 0) {
+        f = 1;
+        m = "superset";
+    } else if (subset_ok && proto == 0) {
+        f = 1;
+        m = "subset";
+    }
+    DBG(DBG_CONTROL,
+        DBG_log("protocol %d and %s[%d].ipprotoid %d: %s match",
+                proto,
+                which, index,
+                ts_proto,
+                m));
+    return f;
+}
 
-			DBG(DBG_CONTROL,DBG_log("ei->port %d  tsi[tsi_ni].startport %d  tsi[tsi_ni].endport %d narrowing=%s"
-						,ei->port , tsi[tsi_ni].startport, tsi[tsi_ni].endport, (narrowing ? "yes" : "no")));
+/*
+ * returns -1 on no match; otherwise a weight of how great the match was.
+ * *best_tsi_i and *best_tsr_i are set if there was a match.
+ */
+int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
+					   const struct spd_route *sr,
+					   enum phase1_role role,
+					   const struct traffic_selector *tsi,
+					   const struct traffic_selector *tsr,
+					   int tsi_n,
+					   int tsr_n,
+					   int *best_tsi_i,
+					   int *best_tsr_i)
+{
+    int tsi_ni;
+    int bestfit_pr = -1;
+    const struct end *ei, *er;
+    int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
 
-			if((ei->port) && (( ei->port == tsi[tsi_ni].startport ) && (ei->port == tsi[tsi_ni].endport))) {
-				fitrange1 = 1;
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d  ==  ei->port %d exact match single port  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, ei->port, fitrange1));
+    if (role == INITIATOR) {
+        ei = &sr->this;
+        er = &sr->that;
+    } else {
+        ei = &sr->that;
+        er = &sr->this;
+    }
+    /* compare tsi/r array to this/that, evaluating protocol how well it fits */
+    /* ??? stupid n**2 algorithm */
+    for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+        int tsr_ni;
 
-			}
-			else if ((!ei->port) && ( ( tsi[tsi_ni].startport == ei->port ) && (tsi[tsi_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange1 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsi[%d] %d-%d  ==  ei 0-65535 exact match all ports  fitrange1 %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-			}
-			else if ( (role == INITIATOR) && narrowing && (!ei->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-						 ,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));
-				if( tsi[tsi_ni].startport <= tsi[tsi_ni].endport ) {
-					fitrange1 = 1 + tsi[tsi_ni].endport - tsi[tsi_ni].startport ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535 can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
+        int fitrange_i = ikev2_match_protocol(ei->protocol, tsi[tsi_ni].ipprotoid,
+                                              role == RESPONDER && narrowing,
+                                              role == INITIATOR && narrowing,
+                                              "tsi", tsi_ni);
 
-			}
-			else if ((role == RESPONDER) && ( narrowing  && ei->port) ) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port %d to tsi[%d] %d-%d to"
-						 ,ei->port, tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport));
-				if(( ei->port >= tsi[tsi_ni].startport ) &&
-						(ei->port <= tsi[tsi_ni].endport)) {
-					fitrange1 = 1 ;
-					DBG(DBG_CONTROL,DBG_log("  tsi[%d] %d-%d >= ei->port 0-65535. can be narrowed  fitrange1 %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, fitrange1));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsi[%d] %d-%d to ei->port %d"
-								,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
+        if (fitrange_i == 0)
+            continue;	/* save effort! */
 
-			}
+        for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
+            int fitrange_r = ikev2_match_protocol(er->protocol, tsr[tsr_ni].ipprotoid,
+                                                  role == RESPONDER && narrowing,
+                                                  role == INITIATOR && narrowing,
+                                                  "tsr", tsr_ni);
 
-			else
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsi[%d] %d-%d to ei->port %d"
-							,tsi_ni, tsi[tsi_ni].startport, tsi[tsi_ni].endport, ei->port));
+            int matchiness;
 
+            if (fitrange_r == 0)
+                continue;	/* save effort! */
 
-			if((er->port) && (( er->port == tsr[tsr_ni].startport ) && (er->port == tsr[tsr_ni].endport))) {
-				fitrange2 = 1;
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d  ==  er->port %d exact match single port fitrange2 %d"
-							,tsr_ni, tsr[tsr_ni].startport, er->port, fitrange2));
+            matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
 
-			}
-			else if ((!er->port) && ( ( tsr[tsr_ni].startport == er->port ) && (tsr[tsr_ni].endport == 65535 ))) {
-				// we are on range 0 - 64K  will alloow  only the same  with our without narrowing
-				fitrange2 =  65535;
-				DBG(DBG_CONTROL,DBG_log("   tsr[%d] %d-%d  ==  ei 0-65535 exact match all ports fitrange2 %d"
-							, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, fitrange2));
-			}
+            if (matchiness > bestfit_pr) {
+                *best_tsi_i = tsi_ni;
+                *best_tsr_i = tsr_ni;
+                bestfit_pr = matchiness;
+                DBG(DBG_CONTROL,
+                    DBG_log("    best protocol fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+                            *best_tsi_i, fitrange_i,
+                            *best_tsr_i, fitrange_r,
+                            matchiness));
+            }
+        }
+    }
+    DBG(DBG_CONTROL, DBG_log("    protocol_fitness %d", bestfit_pr));
+    return bestfit_pr;
+}
 
-			else if ( (role == INITIATOR) && narrowing && (!er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65355 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
-				if( tsr[tsr_ni].startport <= tsi[tsr_ni].endport ){
-					fitrange2 = 1 + tsr[tsr_ni].endport - tsr[tsi_ni].startport;
-						DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port 0-65535 can be narrowed  fitrange2 %d"
-									,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport,fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   cant narrow tsr[%d] %d-%d to er->port 0-65535"
-								,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
+/*
+ * Check if our policy's port (port) matches
+ * the Traffic Selector port range (ts.startport to ts.endport)
+ * Note port == 0 means port range 0 to 65535.
+ * If superset_ok, narrowing ts port range to our port range is OK (responder narrowing)
+ * If subset_ok, narrowing our port range to ts port range is OK (initiator narrowing).
+ * Returns 0 if no match; otherwise number of ports within match
+ */
+static int ikev2_match_port_range(u_int16_t port, struct traffic_selector ts,
+	bool superset_ok, bool subset_ok, const char *which, int index)
+{
+    u_int16_t low = port;
+    u_int16_t high = port == 0 ? 65535 : port;
+    int f = 0;	/* strength of match */
+    const char *m = "no";
 
-			}
-      else if ((role == RESPONDER) &&  narrowing  && (er->port)) {
-				DBG(DBG_CONTROL,DBG_log("   narrowing=yes want to narrow ei->port 0-65535 to tsi[%d] %d-%d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport));
-				if((  er->port >= tsr[tsr_ni].startport ) &&
-						(er->port <= tsr[tsr_ni].endport)) {
-					fitrange2 = 1;
-					DBG(DBG_CONTROL,DBG_log("  tsr[%d] %d-%d <= er->port %d can be narrowed fitrange2 %d"
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port, fitrange2));
-				}
-				else
-					DBG(DBG_CONTROL,DBG_log("   can't narrow tsr[%d] %d-%d to er->port %d"
-								, tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
-			}
-			else
-				DBG(DBG_CONTROL,DBG_log("  mismatch tsr[%d] %d-%d to er->port %d"
-							,tsr_ni, tsr[tsr_ni].startport, tsr[tsr_ni].endport, er->port));
+    if (ts.startport > ts.endport) {
+        m = "invalid range in";
+    } else if (ts.startport == low && ts.endport == high) {
+        f = 1 + (high - low);
+        m = "exact";
+    } else if (superset_ok && ts.startport <= low && high <= ts.endport) {
+        f = 1 + (high - low);
+        m = "superset";
+    } else if (subset_ok && low <= ts.startport && ts.endport <= high) {
+        f = 1 + (ts.endport - ts.startport);
+        m = "subset";
+    }
+    DBG(DBG_CONTROL,
+        DBG_log("   %s[%d] %u-%u: %s port match with %u.  fitness %d",
+                which, index,
+                ts.startport, ts.endport,
+                m,
+                port,
+                f));
+    return f;
+}
 
+/*
+ * returns -1 on no match; otherwise a weight of how great the match was.
+ * *best_tsi_i and *best_tsr_i are set if there was a match.
+ */
+int ikev2_evaluate_connection_port_fit(const struct connection *d,
+				       const struct spd_route *sr,
+				       enum phase1_role role,
+				       const struct traffic_selector *tsi,
+				       const struct traffic_selector *tsr,
+				       int tsi_n,
+				       int tsr_n,
+				       int *best_tsi_i,
+				       int *best_tsr_i)
+{
+    int tsi_ni;
+    int bestfit_p = -1;
+    const struct end *ei, *er;
+    int narrowing = (d->policy & POLICY_IKEV2_ALLOW_NARROWING);
 
-			int fitbits  = 0;
-			if(fitrange1 && fitrange2) {
-				fitbits = (fitrange1 << 8) + fitrange2;
-				DBG(DBG_CONTROL,DBG_log("    is a match"));
-				if(fitbits > bestfit_p) {
-					*best_tsi_i = tsi_ni;
-					*best_tsr_i = tsr_ni;
-					bestfit_p = fitbits;
-					DBG(DBG_CONTROL,DBG_log("    and is a better fit tsi[%d] fitrange1 %d tsr[%d] fitrange2 %d fitbits %d"
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				}
-				else {
-					DBG(DBG_CONTROL,DBG_log("    and is not a better fit tsi[%d] fitrange %d tsr[%d] fitrange2 %d fitbits %d"
-								, *best_tsi_i, fitrange1 , *best_tsr_i, fitrange2, fitbits));
-				}
-			}
-			else {
-				DBG(DBG_CONTROL,DBG_log("    is not a match"));
-			}
+    if (role == INITIATOR) {
+        ei = &sr->this;
+        er = &sr->that;
+    } else {
+        ei = &sr->that;
+        er = &sr->this;
+    }
 
-		}
-	}
-	DBG(DBG_CONTROL,DBG_log("    port_fitness  %d", bestfit_p));
-	return bestfit_p;
+    DBG(DBG_CONTROL,
+        DBG_log("    evaluate_connection_port_fit tsi_n[%d], best=%d"
+                , tsi_n, bestfit_p));
+    // so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+    //                *best_tsi_i, fitrange_i,
+    //                *best_tsr_i, fitrange_r,
+    //matchiness));
+
+    /* compare tsi/r array to this/that, evaluating how well each port range fits */
+    /* ??? stupid n**2 algorithm */
+    for (tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+        int tsr_ni;
+        int fitrange_i = ikev2_match_port_range(ei->port, tsi[tsi_ni],
+                                                role == RESPONDER && narrowing,
+                                                role == INITIATOR && narrowing,
+                                                "tsi", tsi_ni);
+
+        DBG(DBG_CONTROL,
+            DBG_log("      evaluating_connection_port_fit tsi_n[%d], range_i=%d best=%d"
+                    , tsi_ni, fitrange_i, bestfit_p));
+
+        if (fitrange_i == 0)
+            continue;	/* save effort! */
+
+        for (tsr_ni = 0; tsr_ni < tsr_n; tsr_ni++) {
+            int fitrange_r = ikev2_match_port_range(er->port, tsr[tsr_ni],
+                                                    role == RESPONDER && narrowing,
+                                                    role == INITIATOR && narrowing,
+                                                    "tsr", tsr_ni);
+
+            int matchiness;
+
+            DBG(DBG_CONTROL,
+                DBG_log("      evaluating_connection_port_fit tsi_n[%d] tsr_n[%d], range=%d/%d best=%d"
+                        , tsi_ni, tsr_ni, fitrange_i, fitrange_r, bestfit_p));
+
+            if (fitrange_r == 0)
+                continue;	/* no match */
+
+            matchiness = fitrange_i + fitrange_r;	/* ??? arbitrary objective function */
+
+            if (matchiness > bestfit_p) {
+                *best_tsi_i = tsi_ni;
+                *best_tsr_i = tsr_ni;
+                bestfit_p = matchiness;
+                DBG(DBG_CONTROL,
+                    DBG_log("    best ports fit so far: tsi[%d] fitrange_i %d, tsr[%d] fitrange_r %d, matchiness %d",
+                            *best_tsi_i, fitrange_i,
+                            *best_tsr_i, fitrange_r,
+                            matchiness));
+            }
+        }
+    }
+    DBG(DBG_CONTROL, DBG_log("    port_fitness %d", bestfit_p));
+    return bestfit_p;
 }
 
 int ikev2_evaluate_connection_fit(struct connection *d
+                                  , struct state *st
 				  , struct spd_route *sr
 				  , enum phase1_role role
 				  , struct traffic_selector *tsi
@@ -499,6 +556,7 @@ int ikev2_evaluate_connection_fit(struct connection *d
     int bestfit = -1;
     /* int best_tsr, best_tsi;  */
     struct end *ei, *er;
+    struct end fei, fer;
 
     if(role == INITIATOR) {
 	ei = &sr->this;
@@ -512,8 +570,33 @@ int ikev2_evaluate_connection_fit(struct connection *d
     {
 	char ei3[SUBNETTOT_BUF];
 	char er3[SUBNETTOT_BUF];
-	subnettot(&ei->client,  0, ei3, sizeof(ei3));
-	subnettot(&er->client,  0, er3, sizeof(er3));
+        if(ei->has_client) {
+            subnettot(&ei->client,  0, ei3, sizeof(ei3));
+        } else {
+            strcpy(ei3, "<noclient>");
+
+            /* here, fill in new end with actual client info from the state */
+            if(ei->host_type == KH_ANY) {
+                fei = *ei;
+                ei  = &fei;
+                strcpy(ei3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fei.client);
+            }
+        }
+
+        if(er->has_client) {
+            subnettot(&er->client,  0, er3, sizeof(er3));
+        } else {
+            strcpy(er3, "<noclient");
+
+            /* here, fill in new end with actual client info from the state */
+            if(er->host_type == KH_ANY) {
+                fer = *er;
+                er  = &fer;
+                strcpy(er3, "<self>");
+                addrtosubnet(&st->st_remoteaddr, &fer.client);
+            }
+        }
 	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
 		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
 		, d->name, ei3, ei->protocol, ei->port
@@ -611,11 +694,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
-                                  , enum phase1_role role
                                   , pb_stream *outpbs)
 {
     struct state      *st = md->st;
-    struct state      *st1;
+    struct state      *st1= st;
     struct connection *c  = st->st_connection;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
@@ -638,194 +720,235 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
      *
      * similar to find_client_connection/fc_try.
      */
-  {
+    {
 	struct connection *b = c;
 	struct connection *d;
 	int bestfit_n, newfit, bestfit_p;
 	struct spd_route *sra, *bsr;
-	struct host_pair *hp = NULL;
-	unsigned int best_tsi_i ,  best_tsr_i;
+	struct IDhost_pair *hp = NULL;
+	int best_tsi_i ,  best_tsr_i;
 
 	bsr = NULL;
 	bestfit_n = -1;
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
-	for (sra = &c->spd; sra != NULL; sra = sra->next)
-	{
-					int bfit_n=ikev2_evaluate_connection_fit(c,sra,role,tsi,tsr,tsi_n,
-													tsr_n);
-					if (bfit_n > bestfit_n)
-					{
-									DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-									int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-																	tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-									if (bfit_p > bestfit_p) {
-													DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
-																									, c->name, best_tsi_i, best_tsr_i));
-													bestfit_p = bfit_p;
-													bestfit_n = bfit_n;
-													b = c;
-													bsr = sra;
-									}
-					}
-					else
-									DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
-																					, c->name));
-	}
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
+	for (sra = &c->spd; sra != NULL; sra = sra->next) {
+            int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
+                                                     tsr_n);
+            if (bfit_n > bestfit_n) {
+                DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,RESPONDER,tsi,tsr,
+                                                                  tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+                if (bfit_p > bestfit_p) {
+                    DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
+                                                 , c->name, best_tsi_i, best_tsr_i));
+                    bestfit_p = bfit_p;
+                    bestfit_n = bfit_n;
+                    b = c;
+                    bsr = sra;
+                }
+            }
+            else
+                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
+                                             , c->name));
+        }
 
-	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next)
-	{
-		hp = find_host_pair(&sra->this.host_addr
-				, sra->this.host_port
-				, &sra->that.host_addr
-				, sra->that.host_port);
+	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
+            hp = find_ID_host_pair(ANY_MATCH
+                                   , sra->this.id
+                                   , sra->that.id);
 
 #ifdef DEBUG
-		if (DBGP(DBG_CONTROLMORE))
-		{
-			char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
+            if (DBGP(DBG_CONTROLMORE))  {
+                char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
 
-			subnettot(&sra->this.client, 0, s2, sizeof(s2));
-			subnettot(&sra->that.client, 0, d2, sizeof(d2));
+                subnettot(&sra->this.client, 0, s2, sizeof(s2));
+                subnettot(&sra->that.client, 0, d2, sizeof(d2));
 
-			DBG_log("  checking hostpair %s -> %s is %s"
-					, s2, d2
-					, (hp ? "found" : "not found"));
-		}
+                DBG_log("  checking hostpair %s -> %s is %s"
+                        , s2, d2
+                        , (hp ? "found" : "not found"));
+            }
 #endif /* DEBUG */
 
-		if(!hp) continue;
+            if(!hp) continue;
 
-		for (d = hp->connections; d != NULL; d = d->hp_next)
-		{
-			struct spd_route *sr;
-			int wildcards, pathlen;  /* XXX */
+            for (d = hp->connections; d != NULL; d = d->IDhp_next) {
+                struct spd_route *sr;
+                int wildcards, pathlen;  /* XXX */
 
-			if (d->policy & POLICY_GROUP)
-				continue;
+                /* if already best fit, do not try again */
+                if(d == c) continue;
 
-			if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-						&& match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-						&& trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-				continue;
+                if (d->policy & POLICY_GROUP)
+                    continue;
+
+                if (!(same_id(&c->spd.this.id, &d->spd.this.id)
+                      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
+                      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+                    continue;
 
 
-			for (sr = &d->spd; sr != NULL; sr = sr->next) {
-				newfit=ikev2_evaluate_connection_fit(d,sr,role
-						,tsi,tsr,tsi_n,tsr_n);
-				if(newfit > bestfit_n) {  /// will complicated this with narrowing
-					DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
-					int bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
-							tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
-					if (bfit_p > bestfit_p) {
-						DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
-									, d->name, best_tsi_i, best_tsr_i));
-						bestfit_p = bfit_p;
-						bestfit_n = newfit;
-						b = d;
-						bsr = sr;
-					}
-				}
-				else
-					DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by port matching", d->name));
-			}
-		}
-	}
+                for (sr = &d->spd; sr != NULL; sr = sr->next) {
+                    newfit=ikev2_evaluate_connection_fit(d,st, sr,RESPONDER
+                                                         ,tsi,tsr,tsi_n,tsr_n);
+                    if(newfit > bestfit_n) {  /// will complicated this with narrowing
+                        int bfit_p;
 
+                        DBG(DBG_CONTROLMORE, DBG_log("bfit=ikev2_evaluate_connection_fit found better fit d %s", d->name));
+
+                        /* we know that it's already a better fit */
+                        bestfit_n = newfit;
+                        b = d;
+                        bsr = sr;
+
+                        /* now look at port fit, it might be even better! */
+                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
+                                                                          tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
+                        if (bfit_p > bestfit_p) {
+                            DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
+                                                         , d->name, best_tsi_i, best_tsr_i));
+                            bestfit_p = bfit_p;
+                        }
+                    }
+                    else {
+                        DBG(DBG_CONTROLMORE, DBG_log("prefix range fit d %s d->name was rejected by connection fit: %d > %d", d->name, newfit, bestfit_n));
+
+                    }
+                }
+            }
+        }
+
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*
-	 * now that we have found the best connection, copy the data into
-	 * the state structure as the tsi/tsr
+	 * now that we have found the best connection (in b), copy the data into
+	 * the state structure as the tsi/tsr, perhaps after instantiating it.
 	 *
 	 */
 
-	/*better connection*/
+        if (b->kind == CK_TEMPLATE || b->kind == CK_GROUP) {
+            /* instantiate it, filling in peer's ID */
+            b = rw_instantiate(b, &st->st_remoteaddr,
+                               NULL,
+                               &st->ikev2.st_peer_id);
+        }
+
+        if (b != c)
+	{
+            char instance[1 + 10 + 1];
+
+            openswan_log("switched from \"%s\" to \"%s\"%s", c->name, b->name
+                         , fmt_connection_inst_name(b, instance, sizeof(instance)));
+
+	    st->st_connection = b;	/* kill reference to c */
+
+	    /* this ensures we don't move cur_connection from NULL to
+	     * something, requiring a reset_cur_connection() */
+	    if (cur_connection == c) {
+		set_cur_connection(b);
+	    }
+
+	    connection_discard(c);
+	}
+
+	/* better connection */
 	c=b;
 
-	/* Paul: should we STF_FAIL here instead of checking for NULL */
-	if (bsr != NULL) {
-    st1 = duplicate_state(st);
-    insert_state(st1); /* needed for delete - we should never have duplicated before we were sure */
+        if(bsr == NULL) {
+            /* no proposal matched... */
+            return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN;
+        }
 
-		if(role == INITIATOR) {
-			memcpy (&st1->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
-			memcpy (&st1->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
-		}
-		else {
-			st1->st_ts_this = ikev2_end_to_ts(&bsr->this);
-			st1->st_ts_that = ikev2_end_to_ts(&bsr->that);
-		}
-		ikev2_print_ts(&st1->st_ts_this);
-		ikev2_print_ts(&st1->st_ts_that);
-	}
-	else {
-		if(role == INITIATOR)
-				return STF_FAIL;
-			else
-			return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN ;
-		}
-	}
+        /* we are sure, so lets make a state for this child SA */
+        st1 = duplicate_state(st);
+        insert_state(st1);
 
-	st1->st_connection = c;
-	md->st = st1;
-	md->pst= st;
-
-	/* start of SA out */
-	{
-		struct isakmp_sa r_sa = sa_pd->payload.sa;
-		notification_t rn;
-		pb_stream r_sa_pbs;
-
-		r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
-		if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
-			return STF_INTERNAL_ERROR;
-
-		/* SA body in and out */
-		rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-				&r_sa_pbs, st1, FALSE);
-
-		if (rn != NOTHING_WRONG)
-			return STF_FAIL + rn; // should we delete_state st1?
-	}
-
-        ret = ikev2_calc_emit_ts(md, outpbs, role
-                        , c, c->policy);
-        if(ret != STF_OK) return ret; // should we delete_state st1?
-
-	if( role == RESPONDER ) {
-		chunk_t child_spi, notifiy_data;
-		struct payload_digest *p;
-		for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next)
-		{
-			if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-
-				if(st1->st_connection->policy & POLICY_TUNNEL) {
-					DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
-					DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
-				}
-				else {
-					DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
-					DBG_log("Now responding with USE_TRANSPORT_MODE notify");
-				}
-
-				memset(&child_spi, 0, sizeof(child_spi));
-				memset(&notifiy_data, 0, sizeof(notifiy_data));
-				ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, /*PROTO_ISAKMP*/ 0,
-						&child_spi,
-						v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
-
-				if (st1->st_esp.present == TRUE) {
-					/*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-					st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-				}
-				break;
-			}
-		}
+        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
+        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
+        ikev2_print_ts(&st1->st_ts_this);
+        ikev2_print_ts(&st1->st_ts_that);
     }
 
-    ikev2_derive_child_keys(st1, role);
+    /* note that st1 starts == st, but a child SA creation can change that */
+    st1->st_connection = c;
+    md->st = st1;
+    md->pst= st;
+
+    /* start of SA out */
+    {
+        struct isakmp_sa r_sa = sa_pd->payload.sa;
+        notification_t rn;
+        pb_stream r_sa_pbs;
+
+        r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
+        if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
+            return STF_INTERNAL_ERROR;
+
+        /* SA body in and out */
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
+                                       &r_sa_pbs, st1, FALSE);
+
+        /* we do not delete_state st1 yet, because initiator could retransmit */
+        if (rn != NOTHING_WRONG) {
+            event_schedule(EVENT_SO_DISCARD, EVENT_HALF_OPEN_TIMEOUT, st1);
+            return STF_FAIL + rn;
+        }
+    }
+
+    {
+        unsigned int next_payload = ISAKMP_NEXT_NONE;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+                next_payload = ISAKMP_NEXT_v2N;
+                break;
+            }
+        }
+
+        ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER, next_payload
+                                 , c, c->policy);
+        if(ret != STF_OK) {
+            return ret;
+        }
+    }
+
+    {
+        chunk_t child_spi, notifiy_data;
+        struct payload_digest *p;
+        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+
+                if(st1->st_connection->policy & POLICY_TUNNEL) {
+                    DBG_log("Although local policy is tunnel, received USE_TRANSPORT_MODE");
+                    DBG_log("So switching to transport mode, and responding with USE_TRANSPORT_MODE notify");
+                }
+                else {
+                    DBG_log("Local policy is transport, received USE_TRANSPORT_MODE");
+                    DBG_log("Now responding with USE_TRANSPORT_MODE notify");
+                }
+
+                memset(&child_spi, 0, sizeof(child_spi));
+                memset(&notifiy_data, 0, sizeof(notifiy_data));
+                ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL
+                          , /*PROTO_ISAKMP*/ 0,
+                          &child_spi,
+                          v2N_USE_TRANSPORT_MODE, &notifiy_data, outpbs);
+
+                if (st1->st_esp.present == TRUE) {
+                    /* openswan supports only "esp" with ikev2 it seems,
+                     * look at ikev2_parse_child_sa_body handling*/
+                    st1->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                }
+                break;
+            }
+        }
+    }
+
+    ikev2_derive_child_keys(st1, RESPONDER);
     /* install inbound and outbound SPI info */
-    if(!install_ipsec_sa(st1, TRUE))
+    if(!install_ipsec_sa(st, st1, TRUE))
         return STF_FATAL;
 
     /* mark the connection as now having an IPsec SA associated with it. */

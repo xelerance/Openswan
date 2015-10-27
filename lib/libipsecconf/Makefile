@@ -23,7 +23,7 @@ MANDIR=$(MANTREE)/man3
 
 ONEFILE=parser.y
 SRCS=confread.c confwrite.c starterwhack.c starterlog.c
-SRCS+=cmp.c parser.tab.c lex.yy.c keywords.c alloc.c oeconns.c
+SRCS+=cmp.c parser.tab.c lex.yy.c keywords.c oeconns.c
 SRCS+=interfaces.c
 
 #enable to get lots more debugging about semantics.
@@ -55,10 +55,12 @@ include ${srcdir}../Makefile.library
 keywords.c: parser.tab.h
 
 lex.yy.c: parser.tab.c parser.l parser.y
-	$(LEX) ${srcdir}parser.l
+	@echo LEX $(notdir $<)
+	@$(LEX) ${srcdir}parser.l
 
 parser.tab.h parser.tab.c: parser.l parser.y
-	$(BISON) ${BISONOSFLAGS} -v -d ${srcdir}parser.y
+	@echo BISON $(notdir $<)
+	@$(BISON) ${BISONOSFLAGS} -v -d ${srcdir}parser.y
 
 cleanall::
 	$(RM) -f parser.tab.* lex.yy.*

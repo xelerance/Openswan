@@ -41,7 +41,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
@@ -49,7 +49,7 @@
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -67,7 +67,7 @@
 #include "nat_traversal.h"
 #endif
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #include "pluto_crypt.h"
 #include "crypto.h"
@@ -76,6 +76,7 @@
 stf_status aggr_not_present(int whack_sock UNUSED
 			    , struct connection *c UNUSED
 			    , struct state *predecessor UNUSED
+                            , so_serial_t  *newstateno UNUSED
 			    , lset_t policy UNUSED
 			    , unsigned long try UNUSED
 			    , enum crypto_importance importance UNUSED)

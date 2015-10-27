@@ -181,18 +181,12 @@ int starter_whack_read_reply(int sock,
 	return ret;
 }
 
-static int send_whack_msg (struct whack_message *msg, char *ctlbase)
+/* returns length of result... XXX unit test would be good here */
+int serialize_whack_msg(struct whack_message *msg)
 {
-	struct sockaddr_un ctl_addr =
-	    { .sun_family = AF_UNIX };
-	int sock;
-	ssize_t len;
 	struct whackpacker wp;
+	ssize_t len;
 	err_t ugh;
-	int ret;
-
-	/* copy socket location */
-	strncpy(ctl_addr.sun_path, ctlbase, sizeof(ctl_addr.sun_path));
 
 	/**
 	 * Pack strings
@@ -210,6 +204,32 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	}
 
 	len = wp.str_next - (unsigned char *)msg;
+        return len;
+}
+
+static int send_whack_msg(struct starter_config *cfg, struct whack_message *msg)
+{
+  if(cfg->send_whack_msg) {
+    return cfg->send_whack_msg(cfg, msg);
+  } else {
+    starter_log(LOG_LEVEL_ERR, "no send_whack_msg function defined");
+    return -1;
+  }
+}
+
+static int send_whack_msg_to_socket(struct starter_config *cfg, struct whack_message *msg)
+{
+	struct sockaddr_un ctl_addr =
+	    { .sun_family = AF_UNIX };
+	int sock;
+	ssize_t len;
+	int ret;
+
+	/* copy socket location */
+	strncpy(ctl_addr.sun_path, cfg->ctlbase, sizeof(ctl_addr.sun_path));
+
+        len = serialize_whack_msg(msg);
+        if(len == -1) return -1;   /* already logged error */
 
 	/**
 	 * Connect to pluto ctl
@@ -251,7 +271,7 @@ static int send_whack_msg (struct whack_message *msg, char *ctlbase)
 	return ret;
 }
 
-static void init_whack_msg (struct whack_message *msg)
+void init_whack_msg (struct whack_message *msg)
 {
 	memset(msg, 0, sizeof(struct whack_message));
 	msg->magic = WHACK_MAGIC;
@@ -272,13 +292,53 @@ static char *connection_name (struct starter_conn *conn)
 	}
 }
 
-static void set_whack_end(struct starter_config *cfg
+static char *split_dns_hostname(struct starter_conn *conn
+                                , char *lr
+                                , char *dnsname
+                                , ip_address *host_addr)
+{
+  char *slash = strchr(dnsname, '/');
+  ip_address tmp;
+  err_t e;
+  if(slash) {
+    char *ip;
+    *slash = '\0';
+    slash++;
+
+    ip = slash;
+    slash = strchr(slash, '/');
+    if(slash) {
+      *slash = '\0';
+      slash++;
+    }
+    /* now convert to IP address */
+    e = ttoaddr(ip, 0, 0, &tmp);
+    if(!e) {
+      /* avoid trashing host_addr on error */
+      *host_addr = tmp;
+    } else {
+      starter_log(LOG_LEVEL_DEBUG, "conn %s, %s= %dns hint(%s) failed to parse as IPv4/IPv6 address, ignored",
+                  connection_name(conn), lr, ip);
+    }
+  }
+
+  /* return first part as DNS name */
+  return dnsname;
+}
+
+
+static int set_whack_end(struct starter_config *cfg
+                          , struct starter_conn *conn
 			  , char *lr
 			  , struct whack_end *w
 			  , struct starter_end *l)
 {
 	w->id = l->id;
 	w->host_type = l->addrtype;
+
+        /* may get overridden if IPHOSTNAME */
+	w->host_addr_name = l->strings[KSCF_IP];
+        anyaddr(l->addr_family, &w->host_addr);
 
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
@@ -294,9 +354,11 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 
 	case KH_IPHOSTNAME:
-		/* note: we always copy the name string below */
-		anyaddr(l->addr_family, &w->host_addr);
-		break;
+          /* go split the string up into DNS part, and one or more hints */
+          w->host_addr_name = split_dns_hostname(conn, lr
+                                                 , l->strings[KSCF_IP]
+                                                 , &w->host_addr);
+          break;
 
 	case KH_OPPO:
 	case KH_GROUP:
@@ -309,11 +371,14 @@ static void set_whack_end(struct starter_config *cfg
 		anyaddr(l->addr_family, &w->host_addr);
 		break;
 
+        case KH_NOTSET:
+          printf("%s: %s= end is not defined, conn not loaded\n", conn->name, lr);
+                return -1;
+
 	default:
-		printf("%s: do something with host case: %d\n", lr, l->addrtype);
+          printf("%s %s: do something with host case: %d\n", conn->name, lr, l->addrtype);
 		break;
 	}
-	w->host_addr_name = l->strings[KSCF_IP];
 
 	switch(l->nexttype) {
 	case KH_DEFAULTROUTE:
@@ -325,7 +390,7 @@ static void set_whack_end(struct starter_config *cfg
 		break;
 
 	default:
-		printf("%s: do something with nexthop case: %d\n", lr, l->nexttype);
+          printf("%s %s: do something with nexthop case: %d\n", conn->name, lr, l->nexttype);
 		break;
 
 	case KH_NOTSET:  /* acceptable to not set nexthop */
@@ -384,139 +449,135 @@ static void set_whack_end(struct starter_config *cfg
 	if(l->options_set[KNCF_MODECONFIGCLIENT]) {
 		w->modecfg_client = l->options[KNCF_MODECONFIGCLIENT];
 	}
+        return 0;
+}
+
+
+/*
+ * returns 0 if a key needs to be sent
+ * returns 1 if there was an error.
+ * returns 2 if everything is fine, no key to send.
+ */
+int starter_whack_build_pkmsg(struct starter_config *cfg,
+                              struct whack_message *msg,
+                              struct starter_conn *conn,
+                              struct starter_end *end,
+                              unsigned int keynum,
+                              enum pubkey_source key_type,
+                              unsigned char *rsakey,
+                              const char *lr)
+{
+  char keyspace[1024 + 4];
+  const char *err;
+
+  msg->whack_key = TRUE;
+  msg->pubkey_alg = PUBKEY_ALG_RSA;
+  if (end->id && rsakey) {
+    msg->keyid = end->id;   /* XXX? should this clone_str? */
+
+    switch(key_type) {
+    case PUBKEY_DNS:
+    case PUBKEY_DNSONDEMAND:
+      starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from DNS",
+                  connection_name(conn), lr, keynum);
+      break;
+
+    case PUBKEY_CERTIFICATE:
+      starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key%u from certificate",
+                  connection_name(conn), lr, keynum);
+      break;
+
+    case PUBKEY_NOTSET:
+      break;
+
+    case PUBKEY_PREEXCHANGED:
+      err = atobytes((char *)rsakey, 0, keyspace, sizeof(keyspace),
+                     &msg->keyval.len);
+      if (err) {
+        starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
+                    connection_name(conn), lr, keynum, err);
+        return 1;
+      }
+      else {
+        msg->keyval.ptr = (unsigned char *)keyspace;
+        return 0;
+      }
+    }
+  }
+
+  /* nothing to send, do not send it */
+  return 2;
 }
 
 static int starter_whack_add_pubkey (struct starter_config *cfg,
 				     struct starter_conn *conn,
 				     struct starter_end *end, const char *lr)
 {
-	const char *err;
-	char keyspace[1024 + 4];
 	struct whack_message msg;
 	int ret;
 
 	ret = 0;
 
 	init_whack_msg(&msg);
-
-	msg.whack_key = TRUE;
-	msg.pubkey_alg = PUBKEY_ALG_RSA;
-	if (end->id && end->rsakey1) {
-		msg.keyid = end->id;
-
-		switch(end->rsakey1_type) {
-		case PUBKEY_DNS:
-		case PUBKEY_DNSONDEMAND:
-		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from DNS",
-				connection_name(conn), lr);
-		    break;
-
-		case PUBKEY_CERTIFICATE:
-		    starter_log(LOG_LEVEL_DEBUG, "conn %s/%s has key from certificate",
-				connection_name(conn), lr);
-		    break;
-
-		case PUBKEY_NOTSET:
-		    break;
-
-		case PUBKEY_PREEXCHANGED:
- 		    err = atobytes((char *)end->rsakey1, 0, keyspace, sizeof(keyspace),
-				   &msg.keyval.len);
-		    if (err) {
-			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				    connection_name(conn), lr, err);
-			return 1;
-		    }
-		    else {
-			    msg.keyval.ptr = (unsigned char *)keyspace;
-			    ret = send_whack_msg(&msg, cfg->ctlbase);
-		    }
-		}
-	}
-
-	if(ret < 0) return ret;
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      1, end->rsakey1_type, end->rsakey1, lr)==0) {
+          ret = send_whack_msg(cfg, &msg);
+          if(ret != 0) return ret;
+        }
 
 	init_whack_msg(&msg);
+        if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
+                                      2, end->rsakey2_type, end->rsakey2, lr)==0) {
+          ret = send_whack_msg(cfg, &msg);
+          if(ret != 0) return ret;
+        }
 
-	msg.whack_key = TRUE;
-	msg.pubkey_alg = PUBKEY_ALG_RSA;
-	if (end->id && end->rsakey2) {
-		/* printf("addkey2: %s\n", lr); */
-
-		msg.keyid = end->id;
-		switch(end->rsakey2_type) {
-		case PUBKEY_NOTSET:
-		case PUBKEY_DNS:
-		case PUBKEY_DNSONDEMAND:
-		case PUBKEY_CERTIFICATE:
-		    break;
-
-		case PUBKEY_PREEXCHANGED:
-		  err = atobytes((char *)end->rsakey2, 0, keyspace, sizeof(keyspace),
-				   &msg.keyval.len);
-		    if (err) {
-			starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey malformed [%s]",
-				    connection_name(conn), lr, err);
-			return 1;
-		    }
-		    else {
-		      msg.keyval.ptr = (unsigned char *)keyspace;
-		      return send_whack_msg(&msg, cfg->ctlbase);
-		    }
-		}
-	}
-	return 0;
+        return 0;
 }
 
-static int starter_whack_basic_add_conn(struct starter_config *cfg
-					, struct starter_conn *conn)
+
+int starter_whack_build_basic_conn(struct starter_config *cfg
+                                   , struct whack_message *msg
+                                   , struct starter_conn *conn)
 {
-	struct whack_message msg;
-	int r;
+	init_whack_msg(msg);
 
-	init_whack_msg(&msg);
+	msg->whack_connection = TRUE;
+	msg->whack_delete = TRUE;      /* always do replace for now */
+	msg->name = connection_name(conn);
 
-	msg.whack_connection = TRUE;
-	msg.whack_delete = TRUE;      /* always do replace for now */
-	msg.name = connection_name(conn);
+	msg->addr_family = conn->left.addr_family;
+	msg->tunnel_addr_family = conn->left.addr_family;
 
-	msg.addr_family = conn->left.addr_family;
-	msg.tunnel_addr_family = conn->left.addr_family;
+	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
+	msg->sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
+	msg->sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
+	msg->sa_rekey_fuzz = conn->options[KBF_REKEYFUZZ];
+	msg->sa_keying_tries = conn->options[KBF_KEYINGTRIES];
 
-	if (conn->right.addrtype == KH_IPHOSTNAME)
-	{
-		msg.dnshostname = conn->right.strings[KSCF_IP];
-	}
+	msg->policy = conn->policy;
 
-	msg.sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
-	msg.sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
-	msg.sa_rekey_margin = conn->options[KBF_REKEYMARGIN];
-	msg.sa_rekey_fuzz = conn->options[KBF_REKEYFUZZ];
-	msg.sa_keying_tries = conn->options[KBF_KEYINGTRIES];
+	msg->connalias = conn->connalias;
 
-	msg.policy = conn->policy;
-
-	msg.connalias = conn->connalias;
-
-	msg.metric = conn->options[KBF_METRIC];
+	msg->metric = conn->options[KBF_METRIC];
 
 	if(conn->options_set[KBF_CONNMTU]) {
-		msg.connmtu   = conn->options[KBF_CONNMTU];
+		msg->connmtu   = conn->options[KBF_CONNMTU];
 	}
 
 	if(conn->options_set[KBF_DPDDELAY] &&
 	   conn->options_set[KBF_DPDTIMEOUT]) {
-		msg.dpd_delay   = conn->options[KBF_DPDDELAY];
-		msg.dpd_timeout = conn->options[KBF_DPDTIMEOUT];
+		msg->dpd_delay   = conn->options[KBF_DPDDELAY];
+		msg->dpd_timeout = conn->options[KBF_DPDTIMEOUT];
 
 		if(conn->options_set[KBF_DPDACTION]) {
-			msg.dpd_action = conn->options[KBF_DPDACTION];
+			msg->dpd_action = conn->options[KBF_DPDACTION];
 		} else {
 			/*
 			 * there is a default DPD action, but DPD is only
 			 * enabled if there is a dpd delay set.
 			 */
-			msg.dpd_action = DPD_ACTION_HOLD;
+			msg->dpd_action = DPD_ACTION_HOLD;
 		}
 
 	} else {
@@ -530,23 +591,23 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 	}
 #ifdef NAT_TRAVERSAL
 	if(conn->options_set[KBF_FORCEENCAP]) {
-		msg.forceencaps=conn->options[KBF_FORCEENCAP];
+		msg->forceencaps=conn->options[KBF_FORCEENCAP];
 	}
 #endif
 
 	/*Cisco interop : remote peer type*/
 	if(conn->options_set[KBF_REMOTEPEERTYPE]) {
-		msg.remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
+		msg->remotepeertype=conn->options[KBF_REMOTEPEERTYPE];
 	}
 
 	if(conn->options_set[KBF_SHA2_TRUNCBUG]) {
-		msg.sha2_truncbug=conn->options[KBF_SHA2_TRUNCBUG];
+		msg->sha2_truncbug=conn->options[KBF_SHA2_TRUNCBUG];
 	}
 
 #ifdef HAVE_NM
 	/*Network Manager support*/
 	if(conn->options_set[KBF_NMCONFIGURED]) {
-		msg.nmconfigured=conn->options[KBF_NMCONFIGURED];
+		msg->nmconfigured=conn->options[KBF_NMCONFIGURED];
 	}
 #endif
 
@@ -554,37 +615,59 @@ static int starter_whack_basic_add_conn(struct starter_config *cfg
 #ifdef HAVE_LABELED_IPSEC
 	/*Labeled ipsec support*/
 	if(conn->options_set[KBF_LOOPBACK]) {
-		msg.loopback=conn->options[KBF_LOOPBACK];
+		msg->loopback=conn->options[KBF_LOOPBACK];
 	}
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" loopback=%d", conn->name, msg.loopback);
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" loopback=%d", conn->name, msg->loopback);
 
         if(conn->options_set[KBF_LABELED_IPSEC]) {
-                msg.labeled_ipsec=conn->options[KBF_LABELED_IPSEC];
+                msg->labeled_ipsec=conn->options[KBF_LABELED_IPSEC];
         }
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" labeled_ipsec=%d", conn->name, msg.labeled_ipsec);
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" labeled_ipsec=%d", conn->name, msg->labeled_ipsec);
 
-	msg.policy_label = conn->policy_label;
-	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg.policy_label);
+	msg->policy_label = conn->policy_label;
+	starter_log(LOG_LEVEL_INFO, "conn: \"%s\" policy_label=%d", conn->name, msg->policy_label);
 #endif
 
-	set_whack_end(cfg, "left",  &msg.left, &conn->left);
-	set_whack_end(cfg, "right", &msg.right, &conn->right);
+	if(set_whack_end(cfg, conn, "left",  &msg->left, &conn->left) != 0
+           || set_whack_end(cfg, conn, "right", &msg->right, &conn->right)!=0) {
+          return -1;
+        }
 
 	/* for bug #1004 */
-	update_ports(&msg);
+	update_ports(msg);
 
-	msg.esp = conn->esp;
-	msg.ike = conn->ike;
-	msg.tpmeval = NULL;
+	msg->esp = conn->esp;
+	msg->ike = conn->ike;
+	msg->tpmeval = NULL;
 
-	r =  send_whack_msg(&msg, cfg->ctlbase);
+        return 0;
+}
 
-	if ((r==0) && (conn->policy & POLICY_RSASIG)) {
-	    r=starter_whack_add_pubkey (cfg, conn, &conn->left,  "left");
-	    if(r==0) {
-	      r=starter_whack_add_pubkey (cfg, conn, &conn->right, "right");
-	    }
+static int starter_whack_basic_add_conn(struct starter_config *cfg
+					, struct starter_conn *conn)
+{
+	struct whack_message msg;
+	int r = 0;
+
+	init_whack_msg(&msg);
+
+        /*
+         * it seems smarter to load the keys required first, even though on error that might
+         * leave keys loaded which might never get used.
+         */
+	if (conn->policy & POLICY_RSASIG) {
+          starter_log(LOG_LEVEL_DEBUG, "conn: \"%s\" sending RSA keys for left", conn->name);
+          r=starter_whack_add_pubkey (cfg, conn, &conn->left,  "left");
+          if(r==0) {
+            starter_log(LOG_LEVEL_DEBUG, "conn: \"%s\" sending RSA keys for right", conn->name);
+            r=starter_whack_add_pubkey (cfg, conn, &conn->right, "right");
+          }
 	}
+        if(r != 0) return r;
+
+        r = starter_whack_build_basic_conn(cfg, &msg, conn);
+        if(r != 0) return r;
+	r =  send_whack_msg(cfg, &msg);
 
 	return r;
 }
@@ -768,7 +851,7 @@ int starter_whack_basic_del_conn (struct starter_config *cfg
 	init_whack_msg(&msg);
 	msg.whack_delete = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_del_conn(struct starter_config *cfg
@@ -791,7 +874,7 @@ int starter_whack_basic_route_conn (struct starter_config *cfg
 	init_whack_msg(&msg);
 	msg.whack_route = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_route_conn(struct starter_config *cfg
@@ -815,7 +898,7 @@ int starter_whack_initiate_conn (struct starter_config *cfg
 	msg.whack_initiate = TRUE;
 	msg.whack_async = TRUE;
 	msg.name = connection_name(conn);
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_listen (struct starter_config *cfg)
@@ -823,7 +906,7 @@ int starter_whack_listen (struct starter_config *cfg)
 	struct whack_message msg;
 	init_whack_msg(&msg);
 	msg.whack_listen = TRUE;
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
 int starter_whack_shutdown (struct starter_config *cfg)
@@ -831,6 +914,10 @@ int starter_whack_shutdown (struct starter_config *cfg)
 	struct whack_message msg;
 	init_whack_msg(&msg);
 	msg.whack_shutdown = TRUE;
-	return send_whack_msg(&msg, cfg->ctlbase);
+	return send_whack_msg(cfg, &msg);
 }
 
+void starter_whack_init_cfg(struct starter_config *cfg)
+{
+  cfg->send_whack_msg = send_whack_msg_to_socket;
+}

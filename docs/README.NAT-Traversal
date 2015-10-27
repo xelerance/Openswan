@@ -4,7 +4,7 @@ NAT-Traversal Patch -- Version 0.6c     [ Contributed by Arkoon Network Security
                                         [          http://open-source.arkoon.net ]
 
 NAT-Traversal patch allows FreeS/WAN to be used behind any NAT device
-by encapsuling ESP in UDP.
+by encapsulating ESP in UDP.
 
 Send all your comments/requests to me (mlafon@arkoon.net). If you use it and
 find it useful, drop me a mail too.
@@ -35,7 +35,7 @@ Notes :
         right=%any
         rightsubnet=192.168.1.1/32
 
-  o x509/RSA is strongly recomended for authentication or you'll have to use
+  o x509/RSA is strongly recommended for authentication or you'll have to use
     the same PSK for every users.
 
   o This patch also includes VendorID identification. If you know/encounter

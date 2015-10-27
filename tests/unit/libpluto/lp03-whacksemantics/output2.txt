@@ -1,0 +1,101 @@
+debugging mode enabled
+Loading default conn
+Loading oedefault conn
+Loading conn cassidy--marajade
+	while loading conn 'cassidy--marajade' also including 'cassidy-left'
+	while loading conn 'cassidy--marajade' also including 'marajade-extrude-new'
+Loading conn cassidy--marajade-extrude
+	while loading conn 'cassidy--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'cassidy--marajade-extrude' also including 'marajade-extrude-new'
+Loading conn istari--marajade-extrude
+	while loading conn 'istari--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'istari--marajade-extrude' also including 'marajade-extrude-new'
+Loading conn catfish--marajade-extrude
+	while loading conn 'catfish--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'catfish--marajade-extrude' also including 'marajade-extrude'
+Loading conn franklin--marajade-extrude
+	while loading conn 'franklin--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'franklin--marajade-extrude' also including 'marajade-extrude-new'
+Loading conn aragorn--marajade-extrude
+	while loading conn 'aragorn--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'aragorn--marajade-extrude' also including 'marajade-extrude-new'
+Loading conn saruman--marajade-extrude
+	while loading conn 'saruman--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'saruman--marajade-extrude' also including 'marajade-extrude'
+Loading conn galadriel--marajade-extrude
+	while loading conn 'galadriel--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'galadriel--marajade-extrude' also including 'marajade-extrude'
+Loading conn grouper--marajade-extrude
+	while loading conn 'grouper--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'grouper--marajade-extrude' also including 'marajade-extrude'
+Loading conn jarvis--marajade-extrude
+	while loading conn 'jarvis--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'jarvis--marajade-extrude' also including 'marajade-extrude'
+Loading conn tuna--marajade-extrude
+	while loading conn 'tuna--marajade-extrude' also including 'cassidy-left'
+	while loading conn 'tuna--marajade-extrude' also including 'marajade-extrude'
+Loading conn cassidy--correlhorn
+	while loading conn 'cassidy--correlhorn' also including 'cassidy-left'
+	while loading conn 'cassidy--correlhorn' also including 'correlhorn-extrude'
+Loading conn istari--correlhorn-extrude
+	while loading conn 'istari--correlhorn-extrude' also including 'cassidy-left'
+	while loading conn 'istari--correlhorn-extrude' also including 'correlhorn-extrude'
+Loading conn franklin--correlhorn-extrude
+	while loading conn 'franklin--correlhorn-extrude' also including 'cassidy-left'
+	while loading conn 'franklin--correlhorn-extrude' also including 'correlhorn-extrude'
+Loading conn aragorn--correlhorn-extrude
+	while loading conn 'aragorn--correlhorn-extrude' also including 'cassidy-left'
+	while loading conn 'aragorn--correlhorn-extrude' also including 'correlhorn-extrude'
+Loading conn cassidy--tygerteam-home88
+Loading conn cassidy-left
+Loading conn dooku--cassidy-net
+	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
+	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+Loading conn dooku-base
+Loading conn cassidy-base
+Loading conn knothole--cassidy
+Loading conn marajade-extrude
+Loading conn marajade-extrude-new
+Loading conn correlhorn-extrude
+Enabling OE conns
+did not find conn: packetdefault, loading implicit
+did not find conn: clear, loading implicit
+did not find conn: clear-or-private, loading implicit
+did not find conn: private-or-clear, loading implicit
+did not find conn: private, loading implicit
+did not find conn: block, loading implicit
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: 2 * new_list item, item size: X
+./whacksemantics leak: new_list nlist, item size: X
+./whacksemantics leak: default base, item size: X
+./whacksemantics leak detective found Z leaks, total size X
+processing conn: knothole--cassidy

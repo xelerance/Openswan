@@ -15,9 +15,8 @@
 #ifndef _ADNS_H
 #define _ADNS_H
 
-#ifndef USE_LWRES	/* whole file! */
-
 #include <resolv.h>
+#include <netdb.h>
 
 /* The interface in RHL6.x and BIND distribution 8.2.2 are different,
  * so we build some of our own :-(
@@ -44,11 +43,13 @@ struct adns_query {
     size_t len;
     unsigned int qmagic;
     unsigned long serial;
+    sa_family_t addr_family;
     lset_t debugging;	/* only used #ifdef DEBUG, but don't want layout to change */
     char name_buf[NS_MAXDNAME + 2];
-    int type;	/* T_KEY or T_TXT */
+    int type;	                   /* T_KEY or T_TXT or T_A (also AAAA) */
 };
 
+#define ADNS_ANS_SIZE NS_PACKETSZ * 10
 struct adns_answer {
     size_t len;
     unsigned int amagic;
@@ -56,7 +57,7 @@ struct adns_answer {
     struct adns_continuation *continuation;
     int result;
     int h_errno_val;
-    u_char ans[NS_PACKETSZ * 10];   /* very probably bigger than necessary */
+    u_char ans[ADNS_ANS_SIZE];   /* very probably bigger than necessary */
 };
 
 enum helper_exit_status {
@@ -75,6 +76,15 @@ enum helper_exit_status {
     HES_BAD_MAGIC,	/* .magic field wrong */
 };
 
-#endif /* !USE_LWRES */
+/* used in unit testing */
+extern int serialize_addr_info(struct addrinfo *result
+                               , u_char *ansbuf
+                               , int     ansbuf_len);
+/* used in unit testing and dnskey.c */
+extern struct addrinfo *deserialize_addr_info(u_char *ansbuf
+                                              , int     ansbuf_len);
 
+extern void osw_freeaddrinfo(struct addrinfo *ai);
+
+extern int adns_main(bool debugval);
 #endif /* _ADNS_H */

@@ -190,25 +190,18 @@ endif
 LOADLIBS=${OBJS}
 
 # ${LIBS} is repeated due to possible circular dependancies among libraries
-ifeq ($(USE_LIBNSS),false)
-LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP}
-else
-LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP} -lnspr4 -lnss3
-endif
+LDLIBS=${LIBS} ${USERLINK} ${LIBS} ${EXTRALIBS} ${LIBGMP} ${NSS_LIBS} ${FIPS_LIBS}
 
 
 %: %.o $(OBJS) ${LIBS}
 	@echo LD $@
-ifeq ($(USE_LIBNSS),true)
-	@$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK) -lnspr4 -lnss3
-else
 	@$(CC) $(CFLAGS) -o $@ $@.o ${OBJS} $(LDFLAGS) $(LDLIBS) $(USERLINK)
-endif
 
 include ${OPENSWANSRCDIR}/programs/Makefile.manpages
 
 %.i: %.c
-	$(CC) $(CFLAGS) -E -o $@ $<
+	@echo CC  $(notdir $<)
+	@$(CC) $(CFLAGS) -E -o $@ $<
 
 TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 			-e "s:@IPSEC_DIR@:$(FINALBINDIR):" \
@@ -229,13 +222,13 @@ TRANSFORM_VARIABLES = sed -e "s:@IPSECVERSION@:$(IPSECVERSION):" \
 
 
 %: ${srcdir}%.in ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'IN' `basename $<` '->' $@
+	@echo  'IN' $(notdir $<) '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.in" = $< ]; then chmod +x $@; fi
 
 %: ${srcdir}%.pl ${OPENSWANSRCDIR}/Makefile.inc ${OPENSWANSRCDIR}/Makefile.ver
-	@echo  'PL' `basename $<` '->' $@
+	@echo  'PL' $(notdir $<) '->' $@
 	@${TRANSFORM_VARIABLES} < $< > $@
 	@if [ -x $< ]; then chmod +x $@; fi
 	@if [ "${PROGRAM}.pl" = $< ]; then chmod +x $@; fi

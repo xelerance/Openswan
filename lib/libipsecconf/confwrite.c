@@ -1,6 +1,6 @@
 /*
  * Openswan config file writer (confwrite.c)
- * Copyright (C) 2004-2006 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2015 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -64,6 +64,7 @@ void confwrite_int(FILE *out,
 	/* do not output policy settings handled elsewhere */
 	if(k->validity & kv_policy) continue;
 	if(k->validity & kv_processed) continue;
+        if(k->validity & kv_obsolete)  continue;
 
 #if 0
 	printf("#side: %s  %s validity: %08x & %08x=%08x vs %08x\n", side,
@@ -106,12 +107,13 @@ void confwrite_int(FILE *out,
 
 	case kt_enum:
 	case kt_loose_enum:
+	case kt_loose_enumarg:
 	    /* special enumeration */
 	    if(options_set[k->field]) {
 		int val = options[k->field];
 		fprintf(out, "\t%s%s=",side, k->keyname);
 
-		if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
+                if(k->type == kt_loose_enum && val == LOOSE_ENUM_OTHER) {
 		    fprintf(out, "%s\n", strings[k->field]);
 		} else {
 		    const struct keyword_enum_values *kevs = k->validenum;
@@ -125,6 +127,10 @@ void confwrite_int(FILE *out,
 			}
 			i++;
 		    }
+                    if(k->type == kt_loose_enumarg && strings[k->field]) {
+                        fprintf(out, "%c%s", k->deliminator, strings[k->field]);
+                    }
+
 		    fprintf(out, "\n");
 		}
 	    }
@@ -148,9 +154,6 @@ void confwrite_int(FILE *out,
 	    break;
 
 	case kt_comment:
-	    continue;
-
-	case kt_obsolete:
 	    continue;
 	}
 
@@ -207,7 +210,8 @@ void confwrite_str(FILE *out,
 	case kt_enum:
 	case kt_list:
 	case kt_loose_enum:
-	    /* special enumeration */
+	case kt_loose_enumarg:
+	    /* special enumeration, sorta a string */
 	    continue;
 
 	case kt_time:
@@ -219,9 +223,6 @@ void confwrite_str(FILE *out,
 	    continue;
 
 	case kt_comment:
-	    continue;
-
-	case kt_obsolete:
 	    continue;
 	}
 
@@ -246,6 +247,7 @@ void confwrite_side(FILE *out,
 {
     char databuf[2048];  /* good for a 12288 bit rsa key */
     int  keyingtype;
+    bool addrargument = TRUE;
 
     if(conn->manualkey) {
 	keyingtype=kv_manual;
@@ -255,47 +257,52 @@ void confwrite_side(FILE *out,
 
     switch(end->addrtype) {
     case KH_NOTSET:
-	fprintf(out, "\t#%s= not set\n",side);
+	fprintf(out, "\t#%s= not set",side);
+        addrargument = FALSE;
 	/* nothing! */
 	break;
 
     case KH_DEFAULTROUTE:
-	fprintf(out, "\t%s=%%defaultroute\n",side);
+	fprintf(out, "\t%s=%%defaultroute",side);
 	break;
 
     case KH_ANY:
-	fprintf(out, "\t%s=%%any\n",side);
+	fprintf(out, "\t%s=%%any",side);
 	break;
 
     case KH_IFACE:
 	if(end->strings_set[KSCF_IP]) {
-	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
+	    fprintf(out, "\t%s=%s",side, end->strings[KSCF_IP]);
 	}
+        addrargument = FALSE;
 	break;
 
     case KH_OPPO:
-	fprintf(out, "\t%s=%%opportunistic\n",side);
+	fprintf(out, "\t%s=%%opportunistic",side);
 	break;
 
     case KH_OPPOGROUP:
-	fprintf(out, "\t%s=%%opportunisticgroup\n",side);
+	fprintf(out, "\t%s=%%opportunisticgroup",side);
 	break;
 
     case KH_GROUP:
-	fprintf(out, "\t%s=%%group\n",side);
+	fprintf(out, "\t%s=%%group",side);
 	break;
 
     case KH_IPHOSTNAME:
-	if(end->strings_set[KSCF_IP]) {
-	    fprintf(out, "\t%s=%s\n",side, end->strings[KSCF_IP]);
-	}
+        fprintf(out, "\t%s=%%dns",side);
 	break;
 
     case KH_IPADDR:
 	addrtot(&end->addr, 0, databuf, ADDRTOT_BUF);
-	fprintf(out, "\t%s=%s\n", side, databuf);
+	fprintf(out, "\t%s=%s", side, databuf);
+        addrargument = FALSE;
 	break;
     }
+    if(addrargument && end->strings_set[KSCF_IP]) {
+        fprintf(out, "/%s", end->strings[KSCF_IP]);
+    }
+    fputc('\n', out);
 
     if(end->strings_set[KSCF_ID] && end->id) {
 	fprintf(out, "\t%sid=\"%s\"\n",     side, end->id);
@@ -402,10 +409,10 @@ void confwrite_conn(FILE *out,
     { /* handle also= as a comment */
 
 	int alsoplace=0;
-	fprintf(out, "\t#also = ");
+	fprintf(out, "\t#also =");
 	while(conn->alsos[alsoplace] != NULL)
 	{
-	    fprintf(out, "%s ", conn->alsos[alsoplace]);
+	    fprintf(out, " %s", conn->alsos[alsoplace]);
 	    alsoplace++;
 	}
 	fprintf(out, "\n");

@@ -15,7 +15,7 @@
 
 #include "../seam_exitlog.c"
 
-char *progname;
+const char *progname;
 
 /** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;
@@ -31,7 +31,10 @@ main(int argc, char *argv[])
     cert_t cacert,t1;
     time_t until;
 
+    /* sadly, this is actually too late */
+#ifdef HAVE_EFENCE
     EF_DISABLE_BANNER = 1;
+#endif
     progname = argv[0];
     leak_detective=1;
 

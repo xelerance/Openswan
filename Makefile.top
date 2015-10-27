@@ -70,7 +70,10 @@ check: checkprograms
 version:
 	@echo ${IPSECVERSION}
 
-packagingprep: 
+baseversion:
+	@echo ${IPSECBASEVERSION}
+
+packagingprep:
 	sed "s/IPSECBASEVERSION/${IPSECBASEVERSION}/" debian/changelog.in > debian/changelog
 	cp debian/changelog debian/NEWS
 	@for spec in packaging/*/openswan.spec.in; do \
@@ -78,13 +81,14 @@ packagingprep:
 		echo $$spec '->' $$d/$$f; \
 		sed "s/IPSECBASEVERSION/${IPSECBASEVERSION}/" $$spec > $$d/$$f; \
 	done
+	echo IPSECBASEVERSION=${IPSECBASEVERSION} > Makefile.ver
 
 distarchive: packagingprep
 	git archive --prefix=openswan-${IPSECBASEVERSION}/ -o ${HOME}/rpmbuild/SOURCES/openswan-${IPSECBASEVERSION}.tar.gz HEAD
 
 # USE_ variables determine if features are compiled into Openswan.
 # export them so that "make env" can get at them
-export USE_LWRES USE_IPSECPOLICY USE_IKEPING
+export USE_IPSECPOLICY USE_IKEPING
 export USE_KEYRR USE_KLIPS USE_NETKEY USE_VENDORID
 export USE_AGGRESSIVE USE_XAUTH USE_XAUTHPAM
 export USE_NAT_TRAVERSAL USE_NAT_TRAVERSAL_TRANSPORT_MODE USE_LDAP

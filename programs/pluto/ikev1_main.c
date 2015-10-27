@@ -52,7 +52,8 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
+#include "hostpair.h"
 #include "pluto/keys.h"
 #include "keys.h"
 #include "packet.h"
@@ -62,7 +63,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -93,7 +94,7 @@
 #include "nat_traversal.h"
 #endif
 #ifdef VIRTUAL_IP
-#include "virtual.h"
+#include "pluto/virtual.h"
 #endif
 #include "dpd.h"
 #include "x509more.h"
@@ -108,6 +109,7 @@ stf_status
 main_outI1(int whack_sock
 	   , struct connection *c
 	   , struct state *predecessor
+           , so_serial_t  *newstateno
 	   , lset_t policy
 	   , unsigned long try
 	   , enum crypto_importance importance
@@ -135,6 +137,12 @@ main_outI1(int whack_sock
     /* set up new state */
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
+    if(newstateno) *newstateno = st->st_serialno;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv1_MAJOR_VERSION;
+    st->st_ike_min        = IKEv1_MINOR_VERSION;
+
     change_state(st, STATE_MAIN_I1);
 
     if (HAS_IPSEC_POLICY(policy))
@@ -450,150 +458,6 @@ RSA_sign_hash(struct connection *c
     return sz;
 }
 
-/* Check a Main Mode RSA Signature against computed hash using RSA public key k.
- *
- * As a side effect, on success, the public key is copied into the
- * state object to record the authenticator.
- *
- * Can fail because wrong public key is used or because hash disagrees.
- * We distinguish because diagnostics should also.
- *
- * The result is NULL if the Signature checked out.
- * Otherwise, the first character of the result indicates
- * how far along failure occurred.  A greater character signifies
- * greater progress.
- *
- * Classes:
- * 0	reserved for caller
- * 1	SIG length doesn't match key length -- wrong key
- * 2-8	malformed ECB after decryption -- probably wrong key
- * 9	decrypted hash != computed hash -- probably correct key
- * 10   NSS error
- * 11   NSS error
- * 12   NSS error
- *
- * Although the math should be the same for generating and checking signatures,
- * it is not: the knowledge of the private key allows more efficient (i.e.
- * different) computation for encryption.
- */
-static err_t
-try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
-		     , const pb_stream *sig_pbs, struct pubkey *kr
-		     , struct state *st)
-{
-    const u_char *sig_val = sig_pbs->cur;
-    size_t sig_len = pbs_left(sig_pbs);
-#ifndef HAVE_LIBNSS
-    u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
-    u_char *hash_in_s = &s[sig_len - hash_len];
-#endif
-    const struct RSA_public_key *k = &kr->u.rsa;
-
-    /* decrypt the signature -- reversing RSA_sign_hash */
-    if (sig_len != k->k)
-    {
-	/* XXX notification: INVALID_KEY_INFORMATION */
-	return "1" "SIG length does not match public key length";
-    }
-
-#ifdef HAVE_LIBNSS
-    err_t ugh = RSA_signature_verify_nss (k,hash_val,hash_len,sig_val,sig_len);
-    if(ugh!=NULL) {
-	return ugh;
-    }
-#else
-    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
-    {
-	chunk_t temp_s;
-	MP_INT c;
-
-	n_to_mpz(&c, sig_val, sig_len);
-	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
-
-	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
-	memcpy(s, temp_s.ptr, sig_len);
-	pfree(temp_s.ptr);
-	mpz_clear(&c);
-    }
-
-    /* sanity check on signature: see if it matches
-     * PKCS#1 v1.5 8.1 encryption-block formatting
-     */
-    {
-	err_t ugh = NULL;
-
-	if (s[0] != 0x00)
-	    ugh = "2" "no leading 00";
-	else if (hash_in_s[-1] != 0x00)
-	    ugh = "3" "00 separator not present";
-	else if (s[1] == 0x01)
-	{
-	    const u_char *p;
-
-	    for (p = &s[2]; p != hash_in_s - 1; p++)
-	    {
-		if (*p != 0xFF)
-		{
-		    ugh = "4" "invalid Padding String";
-		    break;
-		}
-	    }
-	}
-	else if (s[1] == 0x02)
-	{
-	    const u_char *p;
-
-	    for (p = &s[2]; p != hash_in_s - 1; p++)
-	    {
-		if (*p == 0x00)
-		{
-		    ugh = "5" "invalid Padding String";
-		    break;
-		}
-	    }
-	}
-	else
-	    ugh = "6" "Block Type not 01 or 02";
-
-	if (ugh != NULL)
-	{
-	    /* note: it might be a good idea to make sure that
-	     * an observer cannot tell what kind of failure happened.
-	     * I don't know what this means in practice.
-	     */
-	    /* We probably selected the wrong public key for peer:
-	     * SIG Payload decrypted into malformed ECB
-	     */
-	    /* XXX notification: INVALID_KEY_INFORMATION */
-	    return ugh;
-	}
-    }
-
-    /* We have the decoded hash: see if it matches. */
-    if (memcmp(hash_val, hash_in_s, hash_len) != 0)
-    {
-	/* good: header, hash, signature, and other payloads well-formed
-	 * good: we could find an RSA Sig key for the peer.
-	 * bad: hash doesn't match
-	 * Guess: sides disagree about key to be used.
-	 */
-	DBG_cond_dump(DBG_CRYPT, "decrypted SIG", s, sig_len);
-	DBG_cond_dump(DBG_CRYPT, "computed HASH", hash_val, hash_len);
-	/* XXX notification: INVALID_HASH_INFORMATION */
-	return "9" "authentication failure: received SIG does not match computed HASH, but message is well-formed";
-    }
-#endif
-
-    /* Success: copy successful key into state.
-     * There might be an old one if we previously aborted this
-     * state transition.
-     */
-    unreference_key(&st->st_peer_pubkey);
-    st->st_peer_pubkey = reference_key(kr);
-
-    return NULL;    /* happy happy */
-}
-
 static stf_status
 RSA_check_signature(struct state *st
 		    , const u_char hash_val[MAX_DIGEST_LEN]
@@ -756,7 +620,8 @@ main_inI1_outR1(struct msg_digest *md)
 
 
     /* random source ports are handled by find_host_connection */
-    c = find_host_connection(&md->iface->ip_addr, pluto_port
+    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+                             , KH_IPADDR
 			     , &md->sender
 			     , md->sender_port, LEMPTY);
 
@@ -783,11 +648,12 @@ main_inI1_outR1(struct msg_digest *md)
 	 */
 	{
 	    struct connection *d;
-	    d = find_host_connection(&md->iface->ip_addr, pluto_port
+	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+                                     , KH_ANY
 				     , (ip_address*)NULL
 				     , md->sender_port, policy);
 
-	    for (; d != NULL; d = d->hp_next)
+	    for (; d != NULL; d = d->IPhp_next)
 	    {
 		if (d->kind == CK_GROUP)
 		{
@@ -824,7 +690,7 @@ main_inI1_outR1(struct msg_digest *md)
 	{
 	    loglog(RC_LOG_SERIOUS, "initial Main Mode message received on %s:%u"
 		" but \"%s\" forbids connection"
-		, ip_str(&md->iface->ip_addr), pluto_port, c->name);
+		, ip_str(&md->iface->ip_addr), pluto_port500, c->name);
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}
@@ -834,7 +700,7 @@ main_inI1_outR1(struct msg_digest *md)
 	     * His ID isn't declared yet.
 	     */
 	   DBG(DBG_CONTROL, DBG_log("instantiating \"%s\" for initial Main Mode message received on %s:%u"
-		, c->name, ip_str(&md->iface->ip_addr), pluto_port));
+		, c->name, ip_str(&md->iface->ip_addr), pluto_port500));
 	    c = rw_instantiate(c, &md->sender
 			       , NULL, NULL);
 	}
@@ -863,6 +729,10 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
 
     set_cur_state(st);	/* (caller will reset cur_state) */
     st->st_try = 0;	/* not our job to try again from start */
@@ -1349,6 +1219,10 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
     return;
 }
 
+/*
+ * this routine gets called after any DH exponentiation that needs to be done
+ * has been done, and we are ready to send our g^y.
+ */
 stf_status
 main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 		     , struct pluto_crypto_req *r)

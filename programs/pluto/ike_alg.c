@@ -42,7 +42,7 @@
 #include "ike_alg.h"
 #include "db_ops.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "kernel.h"
 #include "plutoalg.h"
 
@@ -191,7 +191,7 @@ ike_alg_ikev2_find(unsigned algo_type
  * 	Main "raw" ike_alg list adding function
  */
 int
- ike_alg_add(struct ike_alg* a)
+ike_alg_add(struct ike_alg* a, bool quiet)
 {
 	int ret=0;
 	const char *ugh="No error";
@@ -210,8 +210,9 @@ int
 		ike_alg_base[a->algo_type]=a;
 	}
 return_out:
-	if (ret)
-		openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
+	if (ret && !quiet) {
+            openswan_log("ike_alg_add(): ERROR: algo_type '%d', algo_id '%d', %s", a->algo_type, a->algo_id, ugh);
+        }
 	return ret;
 }
 
@@ -259,7 +260,7 @@ ike_alg_register_hash(struct hash_desc *hash_desc)
 
 return_out:
 	if (ret==0)
-		ret=ike_alg_add((struct ike_alg *)hash_desc);
+            ret=ike_alg_add((struct ike_alg *)hash_desc, TRUE);
 	openswan_log("ike_alg_register_hash(): Activating %s: %s (ret=%d)",
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return ret;
@@ -301,12 +302,14 @@ ike_alg_register_enc(struct encrypt_desc *enc_desc)
 return_out:
 #endif
 
-	if (ret==0)
-		ret=ike_alg_add((struct ike_alg *)enc_desc);
+	if (ret==0) {
+            ret=ike_alg_add((struct ike_alg *)enc_desc, FALSE);
+        }
 	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)",
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return 0;
 }
+
 /* Get pfsgroup for this connection */
 const struct oakley_group_desc *
 ike_alg_pfsgroup(struct connection *c, lset_t policy)

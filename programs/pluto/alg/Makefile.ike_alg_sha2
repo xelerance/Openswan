@@ -1,3 +1,5 @@
+# -*- makefile -*-
+
 ALG:=sha2
 CONFIG_YES:=$(CONFIG_IKE_ALG_SHA2)
 DIR_SHA2:=$(LIBCRYPTO)/libsha2
@@ -10,4 +12,5 @@ $(DIR_SHA2)/libsha2.a:
 	make -C $(DIR_SHA2) libsha2.a
 
 ike_alg_$(ALG).o: ike_alg_$(ALG).c
-	$(CC) -I $(LIBCRYPTO) -I$(DIR_SHA2) $(COPTS) $(ALLFLAGS) -c $<
+	@echo CC $(notdir $<)
+	@$(CC) -I $(LIBCRYPTO) -I$(DIR_SHA2) $(COPTS) $(ALLFLAGS) -c $<

@@ -191,8 +191,6 @@ extern void unlock_certs_and_keys(const char *who);
 extern const struct RSA_private_key*
 osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert);
 
-
-
 #endif /* _SECRETS_H */
 /*
  * Local Variables:

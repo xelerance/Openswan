@@ -1,6 +1,6 @@
 /*
  * Openswan config file parser (keywords.c)
- * Copyright (C) 2003-2006,2014 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2003-2006,2015 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2012 Paul Wouters <paul@libreswan.org>
  * Copyright (C) 2013 Paul Wouters <pwouters@redhat.com>
@@ -38,6 +38,32 @@
 #include "ipsecconf/parserlast.h"
 
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
+
+/*
+ * values for keyword types  (used for debugging)
+ */
+static const struct keyword_enum_value kt_values[]={
+    KEV_LITERAL(kt_string),
+    KEV_LITERAL(kt_appendstring),
+    KEV_LITERAL(kt_appendlist),
+    KEV_LITERAL(kt_filename),
+    KEV_LITERAL(kt_dirname),
+    KEV_LITERAL(kt_bool),
+    KEV_LITERAL(kt_invertbool),
+    KEV_LITERAL(kt_enum),
+    KEV_LITERAL(kt_list),
+    KEV_LITERAL(kt_loose_enum),
+    KEV_LITERAL(kt_rsakey),
+    KEV_LITERAL(kt_number),
+    KEV_LITERAL(kt_time),
+    KEV_LITERAL(kt_percent),
+    KEV_LITERAL(kt_ipaddr),
+    KEV_LITERAL(kt_subnet),
+    KEV_LITERAL(kt_idtype),
+    KEV_LITERAL(kt_bitstring),
+    KEV_LITERAL(kt_comment),
+};
+static const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
 
 /*
  * Values for failureshunt={passthrough, drop, reject, none}
@@ -329,11 +355,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"nhelpers",kv_config,kt_number, KBF_NHELPERS, NOT_ENUM},
     {"secctx_attr_value",kv_config,kt_number, KBF_SECCTX, NOT_ENUM},
     /* these two options are obsoleted. Don't die on them */
-    {"forwardcontrol", kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
-    {"rp_filter",      kv_config, kt_obsolete, KBF_WARNIGNORE,NOT_ENUM},
+    {"forwardcontrol", kv_config|kv_obsolete, kt_string, KBF_WARNIGNORE,NOT_ENUM},
+    {"rp_filter",      kv_config|kv_obsolete, kt_string, KBF_WARNIGNORE,NOT_ENUM},
 
     /* this is "left=" and "right=" */
-    {"",               kv_conn|kv_leftright, kt_loose_enum, KSCF_IP, &kw_host_list},
+    {"",               kv_conn|kv_leftright, kt_loose_enumarg, KSCF_IP, &kw_host_list, LOOSE_ENUM_OTHER, '/'},
 
     {"ike",            kv_conn|kv_auto, kt_string, KSF_IKE,NOT_ENUM},
 
@@ -341,11 +367,11 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"subnets",        kv_conn|kv_auto|kv_leftright, kt_appendlist, KSCF_SUBNETS,NOT_ENUM},
     {"sourceip",       kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_SOURCEIP,NOT_ENUM},
     {"nexthop",        kv_conn|kv_auto|kv_leftright, kt_ipaddr, KSCF_NEXTHOP,NOT_ENUM},
-    {"firewall",       kv_conn|kv_auto|kv_leftright|kt_obsolete, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
+    {"firewall",       kv_conn|kv_auto|kv_leftright|kv_obsolete, kt_bool,   KNCF_FIREWALL,NOT_ENUM},
     {"updown",         kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_UPDOWN,NOT_ENUM},
     {"id",             kv_conn|kv_auto|kv_leftright, kt_idtype, KSCF_ID,NOT_ENUM},
-    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list},
-    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list},
+    {"rsasigkey",      kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY1, &kw_rsasigkey_list, PUBKEY_PREEXCHANGED},
+    {"rsasigkey2",     kv_conn|kv_auto|kv_leftright, kt_rsakey, KSCF_RSAKEY2, &kw_rsasigkey_list, PUBKEY_PREEXCHANGED},
     {"spibase",        kv_conn|kv_auto|kv_leftright, kt_number, KNCF_SPIBASE,NOT_ENUM},
     {"cert",           kv_conn|kv_auto|kv_leftright, kt_filename, KSCF_CERT,NOT_ENUM},
     {"sendcert",       kv_conn|kv_auto|kv_leftright, kt_enum,   KNCF_SENDCERT, &kw_sendcert_list},
@@ -353,8 +379,8 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* these are conn statements which are not left/right */
     {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
-    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,NOT_ENUM},
-    {"alsoflip",       kv_conn,         kt_string, KSF_ALSOFLIP,NOT_ENUM},
+    {"also",           kv_conn,         kt_appendstring, KSF_ALSO,    NOT_ENUM},
+    {"alsoflip",       kv_conn,         kt_appendstring, KSF_ALSOFLIP,NOT_ENUM},
     {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,     &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
@@ -426,6 +452,10 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"espenckey",      kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPENCKEY,NOT_ENUM},
     {"espauthkey",     kv_conn|kv_leftright|kv_manual, kt_bitstring, KSCF_ESPAUTHKEY,NOT_ENUM},
     {"espreplay_window",kv_conn|kv_leftright|kv_manual, kt_number, KNCF_ESPREPLAYWINDOW,NOT_ENUM},
+
+    /* some things from libreswan, which we will probably accept */
+    { "plutofork",      kv_config|kv_obsolete, kt_bool,      KBF_PLUTOFORK,  NOT_ENUM },
+
     {NULL, 0, 0, 0, NOT_ENUM}
 };
 
@@ -602,15 +632,24 @@ unsigned int parser_enum_list(struct keyword_def *kd, const char *s, bool list)
     return valresult;
 }
 
-unsigned int parser_loose_enum(struct keyword *k, const char *s)
+unsigned int parser_loose_enum_arg(struct keyword *k, const char *s, char **rest)
 {
     struct keyword_def *kd = k->keydef;
     int   kevcount;
     const struct keyword_enum_value *kev;
     unsigned int valresult;
 
-    assert(kd->type == kt_loose_enum || kd->type == kt_rsakey);
+    assert(kd->type == kt_loose_enum || kd->type == kt_loose_enumarg || kd->type == kt_rsakey);
     assert(kd->validenum != NULL && kd->validenum->values != NULL);
+
+    if(kd->deliminator != '\0') {
+        char *nl = strchr(s, kd->deliminator);
+        if(nl) {
+            *nl='\0';
+            nl++;
+            if(rest) *rest = nl;
+        }
+    }
 
     for(kevcount = kd->validenum->valuesize, kev = kd->validenum->values;
 	kevcount > 0 && strcasecmp(s, kev->name)!=0;
@@ -625,8 +664,16 @@ unsigned int parser_loose_enum(struct keyword *k, const char *s)
 	return valresult;
     }
 
+#ifdef KEYWORD_PARSE_DEBUG
+    {
+        char kdtypebuf[KEYWORD_NAME_BUFLEN];
+        fprintf(stderr, "loose enum for %s is %d\n", keyword_name(&kt_values_list, kd->type, kdtypebuf),
+                kd->loose_enum_value);
+    }
+#endif
+    /* else, it's a literal other value */
     k->string = strdup(s);
-    return 255;
+    return kd->loose_enum_value;
 }
 
 

@@ -34,9 +34,9 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"
+#include "pluto/connections.h"
 #include "whack.h"
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #define F_VIRTUAL_NO          1
 #define F_VIRTUAL_DHCP        2

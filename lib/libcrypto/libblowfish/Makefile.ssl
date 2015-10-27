@@ -27,7 +27,7 @@ TEST=bftest.c
 APPS=
 
 LIB=$(TOP)/libcrypto.a
-LIBSRC=bf_skey.c bf_ecb.c bf_enc.c bf_cfb64.c bf_ofb64.c 
+LIBSRC=bf_skey.c bf_ecb.c bf_enc.c bf_cfb64.c bf_ofb64.c
 LIBOBJ=bf_skey.o bf_ecb.o $(BF_ENC) bf_cfb64.o bf_ofb64.o
 
 SRC= $(LIBSRC)
@@ -43,8 +43,9 @@ top:
 all:	lib
 
 lib:	$(LIBOBJ)
-	$(AR) $(LIB) $(LIBOBJ)
-	$(RANLIB) $(LIB)
+	@echo AR $(notdir $<)
+	@$(AR) $(LIB) $(LIBOBJ)
+	@$(RANLIB) $(LIB)
 	@touch lib
 
 # elf
@@ -53,17 +54,20 @@ asm/bx86-elf.o: asm/bx86unix.cpp
 
 # solaris
 asm/bx86-sol.o: asm/bx86unix.cpp
-	$(CC) -E -DSOL asm/bx86unix.cpp | sed 's/^#.*//' > asm/bx86-sol.s
+	@echo CC $(notdir $<)
+	@$(CC) -E -DSOL asm/bx86unix.cpp | sed 's/^#.*//' > asm/bx86-sol.s
 	as -o asm/bx86-sol.o asm/bx86-sol.s
 	rm -f asm/bx86-sol.s
 
 # a.out
 asm/bx86-out.o: asm/bx86unix.cpp
-	$(CPP) -DOUT asm/bx86unix.cpp | as -o asm/bx86-out.o
+	@echo CPP $(notdir $<)
+	@$(CPP) -DOUT asm/bx86unix.cpp | as -o asm/bx86-out.o
 
 # bsdi
 asm/bx86bsdi.o: asm/bx86unix.cpp
-	$(CPP) -DBSDI asm/bx86unix.cpp | sed 's/ :/:/' | as -o asm/bx86bsdi.o
+	@echo CPP $(notdir $<)
+	@$(CPP) -DBSDI asm/bx86unix.cpp | sed 's/ :/:/' | as -o asm/bx86bsdi.o
 
 asm/bx86unix.cpp: asm/bf-586.pl ../perlasm/x86asm.pl ../perlasm/cbc.pl
 	(cd asm; $(PERL) bf-586.pl cpp $(PROCESSOR) >bx86unix.cpp)

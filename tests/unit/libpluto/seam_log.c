@@ -1,3 +1,5 @@
+#include "oswlog.h"
+#include "pluto/connections.h"
 /* log.c SEAM */
 void close_peerlog(void) {}
 void daily_log_reset(void) {}
@@ -19,3 +21,8 @@ pexpect_log(const char *pred_str, const char *file_str, unsigned long line_no)
 
 void daily_log_event(void) {}
 
+bool
+    logged_myid_fqdn_txt_warning = FALSE,
+    logged_myid_ip_txt_warning   = FALSE,
+    logged_myid_fqdn_key_warning = FALSE,
+    logged_myid_ip_key_warning   = FALSE;

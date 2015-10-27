@@ -44,7 +44,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -53,7 +53,8 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
+#include "pluto/libpluto.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -83,7 +84,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "dpd.h"
 #include "x509more.h"
 #include "tpm/tpm.h"
@@ -1666,25 +1667,37 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
     struct connection *c = p1st->st_connection;
     ip_subnet *our_net = &b->my.net
 	, *his_net = &b->his.net;
+    struct end our, peer;
     struct hidden_variables hv;
 
+    zero(&our); zero(&peer);
+    our.host_type  = KH_IPADDR;
+    our.client     = b->my.net;
+    our.port       = b->my.port;
+    our.protocol   = b->my.proto;
+    our.has_client = TRUE;
+
+    peer.host_type  = KH_IPADDR;
+    peer.client     = b->his.net;
+    peer.port       = b->his.port;
+    peer.protocol   = b->his.proto;
+    peer.has_client = TRUE;
+
     {
-	char s1[SUBNETTOT_BUF],d1[SUBNETTOT_BUF];
+	char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
 
-	subnettot(our_net, 0, s1, sizeof(s1));
-	subnettot(his_net, 0, d1, sizeof(d1));
+	endclienttot(&our, s1, sizeof(s1));
+	endclienttot(&peer,d1, sizeof(d1));
 
-	openswan_log("the peer proposed: %s:%d/%d -> %s:%d/%d"
-		     , s1, c->spd.this.protocol, c->spd.this.port
-		     , d1, c->spd.that.protocol, c->spd.that.port);
+	openswan_log("the peer proposed: %s -> %s"
+		     , s1, d1);
     }
 
     /* Now that we have identities of client subnets, we must look for
      * a suitable connection (our current one only matches for hosts).
      */
     {
-	struct connection *p = find_client_connection(c
-	    , our_net, his_net, b->my.proto, b->my.port, b->his.proto, b->his.port);
+	struct connection *p = find_client_connection(c, &our, &peer);
 
 #ifdef NAT_TRAVERSAL
 #ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
@@ -2296,7 +2309,7 @@ quick_inI1_outR1_cryptotail(struct dh_continuation *dh
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_inbound_ipsec_sa(st))
+    if (!install_inbound_ipsec_sa(md->pst, st))
 	return STF_INTERNAL_ERROR;	/* ??? we may be partly committed */
 
     /* encrypt message, except for fixed part of header */
@@ -2570,7 +2583,7 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_ipsec_sa(st, TRUE))
+    if (!install_ipsec_sa(md->pst, st, TRUE))
 	return STF_INTERNAL_ERROR;
 
     /* encrypt message, except for fixed part of header */
@@ -2628,7 +2641,7 @@ quick_inI2(struct msg_digest *md)
      * We do this before any state updating so that
      * failure won't look like success.
      */
-    if (!install_ipsec_sa(st, FALSE))
+    if (!install_ipsec_sa(md->pst, st, FALSE))
 	return STF_INTERNAL_ERROR;
 
     {

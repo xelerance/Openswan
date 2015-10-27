@@ -117,7 +117,7 @@ sig keys with Pluto.
 
 Creating certificates with NSS
 -------------------------------
-i)To create a certificate authority (CA certficate):
+i)To create a certificate authority (CA certificate):
 
 certutil -S -k rsa -n <ca-cert-nickname> -s "CN=ca-cert-common-name" -w 12 \
  -d . -t "C,C,C" -x -d /etc/ipsec.d
@@ -140,7 +140,7 @@ It creates a user cert with nick name "user-cert-nickname" with attributes
 "u,u,u" signed by the CA cert "ca-cert-name". 
 
 Important thing to note: You must provided a nick name when creating a user
-cert, because Pluto reads the user cert from the NSS database nased on
+cert, because Pluto reads the user cert from the NSS database based on
 the user cert's nickname. 
 
 

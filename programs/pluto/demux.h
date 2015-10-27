@@ -15,7 +15,7 @@
 #ifndef _DEMUX_H
 #define _DEMUX_H
 
-#include "server.h"
+#include "pluto/server.h"
 #include "packet.h"
 #include "quirks.h"
 
@@ -59,6 +59,7 @@ struct msg_digest {
     pb_stream message_pbs;	/* message to be processed */
     pb_stream clr_pbs;          /* place to store decrypted packet */
     struct isakmp_hdr hdr;	/* message's header */
+    u_char maj, min;            /* IKE version major and minor */
     bool encrypted;	/* was it encrypted? */
     enum state_kind from_state;	/* state we started in */
     const struct state_microcode *smc;	  /* microcode for initial state (v1)*/
@@ -82,8 +83,7 @@ struct msg_digest {
     struct payload_digest
 	digest[PAYLIMIT],
 	*digest_roof;
-	struct payload_digest
-		*chain[(unsigned)ISAKMP_NEXT_ROOF];
+    struct payload_digest *chain[(unsigned)ISAKMP_NEXT_ROOF];
     struct isakmp_quirks quirks;
 };
 

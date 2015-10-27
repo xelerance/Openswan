@@ -1,6 +1,6 @@
 /* Openswan NAT-Traversal
  * Copyright (C) 2002-2003 Mathieu Lafon - Arkoon Network Security
- * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2015 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2005 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2006 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
@@ -49,7 +49,7 @@
 
 #include "defs.h"
 #include "log.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "state.h"
 #include "id.h"
 #include "x509.h"
@@ -58,7 +58,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"
+#include "pluto/connections.h"
 #include "packet.h"
 #include "demux.h"
 #include "kernel.h"
@@ -845,33 +845,37 @@ struct _new_mapp_nfo {
 
 static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
 {
-	struct _new_mapp_nfo *nfo = (struct _new_mapp_nfo *)data;
+  struct _new_mapp_nfo *nfo = (struct _new_mapp_nfo *)data;
 
-	if((nfo->st->st_clonedfrom &&
-	    (st->st_serialno == nfo->st->st_clonedfrom ||
-	     st->st_clonedfrom == nfo->st->st_clonedfrom)) ||
-	   st->st_serialno == nfo->st->st_serialno) {
-		char b1[ADDRTOT_BUF];
-		char b2[ADDRTOT_BUF];
-		struct connection *c = st->st_connection;
+  if((nfo->st->st_clonedfrom &&
+      (st->st_serialno   == nfo->st->st_clonedfrom ||
+       st->st_clonedfrom == nfo->st->st_clonedfrom)) ||
+     st->st_serialno     == nfo->st->st_serialno) {
+    char b1[ADDRTOT_BUF];
+    char b2[ADDRTOT_BUF];
+    struct connection *c = st->st_connection;
 
-		addrtot(&st->st_remoteaddr, 0, b1, ADDRTOT_BUF);
-		addrtot(&nfo->addr,         0, b2, ADDRTOT_BUF);
+    /* only log it if the remoteaddr was not 0.0.0.0, or the ports were not normal ones */
+    if(!isanyaddr(&st->st_remoteaddr)
+       || (nfo->port != pluto_port500 && nfo->port != pluto_port4500)) {
+      addrtot(&st->st_remoteaddr, 0, b1, ADDRTOT_BUF);
+      addrtot(&nfo->addr,         0, b2, ADDRTOT_BUF);
 
-		openswan_log("new NAT mapping for #%u, was %s:%d, now %s:%d"
-			     , (unsigned int)st->st_serialno
-			     , b1, st->st_remoteport
-			     , b2, nfo->port);
+      openswan_log("new NAT mapping for #%u, was %s:%u, now %s:%u"
+                   , (unsigned int)st->st_serialno
+                   , b1, st->st_remoteport
+                   , b2, nfo->port);
+    }
 
-		/* update it */
-		st->st_remoteaddr = nfo->addr;
-		st->st_remoteport = nfo->port;
-		st->hidden_variables.st_natd = nfo->addr;
+    /* update it */
+    st->st_remoteaddr = nfo->addr;
+    st->st_remoteport = nfo->port;
+    st->hidden_variables.st_natd = nfo->addr;
 
-		if(c->kind == CK_INSTANCE) {
-			c->spd.that.host_addr = nfo->addr;
-		}
-	}
+    if(c->kind == CK_INSTANCE) {
+      c->spd.that.host_addr = nfo->addr;
+    }
+  }
 }
 
 
@@ -887,25 +891,6 @@ static int nat_traversal_new_mapping(struct state *st
 	DBG(DBG_CONTROLMORE, DBG_log("state #%u NAT-T: new mapping %s:%d"
 		, (unsigned int)st->st_serialno
 		, ba, nsrcport));
-
-#if 0
-	if (!sameaddr(src, dst)) {
-		char srca[ADDRTOT_BUF];
-		char srcb[ADDRTOT_BUF];
-		addrtot(src, 0, srca, ADDRTOT_BUF);
-		addrtot(dst, 0, dsta, ADDRTOT_BUF);
-
-		loglog(RC_LOG_SERIOUS, "nat_traversal_new_mapping: "
-			"address change currently not supported [%s:%d,%s:%d]",
-			srca, sport, dsta, dport);
-		return -1;
-	}
-
-	if (sport == dport) {
-		/* no change */
-		return 0;
-	}
-#endif
 
 	nfo.st    = st;
 	nfo.addr  = *nsrc;

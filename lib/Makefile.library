@@ -103,6 +103,10 @@ $(LIB): $(OBJS)
 
 $(OBJS):	$(HDRS)
 
+%.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
 cleanall::
 	rm -rf ${OBJS} $(LIB)
 

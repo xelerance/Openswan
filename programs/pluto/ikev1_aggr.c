@@ -41,7 +41,8 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
+#include "hostpair.h"
 #include "keys.h"
 #include "packet.h"
 #include "demux.h"	/* needs packet.h */
@@ -50,7 +51,7 @@
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "cookie.h"
-#include "server.h"
+#include "pluto/server.h"
 #include "spdb.h"
 #include "timer.h"
 #include "rnd.h"
@@ -78,7 +79,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
-#include "virtual.h"
+#include "pluto/virtual.h"
 #include "dpd.h"
 #include "x509more.h"
 #include "tpm/tpm.h"
@@ -225,8 +226,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
     struct state *st;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_SA];
     pb_stream *keyex_pbs = &md->chain[ISAKMP_NEXT_KE]->pbs;
-    struct connection *c = find_host_connection(&md->iface->ip_addr
+    struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
 						, md->iface->port
+                                                , KH_ANY
 						, &md->sender
 						, md->sender_port, LEMPTY);
 
@@ -246,8 +248,8 @@ aggr_inI1_outR1_common(struct msg_digest *md
 	/* see if a wildcarded connection can be found */
  	pb_stream pre_sa_pbs = sa_pd->pbs;
  	lset_t policy = preparse_isakmp_sa_body(&pre_sa_pbs) | POLICY_AGGRESSIVE;
-	c = find_host_connection(&md->iface->ip_addr, pluto_port
-				 , (ip_address*)NULL, md->sender_port, policy);
+	c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
+				 , KH_ANY, (ip_address*)NULL, md->sender_port, policy);
 	if (c == NULL || (c->policy & POLICY_AGGRESSIVE) == 0) {
 	    loglog(RC_LOG_SERIOUS, "initial Aggressive Mode message from %s"
 		   " but no (wildcard) connection has been configured%s%s"
@@ -271,6 +273,9 @@ aggr_inI1_outR1_common(struct msg_digest *md
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = md->maj;
+    st->st_ike_min        = md->min;
     change_state(st, STATE_AGGR_R1);
 
     /* until we have clue who this is, then be conservative about allocating
@@ -997,6 +1002,7 @@ stf_status
 aggr_outI1(int whack_sock,
 	   struct connection *c,
 	   struct state *predecessor,
+           so_serial_t  *newstateno,
 	   lset_t policy,
 	   unsigned long try
 	   , enum crypto_importance importance
@@ -1008,18 +1014,26 @@ aggr_outI1(int whack_sock,
 
     /* set up new state */
     cur_state = st = new_state();
+    if(newstateno) *newstateno = st->st_serialno;
+
     st->st_connection = c;
 #ifdef HAVE_LABELED_IPSEC
     st->sec_ctx = NULL;
 #endif
     set_state_ike_endpoints(st, c);
 
+    DBG_log("aggr_outI1");
 #ifdef DEBUG
     extra_debugging(c);
 #endif
     st->st_policy = policy & ~POLICY_IPSEC_MASK;
     st->st_whack_sock = whack_sock;
     st->st_try = try;
+
+    /* IKE version numbers -- used mostly in logging */
+    st->st_ike_maj        = IKEv1_MAJOR_VERSION;
+    st->st_ike_min        = IKEv1_MINOR_VERSION;
+
     change_state(st, STATE_AGGR_I1);
 
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);

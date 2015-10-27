@@ -71,7 +71,7 @@ int ike_alg_init(void);
 #define IKE_ALG_INTEG	2
 #define IKE_ALG_MAX	3
 extern struct ike_alg *ike_alg_base[IKE_ALG_MAX+1];
-int ike_alg_add(struct ike_alg *);
+int ike_alg_add(struct ike_alg *, bool quiet);
 int ike_alg_register_enc(struct encrypt_desc *e);
 int ike_alg_register_hash(struct hash_desc *a);
 struct ike_alg *ike_alg_find(unsigned algo_type
@@ -99,6 +99,10 @@ extern struct db_sa *oakley_alg_makedb(struct alg_info_ike *ai
 extern struct db_sa *kernel_alg_makedb(lset_t policy
 				       , struct alg_info_esp *ei
 				       , bool logit);
+
+/* used if USE_SHA2 set, which is now default */
+extern int ike_alg_sha2_init(void);
+
 #endif /* _IKE_ALG_H */
 
 /*

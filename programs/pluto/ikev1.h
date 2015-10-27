@@ -44,27 +44,30 @@ extern bool ship_KE(struct state *st
 extern stf_status main_outI1(int whack_sock
 			     , struct connection *c
 			     , struct state *predecessor
+                             , so_serial_t  *newstateno
 			     , lset_t policy
 			     , unsigned long try
 			     , enum crypto_importance importance
                              , struct xfrm_user_sec_ctx_ike * uctx
 			     );
 
-extern stf_status aggr_outI1(int whack_sock,
-			     struct connection *c,
-			     struct state *predecessor,
-			     lset_t policy,
-			     unsigned long try
+extern stf_status aggr_outI1(int whack_sock
+                             , struct connection *c
+                             , struct state *predecessor
+                             , so_serial_t  *newstateno
+                             , lset_t policy
+                             , unsigned long try
 			     , enum crypto_importance importance
 			     , struct xfrm_user_sec_ctx_ike * uctx
 			     );
 
-extern stf_status aggr_not_present(int whack_sock,
-			     struct connection *c,
-			     struct state *predecessor,
-			     lset_t policy,
-			     unsigned long try
-			     , enum crypto_importance importance);
+extern stf_status aggr_not_present(int whack_sock
+                                   , struct connection *c
+                                   , struct state *predecessor
+                                   , so_serial_t  *newstateno
+                                   , lset_t policy
+                                   , unsigned long try
+                                   , enum crypto_importance importance);
 
 extern void ikev1_delete_out(struct state *st);
 
@@ -92,6 +95,12 @@ extern size_t
 RSA_sign_hash(struct connection *c
 	      , u_char sig_val[RSA_MAX_OCTETS]
 	      , const u_char *hash_val, size_t hash_len);
+
+extern err_t
+try_RSA_signature_v1(const u_char hash_val[MAX_DIGEST_LEN], size_t hash_len
+                     , const pb_stream *sig_pbs, struct pubkey *kr
+                     , struct state *st);
+
 
 extern size_t	/* length of hash */
 main_mode_hash(struct state *st

@@ -56,7 +56,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "lex.h"
 #include "keys.h"
@@ -294,9 +294,9 @@ RSA_check_signature_gen(struct state *st
 	{
 	    struct pubkey *key = p->key;
 
-	    if (key->alg == PUBKEY_ALG_RSA
-		&& same_id(&c->spd.that.id, &key->id)
-		&& trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+            if (key->alg == PUBKEY_ALG_RSA
+                && same_id(&st->ikev2.st_peer_id, &key->id)
+                && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
 	    {
 		time_t tnow;
 
@@ -649,6 +649,28 @@ void
 free_remembered_public_keys(void)
 {
     free_public_keys(&pluto_pubkeys);
+}
+
+/* find a public key */
+struct pubkey *osw_get_public_key_by_end(struct end *him)
+{
+    struct pubkey_list *p, **pp;
+    int pathlen;
+
+    pp = &pluto_pubkeys;
+
+    for (p = pluto_pubkeys; p != NULL; p = *pp)
+	{
+	    struct pubkey *key = p->key;
+
+	    if (key->alg == PUBKEY_ALG_RSA
+		&& same_id(&him->id, &key->id)
+                && trusted_ca(key->issuer, him->ca, &pathlen)) {
+                return key;
+            }
+	    pp = &p->next;
+        }
+    return NULL;
 }
 
 /* transfer public keys from *keys list to front of pubkeys list */

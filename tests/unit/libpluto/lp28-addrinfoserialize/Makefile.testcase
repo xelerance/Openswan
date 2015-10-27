@@ -1,0 +1,6 @@
+WHACKFILE=
+CONNNAME=cpe
+UNITTEST1ARGS=example.com cassidy.sandelman.ca moon.testing.openswan.org nonexistant.testing.openswan.org
+
+TESTNAME=serialaddrinfo
+ENDNAME=dnsdelayclient

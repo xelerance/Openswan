@@ -24,7 +24,7 @@ MANDIR=$(MANTREE)/man3
 
 SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
-	alloc.c biglset.c diag.c \
+	alloc.c biglset.c diag.c familytot.c \
 	goodmask.c id.c initaddr.c initsaid.c initsubnet.c \
 	iprange.c \
         keyblobtoid.c \
@@ -171,10 +171,14 @@ $(LIBA): $(OBJS)
 
 $(OBJS):	$(HDRS)
 
+%.o: %.c
+	@echo CC $(notdir $<)
+	@$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
 # build version.c using version number from Makefile.ver
 version.c:	version.in.c ${OPENSWANSRCDIR}/Makefile.ver
-	@echo VERSION
-	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${KLIPSSRCDIR}/version.in.c >$@
+	@echo VERSION processing ${IPSECVERSION}
+	@sed '/"/s/@IPSECVERSION@/$(IPSECVERSION)/' ${OPENSWANSRCDIR}/lib/libopenswan/version.in.c >$@
 
 #libdes.a:	../libdes/libdes.a
 #	ln -f -s ../libdes/libdes.a

@@ -1,0 +1,2 @@
+This case tests the orient() function: it has been made more complicated to
+deal better with various kinds of wildcards.

@@ -49,6 +49,7 @@ extern lset_t cur_debugging;	/* current debugging level */
 extern int openswan_DBG_log(const char *message, ...) PRINTF_LIKE(1);
 extern void openswan_DBG_dump(const char *label, const void *p, size_t len);
 
+/* dump a chunk_t with a label */
 #define DBG_dump_chunk(label, ch) DBG_dump(label, (ch).ptr, (ch).len)
 
 extern void exit_tool(int) NEVER_RETURNS;
@@ -90,7 +91,7 @@ extern void tool_close_log(void);
 extern char diag_space[LOG_WIDTH];	/* output buffer, but can be occupied at call */
 extern err_t builddiag(const char *fmt, ...) PRINTF_LIKE(1);
 
-extern char *progname;
+extern const char *progname;
 
 /* Codes for status messages returned to whack.
  * These are 3 digit decimal numerals.  The structure

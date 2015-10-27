@@ -237,8 +237,8 @@ struct whack_message {
     /* what metric to put on ipsec routes */
     u_int32_t metric;
 
-    /* for DYNAMICDNS */
-    char *dnshostname;
+    /* was DYNAMICDNS, now string4 */
+    char *string4;
 
     /* for use with general option adjustments */
     enum whack_opt_set opt_set;
@@ -274,7 +274,7 @@ struct whack_message {
      * 24 genstring1  - used with opt_set
      * 25 genstring2
      * 26 genstring3
-     * 27 dnshostname
+     * 27 genstring4
      * plus keyval (limit: 8K bits + overhead), a chunk.
      */
     u_int32_t str_size;
@@ -295,9 +295,10 @@ struct whack_message {
 #define LIST_OCSP	0x0100	/* list all ocsp cache entries */
 #define LIST_PSKS       0x0400  /* list all preshared keys (by name) */
 #define LIST_EVENTS     0x0800  /* list all queued events */
+#define LIST_HOSTPAIRS  0x1000  /* list all hostpair events */
 
 /* omit events from listing options */
-#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_PSKS)  /* all list options */
+#define LIST_ALL	LRANGES(LIST_PUBKEYS, LIST_PSKS)  /* all list options: omits: events/hostpairs */
 
 /* options of whack --reread*** command */
 

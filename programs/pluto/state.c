@@ -41,7 +41,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
@@ -65,12 +65,6 @@
 # include <pk11pub.h>
 # include <keyhi.h>
 #endif
-
-/*
- * Global variables: had to go somewhere, might as well be this file.
- */
-
-u_int16_t pluto_port = IKE_UDP_PORT;	/* Pluto's port */
 
 /*
  * This file has the functions that handle the
@@ -161,7 +155,7 @@ generate_msgid(struct state *isakmp_sa)
 static struct state *statetable[STATE_TABLE_SIZE];
 
 static struct state **
-state_hash(const u_char *icookie, const u_char *rcookie)
+state_hash(const u_char *icookie, const u_char *rcookie, unsigned *state_bucket)
 {
     u_int i = 0, j;
 
@@ -177,6 +171,9 @@ state_hash(const u_char *icookie, const u_char *rcookie)
     i = i % STATE_TABLE_SIZE;
 
     DBG(DBG_CONTROL, DBG_log("state hash entry %d", i));
+    if(state_bucket) {
+        *state_bucket = i;
+    }
 
     return &statetable[i];
 }
@@ -247,13 +244,14 @@ state_with_serialno(so_serial_t sn)
 void
 insert_state(struct state *st)
 {
-    struct state **p = state_hash(st->st_icookie, st->st_rcookie);
+    unsigned int bucket;
+    struct state **p = state_hash(st->st_icookie, st->st_rcookie, &bucket);
 
     passert(st->st_hashchain_prev == NULL && st->st_hashchain_next == NULL);
 
     DBG(DBG_CONTROL
-	, DBG_log("inserting state object #%lu"
-		  , st->st_serialno));
+	, DBG_log("inserting state object #%lu bucket: %u"
+		  , st->st_serialno, bucket));
 
     if (*p != NULL)
     {
@@ -271,7 +269,7 @@ insert_state(struct state *st)
     if (st->st_event == NULL)
 	event_schedule(EVENT_SO_DISCARD, 0, st);
 
-	refresh_state(st);
+    refresh_state(st);
 }
 
 /*
@@ -281,14 +279,15 @@ insert_state(struct state *st)
 void
 rehash_state(struct state *st)
 {
+    unsigned bucket = 0;
     /* unlink from forward chain */
     struct state **p = st->st_hashchain_prev == NULL
-	? state_hash(st->st_icookie, zero_cookie)
+	? state_hash(st->st_icookie, zero_cookie, &bucket)
 	: &st->st_hashchain_prev->st_hashchain_next;
 
     DBG(DBG_CONTROL
-	, DBG_log("rehashing state object #%lu"
-			     , st->st_serialno));
+	, DBG_log("rehashing state object #%lu from bucket %u"
+                  , st->st_serialno, bucket));
 
     /* unlink from forward chain */
     passert(*p == st);
@@ -316,9 +315,9 @@ unhash_state(struct state *st)
     struct state **p;
 
     if(st->st_hashchain_prev == NULL) {
-	p = state_hash(st->st_icookie, st->st_rcookie);
+	p = state_hash(st->st_icookie, st->st_rcookie, NULL);
 	if(*p != st) {
-	    p = state_hash(st->st_icookie, zero_cookie);
+	    p = state_hash(st->st_icookie, zero_cookie, NULL);
 	}
     } else {
 	p = &st->st_hashchain_prev->st_hashchain_next;
@@ -347,136 +346,10 @@ release_whack(struct state *st)
     close_any(st->st_whack_sock);
 }
 
-/* delete a state object */
-void
-delete_state(struct state *st)
+/* here we are just freeing RAM */
+void free_state(struct state *st)
 {
-    struct connection *const c = st->st_connection;
-    struct state *old_cur_state = cur_state == st? NULL : cur_state;
-
-/* PATRICK: I may have to uncomment the following code block: */
-//    if(st->st_ikev2)
-//    {
-//    /* child sa*/
-//    if(st->st_clonedfrom != 0)
-//    {
-//	DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
-//	if(st->st_state == STATE_CHILDSA_DEL) {
-//		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
-//	}
-//	else
-//	{
-//		/* Only send request if child sa is established
-//		 * otherwise continue with deletion
-//		 */
-//		if(IS_CHILD_SA_ESTABLISHED(st))
-//		{
-//		DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
-//		//change_state(st, STATE_CHILDSA_DEL);
-//		send_delete(st);
-//		change_state(st, STATE_CHILDSA_DEL);
-//		/* actual deletion when we receive peer response*/
-//		goto delete_state_end;
-//		}
-//	}
-//    }
-//    else
-//    {
-//	DBG(DBG_CONTROL, DBG_log("received request to delete IKE parent state"));
-//	/* parent sa */
-//	if(st->st_state == STATE_IKESA_DEL)
-//	{
-//		DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
-//	}
-//	else
-//	{
-//		/* Another check to verify if a secured
-//		 * INFORMATIONAL exchange can be sent or not
-//		 */
-//		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
-//			&& st->st_skey_er.ptr && st->st_skey_ar.ptr)
-//		{
-//		DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
-//		//change_state(st, STATE_IKESA_DEL);
-//		send_delete(st);
-//		change_state(st, STATE_IKESA_DEL);
-//		/* actual deletion when we receive peer response*/
-//                goto delete_state_end;
-//		}
-//	}
-//
-//    }
-//    }
-//
-    DBG(DBG_CONTROL, DBG_log("deleting state #%lu", st->st_serialno));
-
-
-    /* If DPD is enabled on this state object, clear any pending events */
-    if(st->st_dpd_event != NULL)
-            delete_dpd_event(st);
-
-    /* if there is a suspended state transition, disconnect us */
-    if (st->st_suspended_md != NULL)
-    {
-	passert(st->st_suspended_md->st == st);
-	DBG(DBG_CONTROL, DBG_log("disconnecting state #%lu from md",
-	    st->st_serialno));
-	st->st_suspended_md->st = NULL;
-    }
-
-    /* tell the other side of any IPSEC SAs that are going down */
-    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-    || IS_ISAKMP_SA_ESTABLISHED(st->st_state))
-	send_delete(st);
-
     delete_event(st);	/* delete any pending timer event */
-
-    /* Ditch anything pending on ISAKMP SA being established.
-     * Note: this must be done before the unhash_state to prevent
-     * flush_pending_by_state inadvertently and prematurely
-     * deleting our connection.
-     */
-    flush_pending_by_state(st);
-
-    /* if there is anything in the cryptographic queue, then remove this
-     * state from it.
-     */
-    delete_cryptographic_continuation(st);
-
-    /* effectively, this deletes any ISAKMP SA that this state represents */
-    unhash_state(st);
-
-    /* tell kernel to delete any IPSEC SA
-     * ??? we ought to tell peer to delete IPSEC SAs
-     */
-    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	|| IS_CHILD_SA_ESTABLISHED(st))
-	delete_ipsec_sa(st, FALSE);
-    else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
-	delete_ipsec_sa(st, TRUE);
-
-    if (c->newest_ipsec_sa == st->st_serialno)
-	c->newest_ipsec_sa = SOS_NOBODY;
-
-    if (c->newest_isakmp_sa == st->st_serialno)
-	c->newest_isakmp_sa = SOS_NOBODY;
-
-    /*
-     * fake a state change here while we are still associated with a
-     * connection.  Without this the state logging (when enabled) cannot
-     * work out what happened.
-     */
-    fake_state(st, STATE_UNDEFINED);
-
-    st->st_connection = NULL;	/* we might be about to free it */
-    cur_state = old_cur_state;	/* without st_connection, st isn't complete */
-    connection_discard(c);
-
-    change_state(st, STATE_UNDEFINED);
-
-    release_whack(st);
-
-    /* from here on we are just freeing RAM */
 
     {
 	struct msgid_list *p = st->st_used_msgids;
@@ -560,6 +433,133 @@ delete_state(struct state *st)
     pfreeany(st->sec_ctx);
 #endif
     pfree(st);
+}
+
+/* delete a state object */
+void
+delete_state(struct state *st)
+{
+    struct connection *const c = st->st_connection;
+    struct state *old_cur_state = cur_state == st? NULL : cur_state;
+
+    openswan_log("deleting state #%lu (%s)",
+                 st->st_serialno,
+                 enum_show(&state_names, st->st_state));
+
+    /*
+     * for most IKEv2 things, we may have further things to do after marking the state deleted,
+     * so we do not actually free it here at all, but back in the main loop when all the work is done.
+     */
+    if(st->st_ikev2) {
+        /* child sa*/
+        if(st->st_clonedfrom != 0) {
+            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+            if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+
+            } else {
+                /* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */
+		if(IS_CHILD_SA_ESTABLISHED(st)) {
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    send_delete(st);
+                    change_state(st, STATE_CHILDSA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+
+        } else {
+            DBG(DBG_CONTROL, DBG_log("considering request to delete IKE parent state"));
+            /* parent sa */
+            if(st->st_state == STATE_IKESA_DEL) {
+                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+
+            } else {
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
+                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
+                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+                    send_delete(st);
+                    change_state(st, STATE_IKESA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+        }
+    }
+
+    /* If DPD is enabled on this state object, clear any pending events */
+    if(st->st_dpd_event != NULL)
+            delete_dpd_event(st);
+
+    /* if there is a suspended state transition, disconnect us */
+    if (st->st_suspended_md != NULL)
+    {
+	passert(st->st_suspended_md->st == st);
+	DBG(DBG_CONTROL, DBG_log("disconnecting state #%lu from md",
+	    st->st_serialno));
+	st->st_suspended_md->st = NULL;
+    }
+
+    /* tell the other side of any IPSEC SAs that are going down */
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
+    || IS_ISAKMP_SA_ESTABLISHED(st->st_state))
+	send_delete(st);
+
+    delete_event(st);	/* delete any pending timer event */
+
+    /* Ditch anything pending on ISAKMP SA being established.
+     * Note: this must be done before the unhash_state to prevent
+     * flush_pending_by_state inadvertently and prematurely
+     * deleting our connection.
+     */
+    flush_pending_by_state(st);
+
+    /* if there is anything in the cryptographic queue, then remove this
+     * state from it.
+     */
+    delete_cryptographic_continuation(st);
+
+    /* effectively, this deletes any ISAKMP SA that this state represents */
+    unhash_state(st);
+
+    /* tell kernel to delete any IPSEC SA
+     * ??? we ought to tell peer to delete IPSEC SAs
+     */
+    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
+	|| IS_CHILD_SA_ESTABLISHED(st))
+	delete_ipsec_sa(st, FALSE);
+    else if (IS_ONLY_INBOUND_IPSEC_SA_ESTABLISHED(st->st_state))
+	delete_ipsec_sa(st, TRUE);
+
+    if (c->newest_ipsec_sa == st->st_serialno)
+	c->newest_ipsec_sa = SOS_NOBODY;
+
+    if (c->newest_isakmp_sa == st->st_serialno)
+	c->newest_isakmp_sa = SOS_NOBODY;
+
+    /*
+     * fake a state change here while we are still associated with a
+     * connection.  Without this the state logging (when enabled) cannot
+     * work out what happened.
+     */
+    fake_state(st, STATE_UNDEFINED);
+
+    st->st_connection = NULL;	/* we might be about to free it */
+    cur_state = old_cur_state;	/* without st_connection, st isn't complete */
+    connection_discard(c);
+
+    change_state(st, STATE_UNDEFINED);
+
+    release_whack(st);
+
+    change_state(st, STATE_CHILDSA_DEL);
 }
 
 /*
@@ -933,6 +933,8 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
+    nst->st_ike_maj    = st->st_ike_maj;
+    nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;
 
 #   define clone_chunk(ch, name) \
@@ -1001,7 +1003,7 @@ find_state_ikev1(const u_char *icookie
 		 , const ip_address *peer UNUSED
 		 , msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1039,7 +1041,7 @@ find_state_ikev1_loopback(const u_char *icookie
                  , msgid_t /*network order*/ msgid
 		 , struct msg_digest *md)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1078,7 +1080,8 @@ struct state *
 find_state_ikev2_parent(const u_char *icookie
 			, const u_char *rcookie)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    unsigned bucket;
+    struct state *st = *state_hash(icookie, rcookie, &bucket);
 
     while (st != (struct state *) NULL)
     {
@@ -1097,11 +1100,11 @@ find_state_ikev2_parent(const u_char *icookie
 
     DBG(DBG_CONTROL,
 	if (st == NULL)
-	    DBG_log("v2 state object not found");
+	    DBG_log("v2 state object not found in hash %u", bucket);
 	else
-	    DBG_log("v2 state object #%lu found, in %s"
-		, st->st_serialno
-		, enum_show(&state_names, st->st_state)));
+	    DBG_log("v2 state object #%lu (%s) found, in %s"
+                    , st->st_serialno, st->st_connection->name
+                    , enum_show(&state_names, st->st_state)));
 
     return st;
 }
@@ -1113,7 +1116,7 @@ find_state_ikev2_parent(const u_char *icookie
 struct state *
 find_state_ikev2_parent_init(const u_char *icookie)
 {
-    struct state *st = *state_hash(icookie, zero_cookie);
+    struct state *st = *state_hash(icookie, zero_cookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1148,7 +1151,7 @@ find_state_ikev2_child(const u_char *icookie
 		       , const u_char *rcookie
 		       , msgid_t msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1186,7 +1189,7 @@ find_state_ikev2_child_to_delete(const u_char *icookie
 		       , u_int8_t protoid
 		       , ipsec_spi_t spi)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1229,7 +1232,7 @@ find_info_state(const u_char *icookie
 		, const ip_address *peer UNUSED
 		, msgid_t /*network order*/ msgid)
 {
-    struct state *st = *state_hash(icookie, rcookie);
+    struct state *st = *state_hash(icookie, rcookie, NULL);
 
     while (st != (struct state *) NULL)
     {
@@ -1296,7 +1299,7 @@ find_phase2_state_to_delete(const struct state *p1st
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next)
 	{
 	    if (IS_IPSEC_SA_ESTABLISHED(st->st_state)
-	    && p1st->st_connection->host_pair == st->st_connection->host_pair
+	    && p1st->st_connection->IPhost_pair == st->st_connection->IPhost_pair
 	    && same_peer_ids(p1st->st_connection, st->st_connection, NULL))
 	    {
 		struct ipsec_proto_info *pr = protoid == PROTO_IPSEC_AH
@@ -1328,7 +1331,7 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
     for (i = 0; i < STATE_TABLE_SIZE; i++) {
 	for (st = statetable[i]; st != NULL; st = st->st_hashchain_next) {
 	    if (LHAS(ok_states, st->st_state)
-		&& c->host_pair == st->st_connection->host_pair
+		&& c->IPhost_pair == st->st_connection->IPhost_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
 		&& (best == NULL
 		    || best->st_serialno < st->st_serialno))
@@ -1382,6 +1385,15 @@ state_eroute_usage(ip_subnet *ours, ip_subnet *his
 	});
 }
 
+static long msgid_invalid(msgid_t thing)
+{
+    if(thing == INVALID_MSGID) {
+        return -1;
+    } else {
+        return thing;
+    }
+}
+
 void fmt_state(struct state *st, const time_t n
 , char *state_buf, const size_t state_buf_len
 , char *state_buf2, const size_t state_buf2_len)
@@ -1391,6 +1403,7 @@ void fmt_state(struct state *st, const time_t n
     long delta;
     char inst[CONN_INST_BUF];
     char dpdbuf[128];
+    char msgidbuf[128];
     const char *np1 = c->newest_isakmp_sa == st->st_serialno
 	? "; newest ISAKMP" : "";
     const char *np2 = c->newest_ipsec_sa == st->st_serialno
@@ -1410,6 +1423,7 @@ void fmt_state(struct state *st, const time_t n
 	delta = -1;
     }
 
+    msgidbuf[0]='\0';
     if (IS_IPSEC_SA_ESTABLISHED(st->st_state))
     {
 	dpdbuf[0]='\0';
@@ -1424,6 +1438,20 @@ void fmt_state(struct state *st, const time_t n
 	} else {
 	    snprintf(dpdbuf, sizeof(dpdbuf), "; nodpd");
 	}
+        if(st->st_ikev2) {
+            if(IS_PARENT_SA(st)) {
+                snprintf(msgidbuf, sizeof(msgidbuf), "; retranscnt=%ld,outorder=%ld,last=%ld,next=%ld,recv=%ld; msgid=%ld"
+                     , (long)st->st_msg_retransmitted
+                     , (long)st->st_msg_badmsgid_recv
+                         , msgid_invalid(st->st_msgid_lastack)
+                         , msgid_invalid(st->st_msgid_nextuse)
+                         , msgid_invalid(st->st_msgid_lastrecv)
+                         , msgid_invalid(st->st_msgid));
+            } else {
+                snprintf(msgidbuf, sizeof(msgidbuf), "; msgid=%ld"
+                         , msgid_invalid(st->st_msgid));
+            }
+        }
     }
 
     if(st->st_calculating) {
@@ -1435,15 +1463,16 @@ void fmt_state(struct state *st, const time_t n
     }
 
     snprintf(state_buf, state_buf_len
-	     , "#%lu: \"%s\"%s:%u %s (%s); %s in %lds%s%s%s%s; %s; %s"
+	     , "#%lu: \"%s\"%s:%u IKEv%u.%u %s (%s); %s in %lds%s%s%s%s%s; %s; %s"
 	     , st->st_serialno
 	     , c->name, inst
 	     , st->st_remoteport
+             , st->st_ike_maj, st->st_ike_min
 	     , enum_name(&state_names, st->st_state)
 	     , state_story[st->st_state - STATE_MAIN_R0]
 	     , st->st_event ? enum_name(&timer_event_names, st->st_event->ev_type) : "none"
 	     , delta
-	     , np1, np2, eo, dpdbuf
+	     , np1, np2, eo, dpdbuf, msgidbuf
 	     , idlestr
 	     , enum_name(&pluto_cryptoimportance_names, st->st_import));
 
@@ -1593,7 +1622,7 @@ show_states_status(void)
 	   }
         }
 
-         /* sort it! */
+         /* sort it --- XXXX might be a big deal for really big systems... */
          qsort(array, count, sizeof(struct state *), state_compare);
 
          /* now print sorted results */
@@ -1615,6 +1644,18 @@ show_states_status(void)
 	/* free the array */
 	pfree(array);
     }
+}
+
+void dump_one_state(struct state *st)
+{
+    char state_buf[LOG_WIDTH];
+    char state_buf2[LOG_WIDTH];
+
+    fmt_state(st, 1, state_buf, sizeof(state_buf)
+              , state_buf2, sizeof(state_buf2));
+    DBG_log("%s", state_buf);
+    if (state_buf2[0] != '\0')
+        DBG_log("%s", state_buf2);
 }
 
 /* Given that we've used up a range of unused CPI's,
@@ -1747,7 +1788,7 @@ void set_state_ike_endpoints(struct state *st
 {
     /* reset our choice of interface */
     c->interface = NULL;
-    orient(c);
+    orient(c, pluto_port500);
 
     st->st_localaddr  = c->spd.this.host_addr;
     st->st_localport  = c->spd.this.host_port;
@@ -1759,6 +1800,7 @@ void set_state_ike_endpoints(struct state *st
 
 /*
  * Local Variables:
- * c-basic-offset:4
+ * c-style: pluto
+ * c-basic-offset: 4
  * End:
  */

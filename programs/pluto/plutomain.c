@@ -38,6 +38,7 @@
 #include <getopt.h>
 #include <netinet/in.h>
 #include <resolv.h>
+#include <signal.h>
 
 #include <openswan.h>
 
@@ -45,6 +46,7 @@
 #include <openswan/pfkey.h>
 
 #include "sysdep.h"
+#include "setproctitle.h"
 #include "constants.h"
 #include "oswconf.h"
 #include "defs.h"
@@ -56,11 +58,11 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "foodgroups.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
-#include "server.h"
+#include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "keys.h"
@@ -80,7 +82,7 @@
 #include "vendor.h"
 #include "pluto_crypt.h"
 
-#include "virtual.h"
+#include "pluto/virtual.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -118,6 +120,7 @@
 
 const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
+const char *progname = NULL;
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -133,82 +136,89 @@ usage(const char *mess)
     if (mess != NULL && *mess != '\0')
 	fprintf(stderr, "%s\n", mess);
     fprintf(stderr
-	, "Usage: pluto"
-	    " [--help]"
-	    " [--version]"
-	    " [--optionsfrom <filename>]"
-	    " \\\n\t"
-	    "[--nofork]"
-	    " [--stderrlog]"
-	    " [--plutostderrlogtime]"
-	    " [--force_busy]"
-	    " [--nocrsend]"
-	    " [--strictcrlpolicy]"
-	    " [--crlcheckinterval]"
-	    " [--ocspuri]"
-	    " [--uniqueids]"
-	    " [--use-auto]"
-	    " [--use-klips]"
-	    " [--use-netkey]"
-	    " [--use-mast]"
-	    " [--use-bsdkame]"
-	    " [--use-nostack]"         /* old --no_klips */
-	    " \\\n\t"
-	    "[--interface <ifname|ifaddr>]"
-	    " [--ikeport <port-number>]"
-	    "[--listen <ifaddr>]"
-	    " \\\n\t"
-	    "[--ctlbase <path>]"
-	    " \\\n\t"
-	    "[--perpeerlogbase <path>] [--perpeerlog]"
-	    " \\\n\t"
-	    "[--coredir <dirname>] [--noretransmits]"
-	    " \\\n\t"
-	    "[--secretsfile <secrets-file>]"
-	    " [--ipsecdir <ipsec-dir>]"
-	    " \\\n\t"
-	    "[--adns <pathname>]"
-	    "[--nhelpers <number>]"
-	    " \\\n\t"
-	    "[--secctx_attr_value <number>] "
+	, "Usage: pluto  "
+	    "[--help] "
+	    "[--version] "
+	    "[--optionsfrom <filename>] "
+	    "\n\t"
+	    "[--nofork] "
+	    "[--stderrlog] "
+	    "[--plutostderrlogtime] "
+	    "[--force_busy] "
+	    "\n\t"
+	    "[--nocrsend] "
+	    "[--strictcrlpolicy] "
+	    "[--crlcheckinterval] "
+	    "[--ocspuri] "
+	    "[--uniqueids] "
+            "[--noretransmits] "
+	    "\n\nIPsec stack options\n\t"
+	    "[--use-auto] "
+	    "[--use-klips] "
+	    "[--use-netkey] "
+	    "[--use-mast] "
+	    "[--use-bsdkame] "
+	    "[--use-nostack]"         /* old --no_klips */
+            "\n\nConnection options\n\t"
+	    "[--interface <ifname|ifaddr>] "
+	    "[--ikeport <port-number>] "
+	    "[--listen <ifaddr>] "
+	    "\n\nFile/Directory settings\n\t"
+	    "[--ctlbase <path>] "
+	    "\n\t"
+	    "[--perpeerlogbase <path>] [--perpeerlog] "
+	    " \n\t"
+	    "[--coredir <dirname>]"
+	    "\n\t"
+	    "[--secretsfile <secrets-file>] "
+	    "[--ipsecdir <ipsec-dir>] "
+	    "\n\t"
+	    "[--nhelpers <number>] "
+	    " \n\t"
+	    "[--secctx_attr_value <number>]  "
 #ifdef HAVE_LABELED_IPSEC
-            "(available) "
+            "(available)  "
 #else
-            "(unavailable) "
+            "(unavailable)  "
 #endif
 
 #ifdef DEBUG
-	    " \\\n\t"
-	    "[--debug-none]"
-	    " [--debug-all]"
-	    " \\\n\t"
-	    "[--debug-raw]"
-	    " [--debug-crypt]"
-	    " [--debug-crypto]"
-	    " [--debug-parsing]"
-	    " [--debug-emitting]"
-	    " \\\n\t"
-	    "[--debug-control]"
-	    "[--debug-lifecycle]"
-	    " [--debug-klips]"
-	    " [--debug-netkey]"
-	    " [--debug-x509]"
-	    " [--debug-dns]"
-	    " [--debug-oppo]"
-	    " [--debug-oppoinfo]"
-	    " [--debug-dpd]"
-	    " [ --debug-private]"
-	    " [ --debug-pfkey]"
+	    " \n\nDebug Options\n\t"
+	    "[--debug-none] "
+	    "[--debug-all] "
+	    "\n\t"
+	    "[--debug-raw] "
+	    "[--debug-crypt] "
+	    "[--debug-crypto] "
+	    "[--debug-parsing] "
+	    "[--debug-emitting] "
+	    "\n\t"
+	    "[--debug-control] "
+	    "[--debug-lifecycle] "
+	    "[--debug-klips] "
+	    "[--debug-netkey] "
+	    "[--debug-x509] "
+	    "[ --debug-nat-t] "
+#ifndef NAT_TRAVERSAL
+            "(unavailable) "
+#endif
+	    "\n\t"
+	    "[--debug-dns] "
+	    "[--debug-oppo] "
+	    "[--debug-oppoinfo] "
+	    "[--debug-dpd] "
+	    "[ --debug-private] "
+	    "[ --debug-pfkey] "
+            "\n\t"
 #endif
 #ifdef NAT_TRAVERSAL
-	    " [ --debug-nat-t]"
-	    " \\\n\t"
-	    "[--nat_traversal] [--keep_alive <delay_sec>]"
-	    " \\\n\t"
-            "[--force_keepalive] [--disable_port_floating]"
+	    " \n\t"
+	    "[--nat_traversal] [--keep_alive <delay_sec>] "
+	    " \n\t"
+            "[--force_keepalive] [--disable_port_floating] "
+	   " \n\t"
 #endif
-	   " \\\n\t"
-	   "[--virtual_private <network_list>]"
+	   "[--virtual_private <network_list>] "
 	    "\n"
 	"Openswan %s\n"
 	, ipsec_version_code());
@@ -225,6 +235,12 @@ usage(const char *mess)
 
 static char pluto_lock[sizeof(ctl_addr.sun_path)] = DEFAULT_CTLBASE LOCK_SUFFIX;
 static bool pluto_lock_created = FALSE;
+
+static void pluto_sigusr1(int signum UNUSED)
+{
+    openswan_log("signal 1 received");
+    signal(SIGUSR1, pluto_sigusr1);
+}
 
 /** create lockfile, or die in the attempt */
 static int
@@ -308,8 +324,6 @@ bool force_busy = FALSE;
 /* whether or not to use klips */
 enum kernel_interface kern_interface = AUTO_PICK;
 
-char **global_argv;
-int    global_argc;
 bool   log_to_stderr_desired = FALSE;
 bool   log_with_timestamp_desired = FALSE;
 
@@ -357,6 +371,9 @@ main(int argc, char **argv)
     leak_detective=0;
 #endif
 
+    progname = argv[0];
+
+
 #ifdef HAVE_LIBCAP_NG
 	/* Drop capabilities */
 	capng_clear(CAPNG_SELECT_BOTH);
@@ -371,11 +388,11 @@ main(int argc, char **argv)
 #endif
 
 
-    global_argv = argv;
-    global_argc = argc;
 #ifdef DEBUG
     openswan_passert_fail = passert_fail;
 #endif
+
+    initproctitle(argc, argv);
 
     /* see if there is an environment variable */
     coredir = getenv("PLUTO_CORE_DIR");
@@ -426,11 +443,6 @@ main(int argc, char **argv)
 	    { "coredir", required_argument, NULL, 'C' },
 	    { "ipsecdir", required_argument, NULL, 'f' },
 	    { "ipsec_dir", required_argument, NULL, 'f' },
-#ifdef USE_LWRES
-	    { "lwdnsq", required_argument, NULL, 'a' },
-#else /* !USE_LWRES */
-	    { "adns", required_argument, NULL, 'a' },
-#endif /* !USE_LWRES */
 #ifdef NAT_TRAVERSAL
 	    { "nat_traversal", no_argument, NULL, '1' },
 	    { "keep_alive", required_argument, NULL, '2' },
@@ -442,10 +454,9 @@ main(int argc, char **argv)
 #endif
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
-#ifdef HAVE_LABELED_IPSEC
-            /* XXX - should accept argument and return error */
+
+            /* might not be enabled, but always accept the option */
 	    { "secctx_attr_value", required_argument, NULL, 'w' },
-#endif
 #ifdef DEBUG
 	    { "debug-none", no_argument, NULL, 'N' },
 	    { "debug-all", no_argument, NULL, 'A' },
@@ -524,7 +535,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case 'j':	/* --nhelpers */
-            if (optarg == NULL || !isdigit(optarg[0]))
+            if (optarg == NULL || !(isdigit(optarg[0]) || optarg[0]=='-'))
                 usage("missing number of pluto helpers");
 
             {
@@ -538,7 +549,6 @@ main(int argc, char **argv)
             }
 	    continue;
 
-#ifdef HAVE_LABELED_IPSEC
 	case 'w':	/* --secctx_attr_value*/
 	    if (optarg == NULL || !isdigit(optarg[0]))
 		usage("missing (positive integer) value of secctx_attr_value (needed only if using labeled ipsec)");
@@ -547,13 +557,16 @@ main(int argc, char **argv)
                 char *endptr;
                 long value = strtol(optarg, &endptr, 0);
 
+#ifdef HAVE_LABELED_IPSEC
                 if (*endptr != '\0' || endptr == optarg
                     || (value != SECCTX && value !=10) )
                     usage("<secctx_attr_value> must be a positive number (32001 by default, 10 for backward compatibility, or any other future number assigned by IANA)");
-                 secctx_attr_value = (u_int16_t)value;
+                secctx_attr_value = (u_int16_t)value;
+#else
+                openswan_log("Labelled IPsec not enabled; value %ld ignored.", value);
+#endif
 	   }
 	   continue;
-#endif
 
 	case 'd':	/* --nofork*/
 	    fork_desired = FALSE;
@@ -665,9 +678,10 @@ main(int argc, char **argv)
 		long port = strtol(optarg, &endptr, 0);
 
 		if (*endptr != '\0' || endptr == optarg
-		|| port <= 0 || port > 0x10000)
-		    usage("<port-number> must be a number between 1 and 65535");
-		pluto_port = port;
+                    || port <= 0 || port > (0x10000-4000))
+		    usage("<port-number> must be a number between 1 and 61535 (nat port: port-number+4000)");
+		pluto_port500  = port;
+		pluto_port4500 = port+4000;
 	    }
 	    continue;
 
@@ -690,10 +704,6 @@ main(int argc, char **argv)
 
 	case 'f':	/* --ipsecdir <ipsec-dir> */
 	    (void)osw_init_ipsecdir(optarg);
-	    continue;
-
-	case 'a':	/* --adns <pathname> */
-	    pluto_adns_option = optarg;
 	    continue;
 
 #ifdef DEBUG
@@ -912,7 +922,6 @@ main(int argc, char **argv)
 					IPSECLIBDIR"/look",
 					IPSECLIBDIR"/newhostkey",
 					IPSECLIBDIR"/pf_key",
-					IPSECLIBDIR"/_pluto_adns",
 					IPSECLIBDIR"/_plutoload",
 					IPSECLIBDIR"/_plutorun",
 					IPSECLIBDIR"/ranbits",
@@ -987,6 +996,13 @@ main(int argc, char **argv)
 	openswan_log("core dump dir: %s", coredir);
     }
 
+    /* do this really early so that child process is as small as possible */
+    init_adns();
+
+    /* establish SIGUSR1 handler */
+    signal(SIGUSR1, pluto_sigusr1);
+
+
 #ifdef LEAK_DETECTIVE
 	openswan_log("LEAK_DETECTIVE support [enabled]");
 #else
@@ -1009,32 +1025,7 @@ main(int argc, char **argv)
 
    /* Check for SAREF support */
 #ifdef KLIPS_MAST
-#include <ipsec_saref.h>
-    {
-	int e, sk, saref;
-	saref = 1;
-	errno=0;
-
-	sk = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_REFINFO, &saref, sizeof(saref));
-	if (e == -1 ) {
-		openswan_log("SAref support [disabled]: %s" , strerror(errno));
-	}
-	else {
-		openswan_log("SAref support [enabled]");
-	}
-	errno=0;
-	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_BINDREF, &saref, sizeof(saref));
-	if (e == -1 ) {
-		openswan_log("SAbind support [disabled]: %s" , strerror(errno));
-	}
-	else {
-		openswan_log("SAbind support [enabled]");
-	}
-
-
-	close(sk);
-    }
+        saref_init();
 #endif
 
 #ifdef HAVE_LIBNSS
@@ -1092,7 +1083,6 @@ main(int argc, char **argv)
     load_oswcrypto();
     init_demux();
     init_kernel();
-    init_adns();
     init_id();
 
 #ifdef TPM

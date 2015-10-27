@@ -1,0 +1,6 @@
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+CONNNAME=cpe
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+
+TESTNAME=dnscpeI1
+ENDNAME=dnsdelayclient

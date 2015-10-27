@@ -1,0 +1,4 @@
+This is a unit test case that performs DNS queries using the dnskey/adns
+interface.
+
+

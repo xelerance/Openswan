@@ -49,6 +49,8 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 #include "oswalloc.h"
 #include "oswconf.h"
 #include "oswlog.h"
+#include "whack.h"
+#include "pluto/whackfile.h"
 #include "ipsecconf/confread.h"
 #include "ipsecconf/confwrite.h"
 #include "ipsecconf/starterlog.h"
@@ -61,12 +63,17 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
  * #include "ipsecconf/interfaces.h"
  * #include "ipsecconf/keywords.h" */
 
-char *progname;
+const char *progname;
 int verbose=0;
 int warningsarefatal = 0;
 
 static const char *usage_string = ""
-    "Usage: readwriteconn [--config file] \n";
+    "Usage: readwriteconn [--config file] \n"
+    "       [--rootdir X] [--rootdir2 Y]   -- also look here for files\n"
+    "       [--debug] [--verbose]          -- enable debugging or verbose\n"
+    "       [--text]                       -- enable text output\n"
+    "       [--whackout=file]       -- enable generating messages out\n"
+    "       [--all] [conns...]      -- which conns to send to whack file\n";
 
 
 static void usage(void)
@@ -76,31 +83,44 @@ static void usage(void)
     exit(10);
 }
 
-extern char rootdir[PATH_MAX];       /* when evaluating paths, prefix this to them */
-extern char rootdir2[PATH_MAX];       /* when evaluating paths, prefix this to them */
-
 static struct option const longopts[] =
 {
 	{"config",              required_argument, NULL, 'C'},
 	{"debug",               no_argument, NULL, 'D'},
 	{"verbose",             no_argument, NULL, 'D'},
+	{"warningsarefatal",    no_argument, NULL, 'W'},
+	{"whackout",            required_argument, NULL, 'w'},
+	{"all",                 no_argument, NULL, 'A'},
+	{"text",                no_argument, NULL, 'T'},
 	{"rootdir",             required_argument, NULL, 'R'},
 	{"rootdir2",            required_argument, NULL, 'S'},
 	{"help",                no_argument, NULL, 'h'},
 	{0, 0, 0, 0}
 };
 
+static int send_whack_msg_to_file(struct starter_config *cfg, struct whack_message *msg)
+{
+    static int recno = 0;
 
+    fprintf(stderr, "writing record %u to whack file\n", ++recno);
+    unsigned int len = serialize_whack_msg(msg);
+    writewhackrecord((char *)msg, len);
+    return 0;
+}
 
 int
 main(int argc, char *argv[])
 {
     int opt = 0;
+    int textout  = 1;
+    int whackout = 0;              /* if true, write whack messages */
+    char *whackfile = NULL;
     struct starter_config *cfg = NULL;
     err_t err = NULL;
     char *confdir = NULL;
     char *configfile = NULL;
     struct starter_conn *conn = NULL;
+    int whackall = 0;
 
     progname = argv[0];
     rootdir[0]='\0';
@@ -109,10 +129,25 @@ main(int argc, char *argv[])
 
     while((opt = getopt_long(argc, argv, "", longopts, 0)) != EOF) {
 	switch(opt) {
+        default:
 	case 'h':
 	    /* usage: */
 	    usage();
 	    break;
+
+        case 'T':
+            textout = 1;
+            break;
+
+        case 'A':
+            whackall = 1;
+            break;
+
+        case 'w':
+            whackfile = clone_str(optarg, "output file name");
+            whackout  = 1;
+            textout   = 0;
+            break;
 
 	case 'D':
 	    verbose++;
@@ -127,12 +162,12 @@ main(int argc, char *argv[])
 	    break;
 
 	case 'R':
-	    printf("#setting rootdir=%s\n", optarg);
+            if(verbose) printf("#setting rootdir=%s\n", optarg);
 	    strlcat(rootdir, optarg, sizeof(rootdir));
 	    break;
 
 	case 'S':
-	    printf("#setting rootdir2=%s\n", optarg);
+            if(verbose) printf("#setting rootdir2=%s\n", optarg);
             rootdir2[0]='\0';
 	    strlcat(rootdir2, optarg, sizeof(rootdir2));
 	    break;
@@ -177,18 +212,67 @@ main(int argc, char *argv[])
 	exit(3);
     }
 
-    /* load all conns marked as auto=add or better */
-    for(conn = cfg->conns.tqh_first;
-	conn != NULL;
-	conn = conn->link.tqe_next)
-    {
-	printf("#conn %s loaded\n", conn->name);
+    if(textout) {
+        /* load all conns marked as auto=add or better */
+        for(conn = cfg->conns.tqh_first;
+            conn != NULL;
+            conn = conn->link.tqe_next)
+            {
+                printf("#conn %s loaded\n", conn->name);
+            }
+
+        confwrite(cfg, stdout);
     }
 
-    confwrite(cfg, stdout);
+    if(whackout && whackfile!=NULL) {
+        if(!openwhackrecordfile(whackfile)) {
+            perror(whackfile);
+            exit(5);
+        }
+        /* use file writer above */
+        cfg->send_whack_msg = send_whack_msg_to_file;
+
+        /* load all conns marked as auto=add or better, and save them. */
+        if(whackall) {
+            for(conn = cfg->conns.tqh_first;
+                conn != NULL;
+                conn = conn->link.tqe_next) {
+                if(verbose) {
+                    printf("processing conn: %s \n", conn->name);
+                }
+                if(conn->desired_state == STARTUP_ADD
+                   || conn->desired_state == STARTUP_ROUTE
+                   || conn->desired_state == STARTUP_START) {
+                    if(starter_whack_add_conn(cfg, conn) != 0) {
+                        fprintf(stderr, "failed to load conn: %s\n", conn->name);
+                    }
+                }
+            }
+        } else {
+            argv+=optind;
+            argc-=optind;
+            for(; argc>0; argc--, argv++) {
+                char *conn_name = *argv;
+                for(conn = cfg->conns.tqh_first;
+                    conn != NULL;
+                    conn = conn->link.tqe_next)
+                    {
+                        if(verbose) {
+                            printf("processing conn: %s vs %s\n", conn_name, conn->name);
+                        }
+                        if(strcasecmp(conn->name, conn_name)==0) {
+                            if(starter_whack_add_conn(cfg, conn) != 0) {
+                                fprintf(stderr, "failed to load conn: %s\n", conn_name);
+                            }
+                        }
+                    }
+            }
+        }
+    }
     confread_free(cfg);
     exit(0);
 }
+
 
 void exit_tool(int x)
 {
@@ -196,8 +280,6 @@ void exit_tool(int x)
 }
 
 /*
- * $Log: spi.c,v $
- *
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto

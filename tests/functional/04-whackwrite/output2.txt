@@ -1,0 +1,20 @@
+debugging mode enabled
+end of file ../../unit/libpluto/samples/parker.conf
+Loading conn ikev2:parker--jj
+Loading conn parker1--jj2
+Loading conn any1--jj2
+Loading conn maryjane1--jj2
+Loading conn parker1--jj0
+conn: "parker1--jj0" sending RSA keys for left
+writing record 1 to whack file
+conn: "parker1--jj0" sending RSA keys for right
+writing record 2 to whack file
+failed to load conn: parker1--jj0
+#setting rootdir=../../unit/libpluto/samples/parker
+opening file: ../../unit/libpluto/samples/parker.conf
+processing conn: parker1--jj0 vs ikev2:parker--jj
+processing conn: parker1--jj0 vs parker1--jj2
+processing conn: parker1--jj0 vs any1--jj2
+processing conn: parker1--jj0 vs maryjane1--jj2
+processing conn: parker1--jj0 vs parker1--jj0
+parker1--jj0: right= end is not defined, conn not loaded

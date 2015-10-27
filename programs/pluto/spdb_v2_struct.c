@@ -36,7 +36,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "keys.h"
@@ -1346,12 +1346,12 @@ ikev2_parse_child_sa_body(
 	    gotmatch = TRUE;
 	    winning_prop = proposal;
 
-	    /* gotmatch is true, so will never go inside if*/
-	    //if(selection && !gotmatch && np == ISAKMP_NEXT_P) {
-		//openswan_log("More than 1 proposal received from responder, ignoring rest. First one did not match");
-		//return NO_PROPOSAL_CHOSEN;
-	    //}
 	}
+
+        if(gotmatch && selection && np == ISAKMP_NEXT_P) {
+            openswan_log("More than 1 proposal received from responder, ignoring rest");
+            break;
+        }
     }
 
     /*
@@ -1401,10 +1401,10 @@ ikev2_parse_child_sa_body(
     st->st_esp.attrs.transattrs = ta;
     st->st_esp.present = TRUE;
 
-    /* if not confirming, then record the SPI value */
-    if(!selection) {
-	st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next -1];
-    }
+    /* record the SPI value */
+    st->st_esp.attrs.spi = itl->spi_values[itl->spi_values_next -1];
+
+    /* could get changed by a notify */
     st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TUNNEL;
 
     if (r_sa_pbs != NULL)

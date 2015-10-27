@@ -39,7 +39,7 @@
 
 #include "defs.h"
 #include "id.h"
-#include "connections.h"
+#include "pluto/connections.h"
 #include "state.h"
 #include "kernel.h"
 #include "kernel_pfkey.h"
@@ -145,7 +145,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 		if (q == NULL)
 		{
 		    /* matches nothing -- create a new entry */
-		    int fd = create_socket(ifp, ifp->name, pluto_port);
+		    int fd = create_socket(ifp, ifp->name, pluto_port500);
 
 		    if (fd < 0)
 			break;
@@ -171,7 +171,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
-		    q->port = pluto_port;
+		    q->port = pluto_port500;
 		    q->ike_float = FALSE;
 
 		    interfaces = q;

@@ -14,6 +14,7 @@
  * for more details.
  */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
@@ -42,12 +43,13 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "keys.h"	    /* needs connections.h */
 #include "dnskey.h"
 #include "packet.h"
+#include "state.h"
 #include "timer.h"
-#include "server.h"
+#include "pluto/server.h"
 
 /* somebody has to decide */
 #define MAX_TXT_RDATA	((MAX_KEY_BYTES * 8 / 6) + 40)	/* somewhat arbitrary overkill */
@@ -89,71 +91,8 @@ bool adns_reapchild(pid_t pid, int status UNUSED)
 void
 init_adns(void)
 {
-    const char *adns_path = pluto_adns_option;
-    const char *helper_bin_dir = getenv("IPSEC_EXECDIR");
-#ifndef USE_LWRES
-    static const char adns_name[] = "_pluto_adns";
-#else /* USE_LWRES */
-    static const char adns_name[] = "lwdnsq";
-#endif /* USE_LWRES */
-    char adns_path_space[4096];	/* plenty long? */
     int qfds[2];
     int afds[2];
-
-    /* find a pathname to the ADNS program */
-    if (adns_path == NULL)
-    {
-	/* pathname was not specified as an option: build it.
-	 * First, figure out the directory to be used.
-	 */
-	ssize_t n=0;
-
-	if (helper_bin_dir != NULL)
-	{
-	    n = strlen(helper_bin_dir);
-	    if ((size_t)n <= sizeof(adns_path_space) - sizeof(adns_name))
-	    {
-		strcpy(adns_path_space, helper_bin_dir);
-		if (n > 0 && adns_path_space[n -1] != '/')
-		    adns_path_space[n++] = '/';
-	    }
-	}
-	else
-#if !(defined(macintosh) || (defined(__MACH__) && defined(__APPLE__)))
-	{
-	    /* The program will be in the same directory as Pluto,
-	     * so we use the sympolic link /proc/self/exe to
-	     * tell us of the path prefix.
-	     */
-	    n = readlink("/proc/self/exe", adns_path_space, sizeof(adns_path_space));
-
-	    if (n < 0)
-# ifdef __uClibc__
-		/* on some nommu we have no proc/self/exe, try without path */
-		*adns_path_space = '\0', n = 0;
-# else
-		exit_log_errno((e
-		    , "readlink(\"/proc/self/exe\") failed in init_adns()"));
-# endif
-
-	}
-#else
-	/* This is wrong. Should end up in a resource_dir on MacOSX -- Paul */
-	adns_path="/usr/local/libexec/ipsec/lwdnsq";
-#endif
-
-
-	if ((size_t)n > sizeof(adns_path_space) - sizeof(adns_name))
-	    exit_log("path to %s is too long", adns_name);
-
-	while (n > 0 && adns_path_space[n - 1] != '/')
-	    n--;
-
-	strcpy(adns_path_space + n, adns_name);
-	adns_path = adns_path_space;
-    }
-    if (access(adns_path, X_OK) < 0)
-	exit_log_errno((e, "%s missing or not executable", adns_path));
 
     if (pipe(qfds) != 0 || pipe(afds) != 0)
 	exit_log_errno((e, "pipe(2) failed in init_adns()"));
@@ -191,10 +130,8 @@ init_adns(void)
 	    if (afds[1] > 1)
 		close(afds[1]);
 
-	    DBG(DBG_DNS, execlp(adns_path, adns_name, "-d", NULL));
-
-	    execlp(adns_path, adns_name, NULL);
-	    exit_log_errno((e, "execlp of %s failed", adns_path));
+            adns_main(TRUE);
+            exit(0);
 	}
 
     default:
@@ -515,90 +452,16 @@ rr_typename(int type)
 	return "TXT";
     case ns_t_key:
 	return "KEY";
+    case ns_t_a:
+	return "A";
+    case ns_t_aaaa:
+	return "AAAA";
     default:
 	return "???";
     }
 }
 
 
-#ifdef USE_LWRES
-
-# ifdef USE_KEYRR
-static err_t
-process_lwdnsq_key(char *str
-		   , enum dns_auth_level dns_auth_level
-		   , struct adns_continuation *const cr)
-{
-    /* fields of KEY record.  See RFC 2535 3.1 KEY RDATA format. */
-    unsigned long flags	/* 16 bits */
-	, protocol	/* 8 bits */
-	, algorithm;	/* 8 bits */
-
-    char *rest = str
-	, *p
-	, *endofnumber;
-
-    /* flags */
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq KEY: missing flags";
-
-    flags = strtoul(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq KEY: malformed flags";
-
-    /* protocol */
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq KEY: missing protocol";
-
-    protocol = strtoul(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq KEY: malformed protocol";
-
-    /* algorithm */
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq KEY: missing algorithm";
-
-    algorithm = strtoul(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq KEY: malformed algorithm";
-
-    /* is this key interesting? */
-    if (protocol == 4	/* IPSEC (RFC 2535 3.1.3) */
-    && algorithm == 1	/* RSA/MD5 (RFC 2535 3.2) */
-    && (flags & 0x8000ul) == 0	/* use for authentication (3.1.2) */
-    && (flags & 0x2CF0ul) == 0)	/* must be zero */
-    {
-	/* Decode base 64 encoding of key.
-	 * Similar code is in process_txt_rr_body.
-	 */
-	u_char kb[RSA_MAX_ENCODING_BYTES];	/* plenty of space for binary form of public key */
-	chunk_t kbc;
-	err_t ugh = ttodatav(rest, 0, 64, (char *)kb, sizeof(kb), &kbc.len
-	    , diag_space, sizeof(diag_space), TTODATAV_IGNORESPACE);
-
-	if (ugh != NULL)
-	    return builddiag("malformed key data: %s", ugh);
-
-	if (kbc.len > sizeof(kb))
-	    return builddiag("key data larger than %lu bytes"
-		, (unsigned long) sizeof(kb));
-
-	kbc.ptr = kb;
-	TRY(add_public_key(&cr->id, dns_auth_level, PUBKEY_ALG_RSA, &kbc
-	    , &cr->keys_from_dns));
-
-	/* keep a reference to last one */
-	unreference_key(&cr->last_info);
-	cr->last_info = reference_key(cr->keys_from_dns->key);
-    }
-    return NULL;
-}
-# endif /* USE_KEYRR */
-
-#else  /* ! USE_LWRES */
 
 /* structure of Query Reply (RFC 1035 4.1.1):
  *
@@ -1128,8 +991,8 @@ process_answer_section(pb_stream *pbs
 /* process DNS answer -- TXT or KEY query */
 
 static err_t
-process_dns_answer(struct adns_continuation *const cr
-, u_char ans[], int anslen)
+process_dns_rr_answer(struct adns_continuation *const cr
+                   , u_char ans[], int anslen)
 {
     const int type = cr->query.type;	/* type of record being sought */
     int r;	/* all-purpose return value holder */
@@ -1280,7 +1143,39 @@ process_dns_answer(struct adns_continuation *const cr
 	, qr_header.ancount, cr);
 }
 
-#endif /* ! USE_LWRES */
+/*
+ * Note: this could be done with getaddrinfo_a(), but before involving
+ * pluto main in dns requests, need to change the key/txt(ipseckey)
+ * lookups to work with that, and getaddrinfo_a() uses threads!
+ */
+static err_t
+process_dns_sockaddr_answer(struct adns_continuation *const cr
+                            , u_char ans[], int anslen)
+{
+    /* unserialize the results from the ans buffer */
+    /* serialize/unserialize routine is at top of adns.c */
+    cr->ipanswers = deserialize_addr_info(ans, anslen);
+    return NULL;
+}
+
+static err_t
+process_dns_answer(struct adns_continuation *const cr
+                   , u_char ans[], int anslen)
+{
+    switch(cr->type) {
+    case ns_t_txt:
+    case ns_t_key:
+        /* raw DNS reply */
+        return process_dns_rr_answer(cr, ans, anslen);
+
+    case ns_t_a:
+        /* cooked getaddrinfo reply, ans contains a bunch of sockaddr */
+        return process_dns_sockaddr_answer(cr, ans, anslen);
+
+    default:
+        return "not A, TXT or KEY query";
+    }
+}
 
 
 /****************************************************************/
@@ -1466,6 +1361,10 @@ release_adns_continuation(struct adns_continuation *cr)
 	cr->previous->next = cr->next;
     }
 
+    if(cr->ipanswers != NULL) {
+        osw_freeaddrinfo(cr->ipanswers);
+    }
+
     pfree(cr);
 }
 
@@ -1480,9 +1379,6 @@ release_all_continuations()
 	crnext = cr->previous;
 
 	cr->cont_fn(cr, "no results returned by lwdnsq");
-#ifdef USE_LWRES
-	cr->used = TRUE;
-#endif
 	release_adns_continuation(cr);
 	num_released++;
     }
@@ -1493,17 +1389,8 @@ release_all_continuations()
     adns_in_flight-=num_released;
 }
 
-err_t
-start_adns_query(const struct id *id	/* domain to query */
-, const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
-, int type	/* T_TXT or T_KEY, selecting rr type of interest */
-, cont_fn_t cont_fn
-, struct adns_continuation *cr)
+static void init_generic_adns_query(struct adns_continuation *cr)
 {
-    static unsigned long qtid = 1;	/* query transaction id; NOTE: static */
-    const char *typename = rr_typename(type);
-    char gwidb[IDTOA_BUF];
-
     if(adns_pid == 0
     && adns_restart_count < ADNS_RESTART_MAX)
     {
@@ -1523,15 +1410,18 @@ start_adns_query(const struct id *id	/* domain to query */
 	continuations->next = cr;
     }
     continuations = cr;
+}
 
+/* type: T_TXT or T_KEY, selecting rr type of interest */
+static void start_generic_adns_query(int type
+                                     , struct adns_continuation *cr
+                                     , sa_family_t addr_family)
+{
+    static unsigned long qtid = 1;	/* query transaction id; NOTE: static */
+
+    cr->query.addr_family = addr_family;
     cr->qtid = qtid++;
     cr->type = type;
-    cr->cont_fn = cont_fn;
-    cr->id = *id;
-    unshare_id_content(&cr->id);
-    cr->sgw_specified = sgw_id != NULL;
-    cr->sgw_id = cr->sgw_specified? *sgw_id : empty_id;
-    unshare_id_content(&cr->sgw_id);
     cr->gateways_from_dns = NULL;
 #ifdef USE_KEYRR
     cr->keys_from_dns = NULL;
@@ -1543,10 +1433,36 @@ start_adns_query(const struct id *id	/* domain to query */
     cr->debugging = LEMPTY;
 #endif
 
+    if (next_query == NULL)
+	next_query = cr;
+
+    unsent_ADNS_queries = TRUE;
+}
+
+err_t
+start_adns_query(const struct id *id	/* domain to query */
+                 , const struct id *sgw_id	/* if non-null, any accepted gw_info must match */
+                 , int type	/* T_TXT or T_KEY, selecting rr type of interest */
+                 , cont_fn_t cont_fn
+                 , struct adns_continuation *cr)
+{
+    char gwidb[IDTOA_BUF];
+    const char *typename = rr_typename(type);
+
+    /* link it in so it's all sane */
+    init_generic_adns_query(cr);
+
+    cr->cont_fn = cont_fn;
+    cr->id = *id;
+    unshare_id_content(&cr->id);
+    cr->sgw_specified = sgw_id != NULL;
+    cr->sgw_id = cr->sgw_specified? *sgw_id : empty_id;
+    unshare_id_content(&cr->sgw_id);
     idtoa(&cr->sgw_id, gwidb, sizeof(gwidb));
 
     zero(&cr->query);
 
+    start_generic_adns_query(type, cr, AF_UNSPEC);
     {
 	err_t ugh = build_dns_name(cr->query.name_buf, cr->qtid
 				   , id, typename, gwidb);
@@ -1558,10 +1474,35 @@ start_adns_query(const struct id *id	/* domain to query */
 	}
     }
 
-    if (next_query == NULL)
-	next_query = cr;
+    return NULL;
+}
 
-    unsent_ADNS_queries = TRUE;
+err_t
+start_adns_hostname(sa_family_t addr_family
+                    , const char *hostname
+                    , cont_fn_t cont_fn
+                    , struct adns_continuation *cr)
+{
+    /* link it in so it's all sane */
+    init_generic_adns_query(cr);
+
+    cr->cont_fn = cont_fn;
+    cr->id.kind = ID_FQDN;
+    strtochunk(cr->id.name, hostname, "adns hostname");
+    zero(&cr->query);
+
+    {
+	err_t ugh = build_dns_name(cr->query.name_buf, cr->qtid
+				   , &cr->id, "host", "none");
+
+	if (ugh != NULL)
+	{
+	    release_adns_continuation(cr);
+	    return ugh;
+	}
+    }
+
+    start_generic_adns_query(ns_t_a, cr, addr_family);
 
     return NULL;
 }
@@ -1622,21 +1563,6 @@ send_unsent_ADNS_queries(void)
 		break;	/* done! */
 	    }
 
-#ifdef USE_LWRES
-	    next_query->used = FALSE;
-	    {
-		/* NOTE STATIC: */
-		static char qbuf[LWDNSQ_CMDBUF_LEN + 1];	/* room for NUL */
-
-		snprintf(qbuf, sizeof(qbuf), "%s %lu %s\n"
-		    , rr_typename(next_query->type)
-		    , next_query->qtid
-		    , next_query->query.name_buf);
-		DBG(DBG_DNS, DBG_log("lwdnsq query: %.*s", (int)(strlen(qbuf) - 1), qbuf));
-		buf_cur = qbuf;
-		buf_end = qbuf + strlen(qbuf);
-	    }
-#else /* !USE_LWRES */
 	    next_query->query.debugging = next_query->debugging;
 	    next_query->query.serial = next_query->qtid;
 	    next_query->query.len = sizeof(next_query->query);
@@ -1644,221 +1570,12 @@ send_unsent_ADNS_queries(void)
 	    next_query->query.type = next_query->type;
 	    buf_cur = (const void *)&next_query->query;
 	    buf_end = buf_cur + sizeof(next_query->query);
-#endif /* !USE_LWRES */
 	    next_query = next_query->next;
 	    adns_in_flight++;
 	}
     }
 }
 
-#ifdef USE_LWRES
-/* Process a line of lwdnsq answer.
- * Returns with error message iff lwdnsq result is malformed.
- * Most errors will be in DNS data and will be handled by cr->cont_fn.
- */
-static err_t
-process_lwdnsq_answer(char *ts)
-{
-    err_t ugh = NULL;
-    char *rest;
-    char *p;
-    char *endofnumber;
-    struct adns_continuation *cr = NULL;
-    unsigned long qtid;
-    time_t anstime;	/* time of answer */
-    char *atype;	/* type of answer */
-    long ttl;	/* ttl of answer; int, but long for conversion */
-    bool AuthenticatedData = FALSE;
-    static char scratch_null_str[] = "";	/* cannot be const, but isn't written */
-
-    /* query transaction id */
-    rest = ts;
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq: answer missing query transaction ID";
-
-    qtid = strtoul(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq: malformed query transaction ID";
-
-    cr = continuation_for_qtid(qtid);
-    if (qtid != 0 && cr == NULL)
-	return "lwdnsq: unrecognized qtid";	/* can't happen! */
-
-    /* time */
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq: missing time";
-
-    anstime = strtoul(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq: malformed time";
-
-    /* TTL */
-    p = strsep(&rest, " \t");
-    if (p == NULL)
-	return "lwdnsq: missing TTL";
-
-    ttl = strtol(p, &endofnumber, 10);
-    if (*endofnumber != '\0')
-	return "lwdnsq: malformed TTL";
-
-    /* type */
-    atype = strsep(&rest, " \t");
-    if (atype == NULL)
-	return "lwdnsq: missing type";
-
-    /* if rest is NULL, make it "", otherwise eat whitespace after type */
-    rest = rest == NULL? scratch_null_str : rest + strspn(rest, " \t");
-
-    if (strncasecmp(atype, "AD-", 3) == 0)
-    {
-	AuthenticatedData = TRUE;
-	atype += 3;
-    }
-
-    /* deal with each type */
-
-    if (cr == NULL)
-    {
-	/* we don't actually know which this applies to */
-	return builddiag("lwdnsq: 0 qtid invalid with %s", atype);
-    }
-    else if (strcaseeq(atype, "START"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "DONE"))
-    {
-	if (!cr->used)
-	{
-	    /* "no results returned by lwdnsq" should not happen */
-	    cr->cont_fn(cr
-		, cr->gateways_from_dns == NULL
-#ifdef USE_KEYRR
-		  && cr->keys_from_dns == NULL
-#endif /* USE_KEYRR */
-		    ? "no results returned by lwdnsq" : NULL);
-	    cr->used = TRUE;
-	}
-	reset_globals();
-	release_adns_continuation(cr);
-	adns_in_flight--;
-    }
-    else if (strcaseeq(atype, "RETRY"))
-    {
-	if (!cr->used)
-	{
-	    cr->cont_fn(cr, rest);
-	    cr->used = TRUE;
-	}
-    }
-    else if (strcaseeq(atype, "TIMEOUT"))
-    {   /* for now, treat as if it was a fatal error, and run failure
-	 * shunt. Later, we will consider a valid answer and re-evaluate
-	 * life, the universe and everything
-	 */
-	if (!cr->used)
-	{
-	    cr->cont_fn(cr, rest);
-	    cr->used = TRUE;
-	}
-    }
-    else if (strcaseeq(atype, "FATAL"))
-    {
-	if (!cr->used)
-	{
-	    cr->cont_fn(cr, rest);
-	    cr->used = TRUE;
-	}
-    }
-    else if (strcaseeq(atype, "DNSSEC"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "NAME"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "TXT"))
-    {
-	char *end = rest + strlen(rest);
-	err_t txt_ugh;
-
-	if (*rest == '"' && end[-1] == '"')
-	{
-	    /* strip those pesky quotes */
-	    rest++;
-	    *--end = '\0';
-	}
-
-	txt_ugh = process_txt_rr_body(rest
-	    , TRUE
-	    , AuthenticatedData? DAL_SIGNED : DAL_NOTSEC
-	    , cr);
-
-	if (txt_ugh != NULL)
-	{
-	    DBG(DBG_DNS,
-		DBG_log("error processing TXT resource record (%s) while processing: %s"
-			, txt_ugh, rest));
-	    cr->cont_fn(cr, txt_ugh);
-	    cr->used = TRUE;
-	}
-    }
-    else if (strcaseeq(atype, "SIG"))
-    {
-	/* record the SIG records for posterity */
-	if (cr->last_info != NULL)
-	{
-	    pfreeany(cr->last_info->dns_sig);
-	    cr->last_info->dns_sig = clone_str(rest, "sigrecord");
-	}
-    }
-    else if (strcaseeq(atype, "A"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "AAAA"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "CNAME"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "CNAMEFROM"))
-    {
-	/* ignore */
-    }
-    else if (strcaseeq(atype, "PTR"))
-    {
-	/* ignore */
-    }
-#ifdef USE_KEYRR
-    else if (strcaseeq(atype, "KEY"))
-    {
-	err_t key_ugh = process_lwdnsq_key(rest
-	    , AuthenticatedData? DAL_SIGNED : DAL_NOTSEC
-	    , cr);
-
-	if (key_ugh != NULL)
-	{
-	    DBG(DBG_DNS,
-		DBG_log("error processing KEY resource record (%s) while processing: %s"
-			, key_ugh, rest));
-	    cr->cont_fn(cr, key_ugh);
-	    cr->used = TRUE;
-	}
-    }
-#endif /* USE_KEYRR */
-    else
-    {
-	ugh = "lwdnsq: unrecognized type";
-    }
-    return ugh;
-}
-#endif /* USE_LWRES */
 
 static void
 recover_adns_die(void)
@@ -1895,17 +1612,17 @@ void reset_adns_restart_count(void)
     adns_restart_count=0;
 }
 
+bool adns_any_in_flight(void)
+{
+    return adns_in_flight > 0;
+}
+
 void
 handle_adns_answer(void)
 {
   /* These are retained across calls to handle_adns_answer. */
     static size_t buflen = 0;	/* bytes in answer buffer */
-#ifndef USE_LWRES
     static struct adns_answer buf;
-#else /* USE_LWRES */
-    static char buf[LWDNSQ_RESULT_LEN_MAX];
-    static char buf_copy[LWDNSQ_RESULT_LEN_MAX];
-#endif /* USE_LWRES */
 
     ssize_t n;
 
@@ -1947,7 +1664,6 @@ handle_adns_answer(void)
     }
 
     buflen += n;
-#ifndef USE_LWRES
     while (buflen >= offsetof(struct adns_answer, ans) && buflen >= buf.len)
     {
 	/* we've got a tasty answer -- process it */
@@ -2012,35 +1728,172 @@ handle_adns_answer(void)
 	buflen -= buf.len;
 	memmove((unsigned char *)&buf, (unsigned char *)&buf + buf.len, buflen);
     }
-#else /* USE_LWRES */
-    for (;;)
-    {
-	err_t ugh;
-	char *nlp = memchr(buf, '\n', buflen);
-
-	if (nlp == NULL)
-	    break;
-
-	/* we've got a line */
-	*nlp++ = '\0';
-
-	DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL | DBG_DNS
-	    , DBG_log("lwdns: %s", buf));
-
-	/* process lwdnsq_answer may modify buf, so make a copy. */
-	memcpy(buf_copy, buf, nlp-buf);
-
-	ugh = process_lwdnsq_answer(buf_copy);
-	if (ugh != NULL)
-	    openswan_log("failure processing lwdnsq output: %s; record: %s"
-		 , ugh, buf);
-
-	passert(GLOBALS_ARE_RESET());
-	reset_globals();
-
-	/* shift out answer that we've consumed */
-	buflen -= nlp - buf;
-	memmove(buf, nlp, buflen);
-    }
-#endif /* USE_LWRES */
 }
+
+/*
+ * this routing picks a new DNS result, or if there are none, performs
+ * a new DNS lookup, in an attempt to find a useable peer address.
+ *
+ * Ideally, one would try all the addresses for *SELF* and also for *REMOTE*
+ * as this gets around BCP38 filtering, and is what RFC3484 says we should do.
+ *
+ * Return true if there was a change that can be acted on now.
+ */
+static bool advance_end_dns_list(struct connection *c
+                          , struct end *end)
+{
+    unsigned int len = sizeof(end->host_addr);
+    struct addrinfo *ai = end->host_address_list.next_address;
+    char newaddr[ADDRTOT_BUF];
+    /* try next address in the list */
+
+    if(ai == NULL) return FALSE;
+
+    /* copy the address into the host_addr structure, and kick this conn */
+    /* structures are not identically names, but equivalent; both contain sockaddr */
+    if(len > ai->ai_addrlen) len = ai->ai_addrlen;
+    memcpy(&end->host_addr, ai->ai_addr, len);
+    end->host_address_list.addresses_available = TRUE;
+
+    addrtot(&end->host_addr, 0, newaddr, sizeof(newaddr));
+    DBG(DBG_DNS
+        , DBG_log("advancing DNS to: %s (next: %s)", newaddr, ai->ai_next ? "more":"last"));
+
+    /* advance pointer */
+    end->host_address_list.next_address = ai->ai_next;
+
+    update_host_pairs(c);
+
+    return TRUE;
+}
+
+static void reset_end_dns_list(struct dns_end_list *del)
+{
+    del->next_address = del->address_list;
+}
+
+void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
+{
+    struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
+    DBG(DBG_DNS
+        , DBG_log("iphostname_continuation: %s", iph_c->c->name));
+    if(ugh) {
+        loglog(RC_NOPEERIP, "iphostname error: %s", ugh);
+        /* continuation is freed by dnskey */
+        return;
+    }
+    dump_addr_info(cr->ipanswers);
+
+    /* now move results to connection structure */
+    iph_c->c->spd.that.host_address_list.address_list = iph_c->ac.ipanswers;
+    reset_end_dns_list(&iph_c->c->spd.that.host_address_list);
+    iph_c->ac.ipanswers = NULL;
+
+    kick_adns_connection(iph_c->c);
+}
+
+/*
+ * sort addrinfo structures.
+ * this is useful when doing regression tests where gai.conf might differ
+ * and is otherwise stupid.
+ */
+static int ai_compare(const void *a, const void *b, void *arg UNUSED)
+{
+    const struct addrinfo * const *aip;
+    const struct addrinfo * const *bip;
+    const struct addrinfo *ai,*bi;
+    aip = a; ai = *aip;
+    bip = b; bi = *bip;
+    if(!ai->ai_addr) return -1;
+    if(!bi->ai_addr) return -1;
+    if(ai->ai_addrlen < bi->ai_addrlen) return -1;
+    if(ai->ai_addrlen > bi->ai_addrlen) return 1;
+    return memcmp(ai->ai_addr, bi->ai_addr, ai->ai_addrlen);
+}
+
+struct addrinfo *sort_addr_info(struct addrinfo *ai)
+{
+    int ai_count, i;
+    struct addrinfo *ai1;
+    struct addrinfo **array;
+
+    /* first figure out how many there are */
+    for(ai_count=0,ai1 = ai; ai1 != NULL; ai1=ai1->ai_next, ai_count++);
+
+    /* now make an array */
+    array = (struct addrinfo **)alloca(sizeof(struct addrinfo *)*ai_count);
+    for(i=0,ai1 = ai; ai1 != NULL; ai1=ai1->ai_next, i++) {
+        array[i] = ai1;
+    }
+
+    /* now sort it */
+    qsort_r(array, ai_count, sizeof(struct addrinfo *), ai_compare, NULL);
+
+    /* now put them back into the linked list */
+    ai = array[0];
+    if(ai_count > 1) {
+        for(i=0; i < ai_count-1; i++) {
+            array[i]->ai_next = array[i+1];
+        }
+    }
+    array[ai_count-1]->ai_next = NULL;
+
+    return ai;
+}
+
+void dump_addr_info(struct addrinfo *ans)
+{
+    unsigned int ansnum = 0;
+
+    while(ans) {
+        char addrbuf[ADDRTOT_BUF];
+        DBG_log("ans %03u canonname=%s protocol=%u family=%u len=%u\n"
+               , ansnum, ans->ai_canonname, ans->ai_protocol, ans->ai_family, ans->ai_addrlen);
+        if(ans->ai_addrlen && ans->ai_addr) {
+            sin_addrtot(ans->ai_addr, 0, addrbuf, sizeof(addrbuf));
+            DBG_log("        result=%s\n", addrbuf);
+        }
+
+        ans = ans->ai_next;
+        ansnum++;
+    }
+}
+
+
+bool kick_adns_connection_lookup(struct connection *c
+                                 , struct end *end)
+{
+    struct iphostname_continuation *iph_c;
+
+    err_t e;
+
+    /* first look for a new IP address to try: see if there a new one. */
+    /* if some addresses found, and not at end of list */
+    if(end->host_address_list.address_list != NULL
+       && end->host_address_list.next_address != NULL) {
+        return advance_end_dns_list(c, end);
+    }
+
+    /*
+     * no new address to try, initiate a new DNS lookup, but in the meantime,
+     * also reset the pointer to beginning, and try again.
+     */
+    iph_c = alloc_thing(struct iphostname_continuation, "kick adns");
+    iph_c->c = c;
+    e = start_adns_hostname(c->addr_family, end->host_addr_name,
+                            iphostname_continuation, &iph_c->ac);
+
+    if(e) {
+        openswan_log("failed to initiate DNS lookup on %s: %s", end->host_addr_name, e);
+        return FALSE;
+    }
+    reset_end_dns_list(&end->host_address_list);
+    return advance_end_dns_list(c, end);
+}
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

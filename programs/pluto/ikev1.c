@@ -133,7 +133,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
-#include "connections.h"	/* needs id.h */
+#include "pluto/connections.h"	/* needs id.h */
 #include "state.h"
 #include "packet.h"
 #include "md5.h"
@@ -146,7 +146,7 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "timer.h"
 #include "whack.h"	/* requires connections.h */
-#include "server.h"
+#include "pluto/server.h"
 #ifdef XAUTH
 #include "xauth.h"
 #endif
@@ -739,7 +739,7 @@ informational(struct msg_digest *md)
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client: %d", tmp_spd->that.has_client));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_client_wildcard: %d", tmp_spd->that.has_client_wildcard));
                 DBG(DBG_CONTROLMORE, DBG_log("that has_port_wildcard: %d", tmp_spd->that.has_port_wildcard));
-                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.has_id_wildcards));
+                DBG(DBG_CONTROLMORE, DBG_log("that has_id_wildcards: %d", tmp_spd->that.id.has_wildcards));
 
                 tmp_spd = tmp_spd->next;
                 } while(tmp_spd!=NULL);
@@ -792,7 +792,7 @@ informational(struct msg_digest *md)
                     }
                    );
 
-		tmp_c->host_pair->him.addr = tmp_c->spd.that.host_addr;
+		tmp_c->IPhost_pair->him.addr = tmp_c->spd.that.host_addr;
 
 		/*Initiating connection to the redirected peer*/
 		initiate_connection(tmp_name, tmp_whack_sock, 0, pcim_demand_crypto);
@@ -1390,6 +1390,10 @@ process_v1_packet(struct msg_digest **mdp)
      * (may be suspended due to crypto operation not yet complete)
      */
     md->st = st;
+    md->pst = st;
+    if(st!=NULL && st->st_clonedfrom != 0) {
+        md->pst = state_with_serialno(st->st_clonedfrom);
+    }
     md->from_state = from_state;
     md->smc = smc;
     md->new_iv_set = new_iv_set;

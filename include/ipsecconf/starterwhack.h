@@ -18,6 +18,9 @@
 
 struct starter_conn;
 struct starter_config;
+struct starter_end;
+struct whack_message;
+enum pubkey_source;
 
 int starter_whack_add_conn (struct starter_config *cfg, struct starter_conn *conn);
 int starter_whack_del_conn (struct starter_config *cfg, struct starter_conn *conn);
@@ -25,6 +28,25 @@ int starter_whack_route_conn (struct starter_config *cfg, struct starter_conn *c
 int starter_whack_initiate_conn (struct starter_config *cfg, struct starter_conn *conn);
 int starter_whack_listen (struct starter_config *cfg);
 int starter_whack_shutdown (struct starter_config *cfg);
+void starter_whack_init_cfg(struct starter_config *cfg);
+void init_whack_msg (struct whack_message *msg);
+
+/* build whack message from starter structures */
+extern int starter_whack_build_pkmsg(struct starter_config *cfg,
+                                     struct whack_message *msg,
+                                     struct starter_conn *conn,
+                                     struct starter_end *end,
+                                     unsigned int keynum,
+                                     enum pubkey_source key_type,
+                                     unsigned char *rsakey,
+                                     const char *lr);
+
+/* serialize strings */
+extern int serialize_whack_msg(struct whack_message *msg);
+
+extern int starter_whack_build_basic_conn(struct starter_config *cfg
+                                          , struct whack_message *msg
+                                          , struct starter_conn *conn);
 
 extern int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 						    , struct starter_conn *conn)

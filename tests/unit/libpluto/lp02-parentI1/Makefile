@@ -1,6 +1,5 @@
 # FreeS/WAN testing makefile
-# Copyright (C) 2014 Michael Richardson <mcr@xelerance.com>
-# Copyright (C) 2002 Michael Richardson <mcr@freeswan.org>
+# Copyright (C) 2015 Michael Richardson <mcr@xelerance.com>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -20,41 +19,44 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/myid.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
@@ -62,25 +64,54 @@ EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
-EXTRALIBS+=-lgmp -lefence -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
+EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
-EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
+EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
-UNITTESTARGS=sun-netnet.record.${ARCH} net-net
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
+SAMPLEDIR=../samples
+OUTPUTS=OUTPUT
 
-TESTNAME=parentI1
+include Makefile.testcase
 
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
-check:
-	@mkdir -p OUTPUT
-	${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
+	@echo CC ${TESTNAME}.c
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
+	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+
+check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
+	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
-update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
+${TESTNAME}.E:
+	@${CC} -E -c -g -o ${TESTNAME}.E -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 
+ifeq (${WHACKREFFILE},)
+${WHACKFILE}: OUTPUT
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+else
+${WHACKFILE}: ${WHACKREFFILE}
+	cp ${WHACKREFFILE} ${WHACKFILE}
+endif
+
+update: OUTPUT
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
+	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
+
+clean: OUTPUT
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/${TESTNAME}.pcap *.o
+
+OUTPUT:
+	@mkdir -p OUTPUT
+
+# Local Variables:
+# compile-command: "make check"
+# End:
+#

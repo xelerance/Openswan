@@ -24,7 +24,7 @@ EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
 EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
-EXTRALIBS+=-lgmp -lefence -lpcap ${NSS_LIBS} ${FIPS_LIBS}
+EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap ${NSS_LIBS} ${FIPS_LIBS}
 
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
@@ -32,11 +32,15 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 UNITTESTARGS=CAcert.pem goodcert1.pem badcert1.pem
 
 TESTNAME=nsscert
+EF_DISABLE_BANNER=1
+export EF_DISABLE_BANNER
 
+.PHONY: check update
 
-check:
+check:	nsscert.c
 	@mkdir -p OUTPUT
-	${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
+	@echo CC ${TESTNAME}.c
+	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} 2>&1 | tee OUTPUT/${TESTNAME}.txt | diff -B - output${NSS_LIBTOKEN}.txt
@@ -44,3 +48,5 @@ check:
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
+clean:
+	rm -f ${TESTNAME}

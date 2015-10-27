@@ -95,6 +95,11 @@ enum_names timer_event_names =
 
 /* State of exchanges */
 static const char *const state_name[] = {
+    "STATE_UNDEFINED",
+    "STATE_DELETING",
+    "OPPO_ACQUIRE",
+    "OPPO_GW_DISCOVERED",
+
 	"STATE_MAIN_R0",
 	"STATE_MAIN_I1",
 	"STATE_MAIN_R1",
@@ -109,7 +114,7 @@ static const char *const state_name[] = {
 	"STATE_AGGR_R1",
 	"STATE_AGGR_I2",
 	"STATE_AGGR_R2",
-	
+
 	"STATE_QUICK_R0",
 	"STATE_QUICK_I1",
 	"STATE_QUICK_R1",
@@ -140,11 +145,11 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 	"STATE_IKEv2_ROOF"
-	
+
     };
 
 enum_names state_names =
-    { STATE_MAIN_R0, STATE_IKEv2_ROOF-1, state_name, NULL };
+    { STATE_UNDEFINED, STATE_IKEv2_ROOF-1, state_name, NULL };
 
 /* story for state */
 
@@ -214,7 +219,7 @@ enum_names pluto_cryptoop_names =
     { pcr_build_kenonce, pcr_compute_dh_v2, pluto_cryptoop_strings, NULL};
 
 
-/* pluto crypto importance */
+/* pluto crypto importance: enum crypto_importance in pluto_constants.h */
 static const char *const pluto_cryptoimportance_strings[] = {
 	"import:not set",
   "import:respond to stranger",	

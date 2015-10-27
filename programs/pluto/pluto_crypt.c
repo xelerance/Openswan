@@ -48,6 +48,7 @@
 #include <openswan/ipsec_policy.h>
 
 #include "sysdep.h"
+#include "setproctitle.h"
 #include "constants.h"
 #include "defs.h"
 #include "packet.h"
@@ -207,9 +208,9 @@ helper_passert_fail(const char *pred_str
 }
 #endif
 
+#ifdef HAVE_LIBNSS
 void pluto_crypto_helper(int fd, int helpernum)
 {
-#ifdef HAVE_LIBNSS
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
     long reqbuf[PCR_REQ_SIZE/sizeof(long)];
@@ -270,13 +271,18 @@ void pluto_crypto_helper(int fd, int helpernum)
     }
 
     /* probably normal EOF */
-    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is exiting (eof, normal)\n",helpernum);
 
 error:
     fclose(in);
     fclose(out);
     /*pthread_exit();*/
-#else
+}
+
+#else /* non-LIBNSS */
+
+void pluto_crypto_helper(int fd, int helpernum)
+{
     FILE *in  = fdopen(fd, "rb");
     FILE *out = fdopen(fd, "wb");
     struct pluto_crypto_req reqbuf[2];
@@ -346,10 +352,10 @@ error:
     /* probably normal EOF */
     fclose(in);
     fclose(out);
-    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper (%d) is  normal exiting\n",helpernum);
+    loglog(RC_LOG_SERIOUS, "pluto_crypto_helper: helper [nonnss] (%d) is exiting normally\n",helpernum);
     exit(0);
-#endif
 }
+#endif
 
 
 /* send the request, make sure it all goes down. */
@@ -905,29 +911,24 @@ static void init_crypto_helper(struct pluto_crypto_worker *w, int n)
 	int fd;
 	int maxfd;
 	struct rlimit nf;
-	int i, arg_len = 0;
+        char statusbuf[1024];
+
+        /* reset sigusr1 handler */
+        signal(SIGUSR1, SIG_IGN);
 
 	/* diddle with our proc title */
-	memset(global_argv[0], '\0', strlen(global_argv[0])+1);
-	arg_len += strlen(global_argv[0]);
-	for(i = 1; i < global_argc; i++) {
-	    if(global_argv[i]) {
-		int l = strlen(global_argv[i]);
-		memset(global_argv[i], '\0', l);
-		arg_len += l;
-	    }
-	    global_argv[i]=NULL;
-	}
-	snprintf(global_argv[0], arg_len, "pluto helper %s #%3d "
+	snprintf(statusbuf, sizeof(statusbuf), "pluto helper %s #%3d "
 			, pluto_ifn_inst, n);
+        setproctitle(progname, statusbuf);
 
 	if(getenv("PLUTO_CRYPTO_HELPER_DEBUG")) {
-	    snprintf(global_argv[0], arg_len,
+            char statusbuf2[1024];
+	    snprintf(statusbuf2, sizeof(statusbuf2),
 	    	    "pluto helper %s #%3d (waiting for GDB) ",
 		    pluto_ifn_inst, n);
+            setproctitle(progname, statusbuf2);
 	    sleep(60); /* for debugger to attach */
-	    sprintf(global_argv[0], "pluto helper %s #%3d                   "
-		    , pluto_ifn_inst, n);
+            setproctitle(progname, statusbuf);
 	}
 
 	if(getrlimit(RLIMIT_NOFILE, &nf) == -1) {

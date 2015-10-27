@@ -5,13 +5,22 @@
 extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct connection *c
 				    , struct state *predecessor
+                                    , so_serial_t  *newstateno
 				    , lset_t policy
 				    , unsigned long try
 				    , enum crypto_importance importance
 				    , struct xfrm_user_sec_ctx_ike * uctx
 				    );
 
-
+extern stf_status ikev2parent_outI1_withstate(struct state *st
+                            , int whack_sock
+                            , struct connection *c
+                            , struct state *predecessor
+                            , lset_t policy
+                            , unsigned long try /* how many attempts so far */
+                            , enum crypto_importance importance
+                            , struct xfrm_user_sec_ctx_ike * uctx
+                                              );
 
 extern void ikev2_delete_out(struct state *st);
 
@@ -34,6 +43,7 @@ extern void complete_v2_state_transition(struct msg_digest **mdp
 extern stf_status process_informational_ikev2(struct msg_digest *md);
 extern stf_status ikev2parent_inI1outR1(struct msg_digest *md);
 extern stf_status ikev2parent_inR1(struct msg_digest *md);
+extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
@@ -92,6 +102,8 @@ extern stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
 
 extern bool ikev2_decode_peer_id(struct msg_digest *md
 				 , enum phase1_role initiator);
+extern bool ikev2_decode_local_id(struct msg_digest *md
+                               , enum phase1_role initiator);
 extern void ikev2_log_parentSA(struct state *st);
 
 extern bool ikev2_calculate_rsa_sha1(struct state *st
@@ -125,8 +137,8 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 extern void ikev2_derive_child_keys(struct state *st
 				    , enum phase1_role role);
 
-extern struct traffic_selector ikev2_end_to_ts(struct end *e);
 extern int ikev2_evaluate_connection_fit(struct connection *d
+                                         , struct state *st
 				, struct spd_route *sr
 				, enum phase1_role role
 				, struct traffic_selector *tsi
@@ -134,37 +146,46 @@ extern int ikev2_evaluate_connection_fit(struct connection *d
 				, unsigned int tsi_n
 				, unsigned int tsr_n);
 
-extern int ikev2_evaluate_connection_port_fit(struct connection *d
-				, struct spd_route *sr
-				, enum phase1_role role
-				, struct traffic_selector *tsi
-				, struct traffic_selector *tsr
-				, unsigned int tsi_n
-				, unsigned int tsr_n
-				, unsigned int *best_tsi_i
-				, unsigned int *best_tsr_i);
+extern int ikev2_evaluate_connection_port_fit(const struct connection *d
+                                              , const struct spd_route *sr
+                                              , enum phase1_role role
+                                              , const struct traffic_selector *tsi
+                                              , const struct traffic_selector *tsr
+                                              , int tsi_n
+                                              , int tsr_n
+                                              , int *best_tsi_i
+                                              , int *best_tsr_i);
+
+extern int ikev2_evaluate_connection_protocol_fit(const struct connection *d,
+						  const struct spd_route *sr,
+						  enum phase1_role role,
+						  const struct traffic_selector *tsi,
+						  const struct traffic_selector *tsr,
+						  int tsi_n,
+						  int tsr_n,
+						  int *best_tsi_i,
+						  int *best_tsr_i);
 
 extern stf_status ikev2_emit_ts(struct msg_digest *md
 				, pb_stream *outpbs
 				, unsigned int np
-				, struct traffic_selector *ts
-				, enum phase1_role role);
+				, struct traffic_selector *ts);
 
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
-				, pb_stream *outpbs
-				, enum phase1_role role
-				, struct connection *c0
-				, lset_t policy);
+                                     , pb_stream *outpbs
+                                     , enum phase1_role role
+                                     , unsigned int next_payload
+                                     , struct connection *c0
+                                     , lset_t policy);
 
 extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, struct traffic_selector *array
 				, unsigned int array_max);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
-					 , enum phase1_role role
 					 , pb_stream *outpbs);
 
-extern struct traffic_selector ikev2_end_to_ts(struct end *e);
+extern struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint);
 extern void ikev2_update_counters(struct msg_digest *md);
 extern void ikev2_print_ts(struct traffic_selector *ts);
 
@@ -188,3 +209,16 @@ extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 
 extern bool force_busy;  /* config option to emulate responder under DOS */
 
+/* allocate a transmit slot */
+extern stf_status allocate_msgid_from_parent(struct state *pst, msgid_t *newid_p);
+
+extern err_t try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
+                                  , size_t hash_len
+                                  , const pb_stream *sig_pbs, struct pubkey *kr
+                                  , struct state *st);
+
+extern void ikev2_calculate_sighash(struct state *st
+                                    , enum phase1_role role
+                                    , unsigned char *idhash
+                                    , chunk_t firstpacket
+                                    , unsigned char *sig_octets);
