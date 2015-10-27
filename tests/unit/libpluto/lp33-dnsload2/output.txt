@@ -26,7 +26,6 @@ RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rek
 RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 RC=0 "cpenohint":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./dnscpeI1 Can not initiate: no remote address available (yet)
-| iphostname_continuation: cpenohint
 | ans 000 canonname=(null) protocol=17 family=2 len=16
 |         result=93.184.216.34
 | creating state object #1 at Z
@@ -528,8 +527,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 93.184.216.3
 ./dnscpeI1 leak: db_v2_trans, item size: X
 ./dnscpeI1 leak: db_v2_prop_conj, item size: X
 ./dnscpeI1 leak: keep id name, item size: X
-./dnscpeI1 leak: adns hostname, item size: X
-./dnscpeI1 leak: kick adns, item size: X
 ./dnscpeI1 leak: addrinfo sockaddr, item size: X
 ./dnscpeI1 leak: addrinfo, item size: X
 ./dnscpeI1 leak: 2 * keep id name, item size: X
