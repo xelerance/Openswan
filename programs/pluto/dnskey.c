@@ -1462,6 +1462,7 @@ start_adns_query(const struct id *id	/* domain to query */
 
     zero(&cr->query);
 
+    start_generic_adns_query(type, cr, AF_UNSPEC);
     {
 	err_t ugh = build_dns_name(cr->query.name_buf, cr->qtid
 				   , id, typename, gwidb);
@@ -1473,7 +1474,6 @@ start_adns_query(const struct id *id	/* domain to query */
 	}
     }
 
-    start_generic_adns_query(type, cr, AF_UNSPEC);
     return NULL;
 }
 
