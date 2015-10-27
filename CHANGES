@@ -4,8 +4,49 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.46dr1 (October 11, 2015)
+v2.6.46dr3 (October 27, 2015)
 
+*  Make sure to set the DNS list pointer upon receiving new answers [MCR]
+*  Host pair lists can become empty-- guard against that [MCR]
+*  Guard against no connections in search routine [MCR]
+*  Added additional debugging to delayed DNS lookup continuation [MCR]
+*  Init generic CR before filling in DNS name so that qtid gets logged sanely [MCR]
+*  Keep track of states that are created to potentially bring up a parent SA. [MCR]
+*  Return state number for newly created states, as there is no way to track them until they are authenticated [MCR]
+*  When doing DNS lookups, use the connaddr family as the hint as to what kind of records to lookup (A vs AAAA). [MCR]
+*  Move kick_adns_connection from dnskey to initiate [MCR]
+*  Create kick_adns_connection routine so that DNS replies kick new connections immediately [MCR]
+*  Added A and AAAA records to rr_typename [MCR]
+*  Remember if an end has a valid address when DNS lookups are delayed so that we do not initiate until DNS lookups have had a chance. [MCR]
+*  Fixed problem in check_connection_end where wrong end was tested for [MCR]
+*  Use sort_addr_info to canonicalize the output to deal with differences in gai.conf [MCR]
+*  Removed last vestiges of DYNAMICDNS and processing converted to IPHOSTNAME [MCR]
+*  Process DNS getaddrinfo() replies, and attach them to continuation [MCR]
+*  Cleanup leaks of addrinfo structures [MCR]
+*  Use standard openswan_log() for messages rather than syslog() [MCR]
+*  Make it easy to generate cpp processed files for inspection [MCR]
+*  Added new utility strtochunk() [MCR]
+*  Created adnstest case to validate operation of dnskey.c and adns.c [MCR]
+*  Small refactor of start_adns_query so that it can accept things other than struct id [MCR]
+*  Change definition of progname to const [MCR]
+*  Moved init_adns() call earlier, and make sure it exits properly [MCR]
+*  Move test for SAref and SAbind into kernel.c [MCR]
+*  Added setproctitle() [from BSD licensed sendmail via pppd] and use it rather than global_argv hack. Use setproctitle() in adns sub-process [MCR]
+*  Create dummy kick_adns_connection [MCR]
+*  _pluto_adns is no longer a seperate program, but is part of the pluto executable, forked out for use. [MCR]
+*  Progname should be const [MCR]
+*  Remove dnshostname from whack_message structure, and DYNAMICDNS from Makefile [MCR]
+*  Move whack out of pluto directory [MCR]
+*  Removed DYNAMIC DNS from whack client [MCR]
+*  Do not show hostname string if the host_type is IP address [MCR]
+*  Remove LWRES support --- it broke awhile ago [MCR]
+*  If nexthop is invalid, then do not show it [MCR]
+*  ipsecconf already included the hostname into a string, but now it needs to include the hint as well. [MCR]
+*  Obsolete is a qualifier for a keyword, not a type of keyword [MCR]
+*  Removed redundant kw_list->string member [MCR]
+*  Added processing of new loose_enum_arg type, added %dns and test it out in a functional test [MCR]
+*  Figure out left/right-ness of keyword so that it can be logged better in errors [MCR]
+*  Added loose_enumarg processing [MCR]
 *  Fixed find_host_pair so that it finds right=%any matches correctly [MCR]
 *  Change listing to give IP/ID type on every bucket [MCR]
 *  Added option to readwriteconf to load all conns marked add/route/up [MCR]
@@ -28,6 +69,14 @@ v2.6.46dr1 (October 11, 2015)
 *  Move try_RSA_signature_v1 to seperate file [MCR]
 *  When loading conn, process alsoflip= as well [MCR]
 *  Refactor also processing so it can be applied to alsoflip [MCR]
+*  Fixing minor typo and spelling mistakes. [Samir Hussain]
+*  Refactor whack_listen processing to seperate function for unit testing
+   Added called to check_orientations() after discovery of new interfaces [MCR]
+*  Log the connection name for each IPhostpair that is being compared to [MCR]
+*  lp24-certreply dave discovered that find_host_pair was still wrong.
+   Rewrote find_host_pair again to with bestpair mechanism to get it right [MCR]
+*  Updating man page in order to remove manual option from auto keyword
+   (it is no longer supported) [Samir Hussain]
 
 v2.6.45 (August 27, 2015)
   This release fixes CVE-2015-3240 (IKE DoS)

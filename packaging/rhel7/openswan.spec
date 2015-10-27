@@ -1,15 +1,6 @@
 Summary: Openswan IPsec implementation
 Name: openswanX
-Version: 2.6.46dr1
-%{!?buildklips: %{expand: %%define buildklips 0}}
-%{!?buildxen: %{expand: %%define buildxen 0}}
-
-# The default kernel version to build for is the latest of
-# the installed binary kernel
-# This can be overridden by "--define 'kversion x.x.x-y.y.y'"
-%define defkv %(rpm -q kernel kernel-smp| grep -v "not installed" | sed "s/kernel-smp-\\\(.\*\\\)$/\\1smp/"| sed "s/kernel-//"| sort | tail -1)
-%{!?kversion: %{expand: %%define kversion %defkv}}
-%define krelver %(echo %{kversion} | tr -s '-' '_')
+Version: 2.6.46dr3
 
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')
