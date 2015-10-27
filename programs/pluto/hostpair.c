@@ -525,19 +525,21 @@ hostpair_list(void)
         char himtypebuf[KEYWORD_NAME_BUFLEN];
         struct connection *c = pi->connections;
 
-        himtypebuf[0]='\0';
-        addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
-        addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
-        keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
+        if(c) {
+            himtypebuf[0]='\0';
+            addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
+            addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
+            keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
 
-        whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
-                  , b1, c->spd.this.host_port, himtypebuf
-                  , b2, c->spd.that.host_port);
-        while(c != NULL) {
-            fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
+            whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
+                      , b1, c->spd.this.host_port, himtypebuf
+                      , b2, c->spd.that.host_port);
+            while(c != NULL) {
+                fmt_connection_inst_name(c, instance, sizeof(instance));
+                whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
 
-            c = c->IPhp_next;
+                c = c->IPhp_next;
+            }
         }
     }
 
@@ -549,16 +551,18 @@ hostpair_list(void)
         char instance[1 + 10 + 1];
         struct connection *c = pd->connections;
 
-        idtoa(&c->spd.this.id, b1,sizeof(b1));
-        idtoa(&c->spd.that.id, b2,sizeof(b2));
+        if(c) {
+            idtoa(&c->spd.this.id, b1,sizeof(b1));
+            idtoa(&c->spd.that.id, b2,sizeof(b2));
 
-        whack_log(RC_LOG, "  IDpair: %s %s"
-                  , b1, b2);
-        while(c != NULL) {
-            fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
+            whack_log(RC_LOG, "  IDpair: %s %s"
+                      , b1, b2);
+            while(c != NULL) {
+                fmt_connection_inst_name(c, instance, sizeof(instance));
+                whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
 
-            c = c->IDhp_next;
+                c = c->IDhp_next;
+            }
         }
     }
 }
