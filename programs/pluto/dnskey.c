@@ -1868,7 +1868,8 @@ bool kick_adns_connection_lookup(struct connection *c
     err_t e;
 
     /* first look for a new IP address to try: see if there a new one. */
-    if(end->host_address_list.address_list != NULL  /* some addresses found */
+    /* if some addresses found, and not at end of list */
+    if(end->host_address_list.address_list != NULL
        && end->host_address_list.next_address != NULL) {
         return advance_end_dns_list(c, end);
     }
