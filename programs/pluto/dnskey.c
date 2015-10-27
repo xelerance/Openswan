@@ -1744,6 +1744,7 @@ static bool advance_end_dns_list(struct connection *c
 {
     unsigned int len = sizeof(end->host_addr);
     struct addrinfo *ai = end->host_address_list.next_address;
+    char newaddr[ADDRTOT_BUF];
     /* try next address in the list */
 
     if(ai == NULL) return FALSE;
@@ -1754,10 +1755,15 @@ static bool advance_end_dns_list(struct connection *c
     memcpy(&end->host_addr, ai->ai_addr, len);
     end->host_address_list.addresses_available = TRUE;
 
-    update_host_pairs(c);
+    addrtot(&end->host_addr, 0, newaddr, sizeof(newaddr));
+    DBG(DBG_DNS
+        , DBG_log("advancing DNS to: %s (next: %s)", newaddr, ai->ai_next ? "more":"last"));
 
     /* advance pointer */
     end->host_address_list.next_address = ai->ai_next;
+
+    update_host_pairs(c);
+
     return TRUE;
 }
 
@@ -1780,6 +1786,7 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
 
     /* now move results to connection structure */
     iph_c->c->spd.that.host_address_list.address_list = iph_c->ac.ipanswers;
+    reset_end_dns_list(&iph_c->c->spd.that.host_address_list);
     iph_c->ac.ipanswers = NULL;
 
     kick_adns_connection(iph_c->c);
