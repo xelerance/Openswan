@@ -514,7 +514,7 @@ find_ID_host_pair(const struct id me
             idtoa(&p->me_who, mewho, sizeof(mewho));
             idtoa(&p->him_who,himwho, sizeof(himwho));
             DBG_log("                  comparing to me=%s him=%s (%s)\n"
-                    , mewho, himwho, p->connections->name));
+                    , mewho, himwho, (p && p->connections) ? p->connections->name : "<none>"));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
