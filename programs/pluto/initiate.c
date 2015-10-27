@@ -207,6 +207,8 @@ bool kick_adns_connection(struct connection *c)
        && (IS_ISAKMP_SA_ESTABLISHED(st->st_state) || IS_PARENT_SA_ESTABLISHED(st->st_state))) {
 
         /* the connection is up, no point in doing it again */
+        DBG(DBG_DNS
+            , DBG_log("  DNS already connected, do not reinit"));
         return FALSE;
     }
 
@@ -214,7 +216,11 @@ bool kick_adns_connection(struct connection *c)
         st = state_with_serialno(c->prospective_parent_sa);
 
         /* might need to put some state restrictions on this, or look at how many retries */
-        if(st != NULL) return FALSE;
+        if(st != NULL) {
+            DBG(DBG_DNS
+                , DBG_log("  DNS connection attempt in progress, do not restart"));
+            return FALSE;
+        }
     }
 
     /* arrange to rekey the phase 1, if there was one. */
@@ -232,6 +238,9 @@ bool kick_adns_connection(struct connection *c)
         is.moredebug = 0;
         is.importance= pcim_ongoing_crypto;
 
+        DBG(DBG_DNS
+            , DBG_log("  attempting to reinit"));
+
         set_cur_connection(c);
         addrtot(&c->spd.that.host_addr, 0, targetaddr, sizeof(targetaddr));
         loglog(RC_NOPEERIP, "trying to initiate to address %s (name=%s)"
@@ -239,6 +248,9 @@ bool kick_adns_connection(struct connection *c)
                , c->spd.that.host_addr_name);
 
 	initiate_a_connection(c, &is);
+    } else {
+        DBG(DBG_DNS
+            , DBG_log("  no additional DNS answers,  not re-attempting"));
     }
 
     return kicknow;
