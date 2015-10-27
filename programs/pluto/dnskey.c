@@ -1769,9 +1769,10 @@ static void reset_end_dns_list(struct dns_end_list *del)
 void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
 {
     struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
-    DBG_log("iphostname_continuation: %s", iph_c->c->name);
+    DBG(DBG_DNS
+        , DBG_log("iphostname_continuation: %s", iph_c->c->name));
     if(ugh) {
-        DBG_log("iphostname error: %s", ugh);
+        loglog(RC_NOPEERIP, "iphostname error: %s", ugh);
         /* continuation is freed by dnskey */
         return;
     }
