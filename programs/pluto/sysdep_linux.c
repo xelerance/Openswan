@@ -110,6 +110,9 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
 {
     DBG(DBG_CONTROL, DBG_log("executing %s%s: %s"
         , verb, verb_suffix, cmd));
+
+    /* this popen() debug is really excessive */
+#if 0
     {
        char tmp[100];
        int slen,i;
@@ -121,6 +124,7 @@ bool invoke_command(const char *verb, const char *verb_suffix, char *cmd)
                DBG(DBG_CONTROL, DBG_log("cmd(%4d):%s:", i, tmp));
        }
     }
+#endif
 
     {
         /* invoke the script, catching stderr and stdout

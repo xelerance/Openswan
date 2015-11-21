@@ -36,7 +36,7 @@ extern void init_timer(void);
 
 /* extra debugging of dpd event removal */
 extern void _delete_dpd_event(struct state *st, const char *file, int lineno);
-#define delete_dpd_event(st) _delete_dpd_event(st, __FILE__, __LINE__)
+#define delete_dpd_event(st) _delete_dpd_event(st, __func__, __LINE__)
 
 extern void timer_list(void);
 
