@@ -534,11 +534,11 @@ static bool validate_end(struct starter_conn *conn_st
 	if (tnatoaddr(value, strlen(value), AF_INET, &(end->nexthop)) != NULL
 	    && tnatoaddr(value, strlen(value), AF_INET6, &(end->nexthop)) != NULL) {
 
-	    er = ttoaddr(value, 0, family, &(end->sourceip));
+	    er = ttoaddr(value, 0, 0, &(end->sourceip));
 	    if (er) ERR_FOUND("bad addr %ssourceip=%s [%s]", leftright, value, er);
 
 	} else {
-		er = tnatoaddr(value, 0, family, &(end->sourceip));
+		er = tnatoaddr(value, 0, 0, &(end->sourceip));
 		if (er) ERR_FOUND("bad numerical addr %ssourceip=%s [%s]", leftright, value, er);
 	}
 

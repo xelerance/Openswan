@@ -1,0 +1,4 @@
+This test validates that left/rightsourceip can be an IPv6 address in
+addition to being an IPv4 address.
+
+
