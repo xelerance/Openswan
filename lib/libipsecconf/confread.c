@@ -531,8 +531,8 @@ static bool validate_end(struct starter_conn *conn_st
     {
 	char *value = end->strings[KSCF_SOURCEIP];
 
-	if (tnatoaddr(value, strlen(value), AF_INET, &(end->nexthop)) != NULL
-	    && tnatoaddr(value, strlen(value), AF_INET6, &(end->nexthop)) != NULL) {
+	if (tnatoaddr(value, strlen(value), AF_INET, &(end->sourceip)) != NULL
+	    && tnatoaddr(value, strlen(value), AF_INET6, &(end->sourceip)) != NULL) {
 
 	    er = ttoaddr(value, 0, 0, &(end->sourceip));
 	    if (er) ERR_FOUND("bad addr %ssourceip=%s [%s]", leftright, value, er);
