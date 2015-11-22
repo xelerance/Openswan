@@ -30,6 +30,9 @@ step1:
 step2:
 	@${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any
 
+step2b:
+	@${ADDCONN} --verbose ${CTLBASE} --config ../07-sourceipv6/green.conf --rootdir ../07-sourceipv6 green
+
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
 
@@ -37,7 +40,7 @@ step4:
 	@${WHACKBIN} ${CTLBASE} --status
 
 check: OUTPUT
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2b; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
