@@ -819,10 +819,10 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
-	loglog(RC_CLASH, "address family inconsistency in this connection=%d host=%d/nexthop=%d"
-	       , wm->addr_family
-	       , addrtypeof(&this->host_addr)
-	       , addrtypeof(&this->host_nexthop));
+	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
+	       , aftoinfo(wm->addr_family)->name
+	       , aftoinfo(addrtypeof(&this->host_addr))->name
+	       , aftoinfo(addrtypeof(&this->host_nexthop))->name);
 	return FALSE;
     }
 
