@@ -376,6 +376,19 @@ open_peerlog(struct connection *c)
     perpeer_count++;
 }
 
+char *oswtimestr(void)
+{
+    static char datebuf[32];
+    time_t n;
+    struct tm *t;
+
+    time(&n);
+    t = localtime(&n);
+
+    strftime(datebuf, sizeof(datebuf), "%Y-%m-%d %T", t);
+    return datebuf;
+}
+
 /* log a line to cur_connection's log */
 static void
 peerlog(const char *prefix, const char *m)
@@ -394,15 +407,7 @@ peerlog(const char *prefix, const char *m)
     /* despite our attempts above, we may not be able to open the file. */
     if (cur_connection->log_file != NULL)
     {
-	char datebuf[32];
-	time_t n;
-	struct tm *t;
-
-	time(&n);
-	t = localtime(&n);
-
-	strftime(datebuf, sizeof(datebuf), "%Y-%m-%d %T", t);
-	fprintf(cur_connection->log_file, "%s %s%s\n", datebuf, prefix, m);
+	fprintf(cur_connection->log_file, "%s %s%s\n", oswtimestr(), prefix, m);
 
 	/* now move it to the front of the list */
 	CIRCLEQ_REMOVE(&perpeer_list, cur_connection, log_link);

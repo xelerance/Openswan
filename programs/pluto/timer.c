@@ -464,8 +464,10 @@ handle_next_timer_event(void)
     type = ev->ev_type;
     st = ev->ev_state;
 
-    DBG(DBG_CONTROL, DBG_log("handling event %s"
-			     , enum_show(&timer_event_names, type)));
+    if(DBGP(DBG_CONTROL)) {
+        DBG_log("at %s handling event %s", oswtimestr()
+                , enum_show(&timer_event_names, type));
+    }
 
     if(DBGP(DBG_CONTROL)) {
 	if (evlist != (struct event *) NULL) {

@@ -64,6 +64,8 @@ extern struct connection *cur_connection;	/* current connection, for diagnostics
 extern const ip_address *cur_from;	/* source of current current message */
 extern u_int16_t cur_from_port;	/* host order */
 
+extern char *oswtimestr(void);
+
 extern bool whack_prompt_for(int whackfd
 			     , const char *prompt1
 			     , const char *prompt2
