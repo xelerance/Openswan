@@ -90,7 +90,7 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 endif
 
 update: OUTPUT
