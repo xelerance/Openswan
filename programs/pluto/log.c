@@ -846,7 +846,7 @@ show_status(void)
     db_ops_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
 #endif
-    show_connections_status();
+    show_connections_status(whack_log);
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_states_status();
 #ifdef KLIPS

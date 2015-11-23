@@ -124,6 +124,7 @@ extern void fmt_policy_prio(policy_prio_t pp, char buf[POLICY_PRIO_BUF]);
 #include "pgp.h"
 #include "certs.h"
 #include "pluto/defs.h"
+#include "pluto/log.h"
 
 struct virtual_t;
 
@@ -447,11 +448,11 @@ extern struct connection *eclipsed(struct connection *c, struct spd_route **);
 
 /* print connection status */
 
-extern void show_one_connection(struct connection *c);
+extern void show_one_connection(struct connection *c, logfunc logger);
 extern char *fmt_connection_inst_name(struct connection *c
                                       , char *instname
                                       , unsigned int instname_len);
-extern void show_connections_status(void);
+extern void show_connections_status(logfunc logger);
 extern int  connection_compare(const struct connection *ca
 			       , const struct connection *cb);
 #ifdef NAT_TRAVERSAL

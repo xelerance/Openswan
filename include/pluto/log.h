@@ -147,6 +147,9 @@ extern void close_peerlog(void);
 /* free all per-peer log resources */
 extern void perpeer_logfree(struct connection *c);
 
+/* typedef matches whacklog, and loglog */
+typedef void (*logfunc)(int mess_no, const char *message, ...);
+
 extern void whack_log(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* Log to both main log and whack log
