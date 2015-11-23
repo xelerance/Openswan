@@ -2181,31 +2181,11 @@ teardown_half_ipsec_sa(struct state *st, struct end *that, bool inbound)
                           , c->spd.this.protocol
                           , ET_UNSPEC
                           , null_proto_info, 0
-                          , ERO_DEL_INBOUND, "delete inbound"
+                          , ERO_DEL_INBOUND, "delete (half) inbound"
 			  , c->policy_label
 			  );
     }
 
-    /* PATRICK: I may have to uncomment the following block: */
-//    if(st->st_ikev2) {
-//        for(sr = &c->spd; sr; sr=sr->next) {
-//            if (kernel_ops->inbound_eroute && inbound
-//                && sr->eroute_owner == SOS_NOBODY)
-//                {
-//                    (void) raw_eroute(&sr->that.host_addr, &sr->that.client
-//                                      , &sr->this.host_addr, &sr->this.client
-//                                      , 256
-//                                      , IPSEC_PROTO_ANY
-//                                      , sr->this.protocol
-//                                      , ET_UNSPEC
-//                                      , null_proto_info, 0
-//                                      , ERO_DEL_INBOUND, "delete inbound"
-//                                      , c->policy_label
-//                                      );
-//                }
-//        }
-//    }
-//
     if (!kernel_ops->grp_sa)
     {
         if (st->st_ah.present)
