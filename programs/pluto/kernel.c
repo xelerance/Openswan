@@ -920,25 +920,13 @@ raw_eroute(const ip_address *this_host
     bool result;
 
     set_text_said(text_said, that_host, spi, proto);
+    char mybuf[SUBNETTOT_BUF];
+    char peerbuf[SUBNETTOT_BUF];
+    int sport = ntohs(portof(&this_client->addr));
+    int dport = ntohs(portof(&that_client->addr));
 
-    DBG(DBG_CONTROL | DBG_KLIPS,
-        {
-            int sport = ntohs(portof(&this_client->addr));
-            int dport = ntohs(portof(&that_client->addr));
-            char mybuf[SUBNETTOT_BUF];
-            char peerbuf[SUBNETTOT_BUF];
-
-            subnettot(this_client, 0, mybuf, sizeof(mybuf));
-            subnettot(that_client, 0, peerbuf, sizeof(peerbuf));
-            DBG_log("%s eroute %s:%d --%d-> %s:%d => %s (raw_eroute)"
-                    , opname, mybuf, sport, transport_proto, peerbuf, dport
-                    , text_said);
-#ifdef HAVE_LABELED_IPSEC
-		if(policy_label) {
-                    DBG_log("policy security label %s", policy_label);
-		}
-#endif
-        });
+    subnettot(this_client, 0, mybuf, sizeof(mybuf));
+    subnettot(that_client, 0, peerbuf, sizeof(peerbuf));
 
     result = kernel_ops->raw_eroute(this_host, this_client
                                   , that_host, that_client
@@ -949,7 +937,9 @@ raw_eroute(const ip_address *this_host
 				  , policy_label);
 
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
-	   DBG_log("raw_eroute result=%u\n", result);
+        loglog(RC_COMMENT, "%s eroute %s:%d --%d-> %s:%d => %s %s"
+               , opname, mybuf, sport, transport_proto, peerbuf, dport
+               , text_said, result ? "succeeded" : "FAILED");
     }
 
     return result;
