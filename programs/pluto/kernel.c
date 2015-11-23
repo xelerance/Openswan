@@ -787,6 +787,12 @@ unroute_connection(struct connection *c)
     struct spd_route *sr;
     enum routing_t cr;
 
+#if 0
+    /* useful for debugging situations where newest_*_SA/eroute is going wrong */
+    DBG_log("unroute connection");
+    show_connections_status(loglog);
+#endif
+
     for (sr = &c->spd; sr; sr = sr->next)
     {
         cr = sr->routing;
