@@ -86,11 +86,11 @@ static void init_loaded(void)
 
     c = con_by_name("rw-carol", TRUE);
     assert(c != NULL);
-    show_one_connection(c);
+    show_one_connection(c, whack_log);
 
     c = con_by_name("rw-dave", TRUE);
     assert(c != NULL);
-    show_one_connection(c);
+    show_one_connection(c, whack_log);
 
     hostpair_list();
 }

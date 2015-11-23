@@ -47,6 +47,7 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
+#include "pluto/log.h"
 #include "pluto/connections.h"	/* needs id.h */
 #include "pending.h"
 #include "foodgroups.h"
@@ -57,7 +58,6 @@
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "pluto/server.h"
 #include "kernel.h"	/* needs connections.h */
-#include "log.h"
 #include "pluto/keys.h"
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
@@ -819,10 +819,10 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
-	loglog(RC_CLASH, "address family inconsistency in this connection=%d host=%d/nexthop=%d"
-	       , wm->addr_family
-	       , addrtypeof(&this->host_addr)
-	       , addrtypeof(&this->host_nexthop));
+	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
+	       , aftoinfo(wm->addr_family)->name
+	       , aftoinfo(addrtypeof(&this->host_addr))->name
+	       , aftoinfo(addrtypeof(&this->host_nexthop))->name);
 	return FALSE;
     }
 
@@ -3152,7 +3152,7 @@ char *fmt_connection_inst_name(struct connection *c
 }
 
 void
-show_one_connection(struct connection *c)
+show_one_connection(struct connection *c, logfunc logger)
 {
     const char *ifn;
     char instance[1 + 10 + 1];
@@ -3182,7 +3182,7 @@ show_one_connection(struct connection *c)
 	dntoa_or_null(this_ca, IDTOA_BUF, c->spd.this.ca, "%any");
 	dntoa_or_null(that_ca, IDTOA_BUF, c->spd.that.ca, "%any");
 
-	whack_log(RC_COMMENT
+	logger(RC_COMMENT
 		  , "\"%s\"%s:   CAs: '%s'...'%s'"
 		  , c->name
 		  , instance
@@ -3190,7 +3190,7 @@ show_one_connection(struct connection *c)
 		  , that_ca);
     }
 
-    whack_log(RC_COMMENT
+    logger(RC_COMMENT
 	      , "\"%s\"%s:   ike_life: %lus; ipsec_life: %lus;"
 	      " rekey_margin: %lus; rekey_fuzz: %lu%%; keyingtries: %lu%s%s "
 	      , c->name
@@ -3206,14 +3206,14 @@ show_one_connection(struct connection *c)
 
     if (c->policy_next)
     {
-	whack_log(RC_COMMENT
+	logger(RC_COMMENT
 		  , "\"%s\"%s:   policy_next: %s"
 		  , c->name, instance, c->policy_next->name);
     }
 
     /* Note: we display key_from_DNS_on_demand as if policy [lr]KOD */
     fmt_policy_prio(c->prio, prio);
-    whack_log(RC_COMMENT
+    logger(RC_COMMENT
 	      , "\"%s\"%s:   policy: %s%s%s; prio: %s; interface: %s; kind=%s"
 	      , c->name
 	      , instance
@@ -3225,7 +3225,7 @@ show_one_connection(struct connection *c)
               , enum_name(&connection_kind_names, c->kind));
 
     if(c->connmtu > 0 || c->metric > 0) {
-	whack_log(RC_COMMENT
+	logger(RC_COMMENT
 		  , "\"%s\"%s:   network params: metric:%lu; mtu:%lu; "
 		  , c->name
 		  , instance
@@ -3235,7 +3235,7 @@ show_one_connection(struct connection *c)
 
     /* slightly complicated stuff to avoid extra crap */
     if(c->dpd_timeout > 0 || DBGP(DBG_DPD)) {
-	whack_log(RC_COMMENT
+	logger(RC_COMMENT
 		  , "\"%s\"%s:   dpd: %s; delay:%lu; timeout:%lu;  "
 		  , c->name
 		  , instance
@@ -3245,22 +3245,22 @@ show_one_connection(struct connection *c)
     }
 
     if(c->extra_debugging) {
-	whack_log(RC_COMMENT, "\"%s\"%s:   debug: %s"
+	logger(RC_COMMENT, "\"%s\"%s:   debug: %s"
 		  , c->name
 		  , instance
 		  , bitnamesof(debug_bit_names
 			       , c->extra_debugging));
     }
 
-    whack_log(RC_COMMENT
-	      , "\"%s\"%s:   newest ISAKMP SA: #%ld; newest IPsec SA: #%ld; "
+    logger(RC_COMMENT
+	      , "\"%s\"%s:   newest ISAKMP SA: #%ld; newest IPsec SA: #%ld; eroute owner: #%ld;"
 	      , c->name
 	      , instance
 	      , c->newest_isakmp_sa
-	      , c->newest_ipsec_sa);
+              , c->newest_ipsec_sa, c->spd.eroute_owner);
 
     if(c->connalias) {
-	whack_log(RC_COMMENT
+	logger(RC_COMMENT
 		  , "\"%s\"%s:   aliases: %s\n"
 		  , c->name
 		  , instance
@@ -3276,12 +3276,15 @@ show_one_connection(struct connection *c)
 }
 
 void
-show_connections_status(void)
+show_connections_status(logfunc logger)
 {
     int count, i;
     struct connection *c;
     struct connection **array;
 
+    if(logger == NULL) {
+        logger = whack_log;
+    }
 
     /* make an array of connections, and sort it */
     count=0;
@@ -3306,7 +3309,7 @@ show_connections_status(void)
 
     for (i=0; i<count; i++)
     {
-	show_one_connection(array[i]);
+	show_one_connection(array[i], logger);
     }
     pfree(array);
 }

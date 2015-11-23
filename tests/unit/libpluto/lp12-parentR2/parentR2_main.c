@@ -109,7 +109,7 @@ main(int argc, char *argv[])
     assert(c1 != NULL);
 
     assert(orient(c1, 500));
-    show_one_connection(c1);
+    show_one_connection(c1, whack_log);
     init_loaded();
 
     for(i=0; i<PCAP_INPUT_COUNT; i++) {

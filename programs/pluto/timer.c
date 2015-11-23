@@ -76,6 +76,7 @@ void
 event_schedule(enum event_type type, time_t tm, struct state *st)
 {
     struct event *ev = alloc_thing(struct event, "struct event in event_schedule()");
+    const char *headqueue;
 
     passert(tm >= 0);
     ev->ev_type = type;
@@ -98,19 +99,24 @@ event_schedule(enum event_type type, time_t tm, struct state *st)
 	    }
     }
 
+    headqueue = "";
+    if (evlist == (struct event *) NULL
+	|| evlist->ev_time >= ev->ev_time) {
+        headqueue = "(head of queue)";
+    }
+
     DBG(DBG_CONTROL,
 	if (st == NULL)
-	    DBG_log("inserting event %s, timeout in %lu seconds"
-		, enum_show(&timer_event_names, type), (unsigned long)tm);
+	    DBG_log("inserting event %s, timeout in %lu seconds %s"
+                    , enum_show(&timer_event_names, type), (unsigned long)tm, headqueue);
 	else
-	    DBG_log("inserting event %s, timeout in %lu seconds for #%lu"
-		, enum_show(&timer_event_names, type), (unsigned long)tm
-		, ev->ev_state->st_serialno));
+	    DBG_log("inserting event %s, timeout in %lu seconds for #%lu %s"
+                    , enum_show(&timer_event_names, type), (unsigned long)tm
+                    , ev->ev_state->st_serialno, headqueue));
 
     if (evlist == (struct event *) NULL
 	|| evlist->ev_time >= ev->ev_time)
     {
-	DBG(DBG_CONTROLMORE, DBG_log("event added at head of queue"));
 	ev->ev_next = evlist;
 	evlist = ev;
     }
@@ -458,8 +464,10 @@ handle_next_timer_event(void)
     type = ev->ev_type;
     st = ev->ev_state;
 
-    DBG(DBG_CONTROL, DBG_log("handling event %s"
-			     , enum_show(&timer_event_names, type)));
+    if(DBGP(DBG_CONTROL)) {
+        DBG_log("at %s handling event %s", oswtimestr()
+                , enum_show(&timer_event_names, type));
+    }
 
     if(DBGP(DBG_CONTROL)) {
 	if (evlist != (struct event *) NULL) {

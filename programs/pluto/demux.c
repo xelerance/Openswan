@@ -397,11 +397,11 @@ read_packet(struct msg_digest *md)
 
     DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL,
 	{
-	    DBG_log("*received %d bytes from %s:%u on %s (port=%d)"
+	    DBG_log("*received %d bytes from %s:%u on %s (port=%d) at %s"
 		    , (int) pbs_room(&md->packet_pbs)
 		    , ip_str(cur_from), (unsigned) cur_from_port
 		    , ifp->ip_dev->id_rname
-		    , ifp->port);
+		    , ifp->port, oswtimestr());
 	});
 
     DBG(DBG_RAW,

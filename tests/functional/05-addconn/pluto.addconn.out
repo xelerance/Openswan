@@ -19,5 +19,11 @@ adding connection: "gateway--any"
 setting rootdir=YY
 opening file: ZZ
 loading named conns: gateway--any
+adding connection: "green"
+002 adding connection: "green"
+setting rootdir=YY
+opening file: ZZ
+loading named conns: green
+"green": deleting connection
 "gateway--any": deleting connection
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

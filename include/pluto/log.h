@@ -64,6 +64,8 @@ extern struct connection *cur_connection;	/* current connection, for diagnostics
 extern const ip_address *cur_from;	/* source of current current message */
 extern u_int16_t cur_from_port;	/* host order */
 
+extern char *oswtimestr(void);
+
 extern bool whack_prompt_for(int whackfd
 			     , const char *prompt1
 			     , const char *prompt2
@@ -144,6 +146,9 @@ extern void close_peerlog(void);
 
 /* free all per-peer log resources */
 extern void perpeer_logfree(struct connection *c);
+
+/* typedef matches whacklog, and loglog */
+typedef void (*logfunc)(int mess_no, const char *message, ...);
 
 extern void whack_log(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 

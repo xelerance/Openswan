@@ -133,7 +133,7 @@ main(int argc, char *argv[])
     assert(c1 != NULL);
 
     assert(orient(c1, 500));
-    show_one_connection(c1);
+    show_one_connection(c1, whack_log);
 
     /* output first packets to /dev/null */
     send_packet_setup_pcap("/dev/null");

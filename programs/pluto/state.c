@@ -712,7 +712,6 @@ delete_states_by_connection(struct connection *c, bool relations)
 {
     so_serial_t parent_sa = c->newest_isakmp_sa;
     enum connection_kind ck = c->kind;
-    struct spd_route *sr;
 
     /* save this connection's isakmp SA,
      * since it will get set to later SOS_NOBODY */
@@ -729,22 +728,21 @@ delete_states_by_connection(struct connection *c, bool relations)
 					  , &parent_sa);
     }
 
+#if 0
     /*
-     * Seems to dump here because 1 of the states is NULL.  Removing the Assert
-     * makes things work.  We should fix this eventually.
-     *
-     *  passert(c->newest_ipsec_sa == SOS_NOBODY
-     *  && c->newest_isakmp_sa == SOS_NOBODY);
-     *
+     * XXX this check is supposed to validate the connection was killed,
+     * but it isn't always the case.
      */
-
-    sr = &c->spd;
-    while (sr != NULL)
     {
-	passert(sr->eroute_owner == SOS_NOBODY);
-	passert(sr->routing != RT_ROUTED_TUNNEL);
-	sr = sr->next;
+        struct spd_route *sr = &c->spd;
+        while (sr != NULL)
+            {
+                passert(sr->eroute_owner == SOS_NOBODY);
+                passert(sr->routing != RT_ROUTED_TUNNEL);
+                sr = sr->next;
+            }
     }
+#endif
 
     if (ck == CK_INSTANCE)
     {

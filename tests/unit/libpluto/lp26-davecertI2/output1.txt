@@ -32,7 +32,6 @@ RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
 RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
-RC=0 "home":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | Changed path to directory '../samples/davecert/cacerts'
 ./davecertI2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
 | creating state object #1 at Z

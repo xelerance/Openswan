@@ -787,6 +787,12 @@ unroute_connection(struct connection *c)
     struct spd_route *sr;
     enum routing_t cr;
 
+#if 0
+    /* useful for debugging situations where newest_*_SA/eroute is going wrong */
+    DBG_log("unroute connection");
+    show_connections_status(loglog);
+#endif
+
     for (sr = &c->spd; sr; sr = sr->next)
     {
         cr = sr->routing;
@@ -920,25 +926,13 @@ raw_eroute(const ip_address *this_host
     bool result;
 
     set_text_said(text_said, that_host, spi, proto);
+    char mybuf[SUBNETTOT_BUF];
+    char peerbuf[SUBNETTOT_BUF];
+    int sport = ntohs(portof(&this_client->addr));
+    int dport = ntohs(portof(&that_client->addr));
 
-    DBG(DBG_CONTROL | DBG_KLIPS,
-        {
-            int sport = ntohs(portof(&this_client->addr));
-            int dport = ntohs(portof(&that_client->addr));
-            char mybuf[SUBNETTOT_BUF];
-            char peerbuf[SUBNETTOT_BUF];
-
-            subnettot(this_client, 0, mybuf, sizeof(mybuf));
-            subnettot(that_client, 0, peerbuf, sizeof(peerbuf));
-            DBG_log("%s eroute %s:%d --%d-> %s:%d => %s (raw_eroute)"
-                    , opname, mybuf, sport, transport_proto, peerbuf, dport
-                    , text_said);
-#ifdef HAVE_LABELED_IPSEC
-		if(policy_label) {
-                    DBG_log("policy security label %s", policy_label);
-		}
-#endif
-        });
+    subnettot(this_client, 0, mybuf, sizeof(mybuf));
+    subnettot(that_client, 0, peerbuf, sizeof(peerbuf));
 
     result = kernel_ops->raw_eroute(this_host, this_client
                                   , that_host, that_client
@@ -949,7 +943,9 @@ raw_eroute(const ip_address *this_host
 				  , policy_label);
 
     if(result == FALSE || DBGP(DBG_CONTROL|DBG_KLIPS)) {
-	   DBG_log("raw_eroute result=%u\n", result);
+        loglog(RC_COMMENT, "%s eroute %s:%d --%d-> %s:%d => %s %s"
+               , opname, mybuf, sport, transport_proto, peerbuf, dport
+               , text_said, result ? "succeeded" : "FAILED");
     }
 
     return result;
@@ -2191,31 +2187,11 @@ teardown_half_ipsec_sa(struct state *st, struct end *that, bool inbound)
                           , c->spd.this.protocol
                           , ET_UNSPEC
                           , null_proto_info, 0
-                          , ERO_DEL_INBOUND, "delete inbound"
+                          , ERO_DEL_INBOUND, "delete (half) inbound"
 			  , c->policy_label
 			  );
     }
 
-    /* PATRICK: I may have to uncomment the following block: */
-//    if(st->st_ikev2) {
-//        for(sr = &c->spd; sr; sr=sr->next) {
-//            if (kernel_ops->inbound_eroute && inbound
-//                && sr->eroute_owner == SOS_NOBODY)
-//                {
-//                    (void) raw_eroute(&sr->that.host_addr, &sr->that.client
-//                                      , &sr->this.host_addr, &sr->this.client
-//                                      , 256
-//                                      , IPSEC_PROTO_ANY
-//                                      , sr->this.protocol
-//                                      , ET_UNSPEC
-//                                      , null_proto_info, 0
-//                                      , ERO_DEL_INBOUND, "delete inbound"
-//                                      , c->policy_label
-//                                      );
-//                }
-//        }
-//    }
-//
     if (!kernel_ops->grp_sa)
     {
         if (st->st_ah.present)
@@ -2797,10 +2773,9 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 
             DBG(DBG_CONTROL,
                 char cib[CONN_INST_BUF];
-                DBG_log("route_and_eroute: instance \"%s\"%s, setting eroute_owner {spd=%p,sr=%p} to #%ld (was #%ld) (newest_ipsec_sa=#%ld)"
+                DBG_log("route_and_eroute: instance \"%s\"%s, setting eroute_owner to #%ld (was #%ld) (newest_ipsec_sa=#%ld)"
                         , st->st_connection->name
                         , (fmt_conn_instance(st->st_connection, cib), cib)
-                        , &st->st_connection->spd, sr
                         , st->st_serialno
                         , sr->eroute_owner
                         , st->st_connection->newest_ipsec_sa));
@@ -2965,7 +2940,6 @@ install_ipsec_sa(struct state *parent_st
     }
 
 
-    /* for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) */
     for (; sr != NULL; sr = sr->next)
     {
         DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s"
@@ -2992,6 +2966,18 @@ install_ipsec_sa(struct state *parent_st
             }
         }
     }
+
+    /*
+     * because desired_sr may have been passed into route_and_eroute, the result
+     * won't have been returned to us properly, so copy it back into structure.
+     */
+    for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) {
+        if (sr->eroute_owner != st->st_serialno
+            && sr->routing != RT_UNROUTED_KEYED) {
+            sr->eroute_owner = desired_sr.eroute_owner;
+        }
+    }
+
 
    if (st->st_connection->remotepeertype == CISCO) {
 

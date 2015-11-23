@@ -1,0 +1,71 @@
+opening file: green.conf
+#conn peel loaded
+#conn berri loaded
+#conn green loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn peel
+conn peel
+	#left= not set
+	right=192.139.46.82
+	rightid="@peel"
+	rightnexthop=192.139.46.65
+	rightrsakey=0sAQObyWTfI6MuBB5PR/EZDAif4tmNOqUWNsYiZe/Us8l1gqgxUtFXQm7M6RszKsb25KpxV/a5x5ogoP0g1Q9E8ZRXwaeBhsdzP1nTbNwQl14GCHpEzH1frZW5lWeR6s8VHw1ndrZPOOr9RqGRQq4yrSDbZbYRlciAB2dTLwsWWEFsVeVkhh1zBj1YzJS2AB7Gafxe8PMLpWbthwbgRK8hoYpa9qgBMk9YX6FlEB5FJevdfzhdwH15qaUuURJ0cJTzV0Gq4hxkaPvErunAj9WZC0EwVILDaVKCgInewwUdfn1llx6K02rZ1bLNwtp9i6rzWJdydV50cioG9ajt1Jp2ONEysvj33L7LOEr2gRzsDMDhJS41
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn peel
+
+# begin conn berri
+conn berri
+	left=192.139.46.81
+	leftid="@berri.testing.xelerance.com"
+	leftnexthop=192.139.46.65
+	leftrsakey=0sAQOAQyMdHZds6nHXwqSpuElAD2VgUwfEX/riI4+vI7eJ0hjhTI66pe/hCVW0K3pLssO3QSsNG1Dbu8EJHAdwtkMJJvEeZtUh3wFxV4z5jiRnIOFf7OJ4aexov1YkWvtFGl+mutzO4m8D4wqmRnNxgdSVs/g7E2HSFow2Ww4fyW7qDyPU5jUisjbU+FpWdmCcVTM98U2JE3x6iUwsuiJ5ud75vsqgwZqI+wmAn+hWcnYlddXaKe+CJjspMEKAdXuRKL03b/0AdpPCjINbsIzpsIw2N65PfrcApeT0sKA25hJ2wVDjLU4IHrtimITpLd4Qx+6d+X8wpTWedFB1M5gl2wdWsjFYPpABlyFh56BjGMHy3nFr
+	#right= not set
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn berri
+
+# begin conn green
+conn green
+	#also = peel berri
+	left=192.139.46.81
+	leftid="@berri.testing.xelerance.com"
+	leftnexthop=192.139.46.65
+	leftsubnet=2620:120:9000:82::/64
+	leftrsakey=0sAQOAQyMdHZds6nHXwqSpuElAD2VgUwfEX/riI4+vI7eJ0hjhTI66pe/hCVW0K3pLssO3QSsNG1Dbu8EJHAdwtkMJJvEeZtUh3wFxV4z5jiRnIOFf7OJ4aexov1YkWvtFGl+mutzO4m8D4wqmRnNxgdSVs/g7E2HSFow2Ww4fyW7qDyPU5jUisjbU+FpWdmCcVTM98U2JE3x6iUwsuiJ5ud75vsqgwZqI+wmAn+hWcnYlddXaKe+CJjspMEKAdXuRKL03b/0AdpPCjINbsIzpsIw2N65PfrcApeT0sKA25hJ2wVDjLU4IHrtimITpLd4Qx+6d+X8wpTWedFB1M5gl2wdWsjFYPpABlyFh56BjGMHy3nFr
+	leftsourceip=2620:120:9000:82::1
+	right=192.139.46.82
+	rightid="@peel"
+	rightnexthop=192.139.46.65
+	rightsubnet=2620:120:9000:81::/64
+	rightrsakey=0sAQObyWTfI6MuBB5PR/EZDAif4tmNOqUWNsYiZe/Us8l1gqgxUtFXQm7M6RszKsb25KpxV/a5x5ogoP0g1Q9E8ZRXwaeBhsdzP1nTbNwQl14GCHpEzH1frZW5lWeR6s8VHw1ndrZPOOr9RqGRQq4yrSDbZbYRlciAB2dTLwsWWEFsVeVkhh1zBj1YzJS2AB7Gafxe8PMLpWbthwbgRK8hoYpa9qgBMk9YX6FlEB5FJevdfzhdwH15qaUuURJ0cJTzV0Gq4hxkaPvErunAj9WZC0EwVILDaVKCgInewwUdfn1llx6K02rZ1bLNwtp9i6rzWJdydV50cioG9ajt1Jp2ONEysvj33L7LOEr2gRzsDMDhJS41
+	rightsourceip=2620:120:9000:81::1
+	salifetime=600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn green
+
+# end of config
