@@ -2934,7 +2934,6 @@ install_ipsec_sa(struct state *parent_st
     }
 
 
-    /* for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) */
     for (; sr != NULL; sr = sr->next)
     {
         DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s"
@@ -2961,6 +2960,18 @@ install_ipsec_sa(struct state *parent_st
             }
         }
     }
+
+    /*
+     * because desired_sr may have been passed into route_and_eroute, the result
+     * won't have been returned to us properly, so copy it back into structure.
+     */
+    for (sr = &st->st_connection->spd; sr != NULL; sr = sr->next) {
+        if (sr->eroute_owner != st->st_serialno
+            && sr->routing != RT_UNROUTED_KEYED) {
+            sr->eroute_owner = desired_sr.eroute_owner;
+        }
+    }
+
 
    if (st->st_connection->remotepeertype == CISCO) {
 
