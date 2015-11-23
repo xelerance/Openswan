@@ -2797,10 +2797,9 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
 
             DBG(DBG_CONTROL,
                 char cib[CONN_INST_BUF];
-                DBG_log("route_and_eroute: instance \"%s\"%s, setting eroute_owner {spd=%p,sr=%p} to #%ld (was #%ld) (newest_ipsec_sa=#%ld)"
+                DBG_log("route_and_eroute: instance \"%s\"%s, setting eroute_owner to #%ld (was #%ld) (newest_ipsec_sa=#%ld)"
                         , st->st_connection->name
                         , (fmt_conn_instance(st->st_connection, cib), cib)
-                        , &st->st_connection->spd, sr
                         , st->st_serialno
                         , sr->eroute_owner
                         , st->st_connection->newest_ipsec_sa));

@@ -51,7 +51,7 @@ main(int argc, char *argv[])
 #ifndef SKIP_ORIENT_ASSERT
     assert(orient(c1, 500));
 #endif
-    show_one_connection(c1);
+    show_one_connection(c1, whack_log);
 
 #ifndef SKIP_INITIATE
     /* do calculation if not -r for regression */

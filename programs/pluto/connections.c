@@ -3253,11 +3253,11 @@ show_one_connection(struct connection *c, logfunc logger)
     }
 
     logger(RC_COMMENT
-	      , "\"%s\"%s:   newest ISAKMP SA: #%ld; newest IPsec SA: #%ld; "
+	      , "\"%s\"%s:   newest ISAKMP SA: #%ld; newest IPsec SA: #%ld; eroute owner: #%ld;"
 	      , c->name
 	      , instance
 	      , c->newest_isakmp_sa
-	      , c->newest_ipsec_sa);
+              , c->newest_ipsec_sa, c->spd.eroute_owner);
 
     if(c->connalias) {
 	logger(RC_COMMENT

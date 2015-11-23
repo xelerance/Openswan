@@ -31,7 +31,6 @@ RC=0 "gateway--any": %any[@example.com]...132.213.238.7<132.213.238.7>[@jamesjoh
 RC=0 "gateway--any":     myip=unset; hisip=unset;
 RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-RC=0 "gateway--any":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 | creating state object #1 at Z
 | orient gateway--any checking against if: eth0
 | orient gateway--any matching on public/private keys

@@ -21,3 +21,18 @@ pexpect_log(const char *pred_str, const char *file_str, unsigned long line_no)
 
 void daily_log_event(void) {}
 
+/* verbatish copy from log.c, only set date constant */
+char *oswtimestr(void)
+{
+    static char datebuf[32];
+    time_t n;
+    struct tm *t;
+
+    n = 1448316734L;
+    t = localtime(&n);
+
+    strftime(datebuf, sizeof(datebuf), "%Y-%m-%d %T", t);
+    return datebuf;
+}
+
+
