@@ -3,12 +3,12 @@
  * Copyright (C) 1996  John Ioannidis.
  * Copyright (C) 1998, 1999, 2000, 2001  Richard Guy Briggs.
  * Copyright (C) 2006 Michael Richardson <mcr@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -106,7 +106,7 @@ int createdelete_virtual(int createdelete, char *virtname)
 	struct sadb_msg *pfkey_msg;
 	int error;
 	int io_error, pfkey_sock;
-	
+
 	if(sscanf(virtname, "mast%d", &vifnum)==1) {
 		/* good */
 	} else if(sscanf(virtname, "ipsec%d", &vifnum)==1) {
@@ -152,12 +152,12 @@ int createdelete_virtual(int createdelete, char *virtname)
 			 pfkey_msg,
 			 pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN);
 
-	
+
 	if(io_error != (pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN)) {
 		perror("pfkey write");
 		exit(2);
 	}
-	
+
 	return 0;
 }
 
@@ -180,7 +180,7 @@ main(int argc, char *argv[])
 	int createdelete = 0;
 	char virtname[64];
         struct stat sts;
-     
+
 	memset(&ifr, 0, sizeof(ifr));
 	memset(&shc, 0, sizeof(shc));
 	virtname[0]='\0';
