@@ -24,7 +24,7 @@
 #include "dnskey.h"
 #include "pluto/defs.h"
 #include "demux.h"
-#include "log.h"
+#include "pluto/log.h"
 
 /* seams */
 #include "whackmsgtestlib.c"
