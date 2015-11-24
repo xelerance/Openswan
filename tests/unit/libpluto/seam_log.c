@@ -21,6 +21,7 @@ pexpect_log(const char *pred_str, const char *file_str, unsigned long line_no)
 
 void daily_log_event(void) {}
 
+#include <time.h>
 /* verbatish copy from log.c, only set date constant */
 char *oswtimestr(void)
 {
