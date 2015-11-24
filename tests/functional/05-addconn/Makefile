@@ -25,6 +25,9 @@ SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdi
 OUTPUTS=OUTPUT
 
 step1:
+	@rm -f OUTPUT/base.pid
+	@echo "file ${PLUTOBIN}" >.gdbinit
+	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
