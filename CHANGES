@@ -4,8 +4,20 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.46dr2 (October 26, 2015)
+v2.6.46dr4 (November 24, 2015)
 
+*  As SPD Route may be manipulated before being erouted, the resulting eroute_owner setting is no longer propogated back into the connection
+   this patch sets all SPD routes which do not have other owners to this eroute [MCR]
+*  Log eroute operations more concisely, do it after they succeed/fail [MCR]
+*  Better logging of eroute_owner [MCR]
+*  Refactor show_connection_status so that it can use loglog or whacklog for output
+   moved log.h to pluto/log.h as unit test cases will need it [MCR]
+*  Log current date when processing events [MCR]
+*  Looks like a copy and paste error has lingered in the sourceip processing, causing the parser
+   to whomp on the nexthop if the sourceip is set [MCR]
+*  Log address inconsistencies with names rather than numbers [MCR]
+*  The address family determined by the outer addresses (right/left/nexthop) should not override address family
+    for inner items (rightsubnet/sourceip) [MCR]
 *  Fixed find_host_pair so that it finds right=%any matches correctly [MCR]
 *  Change listing to give IP/ID type on every bucket [MCR]
 *  Added option to readwriteconf to load all conns marked add/route/up [MCR]
