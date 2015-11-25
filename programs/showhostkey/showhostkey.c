@@ -83,7 +83,7 @@ struct option opts[] = {
   {0,		0,	NULL,	0,}
 };
 
-char *progname = "ipsec showhostkey";	/* for messages */
+const char *progname = "ipsec showhostkey";	/* for messages */
 
 void exit_tool(int code)
 {

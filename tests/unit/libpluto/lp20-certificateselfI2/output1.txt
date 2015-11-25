@@ -25,9 +25,9 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=carol@strongswan.org him=@moon.strongswan.org
 |   concluded with <none>
 ./certificateselfI2 adding connection: "home"
-| %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16
+| %any[carol@strongswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "home": %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "home": %any[carol@strongswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=carolCert.pem;
 RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1

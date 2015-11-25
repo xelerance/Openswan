@@ -21,6 +21,7 @@ pexpect_log(const char *pred_str, const char *file_str, unsigned long line_no)
 
 void daily_log_event(void) {}
 
+#include <time.h>
 /* verbatish copy from log.c, only set date constant */
 char *oswtimestr(void)
 {
@@ -35,4 +36,10 @@ char *oswtimestr(void)
     return datebuf;
 }
 
+
+bool
+    logged_myid_fqdn_txt_warning = FALSE,
+    logged_myid_ip_txt_warning   = FALSE,
+    logged_myid_fqdn_key_warning = FALSE,
+    logged_myid_ip_key_warning   = FALSE;
 

@@ -43,11 +43,11 @@ Requires(preun): /sbin/chkconfig
 Requires(preun): /sbin/service
 
 %description
-Openswan is a free implementation of IPsec & IKE for Linux.  IPsec is 
+Openswan is a free implementation of IPsec & IKE for Linux.  IPsec is
 the Internet Protocol Security and uses strong cryptography to provide
 both authentication and encryption services.  These services allow you
 to build secure tunnels through untrusted networks.  Everything passing
-through the untrusted net is encrypted by the ipsec gateway machine and 
+through the untrusted net is encrypted by the ipsec gateway machine and
 decrypted by the gateway at the other end of the tunnel.  The resulting
 tunnel is a virtual private network or VPN.
 
@@ -95,7 +95,6 @@ kernels.
   USE_LIBCAP_NG="true" \
 %endif
   USE_DYNAMICDNS="true" \
-  USE_LWRES="true" \
   INC_USRLOCAL=%{_prefix} \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{_mandir} \
@@ -130,7 +129,6 @@ rm -rf ${RPM_BUILD_ROOT}
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{buildroot}%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
-  USE_LWRES="true" \
   install
 FS=$(pwd)
 rm -rf %{buildroot}/usr/share/doc/openswan
@@ -139,7 +137,7 @@ rm -rf %{buildroot}/etc/ipsec.d/examples
 find %{buildroot}%{_mandir}  -type f | xargs chmod a-x
 
 install -d -m 0700 %{buildroot}%{_localstatedir}/run/pluto
-# used when setting --perpeerlog without --perpeerlogbase 
+# used when setting --perpeerlog without --perpeerlogbase
 install -d -m 0700 %{buildroot}%{_localstatedir}/log/pluto/peer
 install -d %{buildroot}%{_sbindir}
 
@@ -149,7 +147,7 @@ for i in $FS/BUILD.%{_target_cpu}/ipsec.ko  $FS/modobj/ipsec.o
 do
   if [ -f $i ]
   then
-    cp $i %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec 
+    cp $i %{buildroot}/lib/modules/%{kversion}/kernel/net/ipsec
   fi
 done
 %endif
@@ -157,7 +155,7 @@ done
 %clean
 rm -rf ${RPM_BUILD_ROOT}
 
-%files 
+%files
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
 %doc OBJ.linux.*/programs/examples/*.conf
@@ -201,7 +199,7 @@ fi
 /sbin/depmod -ae %{kversion}
 %endif
 
-%post 
+%post
 /sbin/chkconfig --add ipsec
 
 %changelog

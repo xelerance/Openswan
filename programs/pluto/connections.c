@@ -135,78 +135,39 @@ release_connection(struct connection *c, bool relations)
     }
 }
 
-#ifdef DYNAMICDNS
-
-/* used by update_host_pairs */
-#define list_rm(etype, enext, e, ehead) { \
-	etype **ep; \
-	for (ep = &(ehead); *ep != (e); ep = &(*ep)->enext) \
-	    passert(*ep != NULL);    /* we must not come up empty-handed */ \
-	*ep = (e)->enext; \
+/*
+ * this routine compares two struct end on two basis.
+ *   They are the same if they are not KH_IPHOSTNAME, and have the
+ *   same host_addr.
+ *   They are the same if they are KH_IPHOSTNAME, and have the same
+ *   same *name*.
+ *   If one is KH_IPHOSTNAME, and the other is not, then the host_addr
+ *   are compared.
+ *
+ */
+bool compare_end_addr_names(struct end *a, struct end *b)
+{
+    if(a->host_type == KH_IPHOSTNAME
+       && b->host_type == KH_IPHOSTNAME) {
+        return strcasecmp(a->host_addr_name, b->host_addr_name)==0;
     }
 
-/* update the host pairs with the latest DNS ip address */
+    return sameaddr(&a->host_addr, &b->host_addr);
+}
+
+/*
+ * update the host pairs attachment, after host_addr changes
+ * just remove it from the pair it is in, and put it in another pair.
+*/
 void
 update_host_pairs(struct connection *c)
 {
-    struct connection *d = NULL, *conn_next_tmp = NULL, *conn_list = NULL;
-    struct IPhost_pair *p = NULL;
-    ip_address new_addr;
-    char *dnshostname;
-
-    p = c->IPhost_pair;
-    d = p ? p->connections : NULL;
-
-    if (d == NULL
-    	|| p == NULL
-	|| d->dnshostname == NULL
-	|| ttoaddr(d->dnshostname, 0, d->addr_family, &new_addr) != NULL
-	|| sameaddr(&new_addr, &p->him.addr))
+    if (c->spd.that.host_type != KH_IPHOSTNAME)
 	    return;
 
-    /* remember this dnshostname */
-    dnshostname = c->dnshostname;
-
-    for (; d != NULL; d = conn_next_tmp)
-    {
-	conn_next_tmp = d->IPhp_next;
-	if (d->dnshostname && strcmp(d->dnshostname, dnshostname) == 0)
-	{
-	      /*
-	      * If there is a dnshostname and it is the same as the one that has changed, then
-	      * change the connection's remote host address and remove the connection from the host pair.
-	      */
-	      d->spd.that.host_addr = new_addr;
-	      list_rm(struct connection,IPhp_next,d, d->IPhost_pair->connections);
-
-	      d->IPhp_next = conn_list;
-	      conn_list = d;
-	}
-    }
-
-    if (conn_list)
-    {
-	d = conn_list;
-	for (; d != NULL; d = conn_next_tmp)
-	{
-	    /*
-	     * connect the connection to the new IP host_pair
-	     */
-	    conn_next_tmp = d->IPhp_next;
-	    connect_to_IPhost_pair(d);
-	}
-    }
-
-    if (p->connections == NULL)
-    {
-	passert(p->pending == NULL);	/* ??? must deal with this! */
-	list_rm(struct IPhost_pair, next, p, IPhost_pairs);
-	pfree(p);
-    }
+    remove_connection_from_host_pair(c);
+    connect_to_IPhost_pair(c);
 }
-
-#endif /* DYNAMICDNS */
-
 
 
 /* Delete a connection */
@@ -346,9 +307,6 @@ delete_connection(struct connection *c, bool relations)
 #ifdef HAVE_LABELED_IPSEC
     pfreeany(c->policy_label);
 #endif
-#ifdef DYNAMICDNS
-    pfreeany(c->dnshostname);
-#endif /* DYNAMICDNS */
 
     sr = &c->spd;
     while(sr) {
@@ -555,10 +513,6 @@ unshare_connection_strings(struct connection *c)
     c->cisco_banner = clone_str(c->cisco_banner, "connection cisco_banner");
 #endif
 
-#ifdef DYNAMICDNS
-    c->dnshostname = clone_str(c->dnshostname, "connection dnshostname");
-#endif /* DYNAMICDNS */
-
     /* duplicate any alias, adding spaces to the beginning and end */
     c->connalias = clone_str(c->connalias, "connection alias");
 
@@ -665,7 +619,8 @@ load_end_certificate(const char *filename, struct end *dst)
 }
 
 static bool
-extract_end(struct end *dst, const struct whack_end *src, const char *which)
+extract_end(struct connection *conn UNUSED
+            , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
 
@@ -767,31 +722,17 @@ extract_end(struct end *dst, const struct whack_end *src, const char *which)
 
     dst->sendcert =  src->sendcert;
 
-    /* see if we can resolve the DNS name right now */
-    /* XXX this is WRONG, we should do this asynchronously, as part of
-     * the normal loading process
-     */
-    {
-	err_t er;
-	int port;
+    /* save the originally provided hint */
+    dst->saved_hint_addr = dst->host_addr;
 
-	switch(dst->host_type) {
-	case KH_IPHOSTNAME:
-	    er = ttoaddr(dst->host_addr_name, 0, 0, &dst->host_addr);
-
-	    /*The above call wipes out the port, put it again*/
-	    port = htons(dst->port);
-	    setportof(port, &dst->host_addr);
-
-	    if(er) {
-		loglog(RC_COMMENT, "failed to convert '%s' at load time: %s"
-		       , dst->host_addr_name, er);
-	    }
-	    break;
-
-	default:
-	    break;
-	}
+    /* see if we should try to resolve the DNS name */
+    /* dst->host_addr may already have a hint, do not destroy it! */
+    if(dst->host_type == KH_IPHOSTNAME
+       && dst->host_addr_name!=NULL && strlen(dst->host_addr_name) > 0) {
+        dst->host_address_list.addresses_available = FALSE;
+        kick_adns_connection_lookup(conn, dst, TRUE);
+    } else {
+        dst->host_address_list.addresses_available = TRUE;
     }
 
     return same_ca;
@@ -839,7 +780,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
     if (that->host_type != KH_IPHOSTNAME && isanyaddr(&that->host_addr))
     {
 	/* other side is wildcard: we must check if other conditions met */
-	if (that->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
+	if (this->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
 	{
 	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
 	    return FALSE;
@@ -1001,11 +942,6 @@ add_connection(const struct whack_message *wm)
 	c->cisco_domain_info = NULL;
 	c->cisco_banner = NULL;
 #endif
-#ifdef DYNAMICDNS
-	c->dnshostname = NULL;
-	if (wm->dnshostname)
-		c->dnshostname = wm->dnshostname;
-#endif /* DYNAMICDNS */
 
 	c->policy = wm->policy;
 
@@ -1154,8 +1090,8 @@ add_connection(const struct whack_message *wm)
 
 	c->requested_ca = NULL;
 
-	same_leftca  = extract_end(&c->spd.this, &wm->left, "left");
-	same_rightca = extract_end(&c->spd.that, &wm->right, "right");
+	same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
+	same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
 
 	if (c->spd.this.xauth_server || c->spd.that.xauth_server)
 	{

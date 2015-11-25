@@ -91,7 +91,7 @@ extern void tool_close_log(void);
 extern char diag_space[LOG_WIDTH];	/* output buffer, but can be occupied at call */
 extern err_t builddiag(const char *fmt, ...) PRINTF_LIKE(1);
 
-extern char *progname;
+extern const char *progname;
 
 /* Codes for status messages returned to whack.
  * These are 3 digit decimal numerals.  The structure

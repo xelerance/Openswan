@@ -251,12 +251,26 @@ void remove_IPhost_pair(struct IPhost_pair *hp)
     list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
 }
 
+/* this removes a host pair header from the list of host pairs */
 void remove_IDhost_pair(struct IDhost_pair *hp)
 {
     list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
     if(hp->connections == NULL) {
         free_id_content(&hp->me_who);
         free_id_content(&hp->him_who);
+    }
+}
+
+/*
+ * this removes a connection from a list of host pairs
+ */
+void remove_connection_from_host_pair(struct connection *c)
+{
+    struct IPhost_pair *p = c->IPhost_pair;
+
+    if(p != NULL) {
+        /* used by update_host_pairs */
+        list_rm(struct connection, IPhp_next, c, p->connections);
     }
 }
 
@@ -390,7 +404,7 @@ find_ID_host_pair(bool exact
             idtoa(&p->me_who, thisid, sizeof(thisid));
             idtoa(&p->him_who,thatid, sizeof(thatid));
             DBG_log("                  comparing to me=%s him=%s (%s)\n"
-                    , thisid, thatid, p->connections->name));
+                    , thisid, thatid, (p && p->connections) ? p->connections->name : "<none>"));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
@@ -513,19 +527,21 @@ hostpair_list(void)
         char himtypebuf[KEYWORD_NAME_BUFLEN];
         struct connection *c = pi->connections;
 
-        himtypebuf[0]='\0';
-        addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
-        addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
-        keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
+        if(c) {
+            himtypebuf[0]='\0';
+            addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
+            addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
+            keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
 
-        whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
-                  , b1, c->spd.this.host_port, himtypebuf
-                  , b2, c->spd.that.host_port);
-        while(c != NULL) {
-            fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
+            whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
+                      , b1, c->spd.this.host_port, himtypebuf
+                      , b2, c->spd.that.host_port);
+            while(c != NULL) {
+                fmt_connection_inst_name(c, instance, sizeof(instance));
+                whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
 
-            c = c->IPhp_next;
+                c = c->IPhp_next;
+            }
         }
     }
 
@@ -537,16 +553,18 @@ hostpair_list(void)
         char instance[1 + 10 + 1];
         struct connection *c = pd->connections;
 
-        idtoa(&c->spd.this.id, b1,sizeof(b1));
-        idtoa(&c->spd.that.id, b2,sizeof(b2));
+        if(c) {
+            idtoa(&c->spd.this.id, b1,sizeof(b1));
+            idtoa(&c->spd.that.id, b2,sizeof(b2));
 
-        whack_log(RC_LOG, "  IDpair: %s %s"
-                  , b1, b2);
-        while(c != NULL) {
-            fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
+            whack_log(RC_LOG, "  IDpair: %s %s"
+                      , b1, b2);
+            while(c != NULL) {
+                fmt_connection_inst_name(c, instance, sizeof(instance));
+                whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
 
-            c = c->IDhp_next;
+                c = c->IDhp_next;
+            }
         }
     }
 }

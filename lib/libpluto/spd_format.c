@@ -142,7 +142,9 @@ format_end(char *buf
     {
 	addrtot(&this->host_addr, 0, host_space, sizeof(host_space));
 	host = host_space;
-	dohost_name=TRUE;
+        if(this->host_type != KH_IPADDR) {
+            dohost_name=TRUE;
+        }
     }
 
     if(dohost_name) {
@@ -251,7 +253,11 @@ format_end(char *buf
     /* [---hop] */
     hop[0] = '\0';
     hop_sep = "";
-    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr))
+    /* do not format if nexthop is invalid.
+     * skip if nexhop is actually right=
+     */
+    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr)
+        && addrbytesptr(&this->host_nexthop, NULL)!=0)
     {
 	addrtot(&this->host_nexthop, 0, hop, sizeof(hop));
 	hop_sep = "---";

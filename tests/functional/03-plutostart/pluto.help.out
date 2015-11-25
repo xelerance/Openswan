@@ -13,7 +13,7 @@ File/Directory settings
 	[--perpeerlogbase <path>] [--perpeerlog]  
 	[--coredir <dirname>]
 	[--secretsfile <secrets-file>] [--ipsecdir <ipsec-dir>] 
-	[--adns <pathname>] [--nhelpers <number>]  
+	[--nhelpers <number>]  
 	[--secctx_attr_value <number>]  (unavailable)   
 
 Debug Options

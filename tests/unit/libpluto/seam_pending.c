@@ -1,5 +1,9 @@
+struct state;
 void flush_pending_by_state(struct state *st) {}
 void show_pending_phase2(const struct connection *c, const struct state *st) {}
+void release_pending_whacks(struct state *st, err_t story) {}
+void flush_pending_by_connection(struct connection *c) {}
+
 
 static struct connection *pending_c;
 static int pending_whack_sock;

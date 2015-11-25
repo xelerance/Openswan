@@ -1,6 +1,6 @@
 #include "demux.h"
 
-u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
+#include "seam_io.c"
 unsigned int dlt_type;
 pcap_t *pt;
 

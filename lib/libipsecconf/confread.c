@@ -267,80 +267,80 @@ static char **new_list(char *value)
 static bool load_setup(struct starter_config *cfg,
 		      struct config_parsed *cfgp)
 {
-	bool err = FALSE;
-	struct kw_list *kw;
+    bool err = FALSE;
+    struct kw_list *kw;
 
-	for (kw = cfgp->config_setup; kw; kw = kw->next) {
+    for (kw = cfgp->config_setup; kw; kw = kw->next) {
 
-		/**
-		 * the parser already made sure that only config keywords were used,
-		 * but we double check!
-		 */
-		assert(kw->keyword.keydef->validity & kv_config);
+        /**
+         * the parser already made sure that only config keywords were used,
+         * but we double check!
+         */
+        assert(kw->keyword.keydef->validity & kv_config);
 
-		switch (kw->keyword.keydef->type) {
-		case kt_string:
-		case kt_filename:
-		case kt_dirname:
-		case kt_loose_enum:
-			/* all treated as strings for now */
-			assert(kw->keyword.keydef->field <
-			       sizeof(cfg->setup.strings));
-			pfreeany(cfg->setup.strings[kw->keyword.keydef->
-							field]);
-			cfg->setup.strings[kw->keyword.keydef->field] =
-				clone_str(kw->string, "kt_loose_enum kw->string");
-			cfg->setup.strings_set[kw->keyword.keydef->field] =
-				TRUE;
-			break;
+        if(kw->keyword.keydef->validity & kv_obsolete) {
+            starter_log(LOG_LEVEL_INFO,
+                        "Warning: obsolete keyword '%s' ignored on read",
+                        kw->keyword.keydef->keyname);
+        }
 
-		case kt_list:
-		case kt_bool:
-		case kt_invertbool:
-		case kt_enum:
-		case kt_number:
-		case kt_time:
-		case kt_percent:
-			/* all treated as a number for now */
-			assert(kw->keyword.keydef->field <
-			       sizeof(cfg->setup.options));
-			cfg->setup.options[kw->keyword.keydef->field] =
-				kw->number;
-			cfg->setup.options_set[kw->keyword.keydef->field] =
-				TRUE;
-			break;
+        switch (kw->keyword.keydef->type) {
+        case kt_string:
+        case kt_filename:
+        case kt_dirname:
+        case kt_loose_enum:
+        case kt_loose_enumarg:
+            /* all treated as strings for now */
+            assert(kw->keyword.keydef->field < sizeof(cfg->setup.strings));
+            pfreeany(cfg->setup.strings[kw->keyword.keydef->field]);
+            cfg->setup.strings[kw->keyword.keydef->field] =
+                clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
+            cfg->setup.strings_set[kw->keyword.keydef->field] =TRUE;
+            break;
 
-		case kt_bitstring:
-		case kt_rsakey:
-		case kt_ipaddr:
-		case kt_subnet:
-                /* case kt_range: */
-		case kt_idtype:
-			err = TRUE;
-			break;
+        case kt_list:
+        case kt_bool:
+        case kt_invertbool:
+        case kt_enum:
+        case kt_number:
+        case kt_time:
+        case kt_percent:
+            /* all treated as a number for now */
+            assert(kw->keyword.keydef->field <
+                   sizeof(cfg->setup.options));
+            cfg->setup.options[kw->keyword.keydef->field] =
+                kw->number;
+            cfg->setup.options_set[kw->keyword.keydef->field] =
+                TRUE;
+            break;
 
-		case kt_comment:
-			break;
+        case kt_bitstring:
+        case kt_rsakey:
+        case kt_ipaddr:
+        case kt_subnet:
+            /* case kt_range: */
+        case kt_idtype:
+            err = TRUE;
+            break;
 
-		case kt_obsolete:
-			starter_log(LOG_LEVEL_INFO,
-				    "Warning: ignored obsolete keyword '%s'",
-				    kw->keyword.keydef->keyname);
-			break;
-		default:
-		    /* NEVER HAPPENS */
-		    break;
-		}
-	}
+        case kt_appendstring:
+        case kt_appendlist:
+            /* XXX not yet implemented */
+            break;
+        case kt_comment:
+            break;
 
-	/* now process some things with specific values */
+        }
+    }
 
-	/* interfaces has to be chopped up */
-	if (cfg->setup.interfaces)
-		FREE_LIST(cfg->setup.interfaces);
-	cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
+    /* now process some things with specific values */
 
-	return err;
+    /* interfaces has to be chopped up */
+    if (cfg->setup.interfaces)
+        FREE_LIST(cfg->setup.interfaces);
+    cfg->setup.interfaces = new_list(cfg->setup.strings[KSF_INTERFACES]);
+
+    return err;
 }
 
 /**
@@ -389,6 +389,7 @@ static bool validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_IPADDR:
+        /* right=/left= */
 	assert(end->strings[KSCF_IP] != NULL);
 
 	if (end->strings[KSCF_IP][0]=='%') {
@@ -430,7 +431,7 @@ static bool validate_end(struct starter_conn *conn_st
 	break;
 
     case KH_IPHOSTNAME:
-	/* generally, this doesn't show up at this stage */
+        /* XXX */
 	break;
 
     case KH_DEFAULTROUTE:
@@ -623,25 +624,34 @@ bool translate_conn (struct starter_conn *conn
 
     for ( ; kw; kw=kw->next)
     {
+        char keyname[128];
+
 	i++;
 	the_strings = &conn->strings;
 	set_strings = &conn->strings_set;
 	the_options = &conn->options;
 	set_options = &conn->options_set;
 
-	if((kw->keyword.keydef->validity & kv_conn) == 0)
+        /* initialize with base value */
+        strcpy(keyname, kw->keyword.keydef->keyname);
+
+        if((kw->keyword.keydef->validity & kv_conn) == 0)
 	{
 	    /* this isn't valid in a conn! */
 	    *error = (const char *)tmp_err;
 
 	    snprintf(tmp_err, sizeof(tmp_err),
 		     "keyword '%s' is not valid in a conn (%s) (#%d)\n",
-		     kw->keyword.keydef->keyname, sl->name, i);
+		     keyname, sl->name, i);
 	    starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
 	    continue;
 	}
 
-	if(kw->keyword.keydef->validity & kv_leftright)
+        if(kw->keyword.keydef->validity & kv_obsolete) {
+	    starter_log(LOG_LEVEL_DEBUG,"Warning: obsolete keyword %s ignored\n",kw->keyword.keydef->keyname);
+        }
+
+        if(kw->keyword.keydef->validity & kv_leftright)
 	{
             struct starter_end *left, *right;
             left  = &conn->left;
@@ -653,11 +663,13 @@ bool translate_conn (struct starter_conn *conn
 
 	    if(kw->keyword.keyleft)
 	    {
+                snprintf(keyname, sizeof(keyname), "left%s", kw->keyword.keydef->keyname);
 		the_strings = &left->strings;
 		the_options = &left->options;
 		set_strings = &left->strings_set;
 		set_options = &left->options_set;
 	    } else {
+                snprintf(keyname, sizeof(keyname), "right%s", kw->keyword.keydef->keyname);
 		the_strings = &right->strings;
 		the_options = &right->options;
 		set_strings = &right->strings_set;
@@ -669,7 +681,7 @@ bool translate_conn (struct starter_conn *conn
 
 #ifdef PARSER_TYPE_DEBUG
 	starter_log(LOG_LEVEL_DEBUG, "#analyzing %s[%d] kwtype=%d\n",
-		    kw->keyword.keydef->keyname, field,
+		    keyname, field,
 		    kw->keyword.keydef->type);
 #endif
 
@@ -689,9 +701,10 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		*error = tmp_err;
 
+                /* keyname[0] test looks for left=/right= */
 		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , kw->keyword.keydef->keyname
+			 , "duplicate key '%s' in conn %s while processing def %s (ignored)"
+			 , keyname
 			 , conn->name
 			 , sl->name);
 
@@ -706,17 +719,17 @@ bool translate_conn (struct starter_conn *conn
 	    }
             pfreeany((*the_strings)[field]);
 
-	    if(kw->string == NULL) {
+	    if(kw->keyword.string == NULL) {
 		*error = tmp_err;
 
 		snprintf(tmp_err, sizeof(tmp_err)
 			 , "Invalid %s value"
-			 , kw->keyword.keydef->keyname);
+			 , keyname);
 		    err++;
 		    break;
             }
 
-            (*the_strings)[field] = clone_str(kw->string,"kt_idtype kw->string");
+            (*the_strings)[field] = clone_str(kw->keyword.string,"kt_idtype kw->keyword.string");
 	    (*set_strings)[field] = assigned_value;
 	    break;
 
@@ -726,17 +739,17 @@ bool translate_conn (struct starter_conn *conn
 	    assert(kw->keyword.keydef->field < KEY_STRINGS_MAX);
 	    if(!(*the_strings)[field])
 	    {
-                (*the_strings)[field] = clone_str(kw->string, "kt_appendlist kw->string");
+                (*the_strings)[field] = clone_str(kw->keyword.string, "kt_appendlist kw->keyword.string");
 	    } else {
                 char *s = (*the_strings)[field];
                 size_t old_len = strlen(s);	/* excludes '\0' */
-                size_t new_len = strlen(kw->string);
+                size_t new_len = strlen(kw->keyword.string);
                 char *n;
 
                 n = alloc_bytes(old_len + 1 + new_len + 1, "kt_appendlist");
                 memcpy(n, s, old_len);
                 n[old_len] = ' ';
-                memcpy(n + old_len + 1, kw->string, new_len + 1);	/* includes '\0' */
+                memcpy(n + old_len + 1, kw->keyword.string, new_len + 1);	/* includes '\0' */
                 (*the_strings)[field] = n;
                 pfree(s);
 	    }
@@ -745,6 +758,7 @@ bool translate_conn (struct starter_conn *conn
 
 	case kt_rsakey:
 	case kt_loose_enum:
+	case kt_loose_enumarg:
 	    assert(field < KEY_STRINGS_MAX);
 	    assert(field < KEY_NUMERIC_MAX);
 
@@ -753,7 +767,7 @@ bool translate_conn (struct starter_conn *conn
 		*error = tmp_err;
 		snprintf(tmp_err, sizeof(tmp_err)
 			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , kw->keyword.keydef->keyname
+			 , keyname
 			 , conn->name
 			 , sl->name);
 
@@ -778,7 +792,13 @@ bool translate_conn (struct starter_conn *conn
 		assert(kw->keyword.string != NULL);
                 pfreeany((*the_strings)[field]);
                 (*the_strings)[field] = clone_str(kw->keyword.string, "kt_loose_enum kw->keyword.string");
-	    }
+                (*set_strings)[field] = TRUE;
+	    } else if(kw->keyword.keydef->type == kt_loose_enumarg && kw->argument != NULL) {
+                pfreeany((*the_strings)[field]);
+                (*the_strings)[field] = clone_str(kw->argument, "kt_loose_enum kw->keyword.argument");
+                (*set_strings)[field] = TRUE;
+            }
+
 	    (*set_options)[field] = assigned_value;
 	    break;
 
@@ -796,7 +816,7 @@ bool translate_conn (struct starter_conn *conn
 	    {
 		starter_log(LOG_LEVEL_INFO
                             , "duplicate key '%s' in conn %s while processing def %s"
-                            , kw->keyword.keydef->keyname, conn->name, sl->name);
+                            , keyname, conn->name, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -806,16 +826,13 @@ bool translate_conn (struct starter_conn *conn
 
 #if 0
 	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u\n",
-			kw->keyword.keydef->keyname, field, kw->number);
+			keyname, field, kw->number);
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
 	    break;
 
 	case kt_comment:
-	    break;
-	case kt_obsolete:
-	    starter_log(LOG_LEVEL_DEBUG,"Warning: obsolete keyword %s ignored\n",kw->keyword.keydef->keyname);
 	    break;
 	}
     }
