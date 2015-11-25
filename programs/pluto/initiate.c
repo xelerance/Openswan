@@ -212,11 +212,11 @@ bool kick_adns_connection(struct connection *c, err_t ugh)
         return FALSE;
     }
 
-    if(st == NULL ) {
+    if(st == NULL) {
         st = state_with_serialno(c->prospective_parent_sa);
 
         /* might need to put some state restrictions on this, or look at how many retries */
-        if(st != NULL) {
+        if(st != NULL && ugh != NULL) {
             DBG(DBG_DNS
                 , DBG_log("  DNS connection attempt in progress, do not restart"));
             return FALSE;
