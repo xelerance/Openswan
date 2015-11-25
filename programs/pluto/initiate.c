@@ -198,7 +198,7 @@ initiate_connection(const char *name, int whackfd
     close_any(is.whackfd);
 }
 
-bool kick_adns_connection(struct connection *c)
+bool kick_adns_connection(struct connection *c, err_t ugh)
 {
     bool kicknow = FALSE;
     struct state *st = state_with_serialno(c->newest_isakmp_sa);
@@ -224,11 +224,15 @@ bool kick_adns_connection(struct connection *c)
     }
 
     /* arrange to rekey the phase 1, if there was one. */
+    /* we should do this if we immediately found a new address in the list.
+     * the DNS lookup will be done again if this was not the result of a failure
+     * of a previous DNS lookup: on failure, we wait for the rescan event
+     */
     if (c->spd.that.host_type == KH_IPHOSTNAME) {
-        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that);
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.that, ugh == NULL);
     }
     if (!kicknow && c->spd.this.host_type == KH_IPHOSTNAME) {
-        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this);
+        kicknow = kicknow || kick_adns_connection_lookup(c, &c->spd.this, ugh == NULL);
     }
 
     if(kicknow && c->policy & POLICY_UP) {
@@ -1697,7 +1701,7 @@ void connection_check_phase2(void)
 	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
 
 	    if(p1st) {
-                bool kicknow = kick_adns_connection(c);
+                bool kicknow = kick_adns_connection(c, NULL);
 
                 if(!kicknow) {
                     delete_event(p1st);

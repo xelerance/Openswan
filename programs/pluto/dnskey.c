@@ -1776,7 +1776,8 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
 {
     struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
     DBG(DBG_DNS
-        , DBG_log("iphostname_continuation: %s", iph_c->c->name));
+        , DBG_log("iphostname_continuation: %s %s", iph_c->c->name
+                  , ugh ? ugh : "no-error"));
     if(ugh) {
         loglog(RC_NOPEERIP, "iphostname error: %s", ugh);
         /* continuation is freed by dnskey */
@@ -1789,7 +1790,7 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
     reset_end_dns_list(&iph_c->c->spd.that.host_address_list);
     iph_c->ac.ipanswers = NULL;
 
-    kick_adns_connection(iph_c->c);
+    kick_adns_connection(iph_c->c, ugh);
 }
 
 /*
@@ -1861,7 +1862,8 @@ void dump_addr_info(struct addrinfo *ans)
 
 
 bool kick_adns_connection_lookup(struct connection *c
-                                 , struct end *end)
+                                 , struct end *end
+                                 , bool newlookup)
 {
     struct iphostname_continuation *iph_c;
 
@@ -1874,9 +1876,16 @@ bool kick_adns_connection_lookup(struct connection *c
         return advance_end_dns_list(c, end);
     }
 
+    if(!newlookup) {
+        return FALSE;
+    }
+
     /*
-     * no new address to try, initiate a new DNS lookup, but in the meantime,
-     * also reset the pointer to beginning, and try again.
+     * no new address to try, schedule a new DNS lookup.
+     * do not initiate the lookup immediately, because it leads to continuous
+     * DNS lookup loops.
+     * In the meantime, also reset the pointer to beginning, if there are
+     * any items to find.
      */
     iph_c = alloc_thing(struct iphostname_continuation, "kick adns");
     iph_c->c = c;

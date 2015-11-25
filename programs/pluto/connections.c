@@ -700,7 +700,7 @@ extract_end(struct connection *conn UNUSED
     if(dst->host_type == KH_IPHOSTNAME
        && dst->host_addr_name!=NULL && strlen(dst->host_addr_name) > 0) {
         dst->host_address_list.addresses_available = FALSE;
-        kick_adns_connection_lookup(conn, dst);
+        kick_adns_connection_lookup(conn, dst, TRUE);
     } else {
         dst->host_address_list.addresses_available = TRUE;
     }
