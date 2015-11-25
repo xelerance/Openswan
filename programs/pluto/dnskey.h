@@ -93,7 +93,7 @@ extern void gw_addref(struct gw_info *gw)
 
 extern void reset_adns_restart_count(void);
 
-extern bool kick_adns_connection_lookup(struct connection *c, struct end *end);
+extern bool kick_adns_connection_lookup(struct connection *c, struct end *end, bool newlookup);
 extern void dump_addr_info(struct addrinfo *ans);
 extern struct addrinfo *sort_addr_info(struct addrinfo *ai);
 

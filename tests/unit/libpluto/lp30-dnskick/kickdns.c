@@ -115,7 +115,7 @@ main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1, whack_log);
 
-    kick_adns_connection_lookup(c1, &c1->spd.that);
+    kick_adns_connection_lookup(c1, &c1->spd.that, TRUE);
 
     report_leaks();
 

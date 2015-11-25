@@ -479,7 +479,7 @@ struct pending **host_pair_first_pending(const struct connection *c);
 void connection_check_ddns(void);
 #endif
 
-extern bool kick_adns_connection(struct connection *c);
+extern bool kick_adns_connection(struct connection *c, err_t ugh);
 void connection_check_phase2(void);
 void init_connections(void);
 
