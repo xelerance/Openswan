@@ -1574,7 +1574,8 @@ shunt_owner(const ip_subnet *ours, const ip_subnet *his)
 
 static void connection_check_ddns1(struct connection *c)
 {
-    struct connection *d;
+    struct connection *d, *dslow;
+    bool dslowflip;
 
     if (NEVER_NEGOTIATE(c->policy))
 	return;
@@ -1632,7 +1633,18 @@ static void connection_check_ddns1(struct connection *c)
 	return;
 
     d = c->IPhost_pair->connections;
+    dslow = c->IPhost_pair->connections;
+    dslowflip = TRUE;
     for (; d != NULL; d = d->IPhp_next) {
+
+        /* protect: against corrupted lists */
+        if(dslowflip) {
+            dslow = dslow->IPhp_next;
+        }
+        dslowflip = !dslowflip;
+        passert(d != dslow);
+
+
 	/* just in case we see ourselves */
 	if (c == d)
 	    continue;
