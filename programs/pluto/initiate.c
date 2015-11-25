@@ -1583,9 +1583,9 @@ static void connection_check_ddns1(struct connection *c)
         && c->spd.that.host_type != KH_IPHOSTNAME)
         return;
 
-    if (!isanyaddr(&c->spd.that.host_addr)) {
+    if (c->newest_isakmp_sa != SOS_NOBODY) {
 	DBG(DBG_CONTROLMORE,
-	    DBG_log("pending ddns: connection \"%s\" has address",
+	    DBG_log("pending ddns: connection \"%s\" already up",
 	    c->name));
 	return;
     }
@@ -1690,34 +1690,44 @@ void connection_check_phase2(void)
 	}
 
 	DBG(DBG_CONTROL,
-	    DBG_log("pending review: connection \"%s\" checked", c->name));
+	    DBG_log("pending review: connection \"%s\" being checked", c->name));
 
-	if(pending_check_timeout(c)) {
+	if(c->newest_isakmp_sa == SOS_NOBODY
+           || pending_check_timeout(c)) {
+
 	    struct state *p1st;
+            bool kicknow = kick_adns_connection(c, NULL);
+
 	    openswan_log("pending Quick Mode with %s \"%s\" took too long -- replacing phase 1"
 			 , ip_str(&c->spd.that.host_addr)
 			 , c->name);
 
-	    p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
-
-	    if(p1st) {
-                bool kicknow = kick_adns_connection(c, NULL);
-
-                if(!kicknow) {
+            if(kicknow) {
+                /*
+                 * look for a phase 1 to kill, but not point in doing that until we
+                 * actually have something new to try.
+                 */
+                p1st = find_phase1_state(c, ISAKMP_SA_ESTABLISHED_STATES|PHASE1_INITIATOR_STATES);
+                if(p1st) {
                     delete_event(p1st);
                     event_schedule(EVENT_SA_REPLACE, 0, p1st);
                 }
-	    } else {
-		/* start a new connection. Something wanted it up */
-		struct initiate_stuff is;
+                else {
+                    /* start a new connection. Something wanted it up, and we have new info */
+                    struct initiate_stuff is;
 
-		is.whackfd   = NULL_FD;
-		is.moredebug = 0;
-		is.importance= pcim_local_crypto;
+                    is.whackfd   = NULL_FD;
+                    is.moredebug = 0;
+                    is.importance= pcim_local_crypto;
 
-		initiate_a_connection(c, &is);
-	    }
-	}
+                    initiate_a_connection(c, &is);
+                }
+            }
+	} else {
+            DBG(DBG_CONTROL,
+                DBG_log("pending review: connection \"%s\" not time for review", c->name));
+        }
+
     }
 }
 
