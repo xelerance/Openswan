@@ -27,6 +27,7 @@
 #include <netinet/in.h>
 #include <netdb.h>	/* ??? for h_errno */
 #include <resolv.h>
+#include <arpa/inet.h>  /* for inet_ntop */
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
@@ -1738,6 +1739,10 @@ handle_adns_answer(void)
  * as this gets around BCP38 filtering, and is what RFC3484 says we should do.
  *
  * Return true if there was a change that can be acted on now.
+ *
+ * Blacklist reserved IPs addresses (including loopback) and multicast addresses.
+ * Treat them as if no DNS answer was available.
+ *
  */
 static bool advance_end_dns_list(struct connection *c
                           , struct end *end)
@@ -1745,26 +1750,127 @@ static bool advance_end_dns_list(struct connection *c
     unsigned int len = sizeof(end->host_addr);
     struct addrinfo *ai = end->host_address_list.next_address;
     char newaddr[ADDRTOT_BUF];
-    /* try next address in the list */
+    bool valid = FALSE;
 
+    /* try next address in the list */
     if(ai == NULL) return FALSE;
 
-    /* copy the address into the host_addr structure, and kick this conn */
-    /* structures are not identically names, but equivalent; both contain sockaddr */
-    if(len > ai->ai_addrlen) len = ai->ai_addrlen;
-    memcpy(&end->host_addr, ai->ai_addr, len);
-    end->host_address_list.addresses_available = TRUE;
+    /* see if next address is valid */
+    switch(ai->ai_family) {
+    case AF_INET:
+        {
+            struct sockaddr_in *ai4 = (struct sockaddr_in *)ai->ai_addr;
+            const unsigned char *bytes = (unsigned char *)&ai4->sin_addr.s_addr;
+            char addrbuf[ADDRTOT_BUF];
+            inet_ntop(AF_INET, bytes, addrbuf, ADDRTOT_BUF);
 
-    addrtot(&end->host_addr, 0, newaddr, sizeof(newaddr));
-    DBG(DBG_DNS
-        , DBG_log("advancing DNS to: %s (next: %s)", newaddr, ai->ai_next ? "more":"last"));
+            if(bytes[0] == 127) {
+                /* loopback addresses not allowed */
+                openswan_log("DNS lookup for '%s' rejected address %s: loopback address"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] > 224 && bytes[0] <= 239) {
+                /* multicast addresses now allowed, but maybe class E permitted */
+                openswan_log("DNS lookup for '%s' rejected address %s: multicast address"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 255) {
+                /* 255/8 is reserved */
+                openswan_log("DNS lookup for '%s' rejected rejected address %s: 255/8 is reserved"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0) {
+                /* 0/8 is reserved */
+                openswan_log("DNS lookup for '%s' rejected address %s: 0/8 is reserved"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else {
+                valid = TRUE;
+            }
+        }
+        break;
+    case AF_INET6:
+        {
+            struct sockaddr_in6 *ai6 = (struct sockaddr_in6 *)ai->ai_addr;
+            const unsigned char *bytes = ai6->sin6_addr.s6_addr;
+            char addrbuf[ADDRTOT_BUF];
+            inet_ntop(AF_INET6, bytes, addrbuf, ADDRTOT_BUF);
 
-    /* advance pointer */
+            /* see https://tools.ietf.org/html/rfc4291 */
+            if(bytes[0] == 0 && bytes[1] == 0 && bytes[2]==0 && bytes[3]==0
+               && bytes[4] == 0 && bytes[5] == 0 && bytes[6]==0 && bytes[7]==0
+               && bytes[8] == 0 && bytes[9] == 0 && bytes[10]==0 && bytes[11]==0
+               && bytes[12]== 0 && bytes[13]== 0 && bytes[14]==0) {
+
+                /* section 2.5.2, and 2.5.3 */
+                /* loopback addresses ::1 and unspecified ::, and all of ::/120 */
+                openswan_log("DNS lookup for '%s' rejected address %s: loopback address"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0 && bytes[1] == 0 && bytes[2]==0 && bytes[3]==0
+                      && bytes[4] == 0 && bytes[5] == 0 && bytes[6]==0 && bytes[7]==0
+                      && bytes[8] == 0 && bytes[9] == 0 && bytes[10]==0 && bytes[11]==0) {
+
+                /* section 2.5.5.1: IPv4 compatible IPv6 addresses, e.g.  ::1.2.3.4 */
+                openswan_log("DNS lookup for '%s' rejected address %s: IPv4-compatible IPv6 address"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0 && bytes[1] == 0 && bytes[2]==0 && bytes[3]==0
+                      && bytes[4] == 0 && bytes[5] == 0 && bytes[6]==0 && bytes[7]==0
+                      && bytes[8] == 0 && bytes[9] == 0 && bytes[10]==0xff && bytes[11]==0xff) {
+
+                /* section 2.5.5.6: IPv4-mapped IPv6 addresses, e.g.  ::ffff:1.2.3.4 */
+                /* XXX rejected for now: could become IPv4 address */
+                openswan_log("DNS lookup for '%s' rejected address %s: IPv4-mapped IPv6 address"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0x80) {
+                /* section 2.5.6: Link-Local addresses 0b1111 1110 10, fe80::/10 */
+                /* XXX rejected for now --- attack vector */
+                openswan_log("DNS lookup for '%s' rejected address %s: Link Local address returned"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0xfe && (bytes[1] & 0xc0) == 0xc0) {
+                /* section 2.5.7: Site-Local addresses 0b1111 1110 11, fec0::/10 */
+                /* warned for now -- might be attack vector */
+                openswan_log("DNS lookup for '%s' found address %s: Site Local address returned (okay)"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else if(bytes[0] == 0xff && (bytes[1] & 0xc0) == 0xc0) {
+                /* section 2.7: Multicast addresses 0b1111 1111, ff00::/8 */
+                /* rejected */
+                openswan_log("DNS lookup for '%s' found address %s: multicast address returned"
+                            , end->host_addr_name, addrbuf);
+                valid = FALSE;
+            } else {
+                valid = TRUE;
+            }
+        }
+        break;
+
+    default:
+        /* protect against future IP protocols...*/
+        valid = FALSE;
+        break;
+    }
+
+    if(valid) {
+        /* copy the address into the host_addr structure, and kick this conn */
+        /* structures are not identically names, but equivalent; both contain sockaddr */
+        if(len > ai->ai_addrlen) len = ai->ai_addrlen;
+        memcpy(&end->host_addr, ai->ai_addr, len);
+        end->host_address_list.addresses_available = TRUE;
+
+        addrtot(&end->host_addr, 0, newaddr, sizeof(newaddr));
+        DBG(DBG_DNS
+            , DBG_log("advancing DNS to: %s (next: %s)", newaddr, ai->ai_next ? "more":"last"));
+        update_host_pairs(c);
+    }
+
+    /* advance pointer, we consumed something, maybe valid */
     end->host_address_list.next_address = ai->ai_next;
 
-    update_host_pairs(c);
-
-    return TRUE;
+    return valid;
 }
 
 static void reset_end_dns_list(struct dns_end_list *del)
