@@ -336,12 +336,25 @@ worker(int qfd, int afd)
         case ns_t_txt:
         case ns_t_key:
             a.result = res_nquery(statp, q.name_buf, ns_c_in, q.type, a.ans, sizeof(a.ans));
-            a.h_errno_val = h_errno;
-
+            switch(h_errno) {
+            case NO_DATA:
+                a.h_errno_val = EAI_NODATA;
+                break;
+            case HOST_NOT_FOUND:
+                a.h_errno_val = EAI_NONAME;
+                break;
+            case TRY_AGAIN:
+                a.h_errno_val = EAI_AGAIN;
+                break;
+            default:
+            case NO_RECOVERY:
+                a.h_errno_val = EAI_SYSTEM;
+                break;
+            }
             break;
 
         case ns_t_a:
-            /* actually, use getaddrinfo() to do lookup */
+            /* actually, use getaddrinfo() to do lookup, which does A and AAAA */
             hints.ai_family = q.addr_family;     /* Allow IPv4 or IPv6 */
             hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
             hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
@@ -356,15 +369,18 @@ worker(int qfd, int afd)
                 a.result = serialize_addr_info(result, a.ans, ADNS_ANS_SIZE);
                 break;
 
-            case EAI_NODATA:
                 /* not found */
+            case EAI_NONAME:
+            case EAI_NODATA:
                 a.h_errno_val = s;
-                a.result = 0;
+                a.result = -1;
                 break;
+
             default:
                 openswan_log("adns lookup: %s a/aaaa lookup error: %s"
                              , q.name_buf, gai_strerror(s));
                 a.h_errno_val = s;
+                a.result = -1;
                 break;
             }
         }

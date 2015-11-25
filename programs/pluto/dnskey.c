@@ -1687,15 +1687,15 @@ handle_adns_answer(void)
 	     */
 	    switch (buf.h_errno_val)
 	    {
-	    case NO_DATA:
+            case EAI_NODATA:
 		ugh = builddiag("no %s record for %s", typename, name_buf);
 		break;
-	    case HOST_NOT_FOUND:
+            case EAI_NONAME:
 		ugh = builddiag("no host %s for %s record", name_buf, typename);
 		break;
 	    default:
 		ugh = builddiag("failure querying DNS for %s of %s: %s"
-		    , typename, name_buf, hstrerror(buf.h_errno_val));
+		    , typename, name_buf, gai_strerror(buf.h_errno_val));
 		break;
 	    }
 	}
@@ -1713,10 +1713,10 @@ handle_adns_answer(void)
 	}
 	DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL | DBG_DNS,
 	    if (ugh == NULL)
-		DBG_log("asynch DNS answer %lu for %s of %s"
+		DBG_log("async DNS answer %lu for %s of %s"
 		    , cr->query.serial, typename, name_buf);
 	    else
-		DBG_log("asynch DNS answer %lu %s", cr->query.serial, ugh);
+		DBG_log("async DNS answer %lu %s", cr->query.serial, ugh);
 	    );
 
 	passert(GLOBALS_ARE_RESET());
