@@ -298,9 +298,10 @@ void remove_connection_from_host_pair(struct connection *c)
 {
     struct IPhost_pair *p = c->IPhost_pair;
 
-    /* used by update_host_pairs */
-    list_rm(struct connection, IPhp_next, c, p->connections);
-    c->IDhost_pair = NULL;	/* redundant, but safe */
+    if(p != NULL) {
+        /* used by update_host_pairs */
+        list_rm(struct connection, IPhp_next, c, p->connections);
+    }
 }
 
 void clear_IDhost_pair(struct connection *c)
