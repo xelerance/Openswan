@@ -2946,9 +2946,10 @@ install_ipsec_sa(struct state *parent_st
 
     for (; sr != NULL; sr = sr->next)
     {
-        DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s"
+        DBG(DBG_CONTROL, DBG_log("sr for #%ld: %s (eroute_owner: #%ld)"
                                  , st->st_serialno
-                                 , enum_name(&routing_story, sr->routing)));
+                                 , enum_name(&routing_story, sr->routing)
+                                 , sr->eroute_owner));
 
         /*
          * if the eroute owner is not us, then make it us.
