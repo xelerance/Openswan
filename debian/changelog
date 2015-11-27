@@ -1,6 +1,6 @@
-openswan (1:2.6.46dr4-0xelerance1) trusty; urgency=low
+openswan (1:2.6.46dr5-0xelerance1) trusty; urgency=low
 
-  * Update to 2.6.46dr4
+  * Update to 2.6.46dr5
 
   The real changelog is in /usr/share/doc/openswan/changelog.gz
 
