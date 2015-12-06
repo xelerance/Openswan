@@ -1,0 +1,5 @@
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=-r ${WHACKFILE} parker1--jj2 parentR1.pcap OUTPUT/${TESTNAME}.pcap
+TESTNAME=parentI2
+CONNNAME=parker1--jj2
+ENDNAME=parker
