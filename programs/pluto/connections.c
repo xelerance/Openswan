@@ -318,19 +318,7 @@ delete_connection(struct connection *c, bool relations)
 	}
     }
 
-    {
-        /* XXX this does not belong here: should be handled in hostpair.c */
-	struct IDhost_pair *IDhp = c->IDhost_pair;
-
-	list_rm(struct connection, IDhp_next, c, IDhp->connections);
-	c->IDhost_pair = NULL;	/* redundant, but safe */
-
-	if(IDhp->connections == NULL)
-	{
-	    remove_IDhost_pair(IDhp);
-	    pfree(IDhp);
-	}
-    }
+    clear_IDhost_pair(c);
 
     if (c->kind != CK_GOING_AWAY) pfreeany(c->spd.that.virt);
 
