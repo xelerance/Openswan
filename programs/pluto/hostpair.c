@@ -260,6 +260,22 @@ void remove_IDhost_pair(struct IDhost_pair *hp)
     }
 }
 
+void clear_IDhost_pair(struct connection *c)
+{
+    struct IDhost_pair *IDhp = c->IDhost_pair;
+
+    if(IDhp == NULL) return;
+
+    list_rm(struct connection, IDhp_next, c, IDhp->connections);
+    c->IDhost_pair = NULL;	/* redundant, but safe */
+
+    if(IDhp->connections == NULL) {
+        remove_IDhost_pair(IDhp);
+        pfree(IDhp);
+    }
+}
+
+
 /* find head of list of connections with this pair of hosts */
 struct connection *
 find_host_pair_connections(const char *func, bool exact

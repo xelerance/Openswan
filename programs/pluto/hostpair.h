@@ -55,6 +55,7 @@ extern struct IDhost_pair *find_ID_host_pair(bool exact
 
 extern void remove_IPhost_pair(struct IPhost_pair *hp);
 extern void remove_IDhost_pair(struct IDhost_pair *hp);
+extern void clear_IDhost_pair(struct connection *c);
 extern void hostpair_list(void);
 
 extern struct connection *connections;
