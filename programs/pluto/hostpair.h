@@ -48,9 +48,10 @@ extern struct IDhost_pair *find_ID_host_pair(bool exact
 
 #define list_rm(etype, enext, e, ehead) { \
 	etype **ep; \
+        if(ehead != NULL) { \
 	for (ep = &(ehead); *ep != (e); ep = &(*ep)->enext) \
 	    passert(*ep != NULL);    /* we must not come up empty-handed */ \
-	*ep = (e)->enext; \
+	*ep = (e)->enext; } \
     }
 
 extern void remove_IPhost_pair(struct IPhost_pair *hp);
