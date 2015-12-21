@@ -5,7 +5,7 @@ It is otherwise identical to lp15.
 In this test case, the policy is to permit an initiator from %any to propose
 a tunnel to that end point (the /32).
 
-parentI1.pcap is copied from ../lp15-certificateselfI1/OUTPUT/certificateselfI1.pcap
+parentI1.pcap is copied from ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap
 
 
 
