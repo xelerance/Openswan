@@ -799,6 +799,15 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |        aserial:  00
 | checking alg=1 == 1, keyid=@moon.strongswan.org same_id=0
 | checking alg=1 == 1, keyid=C=CH, O=Linux strongSwan, CN=moon.strongswan.org same_id=0
+RC=0
+RC=0 List of Public Keys:
+RC=0
+RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA Key AwEAAaR8B (has private key), until Aug 26 14:44:56 UTC 2019 ok
+RC=0        ID_FQDN '@moon.strongswan.org'
+RC=0        Issuer 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
+RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA Key AwEAAaR8B (has private key), until Aug 26 14:44:56 UTC 2019 ok
+RC=0        ID_DER_ASN1_DN 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
+RC=0        Issuer 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 ./wrongcacert RSA authentication failed
 ./wrongcacert sending  notification v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
 | **emit ISAKMP Message:

@@ -15,6 +15,8 @@
 #ifndef _OSWTIME_H_
 #define _OSWTIME_H_
 
+extern bool now_regression;
+extern time_t regression_time;
 extern time_t now(void);	/* careful version of time(2) */
 
 /* no time defined in time_t */
