@@ -56,4 +56,7 @@ clean check:
 	@${MAKE} -C lp34-orientafterlisten  $@
 	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
 	@${MAKE} -C lp36-h2hI1            $@
+	@${MAKE} -C lp37-h2hR1            $@
+	@${MAKE} -C lp38-h2hI2            $@
+	@${MAKE} -C lp39-h2hR2            $@
 	@${MAKE} -C lp40-orientafterprivate $@

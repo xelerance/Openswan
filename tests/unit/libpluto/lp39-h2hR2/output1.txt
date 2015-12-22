@@ -20,9 +20,9 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=132.213.238.7 him=192.168.1.1
 |   concluded with <none>
 ./h2hR2 adding connection: "mytunnel"
-| 132.213.238.7<132.213.238.7>...192.168.1.1<192.168.1.1>
+| 132.213.238.7...192.168.1.1
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "mytunnel": 132.213.238.7<132.213.238.7>...192.168.1.1<192.168.1.1>; unrouted; eroute owner: #0
+RC=0 "mytunnel": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
@@ -763,7 +763,6 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./h2hR2 leak: 2 * host ip, item size: X
 ./h2hR2 leak: connection name, item size: X
 ./h2hR2 leak: struct connection, item size: X
-./h2hR2 leak: alg_info_ike, item size: X
 ./h2hR2 leak: pubkey entry, item size: X
 ./h2hR2 leak: pubkey, item size: X
 ./h2hR2 leak: pubkey entry, item size: X
