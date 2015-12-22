@@ -1,8 +1,13 @@
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_x509.c"
+#include "seam_pending.c"
+#include "seam_whack.c"
+#include "seam_initiate.c"
 #include "seam_keys.c"
+#include "seam_dnskey.c"
 
 #include "seam_host_parker.c"
+
 #define TESTNAME "h2hI1"
 
 static void init_local_interface(void)

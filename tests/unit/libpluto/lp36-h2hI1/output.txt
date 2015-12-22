@@ -3,6 +3,10 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for 192.168.1.1 is 0
 | counting wild cards for 132.213.238.7 is 0
@@ -13,12 +17,12 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7
 |   concluded with <none>
 ./h2hI1 adding connection: "mytunnel"
-| 192.168.1.1<192.168.1.1>...132.213.238.7<132.213.238.7>
+| 192.168.1.1...132.213.238.7
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "mytunnel": 192.168.1.1<192.168.1.1>...132.213.238.7<132.213.238.7>; unrouted; eroute owner: #0
+RC=0 "mytunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
 | orient mytunnel checking against if: eth0
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -515,7 +519,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./h2hI1 leak: db_attrs, item size: X
 ./h2hI1 leak: db_v2_trans, item size: X
 ./h2hI1 leak: db_v2_prop_conj, item size: X
-./h2hI1 leak: alg_info_ike, item size: X
 ./h2hI1 leak: policies path, item size: X
 ./h2hI1 leak: ocspcerts path, item size: X
 ./h2hI1 leak: aacerts path, item size: X
