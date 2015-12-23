@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #define LEAK_DETECTIVE
 #define AGGRESSIVE 1
 #define XAUTH
@@ -13,6 +14,7 @@
 #include "openswan.h"
 #include "oswtime.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
 #include "whack.h"
 #include "../../programs/pluto/rcv_whack.h"
 
@@ -65,7 +67,7 @@ static void init_fake_secrets(void)
 			       , NULL);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     bool  recalculate = FALSE;
     int   len;

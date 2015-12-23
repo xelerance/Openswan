@@ -1,3 +1,4 @@
+#define _GNU_SOURCE         /* for ppoll(2) */
 #define LEAK_DETECTIVE
 #define AGGRESSIVE 1
 #define XAUTH
@@ -25,6 +26,7 @@
 #include "pluto/defs.h"
 #include "demux.h"
 #include "pluto/log.h"
+#include "setproctitle.h"
 
 /* seams */
 #include "whackmsgtestlib.c"
@@ -97,7 +99,7 @@ void process_dns_results(void) {
     }
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     bool  recalculate = FALSE;
     int   len;

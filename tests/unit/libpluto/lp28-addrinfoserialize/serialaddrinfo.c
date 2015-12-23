@@ -25,6 +25,7 @@
 #include "demux.h"
 #include "pluto/log.h"
 #include "adns.h"
+#include "setproctitle.h"
 
 /* seams */
 #include "whackmsgtestlib.c"
@@ -40,7 +41,7 @@ int warningsarefatal = 0;
 
 #define TESTNAME "adnstest"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     err_t err = NULL;
     struct addrinfo hints, *result1, *result2;
