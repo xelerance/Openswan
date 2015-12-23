@@ -144,6 +144,10 @@ static const char *const state_name[] = {
 	"STATE_PARENT_I3",
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
+
+        "STATE_IKESA_DEL",
+        "STATE_CHILDSA_DEL",
+
 	"STATE_IKEv2_ROOF"
 
     };

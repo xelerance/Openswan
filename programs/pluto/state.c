@@ -486,6 +486,7 @@ delete_state(struct state *st)
                     DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
                     send_delete(st);
                     change_state(st, STATE_IKESA_DEL);
+                    event_schedule(EVENT_SA_DELETE, 300, st);
 
                     /* actual deletion when we receive peer response*/
                     return;
@@ -646,9 +647,6 @@ static void delete_state_function(struct state *this
 				  , struct connection *c UNUSED
 				  , void *arg UNUSED)
 {
-    openswan_log("deleting state (%s)"
-		 , enum_show(&state_names, this->st_state));
-
     if(this->st_event != NULL) delete_event(this);
     delete_state(this);
 }

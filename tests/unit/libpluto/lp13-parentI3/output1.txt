@@ -586,7 +586,6 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 ./parentI3 deleting connection
-./parentI3 deleting state (STATE_PARENT_I3)
 ./parentI3 deleting state #2 (STATE_PARENT_I3)
 | received request to delete child state
 | sending Child SA delete equest
@@ -634,7 +633,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 |   02 3a aa 39  66 66 ff a9  d3 01 40 55
-./parentI3 deleting state (STATE_PARENT_I3)
 ./parentI3 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
@@ -680,15 +678,13 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
-./parentI3 deleting state (EVENT_NULL)
-./parentI3 deleting state #2 (EVENT_NULL)
+./parentI3 deleting state #2 (STATE_CHILDSA_DEL)
 | received request to delete child state
 | now deleting the child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-./parentI3 deleting state (STATE_IKEv2_ROOF)
-./parentI3 deleting state #1 (STATE_IKEv2_ROOF)
+./parentI3 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
 | ICOOKIE:  80 01 02 03  04 05 06 07
