@@ -666,6 +666,11 @@ handle_next_timer_event(void)
 	    delete_state(st);
 	    break;
 
+        case EVENT_SA_DELETE:
+	    passert(st == NULL);
+	    DBG(DBG_CONTROL, DBG_log("event EVENT_SA_DELETE --- no reply to delete"));
+            delete_state(st);
+	    break;
 
 	default:
 	    loglog(RC_LOG_SERIOUS, "INTERNAL ERROR: ignoring unknown expiring event %s"

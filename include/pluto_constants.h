@@ -75,6 +75,7 @@ enum event_type {
     EVENT_v2_RETRANSMIT,   /* Retransmit v2 packet */
 
     EVENT_PENDING_DDNS, /* try to start connections where DNS failed at init */
+    EVENT_SA_DELETE,    /* SA delete was sent, but never acknowledged */
 };
 
 #define EVENT_REINIT_SECRET_DELAY		3600 /* 1 hour */
