@@ -137,14 +137,6 @@ release_connection(struct connection *c, bool relations)
 
 #ifdef DYNAMICDNS
 
-/* used by update_host_pairs */
-#define list_rm(etype, enext, e, ehead) { \
-	etype **ep; \
-	for (ep = &(ehead); *ep != (e); ep = &(*ep)->enext) \
-	    passert(*ep != NULL);    /* we must not come up empty-handed */ \
-	*ep = (e)->enext; \
-    }
-
 /* update the host pairs with the latest DNS ip address */
 void
 update_host_pairs(struct connection *c)
@@ -1472,6 +1464,9 @@ instantiate(struct connection *c, const ip_address *him
     d->log_file_err = FALSE;
 
     connect_to_IPhost_pair(d);
+
+    /* but do not connect to ID host pair: parent should get all links */
+    d->IDhost_pair = NULL;
 
     return d;
 }
