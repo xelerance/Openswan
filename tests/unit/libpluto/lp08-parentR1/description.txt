@@ -4,12 +4,18 @@ be processed.
 This case should create an R1 packet that can be sent back to the initiator
 for test case parentI2.
 
+Subtest: output1:
 There is a subcase that was debugged in this, which is the case where a bad
 KE payload is received, and this results in an invalid-ke-payload. The wrong
 KE payload is in fact the case where group2 values were forced rather than
 group 14.  This is sub case 1 (output1.txt, R1notify-dump.txt).
 
+Subtest: output2:
 Unit case 2 (output2.txt, R1-dump.txt) has the proper inputs.
+
+Subtest: output3
+Unit case 3 (output2.txt, R1parker-dump.txt) is the same test case, but the
+     policy does not specify an IP for parker (%any).
 
 
 
