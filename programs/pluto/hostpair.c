@@ -246,11 +246,17 @@ find_host_pair(bool exact
     return bestpair;
 }
 
+/*
+ * frees an entry in the IPhost_pair list.
+ */
 void remove_IPhost_pair(struct IPhost_pair *hp)
 {
     list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
 }
 
+/*
+ * frees an entry in the IDhost_pair list.
+ */
 void remove_IDhost_pair(struct IDhost_pair *hp)
 {
     list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
@@ -263,12 +269,30 @@ void remove_IDhost_pair(struct IDhost_pair *hp)
 void clear_IDhost_pair(struct connection *c)
 {
     struct IDhost_pair *IDhp = c->IDhost_pair;
+    struct connection  **ep;
 
     if(IDhp == NULL) return;
 
-    list_rm(struct connection, IDhp_next, c, IDhp->connections);
+    /* removes connection c from the list of ID host pairs */
+
+    /* it is possible it was never in the list, if it was an instance,
+     * so can not use list_rm() macro.
+     */
+
+    /* find entry that points to (c) */
+    for(ep = &(IDhp->connections); *ep != (c); ep = &(*ep)->IDhp_next);
+
+    if(*ep == NULL) {
+        /* then connection was never in the list! */
+        DBG_log("connection: %s[%lu] not in IDhost_pair %p. Is it an instance?", c->name,
+                c->instance_serial,
+                IDhp);
+    } else {
+	*ep = (c)->IDhp_next;
+    }
     c->IDhost_pair = NULL;	/* redundant, but safe */
 
+    /* check out the IDhp, maybe it should be freed too, if empty */
     if(IDhp->connections == NULL) {
         remove_IDhost_pair(IDhp);
         pfree(IDhp);
