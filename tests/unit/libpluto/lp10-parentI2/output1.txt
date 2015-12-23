@@ -539,7 +539,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
-./parentI2 deleting state #1 (STATE_IKEv2_ROOF)
+./parentI2 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -693,6 +693,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI2 leak: sa copy prop conj array, item size: X
 ./parentI2 leak: sa copy prop_conj, item size: X
 ./parentI2 leak: struct state in new_state(), item size: X
+./parentI2 leak: 2 * keep id name, item size: X
 ./parentI2 leak: 2 * id list, item size: X
 ./parentI2 leak: secret, item size: X
 ./parentI2 leak: 2 * hasher name, item size: X
