@@ -53,7 +53,7 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 void finish_pcap(void) {}
 #endif
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     char *infile;

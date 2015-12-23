@@ -8,6 +8,7 @@
 
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
 #include "whack.h"
 #include "../../programs/pluto/rcv_whack.h"
 
@@ -63,7 +64,7 @@ void recv_pcap_packet(u_char *user
     run_continuation(crypto_req);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     char *infile;

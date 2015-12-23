@@ -8,6 +8,8 @@
 
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
+#include "oswconf.h"
 #include "whack.h"
 #include "../../programs/pluto/rcv_whack.h"
 
@@ -39,7 +41,7 @@
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   i;
     int   len;
@@ -78,7 +80,7 @@ main(int argc, char *argv[])
         conn_name = argv[i];
         fprintf(stderr, "processing %s\n", conn_name);
         c1 = con_by_name(conn_name, TRUE);
-        show_one_connection(c1);
+        show_one_connection(c1, whack_log);
         assert(c1 != NULL);
         assert(orient(c1, pluto_port500) == FALSE);
     }
@@ -92,7 +94,7 @@ main(int argc, char *argv[])
         conn_name = argv[i];
         fprintf(stderr, "re-processing %s\n", conn_name);
         c1 = con_by_name(conn_name, TRUE);
-        show_one_connection(c1);
+        show_one_connection(c1, whack_log);
         assert(c1 != NULL);
         assert(orient(c1, pluto_port500) == TRUE);
     }
