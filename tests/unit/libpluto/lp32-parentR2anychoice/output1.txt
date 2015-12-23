@@ -520,6 +520,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
 |   concluded with maryjane1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:3:0:1::/96 is found
 | ikev2_evaluate_connection_fit, concluded with maryjane1--jj2
