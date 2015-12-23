@@ -19,7 +19,7 @@ void recv_pcap_packet(u_char *user
     run_continuation(crypto_req);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     char *infile;

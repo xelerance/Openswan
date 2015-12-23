@@ -11,7 +11,7 @@ void exit_tool(int stat)
     exit(stat);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int i;
     struct db_sa *sa1 = NULL;

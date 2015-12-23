@@ -30,7 +30,7 @@ void recv_pcap_packet(u_char *user
 
 
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     char *infile;

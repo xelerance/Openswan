@@ -10,6 +10,7 @@
 #include "oswalloc.h"
 #include "whack.h"
 #include "oswconf.h"
+#include "oswcrypto.h"
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"

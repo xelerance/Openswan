@@ -8,10 +8,12 @@
 #include "openswan/ipsec_policy.h"
 #include "oswalloc.h"
 #include "constants.h"
+#include "pluto/keys.h"
 #include "certs.h"
 #include "oswlog.h"
 #include "oswconf.h"
 #include "oswtime.h"
+#include "oswcrypto.h"
 
 #include "../seam_exitlog.c"
 
@@ -23,7 +25,7 @@ struct pubkey_list *pluto_pubkeys = NULL;
 struct secret *pluto_secrets = NULL;
 extern int EF_DISABLE_BANNER;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int i;
     chunk_t blob, crl_uri;
