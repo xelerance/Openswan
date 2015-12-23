@@ -402,7 +402,7 @@ find_ID_host_pair(bool exact
     struct IDhost_pair *p, *pbest = NULL;
     bool exactmatch = FALSE;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
-    char thisid[IDTOA_BUF], thatid[IDTOA_BUF];
+    char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
 
     /*
      * look for a host-pair that has the right set of local ID/remote ID.
@@ -427,10 +427,10 @@ find_ID_host_pair(bool exact
     for (p = IDhost_pairs; p != NULL; p = p->next)
     {
 	DBG(DBG_CONTROLMORE,
-            idtoa(&p->me_who, thisid, sizeof(thisid));
-            idtoa(&p->him_who,thatid, sizeof(thatid));
+            idtoa(&p->me_who, mewho, sizeof(mewho));
+            idtoa(&p->him_who,himwho, sizeof(himwho));
             DBG_log("                  comparing to me=%s him=%s (%s)\n"
-                    , thisid, thatid, p->connections->name));
+                    , mewho, himwho, p->connections->name));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
@@ -579,8 +579,8 @@ hostpair_list(void)
         char instance[1 + 10 + 1];
         struct connection *c = pd->connections;
 
-        idtoa(&c->spd.this.id, b1,sizeof(b1));
-        idtoa(&c->spd.that.id, b2,sizeof(b2));
+        idtoa(&pd->me_who,  b1,sizeof(b1));
+        idtoa(&pd->him_who, b2,sizeof(b2));
 
         whack_log(RC_LOG, "  IDpair: %20s/%20s"
                   , b1, b2);
