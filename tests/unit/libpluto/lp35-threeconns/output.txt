@@ -57,7 +57,6 @@ RC=0 "vzhost1-vzhost-mondev": 10.153.139.0/24===192.168.134.179<192.168.134.179>
 RC=0 "vzhost1-vzhost-mondev":     myip=10.153.139.1; hisip=10.153.140.1;
 RC=0 "vzhost1-vzhost-mondev":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "vzhost1-vzhost-mondev":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 24,24; interface: ; kind=CK_PERMANENT
-RC=0 "vzhost1-vzhost-mondev":   newest ISAKMP SA: #0; newest IPsec SA: #0;
 ./threeconns deleting connection
 ./threeconns leak: 2 * keep id name, item size: X
 ./threeconns leak: ID host_pair, item size: X
