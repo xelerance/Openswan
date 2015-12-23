@@ -287,20 +287,7 @@ void clear_IPhost_pair(struct connection *c)
 
         /* maybe clean up IPhp */
         remove_IPhost_pair(IPhp);
-	c->IPhost_pair = NULL;
-    }
-}
-
-/*
- * this removes a connection from a list of host pairs
- */
-void remove_connection_from_host_pair(struct connection *c)
-{
-    struct IPhost_pair *p = c->IPhost_pair;
-
-    if(p != NULL) {
-        /* used by update_host_pairs */
-        list_rm(struct connection, IPhp_next, c, p->connections);
+	c->IPhost_pair = NULL;	/* redundant, but safe */
     }
 }
 
@@ -581,6 +568,7 @@ connect_to_IDhost_pair(struct connection *c)
         /* must be on wrong list: remove from current list */
         clear_IDhost_pair(c);
     }
+
 
     /* add this connection to front of ID host pair connection list */
     c->IDhp_next = hp->connections;
