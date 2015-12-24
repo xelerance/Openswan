@@ -1280,14 +1280,14 @@ parse_time(chunk_t blob, int level0)
 
     asn1_init(&ctx, blob, level0, FALSE, DBG_RAW);
 
-    while (objectID < TIME_ROOF)
+    while (objectID < X509_TIME_ROOF)
     {
 	if (!extract_object(timeObjects, &objectID, &object, &level, &ctx))
 	     return UNDEFINED_TIME;
 
-	if (objectID == TIME_UTC || objectID == TIME_GENERALIZED)
+	if (objectID == X509_TIME_UTC || objectID == X509_TIME_GENERALIZED)
 	{
-	    return asn1totime(&object, (objectID == TIME_UTC)
+	    return asn1totime(&object, (objectID == X509_TIME_UTC)
 			? ASN1_UTCTIME : ASN1_GENERALIZEDTIME);
 	}
 	objectID++;

@@ -8,6 +8,8 @@
 
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswconf.h"
+#include "oswcrypto.h"
 #include "whack.h"
 #include "../../programs/pluto/rcv_whack.h"
 
@@ -53,7 +55,7 @@ static void init_fake_secrets(void)
 			       , NULL);
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     char *infile;

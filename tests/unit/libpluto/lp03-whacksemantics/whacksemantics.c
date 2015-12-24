@@ -52,7 +52,7 @@ char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int   len;
     err_t err = NULL;
