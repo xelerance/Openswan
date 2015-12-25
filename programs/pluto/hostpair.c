@@ -97,7 +97,8 @@
  * Only oriented connections are registered.
  *
  * Unoriented connections are kept on the unoriented_connections
- * linked list (using hp_next).  For them, host_pair is NULL.
+ * linked list (using hp_next).  For them, IPhost_pair is NULL,
+ * but they may still be on the IDhost_pair list.
  */
 
 struct IPhost_pair *IPhost_pairs = NULL;
@@ -247,56 +248,66 @@ find_host_pair(bool exact
 }
 
 /*
- * frees an entry in the IPhost_pair list.
+ * this removes a connection from a list of host pairs
  */
 void remove_IPhost_pair(struct IPhost_pair *hp)
 {
-    list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
+    if(hp != NULL && hp->connections == NULL) {
+        list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
+        pfree(hp);
+    }
+}
+
+/* this removes a host pair header from the list of host pairs */
+void remove_IDhost_pair(struct IDhost_pair *hp)
+{
+    if(hp != NULL && hp->connections == NULL) {
+        list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
+        free_id_content(&hp->me_who);
+        free_id_content(&hp->him_who);
+        pfree(hp);
+    }
 }
 
 /*
- * frees an entry in the IDhost_pair list.
+ * this removes a connection from it's ID and IP host pairs
  */
-void remove_IDhost_pair(struct IDhost_pair *hp)
+void clear_IPhost_pair(struct connection *c)
 {
-    list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
-    if(hp->connections == NULL) {
-        free_id_content(&hp->me_who);
-        free_id_content(&hp->him_who);
+    struct IPhost_pair *IPhp = c->IPhost_pair;
+
+    if (IPhp == NULL)
+    {
+        /* remove it from unoriented_connections then */
+	list_rm(struct connection, IPhp_next, c, unoriented_connections);
+    }
+    else
+    {
+        list_rm(struct connection, IPhp_next, c, IPhp->connections);
+
+        /* maybe clean up IPhp */
+        remove_IPhost_pair(IPhp);
+	c->IPhost_pair = NULL;
     }
 }
 
 void clear_IDhost_pair(struct connection *c)
 {
     struct IDhost_pair *IDhp = c->IDhost_pair;
-    struct connection  **ep;
 
-    if(IDhp == NULL) return;
+    if(IDhp != NULL) {
+        list_rm(struct connection, IDhp_next, c, IDhp->connections);
 
-    /* removes connection c from the list of ID host pairs */
-
-    /* it is possible it was never in the list, if it was an instance,
-     * so can not use list_rm() macro.
-     */
-
-    /* find entry that points to (c) */
-    for(ep = &(IDhp->connections); *ep != (c); ep = &(*ep)->IDhp_next);
-
-    if(*ep == NULL) {
-        /* then connection was never in the list! */
-        DBG_log("connection: %s[%lu] not in IDhost_pair %p. Is it an instance?", c->name,
-                c->instance_serial,
-                IDhp);
-    } else {
-	*ep = (c)->IDhp_next;
-    }
-    c->IDhost_pair = NULL;	/* redundant, but safe */
-
-    /* check out the IDhp, maybe it should be freed too, if empty */
-    if(IDhp->connections == NULL) {
+        /* maybe clean up IDhp */
         remove_IDhost_pair(IDhp);
-        pfree(IDhp);
+        c->IDhost_pair = NULL;
     }
+}
+
+void clear_host_pairs(struct connection *c)
+{
+    clear_IPhost_pair(c);
+    clear_IDhost_pair(c);
 }
 
 
@@ -474,15 +485,29 @@ connect_to_IDhost_pair(struct connection *c)
         unshare_id_content(&hp->me_who);
         unshare_id_content(&hp->him_who);
 
+        /* init list contained in this header */
         hp->connections = NULL;
+
+        /* add header to list of ID headers */
         hp->next = IDhost_pairs;
         IDhost_pairs = hp;
+
+    } else if(hp == c->IDhost_pair) {
+        /* already on the correct IDhostpair, do nothing */
+        return;
+
+    }
+
+    if(c->IDhost_pair != NULL) {
+        /* must be on wrong list: remove from current list */
+        clear_IDhost_pair(c);
     }
 
     /* add this connection to front of ID host pair connection list */
-    c->IDhost_pair = hp;
     c->IDhp_next = hp->connections;
     hp->connections = c;
+
+    c->IDhost_pair = hp;
 }
 
 void
