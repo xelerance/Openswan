@@ -11,8 +11,8 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| counting wild cards for 192.168.1.1 is 0
 | counting wild cards for 132.213.238.7 is 0
+| counting wild cards for 192.168.1.1 is 0
 | orient mytunnel checking against if: eth0
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
