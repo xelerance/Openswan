@@ -89,7 +89,7 @@ check:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
+	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
 
 update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
