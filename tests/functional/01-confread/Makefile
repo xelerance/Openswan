@@ -26,7 +26,7 @@ check:
 	${READWRITE} --rootdir=dooku --config dooku.conf | tee ../OUTPUTS/dooku.conf.raw | diff - dooku.conf.out
 	${READWRITE} --rootdir=cassidy --config cassidy.conf | tee ../OUTPUTS/cassidy.conf.raw | diff - cassidy.conf.out
 	${READWRITE} --rootdir=dooku --config ../../unit/libpluto/samples/h2h.conf | tee ../OUTPUTS/h2h.conf.raw | diff - h2h.conf.out
-	${READWRITE} --rootdir=dooku --config brokenspace.conf | tee ../OUTPUTS/brokenspace.conf.raw | diff - brokenspace.conf.out
+	: ${READWRITE} --rootdir=dooku --config brokenspace.conf | tee ../OUTPUTS/brokenspace.conf.raw | diff - brokenspace.conf.out
 	[ ! -f core ]
 
 update:
