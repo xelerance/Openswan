@@ -5,6 +5,7 @@
 #define DEBUG 1
 #define PRINT_SA_DEBUG 1
 #define USE_KEYRR 1
+#define FIND_ID_EXTENDED_DEBUG 1
 
 #include "constants.h"
 #include "oswalloc.h"
@@ -20,7 +21,6 @@
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
 #include "seam_pending.c"
-#include "seam_initiate.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
 #include "seam_kernel.c"
@@ -101,6 +101,7 @@ int main(int argc, char *argv[])
                                    , &pass);
     }
     fprintf(stderr, "listening now\n");
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     whack_listen();
     hostpair_list();
 
@@ -119,6 +120,8 @@ int main(int argc, char *argv[])
         c1 = con_by_name(conn_name, TRUE);
         delete_connection(c1, TRUE);
     }
+
+    hostpair_list();
 
     report_leaks();
 
