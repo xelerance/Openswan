@@ -385,8 +385,14 @@ check_orientations(void)
 	{
 	    struct connection *nxt = c->IPhp_next;
 
-	    (void)orient(c, pluto_port500);
+	    bool oriented = orient(c, pluto_port500);
+            if(oriented) {
+                DBG(DBG_CONTROLMORE
+                    , DBG_log("connection %s is now oriented"
+                              , c->name));
+            }
 	    connect_to_IPhost_pair(c);
+	    connect_to_IDhost_pair(c);
 	    c = nxt;
 	}
     }
