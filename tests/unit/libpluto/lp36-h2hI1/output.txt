@@ -14,7 +14,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
-| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7
+| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7 (exact)
 |   concluded with <none>
 ./h2hI1 adding connection: "mytunnel"
 | 192.168.1.1...132.213.238.7

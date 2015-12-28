@@ -14,7 +14,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %dns him=93.184.216.34:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %dns 93.184.216.34:500 -> hp:none
-| find_ID_host_pair: looking for me=@cpe.example.com him=@example.com
+| find_ID_host_pair: looking for me=@cpe.example.com him=@example.com (exact)
 |   concluded with <none>
 ./kickdns adding connection: "cpe"
 | %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16

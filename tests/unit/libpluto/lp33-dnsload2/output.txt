@@ -15,7 +15,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %dns him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %dns 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@cpe.example.com him=@example.com
+| find_ID_host_pair: looking for me=@cpe.example.com him=@example.com (exact)
 |   concluded with <none>
 ./dnscpeI1 adding connection: "cpenohint"
 | %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.2.0.0/16
