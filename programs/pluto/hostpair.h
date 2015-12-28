@@ -3,6 +3,8 @@
  * Copyright (C) 2003-2015  Michael Richardson <mcr@xelerance.com>
  */
 
+#ifndef _HOST_PAIR_H
+
 struct IPhost_pair {
     struct {
       ip_address        addr;
@@ -62,6 +64,8 @@ extern void clear_IDhost_pair(struct connection *c);
 extern void hostpair_list(void);
 
 extern struct connection *connections;
+#define  _HOST_PAIR_H
+#endif   /* _HOST_PAIR_H */
 /*
  * Local Variables:
  * c-basic-offset:4

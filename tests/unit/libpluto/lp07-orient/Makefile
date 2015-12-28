@@ -22,7 +22,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o

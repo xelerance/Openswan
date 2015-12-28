@@ -14,6 +14,7 @@
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "../../programs/pluto/connections.c"
+#include "../../programs/pluto/hostpair.c"
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
