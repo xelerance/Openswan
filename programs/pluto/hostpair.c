@@ -405,6 +405,12 @@ connect_to_IPhost_pair(struct connection *c)
  *
  *
  */
+#ifdef FIND_ID_EXTENDED_DEBUG
+#define ID_DEBUG(X) X
+#else
+#define ID_DEBUG(X)
+#endif
+
 struct IDhost_pair *
 find_ID_host_pair(bool exact
                   , const struct id me
@@ -432,8 +438,8 @@ find_ID_host_pair(bool exact
     }
 
     DBG(DBG_CONTROLMORE
-        , DBG_log("find_ID_host_pair: looking for me=%s him=%s\n"
-                  , mebuf, himbuf));
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s %s\n"
+                  , mebuf, himbuf, exact ? "(exact)" : "(wildcard)"));
 
     for (p = IDhost_pairs; p != NULL; p = p->next)
     {
@@ -446,21 +452,31 @@ find_ID_host_pair(bool exact
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
-        if(!same_id(&him, &p->him_who)) continue;
+        if(!same_id(&him, &p->him_who)) {
+            ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
+            continue;
+        }
         if(exact) {
-            if(!same_id(&me,  &p->me_who))  continue;
+            if(!same_id(&me,  &p->me_who))  {
+                ID_DEBUG(DBG_log("    exact FAILs -- me_id mismatch"));
+                continue;
+            }
+            exactmatch = TRUE;
         } else {
             if(same_id(&me,  &p->me_who)) {
                 pbest = p;
                 exactmatch = TRUE;
+                ID_DEBUG(DBG_log("    me matches exactly on wildcard"));
                 break;
             } else {
                 pbest = p;
                 exactmatch = FALSE;
+                ID_DEBUG(DBG_log("    me wildcard match"));
             }
         }
-        if(!exact && !exactmatch) {
+        if(!exact || exactmatch==TRUE) {
             pbest = p;
+            ID_DEBUG(DBG_log("    now best match"));
             break;
         }
         /* loop looking for better matches */
