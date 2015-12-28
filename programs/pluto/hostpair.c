@@ -590,7 +590,7 @@ hostpair_list(void)
                       , b2, c->spd.that.host_port);
             while(c != NULL) {
                 fmt_connection_inst_name(c, instance, sizeof(instance));
-                whack_log(RC_LOG, "     %s%s\n", c->name, instance[0] ? instance : "");
+                whack_log(RC_LOG, "     %s%s", c->name, instance[0] ? instance : "");
                 c = c->IPhp_next;
             }
         }
@@ -611,7 +611,7 @@ hostpair_list(void)
                   , b1, b2);
         while(c != NULL) {
             fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s%s\n", c->name, instance[0] ? instance : "");
+            whack_log(RC_LOG, "     %s%s", c->name, instance[0] ? instance : "");
             c = c->IDhp_next;
         }
     }
