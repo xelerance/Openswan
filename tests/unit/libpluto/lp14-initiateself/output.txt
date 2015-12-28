@@ -19,7 +19,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
-| find_ID_host_pair: looking for me=@example.com him=@jamesjohnson.emmjay.credil.org
+| find_ID_host_pair: looking for me=@example.com him=@jamesjohnson.emmjay.credil.org (exact)
 |   concluded with <none>
 ./initiateselfI1 adding connection: "gateway--any"
 | %any[@example.com]...132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16

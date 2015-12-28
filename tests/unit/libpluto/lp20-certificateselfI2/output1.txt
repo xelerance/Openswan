@@ -22,7 +22,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
-| find_ID_host_pair: looking for me=carol@strongswan.org him=@moon.strongswan.org
+| find_ID_host_pair: looking for me=carol@strongswan.org him=@moon.strongswan.org (exact)
 |   concluded with <none>
 ./certificateselfI2 adding connection: "home"
 | %any[carol@strongswan.org]---<invalid>...132.213.238.7<132.213.238.7>[@moon.strongswan.org]===10.2.0.0/16

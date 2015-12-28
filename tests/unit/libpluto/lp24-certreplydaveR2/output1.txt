@@ -22,7 +22,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@moon.strongswan.org him=<any>
+| find_ID_host_pair: looking for me=@moon.strongswan.org him=<any> (exact)
 |   concluded with <none>
 ./certreplydaveR2 adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any

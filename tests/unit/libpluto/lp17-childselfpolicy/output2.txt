@@ -20,7 +20,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com (exact)
 |   concluded with <none>
 ./respondselfR2 adding connection: "gateway--any"
 | 10.2.0.0/16===132.213.238.7<132.213.238.7>[@jamesjohnson.emmjay.credil.org]...%any[@example.com]
@@ -398,7 +398,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=24)
 ./respondselfR2 IKEv2 mode peer ID is ID_FQDN: '@example.com'
-| find_ID_host_pair: looking for me=(none) him=@example.com
+| find_ID_host_pair: looking for me=(none) him=@example.com (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
 | idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
@@ -484,7 +484,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c gateway--any, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@example.com (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
 |   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found

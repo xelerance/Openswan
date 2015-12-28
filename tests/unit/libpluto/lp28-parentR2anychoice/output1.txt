@@ -20,7 +20,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (exact)
 |   concluded with <none>
 ./parentR2anychoice adding connection: "any1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
@@ -43,7 +43,7 @@ processing whack msg time: X size: Y
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with any1--jj2
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:any1--jj2
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (exact)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
 |   concluded with <none>
 ./parentR2anychoice adding connection: "maryjane1--jj2"
@@ -439,7 +439,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
 ./parentR2anychoice IKEv2 mode peer ID is ID_FQDN: '@parker01.emmjay.credil.org'
-| find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org
+| find_ID_host_pair: looking for me=(none) him=@parker01.emmjay.credil.org (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
 |   concluded with any1--jj2
@@ -519,7 +519,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   ikev2_evaluate_connection_fit evaluating our I=maryjane1--jj2:fd68:c9f9:4157:3:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
 |   concluded with maryjane1--jj2
 |   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:3:0:1::/96 is found
