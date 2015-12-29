@@ -474,6 +474,7 @@ find_ID_host_pair(const struct id me
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
     char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
     bool exactmatch = FALSE;
+    bool pbestexact = FALSE;
 
     /*
      * look for a host-pair that has the right set of local ID/remote ID.
@@ -506,19 +507,27 @@ find_ID_host_pair(const struct id me
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
+        exactmatch = TRUE;
+
         if(!same_id(&him, &p->him_who)) {
             ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
             continue;
         }
+        /* if him matched due to wildcard, mark it */
+        if(p->him_who.kind == ID_NONE) {
+            exactmatch = FALSE;
+        }
+
         if(same_exact_id(&me,  &p->me_who)) {
-            exactmatch = TRUE;
-            ID_DEBUG(DBG_log("    me matches exactly on wildcard"));
+            ID_DEBUG(DBG_log("    me matches exactly (wildcard)"));
+
         } else if(same_id(&me,  &p->me_who)) {
             exactmatch = FALSE;
             ID_DEBUG(DBG_log("    me wildcard match"));
         }
-        if(exactmatch==TRUE || pbest == NULL) {
+        if((exactmatch==TRUE && pbestexact == FALSE) || pbest == NULL) {
             pbest = p;
+            pbestexact = exactmatch;
             ID_DEBUG(DBG_log("    now best match"));
         }
         /* loop looking for better matches */
