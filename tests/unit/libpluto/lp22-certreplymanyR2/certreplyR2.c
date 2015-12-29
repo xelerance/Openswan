@@ -30,6 +30,8 @@ static void init_loaded(void)
 {
     /* loading X.509 CA certificates */
     load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
+
+    hostpair_list();
 }
 
 #include "../lp12-parentR2/parentR2_main.c"
