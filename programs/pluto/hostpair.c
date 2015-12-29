@@ -412,14 +412,68 @@ connect_to_IPhost_pair(struct connection *c)
 #endif
 
 struct IDhost_pair *
-find_ID_host_pair(bool exact
-                  , const struct id me
+find_ID_host_pair_exact(const struct id me
+                        , const struct id him)
+{
+    struct IDhost_pair *p, *pbest = NULL;
+    char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
+    char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
+
+    /*
+     * look for a host-pair that has the right set of local ID/remote ID.
+     * ID_NONE matches only another ID_NONE.
+     */
+    if(DBGP(DBG_CONTROLMORE)) {
+        strcpy(mebuf,  "<any>");
+        strcpy(himbuf, "<any>");
+        if(me.has_wildcards == 0) {
+            idtoa(&me,  mebuf,  sizeof(mebuf));
+        }
+        if(him.has_wildcards == 0) {
+            idtoa(&him, himbuf, sizeof(himbuf));
+        }
+    }
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s (exact)\n"
+                  , mebuf, himbuf));
+
+    for (p = IDhost_pairs; p != NULL; p = p->next) {
+	DBG(DBG_CONTROLMORE,
+            idtoa(&p->me_who, mewho, sizeof(mewho));
+            idtoa(&p->him_who,himwho, sizeof(himwho));
+            DBG_log("                  comparing to me=%s him=%s (%s)\n"
+                    , mewho, himwho, p->connections->name));
+
+        /* kick out if it does not match:
+         * easier to understand than positive/convuluted logic
+         */
+        if(!same_exact_id(&him, &p->him_who)) {
+            ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
+            continue;
+        }
+
+        if(!same_exact_id(&me,  &p->me_who))  {
+            ID_DEBUG(DBG_log("    exact FAILs -- me_id mismatch"));
+            continue;
+        }
+        ID_DEBUG(DBG_log("    now best match"));
+        pbest = p;
+        break;
+    }
+    DBG(DBG_CONTROLMORE,
+        DBG_log("  concluded with %s", pbest && pbest->connections ? pbest->connections->name : "<none>"));
+    return pbest;
+}
+
+struct IDhost_pair *
+find_ID_host_pair(const struct id me
                   , const struct id him)
 {
     struct IDhost_pair *p, *pbest = NULL;
-    bool exactmatch = FALSE;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
     char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
+    bool exactmatch = FALSE;
 
     /*
      * look for a host-pair that has the right set of local ID/remote ID.
@@ -438,8 +492,8 @@ find_ID_host_pair(bool exact
     }
 
     DBG(DBG_CONTROLMORE
-        , DBG_log("find_ID_host_pair: looking for me=%s him=%s %s\n"
-                  , mebuf, himbuf, exact ? "(exact)" : "(wildcard)"));
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s (wildcard)\n"
+                  , mebuf, himbuf));
 
     for (p = IDhost_pairs; p != NULL; p = p->next)
     {
@@ -456,28 +510,16 @@ find_ID_host_pair(bool exact
             ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
             continue;
         }
-        if(exact) {
-            if(!same_id(&me,  &p->me_who))  {
-                ID_DEBUG(DBG_log("    exact FAILs -- me_id mismatch"));
-                continue;
-            }
+        if(same_exact_id(&me,  &p->me_who)) {
             exactmatch = TRUE;
-        } else {
-            if(same_id(&me,  &p->me_who)) {
-                pbest = p;
-                exactmatch = TRUE;
-                ID_DEBUG(DBG_log("    me matches exactly on wildcard"));
-                break;
-            } else {
-                pbest = p;
-                exactmatch = FALSE;
-                ID_DEBUG(DBG_log("    me wildcard match"));
-            }
+            ID_DEBUG(DBG_log("    me matches exactly on wildcard"));
+        } else if(same_id(&me,  &p->me_who)) {
+            exactmatch = FALSE;
+            ID_DEBUG(DBG_log("    me wildcard match"));
         }
-        if(!exact || exactmatch==TRUE) {
+        if(exactmatch==TRUE || pbest == NULL) {
             pbest = p;
             ID_DEBUG(DBG_log("    now best match"));
-            break;
         }
         /* loop looking for better matches */
     }
@@ -489,9 +531,8 @@ find_ID_host_pair(bool exact
 void
 connect_to_IDhost_pair(struct connection *c)
 {
-    struct IDhost_pair *hp= find_ID_host_pair(EXACT_MATCH
-                                              , c->spd.this.id
-					      , c->spd.that.id);
+    struct IDhost_pair *hp= find_ID_host_pair_exact(c->spd.this.id
+                                                    , c->spd.that.id);
 
     if (hp == NULL) {
         /* no suitable host_pair -- build one */

@@ -443,23 +443,18 @@ any_id(const struct id *a)
     return FALSE;
 }
 
-/* compare two struct id values */
+/* compare two struct id values: wildcards compared literally */
 bool
-same_id(const struct id *a, const struct id *b)
+same_exact_id(const struct id *a, const struct id *b)
 {
-    a = resolve_myid(a);
-    b = resolve_myid(b);
-
-    if(b->kind == ID_NONE || a->kind==ID_NONE) {
-	return TRUE;    /* it's the wildcard */
-    }
-
+    /* IDs must be the same kind */
     if (a->kind != b->kind)
 	return FALSE;
 
     switch (a->kind)
     {
     case ID_NONE:
+    case ID_MYID:
 	return TRUE;	/* repeat of above for completeness */
 
     case ID_IPV4_ADDR:
@@ -497,6 +492,20 @@ same_id(const struct id *a, const struct id *b)
     }
     /* NOTREACHED */
     return FALSE;
+}
+
+/* compare two struct id values */
+bool
+same_id(const struct id *a, const struct id *b)
+{
+    a = resolve_myid(a);
+    b = resolve_myid(b);
+
+    if(b->kind == ID_NONE || a->kind==ID_NONE) {
+	return TRUE;    /* it's the wildcard */
+    }
+
+    return same_exact_id(a,b);
 }
 
 /* compare two struct id values, DNs can contain wildcards */
