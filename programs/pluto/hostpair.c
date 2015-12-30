@@ -287,7 +287,7 @@ void clear_IPhost_pair(struct connection *c)
 
         /* maybe clean up IPhp */
         remove_IPhost_pair(IPhp);
-	c->IPhost_pair = NULL;	/* redundant, but safe */
+	c->IPhost_pair = NULL;
     }
 }
 
