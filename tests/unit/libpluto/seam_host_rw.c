@@ -16,6 +16,7 @@ struct iface_port rw_if1 = {
 
 void init_rw_interface(void)
 {
+  init_iface_port(&rw_if1);
   rw_if1.next = interfaces;
   rw_if1.ip_addr.u.v4.sin_addr.s_addr=htonl(0x5db8d822); /* 93.184.216.34 example.com */
   interfaces = &rw_if1;

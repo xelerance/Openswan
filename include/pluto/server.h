@@ -55,6 +55,7 @@ struct iface_dev {
 
 struct iface_port {
     struct iface_dev   *ip_dev;
+  char                addrname[ADDRTOT_BUF];
     u_int16_t           port;    /* host byte order */
     ip_address          ip_addr;   /* interface IP address */
     int fd;	        /* file descriptor of socket for IKE UDP messages */
@@ -71,6 +72,7 @@ extern void show_ifaces_status(void);
 extern void free_ifaces(void);
 extern void show_debug_status(void);
 extern void call_server(void);
+extern void init_iface_port(struct iface_port *q);
 
 /* in rcv_info.c */
 extern err_t init_info_socket(void);

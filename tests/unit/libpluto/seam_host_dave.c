@@ -16,6 +16,7 @@ struct iface_port dave_if1 = {
 
 void init_dave_interface(void)
 {
+  init_iface_port(&dave_if1);
   dave_if1.next = interfaces;
   dave_if1.ip_addr.u.v4.sin_addr.s_addr=htonl(0x5db8d823); /* 93.184.216.35 example.com */
   interfaces = &dave_if1;
