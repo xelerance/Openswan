@@ -17,8 +17,11 @@ processing whack msg time: X size: Y
 | certificate is valid
 | counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
 | counting wild cards for @moon.strongswan.org is 0
-| orient home checking against if: eth0 (AF_INET)
-| orient home matching on public/private keys
+| orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
+| orient home matching on public/private keys: this=no[%address] that=yes[%defaultroute]
+|   orient home matched on that having private key
+|   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
+|   orient home finished with: 1 [0.0.0.0]
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
@@ -27,6 +30,7 @@ processing whack msg time: X size: Y
 ./davecertI2 adding connection: "home"
 | %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient home finished with: 1 [0.0.0.0]
 RC=0 "home": %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
 RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
@@ -35,8 +39,11 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | Changed path to directory '../samples/davecert/cacerts'
 ./davecertI2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
 | creating state object #1 at Z
-| orient home checking against if: eth0 (AF_INET)
-| orient home matching on public/private keys
+| orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
+| orient home matching on public/private keys: this=yes[%defaultroute] that=no[%address]
+|   orient home matched on this having private key
+|   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
+|   orient home finished with: 1 [0.0.0.0]
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4

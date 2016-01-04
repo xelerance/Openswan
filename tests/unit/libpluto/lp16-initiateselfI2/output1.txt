@@ -16,9 +16,13 @@ processing whack msg time: X size: Y
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
-| orient gateway--any checking against if: eth0 (AF_INET)
-| orient gateway--any matching on public/private keys
+| orient gateway--any checking against if: eth0 (AF_INET:93.184.216.34:500)
 |   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca called with a=(empty) b=(empty)
+| orient gateway--any matching on public/private keys: this=no[%address] that=yes[%any]
+|   orient gateway--any matched on that having private key
+|   picking maching interface for family[2,2]: AF_INET resulted in: 93.184.216.34
+|   orient gateway--any finished with: 1 [93.184.216.34]
 | find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 0.0.0.0:500 %address 132.213.238.7:500 -> hp:none
@@ -27,14 +31,19 @@ processing whack msg time: X size: Y
 ./initiateselfI2 adding connection: "gateway--any"
 | %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient gateway--any finished with: 1 [93.184.216.34]
 RC=0 "gateway--any": %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "gateway--any":     myip=unset; hisip=unset;
 RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
-| orient gateway--any checking against if: eth0 (AF_INET)
-| orient gateway--any matching on public/private keys
+| orient gateway--any checking against if: eth0 (AF_INET:93.184.216.34:500)
 |   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca called with a=(empty) b=(empty)
+| orient gateway--any matching on public/private keys: this=yes[%any] that=no[%address]
+|   orient gateway--any matched on this having private key
+|   picking maching interface for family[2,2]: AF_INET resulted in: 93.184.216.34
+|   orient gateway--any finished with: 1 [93.184.216.34]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4

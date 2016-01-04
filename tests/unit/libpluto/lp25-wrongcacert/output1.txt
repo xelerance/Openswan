@@ -18,7 +18,8 @@ processing whack msg time: X size: Y
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
-| orient rw-any checking against if: eth0 (AF_INET)
+| orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)
+|   orient rw-any finished with: 1 [132.213.238.7]
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
@@ -27,6 +28,7 @@ processing whack msg time: X size: Y
 ./wrongcacert adding connection: "rw-any"
 | 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient rw-any finished with: 1 [132.213.238.7]
 RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
@@ -114,7 +116,8 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | find_host_connection2 returns rw-any
 ./wrongcacert tentatively considering connection: rw-any
 | creating state object #1 at Z
-| orient rw-any checking against if: eth0 (AF_INET)
+| orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)
+|   orient rw-any finished with: 1 [132.213.238.7]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
