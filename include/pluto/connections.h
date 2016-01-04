@@ -248,6 +248,7 @@ struct connection {
     policy_prio_t prio;
     bool instance_initiation_ok;	/* this is an instance of a policy that mandates initiate */
     enum connection_kind kind;
+    bool                   ip_oriented; /* true iff oriented by IP address */
     const struct iface_port *interface;	/* filled in iff oriented */
 
     bool initiated;
