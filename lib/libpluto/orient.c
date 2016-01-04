@@ -153,8 +153,9 @@ orient(struct connection *c, unsigned int pluto_port)
                     || sr->this.host_type == KH_ANY)
                    && osw_end_has_private_key(&sr->this)) {
                     /*
-                     * orientated is determined by selecting an interface, and this will pick
-                     * first interface in the list...  want to pick wildcard outgoing interface.
+                     * orientated is determined by selecting an interface,
+                     * and this will pick first interface in the list...
+                     * want to pick wildcard outgoing interface.
                      */
                     c->interface = interfaces;
                     c->ip_oriented = FALSE;
@@ -163,21 +164,27 @@ orient(struct connection *c, unsigned int pluto_port)
                            || sr->that.host_type == KH_ANY)
                           && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
+
                     c->interface = interfaces;
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->that)
                           && sr->this.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
+                    /* if still not oriented, then look for an end
+                     * that hasn't a key, but which hasn't a private key,
+                     * and defaultroute */
+
                     c->interface = interfaces;
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->this)
                           && sr->that.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
+                    /* if still not oriented, then look for an end that
+                     * hasn't a key, but which hasn't a private key,
+                     and defaultroute */
+
                     swap_ends(sr);
+
                     c->interface = interfaces;
                     c->ip_oriented = FALSE;
                 }
