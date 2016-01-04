@@ -100,14 +100,14 @@ orient(struct connection *c, unsigned int pluto_port)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
-                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s", c->name, p->ip_dev->id_rname));
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s (%s:%u)", c->name, p->ip_dev->id_rname, p->addrname, p->port));
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
 
 #ifdef HAVE_LABELED_IPSEC
 		if (c->loopback && sameaddr(&sr->this.host_addr, &p->ip_addr)) {
-		DBG(DBG_CONTROLMORE,
+                    DBG(DBG_CONTROLMORE,
 			DBG_log("loopback connections \"%s\" with interface %s!"
 			 , c->name, p->ip_dev->id_rname));
 			c->interface = p;
