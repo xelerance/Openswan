@@ -16,7 +16,8 @@ processing whack msg time: X size: Y
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
-| orient gateway--any checking against if: eth0
+| orient gateway--any checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
@@ -111,7 +112,8 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | find_host_connection2 returns gateway--any
 ./respondselfR1 tentatively considering connection: gateway--any
 | creating state object #1 at Z
-| orient gateway--any checking against if: eth0
+| orient gateway--any checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5

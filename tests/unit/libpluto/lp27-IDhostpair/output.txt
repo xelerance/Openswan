@@ -13,7 +13,10 @@ processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for @openswan.testing.xelerance.com is 0
 | counting wild cards for @dnsh2h2 is 0
-| orient mytunnel checking against if: eth0
+| orient mytunnel checking against if: eth0 (2606:2800:220:1:248:1893:25c8:1946:500)
+| orient mytunnel checking against if: eth0 (192.168.1.1:4500)
+| orient mytunnel checking against if: eth0 (192.168.1.1:500)
+|     orient matched
 | find_host_pair: looking for me=192.168.1.1:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %any 0.0.0.0:500 -> hp:none
@@ -35,7 +38,10 @@ processing whack msg time: X size: Y
 | Added new connection mytunnel2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for @openswan.testing.xelerance.com is 0
 | counting wild cards for @oswclient2 is 0
-| orient mytunnel2 checking against if: eth0
+| orient mytunnel2 checking against if: eth0 (2606:2800:220:1:248:1893:25c8:1946:500)
+| orient mytunnel2 checking against if: eth0 (192.168.1.1:4500)
+| orient mytunnel2 checking against if: eth0 (192.168.1.1:500)
+|     orient matched
 | find_host_pair: looking for me=192.168.1.1:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=192.168.1.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with mytunnel

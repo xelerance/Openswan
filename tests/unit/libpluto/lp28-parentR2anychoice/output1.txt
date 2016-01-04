@@ -16,7 +16,8 @@ processing whack msg time: X size: Y
 | Added new connection any1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| orient any1--jj2 checking against if: eth0
+| orient any1--jj2 checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
@@ -38,7 +39,8 @@ processing whack msg time: X size: Y
 | Added new connection maryjane1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @maryjane01.emmjay.credil.org is 0
-| orient maryjane1--jj2 checking against if: eth0
+| orient maryjane1--jj2 checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with any1--jj2
@@ -135,7 +137,8 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | find_host_connection2 returns maryjane1--jj2
 ./parentR2anychoice tentatively considering connection: maryjane1--jj2
 | creating state object #1 at Z
-| orient maryjane1--jj2 checking against if: eth0
+| orient maryjane1--jj2 checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
