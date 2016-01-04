@@ -50,6 +50,16 @@ static void swap_ends(struct spd_route *sr)
 }
 
 
+struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                   int family)
+{
+    while(iflist && iflist->ip_addr.u.v4.sin_family != family) {
+        iflist = iflist->next;
+    }
+
+    return iflist;
+}
+
 
 static bool osw_end_has_private_key(struct end *him)
 {
@@ -157,7 +167,7 @@ orient(struct connection *c, unsigned int pluto_port)
                      * and this will pick first interface in the list...
                      * want to pick wildcard outgoing interface.
                      */
-                    c->interface = interfaces;
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
@@ -165,7 +175,7 @@ orient(struct connection *c, unsigned int pluto_port)
                           && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
 
-                    c->interface = interfaces;
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->that)
@@ -174,7 +184,7 @@ orient(struct connection *c, unsigned int pluto_port)
                      * that hasn't a key, but which hasn't a private key,
                      * and defaultroute */
 
-                    c->interface = interfaces;
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->that.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->this)
@@ -185,7 +195,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
                     swap_ends(sr);
 
-                    c->interface = interfaces;
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
                 }
             }
