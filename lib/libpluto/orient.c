@@ -41,6 +41,14 @@
 #include "pluto/server.h"
 #include "pluto/connections.h"	/* needs id.h */
 
+/*
+ * this variable is set in production pluto when using
+ * kern_interface == NO_KERNEL,  but must remain unset
+ * at other times, including regression testing.
+ *
+ */
+bool orient_same_addr_ok = FALSE;
+
 static void swap_ends(struct spd_route *sr)
 {
     struct end t = sr->this;
@@ -170,8 +178,8 @@ orient(struct connection *c, unsigned int pluto_port)
 		{
 		    /* check if this interface matches this end */
 		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
-			&& (kern_interface != NO_KERNEL
-			    || sr->this.host_port == pluto_port))
+			&& (orient_same_addr_ok
+                            || sr->this.host_port == p->port))
 		    {
 			if (oriented(*c))
 			{
@@ -188,12 +196,14 @@ orient(struct connection *c, unsigned int pluto_port)
 			}
 			c->interface = p;
                         c->ip_oriented = TRUE;
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("    orient matched"));
 		    }
 
 		    /* done with this interface if it doesn't match that end */
 		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
-			  && (kern_interface!=NO_KERNEL
-			      || sr->that.host_port == pluto_port)))
+			  && (orient_same_addr_ok
+			      || sr->that.host_port == p->port)))
 			break;
 
 		    /* swap ends and try again.
