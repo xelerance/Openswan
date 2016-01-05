@@ -54,9 +54,21 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
                                                    struct spd_route *sr)
 {
     struct iface_port *ifp = interfaces;
+    unsigned int       desired_port;
     struct end        *e1 = &sr->this;
     int family = sr->this.host_addr.u.v4.sin_family;
     int family2= sr->that.host_addr.u.v4.sin_family;
+
+    switch(family) {
+    case AF_INET6:
+        desired_port = e1->host_addr.u.v6.sin6_port;
+        break;
+
+    default:
+    case AF_INET:
+        desired_port = e1->host_addr.u.v4.sin_port;
+        break;
+    }
 
     if(family == 0) {
         family = family2;
@@ -67,17 +79,8 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
     while(iflist) {
         if(iflist->ip_addr.u.v4.sin_family == family) {
             ifp = iflist;
-            switch(family) {
-            case AF_INET6:
-                if(iflist->ip_addr.u.v6.sin6_port == e1->host_addr.u.v6.sin6_port) {
-                    return iflist;
-                }
-                break;
-            case AF_INET:
-                if(iflist->ip_addr.u.v4.sin_port == e1->host_addr.u.v4.sin_port) {
-                    return iflist;
-                }
-                break;
+            if(iflist->port == desired_port) {
+                return iflist;
             }
         }
         iflist = iflist->next;
