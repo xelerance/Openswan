@@ -296,6 +296,7 @@ struct connection {
 };
 
 #define oriented(c) ((c).interface != NULL)
+extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern bool same_peer_ids(const struct connection *c

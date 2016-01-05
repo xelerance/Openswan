@@ -618,6 +618,12 @@ main(int argc, char **argv)
 
 	case 'n':	/* --use-nostack */
 	    kern_interface = NO_KERNEL;
+
+            /* this permits interfaces to match even if ports do not, so
+             * that pluto can be tested against another pluto, all on
+             * 127.0.0.1
+             */
+            orient_same_addr_ok = TRUE;
 	    continue;
 
 	case 'D':	/* --force_busy */
