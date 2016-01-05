@@ -51,16 +51,40 @@ static void swap_ends(struct spd_route *sr)
 
 
 struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
-                                                   int family, int family2)
+                                                   struct spd_route *sr)
 {
-    if(family == 0) family = family2;
+    struct iface_port *ifp = interfaces;
+    struct end        *e1 = &sr->this;
+    int family = sr->this.host_addr.u.v4.sin_family;
+    int family2= sr->that.host_addr.u.v4.sin_family;
+
+    if(family == 0) {
+        family = family2;
+        e1 = &sr->that;
+    }
     if(family == 0) family = AF_INET;
 
-    while(iflist && iflist->ip_addr.u.v4.sin_family != family) {
+    while(iflist) {
+        if(iflist->ip_addr.u.v4.sin_family == family) {
+            ifp = iflist;
+            switch(family) {
+            case AF_INET6:
+                if(iflist->ip_addr.u.v6.sin6_port == e1->host_addr.u.v6.sin6_port) {
+                    return iflist;
+                }
+                break;
+            case AF_INET:
+                if(iflist->ip_addr.u.v4.sin_port == e1->host_addr.u.v4.sin_port) {
+                    return iflist;
+                }
+                break;
+            }
+        }
         iflist = iflist->next;
     }
 
-    return iflist;
+    /* could be a problem here */
+    return ifp;
 }
 
 
@@ -170,9 +194,8 @@ orient(struct connection *c, unsigned int pluto_port)
                      * and this will pick first interface in the list...
                      * want to pick wildcard outgoing interface.
                      */
-                    c->interface   = pick_matching_interfacebyfamily(interfaces
-                                                                     , sr->this.host_addr.u.v4.sin_family
-                                                                     , sr->that.host_addr.u.v4.sin_family);
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
@@ -180,7 +203,8 @@ orient(struct connection *c, unsigned int pluto_port)
                           && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family, sr->that.host_addr.u.v4.sin_family);
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->that)
@@ -190,9 +214,7 @@ orient(struct connection *c, unsigned int pluto_port)
                      * and defaultroute */
 
                     c->interface   =
-                        pick_matching_interfacebyfamily(interfaces
-                                                        , sr->that.host_addr.u.v4.sin_family
-                                                        , sr->that.host_addr.u.v4.sin_family);
+                        pick_matching_interfacebyfamily(interfaces, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!osw_end_has_private_key(&sr->this)
@@ -204,9 +226,7 @@ orient(struct connection *c, unsigned int pluto_port)
                     swap_ends(sr);
 
                     c->interface   =
-                        pick_matching_interfacebyfamily(interfaces
-                                                        , sr->this.host_addr.u.v4.sin_family
-                                                        , sr->that.host_addr.u.v4.sin_family);
+                        pick_matching_interfacebyfamily(interfaces, sr);
                     c->ip_oriented = FALSE;
                 }
             }
