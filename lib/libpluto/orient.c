@@ -49,23 +49,60 @@ static void swap_ends(struct spd_route *sr)
     sr->that = t;
 }
 
-
+/*
+ * pick the next matching interface in the list, starting at iflist.
+ * iflist is always "interfaces" here, but other calls will resume the
+ * search from the previously returned value.
+ */
 struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
-                                                   int family1, int family2)
+                                                   int family, struct spd_route *sr)
 {
-    unsigned int family = family1 ? family1 : family2;
-    const struct af_info *afi = aftoinfo(family);
+    struct iface_port *ifp = interfaces;
+    struct end        *e1  = &sr->this;
+    const struct af_info *afi;
+    bool done = FALSE;
+    int family1= sr->this.host_addr.u.v4.sin_family;
+    int family2= sr->that.host_addr.u.v4.sin_family;
 
-    while(iflist && iflist->ip_addr.u.v4.sin_family != family) {
+    if(family == 0) {
+        family = family1 ? family1 : family2;
+    }
+    afi = aftoinfo(family);
+    if(family1 == 0) {
+        e1 = &sr->that;
+    }
+
+    while(!done && iflist) {
+        ifp = iflist;
+        if(iflist->ip_addr.u.v4.sin_family == family) {
+#if 0
+            DBG_log("  ports: %u vs %u",
+                    iflist->ip_addr.u.v6.sin6_port, e1->host_addr.u.v6.sin6_port);
+#endif
+            switch(family) {
+            case AF_INET6:
+                if(iflist->ip_addr.u.v6.sin6_port == e1->host_addr.u.v6.sin6_port) {
+                    done = TRUE;
+                }
+                break;
+            case AF_INET:
+                if(iflist->ip_addr.u.v4.sin_port == e1->host_addr.u.v4.sin_port) {
+                    done = TRUE;
+                }
+                break;
+            }
+        }
         iflist = iflist->next;
     }
 
+    if(!done) ifp = NULL;
+
     DBG(DBG_CONTROLMORE,
         DBG_log("  picking maching interface for family[%u,%u]: %s resulted in: %s"
-                , family1, family2
-                , afi ? afi->name : "<family:0>", iflist ? iflist->addrname : "none"));
+                , family, family2
+                , afi ? afi->name : "<family:0>", ifp ? ifp->addrname : "none"));
 
-    return iflist;
+    return ifp;
 }
 
 
@@ -193,7 +230,7 @@ orient(struct connection *c, unsigned int pluto_port)
                         DBG_log("  orient %s matched on this having private key", c->name));
 
                     /* take the family from the other end */
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
@@ -205,7 +242,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!that_has_private_key
@@ -217,7 +254,7 @@ orient(struct connection *c, unsigned int pluto_port)
                     DBG(DBG_CONTROLMORE,
                         DBG_log("  orient %s matched on this being defaultroute, and that lacking private key", c->name));
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!this_has_private_key
@@ -230,7 +267,7 @@ orient(struct connection *c, unsigned int pluto_port)
                         DBG_log("  orient %s matched on that being defaultroute, and this lacking private key", c->name));
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
                     c->ip_oriented = FALSE;
                 }
             }
