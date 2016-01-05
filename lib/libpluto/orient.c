@@ -60,9 +60,21 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
     struct iface_port *ifp = interfaces;
     struct end        *e1  = &sr->this;
     const struct af_info *afi;
+    unsigned int       desired_port;
     bool done = FALSE;
     int family1= sr->this.host_addr.u.v4.sin_family;
     int family2= sr->that.host_addr.u.v4.sin_family;
+
+    switch(family) {
+    case AF_INET6:
+        desired_port = e1->host_addr.u.v6.sin6_port;
+        break;
+
+    default:
+    case AF_INET:
+        desired_port = e1->host_addr.u.v4.sin_port;
+        break;
+    }
 
     if(family == 0) {
         family = family1 ? family1 : family2;
@@ -77,19 +89,10 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         if(iflist->ip_addr.u.v4.sin_family == family) {
 #if 0
             DBG_log("  ports: %u vs %u",
-                    iflist->ip_addr.u.v6.sin6_port, e1->host_addr.u.v6.sin6_port);
+                    iflist->port, desired_port);
 #endif
-            switch(family) {
-            case AF_INET6:
-                if(iflist->ip_addr.u.v6.sin6_port == e1->host_addr.u.v6.sin6_port) {
-                    done = TRUE;
-                }
-                break;
-            case AF_INET:
-                if(iflist->ip_addr.u.v4.sin_port == e1->host_addr.u.v4.sin_port) {
-                    done = TRUE;
-                }
-                break;
+            if(iflist->port == desired_port) {
+                done = TRUE;
             }
         }
         iflist = iflist->next;
