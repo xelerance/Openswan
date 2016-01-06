@@ -1,3 +1,5 @@
+#include <arpa/inet.h>
+
 struct iface_dev  parker_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
