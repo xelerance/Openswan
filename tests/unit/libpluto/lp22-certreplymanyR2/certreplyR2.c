@@ -1,6 +1,11 @@
+#define FIND_ID_EXTENDED_DEBUG 1
+
 #include "../lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
+
+#include "../../programs/pluto/hostpair.c"
+
 
 #define TESTNAME "certreplyselfR2"
 
@@ -25,6 +30,8 @@ static void init_loaded(void)
 {
     /* loading X.509 CA certificates */
     load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
+
+    hostpair_list();
 }
 
 #include "../lp12-parentR2/parentR2_main.c"

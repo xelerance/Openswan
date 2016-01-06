@@ -189,12 +189,8 @@ update_host_pairs(struct connection *c)
 	}
     }
 
-    if (p->connections == NULL)
-    {
-	passert(p->pending == NULL);	/* ??? must deal with this! */
-	list_rm(struct IPhost_pair, next, p, IPhost_pairs);
-	pfree(p);
-    }
+    clear_IPhost_pair(c);
+    connect_to_IPhost_pair(c);
 }
 
 #endif /* DYNAMICDNS */
@@ -286,31 +282,7 @@ delete_connection(struct connection *c, bool relations)
     cur_connection = old_cur_connection;
 
     /* find and delete c from the host pair list */
-    if (c->IPhost_pair == NULL)
-    {
-	list_rm(struct connection,IPhp_next, c, unoriented_connections);
-    }
-    else
-    {
-        /* XXX this does not belong here */
-	struct IPhost_pair *IPhp = c->IPhost_pair;
-
-	list_rm(struct connection, IPhp_next, c, IPhp->connections);
-	c->IPhost_pair = NULL;	/* redundant, but safe */
-
-	/* if there are no more connections with this host_pair
-	 * and we haven't even made an initial contact, let's delete
-	 * this guy in case we were created by an attempted DOS attack.
-	 */
-	if (IPhp->connections == NULL)
-	{
-	    passert(IPhp->pending == NULL);	/* ??? must deal with this! */
-	    remove_IPhost_pair(IPhp);
-	    pfree(IPhp);
-	}
-    }
-
-    clear_IDhost_pair(c);
+    clear_host_pairs(c);
 
     if (c->kind != CK_GOING_AWAY) pfreeany(c->spd.that.virt);
 
@@ -413,8 +385,14 @@ check_orientations(void)
 	{
 	    struct connection *nxt = c->IPhp_next;
 
-	    (void)orient(c, pluto_port500);
+	    bool oriented = orient(c, pluto_port500);
+            if(oriented) {
+                DBG(DBG_CONTROLMORE
+                    , DBG_log("connection %s is now oriented"
+                              , c->name));
+            }
 	    connect_to_IPhost_pair(c);
+	    connect_to_IDhost_pair(c);
 	    c = nxt;
 	}
     }

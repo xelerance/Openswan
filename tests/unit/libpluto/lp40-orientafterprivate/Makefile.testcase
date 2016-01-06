@@ -1,0 +1,6 @@
+SAMPLEDIR=../samples
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+ENDNAME=parker
+UNITTESTARGS=${WHACKFILE} parker1--jj2 ikev2:parker--jj
+
+TESTNAME=orienttest

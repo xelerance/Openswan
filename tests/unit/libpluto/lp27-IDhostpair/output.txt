@@ -17,7 +17,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=192.168.1.1:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %any 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@dnsh2h2
+| find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@dnsh2h2 (exact)
 |   concluded with <none>
 ./IDhostpair adding connection: "mytunnel"
 | 192.168.1.1<192.168.1.1>[@openswan.testing.xelerance.com]---192.139.46.65...10.10.4.1---%any[@dnsh2h2]
@@ -40,25 +40,21 @@ processing whack msg time: X size: Y
 | find_host_pair: comparing to me=192.168.1.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with mytunnel
 | connect_to_host_pair: 192.168.1.1:500 %any 0.0.0.0:500 -> hp:mytunnel
-| find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@oswclient2
+| find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@oswclient2 (exact)
 |                   comparing to me=@openswan.testing.xelerance.com him=@dnsh2h2 (mytunnel)
 |   concluded with <none>
 ./IDhostpair adding connection: "mytunnel2"
 | 192.168.1.1<192.168.1.1>[@openswan.testing.xelerance.com]---192.139.46.65...%any[@oswclient2]
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 RC=2 IP hostpairs:
-RC=2   IPpair: 192.168.1.1:500  0.0.0.0:500
-RC=2      mytunnel2[]
-
-RC=2      mytunnel[]
-
+RC=2   IPpair: 192.168.1.1:500 - 0.0.0.0:500
+RC=2      mytunnel2
+RC=2      mytunnel
 RC=2 ID hostpairs:
-RC=2   IDpair: @openswan.testing.xelerance.com @oswclient2
-RC=2      mytunnel2[]
-
-RC=2   IDpair: @openswan.testing.xelerance.com @dnsh2h2
-RC=2      mytunnel[]
-
+RC=2   IDpair: @openswan.testing.xelerance.com/         @oswclient2
+RC=2      mytunnel2
+RC=2   IDpair: @openswan.testing.xelerance.com/            @dnsh2h2
+RC=2      mytunnel
 ./IDhostpair leak: 2 * keep id name, item size: X
 ./IDhostpair leak: ID host_pair, item size: X
 ./IDhostpair leak: keep id name, item size: X

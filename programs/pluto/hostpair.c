@@ -97,7 +97,8 @@
  * Only oriented connections are registered.
  *
  * Unoriented connections are kept on the unoriented_connections
- * linked list (using hp_next).  For them, host_pair is NULL.
+ * linked list (using hp_next).  For them, IPhost_pair is NULL,
+ * but they may still be on the IDhost_pair list.
  */
 
 struct IPhost_pair *IPhost_pairs = NULL;
@@ -247,56 +248,66 @@ find_host_pair(bool exact
 }
 
 /*
- * frees an entry in the IPhost_pair list.
+ * this removes a connection from a list of host pairs
  */
 void remove_IPhost_pair(struct IPhost_pair *hp)
 {
-    list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
+    if(hp != NULL && hp->connections == NULL) {
+        list_rm(struct IPhost_pair, next, hp, IPhost_pairs);
+        pfree(hp);
+    }
+}
+
+/* this removes a host pair header from the list of host pairs */
+void remove_IDhost_pair(struct IDhost_pair *hp)
+{
+    if(hp != NULL && hp->connections == NULL) {
+        list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
+        free_id_content(&hp->me_who);
+        free_id_content(&hp->him_who);
+        pfree(hp);
+    }
 }
 
 /*
- * frees an entry in the IDhost_pair list.
+ * this removes a connection from it's ID and IP host pairs
  */
-void remove_IDhost_pair(struct IDhost_pair *hp)
+void clear_IPhost_pair(struct connection *c)
 {
-    list_rm(struct IDhost_pair, next, hp, IDhost_pairs);
-    if(hp->connections == NULL) {
-        free_id_content(&hp->me_who);
-        free_id_content(&hp->him_who);
+    struct IPhost_pair *IPhp = c->IPhost_pair;
+
+    if (IPhp == NULL)
+    {
+        /* remove it from unoriented_connections then */
+	list_rm(struct connection, IPhp_next, c, unoriented_connections);
+    }
+    else
+    {
+        list_rm(struct connection, IPhp_next, c, IPhp->connections);
+
+        /* maybe clean up IPhp */
+        remove_IPhost_pair(IPhp);
+	c->IPhost_pair = NULL;
     }
 }
 
 void clear_IDhost_pair(struct connection *c)
 {
     struct IDhost_pair *IDhp = c->IDhost_pair;
-    struct connection  **ep;
 
-    if(IDhp == NULL) return;
+    if(IDhp != NULL) {
+        list_rm(struct connection, IDhp_next, c, IDhp->connections);
 
-    /* removes connection c from the list of ID host pairs */
-
-    /* it is possible it was never in the list, if it was an instance,
-     * so can not use list_rm() macro.
-     */
-
-    /* find entry that points to (c) */
-    for(ep = &(IDhp->connections); *ep != (c); ep = &(*ep)->IDhp_next);
-
-    if(*ep == NULL) {
-        /* then connection was never in the list! */
-        DBG_log("connection: %s[%lu] not in IDhost_pair %p. Is it an instance?", c->name,
-                c->instance_serial,
-                IDhp);
-    } else {
-	*ep = (c)->IDhp_next;
-    }
-    c->IDhost_pair = NULL;	/* redundant, but safe */
-
-    /* check out the IDhp, maybe it should be freed too, if empty */
-    if(IDhp->connections == NULL) {
+        /* maybe clean up IDhp */
         remove_IDhost_pair(IDhp);
-        pfree(IDhp);
+        c->IDhost_pair = NULL;
     }
+}
+
+void clear_host_pairs(struct connection *c)
+{
+    clear_IPhost_pair(c);
+    clear_IDhost_pair(c);
 }
 
 
@@ -394,15 +405,76 @@ connect_to_IPhost_pair(struct connection *c)
  *
  *
  */
+#ifdef FIND_ID_EXTENDED_DEBUG
+#define ID_DEBUG(X) X
+#else
+#define ID_DEBUG(X)
+#endif
+
 struct IDhost_pair *
-find_ID_host_pair(bool exact
-                  , const struct id me
+find_ID_host_pair_exact(const struct id me
+                        , const struct id him)
+{
+    struct IDhost_pair *p, *pbest = NULL;
+    char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
+    char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
+
+    /*
+     * look for a host-pair that has the right set of local ID/remote ID.
+     * ID_NONE matches only another ID_NONE.
+     */
+    if(DBGP(DBG_CONTROLMORE)) {
+        strcpy(mebuf,  "<any>");
+        strcpy(himbuf, "<any>");
+        if(me.has_wildcards == 0) {
+            idtoa(&me,  mebuf,  sizeof(mebuf));
+        }
+        if(him.has_wildcards == 0) {
+            idtoa(&him, himbuf, sizeof(himbuf));
+        }
+    }
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s (exact)\n"
+                  , mebuf, himbuf));
+
+    for (p = IDhost_pairs; p != NULL; p = p->next) {
+	DBG(DBG_CONTROLMORE,
+            idtoa(&p->me_who, mewho, sizeof(mewho));
+            idtoa(&p->him_who,himwho, sizeof(himwho));
+            DBG_log("                  comparing to me=%s him=%s (%s)\n"
+                    , mewho, himwho, p->connections->name));
+
+        /* kick out if it does not match:
+         * easier to understand than positive/convuluted logic
+         */
+        if(!same_exact_id(&him, &p->him_who)) {
+            ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
+            continue;
+        }
+
+        if(!same_exact_id(&me,  &p->me_who))  {
+            ID_DEBUG(DBG_log("    exact FAILs -- me_id mismatch"));
+            continue;
+        }
+        ID_DEBUG(DBG_log("    now best match"));
+        pbest = p;
+        break;
+    }
+    DBG(DBG_CONTROLMORE,
+        DBG_log("  concluded with %s", pbest && pbest->connections ? pbest->connections->name : "<none>"));
+    return pbest;
+}
+
+struct IDhost_pair *
+find_ID_host_pair(const struct id me
                   , const struct id him)
 {
     struct IDhost_pair *p, *pbest = NULL;
-    bool exactmatch = FALSE;
     char mebuf[IDTOA_BUF], himbuf[IDTOA_BUF];
-    char thisid[IDTOA_BUF], thatid[IDTOA_BUF];
+    char mewho[IDTOA_BUF], himwho[IDTOA_BUF];
+    bool exactmatch = FALSE;
+    bool pbestexact = FALSE;
 
     /*
      * look for a host-pair that has the right set of local ID/remote ID.
@@ -421,36 +493,42 @@ find_ID_host_pair(bool exact
     }
 
     DBG(DBG_CONTROLMORE
-        , DBG_log("find_ID_host_pair: looking for me=%s him=%s\n"
+        , DBG_log("find_ID_host_pair: looking for me=%s him=%s (wildcard)\n"
                   , mebuf, himbuf));
 
     for (p = IDhost_pairs; p != NULL; p = p->next)
     {
 	DBG(DBG_CONTROLMORE,
-            idtoa(&p->me_who, thisid, sizeof(thisid));
-            idtoa(&p->him_who,thatid, sizeof(thatid));
+            idtoa(&p->me_who, mewho, sizeof(mewho));
+            idtoa(&p->him_who,himwho, sizeof(himwho));
             DBG_log("                  comparing to me=%s him=%s (%s)\n"
-                    , thisid, thatid, p->connections->name));
+                    , mewho, himwho, p->connections->name));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
          */
-        if(!same_id(&him, &p->him_who)) continue;
-        if(exact) {
-            if(!same_id(&me,  &p->me_who))  continue;
-        } else {
-            if(same_id(&me,  &p->me_who)) {
-                pbest = p;
-                exactmatch = TRUE;
-                break;
-            } else {
-                pbest = p;
-                exactmatch = FALSE;
-            }
+        exactmatch = TRUE;
+
+        if(!same_id(&him, &p->him_who)) {
+            ID_DEBUG(DBG_log("     FAILs -- himid mismatch"));
+            continue;
         }
-        if(!exact && !exactmatch) {
+        /* if him matched due to wildcard, mark it */
+        if(p->him_who.kind == ID_NONE) {
+            exactmatch = FALSE;
+        }
+
+        if(same_exact_id(&me,  &p->me_who)) {
+            ID_DEBUG(DBG_log("    me matches exactly (wildcard)"));
+
+        } else if(same_id(&me,  &p->me_who)) {
+            exactmatch = FALSE;
+            ID_DEBUG(DBG_log("    me wildcard match"));
+        }
+        if((exactmatch==TRUE && pbestexact == FALSE) || pbest == NULL) {
             pbest = p;
-            break;
+            pbestexact = exactmatch;
+            ID_DEBUG(DBG_log("    now best match"));
         }
         /* loop looking for better matches */
     }
@@ -462,9 +540,8 @@ find_ID_host_pair(bool exact
 void
 connect_to_IDhost_pair(struct connection *c)
 {
-    struct IDhost_pair *hp= find_ID_host_pair(EXACT_MATCH
-                                              , c->spd.this.id
-					      , c->spd.that.id);
+    struct IDhost_pair *hp= find_ID_host_pair_exact(c->spd.this.id
+                                                    , c->spd.that.id);
 
     if (hp == NULL) {
         /* no suitable host_pair -- build one */
@@ -474,15 +551,29 @@ connect_to_IDhost_pair(struct connection *c)
         unshare_id_content(&hp->me_who);
         unshare_id_content(&hp->him_who);
 
+        /* init list contained in this header */
         hp->connections = NULL;
+
+        /* add header to list of ID headers */
         hp->next = IDhost_pairs;
         IDhost_pairs = hp;
+
+    } else if(hp == c->IDhost_pair) {
+        /* already on the correct IDhostpair, do nothing */
+        return;
+
+    }
+
+    if(c->IDhost_pair != NULL) {
+        /* must be on wrong list: remove from current list */
+        clear_IDhost_pair(c);
     }
 
     /* add this connection to front of ID host pair connection list */
-    c->IDhost_pair = hp;
     c->IDhp_next = hp->connections;
     hp->connections = c;
+
+    c->IDhost_pair = hp;
 }
 
 void
@@ -553,19 +644,21 @@ hostpair_list(void)
         char himtypebuf[KEYWORD_NAME_BUFLEN];
         struct connection *c = pi->connections;
 
-        himtypebuf[0]='\0';
-        addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
-        addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
-        keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
+        if(c) {
+            himtypebuf[0]='-';
+            himtypebuf[1]='\0';
+            addrtot(&c->spd.this.host_addr, 0, b1,sizeof(b1));
+            addrtot(&c->spd.that.host_addr, 0, b2,sizeof(b2));
+            keyword_name(&kw_host_list, c->spd.that.host_type, himtypebuf);
 
-        whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
-                  , b1, c->spd.this.host_port, himtypebuf
-                  , b2, c->spd.that.host_port);
-        while(c != NULL) {
-            fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
-
-            c = c->IPhp_next;
+            whack_log(RC_LOG, "  IPpair: %s:%d %s %s:%d"
+                      , b1, c->spd.this.host_port, himtypebuf
+                      , b2, c->spd.that.host_port);
+            while(c != NULL) {
+                fmt_connection_inst_name(c, instance, sizeof(instance));
+                whack_log(RC_LOG, "     %s%s", c->name, instance[0] ? instance : "");
+                c = c->IPhp_next;
+            }
         }
     }
 
@@ -577,15 +670,14 @@ hostpair_list(void)
         char instance[1 + 10 + 1];
         struct connection *c = pd->connections;
 
-        idtoa(&c->spd.this.id, b1,sizeof(b1));
-        idtoa(&c->spd.that.id, b2,sizeof(b2));
+        idtoa(&pd->me_who,  b1,sizeof(b1));
+        idtoa(&pd->him_who, b2,sizeof(b2));
 
-        whack_log(RC_LOG, "  IDpair: %s %s"
+        whack_log(RC_LOG, "  IDpair: %20s/%20s"
                   , b1, b2);
         while(c != NULL) {
             fmt_connection_inst_name(c, instance, sizeof(instance));
-            whack_log(RC_LOG, "     %s[%s]\n", c->name, instance);
-
+            whack_log(RC_LOG, "     %s%s", c->name, instance[0] ? instance : "");
             c = c->IDhp_next;
         }
     }

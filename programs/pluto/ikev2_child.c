@@ -756,8 +756,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         }
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
-            hp = find_ID_host_pair(ANY_MATCH
-                                   , sra->this.id
+            hp = find_ID_host_pair(sra->this.id
                                    , sra->that.id);
 
 #ifdef DEBUG

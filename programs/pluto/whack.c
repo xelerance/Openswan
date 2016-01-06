@@ -248,8 +248,12 @@ help(void)
             " [--purgeocsp]"
             "\n\n"
 
-        "purge: whack"
+        "events: whack"
             " [--listevents]"
+            "\n\n"
+
+        "lists: whack"
+            " [--listhostpairs]"
             "\n\n"
 
 	"reread: whack"

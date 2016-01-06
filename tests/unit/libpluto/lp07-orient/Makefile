@@ -22,7 +22,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o
@@ -89,7 +88,7 @@ check:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
+	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
 
 update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt

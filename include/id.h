@@ -61,6 +61,7 @@ extern void unshare_id_content(struct id *id);
 extern void free_id_content(struct id *id);
 extern bool any_id(const struct id *a);
 extern bool same_id(const struct id *a, const struct id *b);
+extern bool same_exact_id(const struct id *a, const struct id *b);
 #define MAX_WILDCARDS	15
 extern bool match_id(const struct id *a, const struct id *b, int *wildcards);
 extern int id_count_wildcards(const struct id *id);

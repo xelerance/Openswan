@@ -12,7 +12,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @vzhost-mondev.xelerance.com is 0
 | orient vzhost1-vzhost-mondev checking against if: eth0
 | orient vzhost1-vzhost-mondev matching on public/private keys
-| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com
+| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (exact)
 |   concluded with <none>
 ./threeconns adding connection: "vzhost1-vzhost-mondev"
 | 10.153.139.0/24===192.168.134.179<192.168.134.179>[@vzhost1.xelerance.com]...192.168.135.215<192.168.135.215>[@vzhost-mondev.xelerance.com]===10.153.140.0/24
@@ -26,7 +26,7 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=173.230.133.71:500 %address him=69.165.217.138:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 173.230.133.71:500 %address 69.165.217.138:500 -> hp:none
-| find_ID_host_pair: looking for me=@vzhost1 him=@patrickn
+| find_ID_host_pair: looking for me=@vzhost1 him=@patrickn (exact)
 |                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
 |   concluded with <none>
 ./threeconns adding connection: "patrickn-vzhost1"
@@ -46,7 +46,7 @@ processing whack msg time: X size: Y
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 173.230.133.71:500 %any 0.0.0.0:500 -> hp:none
-| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@jason
+| find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@jason (exact)
 |                   comparing to me=@vzhost1 him=@patrickn (patrickn-vzhost1)
 |                   comparing to me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (vzhost1-vzhost-mondev)
 |   concluded with <none>

@@ -1794,8 +1794,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     ikev2_decode_local_id(md, RESPONDER);
 
     /* here we have to see if we can find a better SA now that we know the ID */
-    hp = find_ID_host_pair(ANY_MATCH
-                           , st->ikev2.st_local_id
+    hp = find_ID_host_pair(st->ikev2.st_local_id
                            , st->ikev2.st_peer_id);
 
     /*
