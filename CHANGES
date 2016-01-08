@@ -4,8 +4,29 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.46dr5 (November 27, 2015)
+v2.6.46dr6 (January 8, 2016)
 
+*  Properly add IKESA_DEL state: added to state_names,
+   and create new event to delete the state after a timeout with no reply [MCR]
+*  When finding ID match with wildcard, bind tighter to exact matches [MCR]
+*  Split up same_id into same_id(wildcards) and same_exact_id(no wildcards) [MCR]
+*  When checking orientation, log result, and also reconnect to IDhostpair [MCR]
+*  Fix IP/ID free functions to clear a connection from the pairs
+   and then properly free the HP structure themselves [MCR]
+*  Log IDhost pair header values, not ones from the first connection [MCR]
+*  Some formatting tweaks to hostpair_list to make it easier to understand [MCR]
+*  Added listhostpairs option, fixed listevents description [MCR]
+*  The clear_IDhost_pair routine was complaining in list_rm()
+   as a result of an instance being created/copied from the parent, without
+   clearing the IDhost_pair link [MCR]
+*  Use SHA1_DIGEST_SIZE rather than incorrect sizeof() [MCR]
+*  Protected ietf_constants.h against multiple inclusion [MCR]
+*  Some code was duplicated due to refactoring that was backported: list_rm moved to hostpair.h [MCR]
+*  TIME_UTC is also defined in /usr/include/time.h, so pick a better name [MCR]
+*  GCC 5.0 complains about use of !same_chunk() because expansion of macro leaves it confused. Add () [MCR]
+*  Protect list_rm against ehead being null [MCR]
+*  Remove cleanup of IDhostpair links to hostpair.c, 
+    and protect against the connection having never been on an ID hostpair [MCR]
 *  Fixed problem in check_connection_end where wrong end was tested for [MCR]
 *  As SPD Route may be manipulated before being erouted, the resulting eroute_owner setting is no longer propogated back into the connection
    this patch sets all SPD routes which do not have other owners to this eroute [MCR]
