@@ -127,7 +127,7 @@ enum keyword_numeric_config_field {
     KBF_IKEPORT,
     KBF_NAT_KEEPALIVE,      /* per conn enabling/disabling of sending keep-alives */
     KBF_INITIAL_CONTACT,
-    KBF_SEND_VENDORID,      /* per conn sending of our own libreswan vendorid */
+    KBF_SEND_VENDORID,      /* per conn sending of our own openswan vendorid */
     KBF_IKEV1_NATT,	    /* ikev1 NAT-T payloads to send/process */
 
     KBF_MAX
