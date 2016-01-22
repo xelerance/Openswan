@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.46rc1 (January 19, 2016)
+v2.6.46 (January 22, 2016)
 
 *  Properly add IKESA_DEL state: added to state_names,
    and create new event to delete the state after a timeout with no reply [MCR]
