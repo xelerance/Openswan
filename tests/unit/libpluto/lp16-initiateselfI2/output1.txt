@@ -16,7 +16,7 @@ processing whack msg time: X size: Y
 | Added new connection gateway--any with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @example.com is 0
-| orient gateway--any checking against if: eth0
+| orient gateway--any checking against if: eth0 (93.184.216.34:500)
 | orient gateway--any matching on public/private keys
 |   trusted_ca called with a=(empty) b=(empty)
 | find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
@@ -32,7 +32,7 @@ RC=0 "gateway--any":     myip=unset; hisip=unset;
 RC=0 "gateway--any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
-| orient gateway--any checking against if: eth0
+| orient gateway--any checking against if: eth0 (93.184.216.34:500)
 | orient gateway--any matching on public/private keys
 |   trusted_ca called with a=(empty) b=(empty)
 | ICOOKIE:  80 01 02 03  04 05 06 07

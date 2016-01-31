@@ -18,7 +18,8 @@ processing whack msg time: X size: Y
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for (none) is 15
 | based upon ID_wildcard policy, the connection is a template.
-| orient rw-any checking against if: eth0
+| orient rw-any checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
@@ -35,7 +36,8 @@ processing whack msg time: X size: Y
 | certificate is valid
 | counting wild cards for @moon.strongswan.org is 0
 | counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
-| orient rw-dave checking against if: eth0
+| orient rw-dave checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.0.200:500 exact-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with <none>
@@ -58,7 +60,8 @@ processing whack msg time: X size: Y
 ./certreplyR2   loaded host cert file '../samples/gatewaycert/certs/carolCert.pem' (1493 bytes)
 | certificate is valid
 | counting wild cards for 93.184.216.34 is 0
-| orient rw-carol checking against if: eth0
+| orient rw-carol checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 exact-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.0.200:500
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
@@ -176,7 +179,8 @@ RC=2      rw-any
 | find_host_connection2 returns rw-carol
 ./certreplyR2 tentatively considering connection: rw-carol
 | creating state object #1 at Z
-| orient rw-carol checking against if: eth0
+| orient rw-carol checking against if: eth0 (132.213.238.7:500)
+|     orient matched
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5

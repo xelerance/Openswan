@@ -484,8 +484,9 @@ show_ifaces_status(void)
 
     for (p = interfaces; p != NULL; p = p->next)
 	whack_log(RC_COMMENT, "interface %s/%s %s"
-	    , p->ip_dev->id_vname, p->ip_dev->id_rname, ip_str(&p->ip_addr));
+	    , p->ip_dev->id_vname, p->ip_dev->id_rname, p->addrname);
 }
+
 
 void
 show_debug_status(void)

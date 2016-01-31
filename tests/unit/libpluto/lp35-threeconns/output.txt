@@ -10,7 +10,7 @@ processing whack msg time: X size: Y
 | Added new connection vzhost1-vzhost-mondev with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | counting wild cards for @vzhost1.xelerance.com is 0
 | counting wild cards for @vzhost-mondev.xelerance.com is 0
-| orient vzhost1-vzhost-mondev checking against if: eth0
+| orient vzhost1-vzhost-mondev checking against if: eth0 (:500)
 | orient vzhost1-vzhost-mondev matching on public/private keys
 | find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (exact)
 |   concluded with <none>
@@ -22,7 +22,8 @@ processing whack msg time: X size: Y
 | Added new connection patrickn-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for @vzhost1 is 0
 | counting wild cards for @patrickn is 0
-| orient patrickn-vzhost1 checking against if: eth0
+| orient patrickn-vzhost1 checking against if: eth0 (:500)
+|     orient matched
 | find_host_pair: looking for me=173.230.133.71:500 %address him=69.165.217.138:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 173.230.133.71:500 %address 69.165.217.138:500 -> hp:none
@@ -41,7 +42,8 @@ processing whack msg time: X size: Y
 | Added new connection jason-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | counting wild cards for @jason is 0
 | counting wild cards for @vzhost1.xelerance.com is 0
-| orient jason-vzhost1 checking against if: eth0
+| orient jason-vzhost1 checking against if: eth0 (:500)
+|     orient matched
 | find_host_pair: looking for me=173.230.133.71:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>

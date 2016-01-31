@@ -41,6 +41,14 @@
 #include "pluto/server.h"
 #include "pluto/connections.h"	/* needs id.h */
 
+/*
+ * this variable is set in production pluto when using
+ * kern_interface == NO_KERNEL,  but must remain unset
+ * at other times, including regression testing.
+ *
+ */
+bool orient_same_addr_ok = FALSE;
+
 static void swap_ends(struct spd_route *sr)
 {
     struct end t = sr->this;
@@ -49,6 +57,46 @@ static void swap_ends(struct spd_route *sr)
     sr->that = t;
 }
 
+
+struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                   struct spd_route *sr)
+{
+    struct iface_port *ifp = interfaces;
+    unsigned int       desired_port;
+    struct end        *e1 = &sr->this;
+    int family = sr->this.host_addr.u.v4.sin_family;
+    int family2= sr->that.host_addr.u.v4.sin_family;
+
+    switch(family) {
+    case AF_INET6:
+        desired_port = e1->host_addr.u.v6.sin6_port;
+        break;
+
+    default:
+    case AF_INET:
+        desired_port = e1->host_addr.u.v4.sin_port;
+        break;
+    }
+
+    if(family == 0) {
+        family = family2;
+        e1 = &sr->that;
+    }
+    if(family == 0) family = AF_INET;
+
+    while(iflist) {
+        if(iflist->ip_addr.u.v4.sin_family == family) {
+            ifp = iflist;
+            if(iflist->port == desired_port) {
+                return iflist;
+            }
+        }
+        iflist = iflist->next;
+    }
+
+    /* could be a problem here */
+    return ifp;
+}
 
 
 static bool osw_end_has_private_key(struct end *him)
@@ -90,17 +138,18 @@ orient(struct connection *c, unsigned int pluto_port)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
-                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s", c->name, p->ip_dev->id_rname));
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s (%s:%u)", c->name, p->ip_dev->id_rname, p->addrname, p->port));
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
 
 #ifdef HAVE_LABELED_IPSEC
 		if (c->loopback && sameaddr(&sr->this.host_addr, &p->ip_addr)) {
-		DBG(DBG_CONTROLMORE,
+                    DBG(DBG_CONTROLMORE,
 			DBG_log("loopback connections \"%s\" with interface %s!"
 			 , c->name, p->ip_dev->id_rname));
 			c->interface = p;
+                        c->ip_oriented = TRUE;
 			break;
 		}
 #endif
@@ -109,8 +158,8 @@ orient(struct connection *c, unsigned int pluto_port)
 		{
 		    /* check if this interface matches this end */
 		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
-			&& (kern_interface != NO_KERNEL
-			    || sr->this.host_port == pluto_port))
+			&& (orient_same_addr_ok
+                            || sr->this.host_port == p->port))
 		    {
 			if (oriented(*c))
 			{
@@ -126,12 +175,15 @@ orient(struct connection *c, unsigned int pluto_port)
 			    return FALSE;
 			}
 			c->interface = p;
+                        c->ip_oriented = TRUE;
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("    orient matched"));
 		    }
 
 		    /* done with this interface if it doesn't match that end */
 		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
-			  && (kern_interface!=NO_KERNEL
-			      || sr->that.host_port == pluto_port)))
+			  && (orient_same_addr_ok
+			      || sr->that.host_port == p->port)))
 			break;
 
 		    /* swap ends and try again.
@@ -151,27 +203,44 @@ orient(struct connection *c, unsigned int pluto_port)
                     || sr->this.host_type == KH_ANY)
                    && osw_end_has_private_key(&sr->this)) {
                     /*
-                     * orientated is determined by selecting an interface, and this will pick
-                     * first interface in the list...  want to pick wildcard outgoing interface.
+                     * orientated is determined by selecting an interface,
+                     * and this will pick first interface in the list...
+                     * want to pick wildcard outgoing interface.
                      */
-                    c->interface = interfaces;
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
+                    c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
                            || sr->that.host_type == KH_ANY)
                           && osw_end_has_private_key(&sr->that)) {
                     swap_ends(sr);
-                    c->interface = interfaces;
+
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
+                    c->ip_oriented = FALSE;
+
                 } else if(!osw_end_has_private_key(&sr->that)
                           && sr->this.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
-                    c->interface = interfaces;
+                    /* if still not oriented, then look for an end
+                     * that hasn't a key, but which hasn't a private key,
+                     * and defaultroute */
+
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
+                    c->ip_oriented = FALSE;
+
                 } else if(!osw_end_has_private_key(&sr->this)
                           && sr->that.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
+                    /* if still not oriented, then look for an end that
+                     * hasn't a key, but which hasn't a private key,
+                     and defaultroute */
+
                     swap_ends(sr);
-                    c->interface = interfaces;
+
+                    c->interface   =
+                        pick_matching_interfacebyfamily(interfaces, sr);
+                    c->ip_oriented = FALSE;
                 }
             }
         }
