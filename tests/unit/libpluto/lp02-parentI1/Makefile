@@ -22,6 +22,7 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
@@ -46,6 +47,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
@@ -76,7 +78,7 @@ include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS}
+programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
 	@echo CC ${TESTNAME}.c
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
@@ -88,9 +90,16 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
 	@tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
+${TESTNAME}.E:
+	@${CC} -E -c -g -o ${TESTNAME}.E -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+
 ifeq (${WHACKREFFILE},)
 ${WHACKFILE}: OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
+else
+${WHACKFILE}: ${WHACKREFFILE}
+	@mkdir -p OUTPUT
+	cp ${WHACKREFFILE} ${WHACKFILE}
 endif
 
 update: OUTPUT
@@ -103,3 +112,7 @@ clean: OUTPUT
 OUTPUT:
 	@mkdir -p OUTPUT
 
+# Local Variables:
+# compile-command: "make check"
+# End:
+#

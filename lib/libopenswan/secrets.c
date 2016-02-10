@@ -1632,7 +1632,7 @@ install_public_key(struct pubkey *pk, struct pubkey_list **head)
 	pk->issuer.ptr = clone_bytes(pk->issuer.ptr, pk->issuer.len, "issuer dn");
 
     /* store the time the public key was installed */
-    time(&pk->installed_time);
+    pk->installed_time = now();
 
     /* install new key at front */
     p->key = reference_key(pk);

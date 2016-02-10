@@ -46,6 +46,7 @@
 #include <openswan/pfkey.h>
 
 #include "sysdep.h"
+#include "setproctitle.h"
 #include "constants.h"
 #include "oswconf.h"
 #include "defs.h"
@@ -119,6 +120,7 @@
 
 const char *ctlbase = "/var/run/pluto";
 char *pluto_listen = NULL;
+const char *progname = NULL;
 
 #ifdef DEBUG
 openswan_passert_fail_t openswan_passert_fail = passert_fail;
@@ -171,7 +173,6 @@ usage(const char *mess)
 	    "[--secretsfile <secrets-file>] "
 	    "[--ipsecdir <ipsec-dir>] "
 	    "\n\t"
-	    "[--adns <pathname>] "
 	    "[--nhelpers <number>] "
 	    " \n\t"
 	    "[--secctx_attr_value <number>]  "
@@ -323,8 +324,6 @@ bool force_busy = FALSE;
 /* whether or not to use klips */
 enum kernel_interface kern_interface = AUTO_PICK;
 
-char **global_argv;
-int    global_argc;
 bool   log_to_stderr_desired = FALSE;
 bool   log_with_timestamp_desired = FALSE;
 
@@ -372,6 +371,9 @@ main(int argc, char **argv)
     leak_detective=0;
 #endif
 
+    progname = argv[0];
+
+
 #ifdef HAVE_LIBCAP_NG
 	/* Drop capabilities */
 	capng_clear(CAPNG_SELECT_BOTH);
@@ -386,11 +388,11 @@ main(int argc, char **argv)
 #endif
 
 
-    global_argv = argv;
-    global_argc = argc;
 #ifdef DEBUG
     openswan_passert_fail = passert_fail;
 #endif
+
+    initproctitle(argc, argv);
 
     /* see if there is an environment variable */
     coredir = getenv("PLUTO_CORE_DIR");
@@ -441,11 +443,6 @@ main(int argc, char **argv)
 	    { "coredir", required_argument, NULL, 'C' },
 	    { "ipsecdir", required_argument, NULL, 'f' },
 	    { "ipsec_dir", required_argument, NULL, 'f' },
-#ifdef USE_LWRES
-	    { "lwdnsq", required_argument, NULL, 'a' },
-#else /* !USE_LWRES */
-	    { "adns", required_argument, NULL, 'a' },
-#endif /* !USE_LWRES */
 #ifdef NAT_TRAVERSAL
 	    { "nat_traversal", no_argument, NULL, '1' },
 	    { "keep_alive", required_argument, NULL, '2' },
@@ -709,10 +706,6 @@ main(int argc, char **argv)
 	    (void)osw_init_ipsecdir(optarg);
 	    continue;
 
-	case 'a':	/* --adns <pathname> */
-	    pluto_adns_option = optarg;
-	    continue;
-
 #ifdef DEBUG
 	case 'N':	/* --debug-none */
 	    base_debugging = DBG_NONE;
@@ -929,7 +922,6 @@ main(int argc, char **argv)
 					IPSECLIBDIR"/look",
 					IPSECLIBDIR"/newhostkey",
 					IPSECLIBDIR"/pf_key",
-					IPSECLIBDIR"/_pluto_adns",
 					IPSECLIBDIR"/_plutoload",
 					IPSECLIBDIR"/_plutorun",
 					IPSECLIBDIR"/ranbits",
@@ -1004,6 +996,9 @@ main(int argc, char **argv)
 	openswan_log("core dump dir: %s", coredir);
     }
 
+    /* do this really early so that child process is as small as possible */
+    init_adns();
+
     /* establish SIGUSR1 handler */
     signal(SIGUSR1, pluto_sigusr1);
 
@@ -1030,32 +1025,7 @@ main(int argc, char **argv)
 
    /* Check for SAREF support */
 #ifdef KLIPS_MAST
-#include <ipsec_saref.h>
-    {
-	int e, sk, saref;
-	saref = 1;
-	errno=0;
-
-	sk = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_REFINFO, &saref, sizeof(saref));
-	if (e == -1 ) {
-		openswan_log("SAref support [disabled]: %s" , strerror(errno));
-	}
-	else {
-		openswan_log("SAref support [enabled]");
-	}
-	errno=0;
-	e = setsockopt(sk, IPPROTO_IP, IP_IPSEC_BINDREF, &saref, sizeof(saref));
-	if (e == -1 ) {
-		openswan_log("SAbind support [disabled]: %s" , strerror(errno));
-	}
-	else {
-		openswan_log("SAbind support [enabled]");
-	}
-
-
-	close(sk);
-    }
+        saref_init();
 #endif
 
 #ifdef HAVE_LIBNSS
@@ -1113,7 +1083,6 @@ main(int argc, char **argv)
     load_oswcrypto();
     init_demux();
     init_kernel();
-    init_adns();
     init_id();
 
 #ifdef TPM

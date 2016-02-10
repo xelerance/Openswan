@@ -16,6 +16,10 @@
 
 #include <resolv.h>
 #include "adns.h"	/* needs <resolv.h> */
+#include "id.h"
+
+/* forward reference */
+struct connection;
 
 extern int
     adns_qfd,	/* file descriptor for sending queries to adns */
@@ -26,6 +30,7 @@ extern void stop_adns(void);
 extern void handle_adns_answer(void);
 
 extern bool unsent_ADNS_queries;
+extern bool adns_any_in_flight(void);        /* for unit testing */
 extern void send_unsent_ADNS_queries(void);
 
 /* (common prefix of) stuff remembered between async query and answer.
@@ -39,7 +44,7 @@ typedef void (*cont_fn_t)(struct adns_continuation *cr, err_t ugh);
 
 struct adns_continuation {
     unsigned long qtid;	/* query transaction id number */
-    int type;	/* T_TXT or T_KEY, selecting rr type of interest */
+    int type;	        /* T_TXT or T_KEY, selecting rr type of interest */
     cont_fn_t cont_fn;	/* function to carry on suspended work */
     struct id id;	/* subject of query */
     bool sgw_specified;
@@ -49,16 +54,13 @@ struct adns_continuation {
 #ifdef USE_KEYRR
     struct pubkey_list *keys_from_dns;	/* answer, if looking for KEY rrs */
 #endif
+  //struct addrinfo *addresses_from_dns;  /* answer, if looking for A/AAAA rrs */
     struct adns_continuation *previous, *next;
     struct pubkey *last_info;  /* the last structure we accumulated */
-#ifdef USE_LWRES
-    bool used;	/* have we called the cont_fn yet? */
-    struct {
-	char name_buf[NS_MAXDNAME + 2];
-    } query;
-#else /* ! USE_LWRES */
     struct adns_query query;
-#endif /* ! USE_LWRES */
+  struct addrinfo *ipanswers;  /* the result of the async getaddrinfo() call
+                                * this is a fresh malloc, and does not need to be copied
+                                */
 };
 
 extern err_t start_adns_query(const struct id *id	/* domain to query */
@@ -66,6 +68,12 @@ extern err_t start_adns_query(const struct id *id	/* domain to query */
     , int type	/* T_TXT or T_KEY, selecting rr type of interest */
     , cont_fn_t cont_fn	/* continuation function */
     , struct adns_continuation *cr);
+
+extern err_t start_adns_hostname(sa_family_t addr_family
+                                 , const char *hostname
+                                 , cont_fn_t cont_fn
+                                 , struct adns_continuation *cr);
+
 
 
 /* Gateway info gleaned from reverse DNS of client */
@@ -84,6 +92,20 @@ extern void gw_addref(struct gw_info *gw)
     , gw_delref(struct gw_info **gwp);
 
 extern void reset_adns_restart_count(void);
+
+extern bool kick_adns_connection_lookup(struct connection *c, struct end *end, bool newlookup);
+extern void dump_addr_info(struct addrinfo *ans);
+extern struct addrinfo *sort_addr_info(struct addrinfo *ai);
+
+
+struct iphostname_continuation {
+  struct adns_continuation ac;	/* common prefix */
+  struct connection        *c;
+};
+extern void iphostname_continuation(struct adns_continuation *cr, err_t ugh);
+
+
+
 
 #define _DNSKEY_H_
 #endif /* _DNSKEY_H_ */

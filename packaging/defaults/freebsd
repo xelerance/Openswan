@@ -1,4 +1,4 @@
-# set this to space where a linked/configured tree can be created by 
+# set this to space where a linked/configured tree can be created by
 # preprhkern4module. Only needed if you are going to be created RPMs
 # outside of a distribution (as the FS team does for RedHat).
 
@@ -15,7 +15,6 @@ USE_MAST=false
 USE_KLIPS=false
 USE_NETKEY=false
 USE_WIN2K=false
-USE_LWRES=false
 USE_YACC=false
 
 

@@ -1,0 +1,2 @@
+This test case introduces the new right=%dns:name:hint syntax.
+

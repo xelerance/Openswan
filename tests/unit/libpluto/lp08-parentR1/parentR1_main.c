@@ -33,7 +33,7 @@ void recv_pcap_packet(u_char *user
 int main(int argc, char *argv[])
 {
     int   len;
-    char *infile;
+    char *infile, *pcapin, *pcapout;
     char *conn_name;
     int  lineno=0;
     struct connection *c1;
@@ -47,8 +47,9 @@ int main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
-    if(argc != 5) {
-	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin>\n", progname);
+    if(argc <= 4) {
+    usage:
+	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapin> <pcapout>\n", progname);
 	exit(10);
     }
     /* argv[1] == "-r" ?? */
@@ -59,8 +60,33 @@ int main(int argc, char *argv[])
     init_fake_secrets();
     init_jamesjohnson_interface();
 
-    infile = argv[1];
-    conn_name = argv[2];
+    infile = NULL;
+    conn_name = NULL;
+    pcapin  = NULL;
+    pcapout = NULL;
+    argc--; argv++;
+    if(argc > 0) {
+        infile = argv[0];
+        argc--; argv++;
+    }
+    if(argc > 0) {
+        conn_name = argv[0];
+        argc--; argv++;
+    }
+    if(argc > 0) {
+        pcapin = argv[0];
+        argc--; argv++;
+    }
+    if(argc > 0) {
+        pcapout = argv[0];
+        argc--; argv++;
+    }
+    if(conn_name == NULL ||
+       infile    == NULL ||
+       pcapin    == NULL ||
+       pcapout   == NULL) {
+        goto usage;
+    }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(10);
@@ -70,10 +96,10 @@ int main(int argc, char *argv[])
     assert(orient(c1, 500));
     show_one_connection(c1, whack_log);
 
-    send_packet_setup_pcap(argv[4]);
+    send_packet_setup_pcap(pcapout);
 
     /* setup to process the I1 packet */
-    recv_pcap_setup(argv[3]);
+    recv_pcap_setup(pcapin);
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet, NULL);

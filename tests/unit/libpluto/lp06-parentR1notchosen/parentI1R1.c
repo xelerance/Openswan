@@ -32,9 +32,11 @@
 #include "seam_demux.c"
 #include "seam_commhandle.c"
 #include "seam_whack.c"
+#include "seam_initiate.c"
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
+#include "seam_dnskey.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
@@ -74,7 +76,9 @@ int main(int argc, char *argv[])
     struct connection *c1;
     struct state *st;
 
+#ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
+#endif
 
     progname = argv[0];
     leak_detective = 1;
@@ -112,7 +116,7 @@ int main(int argc, char *argv[])
     assert(c1 != NULL);
 
     assert(orient(c1, 500));
-    show_one_connection(c1);
+    show_one_connection(c1, whack_log);
 
     st = sendI1(c1, DBG_CONTROL, regression == 0);
 

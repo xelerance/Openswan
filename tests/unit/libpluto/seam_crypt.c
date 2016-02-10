@@ -145,6 +145,7 @@ ikev2_verify_rsa_sha1(struct state *st
         }
     }
 
+  list_public_keys(TRUE, FALSE);
   return STF_FAIL + INVALID_KEY_INFORMATION;
 }
 

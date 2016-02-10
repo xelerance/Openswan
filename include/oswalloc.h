@@ -60,6 +60,8 @@ typedef struct const_chunk constchunk_t;
 #define freeanychunk(ch) { pfreeany((ch).ptr); (ch).ptr = NULL; }
 #define clonetochunk(ch, addr, size, name) \
     { (ch).ptr = clone_bytes((addr), (ch).len = (size), name); }
+#define strtochunk(ch, str, name) \
+  { (ch).len = strlen(str)+1; clonetochunk(ch, str, ch.len, name); }
 #define clonereplacechunk(ch, addr, size, name) \
     { pfreeany((ch).ptr); clonetochunk(ch, addr, size, name); }
 #define chunkcpy(dst, chunk) \

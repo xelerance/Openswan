@@ -18,13 +18,16 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
 ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
-WHACKBIN=${OBJDIRTOP}/programs/pluto/whack
+WHACKBIN=${OBJDIRTOP}/programs/whack/whack
 SAMPLES=${OPENSWANSRCDIR}/tests/unit/libpluto/samples
 CTLBASE=--ctlbase OUTPUT/base
 SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT
 OUTPUTS=OUTPUT
 
 step1:
+	@rm -f OUTPUT/base.pid
+	@echo "file ${PLUTOBIN}" >.gdbinit
+	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
@@ -50,4 +53,6 @@ OUTPUT:
 update:
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.addconn.raw >pluto.addconn.out
 
+clean:
+	rm -rf OUTPUT OUTPUT.pid
 

@@ -1,0 +1,44 @@
+#conn concentrator loaded
+#conn cpe loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn concentrator
+conn concentrator
+	#left= not set
+	right=%dns/example.com/93.184.216.34
+	rightid="@example.com"
+	rightsubnet=10.2.0.0/16
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn concentrator
+
+# begin conn cpe
+conn cpe
+	#also = concentrator
+	left=%defaultroute
+	leftid="@cpe.example.com"
+	leftnexthop=%defaultroute
+	right=%dns/example.com/93.184.216.34
+	rightid="@example.com"
+	rightsubnet=10.2.0.0/16
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn cpe
+
+# end of config

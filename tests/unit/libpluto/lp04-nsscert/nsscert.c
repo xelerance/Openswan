@@ -17,7 +17,7 @@
 
 #include "../seam_exitlog.c"
 
-char *progname;
+const char *progname;
 
 /** by default pluto does not check crls dynamically */
 long crl_check_interval = 0;

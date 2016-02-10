@@ -502,7 +502,7 @@ find_ID_host_pair(const struct id me
             idtoa(&p->me_who, mewho, sizeof(mewho));
             idtoa(&p->him_who,himwho, sizeof(himwho));
             DBG_log("                  comparing to me=%s him=%s (%s)\n"
-                    , mewho, himwho, p->connections->name));
+                    , mewho, himwho, (p && p->connections) ? p->connections->name : "<none>"));
 
         /* kick out if it does not match:
          * easier to understand than positive/convuluted logic
@@ -568,6 +568,7 @@ connect_to_IDhost_pair(struct connection *c)
         /* must be on wrong list: remove from current list */
         clear_IDhost_pair(c);
     }
+
 
     /* add this connection to front of ID host pair connection list */
     c->IDhp_next = hp->connections;

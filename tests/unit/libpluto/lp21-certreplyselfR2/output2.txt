@@ -25,9 +25,9 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=<any> (exact)
 |   concluded with <none>
 ./certreplyselfR2 adding connection: "rw-any"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any
+| 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
+RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1

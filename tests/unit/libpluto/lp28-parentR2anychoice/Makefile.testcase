@@ -1,8 +1,0 @@
-# -*- makefile -*-
-
-WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-CONNNAME=any1--jj2 maryjane1--jj2
-UNITTEST1ARGS=${WHACKFILE} any1--jj2 OUTPUT/parentR2.pcap parentI1.pcap parentI2.pcap
-ENDNAME=parker
-
-TESTNAME=parentR2anychoice

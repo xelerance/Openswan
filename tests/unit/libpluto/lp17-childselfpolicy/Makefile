@@ -106,17 +106,18 @@ endif
 ${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
-update:: update1
-update1:
-	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
-	[ -f OUTPUT/R2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-dump.txt >R2-dump.txt
-
 ifneq (${UNITTEST2PCAP},)
 update:: update2
 update2:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
 	[ -f OUTPUT/R2-any.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-any.txt >R2-any.txt
 endif
+
+update:: update1
+update1:
+	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
+	[ -f OUTPUT/R2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R2-dump.txt >R2-dump.txt
+
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap

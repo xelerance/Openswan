@@ -14,6 +14,7 @@ sudo: false
 addons:
   apt:
     packages:
+      - make
       - flex
       - bison
       - libgmp-dev
@@ -29,14 +30,15 @@ addons:
 cache:
   directories:
   - $HOME/stuff
+  - $HOME/.ccache
 
 env:
   global:
     - IPSECVERSION=0.0.0
     - BUILD_ARCH=amd64
   matrix:
-    - BUILD_HISTORY_REVS=true
     - BUILD_HISTORY_REVS=false
+    - BUILD_HISTORY_REVS=true
 
 
 # remove the oracle junk, because it otherwise gets updated, and we do not care about it.
@@ -51,7 +53,7 @@ before_script:
 
 install:
   - if [ "$TRAVIS_OS_NAME" = osx ]; then brew install libpcap libgmp flex bison; fi
-  - "PATH=$HOME/stuff/sbin:$PATH export PATH"
+  - "PATH=$HOME/stuff/sbin:/usr/lib/ccache:$PATH export PATH"
   - "echo WERROR=-Werror >Makefile.inc.local"
   - "echo ARCH=${BUILD_ARCH}   >>Makefile.inc.local"
   - if [ "$BUILD_ARCH" = i386 ]; then echo "USERLINKEXTRA=-m32" >>Makefile.inc.local; echo "USERCOMPILEEXTRA=-m32" >>Makefile.inc.local; fi

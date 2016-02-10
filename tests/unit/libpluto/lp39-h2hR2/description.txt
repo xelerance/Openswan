@@ -1,0 +1,12 @@
+This test case is an IKEv2 responder, R2 for a policy that is host to host.
+
+h2hI2.pcap is:
+           cp ../lp38-h2hI2/OUTPUT/h2hI2.pcap .
+
+
+
+
+
+
+
+
