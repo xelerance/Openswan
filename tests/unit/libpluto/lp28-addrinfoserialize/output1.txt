@@ -12,12 +12,12 @@
 | ans 000 canonname=(null) protocol=17 family=2 len=16 
 |         result=209.87.249.25 
 | ans 001 canonname=(null) protocol=17 family=10 len=28 
-|         result=2607:f0b0:f:2:216:3eff:fe11:22e4 
+|         result=2607:f0b0:f:2::25 
 | serialized size=68 
 | ans 000 canonname=(null) protocol=17 family=2 len=16 
 |         result=209.87.249.25 
 | ans 001 canonname=(null) protocol=17 family=10 len=28 
-|         result=2607:f0b0:f:2:216:3eff:fe11:22e4 
+|         result=2607:f0b0:f:2::25 
 | looking up: moon.testing.openswan.org 
 | ans 000 canonname=(null) protocol=17 family=2 len=16 
 |         result=192.168.0.10 
