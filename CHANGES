@@ -4,6 +4,174 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.47dr1 (February 12, 2016)
+
+Added feature to allow DNS query for external IP address of a gateway.
+
+* IPv6 address of cassidy.sandelman.ca actually did change [MCR]
+* lp40 updated for DNS delayed rebase [MCR]
+* find_ID_host_pair debug now includes dump of exact parameter [MCR]
+* Check the orientations after the secrets are loaded, as
+  possession-of-private-key test needs private keys [MCR]
+* Removed confusing comment [MCR]
+* Changes to conn to be really h2h [MCR]
+* Orient test which loads keys after conns [MCR]
+* h2h should use host to host items [MCR]
+* Added h2h and brokenspace as possible test cases for readwriteconf crash [MCR]
+* Change connection list as per DNS changes to show IP address discovered [MCR]
+* gcc 5.0 fixes [MCR]
+* Reconciled leak of ID to fact that IDhost_pair is never freed [MCR]
+* Update lp08 with proper CHILDSA_DEL name for state, after state_names added [MCR]
+* Updated description to explain three unit subtests [MCR]
+* There was a IDhost_pair leak, which was located, as one list was never
+  properly emptied as the clear_host_pair routine was incorrectly calling
+  the host_pair free routine when it meant to remove a connection from a list [MCR]
+* Updated Makefile and explanation of how to get updated pcap file [MCR]
+* Unit tests do not speak 3des-md5, modp1024 [MCR]
+* Make sure the installed_time for a public key is set from regression controlled time [MCR]
+* Updated parameters for test case to match files named after tests [MCR]
+* A half-open, prospective_parent_sa that is in progress only gets priority
+  over new DNS answers, if the DNS query had an error [MCR]
+* If no addresses are available from DNS yet, but there is a hint, then the
+  hint should be attempted [MCR]
+* Protect connection_check_ddns1 against corrupt IPhp_next loops [MCR]
+* Try to be smarter about when a connection is stuck: consider connections
+  which have never come up as well [MCR]
+* Blacklist a bunch of replies for DNS lookups [MCR]
+* In order to avoid DNS errors causing more DNS lookups, only do new DNS
+  lookups when there is a timeout --- other attempts will use additional
+  addresses only [MCR]
+* Have adns return getaddrinfo()-style EAI errors, even for old nquery work [MCR]
+* Be careful not to remove connections which were not yet added to host_pair [MCR]
+* Output sanifier now removes kernel state numbers from output [MCR]
+* Updated to reflect changes to debugging [MCR]
+* Slight tweak to comment [MCR]
+* Make sure to set the DNS list pointer upon receiving new answers [MCR]
+* Guard against no connections in search routine [MCR]
+* Added additional debugging to delayed DNS lookup continuation [MCR]
+* Init generic CR before filling in DNS name so that qtid gets logged sanely [MCR]
+* Keep track of states that are created to potentially bring up a parent SA.
+  This is needed to tell if there is an ongoing initiation for a delayed-DNS
+  effort, or if one should be made. Do not make an attempt to bring up the
+  conn unless the policy is set to UP.  Use returned state number from the
+  initiate process to always get correct state in test harness [MCR]
+* Make test validate that handle_adns_answer() does not cause conn to be set to UP [MCR]
+* Make clean would clean up whackfile, so on reffile use, cp it to OUTPUT [MCR]
+* Use return serial number to pull up correct serial number [MCR]
+* Return state number for newly created states, as there is no way to
+  track them until they are authenticated [MCR]
+* Fix lp33,lp34,lp35 to include seam_initiate, and show DNS name in status [MCR]
+* Added missing test cases [MCR]
+* Show ccache statistics [MCR]
+* Try to do straight build first [MCR]
+* Try to use ccache when building [MCR]
+* Add make clean target [MCR]
+* Slight adjustment to list of leaks [MCR]
+* When doing DNS lookups, use the connaddr family as the hint as to what kind
+  of records to lookup (A vs AAAA) [MCR]
+* Added seam_initiate and seam_adns appropriate to fix up tests [MCR]
+* Do DNS lookup and then initiate connection [MCR]
+* Whitespace changes [MCR]
+* Split up sendI1 so continuation part can be called again [MCR]
+* Move kick_adns_connection from dnskey to initiate [MCR]
+* Reworked lp33 to include actual initiate and dns continuation code [MCR]
+* Create kick_adns_connection routine so that DNS replies kick new
+  connections immediately [MCR]
+* Copy parentI1 main code into lp33 and add aDNS steps [MCR]
+* Added A and AAAA records to rr_typename [MCR]
+* Remember if an end has a valid address when DNS lookups are delayed so
+  that we do not initiate until DNS lookups have had a chance [MCR]
+* Rearranged a bunch of seam so that lp33 can import real adns code properly [MCR]
+* Removed include of connections.c, use connections.o: add set of includes [MCR]
+* Include seam_dnskey explicitly, as test case 33 will use real code [MCR]
+* Updates after rebase [MCR]
+* Add test case lp33 for dns delayed, when there is no hint [MCR]
+* For unclear reasons the lookup of cassidy.sandelman.ca/KEY RR fails. Could
+  be due to obsolete RR? [MCR]
+* Rename lp28-parentR2anychoice to lp32 to keep sequence [MCR]
+* Rename lp27-IDhostpair to lp31 to keep sequence [MCR]
+* Tweak lp30-dnskick [MCR]
+* Tweak seam_log [MCR]
+* Test pcap output now uses TESTNAME, so set it correctly [MCR]
+* Clean up PID file, and create .gdbinit with arguments [MCR]
+* Deal with some leaks; use stop_adns() properly to clear up children.
+  Make sure that ipanswers list, after sorting, is restored so that all
+  items get freed (affects regression testing) [MCR]
+* Process each dns request before making a new one to keep order the same [MCR]
+* Use sort_addr_info to canonicalize the output to deal with differences in gai.conf [MCR]
+* Added make explicitly to package list [MCR]
+* Use DBG_log to get consistent output [MCR]
+* As structure is used as temporary, and copied, make sure to zero it first [MCR]
+* Output results if failure [MCR]
+* Adjust unit test cases for update_host_pair() seam. Rename lp28-dns to
+  lp30-dnskick, add needed canonicalization. Adjust output from moving
+  dump_addr_info() into pluto as it uses DBG_log() rather than printf(),
+  and outputs to stderr [MCR]
+* Removed last vestiges of DYNAMICDNS and processing converted to IPHOSTNAME [MCR]
+* Tweak adnstest [MCR]
+* Process DNS getaddrinfo() replies, and attach them to continuation [MCR]
+* Refactor dump_addr_info debug into seperate file [MCR]
+* Cleanup leaks of addrinfo structures [MCR]
+* Added test case for serialization/deserialization of addrinfo [MCR]
+* Basic test case for looking up KEY RR; one success, one failure [MCR]
+* Use standard openswan_log() for messages rather than syslog() [MCR]
+* Make it easy to generate cpp processed files for inspection [MCR]
+* Added new utility strtochunk() [MCR]
+* Created adnstest case to validate operation of dnskey.c and adns.c [MCR]
+* Small refactor of start_adns_query so that it can accept things other than struct id [MCR]
+* Initial test case for dnslookups [MCR]
+* Adjust comments on functions [MCR]
+* Updated trace with IP address in hint [MCR]
+* Do not include EF unless defined [MCR]
+* Added seam for kick_adns_connection_lookup [MCR]
+* Include gdb instructions for testing pluto [MCR]
+* _pluto_adns is no longer seperate executable [MCR]
+* Change definition of progname to const [MCR]
+* Moved init_adns() call earlier, and make sure it exits properly [MCR]
+* Make certificate directories; removed --adns path argument from help [MCR]
+* Move test for SAref and SAbind into kernel.c [MCR]
+* Added setproctitle() [from BSD licensed sendmail via pppd] and use it rather
+  than global_argv hack. Use setproctitle() in adns sub-process [MCR]
+* Create dummy kick_adns_connection [MCR]
+* _pluto_adns is no longer a seperate program, but is part of the pluto
+  executable, forked out for use. This makes it much easier for embedded
+  systems to have a sane (if simple) async DNS resolver. Future work will
+  switch to c-ares This patch also includes changing progname to a const
+  globally [MCR]
+* Move whack out of pluto directory [MCR]
+* Removed DYNAMIC DNS from whack client [MCR]
+* Added lp27 to test list [MCR]
+* Do not show hostname string if the host_type is IP address [MCR]
+* Comment out I9 [MCR]
+* Switch update order to make it run update1 first [MCR]
+* Fix up lp06 test case to work [MCR]
+* Remove LWRES support --- it broke awhile ago [MCR]
+* Force ikev2 [MCR]
+* If nexthop is invalid, then do not show it [MCR]
+* Ipsecconf already included the hostname into a string, but now it needs
+  to include the hint as well. This code plus test cases probably produces
+  a whack file with the correct hint [MCR]
+* Fix emacs variables [MCR]
+* Gdb init for test case [MCR]
+* Refactor lp02-parentI1, so it can be reused by lp27 [MCR]
+* Obsolete is a qualifier for a keyword, not a type of keyword [MCR]
+* Add functional/06 test case [MCR]
+* Removed redundant kw_list->string member [MCR]
+* Added processing of new loose_enum_arg type, added %dns and test it out
+  in a functional test [MCR]
+* Figure out left/right-ness of keyword so that it can be logged better in errors [MCR]
+* Added loose_enumarg processing [MCR]
+* When setup properly, the h2hR2 test case works fine: just needs to have actual keys [MCR]
+* Use parker end-point and parker secrets [MCR]
+* h2h R2 packet processing - broken [MCR]
+* Make output file parameterized by testname [MCR]
+* h2h I2 packet processing [MCR]
+* Make lp10 a template test case [MCR]
+* Make output file parameterized by testname [MCR]
+* h2h R1 packet processing [MCR]
+* Process arguments more carefully [MCR]
+* Added test case for h2h I1 [MCR]
+
 v2.6.46 (January 22, 2016)
 
 *  Properly add IKESA_DEL state: added to state_names,
