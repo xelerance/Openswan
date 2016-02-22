@@ -365,13 +365,18 @@ static bool validate_end(struct starter_conn *conn_st
     err_t er = NULL;
     char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
-    int family = conn_st->options[KBF_CONNADDRFAMILY];
+    int family;
     bool err = FALSE;
 
 #define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
 
     if(!end->options_set[KNCF_IP]) {
 	conn_st->state = STATE_INCOMPLETE;
+    }
+
+    family = AF_UNSPEC;
+    if(conn_st->options_set[KBF_CONNADDRFAMILY]) {
+	    family = conn_st->options[KBF_CONNADDRFAMILY];
     }
 
     end->addrtype=end->options[KNCF_IP];
@@ -404,7 +409,20 @@ static bool validate_end(struct starter_conn *conn_st
 	    break;
 	}
 
-        er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
+	switch(family) {
+	case AF_INET:
+	case AF_INET6:
+		er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
+		break;
+
+        default:
+		er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET6, &(end->addr));
+		if(er) {
+			er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+		}
+		break;
+	}
+
 	if(er) {
 	    /* not numeric, so set the type to the string type */
 	    end->addrtype = KH_IPHOSTNAME;
