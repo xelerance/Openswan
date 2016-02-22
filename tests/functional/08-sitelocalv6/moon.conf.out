@@ -10,7 +10,6 @@ config setup
 conn host-host
 	left=fec0::1
 	leftid="@moon.strongswan.org"
-	leftcert=moonCert.pem
 	right=fec0::2
 	rightid="@sun.strongswan.org"
 	auto=add

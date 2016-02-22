@@ -24,4 +24,5 @@ check:
 	@${MAKE} -C 06-dnsdelay check
 	@${MAKE} -C 06-alsoflip check
 	@${MAKE} -C 07-sourceipv6 check
+	@${MAKE} -C 08-sitelocalv6 check
 
