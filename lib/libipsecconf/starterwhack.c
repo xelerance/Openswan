@@ -344,7 +344,7 @@ static int set_whack_end(struct starter_config *cfg
 	case KH_DEFAULTROUTE:
 		w->host_addr = cfg->dr;
 		if(addrtypeof(&w->host_addr) == 0) {
-			w->host_addr = *aftoinfo(l->addr_family)->any;
+			w->host_addr = *aftoinfo(AF_INET6)->any;
 		}
 		break;
 
