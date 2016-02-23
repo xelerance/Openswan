@@ -724,6 +724,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
     if ((this->host_type == KH_IPADDR || this->host_type == KH_IFACE)
+	&& wm->addr_family != 0
 	&& (wm->addr_family != addrtypeof(&this->host_addr)
 	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
     {
