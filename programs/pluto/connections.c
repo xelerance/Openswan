@@ -737,7 +737,8 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	return FALSE;
     }
 
-    if (subnettypeof(&this->client) != subnettypeof(&that->client))
+    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR 
+	&& subnettypeof(&this->client) != subnettypeof(&that->client))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
