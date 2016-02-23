@@ -417,8 +417,13 @@ static bool validate_end(struct starter_conn *conn_st
 
         default:
 		er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET6, &(end->addr));
-		if(er) {
+		if(er == NULL) { /* no error! */
+			end->addr_family = AF_INET6;
+		} else { /* error */
 			er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+			if(er == NULL) {
+				end->addr_family = AF_INET;
+			}
 		}
 		break;
 	}
