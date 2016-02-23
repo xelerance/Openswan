@@ -589,10 +589,11 @@ load_end_certificate(const char *filename, struct end *dst)
 }
 
 static bool
-extract_end(struct connection *conn UNUSED
+extract_end(struct connection *conn
             , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
+    unsigned int family = conn->addr_family;
 
     /* decode id, if any */
     if (src->id == NULL)
@@ -654,7 +655,12 @@ extract_end(struct connection *conn UNUSED
 
     /* the rest is simple copying of corresponding fields */
     dst->host_type = src->host_type;
-    dst->host_addr = src->host_addr;
+
+    if(dst->host_type == KH_ANY) {
+        anyaddr(family, &dst->host_addr);
+    } else {
+        dst->host_addr = src->host_addr;
+    }
     dst->host_addr_name = src->host_addr_name;
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
@@ -738,7 +744,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	return FALSE;
     }
 
-    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR 
+    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR
 	&& subnettypeof(&this->client) != subnettypeof(&that->client))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
@@ -853,6 +859,8 @@ add_connection(const struct whack_message *wm)
 {
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
+
+    int family = wm->addr_family;
 
     alg_info_ike = NULL;
 
@@ -1057,13 +1065,22 @@ add_connection(const struct whack_message *wm)
 
 	c->forceencaps = wm->forceencaps;
 
-	c->addr_family = wm->addr_family;
+        if(family == 0) {
+	  if(addrtypeof(&c->spd.this.host_addr) != 0) {
+    	    family = addrtypeof(&c->spd.this.host_addr);
+          }
+	  if(addrtypeof(&c->spd.that.host_addr) != 0) {
+    	    family = addrtypeof(&c->spd.that.host_addr);
+          }
+        }
+
+	c->addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
 	c->requested_ca = NULL;
 
-	same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
-	same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
+        same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
+        same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
 
 	if (c->spd.this.xauth_server || c->spd.that.xauth_server)
 	{
