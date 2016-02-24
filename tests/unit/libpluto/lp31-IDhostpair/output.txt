@@ -20,7 +20,7 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=@openswan.testing.xelerance.com him=@dnsh2h2 (exact)
 |   concluded with <none>
 ./IDhostpair adding connection: "mytunnel"
-| 192.168.1.1[@openswan.testing.xelerance.com]---192.139.46.65...10.10.4.1---%any[@dnsh2h2]
+| 192.168.1.1[@openswan.testing.xelerance.com]---192.139.46.65...%any[@dnsh2h2]
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
