@@ -146,6 +146,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 		{
 		    /* matches nothing -- create a new entry */
 		    int fd = create_socket(ifp, ifp->name, pluto_port500);
+                    const struct af_info *afi = aftoinfo(addrtypeof(&ifp->addr));
 
 		    if (fd < 0)
 			break;
@@ -168,6 +169,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
+                    q->socktypename = afi->name;
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
@@ -201,6 +203,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 			id->id_count++;
 
 			q->ip_addr = ifp->addr;
+                        q->socktypename = afi->name;
 			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;

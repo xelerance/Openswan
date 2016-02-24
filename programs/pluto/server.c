@@ -483,8 +483,9 @@ show_ifaces_status(void)
     struct iface_port *p;
 
     for (p = interfaces; p != NULL; p = p->next)
-	whack_log(RC_COMMENT, "interface %s/%s %s"
-	    , p->ip_dev->id_vname, p->ip_dev->id_rname, ip_str(&p->ip_addr));
+	whack_log(RC_COMMENT, "interface %s/%s %s (%s)"
+                  , p->ip_dev->id_vname, p->ip_dev->id_rname
+                  , ip_str(&p->ip_addr), p->socktypename);
 }
 
 void

@@ -57,6 +57,7 @@ struct iface_port {
     struct iface_dev   *ip_dev;
     u_int16_t           port;    /* host byte order */
     ip_address          ip_addr;   /* interface IP address */
+    const char         *socktypename;
     int fd;	        /* file descriptor of socket for IKE UDP messages */
     struct iface_port *next;
     bool ike_float;

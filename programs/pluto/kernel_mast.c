@@ -293,6 +293,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		/* matches nothing -- create a new entry */
 		char *vname;
 		int fd;
+                const struct af_info *afi = aftoinfo(addrtypeof(&ifp->addr));
 
 		if(useful_mastno == -1) {
 		    useful_mastno=init_useful_mast(ifp->addr, useful_mast_name);
@@ -320,6 +321,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		id->id_count++;
 
 		q->ip_addr = ifp->addr;
+                q->socktypename = afi->name;
 		q->change = IFN_ADD;
 		q->port = pluto_port500;
 		q->ike_float = FALSE;
@@ -365,6 +367,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
+                    q->socktypename = afi->name;
 		    setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 		    q->port = NAT_T_IKE_FLOAT_PORT;
 		    q->fd = fd;

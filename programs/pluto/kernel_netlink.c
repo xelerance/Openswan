@@ -2286,6 +2286,7 @@ add_entry:
 		{
 		    /* matches nothing -- create a new entry */
 		    int fd = create_socket(ifp, v->name, pluto_port500);
+                    const struct af_info *afi = aftoinfo(addrtypeof(&ifp->addr));
 
 		    if (fd < 0)
 			break;
@@ -2308,6 +2309,7 @@ add_entry:
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
+                    q->socktypename = afi->name;
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
@@ -2316,11 +2318,11 @@ add_entry:
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d"
+		    openswan_log("adding interface %s/%s %s:%d (%s)"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
-				 , q->port);
+				 , q->port, q->socktypename);
 
 #ifdef NAT_TRAVERSAL
 		    /*
@@ -2341,6 +2343,7 @@ add_entry:
 			id->id_count++;
 
 			q->ip_addr = ifp->addr;
+                        q->socktypename = afi->name;
 			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;

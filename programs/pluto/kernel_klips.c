@@ -207,6 +207,7 @@ add_entry:
 		{
 		    /* matches nothing -- create a new entry */
 		    int fd = create_socket(ifp, v->name, pluto_port500);
+                    const struct af_info *afi = aftoinfo(addrtypeof(&ifp->addr));
 
 		    if (fd < 0)
 			break;
@@ -229,6 +230,7 @@ add_entry:
 		    id->id_count++;
 
 		    q->ip_addr = ifp->addr;
+                    q->socktypename = afi->name;
 		    q->fd = fd;
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
@@ -262,6 +264,7 @@ add_entry:
 			id->id_count++;
 
 			q->ip_addr = ifp->addr;
+                        q->socktypename = afi->name;
 			q->port = pluto_port4500;
 			setportof(htons(q->port), &q->ip_addr);
 			q->fd = fd;
