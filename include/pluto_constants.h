@@ -637,6 +637,8 @@ enum keyword_host {
     KH_IPADDR       = LOOSE_ENUM_OTHER,
 };
 struct keyword_enum_values kw_host_list;
+#define KH_ISWILDCARD(type)  ((type) == KH_ANY || (type) == KH_DEFAULTROUTE)
+#define KH_ISKNOWNADDR(type) ((type) == KH_IPADDR || (type)==KH_IFACE)
 
 /* BIND enumerated types */
 

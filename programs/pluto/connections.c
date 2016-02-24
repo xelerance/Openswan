@@ -656,7 +656,7 @@ extract_end(struct connection *conn
     /* the rest is simple copying of corresponding fields */
     dst->host_type = src->host_type;
 
-    if(dst->host_type == KH_ANY) {
+    if(src->host_type == KH_ANY && family != 0) {
         anyaddr(family, &dst->host_addr);
     } else {
         dst->host_addr = src->host_addr;
@@ -755,10 +755,12 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
     }
 
     /* MAKE this more sane in the face of unresolved IP addresses */
-    if (that->host_type != KH_IPHOSTNAME && isanyaddr(&that->host_addr))
+    if (that->host_type != KH_IPHOSTNAME
+        && KH_ISWILDCARD(that->host_type))
     {
 	/* other side is wildcard: we must check if other conditions met */
-	if (this->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
+	if (this->host_type != KH_IPHOSTNAME
+            && KH_ISWILDCARD(this->host_type))
 	{
 	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
 	    return FALSE;
@@ -777,7 +779,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 
 	    c = find_host_pair_connections(__FUNCTION__
                                            , ANY_MATCH
-					   , &this->host_addr
+					   , NULL
 					   , this->host_port
                                            , KH_ANY
 					   , (const ip_address *)NULL
