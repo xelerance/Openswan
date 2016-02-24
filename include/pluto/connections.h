@@ -498,7 +498,7 @@ extern int foreach_connection_by_alias(const char *alias
 
 extern struct connection *unoriented_connections;
 
-extern void update_host_pairs(struct connection *c);
+extern bool update_host_pairs(struct connection *c);
 
 #ifdef HAVE_LIBNSS
 extern void load_authcerts_from_nss(const char *type, u_char auth_flags);

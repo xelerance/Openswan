@@ -1,2 +1,2 @@
-void update_host_pairs(struct connection *c) {}
+bool update_host_pairs(struct connection *c) {}
 

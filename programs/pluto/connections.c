@@ -158,15 +158,30 @@ bool compare_end_addr_names(struct end *a, struct end *b)
 /*
  * update the host pairs attachment, after host_addr changes
  * just remove it from the pair it is in, and put it in another pair.
-*/
-void
+ *
+ * This routine also binds to a new/proper interface using orient.
+ */
+bool
 update_host_pairs(struct connection *c)
 {
     if (c->spd.that.host_type != KH_IPHOSTNAME)
-	    return;
+	    return TRUE;
 
     clear_IPhost_pair(c);
+
+    /*
+     * unorient, and try again: this may change the interface to the
+     * appropriate ADDRESS family too!
+     * If orient fails, then tell caller, as they move to another address
+     * family.
+     */
+    c->interface = NULL;
+    if(!orient(c, pluto_port500)) {
+        return FALSE;
+    }
+
     connect_to_IPhost_pair(c);
+    return TRUE;
 }
 
 
