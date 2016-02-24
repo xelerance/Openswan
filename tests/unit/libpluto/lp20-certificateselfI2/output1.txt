@@ -8,9 +8,9 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
-| found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./certificateselfI2   loading certificate from carolCert.pem
 ./certificateselfI2   loaded host cert file '../samples/rwcert/certs/carolCert.pem' (1493 bytes)

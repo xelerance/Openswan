@@ -5,9 +5,9 @@
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
-| found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection OpenswanServer with policy RSASIG+ENCRYPT+TUNNEL+PFS+DONTREKEY+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for 132.213.238.7 is 0
 | counting wild cards for (none) is 15
