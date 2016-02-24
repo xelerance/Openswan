@@ -7,6 +7,7 @@ struct iface_dev  rw_ifd1 = {
 struct iface_port rw_if1 = {
 	.ip_dev = &rw_ifd1,
 	.port   = 500,
+        .socktypename = "AF_INET",
 	.ip_addr.u.v4.sin_family = AF_INET,
 	.fd     = -1,
 	.next   = NULL,

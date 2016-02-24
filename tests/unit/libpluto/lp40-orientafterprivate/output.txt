@@ -36,7 +36,7 @@ RC=2      parker1--jj2
 listening now
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
-| orient ikev2:parker--jj checking against if: eth0
+| orient ikev2:parker--jj checking against if: eth0 (AF_INET)
 | orient ikev2:parker--jj matching on public/private keys
 | connection ikev2:parker--jj is now oriented
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
@@ -46,7 +46,7 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 |                   comparing to me=@parker01.emmjay.credil.org him=@jamesjohnson.emmjay.credil.org (ikev2:parker--jj)
 |     now best match
 |   concluded with ikev2:parker--jj
-| orient parker1--jj2 checking against if: eth0
+| orient parker1--jj2 checking against if: eth0 (AF_INET)
 | connection parker1--jj2 is now oriented
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: comparing to me=<invalid>:500 %address him=132.213.238.7:500

@@ -10,7 +10,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @cpe.example.com is 0
 | counting wild cards for @example.com is 0
 | DNS query 0 for host for example.com (gw: none)
-| orient cpenohint checking against if: eth0
+| orient cpenohint checking against if: eth0 (AF_INET)
 | orient cpenohint matching on public/private keys
 | find_host_pair: looking for me=<invalid>:500 %dns him=<invalid>:500 exact-match
 | find_host_pair: concluded with <none>
