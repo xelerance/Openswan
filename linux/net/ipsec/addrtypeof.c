@@ -21,7 +21,8 @@ int
 addrtypeof(src)
 const ip_address *src;
 {
-	return src->u.v4.sin_family;
+  if(src == NULL) return 0;
+  return src->u.v4.sin_family;
 }
 
 /*
@@ -34,6 +35,8 @@ unsigned char **dstp;	/* NULL means just a size query */
 {
 	unsigned char *p;
 	size_t n;
+
+        if(src == NULL) return 0;
 
 	switch (src->u.v4.sin_family) {
 	case AF_INET:

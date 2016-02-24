@@ -39,14 +39,14 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=173.230.133.71:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>
-| found_host_pair_conn (check_connection_end): 173.230.133.71:500 %any/%any:500 -> hp:none
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection jason-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | counting wild cards for @jason is 0
 | counting wild cards for @vzhost1.xelerance.com is 0
-| orient jason-vzhost1 checking against if: eth0
+| orient jason-vzhost1 checking against if: eth0 (AF_INET)
 | find_host_pair: looking for me=173.230.133.71:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>

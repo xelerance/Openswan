@@ -28,14 +28,14 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=192.168.1.1:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: comparing to me=192.168.1.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with mytunnel
-| found_host_pair_conn (check_connection_end): 192.168.1.1:500 %any/%any:500 -> hp:mytunnel
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:mytunnel
 | Added new connection mytunnel2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for @openswan.testing.xelerance.com is 0
 | counting wild cards for @oswclient2 is 0
-| orient mytunnel2 checking against if: eth0
+| orient mytunnel2 checking against if: eth0 (AF_INET)
 | find_host_pair: looking for me=192.168.1.1:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=192.168.1.1:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with mytunnel
