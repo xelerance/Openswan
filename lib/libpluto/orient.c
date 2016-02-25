@@ -51,8 +51,9 @@ static void swap_ends(struct spd_route *sr)
 
 
 struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
-                                                   int family)
+                                                   int family1, int family2)
 {
+    unsigned int family = family1 ? family1 : family2;
     const struct af_info *afi = aftoinfo(family);
 
     while(iflist && iflist->ip_addr.u.v4.sin_family != family) {
@@ -60,8 +61,9 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
     }
 
     DBG(DBG_CONTROLMORE,
-        DBG_log("  picking maching interface for family: %s resulted in: %s",
-                afi ? afi->name : "<family:0>", iflist ? iflist->addrname : "none"));
+        DBG_log("  picking maching interface for family[%u,%u]: %s resulted in: %s"
+                , family1, family2
+                , afi ? afi->name : "<family:0>", iflist ? iflist->addrname : "none"));
 
     return iflist;
 }
@@ -90,6 +92,7 @@ orient(struct connection *c, unsigned int pluto_port)
 {
     struct spd_route *sr;
     bool result;
+    unsigned int family = c->addr_family;
 
     if (!oriented(*c))
     {
@@ -175,6 +178,8 @@ orient(struct connection *c, unsigned int pluto_port)
                             , that_has_private_key ? "yes" : "no"
                             , keyword_name(&kw_host_list, sr->that.host_type, thathosttype)));
 
+
+
                 /* if %any, then check if we have a matching private key! */
                 if((sr->this.host_type == KH_DEFAULTROUTE
                     || sr->this.host_type == KH_ANY)
@@ -186,7 +191,9 @@ orient(struct connection *c, unsigned int pluto_port)
                      */
                     DBG(DBG_CONTROLMORE,
                         DBG_log("  orient %s matched on this having private key", c->name));
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
+
+                    /* take the family from the other end */
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
@@ -198,7 +205,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if(!that_has_private_key
@@ -210,7 +217,7 @@ orient(struct connection *c, unsigned int pluto_port)
                     DBG(DBG_CONTROLMORE,
                         DBG_log("  orient %s matched on this being defaultroute, and that lacking private key", c->name));
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
 
                 } else if(!this_has_private_key
@@ -223,7 +230,7 @@ orient(struct connection *c, unsigned int pluto_port)
                         DBG_log("  orient %s matched on that being defaultroute, and this lacking private key", c->name));
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr->that.host_addr.u.v4.sin_family);
                     c->ip_oriented = FALSE;
                 }
             }
@@ -231,8 +238,8 @@ orient(struct connection *c, unsigned int pluto_port)
     }
 
     result = oriented(*c);
-    DBG(DBG_CONTROLMORE, DBG_log("  orient %s finished with: %u"
-                                 , c->name, result));
+    DBG(DBG_CONTROLMORE, DBG_log("  orient %s finished with: %u [%s]"
+                                 , c->name, result, c->interface ? c->interface->addrname : "none"));
 
     return result;
 }
