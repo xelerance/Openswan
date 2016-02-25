@@ -197,7 +197,7 @@ orient(struct connection *c, unsigned int pluto_port)
 			c->interface = p;
                         c->ip_oriented = TRUE;
                         DBG(DBG_CONTROLMORE,
-                            DBG_log("    orient matched"));
+                            DBG_log("    orient matched on IP"));
 		    }
 
 		    /* done with this interface if it doesn't match that end */

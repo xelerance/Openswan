@@ -16,7 +16,7 @@ processing whack msg time: X size: Y
 | orient parker1--jj2 checking against if: eth0 (2606:2800:220:1:248:1893:25c8:1946:500)
 | orient parker1--jj2 checking against if: eth0 (192.168.1.1:4500)
 | orient parker1--jj2 checking against if: eth0 (192.168.1.1:500)
-|     orient matched
+|     orient matched on IP
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
