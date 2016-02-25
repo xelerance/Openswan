@@ -53,9 +53,15 @@ static void swap_ends(struct spd_route *sr)
 struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
                                                    int family)
 {
+    const struct af_info *afi = aftoinfo(family);
+
     while(iflist && iflist->ip_addr.u.v4.sin_family != family) {
         iflist = iflist->next;
     }
+
+    DBG(DBG_CONTROLMORE,
+        DBG_log("  picking maching interface for family: %s resulted in: %s",
+                afi ? afi->name : "<family:0>", iflist ? iflist->addrname : "none"));
 
     return iflist;
 }
@@ -83,6 +89,7 @@ bool
 orient(struct connection *c, unsigned int pluto_port)
 {
     struct spd_route *sr;
+    bool result;
 
     if (!oriented(*c))
     {
@@ -156,53 +163,78 @@ orient(struct connection *c, unsigned int pluto_port)
 	    }
 
             if(!oriented(*c)) {
-                DBG(DBG_CONTROLMORE, DBG_log("orient %s matching on public/private keys", c->name));
+                bool this_has_private_key = osw_end_has_private_key(&sr->this);
+                bool that_has_private_key = osw_end_has_private_key(&sr->that);
+                char thishosttype[KEYWORD_NAME_BUFLEN];
+                char thathosttype[KEYWORD_NAME_BUFLEN];
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("orient %s matching on public/private keys: this=%s[%s] that=%s[%s]"
+                            , c->name
+                            , this_has_private_key ? "yes" : "no"
+                            , keyword_name(&kw_host_list, sr->this.host_type, thishosttype)
+                            , that_has_private_key ? "yes" : "no"
+                            , keyword_name(&kw_host_list, sr->that.host_type, thathosttype)));
 
                 /* if %any, then check if we have a matching private key! */
                 if((sr->this.host_type == KH_DEFAULTROUTE
                     || sr->this.host_type == KH_ANY)
-                   && osw_end_has_private_key(&sr->this)) {
+                   && this_has_private_key) {
                     /*
                      * orientated is determined by selecting an interface,
                      * and this will pick first interface in the list...
                      * want to pick wildcard outgoing interface.
                      */
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on this having private key", c->name));
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
                            || sr->that.host_type == KH_ANY)
-                          && osw_end_has_private_key(&sr->that)) {
+                          && that_has_private_key) {
+
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on that having private key", c->name));
+
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
                     c->ip_oriented = FALSE;
 
-                } else if(!osw_end_has_private_key(&sr->that)
+                } else if(!that_has_private_key
                           && sr->this.host_type==KH_DEFAULTROUTE) {
                     /* if still not oriented, then look for an end
                      * that hasn't a key, but which hasn't a private key,
                      * and defaultroute */
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->that.host_addr.u.v4.sin_family);
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on this being defaultroute, and that lacking private key", c->name));
+
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
                     c->ip_oriented = FALSE;
 
-                } else if(!osw_end_has_private_key(&sr->this)
+                } else if(!this_has_private_key
                           && sr->that.host_type==KH_DEFAULTROUTE) {
                     /* if still not oriented, then look for an end that
                      * hasn't a key, but which hasn't a private key,
                      and defaultroute */
 
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on that being defaultroute, and this lacking private key", c->name));
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, sr->this.host_addr.u.v4.sin_family);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, c->addr_family);
                     c->ip_oriented = FALSE;
                 }
             }
         }
     }
 
-    return oriented(*c);
+    result = oriented(*c);
+    DBG(DBG_CONTROLMORE, DBG_log("  orient %s finished with: %u"
+                                 , c->name, result));
+
+    return result;
 }
 
 /*
