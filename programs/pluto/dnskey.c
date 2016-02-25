@@ -57,6 +57,8 @@
 
 /* ADNS stuff */
 
+unsigned int sort_dns_answers = 0;
+
 int adns_qfd = NULL_FD,	/* file descriptor for sending queries to adns (O_NONBLOCK) */
     adns_afd = NULL_FD;	/* file descriptor for receiving answers from adns */
 static pid_t adns_pid = 0;
@@ -1883,6 +1885,8 @@ static void reset_end_dns_list(struct dns_end_list *del)
 void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
 {
     struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
+    struct addrinfo *ai;
+
     DBG(DBG_DNS
         , DBG_log("iphostname_continuation: %s %s", iph_c->c->name
                   , ugh ? ugh : "no-error"));
@@ -1891,10 +1895,14 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
         /* continuation is freed by dnskey */
         return;
     }
-    dump_addr_info(cr->ipanswers);
+    ai = cr->ipanswers;
+    if(sort_dns_answers) {
+        ai = sort_addr_info(ai);
+    }
+    dump_addr_info(ai);
 
     /* now move results to connection structure */
-    iph_c->c->spd.that.host_address_list.address_list = iph_c->ac.ipanswers;
+    iph_c->c->spd.that.host_address_list.address_list = ai;
     reset_end_dns_list(&iph_c->c->spd.that.host_address_list);
     iph_c->ac.ipanswers = NULL;
 

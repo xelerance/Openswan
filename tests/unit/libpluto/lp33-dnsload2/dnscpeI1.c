@@ -17,6 +17,8 @@ static void init_fake_secrets(void)
 			       , NULL);
 }
 
+unsigned int sort_dns_answers;
+
 int main(int argc, char *argv[])
 {
     int   len;
@@ -33,6 +35,7 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
+    sort_dns_answers = 1;
 
     if(argc != 3 && argc!=4) {
 	fprintf(stderr, "Usage: %s [-r] <whackrecord> <conn-name>\n", progname);
