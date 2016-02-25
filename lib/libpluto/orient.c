@@ -63,6 +63,7 @@ static void swap_ends(struct spd_route *sr)
  * search from the previously returned value.
  */
 struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                   int pluto_port,
                                                    int family, struct spd_route *sr)
 {
     struct iface_port *ifp = interfaces;
@@ -83,6 +84,7 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         desired_port = e1->host_addr.u.v4.sin_port;
         break;
     }
+    if(desired_port == 0) desired_port = pluto_port;
 
     if(family == 0) {
         family = family1 ? family1 : family2;
@@ -243,7 +245,7 @@ orient(struct connection *c, unsigned int pluto_port)
                         DBG_log("  orient %s matched on this having private key", c->name));
 
                     /* take the family from the other end */
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
@@ -255,7 +257,7 @@ orient(struct connection *c, unsigned int pluto_port)
 
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!that_has_private_key
@@ -267,7 +269,7 @@ orient(struct connection *c, unsigned int pluto_port)
                     DBG(DBG_CONTROLMORE,
                         DBG_log("  orient %s matched on this being defaultroute, and that lacking private key", c->name));
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
                     c->ip_oriented = FALSE;
 
                 } else if(!this_has_private_key
@@ -280,7 +282,7 @@ orient(struct connection *c, unsigned int pluto_port)
                         DBG_log("  orient %s matched on that being defaultroute, and this lacking private key", c->name));
                     swap_ends(sr);
 
-                    c->interface   = pick_matching_interfacebyfamily(interfaces, family, sr);
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
                     c->ip_oriented = FALSE;
                 }
             }
