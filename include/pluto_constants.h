@@ -636,6 +636,7 @@ enum keyword_host {
     KH_IPHOSTNAME   = 7,                /* host_addr invalid, only string */
     KH_IPADDR       = LOOSE_ENUM_OTHER,
 };
+/* keyword_name(&kw_host_list, type, buffer[KEYWORD_NAME_BUFLEN]) */
 struct keyword_enum_values kw_host_list;
 #define KH_ISWILDCARD(type)  ((type) == KH_ANY || (type) == KH_DEFAULTROUTE)
 #define KH_ISKNOWNADDR(type) ((type) == KH_IPADDR || (type)==KH_IFACE)
