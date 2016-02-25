@@ -28,17 +28,18 @@ struct iface_port parker_if2 = {
 	.change    = IFN_KEEP
 };
 
-void init_parker_interface(void)
+void init_parker_interface(bool doipv6)
 {
-  inet_pton(AF_INET6, "2606:2800:220:1:248:1893:25c8:1946", &parker_if2.ip_addr.u.v6.sin6_addr);
-  init_iface_port(&parker_if2);
+  if(doipv6) {
+    inet_pton(AF_INET6, "2606:2800:220:1:248:1893:25c8:1946", &parker_if2.ip_addr.u.v6.sin6_addr);
+    init_iface_port(&parker_if2);
+
+    parker_if2.next = interfaces;
+    interfaces = &parker_if2;
+  }
 
   parker_if1.ip_addr.u.v4.sin_addr.s_addr = htonl(parker_if1.ip_addr.u.v4.sin_addr.s_addr);
   init_iface_port(&parker_if1);
-
-
   parker_if1.next = interfaces;
   interfaces = &parker_if1;
-  parker_if2.next = interfaces;
-  interfaces = &parker_if2;
 }

@@ -7,7 +7,7 @@
 
 static void init_local_interface(void)
 {
-    init_parker_interface();
+    init_parker_interface(TRUE);
 }
 
 static void init_fake_secrets(void)

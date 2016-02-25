@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
     tool_init_log();
     init_fake_vendorid();
-    init_parker_interface();
+    init_parker_interface(TRUE);
 
     argc--;
     argv++;

@@ -6,7 +6,7 @@
 
 static void init_local_interface(void)
 {
-    init_parker_interface();
+    init_parker_interface(FALSE);
 }
 
 static void init_fake_secrets(void)
@@ -64,8 +64,6 @@ int main(int argc, char *argv[])
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
-    //list_public_keys(FALSE, FALSE);
-    assert(orient(c1, 500));
     show_one_connection(c1, whack_log);
 
     /*
