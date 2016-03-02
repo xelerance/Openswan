@@ -14,8 +14,4 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
-Could not change to directory 'OUTPUT/cacerts': No such file or directory
-Could not change to directory 'OUTPUT/aacerts': No such file or directory
-Could not change to directory 'OUTPUT/ocspcerts': No such file or directory
-Could not change to directory 'OUTPUT/crls': 2 No such file or directory
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

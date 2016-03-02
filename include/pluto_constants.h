@@ -308,7 +308,8 @@ enum phase1_role {
 				  |LELEM(STATE_MAIN_I3) | LELEM(STATE_MAIN_I4) \
 				  |LELEM(STATE_AGGR_I1) | LELEM(STATE_AGGR_I2) \
 				  |LELEM(STATE_XAUTH_I0) | LELEM(STATE_XAUTH_I1) \
-				  | LELEM(STATE_MODE_CFG_I1))
+				  | LELEM(STATE_MODE_CFG_I1) \
+                                  | LELEM(STATE_PARENT_I1))
 #define IS_PHASE1_INIT(s)         ((s) == STATE_MAIN_I1 \
 				   || (s) == STATE_MAIN_I2 \
 				   || (s) == STATE_MAIN_I3 \

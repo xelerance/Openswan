@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+  <refmeta>
+    <refentrytitle>ipsec whack</refentrytitle>
+
+    <manvolnum>8</manvolnum>
+  </refmeta>
+
+  <refnamediv id='name'>
+    <refname>ipsec whack</refname>
+
+    <refpurpose>control the Openswan IPsec IKEv2 daemon (pluto)</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv id='synopsis'>
+    <cmdsynopsis>
+      <command>ipsec whack </command>
+
+    </cmdsynopsis>
+  </refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+
+    <para>The details of this program are presently part of the pluto(8) man page.</para>
+
+  </refsect1>
+</refentry>

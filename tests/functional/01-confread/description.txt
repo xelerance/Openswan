@@ -1,2 +1,6 @@
 This test excercises the configuration reading library present in
 libipsecconf, and wrapped in the readwriteconf program.
+
+h2h.conf was added as readwriteconf seemed to fail on it, but then it was
+suspected that the problem was a lack of a trailing newline on the file,
+so brokenspace.conf was added, only that did not trigger the fault.

@@ -25,7 +25,7 @@ processing whack msg time: X size: Y
 | find_ID_host_pair: looking for me=@moon.strongswan.org him=<any> (exact)
 |   concluded with <none>
 ./certreplydaveR2 adding connection: "rw-any"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any
+| 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -47,7 +47,7 @@ processing whack msg time: X size: Y
 |                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with <none>
 ./certreplydaveR2 adding connection: "rw-carol"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>
+| 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...93.184.216.34
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -68,21 +68,21 @@ processing whack msg time: X size: Y
 |                   comparing to me=@moon.strongswan.org him=(none) (rw-any)
 |   concluded with <none>
 ./certreplydaveR2 adding connection: "rw-dave"
-| 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
+| 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...192.168.0.200[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-RC=0 "rw-any": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
+RC=0 "rw-any": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...%any; unrouted; eroute owner: #0
 RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 | Changed path to directory '../samples/gatewaycert/cacerts'
 ./certreplydaveR2   loaded CA cert file 'strongswanCert.pem' (1350 bytes)
-RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...93.184.216.34<93.184.216.34>; unrouted; eroute owner: #0
+RC=0 "rw-carol": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...93.184.216.34; unrouted; eroute owner: #0
 RC=0 "rw-carol":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=carolCert.pem;
 RC=0 "rw-carol":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-carol":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-carol":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7<132.213.238.7>[@moon.strongswan.org]...192.168.0.200<192.168.0.200>[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]; unrouted; eroute owner: #0
+RC=0 "rw-dave": 10.2.0.0/16===132.213.238.7[@moon.strongswan.org]...192.168.0.200[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]; unrouted; eroute owner: #0
 RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-dave":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1

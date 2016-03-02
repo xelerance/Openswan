@@ -7,13 +7,16 @@
 # it uses the directory $BUILDTMP if set, if not then it makes a directory .buildtmp and uses
 # that to checkout the code.
 
+[ -x /usr/bin/ccache ] && ccache -z
+
 # get more of the history!
 #git fetch --depth 1024
 git fetch --unshallow
 
 BUILDTMP=${BUILDTMP-.buildtmp}
 mkdir -p ${BUILDTMP}
-startingcommit=v$(make baseversion)
+basecommit=v$(make baseversion)
+startingcommit=${1-${basecommit}}
 git log --oneline ${startingcommit}.. | tac | \
     while read commit stuff
     do
@@ -27,5 +30,6 @@ git log --oneline ${startingcommit}.. | tac | \
         fi
     done
 
+[ -x /usr/bin/ccache ] && ccache -s
 
 

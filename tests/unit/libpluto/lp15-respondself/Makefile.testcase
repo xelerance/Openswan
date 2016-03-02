@@ -1,4 +1,4 @@
 TESTNAME=respondselfR1
 CONNNAME=gateway--any
 ENDNAME=rw
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/parentR1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/respondselfR1.pcap

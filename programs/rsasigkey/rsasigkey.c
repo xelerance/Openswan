@@ -74,7 +74,7 @@
 /* the code in getoldkey() knows about this */
 #define	E	3		/* standard public exponent */
 
-char *progname;
+const char *progname;
 
 char usage1[]     = "rsasigkey [--verbose] [--random device] nbits [--hostname host] [--noopt] [--rounds num]";
 char usage2[]    = "rsasigkey [--verbose] --oldkey filename";

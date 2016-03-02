@@ -5,6 +5,7 @@
 extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct connection *c
 				    , struct state *predecessor
+                                    , so_serial_t  *newstateno
 				    , lset_t policy
 				    , unsigned long try
 				    , enum crypto_importance importance

@@ -76,6 +76,7 @@
 stf_status aggr_not_present(int whack_sock UNUSED
 			    , struct connection *c UNUSED
 			    , struct state *predecessor UNUSED
+                            , so_serial_t  *newstateno UNUSED
 			    , lset_t policy UNUSED
 			    , unsigned long try UNUSED
 			    , enum crypto_importance importance UNUSED)

@@ -117,7 +117,7 @@ ${WHACKFILE3}: ${SAMPLEDIR}/parker.conf
 	@mkdir -p OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE3} any1--jj2
 
-update: update1 update2 update3
+update: update3 update2 update1
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt

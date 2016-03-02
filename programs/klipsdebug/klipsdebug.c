@@ -60,7 +60,7 @@
 #include "osw_select.h"
 #include "oswlog.h"
 __u32 bigbuf[1024];
-char *progname;
+const char *progname;
 
 int pfkey_sock;
 osw_fd_set pfkey_socks;
@@ -81,7 +81,7 @@ char copyright[] =
    (file COPYING in the distribution) for more details.\n";
 
 static void
-usage(char * arg)
+usage(const char * arg)
 {
 	fprintf(stdout, "usage: %s {--set|--clear} {tunnel|tunnel-xmit|netlink|xform|eroute|spi|radij|esp|ah|rcv|pfkey|ipcomp|verbose}\n", arg);
 	fprintf(stdout, "       %s {--all|--none}\n", arg);
@@ -269,12 +269,15 @@ main(int argc, char **argv)
 			fputs(copyright, stdout);
 			exit(0);
 		case 'l':
-			progname = malloc(strlen(argv[0])
+                    {
+                        char *toolname= malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(progname, "%s --label %s",
+			sprintf(toolname, "%s --label %s",
 				argv[0],
 				optarg);
+                        progname = toolname;
+                    }
 			argcount -= 2;
 			break;
 		case '+': /* optionsfrom */

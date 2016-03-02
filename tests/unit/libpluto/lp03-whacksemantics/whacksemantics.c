@@ -48,7 +48,7 @@
 #include "seam_exitlog.c"
 #include "seam_dnskey.c"
 
-char *progname=NULL;
+const char *progname=NULL;
 int verbose=0;
 int warningsarefatal = 0;
 

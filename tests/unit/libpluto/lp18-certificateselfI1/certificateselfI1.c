@@ -1,6 +1,10 @@
 /* repeats existing test case */
 #include "../lp02-parentI1/parentI1_head.c"
 #include "../seam_host_rw.c"
+#include "seam_pending.c"
+#include "seam_whack.c"
+#include "seam_initiate.c"
+#include "seam_dnskey.c"
 #include "seam_x509_list.c"
 
 #define TESTNAME "certificateselfI1"

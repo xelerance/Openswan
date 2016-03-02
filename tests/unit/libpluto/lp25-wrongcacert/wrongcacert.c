@@ -13,6 +13,9 @@ static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
+
+    now_regression  = TRUE;
+    regression_time = 1448316734L;
     osw_init_ipsecdir("../samples/wrongcert");
 
     osw_load_preshared_secrets(&pluto_secrets

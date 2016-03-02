@@ -1,0 +1,29 @@
+| looking up: example.com 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=93.184.216.34 
+| ans 001 canonname=(null) protocol=17 family=10 len=28 
+|         result=2606:2800:220:1:248:1893:25c8:1946 
+| serialized size=68 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=93.184.216.34 
+| ans 001 canonname=(null) protocol=17 family=10 len=28 
+|         result=2606:2800:220:1:248:1893:25c8:1946 
+| looking up: cassidy.sandelman.ca 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=209.87.249.25 
+| ans 001 canonname=(null) protocol=17 family=10 len=28 
+|         result=2607:f0b0:f:2::25 
+| serialized size=68 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=209.87.249.25 
+| ans 001 canonname=(null) protocol=17 family=10 len=28 
+|         result=2607:f0b0:f:2::25 
+| looking up: moon.testing.openswan.org 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=192.168.0.10 
+| serialized size=28 
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=192.168.0.10 
+| looking up: nonexistant.testing.openswan.org 
+./serialaddrinfo leak detective found Z leaks
+lookup: nonexistant.testing.openswan.org a/aaaa lookup error: Name or service not known

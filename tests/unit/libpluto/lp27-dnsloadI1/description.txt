@@ -1,0 +1,6 @@
+This test case initiates a connection from a client to a gateway.
+The gateway is given by a DNS name using %dns, (along with an optional hint).
+The DNS name will be looked up by pluto, and the result cached until the
+next time the connection fails for some reason.
+
+

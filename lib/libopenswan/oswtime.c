@@ -28,13 +28,21 @@
 #include "oswtime.h"
 #include "oswlog.h"
 
+bool now_regression = FALSE;
+time_t regression_time = 0;
+
 /* monotonic version of time(3) */
 time_t
 now(void)
 {
     static time_t delta = 0
 	, last_time = 0;
-    time_t n = time(NULL);
+    time_t n;
+    if(now_regression) {
+      n = regression_time;
+    } else {
+      n = time(NULL);
+    }
 
     passert(n != (time_t)-1);
     if (last_time > n)

@@ -1,0 +1,49 @@
+./kickdns loading secrets from "../samples/parker.secrets"
+./kickdns loaded private key for keyid: PPK_RSA:AQN7wUerV
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=93.184.216.34:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): 93.184.216.34:500 %any/%any:500 -> hp:none
+| Added new connection cpe with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+| counting wild cards for @cpe.example.com is 0
+| counting wild cards for @example.com is 0
+| orient cpe checking against if: eth0
+| orient cpe matching on public/private keys
+| find_host_pair: looking for me=<invalid>:500 %dns him=93.184.216.34:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: <invalid>:500 %dns 93.184.216.34:500 -> hp:none
+| find_ID_host_pair: looking for me=@cpe.example.com him=@example.com (exact)
+|   concluded with <none>
+./kickdns adding connection: "cpe"
+| %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16
+| ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+RC=0 "cpe": %any[@cpe.example.com]...93.184.216.34<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "cpe":     myip=unset; hisip=unset;
+RC=0 "cpe":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
+RC=0 "cpe":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+./kickdns leak: 2 * keep id name, item size: X
+./kickdns leak: ID host_pair, item size: X
+./kickdns leak: host_pair, item size: X
+./kickdns leak: keep id name, item size: X
+./kickdns leak: host ip, item size: X
+./kickdns leak: keep id name, item size: X
+./kickdns leak: connection name, item size: X
+./kickdns leak: struct connection, item size: X
+./kickdns leak: policies path, item size: X
+./kickdns leak: ocspcerts path, item size: X
+./kickdns leak: aacerts path, item size: X
+./kickdns leak: certs path, item size: X
+./kickdns leak: private path, item size: X
+./kickdns leak: crls path, item size: X
+./kickdns leak: cacert path, item size: X
+./kickdns leak: acert path, item size: X
+./kickdns leak: default conf var_dir, item size: X
+./kickdns leak: default conf conffile, item size: X
+./kickdns leak: default conf ipsecd_dir, item size: X
+./kickdns leak: default conf ipsec_conf_dir, item size: X
+./kickdns leak: 2 * id list, item size: X
+./kickdns leak: secret, item size: X
+./kickdns leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

@@ -100,6 +100,7 @@ stf_status
 ikev2parent_outI1(int whack_sock
                   , struct connection *c
                   , struct state *predecessor
+                  , so_serial_t  *newstateno
                   , lset_t policy
                   , unsigned long try
                   , enum crypto_importance importance
@@ -109,6 +110,8 @@ ikev2parent_outI1(int whack_sock
     struct state *st = new_state();
     get_cookie(TRUE, st->st_icookie, COOKIE_SIZE, &c->spd.that.host_addr);
     initialize_new_state(st, c, policy, try, whack_sock, importance);
+
+    if(newstateno) *newstateno = st->st_serialno;
 
     return
         ikev2parent_outI1_withstate(st, whack_sock, c

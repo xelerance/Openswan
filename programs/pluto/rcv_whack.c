@@ -252,9 +252,9 @@ void whack_listen(void) {
     reset_adns_restart_count();
     set_myFQDN();
     find_ifaces();
-    check_orientations();
     load_preshared_secrets(NULL_FD);
     load_groups();
+    check_orientations();
 }
 
 /*

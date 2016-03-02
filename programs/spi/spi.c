@@ -4,12 +4,12 @@
  * Copyright (C) 1997, 1998, 1999, 2000, 2001, 2002  Richard Guy Briggs.
  * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.  See <http://www.fsf.org/copyleft/gpl.txt>.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
@@ -68,7 +68,7 @@
 
 struct encap_msghdr *em;
 
-char *progname;
+const char *progname;
 int debug = 0;
 int dumpsaref = 0;
 int saref_him = 0;
@@ -85,7 +85,7 @@ unsigned char proto = 0;
 int alg = 0;
 
 #ifdef KERNEL_ALG
-/* 
+/*
  * 	Manual connection support for modular algos (ipsec_alg) --Juanjo.
  */
 #define XF_OTHER_ALG (XF_CLR-1)	/* define magic XF_ symbol for alg_info's */
@@ -154,7 +154,7 @@ spi --comp <algo> <SA>\n\
 
 
 static void
-usage(char *s, FILE *f)
+usage(const char *s, FILE *f)
 {
 	/* s argument is actually ignored, at present */
 	fprintf(f, "%s:%s", s, usage_string);
@@ -168,11 +168,11 @@ parse_life_options(u_int32_t life[life_maxsever][life_maxtype],
 {
 	char *optargp = myoptarg;
 	char *endptr;
-	
+
 	do {
 		int life_severity, life_type;
 		char *optargt = optargp;
-		
+
 		if(strncmp(optargp, "soft", sizeof("soft")-1) == 0) {
 			life_severity = life_soft;
 			optargp += sizeof("soft")-1;
@@ -304,7 +304,7 @@ parse_life_options(u_int32_t life[life_maxsever][life_maxtype],
 		}
 		optargp=endptr+1;
 	} while(*endptr==',' || isspace(*endptr));
-	
+
 	return(0);
 }
 
@@ -355,7 +355,7 @@ pfkey_register(uint8_t satype) {
 	}
 	pfkey_extensions_free(extensions);
 	pfkey_msg_free(&pfkey_msg);
-	
+
 	return(0);
 }
 
@@ -447,7 +447,7 @@ int decode_esp(char *algname)
     esp_info=&alg_info->esp[0];
     if (debug) {
       fprintf(stdout, "%s: alg_info: cnt=%d ealg[0]=%d aalg[0]=%d\n",
-	      progname, 
+	      progname,
 	      alg_info->alg_info_cnt,
 	      esp_info->encryptalg,
 	      esp_info->authalg);
@@ -526,7 +526,7 @@ main(int argc, char *argv[])
 	char *life_opt[life_maxsever][life_maxtype];
 	struct stat sts;
 	struct sadb_builds sab;
-	
+
 	progname = argv[0];
 	mypid = getpid();
 	natt = 0;
@@ -601,12 +601,15 @@ main(int argc, char *argv[])
 			break;
 
 		case 'l':
-			progname = malloc(strlen(argv[0])
+                    {
+                        char *toolname= malloc(strlen(argv[0])
 					      + 10 /* update this when changing the sprintf() */
 					      + strlen(optarg));
-			sprintf(progname, "%s --label %s",
+			sprintf(toolname, "%s --label %s",
 				argv[0],
 				optarg);
+                        progname = toolname;
+                    }
 			tool_close_log();
 			tool_init_log();
 
@@ -728,7 +731,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(edst_opt) {
 				fprintf(stderr, "%s: Error, EDST parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, edst_opt);
@@ -755,12 +758,12 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(spi_opt) {
 				fprintf(stderr, "%s: Error, SPI parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, spi_opt);
 				exit (1);
-			}				
+			}
 			spi = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
 				fprintf(stderr, "%s: Invalid character in SPI parameter: %s\n",
@@ -779,7 +782,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, proto_opt);
@@ -805,7 +808,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, ADDRESS FAMILY parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(af_opt) {
 				fprintf(stderr, "%s: Error, ADDRESS FAMILY parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, af_opt);
@@ -837,7 +840,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, SAID parameter redefined:%s, already defined in SA:%s\n",
 					progname, optarg, said_opt);
 				exit (1);
-			}				
+			}
 			if(proto_opt) {
 				fprintf(stderr, "%s: Error, PROTO parameter redefined in SA:%s, already defined as:%s\n",
 					progname, optarg, proto_opt);
@@ -977,7 +980,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, DST parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, dst_opt);
 				exit (1);
-			}				
+			}
 			error_s = ttoaddr(optarg, 0, address_family, &dst);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --dst argument:%s\n",
@@ -993,7 +996,7 @@ main(int argc, char *argv[])
 			}
 			break;
 
-#ifdef NAT_TRAVERSAL		  
+#ifdef NAT_TRAVERSAL
 		case 'F':  /* src port */
 			sport = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
@@ -1002,7 +1005,7 @@ main(int argc, char *argv[])
 				exit (1);
 			}
 			break;
-		  
+
 		case 'G':  /* dst port */
 			dport = strtoul(optarg, &endptr, 0);
 			if(!(endptr == optarg + strlen(optarg))) {
@@ -1041,7 +1044,7 @@ main(int argc, char *argv[])
 				fprintf(stderr, "%s: Error, SRC parameter redefined:%s, already defined as:%s\n",
 					progname, optarg, src_opt);
 				exit (1);
-			}				
+			}
 			error_s = ttoaddr(optarg, 0, address_family, &src);
 			if(error_s != NULL) {
 				fprintf(stderr, "%s: Error, %s converting --src argument:%s\n",
@@ -1105,7 +1108,7 @@ main(int argc, char *argv[])
 
 	switch(alg) {
 #ifdef KERNEL_ALG
-	case XF_OTHER_ALG: 
+	case XF_OTHER_ALG:
 		/* validate keysizes */
 		if (proc_read_ok) {
 		       const struct sadb_alg *alg_p;
@@ -1118,7 +1121,7 @@ main(int argc, char *argv[])
 
 		       minbits=alg_p->sadb_alg_minbits;
 		       maxbits=alg_p->sadb_alg_maxbits;
-		       /* 
+		       /*
 			* if explicit keylen told in encrypt algo, eg "aes128"
 			* check actual keylen "equality"
 			*/
@@ -1126,7 +1129,7 @@ main(int argc, char *argv[])
 			       esp_info->esp_ealg_keylen!=keylen) {
 			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
 					       "required %d by encrypt algo string=\"%s\"\n",
-				       progname, 
+				       progname,
 				       (int)keylen,
 				       (int)esp_info->esp_ealg_keylen,
 				       alg_string);
@@ -1138,13 +1141,13 @@ main(int argc, char *argv[])
 		       if (minbits > keylen || maxbits < keylen) {
 			       fprintf(stderr, "%s: invalid encryption keylen=%d, "
 					       "must be between %d and %d bits\n",
-					       progname, 
-					       (int)keylen, 
+					       progname,
+					       (int)keylen,
 					       (int)minbits,
 					       (int)maxbits);
 			       exit(1);
 		       }
-		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_AUTH, 
+		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_AUTH,
 				       esp_info->authalg);
 		       assert(alg_p);
 		       keylen=authkeylen * 8;
@@ -1153,9 +1156,9 @@ main(int argc, char *argv[])
 		       if (minbits > keylen || maxbits < keylen) {
 			       fprintf(stderr, "%s: invalid auth keylen=%d, "
 					       "must be between %d and %d bits\n",
-					       progname, 
-					       (int)keylen, 
-					       (int)minbits, 
+					       progname,
+					       (int)keylen,
+					       (int)minbits,
 					       (int)maxbits);
 			       exit(1);
 		       }
@@ -1277,7 +1280,7 @@ main(int argc, char *argv[])
 		pfkey_extensions_free(extensions);
 		exit(1);
 	}
-	
+
 	switch(alg) {
 	case XF_AHHMACMD5:
 	case XF_ESP3DESMD596:
@@ -1355,7 +1358,7 @@ main(int argc, char *argv[])
 		    exit(1);
 		}
 	    }
-		    
+
 	    if(outif != 0) {
 		if((error = pfkey_outif_build(&extensions[SADB_X_EXT_PLUMBIF],outif))) {
 		    fprintf(stderr, "%s: Trouble building outif extension, error=%d.\n",
@@ -1376,7 +1379,7 @@ main(int argc, char *argv[])
 			authalg,
 			encryptalg);
 	    }
-		
+
 	    if(debug) {
 		int i,j;
 		for(i = 0; i < life_maxsever; i++) {
@@ -1409,7 +1412,7 @@ main(int argc, char *argv[])
 			    progname);
 		}
 	    }
-	    
+
 	    if(life_opt[life_hard][life_alloc] != NULL ||
 	       life_opt[life_hard][life_bytes] != NULL ||
 	       life_opt[life_hard][life_addtime] != NULL ||
@@ -1432,13 +1435,13 @@ main(int argc, char *argv[])
 					progname);
 			}
 		}
-		
+
 		if(debug) {
                 	addrtot(&src, 0, ipaddr_txt, sizeof(ipaddr_txt));
 			fprintf(stdout, "%s: assembling address_s extension (%s).\n",
 				progname, ipaddr_txt);
 		}
-	
+
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_SRC],
 						SADB_EXT_ADDRESS_SRC,
 						0,
@@ -1450,7 +1453,7 @@ main(int argc, char *argv[])
 			pfkey_extensions_free(extensions);
 			exit(1);
 		}
-	
+
 		if((error = pfkey_address_build(&extensions[SADB_EXT_ADDRESS_DST],
 						SADB_EXT_ADDRESS_DST,
 						0,
@@ -1477,7 +1480,7 @@ main(int argc, char *argv[])
 			exit(1);
 		}
 #endif /* PFKEY_PROXY */
-		
+
 		switch(alg) {
 #ifdef KERNEL_ALG
 		/*	Allow no auth ... after all is local root decision 8)  */
@@ -1506,7 +1509,7 @@ main(int argc, char *argv[])
 		default:
 			break;
 		}
-		
+
 		switch(alg) {
 		case XF_ESP3DES:
 		case XF_ESP3DESMD596:
@@ -1531,7 +1534,7 @@ main(int argc, char *argv[])
 		default:
 			break;
 		}
-		
+
 #ifdef PFKEY_IDENT /* GG: looks wierd, not touched */
 		if((pfkey_ident_build(&extensions[SADB_EXT_IDENTITY_SRC],
 				      SADB_EXT_IDENTITY_SRC,
@@ -1549,7 +1552,7 @@ main(int argc, char *argv[])
 		   sizeof(pfkey_ident_s_ska) ) {
 			exit (1);
 		}
-		
+
 		if((error = pfkey_ident_build(&extensions[SADB_EXT_IDENTITY_DST],
 					      SADB_EXT_IDENTITY_DST,
 					      SADB_IDENTTYPE_PREFIX,
@@ -1573,7 +1576,7 @@ main(int argc, char *argv[])
 		}
 #endif /* PFKEY_IDENT */
 	}
-	
+
 #ifdef NAT_TRAVERSAL
 	if(natt != 0) {
 	  bool success;
@@ -1587,7 +1590,7 @@ main(int argc, char *argv[])
 				, ipsaid_txt, extensions);
 	  if(!success) return FALSE;
 	  if(debug) fprintf(stderr, "setting natt_type to %d\n", natt);
-	  
+
 	  if(sport != 0) {
 	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_SPORT]
 					   , K_SADB_X_EXT_NAT_T_SPORT
@@ -1598,7 +1601,7 @@ main(int argc, char *argv[])
 	    if(debug) fprintf(stderr, "setting natt_sport to %d\n", sport);
 	    if(!success) return FALSE;
 	  }
-	  
+
 	  if(dport != 0) {
 	    err = pfkey_x_nat_t_port_build(&extensions[K_SADB_X_EXT_NAT_T_DPORT]
 					   , K_SADB_X_EXT_NAT_T_DPORT
@@ -1609,7 +1612,7 @@ main(int argc, char *argv[])
 	    if(debug) fprintf(stderr, "setting natt_dport to %d\n", dport);
 	    if(!success) return FALSE;
 	  }
-	  
+
 
 #if 0
 	  /* not yet implemented */
@@ -1738,12 +1741,12 @@ main(int argc, char *argv[])
 	if(listenreply || saref_me || dumpsaref)  {
 		ssize_t readlen;
 		unsigned char pfkey_buf[PFKEYv2_MAX_MSGSIZE];
-		
+
 		while((readlen = read(pfkey_sock, pfkey_buf, sizeof(pfkey_buf))) > 0) {
 			struct sadb_ext *extensions[K_SADB_EXT_MAX + 1];
 			pfkey_extensions_init(extensions);
 			pfkey_msg = (struct sadb_msg *)pfkey_buf;
-			
+
 			/* first, see if we got enough for an sadb_msg */
 			if((size_t)readlen < sizeof(struct sadb_msg)) {
 				if(debug) {
@@ -1752,7 +1755,7 @@ main(int argc, char *argv[])
 				}
 				continue;
 			}
-			
+
 			/* okay, we got enough for a message, print it out */
 			if(debug) {
 				printf("%s: pfkey v%d msg received. type=%d(%s) seq=%d len=%d pid=%d errno=%d satype=%d(%s)\n",
@@ -1767,19 +1770,19 @@ main(int argc, char *argv[])
 				       pfkey_msg->sadb_msg_satype,
 				       satype2name(pfkey_msg->sadb_msg_satype));
 			}
-			
+
 			if(readlen != (ssize_t)(pfkey_msg->sadb_msg_len * IPSEC_PFKEYv2_ALIGN))
 			{
 				if(debug) {
 					printf("%s: packet size read from socket=%d doesn't equal sadb_msg_len %u * %u; message not decoded\n",
 					       progname,
-					       (int)readlen, 
+					       (int)readlen,
 					       (unsigned)pfkey_msg->sadb_msg_len,
 					       (unsigned)IPSEC_PFKEYv2_ALIGN);
 				}
 				continue;
 			}
-			
+
 			if (pfkey_msg_parse(pfkey_msg, NULL, extensions, EXT_BITS_OUT)) {
 				if(debug) {
 					printf("%s: unparseable PF_KEY message.\n",

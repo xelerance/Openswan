@@ -394,6 +394,9 @@ extern bool kernel_overlap_supported(void);
 extern const char *kernel_if_name(void);
 extern void show_kernel_interface(void);
 
+extern void saref_init(void);
+
+
 #define _KERNEL_H_
 #endif /* _KERNEL_H_ */
 

@@ -22,9 +22,11 @@ clean check:
 	@${MAKE} -C lp03-whacksemantics $@
 	@${MAKE} -C lp04-nsscert  $@
 	@${MAKE} -C lp05-sha256cert $@
-	@: ${MAKE} -C lp06-parentR1notchosen $@
+	@${MAKE} -C lp06-parentR1notchosen $@
 	@${MAKE} -C lp07-orient     $@
 	@${MAKE} -C lp08-parentR1   $@
+	: lp09 needs some analysis
+	: @${MAKE} -C lp09-I1notify   $@
 	@${MAKE} -C lp10-parentI2   $@
 	@${MAKE} -C lp11-parentI2dup $@
 	@${MAKE} -C lp12-parentR2    $@
@@ -42,10 +44,19 @@ clean check:
 	@${MAKE} -C lp24-certreplydaveR2  $@
 	@${MAKE} -C lp25-wrongcacert      $@
 	@${MAKE} -C lp26-davecertI2       $@
-	@${MAKE} -C lp27-IDhostpair       $@
+	@${MAKE} -C lp27-dnsloadI1        $@
+	@${MAKE} -C lp28-addrinfoserialize $@
+	@${MAKE} -C lp29-adns              $@
+	@${MAKE} -C lp30-dnskick           $@
+	@${MAKE} -C lp31-IDhostpair       $@
+	@${MAKE} -C lp32-parentR2anychoice $@
+	@${MAKE} -C lp33-IDanypair         $@
+	@${MAKE} -C lp33-dnsload2          $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp34-orientafterlisten  $@
 	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
+	@${MAKE} -C lp36-h2hI1            $@
+	@${MAKE} -C lp37-h2hR1            $@
+	@${MAKE} -C lp38-h2hI2            $@
+	@${MAKE} -C lp39-h2hR2            $@
 	@${MAKE} -C lp40-orientafterprivate $@
-
-

@@ -1,0 +1,9 @@
+| moon continue with: no KEY record for moon.testing.openswan.org
+| ans 000 canonname=(null) protocol=17 family=2 len=16 
+|         result=209.87.249.25 
+| ans 001 canonname=(null) protocol=17 family=10 len=28 
+|         result=2607:f0b0:f:2::25 
+./adnstest leak: keep id name, item size: X
+./adnstest leak: adns hostname, item size: X
+./adnstest leak: 2 * keep id name, item size: X
+./adnstest leak detective found Z leaks, total size X

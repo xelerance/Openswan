@@ -4,7 +4,7 @@
 #define PRINT_SA_DEBUG 1
 #include "../../programs/pluto/spdb.c"
 
-char *progname;
+const char *progname;
 
 void exit_tool(int stat)
 {
