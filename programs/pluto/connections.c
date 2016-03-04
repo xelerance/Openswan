@@ -731,9 +731,9 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	 * !!! overloaded use of RC_CLASH
 	 */
 	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
-	       , aftoinfo(wm->addr_family)->name
-	       , aftoinfo(addrtypeof(&this->host_addr))->name
-	       , aftoinfo(addrtypeof(&this->host_nexthop))->name);
+	       , (wm->addr_family)     ? aftoinfo(wm->addr_family)->name                 : "NULL"
+	       , (&this->host_addr)    ? aftoinfo(addrtypeof(&this->host_addr))->name    : "NULL"
+	       , (&this->host_nexthop) ? aftoinfo(addrtypeof(&this->host_nexthop))->name : "NULL");
 	return FALSE;
     }
 
