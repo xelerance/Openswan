@@ -26,10 +26,17 @@ git log --oneline ${startingcommit}.. | tac | \
         then
             echo success
         else
+	    echo ${commit} >BUILD_EVERY_REV_FAILED
             exit 1
         fi
     done
 
+if [ -f BUILD_EVERY_REV_FAILED ]; then
+	cat BUILD_EVERY_REV_FAILED
+	exit 1
+fi
+
 [ -x /usr/bin/ccache ] && ccache -s
+
 
 
