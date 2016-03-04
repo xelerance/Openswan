@@ -248,6 +248,7 @@ struct connection {
     policy_prio_t prio;
     bool instance_initiation_ok;	/* this is an instance of a policy that mandates initiate */
     enum connection_kind kind;
+    bool                   ip_oriented; /* true iff oriented by IP address */
     const struct iface_port *interface;	/* filled in iff oriented */
 
     bool initiated;
@@ -301,6 +302,7 @@ struct connection {
 };
 
 #define oriented(c) ((c).interface != NULL)
+extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
 extern bool same_peer_ids(const struct connection *c
@@ -498,7 +500,7 @@ extern int foreach_connection_by_alias(const char *alias
 
 extern struct connection *unoriented_connections;
 
-extern void update_host_pairs(struct connection *c);
+extern bool update_host_pairs(struct connection *c);
 
 #ifdef HAVE_LIBNSS
 extern void load_authcerts_from_nss(const char *type, u_char auth_flags);

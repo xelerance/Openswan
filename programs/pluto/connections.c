@@ -158,15 +158,30 @@ bool compare_end_addr_names(struct end *a, struct end *b)
 /*
  * update the host pairs attachment, after host_addr changes
  * just remove it from the pair it is in, and put it in another pair.
-*/
-void
+ *
+ * This routine also binds to a new/proper interface using orient.
+ */
+bool
 update_host_pairs(struct connection *c)
 {
     if (c->spd.that.host_type != KH_IPHOSTNAME)
-	    return;
+	    return TRUE;
 
     clear_IPhost_pair(c);
+
+    /*
+     * unorient, and try again: this may change the interface to the
+     * appropriate ADDRESS family too!
+     * If orient fails, then tell caller, as they move to another address
+     * family.
+     */
+    c->interface = NULL;
+    if(!orient(c, pluto_port500)) {
+        return FALSE;
+    }
+
     connect_to_IPhost_pair(c);
+    return TRUE;
 }
 
 
@@ -589,10 +604,11 @@ load_end_certificate(const char *filename, struct end *dst)
 }
 
 static bool
-extract_end(struct connection *conn UNUSED
+extract_end(struct connection *conn
             , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
+    unsigned int family = conn->addr_family;
 
     /* decode id, if any */
     if (src->id == NULL)
@@ -654,7 +670,12 @@ extract_end(struct connection *conn UNUSED
 
     /* the rest is simple copying of corresponding fields */
     dst->host_type = src->host_type;
-    dst->host_addr = src->host_addr;
+
+    if(src->host_type == KH_ANY && family != 0) {
+        anyaddr(family, &dst->host_addr);
+    } else {
+        dst->host_addr = src->host_addr;
+    }
     dst->host_addr_name = src->host_addr_name;
     dst->host_nexthop = src->host_nexthop;
     dst->host_srcip = src->host_srcip;
@@ -724,6 +745,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
     if ((this->host_type == KH_IPADDR || this->host_type == KH_IFACE)
+	&& wm->addr_family != 0
 	&& (wm->addr_family != addrtypeof(&this->host_addr)
 	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
     {
@@ -731,13 +753,14 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 	 * !!! overloaded use of RC_CLASH
 	 */
 	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
-	       , aftoinfo(wm->addr_family)->name
-	       , aftoinfo(addrtypeof(&this->host_addr))->name
-	       , aftoinfo(addrtypeof(&this->host_nexthop))->name);
+	       , (wm->addr_family)     ? aftoinfo(wm->addr_family)->name                 : "NULL"
+	       , (&this->host_addr)    ? aftoinfo(addrtypeof(&this->host_addr))->name    : "NULL"
+	       , (&this->host_nexthop) ? aftoinfo(addrtypeof(&this->host_nexthop))->name : "NULL");
 	return FALSE;
     }
 
-    if (subnettypeof(&this->client) != subnettypeof(&that->client))
+    if (this->host_type == KH_IPADDR && that->host_type == KH_IPADDR
+	&& subnettypeof(&this->client) != subnettypeof(&that->client))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
@@ -747,10 +770,12 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
     }
 
     /* MAKE this more sane in the face of unresolved IP addresses */
-    if (that->host_type != KH_IPHOSTNAME && isanyaddr(&that->host_addr))
+    if (that->host_type != KH_IPHOSTNAME
+        && KH_ISWILDCARD(that->host_type))
     {
 	/* other side is wildcard: we must check if other conditions met */
-	if (this->host_type != KH_IPHOSTNAME && isanyaddr(&this->host_addr))
+	if (this->host_type != KH_IPHOSTNAME
+            && KH_ISWILDCARD(this->host_type))
 	{
 	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
 	    return FALSE;
@@ -769,7 +794,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 
 	    c = find_host_pair_connections(__FUNCTION__
                                            , ANY_MATCH
-					   , &this->host_addr
+					   , NULL
 					   , this->host_port
                                            , KH_ANY
 					   , (const ip_address *)NULL
@@ -851,6 +876,8 @@ add_connection(const struct whack_message *wm)
 {
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
+
+    int family = wm->addr_family;
 
     alg_info_ike = NULL;
 
@@ -1055,13 +1082,22 @@ add_connection(const struct whack_message *wm)
 
 	c->forceencaps = wm->forceencaps;
 
-	c->addr_family = wm->addr_family;
+        if(family == 0) {
+	  if(addrtypeof(&c->spd.this.host_addr) != 0) {
+    	    family = addrtypeof(&c->spd.this.host_addr);
+          }
+	  if(addrtypeof(&c->spd.that.host_addr) != 0) {
+    	    family = addrtypeof(&c->spd.that.host_addr);
+          }
+        }
+
+	c->addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
 	c->requested_ca = NULL;
 
-	same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
-	same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
+        same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
+        same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
 
 	if (c->spd.this.xauth_server || c->spd.that.xauth_server)
 	{

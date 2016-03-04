@@ -320,6 +320,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		id->id_count++;
 
 		q->ip_addr = ifp->addr;
+                init_iface_port(q);
 		q->change = IFN_ADD;
 		q->port = pluto_port500;
 		q->ike_float = FALSE;
@@ -368,6 +369,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 		    setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 		    q->port = NAT_T_IKE_FLOAT_PORT;
 		    q->fd = fd;
+                    init_iface_port(q);
 		    q->change = IFN_ADD;
 		    q->ike_float = TRUE;
 

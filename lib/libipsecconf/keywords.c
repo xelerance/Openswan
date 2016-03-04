@@ -38,6 +38,7 @@
 #include "ipsecconf/parserlast.h"
 
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
+#undef KEYWORD_PARSE_DEBUG 
 
 /*
  * values for keyword types  (used for debugging)
@@ -667,7 +668,7 @@ unsigned int parser_loose_enum_arg(struct keyword *k, const char *s, char **rest
 #ifdef KEYWORD_PARSE_DEBUG
     {
         char kdtypebuf[KEYWORD_NAME_BUFLEN];
-        fprintf(stderr, "loose enum for %s is %d\n", keyword_name(&kt_values_list, kd->type, kdtypebuf),
+        fprintf(stderr, "loose enum(%s) for %s is %d\n", s, keyword_name(&kt_values_list, kd->type, kdtypebuf),
                 kd->loose_enum_value);
     }
 #endif

@@ -15,8 +15,9 @@ processing whack msg time: X size: Y
 | counting wild cards for @vzhost-mondev.xelerance.com is 0
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
-| orient vzhost1-vzhost-mondev checking against if: eth0
-| orient vzhost1-vzhost-mondev matching on public/private keys
+| orient vzhost1-vzhost-mondev checking against if: eth0 (AF_INET::500)
+| orient vzhost1-vzhost-mondev matching on public/private keys: this=no[%address] that=no[%address]
+|   orient vzhost1-vzhost-mondev finished with: 0 [none]
 | find_ID_host_pair: looking for me=@vzhost1.xelerance.com him=@vzhost-mondev.xelerance.com (exact)
 |   concluded with <none>
 ./threeconns adding connection: "vzhost1-vzhost-mondev"
@@ -27,7 +28,9 @@ processing whack msg time: X size: Y
 | Added new connection patrickn-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | counting wild cards for @vzhost1 is 0
 | counting wild cards for @patrickn is 0
-| orient patrickn-vzhost1 checking against if: eth0
+| orient patrickn-vzhost1 checking against if: eth0 (AF_INET::500)
+|     orient matched on IP
+|   orient patrickn-vzhost1 finished with: 1 []
 | find_host_pair: looking for me=173.230.133.71:500 %address him=69.165.217.138:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 173.230.133.71:500 %address 69.165.217.138:500 -> hp:none
@@ -39,14 +42,16 @@ processing whack msg time: X size: Y
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: PSK+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=173.230.133.71:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>
-| found_host_pair_conn (check_connection_end): 173.230.133.71:500 %any/%any:500 -> hp:none
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection jason-vzhost1 with policy PSK+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | counting wild cards for @jason is 0
 | counting wild cards for @vzhost1.xelerance.com is 0
-| orient jason-vzhost1 checking against if: eth0
+| orient jason-vzhost1 checking against if: eth0 (AF_INET::500)
+|     orient matched on IP
+|   orient jason-vzhost1 finished with: 1 []
 | find_host_pair: looking for me=173.230.133.71:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: comparing to me=173.230.133.71:500 %address him=69.165.217.138:500
 | find_host_pair: concluded with <none>

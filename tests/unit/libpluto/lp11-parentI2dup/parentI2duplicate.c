@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
     init_crypto();
     load_oswcrypto();
     init_fake_vendorid();
-    init_parker_interface();
+    init_parker_interface(TRUE);
 
     infile = argv[0];
     conn_name = argv[1];

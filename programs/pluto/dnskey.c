@@ -57,6 +57,8 @@
 
 /* ADNS stuff */
 
+unsigned int sort_dns_answers = 0;
+
 int adns_qfd = NULL_FD,	/* file descriptor for sending queries to adns (O_NONBLOCK) */
     adns_afd = NULL_FD;	/* file descriptor for receiving answers from adns */
 static pid_t adns_pid = 0;
@@ -1864,7 +1866,9 @@ static bool advance_end_dns_list(struct connection *c
         addrtot(&end->host_addr, 0, newaddr, sizeof(newaddr));
         DBG(DBG_DNS
             , DBG_log("advancing DNS to: %s (next: %s)", newaddr, ai->ai_next ? "more":"last"));
-        update_host_pairs(c);
+        if(update_host_pairs(c) == FALSE) {
+            valid = FALSE;
+        }
     }
 
     /* advance pointer, we consumed something, maybe valid */
@@ -1881,6 +1885,8 @@ static void reset_end_dns_list(struct dns_end_list *del)
 void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
 {
     struct iphostname_continuation *iph_c = (struct iphostname_continuation *)cr;
+    struct addrinfo *ai;
+
     DBG(DBG_DNS
         , DBG_log("iphostname_continuation: %s %s", iph_c->c->name
                   , ugh ? ugh : "no-error"));
@@ -1889,10 +1895,14 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
         /* continuation is freed by dnskey */
         return;
     }
-    dump_addr_info(cr->ipanswers);
+    ai = cr->ipanswers;
+    if(sort_dns_answers) {
+        ai = sort_addr_info(ai);
+    }
+    dump_addr_info(ai);
 
     /* now move results to connection structure */
-    iph_c->c->spd.that.host_address_list.address_list = iph_c->ac.ipanswers;
+    iph_c->c->spd.that.host_address_list.address_list = ai;
     reset_end_dns_list(&iph_c->c->spd.that.host_address_list);
     iph_c->ac.ipanswers = NULL;
 
@@ -1974,12 +1984,20 @@ bool kick_adns_connection_lookup(struct connection *c
     struct iphostname_continuation *iph_c;
 
     err_t e;
+    bool valid = FALSE;
 
     /* first look for a new IP address to try: see if there a new one. */
     /* if some addresses found, and not at end of list */
-    if(end->host_address_list.address_list != NULL
-       && end->host_address_list.next_address != NULL) {
-        return advance_end_dns_list(c, end);
+    while(valid == FALSE
+          && end->host_address_list.address_list != NULL
+          && end->host_address_list.next_address != NULL) {
+
+        /*
+         * try all the addresses: we may fail on some due to address type,
+         * or address family that can not be oriented.
+         */
+        valid = advance_end_dns_list(c, end);
+        if(valid) return TRUE;
     }
 
     if(!newlookup) {

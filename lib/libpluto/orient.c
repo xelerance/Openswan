@@ -41,6 +41,14 @@
 #include "pluto/server.h"
 #include "pluto/connections.h"	/* needs id.h */
 
+/*
+ * this variable is set in production pluto when using
+ * kern_interface == NO_KERNEL,  but must remain unset
+ * at other times, including regression testing.
+ *
+ */
+bool orient_same_addr_ok = FALSE;
+
 static void swap_ends(struct spd_route *sr)
 {
     struct end t = sr->this;
@@ -49,6 +57,66 @@ static void swap_ends(struct spd_route *sr)
     sr->that = t;
 }
 
+/*
+ * pick the next matching interface in the list, starting at iflist.
+ * iflist is always "interfaces" here, but other calls will resume the
+ * search from the previously returned value.
+ */
+struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                   int pluto_port,
+                                                   int family, struct spd_route *sr)
+{
+    struct iface_port *ifp = interfaces;
+    struct end        *e1  = &sr->this;
+    const struct af_info *afi;
+    unsigned int       desired_port;
+    bool done = FALSE;
+    int family1= sr->this.host_addr.u.v4.sin_family;
+    int family2= sr->that.host_addr.u.v4.sin_family;
+
+    switch(family) {
+    case AF_INET6:
+        desired_port = e1->host_addr.u.v6.sin6_port;
+        break;
+
+    default:
+    case AF_INET:
+        desired_port = e1->host_addr.u.v4.sin_port;
+        break;
+    }
+    if(desired_port == 0) desired_port = pluto_port;
+
+    if(family == 0) {
+        family = family1 ? family1 : family2;
+    }
+    afi = aftoinfo(family);
+    if(family1 == 0) {
+        e1 = &sr->that;
+    }
+
+    while(!done && iflist) {
+        ifp = iflist;
+        if(iflist->ip_addr.u.v4.sin_family == family) {
+#if 0
+            DBG_log("  ports: %u vs %u",
+                    iflist->port, desired_port);
+#endif
+            if(iflist->port == desired_port) {
+                done = TRUE;
+            }
+        }
+        iflist = iflist->next;
+    }
+
+    if(!done) ifp = NULL;
+
+    DBG(DBG_CONTROLMORE,
+        DBG_log("  picking maching interface for family[%u,%u]: %s resulted in: %s"
+                , family, family2
+                , afi ? afi->name : "<family:0>", ifp ? ifp->addrname : "none"));
+
+    return ifp;
+}
 
 
 static bool osw_end_has_private_key(struct end *him)
@@ -73,6 +141,8 @@ bool
 orient(struct connection *c, unsigned int pluto_port)
 {
     struct spd_route *sr;
+    bool result;
+    unsigned int family = c->addr_family;
 
     if (!oriented(*c))
     {
@@ -90,17 +160,18 @@ orient(struct connection *c, unsigned int pluto_port)
 	     */
 	    for (p = interfaces; p != NULL; p = p->next)
 	    {
-                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s", c->name, p->ip_dev->id_rname));
+                DBG(DBG_CONTROLMORE, DBG_log("orient %s checking against if: %s (%s:%s:%u)", c->name, p->ip_dev->id_rname, p->socktypename, p->addrname, p->port));
 #ifdef NAT_TRAVERSAL
 		if (p->ike_float) continue;
 #endif
 
 #ifdef HAVE_LABELED_IPSEC
 		if (c->loopback && sameaddr(&sr->this.host_addr, &p->ip_addr)) {
-		DBG(DBG_CONTROLMORE,
+                    DBG(DBG_CONTROLMORE,
 			DBG_log("loopback connections \"%s\" with interface %s!"
 			 , c->name, p->ip_dev->id_rname));
 			c->interface = p;
+                        c->ip_oriented = TRUE;
 			break;
 		}
 #endif
@@ -109,8 +180,8 @@ orient(struct connection *c, unsigned int pluto_port)
 		{
 		    /* check if this interface matches this end */
 		    if (sameaddr(&sr->this.host_addr, &p->ip_addr)
-			&& (kern_interface != NO_KERNEL
-			    || sr->this.host_port == pluto_port))
+			&& (orient_same_addr_ok
+                            || sr->this.host_port == p->port))
 		    {
 			if (oriented(*c))
 			{
@@ -126,12 +197,15 @@ orient(struct connection *c, unsigned int pluto_port)
 			    return FALSE;
 			}
 			c->interface = p;
+                        c->ip_oriented = TRUE;
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("    orient matched on IP"));
 		    }
 
 		    /* done with this interface if it doesn't match that end */
 		    if (!(sameaddr(&sr->that.host_addr, &p->ip_addr)
-			  && (kern_interface!=NO_KERNEL
-			      || sr->that.host_port == pluto_port)))
+			  && (orient_same_addr_ok
+			      || sr->that.host_port == p->port)))
 			break;
 
 		    /* swap ends and try again.
@@ -144,40 +218,82 @@ orient(struct connection *c, unsigned int pluto_port)
 	    }
 
             if(!oriented(*c)) {
-                DBG(DBG_CONTROLMORE, DBG_log("orient %s matching on public/private keys", c->name));
+                bool this_has_private_key = osw_end_has_private_key(&sr->this);
+                bool that_has_private_key = osw_end_has_private_key(&sr->that);
+                char thishosttype[KEYWORD_NAME_BUFLEN];
+                char thathosttype[KEYWORD_NAME_BUFLEN];
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("orient %s matching on public/private keys: this=%s[%s] that=%s[%s]"
+                            , c->name
+                            , this_has_private_key ? "yes" : "no"
+                            , keyword_name(&kw_host_list, sr->this.host_type, thishosttype)
+                            , that_has_private_key ? "yes" : "no"
+                            , keyword_name(&kw_host_list, sr->that.host_type, thathosttype)));
+
+
 
                 /* if %any, then check if we have a matching private key! */
                 if((sr->this.host_type == KH_DEFAULTROUTE
                     || sr->this.host_type == KH_ANY)
-                   && osw_end_has_private_key(&sr->this)) {
+                   && this_has_private_key) {
                     /*
-                     * orientated is determined by selecting an interface, and this will pick
-                     * first interface in the list...  want to pick wildcard outgoing interface.
+                     * orientated is determined by selecting an interface,
+                     * and this will pick first interface in the list...
+                     * want to pick wildcard outgoing interface.
                      */
-                    c->interface = interfaces;
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on this having private key", c->name));
+
+                    /* take the family from the other end */
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
+                    c->ip_oriented = FALSE;
 
                 } else if((sr->that.host_type == KH_DEFAULTROUTE
                            || sr->that.host_type == KH_ANY)
-                          && osw_end_has_private_key(&sr->that)) {
+                          && that_has_private_key) {
+
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on that having private key", c->name));
+
                     swap_ends(sr);
-                    c->interface = interfaces;
-                } else if(!osw_end_has_private_key(&sr->that)
+
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
+                    c->ip_oriented = FALSE;
+
+                } else if(!that_has_private_key
                           && sr->this.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
-                    c->interface = interfaces;
-                } else if(!osw_end_has_private_key(&sr->this)
+                    /* if still not oriented, then look for an end
+                     * that hasn't a key, but which hasn't a private key,
+                     * and defaultroute */
+
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on this being defaultroute, and that lacking private key", c->name));
+
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
+                    c->ip_oriented = FALSE;
+
+                } else if(!this_has_private_key
                           && sr->that.host_type==KH_DEFAULTROUTE) {
-                    /* if still not oriented, then look for an end that hasn't a key, but which
-                     * hasn't a private key, and defaultroute */
+                    /* if still not oriented, then look for an end that
+                     * hasn't a key, but which hasn't a private key,
+                     and defaultroute */
+
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  orient %s matched on that being defaultroute, and this lacking private key", c->name));
                     swap_ends(sr);
-                    c->interface = interfaces;
+
+                    c->interface   = pick_matching_interfacebyfamily(interfaces, pluto_port, family, sr);
+                    c->ip_oriented = FALSE;
                 }
             }
         }
     }
 
-    return oriented(*c);
+    result = oriented(*c);
+    DBG(DBG_CONTROLMORE, DBG_log("  orient %s finished with: %u [%s]"
+                                 , c->name, result, c->interface ? c->interface->addrname : "none"));
+
+    return result;
 }
 
 /*

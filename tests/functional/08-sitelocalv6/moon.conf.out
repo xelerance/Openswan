@@ -1,0 +1,25 @@
+opening file: moon.conf
+#conn host-host loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn host-host
+conn host-host
+	left=fec0::1
+	leftid="@moon.strongswan.org"
+	right=fec0::2
+	rightid="@sun.strongswan.org"
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn host-host
+
+# end of config

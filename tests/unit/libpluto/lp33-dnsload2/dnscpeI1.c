@@ -6,7 +6,7 @@
 
 static void init_local_interface(void)
 {
-    init_parker_interface();
+    init_parker_interface(FALSE);
 }
 
 static void init_fake_secrets(void)
@@ -16,6 +16,8 @@ static void init_fake_secrets(void)
 			       , "../samples/parker.secrets"
 			       , NULL);
 }
+
+unsigned int sort_dns_answers;
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +35,7 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
+    sort_dns_answers = 1;
 
     if(argc != 3 && argc!=4) {
 	fprintf(stderr, "Usage: %s [-r] <whackrecord> <conn-name>\n", progname);
@@ -64,11 +67,13 @@ int main(int argc, char *argv[])
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
-    //list_public_keys(FALSE, FALSE);
-    assert(orient(c1, 500));
     show_one_connection(c1, whack_log);
 
-    assert(c1->addr_family == AF_INET);
+    /*
+     * this is now 0, since an address family has *NOT* been chosen,
+     * given that this=>%defaultroute, and that=>%dns
+     */
+    assert(c1->addr_family == 0);
 
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);

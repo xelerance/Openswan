@@ -2309,6 +2309,7 @@ add_entry:
 
 		    q->ip_addr = ifp->addr;
 		    q->fd = fd;
+                    init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
 		    q->port = pluto_port500;
@@ -2316,11 +2317,11 @@ add_entry:
 
 		    interfaces = q;
 
-		    openswan_log("adding interface %s/%s %s:%d"
+		    openswan_log("adding interface %s/%s %s:%d (%s)"
 				 , q->ip_dev->id_vname
 				 , q->ip_dev->id_rname
 				 , ip_str(&q->ip_addr)
-				 , q->port);
+				 , q->port, q->socktypename);
 
 #ifdef NAT_TRAVERSAL
 		    /*
@@ -2344,6 +2345,7 @@ add_entry:
 			setportof(htons(NAT_T_IKE_FLOAT_PORT), &q->ip_addr);
 			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;
+                        init_iface_port(q);
 			q->next = interfaces;
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;

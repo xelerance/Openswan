@@ -344,7 +344,7 @@ static int set_whack_end(struct starter_config *cfg
 	case KH_DEFAULTROUTE:
 		w->host_addr = cfg->dr;
 		if(addrtypeof(&w->host_addr) == 0) {
-			w->host_addr = *aftoinfo(l->addr_family)->any;
+			w->host_addr = *aftoinfo(AF_INET6)->any;
 		}
 		break;
 
@@ -547,6 +547,9 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	msg->name = connection_name(conn);
 
 	msg->addr_family = conn->left.addr_family;
+	if(msg->addr_family == 0) {
+	  msg->addr_family = conn->right.addr_family;
+        }
 	msg->tunnel_addr_family = conn->left.addr_family;
 
 	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];

@@ -46,6 +46,9 @@ int main(int argc, char *argv[])
 
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
+#ifdef INIT_LOADED
+    INIT_LOADED(c1);
+#endif
 
     //list_public_keys(FALSE, FALSE);
 #ifndef SKIP_ORIENT_ASSERT

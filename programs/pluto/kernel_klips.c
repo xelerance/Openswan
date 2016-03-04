@@ -230,6 +230,7 @@ add_entry:
 
 		    q->ip_addr = ifp->addr;
 		    q->fd = fd;
+                    init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
 		    q->port = pluto_port500;
@@ -265,6 +266,7 @@ add_entry:
 			q->port = pluto_port4500;
 			setportof(htons(q->port), &q->ip_addr);
 			q->fd = fd;
+                        init_iface_port(q);
 			q->next = interfaces;
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;

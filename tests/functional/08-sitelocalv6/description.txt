@@ -1,0 +1,3 @@
+This test validates that left=v6-site-local address is parsed properly by pluto.
+
+
