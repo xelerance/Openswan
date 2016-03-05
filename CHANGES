@@ -4,10 +4,67 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.47dr1 (February 12, 2016)
+v2.6.47dr2 (March 4, 2016)
 
 Added feature to allow DNS query for external IP address of a gateway.
 
+* Adjust build-every-rev to exit smarter [MCR]
+* Permit unit test cases to cause returned addresses to be sorted [MCR]
+* alg_info_ike leak is unstable [MCR]
+* Some missing leaks [MCR]
+* With port numbers in play, the desired_port may not be set, in which case, look for plutos port [MCR]
+* Change log to indicate a match on IP, going along with match on private key [MCR]
+* The NO_KERNEL interface type was originally intended for pluto functional
+  testing, and so it has some cruft related to not matching port numbers
+  against 500. This presents problems when unit testing with (fake) ports
+  other than 500, and so really the ignoring of port numbers should be a
+  seperately enabled feature, as the unit testing really needs to use the
+  actual NO_KERNEL interface, since it has no kernel [MCR]
+* Added additional interface for port 4500 [MCR]
+* Try to pick matching port when picking an interface [MCR]
+* When picking an appropriate interface, make sure that the port numbers match [MCR]
+* Updated test cases for logging of IP address in orient test [MCR]
+* Turn off IPv6 since mock output code does not speak IPv6. [MCR]
+* Bit a bit more flexible in where the address family comes from, and log the
+  resulting interface better [MCR]
+* Fixed order of htons() and init_iface_port, and added include for inet_pton [MCR]
+* Provide for optional INIT_LOADED to be called. Used in lp18 for assert [MCR]
+* More extensive debug of orient() --- log which private key was found, and
+  also if the pick_interface was able to find an interface. Also change the
+  family searched for to be the (derived) value for the connection, rather
+  than the end [MCR]
+* Provide example of how to translate enum to string for keyword_host [MCR]
+* Updates to lp18 for revised debugging of orient [MCR]
+* Use preformatted interface address [MCR]
+* Pick an interface that matches the right family [MCR]
+* Reformat comments [MCR]
+* Added ip_oriented flag to indicate if orientation was bound to IP [MCR]
+* Added init_iface_port to include setting of q->socktypename [MCR]
+* lp31 discovered that addrtypeof, addrbytesptr and samaddr should be tolerant
+  of receiving a NULL [MCR]
+* Changes to fmt_connection means that the nexthop for right=%any is no longer
+  guess/assumed or logged [MCR]
+* The changes to the conn load verification for IKEv1 PSK right=%any should use
+  a left=%any, rather than an explicit address. [MCR]
+* Change update_host_pair to return indicate of whether orient worked; as if
+  it did not then a different address might be in order. [MCR]
+* Updates to unit test cases for socktypename addition [MCR]
+* Added socknametype to iface_port structure so that socket family can easily be logged [MCR]
+* Make it clear that IPHOSTNAME types are not v4 or v6, and should not
+  initialize the nexthop in any specific way, and should fit into the
+  right=%any checks for IKEv1 as well [MCR]
+* Try to guess what kind of family the conn is, if the conn has a this or that
+  with a family set the host for the side that does not have a family to
+  that family [MCR]
+* Try to set the address family from left or from right, if set. [MCR]
+* Only diagnose an address-type mis-match if both sides are specified by a literal address [MCR]
+* Check for core dumps. Write test case 2b into gdbinit file [MCR]
+* Arbitrarily decide to use IPv6 ANY address when right is default route [MCR]
+* Set the address type based upon which kind of address was parsed [MCR]
+* Also validate that the conn is properly loaded into pluto [MCR]
+* Correctly parse a site local (e.g. fec0::1) address [MCR]
+* New test case to validate IPv6 site local addresses in left/right= [MCR]
+* Log the string value involved in the debug of the looseenum [MCR]
 * IPv6 address of cassidy.sandelman.ca actually did change [MCR]
 * lp40 updated for DNS delayed rebase [MCR]
 * find_ID_host_pair debug now includes dump of exact parameter [MCR]
