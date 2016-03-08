@@ -376,8 +376,8 @@ static bool validate_end(struct starter_conn *conn_st
     }
 
     family = AF_UNSPEC;
-    if(conn_st->options_set[KBF_CONNADDRFAMILY]) {
-	    family = conn_st->options[KBF_CONNADDRFAMILY];
+    if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
+	    family = conn_st->options[KBF_ENDADDRFAMILY];
     }
 
     end->addrtype=end->options[KNCF_IP];
@@ -464,6 +464,11 @@ static bool validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_SUBNET])
     {
 	char *value = end->strings[KSCF_SUBNET];
+	unsigned int client_family = AF_UNSPEC;
+
+	if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
+	    client_family = conn_st->options[KBF_ENDADDRFAMILY];
+        }
 
         if ( ((strlen(value)>=6) && (strncmp(value,"vhost:",6)==0)) ||
 	     ((strlen(value)>=5) && (strncmp(value,"vnet:",5)==0)) ) {
@@ -472,8 +477,10 @@ static bool validate_end(struct starter_conn *conn_st
 	}
 	else {
 	    end->has_client = TRUE;
-	    er = ttosubnet(value, 0, 0, &(end->subnet));
+	    er = ttosubnet(value, 0, client_family, &(end->subnet));
 	}
+
+
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
     }
 
