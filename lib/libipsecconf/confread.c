@@ -366,6 +366,7 @@ static bool validate_end(struct starter_conn *conn_st
     char *err_str = NULL;
     const char *leftright=(left ? "left" : "right");
     int family;
+    int newfamily;
     bool err = FALSE;
 
 #define ERR_FOUND(args...) do { err += error_append(&err_str, ##args); } while(0)
@@ -375,12 +376,13 @@ static bool validate_end(struct starter_conn *conn_st
     }
 
     family = AF_UNSPEC;
-    if(conn_st->options_set[KBF_CONNADDRFAMILY]) {
-	    family = conn_st->options[KBF_CONNADDRFAMILY];
+    if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
+	    family = conn_st->options[KBF_ENDADDRFAMILY];
     }
 
     end->addrtype=end->options[KNCF_IP];
     end->addr_family = family;
+    newfamily = family;
 
     /* validate the KSCF_IP/KNCF_IP */
     switch(end->addrtype) {
@@ -409,23 +411,17 @@ static bool validate_end(struct starter_conn *conn_st
 	    break;
 	}
 
-	switch(family) {
-	case AF_INET:
-	case AF_INET6:
-		er = ttoaddr_num(end->strings[KNCF_IP], 0, family, &(end->addr));
-		break;
-
-        default:
-		er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET6, &(end->addr));
-		if(er == NULL) { /* no error! */
-			end->addr_family = AF_INET6;
-		} else { /* error */
-			er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
-			if(er == NULL) {
-				end->addr_family = AF_INET;
-			}
+	er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET6, &(end->addr));
+	if(er == NULL) { /* no error! */
+		newfamily = AF_INET6;
+	} else { /* error */
+		er = ttoaddr_num(end->strings[KNCF_IP], 0, AF_INET, &(end->addr));
+		if(er == NULL) {
+			newfamily = AF_INET;
 		}
-		break;
+	}
+	if(family == 0) {
+		end->addr_family = newfamily;
 	}
 
 	if(er) {
@@ -468,6 +464,11 @@ static bool validate_end(struct starter_conn *conn_st
     if(end->strings_set[KSCF_SUBNET])
     {
 	char *value = end->strings[KSCF_SUBNET];
+	unsigned int client_family = AF_UNSPEC;
+
+	if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
+	    client_family = conn_st->options[KBF_ENDADDRFAMILY];
+        }
 
         if ( ((strlen(value)>=6) && (strncmp(value,"vhost:",6)==0)) ||
 	     ((strlen(value)>=5) && (strncmp(value,"vnet:",5)==0)) ) {
@@ -476,8 +477,10 @@ static bool validate_end(struct starter_conn *conn_st
 	}
 	else {
 	    end->has_client = TRUE;
-	    er = ttosubnet(value, 0, 0, &(end->subnet));
+	    er = ttosubnet(value, 0, client_family, &(end->subnet));
 	}
+
+
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
     }
 

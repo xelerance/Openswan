@@ -25,4 +25,5 @@ check:
 	@${MAKE} -C 06-alsoflip check
 	@${MAKE} -C 07-sourceipv6 check
 	@${MAKE} -C 08-sitelocalv6 check
+	@${MAKE} -C 09-v6inv4 check
 
