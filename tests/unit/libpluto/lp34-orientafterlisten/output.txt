@@ -6,13 +6,6 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 ./orienttest adding connection: "parker1--jj2"
-| processing whack message of size: A
-processing whack msg time: X size: Y
-| processing whack message of size: A
-processing whack msg time: X size: Y
-| processing whack message of size: A
-processing whack msg time: X size: Y
-./orienttest adding connection: "ikev2:parker--jj"
 processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
@@ -20,8 +13,6 @@ RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; 
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: ; kind=CK_PERMANENT
 RC=2 IP hostpairs:
 RC=2 ID hostpairs:
-RC=2   IDpair: @parker01.emmjay.credil.org/@jamesjohnson.emmjay.credil.org
-RC=2      ikev2:parker--jj
 RC=2   IDpair: @jamesjohnson.emmjay.credil.org/@parker01.emmjay.credil.org
 RC=2      parker1--jj2
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
@@ -29,11 +20,9 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 RC=2 IP hostpairs:
 RC=2   IPpair: 192.168.1.1:500 - 132.213.238.7:500
 RC=2      parker1--jj2
-RC=2      ikev2:parker--jj
 RC=2 ID hostpairs:
 RC=2   IDpair: @parker01.emmjay.credil.org/@jamesjohnson.emmjay.credil.org
 RC=2      parker1--jj2
-RC=2      ikev2:parker--jj
 re-processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.credil.org]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===fd68:c9f9:4157::/64; unrouted; eroute owner: #0
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
@@ -42,22 +31,12 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 RC=2 IP hostpairs:
 RC=2   IPpair: 192.168.1.1:500 - 132.213.238.7:500
 RC=2      parker1--jj2
-RC=2      ikev2:parker--jj
 RC=2 ID hostpairs:
 RC=2   IDpair: @parker01.emmjay.credil.org/@jamesjohnson.emmjay.credil.org
 RC=2      parker1--jj2
-RC=2      ikev2:parker--jj
 ./orienttest deleting connection
-./orienttest leak: host_pair, item size: X
 ./orienttest leak: myid string, item size: X
 ./orienttest leak: my FQDN, item size: X
-./orienttest leak: 2 * keep id name, item size: X
-./orienttest leak: ID host_pair, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: host ip, item size: X
-./orienttest leak: keep id name, item size: X
-./orienttest leak: connection name, item size: X
-./orienttest leak: struct connection, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
 ./orienttest leak: aacerts path, item size: X
