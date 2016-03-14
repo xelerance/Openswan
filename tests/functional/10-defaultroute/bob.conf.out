@@ -1,0 +1,33 @@
+opening file: bob.conf
+#conn nat-t loaded
+
+version 2.0
+
+config setup
+	nat_traversal=yes
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+
+
+# begin conn nat-t
+conn nat-t
+	left=%defaultroute
+	leftid="bob@strongswan.org"
+	leftnexthop=%defaultroute
+	leftcert=bobCert.pem
+	right=%any
+	rightsubnet=10.1.0.0/16
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+# end conn nat-t
+
+# end of config
