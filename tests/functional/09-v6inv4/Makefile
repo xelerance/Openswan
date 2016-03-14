@@ -40,7 +40,7 @@ step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} --ipsecdir ${CONFBASE} 2>&1
 
 step2:
-	@${ADDCONN} --verbose ${CTLBASE} --config ${CONFFILE} net-net
+	@${ADDCONN} --verbose ${CTLBASE} --config ${CONFFILE} net-net >OUTPUT/addconn.${TESTNAME}.out
 
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
