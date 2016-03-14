@@ -38,6 +38,10 @@ int main(int argc, char *argv[])
         conn_name = *argv++;
         printf("processing %s\n", conn_name);
         c1 = con_by_name(conn_name, TRUE);
+	if(!c1) {
+		printf("no connection %s found\n", conn_name);
+		exit(10);
+	}
         show_one_connection(c1, whack_log);
         assert(c1 != NULL);
         assert(orient(c1, pluto_port500));
