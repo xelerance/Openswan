@@ -94,6 +94,6 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 
 clean:
-	rm -f ${TESTNAME} ${WHACKFILE}
+	rm -f ${TESTNAME} ${WHACKFILE} *.o
 
 
