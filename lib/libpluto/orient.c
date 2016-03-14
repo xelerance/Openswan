@@ -96,7 +96,7 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
 
     while(!done && iflist) {
         ifp = iflist;
-        if(iflist->ip_addr.u.v4.sin_family == family) {
+        if(family == 0 || iflist->ip_addr.u.v4.sin_family == family) {
 #if 0
             DBG_log("  ports: %u vs %u",
                     iflist->port, desired_port);
