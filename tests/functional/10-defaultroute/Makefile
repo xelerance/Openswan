@@ -50,7 +50,7 @@ step4:
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
-	@mkdir -p ${OUTPUTS}/cacerts ${OUTPUTS}/aacerts ${OUTPUTS}/ocspcerts ${OUTPUTS}/crls
+	@mkdir -p bob/cacerts bob/aacerts bob/ocspcerts bob/crls
 	-rm -f OUTPUT/base.pid
 
 clean:
