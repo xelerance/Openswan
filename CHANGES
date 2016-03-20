@@ -4,10 +4,29 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.47dr2 (March 4, 2016)
+v2.6.47dr3 (March 19, 2016)
 
 Added feature to allow DNS query for external IP address of a gateway.
 
+* Make certificate directories in correct place [MCR]
+* Order of addconn and pluto is non-deterministic, so stick addconn output elsewhere [MCR]
+* As a result of change to orient with family=0, this test case now binds an interface [MCR]
+* With revision to permit left=%any, right=%defaultroute, and orient by
+  private key it is permissible to have a conn that does not specify a host
+  IP for "our side" [MCR]
+* When looking for a matching interface, and conn family is 0, and both ends
+  are zero, just pick the first interface that matches on ports [MCR]
+* Initial test case for loading connection with right=%defaultroute [MCR]
+* Exit if connection not found, rather than core dump later [MCR]
+* Clean out .o files [MCR]
+* Test case on why defaultroute is not a valid IP address: discovered in
+  DrTaylorPlumage with ikev1-double-nat [MCR]
+* Created functional test case for loading a mixed v6 in v4 conn [MCR]
+* Created new test case for loading and orientating a mixed v6 in v4 conn [MCR]
+* Added new keyword: endaddrfamily.  renamed connaddrfamily to clientaddrfamily [MCR]
+* Always look for v6 and v4 addresses in left/right=, updating the end-family
+  only if it was not set [MCR]
+* Refactor lp07 so that it can be used by lp41 [MCR]
 * Adjust build-every-rev to exit smarter [MCR]
 * Permit unit test cases to cause returned addresses to be sorted [MCR]
 * alg_info_ike leak is unstable [MCR]
