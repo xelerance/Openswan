@@ -88,12 +88,12 @@ check:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} parker1--jj2 ikev2:parker--jj
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 
 clean:
-	rm -f ${TESTNAME} ${WHACKFILE}
+	rm -f ${TESTNAME} ${WHACKFILE} *.o
 
 

@@ -14,8 +14,11 @@ processing whack msg time: X size: Y
 | orient cpenohint checking against if: eth0 (AF_INET:1.1.168.192:4500)
 | orient cpenohint matching on public/private keys: this=no[%dns] that=no[%defaultroute]
 |   orient cpenohint matched on that being defaultroute, and this lacking private key
-|   picking maching interface for family[0,0]: <family:0> resulted in: none
-|   orient cpenohint finished with: 0 [none]
+|   picking maching interface for family[0,0]: <family:0> resulted in: 192.168.1.1
+|   orient cpenohint finished with: 1 [192.168.1.1]
+| find_host_pair: looking for me=<invalid>:500 %dns him=<invalid>:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: <invalid>:500 %dns <invalid>:500 -> hp:none
 | find_ID_host_pair: looking for me=@cpe.example.com him=@example.com (exact)
 |   concluded with <none>
 ./dnscpeI1 adding connection: "cpenohint"
@@ -24,7 +27,7 @@ processing whack msg time: X size: Y
 RC=0 "cpenohint": %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "cpenohint":     myip=unset; hisip=unset;
 RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
-RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: ; kind=CK_PERMANENT
+RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 ./dnscpeI1 Can not initiate: no remote address available (yet)
 | ans 000 canonname=(null) protocol=17 family=2 len=16
 |         result=93.184.216.34

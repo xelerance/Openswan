@@ -773,14 +773,7 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
     if (that->host_type != KH_IPHOSTNAME
         && KH_ISWILDCARD(that->host_type))
     {
-	/* other side is wildcard: we must check if other conditions met */
-	if (this->host_type != KH_IPHOSTNAME
-            && KH_ISWILDCARD(this->host_type))
-	{
-	    loglog(RC_ORIENT, "connection must specify host IP address for our side");
-	    return FALSE;
-	}
-	else if (!NEVER_NEGOTIATE(wm->policy))
+	if (!NEVER_NEGOTIATE(wm->policy))
 	{
 	    /* check that all main mode RW IKE policies agree because we must
 	     * implement them before the correct connection is known.

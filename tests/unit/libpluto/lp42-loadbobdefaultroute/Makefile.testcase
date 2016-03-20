@@ -1,8 +1,8 @@
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-SAMPLEDIR=../samples
+SAMPLEDIR=../../../functional/10-defaultroute
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-ENDNAME=parker
-CONNNAME=parker1--jj2 ikev2:parker--jj
+ENDNAME=bob
+CONNNAME=nat-t
 UNITTESTARGS=${WHACKFILE} ${CONNNAME}
 
-TESTNAME=orienttest
+TESTNAME=loadbob
