@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.47dr3 (March 19, 2016)
+v2.6.47rc1 (March 20, 2016)
 
 Added feature to allow DNS query for external IP address of a gateway.
 
