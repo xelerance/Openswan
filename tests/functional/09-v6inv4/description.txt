@@ -1,0 +1,3 @@
+This test validates a conn with IPv4 left=, but IPv6 leftsubnet= is still processed correctly as a left=IP.
+
+

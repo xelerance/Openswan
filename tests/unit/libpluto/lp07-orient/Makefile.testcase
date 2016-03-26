@@ -2,7 +2,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 SAMPLEDIR=../samples
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 ENDNAME=parker
-UNITTESTARGS=${WHACKFILE} parker1--jj2
-#UNITTESTARGS=${WHACKFILE} parker1--jj2 ikev2:parker--jj
+CONNNAME=parker1--jj2 ikev2:parker--jj
+UNITTESTARGS=${WHACKFILE} ${CONNNAME}
 
 TESTNAME=orienttest

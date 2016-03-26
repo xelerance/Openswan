@@ -1,0 +1,3 @@
+This case tests the loading of a conn (bob) from the DrTaylorPlumage test case 
+ikev1-double-nat, where the passive side (bob) has a right=%defaultroute.
+Pluto previously (!!) complained that %defaultroute was not an IP address.

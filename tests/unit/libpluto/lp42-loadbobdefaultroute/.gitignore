@@ -1,0 +1,7 @@
+OUTPUT
+core.*
+.gdbinit
+orientmoon
+core
+*.o
+loadbob

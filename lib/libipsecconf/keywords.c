@@ -38,6 +38,7 @@
 #include "ipsecconf/parserlast.h"
 
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
+#undef KEYWORD_PARSE_DEBUG 
 
 /*
  * values for keyword types  (used for debugging)
@@ -381,7 +382,9 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"auto",           kv_conn|kv_duplicateok, kt_enum,   KBF_AUTO,        &kw_auto_list},
     {"also",           kv_conn,         kt_appendstring, KSF_ALSO,    NOT_ENUM},
     {"alsoflip",       kv_conn,         kt_appendstring, KSF_ALSOFLIP,NOT_ENUM},
-    {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,     &kw_connaddrfamily_list},
+    {"endaddrfamily",  kv_conn,         kt_enum,   KBF_ENDADDRFAMILY,     &kw_connaddrfamily_list},
+    {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
+    {"clientaddrfamily", kv_conn,       kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
@@ -667,7 +670,7 @@ unsigned int parser_loose_enum_arg(struct keyword *k, const char *s, char **rest
 #ifdef KEYWORD_PARSE_DEBUG
     {
         char kdtypebuf[KEYWORD_NAME_BUFLEN];
-        fprintf(stderr, "loose enum for %s is %d\n", keyword_name(&kt_values_list, kd->type, kdtypebuf),
+        fprintf(stderr, "loose enum(%s) for %s is %d\n", s, keyword_name(&kt_values_list, kd->type, kdtypebuf),
                 kd->loose_enum_value);
     }
 #endif

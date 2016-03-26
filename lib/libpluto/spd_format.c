@@ -256,7 +256,10 @@ format_end(char *buf
     /* do not format if nexthop is invalid.
      * skip if nexhop is actually right=
      */
-    if (that != NULL && !sameaddr(&this->host_nexthop, &that->host_addr)
+    if (that != NULL
+        && !sameaddr(&this->host_nexthop, &that->host_addr)
+        && addrtypeof(&this->host_nexthop)!=0
+        && KH_ISKNOWNADDR(this->host_type)
         && addrbytesptr(&this->host_nexthop, NULL)!=0)
     {
 	addrtot(&this->host_nexthop, 0, hop, sizeof(hop));

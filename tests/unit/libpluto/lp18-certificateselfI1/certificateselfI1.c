@@ -25,6 +25,14 @@ static void init_fake_secrets(void)
 			       , "../samples/rwcert.secrets"
 			       , &pass);
 }
+
+static void init_loaded(struct connection *c1)
+{
+    fprintf(stderr, "address family: %u\n", c1->addr_family);
+    assert(c1->addr_family != 0);
+}
+#define INIT_LOADED init_loaded
+
 #include "../lp02-parentI1/parentI1_main.c"
 
 

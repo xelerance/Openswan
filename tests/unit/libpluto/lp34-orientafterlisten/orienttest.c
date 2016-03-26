@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     }
 
     hostpair_list();
-    init_parker_interface();
+    init_parker_interface(TRUE);
     whack_listen();
     hostpair_list();
 

@@ -4,3 +4,4 @@ UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/parentI2.pca
 ENDNAME=rwcert
 
 TESTNAME=certificateselfI2
+SANITYARGS=-f leakfix.sed

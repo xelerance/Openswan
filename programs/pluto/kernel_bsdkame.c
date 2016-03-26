@@ -169,6 +169,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 
 		    q->ip_addr = ifp->addr;
 		    q->fd = fd;
+                    init_iface_port(q);
 		    q->next = interfaces;
 		    q->change = IFN_ADD;
 		    q->port = pluto_port500;
@@ -205,6 +206,7 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 			q->port = NAT_T_IKE_FLOAT_PORT;
 			q->fd = fd;
 			q->next = interfaces;
+                        init_iface_port(q);
 			q->change = IFN_ADD;
 			q->ike_float = TRUE;
 			interfaces = q;

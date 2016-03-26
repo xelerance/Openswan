@@ -38,12 +38,18 @@ const ip_address *b;
 	size_t n = (as < bs) ? as : bs;		/* min(as, bs) */
 	int c = memcmp(ap, bp, n);
 
+        if (at == 0)            /* do not compare further */
+          return -1;
+
+        if (bt == 0)            /* do not compare further */
+          return 1;
+
+	if (at != bt)		/* bytes same but not same type:  break tie */
+		return (at < bt) ? -1 : 1;
 	if (c != 0)		/* bytes differ */
 		return (c < 0) ? -1 : 1;
 	if (as != bs)		/* comparison incomplete:  lexical order */
 		return (as < bs) ? -1 : 1;
-	if (at != bt)		/* bytes same but not same type:  break tie */
-		return (at < bt) ? -1 : 1;
 	return 0;
 }
 

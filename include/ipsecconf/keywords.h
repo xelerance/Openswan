@@ -130,6 +130,9 @@ enum keyword_numeric_config_field {
     KBF_SEND_VENDORID,      /* per conn sending of our own openswan vendorid */
     KBF_IKEV1_NATT,	    /* ikev1 NAT-T payloads to send/process */
 
+    /* new ones here */
+    KBF_ENDADDRFAMILY,
+
     KBF_MAX
 };
 

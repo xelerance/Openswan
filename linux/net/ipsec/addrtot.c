@@ -77,9 +77,15 @@ size_t dstlen;
 	size_t n;
 	char buf[1+ADDRTOT_BUF+1];	/* :address: */
 	char *p;
-	int t = addrtypeof(src);
-#	define	TF(t, f)	(((t)<<8) | (f))
+	int t;
+#define	TF(t, f)	(((t)<<8) | (f))
 
+        if(!src) {
+                strncat(dst, "<none>", dstlen -1);
+                return sizeof("<none>");
+        }
+
+	t = addrtypeof(src);
 	n = addrbytesptr(src, &b);
 	if (n == 0) {
 	  dst[0]='\0';

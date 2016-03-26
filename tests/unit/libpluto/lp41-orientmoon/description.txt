@@ -1,0 +1,3 @@
+This case tests the loading of a conn that is a v6-in-v4 conn from DrTaylorPlumage: 	net2net-ip6-in-ip4-ikev1.
+This conn is mistaken for an iphostname right=, and this results in failing to set a left/right, and therefore
+fails to orient.

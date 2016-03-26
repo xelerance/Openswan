@@ -60,3 +60,5 @@ clean check:
 	@${MAKE} -C lp38-h2hI2            $@
 	@${MAKE} -C lp39-h2hR2            $@
 	@${MAKE} -C lp40-orientafterprivate $@
+	@${MAKE} -C lp41-orientmoon       $@
+	@${MAKE} -C lp42-loadbobdefaultroute $@

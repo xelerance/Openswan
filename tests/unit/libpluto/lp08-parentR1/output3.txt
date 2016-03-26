@@ -10,13 +10,15 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
 | find_host_pair: concluded with <none>
-| found_host_pair_conn (check_connection_end): 132.213.238.7:500 %any/%any:500 -> hp:none
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection any1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 | counting wild cards for @parker01.emmjay.credil.org is 0
-| orient any1--jj2 checking against if: eth0
+| orient any1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient any1--jj2 finished with: 1 [132.213.238.7]
 | find_host_pair: looking for me=132.213.238.7:500 %any him=0.0.0.0:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: 132.213.238.7:500 %any 0.0.0.0:500 -> hp:none
@@ -25,6 +27,7 @@ processing whack msg time: X size: Y
 ./parentR1 adding connection: "any1--jj2"
 | fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96
 | ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient any1--jj2 finished with: 1 [132.213.238.7]
 RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...%any[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
 RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
@@ -111,7 +114,9 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | find_host_connection2 returns any1--jj2
 ./parentR1 tentatively considering connection: any1--jj2
 | creating state object #1 at Z
-| orient any1--jj2 checking against if: eth0
+| orient any1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient any1--jj2 finished with: 1 [132.213.238.7]
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  a9 e1 ff 4d  1c 8b b8 19
 | state hash entry 12

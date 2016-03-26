@@ -326,7 +326,7 @@ find_host_pair_connections(const char *func, bool exact
         char himtypebuf[KEYWORD_NAME_BUFLEN];
 	DBG_log("found_host_pair_conn (%s): %s:%d %s/%s:%d -> hp:%s\n"
 		  , func
-		  , (addrtot(myaddr,  0, b1, sizeof(b1)), b1)
+                , myaddr ? (addrtot(myaddr,  0, b1, sizeof(b1)), b1) : "%any"
 		  , myport
                   , keyword_name(&kw_host_list, histype, himtypebuf)
 		  , hisaddr ? (addrtot(hisaddr, 0, b2, sizeof(b2)), b2) : "%any"
