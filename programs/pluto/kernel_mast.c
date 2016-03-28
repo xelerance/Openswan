@@ -401,7 +401,7 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 }
 
 static bool
-mast_do_command(struct connection *c, struct spd_route *sr
+mast_do_command(struct connection *c, const struct spd_route *sr
 		, const char *verb, struct state *st)
 {
     char cmd[2048];     /* arbitrary limit on shell command length */
@@ -500,7 +500,7 @@ mast_raw_eroute(const ip_address *this_host UNUSED
  */
 static bool
 mast_shunt_eroute(struct connection *c UNUSED
-		   , struct spd_route *sr UNUSED
+		   , const struct spd_route *sr UNUSED
 		   , enum routing_t rt_kind UNUSED
 		   , enum pluto_sadb_operations op UNUSED
 		  , const char *opname UNUSED)
@@ -516,7 +516,7 @@ mast_shunt_eroute(struct connection *c UNUSED
  * @return TRUE if add was successful, FALSE otherwise
  */
 static bool
-mast_sag_eroute_replace(struct state *st, struct spd_route *sr)
+mast_sag_eroute_replace(struct state *st, const struct spd_route *sr)
 {
 	struct connection *c = st->st_connection;
 	struct state *old_st;
@@ -550,7 +550,7 @@ mast_sag_eroute_replace(struct state *st, struct spd_route *sr)
 
 /* install or remove eroute for SA Group */
 static bool
-mast_sag_eroute(struct state *st, struct spd_route *sr
+mast_sag_eroute(struct state *st, const struct spd_route *sr
 		, enum pluto_sadb_operations op, const char *opname UNUSED)
 {
     bool ok;

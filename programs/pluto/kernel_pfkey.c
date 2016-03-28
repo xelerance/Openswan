@@ -1215,7 +1215,7 @@ pfkey_close(void)
  */
 bool
 pfkey_shunt_eroute(struct connection *c
-		   , struct spd_route *sr
+		   , const struct spd_route *sr
 		   , enum routing_t rt_kind
 		   , enum pluto_sadb_operations op, const char *opname)
 {
@@ -1344,7 +1344,7 @@ pfkey_shunt_eroute(struct connection *c
 
 /* install or remove eroute for SA Group */
 bool
-pfkey_sag_eroute(struct state *st, struct spd_route *sr
+pfkey_sag_eroute(struct state *st, const struct spd_route *sr
 		 , unsigned op, const char *opname)
 {
     unsigned int inner_proto;

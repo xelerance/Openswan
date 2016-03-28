@@ -346,7 +346,7 @@ extern void remove_group_instance(const struct connection *group, const char *na
 extern void release_dead_interfaces(void);
 extern void check_orientations(void);
 extern struct connection *route_owner(struct connection *c
-				      , struct spd_route *cur_spd
+				      , const struct spd_route *cur_spd
 				      , struct spd_route **srp
 				      , struct connection **erop
 				      , struct spd_route **esrp);

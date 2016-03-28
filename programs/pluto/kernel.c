@@ -310,7 +310,7 @@ get_my_cpi(struct spd_route *sr, bool tunnel)
 /* form the command string */
 int
 fmt_common_shell_out(char *buf, int blen, struct connection *c
-		     , struct spd_route *sr, struct state *st)
+		     , const struct spd_route *sr, struct state *st)
 {
     int result;
     char
@@ -503,7 +503,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 }
 
 bool
-do_command(struct connection *c, struct spd_route *sr, const char *verb, struct state *st)
+do_command(struct connection *c, const struct spd_route *sr, const char *verb, struct state *st)
 {
     const char *verb_suffix;
 
@@ -744,7 +744,7 @@ trap_connection(struct connection *c)
          */
         if (c->spd.routing < RT_ROUTED_TUNNEL)
         {
-            return route_and_eroute(c, &c->spd, NULL);
+            return route_and_eroute(c, &c->spd, &c->spd, NULL);
         }
         return TRUE;
 
@@ -759,7 +759,7 @@ trap_connection(struct connection *c)
 }
 
 static bool shunt_eroute(struct connection *c
-		  , struct spd_route *sr
+		  , const struct spd_route *sr
 		  , enum routing_t rt_kind
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
@@ -772,7 +772,7 @@ static bool shunt_eroute(struct connection *c
 }
 
 static bool sag_eroute(struct state *st
-		  , struct spd_route *sr
+		  , const const struct spd_route *sr
 		  , enum pluto_sadb_operations op
 		  , const char *opname)
 {
@@ -1160,7 +1160,7 @@ replace_bare_shunt(const ip_address *src, const ip_address *dst
 }
 
 bool eroute_connection(struct state *st
-                       , struct spd_route *sr
+                       , const struct spd_route *sr
 		       , ipsec_spi_t spi, unsigned int proto
 		       , enum eroute_type esatype
 		       , const struct pfkey_proto_info *proto_info
@@ -2572,7 +2572,8 @@ install_inbound_ipsec_sa(struct state *parent_st, struct state *st)
  */
 bool
 route_and_eroute(struct connection *c USED_BY_KLIPS
-                 , struct spd_route *sr USED_BY_KLIPS
+                 , const struct spd_route *sr USED_BY_KLIPS
+                 , struct spd_route *orig_sr USED_BY_KLIPS
                  , struct state *st USED_BY_KLIPS)
 {
     struct spd_route *esr;
@@ -2769,11 +2770,11 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
         if (st == NULL)
         {
             passert(sr->eroute_owner == SOS_NOBODY);
-            sr->routing = RT_ROUTED_PROSPECTIVE;
+            orig_sr->routing = RT_ROUTED_PROSPECTIVE;
         }
         else
         {
-            sr->routing = RT_ROUTED_TUNNEL;
+            orig_sr->routing = RT_ROUTED_TUNNEL;
 
             DBG(DBG_CONTROL,
                 char cib[CONN_INST_BUF];
@@ -2783,7 +2784,7 @@ route_and_eroute(struct connection *c USED_BY_KLIPS
                         , st->st_serialno
                         , sr->eroute_owner
                         , st->st_connection->newest_ipsec_sa));
-            sr->eroute_owner = st->st_serialno;
+            orig_sr->eroute_owner = st->st_serialno;
             /* clear host shunts that clash with freshly installed route */
             clear_narrow_holds(&sr->this.client, &sr->that.client, sr->this.protocol);
         }
@@ -2880,6 +2881,7 @@ install_ipsec_sa(struct state *parent_st
 {
     struct connection *const c = st->st_connection;
     struct spd_route desired_sr;
+    struct spd_route *orig_sr;
     struct spd_route *sr;
     enum routability rb;
 
@@ -2901,6 +2903,7 @@ install_ipsec_sa(struct state *parent_st
     desired_sr = *sr;
 
     build_desired_sr(st, &desired_sr);
+    orig_sr = sr;
     sr = &desired_sr;
 
     rb = could_route(st->st_connection, sr);
@@ -2961,7 +2964,7 @@ install_ipsec_sa(struct state *parent_st
         if (sr->eroute_owner != st->st_serialno
             && sr->routing != RT_UNROUTED_KEYED)
         {
-            if (!route_and_eroute(st->st_connection, sr, st))
+            if (!route_and_eroute(st->st_connection, sr, orig_sr, st))
             {
                 delete_ipsec_sa(st, FALSE);
                 /* XXX go and unroute any SRs that were successfully
