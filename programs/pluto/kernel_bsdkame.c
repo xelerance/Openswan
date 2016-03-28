@@ -629,7 +629,7 @@ bsdkame_raw_eroute(const ip_address *this_host
  */
 static bool
 bsdkame_shunt_eroute(struct connection *c
-		     , struct spd_route *sr
+		     , const struct spd_route *sr
 		     , enum routing_t rt_kind
 		     , enum pluto_sadb_operations op
 		     , const char *opname)
@@ -895,7 +895,7 @@ bsdkame_shunt_eroute(struct connection *c
  */
 static bool
 bsdkame_sag_eroute(struct state *st
-		   , struct spd_route *sr
+		   , const struct spd_route *sr
 		   , unsigned op UNUSED
 		   , const char *opname UNUSED)
 {

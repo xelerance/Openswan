@@ -47,7 +47,8 @@ static struct kernel_ops unit_kernel_ops;
 const struct kernel_ops *kernel_ops = &unit_kernel_ops;
 
 bool route_and_eroute(struct connection *c USED_BY_KLIPS
-                      , struct spd_route *sr USED_BY_KLIPS
+                      , const struct spd_route *sr USED_BY_KLIPS
+                      , struct spd_route *orig_sr USED_BY_KLIPS
                       , struct state *st USED_BY_KLIPS) { return TRUE; }
 
 bool replace_bare_shunt(const ip_address *src, const ip_address *dst

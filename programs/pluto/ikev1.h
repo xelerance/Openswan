@@ -150,6 +150,6 @@ aggr_id_and_auth(struct msg_digest *md
 }
 
 extern bool
-do_command(struct connection *c, struct spd_route *sr
+do_command(struct connection *c, const struct spd_route *sr
            , const char *verb, struct state *st);
 #endif

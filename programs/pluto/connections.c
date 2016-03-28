@@ -1949,7 +1949,7 @@ build_outgoing_opportunistic_connection(struct gw_info *gw
  */
 struct connection *
 route_owner(struct connection *c
-	    , struct spd_route *cur_spd
+	    , const struct spd_route *cur_spd
 	    , struct spd_route **srp
 	    , struct connection **erop
 	    , struct spd_route **esrp)

@@ -317,7 +317,7 @@ add_entry:
 }
 
 static bool
-klips_do_command(struct connection *c, struct spd_route *sr
+klips_do_command(struct connection *c, const struct spd_route *sr
 		 , const char *verb, struct state *st)
 {
     char cmd[2048];     /* arbitrary limit on shell command length */
