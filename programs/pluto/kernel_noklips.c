@@ -112,7 +112,7 @@ noklips_del_sa(const struct kernel_sa *sa UNUSED)
 
 static bool
 noklips_sag_eroute(struct state *st UNUSED
-		   , struct spd_route *sr UNUSED
+		   , const struct spd_route *sr UNUSED
 		   , enum pluto_sadb_operations op UNUSED
 		   , const char *opname UNUSED)
 {
@@ -121,7 +121,7 @@ noklips_sag_eroute(struct state *st UNUSED
 
 static bool
 noklips_shunt_eroute(struct connection *c UNUSED
-		     , struct spd_route *sr UNUSED
+		     , const struct spd_route *sr UNUSED
 		     , enum routing_t rt_kind UNUSED
 		     , enum pluto_sadb_operations op UNUSED
 		     , const char *opname UNUSED)

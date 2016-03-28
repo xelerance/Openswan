@@ -444,7 +444,7 @@ cannot_oppo(struct connection *c
 	}
 #endif /* DEBUG */
 
-	if (!route_and_eroute(c, shunt_spd, st))
+	if (!route_and_eroute(c, shunt_spd, shunt_spd, st))
 	{
 	    whack_log(RC_OPPOFAILURE
 		      , "failed to instantiate shunt policy %s for %s to %s"
