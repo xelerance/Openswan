@@ -62,3 +62,4 @@ clean check:
 	@${MAKE} -C lp40-orientafterprivate $@
 	@${MAKE} -C lp41-orientmoon       $@
 	@${MAKE} -C lp42-loadbobdefaultroute $@
+	@${MAKE} -C lp43-parentM1 	$@
