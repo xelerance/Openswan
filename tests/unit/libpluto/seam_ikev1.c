@@ -9,16 +9,9 @@ aggr_outI1(int whack_sock,
 	osw_abort();
 }
 
-stf_status
-main_outI1(int whack_sock
-	   , struct connection *c
-	   , struct state *predecessor
-	   , lset_t policy
-	   , unsigned long try
-	   , enum crypto_importance importance)
-{
-	DBG_log("MAIN OUTi1()\n");
-}
+#ifndef OMIT_MAIN_MODE
+#include "seam_ikev1_main.c"
+#endif
 
 stf_status
 quick_outI1(int whack_sock
