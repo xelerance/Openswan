@@ -14,6 +14,9 @@
  * for more details.
  */
 
+#ifndef _PLUTO_LOG_H
+#define _PLUTO_LOG_H 1
+
 #include <openswan.h>
 
 #include "oswlog.h"
@@ -176,3 +179,5 @@ extern bool logged_myid_ip_txt_warning;
 extern bool logged_myid_ip_key_warning;
 extern bool logged_myid_fqdn_txt_warning;
 extern bool logged_myid_fqdn_key_warning;
+
+#endif /* _PLUTO_LOG_H */
