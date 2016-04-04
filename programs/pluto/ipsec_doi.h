@@ -63,12 +63,6 @@ extern notification_t accept_KE(chunk_t *dest, const char *val_name
 extern void close_message(pb_stream *pbs); /* forward declaration */
 extern bool encrypt_message(pb_stream *pbs, struct state *st); /* forward declaration */
 
-extern stf_status dpd_inI_outR(struct state *st
-            , struct isakmp_notification *const n, pb_stream *n_pbs);
-extern stf_status dpd_inR(struct state *st
-            , struct isakmp_notification *const n, pb_stream *n_pbs);
-extern void dpd_timeout(struct state *st);
-
 /* START_HASH_PAYLOAD
  *
  * Emit a to-be-filled-in hash payload, noting the field start (r_hashval)

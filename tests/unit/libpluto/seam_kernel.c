@@ -17,6 +17,13 @@ ipsec_spi_t get_ipsec_spi(ipsec_spi_t avoid UNUSED
 	return htonl(spis[spinext++]);
 }
 
+ipsec_spi_t
+get_my_cpi(struct spd_route *sr, bool tunnel)
+{
+	if(spinext == 4) spinext=0;
+	return htonl(spis[spinext++]);
+}
+
 const char *kernel_if_name(void);
 const char *kernel_if_name()
 {

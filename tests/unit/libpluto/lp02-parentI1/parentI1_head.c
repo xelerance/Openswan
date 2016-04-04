@@ -67,7 +67,9 @@
 #include "seam_log.c"
 #include "seam_xauth.c"
 #include "seam_terminate.c"
+#ifndef OMIT_MAIN_MODE
 #include "seam_spdbstruct.c"
+#endif
 #include "seam_demux.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
