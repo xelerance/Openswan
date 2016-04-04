@@ -128,6 +128,7 @@ connections.o: connections.c \
  plutoalg.h xauth.h \
  ../../include/pluto/libpluto.h \
  ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
 cookie.o: cookie.c \
  ../../include/openswan.h \
