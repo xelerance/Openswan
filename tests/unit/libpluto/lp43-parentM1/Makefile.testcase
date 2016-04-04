@@ -1,3 +1,7 @@
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+
 CONNNAME=t4901
 ENDNAME=h2h-ikev1
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
