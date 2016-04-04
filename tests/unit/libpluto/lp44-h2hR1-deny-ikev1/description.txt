@@ -1,0 +1,6 @@
+This test case is an IKEv2 responder. It has been told to accept IKEv2 only, but it is presented with 
+an IKEv1 message.
+
+h2hI1-ikev1.pcap is copied from ../lp43-parentM1/OUTPUT/parentM1.pcap
+(make pcapupdate will do this)
+
