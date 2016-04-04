@@ -7,7 +7,7 @@ processing whack msg time: X size: Y
 processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
-| Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK
+| Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 | counting wild cards for 192.168.1.1 is 0
 | counting wild cards for 132.213.238.7 is 0
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
@@ -22,12 +22,12 @@ processing whack msg time: X size: Y
 |   concluded with <none>
 ./parentM1 adding connection: "t4901"
 | 192.168.1.1...132.213.238.7
-| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
 |   orient t4901 finished with: 1 [192.168.1.1]
 RC=0 "t4901": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
 RC=0 "t4901":     myip=unset; hisip=unset;
 RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -38,496 +38,445 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK; p
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-./parentM1 initiating v2 parent SA
-./parentM1 STATE_PARENT_I1: initiate
-| ikev2 parent outI1: calculated ke+nonce, sending I1
+./parentM1 initiating Main Mode
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_v2SA
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_INIT
+|    next payload type: ISAKMP_NEXT_SA
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
 |    message ID:  00 00 00 00
-| ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
-|    critical bit: none
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
+| ***emit ISAKMP Security Association Payload:
+|    next payload type: ISAKMP_NEXT_VID
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 12
+| ****emit ISAKMP Proposal Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 12
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 14
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 2
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 1
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 2
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 14
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 3
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 3
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 14
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 4
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 14
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 5
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 4
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 6
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 5
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 6
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 7
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 7
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 8
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
+|    transform number: 9
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 8
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 5
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 9
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 10
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 3
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
-|    prop #: 11
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 10
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
 |    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    prop #: 12
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 1
-|    transform ID: 12
-| ******emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
+|    transform number: 11
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
 |    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 3
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    transform type: 2
-|    transform ID: 1
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    transform type: 4
-|    transform ID: 2
-| emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 44
-| emitting length of IKEv2 Security Association Payload: 508
-| ***emit IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
-|    critical bit: none
-|    transform type: 14
-| emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
-| ikev2 g^x  3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
-|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
-|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
-|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
-|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
-|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
-|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
-|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
-|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
-|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
-|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-| emitting length of IKEv2 Key Exchange Payload: 264
-| ***emit IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
-|    critical bit: none
-| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
-| IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
-| emitting length of IKEv2 Nonce Payload: 20
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 416
+| emitting length of ISAKMP Security Association Payload: 428
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
+|    next payload type: ISAKMP_NEXT_VID
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 836
-sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.7:500 (using #1)
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 492
+sending 492 bytes for main_outI1 through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
-|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
-|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
-|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
-|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
-|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
-|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
-|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
-|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
-|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
-|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
-./parentM1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./parentM1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
-./parentM1 deleting state #1 (STATE_PARENT_I1)
+|   01 10 02 00  00 00 00 00  00 00 01 ec  0d 00 01 ac
+|   00 00 00 01  00 00 00 01  00 00 01 a0  00 01 00 0c
+|   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 0e
+|   80 0e 00 80  03 00 00 24  01 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
+|   80 04 00 0e  80 0e 00 80  03 00 00 20  02 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 02
+|   80 03 00 03  80 04 00 0e  03 00 00 20  03 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 01
+|   80 03 00 03  80 04 00 0e  03 00 00 24  04 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 07  80 02 00 02
+|   80 03 00 03  80 04 00 05  80 0e 00 80  03 00 00 24
+|   05 01 00 00  80 0b 00 01  80 0c 0e 10  80 01 00 07
+|   80 02 00 01  80 03 00 03  80 04 00 05  80 0e 00 80
+|   03 00 00 20  06 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 05
+|   03 00 00 20  07 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 05
+|   03 00 00 20  08 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 02
+|   03 00 00 20  09 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 02
+|   03 00 00 24  0a 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 02
+|   80 0e 00 80  00 00 00 24  0b 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
+|   80 04 00 02  80 0e 00 80  0d 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30  00 00 00 14  af ca d7 13
+|   68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+RC=105 STATE_MAIN_I1: initiate
+./parentM1 deleting state #1 (STATE_MAIN_I1)
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 ./parentM1 deleting connection
-./parentM1 leak: msg_digest, item size: X
-./parentM1 leak: ikev2_outI1 KE, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_prop, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
-./parentM1 leak: db_attrs, item size: X
-./parentM1 leak: db_v2_trans, item size: X
-./parentM1 leak: db_v2_prop_conj, item size: X
+./parentM1 leak: 67 * VendorID MD5, item size: X
+./parentM1 leak: 3 * vid->data, item size: X
+./parentM1 leak: 15 * VendorID MD5, item size: X
+./parentM1 leak: self-vendor ID, item size: X
+./parentM1 leak: init_pluto_vendorid, item size: X
+./parentM1 leak: 4 * fswan VID, item size: X
+./parentM1 leak: vid->data, item size: X
+./parentM1 leak: 23 * VendorID MD5, item size: X
+./parentM1 leak: vid->data, item size: X
 ./parentM1 leak: policies path, item size: X
 ./parentM1 leak: ocspcerts path, item size: X
 ./parentM1 leak: aacerts path, item size: X
