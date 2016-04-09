@@ -1897,6 +1897,8 @@ retry:
     return rsp.u.sa.id.spi;
 }
 
+#define PROTO_COUNT 4
+
 /* install or remove eroute for SA Group */
 /* (identical to KLIPS version, but refactoring isn't waranteed yet */
 static bool
@@ -1906,7 +1908,7 @@ netlink_sag_eroute(struct state *st, const struct spd_route *sr
     unsigned int inner_proto;
     enum eroute_type inner_esatype;
     ipsec_spi_t inner_spi;
-    struct pfkey_proto_info proto_info[4];
+    struct pfkey_proto_info proto_info[PROTO_COUNT];
     int i;
     bool tunnel;
 
@@ -1973,7 +1975,7 @@ netlink_sag_eroute(struct state *st, const struct spd_route *sr
         inner_esatype = ET_IPIP;
 
         proto_info[i].encapsulation = ENCAPSULATION_MODE_TUNNEL;
-        for (j = i + 1; proto_info[j].proto; j++)
+        for (j = i + 1; j < PROTO_COUNT && proto_info[j].proto; j++)
         {
             proto_info[j].encapsulation = ENCAPSULATION_MODE_TRANSPORT;
         }
