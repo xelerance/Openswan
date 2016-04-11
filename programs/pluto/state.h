@@ -26,7 +26,7 @@
 #include <netinet/in.h>
 #include <time.h>
 #include <gmp.h>    /* GNU MP library */
-#include "quirks.h"
+#include "pluto/quirks.h"
 #include "id.h"
 
 #ifdef HAVE_LIBNSS

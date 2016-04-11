@@ -52,7 +52,7 @@
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
-#include "demux.h"	/* needs packet.h */
+#include "pluto/demux.h"	/* needs packet.h */
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
