@@ -310,13 +310,14 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
     close_output_pbs(&cr_pbs);
     return TRUE;
 }
+
 bool
 collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
 {
     struct connection *d = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , pluto_port500
                                                 , KH_ANY
-                                                ,(ip_address*)NULL, md->sender_port, LEMPTY);
+                                                ,(ip_address*)NULL, md->sender_port, LEMPTY, LEMPTY);
 
     for (; d != NULL; d = d->IPhp_next)
     {

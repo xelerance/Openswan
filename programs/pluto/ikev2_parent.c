@@ -546,7 +546,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
                                                 , KH_IPADDR
                                                 , &md->sender
                                                 , md->sender_port
-                                                , POLICY_IKEV2_ALLOW);
+                                                , POLICY_IKEV2_ALLOW, LEMPTY);
 
     /* retrieve st->st_gi */
 
