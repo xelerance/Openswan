@@ -1534,7 +1534,7 @@ void process_packet_tail(struct msg_digest **mdp)
     {
 	/* packet was not encryped -- should it have been? */
 
-	if (smc->flags & SMF_INPUT_ENCRYPTED)
+	if (smc != NULL && smc->flags & SMF_INPUT_ENCRYPTED)
 	{
 	    loglog(RC_LOG_SERIOUS, "packet rejected: should have been encrypted");
 	    SEND_NOTIFICATION(INVALID_FLAGS);
