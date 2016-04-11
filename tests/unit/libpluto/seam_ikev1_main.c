@@ -1,3 +1,4 @@
+#ifndef INCLUDE_IKEV1_PROCESSING
 stf_status
 main_outI1(int whack_sock
 	   , struct connection *c
@@ -25,4 +26,4 @@ ikev1_delete_out(struct state *st)
 {
 	printf("deleted state #%lu\n", st->st_serialno);
 }
-
+#endif
