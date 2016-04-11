@@ -5,6 +5,7 @@ pcapupdate:
 
 
 # Local Variables:
+# compile: "make clean && make check"
 # gdb-command: ""
 # End Variables:
 #
