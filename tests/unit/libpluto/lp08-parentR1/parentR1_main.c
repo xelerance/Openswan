@@ -12,6 +12,9 @@ void recv_pcap_packet(u_char *user
     struct state *st;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
+    zero(kn);
+    clear_crypto_space(&kn->thespace, kn->space);
+
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */
