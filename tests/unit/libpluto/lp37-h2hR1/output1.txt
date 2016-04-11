@@ -101,12 +101,12 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |   reject:state needed and state unavailable
 | considering state entry: 3
 | Now lets proceed with state specific processing
-| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
 | find_host_pair: concluded with mytunnel
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:mytunnel
-| searching for connection with policy = IKEv2ALLOW
+| searching for connection with policy = IKEv2ALLOW/-
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (mytunnel)
 | find_host_connection2 returns mytunnel
 ./h2hR1 tentatively considering connection: mytunnel
