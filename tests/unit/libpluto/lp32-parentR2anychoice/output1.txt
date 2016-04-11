@@ -130,12 +130,12 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 |   reject:state needed and state unavailable
 | considering state entry: 3
 | Now lets proceed with state specific processing
-| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with maryjane1--jj2
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:maryjane1--jj2
-| searching for connection with policy = IKEv2ALLOW
+| searching for connection with policy = IKEv2ALLOW/-
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (maryjane1--jj2)
 | find_host_connection2 returns maryjane1--jj2
 ./parentR2anychoice tentatively considering connection: maryjane1--jj2
