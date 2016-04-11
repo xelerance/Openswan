@@ -52,7 +52,7 @@
 #include "pending.h"
 #include "foodgroups.h"
 #include "packet.h"
-#include "demux.h"	/* needs packet.h */
+#include "pluto/demux.h"	/* needs packet.h */
 #include "state.h"
 #include "timer.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
@@ -2073,6 +2073,46 @@ route_owner(struct connection *c
     return routed(best_routing)? best_ro : NULL;
 }
 
+static struct connection *
+find_match_by_policy(struct connection *c, lset_t policy_set, lset_t policy_clear,
+                     const char *policy_set_buf, const char *policy_clear_buf)
+{
+    if (policy_set != LEMPTY || policy_clear != LEMPTY) {
+	/*
+	 * if we have requirements for the policy, choose the first matching
+	 * connection.
+	 */
+	DBG(DBG_CONTROLMORE,
+		DBG_log("searching for connection with policy = %s/%s"
+                        , policy_set_buf, policy_clear_buf));
+
+	for (; c != NULL; c = c->IPhp_next) {
+	    DBG(DBG_CONTROLMORE,
+		DBG_log("found policy = %s (%s)"
+			, bitnamesof(sa_policy_bit_names, c->policy)
+			, c->name));
+
+	    if(NEVER_NEGOTIATE(c->policy)) continue;
+
+            /* XAUTH must match true/false exactly */
+	    if ((policy_set & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
+
+	    if ((c->policy & policy_set) == policy_set
+                && (c->policy & policy_clear) == 0) {
+		break;
+            }
+
+            DBG(DBG_CONTROL,
+                DBG_log("connection %s (policy=%s) does not match desired policy %s (~ %s)"
+                        , c->name
+                        , bitnamesof(sa_policy_bit_names, c->policy)
+                        , policy_set_buf, policy_clear_buf));
+	}
+
+    }
+    return c;
+}
+
 /* Find some connection with this pair of hosts.
  * We don't know enough to chose amongst those available.
  * ??? no longer usefully different from find_host_pair_connections
@@ -2081,69 +2121,39 @@ struct connection *
 find_host_connection2(const char *func, bool exact
                       , const ip_address *me, u_int16_t my_port
                       , enum keyword_host histype
-                      , const ip_address *him, u_int16_t his_port, lset_t policy)
+                      , const ip_address *him, u_int16_t his_port
+                      , lset_t policy_set, lset_t policy_clear)
 {
     struct connection *c;
+    char policy_set_buf[128];
+    char policy_clear_buf[128];
+    zero(policy_set_buf);
+    zero(policy_clear_buf);
+
+    bitnamesofb(sa_policy_bit_names, policy_set, policy_set_buf, sizeof(policy_set_buf));
+    strcpy(policy_clear_buf, "-");
+    if(policy_clear) {
+        bitnamesofb(sa_policy_bit_names, policy_clear, policy_clear_buf, sizeof(policy_clear_buf));
+    }
+
+
     DBG(DBG_CONTROLMORE,
         char mebuf[ADDRTOT_BUF];
         char himbuf[ADDRTOT_BUF];
-	DBG_log("find_host_connection2 called from %s, me=%s:%d him=%s:%d policy=%s", func
+	DBG_log("find_host_connection2 called from %s, me=%s:%d him=%s:%d policy=%s/%s", func
 		, (addrtot(me,  0, mebuf,  sizeof(mebuf)),mebuf),   my_port
 		, him ?  (addrtot(him, 0, himbuf, sizeof(himbuf)),himbuf) : "%any"
-		, his_port , bitnamesof(sa_policy_bit_names, policy)));
+		, his_port , policy_set_buf, policy_clear_buf));
     c = find_host_pair_connections(__FUNCTION__, exact, me, my_port, histype, him, his_port);
 
-    if (policy != LEMPTY) {
-	/*
-	 * if we have requirements for the policy, choose the first matching
-	 * connection.
-	 */
-	DBG(DBG_CONTROLMORE,
-		DBG_log("searching for connection with policy = %s"
-			, bitnamesof(sa_policy_bit_names, policy)));
-	for (; c != NULL; c = c->IPhp_next) {
-	    DBG(DBG_CONTROLMORE,
-		DBG_log("found policy = %s (%s)"
-			, bitnamesof(sa_policy_bit_names, c->policy)
-			, c->name));
-	    if(NEVER_NEGOTIATE(c->policy)) continue;
-
-            /* XAUTH must match true/false exactly */
-	    if ((policy & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
-
-	    if ((c->policy & policy) == policy)
-		break;
-	}
-
-    }
-
-    /* need to check for NEVER_NEGOTIATE, because policy might not be set */
-    for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->IPhp_next);
+    c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf);
 
     if(c == NULL) {
+        /* look again with right=%any */
         c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, pluto_port500);
 
-        if (policy != LEMPTY) {
-            DBG(DBG_CONTROLMORE,
-		DBG_log("searching for %%any connection with policy = %s"
-			, bitnamesof(sa_policy_bit_names, policy)));
-            for (; c != NULL; c = c->IPhp_next) {
-                DBG(DBG_CONTROLMORE,
-                    DBG_log("found policy = %s (%s)"
-                            , bitnamesof(sa_policy_bit_names, c->policy)
-                            , c->name));
-                if(NEVER_NEGOTIATE(c->policy)) continue;
-
-                /* XAUTH must match true/false exactly */
-                if ((policy & POLICY_XAUTH) != (c->policy & POLICY_XAUTH)) continue;
-
-                if ((c->policy & policy) == policy)
-                    break;
-            }
-        }
-        for(; c != NULL && NEVER_NEGOTIATE(c->policy); c = c->IPhp_next);
+        c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf);
     }
-
 
     DBG(DBG_CONTROLMORE,
 	DBG_log("find_host_connection2 returns %s", c ? c->name : "empty"));

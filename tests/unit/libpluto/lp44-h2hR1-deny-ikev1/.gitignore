@@ -1,0 +1,9 @@
+OUTPUT
+core.*
+h2hR1-deny-ikev1
+*.o
+parentR1.pcap
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit

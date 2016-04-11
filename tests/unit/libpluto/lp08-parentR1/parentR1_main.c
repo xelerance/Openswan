@@ -12,6 +12,9 @@ void recv_pcap_packet(u_char *user
     struct state *st;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
+    zero(kn);
+    clear_crypto_space(&kn->thespace, kn->space);
+
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */
@@ -59,6 +62,7 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_fake_secrets();
     init_jamesjohnson_interface();
+    init_demux();
 
     infile = NULL;
     conn_name = NULL;

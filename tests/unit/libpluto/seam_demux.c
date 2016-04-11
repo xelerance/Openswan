@@ -96,3 +96,12 @@ complete_state_transition(struct msg_digest **mdp, stf_status result)
 	fprintf(stderr, "transitioning on result: %s\n"
 		, enum_name(&stfstatus_name, result));
 }
+
+#ifndef INCLUDE_IKEV1_PROCESSING
+void
+complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
+{
+	fprintf(stderr, "v1 transitioning on result: %s\n"
+		, enum_name(&stfstatus_name, result));
+}
+#endif

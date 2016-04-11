@@ -136,9 +136,9 @@ same_peer_ids(const struct connection *c, const struct connection *d
 
 /** returns a host pair based upon addresses.
  *
- * find_host_pair is given a pair of addresses, plus UDP ports, and
- * returns a host_pair entry that covers it. It also moves the relevant
- * pair description to the beginning of the list, so that it can be
+ * find_host_pair is given a pair of addresses, plus UDP ports, the IKE
+ * version number, and returns a host_pair entry that covers it.
+ * It also moves the relevant pair description to the beginning of the list, so that it can be
  * found faster next time.
  *
  */

@@ -24,7 +24,7 @@
 
 #include "dnskey.h"
 #include "pluto/defs.h"
-#include "demux.h"
+#include "pluto/demux.h"
 #include "pluto/log.h"
 #include "setproctitle.h"
 

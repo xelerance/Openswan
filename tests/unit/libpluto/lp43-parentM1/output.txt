@@ -1,0 +1,494 @@
+./parentM1 loading secrets from "../samples/parker.secrets"
+./parentM1 loaded private key for keyid: PPK_RSA:AQN7wUerV
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| counting wild cards for 192.168.1.1 is 0
+| counting wild cards for 132.213.238.7 is 0
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
+|     orient matched on IP
+| orient t4901 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   orient t4901 finished with: 1 [192.168.1.1]
+| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7 (exact)
+|   concluded with <none>
+./parentM1 adding connection: "t4901"
+| 192.168.1.1...132.213.238.7
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+|   orient t4901 finished with: 1 [192.168.1.1]
+RC=0 "t4901": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
+RC=0 "t4901":     myip=unset; hisip=unset;
+RC=0 "t4901":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+| creating state object #1 at Z
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
+|     orient matched on IP
+| orient t4901 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   orient t4901 finished with: 1 [192.168.1.1]
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| inserting state object #1 bucket: 4
+./parentM1 initiating Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    next payload type: ISAKMP_NEXT_SA
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    next payload type: ISAKMP_NEXT_VID
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 12
+| ****emit ISAKMP Proposal Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 12
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 1
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 2
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 3
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 14
+|     [14 is OAKLEY_GROUP_MODP2048]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 4
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 5
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 6
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 7
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 8
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 9
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_T
+|    transform number: 10
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    next payload type: ISAKMP_NEXT_NONE
+|    transform number: 11
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 2
+|     [2 is OAKLEY_GROUP_MODP1024]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_KEY_LENGTH
+|    length/value: 128
+| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Proposal Payload: 416
+| emitting length of ISAKMP Security Association Payload: 428
+| ***emit ISAKMP Vendor ID Payload:
+|    next payload type: ISAKMP_NEXT_VID
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 492
+sending 492 bytes for main_outI1 through eth0:500 to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 01 ec  0d 00 01 ac
+|   00 00 00 01  00 00 00 01  00 00 01 a0  00 01 00 0c
+|   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 0e
+|   80 0e 00 80  03 00 00 24  01 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
+|   80 04 00 0e  80 0e 00 80  03 00 00 20  02 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 02
+|   80 03 00 03  80 04 00 0e  03 00 00 20  03 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 01
+|   80 03 00 03  80 04 00 0e  03 00 00 24  04 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 07  80 02 00 02
+|   80 03 00 03  80 04 00 05  80 0e 00 80  03 00 00 24
+|   05 01 00 00  80 0b 00 01  80 0c 0e 10  80 01 00 07
+|   80 02 00 01  80 03 00 03  80 04 00 05  80 0e 00 80
+|   03 00 00 20  06 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 05
+|   03 00 00 20  07 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 05
+|   03 00 00 20  08 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 02
+|   03 00 00 20  09 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 02
+|   03 00 00 24  0a 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 02
+|   80 0e 00 80  00 00 00 24  0b 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
+|   80 04 00 02  80 0e 00 80  0d 00 00 10  4f 45 70 6c
+|   75 74 6f 75  6e 69 74 30  00 00 00 14  af ca d7 13
+|   68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+RC=105 STATE_MAIN_I1: initiate
+./parentM1 deleting state #1 (STATE_MAIN_I1)
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+./parentM1 deleting connection
+./parentM1 leak: 67 * VendorID MD5, item size: X
+./parentM1 leak: 3 * vid->data, item size: X
+./parentM1 leak: 15 * VendorID MD5, item size: X
+./parentM1 leak: self-vendor ID, item size: X
+./parentM1 leak: init_pluto_vendorid, item size: X
+./parentM1 leak: 4 * fswan VID, item size: X
+./parentM1 leak: vid->data, item size: X
+./parentM1 leak: 23 * VendorID MD5, item size: X
+./parentM1 leak: vid->data, item size: X
+./parentM1 leak: policies path, item size: X
+./parentM1 leak: ocspcerts path, item size: X
+./parentM1 leak: aacerts path, item size: X
+./parentM1 leak: certs path, item size: X
+./parentM1 leak: private path, item size: X
+./parentM1 leak: crls path, item size: X
+./parentM1 leak: cacert path, item size: X
+./parentM1 leak: acert path, item size: X
+./parentM1 leak: default conf var_dir, item size: X
+./parentM1 leak: default conf conffile, item size: X
+./parentM1 leak: default conf ipsecd_dir, item size: X
+./parentM1 leak: default conf ipsec_conf_dir, item size: X
+./parentM1 leak: 2 * id list, item size: X
+./parentM1 leak: secret, item size: X
+./parentM1 leak detective found Z leaks, total size X

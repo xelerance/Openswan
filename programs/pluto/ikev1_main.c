@@ -623,7 +623,7 @@ main_inI1_outR1(struct msg_digest *md)
     c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                              , KH_IPADDR
 			     , &md->sender
-			     , md->sender_port, LEMPTY);
+			     , md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE);
 
     if (c == NULL)
     {
@@ -651,7 +651,7 @@ main_inI1_outR1(struct msg_digest *md)
 	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                                      , KH_ANY
 				     , (ip_address*)NULL
-				     , md->sender_port, policy);
+				     , md->sender_port, policy, POLICY_IKEV1_DISABLE);
 
 	    for (; d != NULL; d = d->IPhp_next)
 	    {

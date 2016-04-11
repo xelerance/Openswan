@@ -16,7 +16,7 @@
 #ifndef _NAT_TRAVERSAL_H_
 #define _NAT_TRAVERSAL_H_
 
-#include "demux.h"
+#include "pluto/demux.h"
 
 #define NAT_TRAVERSAL_IETF_00_01     1
 #define NAT_TRAVERSAL_IETF_02_03     2

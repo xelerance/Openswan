@@ -36,7 +36,6 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 
-
  /*
  * Local Variables:
  * c-style: pluto
