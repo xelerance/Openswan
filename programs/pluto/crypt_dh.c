@@ -54,6 +54,7 @@
 #include "secrets.h"
 #include "keys.h"
 #include "ikev2_prfplus.h"
+#include "oswcrypto.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -1162,9 +1163,8 @@ void calc_dh(struct pluto_crypto_req *r)
     memcpy(&dhq, skq, sizeof(struct pcr_skeyid_q));
 
     /* clear out the reply */
-    memset(skr, 0, sizeof(*skr));
-    skr->thespace.start = 0;
-    skr->thespace.len   = sizeof(skr->space);
+    zero(skr);
+    clear_crypto_space(&skr->thespace, skr->space);
 
     group = lookup_group(dhq.oakley_group);
     passert(group != NULL);
