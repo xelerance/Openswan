@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
     char *infile, *pcapin, *pcapout;
     char *conn_name;
     int  lineno=0;
+    int  whackmsgcount=0;
     struct connection *c1;
     struct state *st;
     char   eb1[256];  /* error buffer for pcap open */
@@ -93,7 +94,10 @@ int main(int argc, char *argv[])
     }
 
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
-    if(readwhackmsg(infile) == 0) exit(10);
+    if((whackmsgcount = readwhackmsg(infile)) < 1) {
+        fprintf(stderr, "can not read whack infile: %s msgcount=%u\n", infile, whackmsgcount);
+        exit(10);
+    }
     c1 = con_by_name(conn_name, TRUE);
     assert(c1 != NULL);
 
