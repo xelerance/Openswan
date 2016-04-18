@@ -1950,7 +1950,8 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
      * we can only be in calculating state if state is ignore,
      * or suspended.
      */
-    passert(result == STF_INLINE || result == STF_IGNORE || result == STF_SUSPEND || st->st_calculating==FALSE);
+    passert(result == STF_INLINE || result == STF_IGNORE || result == STF_SUSPEND
+            || st == NULL || (st && st->st_calculating==FALSE));
 
     switch (result)
     {
@@ -2412,34 +2413,36 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	     * whatever retrying was in place, remains in place.
 	     */
 	    whack_log(RC_NOTIFICATION + md->note
-		, "%s: %s", enum_name(&state_names, st->st_state)
+		, "%s: %s", enum_name(&state_names, from_state)
 		, enum_name(&ipsec_notification_names, md->note));
 
 	    if(md->note > 0) {
 		SEND_NOTIFICATION(md->note);
 	    }
 
-	    DBG(DBG_CONTROL,
-		DBG_log("state transition function for %s failed: %s whack_fd: %u"
-			, enum_name(&state_names, from_state)
-			, enum_name(&ipsec_notification_names, md->note)
-                        , st->st_whack_sock
-                        ));
+            if( st ) {
+                DBG(DBG_CONTROL,
+                    DBG_log("state transition function for %s failed: %s whack_fd: %u"
+                            , enum_name(&state_names, from_state)
+                            , enum_name(&ipsec_notification_names, md->note)
+                            , st->st_whack_sock
+                            ));
 #ifdef HAVE_NM
-           if (st->st_connection->remotepeertype == CISCO
-               && st->st_connection->nmconfigured) {
-                if(!do_command(st->st_connection, &st->st_connection->spd, "disconnectNM", st)) {
-                DBG(DBG_CONTROL, DBG_log("sending disconnect to NM failed, you may need to do it manually"));
+                if (st->st_connection->remotepeertype == CISCO
+                    && st->st_connection->nmconfigured) {
+                    if(!do_command(st->st_connection, &st->st_connection->spd, "disconnectNM", st)) {
+                        DBG(DBG_CONTROL, DBG_log("sending disconnect to NM failed, you may need to do it manually"));
+                    }
                 }
-           }
 #endif
-	    if(st!=NULL && IS_PHASE1_INIT(st->st_state)) {
-		delete_event(st);
-		release_whack(st);
+                if(IS_PHASE1_INIT(st->st_state)) {
+                    delete_event(st);
+                    release_whack(st);
+                }
+                if(IS_QUICK(st->st_state)) {
+                    delete_state(st);
+                }
             }
-	    if(st!=NULL && IS_QUICK(st->st_state)) {
-		delete_state(st);
-	    }
             break;
     }
 
