@@ -580,6 +580,7 @@ main_inI1_outR1(struct msg_digest *md)
     struct state *st;
     struct connection *c;
     pb_stream r_sa_pbs;
+    lset_t policy_hint = 0;
 
     /* we are looking for an OpenPGP Vendor ID sent by the peer */
     bool openpgp_peer = FALSE;
@@ -623,7 +624,7 @@ main_inI1_outR1(struct msg_digest *md)
     c = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                              , KH_IPADDR
 			     , &md->sender
-			     , md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE);
+			     , md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE, &policy_hint);
 
     if (c == NULL)
     {
@@ -651,7 +652,7 @@ main_inI1_outR1(struct msg_digest *md)
 	    d = find_host_connection(ANY_MATCH, &md->iface->ip_addr, pluto_port500
                                      , KH_ANY
 				     , (ip_address*)NULL
-				     , md->sender_port, policy, POLICY_IKEV1_DISABLE);
+				     , md->sender_port, policy, POLICY_IKEV1_DISABLE, &policy_hint);
 
 	    for (; d != NULL; d = d->IPhp_next)
 	    {
@@ -683,6 +684,12 @@ main_inI1_outR1(struct msg_digest *md)
 		, ip_str(&md->iface->ip_addr), ntohs(portof(&md->iface->ip_addr))
 		, (policy != LEMPTY) ? " with policy=" : ""
 		, (policy != LEMPTY) ? bitnamesof(sa_policy_bit_names, policy) : "");
+
+            if(policy_hint & POLICY_IKEV1_DISABLE) {
+                md->note = INVALID_MAJOR_VERSION;
+                return STF_FAIL;
+            }
+
 	    /* XXX notification is in order! */
 	    return STF_IGNORE;
 	}

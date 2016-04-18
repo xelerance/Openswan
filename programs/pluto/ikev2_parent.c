@@ -541,12 +541,13 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     lset_t policy = POLICY_IKEV2_ALLOW;
+    lset_t policy_hint = LEMPTY;
     struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , md->iface->port
                                                 , KH_IPADDR
                                                 , &md->sender
                                                 , md->sender_port
-                                                , POLICY_IKEV2_ALLOW, LEMPTY);
+                                                , POLICY_IKEV2_ALLOW, LEMPTY, &policy_hint);
 
     /* retrieve st->st_gi */
 

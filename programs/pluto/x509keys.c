@@ -317,7 +317,7 @@ collect_rw_ca_candidates(struct msg_digest *md, generalName_t **top)
     struct connection *d = find_host_connection(ANY_MATCH, &md->iface->ip_addr
                                                 , pluto_port500
                                                 , KH_ANY
-                                                ,(ip_address*)NULL, md->sender_port, LEMPTY, LEMPTY);
+                                                ,(ip_address*)NULL, md->sender_port, LEMPTY, LEMPTY, NULL);
 
     for (; d != NULL; d = d->IPhp_next)
     {

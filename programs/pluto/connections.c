@@ -2075,8 +2075,11 @@ route_owner(struct connection *c
 
 static struct connection *
 find_match_by_policy(struct connection *c, lset_t policy_set, lset_t policy_clear,
-                     const char *policy_set_buf, const char *policy_clear_buf)
+                     const char *policy_set_buf, const char *policy_clear_buf,
+                     struct connection **pPolicy_hint)
 {
+    struct connection *c_without_version_policy = NULL;
+
     if (policy_set != LEMPTY || policy_clear != LEMPTY) {
 	/*
 	 * if we have requirements for the policy, choose the first matching
@@ -2087,6 +2090,8 @@ find_match_by_policy(struct connection *c, lset_t policy_set, lset_t policy_clea
                         , policy_set_buf, policy_clear_buf));
 
 	for (; c != NULL; c = c->IPhp_next) {
+            lset_t policy_without_ikeversion = (c->policy & (~POLICY_IKEV1_DISABLE)) | POLICY_IKEV2_ALLOW;
+
 	    DBG(DBG_CONTROLMORE,
 		DBG_log("found policy = %s (%s)"
 			, bitnamesof(sa_policy_bit_names, c->policy)
@@ -2102,14 +2107,35 @@ find_match_by_policy(struct connection *c, lset_t policy_set, lset_t policy_clea
 		break;
             }
 
+            /* this is a bit of comparison specific to IKEv1/IKEv2, because we need to
+             * lead a bread trail to indicate if we could have found something, had
+             * the policy ignored IKE version info
+             */
+            if((policy_without_ikeversion & policy_set)==policy_set
+               && (policy_without_ikeversion & policy_clear)==0) {
+                c_without_version_policy = c;
+            }
+
             DBG(DBG_CONTROL,
-                DBG_log("connection %s (policy=%s) does not match desired policy %s (~ %s)"
+                DBG_log("connection %s (policy=%s) does not match desired policy %s (~ %s) [withoutversion: %s]"
                         , c->name
                         , bitnamesof(sa_policy_bit_names, c->policy)
-                        , policy_set_buf, policy_clear_buf));
+                        , policy_set_buf, policy_clear_buf
+                        , c_without_version_policy ? c_without_version_policy->name : "none"));
 	}
 
     }
+
+    if(c==NULL && c_without_version_policy) {
+        DBG(DBG_CONTROL,
+            DBG_log("connection %s (policy=%s) would have matched, but ike version policy was wrong"
+                    , c_without_version_policy->name
+                    , bitnamesof(sa_policy_bit_names, c_without_version_policy->policy)));
+        if(pPolicy_hint) {
+            *pPolicy_hint = c_without_version_policy;
+        }
+    }
+
     return c;
 }
 
@@ -2122,9 +2148,12 @@ find_host_connection2(const char *func, bool exact
                       , const ip_address *me, u_int16_t my_port
                       , enum keyword_host histype
                       , const ip_address *him, u_int16_t his_port
-                      , lset_t policy_set, lset_t policy_clear)
+                      , lset_t policy_set, lset_t policy_clear
+                      , lset_t *pPolicy_IkeVersion)
 {
     struct connection *c;
+    struct connection *cWithoutIkePolicy = NULL;
+    struct connection *cWithoutIkePolicy_any = NULL;
     char policy_set_buf[128];
     char policy_clear_buf[128];
     zero(policy_set_buf);
@@ -2146,17 +2175,44 @@ find_host_connection2(const char *func, bool exact
 		, his_port , policy_set_buf, policy_clear_buf));
     c = find_host_pair_connections(__FUNCTION__, exact, me, my_port, histype, him, his_port);
 
-    c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf);
+    c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf, &cWithoutIkePolicy);
 
     if(c == NULL) {
         /* look again with right=%any */
         c = find_host_pair_connections(__FUNCTION__, ANY_MATCH, me, my_port, KH_ANY, NULL, pluto_port500);
 
-        c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf);
+        c = find_match_by_policy(c, policy_set, policy_clear, policy_set_buf, policy_clear_buf, &cWithoutIkePolicy_any);
     }
 
     DBG(DBG_CONTROLMORE,
-	DBG_log("find_host_connection2 returns %s", c ? c->name : "empty"));
+	DBG_log("find_host_connection2 returns %s (ike=%s/%s)"
+                , c ? c->name : "empty"
+                , cWithoutIkePolicy     ? cWithoutIkePolicy->name     : "none"
+                , cWithoutIkePolicy_any ? cWithoutIkePolicy_any->name : "none"));
+
+    if(c == NULL && pPolicy_IkeVersion != NULL) {
+        if(cWithoutIkePolicy) {
+            if(policy_clear & POLICY_IKEV1_DISABLE
+               && cWithoutIkePolicy->policy & POLICY_IKEV1_DISABLE) {
+                *pPolicy_IkeVersion |= POLICY_IKEV1_DISABLE;
+            }
+            if(policy_set & POLICY_IKEV2_ALLOW
+               && (cWithoutIkePolicy->policy & POLICY_IKEV2_ALLOW) == 0) {
+                *pPolicy_IkeVersion |= POLICY_IKEV2_ALLOW;
+            }
+        }
+        if(cWithoutIkePolicy_any) {
+            if(policy_clear & POLICY_IKEV1_DISABLE
+               && cWithoutIkePolicy_any->policy & POLICY_IKEV1_DISABLE) {
+                *pPolicy_IkeVersion |= POLICY_IKEV1_DISABLE;
+            }
+            if(policy_set & POLICY_IKEV2_ALLOW
+               && (cWithoutIkePolicy_any->policy & POLICY_IKEV2_ALLOW) == 0) {
+                *pPolicy_IkeVersion |= POLICY_IKEV2_ALLOW;
+            }
+        }
+    }
+
     return c;
 }
 
