@@ -3,7 +3,7 @@ into pluto.  Pluto is then terminated.
 This is a functional test case that validates the whack communications
 and the whole addconn and starterwhack libraries.
 
-Since pluto needs port 500/4500 (and 500 is privledged), most tests start it
+Since pluto needs port 500/4500 (and 500 is privileged), most tests start it
 with another port (7500), bound to 127.0.0.1.
 
 

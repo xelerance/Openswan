@@ -1,5 +1,5 @@
 This test case starts pluto with a variety of different options, checking that it starts as expected.
 In most cases, it starts pluto in the background, and then uses whack to tell it to shutdown.
-Since pluto needs port 500/4500 (and 500 is privledged), most tests start it with another port, bound to 127.0.0.1,
+Since pluto needs port 500/4500 (and 500 is privileged), most tests start it with another port, bound to 127.0.0.1,
 that means that the default port selection code won't get tested here.
 

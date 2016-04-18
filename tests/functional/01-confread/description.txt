@@ -1,4 +1,4 @@
-This test excercises the configuration reading library present in
+This test exercises the configuration reading library present in
 libipsecconf, and wrapped in the readwriteconf program.
 
 h2h.conf was added as readwriteconf seemed to fail on it, but then it was

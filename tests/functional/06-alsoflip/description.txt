@@ -1,4 +1,4 @@
-This test excercises the configuration reading library present in
+This test exercises the configuration reading library present in
 libipsecconf, validating that a conn can be loaded with it is defined
 by two sections that are left=, but put together with alsoflip=
 
