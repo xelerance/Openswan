@@ -114,7 +114,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/93.184.216.34:500 -> hp:rw-any
 | searching for connection with policy = IKEv2ALLOW/-
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK (rw-any)
-| find_host_connection2 returns rw-any
+| find_host_connection2 returns rw-any (ike=none/none)
 ./certreplyselfR1 tentatively considering connection: rw-any
 | creating state object #1 at Z
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)

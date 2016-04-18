@@ -1,6 +1,6 @@
 CONNNAME=mytunnel-no-ikev1
 ENDNAME=h2h
-UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentM1.pcap OUTPUT/h2hR1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentM1.pcap OUTPUT/${TESTNAME}.pcap
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=h2hR1-deny-ikev1

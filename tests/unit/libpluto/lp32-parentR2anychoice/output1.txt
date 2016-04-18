@@ -137,7 +137,7 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:maryjane1--jj2
 | searching for connection with policy = IKEv2ALLOW/-
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (maryjane1--jj2)
-| find_host_connection2 returns maryjane1--jj2
+| find_host_connection2 returns maryjane1--jj2 (ike=none/none)
 ./parentR2anychoice tentatively considering connection: maryjane1--jj2
 | creating state object #1 at Z
 | orient maryjane1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
