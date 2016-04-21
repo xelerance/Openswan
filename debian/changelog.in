@@ -1,6 +1,6 @@
-openswan (1:IPSECBASEVERSION-0xelerance1) trusty; urgency=low
+openswan (1:DEBIAN_VER-0xelerance1) trusty; urgency=low
 
-  * Update to IPSECBASEVERSION
+  * Update to DEBIAN_VER
 
   The real changelog is in /usr/share/doc/openswan/changelog.gz
 
