@@ -1052,7 +1052,7 @@ typedef enum {
     V2_INVALID_SPI                  =11,  /* same as ikev1 */
     /* Reserved                  =12, */
     /* Reserved                  =13, */
-    v2N_NO_PROPOSAL_CHOSEN           =14, /* same as ikev1 */
+    v2N_NO_PROPOSAL_CHOSEN           =14, /* failed to choose CHILD SA (same number as ikev1) */
     /* Reserved                  =15, */
     /* Reserved                  =16, */
     v2N_INVALID_KE_PAYLOAD           =17,

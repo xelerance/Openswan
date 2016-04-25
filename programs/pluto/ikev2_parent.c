@@ -549,32 +549,20 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
                                                 , md->sender_port
                                                 , POLICY_IKEV2_ALLOW, LEMPTY, &policy_hint);
 
-    /* retrieve st->st_gi */
-
-#if 0
     if(c==NULL) {
-        /*
-         * make up a policy from the thing that was proposed, and see
-         * if we can find a connection with that policy.
-         */
+        if(policy_hint & POLICY_IKEV2_ALLOW) {
+            /* connection not found, because IKEv2 was not allowed */
+            /* send back AUTHENTICATION_FAILED per WG mailing list discussion */
+            openswan_log("connection refused, IKEv2 not authorized");
+            return STF_FAIL + v2N_AUTHENTICATION_FAILED;
+        }
 
-         pb_stream pre_sa_pbs = sa_pd->pbs;
-         policy = preparse_isakmp_sa_body(&pre_sa_pbs);
-        c = find_host_connection(&md->iface->ip_addr, pluto_port500
-                                 , (ip_address*)NULL, md->sender_port, policy);
-
-
-    }
-#endif
-
-    if(c == NULL) {
         /*
          * be careful about responding, or logging, since it may be that we
          * are under DOS
          */
-        DBG_log("no connection found\n");
-        /* SEND_NOTIFICATION(NO_PROPOSAL_CHOSEN); */
-        return STF_FAIL + NO_PROPOSAL_CHOSEN;
+        DBG_log("no connection with matching policy found\n");
+        return STF_FAIL + v2N_AUTHENTICATION_FAILED;
     }
 
 
