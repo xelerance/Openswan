@@ -1,0 +1,166 @@
+./h2hR1-noikev2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./h2hR1-noikev2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./h2hR1-noikev2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./h2hR1-noikev2 loading secrets from "../samples/jj.secrets"
+./h2hR1-noikev2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection mytunnel-no-ikev2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK
+| counting wild cards for 192.168.1.1 is 0
+| counting wild cards for 132.213.238.7 is 0
+| orient mytunnel-no-ikev2 checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient mytunnel-no-ikev2 finished with: 1 [132.213.238.7]
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 132.213.238.7:500 %address 192.168.1.1:500 -> hp:none
+| find_ID_host_pair: looking for me=132.213.238.7 him=192.168.1.1 (exact)
+|   concluded with <none>
+./h2hR1-noikev2 adding connection: "mytunnel-no-ikev2"
+| 132.213.238.7...192.168.1.1
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK
+|   orient mytunnel-no-ikev2 finished with: 1 [132.213.238.7]
+RC=0 "mytunnel-no-ikev2": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
+RC=0 "mytunnel-no-ikev2":     myip=unset; hisip=unset;
+RC=0 "mytunnel-no-ikev2":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+| *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
+|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
+|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
+|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
+|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
+|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
+|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
+|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
+|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
+|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
+|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
+|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
+|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
+|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
+| I am IKE SA Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found in hash 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v2 state object not found
+| considering state entry: 0
+|   reject:state needed and state unavailable
+| considering state entry: 1
+|   reject:state needed and state unavailable
+| considering state entry: 2
+|   reject:state needed and state unavailable
+| considering state entry: 3
+| Now lets proceed with state specific processing
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
+| find_host_pair: concluded with mytunnel-no-ikev2
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:mytunnel-no-ikev2
+| searching for connection with policy = IKEv2ALLOW/-
+| found policy = RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK (mytunnel-no-ikev2)
+| connection mytunnel-no-ikev2 (policy=RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK) does not match desired policy IKEv2ALLOW (~ -) [withoutversion: mytunnel-no-ikev2]
+| connection mytunnel-no-ikev2 (policy=RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK) would have matched, but ike version policy was wrong
+| find_host_pair: looking for me=132.213.238.7:500 %any him=<none>:500 any-match
+| find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
+| searching for connection with policy = IKEv2ALLOW/-
+| find_host_connection2 returns empty (ike=mytunnel-no-ikev2/none)
+./h2hR1-noikev2 connection refused, IKEv2 not authorized
+| complete v2 state transition with STF_FAIL
+./h2hR1-noikev2 no-state: AUTHENTICATION_FAILED
+./h2hR1-noikev2 sending  notification v2N_AUTHENTICATION_FAILED to 192.168.1.1:500
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    next payload type: ISAKMP_NEXT_v2N
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_SA_INIT
+|    flags: ISAKMP_FLAG_RESPONSE
+|    message ID:  00 00 00 00
+| Adding a v2N Payload
+| ***emit IKEv2 Notify Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    critical bit: none
+|    Protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    Notify Message Type: v2N_AUTHENTICATION_FAILED
+| emitting length of IKEv2 Notify Payload: 8
+| emitting length of ISAKMP Message: 36
+sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (using #0)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
+|   01 00 00 18
+| state transition function for no-state failed: AUTHENTICATION_FAILED
+./h2hR1-noikev2 deleting connection
+./h2hR1-noikev2 leak: notification packet, item size: X
+./h2hR1-noikev2 leak: msg_digest, item size: X
+./h2hR1-noikev2 leak: policies path, item size: X
+./h2hR1-noikev2 leak: ocspcerts path, item size: X
+./h2hR1-noikev2 leak: aacerts path, item size: X
+./h2hR1-noikev2 leak: certs path, item size: X
+./h2hR1-noikev2 leak: private path, item size: X
+./h2hR1-noikev2 leak: crls path, item size: X
+./h2hR1-noikev2 leak: cacert path, item size: X
+./h2hR1-noikev2 leak: acert path, item size: X
+./h2hR1-noikev2 leak: default conf var_dir, item size: X
+./h2hR1-noikev2 leak: default conf conffile, item size: X
+./h2hR1-noikev2 leak: default conf ipsecd_dir, item size: X
+./h2hR1-noikev2 leak: default conf ipsec_conf_dir, item size: X
+./h2hR1-noikev2 leak: 2 * id list, item size: X
+./h2hR1-noikev2 leak: secret, item size: X
+./h2hR1-noikev2 leak: 2 * hasher name, item size: X
+./h2hR1-noikev2 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
