@@ -128,7 +128,6 @@ connections.o: connections.c \
  plutoalg.h xauth.h \
  ../../include/pluto/libpluto.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
 cookie.o: cookie.c \
  ../../include/openswan.h \
@@ -181,7 +180,12 @@ crypt_dh.o: crypt_dh.c \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h \
- ../../include/pgp.h ikev2_prfplus.h
+ ../../include/pgp.h ikev2_prfplus.h \
+ ../../include/oswcrypto.h \
+ ../../include/klips-crypto/aes.h \
+ ../../include/klips-crypto/aes_cbc.h \
+ ../../include/klips-crypto/aes.h \
+ ../../include/klips-crypto/des.h
 crypt_ke.o: crypt_ke.c \
  ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
@@ -2769,7 +2773,7 @@ vendor.o: vendor.c \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/vendor.h \
  ../../include/pluto/quirks.h kernel.h \
- state.h \
+ state.h ../../include/pluto/quirks.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 virtual.o: virtual.c \
