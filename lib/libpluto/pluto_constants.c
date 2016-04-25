@@ -87,11 +87,12 @@ static const char *const timer_event_name[] = {
 	"EVENT_CRYPTO_FAILED",
 	"EVENT_PENDING_PHASE2",
 	"EVENT_v2_RETRANSMIT",
-	"EVENT_PENDING_DDNS"
+	"EVENT_PENDING_DDNS",
+        "EVENT_SA_DELETE"
     };
 
 enum_names timer_event_names =
-    { EVENT_NULL, EVENT_PENDING_DDNS, timer_event_name, NULL };
+    { EVENT_NULL, EVENT_SA_DELETE, timer_event_name, NULL };
 
 /* State of exchanges */
 static const char *const state_name[] = {
