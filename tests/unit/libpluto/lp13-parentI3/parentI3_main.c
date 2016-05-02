@@ -35,6 +35,11 @@ void recv_pcap_packet2(u_char *user
 
 }
 
+#ifndef AFTER_CONN
+#define AFTER_CONN() do {} while(0)
+#endif
+
+
 int main(int argc, char *argv[])
 {
     int   len;
@@ -106,6 +111,8 @@ int main(int argc, char *argv[])
 
     cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
     pcap_dispatch(pt, 1, recv_pcap_packet2, NULL);
+
+    AFTER_CONN();
 
     /* dump the delete message that comes out */
     send_packet_setup_pcap("/dev/null");
