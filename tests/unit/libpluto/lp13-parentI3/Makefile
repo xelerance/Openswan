@@ -66,14 +66,12 @@ EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+OUTPUTS=OUTPUT
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
-OUTPUTS=OUTPUT
-WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
-UNITTEST1ARGS=-r ${WHACKFILE} parker1--jj2 ../lp10-parentI2/parentR1.pcap parentR2.pcap
+include Makefile.testcase
 
-TESTNAME=parentI3
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
@@ -93,7 +91,7 @@ OUTPUT/${TESTNAME}_1.txt:	${WHACKFILE} ${TESTNAME}
 
 ${WHACKFILE}:
 	@mkdir -p OUTPUT
-	${READWRITE} --rootdir=${SAMPLEDIR}/parker --config ${SAMPLEDIR}/parker.conf --whackout=${WHACKFILE} parker1--jj2
+	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 
 update: update1
 update1:
