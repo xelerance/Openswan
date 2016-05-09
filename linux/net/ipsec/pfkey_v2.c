@@ -1533,12 +1533,14 @@ pfkey_cleanup(void)
 #endif /* CONFIG_KLIPS_IPCOMP */
 	error |= supported_remove_all(K_SADB_X_SATYPE_IPIP);
 
+#if 0
+        /* XXX - does anyone actually use this interface at all? */
 #ifdef CONFIG_PROC_FS
         remove_proc_subtree("pf_key",            init_net.proc_net);
         remove_proc_subtree("pf_key_supported",  init_net.proc_net);
         remove_proc_subtree("pf_key_registered", init_net.proc_net);
 #endif /* CONFIG_PROC_FS */
-
+#endif
 	/* other module unloading cleanup happens here */
 	return error;
 }
