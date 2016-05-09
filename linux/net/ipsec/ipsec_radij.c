@@ -135,7 +135,7 @@ ipsec_breakroute(struct sockaddr_encap *eaddr,
 			    "node not found, eroute delete failed.\n");
 		return error;
 	}
-
+	rnh_count--;
 	spin_unlock_bh(&eroute_lock);
 
 	ro = (struct eroute *)rn;
