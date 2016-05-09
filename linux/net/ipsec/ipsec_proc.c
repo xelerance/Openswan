@@ -153,7 +153,8 @@ static void * proc_eroute_start(struct seq_file *m, loff_t *pos)
         memset(rjws, 0, sizeof(struct rj_walkstate));
 
         if(rj_initwalk(rjws, rnh, NULL, NULL)) {
-                kfree(rjws);
+		spin_unlock_bh(&eroute_lock);
+		kfree(rjws);
                 return NULL;
         }
         rj_walktreeonce_top(rjws);
