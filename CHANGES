@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.47.1rc1 (May 6, 2016)
+v2.6.47.1 (May 10, 2016)
 
 * guard against multiple inclusion of pluto/log.h (in order to build on CentOS) [MCR]
 
