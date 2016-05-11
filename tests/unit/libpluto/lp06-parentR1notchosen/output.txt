@@ -191,15 +191,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | Now lets proceed with state specific processing
-| no connection found
+| no connection with matching policy found
 | complete v2 state transition with STF_FAIL
-./parentI1R1 no-state: NO_PROPOSAL_CHOSEN
-./parentI1R1 sending  notification v2N_NO_PROPOSAL_CHOSEN to 10.10.5.4:500
+./parentI1R1 no-state: AUTHENTICATION_FAILED
+./parentI1R1 sending  notification v2N_AUTHENTICATION_FAILED to 10.10.5.4:500
 sending 36 bytes for send_v2_notification through eth0:500 to 10.10.5.4:500 (using #0)
 |   56 11 47 13  4b 1d 6d 52  00 00 00 00  00 00 00 00
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
-|   01 00 00 0e
-| state transition function for no-state failed: NO_PROPOSAL_CHOSEN
+|   01 00 00 18
+| state transition function for no-state failed: AUTHENTICATION_FAILED
 ./parentI1R1 deleting state #1 (STATE_PARENT_I1)
 ./parentI1R1 leak: notification packet, item size: X
 ./parentI1R1 leak: msg_digest, item size: X

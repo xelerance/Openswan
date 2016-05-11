@@ -1,4 +1,4 @@
-/* 
+/*
  * Pluto interface to crypto/pk operations
  *
  * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
@@ -20,6 +20,13 @@
 #include <klips-crypto/aes.h>
 #include <klips-crypto/aes_cbc.h>
 #include <klips-crypto/des.h>
+
+#define clear_crypto_space(wc, space) do { \
+  (wc)->start = 0;  \
+  (wc)->len   = sizeof(space);                  \
+  } while(0)
+
+
 
 struct oswcrypto_meth {
 	void (*rsa_mod_exp_crt)(mpz_t dst, const mpz_t src, const mpz_t p,

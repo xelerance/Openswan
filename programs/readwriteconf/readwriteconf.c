@@ -66,6 +66,7 @@ char readwriteconf_c_version[] = "@(#) Xelerance Openswan readwriteconf";
 const char *progname;
 int verbose=0;
 int warningsarefatal = 0;
+int ignoreconnnotfound = 0;
 
 static const char *usage_string = ""
     "Usage: readwriteconn [--config file] \n"
@@ -89,6 +90,7 @@ static struct option const longopts[] =
 	{"debug",               no_argument, NULL, 'D'},
 	{"verbose",             no_argument, NULL, 'D'},
 	{"warningsarefatal",    no_argument, NULL, 'W'},
+	{"ignoreconnnotfound",  no_argument, NULL, 'X'},
 	{"whackout",            required_argument, NULL, 'w'},
 	{"all",                 no_argument, NULL, 'A'},
 	{"text",                no_argument, NULL, 'T'},
@@ -155,6 +157,10 @@ main(int argc, char *argv[])
 
 	case 'W':
 	    warningsarefatal++;
+	    break;
+
+	case 'X':
+	    ignoreconnnotfound++;
 	    break;
 
 	case 'C':
@@ -252,6 +258,7 @@ main(int argc, char *argv[])
             argv+=optind;
             argc-=optind;
             for(; argc>0; argc--, argv++) {
+                bool found = FALSE;
                 char *conn_name = *argv;
                 for(conn = cfg->conns.tqh_first;
                     conn != NULL;
@@ -261,11 +268,18 @@ main(int argc, char *argv[])
                             printf("processing conn: %s vs %s\n", conn_name, conn->name);
                         }
                         if(strcasecmp(conn->name, conn_name)==0) {
+                            found = TRUE;
                             if(starter_whack_add_conn(cfg, conn) != 0) {
                                 fprintf(stderr, "failed to load conn: %s\n", conn_name);
                             }
                         }
                     }
+                if(!found) {
+                    fprintf(stderr, "can not found conn named: %s\n", conn_name);
+                    if(!ignoreconnnotfound) {
+                        exit(22);
+                    }
+                }
             }
         }
     }

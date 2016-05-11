@@ -6,19 +6,13 @@ aggr_outI1(int whack_sock,
 	   unsigned long try
 	   , enum crypto_importance importance)
 {
+	fprintf(stderr, "IKEv1 aggressive output requested\n");
 	osw_abort();
 }
 
-stf_status
-main_outI1(int whack_sock
-	   , struct connection *c
-	   , struct state *predecessor
-	   , lset_t policy
-	   , unsigned long try
-	   , enum crypto_importance importance)
-{
-	DBG_log("MAIN OUTi1()\n");
-}
+#ifndef OMIT_MAIN_MODE
+#include "seam_ikev1_main.c"
+#endif
 
 stf_status
 quick_outI1(int whack_sock
@@ -29,28 +23,20 @@ quick_outI1(int whack_sock
 	    , so_serial_t replacing
             , struct xfrm_user_sec_ctx_ike * uctx)
 {
+	fprintf(stderr, "IKEv1 quick output requested\n");
 	osw_abort();
 }
 
-void
-ikev1_delete_out(struct state *st)
-{
-	printf("deleted state #%lu\n", st->st_serialno);
-}
-
-void
-send_notification_from_state(struct state *st, enum state_kind state,
-    u_int16_t type)
-{
-}
-
-void
-send_notification_from_md(struct msg_digest *md, u_int16_t type)
-{
-}
-
+#ifndef INCLUDE_IKEV1_PROCESSING
 void
 process_v1_packet(struct msg_digest **mdp)
 {
+	fprintf(stderr, "IKEv1 packet received\n");
 	osw_abort();
 }
+
+void process_packet_tail(struct msg_digest **mdp) {}
+
+void init_demux(void) {}
+#endif
+

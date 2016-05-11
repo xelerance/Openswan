@@ -1,0 +1,14 @@
+This test case is an IKE responder where the responder will not
+accept an IKEv2 message.
+The responder will reply with an IKEv2 message that says AUTHENTICATION_FAILURE.
+
+h2hI1.pcap is copied from ../lp36-h2hI1/OUTPUT/h2hI1.pcap.
+(make pcapupdate will do this)
+
+
+
+
+
+
+
+

@@ -19,7 +19,7 @@
 #include "../../programs/pluto/rcv_whack.h"
 
 #include "pluto/defs.h"
-#include "demux.h"
+#include "pluto/demux.h"
 #include "pluto/connections.h"
 #include "state.h"
 
