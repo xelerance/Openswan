@@ -949,7 +949,7 @@ connection_state(struct state *st, void *data)
 		return;
 
 	if (st->st_connection != lc->conn) {
-		if (lc->conn->host_pair != st->st_connection->host_pair ||
+		if (lc->conn->IPhost_pair != st->st_connection->IPhost_pair ||
 			!same_peer_ids(lc->conn, st->st_connection, NULL))
 		    return;
 		/* phase1 is shared with another connnection */
