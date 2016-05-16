@@ -497,6 +497,7 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
 |   34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 ./initiateselfI2 deleting connection
+| pass 0: considering CHILD SAs to delete
 ./initiateselfI2 deleting state #2 (STATE_PARENT_I2)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -541,7 +542,8 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   5e c0 be 04  65 78 5e 79  df 5f d5 d2
-./initiateselfI2 deleting state #1 (STATE_IKESA_DEL)
+| pass 1: considering PARENT SAs to delete
+./initiateselfI2 deleting state #1 (STATE_CHILDSA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
 | ICOOKIE:  80 01 02 03  04 05 06 07

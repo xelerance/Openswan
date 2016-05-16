@@ -229,6 +229,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   75 74 6f 75  6e 69 74 30
 ./parentR1 deleting state #1 (STATE_PARENT_R1)
 ./parentR1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./parentR1 leak: ikev2_inI1outR1 KE, item size: X
 ./parentR1 leak: msg_digest, item size: X
 ./parentR1 leak: policies path, item size: X
