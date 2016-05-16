@@ -94,7 +94,11 @@ RC=2   IDpair: @parker01.emmjay.credil.org/@jamesjohnson.emmjay.credil.org
 RC=2      parker1--jj2
 RC=2      ikev2:parker--jj
 ./orienttest deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./orienttest deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 RC=2 IP hostpairs:
 RC=2 ID hostpairs:
 ./orienttest leak: myid string, item size: X

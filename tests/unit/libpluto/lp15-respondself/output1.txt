@@ -232,6 +232,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   75 74 6f 75  6e 69 74 30
 ./respondselfR1 deleting state #1 (STATE_PARENT_R1)
 ./respondselfR1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./respondselfR1 leak: ikev2_inI1outR1 KE, item size: X
 ./respondselfR1 leak: msg_digest, item size: X
 ./respondselfR1 leak: policies path, item size: X

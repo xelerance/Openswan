@@ -468,6 +468,8 @@ RC=105 STATE_MAIN_I1: initiate
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 ./parentM1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./parentM1 leak: 67 * VendorID MD5, item size: X
 ./parentM1 leak: 3 * vid->data, item size: X
 ./parentM1 leak: 15 * VendorID MD5, item size: X

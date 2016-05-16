@@ -597,6 +597,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
 ./parentI3 deleting connection
+| pass 0: considering CHILD SAs to delete
 ./parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete equest
@@ -644,6 +645,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 |   02 3a aa 39  66 66 ff a9  d3 01 40 55
+| pass 1: considering PARENT SAs to delete
 ./parentI3 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
@@ -689,19 +691,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
-./parentI3 deleting state #2 (STATE_CHILDSA_DEL)
-| received request to delete child state
-| now deleting the child state
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
-| state hash entry 28
-./parentI3 deleting state #1 (STATE_IKESA_DEL)
-| considering request to delete IKE parent state
-| now deleting the IKE (or parent) state
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
-| state hash entry 28
-./parentI3 leak: request packet for informational exchange, item size: X
 ./parentI3 leak: skeyseed_t1, item size: X
 ./parentI3 leak: responder keys, item size: X
 ./parentI3 leak: initiator keys, item size: X
@@ -738,7 +727,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: sa copy prop array, item size: X
 ./parentI3 leak: sa copy prop conj array, item size: X
 ./parentI3 leak: sa copy prop_conj, item size: X
-./parentI3 leak: saved first received packet, item size: X
 ./parentI3 leak: st_nr in duplicate_state, item size: X
 ./parentI3 leak: st_ni in duplicate_state, item size: X
 ./parentI3 leak: st_skey_pr in duplicate_state, item size: X
@@ -751,14 +739,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: st_skeyseed in duplicate_state, item size: X
 ./parentI3 leak: st_enc_key in duplicate_state, item size: X
 ./parentI3 leak: struct state in new_state(), item size: X
-./parentI3 leak: calculated skey_prshared secret, item size: X
-./parentI3 leak: calculated skey_pishared secret, item size: X
-./parentI3 leak: calculated skey_ershared secret, item size: X
-./parentI3 leak: calculated skey_eishared secret, item size: X
-./parentI3 leak: calculated skey_arshared secret, item size: X
-./parentI3 leak: calculated skey_aishared secret, item size: X
-./parentI3 leak: calculated skey_dshared secret, item size: X
-./parentI3 leak: calculated sharedshared secret, item size: X
 ./parentI3 leak: ikev2_inR1outI2 KE, item size: X
 ./parentI3 leak: db_attrs, item size: X
 ./parentI3 leak: db_v2_trans, item size: X
@@ -791,44 +771,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: db_attrs, item size: X
 ./parentI3 leak: db_v2_trans, item size: X
 ./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: nonce, item size: X
-./parentI3 leak: Gr, item size: X
-./parentI3 leak: saved first packet, item size: X
-./parentI3 leak: sa in main_outI1, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_prop, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: initiator nonce, item size: X
-./parentI3 leak: long term secret, item size: X
-./parentI3 leak: saved gi value, item size: X
 ./parentI3 leak: msg_digest, item size: X
 ./parentI3 leak: ikev2_outI1 KE, item size: X
 ./parentI3 leak: db_attrs, item size: X
@@ -862,12 +804,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: db_attrs, item size: X
 ./parentI3 leak: db_v2_trans, item size: X
 ./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: 12 * sa copy attrs array, item size: X
-./parentI3 leak: sa copy trans array, item size: X
-./parentI3 leak: sa copy prop array, item size: X
-./parentI3 leak: sa copy prop conj array, item size: X
-./parentI3 leak: sa copy prop_conj, item size: X
-./parentI3 leak: struct state in new_state(), item size: X
 ./parentI3 leak: keep id name, item size: X
 ./parentI3 leak: pubkey entry, item size: X
 ./parentI3 leak: pubkey, item size: X

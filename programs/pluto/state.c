@@ -604,6 +604,12 @@ foreach_states_by_connection_func(struct connection *c
     {
 	int i;
 
+        if(pass == 0) {
+            DBG(DBG_CONTROL, DBG_log("pass 0: considering CHILD SAs to delete"));
+        } else {
+            DBG(DBG_CONTROL, DBG_log("pass 1: considering PARENT SAs to delete"));
+        }
+
 	/* For each hash chain... */
 	for (i = 0; i < STATE_TABLE_SIZE; i++)
 	{
@@ -616,8 +622,13 @@ foreach_states_by_connection_func(struct connection *c
 
 		st = st->st_hashchain_next;	/* before this is deleted */
 
-		/* on pass 2, ignore phase2 states */
- 		if(pass == 1 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+		/* on pass 0, ignore phase1 states */
+ 		if(pass == 0 && IS_ISAKMP_SA_ESTABLISHED(this->st_state)) {
+		    continue;
+		}
+
+		/* on pass 1, ignore phase2 states */
+ 		if(pass == 1 && IS_CHILD_SA(this)) {
 		    continue;
 		}
 
@@ -630,7 +641,7 @@ foreach_states_by_connection_func(struct connection *c
 		    lset_t old_cur_debugging = cur_debugging;
 #endif
 
-    set_cur_state(this);
+                    set_cur_state(this);
 		    (*successfunc)(this, c, arg);
 
 		    cur_state = old_cur_state;
