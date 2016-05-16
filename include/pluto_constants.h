@@ -288,6 +288,10 @@ enum state_kind {
      * for all work states. */
     STATE_PARENT_R1,
     STATE_PARENT_R2,
+    STATE_CHILD_C1_KEYED,      /* terminal state for a CHILD SA that has been successfully keyed */
+
+    /* INITIATOR child (re)key states */
+    STATE_CHILD_C1_REKEY,      /* initial state for a CHILD SA that is beginning a rekey */
 
     /* IKEv2 Delete States */
     STATE_IKESA_DEL,
@@ -350,7 +354,7 @@ enum phase1_role {
  * Issue here is that our child sa appears as a STATE_PARENT_I3/STATE_PARENT_R2 state which it should not
  * So we fall back to checking if it is cloned, and therefor really a child
  */
-#define IS_CHILD_SA_ESTABLISHED(st) ( (((st->st_state == STATE_PARENT_I3) || (st->st_state == STATE_PARENT_R2)) && (st->st_clonedfrom != SOS_NOBODY)) || (st->st_state == STATE_CHILDSA_DEL) )
+#define IS_CHILD_SA_ESTABLISHED(st) ( (((st->st_state == STATE_PARENT_I3) || (st->st_state == STATE_PARENT_R2)) && (st->st_clonedfrom != SOS_NOBODY)) || (st->st_state == STATE_CHILDSA_DEL) || (st->st_state == STATE_CHILD_C1_KEYED))
 
 #define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
 #define IS_PARENT_SA(st) (!IS_CHILD_SA(st))

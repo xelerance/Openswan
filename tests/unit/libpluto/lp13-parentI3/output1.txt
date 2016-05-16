@@ -589,13 +589,15 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
 | complete v2 state transition with STF_OK
-./parentI3 transition from state STATE_PARENT_I2 to state STATE_PARENT_I3
+./parentI3 transition from state STATE_PARENT_I2 to state STATE_CHILD_C1_KEYED
 ./parentI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
-./parentI3 STATE_PARENT_I3: PARENT SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000001)
+./parentI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000001)
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
 ./parentI3 deleting connection
-./parentI3 deleting state #2 (STATE_PARENT_I3)
+./parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete equest
 | **emit ISAKMP Message:

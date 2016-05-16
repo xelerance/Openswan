@@ -146,6 +146,8 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 
+    "STATE_CHILD_C1_KEYED",
+
         "STATE_IKESA_DEL",
         "STATE_CHILDSA_DEL",
 
@@ -197,11 +199,17 @@ const char *const state_story[] = {
 	"invalid state - IKE roof",
 	"invalid state - IKEv2 base",
 	"sent v2I1, expected v2R1",             /* STATE_PARENT_I1 */
-	"sent v2I2, expected v2R2",
-	"PARENT SA established",
-	"received v2I1, sent v2R1",
-	"received v2I2, PARENT SA established",
-	"invalid state - IKEv2 roof"
+	"sent v2I2, expected v2R2",             /* STATE_PARENT_I2 */
+	"PARENT SA established",                /* STATE_PARENT_I3 */
+	"received v2I1, sent v2R1",             /* STATE_PARENT_R1 */
+	"received v2I2, PARENT SA established", /* STATE_PARENT_R2 */
+
+        "CHILD SA established",                 /* STATE_CHILD_C1_KEYED */
+
+        "PARENT SA scheduled for deletion",     /* STATE_IKESA_DEL */
+        "CHILD SA scheduled for deletion",      /* STATE_CHILDSA_DEL */
+
+	"invalid state - IKEv2 roof (fix state_stories?)"
     };
 
 enum_names state_stories =

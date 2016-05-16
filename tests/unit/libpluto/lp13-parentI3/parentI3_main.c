@@ -114,6 +114,8 @@ int main(int argc, char *argv[])
 
     AFTER_CONN();
 
+    show_states_status();
+
     /* dump the delete message that comes out */
     send_packet_setup_pcap("/dev/null");
     delete_connection(c1, TRUE);

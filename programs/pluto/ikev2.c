@@ -170,7 +170,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
 
     { .svm_name   = "initiator-auth-process",
       .state      = STATE_PARENT_I2,
-      .next_state = STATE_PARENT_I3,
+      .next_state = STATE_CHILD_C1_KEYED,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDr) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
