@@ -4,6 +4,53 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.48dr1 (May 26, 2016)
+
+Bug fix release.
+
+* fix leak error found by travis [MCR]
+* some minor fixes to unit test cases as a result of merge and travis testing [MCR]
+* Fixing compile error when HAVE_STATSD=true is set. [Samir Hussain]
+* ipsec eroute connections number kept increased. [freedai]
+* Update ipsec_proc.c [freedai]
+* Update pfkey_v2.c [freedai]
+* Providing more meaningful name to variable that will get modified via sed [Samir Hussain]
+* For debian packages, we need to have a tilda (~) between version and
+  rc/dr in order to do proper versioning [Samir Hussain]
+* Minor spelling fixes [Samir Hussain]
+* Fixing issue with missing OCF symbols when trying to modprobe KLIPS on
+  Trusty [Samir Hussain
+* convince compiler that j is never too big [MCR]
+* const-ify as many spd_eroute arguments as possible [MCR]
+* update some dependancy headers [MCR]
+* update test case to expect AUTHENTICATION_FAILURE, rather than NO_PROPOSAL_CHOSEN [MCR]
+* reject connections that have a version mismatch using AUTHENTICATION_FAILED [MCR]
+* test case to check that IKEv2 is reject with a message of AUTHENTICATION_FAILED [MCR]
+* verify that correct IKEv1 notify is sent when IKEv1 is disabled [MCR]
+* when looking for a connection, determine if a different connection would
+  be returned if IKEv1/IKEv2 policy was ignored [MCR]
+* permit notifications to be sent from complete_v1_state_transition even
+  when no state was created [MCR]
+* added mytunnel-no-ikev1 [MCR]
+* log number of whack messages processed to aid in debug of new unit tests [MCR]
+* complain if a conn can not be found [MCR]
+* missed three changes to policy dump from adding policy_clear [MCR]
+* additional debug of policy, output for lset_clear policy search [MCR]
+* with changes to find_host_connections2, the ikev1 packet is now properly rejected [MCR]
+* find_host_connections2 now takes an lset of policies that must be clear [MCR]
+* include complete_v1_state_transition when not doing IKEv1 processing [MCR]
+* initialize wire_chunk_t in crypto_req using macro [MCR]
+* added appropriate seams for responding to ikev1 messages, when no ikev1 permitted [MCR]
+* protect against smc might be null when processing ikev1 packet [MCR]
+* support receiving ikev1 messages in ikev2 receive test [MCR]
+* mark include paths for headers moved to include directory [MCR]
+* no-ikev1 tunnel case [MCR]
+* new test case for process IKEv1 packets when only IKEv2 are expected [MCR]
+* confirm output is an IKEv1 main mode init [MCR]
+* move some nat-t headers to include/pluto, and permit them to be link-seamed out [MCR]
+* removed main_outI1 from seam so that lp43 can use it [MCR]
+* added lp43 - generate IKEv1 first packet [MCR]
+
 v2.6.47.1 (May 10, 2016)
 
 * guard against multiple inclusion of pluto/log.h (in order to build on CentOS) [MCR]
