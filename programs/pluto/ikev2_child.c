@@ -985,7 +985,6 @@ ipsec_outI1(int whack_sock
     return ikev2child_outC1(whack_sock, isakmp_sa, c, policy, try, replacing, uctx);
 }
 
-#if 0
 static void
 ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc
                             , struct pluto_crypto_req *r
@@ -995,62 +994,76 @@ static stf_status
 ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
                             , struct pluto_crypto_req *r);
 
-#endif
 
 stf_status ikev2child_outC1(int whack_sock UNUSED
-                            , struct state *parentst UNUSED
-                            , struct connection *c   UNUSED
-                            , lset_t policy          UNUSED
+                            , struct state *parentst
+                            , struct connection *c
+                            , lset_t policy UNUSED
                             , unsigned long try /* how many attempts so far */ UNUSED
                             , so_serial_t replacing  UNUSED
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
                             )
 {
-#if 0
-    struct state *st = md->st;
-    /* struct connection *c = st->st_connection; */
-    pb_stream *keyex_pbs;
+    struct state *st;
+    stf_status ret = STF_FAIL;
 
-    /* record IKE version numbers -- used mostly in logging */
-    st->st_ike_maj        = md->maj;
-    st->st_ike_min        = md->min;
+    /* okay, got a transmit slot, make a child state to send this. */
+    st = duplicate_state(parentst);
+    ret = allocate_msgid_from_parent(parentst, &st->st_msgid);
 
-    if(isanyaddr(&st->st_localaddr) || st->st_localport == 0) {
-        /* record where packet arrived to */
-        st->st_localaddr  = md->iface->ip_addr;
-        st->st_localport  = md->iface->port;
-    }
+    if(ret != STF_OK) return ret;
 
+    insert_state(st);
 
-    /* check if the responder replied with v2N with DOS COOKIE */
-    if( md->chain[ISAKMP_NEXT_v2N]
-        && md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_type ==  v2N_COOKIE)
-        {
-            u_int8_t spisize;
-            const pb_stream *dc_pbs;
-            DBG(DBG_CONTROLMORE
-                ,DBG_log("inR1OutI2 received a DOS v2N_COOKIE from the responder");
-                DBG_log("resend the I1 with a cookie payload"));
-            spisize = md->chain[ISAKMP_NEXT_v2N]->payload.v2n.isan_spisize;
-            dc_pbs = &md->chain[ISAKMP_NEXT_v2N]->pbs;
-            clonetochunk(st->st_dcookie,  (dc_pbs->cur + spisize)
-                         , (pbs_left(dc_pbs) - spisize), "saved received dcookie");
+    /* create a new parent event to rekey again */
+    delete_event(parentst);
+    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, parentst);
 
-            DBG(DBG_CONTROLMORE
-                ,DBG_dump_chunk("dcookie received (instead of a R1):",
-                                st->st_dcookie);
-                DBG_log("next STATE_PARENT_I1 resend I1 with the dcookie"));
+    /* XXX -- this needs a new child state value */
+    //change_state(st, STATE_PARENT_I2);
 
-            md->svm = &ikev2_parent_firststate_microcode;
+    // XXX do something with replacing!
 
-            /* now reset state, and try again with noncense */
-            change_state(st, STATE_PARENT_I1);
-            st->st_msgid_lastack = INVALID_MSGID;
-            md->msgid_received = INVALID_MSGID;  /* AAA hack  */
-            st->st_msgid_nextuse = 0;
+    /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
+    {
+        struct ke_continuation *ke = alloc_thing(struct ke_continuation
+                                                 , "ikev2child_outC1 KE");
+        stf_status e;
 
-            return ikev2_parent_outI1_common(md, st);
+        ke->md = alloc_md();
+        ke->md->from_state = STATE_CHILD_C1_REKEY;
+        ke->md->svm = &ikev2_parent_firststate_microcode;
+        ke->md->st  = st;
+        set_suspended(st, ke->md);
+
+        if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
+            pcrc_init(&ke->ke_pcrc);
+            ke->ke_pcrc.pcrc_func = ikev2child_outC1_continue;
+            e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_stranger_crypto);
+            if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO)) {
+                loglog(RC_CRYPTOFAILED, "system too busy");
+                delete_state(st);
+            }
+        } else {
+            /* this case is that st_sec already is initialized */
+            e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
         }
+
+        reset_globals();
+
+        return e;
+    }
+}
+
+
+#if 0
+    /* beginning of data going out */
+    authstart = reply_stream.cur;
+
+    /* make sure HDR is at start of a clean buffer */
+    zero(reply_buffer);
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
 
     /*
      * the responder sent us back KE, Gr, Nr, and it's our time to calculate
@@ -1110,15 +1123,13 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
         return e;
     }
 #endif
-    return STF_FAIL;
-}
 
-#if 0
 static void
 ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc UNUSED
                                 , struct pluto_crypto_req *r   UNUSED
                                 , err_t ugh UNUSED)
 {
+#if 0
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *const st = md->st;
@@ -1153,17 +1164,17 @@ ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc UNUSED
         complete_v2_state_transition(&dh->md, e);
         if(dh->md) release_md(dh->md);
     }
+#endif
     reset_globals();
 
     passert(GLOBALS_ARE_RESET());
 }
-#endif
 
-#if 0
 static stf_status
-ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc UNUSED
-                            , struct pluto_crypto_req *r       UNUSED)
+ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
+                      , struct pluto_crypto_req *r       UNUSED)
 {
+#if 0
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *st      = md->st;
@@ -1413,8 +1424,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc UNUSED
     event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
     return STF_OK;
-}
 #endif
+    return STF_FAIL;
+}
 
 
 /*
