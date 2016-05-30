@@ -1476,7 +1476,7 @@ void fmt_state(struct state *st, const time_t n
 	     , st->st_remoteport
              , st->st_ike_maj, st->st_ike_min
 	     , enum_name(&state_names, st->st_state)
-	     , state_story[st->st_state - STATE_MAIN_R0]
+	     , enum_name(&state_stories, st->st_state)
 	     , st->st_event ? enum_name(&timer_event_names, st->st_event->ev_type) : "none"
 	     , delta
 	     , np1, np2, eo, dpdbuf, msgidbuf
