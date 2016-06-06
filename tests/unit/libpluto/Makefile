@@ -65,5 +65,5 @@ clean check:
 	@${MAKE} -C lp43-parentM1 	$@
 	@${MAKE} -C lp44-h2hR1-deny-ikev1 	$@
 	@${MAKE} -C lp45-h2hR1-noikev2  	$@
-	@${MAKE} -C lp46-rekeyikev2     $@
+	@${MAKE} -C lp46-rekeyikev2-I1   $@
 
