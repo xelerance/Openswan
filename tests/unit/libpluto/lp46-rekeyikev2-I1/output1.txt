@@ -892,8 +892,45 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
 | out calculated auth:
 |   d0 bb 8e ee  2d 29 1c 48  0e 7b d2 18
-sending 0 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:500 (using #3)
-|
+sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:500 (using #3)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 24 09  00 00 00 02  00 00 02 5c  28 00 02 40
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
+|   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
+|   59 c7 83 3d  1d 3e 87 02  ce d7 61 79  4b 8d 4b c4
+|   ff 36 93 7c  92 37 83 fc  5f 16 c2 35  0f 66 12 e2
+|   ea 2b 36 dd  d4 8b 0c 3f  c6 f0 0d ac  ba 49 32 cb
+|   e0 62 70 92  3b 70 79 bd  44 e6 29 ce  82 2a d6 3c
+|   5e 73 62 3f  f7 0e 3e f6  90 67 13 19  70 22 b3 e5
+|   da 1b d8 43  aa c4 78 d1  52 37 87 29  cc 15 58 bd
+|   83 57 0c 0c  95 9f a0 ba  f2 81 6b 11  f9 4d 29 4f
+|   76 df 64 86  21 6a ae 93  ff 31 af 1d  6a 4b b1 2e
+|   41 b1 46 99  59 f4 1b ed  e7 65 2f 0d  2b 35 84 62
+|   83 be 60 80  94 78 b1 77  6d dc fb 94  27 75 59 5a
+|   e6 f1 e8 b0  9a 89 f4 b7  0a 23 17 1c  43 91 f0 6c
+|   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
+|   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
+|   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
+|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
+|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
+|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
+|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
+|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
+|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
+|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
+|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
+|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
+|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
+|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
+|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
+|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
+|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
+|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
+|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
+|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
+|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+|   d0 bb 8e ee  2d 29 1c 48  0e 7b d2 18
 | complete v2 state transition with STF_OK
 ./rekeyikev2-I1 transition from state STATE_IKESA_DEL to state STATE_PARENT_I1
 ./rekeyikev2-I1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000002)
@@ -1000,6 +1037,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   39 4b 66 f8  5e 19 f9 eb  15 95 53 79
+./rekeyikev2-I1 leak: reply packet for ikev2_out_C1_tail, item size: X
 ./rekeyikev2-I1 leak: db_v2_trans, item size: X
 ./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
 ./rekeyikev2-I1 leak: db_v2_prop, item size: X
