@@ -1117,7 +1117,6 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     int            ivsize;
     stf_status     ret;
     unsigned char *authstart;
-    struct state *pst = md->pst;
     struct connection *c0 = NULL;
 
     unpack_v2KE(st, r, &st->st_gi);
@@ -1254,9 +1253,11 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     /* keep it for a retransmit if necessary, but on initiator
      * we never do that, but send_packet() uses it.
      */
-    freeanychunk(pst->st_tpacket);
-    clonetochunk(pst->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+    freeanychunk(st->st_tpacket);
+    clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
                  , "reply packet for ikev2_out_C1_tail");
+
+    send_packet(st, __FUNCTION__, TRUE);
 
     /*
      * Delete previous retransmission event.
