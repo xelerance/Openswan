@@ -9,11 +9,13 @@ void rekeyit()
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     fprintf(stderr, "now pretend that the keylife timer is up, and rekey the connection\n");
-
     show_states_status();
 
     timer_list();
     st = state_with_serialno(2);
+
+    /* capture the rekey message */
+    send_packet_setup_pcap("OUTPUT/rekeyikev2-I1.pcap");
 
     if(st) {
         DBG(DBG_LIFECYCLE
@@ -32,6 +34,8 @@ void rekeyit()
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
 
     run_continuation(crypto_req);
+
+    send_packet_close();
 }
 
 #include "../lp13-parentI3/parentI3_main.c"
