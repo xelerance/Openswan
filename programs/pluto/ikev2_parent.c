@@ -311,7 +311,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
  * unpack the calculate KE value, store it in state.
  * used by IKEv2: parent, child (PFS)
  */
-static int
+int
 unpack_v2KE(struct state *st
             , struct pluto_crypto_req *r
             , chunk_t *g)
@@ -326,7 +326,7 @@ unpack_v2KE(struct state *st
  * package up the calculate KE value, and emit it as a KE payload.
  * used by IKEv2: parent, child (PFS)
  */
-static bool
+bool
 justship_v2KE(struct state *st UNUSED
               , chunk_t *g, unsigned int oakley_group
               , pb_stream *outs, u_int8_t np)
@@ -1065,8 +1065,8 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(GLOBALS_ARE_RESET());
 }
 
-static void ikev2_padup_pre_encrypt(struct msg_digest *md
-                                    , pb_stream *e_pbs_cipher)
+void ikev2_padup_pre_encrypt(struct msg_digest *md
+                             , pb_stream *e_pbs_cipher)
 {
     struct state *st = md->st;
     struct state *pst= st;
@@ -1090,8 +1090,8 @@ static void ikev2_padup_pre_encrypt(struct msg_digest *md
     }
 }
 
-static unsigned char *ikev2_authloc(struct msg_digest *md
-                                    , pb_stream *e_pbs)
+unsigned char *ikev2_authloc(struct msg_digest *md
+                             , pb_stream *e_pbs)
 {
     unsigned char *b12;
     struct state *st = md->st;
@@ -1111,7 +1111,7 @@ static unsigned char *ikev2_authloc(struct msg_digest *md
     return b12;
 }
 
-static stf_status ikev2_encrypt_msg(struct msg_digest *md,
+stf_status ikev2_encrypt_msg(struct msg_digest *md,
                                     enum phase1_role init,
                                     unsigned char *authstart,
                                     unsigned char *iv,

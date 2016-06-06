@@ -199,6 +199,7 @@ struct state
 {
     so_serial_t        st_serialno;          /* serial number (for seniority)*/
     so_serial_t        st_clonedfrom;        /* serial number of parent */
+    so_serial_t        st_replaced;          /* what state are we rekey for? */
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
