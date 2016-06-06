@@ -1,4 +1,4 @@
-TESTNAME=rekeyikev2
+TESTNAME=rekeyikev2-I1
 CONNNAME=parker1--jj2
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} ../lp10-parentI2/parentR1.pcap ../lp13-parentI3/parentR2.pcap
