@@ -225,6 +225,25 @@ extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 				    u_int8_t protoid, chunk_t *spi,
 					u_int16_t type, chunk_t *n_data, pb_stream *rbody);
 
+extern bool justship_v2KE(struct state *st UNUSED
+                          , chunk_t *g, unsigned int oakley_group
+                          , pb_stream *outs, u_int8_t np);
+
+extern void ikev2_padup_pre_encrypt(struct msg_digest *md
+                                    , pb_stream *e_pbs_cipher);
+
+extern unsigned char *ikev2_authloc(struct msg_digest *md
+                                    , pb_stream *e_pbs);
+
+extern stf_status ikev2_encrypt_msg(struct msg_digest *md,
+                                    enum phase1_role init,
+                                    unsigned char *authstart,
+                                    unsigned char *iv,
+                                    unsigned char *encstart,
+                                    unsigned char *authloc,
+                                    pb_stream *e_pbs UNUSED,
+                                    pb_stream *e_pbs_cipher);
+
 extern bool force_busy;  /* config option to emulate responder under DOS */
 
 /* allocate a transmit slot */

@@ -10,6 +10,8 @@ void rekeyit()
 
     fprintf(stderr, "now pretend that the keylife timer is up, and rekey the connection\n");
 
+    show_states_status();
+
     timer_list();
     st = state_with_serialno(2);
 
@@ -21,6 +23,13 @@ void rekeyit()
     } else {
         fprintf(stderr, "no state #2 found\n");
     }
+
+    passert(kn->oakley_group == tc14_oakleygroup);
+
+    /* now fill in the KE values from a constant.. not calculated */
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);  /* maybe change nonce for rekey? */
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
 
     run_continuation(crypto_req);
 }

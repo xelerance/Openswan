@@ -60,6 +60,7 @@
 #include "pluto/server.h"
 #include "vendor.h"
 #include "dpd.h"
+#include "rnd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 #include "kernel.h"
@@ -1000,7 +1001,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
                             , struct connection *c
                             , lset_t policy UNUSED
                             , unsigned long try /* how many attempts so far */ UNUSED
-                            , so_serial_t replacing  UNUSED
+                            , so_serial_t replacing
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
                             )
 {
@@ -1022,7 +1023,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
     /* XXX -- this needs a new child state value */
     //change_state(st, STATE_PARENT_I2);
 
-    // XXX do something with replacing!
+    // record which state we are aiming to replace.
+    st->st_replaced = replacing;
 
     /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
     {
@@ -1034,6 +1036,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
         ke->md->from_state = STATE_CHILD_C1_REKEY;
         ke->md->svm = &ikev2_parent_firststate_microcode;
         ke->md->st  = st;
+        ke->md->pst = parentst;
         set_suspended(st, ke->md);
 
         if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
@@ -1055,88 +1058,18 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
     }
 }
 
-
-#if 0
-    /* beginning of data going out */
-    authstart = reply_stream.cur;
-
-    /* make sure HDR is at start of a clean buffer */
-    zero(reply_buffer);
-    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
-
-
-    /*
-     * the responder sent us back KE, Gr, Nr, and it's our time to calculate
-     * the shared key values.
-     */
-
-    DBG(DBG_CONTROLMORE
-        , DBG_log("ikev2 parent inR1: calculating g^{xy} in order to send I2"));
-
-    /* KE in */
-    keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
-    RETURN_STF_FAILURE(accept_KE(&st->st_gr, "Gr", st->st_oakley.group, keyex_pbs));
-
-    /* Ni in */
-    RETURN_STF_FAILURE(accept_v2_nonce(md, &st->st_nr, "Ni"));
-
-    if(md->chain[ISAKMP_NEXT_v2SA] == NULL) {
-        openswan_log("No responder SA proposal found");
-        return PAYLOAD_MALFORMED;
-    }
-
-    /* process and confirm the SA selected */
-    {
-        struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-        v2_notification_t rn;
-
-        /* SA body in and out */
-        rn = ikev2_parse_parent_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa,
-                                        NULL, st, FALSE);
-
-        if (rn != v2N_NOTHING_WRONG)
-            return STF_FAIL + rn;
-    }
-
-    /* update state */
-    ikev2_update_counters(md);
-
-    /* now. we need to go calculate the g^xy */
-    {
-        struct dh_continuation *dh = alloc_thing(struct dh_continuation
-                                                 , "ikev2_inR1outI2 KE");
-        stf_status e;
-
-        dh->md = md;
-        set_suspended(st, dh->md);
-
-        pcrc_init(&dh->dh_pcrc);
-        dh->dh_pcrc.pcrc_func = ikev2_parent_inR1outI2_continue;
-        e = start_dh_v2(&dh->dh_pcrc, st, st->st_import, INITIATOR, st->st_oakley.groupnum);
-        if(e != STF_SUSPEND && e != STF_INLINE) {
-            loglog(RC_CRYPTOFAILED, "system too busy");
-            delete_state(st);
-        }
-
-        reset_globals();
-
-        return e;
-    }
-#endif
-
 static void
-ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc UNUSED
-                                , struct pluto_crypto_req *r   UNUSED
-                                , err_t ugh UNUSED)
+ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc
+                                , struct pluto_crypto_req *r
+                                , err_t ugh)
 {
-#if 0
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *const st = md->st;
     stf_status e;
 
     DBG(DBG_CONTROLMORE
-        , DBG_log("ikev2 parent inR1outI2: calculating g^{xy}, sending I2"));
+        , DBG_log("ikev2 child outC1: calculating g^{xy}, sending C1"));
 
     if (st == NULL) {
         loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
@@ -1158,74 +1091,37 @@ ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc UNUSED
 
     st->st_calculating = FALSE;
 
-    e = ikev2_parent_inR1outI2_tail(pcrc, r);
+    e = ikev2child_outC1_tail(pcrc, r);
 
     if(dh->md != NULL) {
         complete_v2_state_transition(&dh->md, e);
         if(dh->md) release_md(dh->md);
     }
-#endif
     reset_globals();
 
     passert(GLOBALS_ARE_RESET());
 }
 
 static stf_status
-ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
-                      , struct pluto_crypto_req *r       UNUSED)
+ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
+                      , struct pluto_crypto_req *r       )
 {
-#if 0
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *st      = md->st;
-    struct connection *c  = st->st_connection;
+    struct state *o_st     = NULL;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
     unsigned char *iv;
     int            ivsize;
     stf_status     ret;
-    unsigned char *idhash;
     unsigned char *authstart;
-    struct state *pst = st;
-    msgid_t        mid = INVALID_MSGID;
-    bool send_cert = FALSE;
+    struct state *pst = md->pst;
+    struct connection *c0 = NULL;
 
-    finish_dh_v2(st, r);
-
-    if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
-        ikev2_log_parentSA(st);
-    }
-
-    pst = st;
-    ret = allocate_msgid_from_parent(pst, &mid);
-    if(ret != STF_OK) {
-        /*
-         * XXX: need to return here, having enqueued our pluto_crypto_req_cont
-         * onto a structure on the parent for processing when there is message
-         * ID available.
-         */
-        return ret;
-    }
-
-    /* okay, got a transmit slot, make a child state to send this. */
-    st = duplicate_state(pst);
-
-    st->st_msgid = mid;
-    insert_state(st);
-    md->st = st;
-    md->pst= pst;
-
-    /* parent had crypto failed, replace it with rekey! */
-    delete_event(pst);
-    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
-
-    /* need to force parent state to I2 */
-    change_state(pst, STATE_PARENT_I2);
-
-    /* record first packet for later checking of signature */
-    clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
-                 , pbs_offset(&md->message_pbs), "saved first received packet");
+    unpack_v2KE(st, r, &st->st_gi);
+    unpack_nonce(&st->st_ni, r);
 
     /* beginning of data going out */
     authstart = reply_stream.cur;
@@ -1238,25 +1134,20 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
     {
         struct isakmp_hdr r_hdr = md->hdr;
 
-        /* should be set to version received */
-        // r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+        r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np    = ISAKMP_NEXT_v2E;
-        r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
-        r_hdr.isa_flags = ISAKMP_FLAGS_I;
+        r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
+        r_hdr.isa_flags = ISAKMP_FLAGS_I|ISAKMP_FLAGS_E;
         r_hdr.isa_msgid = htonl(st->st_msgid);
-        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE); /* XXX */
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             return STF_INTERNAL_ERROR;
     }
 
     /* insert an Encryption payload header */
-    e.isag_np = ISAKMP_NEXT_v2IDi;
+    e.isag_np = ISAKMP_NEXT_v2Ni;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-        openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-        e.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-    }
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
         return STF_INTERNAL_ERROR;
@@ -1277,84 +1168,35 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
     e_pbs_cipher.cur = e_pbs.cur;
     encstart = e_pbs_cipher.cur;
 
-    /* send out the IDi payload */
+    /* send KE */
+    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
+        return STF_INTERNAL_ERROR;
+
+    /* send NONCE */
     {
-        struct ikev2_id r_id;
-        pb_stream r_id_pbs;
-        chunk_t         id_b;
-        struct hmac_ctx id_ctx;
-        unsigned char *id_start;
-        unsigned int   id_len;
+        struct ikev2_generic in;
+        pb_stream pb;
 
-        hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
-        build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
-        r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-            r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-        }
+        memset(&in, 0, sizeof(in));
+        in.isag_np = ISAKMP_NEXT_v2SA;
+        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
-        {  /* decide to send CERT payload */
-            send_cert = doi_send_ikev2_cert_thinking(st);
-
-            if(send_cert)
-                r_id.isai_np = ISAKMP_NEXT_v2CERT;
-            else
-                r_id.isai_np = ISAKMP_NEXT_v2AUTH;
-        }
-
-        id_start = e_pbs_cipher.cur;
-        if (!out_struct(&r_id
-                        , &ikev2_id_desc
-                        , &e_pbs_cipher
-                        , &r_id_pbs)
-            || !out_chunk(id_b, &r_id_pbs, "my identity"))
+        if(!out_struct(&in, &ikev2_nonce_desc, &e_pbs_cipher, &pb) ||
+           !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
             return STF_INTERNAL_ERROR;
-
-        /* HASH of ID is not done over common header */
-        id_start += 4;
-
-        close_output_pbs(&r_id_pbs);
-
-        /* calculate hash of IDi for AUTH below */
-        id_len = e_pbs_cipher.cur - id_start;
-        DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", pst->st_skey_pi));
-        DBG(DBG_CRYPT, DBG_dump("idhash calc I2", id_start, id_len));
-        hmac_update(&id_ctx, id_start, id_len);
-        idhash = alloca(pst->st_oakley.prf_hasher->hash_digest_len);
-        hmac_final(idhash, &id_ctx);
+        close_output_pbs(&pb);
     }
 
-    /* send [CERT,] payload RFC 4306 3.6, 1.2) */
-    {
-
-        if(send_cert) {
-            stf_status certstat = ikev2_send_cert( st, md
-                                                       , INITIATOR
-                                                   , ISAKMP_NEXT_v2AUTH
-                                                   , &e_pbs_cipher);
-            if(certstat != STF_OK) return certstat;
-        }
-    }
-
-    /* send out the AUTH payload */
-    {
-        lset_t policy;
-        struct connection *c0= first_pending(pst, &policy,&st->st_whack_sock);
-        unsigned int np = (c0 ? ISAKMP_NEXT_v2SA : ISAKMP_NEXT_NONE);
-        DBG(DBG_CONTROL,DBG_log(" payload after AUTH will be %s", (c0) ? "ISAKMP_NEXT_v2SA" : "ISAKMP_NEXT_NONE/NOTIFY"));
-
-        stf_status authstat = ikev2_send_auth(c, st
-                                              , INITIATOR
-                                              , np
-                                              , idhash, &e_pbs_cipher);
-        if(authstat != STF_OK) return authstat;
-
-        /*
-         * now, find an eligible child SA from the pending list, and emit
-         * SA2i, TSi and TSr and (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
-         */
+    /*
+     * now, find an eligible child SA from the pending list, and emit
+     * SA2(i), TSi and TSr and
+     *    (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
+     */
+    o_st = state_with_serialno(st->st_replaced);
+    if(o_st) {
+        c0 = st->st_connection;
         if(c0) {
+            lset_t policy = c0->policy;
             chunk_t child_spi, notify_data;
             unsigned int next_payload = ISAKMP_NEXT_NONE;
             st->st_connection = c0;
@@ -1406,16 +1248,15 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
         if(ret != STF_OK) return ret;
     }
 
-
     /* let TCL hack it before we mark the length. */
-    TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+    TCLCALLOUT("v2_rekeyChild", st, st->st_connection, md);
 
     /* keep it for a retransmit if necessary, but on initiator
      * we never do that, but send_packet() uses it.
      */
     freeanychunk(pst->st_tpacket);
     clonetochunk(pst->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
-                 , "reply packet for ikev2_parent_outI1");
+                 , "reply packet for ikev2_out_C1_tail");
 
     /*
      * Delete previous retransmission event.
@@ -1424,8 +1265,6 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc UNUSED
     event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
 
     return STF_OK;
-#endif
-    return STF_FAIL;
 }
 
 
