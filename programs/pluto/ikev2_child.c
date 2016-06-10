@@ -1270,6 +1270,208 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
 
 
 /*
+ * RESPOND to CHILD SA REKEY.
+ *   There are two ways to respond: one routine has the KE in the packet
+ *   (valid with or without POLICY_PFS).
+ *   The other has no KE in the packet (valid only when !POLICY_PFS).
+ *
+ *     It is not an error to not-require PFS, and yet have an exponent:
+ *      the initiator may have simply decided that there was no further entropy in g^xy
+ *      (CHECK RFC7296 on this)
+ *
+ */
+
+/* after calculating g^y */
+static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh);
+
+/* after calculating g^xy */
+static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh);
+
+/* process the packet and send reply */
+static stf_status
+ikev2child_inCI1_tail(struct msg_digest *md, struct state *st);
+
+
+stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
+{
+    struct state *parentst = md->st;   /* this is parent state! */
+    struct state *st;
+
+    st = duplicate_state(parentst);
+    st->st_msgid = md->msgid_received;
+    insert_state(st);
+
+    /* create a new parent event to rekey again */
+    event_schedule(EVENT_SO_DISCARD, 0, st);
+
+    /* now. we need to go calculate our g^y, then calculate the g^xy */
+    {
+        struct ke_continuation *ke = alloc_thing(struct ke_continuation
+                                                 , "ikev2child_inCI1 KE");
+        stf_status e;
+
+        ke->md = md;
+        set_suspended(st, ke->md);
+
+        pcrc_init(&ke->ke_pcrc);
+        ke->ke_pcrc.pcrc_func = ikev2child_inCI1_continue1;
+        e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_known_crypto);
+        if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO)) {
+            loglog(RC_CRYPTOFAILED, "system too busy");
+            delete_state(st);
+        }
+        reset_globals();
+        return e;
+    }
+}
+
+
+stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
+{
+    struct state *parentst = md->st;   /* this is parent state! */
+    struct state *st;
+
+    st = duplicate_state(parentst);
+    st->st_msgid = md->msgid_received;
+    insert_state(st);
+
+    /* create a new parent event to rekey again */
+    event_schedule(EVENT_SO_DISCARD, 0, st);
+
+    return ikev2child_inCI1_tail(md, st);
+}
+
+/*
+ * this function is called after g^y is calculated, in order to
+ * start the calculation of g^xy
+ */
+static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh)
+{
+    /* first, gather up the crypto that just finished */
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child inCI1: calculated ke+nonce, calculating g^xy"));
+
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (ke->md)
+            release_md(ke->md);
+        return;
+    }
+
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == ke->md);
+    set_suspended(st,NULL);        /* no longer connected or suspended */
+    set_cur_state(st);
+
+    st->st_calculating = FALSE;
+
+    /* collect data out of pcrc */
+    /* collect new NONCE */
+    unpack_nonce(&st->st_nr, r);
+    unpack_v2KE(st, r, &st->st_gr);
+
+    /* Gi in */
+    e = accept_v2_KE(md, st, &st->st_gi, "Gi");
+    if(e) {
+        loglog(RC_LOG_SERIOUS, "no valid KE payload found");
+        delete_state(st);
+    }
+
+    /* Ni in */
+    e = accept_v2_nonce(md, &st->st_ni, "Ni");
+    if(e) {
+        loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
+        delete_state(st);
+    }
+
+    /* now. we need to go calculate the g^xy */
+    {
+        struct dh_continuation *dh = alloc_thing(struct dh_continuation
+                                                 , "ikev2_inI2outR2 KE");
+        dh->md = md;
+        set_suspended(st, dh->md);
+
+        pcrc_init(&dh->dh_pcrc);
+        dh->dh_pcrc.pcrc_func = ikev2child_inCI1_continue2;
+
+        e = start_dh_v2(&dh->dh_pcrc, st, pcim_known_crypto, RESPONDER, st->st_oakley.groupnum);
+        if(e != STF_SUSPEND && e != STF_INLINE) {
+            loglog(RC_CRYPTOFAILED, "system too busy");
+            delete_state(st);
+        }
+
+        reset_globals();
+        return;
+    }
+}
+
+/*
+ * this function is called after g^xy is calculated, and just collects
+ * the results, and calls inC1_tail.
+ */
+static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child inCI1: calculated g^{xy}, sending R2"));
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (dh->md)
+            release_md(dh->md);
+        return;
+    }
+
+    set_suspended(st,NULL);        /* no longer connected or suspended */
+    set_cur_state(st);
+    st->st_calculating = FALSE;
+    passert(ugh == NULL);
+
+    /* extract calculated values from r */
+    finish_dh_v2(st, r);
+
+    e = ikev2child_inCI1_tail(md, st);
+
+    if(dh->md != NULL) {
+        complete_v2_state_transition(&dh->md, e);
+        if(dh->md) release_md(dh->md);
+    }
+    reset_globals();
+
+    passert(GLOBALS_ARE_RESET());
+}
+
+stf_status
+ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED)
+{
+    /* do something here with new st_shared if we have it */
+    return STF_FAIL;
+}
+
+
+/*
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto
