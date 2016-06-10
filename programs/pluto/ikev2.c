@@ -726,7 +726,7 @@ process_v2_packet(struct msg_digest **mdp)
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
-	DBG(DBG_CONTROL, DBG_log("did not found valid state; ended up with STATE_IKEv2_ROOF"));
+	DBG(DBG_CONTROL, DBG_log("did not found valid state; giving up"));
 
 	/* no useful state */
 	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
