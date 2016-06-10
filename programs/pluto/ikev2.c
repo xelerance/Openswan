@@ -201,6 +201,42 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    { .svm_name   = "rekey-child-SA-init",
+      .state      = STATE_CHILD_C1_REKEY,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr),
+      .opt_enc_payloads = 0,
+      //.processor  = ikev2child_inCR1,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_SA_REPLACE,
+    },
+
+    { .svm_name   = "rekey-child-SA-responder-with-PFS",
+      .state      = STATE_PARENT_R2,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE),
+      .opt_enc_payloads = 0,
+      .processor  = ikev2child_inCI1_pfs,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_NULL
+    },
+
+    { .svm_name   = "rekey-child-SA-responder-without-pfs",
+      .state      = STATE_PARENT_R2,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr),
+      .opt_enc_payloads = 0,
+      .processor  = ikev2child_inCI1_nopfs,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_NULL
+    },
+
     /* Informational Exchange*/
     { .svm_name   = "initiator-insecure-informational",
       .state      = STATE_PARENT_I2,
