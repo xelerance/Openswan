@@ -535,23 +535,37 @@ process_v2_packet(struct msg_digest **mdp)
 
 	DBG(DBG_CONTROL, DBG_log("I am IKE SA Responder"));
 
-	st = find_state_ikev2_parent(md->hdr.isa_icookie
-				     , md->hdr.isa_rcookie);
+        st = find_state_ikev2_child(md->hdr.isa_icookie
+                                    , md->hdr.isa_rcookie
+                                    , md->msgid_received);
 
-	if(st == NULL) {
+	if(st == NULL && md->msgid_received == MAINMODE_MSGID) {
 	    /* first time for this cookie, it's a new state! */
 	    st = find_state_ikev2_parent_init(md->hdr.isa_icookie);
+
+	} else if(st == NULL && md->msgid_received != MAINMODE_MSGID) {
+	    /* first time for this message.  Could be a new child? */
+            /* look up the parent state here */
+            st = find_state_ikev2_parent(md->hdr.isa_icookie
+                                         , md->hdr.isa_rcookie);
 	}
 
-	if(st) {
-	    if(st->st_msgid_lastrecv >  md->msgid_received){
+        pst = st;
+        if(st->st_clonedfrom) {
+            /* find parent state for retransmission counters */
+            pst = state_with_serialno(st->st_clonedfrom);
+        }
+
+	if(pst) {
+	    if(pst->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
 		openswan_log("received too old retransmit: %u < %u"
-			     , md->msgid_received, st->st_msgid_lastrecv);
+			     , md->msgid_received, pst->st_msgid_lastrecv);
 		return;
 	    }
-	    if(st->st_msgid_lastrecv == md->msgid_received){
+	    if(pst->st_msgid_lastrecv == md->msgid_received){
 		/* this is a recent retransmit, resend our reply */
+                /* is it ever the case that *st* is the wrong child? No, looked it up by msgid */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
 		return;
             }
