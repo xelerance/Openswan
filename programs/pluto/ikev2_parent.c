@@ -1611,8 +1611,8 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
  ***************************************************************
  *  - note that in IKEv1, the child states are identified by msgid,
  *  - but in IKEv2, the msgid is just about retransmissions.
- *  - child states are therefore just contains for IPsec SAs, and
- *    so that they can be manipulated, and eventually rekeyed or deleted.
+ *  - child states are therefore just contains IPsec SAs, and
+ *     so that they can be manipulated, and eventually rekeyed or deleted.
  *
  */
 static void ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
