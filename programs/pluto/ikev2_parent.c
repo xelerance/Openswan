@@ -1158,7 +1158,6 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
     return STF_OK;
 }
 
-static
 stf_status ikev2_decrypt_msg(struct msg_digest *md
                              , enum phase1_role init)
 {
@@ -1213,7 +1212,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         }
     }
 
-    DBG(DBG_PARSING, DBG_log("authenticator matched"));
+    DBG(DBG_PARSING, DBG_log("authenticator matched, np=%u", np));
 
     /* decrypt */
     {

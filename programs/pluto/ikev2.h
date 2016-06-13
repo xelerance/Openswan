@@ -255,6 +255,9 @@ extern stf_status ikev2_encrypt_msg(struct msg_digest *md,
                                     unsigned char *authloc,
                                     pb_stream *e_pbs UNUSED,
                                     pb_stream *e_pbs_cipher);
+extern stf_status ikev2_decrypt_msg(struct msg_digest *md
+                                    , enum phase1_role init);
+
 
 extern bool force_busy;  /* config option to emulate responder under DOS */
 
