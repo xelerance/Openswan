@@ -1,8 +1,7 @@
 OUTPUT
 core.*
-h2hR1
 *.o
-parentR1.pcap
+rekeyikev2-R1
 .gdb1init
 .gdb2init
 .gdb3init
