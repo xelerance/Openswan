@@ -551,7 +551,7 @@ process_v2_packet(struct msg_digest **mdp)
 	}
 
         pst = st;
-        if(st->st_clonedfrom) {
+        if(st && st->st_clonedfrom) {
             /* find parent state for retransmission counters */
             pst = state_with_serialno(st->st_clonedfrom);
         }
