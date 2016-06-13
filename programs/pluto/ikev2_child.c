@@ -1304,6 +1304,8 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
     insert_state(st);
+    md->st = st;
+    set_cur_state(st);
 
     /* create a new parent event to rekey again */
     event_schedule(EVENT_SO_DISCARD, 0, st);
@@ -1386,11 +1388,23 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     unpack_nonce(&st->st_nr, r);
     unpack_v2KE(st, r, &st->st_gr);
 
+    /* now decrypt payload and extract values */
+    {
+        stf_status ret;
+        ret = ikev2_decrypt_msg(md, RESPONDER);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to encrypt message");
+            delete_state(st);
+            goto out;
+        }
+    }
+
     /* Gi in */
     e = accept_v2_KE(md, st, &st->st_gi, "Gi");
     if(e) {
         loglog(RC_LOG_SERIOUS, "no valid KE payload found");
         delete_state(st);
+        goto out;
     }
 
     /* Ni in */
@@ -1398,6 +1412,7 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     if(e) {
         loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
         delete_state(st);
+        goto out;
     }
 
     /* now. we need to go calculate the g^xy */
@@ -1415,10 +1430,11 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
             loglog(RC_CRYPTOFAILED, "system too busy");
             delete_state(st);
         }
-
-        reset_globals();
-        return;
     }
+
+ out:
+    reset_globals();
+    return;
 }
 
 /*
