@@ -150,7 +150,9 @@ generate_msgid(struct state *isakmp_sa)
 
 /* state table functions */
 
+#ifndef STATE_TABLE_SIZE
 #define STATE_TABLE_SIZE 32
+#endif
 
 static struct state *statetable[STATE_TABLE_SIZE];
 
