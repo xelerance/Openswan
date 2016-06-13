@@ -1145,7 +1145,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /* insert an Encryption payload header */
-    e.isag_np = ISAKMP_NEXT_v2Ni;
+    e.isag_np = ISAKMP_NEXT_v2KE;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
