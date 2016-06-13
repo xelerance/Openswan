@@ -448,7 +448,7 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
             unsigned int np)
 {
     stf_status stf;
-    lset_t seen;
+    lset_t seen = LEMPTY;
     const struct state_v2_microcode *svm = md->svm;
     stf = ikev2_collect_payloads(md, in_pbs, &seen, np);
 
