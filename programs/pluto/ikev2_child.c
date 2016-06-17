@@ -1360,6 +1360,7 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct state *const st = md->st;
     stf_status e;
+    v2_notification_t rn;
 
     DBG(DBG_CONTROLMORE
         , DBG_log("ikev2 child inCI1: calculated ke+nonce, calculating g^xy"));
@@ -1401,18 +1402,18 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
 
     /* Gi in */
     e = accept_v2_KE(md, st, &st->st_gi, "Gi");
-    if(e) {
+    if(e != STF_OK) {
+        /* feel something shoud be done with e */
         loglog(RC_LOG_SERIOUS, "no valid KE payload found");
-        delete_state(st);
-        goto out;
+        goto returnerr;
     }
 
     /* Ni in */
-    e = accept_v2_nonce(md, &st->st_ni, "Ni");
-    if(e) {
+    rn = accept_v2_nonce(md, &st->st_ni, "Ni");
+    if(rn != v2N_NOTHING_WRONG) {
+	send_v2_notification_from_state(st, st->st_state, rn, NULL);
         loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
-        delete_state(st);
-        goto out;
+        goto returnerr;
     }
 
     /* now. we need to go calculate the g^xy */
@@ -1433,6 +1434,12 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     }
 
  out:
+    reset_globals();
+    return;
+
+ returnerr:
+    /* XXX send an error notification to initiator, from variable e */
+    delete_state(st);
     reset_globals();
     return;
 }
