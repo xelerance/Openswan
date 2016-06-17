@@ -697,10 +697,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                  , struct state *st1
                                   , pb_stream *outpbs)
 {
     struct state      *st = md->st;
-    struct state      *st1= st;
     struct connection *c  = st->st_connection;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
@@ -863,9 +863,11 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN;
         }
 
-        /* we are sure, so lets make a state for this child SA */
-        st1 = duplicate_state(st);
-        insert_state(st1);
+        if(st1 == NULL) {
+            /* we are sure, so lets make a state for this child SA */
+            st1 = duplicate_state(st);
+            insert_state(st1);
+        }
 
         st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
         st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
