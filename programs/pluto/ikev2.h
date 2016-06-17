@@ -213,6 +213,7 @@ extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, unsigned int array_max);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                         , struct state *childst
 					 , pb_stream *outpbs);
 
 extern struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint);
