@@ -1491,8 +1491,106 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 stf_status
 ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED)
 {
-    /* do something here with new st_shared if we have it */
-    return STF_FAIL;
+    unsigned char *authstart;
+
+    authstart = reply_stream.cur;
+    /* send response */
+    {
+        unsigned char *encstart;
+        unsigned char *iv;
+        unsigned int ivsize;
+        struct ikev2_generic e;
+        pb_stream      e_pbs, e_pbs_cipher;
+        stf_status     ret;
+
+        /* make sure HDR is at start of a clean buffer */
+        zero(reply_buffer);
+        init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
+        /* see if there is a child SA being proposed */
+        if(md->chain[ISAKMP_NEXT_v2TSi] == NULL
+           || md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
+
+            /* initiator didn't propose anything. Weird. Try unpending out end. */
+            /* UNPEND XXX */
+            openswan_log("No CHILD SA proposals received.");
+            e.isag_np = ISAKMP_NEXT_NONE;
+        } else {
+            DBG_log("CHILD SA proposals received");
+            e.isag_np = ISAKMP_NEXT_v2TSi;
+        }
+
+        /* HDR out */
+        {
+            struct isakmp_hdr r_hdr = md->hdr;
+
+            /* let the isa_version reply be the same as what the sender had */
+            r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+            r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
+            r_hdr.isa_flags = ISAKMP_FLAGS_R;
+            r_hdr.isa_msgid = htonl(md->msgid_received);
+            memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+            memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+            if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
+                return STF_INTERNAL_ERROR;
+        }
+
+        /* insert an Encryption payload header */
+        e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+        if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+            return STF_INTERNAL_ERROR;
+        }
+
+        /* insert IV */
+        iv     = e_pbs.cur;
+        ivsize = st->st_oakley.encrypter->iv_size;
+        if(!out_zero(ivsize, &e_pbs, "iv")) {
+            return STF_INTERNAL_ERROR;
+        }
+        get_rnd_bytes(iv, ivsize);
+
+        /* note where cleartext starts */
+        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
+        e_pbs_cipher.container = &e_pbs;
+        e_pbs_cipher.desc = NULL;
+        e_pbs_cipher.cur = e_pbs.cur;
+        encstart = e_pbs_cipher.cur;
+
+        if(e.isag_np != ISAKMP_NEXT_NONE) {
+            int v2_notify_num = 0;
+
+            /* must have enough to build an CHILD_SA... go do that! */
+            ret = ikev2_child_sa_respond(md, st, &e_pbs_cipher);
+            if(ret > STF_FAIL) {
+                v2_notify_num = ret - STF_FAIL;
+                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
+            } else if(ret != STF_OK) {
+                DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+            }
+        }
+
+        ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+        close_output_pbs(&e_pbs_cipher);
+
+        {
+            unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+
+            if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
+
+            close_output_pbs(&e_pbs);
+
+            close_output_pbs(&md->rbody);
+            close_output_pbs(&reply_stream);
+
+            ret = ikev2_encrypt_msg(md, RESPONDER,
+                                    authstart,
+                                    iv, encstart, authloc,
+                                    &e_pbs, &e_pbs_cipher);
+            if(ret != STF_OK) return ret;
+        }
+    }
+    return STF_OK;
 }
 
 
