@@ -2,6 +2,9 @@
 
 #define TESTNAME "parentI3"
 
+static void init_loaded(void)
+{   /* nothing */ }
+
 #include "../lp13-parentI3/parentI3_main.c"
 
  /*
