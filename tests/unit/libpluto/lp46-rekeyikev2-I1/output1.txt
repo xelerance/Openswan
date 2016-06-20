@@ -124,17 +124,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
-| **parse ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2SA
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
-|    length: 376
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -154,60 +143,9 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
-| ***parse IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
-|    critical bit: none
-|    length: 48
-| processing payload: ISAKMP_NEXT_v2SA (len=48)
-| ***parse IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
-|    critical bit: none
-|    length: 264
-|    transform type: 14
-| processing payload: ISAKMP_NEXT_v2KE (len=264)
-| ***parse IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
-|    critical bit: none
-|    length: 20
-| processing payload: ISAKMP_NEXT_v2Ni (len=20)
-| ***parse IKEv2 Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    critical bit: none
-|    length: 16
-| processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 | Now lets proceed with state specific processing
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
-| ****parse IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    length: 44
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| *****parse IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -853,45 +791,6 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
 |   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
 |   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
-|   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
-|   59 c7 83 3d  1d 3e 87 02  ce d7 61 79  4b 8d 4b c4
-|   ff 36 93 7c  92 37 83 fc  5f 16 c2 35  0f 66 12 e2
-|   ea 2b 36 dd  d4 8b 0c 3f  c6 f0 0d ac  ba 49 32 cb
-|   e0 62 70 92  3b 70 79 bd  44 e6 29 ce  82 2a d6 3c
-|   5e 73 62 3f  f7 0e 3e f6  90 67 13 19  70 22 b3 e5
-|   da 1b d8 43  aa c4 78 d1  52 37 87 29  cc 15 58 bd
-|   83 57 0c 0c  95 9f a0 ba  f2 81 6b 11  f9 4d 29 4f
-|   76 df 64 86  21 6a ae 93  ff 31 af 1d  6a 4b b1 2e
-|   41 b1 46 99  59 f4 1b ed  e7 65 2f 0d  2b 35 84 62
-|   83 be 60 80  94 78 b1 77  6d dc fb 94  27 75 59 5a
-|   e6 f1 e8 b0  9a 89 f4 b7  0a 23 17 1c  43 91 f0 6c
-|   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
-|   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
-|   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
-|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
-|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
-|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
-|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
-|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
-|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
-|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
-|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
-|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
-|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
-|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
-|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
-|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
-|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
-|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
-|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
-|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
-|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
-| out calculated auth:
-|   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
 sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
@@ -979,12 +878,6 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
 | data after encryption:
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| out calculated auth:
-|   13 95 e9 47  e3 35 79 4b  7f e1 27 93
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
@@ -1025,12 +918,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-| out calculated auth:
-|   39 4b 66 f8  5e 19 f9 eb  15 95 53 79
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
