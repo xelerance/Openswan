@@ -61,15 +61,6 @@
 
 #include "tpm/tpm.h"
 
-#define SEND_V2_NOTIFICATION_AA(t, d) \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
-    else send_v2_notification_from_md(md, t, d);
-
-
-#define SEND_V2_NOTIFICATION(t)                                            \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
-    else send_v2_notification_from_md(md, t, NULL);
-
 static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
                                         , struct pluto_crypto_req *r
                                         , err_t ugh);

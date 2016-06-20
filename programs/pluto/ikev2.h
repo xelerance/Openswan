@@ -68,6 +68,15 @@ extern stf_status ikev2parent_inR2(struct msg_digest *md);
 extern stf_status ikev2child_inCI1_pfs(struct msg_digest *md);
 extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
 
+#define SEND_V2_NOTIFICATION_AA(t, d) \
+    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
+    else send_v2_notification_from_md(md, t, d);
+
+
+#define SEND_V2_NOTIFICATION(t)                                            \
+    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
+    else send_v2_notification_from_md(md, t, NULL);
+
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
 
 extern v2_notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
