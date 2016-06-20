@@ -1109,7 +1109,7 @@ find_state_ikev2_parent(const u_char *icookie
 
     DBG(DBG_CONTROL,
 	if (st == NULL)
-	    DBG_log("v2 state object not found in hash %u", bucket);
+	    DBG_log("v2 state object not found");
 	else
 	    DBG_log("v2 state object #%lu (%s) found, in %s"
                     , st->st_serialno, st->st_connection->name
