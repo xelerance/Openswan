@@ -96,7 +96,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -339,6 +339,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
+| v2 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
 | v2 peer and cookies match on #1
 | v2 state object #1 (rw-any) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
@@ -455,7 +459,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
 | R2 calculated auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
 | R2  provided  auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   04 64 22 ca  bd 8e 1c 3e  68 57 42 0a  71 2c c0 97
 |   44 e7 d8 17  b2 e9 29 61  7c 54 b5 d8  f0 13 b6 60
