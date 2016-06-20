@@ -754,7 +754,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
-    pb_stream *keyex_pbs;
+    stf_status notok;
     int    numvidtosend=0;
 #ifdef PLUTO_SENDS_VENDORID
     numvidtosend++;  /* we send Openswan VID */
@@ -808,22 +808,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_FAIL + rn;
     }
 
-    {
-        v2_notification_t rn;
-        chunk_t dc;
-        if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
-                    return STF_FAIL;
-        keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
-        /* KE in */
-        rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
-        if(rn != v2N_NOTHING_WRONG) {
-            u_int16_t group_number = htons(st->st_oakley.group->group);
-            dc.ptr = (unsigned char *)&group_number;
-            dc.len = 2;
-            SEND_V2_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
-            delete_state(st);
-            return STF_FAIL + rn;
-        }
+    if((notok = accept_v2_KE(md, st, &st->st_gi, "Gi"))!=STF_OK) {
+        return notok;
     }
 
     /* Ni in */
