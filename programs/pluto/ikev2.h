@@ -65,6 +65,8 @@ extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
+extern stf_status ikev2child_inCI1_pfs(struct msg_digest *md);
+extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
 
