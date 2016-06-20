@@ -167,7 +167,7 @@ RC=2      rw-any
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -411,6 +411,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
+| v2 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
 | v2 peer and cookies match on #1
 | v2 state object #1 (rw-carol) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
@@ -527,7 +531,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
 | R2 calculated auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
 | R2  provided  auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   04 64 22 ca  bd 8e 1c 3e  68 57 42 0a  71 2c c0 97
 |   44 e7 d8 17  b2 e9 29 61  7c 54 b5 d8  f0 13 b6 60
@@ -1666,7 +1670,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -1918,6 +1922,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  5d 73 ce 75  3d b1 db 6d
 | state hash entry 15
+| v2 state object not found
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
+| state hash entry 15
 | v2 peer and cookies match on #3
 | v2 state object #3 (rw-any) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
@@ -2041,7 +2049,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   1a 20 0d 4a  ca 7b 68 25  cb 16 12 06  8d 77 01 c5
 | R2 calculated auth:  09 9d 66 67  fa a3 5a 21  d3 b2 2c 18
 | R2  provided  auth:  09 9d 66 67  fa a3 5a 21  d3 b2 2c 18
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   a2 92 6c 8a  71 fd 52 2b  0b 8c b5 31  dd 5d 4f ca
 |   6c 38 bf 35  76 e5 c8 ad  8d f0 02 20  a8 45 73 80
