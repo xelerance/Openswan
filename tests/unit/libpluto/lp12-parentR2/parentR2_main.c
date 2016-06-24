@@ -116,12 +116,12 @@ int main(int argc, char *argv[])
             /* omit the R1 reply */
             send_packet_setup_pcap("/dev/null");
         } else {
-            printf("%u: output to %s\n", i, pcap_out);
+            fprintf(stderr, "%u: output to %s\n", i, pcap_out);
             send_packet_setup_pcap(pcap_out);
         }
 
         /* setup to process the n'th packet */
-        printf("%u: input from %s\n", i, pcapin[i]);
+        fprintf(stderr, "%u: input from %s\n", i, pcapin[i]);
         recv_pcap_setup(pcapin[i]);
 
         /* process first I1 packet */
