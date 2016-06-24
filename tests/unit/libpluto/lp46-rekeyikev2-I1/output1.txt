@@ -99,6 +99,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   6e 69 74 30
 ./rekeyikev2-I1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./rekeyikev2-I1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+0: input from ../lp10-parentI2/parentR1.pcap
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
@@ -441,6 +442,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
 |   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
+1: output to /dev/null
+1: input from ../lp13-parentI3/parentR2.pcap
 | *received 444 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
@@ -490,7 +493,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
 |   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
-|  check narrowing - we are responding to I2
+|  checking narrowing - responding to R2
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
@@ -831,14 +834,14 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 |   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
 |   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
 | complete v2 state transition with STF_OK
-./rekeyikev2-I1 transition from state STATE_IKESA_DEL to state STATE_PARENT_I1
-./rekeyikev2-I1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000002)
-RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I1 (sent v2I1, expected v2R1); none in -1s; nodpd; msgid=2; idle; import:admin initiate
+./rekeyikev2-I1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
+./rekeyikev2-I1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000002)
+RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=0; msgid=0; idle; import:admin initiate
 ./rekeyikev2-I1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekeyikev2-I1 deleting state #3 (STATE_PARENT_I1)
+./rekeyikev2-I1 deleting state #3 (STATE_CHILD_C1_REKEY)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf

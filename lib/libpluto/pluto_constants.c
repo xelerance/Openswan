@@ -56,7 +56,7 @@ static const char *const kern_interface_name[] = {
   "mastklips",
   "bsdkame"
 };
-enum_names kern_interface_names = 
+enum_names kern_interface_names =
   { NO_KERNEL, USE_BSDKAME, kern_interface_name, NULL };
 
 /* DPD actions */
@@ -147,6 +147,7 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R2",
 
     "STATE_CHILD_C1_KEYED",
+    "STATE_CHILD_C1_REKEY",
 
         "STATE_IKESA_DEL",
         "STATE_CHILDSA_DEL",
@@ -205,6 +206,7 @@ const char *const state_story[] = {
 	"received v2I2, PARENT SA established", /* STATE_PARENT_R2 */
 
         "CHILD SA established",                 /* STATE_CHILD_C1_KEYED */
+        "CHILD SA being rekeyed",               /* STATE_CHILD_C1_REKEY */
 
         "PARENT SA scheduled for deletion",     /* STATE_IKESA_DEL */
         "CHILD SA scheduled for deletion",      /* STATE_CHILDSA_DEL */
@@ -235,7 +237,7 @@ enum_names pluto_cryptoop_names =
 /* pluto crypto importance: enum crypto_importance in pluto_constants.h */
 static const char *const pluto_cryptoimportance_strings[] = {
 	"import:not set",
-  "import:respond to stranger",	
+  "import:respond to stranger",
   "import:respond to friend",
   "import:ongoing calculation",
   "import:local rekey",
