@@ -1,0 +1,11 @@
+This test case is an IKEv1 initiator that rekeys it's child SA after
+establishing it.
+This is the case where the responder replies with it's R1 packet.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp13-parentI3.
+It uses the CR1 packet producd by lp47.
+
+
+
+
+
