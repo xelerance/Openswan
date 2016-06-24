@@ -829,7 +829,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | considering state entry: 4
 |   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_R1
 | considering state entry: 5
-|   reject: in state: STATE_PARENT_R2, needs STATE_IKESA_DEL
+|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 6
 | Now lets proceed with state specific processing
 | duplicating state object #1

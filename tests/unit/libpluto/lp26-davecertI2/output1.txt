@@ -857,7 +857,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   ef 61 43 7e  20 c8 ff cc  28 2e 1d 57  52 43 96 41
 |   6a 62 0f cc  8a 03 02 70  19 cd 9e e2
 | pass 1: considering PARENT SAs to delete
-./davecertI2 deleting state #1 (STATE_CHILDSA_DEL)
+./davecertI2 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
