@@ -146,6 +146,15 @@ const struct state_v2_microcode ikev2_parent_firststate_microcode =
       .processor  = NULL,
 };
 
+/* microcode to parent first child rekey state: not associated with an input packet */
+const struct state_v2_microcode ikev2_childrekey_microcode =
+    { .svm_name   = "rekey-child",
+      .state      = STATE_UNDEFINED,
+      .next_state = STATE_CHILD_C1_REKEY,
+      .flags =  SMF2_INITIATOR,
+      .processor  = NULL,
+    };
+
 /* microcode for input packet processing */
 static const struct state_v2_microcode v2_state_microcode_table[] = {
     { .svm_name   = "initiator-V2_init",

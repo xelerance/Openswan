@@ -1036,7 +1036,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
         ke->md = alloc_md();
         ke->md->from_state = STATE_CHILD_C1_REKEY;
-        ke->md->svm = &ikev2_parent_firststate_microcode;
+        ke->md->svm = &ikev2_childrekey_microcode;
         ke->md->st  = st;
         ke->md->pst = parentst;
         set_suspended(st, ke->md);

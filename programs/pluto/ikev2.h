@@ -78,6 +78,8 @@ extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
     else send_v2_notification_from_md(md, t, NULL);
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
+extern const struct state_v2_microcode ikev2_childrekey_microcode;
+
 
 extern stf_status accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *name);
 extern v2_notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
