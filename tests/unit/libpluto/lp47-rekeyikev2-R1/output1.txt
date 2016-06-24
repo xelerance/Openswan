@@ -29,6 +29,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+0: input from ../lp12-parentR2/parentI1.pcap
 | *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -227,6 +228,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: input from ../lp12-parentR2/parentI2.pcap
 | *received 556 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
@@ -767,6 +769,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+2: output to OUTPUT/rekeyikev2-R1.pcap
+2: input from rekeyCI1.pcap
 | *received 604 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
@@ -1219,8 +1223,24 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 transition from state STATE_PARENT_R2 to state STATE_CHILD_C1_KEYED
 ./rekeyikev2-R1 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
 ./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000002)
+| sending reply packet to 192.168.1.1:500 (from port 500)
+sending 204 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using #3)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 24 20  00 00 00 02  00 00 00 cc  2c 00 00 b0
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   55 20 4c 5f  f2 01 d4 85  6f b7 4f 62  17 72 1e 50
+|   81 73 82 a5  71 90 3a f3  fb 2c 7e 08  61 ae 45 57
+|   9f ce 4a 83  67 e9 20 b5  ab 9b c7 49  b2 54 29 1b
+|   40 97 42 98  eb 81 fe 13  5c ca 80 85  9c 29 e3 d0
+|   8b 62 36 20  bd 4d eb 40  ea a7 43 42  43 ea 0e 34
+|   91 4c 0d f4  e7 4e b0 f6  fb 7e e6 d1  80 43 b1 31
+|   68 23 85 4c  3f 8e 79 45  3c f8 f6 d2  0a 1e eb cc
+|   3e fc 86 1a  5f aa 16 26  99 f4 19 44  d0 d2 52 f6
+|   e2 1c db fe  5f f8 21 34  52 f2 53 38  5f eb e0 c3
+|   69 ea 73 3b  53 43 62 83  b4 de 45 94
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+./rekeyikev2-R1 leak: reply packet, item size: X
 ./rekeyikev2-R1 leak: skeyseed_t1, item size: X
 ./rekeyikev2-R1 leak: responder keys, item size: X
 ./rekeyikev2-R1 leak: initiator keys, item size: X
@@ -1332,7 +1352,3 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 leak: default conf ipsec_conf_dir, item size: X
 ./rekeyikev2-R1 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from ../lp12-parentR2/parentI1.pcap
-1: input from ../lp12-parentR2/parentI2.pcap
-2: output to OUTPUT/rekeyikev2-R1.pcap
-2: input from rekeyCI1.pcap
