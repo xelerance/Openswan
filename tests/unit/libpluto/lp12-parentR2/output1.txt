@@ -29,6 +29,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+0: input from parentI1.pcap
 | *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -227,6 +228,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: output to OUTPUT/parentR2.pcap
+1: input from parentI2.pcap
 | *received 556 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
@@ -834,6 +837,3 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2 leak: default conf ipsec_conf_dir, item size: X
 ./parentR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from parentI1.pcap
-1: output to OUTPUT/parentR2.pcap
-1: input from parentI2.pcap

@@ -101,6 +101,7 @@ RC=2   IDpair: @moon.strongswan.org/C=CA, ST=ON, L=Ottawa, O=Xelerance Corporati
 RC=2      rw-dave
 RC=2   IDpair: @moon.strongswan.org/              (none)
 RC=2      rw-any
+0: input from parentI1.pcap
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -299,6 +300,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: output to OUTPUT/parentR2.pcap
+1: input from parentI2.pcap
 | *received 1564 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 08  00 00 00 01  00 00 06 1c  23 00 06 00
@@ -1736,6 +1739,3 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: default conf ipsec_conf_dir, item size: X
 ./certreplyR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from parentI1.pcap
-1: output to OUTPUT/parentR2.pcap
-1: input from parentI2.pcap
