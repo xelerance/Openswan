@@ -1638,7 +1638,7 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
         stf_status ret;
         ret = ikev2_decrypt_msg(md, INITIATOR);
         if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to encrypt message");
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
             /* XXX maybe try rekey again? */
             return STF_FAIL;
         }
