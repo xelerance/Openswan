@@ -835,6 +835,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | considering state entry: 5
 |   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 6
+|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
+| considering state entry: 7
 | Now lets proceed with state specific processing
 | duplicating state object #1
 | creating state object #3 at Z
@@ -1268,7 +1270,7 @@ sending 204 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 leak: calculated skey_aishared secret, item size: X
 ./rekeyikev2-R1 leak: calculated skey_dshared secret, item size: X
 ./rekeyikev2-R1 leak: calculated sharedshared secret, item size: X
-./rekeyikev2-R1 leak: ikev2_inI2outR2 KE, item size: X
+./rekeyikev2-R1 leak: ikev2_inCI1 KE, item size: X
 ./rekeyikev2-R1 leak: nonce, item size: X
 ./rekeyikev2-R1 leak: Gi, item size: X
 ./rekeyikev2-R1 leak: long term secret, item size: X
