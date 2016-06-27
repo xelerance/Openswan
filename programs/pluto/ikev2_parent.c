@@ -348,6 +348,27 @@ ship_v2KE(struct state *st
     return justship_v2KE(st, g, oakley_group, outs, np);
 }
 
+bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce, unsigned int np)
+{
+    struct ikev2_generic in;
+    pb_stream pb;
+
+    memset(&in, 0, sizeof(in));
+    in.isag_np = np;
+    in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+        openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+        in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+    }
+
+    if(!out_struct(&in, &ikev2_nonce_desc, outpbs, &pb) ||
+       !out_raw(nonce->ptr, nonce->len, &pb, "IKEv2 nonce"))
+        return FALSE;
+    close_output_pbs(&pb);
+
+    return TRUE;
+}
+
 static stf_status
 ikev2_parent_outI1_tail(struct pluto_crypto_req_cont *pcrc
                         , struct pluto_crypto_req *r)
@@ -451,23 +472,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 
 
     /* send NONCE */
-    {
-        int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-        struct ikev2_generic in;
-        pb_stream pb;
-
-        memset(&in, 0, sizeof(in));
-        in.isag_np = np;
-        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-            in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-        }
-
-        if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
-           !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
-            return STF_INTERNAL_ERROR;
-        close_output_pbs(&pb);
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_ni, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+        return STF_INTERNAL_ERROR;
     }
 
     /* Send Vendor VID if needed */
@@ -821,23 +827,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send NONCE */
     unpack_nonce(&st->st_nr, r);
-    {
-        int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-        struct ikev2_generic in;
-        pb_stream pb;
-
-        memset(&in, 0, sizeof(in));
-        in.isag_np = np;
-        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-            in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-        }
-
-        if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
-           !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
-            return STF_INTERNAL_ERROR;
-        close_output_pbs(&pb);
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_nr, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+        return STF_INTERNAL_ERROR;
     }
 
     /* Send VendrID if needed VID */
