@@ -215,7 +215,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
-      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(N),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Nr),
       .opt_enc_payloads = 0,
       .processor  = ikev2child_inCR1_pfs,
       .recv_type  = ISAKMP_v2_CHILD_SA,
@@ -227,7 +227,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
-      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(N),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
       .opt_enc_payloads = 0,
       .processor  = ikev2child_inCR1_nopfs,
       .recv_type  = ISAKMP_v2_CHILD_SA,
@@ -239,7 +239,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
-      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(N),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Ni),
       .opt_enc_payloads = 0,
       .processor  = ikev2child_inCI1_pfs,
       .recv_type  = ISAKMP_v2_CHILD_SA,
@@ -251,7 +251,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
-      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(N),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
       .opt_enc_payloads = 0,
       .processor  = ikev2child_inCI1_nopfs,
       .recv_type  = ISAKMP_v2_CHILD_SA,
@@ -480,7 +480,7 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     if (svm->req_enc_payloads & ~seen) {
         /* missing payloads in encryption part */
         loglog(RC_LOG_SERIOUS,
-               "missing encrypted payload for v2_state: %s: %s. Message dropped."
+               "missing payloads (within encryption) for v2_state: %s: %s. Message dropped."
                , svm->svm_name
                , bitnamesof(payload_name_ikev2_main
                             , svm->req_enc_payloads & ~seen));
