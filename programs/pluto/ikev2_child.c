@@ -1396,7 +1396,7 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
         stf_status ret;
         ret = ikev2_decrypt_msg(md, RESPONDER);
         if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to encrypt message");
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
             delete_state(st);
             goto out;
         }
