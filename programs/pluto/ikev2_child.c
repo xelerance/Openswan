@@ -1295,7 +1295,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 
 /* process the packet and send reply */
 static stf_status
-ikev2child_inCI1_tail(struct msg_digest *md, struct state *st);
+ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs);
 
 
 stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
@@ -1346,7 +1346,7 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
     /* create a new parent event to rekey again */
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
-    return ikev2child_inCI1_tail(md, st);
+    return ikev2child_inCI1_tail(md, st, FALSE);
 }
 
 /*
@@ -1477,7 +1477,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
     /* extract calculated values from r */
     finish_dh_v2(st, r);
 
-    e = ikev2child_inCI1_tail(md, st);
+    e = ikev2child_inCI1_tail(md, st, TRUE);
 
     if(dh->md != NULL) {
         complete_v2_state_transition(&dh->md, e);
@@ -1489,7 +1489,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 }
 
 stf_status
-ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED)
+ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs UNUSED)
 {
     unsigned char *authstart;
 
