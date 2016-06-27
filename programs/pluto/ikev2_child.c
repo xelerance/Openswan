@@ -1489,7 +1489,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 }
 
 stf_status
-ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs UNUSED)
+ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs)
 {
     unsigned char *authstart;
 
@@ -1517,7 +1517,7 @@ ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, boo
             e.isag_np = ISAKMP_NEXT_NONE;
         } else {
             DBG_log("CHILD SA proposals received");
-            e.isag_np = ISAKMP_NEXT_v2TSi;
+            e.isag_np = ISAKMP_NEXT_v2Nr;
         }
 
         /* HDR out */
@@ -1559,6 +1559,21 @@ ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, boo
 
         if(e.isag_np != ISAKMP_NEXT_NONE) {
             int v2_notify_num = 0;
+
+            /* insert Nonce and KE (if PFS) */
+
+            /* see if we are supposed to send the KE */
+            if(dopfs) {
+                if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2KE)) {
+                    return STF_INTERNAL_ERROR;
+                }
+                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2SA))
+                    return STF_INTERNAL_ERROR;
+            } else {
+                if(!justship_v2Nonce(st, &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2SA)) {
+                    return STF_INTERNAL_ERROR;
+                }
+            }
 
             /* must have enough to build an CHILD_SA... go do that! */
             ret = ikev2_child_sa_respond(md, st, &e_pbs_cipher);
