@@ -49,7 +49,12 @@ void run_one_continuation(struct pluto_crypto_req *r)
 {
   struct pluto_crypto_req_cont *cn = continuation;
   continuation = NULL;
-  (*cn->pcrc_func)(cn, r, NULL);
+
+  if(cn) {
+    (*cn->pcrc_func)(cn, r, NULL);
+  } else {
+    fprintf(stderr, "should have found a continuation, but none was found\n");
+  }
 }
 
 void run_continuation(struct pluto_crypto_req *r)
