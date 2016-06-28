@@ -52,12 +52,15 @@
 #include "log.h"
 #include "demux.h"        /* needs packet.h */
 #include "ikev2.h"
+#include "pluto_crypt.h"
 #include "ipsec_doi.h"        /* needs demux.h and state.h */
+#include "ike_continuations.h"
 #include "timer.h"
 #include "whack.h"        /* requires connections.h */
 #include "pluto/server.h"
 #include "vendor.h"
 #include "dpd.h"
+#include "rnd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 #include "kernel.h"
@@ -694,10 +697,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                  , struct state *st1
                                   , pb_stream *outpbs)
 {
     struct state      *st = md->st;
-    struct state      *st1= st;
     struct connection *c  = st->st_connection;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
@@ -860,9 +863,11 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             return STF_FAIL + v2N_NO_PROPOSAL_CHOSEN;
         }
 
-        /* we are sure, so lets make a state for this child SA */
-        st1 = duplicate_state(st);
-        insert_state(st1);
+        if(st1 == NULL) {
+            /* we are sure, so lets make a state for this child SA */
+            st1 = duplicate_state(st);
+            insert_state(st1);
+        }
 
         st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
         st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
@@ -955,6 +960,1031 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
     return STF_OK;
 }
+
+
+/*
+ * IKEv2 - CHILD rekey IPsec SA
+ */
+stf_status
+ipsec_outI1(int whack_sock
+	    , struct state *isakmp_sa
+	    , struct connection *c
+	    , lset_t policy
+	    , unsigned long try
+	    , so_serial_t replacing
+	    , struct xfrm_user_sec_ctx_ike * uctx UNUSED
+	    )
+{
+    if(!isakmp_sa->st_ikev2 && (policy&POLICY_IKEV1_DISABLE)==0) {
+#ifdef IKEV1
+        return quick_outI1(whack_sock
+                           , isakmp_sa
+                           , c,policy,try,replacing,uctx);
+#else
+        return STF_FAIL;
+#endif
+    }
+
+    return ikev2child_outC1(whack_sock, isakmp_sa, c, policy, try, replacing, uctx);
+}
+
+static void
+ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc
+                            , struct pluto_crypto_req *r
+                            , err_t ugh);
+
+static stf_status
+ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
+                            , struct pluto_crypto_req *r);
+
+
+stf_status ikev2child_outC1(int whack_sock UNUSED
+                            , struct state *parentst
+                            , struct connection *c
+                            , lset_t policy UNUSED
+                            , unsigned long try /* how many attempts so far */ UNUSED
+                            , so_serial_t replacing
+                            , struct xfrm_user_sec_ctx_ike * uctx UNUSED
+                            )
+{
+    struct state *st;
+    stf_status ret = STF_FAIL;
+
+    /* okay, got a transmit slot, make a child state to send this. */
+    st = duplicate_state(parentst);
+    ret = allocate_msgid_from_parent(parentst, &st->st_msgid);
+
+    if(ret != STF_OK) return ret;
+
+    insert_state(st);
+
+    /* create a new parent event to rekey again */
+    delete_event(parentst);
+    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, parentst);
+
+    /* XXX -- this needs a new child state value */
+    //change_state(st, STATE_PARENT_I2);
+
+    // record which state we are aiming to replace.
+    st->st_replaced = replacing;
+
+    /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
+    {
+        struct ke_continuation *ke = alloc_thing(struct ke_continuation
+                                                 , "ikev2child_outC1 KE");
+        stf_status e;
+
+        ke->md = alloc_md();
+        ke->md->from_state = STATE_CHILD_C1_REKEY;
+        ke->md->svm = &ikev2_childrekey_microcode;
+        ke->md->st  = st;
+        ke->md->pst = parentst;
+        set_suspended(st, ke->md);
+
+        if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
+            pcrc_init(&ke->ke_pcrc);
+            ke->ke_pcrc.pcrc_func = ikev2child_outC1_continue;
+            e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_stranger_crypto);
+            if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO)) {
+                loglog(RC_CRYPTOFAILED, "system too busy");
+                delete_state(st);
+            }
+        } else {
+            /* this case is that st_sec already is initialized */
+            e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
+        }
+
+        reset_globals();
+
+        return e;
+    }
+}
+
+static void
+ikev2child_outC1_continue(struct pluto_crypto_req_cont *pcrc
+                                , struct pluto_crypto_req *r
+                                , err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child outC1: calculating g^{xy}, sending C1"));
+
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (dh->md)
+            release_md(dh->md);
+        return;
+    }
+
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == dh->md);
+    set_suspended(st,NULL);        /* no longer connected or suspended */
+
+    set_cur_state(st);
+
+    st->st_calculating = FALSE;
+
+    e = ikev2child_outC1_tail(pcrc, r);
+
+    if(dh->md != NULL) {
+        complete_v2_state_transition(&dh->md, e);
+        if(dh->md) release_md(dh->md);
+    }
+    reset_globals();
+
+    passert(GLOBALS_ARE_RESET());
+}
+
+static stf_status
+ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
+                      , struct pluto_crypto_req *r       )
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *st      = md->st;
+    struct state *o_st     = NULL;
+    struct ikev2_generic e;
+    unsigned char *encstart;
+    pb_stream      e_pbs, e_pbs_cipher;
+    unsigned char *iv;
+    int            ivsize;
+    stf_status     ret;
+    unsigned char *authstart;
+    struct connection *c0 = NULL;
+
+    unpack_v2KE(st, r, &st->st_gi);
+    unpack_nonce(&st->st_ni, r);
+
+    /* beginning of data going out */
+    authstart = reply_stream.cur;
+
+    /* make sure HDR is at start of a clean buffer */
+    zero(reply_buffer);
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
+    /* HDR out */
+    {
+        struct isakmp_hdr r_hdr = md->hdr;
+
+        r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+        r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+        r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
+        r_hdr.isa_flags = ISAKMP_FLAGS_I|ISAKMP_FLAGS_E;
+        r_hdr.isa_msgid = htonl(st->st_msgid);
+        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE); /* XXX */
+        memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+        if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
+            return STF_INTERNAL_ERROR;
+    }
+
+    /* insert an Encryption payload header */
+    e.isag_np = ISAKMP_NEXT_v2KE;
+    e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+    if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+        return STF_INTERNAL_ERROR;
+    }
+
+    /* insert IV */
+    iv     = e_pbs.cur;
+    ivsize = st->st_oakley.encrypter->iv_size;
+    if(!out_zero(ivsize, &e_pbs, "iv")) {
+        return STF_INTERNAL_ERROR;
+    }
+    get_rnd_bytes(iv, ivsize);
+
+    /* note where cleartext starts */
+    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
+    e_pbs_cipher.container = &e_pbs;
+    e_pbs_cipher.desc = NULL;
+    e_pbs_cipher.cur = e_pbs.cur;
+    encstart = e_pbs_cipher.cur;
+
+    /* send KE */
+    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
+        return STF_INTERNAL_ERROR;
+
+    /* send NONCE */
+    {
+        struct ikev2_generic in;
+        pb_stream pb;
+
+        memset(&in, 0, sizeof(in));
+        in.isag_np = ISAKMP_NEXT_v2SA;
+        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+        if(!out_struct(&in, &ikev2_nonce_desc, &e_pbs_cipher, &pb) ||
+           !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
+            return STF_INTERNAL_ERROR;
+        close_output_pbs(&pb);
+    }
+
+    /*
+     * now, find an eligible child SA from the pending list, and emit
+     * SA2(i), TSi and TSr and
+     *    (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
+     */
+    o_st = state_with_serialno(st->st_replaced);
+    if(o_st) {
+        c0 = st->st_connection;
+        if(c0) {
+            lset_t policy = c0->policy;
+            chunk_t child_spi, notify_data;
+            unsigned int next_payload = ISAKMP_NEXT_NONE;
+            st->st_connection = c0;
+
+            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+                next_payload = ISAKMP_NEXT_v2N;
+            }
+
+	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
+
+	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
+	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
+
+	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
+
+            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+                DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
+                memset(&child_spi, 0, sizeof(child_spi));
+                memset(&notify_data, 0, sizeof(notify_data));
+                ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
+                          &child_spi,
+                          v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
+            }
+        } else {
+            openswan_log("no pending SAs found, PARENT SA keyed only");
+        }
+    }
+
+    /*
+     * need to extend the packet so that we will know how big it is
+     * since the length is under the integrity check
+     */
+    ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+    close_output_pbs(&e_pbs_cipher);
+
+    {
+        unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+
+        if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
+
+        close_output_pbs(&e_pbs);
+        close_output_pbs(&md->rbody);
+        close_output_pbs(&reply_stream);
+
+        ret = ikev2_encrypt_msg(md, INITIATOR,
+                                authstart,
+                                iv, encstart, authloc,
+                                &e_pbs, &e_pbs_cipher);
+        if(ret != STF_OK) return ret;
+    }
+
+    /* let TCL hack it before we mark the length. */
+    TCLCALLOUT("v2_rekeyChild", st, st->st_connection, md);
+
+    /* keep it for a retransmit if necessary, but on initiator
+     * we never do that, but send_packet() uses it.
+     */
+    freeanychunk(st->st_tpacket);
+    clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+                 , "reply packet for ikev2_out_C1_tail");
+
+    send_packet(st, __FUNCTION__, TRUE);
+
+    /*
+     * Delete previous retransmission event.
+     */
+    delete_event(st);
+    event_schedule(EVENT_v2_RETRANSMIT, EVENT_RETRANSMIT_DELAY_0, st);
+
+    return STF_OK;
+}
+
+
+/*
+ * RESPOND to CHILD SA REKEY.
+ *   There are two ways to respond: one routine has the KE in the packet
+ *   (valid with or without POLICY_PFS).
+ *   The other has no KE in the packet (valid only when !POLICY_PFS).
+ *
+ *     It is not an error to not-require PFS, and yet have an exponent:
+ *      the initiator may have simply decided that there was no further entropy in g^xy
+ *      (CHECK RFC7296 on this)
+ *
+ */
+
+/* after calculating g^y */
+static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh);
+
+/* after calculating g^xy */
+static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh);
+
+/* process the packet and send reply */
+static stf_status
+ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs);
+
+
+stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
+{
+    struct state *parentst = md->st;   /* this is parent state! */
+    struct state *st;
+
+    st = duplicate_state(parentst);
+    st->st_msgid = md->msgid_received;
+    insert_state(st);
+    md->st = st;
+    set_cur_state(st);
+
+    /* create a new parent event to rekey again */
+    event_schedule(EVENT_SO_DISCARD, 0, st);
+
+    /* now. we need to go calculate our g^y, then calculate the g^xy */
+    {
+        struct ke_continuation *ke = alloc_thing(struct ke_continuation
+                                                 , "ikev2child_inCI1 KE");
+        stf_status e;
+
+        ke->md = md;
+        set_suspended(st, ke->md);
+
+        pcrc_init(&ke->ke_pcrc);
+        ke->ke_pcrc.pcrc_func = ikev2child_inCI1_continue1;
+        e = build_ke(&ke->ke_pcrc, st, st->st_oakley.group, pcim_known_crypto);
+        if( (e != STF_SUSPEND && e != STF_INLINE) || (e == STF_TOOMUCHCRYPTO)) {
+            loglog(RC_CRYPTOFAILED, "system too busy");
+            delete_state(st);
+        }
+        reset_globals();
+        return e;
+    }
+}
+
+
+stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
+{
+    struct state *parentst = md->st;   /* this is parent state! */
+    struct state *st;
+
+    st = duplicate_state(parentst);
+    st->st_msgid = md->msgid_received;
+    insert_state(st);
+
+    /* create a new parent event to rekey again */
+    event_schedule(EVENT_SO_DISCARD, 0, st);
+
+    return ikev2child_inCI1_tail(md, st, FALSE);
+}
+
+/*
+ * this function is called after g^y is calculated, in order to
+ * start the calculation of g^xy
+ */
+static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh)
+{
+    /* first, gather up the crypto that just finished */
+    struct ke_continuation *ke = (struct ke_continuation *)pcrc;
+    struct msg_digest *md = ke->md;
+    struct state *const st = md->st;
+    stf_status e;
+    v2_notification_t rn;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child inCI1: calculated ke+nonce, calculating g^xy"));
+
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (ke->md)
+            release_md(ke->md);
+        return;
+    }
+
+    /* XXX should check out ugh */
+    passert(ugh == NULL);
+    passert(cur_state == NULL);
+    passert(st != NULL);
+
+    passert(st->st_suspended_md == ke->md);
+    set_suspended(st,NULL);        /* no longer connected or suspended */
+    set_cur_state(st);
+
+    st->st_calculating = FALSE;
+
+    /* collect data out of pcrc */
+    /* collect new NONCE */
+    unpack_nonce(&st->st_nr, r);
+    unpack_v2KE(st, r, &st->st_gr);
+
+    /* now decrypt payload and extract values */
+    {
+        stf_status ret;
+        ret = ikev2_decrypt_msg(md, RESPONDER);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            delete_state(st);
+            goto out;
+        }
+    }
+
+    /* Gi in */
+    e = accept_v2_KE(md, st, &st->st_gi, "Gi");
+    if(e != STF_OK) {
+        /* feel something shoud be done with e */
+        loglog(RC_LOG_SERIOUS, "no valid KE payload found");
+        goto returnerr;
+    }
+
+    /* Ni in */
+    rn = accept_v2_nonce(md, &st->st_ni, "Ni");
+    if(rn != v2N_NOTHING_WRONG) {
+	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
+        goto returnerr;
+    }
+
+    /* now. we need to go calculate the g^xy */
+    {
+        struct dh_continuation *dh = alloc_thing(struct dh_continuation
+                                                 , "ikev2_inCI1 KE");
+        dh->md = md;
+        set_suspended(st, dh->md);
+
+        pcrc_init(&dh->dh_pcrc);
+        dh->dh_pcrc.pcrc_func = ikev2child_inCI1_continue2;
+
+        e = start_dh_v2(&dh->dh_pcrc, st, pcim_known_crypto, RESPONDER, st->st_oakley.groupnum);
+        if(e != STF_SUSPEND && e != STF_INLINE) {
+            loglog(RC_CRYPTOFAILED, "system too busy");
+            delete_state(st);
+        }
+    }
+
+ out:
+    reset_globals();
+    return;
+
+ returnerr:
+    /* XXX send an error notification to initiator, from variable e */
+    delete_state(st);
+    reset_globals();
+    return;
+}
+
+/*
+ * this function is called after g^xy is calculated, and just collects
+ * the results, and calls inC1_tail.
+ */
+static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child inCI1: calculated g^{xy}, sending R2"));
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (dh->md)
+            release_md(dh->md);
+        return;
+    }
+
+    set_suspended(st,NULL);        /* no longer connected or suspended */
+    set_cur_state(st);
+    st->st_calculating = FALSE;
+    passert(ugh == NULL);
+
+    /* extract calculated values from r */
+    finish_dh_v2(st, r);
+
+    e = ikev2child_inCI1_tail(md, st, TRUE);
+
+    if(dh->md != NULL) {
+        complete_v2_state_transition(&dh->md, e);
+        if(dh->md) release_md(dh->md);
+    }
+    reset_globals();
+
+    passert(GLOBALS_ARE_RESET());
+}
+
+stf_status
+ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs)
+{
+    unsigned char *authstart;
+
+    authstart = reply_stream.cur;
+    /* send response */
+    {
+        unsigned char *encstart;
+        unsigned char *iv;
+        unsigned int ivsize;
+        struct ikev2_generic e;
+        pb_stream      e_pbs, e_pbs_cipher;
+        stf_status     ret;
+
+        /* make sure HDR is at start of a clean buffer */
+        zero(reply_buffer);
+        init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
+
+        /* see if there is a child SA being proposed */
+        if(md->chain[ISAKMP_NEXT_v2TSi] == NULL
+           || md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
+
+            /* initiator didn't propose anything. Weird. Try unpending out end. */
+            /* UNPEND XXX */
+            openswan_log("No CHILD SA proposals received.");
+            e.isag_np = ISAKMP_NEXT_NONE;
+        } else {
+            DBG_log("CHILD SA proposals received");
+            e.isag_np = ISAKMP_NEXT_v2Nr;
+        }
+
+        /* HDR out */
+        {
+            struct isakmp_hdr r_hdr = md->hdr;
+
+            /* let the isa_version reply be the same as what the sender had */
+            r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+            r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
+            r_hdr.isa_flags = ISAKMP_FLAGS_R;
+            r_hdr.isa_msgid = htonl(md->msgid_received);
+            memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+            memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+            if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
+                return STF_INTERNAL_ERROR;
+        }
+
+        /* insert an Encryption payload header */
+        e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+
+        if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+            return STF_INTERNAL_ERROR;
+        }
+
+        /* insert IV */
+        iv     = e_pbs.cur;
+        ivsize = st->st_oakley.encrypter->iv_size;
+        if(!out_zero(ivsize, &e_pbs, "iv")) {
+            return STF_INTERNAL_ERROR;
+        }
+        get_rnd_bytes(iv, ivsize);
+
+        /* note where cleartext starts */
+        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
+        e_pbs_cipher.container = &e_pbs;
+        e_pbs_cipher.desc = NULL;
+        e_pbs_cipher.cur = e_pbs.cur;
+        encstart = e_pbs_cipher.cur;
+
+        if(e.isag_np != ISAKMP_NEXT_NONE) {
+            int v2_notify_num = 0;
+
+            /* insert Nonce and KE (if PFS) */
+
+            /* see if we are supposed to send the KE */
+            if(dopfs) {
+                if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2KE)) {
+                    return STF_INTERNAL_ERROR;
+                }
+                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2SA))
+                    return STF_INTERNAL_ERROR;
+            } else {
+                if(!justship_v2Nonce(st, &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2SA)) {
+                    return STF_INTERNAL_ERROR;
+                }
+            }
+
+            /* must have enough to build an CHILD_SA... go do that! */
+            ret = ikev2_child_sa_respond(md, st, &e_pbs_cipher);
+            if(ret > STF_FAIL) {
+                v2_notify_num = ret - STF_FAIL;
+                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
+            } else if(ret != STF_OK) {
+                DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+            }
+        }
+
+        ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+        close_output_pbs(&e_pbs_cipher);
+
+        {
+            unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+
+            if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
+
+            close_output_pbs(&e_pbs);
+
+            close_output_pbs(&md->rbody);
+            close_output_pbs(&reply_stream);
+
+            ret = ikev2_encrypt_msg(md, RESPONDER,
+                                    authstart,
+                                    iv, encstart, authloc,
+                                    &e_pbs, &e_pbs_cipher);
+            if(ret != STF_OK) return ret;
+        }
+    }
+    return STF_OK;
+}
+
+
+/************************************************************************
+ *
+ * Processing of CR1 packet - CHILD_SA Responder in (on initiator)
+ *
+ * this processes the reply from the child rekey.
+ * If PFS is enabled, the responder will have calculated a new g^y and sent it
+ * to us, and we will calculate a new shared state by completing the DH operation.
+ *
+ * If No-PFS, then there will be no g^y, and the responder will have just sent us
+ * a new nonce, and we proceed into the PRF and derive keys for the IPsec SA.
+ */
+static void ikev2child_inCR1_continue(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                      , err_t ugh);
+static stf_status ikev2child_inCR1_tail(struct msg_digest *md, struct state *st);
+
+static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    v2_notification_t rn;
+
+    /* create a new parent event to rekey again */
+    event_schedule(EVENT_SO_DISCARD, 0, st);
+
+    /* now decrypt payload and extract values */
+    {
+        stf_status ret;
+        ret = ikev2_decrypt_msg(md, INITIATOR);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            /* XXX maybe try rekey again? */
+            return STF_FAIL;
+        }
+    }
+
+    /* Nr in */
+    rn = accept_v2_nonce(md, &st->st_nr, "Nr");
+    if(rn != v2N_NOTHING_WRONG) {
+	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
+        return STF_FAIL;
+    }
+    return STF_OK;
+}
+
+stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    stf_status e;
+
+    e = ikev2child_inCR1_decrypt(md);
+    if(e != STF_OK) {
+        return e;
+    }
+
+    /* Gr in */
+    e = accept_v2_KE(md, st, &st->st_gr, "Gr");
+    if(e != STF_OK) {
+        /* feel something shoud be done with e */
+        loglog(RC_LOG_SERIOUS, "no valid KE payload found");
+        return STF_FAIL; /* XXX - invalid packet notify? */
+    }
+
+    /* now. we need to go calculate the g^xy */
+    {
+        struct dh_continuation *dh = alloc_thing(struct dh_continuation
+                                                 , "ikev2_inCR1 KE");
+        dh->md = md;
+        set_suspended(st, dh->md);
+
+        pcrc_init(&dh->dh_pcrc);
+        dh->dh_pcrc.pcrc_func = ikev2child_inCR1_continue;
+
+        e = start_dh_v2(&dh->dh_pcrc, st, pcim_known_crypto, INITIATOR, st->st_oakley.groupnum);
+        if(e != STF_SUSPEND && e != STF_INLINE) {
+            loglog(RC_CRYPTOFAILED, "system too busy..? but we initiated?");
+            delete_state(st);
+        }
+        reset_globals();
+        return e;
+    }
+}
+
+stf_status ikev2child_inCR1_nopfs(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    stf_status e;
+
+    e = ikev2child_inCR1_decrypt(md);
+    if(e != STF_OK) {
+        return e;
+    }
+    return ikev2child_inCR1_tail(md, st);
+}
+
+/*
+ * this function is called after g^xy is calculated on initiator,
+ * and just collects the results, and calls inCR1_tail.
+ */
+static void ikev2child_inCR1_continue(struct pluto_crypto_req_cont *pcrc
+                                       , struct pluto_crypto_req *r
+                                       , err_t ugh)
+{
+    struct dh_continuation *dh = (struct dh_continuation *)pcrc;
+    struct msg_digest *md = dh->md;
+    struct state *const st = md->st;
+    stf_status e;
+
+    DBG(DBG_CONTROLMORE
+        , DBG_log("ikev2 child inCR1: calculated g^{xy}, setting up CHILD SA"));
+    if (st == NULL) {
+        loglog(RC_LOG_SERIOUS, "%s: Request was disconnected from state",
+               __FUNCTION__);
+        if (dh->md)
+            release_md(dh->md);
+        return;
+    }
+
+    set_suspended(st, NULL);        /* no longer connected or suspended */
+    set_cur_state(st);
+    st->st_calculating = FALSE;
+    passert(ugh == NULL);
+
+    /* extract calculated values from r */
+    finish_dh_v2(st, r);
+
+    e = ikev2child_inCR1_tail(md, st);
+
+    if(dh->md != NULL) {
+        complete_v2_state_transition(&dh->md, e);
+        if(dh->md) release_md(dh->md);
+    }
+    reset_globals();
+
+    passert(GLOBALS_ARE_RESET());
+}
+
+/*
+ * this function validates that the Traffic Selectors that the responder selected
+ * (and perhaps narrowed to), still fit into our policy.
+ */
+stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
+                                                   , struct state *st)
+{
+    struct connection *c = st->st_connection;
+    int best_tsi_i ,  best_tsr_i;
+    int bestfit_n = -1;
+    int bestfit_p = -1;
+    int bestfit_pr= -1;
+
+    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+    struct traffic_selector tsi[16], tsr[16];
+
+    const int tsi_n = ikev2_parse_ts(tsi_pd, tsi, elemsof(tsi));
+    const int tsr_n = ikev2_parse_ts(tsr_pd, tsr, elemsof(tsr));
+
+    DBG_log("checking TSi(%d)/TSr(%d) selectors, looking for exact match"
+            , tsi_n,tsr_n);
+    if (tsi_n < 0 || tsr_n < 0)
+        return STF_FAIL + v2N_TS_UNACCEPTABLE;
+
+    {
+        struct spd_route *sra ;
+        sra = &c->spd;
+        int bfit_n=ikev2_evaluate_connection_fit(c, st
+                                                 ,sra
+                                                 ,INITIATOR
+                                                 ,tsi   ,tsr
+                                                 ,tsi_n ,tsr_n);
+        if (bfit_n > bestfit_n)
+            {
+                DBG(DBG_CONTROLMORE,
+                    DBG_log(" prefix fitness found a better match c %s"
+                            , c->name));
+                int bfit_p =
+                    ikev2_evaluate_connection_port_fit(c
+                                                       ,sra
+                                                       ,INITIATOR
+                                                       ,tsi,tsr
+                                                       ,tsi_n,tsr_n
+                                                       , &best_tsi_i
+                                                       , &best_tsr_i);
+                if (bfit_p > bestfit_p) {
+                    DBG(DBG_CONTROLMORE,
+                        DBG_log("  port fitness found better match c %s, tsi[%d],tsr[%d]"
+                                , c->name, best_tsi_i, best_tsr_i));
+                    int bfit_pr =
+                        ikev2_evaluate_connection_protocol_fit(c, sra
+                                                               , INITIATOR
+                                                               , tsi, tsr
+                                                               , tsi_n, tsr_n
+                                                               , &best_tsi_i
+                                                               , &best_tsr_i);
+                    if (bfit_pr > bestfit_pr ) {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("   protocol fitness found better match c %s, tsi[%d],tsr[%d]"
+                                    , c->name, best_tsi_i,
+                                    best_tsr_i));
+                        bestfit_p = bfit_p;
+                        bestfit_n = bfit_n;
+                    } else {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("    protocol fitness rejected c %s",
+                                    c->name));
+                    }
+                }
+            }
+        else
+            DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
+                                         , c->name));
+    }
+
+    if ( ( bestfit_n > 0 )  && (bestfit_p > 0))  {
+        ip_subnet tmp_subnet_i;
+        ip_subnet tmp_subnet_r;
+
+        DBG(DBG_CONTROLMORE, DBG_log(("found an acceptable TSi/TSr Traffic Selector")));
+        memcpy (&st->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
+        memcpy (&st->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
+        ikev2_print_ts(&st->st_ts_this);
+        ikev2_print_ts(&st->st_ts_that);
+
+        rangetosubnet(&st->st_ts_this.low,
+                      &st->st_ts_this.high, &tmp_subnet_i);
+        rangetosubnet(&st->st_ts_that.low,
+                      &st->st_ts_that.high, &tmp_subnet_r);
+
+        c->spd.this.client = tmp_subnet_i;
+        c->spd.this.port = st->st_ts_this.startport;
+        c->spd.this.protocol = st->st_ts_this.ipprotoid;
+        setportof(htons(c->spd.this.port),
+                  &c->spd.this.host_addr);
+        setportof(htons(c->spd.this.port),
+                  &c->spd.this.client.addr);
+
+        c->spd.this.has_client =
+            !(subnetishost(&c->spd.this.client) &&
+              addrinsubnet(&c->spd.this.host_addr,
+                           &c->spd.this.client));
+
+        c->spd.that.client = tmp_subnet_r;
+        c->spd.that.port = st->st_ts_that.startport;
+        c->spd.that.protocol = st->st_ts_that.ipprotoid;
+        setportof(htons(c->spd.that.port),
+                  &c->spd.that.host_addr);
+        setportof(htons(c->spd.that.port),
+                  &c->spd.that.client.addr);
+
+        c->spd.that.has_client =
+            !(subnetishost(&c->spd.that.client) &&
+              addrinsubnet(&c->spd.that.host_addr,
+                           &c->spd.that.client));
+    }
+    else {
+        DBG(DBG_CONTROLMORE, DBG_log(("reject responder TSi/TSr Traffic Selector")));
+        // prevents parent from going to I3
+        return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
+
+    return STF_OK;
+}
+
+stf_status ikev2_child_notify_process(struct msg_digest *md
+                                      , struct state *st)
+{
+    struct payload_digest *p;
+
+    for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+        /* RFC 5996 */
+        /* Types in the range 0 - 16383 are intended for reporting errors.
+         * An implementation receiving a Notify payload with one of these
+         * types that it does not recognize in a response MUST assume
+         * that the corresponding request has failed entirely.
+         * Unrecognized error types in a request and status types in a
+         * request or response MUST be
+         * ignored, and they should be logged.
+         */
+        if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
+            if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
+                return STF_FAIL + p->payload.v2n.isan_type;
+            }
+        }
+
+        if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
+            if ( st->st_connection->policy & POLICY_TUNNEL) {
+                /*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
+            }
+            else {
+                DBG(DBG_CONTROLMORE,
+                    DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
+                if (st->st_esp.present == TRUE) {
+                    /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
+                    st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
+                }
+            }
+        }
+    } /* for */
+    return STF_OK;
+}
+
+static stf_status ikev2child_inCR1_tail(struct msg_digest *md, struct state *st)
+{
+    struct connection *c = st->st_connection;
+    struct state *pst;
+    stf_status e;
+
+    /* authentication good, see if there is a child SA available */
+    if(md->chain[ISAKMP_NEXT_v2SA] == NULL
+       || md->chain[ISAKMP_NEXT_v2TSi] == NULL
+       || md->chain[ISAKMP_NEXT_v2TSr] == NULL) {
+        /* not really anything to here... but it would be worth unpending again */
+        DBG(DBG_CONTROLMORE, DBG_log("no v2SA, v2TSi or v2TSr received child trying to rekey CHILD_SA."));
+        DBG(DBG_CONTROLMORE, DBG_log("  look for notify of error"));
+        /*
+         * Delete previous retransmission event.
+         */
+        delete_event(st);
+        return STF_OK;
+    }
+
+    /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
+    DBG(DBG_CONTROLMORE,DBG_log(" checking narrowing - responding to CR1"));
+
+    if ((e = ikev2_child_validate_responder_proposal(md, st)) != STF_OK) {
+        return e;
+    }
+
+    if ((e = ikev2_child_notify_process(md, st)) != STF_OK) {
+        return e;
+    }
+
+    {
+        v2_notification_t rn;
+        struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+        if (sa_pd == NULL) {
+                return STF_FAIL;
+        }
+
+        rn = ikev2_parse_child_sa_body(&sa_pd->pbs, &sa_pd->payload.v2sa
+                                       , NULL, st, /* selection=*/TRUE);
+
+        if(rn != v2N_NOTHING_WRONG)
+            return STF_FAIL + rn;
+    }
+
+    ikev2_derive_child_keys(st, INITIATOR);
+
+    c->newest_ipsec_sa = st->st_serialno;
+
+    pst = st;
+    if(st->st_clonedfrom != 0) {
+        pst = state_with_serialno(st->st_clonedfrom);
+    }
+
+    /* now install child SAs */
+    if(!install_ipsec_sa(pst, st, TRUE)) {
+#ifdef DEBUG_WITH_PAUSE
+        pause();
+#endif
+        loglog(RC_LOG_SERIOUS, "failed to installed IPsec Child SAs");
+        return STF_FATAL;
+    }
+
+    /*
+     * Delete previous retransmission event.
+     */
+    delete_event(st);
+
+    return STF_OK;
+}
+
+
+
 
 /*
  * Local Variables:

@@ -108,6 +108,7 @@ RC=2   IDpair: @moon.strongswan.org/       93.184.216.34
 RC=2      rw-carol
 RC=2   IDpair: @moon.strongswan.org/              (none)
 RC=2      rw-any
+0: input from carolI1.pcap
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -167,7 +168,7 @@ RC=2      rw-any
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -307,6 +308,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: input from carolI2.pcap
 | *received 1564 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 08  00 00 00 01  00 00 06 1c  23 00 06 00
@@ -408,6 +410,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   b0 a8 65 15  ab ab 08 89  76 51 bb 4b
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -527,7 +533,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   da 97 56 57  58 13 03 a6  f2 3b ba b6  1d e2 c8 67
 | R2 calculated auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
 | R2  provided  auth:  b0 a8 65 15  ab ab 08 89  76 51 bb 4b
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   04 64 22 ca  bd 8e 1c 3e  68 57 42 0a  71 2c c0 97
 |   44 e7 d8 17  b2 e9 29 61  7c 54 b5 d8  f0 13 b6 60
@@ -1607,6 +1613,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 |   8e 06 1e 5b  f8 cf 41 bb  7e 82 0c 9b
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+2: input from davecertI1.pcap
 | *received 836 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -1666,7 +1673,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -1807,6 +1814,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+3: output to OUTPUT/parentR2dave.pcap
+3: input from davecertI2.pcap
 | *received 1676 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
 |   2e 20 23 08  00 00 00 01  00 00 06 8c  23 00 06 70
@@ -1915,6 +1924,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   09 9d 66 67  fa a3 5a 21  d3 b2 2c 18
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
+| state hash entry 15
+| v2 state object not found
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  5d 73 ce 75  3d b1 db 6d
 | state hash entry 15
@@ -2041,7 +2054,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   1a 20 0d 4a  ca 7b 68 25  cb 16 12 06  8d 77 01 c5
 | R2 calculated auth:  09 9d 66 67  fa a3 5a 21  d3 b2 2c 18
 | R2  provided  auth:  09 9d 66 67  fa a3 5a 21  d3 b2 2c 18
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   a2 92 6c 8a  71 fd 52 2b  0b 8c b5 31  dd 5d 4f ca
 |   6c 38 bf 35  76 e5 c8 ad  8d f0 02 20  a8 45 73 80
@@ -3374,8 +3387,3 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: default conf ipsec_conf_dir, item size: X
 ./certreplydaveR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from carolI1.pcap
-1: input from carolI2.pcap
-2: input from davecertI1.pcap
-3: output to OUTPUT/parentR2dave.pcap
-3: input from davecertI2.pcap

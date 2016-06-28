@@ -164,7 +164,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 6
-| v2 state object not found in hash 6
+| v2 state object not found
 | ICOOKIE:  56 11 47 13  4b 1d 6d 52
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 6

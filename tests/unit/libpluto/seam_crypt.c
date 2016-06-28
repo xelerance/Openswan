@@ -45,13 +45,23 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 }
 
 
+void run_one_continuation(struct pluto_crypto_req *r)
+{
+  struct pluto_crypto_req_cont *cn = continuation;
+  continuation = NULL;
+
+  if(cn) {
+    (*cn->pcrc_func)(cn, r, NULL);
+  } else {
+    fprintf(stderr, "should have found a continuation, but none was found\n");
+  }
+}
+
 void run_continuation(struct pluto_crypto_req *r)
 {
-	while(continuation != NULL) {
-		struct pluto_crypto_req_cont *cn = continuation;
-		continuation = NULL;
-		(*cn->pcrc_func)(cn, r, NULL);
-	}
+  while(continuation != NULL) {
+    run_one_continuation(r);
+  }
 }
 
 bool ikev2_calculate_rsa_sha1(struct state *st

@@ -16,11 +16,10 @@ void recv_pcap_packet(u_char *user
         st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
         /* now fill in the KE values from a constant.. not calculated */
-        clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
         clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
         clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
 
-        run_continuation(crypto_req);
+        run_one_continuation(crypto_req);
     }
 }
 
@@ -36,9 +35,9 @@ void recv_pcap_packet2(u_char *user
     /* find st involved */
     st = state_with_serialno(1);
     st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
 
-    run_continuation(crypto_req);
-
+    run_one_continuation(crypto_req);
 }
 
 #ifndef PCAP_INPUT_COUNT
@@ -117,12 +116,12 @@ int main(int argc, char *argv[])
             /* omit the R1 reply */
             send_packet_setup_pcap("/dev/null");
         } else {
-            printf("%u: output to %s\n", i, pcap_out);
+            fprintf(stderr, "%u: output to %s\n", i, pcap_out);
             send_packet_setup_pcap(pcap_out);
         }
 
         /* setup to process the n'th packet */
-        printf("%u: input from %s\n", i, pcapin[i]);
+        fprintf(stderr, "%u: input from %s\n", i, pcapin[i]);
         recv_pcap_setup(pcapin[i]);
 
         /* process first I1 packet */

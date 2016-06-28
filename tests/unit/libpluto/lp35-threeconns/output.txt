@@ -73,6 +73,8 @@ RC=0 "vzhost1-vzhost-mondev":   ESP algorithms wanted: AES(12)_128-SHA2_256(5)_0
 | auth algid=5 not available
 RC=0 "vzhost1-vzhost-mondev":   ESP algorithms loaded: none
 ./threeconns deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1
 | alg_info_delref(ADDRESS) freeing alg_info
 | alg_info_delref(ADDRESS) alg_info->ref_cnt=1

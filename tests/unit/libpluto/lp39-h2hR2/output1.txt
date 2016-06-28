@@ -29,6 +29,7 @@ RC=0 "mytunnel": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #0
 RC=0 "mytunnel":     myip=unset; hisip=unset;
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+0: input from ../lp37-h2hR1/h2hI1.pcap
 | *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -88,7 +89,7 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -227,6 +228,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: output to OUTPUT/h2hR2.pcap
+1: input from h2hI2.pcap
 | *received 492 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
@@ -261,6 +264,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -313,7 +320,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
 | R2 calculated auth:  b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
 | R2  provided  auth:  b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
 |   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
@@ -789,6 +796,3 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./h2hR2 leak: default conf ipsec_conf_dir, item size: X
 ./h2hR2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from ../lp37-h2hR1/h2hI1.pcap
-1: output to OUTPUT/h2hR2.pcap
-1: input from h2hI2.pcap

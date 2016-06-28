@@ -61,15 +61,6 @@
 
 #include "tpm/tpm.h"
 
-#define SEND_V2_NOTIFICATION_AA(t, d) \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
-    else send_v2_notification_from_md(md, t, d);
-
-
-#define SEND_V2_NOTIFICATION(t)                                            \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
-    else send_v2_notification_from_md(md, t, NULL);
-
 static void ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
                                         , struct pluto_crypto_req *r
                                         , err_t ugh);
@@ -311,7 +302,7 @@ ikev2_parent_outI1_continue(struct pluto_crypto_req_cont *pcrc
  * unpack the calculate KE value, store it in state.
  * used by IKEv2: parent, child (PFS)
  */
-static int
+int
 unpack_v2KE(struct state *st
             , struct pluto_crypto_req *r
             , chunk_t *g)
@@ -326,7 +317,7 @@ unpack_v2KE(struct state *st
  * package up the calculate KE value, and emit it as a KE payload.
  * used by IKEv2: parent, child (PFS)
  */
-static bool
+bool
 justship_v2KE(struct state *st UNUSED
               , chunk_t *g, unsigned int oakley_group
               , pb_stream *outs, u_int8_t np)
@@ -355,6 +346,27 @@ ship_v2KE(struct state *st
 {
     int oakley_group = unpack_v2KE(st, r, g);
     return justship_v2KE(st, g, oakley_group, outs, np);
+}
+
+bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce, unsigned int np)
+{
+    struct ikev2_generic in;
+    pb_stream pb;
+
+    memset(&in, 0, sizeof(in));
+    in.isag_np = np;
+    in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
+        openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
+        in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
+    }
+
+    if(!out_struct(&in, &ikev2_nonce_desc, outpbs, &pb) ||
+       !out_raw(nonce->ptr, nonce->len, &pb, "IKEv2 nonce"))
+        return FALSE;
+    close_output_pbs(&pb);
+
+    return TRUE;
 }
 
 static stf_status
@@ -460,23 +472,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 
 
     /* send NONCE */
-    {
-        int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-        struct ikev2_generic in;
-        pb_stream pb;
-
-        memset(&in, 0, sizeof(in));
-        in.isag_np = np;
-        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-            in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-        }
-
-        if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
-           !out_raw(st->st_ni.ptr, st->st_ni.len, &pb, "IKEv2 nonce"))
-            return STF_INTERNAL_ERROR;
-        close_output_pbs(&pb);
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_ni, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+        return STF_INTERNAL_ERROR;
     }
 
     /* Send Vendor VID if needed */
@@ -763,7 +760,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     struct msg_digest *md = ke->md;
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     struct state *const st = md->st;
-    pb_stream *keyex_pbs;
+    stf_status notok;
     int    numvidtosend=0;
 #ifdef PLUTO_SENDS_VENDORID
     numvidtosend++;  /* we send Openswan VID */
@@ -817,22 +814,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_FAIL + rn;
     }
 
-    {
-        v2_notification_t rn;
-        chunk_t dc;
-        if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
-                    return STF_FAIL;
-        keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
-        /* KE in */
-        rn=accept_KE(&st->st_gi, "Gi", st->st_oakley.group, keyex_pbs);
-        if(rn != v2N_NOTHING_WRONG) {
-            u_int16_t group_number = htons(st->st_oakley.group->group);
-            dc.ptr = (unsigned char *)&group_number;
-            dc.len = 2;
-            SEND_V2_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
-            delete_state(st);
-            return STF_FAIL + rn;
-        }
+    if((notok = accept_v2_KE(md, st, &st->st_gi, "Gi"))!=STF_OK) {
+        return notok;
     }
 
     /* Ni in */
@@ -844,23 +827,8 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send NONCE */
     unpack_nonce(&st->st_nr, r);
-    {
-        int np = numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-        struct ikev2_generic in;
-        pb_stream pb;
-
-        memset(&in, 0, sizeof(in));
-        in.isag_np = np;
-        in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-        if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-            openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-            in.isag_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-        }
-
-        if(!out_struct(&in, &ikev2_nonce_desc, &md->rbody, &pb) ||
-           !out_raw(st->st_nr.ptr, st->st_nr.len, &pb, "IKEv2 nonce"))
-            return STF_INTERNAL_ERROR;
-        close_output_pbs(&pb);
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_nr, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+        return STF_INTERNAL_ERROR;
     }
 
     /* Send VendrID if needed VID */
@@ -1065,8 +1033,8 @@ ikev2_parent_inR1outI2_continue(struct pluto_crypto_req_cont *pcrc
     passert(GLOBALS_ARE_RESET());
 }
 
-static void ikev2_padup_pre_encrypt(struct msg_digest *md
-                                    , pb_stream *e_pbs_cipher)
+void ikev2_padup_pre_encrypt(struct msg_digest *md
+                             , pb_stream *e_pbs_cipher)
 {
     struct state *st = md->st;
     struct state *pst= st;
@@ -1090,8 +1058,8 @@ static void ikev2_padup_pre_encrypt(struct msg_digest *md
     }
 }
 
-static unsigned char *ikev2_authloc(struct msg_digest *md
-                                    , pb_stream *e_pbs)
+unsigned char *ikev2_authloc(struct msg_digest *md
+                             , pb_stream *e_pbs)
 {
     unsigned char *b12;
     struct state *st = md->st;
@@ -1111,7 +1079,7 @@ static unsigned char *ikev2_authloc(struct msg_digest *md
     return b12;
 }
 
-static stf_status ikev2_encrypt_msg(struct msg_digest *md,
+stf_status ikev2_encrypt_msg(struct msg_digest *md,
                                     enum phase1_role init,
                                     unsigned char *authstart,
                                     unsigned char *iv,
@@ -1181,7 +1149,6 @@ static stf_status ikev2_encrypt_msg(struct msg_digest *md,
     return STF_OK;
 }
 
-static
 stf_status ikev2_decrypt_msg(struct msg_digest *md
                              , enum phase1_role init)
 {
@@ -1236,7 +1203,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         }
     }
 
-    DBG(DBG_PARSING, DBG_log("authenticator matched"));
+    DBG(DBG_PARSING, DBG_log("authenticator matched, np=%u", np));
 
     /* decrypt */
     {
@@ -1634,8 +1601,8 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
  ***************************************************************
  *  - note that in IKEv1, the child states are identified by msgid,
  *  - but in IKEv2, the msgid is just about retransmissions.
- *  - child states are therefore just contains for IPsec SAs, and
- *    so that they can be manipulated, and eventually rekeyed or deleted.
+ *  - child states are therefore just contains IPsec SAs, and
+ *     so that they can be manipulated, and eventually rekeyed or deleted.
  *
  */
 static void ikev2_parent_inI2outR2_continue(struct pluto_crypto_req_cont *pcrc
@@ -2034,7 +2001,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
         if(np == ISAKMP_NEXT_v2SA) {
             /* must have enough to build an CHILD_SA... go do that! */
-            ret = ikev2_child_sa_respond(md, &e_pbs_cipher);
+            ret = ikev2_child_sa_respond(md, NULL, &e_pbs_cipher);
             if(ret > STF_FAIL) {
                 v2_notify_num = ret - STF_FAIL;
                 DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
@@ -2101,6 +2068,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     struct connection *c = st->st_connection;
     unsigned char *idhash_in;
     struct state *pst = st;
+    stf_status e;
 
     if(st->st_clonedfrom != 0) {
         pst = state_with_serialno(st->st_clonedfrom);
@@ -2223,135 +2191,12 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         return STF_OK;
     }
 
-    /*
-     * here we actually really need the child state, it's not just
-     * optional if we creating child SAs.
-     */
-    /* so let's look for the child state */
-    {
-        int best_tsi_i ,  best_tsr_i;
-        int bestfit_n = -1;
-        int bestfit_p = -1;
-        int bestfit_pr= -1;
+    /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
+    DBG(DBG_CONTROLMORE,DBG_log(" checking narrowing - responding to R2"));
 
-        /* Check TSi/TSr http://tools.ietf.org/html/rfc5996#section-2.9 */
-        DBG(DBG_CONTROLMORE,DBG_log(" check narrowing - we are responding to I2"));
-
-        struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-        struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-        struct traffic_selector tsi[16], tsr[16];
-#if 0
-        bool instantiate = FALSE;
-        ip_subnet tsi_subnet, tsr_subnet;
-        const char *oops;
-#endif
-
-        const int tsi_n = ikev2_parse_ts(tsi_pd, tsi, elemsof(tsi));
-        const int tsr_n = ikev2_parse_ts(tsr_pd, tsr, elemsof(tsr));
-
-        DBG_log("checking TSi(%d)/TSr(%d) selectors, looking for exact match"
-                , tsi_n,tsr_n);
-        if (tsi_n < 0 || tsr_n < 0)
-            return STF_FAIL + v2N_TS_UNACCEPTABLE;
-
-        {
-            struct spd_route *sra ;
-            sra = &c->spd;
-            int bfit_n=ikev2_evaluate_connection_fit(c, st
-                                                     ,sra
-                                                     ,INITIATOR
-                                                     ,tsi   ,tsr
-                                                     ,tsi_n ,tsr_n);
-            if (bfit_n > bestfit_n)
-            {
-                DBG(DBG_CONTROLMORE,
-                    DBG_log(" prefix fitness found a better match c %s"
-                            , c->name));
-                int bfit_p =
-                    ikev2_evaluate_connection_port_fit(c
-                                                       ,sra
-                                                       ,INITIATOR
-                                                       ,tsi,tsr
-                                                       ,tsi_n,tsr_n
-                                                       , &best_tsi_i
-                                                       , &best_tsr_i);
-                if (bfit_p > bestfit_p) {
-                    DBG(DBG_CONTROLMORE,
-                        DBG_log("  port fitness found better match c %s, tsi[%d],tsr[%d]"
-                                , c->name, best_tsi_i, best_tsr_i));
-                    int bfit_pr =
-                        ikev2_evaluate_connection_protocol_fit(c, sra
-                                                               , INITIATOR
-                                                               , tsi, tsr
-                                                               , tsi_n, tsr_n
-                                                               , &best_tsi_i
-                                                               , &best_tsr_i);
-                    if (bfit_pr > bestfit_pr ) {
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("   protocol fitness found better match c %s, tsi[%d],tsr[%d]"
-                                    , c->name, best_tsi_i,
-                                    best_tsr_i));
-                        bestfit_p = bfit_p;
-                        bestfit_n = bfit_n;
-                    } else {
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("    protocol fitness rejected c %s",
-                                    c->name));
-                    }
-                }
-            }
-            else
-                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by port matching"
-                    , c->name));
-        }
-
-        if ( ( bestfit_n > 0 )  && (bestfit_p > 0))  {
-            ip_subnet tmp_subnet_i;
-            ip_subnet tmp_subnet_r;
-
-            DBG(DBG_CONTROLMORE, DBG_log(("found an acceptable TSi/TSr Traffic Selector")));
-            memcpy (&st->st_ts_this , &tsi[best_tsi_i],  sizeof(struct traffic_selector));
-            memcpy (&st->st_ts_that , &tsr[best_tsr_i],  sizeof(struct traffic_selector));
-            ikev2_print_ts(&st->st_ts_this);
-            ikev2_print_ts(&st->st_ts_that);
-
-            rangetosubnet(&st->st_ts_this.low,
-                          &st->st_ts_this.high, &tmp_subnet_i);
-            rangetosubnet(&st->st_ts_that.low,
-                          &st->st_ts_that.high, &tmp_subnet_r);
-
-            c->spd.this.client = tmp_subnet_i;
-            c->spd.this.port = st->st_ts_this.startport;
-            c->spd.this.protocol = st->st_ts_this.ipprotoid;
-            setportof(htons(c->spd.this.port),
-                      &c->spd.this.host_addr);
-            setportof(htons(c->spd.this.port),
-                      &c->spd.this.client.addr);
-
-            c->spd.this.has_client =
-                !(subnetishost(&c->spd.this.client) &&
-                  addrinsubnet(&c->spd.this.host_addr,
-                               &c->spd.this.client));
-
-            c->spd.that.client = tmp_subnet_r;
-            c->spd.that.port = st->st_ts_that.startport;
-            c->spd.that.protocol = st->st_ts_that.ipprotoid;
-            setportof(htons(c->spd.that.port),
-                      &c->spd.that.host_addr);
-            setportof(htons(c->spd.that.port),
-                      &c->spd.that.client.addr);
-
-            c->spd.that.has_client =
-                !(subnetishost(&c->spd.that.client) &&
-                  addrinsubnet(&c->spd.that.host_addr,
-                               &c->spd.that.client));
-        }
-        else {
-            DBG(DBG_CONTROLMORE, DBG_log(("reject responder TSi/TSr Traffic Selector")));
-            // prevents parent from going to I3
-            return STF_FAIL + v2N_TS_UNACCEPTABLE;
-        }
-    } /* end of TS check block */
+    if ((e = ikev2_child_validate_responder_proposal(md, st)) != STF_OK) {
+        return e;
+    }
 
     {
         v2_notification_t rn;
@@ -2367,44 +2212,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
             return STF_FAIL + rn;
     }
 
-    {
-        struct payload_digest *p;
-
-        for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
-            /* RFC 5996 */
-            /* Types in the range 0 - 16383 are intended for reporting errors.
-             * An implementation receiving a Notify payload with one of these
-             * types that it does not recognize in a response MUST assume
-             * that the corresponding request has failed entirely.
-             * Unrecognized error types in a request and status types in a
-             * request or response MUST be
-             * ignored, and they should be logged.
-             */
-            if(enum_name(&ikev2_notify_names, p->payload.v2n.isan_type) == NULL) {
-                if(p->payload.v2n.isan_type < v2N_INITIAL_CONTACT) {
-                    return STF_FAIL + p->payload.v2n.isan_type;
-                }
-            }
-
-            if ( p->payload.v2n.isan_type == v2N_USE_TRANSPORT_MODE ) {
-                if ( st->st_connection->policy & POLICY_TUNNEL) {
-                    /*This means we did not send v2N_USE_TRANSPORT, however responder is sending it in now (inR2), seems incorrect*/
-                    DBG(DBG_CONTROLMORE,
-                        DBG_log("Initiator policy is tunnel, responder sends v2N_USE_TRANSPORT_MODE notification in inR2, ignoring it"));
-                }
-                else {
-                    DBG(DBG_CONTROLMORE,
-                        DBG_log("Initiator policy is transport, responder sends v2N_USE_TRANSPORT_MODE, setting CHILD SA to transport mode"));
-                    if (st->st_esp.present == TRUE) {
-                        /*openswan supports only "esp" with ikev2 it seems, look at ikev2_parse_child_sa_body handling*/
-                        st->st_esp.attrs.encapsulation = ENCAPSULATION_MODE_TRANSPORT;
-                    }
-                }
-            }
-        } /* for */
-
-    } /* notification block */
-
+    if ((e = ikev2_child_notify_process(md, st)) != STF_OK) {
+        return e;
+    }
 
     ikev2_derive_child_keys(st, INITIATOR);
 
@@ -2503,14 +2313,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
                  , enum_name(&ikev2_notify_names, type)
                  , ip_str(&p1st->st_remoteaddr)
                  , p1st->st_remoteport);
-#if 0
-    /* Empty notification data section should be fine? */
-    if(n_data == NULL) {
-        DBG(DBG_CONTROLMORE
-            ,DBG_log("don't send packet when notification data empty"));
-        return;
-    }
-#endif
 
     memset(buffer, 0, sizeof(buffer));
     init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
@@ -2560,6 +2362,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
 
     send_packet(p1st, __FUNCTION__, TRUE);
 }
+
 /* add notify payload to the rbody */
 bool ship_v2N (unsigned int np, u_int8_t  critical,
                u_int8_t protoid, chunk_t *spi,

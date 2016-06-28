@@ -56,7 +56,7 @@ static const char *const kern_interface_name[] = {
   "mastklips",
   "bsdkame"
 };
-enum_names kern_interface_names = 
+enum_names kern_interface_names =
   { NO_KERNEL, USE_BSDKAME, kern_interface_name, NULL };
 
 /* DPD actions */
@@ -87,11 +87,12 @@ static const char *const timer_event_name[] = {
 	"EVENT_CRYPTO_FAILED",
 	"EVENT_PENDING_PHASE2",
 	"EVENT_v2_RETRANSMIT",
-	"EVENT_PENDING_DDNS"
+	"EVENT_PENDING_DDNS",
+        "EVENT_SA_DELETE"
     };
 
 enum_names timer_event_names =
-    { EVENT_NULL, EVENT_PENDING_DDNS, timer_event_name, NULL };
+    { EVENT_NULL, EVENT_SA_DELETE, timer_event_name, NULL };
 
 /* State of exchanges */
 static const char *const state_name[] = {
@@ -145,6 +146,9 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 
+    "STATE_CHILD_C1_KEYED",
+    "STATE_CHILD_C1_REKEY",
+
         "STATE_IKESA_DEL",
         "STATE_CHILDSA_DEL",
 
@@ -196,11 +200,18 @@ const char *const state_story[] = {
 	"invalid state - IKE roof",
 	"invalid state - IKEv2 base",
 	"sent v2I1, expected v2R1",             /* STATE_PARENT_I1 */
-	"sent v2I2, expected v2R2",
-	"PARENT SA established",
-	"received v2I1, sent v2R1",
-	"received v2I2, PARENT SA established",
-	"invalid state - IKEv2 roof"
+	"sent v2I2, expected v2R2",             /* STATE_PARENT_I2 */
+	"PARENT SA established",                /* STATE_PARENT_I3 */
+	"received v2I1, sent v2R1",             /* STATE_PARENT_R1 */
+	"received v2I2, PARENT SA established", /* STATE_PARENT_R2 */
+
+        "CHILD SA established",                 /* STATE_CHILD_C1_KEYED */
+        "CHILD SA being rekeyed",               /* STATE_CHILD_C1_REKEY */
+
+        "PARENT SA scheduled for deletion",     /* STATE_IKESA_DEL */
+        "CHILD SA scheduled for deletion",      /* STATE_CHILDSA_DEL */
+
+	"invalid state - IKEv2 roof (fix state_stories?)"
     };
 
 enum_names state_stories =
@@ -226,7 +237,7 @@ enum_names pluto_cryptoop_names =
 /* pluto crypto importance: enum crypto_importance in pluto_constants.h */
 static const char *const pluto_cryptoimportance_strings[] = {
 	"import:not set",
-  "import:respond to stranger",	
+  "import:respond to stranger",
   "import:respond to friend",
   "import:ongoing calculation",
   "import:local rekey",

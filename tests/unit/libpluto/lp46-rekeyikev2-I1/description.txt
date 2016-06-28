@@ -1,0 +1,9 @@
+This test case is an IKEv1 initiator that rekeys it's child SA after
+establishing it.
+This is just the Child I1 message requesting the rekey.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp13-parentI3.
+
+
+
+
