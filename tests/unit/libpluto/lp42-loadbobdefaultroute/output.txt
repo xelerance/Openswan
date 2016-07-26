@@ -37,8 +37,6 @@ RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fu
 RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 |   orient nat-t finished with: 1 [10.2.0.10]
 ./loadbob deleting connection
-| pass 0: considering CHILD SAs to delete
-| pass 1: considering PARENT SAs to delete
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X
