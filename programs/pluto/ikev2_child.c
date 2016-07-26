@@ -1018,13 +1018,6 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
     insert_state(st);
 
-    /* create a new parent event to rekey again */
-    delete_event(parentst);
-    event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, parentst);
-
-    /* XXX -- this needs a new child state value */
-    //change_state(st, STATE_PARENT_I2);
-
     // record which state we are aiming to replace.
     st->st_replaced = replacing;
 
@@ -1629,9 +1622,6 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
 {
     struct state *st = md->st;
     v2_notification_t rn;
-
-    /* create a new parent event to rekey again */
-    event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now decrypt payload and extract values */
     {
