@@ -2446,7 +2446,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
         stf_status ret;
         struct state *const st = md->st;
 
-        /* Only send response if it is request*/
+        /* Only send response if it is request (we are responder!) */
         if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
             unsigned char *authstart;
             pb_stream      e_pbs, e_pbs_cipher;
@@ -2588,7 +2588,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                             return STF_IGNORE;
                         }
                         else {
-                            DBG(DBG_CONTROLMORE, DBG_log("No. of SPIs to be sent %d", j);
+                            DBG(DBG_CONTROLMORE, DBG_log("Number of SPIs to be sent %d", j);
                                 DBG_dump(" Emit SPIs", spi_buf, j*v2del->isad_spisize));
                         }
 
@@ -2805,7 +2805,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
             }
     }
 
-    return STF_OK;
+    return STF_IGNORE;
 }
 
 /*
