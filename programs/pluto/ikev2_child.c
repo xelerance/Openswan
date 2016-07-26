@@ -1124,6 +1124,10 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     zero(reply_buffer);
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
+    openswan_log("starting rekey of CHILD SA for state=#%lu (expired) using PARENT SA #%lu"
+                 , st->st_replaced
+                 , st->st_clonedfrom);
+
     /* HDR out */
     {
         struct isakmp_hdr r_hdr = md->hdr;
