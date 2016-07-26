@@ -2818,6 +2818,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 void ikev2_delete_out(struct state *st)
 {
     struct state *pst = st;
+    int ret = STF_OK;
 
     if(st->st_clonedfrom != 0) {
         /*child SA*/
@@ -2848,6 +2849,12 @@ void ikev2_delete_out(struct state *st)
         zero(reply_buffer);
         init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "information exchange request packet");
 
+        ret = allocate_msgid_from_parent(pst, &st->st_msgid);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "can not allocate new msgid, delete not sent");
+            goto end;
+        }
+
         /* beginning of data going out */
         authstart = reply_stream.cur;
 
@@ -2860,7 +2867,7 @@ void ikev2_delete_out(struct state *st)
             memcpy(r_hdr.isa_icookie, pst->st_icookie, COOKIE_SIZE);
             r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
             r_hdr.isa_np = ISAKMP_NEXT_v2E;
-            r_hdr.isa_msgid = htonl(pst->st_msgid_nextuse);
+            r_hdr.isa_msgid = htonl(st->st_msgid);
 
             /*set initiator bit if we are initiator*/
             if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
