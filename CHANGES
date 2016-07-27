@@ -4,6 +4,98 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.49dr1 (July 27, 2016)
+
+Implements the IKEv2 child rekey facility in IKEv2.
+
+* added additional debug for rekey event. Delete processing now increment
+  message ID properly, so the numbers are higher. When no parent exists, the
+  child can not be deleted, so message about scanning does not occur [MCR]
+* use allocate_msgid_from_parent properly when sending delete messages [MCR]
+* have process_informational_ikev2 return STF_IGNORE to avoid confusing parent
+  state I3->I3 message, clean up some debug messages and comments [MCR]
+* clear up small comment [MCR]
+* log current time when indicating when next event is [MCR]
+* removed stack of #if0/PATRICKXXX blocks, and reformat to fit screen [MCR]
+* log reason for creating new CHILD SA (rekey) [MCR]
+* do not reset PARENT SA replace timer [MCR]
+* accept reply from responder, do calculations and install new IPsec SA.
+  No further reply is needed [MCR]
+* lp47 test now validates that Nonce and KE are in fact sent [MCR]
+* note that it was decryption that failed [MCR]
+* the first payload in reply should always be Nonce, send it. If PFS is
+  enabled, then send KE. Finally, send SA and Traffic Selectors [MCR]
+* if PFS is enabled, then tell tail() function so that it can send KE [MCR]
+* refactor nonce sending into justship_v2Nonce [MCR]
+* added additional constraints on required encrypted payloads: mistyped
+  Nonce (Initiator/Responder) as Notify! [MCR]
+* mark failure to decrypt as such [MCR]
+* take care to diagnose when a continuation is not found [MCR]
+* refactor out child_notify_process, and child_validate_responder_proposal.
+  Complete inCR1 processing, calculating g^xy if PFS is enabled [MCR]
+* in responder from child, make sure to mark packet as having a reply [MCR]
+* put packet input/output debug into middle of pluto log [MCR]
+* added missing description for C1_REKEY state [MCR]
+* added explicit initial state microsoft code child rekey state [MCR]
+* deal with compiler warnings due to new bounds checker [MCR]
+* move pcap_recv_packet to per-test .c file, as per lp13, and update for
+  reduced debugging in setup portion [MCR]
+* move pcap_recv_packet to per-test .c file, out of common code [MCR]
+* transform lp13-parentI3 like lp10, such that it can take an arbitrary
+  number of pcap files as input; refactored for creating lp48 [MCR]
+* added test case lp47 [MCR]
+* added missing "in hash X" to test case [MCR]
+* added run_one_continuation for use by lp47, which has to run multiple
+  continuations [MCR]
+* run continuations, one at a time [MCR]
+* updated CI1 packet [MCR]
+* run two continuations in test case: one for g^y calculation, one for
+  g^xy calculation [MCR]
+* inCI1_tail routine takes request and replies to it using child_sa_respond [MCR]
+* permit child_sa_respond to be provided with the child state object [MCR]
+* get rid of dead code that tried to kill empty notifications [MCR]
+* accept_v2_KE and accept_v2_nonce do not return the same type, check each
+  properly [MCR]
+* lookup state 3 for rekey debugging [MCR]
+* decrypt incoming packet, having recorded the correct state [MCR]
+* allow compile time directive to expand size of state table [MCR]
+* make ikev2_decrypt_msg available to ikev2_child [MCR]
+* guard against st still being NULL when dealing with initial handshake [MCR]
+* make sure to clear list of seen payloads [MCR]
+* fix ikev2_child I1 packet to have correct np for first encrypted payload [MCR]
+* minor reformat [MCR]
+* change silly message about IKEv2_ROOF [MCR]
+* when receiving a package on responder, look up with the messageid first,
+  and find parent to do retransmission logic. [MCR]
+* added microcode and initial processing for receiviving the CI1 packet [MCR]
+* refactor accept_v2_KE from ikev2_parent [MCR]
+* move SEND_*NOTIFICATION macros to ikev2.h [MCR]
+* added prototypes for child CI1 states on responder [MCR]
+* added forward declaration for recv_pcap [MCR]
+* new test case for receiving IKEv2 CHILD rekey [MCR]
+* actually send the packet once it is formed [MCR]
+* rename test case, open pcap file and make sure it is closed [MCR]
+* add send_packet_close() [MCR]
+* renamed test case [MCR]
+* IKEv2 rekey child calls the right KE, auth, encrypt and nonce functions
+  which have been marked as non-static from ikev2_parent [MCR]
+* minor reformat and addition of positional argument names [MCR]
+* use enum_name rather than explicit reference to array to find state_stories
+  --- english description of current state [MCR]
+* t5: do rekey work [MCR]
+* enable ikev2child_outC1_continue and ikev2child_outC1 and kev2child_outC1_tail [MCR]
+* when deleting SAs, make sure to delete child SAs first, then parent SAs [MCR]
+* added state_stories and state_name for STATE_CHILD_C1 states. Change
+  microcode to take CHILD SA from I3 to C1 [MCR]
+* include IKEv2 states in IS_ISAKMP_SA_ESTABLISHED [MCR]
+* adjustments to seams for change to ipsecdoi_initiate API [MCR]
+* start duplication of ike2 child negotiation into ikev2 child rekey code [MCR]
+* initial test case base for rekey experiment [MCR]
+* added AFTER_CONN() call to do things after conn is established [MCR]
+* split up parentI3 so that it can be reused [MCR]
+* added name for new SA_DELETE event [MCR]
+* move some headers to include/pluto so that they can be used in unit test seams [MCR]
+
 v2.6.48 (June 6, 2016)
 
 Bug fix release.
