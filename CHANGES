@@ -8,6 +8,16 @@ v2.6.49dr1 (July 27, 2016)
 
 Implements the IKEv2 child rekey facility in IKEv2.
 
+* revert "have R2 keep parent SA as md->st, and manipulate the child
+  SA state directly" [MCR]
+* have R2 keep parent SA as md->st, and manipulate the child SA state
+  directly [MCR]
+* use shunt_eroute, rather than eroute() to protect against attempting to
+  replace tunnels with shunts when deleting [MCR]
+* change child final state by adjusting microcode [MCR]
+* initialize the IKE version maj/min when creating state [MCR]
+* explicitely set child state on responder [MCR]
+* clean out some dead comments [MCR]
 * added additional debug for rekey event. Delete processing now increment
   message ID properly, so the numbers are higher. When no parent exists, the
   child can not be deleted, so message about scanning does not occur [MCR]

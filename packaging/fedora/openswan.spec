@@ -1,6 +1,6 @@
 Summary: Openswan IPsec implementation
 Name: openswan
-Version: 2.6.49dr1
+Version: 2.6.49dr2
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
