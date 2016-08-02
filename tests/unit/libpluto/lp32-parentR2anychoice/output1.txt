@@ -620,6 +620,7 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
 |   4c c4 ae 7a  49 94 80 d6  0f 6a c8 2a
+| releasing whack for #X (sock=Y)
 ./parentR2anychoice leak: ikev2_inI2outR2 KE, item size: X
 ./parentR2anychoice leak: ikev2_inI1outR1 KE, item size: X
 ./parentR2anychoice leak: msg_digest, item size: X

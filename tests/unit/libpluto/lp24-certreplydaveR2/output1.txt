@@ -1515,9 +1515,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | out calculated auth:
 |   8e 06 1e 5b  f8 cf 41 bb  7e 82 0c 9b
 | complete v2 state transition with STF_OK
-./certreplydaveR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
+./certreplydaveR2 transition from state STATE_PARENT_R1 to state STATE_CHILD_C1_KEYED
 ./certreplydaveR2 negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.34,93.184.216.34 proto:0 port:0-65535]
-./certreplydaveR2 STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
+./certreplydaveR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -3063,9 +3063,9 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 | out calculated auth:
 |   2d bc 51 06  21 1a 26 33  1b c3 d9 bf
 | complete v2 state transition with STF_OK
-./certreplydaveR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
+./certreplydaveR2 transition from state STATE_PARENT_R1 to state STATE_CHILD_C1_KEYED
 ./certreplydaveR2 negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.35,93.184.216.35 proto:0 port:0-65535]
-./certreplydaveR2 STATE_PARENT_R2: received v2I2, PARENT SA established tunnel mode {ESP=>0x12345678 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
+./certreplydaveR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
 | sending reply packet to 93.184.216.35:500 (from port 500)
 sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (using #4)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
@@ -3161,10 +3161,10 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 |   2d bc 51 06  21 1a 26 33  1b c3 d9 bf
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
-| #1: "rw-carol":500 IKEv0.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
-| #2: "rw-carol":500 IKEv0.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
-| #3: "rw-any"[1] 93.184.216.35:500 IKEv0.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
-| #4: "rw-any"[1] 93.184.216.35:500 IKEv0.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
+| #1: "rw-carol":500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
+| #2: "rw-carol":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
+| #3: "rw-any"[1] 93.184.216.35:500 IKEv2.0 STATE_PARENT_R2 (received v2I2, PARENT SA established); none in -1s; nodpd; retranscnt=0,outorder=0,last=-1,next=1,recv=1; msgid=0; idle; import:respond to friend
+| #4: "rw-any"[1] 93.184.216.35:500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=0; idle; import:respond to friend
 ./certreplydaveR2 leak: reply packet, item size: X
 ./certreplydaveR2 leak: reply packet for ikev2_parent_inI2outR2_tail, item size: X
 ./certreplydaveR2 leak: skeyseed_t1, item size: X

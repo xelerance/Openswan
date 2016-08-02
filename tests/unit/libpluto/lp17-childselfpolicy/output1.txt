@@ -573,6 +573,7 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
 |   ef 87 94 81  a8 d6 f6 2e  a5 9b f7 3f
+| releasing whack for #X (sock=Y)
 ./respondselfR2 leak: ikev2_inI2outR2 KE, item size: X
 ./respondselfR2 leak: ikev2_inI1outR1 KE, item size: X
 ./respondselfR2 leak: msg_digest, item size: X
