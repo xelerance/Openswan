@@ -1984,7 +1984,6 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             np = ISAKMP_NEXT_NONE;
         } else {
             DBG_log("CHILD SA proposals received");
-            /* PAUL: openswan_log("PAUL: this is where we have to check the TSi/TSr"); */
             np = ISAKMP_NEXT_v2SA;
         }
 

@@ -739,22 +739,6 @@ delete_states_by_connection(struct connection *c, bool relations)
 					  , &parent_sa);
     }
 
-#if 0
-    /*
-     * XXX this check is supposed to validate the connection was killed,
-     * but it isn't always the case.
-     */
-    {
-        struct spd_route *sr = &c->spd;
-        while (sr != NULL)
-            {
-                passert(sr->eroute_owner == SOS_NOBODY);
-                passert(sr->routing != RT_ROUTED_TUNNEL);
-                sr = sr->next;
-            }
-    }
-#endif
-
     if (ck == CK_INSTANCE)
     {
 	c->kind = ck;
