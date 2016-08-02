@@ -801,10 +801,8 @@ unroute_connection(struct connection *c)
     {
         cr = sr->routing;
 
-        if (erouted(cr))
+        if (shunt_erouted(cr))
         {
-            /* cannot handle a live one */
-            passert(sr->routing != RT_ROUTED_TUNNEL);
 	    if(kernel_ops->shunt_eroute) {
 		kernel_ops->shunt_eroute(c, sr, RT_UNROUTED
 					 , ERO_DELETE, "delete");
