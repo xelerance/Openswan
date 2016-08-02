@@ -875,7 +875,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         ikev2_print_ts(&st1->st_ts_that);
     }
 
+    /* note that st1 starts == st, but a child SA creation can change that */
     st1->st_connection = c;
+    md->st = st1;
     md->pst= st;
 
     /* start of SA out */
