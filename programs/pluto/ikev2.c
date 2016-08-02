@@ -200,7 +200,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
 
     { .svm_name   = "responder-auth-process",
       .state      = STATE_PARENT_R1,
-      .next_state = STATE_CHILD_C1_KEYED,
+      .next_state = STATE_PARENT_R2,
       .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(IDi) | P(AUTH) | P(SA) | P(TSi) | P(TSr),
