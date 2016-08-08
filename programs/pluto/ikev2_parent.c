@@ -137,6 +137,7 @@ ikev2parent_outI1_withstate(struct state *st
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
+    st->st_policy         = policy & ~POLICY_IPSEC_MASK;
 
     if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
@@ -1339,6 +1340,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(pst);
+    st->st_policy = pst->st_connection->policy & POLICY_IPSEC_MASK;
 
     st->st_msgid = mid;
     insert_state(st);
@@ -1507,6 +1509,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
                           &child_spi,
                           v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
             }
+
+            /* need to force child to KEYING */
+            change_state(st, STATE_CHILD_C0_KEYING);
         } else {
             openswan_log("no pending SAs found, PARENT SA keyed only");
         }

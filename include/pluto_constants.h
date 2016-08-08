@@ -288,6 +288,7 @@ enum state_kind {
      * for all work states. */
     STATE_PARENT_R1,
     STATE_PARENT_R2,
+    STATE_CHILD_C0_KEYING,     /* initial state for a CHILD SA that has started keying */
     STATE_CHILD_C1_KEYED,      /* terminal state for a CHILD SA that has been successfully keyed */
 
     /* INITIATOR child (re)key states */
