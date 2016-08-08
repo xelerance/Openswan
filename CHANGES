@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.49rc1 (August 3, 2016)
+v2.6.49 (August 8, 2016)
 
 Implements the IKEv2 child rekey facility in IKEv2.
 
