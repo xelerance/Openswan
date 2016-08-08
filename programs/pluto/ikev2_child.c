@@ -700,8 +700,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                                   , struct state *st1
                                   , pb_stream *outpbs)
 {
-    struct state      *st = md->st;
-    struct connection *c  = st->st_connection;
+    struct state      *pst= md->pst;
+    struct connection *c  = pst->st_connection;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     stf_status ret;
@@ -738,7 +738,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
@@ -794,7 +794,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,st, sr,RESPONDER
+                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         int bfit_p;
@@ -832,9 +832,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         if (b->kind == CK_TEMPLATE || b->kind == CK_GROUP) {
             /* instantiate it, filling in peer's ID */
-            b = rw_instantiate(b, &st->st_remoteaddr,
+            b = rw_instantiate(b, &pst->st_remoteaddr,
                                NULL,
-                               &st->ikev2.st_peer_id);
+                               &pst->ikev2.st_peer_id);
         }
 
         if (b != c)
@@ -844,7 +844,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             openswan_log("switched from \"%s\" to \"%s\"%s", c->name, b->name
                          , fmt_connection_inst_name(b, instance, sizeof(instance)));
 
-	    st->st_connection = b;	/* kill reference to c */
+	    pst->st_connection = b;	/* kill reference to c */
 
 	    /* this ensures we don't move cur_connection from NULL to
 	     * something, requiring a reset_cur_connection() */
@@ -865,12 +865,12 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         if(st1 == NULL) {
             /* we are sure, so lets make a state for this child SA */
-            st1 = duplicate_state(st);
+            st1 = duplicate_state(pst);
             insert_state(st1);
         }
 
-        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
-        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
+        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, pst->st_localaddr);
+        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, pst->st_remoteaddr);
         ikev2_print_ts(&st1->st_ts_this);
         ikev2_print_ts(&st1->st_ts_that);
     }
@@ -878,7 +878,6 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     /* note that st1 starts == st, but a child SA creation can change that */
     st1->st_connection = c;
     md->st = st1;
-    md->pst= st;
 
     /* start of SA out */
     {
@@ -952,7 +951,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
     ikev2_derive_child_keys(st1, RESPONDER);
     /* install inbound and outbound SPI info */
-    if(!install_ipsec_sa(st, st1, TRUE))
+    if(!install_ipsec_sa(pst, st1, TRUE))
         return STF_FATAL;
 
     /* mark the connection as now having an IPsec SA associated with it. */
