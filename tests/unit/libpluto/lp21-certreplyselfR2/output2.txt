@@ -209,7 +209,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | emitting length of ISAKMP Message: 376
 | complete v2 state transition with STF_OK
 ./certreplyselfR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
-./certreplyselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+./certreplyselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -1278,7 +1278,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   ed 24 a7 23  8a f3 6d 39  b8 e4 6e c1
 | complete v2 state transition with STF_OK
 ./certreplyselfR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
-./certreplyselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+./certreplyselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 1356 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -1366,7 +1366,6 @@ sending 1356 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 |   38 6b f0 91  27 9e 1f be  15 57 53 99  46 09 69 a0
 |   c8 3f 23 f4  b2 77 41 cc  c5 ad a7 29  d8 d0 35 32
 |   ed 24 a7 23  8a f3 6d 39  b8 e4 6e c1
-| releasing whack for #X (sock=Y)
 ./certreplyselfR2 leak: ca string, item size: X
 ./certreplyselfR2 leak: keep id name, item size: X
 ./certreplyselfR2 leak: host ip, item size: X

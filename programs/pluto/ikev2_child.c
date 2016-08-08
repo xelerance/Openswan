@@ -700,8 +700,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                                   , struct state *st1
                                   , pb_stream *outpbs)
 {
-    struct state      *pst= md->pst;
-    struct connection *c  = pst->st_connection;
+    struct state      *pst = md->pst;
+    struct connection *c   = NULL;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     stf_status ret;
@@ -709,6 +709,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
     struct traffic_selector tsi[16], tsr[16];
     unsigned int tsi_n, tsr_n;
+
+    if(pst == NULL) pst = md->st;
+    c = pst->st_connection;
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -866,6 +869,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         if(st1 == NULL) {
             /* we are sure, so lets make a state for this child SA */
             st1 = duplicate_state(pst);
+            st1->st_policy = c->policy & POLICY_IPSEC_MASK;
             insert_state(st1);
         }
 
