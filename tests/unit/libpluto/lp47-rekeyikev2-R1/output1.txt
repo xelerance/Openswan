@@ -282,7 +282,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -828,7 +828,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -1306,7 +1306,9 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   fe 0f 04 6f  24 bf 55 d8  56 bf ea 4d
 | complete v2 state transition with STF_OK
 ./rekeyikev2-R1 transition from state STATE_PARENT_R2 to state STATE_CHILD_C1_KEYED
-./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/00000000)
+./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/00000002)
+./rekeyikev2-R1 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
+./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.168.1.1:500 (from port 500)
 sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf

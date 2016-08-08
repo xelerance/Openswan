@@ -1351,9 +1351,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     delete_event(pst);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
 
-    /* need to force parent state to I2 */
-    change_state(pst, STATE_PARENT_I2);
-
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
                  , pbs_offset(&md->message_pbs), "saved first received packet");
@@ -2240,6 +2237,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         loglog(RC_LOG_SERIOUS, "failed to installed IPsec Child SAs");
         return STF_FATAL;
     }
+
+    /* need to force child to KEYED */
+    change_state(st, STATE_CHILD_C1_KEYED);
 
     /*
      * Delete previous retransmission event.
