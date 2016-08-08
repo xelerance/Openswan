@@ -1866,6 +1866,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
+    md->pst = st;
 
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
