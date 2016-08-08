@@ -1305,6 +1305,8 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
 
+    md->pst = parentst;
+
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
     insert_state(st);
@@ -1340,6 +1342,8 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
 {
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
+
+    md->pst = parentst;
 
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
@@ -1491,7 +1495,7 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 }
 
 stf_status
-ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs)
+ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
 {
     unsigned char *authstart;
 

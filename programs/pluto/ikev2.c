@@ -178,7 +178,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     { .svm_name   = "initiator-auth-process",
-      .state      = STATE_PARENT_I2,
+      .state      = STATE_CHILD_C0_KEYING,
       .next_state = STATE_CHILD_C1_KEYED,
       .flags = SMF2_INITIATOR|SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
@@ -1010,15 +1010,20 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     struct state *st  = md->st;
     enum rc_type w;
 
-    if(pst == NULL) {
-        pst = st;
-    }
-
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
                  , enum_name(&state_names, svm->next_state));
 
-    change_state(pst, svm->next_state);
+    if(pst == NULL) {
+        if(IS_CHILD_SA(st)) {
+            pst = state_with_serialno(st->st_clonedfrom);
+        } else {
+            pst = st;
+        }
+    } else {
+        change_state(pst, svm->next_state);
+    }
+
     w = RC_NEW_STATE + pst->st_state;
 
     ikev2_update_counters(md);

@@ -418,7 +418,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
