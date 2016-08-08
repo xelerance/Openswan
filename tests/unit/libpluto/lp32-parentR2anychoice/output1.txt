@@ -58,6 +58,7 @@ RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credi
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
 RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+0: input from parentI1.pcap
 | *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -117,7 +118,7 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -256,6 +257,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30
+1: output to OUTPUT/parentR2anychoice.pcap
+1: input from parentI2.pcap
 | *received 556 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
@@ -294,6 +297,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -350,7 +357,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
 | R2 calculated auth:  30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 | R2  provided  auth:  30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
-| authenticator matched
+| authenticator matched, np=35
 | data before decryption:
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
@@ -591,7 +598,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   4c c4 ae 7a  49 94 80 d6  0f 6a c8 2a
 | complete v2 state transition with STF_OK
 ./parentR2anychoice transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
-./parentR2anychoice STATE_PARENT_R2: received v2I2, PARENT SA established (msgid: 00000000)
+./parentR2anychoice STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
 | sending reply packet to 192.168.1.1:500 (from port 500)
 sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -613,6 +620,7 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
 |   4c c4 ae 7a  49 94 80 d6  0f 6a c8 2a
+| releasing whack for #X (sock=Y)
 ./parentR2anychoice leak: ikev2_inI2outR2 KE, item size: X
 ./parentR2anychoice leak: ikev2_inI1outR1 KE, item size: X
 ./parentR2anychoice leak: msg_digest, item size: X
@@ -657,6 +665,3 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2anychoice leak: default conf ipsec_conf_dir, item size: X
 ./parentR2anychoice leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
-0: input from parentI1.pcap
-1: output to OUTPUT/parentR2anychoice.pcap
-1: input from parentI2.pcap

@@ -9,19 +9,23 @@ pb_stream      reply_stream;
 time_t         packet_time=0;
 pcap_dumper_t *packet_save = NULL;
 
+void send_packet_close(void)
+{
+  if(packet_save != NULL) {
+    pcap_dump_close(packet_save);
+    packet_save = NULL;
+  }
+}
+
 void send_packet_setup_pcap(char *file)
 {
 	pcap_t *pt;
 
-        if(packet_save != NULL) {
-          pcap_dump_close(packet_save);
-          packet_save = NULL;
-        }
+        send_packet_close();
 
 	pt = pcap_open_dead(DLT_NULL, 9000);
 	packet_save = pcap_dump_open(pt, file);
 }
-
 
 bool
 send_packet(struct state *st, const char *where, bool verbose)

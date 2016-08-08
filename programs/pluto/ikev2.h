@@ -12,6 +12,24 @@ extern stf_status ikev2parent_outI1(int whack_sock
 				    , struct xfrm_user_sec_ctx_ike * uctx
 				    );
 
+extern stf_status ipsec_outI1(int whack_sock
+                              , struct state *isakmp_sa
+                              , struct connection *c
+                              , lset_t policy
+                              , unsigned long try
+                              , so_serial_t replacing
+                              , struct xfrm_user_sec_ctx_ike * uctx);
+
+extern stf_status ikev2child_outC1(int whack_sock
+                            , struct state *parentst
+                            , struct connection *c
+                            , lset_t policy
+                            , unsigned long try /* how many attempts so far */
+                            , so_serial_t replacing
+                            , struct xfrm_user_sec_ctx_ike * uctx UNUSED
+                                   );
+
+
 extern stf_status ikev2parent_outI1_withstate(struct state *st
                             , int whack_sock
                             , struct connection *c
@@ -47,9 +65,29 @@ extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
+extern stf_status ikev2child_inCI1_pfs(struct msg_digest *md);
+extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
+extern stf_status ikev2child_inCR1_pfs(struct msg_digest *md);
+extern stf_status ikev2child_inCR1_nopfs(struct msg_digest *md);
+extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
+                                                          , struct state *st);
+extern stf_status ikev2_child_notify_process(struct msg_digest *md
+                                             , struct state *st);
+
+#define SEND_V2_NOTIFICATION_AA(t, d) \
+    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
+    else send_v2_notification_from_md(md, t, d);
+
+
+#define SEND_V2_NOTIFICATION(t)                                            \
+    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
+    else send_v2_notification_from_md(md, t, NULL);
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
+extern const struct state_v2_microcode ikev2_childrekey_microcode;
 
+
+extern stf_status accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *name);
 extern v2_notification_t accept_v2_nonce(struct msg_digest *md, chunk_t *dest
 				      , const char *name);
 
@@ -183,6 +221,7 @@ extern int ikev2_parse_ts(struct payload_digest *ts_pd
 				, unsigned int array_max);
 
 extern stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                         , struct state *childst
 					 , pb_stream *outpbs);
 
 extern struct traffic_selector ikev2_end_to_ts(struct end *e, ip_address endpoint);
@@ -206,6 +245,29 @@ extern stf_status ikev2_send_cert( struct state *st
 extern bool ship_v2N (unsigned int np, u_int8_t  critical,
 				    u_int8_t protoid, chunk_t *spi,
 					u_int16_t type, chunk_t *n_data, pb_stream *rbody);
+
+extern bool justship_v2KE(struct state *st UNUSED
+                          , chunk_t *g, unsigned int oakley_group
+                          , pb_stream *outs, u_int8_t np);
+extern bool justship_v2Nonce(struct state *st, pb_stream *outpbs, chunk_t *nonce, unsigned int np);
+
+extern void ikev2_padup_pre_encrypt(struct msg_digest *md
+                                    , pb_stream *e_pbs_cipher);
+
+extern unsigned char *ikev2_authloc(struct msg_digest *md
+                                    , pb_stream *e_pbs);
+
+extern stf_status ikev2_encrypt_msg(struct msg_digest *md,
+                                    enum phase1_role init,
+                                    unsigned char *authstart,
+                                    unsigned char *iv,
+                                    unsigned char *encstart,
+                                    unsigned char *authloc,
+                                    pb_stream *e_pbs UNUSED,
+                                    pb_stream *e_pbs_cipher);
+extern stf_status ikev2_decrypt_msg(struct msg_digest *md
+                                    , enum phase1_role init);
+
 
 extern bool force_busy;  /* config option to emulate responder under DOS */
 

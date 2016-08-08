@@ -336,6 +336,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
 
 so_serial_t
 ipsecdoi_initiate(int whack_sock
+                  , struct state *old_child_state
 		  , struct connection *c
 		  , lset_t policy
 		  , unsigned long try
@@ -352,8 +353,17 @@ ipsecdoi_initiate(int whack_sock
      * Note: there is no way to initiate with a Road Warrior.
      */
     so_serial_t created;
-    struct state *st = find_phase1_state(c
-	, ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
+
+    struct state *st = NULL;
+
+    if(old_child_state) {
+        st = state_with_serialno(old_child_state->st_clonedfrom);
+    }
+
+    if(st == NULL) {
+        st = find_phase1_state(c
+                               , ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
+    }
 
     if (st == NULL)
     {
@@ -387,11 +397,12 @@ ipsecdoi_initiate(int whack_sock
 	return st->st_serialno;
       }
       else {
+
 	/* ??? we assume that peer_nexthop_sin isn't important:
 	 * we already have it from when we negotiated the ISAKMP SA!
 	 * It isn't clear what to do with the error return.
 	 */
-	(void) quick_outI1(whack_sock, st, c, policy, try
+	(void) ipsec_outI1(whack_sock, st, c, policy, try
 			   , replacing
 			   , uctx
 			  );
@@ -424,7 +435,7 @@ ipsecdoi_replace(struct state *st
     lset_t policy = st->st_policy;
     so_serial_t  newstateno;
 
-    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state) || (st->st_state == STATE_PARENT_I2))
+    if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state))
     {
 	struct connection *c = st->st_connection;
 	policy = c->policy & ~POLICY_IPSEC_MASK;
@@ -466,7 +477,7 @@ ipsecdoi_replace(struct state *st
 		policy |= POLICY_TUNNEL;
 	}
 	passert(HAS_IPSEC_POLICY(policy));
-	ipsecdoi_initiate(whack_sock, st->st_connection, policy, try
+	ipsecdoi_initiate(whack_sock, st, st->st_connection, policy, try
 			  , st->st_serialno, st->st_import
 			  , st->sec_ctx);
     }

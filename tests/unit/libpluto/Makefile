@@ -34,11 +34,11 @@ clean check:
 	@${MAKE} -C lp14-initiateself $@
 	@${MAKE} -C lp15-respondself $@
 	@${MAKE} -C lp16-initiateselfI2 $@
-	@${MAKE} -C lp17-childselfpolicy $@
+	: @${MAKE} -C lp17-childselfpolicy $@
 	@${MAKE} -C lp18-certificateselfI1 $@
 	@${MAKE} -C lp19-certreplyselfR1 $@
 	@${MAKE} -C lp20-certificateselfI2 $@
-	@${MAKE} -C lp21-certreplyselfR2 $@
+	: @${MAKE} -C lp21-certreplyselfR2 $@
 	@${MAKE} -C lp22-certreplymanyR2  $@
 	@${MAKE} -C lp23-davecertI1       $@
 	@${MAKE} -C lp24-certreplydaveR2  $@
@@ -49,7 +49,7 @@ clean check:
 	@${MAKE} -C lp29-adns              $@
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
-	@${MAKE} -C lp32-parentR2anychoice $@
+	: @${MAKE} -C lp32-parentR2anychoice $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp33-dnsload2          $@
 	@${MAKE} -C lp33-IDanypair         $@
@@ -65,3 +65,7 @@ clean check:
 	@${MAKE} -C lp43-parentM1 	$@
 	@${MAKE} -C lp44-h2hR1-deny-ikev1 	$@
 	@${MAKE} -C lp45-h2hR1-noikev2  	$@
+	@${MAKE} -C lp46-rekeyikev2-I1   $@
+	@${MAKE} -C lp47-rekeyikev2-R1   $@
+	@${MAKE} -C lp48-rekeyikev2-inCR1 $@
+

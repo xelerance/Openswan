@@ -94,7 +94,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| v2 state object not found in hash 4
+| v2 state object not found
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -235,6 +235,8 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   75 74 6f 75  6e 69 74 30
 ./certreplyselfR1 deleting state #1 (STATE_PARENT_R1)
 ./certreplyselfR1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./certreplyselfR1 leak: ikev2_inI1outR1 KE, item size: X
 ./certreplyselfR1 leak: msg_digest, item size: X
 ./certreplyselfR1 leak: issuer dn, item size: X

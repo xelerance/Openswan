@@ -14,7 +14,9 @@
 
 extern void echo_hdr(struct msg_digest *md, bool enc, u_int8_t np);
 
-extern so_serial_t ipsecdoi_initiate(int whack_sock, struct connection *c
+extern so_serial_t ipsecdoi_initiate(int whack_sock
+                                     , struct state *oldstate
+                                     , struct connection *c
 			      , lset_t policy, unsigned long try
 			      , so_serial_t replacing
 			      , enum crypto_importance importance

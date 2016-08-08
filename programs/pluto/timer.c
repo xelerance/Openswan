@@ -700,11 +700,12 @@ next_event(void)
 	    DBG_log("next event %s in %ld seconds"
 		, enum_show(&timer_event_names, evlist->ev_type)
 		, (long)evlist->ev_time - (long)tm);
-	else
-	    DBG_log("next event %s in %ld seconds for #%lu"
+	else {
+	    DBG_log("next event %s in %ld seconds for #%lu (%s)"
 		, enum_show(&timer_event_names, evlist->ev_type)
 		, (long)evlist->ev_time - (long)tm
-		, evlist->ev_state->st_serialno));
+                    , evlist->ev_state->st_serialno, oswtimestr()));
+        }
 
     if (evlist->ev_time - tm <= 0)
 	return 0;

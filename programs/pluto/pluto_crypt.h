@@ -242,6 +242,7 @@ extern void calc_dh_iv(struct pluto_crypto_req *r);
 extern void calc_dh(struct pluto_crypto_req *r);
 extern void calc_dh_v2(struct pluto_crypto_req *r);
 
+extern int unpack_v2KE(struct state *st, struct pluto_crypto_req *r, chunk_t *g);
 extern void unpack_KE(struct state *st
 		      , struct pluto_crypto_req *r
 		      , chunk_t *g);
