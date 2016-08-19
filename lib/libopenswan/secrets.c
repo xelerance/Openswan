@@ -1268,7 +1268,8 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    s = alloc_thing(struct secret, "secret");
 
 	    if (s != NULL) {
-	    s->ids = NULL;
+                zero(s);
+                s->ids = NULL;
 	    s->pks.kind = PPK_PSK;	/* default */
 	    setchunk(s->pks.u.preshared_secret, NULL, 0);
 	    s->secretlineno=flp->lino;
