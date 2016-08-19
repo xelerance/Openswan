@@ -1,7 +1,9 @@
-./sameid leak detective found no leaks
-t1
-t2
-t3
-t4
-t5
-t6
+./verifysigs loading secrets from "key-0512.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQOkietpl
+| signing hash with RSA Key *AQOkietpl
+./verifysigs leak detective found no leaks
+0000: 91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50 
+0000: 8d 5f 89 71  48 1a b3 dd  9a 0b fc 5e  cf eb b3 b2 
+0010: f9 e6 ac 35  c3 6a 83 1a  56 52 32 bc  ba a4 02 ed 
+0020: 5e 4d 15 22  04 3c 92 1d  0b a4 e6 6b  b7 6e 69 10 
+0030: a5 6b ac 60  73 66 bd c3  a1 4a 94 b9  76 22 44 17 

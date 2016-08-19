@@ -81,6 +81,13 @@
 // this linked list is part of pluto for now.
 //struct secret *pluto_secrets = NULL;
 
+const u_char der_digestinfo[]={
+    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
+    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
+};
+const int der_digestinfo_len=sizeof(der_digestinfo);
+
+
 /*
  * compute an RSA signature with PKCS#1 padding
  */
@@ -122,6 +129,60 @@ sign_hash(const struct RSA_private_key *k
     pfree(ch.ptr);
 
     mpz_clear(t1);
+}
+
+err_t verify_signed_hash(const struct RSA_public_key *k
+                         , u_char *s, unsigned int s_max_octets
+                         , u_char **psig
+                         , size_t hash_len
+                         , const u_char *sig_val, size_t sig_len)
+{
+    unsigned int padlen;
+
+    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
+    {
+	chunk_t temp_s;
+	MP_INT c;
+
+	n_to_mpz(&c, sig_val, sig_len);
+	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
+
+	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
+        if(s_max_octets < sig_len) {
+            return "2""exponentiation failed; too many octets";
+        }
+	memcpy(s, temp_s.ptr, sig_len);
+	pfree(temp_s.ptr);
+	mpz_clear(&c);
+    }
+
+    /* check signature contents */
+    /* verify padding */
+    padlen = sig_len - 3 - (hash_len+der_digestinfo_len);
+    /* now check padding */
+    (*psig) = s;
+
+    DBG(DBG_CRYPT,
+	DBG_dump("v2rsa decrypted SIG1:", (*psig), sig_len));
+
+    if((*psig)[0]    != 0x00
+       || (*psig)[1] != 0x01
+       || (*psig)[padlen+2] != 0x00) {
+	return "3""SIG padding does not check out";
+    }
+
+    /* skip padding */
+    (*psig) += padlen+3;
+
+    /* 2 verify that the has was done with SHA1 */
+    if(memcmp(der_digestinfo, (*psig), der_digestinfo_len)!=0) {
+	return "SIG not performed with SHA1";
+    }
+
+    (*psig) += der_digestinfo_len;
+
+    /* return SUCCESS */
+    return NULL;
 }
 
 /*
