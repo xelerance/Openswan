@@ -3,110 +3,76 @@
 #include "openswan.h"
 #include "openswan/passert.h"
 #include "constants.h"
-#include "openswan/ipsec_policy.h"
 #include "oswalloc.h"
 #include "oswlog.h"
+#include "secrets.h"
 #include "id.h"
+#include "hexdump.c"
 const char *progname;
+
+struct prng not_very_random;
 
 void exit_tool(int stat)
 {
     exit(stat);
 }
 
-/* an ID_NONE will same_exact_id() match only another ID_NONE */
-void t1(void)
+int count_secrets(struct secret *secret,
+                  struct private_key_stuff *pks,
+                  void *uservoid)
 {
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t1\n");
+    int *pcount = (int *)uservoid;
+    (*pcount)++;
 
-    a.kind = ID_NONE;
-    b.kind = ID_NONE;
-
-    passert(same_exact_id(&a,&b) == 1);
+    return 1;
 }
 
-/* an ID_MYID will same_exact_id() match only another ID_MYID */
-void t2(void)
+void verify_sig_key(const char *keyfile, unsigned int keysize)
 {
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t2\n");
+    struct secret *secrets = NULL;
+    char   thingtosign[16];
+    char   signature_buf[8192];
+    int    count;
+    struct private_key_stuff *pks1;
+    char secretsfile[512];
 
-    a.kind = ID_MYID;
-    b.kind = ID_MYID;
+    memset(signature_buf, 0, sizeof(signature_buf));
+    snprintf(secretsfile, sizeof(secretsfile), "key-%s.secrets", keyfile);
 
-    passert(same_exact_id(&a,&b) == 1);
+    osw_load_preshared_secrets(&secrets, TRUE, secretsfile, NULL);
+    assert(secrets != NULL);
+    count = 0;
+    osw_foreach_secret(secrets, count_secrets, &count);
+    assert(count == 1);
+    pks1 = osw_get_pks(secrets);
+    assert(pks1->kind == PPK_RSA);
+    assert(keysize <= sizeof(signature_buf));
+
+    /* now pick number at pseudo-random */
+    prng_bytes(&not_very_random, thingtosign, 16);
+    hexdump(thingtosign, 0, 16);
+
+    /* XXX should also run this with a signature_buf that is TOO SMALL */
+    sign_hash(&pks1->u.RSA_private_key, thingtosign, 16,
+              signature_buf, keysize);
+
+    hexdump(signature_buf, 0, sizeof(signature_buf));
 }
-
-/* an ID_MYID will same_exact_id() match only another ID_MYID */
-void t3(void)
-{
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t3\n");
-
-    a.kind = ID_MYID;
-    b.kind = ID_NONE;
-
-    passert(same_exact_id(&a,&b) == 0);
-}
-
-/* an ID_NONE will same_id() match anything */
-void t4(void)
-{
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t4\n");
-
-    a.kind = ID_MYID;
-    b.kind = ID_NONE;
-
-    passert(same_exact_id(&a,&b) == 0);
-}
-
-/* an FQDN will match another FQDN with a trailing .  */
-void t5(void)
-{
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t5\n");
-
-    atoid("example.com", &a, FALSE);
-    atoid("example.com.", &b,FALSE);
-
-    passert(same_exact_id(&a,&b) == 1);
-}
-
-/* an FROMCERT will not match FQDN  */
-void t6(void)
-{
-    struct id a,b;
-    zero(&a); zero(&b);
-    printf("t6\n");
-
-    atoid("%fromcert", &a, FALSE);
-    atoid("example.com", &b,FALSE);
-
-    passert(same_exact_id(&a,&b) == 0);
-}
-
 
 int main(int argc, char *argv[])
 {
     int i;
     struct id one;
 
+    load_oswcrypto();
+    prng_init(&not_very_random, "01234567", 8);
+
     progname = argv[0];
 
     tool_init_log();
 
-    t1();
-    t2();
-    t3();
-    t4();
-    t5(); t6();
+    set_debugging(DBG_CONTROL);
+    verify_sig_key("0512", 512/8);
 
     report_leaks();
     tool_close_log();

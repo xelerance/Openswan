@@ -60,12 +60,6 @@
 
 #include "oswcrypto.h"
 
-static u_char der_digestinfo[]={
-    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
-    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
-};
-static int der_digestinfo_len=sizeof(der_digestinfo);
-
 bool ikev2_calculate_rsa_sha1(struct state *st
 			      , enum phase1_role role
 			      , unsigned char *idhash
@@ -121,7 +115,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
     size_t sig_len = pbs_left(sig_pbs);
     u_char s[RSA_MAX_OCTETS];	/* for decrypted sig_val */
     u_char *sig;
-    unsigned int padlen;
+    err_t e = NULL;
     const struct RSA_public_key *k = &kr->u.rsa;
 
     if (k == NULL)
@@ -135,44 +129,9 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 	return "1""SIG length does not match public key length";
     }
 
-    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
-    {
-	chunk_t temp_s;
-	MP_INT c;
-
-	n_to_mpz(&c, sig_val, sig_len);
-	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
-
-	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
-	memcpy(s, temp_s.ptr, sig_len);
-	pfree(temp_s.ptr);
-	mpz_clear(&c);
+    if((e = verify_signed_hash(k, s, sizeof(s), &sig, hash_len, sig_val, sig_len)) != NULL) {
+        return e;
     }
-
-    /* check signature contents */
-    /* verify padding */
-    padlen = sig_len - 3 - (hash_len+der_digestinfo_len);
-    /* now check padding */
-    sig = s;
-
-    DBG(DBG_CRYPT,
-	DBG_dump("v2rsa decrypted SIG1:", sig, sig_len));
-
-    if(sig[0]    != 0x00
-       || sig[1] != 0x01
-       || sig[padlen+2] != 0x00) {
-	return "2""SIG padding does not check out";
-    }
-
-    /* skip padding */
-    sig += padlen+3;
-
-    /* 2 verify that the has was done with SHA1 */
-    if(memcmp(der_digestinfo, sig, der_digestinfo_len)!=0) {
-	return "SIG not performed with SHA1";
-    }
-
-    sig += der_digestinfo_len;
 
     DBG(DBG_CRYPT,
 	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
