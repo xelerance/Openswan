@@ -1,0 +1,4 @@
+This unit test case reads an ipsec.secrets file to find an RSA key in it.
+It then uses the private key found within to sign something (pseudo-random), and then
+uses the public key to validate that the signature was sane.
+
