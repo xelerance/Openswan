@@ -108,6 +108,9 @@ int main(int argc, char *argv[])
 
     set_debugging(DBG_CONTROL|DBG_CRYPT);
     verify_sig_key("0512", 512/8);
+    verify_sig_key("1024", 1024/8);
+    verify_sig_key("2048", 2048/8);
+    verify_sig_key("3072", 3072/8);
 
     report_leaks();
     tool_close_log();
