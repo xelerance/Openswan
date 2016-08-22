@@ -63,6 +63,7 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
               signature_buf, keysize);
 
     hexdump(signature_buf, 0, sizeof(signature_buf));
+    printf("\n");
 
     /* now verify the signature using the public key part of this secret */
 
@@ -111,6 +112,7 @@ int main(int argc, char *argv[])
     verify_sig_key("1024", 1024/8);
     verify_sig_key("2048", 2048/8);
     verify_sig_key("3072", 3072/8);
+    verify_sig_key("4096", 4096/8);
 
     report_leaks();
     tool_close_log();

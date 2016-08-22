@@ -82,7 +82,9 @@
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
 | v2rsa computed hash:
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
-./verifysigs leak detective found no leaks
+./verifysigs loading secrets from "key-4096.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQPRudGr2
+| signing hash with RSA Key *AQPRudGr2
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 91 
 0010: d5 f3 1f 46  27 25 30 30  53 bb 5a f2  ae e3 50 00 
@@ -90,6 +92,7 @@ signed_len: 31
 0010: fa 00 ce 3f  dd f7 d9 cc  03 18 4c 6e  77 78 81 c8 
 0020: 0a d1 73 a6  4d 61 5a 14  4e 5f 7a 47  f6 cf 49 b9 
 0030: ae e3 56 c1  40 9a 33 96  54 2c 27 20  83 1e 17 f6 
+
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 07 
 0010: ce 4a 50 2e  7c 96 32 a1  50 6b 52 79  4a c4 a6 00 
@@ -101,6 +104,7 @@ signed_len: 31
 0050: c4 fe 83 f0  61 98 c4 eb  60 66 5f 90  38 07 02 eb 
 0060: 26 96 44 50  ca c0 d4 c5  7b 50 a8 89  91 de 77 0f 
 0070: 76 21 61 43  b3 d6 98 22  71 d5 9c 86  57 c4 03 39 
+
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 48 
 0010: 5e ac fb 1e  17 d9 30 d3  3c 7c 90 9b  da 9d 13 00 
@@ -120,6 +124,7 @@ signed_len: 31
 00d0: d5 4e 7b ba  b7 f9 e2 47  08 31 8f 43  53 10 13 76 
 00e0: d4 03 a6 b5  36 4a e2 77  ce 2a 97 db  15 a8 bb ca 
 00f0: fb 33 7a 7e  f4 75 31 13  7d fe 54 0b  d3 45 18 69 
+
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 76 
 0010: f5 d9 c1 82  6f 05 b1 04  5b ee f2 f6  73 13 9d 00 
@@ -147,3 +152,78 @@ signed_len: 31
 0150: f8 8b 4c a3  84 f8 88 6f  e5 97 ad 4f  79 30 3d d9 
 0160: a5 ad 03 78  28 59 bb b2  c4 c2 d1 c9  52 ce 7e 49 
 0170: 27 73 16 6c  d4 91 41 6f  43 b8 25 93  fb 54 0b d4 
+
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 1a 
+0010: d8 76 eb 4a  aa ea d8 8d  2d 1b c7 49  5a 10 9a 00 
+0000: bb 0c 40 24  ac fd 91 c9  cf fe e0 26  78 82 0f d4 
+0010: c8 8a cb f8  f6 65 26 7e  0e 10 c1 80  cb 2c 83 94 
+0020: 62 1b da 35  29 9e 6f 02  e9 0f 62 ce  ba 1d ed 11 
+0030: 8e 17 44 08  fb 17 3f 3f  ef 29 a4 8a  d5 ee c7 f7 
+0040: 16 b2 31 6a  d2 f4 1f dc  55 c1 d8 4a  bc a4 74 4c 
+0050: 21 c4 0f 2f  e0 2e 0e 75  a9 0f e0 e6  b4 d7 cb f9 
+0060: 47 9b 22 6d  70 a1 56 de  dd e7 f5 a1  48 fe cf 1d 
+0070: c9 df a5 | v2rsa decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
+| v2rsa decrypted SIG:
+|   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
+| v2rsa computed hash:
+|   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
+./verifysigs leak detective found no leaks
+5b  ff 0a fb d8  3a 0e 1c fa  ad 51 00 f0 
+0080: 3d a0 35 e7  0d d7 91 22  5b 14 72 12  d7 01 8c ac 
+0090: ae a5 b0 bc  6c 43 43 3e  b8 8c 97 1a  76 35 b1 93 
+00a0: 96 e2 eb 0c  b4 ae 91 fd  bf d5 7f df  df 1a 7e 9e 
+00b0: cb 6a 81 d1  23 04 af 10  7b 18 7a f3  7c aa 7a 8f 
+00c0: 8c 4d d2 c1  32 ed e6 44  57 f0 66 7c  8a 47 e8 7d 
+00d0: f6 de 9d 7d  4b 5d 76 47  7b e2 85 ed  cc ca d9 20 
+00e0: d8 a5 39 84  a1 6f 59 29  93 c6 66 17  5b d8 5b 7c 
+00f0: 54 af 04 fd  34 8b 17 f3  be e1 29 43  86 ef f0 f9 
+0100: 02 01 62 84  cd d6 25 79  73 41 88 e2  f6 82 4d 2c 
+0110: 89 47 e1 2c  78 37 24 0b  41 7e 58 83  a8 85 e4 22 
+0120: f4 33 ed d9  a5 da 74 65  0b 87 8f 36  f5 ac 18 1b 
+0130: dc 22 59 ea  39 98 2d 32  57 25 29 f8  b3 96 03 e1 
+0140: 8e 17 8c 5f  bd fa f6 04  87 18 82 a1  94 05 c8 cd 
+0150: c9 e7 c8 26  08 b7 f2 0b  c2 c3 86 19  c5 ac a8 d2 
+0160: 46 46 f3 7c  ff cb 68 20  8a 26 e3 7e  2e 6f 21 41 
+0170: 79 bd f2 6b  a4 c7 98 85  c9 f2 f7 be  f5 fc 30 c5 
+0180: db 11 fb 67  4a 77 9f 05  6c 2d dc ee  0c df 53 97 
+0190: 4d 33 53 42  00 58 48 4e  3d f2 15 2f  60 f6 b5 22 
+01a0: b7 3e 17 0a  49 5e 06 d4  e6 f2 6f cc  ca a5 13 73 
+01b0: 3f 69 08 31  df 5b 87 2a  a0 b7 4e f3  52 99 6e d9 
+01c0: 12 65 69 94  30 a9 ca 54  e5 37 df aa  08 ba 3c 80 
+01d0: ec 9c d3 27  4c d5 f0 a4  73 5c 3d 79  e4 63 06 36 
+01e0: 57 96 f8 61  02 e7 60 63  8b 94 48 88  77 26 7c 92 
+01f0: 54 24 18 e6  07 2b 6e 6a  0b 7b f9 2d  18 79 4d 74 
+
