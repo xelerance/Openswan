@@ -7,7 +7,9 @@
 #include "oswlog.h"
 #include "secrets.h"
 #include "id.h"
+#include "pluto/keys.h"
 #include "hexdump.c"
+
 const char *progname;
 
 struct prng not_very_random;
@@ -30,7 +32,8 @@ int count_secrets(struct secret *secret,
 void verify_sig_key(const char *keyfile, unsigned int keysize)
 {
     struct secret *secrets = NULL;
-    char   thingtosign[16];
+    char   thingtosign[64];
+    size_t signed_len;
     char   signature_buf[8192];
     int    count;
     struct private_key_stuff *pks1;
@@ -49,14 +52,46 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
     assert(keysize <= sizeof(signature_buf));
 
     /* now pick number at pseudo-random */
-    prng_bytes(&not_very_random, thingtosign, 16);
-    hexdump(thingtosign, 0, 16);
+    memcpy(thingtosign, der_digestinfo, der_digestinfo_len);
+    prng_bytes(&not_very_random, thingtosign+der_digestinfo_len, 16);
+    signed_len = 16+der_digestinfo_len;
+    printf("signed_len: %d\n", (int)signed_len);
+    hexdump(thingtosign, 0, signed_len);
 
     /* XXX should also run this with a signature_buf that is TOO SMALL */
-    sign_hash(&pks1->u.RSA_private_key, thingtosign, 16,
+    sign_hash(&pks1->u.RSA_private_key, thingtosign, signed_len,
               signature_buf, keysize);
 
     hexdump(signature_buf, 0, sizeof(signature_buf));
+
+    /* now verify the signature using the public key part of this secret */
+
+    {
+        u_char s[RSA_MAX_OCTETS];	/* working space for decrypted sig_val */
+        u_char *sig = NULL;
+        const u_char *sig_val = signature_buf;
+        size_t        sig_len = keysize;
+        size_t       hash_len = 16;
+        const struct RSA_public_key *k = &pks1->u.RSA_private_key.pub;
+        err_t e = NULL;
+
+        e = verify_signed_hash(k, s, sizeof(s), &sig, signed_len, sig_val, sig_len);
+        if(e) puts(e);
+        assert(e == NULL);
+
+        /* 2 verify that the has was done with SHA1 */
+        assert(memcmp(der_digestinfo, sig, der_digestinfo_len) ==0);
+        sig += der_digestinfo_len;
+
+
+        DBG(DBG_CRYPT,
+            DBG_dump("v2rsa decrypted SIG:", sig, hash_len);
+            DBG_dump("v2rsa computed hash:", thingtosign+der_digestinfo_len, hash_len);
+            );
+
+        assert(memcmp(sig, thingtosign+der_digestinfo_len, hash_len) == 0);
+    }
+
 }
 
 int main(int argc, char *argv[])
@@ -71,7 +106,7 @@ int main(int argc, char *argv[])
 
     tool_init_log();
 
-    set_debugging(DBG_CONTROL);
+    set_debugging(DBG_CONTROL|DBG_CRYPT);
     verify_sig_key("0512", 512/8);
 
     report_leaks();
