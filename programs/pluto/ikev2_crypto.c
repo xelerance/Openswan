@@ -133,9 +133,15 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
         return e;
     }
 
+    /* 2 verify that the has was done with SHA1 */
+    if(memcmp(der_digestinfo, sig, der_digestinfo_len)!=0) {
+	return "SIG not performed with SHA1";
+    }
+    sig += der_digestinfo_len;
+
     DBG(DBG_CRYPT,
-	DBG_dump("v2rsa decrypted SIG:", hash_val, hash_len);
-	DBG_dump("v2rsa computed hash:", sig, hash_len);
+	DBG_dump("v2rsa decrypted SIG:", sig, hash_len);
+	DBG_dump("v2rsa computed hash:", hash_val, hash_len);
     );
 
     if(memcmp(sig, hash_val, hash_len) != 0) {

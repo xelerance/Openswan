@@ -89,7 +89,8 @@ const int der_digestinfo_len=sizeof(der_digestinfo);
 
 
 /*
- * compute an RSA signature with PKCS#1 padding
+ * compute an RSA signature with PKCS#1 padding: Note that this assumes that any DER encoding is
+ *    **INCLUDED** as part of the hash_val/hash_len.
  */
 void
 sign_hash(const struct RSA_private_key *k
@@ -131,6 +132,10 @@ sign_hash(const struct RSA_private_key *k
     mpz_clear(t1);
 }
 
+/*
+ * verify an RSA signature with PKCS#1 padding.
+ *
+ */
 err_t verify_signed_hash(const struct RSA_public_key *k
                          , u_char *s, unsigned int s_max_octets
                          , u_char **psig
@@ -157,8 +162,8 @@ err_t verify_signed_hash(const struct RSA_public_key *k
     }
 
     /* check signature contents */
-    /* verify padding */
-    padlen = sig_len - 3 - (hash_len+der_digestinfo_len);
+    /* verify padding (not including any DER digest info! */
+    padlen = sig_len - 3 - hash_len;
     /* now check padding */
     (*psig) = s;
 
@@ -173,13 +178,6 @@ err_t verify_signed_hash(const struct RSA_public_key *k
 
     /* skip padding */
     (*psig) += padlen+3;
-
-    /* 2 verify that the has was done with SHA1 */
-    if(memcmp(der_digestinfo, (*psig), der_digestinfo_len)!=0) {
-	return "SIG not performed with SHA1";
-    }
-
-    (*psig) += der_digestinfo_len;
 
     /* return SUCCESS */
     return NULL;
