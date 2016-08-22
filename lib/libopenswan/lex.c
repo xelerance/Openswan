@@ -221,3 +221,10 @@ flushline(const char *m)
 	return FALSE;
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

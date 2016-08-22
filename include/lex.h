@@ -37,3 +37,10 @@ extern void lexclose(void);
 
 extern bool shift(void);
 extern bool flushline(const char *m);
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
