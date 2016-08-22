@@ -10,6 +10,78 @@
 |   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
 | v2rsa computed hash:
 |   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
+./verifysigs loading secrets from "key-1024.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQN3OKgAN
+| signing hash with RSA Key *AQN3OKgAN
+| v2rsa decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
+| v2rsa decrypted SIG:
+|   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
+| v2rsa computed hash:
+|   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
+./verifysigs loading secrets from "key-2048.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQO8vQM7b
+| signing hash with RSA Key *AQO8vQM7b
+| v2rsa decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
+| v2rsa decrypted SIG:
+|   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
+| v2rsa computed hash:
+|   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
+./verifysigs loading secrets from "key-3072.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQOnXoqI3
+| signing hash with RSA Key *AQOnXoqI3
+| v2rsa decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
+| v2rsa decrypted SIG:
+|   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
+| v2rsa computed hash:
+|   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
 ./verifysigs leak detective found no leaks
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 91 
@@ -18,3 +90,60 @@ signed_len: 31
 0010: fa 00 ce 3f  dd f7 d9 cc  03 18 4c 6e  77 78 81 c8 
 0020: 0a d1 73 a6  4d 61 5a 14  4e 5f 7a 47  f6 cf 49 b9 
 0030: ae e3 56 c1  40 9a 33 96  54 2c 27 20  83 1e 17 f6 
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 07 
+0010: ce 4a 50 2e  7c 96 32 a1  50 6b 52 79  4a c4 a6 00 
+0000: 14 8b eb 3b  fc a3 5b e5  5d 75 be 6d  12 65 5d 00 
+0010: 63 96 bd 5a  ae c3 9e 5d  d3 cd 14 74  d5 c0 79 01 
+0020: 6e 03 75 7e  4e a0 88 b8  40 bb 2d 82  b4 f2 2d a8 
+0030: 16 48 0e 1b  a8 c6 64 81  54 c7 e8 20  9f 2d 5e e0 
+0040: 0e 5b c4 07  8e f5 5e 61  22 4b 0b 93  b2 31 04 20 
+0050: c4 fe 83 f0  61 98 c4 eb  60 66 5f 90  38 07 02 eb 
+0060: 26 96 44 50  ca c0 d4 c5  7b 50 a8 89  91 de 77 0f 
+0070: 76 21 61 43  b3 d6 98 22  71 d5 9c 86  57 c4 03 39 
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 48 
+0010: 5e ac fb 1e  17 d9 30 d3  3c 7c 90 9b  da 9d 13 00 
+0000: 9d 46 a6 15  7a 21 23 8b  fc 28 93 4d  24 15 2a 27 
+0010: c4 8f b8 43  03 82 d2 4a  3e 2c e1 56  9f 48 c3 e0 
+0020: 41 bc 2d 80  08 97 c7 92  26 7d c4 65  b8 65 d2 4b 
+0030: 50 8a fd d5  ef 3c 30 b7  46 a9 43 d5  1a 51 5a 96 
+0040: 85 a5 93 99  88 7b bd 1e  73 24 64 b3  04 cd 32 bf 
+0050: 89 3a 45 9c  fc 29 4d 96  3f 40 19 9f  80 33 db 41 
+0060: cb 1d d8 1d  ce 96 63 02  b6 33 21 20  c4 e3 2b 47 
+0070: 8f b5 ef f0  93 6e 41 a1  31 14 d8 19  7f 91 eb 2b 
+0080: 59 5e e0 66  ac db e5 77  e6 a7 54 d4  d8 76 02 1a 
+0090: a2 6e 32 f8  eb 49 b3 4f  12 82 2e 27  ef 77 5d cc 
+00a0: 0c a1 57 9f  d7 ac d3 47  15 bf f0 e2  b7 90 82 b9 
+00b0: 9a 83 bd f4  67 38 4f fb  44 b5 78 d2  91 0e 7a d5 
+00c0: 34 98 87 1a  84 b9 a0 27  ae 1f 25 a4  94 29 70 8c 
+00d0: d5 4e 7b ba  b7 f9 e2 47  08 31 8f 43  53 10 13 76 
+00e0: d4 03 a6 b5  36 4a e2 77  ce 2a 97 db  15 a8 bb ca 
+00f0: fb 33 7a 7e  f4 75 31 13  7d fe 54 0b  d3 45 18 69 
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 76 
+0010: f5 d9 c1 82  6f 05 b1 04  5b ee f2 f6  73 13 9d 00 
+0000: a5 c2 03 99  e9 e5 79 94  8f 19 34 66  36 e5 8c a2 
+0010: 0f 53 f8 12  73 8a ae 35  cf 67 73 4c  e5 3a 69 52 
+0020: 97 f6 20 ff  be 0b c9 2f  7f d3 48 f5  26 13 8e ce 
+0030: c0 81 34 54  a0 3a 82 1b  b0 fa 97 f0  7e 35 7a 3e 
+0040: 7b 29 38 a1  57 d9 50 ff  16 83 98 a7  ad 38 2c 20 
+0050: ba e8 9d 63  33 bf 75 70  a4 62 12 cb  46 ef e8 83 
+0060: b9 25 9a 72  d9 b2 6e e3  6a 94 84 ee  d3 f6 95 bf 
+0070: 46 6f 22 d3  91 eb ab 72  16 96 08 92  04 f8 de e5 
+0080: b5 12 46 16  1c 93 d7 df  d9 2b 9f 8f  96 ee 5f f8 
+0090: fa a6 29 9b  23 fd 54 bf  78 2a a7 aa  80 bf 90 68 
+00a0: 80 ad ec d0  9c 6e 5f ce  fa 7a 14 47  63 5b 6c a6 
+00b0: 81 27 27 b2  77 40 20 12  9b fd ae d8  fc aa 43 58 
+00c0: bf d1 fe 15  77 36 13 fd  06 82 c5 47  fe 13 55 87 
+00d0: 79 7b a9 3a  55 d4 64 89  e1 34 6a 54  9f 67 ad 2f 
+00e0: 1a b1 67 ac  70 83 61 55  41 e9 96 b8  8a e5 2c 87 
+00f0: 3f 83 3a f6  60 1d 09 eb  ad 7d c0 dc  35 f4 87 53 
+0100: 2a 2a 1c da  78 6d d0 08  08 a9 24 47  27 7a b9 6d 
+0110: 20 d1 b2 27  1c c6 c5 79  cd 09 df 55  6e 0d 88 ce 
+0120: 9a a4 4e a1  b4 15 84 21  4b 9a 1b ac  0e 99 0d 5f 
+0130: 64 3b e5 c8  96 e0 5f 7a  3d 2e 67 f6  12 2a e6 71 
+0140: e6 77 e1 30  2f 5b 60 d8  54 f4 35 5b  b9 c3 f5 7f 
+0150: f8 8b 4c a3  84 f8 88 6f  e5 97 ad 4f  79 30 3d d9 
+0160: a5 ad 03 78  28 59 bb b2  c4 c2 d1 c9  52 ce 7e 49 
+0170: 27 73 16 6c  d4 91 41 6f  43 b8 25 93  fb 54 0b d4 
