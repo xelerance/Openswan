@@ -200,7 +200,9 @@ signed_len: 31
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
 | v2rsa computed hash:
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
-./verifysigs leak detective found no leaks
+./verifysigs loading secrets from "key-8192.secrets"
+./verifysigs loaded private key for keyid: PPK_RSA:AQNvWxgGb
+| signing hash with RSA Key *AQNvWxgGb
 5b  ff 0a fb d8  3a 0e 1c fa  ad 51 00 f0 
 0080: 3d a0 35 e7  0d d7 91 22  5b 14 72 12  d7 01 8c ac 
 0090: ae a5 b0 bc  6c 43 43 3e  b8 8c 97 1a  76 35 b1 93 
@@ -226,4 +228,142 @@ signed_len: 31
 01d0: ec 9c d3 27  4c d5 f0 a4  73 5c 3d 79  e4 63 06 36 
 01e0: 57 96 f8 61  02 e7 60 63  8b 94 48 88  77 26 7c 92 
 01f0: 54 24 18 e6  07 2b 6e 6a  0b 7b f9 2d  18 79 4d 74 
+
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 63 
+0010: 22 ef 22 79  d5 3b 00 6b  fa 3f 57 d1  e6 69 24 00 
+0000: 67 bc a3 8f  38 79 7d db  3b 08 2b a3  6c db 91 f9 
+0010: c5 0b bd 8a  ef c8 ef a4  e1 3e f8 c3  a4 24 06 65 
+0020: f2 fa 9c cd  60 93 74 38  e1 6f 6f 46  bf 4c 05 a4 
+0030: d6 cc c9 a8  13 c5 ae e6  6f 23 db e8  85 68 60 ed 
+0040: ee 9e 6a 32  05 46 03 14  96 90 cc 7b  95 c0 c6 a0 
+0050: 09 a5 d0 66  02 e5 89 52  19 b5 7d ba  1d c8 c2 1f 
+0060: 7a e3 be dd  8e 50 1e b9  80 54 4b dc  1a 5e ff b9 
+0070: 5a 3b 60 33  a2 19 9f bf  a6 6b 9c 47  0b d3 4a 36 
+0080: 79 3e a9 86  2a b6 eb 0e  d8 20 35 48  6f 45 a4 2e 
+0090: 09 ff 76 6a  6c d5 4f f1  bd 32 d3 6d  24 40 9d ef 
+00a0: 89 4e d2 99  68 ab 05 c2  fc ba 66 14  2b 68 20 6a 
+00b0: 6b 4a ff 54  9f 75 bf 4a  12 c4 a2 c8  a2 af e0 1d 
+00c0: 69 a8 58 c2  27 82 70 47  a8 fc ee 8e  3e 1a f1 ab 
+00d0: 1a fb 4d 03  a5 8b d8 73  b6 26 d1 8e  eb da dc 0a 
+00e0: f5 05 6f e1  8a ff e7 be  44 f5 23 de  b9 2e 30 44 
+00f0: 8b 01 78 3c  ab f3 d1 71  e2 d3 df e6  f1 a0 14 ef 
+0100: 6d 48 ef ba  0f 5d 34 e8  0b a2 f8 b4  eb 65 95 1c 
+0110: bd 29 7b 50  25 e5 af cf  67 7d b8 0d  1a 4d 86 d2 
+0120: a7 4d 97 d7  b1 e1 17 b5  fb 24 01 8d  65 07 c9 bf 
+0130: e4 a4 a1 62  43 4e a1 8c  0e 36 bc 22  a6 da 1a 21 
+0140: 34 bb 56 b8  b8 e4 07 d2  a7 ca c6 58  e2 50 d9 1e 
+0150: d6 71 6d fc  8f 2f 39 d1  15 ce 91 ed  6b ba cf a0 
+0160: 1b 7f d2 f1  bc 85 51 d9  c7 e0 25 4e  2d d4 e2 2a 
+0170: 2b 30 ce a8  90 07 08 b7  c6 fb a4 34  a5 cf 81 d5 
+0180: 47 33 51 02  87 36 6f ff  6a cb 1a c8  ea a2 38 f1 
+0190: 6c 2b be cb  a2 a8 f2 58  49 41 5d 95  c5 da 29 50 
+01a0: a4 2b 7c a7  df b0 b9 fc  b0 aa 5c fa  7e f0 23 ce 
+01b0: 15 82 44 70  ef 9a b8 c4  37 b0 0e b9  6f 82 6e 3b 
+01c0: 2c 76 5e b5  35 23 9d f8  b2 14 67 68  54 2e 98 4b 
+01d0: a7 98 79 05  a0 db a4 91  90 fb 63 61  e9 31 80 e0 
+01e0: fc 27 e1 3b  be 7a 3f 92  db e3 a0 72  4d e8 06 6c 
+01f0: f4 18 61 51  d0 16 f9 ff  6e 67 10 f3  58 ab c9 92 
+0200: 98 d9 de 22  13 49 30 85  55 b8 1a 02  a2 ca 3f 78 
+0210: 0f cb da b4  c8 84 e9 82  59 14 53 cd  3f 0f 09 81 
+0220: 1a 88 66 9d  2f 02 1b 7a  9c e6 20 07  5c 0f 46 26 
+0230: f7 f7 0f 64  31 1f 59 30  0c ee 74 09  c9 54 77 f6 
+0240: 73 c6 c8 73  8c e0 34 b8  cd b0 94 d3  54 82 44 27 
+0250: db 92 16 56  dc ba 41 15  32 af 1b 7b  ea 86 9a c7 
+0260: 3e 0f 57 b3  f5 ac 3d 41  ea 5b 9d b0  a0 48 b5 27 
+0270: 6f 3a 8e 9c  d8 3e 60 ca  6e 08 d6 43  84 f5 5f 01 
+0280: 35 ac df 69  35 b9 c4 d2  dc d3 15 59  10 a5 47 91 
+0290: 68 d1 98 a1  92 55 6f 7c  71 29 cb 41  ed 82 b5 0b 
+02a0: d8 53 67 50  54 14 a4 e6  65 5e 08 1b  f7 b6 e0 a5 
+02b0: 16 44 72 b8  58 46 7d e4  ce | v2rsa decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
+| v2rsa decrypted SIG:
+|   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
+| v2rsa computed hash:
+|   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
+./verifysigs leak detective found no leaks
+45 b1 01  32 78 28 4b 
+02c0: f8 9c d3 61  68 b2 53 e9  7d 51 fd ad  aa 21 f3 f2 
+02d0: 18 fc 11 43  0d 2f ea 49  0c c5 4a e1  b9 66 3b bb 
+02e0: a0 27 c0 25  e2 7d 4f 50  fd 9c 25 f4  03 df 86 7f 
+02f0: 4d 71 91 48  3a 2a 04 b4  a1 fe a4 9c  b7 f3 e2 b6 
+0300: a9 82 af 13  23 2e 56 fe  34 26 d2 61  df 20 d0 f9 
+0310: 29 b6 13 90  7c c5 3f 01  43 13 ca b6  03 1a 50 ba 
+0320: 6a 34 7e 6b  42 f0 f9 78  41 21 94 15  73 0c 3a cd 
+0330: 1b 44 dc c9  cb 7c 0d 73  bd 1a 35 c7  f9 6b e1 90 
+0340: 14 20 cd 8d  95 e1 ae 04  4c f0 86 72  96 71 82 b9 
+0350: 6d 90 b4 f8  99 62 1a 17  03 ad e6 97  78 3d a1 e1 
+0360: 76 fd 9a 68  76 a4 5f 95  9a 73 34 f2  d0 65 a1 d2 
+0370: 12 c6 85 0b  fe e9 8d 80  5b 4d a6 46  fd 07 20 da 
+0380: 89 39 7e 8d  3d f7 d6 db  58 bf 11 d8  7f 7c f0 b2 
+0390: 95 33 1a 68  43 c9 14 53  58 a8 1e f0  fd db e3 4e 
+03a0: aa 86 49 63  e7 f9 fa 3a  45 d7 42 1a  24 f1 1d de 
+03b0: 17 11 17 b1  25 98 41 82  be 15 9c 0f  4f be d2 bb 
+03c0: 56 c3 9b 56  74 7e 7b 28  91 bb d0 ab  12 f5 01 6c 
+03d0: ca c0 3a 85  44 3e d2 f6  a2 d1 2c 34  0c 74 fe ed 
+03e0: 37 17 88 02  1d 60 6d 16  4d de a2 d5  8e 34 87 d6 
+03f0: 02 d9 c1 56  48 52 61 96  81 76 db 3b  0d 3e d1 f0 
 
