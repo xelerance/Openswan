@@ -1220,7 +1220,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	if (tokeqword("include"))
 	{
 	    /* an include directive */
-	    char fn[MAX_TOK_LEN];	/* space for filename (I hope) */
+	    char *fn = NULL;
 	    char *p = fn;
 	    char *end_prefix = strrchr(flp->filename, '/');
 
@@ -1238,11 +1238,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    {
 		size_t pl = end_prefix - flp->filename + 1;
 
-		/* "clamp" length to prevent problems now;
-		 * will be rediscovered and reported later.
-		 */
-		if (pl > sizeof(fn))
-		    pl = sizeof(fn);
+                fn = alloca(pl+1);
 		memcpy(fn, flp->filename, pl);
 		p += pl;
 	    }
