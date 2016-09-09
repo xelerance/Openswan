@@ -1284,11 +1284,13 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	*mdp = NULL;
 	break;
 
-    case STF_INLINE:         /* mcr: this is second time through complete
-			      * state transition, so the MD has already
-			      * been freed.                              */
-			      *mdp = NULL;
-			      /* fall through to STF_OK */
+    case STF_INLINE:
+        /* mcr: this is second time through complete
+         * state transition: the MD was processed by the
+         * appropriate _tail() function, and released.
+         */
+        *mdp = NULL;
+        break;
 
     case STF_OK:
 	/* advance the state */
