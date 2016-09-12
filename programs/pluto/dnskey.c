@@ -1914,7 +1914,7 @@ void iphostname_continuation(struct adns_continuation *cr, err_t ugh)
  * this is useful when doing regression tests where gai.conf might differ
  * and is otherwise stupid.
  */
-static int ai_compare(const void *a, const void *b, void *arg UNUSED)
+static int ai_compare(const void *a, const void *b)
 {
     const struct addrinfo * const *aip;
     const struct addrinfo * const *bip;
@@ -1944,7 +1944,7 @@ struct addrinfo *sort_addr_info(struct addrinfo *ai)
     }
 
     /* now sort it */
-    qsort_r(array, ai_count, sizeof(struct addrinfo *), ai_compare, NULL);
+    qsort(array, ai_count, sizeof(struct addrinfo *), ai_compare);
 
     /* now put them back into the linked list */
     ai = array[0];
