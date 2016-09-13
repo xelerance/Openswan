@@ -11,7 +11,7 @@ Homepage: https://www.openswan.org/
 Package: openswan
 Architecture: linux-any
 Pre-Depends: debconf | debconf-2.0
-Depends: ${shlibs:Depends}, ${misc:Depends}, bsdmainutils, openssl, host, iproute, iproute (>=20041019-0.1) | ipsec-tools
+Depends: ${shlibs:Depends}, ${misc:Depends}, bsdmainutils, openssl, host, iproute2 | ipsec-tools
 Recommends: python
 Suggests: openswan-modules-source | openswan-modules-dkms, openswan-doc, curl
 Provides: ike-server

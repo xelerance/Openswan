@@ -41,7 +41,7 @@ There are a few packages required for Openswan to compile from source:
 3. iproute2, iptables, sed, awk, bash, cut and possible other tools
    are required at runtime.
 
-   Debian package names: iproute, iptables, the rest are usually there
+   Debian package names: iproute2, iptables, the rest are usually there
    Rpm package names:    same as for Debian
 
    python is also required for "ipsec verify".
