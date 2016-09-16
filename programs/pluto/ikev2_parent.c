@@ -858,6 +858,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     clonetochunk(st->st_firstpacket_me, reply_stream.start
                  , pbs_offset(&reply_stream), "saved first packet");
 
+
+    /* while waiting for initiator to continue, arrange to die if nothing happens */
+    delete_event(st);
+    event_schedule(EVENT_SO_DISCARD, 300, st);
+
     /* note: retransimission is driven by initiator */
 
     /* PATRICK: May need to uncomment this line:
