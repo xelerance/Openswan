@@ -61,33 +61,6 @@
 
 #include "oswcrypto.h"
 
-#ifdef HAVE_LIBNSS
- /* nspr */
-# include <prerror.h>
-# include <prinit.h>
-# include <prmem.h>
- /* nss */
-# include <key.h>
-# include <keyt.h>
-# include <nss.h>
-# include <pk11pub.h>
-# include <seccomon.h>
-# include <secerr.h>
-# include <secport.h>
-# include <time.h>
-# include "oswconf.h"
-#endif
-
-// this linked list is part of pluto for now.
-//struct secret *pluto_secrets = NULL;
-
-const u_char der_digestinfo[]={
-    0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0e,
-    0x03, 0x02, 0x1a, 0x05, 0x00, 0x04, 0x14
-};
-const int der_digestinfo_len=sizeof(der_digestinfo);
-
-
 /*
  * compute an RSA signature with PKCS#1 padding: Note that this assumes that any DER encoding is
  *    **INCLUDED** as part of the hash_val/hash_len.
@@ -134,6 +107,10 @@ sign_hash(const struct RSA_private_key *k
 
 /*
  * verify an RSA signature with PKCS#1 padding.
+ *   psig, which must be non-NULL, is set to where the decoded signature is
+ *      s, is some working area which is of size "s_max_octets"
+ *   hash_len is expected result size.
+ *   sig_val  is actual signature blob.
  *
  */
 err_t verify_signed_hash(const struct RSA_public_key *k
