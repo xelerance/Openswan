@@ -107,6 +107,10 @@ int main(int argc, char *argv[])
 
     tool_init_log();
 
+#ifdef HAVE_LIBNSS
+    exit(1);
+#endif
+
     set_debugging(DBG_CONTROL|DBG_CRYPT);
     verify_sig_key("0512", 512/8);
     verify_sig_key("1024", 1024/8);
