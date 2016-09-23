@@ -665,9 +665,12 @@ handle_next_timer_event(void)
 	    break;
 
         case EVENT_SA_DELETE:
-	    passert(st == NULL);
-	    DBG(DBG_CONTROL, DBG_log("event EVENT_SA_DELETE --- no reply to delete"));
-            delete_state(st);
+            if(st != NULL) {
+                DBG(DBG_CONTROL, DBG_log("event EVENT_SA_DELETE --- no reply to delete"));
+                delete_state(st);
+            } else {
+                DBG(DBG_CONTROL, DBG_log("event EVENT_SA_DELETE for state already NULL"));
+            }
 	    break;
 
 	default:
