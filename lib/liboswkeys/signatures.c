@@ -142,19 +142,20 @@ err_t verify_signed_hash(const struct RSA_public_key *k
     /* verify padding (not including any DER digest info! */
     padlen = sig_len - 3 - hash_len;
     /* now check padding */
-    (*psig) = s;
 
     DBG(DBG_CRYPT,
-	DBG_dump("v2rsa decrypted SIG1:", (*psig), sig_len));
+	DBG_dump("verify_sh decrypted SIG1:", s, sig_len));
+    DBG(DBG_CRYPT, DBG_log("pad_len calculated: %d hash_len: %d", padlen, (int)hash_len));
 
-    if((*psig)[0]    != 0x00
-       || (*psig)[1] != 0x01
-       || (*psig)[padlen+2] != 0x00) {
+    /* skip padding */
+    if(s[0]    != 0x00
+       || s[1] != 0x01
+       || s[padlen+2] != 0x00) {
 	return "3""SIG padding does not check out";
     }
 
-    /* skip padding */
-    (*psig) += padlen+3;
+    s += padlen + 3;
+    (*psig) = s;
 
     /* return SUCCESS */
     return NULL;

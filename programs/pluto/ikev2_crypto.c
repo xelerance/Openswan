@@ -129,7 +129,8 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
 	return "1""SIG length does not match public key length";
     }
 
-    if((e = verify_signed_hash(k, s, sizeof(s), &sig, hash_len, sig_val, sig_len)) != NULL) {
+    if((e = verify_signed_hash(k, s, sizeof(s), &sig, hash_len+der_digestinfo_len,
+                               sig_val, sig_len)) != NULL) {
         return e;
     }
 
@@ -140,7 +141,7 @@ try_RSA_signature_v2(const u_char hash_val[MAX_DIGEST_LEN]
     sig += der_digestinfo_len;
 
     DBG(DBG_CRYPT,
-	DBG_dump("v2rsa decrypted SIG:", sig, hash_len);
+	DBG_dump("v2rsa decrypted SIG:", sig,      hash_len);
 	DBG_dump("v2rsa computed hash:", hash_val, hash_len);
     );
 
