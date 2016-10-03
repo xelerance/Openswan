@@ -548,9 +548,13 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 
 	msg->addr_family = conn->left.addr_family;
 	if(msg->addr_family == 0) {
-	  msg->addr_family = conn->right.addr_family;
+	  msg->addr_family = conn->client_addr_family;
         }
-	msg->tunnel_addr_family = conn->left.addr_family;
+
+        msg->tunnel_addr_family = conn->left.addr_family;
+        if(msg->addr_family == 0) {
+          msg->tunnel_addr_family = conn->end_addr_family;
+        }
 
 	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
 	msg->sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
