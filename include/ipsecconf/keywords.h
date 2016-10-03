@@ -281,6 +281,7 @@ struct kw_list {
     double          decimal;
     unsigned int    number;
     char           *argument;
+    unsigned int    lineno;
 };
 
 struct starter_comments {
