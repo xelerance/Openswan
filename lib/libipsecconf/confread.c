@@ -131,7 +131,7 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
-	cfg->conn_default.options[KBF_CONNADDRFAMILY] = AF_INET;
+	cfg->conn_default.options[KBF_CLIENTADDRFAMILY] = AF_INET;
 
 	cfg->conn_default.left.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
@@ -1274,10 +1274,9 @@ static int load_conn (struct starter_config *cfg
     if(conn->options_set[KBF_ENDADDRFAMILY]) {
         conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
     }
-    if(conn->options_set[KBF_CONNADDRFAMILY]) {
-        conn->tunnel_addr_family = conn->options[KBF_CONNADDRFAMILY];
+    if(conn->options_set[KBF_CLIENTADDRFAMILY]) {
+        conn->tunnel_addr_family = conn->options[KBF_CLIENTADDRFAMILY];
     }
-
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];

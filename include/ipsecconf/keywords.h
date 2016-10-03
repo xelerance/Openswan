@@ -110,7 +110,7 @@ enum keyword_numeric_config_field {
     KBF_FORCEENCAP,
     KBF_IKEv2,
     KBF_IKEv2_ALLOW_NARROWING,
-    KBF_CONNADDRFAMILY,
+    KBF_CLIENTADDRFAMILY,       /* 44 */
     KBF_FORCEBUSY,
     KBF_OVERLAPIP,
     KBF_REMOTEPEERTYPE, /*Cisco interop: remote peer type*/
