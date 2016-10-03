@@ -731,9 +731,9 @@ bool translate_conn (struct starter_conn *conn
 
                 /* keyname[0] test looks for left=/right= */
 		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s (ignored)"
+			 , "duplicate string key '%s' in conn %s (line=%u) while processing def %s (ignored)"
 			 , keyname
-			 , conn->name
+			 , conn->name, kw->lineno
 			 , sl->name);
 
 		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
@@ -792,15 +792,9 @@ bool translate_conn (struct starter_conn *conn
 
 	    if((*set_options)[field] == k_set)
 	    {
+                bool fatal = FALSE;
+
 		*error = tmp_err;
-		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , keyname
-			 , conn->name
-			 , sl->name);
-
-		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
-
 		/* only fatal if we try to change values */
 		if((*the_options)[field] != kw->number
 		   || !((*the_options)[field] == LOOSE_ENUM_OTHER
@@ -809,9 +803,21 @@ bool translate_conn (struct starter_conn *conn
 			&& (*the_strings)[field] != NULL
 			&& strcmp(kw->keyword.string, (*the_strings)[field])==0))
 		{
+                    fatal = TRUE;
 		    err++;
-		    break;
 		}
+		snprintf(tmp_err, sizeof(tmp_err)
+			 , "duplicate loose key '%s' in conn %s (line=%u) while processing def %s%s"
+			 , keyname
+			 , conn->name, kw->lineno
+			 , sl->name, fatal ? "(FATAL!)":"");
+
+		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
+
+                if(fatal) {
+		    break;
+                }
+
 	    }
 
 	    (*the_options)[field] = kw->number;
@@ -843,8 +849,8 @@ bool translate_conn (struct starter_conn *conn
 	    if((*set_options)[field] == k_set)
 	    {
 		starter_log(LOG_LEVEL_INFO
-                            , "duplicate key '%s' in conn %s while processing def %s"
-                            , keyname, conn->name, sl->name);
+                            , "duplicate enum key '%s' in conn %s (line=%u) while processing def %s"
+                            , keyname, conn->name, kw->lineno, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -853,8 +859,8 @@ bool translate_conn (struct starter_conn *conn
 	    }
 
 #if 0
-	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u\n",
-			keyname, field, kw->number);
+	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u at line=%u\n",
+			keyname, field, kw->number, kw->lineno);
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
