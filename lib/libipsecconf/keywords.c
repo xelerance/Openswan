@@ -156,10 +156,14 @@ static const struct keyword_enum_values kw_auto_list = VALUES_INITIALIZER(kw_aut
  */
 static const struct keyword_enum_value kw_connaddrfamily_values[]={
     { "ipv4",   AF_INET },
+    { "v4",     AF_INET },
+    { "inet",   AF_INET },
     { "ipv6",   AF_INET6 },
+    { "v6",     AF_INET6 },
+    { "inet6",  AF_INET6 },
 };
 
-static const struct keyword_enum_values kw_connaddrfamily_list = VALUES_INITIALIZER(kw_connaddrfamily_values);
+const struct keyword_enum_values kw_connaddrfamily_list = VALUES_INITIALIZER(kw_connaddrfamily_values);
 
 /*
  * Values for type={tunnel,transport,udpencap}

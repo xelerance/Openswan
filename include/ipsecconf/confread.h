@@ -98,6 +98,8 @@ struct starter_conn {
     unsigned long id;
 
     enum keyword_auto desired_state;
+    sa_family_t end_addr_family;
+    sa_family_t client_addr_family;
 
     enum {
 	STATE_INVALID,

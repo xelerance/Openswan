@@ -1208,6 +1208,13 @@ static int load_conn (struct starter_config *cfg
      * in case of 6in4 and 4in6 tunnels
      */
 
+    if(conn->options_set[KBF_ENDADDRFAMILY]) {
+        conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
+    }
+    if(conn->options_set[KBF_CONNADDRFAMILY]) {
+        conn->client_addr_family = conn->options[KBF_CONNADDRFAMILY];
+    }
+
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
