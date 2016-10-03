@@ -66,6 +66,8 @@ conn green
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+        endaddrfamily=ipv4
+        clientaddrfamily=ipv6
 # end conn green
 
 # end of config
