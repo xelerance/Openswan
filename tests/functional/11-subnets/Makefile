@@ -11,21 +11,23 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/functional
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/functional/11-subnets
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
+OUTPUTS=../OUTPUTS
+
 check:
-	@${MAKE} -C 01-confread check
-	@${MAKE} -C 03-plutostart check
-	@${MAKE} -C 04-whackwrite check
-	@${MAKE} -C 05-addconn check
-	@${MAKE} -C 06-dnsdelay check
-	@${MAKE} -C 06-alsoflip check
-	@${MAKE} -C 07-sourceipv6 check
-	@${MAKE} -C 08-sitelocalv6 check
-	@${MAKE} -C 09-v6inv4 check
-	@${MAKE} -C 10-defaultroute check
-	@${MAKE} -C 11-subnets
+	mkdir -p ${OUTPUTS}
+	@(echo "file ${READWRITE}"; echo "set args" --debug --whackout=${OUTPUTS}/dookurecord.whack --config ../../unit/libpluto/samples/alias-h2n.conf parker--dailyplanet) >.gdbinit
+	${READWRITE} --debug --whackout=${OUTPUTS}/dookurecord.whack --config ../../unit/libpluto/samples/alias-h2n.conf parker--dailyplanet 2>&1 | tee ../OUTPUTS/alias-h2n.conf.raw | diff - alias-h2n.conf.out
+
+
+update:
+	cp ../OUTPUTS/alias-h2n.conf.raw     alias-h2n.conf.out
+
+
+
 
