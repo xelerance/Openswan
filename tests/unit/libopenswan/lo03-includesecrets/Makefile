@@ -37,10 +37,10 @@ check:
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
-	diff OUTPUT/${TESTNAME}.txt output.txt
+	sed -e'/loading secrets/s,"/.*/etc/ipsec,"/etc/ipsec,' OUTPUT/${TESTNAME}.txt | tee OUTPUT/${TESTNAME}.cooked | diff - output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
 update:
-	cp OUTPUT/${TESTNAME}.txt output.txt
+	cp OUTPUT/${TESTNAME}.cooked output.txt
 
 

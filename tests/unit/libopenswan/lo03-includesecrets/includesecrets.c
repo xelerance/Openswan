@@ -1,5 +1,9 @@
 #define DEBUG
+/* for get_current_dir_name() */
+#define _GNU_SOURCE
+
 #include <stdlib.h>
+#include <unistd.h>
 #include "openswan.h"
 #include "openswan/passert.h"
 #include "constants.h"
@@ -29,12 +33,12 @@ int count_secrets(struct secret *secret,
     return 1;
 }
 
-void load_secrets(void)
+void load_secrets(const char *rootdir)
 {
     struct secret *secrets = NULL;
     int count;
 
-    osw_load_preshared_secrets(&secrets, TRUE, "key-2048.secrets", NULL);
+    osw_load_preshared_secrets(&secrets, TRUE, "key-2048.secrets", NULL, rootdir);
     assert(secrets != NULL);
     count = 0;
     osw_foreach_secret(secrets, count_secrets, &count);
@@ -45,11 +49,16 @@ int main(int argc, char *argv[])
 {
     int i;
     struct id one;
+    const char *rootdir=get_current_dir_name();
 
     load_oswcrypto();
     prng_init(&not_very_random, "01234567", 8);
 
     progname = argv[0];
+
+    if(argc > 1) {
+        rootdir = argv[1];
+    }
 
     tool_init_log();
 
@@ -58,7 +67,7 @@ int main(int argc, char *argv[])
 #endif
 
     set_debugging(DBG_CONTROL|DBG_CRYPT);
-    load_secrets();
+    load_secrets(rootdir);
 
     report_leaks();
     tool_close_log();
