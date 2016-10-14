@@ -168,7 +168,7 @@ extern void free_public_key(struct pubkey *pk);
 extern void osw_load_preshared_secrets(struct secret **psecrets
 				       , int verbose
 				       , const char *secrets_file
-				       , prompt_pass_t *pass);
+				       , prompt_pass_t *pass, const char *root_dir);
 extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);

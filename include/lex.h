@@ -15,6 +15,7 @@
 struct file_lex_position
 {
     int depth;	/* how deeply we are nested */
+    const char *root_dir;
     const char *filename;
     FILE *fp;
     enum { B_none, B_record, B_file } bdry;	/* current boundary */
