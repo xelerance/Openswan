@@ -1,11 +1,12 @@
 ./verifysigs loading secrets from "key-0512.secrets"
 ./verifysigs loaded private key for keyid: PPK_RSA:AQOkietpl
 | signing hash with RSA Key *AQOkietpl
-| v2rsa decrypted SIG1:
+| verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
+| pad_len calculated: 30 hash_len: 31
 | v2rsa decrypted SIG:
 |   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
 | v2rsa computed hash:
@@ -13,7 +14,7 @@
 ./verifysigs loading secrets from "key-1024.secrets"
 ./verifysigs loaded private key for keyid: PPK_RSA:AQN3OKgAN
 | signing hash with RSA Key *AQN3OKgAN
-| v2rsa decrypted SIG1:
+| verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -22,6 +23,7 @@
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
+| pad_len calculated: 94 hash_len: 31
 | v2rsa decrypted SIG:
 |   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
 | v2rsa computed hash:
@@ -29,7 +31,7 @@
 ./verifysigs loading secrets from "key-2048.secrets"
 ./verifysigs loaded private key for keyid: PPK_RSA:AQO8vQM7b
 | signing hash with RSA Key *AQO8vQM7b
-| v2rsa decrypted SIG1:
+| verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -46,6 +48,7 @@
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
+| pad_len calculated: 222 hash_len: 31
 | v2rsa decrypted SIG:
 |   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
 | v2rsa computed hash:
@@ -53,7 +56,7 @@
 ./verifysigs loading secrets from "key-3072.secrets"
 ./verifysigs loaded private key for keyid: PPK_RSA:AQOnXoqI3
 | signing hash with RSA Key *AQOnXoqI3
-| v2rsa decrypted SIG1:
+| verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -78,6 +81,7 @@
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
+| pad_len calculated: 350 hash_len: 31
 | v2rsa decrypted SIG:
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
 | v2rsa computed hash:
@@ -163,7 +167,7 @@ signed_len: 31
 0040: 16 b2 31 6a  d2 f4 1f dc  55 c1 d8 4a  bc a4 74 4c 
 0050: 21 c4 0f 2f  e0 2e 0e 75  a9 0f e0 e6  b4 d7 cb f9 
 0060: 47 9b 22 6d  70 a1 56 de  dd e7 f5 a1  48 fe cf 1d 
-0070: c9 df a5 | v2rsa decrypted SIG1:
+0070: c9 df a5 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -196,6 +200,7 @@ signed_len: 31
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
+| pad_len calculated: 478 hash_len: 31
 | v2rsa decrypted SIG:
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
 | v2rsa computed hash:
@@ -275,7 +280,7 @@ signed_len: 31
 0280: 35 ac df 69  35 b9 c4 d2  dc d3 15 59  10 a5 47 91 
 0290: 68 d1 98 a1  92 55 6f 7c  71 29 cb 41  ed 82 b5 0b 
 02a0: d8 53 67 50  54 14 a4 e6  65 5e 08 1b  f7 b6 e0 a5 
-02b0: 16 44 72 b8  58 46 7d e4  ce | v2rsa decrypted SIG1:
+02b0: 16 44 72 b8  58 46 7d e4  ce | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -340,6 +345,7 @@ signed_len: 31
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
 |   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
+| pad_len calculated: 990 hash_len: 31
 | v2rsa decrypted SIG:
 |   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
 | v2rsa computed hash:
