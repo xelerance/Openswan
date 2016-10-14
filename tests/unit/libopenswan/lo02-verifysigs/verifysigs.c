@@ -42,7 +42,7 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
     memset(signature_buf, 0, sizeof(signature_buf));
     snprintf(secretsfile, sizeof(secretsfile), "key-%s.secrets", keyfile);
 
-    osw_load_preshared_secrets(&secrets, TRUE, secretsfile, NULL);
+    osw_load_preshared_secrets(&secrets, TRUE, secretsfile, NULL, NULL);
     assert(secrets != NULL);
     count = 0;
     osw_foreach_secret(secrets, count_secrets, &count);
