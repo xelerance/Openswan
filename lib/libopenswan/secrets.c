@@ -1220,7 +1220,8 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	if (tokeqword("include"))
 	{
 	    /* an include directive */
-	    char *fn = NULL;
+            unsigned int fn_len = strlen(flp->filename)+strlen(flp->tok)+1;
+	    char *fn = alloca(fn_len);
 	    char *p = fn;
 	    char *end_prefix = strrchr(flp->filename, '/');
 
@@ -1238,11 +1239,10 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    {
 		size_t pl = end_prefix - flp->filename + 1;
 
-                fn = alloca(pl+1);
 		memcpy(fn, flp->filename, pl);
 		p += pl;
 	    }
-	    if (flp->cur - flp->tok >= &fn[sizeof(fn)] - p)
+	    if (flp->cur - flp->tok >= fn_len)
 	    {
 		loglog(RC_LOG_SERIOUS, "\"%s\" line %d: include pathname too long"
 		    , flp->filename, flp->lino);
