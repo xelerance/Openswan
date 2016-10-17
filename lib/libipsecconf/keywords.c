@@ -38,7 +38,7 @@
 #include "ipsecconf/parserlast.h"
 
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
-#undef KEYWORD_PARSE_DEBUG 
+#undef KEYWORD_PARSE_DEBUG
 
 /*
  * values for keyword types  (used for debugging)
@@ -389,6 +389,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"endaddrfamily",  kv_conn,         kt_enum,   KBF_ENDADDRFAMILY,     &kw_connaddrfamily_list},
     {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
     {"clientaddrfamily", kv_conn,       kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
+    {"tunneladdrfamily", kv_conn,       kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},

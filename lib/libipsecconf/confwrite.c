@@ -587,9 +587,9 @@ void confwrite_conn(FILE *out,
         char extra[KEYWORD_NAME_BUFLEN];
         fprintf(out,"\tendaddrfamily=%s", keyword_name(&kw_connaddrfamily_list, conn->end_addr_family, extra));
     }
-    if(conn->client_addr_family) {
+    if(conn->tunnel_addr_family) {
         char extra[KEYWORD_NAME_BUFLEN];
-        fprintf(out,"\tclientaddrfamily=%s", keyword_name(&kw_connaddrfamily_list, conn->client_addr_family, extra));
+        fprintf(out,"\ttunneladdrfamily=%s", keyword_name(&kw_connaddrfamily_list, conn->tunnel_addr_family, extra));
     }
 
     fprintf(out,"# end conn %s\n\n",conn->name);
