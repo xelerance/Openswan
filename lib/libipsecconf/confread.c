@@ -133,12 +133,12 @@ void ipsecconf_default_values(struct starter_config *cfg)
 
 	cfg->conn_default.options[KBF_CONNADDRFAMILY] = AF_INET;
 
-	cfg->conn_default.left.addr_family = AF_INET;
+	cfg->conn_default.left.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
 	cfg->conn_default.left.nexttype  = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.left.nexthop);
 
-	cfg->conn_default.right.addr_family = AF_INET;
+	cfg->conn_default.right.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
 	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
@@ -381,7 +381,7 @@ static bool validate_end(struct starter_conn *conn_st
     }
 
     end->addrtype=end->options[KNCF_IP];
-    end->addr_family = family;
+    end->end_addr_family = family;
     newfamily = family;
 
     /* validate the KSCF_IP/KNCF_IP */
@@ -421,7 +421,7 @@ static bool validate_end(struct starter_conn *conn_st
 		}
 	}
 	if(family == 0) {
-		end->addr_family = newfamily;
+		end->end_addr_family = newfamily;
 	}
 
 	if(er) {
@@ -1212,7 +1212,7 @@ static int load_conn (struct starter_config *cfg
         conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
     }
     if(conn->options_set[KBF_CONNADDRFAMILY]) {
-        conn->client_addr_family = conn->options[KBF_CONNADDRFAMILY];
+        conn->tunnel_addr_family = conn->options[KBF_CONNADDRFAMILY];
     }
 
 

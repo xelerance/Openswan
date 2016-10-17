@@ -965,7 +965,7 @@ main(int argc, char **argv)
     msg.sa_rekey_fuzz = SA_REPLACEMENT_FUZZ_DEFAULT;
     msg.sa_keying_tries = SA_REPLACEMENT_RETRIES_DEFAULT;
 
-    msg.addr_family = AF_INET;
+    msg.end_addr_family = AF_INET;
     msg.tunnel_addr_family = AF_INET;
 
     for (;;)
@@ -1272,7 +1272,7 @@ main(int argc, char **argv)
 	    lset_t new_policy = LEMPTY;
 
 	    af_used_by = long_opts[long_index].name;
-	    diagq(anyaddr(msg.addr_family, &msg.right.host_addr), optarg);
+	    diagq(anyaddr(msg.end_addr_family, &msg.right.host_addr), optarg);
 	    if (streq(optarg, "%any"))
 	    {
 	    }
@@ -1293,7 +1293,7 @@ main(int argc, char **argv)
 	    }
 	    else
 	    {
-		diagq(ttoaddr(optarg, 0, msg.addr_family
+		diagq(ttoaddr(optarg, 0, msg.end_addr_family
 		    , &msg.right.host_addr), optarg);
 	    }
 
@@ -1383,16 +1383,16 @@ main(int argc, char **argv)
 	case END_NEXTHOP:	/* --nexthop <ip-address> */
 	    af_used_by = long_opts[long_index].name;
 	    if (streq(optarg, "%direct"))
-		diagq(anyaddr(msg.addr_family
+		diagq(anyaddr(msg.end_addr_family
 		    , &msg.right.host_nexthop), optarg);
 	    else
-		diagq(ttoaddr(optarg, 0, msg.addr_family
+		diagq(ttoaddr(optarg, 0, msg.end_addr_family
 		    , &msg.right.host_nexthop), optarg);
 	    continue;
 
 	case END_SRCIP:	       /* --srcip <ip-address> */
 	    af_used_by = long_opts[long_index].name;
-	    diagq(ttoaddr(optarg, 0, msg.addr_family
+	    diagq(ttoaddr(optarg, 0, msg.end_addr_family
 			  , &msg.right.host_srcip), optarg);
 	    continue;
 
@@ -1604,7 +1604,7 @@ main(int argc, char **argv)
 		diagq("--ipv6 must precede", af_used_by);
 
 	    af_used_by = long_opts[long_index].name;
-	    msg.addr_family = AF_INET6;
+	    msg.end_addr_family = AF_INET6;
 
 	    /* Consider defaulting tunnel_addr_family to AF_INET6.
 	     * Do so only if it hasn't yet been specified or used.
@@ -1835,10 +1835,10 @@ main(int argc, char **argv)
 	}
 
 	check_end(&msg.left, &msg.right, !LHAS(end_seen_before_to, END_NEXTHOP-END_FIRST)
-	    , msg.addr_family, msg.tunnel_addr_family);
+	    , msg.end_addr_family, msg.tunnel_addr_family);
 
 	check_end(&msg.right, &msg.left, !LHAS(end_seen, END_NEXTHOP-END_FIRST)
-	    , msg.addr_family, msg.tunnel_addr_family);
+	    , msg.end_addr_family, msg.tunnel_addr_family);
 
 	if (subnettypeof(&msg.left.client) != subnettypeof(&msg.right.client))
 	    diag("endpoints clash: one is IPv4 and the other is IPv6");
