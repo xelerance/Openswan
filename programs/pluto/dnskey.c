@@ -2013,7 +2013,7 @@ bool kick_adns_connection_lookup(struct connection *c
      */
     iph_c = alloc_thing(struct iphostname_continuation, "kick adns");
     iph_c->c = c;
-    e = start_adns_hostname(c->addr_family, end->host_addr_name,
+    e = start_adns_hostname(c->end_addr_family, end->host_addr_name,
                             iphostname_continuation, &iph_c->ac);
 
     if(e) {
