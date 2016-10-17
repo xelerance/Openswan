@@ -200,7 +200,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | emitting length of ISAKMP Message: 376
 | complete v2 state transition with STF_OK
 ./parentR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
-./parentR1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+./parentR1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 192.168.1.1:500 (from port 500)
 sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf

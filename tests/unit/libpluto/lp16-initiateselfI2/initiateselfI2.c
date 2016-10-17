@@ -14,7 +14,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/rw.secrets"
-			       , NULL);
+			       , NULL, NULL);
 }
 
 static void init_loaded(void) {}

@@ -497,7 +497,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./davecertI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 ./davecertI1 deleting state #1 (STATE_PARENT_I1)
 ./davecertI1 deleting connection
 | pass 0: considering CHILD SAs to delete

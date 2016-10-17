@@ -918,6 +918,7 @@ duplicate_state(struct state *st)
     nst->st_situation = st->st_situation;
     nst->quirks = st->quirks;
     nst->hidden_variables = st->hidden_variables;
+    nst->st_policy     = st->st_policy;
     nst->st_remoteaddr = st->st_remoteaddr;
     nst->st_remoteport = st->st_remoteport;
     nst->st_localaddr  = st->st_localaddr;

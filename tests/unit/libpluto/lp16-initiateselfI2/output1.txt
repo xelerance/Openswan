@@ -105,7 +105,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./initiateselfI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./initiateselfI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./initiateselfI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
@@ -462,7 +462,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
 | complete v2 state transition with STF_OK
 ./initiateselfI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
-./initiateselfI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001)
+./initiateselfI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)
 sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -498,7 +498,7 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 ./initiateselfI2 deleting connection
 | pass 0: considering CHILD SAs to delete
-./initiateselfI2 deleting state #2 (STATE_PARENT_I2)
+./initiateselfI2 deleting state #2 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31

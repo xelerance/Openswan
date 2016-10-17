@@ -2,8 +2,15 @@ debugging mode enabled
 Loading conn dooku--cassidy-net
 	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
 	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+dooku--cassidy-net: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
+dooku--cassidy-net: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn dooku-base
+dooku-base: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
+dooku-base: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn cassidy-base
+cassidy-base: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
+cassidy-base: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
+emitting conn dooku--cassidy-net with end-family: 0 and tunnel-family: 0
 ./whacksemantics adding connection: "dooku--cassidy-net"
 ./whacksemantics leak: 2 * keep id name, item size: X
 ./whacksemantics leak: ID host_pair, item size: X

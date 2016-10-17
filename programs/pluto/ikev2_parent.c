@@ -137,6 +137,7 @@ ikev2parent_outI1_withstate(struct state *st
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
+    st->st_policy         = policy & ~POLICY_IPSEC_MASK;
 
     if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
@@ -858,6 +859,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     clonetochunk(st->st_firstpacket_me, reply_stream.start
                  , pbs_offset(&reply_stream), "saved first packet");
 
+
+    /* while waiting for initiator to continue, arrange to die if nothing happens */
+    delete_event(st);
+    event_schedule(EVENT_SO_DISCARD, 300, st);
+
     /* note: retransimission is driven by initiator */
 
     /* PATRICK: May need to uncomment this line:
@@ -1334,6 +1340,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(pst);
+    st->st_policy = pst->st_connection->policy & POLICY_IPSEC_MASK;
 
     st->st_msgid = mid;
     insert_state(st);
@@ -1343,9 +1350,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* parent had crypto failed, replace it with rekey! */
     delete_event(pst);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
-
-    /* need to force parent state to I2 */
-    change_state(pst, STATE_PARENT_I2);
 
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
@@ -1502,6 +1506,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
                           &child_spi,
                           v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
             }
+
+            /* need to force child to KEYING */
+            change_state(st, STATE_CHILD_C0_KEYING);
         } else {
             openswan_log("no pending SAs found, PARENT SA keyed only");
         }
@@ -1861,6 +1868,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
+    md->pst = st;
 
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
@@ -2229,6 +2237,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         loglog(RC_LOG_SERIOUS, "failed to installed IPsec Child SAs");
         return STF_FATAL;
     }
+
+    /* need to force child to KEYED */
+    change_state(st, STATE_CHILD_C1_KEYED);
 
     /*
      * Delete previous retransmission event.

@@ -110,7 +110,7 @@ enum keyword_numeric_config_field {
     KBF_FORCEENCAP,
     KBF_IKEv2,
     KBF_IKEv2_ALLOW_NARROWING,
-    KBF_CONNADDRFAMILY,
+    KBF_CLIENTADDRFAMILY,       /* 44 */
     KBF_FORCEBUSY,
     KBF_OVERLAPIP,
     KBF_REMOTEPEERTYPE, /*Cisco interop: remote peer type*/
@@ -281,6 +281,7 @@ struct kw_list {
     double          decimal;
     unsigned int    number;
     char           *argument;
+    unsigned int    lineno;
 };
 
 struct starter_comments {
@@ -311,6 +312,8 @@ struct config_parsed {
     struct section_list conn_default;
     bool                got_default;
 };
+
+const struct keyword_enum_values kw_connaddrfamily_list;
 
 extern struct keyword_def ipsec_conf_keywords_v2[];
 extern const int ipsec_conf_keywords_v2_count;

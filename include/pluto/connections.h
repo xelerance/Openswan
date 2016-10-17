@@ -262,7 +262,7 @@ struct connection {
     lset_t extra_debugging;
 
     /* note: if the client is the gateway, the following must be equal */
-    sa_family_t addr_family;		/* between gateways */
+    sa_family_t end_addr_family;	/* between gateways */
     sa_family_t tunnel_addr_family;	/* between clients */
 
     struct connection *policy_next; /* if multiple policies,

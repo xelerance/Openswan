@@ -114,7 +114,7 @@ void load_preshared_secrets(int whackfd)
 			       , TRUE
 #endif
 			       , pluto_shared_secrets_file
-			       , &pass);
+			       , &pass, NULL);
 }
 
 void free_preshared_secrets(void)

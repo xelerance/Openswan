@@ -1198,7 +1198,7 @@ process_secret(struct secret **psecrets, int verbose,
 static void osw_process_secrets_file(struct secret **psecrets
 				     , int verbose
 				     , const char *file_pat
-				     , prompt_pass_t *pass);
+				     , prompt_pass_t *pass, const char *rootdir);
 
 
 static void
@@ -1219,11 +1219,6 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 
 	if (tokeqword("include"))
 	{
-	    /* an include directive */
-	    char fn[MAX_TOK_LEN];	/* space for filename (I hope) */
-	    char *p = fn;
-	    char *end_prefix = strrchr(flp->filename, '/');
-
 	    if (!shift())
 	    {
 		loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of include directive"
@@ -1231,33 +1226,43 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		continue;   /* abandon this record */
 	    }
 
-	    /* if path is relative and including file's pathname has
-	     * a non-empty dirname, prefix this path with that dirname.
-	     */
-	    if (flp->tok[0] != '/' && end_prefix != NULL)
 	    {
-		size_t pl = end_prefix - flp->filename + 1;
+		    /* an include directive */
+		    unsigned int pathname_len = flp->cur - flp->tok;
+		    unsigned int fn_len = strlen(flp->root_dir)+1+strlen(flp->filename)+pathname_len+1;
+		    char *fn = alloca(fn_len);
+		    char *p = fn;
+		    char *end_prefix = strrchr(flp->filename, '/');
 
-		/* "clamp" length to prevent problems now;
-		 * will be rediscovered and reported later.
-		 */
-		if (pl > sizeof(fn))
-		    pl = sizeof(fn);
-		memcpy(fn, flp->filename, pl);
-		p += pl;
-	    }
-	    if (flp->cur - flp->tok >= &fn[sizeof(fn)] - p)
-	    {
-		loglog(RC_LOG_SERIOUS, "\"%s\" line %d: include pathname too long"
-		    , flp->filename, flp->lino);
-		continue;   /* abandon this record */
-	    }
-	    strcpy(p, flp->tok);
-	    (void) shift();	/* move to Record Boundary, we hope */
-	    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
-	    {
-		osw_process_secrets_file(psecrets, verbose, fn, pass);
-		flp->tok = NULL;	/* correct, but probably redundant */
+		    /* insert root_dir and / into p, and advance it */
+		    strcpy(p, flp->root_dir);
+		    /* if(flp->root_dir[0] != '\0') strcat(p,"/"); */
+		    fn_len -= strlen(p);
+		    p       = p + strlen(p);
+
+		    /* if path is relative and including file's pathname has
+		     * a non-empty dirname, prefix this path with that dirname.
+		     */
+		    if (flp->tok[0] != '/' && end_prefix != NULL)
+		    {
+			size_t pl = end_prefix - flp->filename + 1;
+
+			memcpy(fn, flp->filename, pl);
+			p += pl;
+		    }
+		    if (pathname_len >= fn_len)
+		    {
+			loglog(RC_LOG_SERIOUS, "\"%s\" line %d: include pathname too long (%u > %u)"
+			    , flp->filename, flp->lino, pathname_len, fn_len);
+			continue;   /* abandon this record */
+		    }
+		    strcpy(p, flp->tok);
+		    (void) shift();	/* move to Record Boundary, we hope */
+		    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
+		    {
+			osw_process_secrets_file(psecrets, verbose, fn, pass, flp->root_dir);
+			flp->tok = NULL;	/* correct, but probably redundant */
+		    }
 	    }
 	}
 	else
@@ -1268,84 +1273,85 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    s = alloc_thing(struct secret, "secret");
 
 	    if (s != NULL) {
-	    s->ids = NULL;
-	    s->pks.kind = PPK_PSK;	/* default */
-	    setchunk(s->pks.u.preshared_secret, NULL, 0);
-	    s->secretlineno=flp->lino;
-	    s->next = NULL;
+                zero(s);
+                s->ids = NULL;
+                s->pks.kind = PPK_PSK;	/* default */
+                setchunk(s->pks.u.preshared_secret, NULL, 0);
+                s->secretlineno=flp->lino;
+                s->next = NULL;
 
 #ifdef HAVE_LIBNSS
-	    s->pks.u.RSA_private_key.pub.nssCert = NULL;
+                s->pks.u.RSA_private_key.pub.nssCert = NULL;
 #endif
 
-	    //while(s != NULL)
-	    while(1)
-	    {
-		struct id id;
-		err_t ugh;
+                //while(s != NULL)
+                while(1)
+                    {
+                        struct id id;
+                        err_t ugh;
 
-		if (tokeq(":"))
-		{
-		    /* found key part */
-		    shift();	/* discard explicit separator */
-		    process_secret(psecrets, verbose, s, pass);
-		    //s = NULL;
-		    break;
-		}
+                        if (tokeq(":"))
+                            {
+                                /* found key part */
+                                shift();	/* discard explicit separator */
+                                process_secret(psecrets, verbose, s, pass);
+                                //s = NULL;
+                                break;
+                            }
 
-		/* an id
-		 * See RFC2407 IPsec Domain of Interpretation 4.6.2
-		 */
+                        /* an id
+                         * See RFC2407 IPsec Domain of Interpretation 4.6.2
+                         */
 
-		if (tokeq("%any"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV4_ADDR;
-		    ugh = anyaddr(AF_INET, &id.ip_addr);
-		}
-		else if (tokeq("%any6"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV6_ADDR;
-		    ugh = anyaddr(AF_INET6, &id.ip_addr);
-		}
-		else
-		{
-		    ugh = atoid(flp->tok, &id, FALSE);
-		}
+                        if (tokeq("%any"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV4_ADDR;
+                                ugh = anyaddr(AF_INET, &id.ip_addr);
+                            }
+                        else if (tokeq("%any6"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV6_ADDR;
+                                ugh = anyaddr(AF_INET6, &id.ip_addr);
+                            }
+                        else
+                            {
+                                ugh = atoid(flp->tok, &id, FALSE);
+                            }
 
-		if (ugh != NULL)
-		{
-		    loglog(RC_LOG_SERIOUS
-			   , "ERROR \"%s\" line %d: index \"%s\" %s"
-			   , flp->filename, flp->lino, flp->tok, ugh);
-		}
-		else
-		{
-		    struct id_list *i = alloc_thing(struct id_list
-						    , "id_list");
-		    char idb[IDTOA_BUF];
+                        if (ugh != NULL)
+                            {
+                                loglog(RC_LOG_SERIOUS
+                                       , "ERROR \"%s\" line %d: index \"%s\" %s"
+                                       , flp->filename, flp->lino, flp->tok, ugh);
+                            }
+                        else
+                            {
+                                struct id_list *i = alloc_thing(struct id_list
+                                                                , "id_list");
+                                char idb[IDTOA_BUF];
 
-		    i->id = id;
-		    unshare_id_content(&i->id);
-		    i->next = s->ids;
-		    s->ids = i;
-		    idtoa(&id, idb, IDTOA_BUF);
-		    DBG(DBG_CONTROL,
-			DBG_log("id type added to secret(%p) %s: %s",
-				s,
-				enum_name(&ppk_names,s->pks.kind),
-				idb));
-		}
-		if (!shift())
-		{
-		    /* unexpected Record Boundary or EOF */
-		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
-			   , flp->filename, flp->lino);
-		    pfree(s);
-		    break;
-		}
-	    }
+                                i->id = id;
+                                unshare_id_content(&i->id);
+                                i->next = s->ids;
+                                s->ids = i;
+                                idtoa(&id, idb, IDTOA_BUF);
+                                DBG(DBG_CONTROL,
+                                    DBG_log("id type added to secret(%p) %s: %s",
+                                            s,
+                                            enum_name(&ppk_names,s->pks.kind),
+                                            idb));
+                            }
+                        if (!shift())
+                            {
+                                /* unexpected Record Boundary or EOF */
+                                loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
+                                       , flp->filename, flp->lino);
+                                pfree(s);
+                                break;
+                            }
+                    }
 	    }
 	}
     }
@@ -1358,11 +1364,17 @@ globugh(const char *epath, int eerrno)
     return 1;	/* stop glob */
 }
 
+/*
+ * root_dir is prefixed to all filenames: this permits test cases to specify what appear to be
+ *          full pathnames, but to actually operate on a sub-directory.
+ *
+ * file_pat is not meant to be relative to root_dir.
+ */
 static void
 osw_process_secrets_file(struct secret **psecrets
 			 , int verbose
 			 , const char *file_pat
-			 , prompt_pass_t *pass)
+			 , prompt_pass_t *pass, const char *root_dir)
 {
     struct file_lex_position pos;
     char **fnp;
@@ -1370,6 +1382,7 @@ osw_process_secrets_file(struct secret **psecrets
 
     memset(&globbuf, 0, sizeof(glob_t));
     pos.depth = flp == NULL? 0 : flp->depth + 1;
+    pos.root_dir = root_dir ? root_dir : "";
 
     if (pos.depth > 10)
     {
@@ -1475,10 +1488,10 @@ void
 osw_load_preshared_secrets(struct secret **psecrets
 			   , int verbose
 			   , const char *secrets_file
-			   , prompt_pass_t *pass)
+			   , prompt_pass_t *pass, const char *root_dir)
 {
     osw_free_preshared_secrets(psecrets);
-    (void) osw_process_secrets_file(psecrets, verbose, secrets_file, pass);
+    (void) osw_process_secrets_file(psecrets, verbose, secrets_file, pass, root_dir);
 }
 
 

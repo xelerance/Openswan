@@ -20,6 +20,7 @@ conn concentrator
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn concentrator
 
 # begin conn cpe
@@ -39,6 +40,7 @@ conn cpe
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn cpe
 
 # end of config

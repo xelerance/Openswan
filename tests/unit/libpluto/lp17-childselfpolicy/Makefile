@@ -97,7 +97,7 @@ check:: OUTPUT/R2-any.txt
 OUTPUT/R2-any.txt:	${WHACKFILE} ${TESTNAME}
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb2init
-	@echo "set args "${UNITTEST1ARGS} >>.gdb2init
+	@echo "set args "${UNITTEST2ARGS} >>.gdb2init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}_2.txt 2>&1
 	tcpdump -n -t -v -r ${UNITTEST2PCAP} | tee OUTPUT/R2-any.txt | sed -f ${TESTUTILS}/sanity.sed | diff - R2-any.txt
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt | diff - output2.txt
