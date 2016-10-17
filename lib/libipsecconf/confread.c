@@ -478,10 +478,12 @@ static bool validate_end(struct starter_conn *conn_st
 	else {
 	    end->has_client = TRUE;
 	    er = ttosubnet(value, 0, client_family, &(end->subnet));
+            client_family = end->subnet.addr.u.v4.sin_family;
 	}
 
-
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
+
+        end->tunnel_addr_family = client_family;
     }
 
     /* set nexthop address to something consistent, by default */
@@ -984,6 +986,55 @@ char **process_alsos(struct starter_config *cfg
     return alsos;
 }
 
+static int validate_family_consistency(const char *connname,
+                                       const char *addrtype,
+                                       unsigned int left,
+                                       unsigned int right,
+                                       unsigned int family)
+{
+        if(left == 0 &&
+           family      == 0 &&
+           right != 0) {
+            left = family = right;
+        }
+
+        if(left  != 0 &&
+           family       == 0 &&
+           right == 0) {
+            right = family = left;
+        }
+
+        if(left  == 0 &&
+           family       != 0 &&
+           right == 0) {
+            right = left = family;
+        }
+
+        if(left  != 0 &&
+           family       == 0 &&
+           right != 0 &&
+           left  == right) {
+            family = right;
+        }
+
+        /* if the end_address family is *STILL* 0, then it must be that there is an
+           inconsistency in the left/right ends.
+        */
+        if(family == 0) {
+            char b1[KEYWORD_NAME_BUFLEN];
+            char b2[KEYWORD_NAME_BUFLEN];
+            char b3[KEYWORD_NAME_BUFLEN];
+            starter_log(LOG_LEVEL_ERR,
+                        "%s: inconsistent left/right %s address family: policy=%s left=%s right=%s",
+                        connname,
+                        addrtype,
+                        keyword_name(&kw_connaddrfamily_list, family, b1),
+                        keyword_name(&kw_connaddrfamily_list, left, b2),
+                        keyword_name(&kw_connaddrfamily_list, right, b3));
+        }
+
+        return family;
+}
 
 static int load_conn (struct starter_config *cfg
 		      , struct starter_conn *conn
@@ -1197,16 +1248,28 @@ static int load_conn (struct starter_config *cfg
 
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
-    /*
-     * TODO:
-     * verify both ends are using the same inet family, if one end
-     * is "%any" or "%defaultroute", then perhaps adjust it.
-     * ensource this for left,leftnexthop,right,rightnexthop
-     * Ideally, phase out connaddrfamily= which now wrongly assumes
-     * left,leftnextop,leftsubnet are the same inet family
-     * Currently, these tests are implicitely done, and wrongly
-     * in case of 6in4 and 4in6 tunnels
-     */
+
+    if(!defaultconn) {
+        /*
+         * At this point, the two ends should be sufficiently well declared that
+         * one can verify if the two ends are using the same address family.
+         * This is a bit more complex and just an ==, as one end may be unspecified.
+         * In that case, it should adopt the family of the other end. If both
+         * are unspecified, then this is an error, unless the conn already
+         * has an end/tunnel family specified.
+         */
+
+        conn->end_addr_family = validate_family_consistency(conn->name, "end",
+                                                            conn->left.end_addr_family,
+                                                            conn->right.end_addr_family,
+                                                            conn->end_addr_family);
+
+        conn->tunnel_addr_family = validate_family_consistency(conn->name, "tunnel",
+                                                            conn->left.tunnel_addr_family,
+                                                            conn->right.tunnel_addr_family,
+                                                            conn->tunnel_addr_family);
+    }
+
 
     if(conn->options_set[KBF_ENDADDRFAMILY]) {
         conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
