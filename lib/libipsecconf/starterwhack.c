@@ -553,21 +553,7 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
          *     in the same address family.
          */
 	msg->end_addr_family = conn->end_addr_family;
-	if(msg->end_addr_family == 0) {
-	  msg->end_addr_family = conn->left.end_addr_family;
-        }
-	if(msg->end_addr_family == 0) {
-	  msg->end_addr_family = conn->right.end_addr_family;
-        }
-
         msg->tunnel_addr_family = conn->tunnel_addr_family;
-        if(msg->tunnel_addr_family == 0) {
-          msg->tunnel_addr_family = conn->left.tunnel_addr_family;
-        }
-        if(msg->tunnel_addr_family == 0) {
-          msg->tunnel_addr_family = conn->right.tunnel_addr_family;
-        }
-
         starter_log(LOG_LEVEL_DEBUG,
                     "emitting conn %s with end-family: %u and tunnel-family: %u\n",
                     conn->name,
