@@ -608,7 +608,7 @@ extract_end(struct connection *conn
             , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
-    unsigned int family = conn->addr_family;
+    unsigned int family = conn->end_addr_family;
 
     /* decode id, if any */
     if (src->id == NULL)
@@ -1084,7 +1084,7 @@ add_connection(const struct whack_message *wm)
           }
         }
 
-	c->addr_family = family;
+	c->end_addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
 	c->requested_ca = NULL;

@@ -28,8 +28,8 @@ static void init_fake_secrets(void)
 
 static void init_loaded(struct connection *c1)
 {
-    fprintf(stderr, "address family: %u\n", c1->addr_family);
-    assert(c1->addr_family != 0);
+    fprintf(stderr, "address family: %u\n", c1->end_addr_family);
+    assert(c1->end_addr_family != 0);
 }
 #define INIT_LOADED init_loaded
 
