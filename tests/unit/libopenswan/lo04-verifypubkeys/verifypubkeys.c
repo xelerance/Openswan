@@ -19,15 +19,61 @@ void exit_tool(int stat)
     exit(stat);
 }
 
-void verify_signature(unsigned int keysize_bits,
-                      const struct RSA_public_key *pubkey)
+void verify_signature(unsigned int keysize_bits)
 {
     size_t signed_len;
     char   signature_buf[8192];
     char   sig_buf_name[512];
     unsigned int keysize = keysize_bits / 8;
-
+    struct RSA_public_key pubkey;
     FILE *infile;
+
+    {
+        chunk_t   pubkey_binary;
+        err_t  e;
+        FILE *pubkey_file;
+        char *pubkey_space = NULL;
+        size_t pubkey_space_len;
+        char   pubkey_bin_space[65536];
+        size_t pubkey_bin_space_len;
+
+        char   pubkey_file_name[512];
+
+        snprintf(pubkey_file_name, sizeof(pubkey_file_name), "pubkey-%04d.pubkey", keysize_bits);
+
+        pubkey_file = fopen(pubkey_file_name, "r");
+        if(!pubkey_file) {
+            perror("pubkey-0512");
+            exit(12);
+        }
+        pubkey_space_len = 0;
+        if(getline(&pubkey_space, &pubkey_space_len, pubkey_file) < 0) {
+            perror("getline");
+            exit(13);
+        }
+
+        pubkey_space_len = strlen(pubkey_space);
+        pubkey_space[pubkey_space_len - 1] = '\0';
+
+        e = ttodatav(pubkey_space, 0, 0,
+                     pubkey_bin_space, sizeof(pubkey_bin_space), &pubkey_bin_space_len,
+                     (char *)NULL, (size_t)0, TTODATAV_IGNORESPACE);
+
+        if(e) {
+            printf("error: %s decoding base64", e);
+            exit(11);
+        }
+
+        setchunk(pubkey_binary, pubkey_bin_space, pubkey_bin_space_len);
+
+        /* this decodes the public key from the binary (wire) representation of it */
+        e = unpack_RSA_public_key(&pubkey, &pubkey_binary);
+        if(e) {
+            printf("error: %s decoding public key", e);
+            exit(11);
+        }
+    }
+
     snprintf(sig_buf_name, sizeof(sig_buf_name), "sig-%04d.bin", keysize_bits);
     infile = fopen(sig_buf_name, "rb");
     if(!infile) {
@@ -55,7 +101,7 @@ void verify_signature(unsigned int keysize_bits,
         size_t       hash_len = 16;
         err_t e = NULL;
 
-        e = verify_signed_hash(pubkey, s, sizeof(s), &sig, signed_len, sig_val, sig_len);
+        e = verify_signed_hash(&pubkey, s, sizeof(s), &sig, signed_len, sig_val, sig_len);
         if(e) puts(e);
         assert(e == NULL);
 
@@ -73,14 +119,6 @@ int main(int argc, char *argv[])
 {
     int i;
     struct id one;
-    struct RSA_public_key pubkey;
-    chunk_t   pubkey_binary;
-    err_t  e;
-    FILE *pubkey_file;
-    char *pubkey_space = NULL;
-    size_t pubkey_space_len;
-    char   pubkey_bin_space[65536];
-    size_t pubkey_bin_space_len;
 
     load_oswcrypto();
 
@@ -92,40 +130,8 @@ int main(int argc, char *argv[])
     exit(1);
 #endif
 
-    pubkey_file = fopen("pubkey-0512.pubkey", "r");
-    if(!pubkey_file) {
-        perror("pubkey-0512");
-        exit(12);
-    }
-    pubkey_space_len = 0;
-    if(getline(&pubkey_space, &pubkey_space_len, pubkey_file) < 0) {
-        perror("getline");
-        exit(13);
-    }
-
-    pubkey_space_len = strlen(pubkey_space);
-    pubkey_space[pubkey_space_len - 1] = '\0';
-
-    e = ttodatav(pubkey_space, 0, 0,
-                pubkey_bin_space, sizeof(pubkey_bin_space), &pubkey_bin_space_len,
-                (char *)NULL, (size_t)0, TTODATAV_IGNORESPACE);
-
-    if(e) {
-        printf("error: %s decoding base64", e);
-        exit(11);
-    }
-
-    setchunk(pubkey_binary, pubkey_bin_space, pubkey_bin_space_len);
-
-    /* this decodes the public key from the binary (wire) representation of it */
-    e = unpack_RSA_public_key(&pubkey, &pubkey_binary);
-    if(e) {
-        printf("error: %s decoding public key", e);
-        exit(11);
-    }
-
     set_debugging(DBG_CONTROL|DBG_CRYPT);
-    verify_signature(512, &pubkey);
+    verify_signature(512);
 
     report_leaks();
     tool_close_log();

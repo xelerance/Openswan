@@ -20,5 +20,7 @@ clean check:
 	@${MAKE} -C lo01-sameid $@
 	@${MAKE} -C lo02-verifysigs $@
 	@${MAKE} -C lo03-includesecrets $@
+	@${MAKE} -C lo04-verifysigs     $@
+
 
 
