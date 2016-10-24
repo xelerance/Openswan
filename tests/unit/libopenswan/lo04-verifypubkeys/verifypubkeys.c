@@ -132,6 +132,11 @@ int main(int argc, char *argv[])
 
     set_debugging(DBG_CONTROL|DBG_CRYPT);
     verify_signature(512);
+    verify_signature(1024);
+    verify_signature(2048);
+    verify_signature(3072);
+    verify_signature(4096);
+    verify_signature(8192);
 
     report_leaks();
     tool_close_log();
