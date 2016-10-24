@@ -63,6 +63,18 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
               signature_buf, keysize);
 
     hexdump(signature_buf, 0, sizeof(signature_buf));
+    {
+        char outname[512];
+        FILE *outfile;
+        snprintf(outname, sizeof(outname), "OUTPUT/sig-%s.bin", keyfile);
+        outfile = fopen(outname, "wb");
+        if(!outfile) {
+            perror(outname);
+            exit(10);
+        }
+        fwrite(signature_buf, keysize, 1, outfile);
+        fclose(outfile);
+    }
     printf("\n");
 
     /* now verify the signature using the public key part of this secret */
