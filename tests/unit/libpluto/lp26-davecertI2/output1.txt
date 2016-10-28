@@ -1013,6 +1013,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./davecertI2 leak: struct state in new_state(), item size: X
 ./davecertI2 leak: x509cert, item size: X
 ./davecertI2 leak: CA cert, item size: X
+./davecertI2 leak: rfc3110 format of public key [created], item size: X
 ./davecertI2 leak: issuer dn, item size: X
 ./davecertI2 leak: keep id name, item size: X
 ./davecertI2 leak: pubkey entry, item size: X

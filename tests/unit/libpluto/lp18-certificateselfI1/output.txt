@@ -536,10 +536,12 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./certificateselfI1 leak: db_attrs, item size: X
 ./certificateselfI1 leak: db_v2_trans, item size: X
 ./certificateselfI1 leak: db_v2_prop_conj, item size: X
+./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: issuer dn, item size: X
 ./certificateselfI1 leak: keep id name, item size: X
 ./certificateselfI1 leak: pubkey entry, item size: X
 ./certificateselfI1 leak: pubkey, item size: X
+./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: issuer dn, item size: X
 ./certificateselfI1 leak: keep id name, item size: X
 ./certificateselfI1 leak: pubkey entry, item size: X

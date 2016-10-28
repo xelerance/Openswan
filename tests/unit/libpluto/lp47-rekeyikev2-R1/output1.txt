@@ -1435,9 +1435,11 @@ sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 leak: struct connection, item size: X
 ./rekeyikev2-R1 leak: keep id name, item size: X
 ./rekeyikev2-R1 leak: pubkey entry, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key, item size: X
 ./rekeyikev2-R1 leak: pubkey, item size: X
 ./rekeyikev2-R1 leak: keep id name, item size: X
 ./rekeyikev2-R1 leak: pubkey entry, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key, item size: X
 ./rekeyikev2-R1 leak: pubkey, item size: X
 ./rekeyikev2-R1 leak: 2 * id list, item size: X
 ./rekeyikev2-R1 leak: secret, item size: X

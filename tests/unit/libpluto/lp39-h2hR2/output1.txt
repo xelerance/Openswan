@@ -777,8 +777,10 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./h2hR2 leak: connection name, item size: X
 ./h2hR2 leak: struct connection, item size: X
 ./h2hR2 leak: pubkey entry, item size: X
+./h2hR2 leak: rfc3110 format of public key, item size: X
 ./h2hR2 leak: pubkey, item size: X
 ./h2hR2 leak: pubkey entry, item size: X
+./h2hR2 leak: rfc3110 format of public key, item size: X
 ./h2hR2 leak: pubkey, item size: X
 ./h2hR2 leak: 2 * id list, item size: X
 ./h2hR2 leak: secret, item size: X

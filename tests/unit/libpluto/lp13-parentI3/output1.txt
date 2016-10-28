@@ -748,9 +748,11 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI3 leak: db_v2_prop_conj, item size: X
 ./parentI3 leak: keep id name, item size: X
 ./parentI3 leak: pubkey entry, item size: X
+./parentI3 leak: rfc3110 format of public key, item size: X
 ./parentI3 leak: pubkey, item size: X
 ./parentI3 leak: keep id name, item size: X
 ./parentI3 leak: pubkey entry, item size: X
+./parentI3 leak: rfc3110 format of public key, item size: X
 ./parentI3 leak: pubkey, item size: X
 ./parentI3 leak: policies path, item size: X
 ./parentI3 leak: ocspcerts path, item size: X

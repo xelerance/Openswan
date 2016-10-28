@@ -361,6 +361,7 @@ allocate_RSA_public_key(const cert_t cert)
 
 void free_RSA_public_content(struct RSA_public_key *rsa)
 {
+    freeanychunk(rsa->key_rfc3110);
     mpz_clear(&rsa->n);
     mpz_clear(&rsa->e);
 }
@@ -1573,10 +1574,7 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
     if (pubkey->len < 3)
 	return "RSA public key blob way to short";	/* not even room for length! */
 
-    /* maybe #ifdef SHA2 ? */
-    /* calculate the hash of the public key, using SHA-2 */
-    sha256_hash_buffer(pubkey->ptr, pubkey->len,
-                       rsa->key_ckaid, sizeof(rsa->key_ckaid));
+    rsa->key_rfc3110 = chunk_clone(*pubkey, "rfc3110 format of public key");
 
     if (pubkey->ptr[0] != 0x00)
     {
@@ -1649,6 +1647,37 @@ install_public_key(struct pubkey *pk, struct pubkey_list **head)
     /* copy issuer dn */
     if (pk->issuer.ptr != NULL)
 	pk->issuer.ptr = clone_bytes(pk->issuer.ptr, pk->issuer.len, "issuer dn");
+
+
+
+
+    switch(pk->alg) {
+    case PUBKEY_ALG_RSA: {
+        struct RSA_public_key *rsa = &pk->u.rsa;
+
+        if(rsa->key_rfc3110.len == 0) {
+            /* key has no 3110 representation, need to cons up one */
+            unsigned int e_size     = mpz_sizeinbase(&rsa->e, 256);
+            unsigned int key3110len = rsa->k + 1 + e_size;
+            rsa->key_rfc3110.ptr = alloc_bytes(key3110len, "rfc3110 format of public key [created]");
+            rsa->key_rfc3110.len = key3110len;
+            unsigned char *here = rsa->key_rfc3110.ptr;
+
+            here[0] = e_size;
+            here++;
+            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->e);
+            here += e_size;
+            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->n);
+        }
+
+        /* maybe #ifdef SHA2 ? */
+        /* calculate the hash of the public key, using SHA-2 */
+        sha256_hash_buffer(rsa->key_rfc3110.ptr, rsa->key_rfc3110.len,
+                           rsa->key_ckaid, sizeof(rsa->key_ckaid));
+    }
+    case PUBKEY_ALG_DSA:
+        break;
+    }
 
     /* store the time the public key was installed */
     pk->installed_time = now();
