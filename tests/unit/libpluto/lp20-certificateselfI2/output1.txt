@@ -976,10 +976,12 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./certificateselfI2 leak: sa copy prop conj array, item size: X
 ./certificateselfI2 leak: sa copy prop_conj, item size: X
 ./certificateselfI2 leak: struct state in new_state(), item size: X
+./certificateselfI2 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI2 leak: issuer dn, item size: X
 ./certificateselfI2 leak: keep id name, item size: X
 ./certificateselfI2 leak: pubkey entry, item size: X
 ./certificateselfI2 leak: pubkey, item size: X
+./certificateselfI2 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI2 leak: issuer dn, item size: X
 ./certificateselfI2 leak: keep id name, item size: X
 ./certificateselfI2 leak: pubkey entry, item size: X

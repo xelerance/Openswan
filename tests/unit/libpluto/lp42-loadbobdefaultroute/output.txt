@@ -39,10 +39,12 @@ RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKO
 ./loadbob deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X
 ./loadbob leak: pubkey, item size: X
+./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X

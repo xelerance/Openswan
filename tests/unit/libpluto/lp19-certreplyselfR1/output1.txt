@@ -239,10 +239,12 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | pass 1: considering PARENT SAs to delete
 ./certreplyselfR1 leak: ikev2_inI1outR1 KE, item size: X
 ./certreplyselfR1 leak: msg_digest, item size: X
+./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
 ./certreplyselfR1 leak: issuer dn, item size: X
 ./certreplyselfR1 leak: keep id name, item size: X
 ./certreplyselfR1 leak: pubkey entry, item size: X
 ./certreplyselfR1 leak: pubkey, item size: X
+./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
 ./certreplyselfR1 leak: issuer dn, item size: X
 ./certreplyselfR1 leak: keep id name, item size: X
 ./certreplyselfR1 leak: pubkey entry, item size: X

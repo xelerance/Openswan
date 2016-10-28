@@ -699,9 +699,11 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./initiateselfI2 leak: struct state in new_state(), item size: X
 ./initiateselfI2 leak: keep id name, item size: X
 ./initiateselfI2 leak: pubkey entry, item size: X
+./initiateselfI2 leak: rfc3110 format of public key, item size: X
 ./initiateselfI2 leak: pubkey, item size: X
 ./initiateselfI2 leak: keep id name, item size: X
 ./initiateselfI2 leak: pubkey entry, item size: X
+./initiateselfI2 leak: rfc3110 format of public key, item size: X
 ./initiateselfI2 leak: pubkey, item size: X
 ./initiateselfI2 leak: 2 * id list, item size: X
 ./initiateselfI2 leak: secret, item size: X

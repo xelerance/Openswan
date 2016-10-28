@@ -42,6 +42,8 @@ struct RSA_public_key
     /* length of modulus n in octets: [RSA_MIN_OCTETS, RSA_MAX_OCTETS] */
     unsigned k;
 
+    chunk_t        key_rfc3110;     /* Raw Public key format */
+
     /* public: */
     MP_INT
 	n,	/* modulus: p * q */

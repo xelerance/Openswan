@@ -632,9 +632,11 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2anychoice leak: struct connection, item size: X
 ./parentR2anychoice leak: keep id name, item size: X
 ./parentR2anychoice leak: pubkey entry, item size: X
+./parentR2anychoice leak: rfc3110 format of public key, item size: X
 ./parentR2anychoice leak: pubkey, item size: X
 ./parentR2anychoice leak: keep id name, item size: X
 ./parentR2anychoice leak: pubkey entry, item size: X
+./parentR2anychoice leak: rfc3110 format of public key, item size: X
 ./parentR2anychoice leak: pubkey, item size: X
 ./parentR2anychoice leak: 2 * keep id name, item size: X
 ./parentR2anychoice leak: ID host_pair, item size: X
@@ -646,6 +648,7 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2anychoice leak: struct connection, item size: X
 ./parentR2anychoice leak: keep id name, item size: X
 ./parentR2anychoice leak: pubkey entry, item size: X
+./parentR2anychoice leak: rfc3110 format of public key, item size: X
 ./parentR2anychoice leak: pubkey, item size: X
 ./parentR2anychoice leak: 2 * id list, item size: X
 ./parentR2anychoice leak: secret, item size: X

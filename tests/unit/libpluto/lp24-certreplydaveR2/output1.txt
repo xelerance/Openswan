@@ -3207,6 +3207,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: connection name, item size: X
 ./certreplydaveR2 leak: temporary connection, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
@@ -3297,10 +3298,12 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: st_skeyseed in duplicate_state, item size: X
 ./certreplydaveR2 leak: st_enc_key in duplicate_state, item size: X
 ./certreplydaveR2 leak: struct state in new_state(), item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
 ./certreplydaveR2 leak: pubkey, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
@@ -3320,10 +3323,12 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: connection name, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
 ./certreplydaveR2 leak: pubkey, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
@@ -3340,6 +3345,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: ca string, item size: X
 ./certreplydaveR2 leak: keep id name, item size: X
 ./certreplydaveR2 leak: connection name, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: issuer dn, item size: X
 ./certreplydaveR2 leak: pubkey entry, item size: X
 ./certreplydaveR2 leak: pubkey, item size: X
