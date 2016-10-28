@@ -32,9 +32,12 @@
 struct state;	 /* forward declaration */
 struct secret;  /* opaque definition, private to secrets.c */
 
+#define CKAID_BUFSIZE 20
+
 struct RSA_public_key
 {
-    char keyid[KEYID_BUF];	/* see ipsec_keyblobtoid(3) */
+    char keyid[KEYID_BUF];	    /* see ipsec_keyblobtoid(3) */
+    unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
 
     /* length of modulus n in octets: [RSA_MIN_OCTETS, RSA_MAX_OCTETS] */
     unsigned k;

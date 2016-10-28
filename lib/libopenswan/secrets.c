@@ -51,6 +51,7 @@
 #include "certs.h"
 #include "lex.h"
 #include "mpzfuncs.h"
+#include "sha2.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -1571,6 +1572,11 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
 
     if (pubkey->len < 3)
 	return "RSA public key blob way to short";	/* not even room for length! */
+
+    /* maybe #ifdef SHA2 ? */
+    /* calculate the hash of the public key, using SHA-2 */
+    sha256_hash_buffer(pubkey->ptr, pubkey->len,
+                       rsa->key_ckaid, sizeof(rsa->key_ckaid));
 
     if (pubkey->ptr[0] != 0x00)
     {
