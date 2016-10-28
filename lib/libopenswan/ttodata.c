@@ -585,6 +585,7 @@ struct drtab {
 	{ "\x0c\x20\x3f",		's',	-1,	-1,	"0sDCA/", },
 	{ "\x01\xba\xda\x09\xa7\x5a\x6e\xb6\xbe", 's', -1, -1, "0sAbraCadabra+", },
 	{ "\x01\xba\xda\x09\xa7\x5a\x6e\xb6\xbe", 64, -1, -1, "AbraCadabra+", },
+        { "\x01\xba\xda\x09\xa7\x5a\x6e\xb6\xbe", 'G', -1, -1, "01BA DA09 A75A 6EB6 BE", },
 	{ NULL,			'x',	-1,	-1,	NULL, },
 };
 
