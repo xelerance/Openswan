@@ -90,6 +90,7 @@ static const struct fld RSA_private_field[] =
 
 };
 
+static void calculate_rsa_ckaid(struct RSA_public_key *rsa);
 static err_t osw_process_psk_secret(const struct secret *secrets
 				    , chunk_t *psk);
 static err_t osw_process_rsa_secret(const struct secret *secrets
@@ -1142,10 +1143,17 @@ process_secret(struct secret **psecrets, int verbose,
 	    ugh = osw_process_rsa_keyfile(psecrets, verbose,
 					  &s->pks.u.RSA_private_key,pass);
 	}
+
+        calculate_rsa_ckaid(&s->pks.u.RSA_private_key.pub);
+
 	if(!ugh && verbose) {
-	    openswan_log("loaded private key for keyid: %s:%s",
+            char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
+            datatot(s->pks.u.RSA_private_key.pub.key_ckaid, sizeof(s->pks.u.RSA_private_key.pub.key_ckaid),
+                    'G', ckaid_print_buf, sizeof(ckaid_print_buf));
+	    openswan_log("loaded private key for keyid: %s:%s/%s",
 			 enum_name(&ppk_names, s->pks.kind),
-			 s->pks.u.RSA_private_key.pub.keyid);
+			 s->pks.u.RSA_private_key.pub.keyid,
+                         ckaid_print_buf);
 	}
     }
     else if (tokeqword("pin"))
@@ -1637,6 +1645,29 @@ same_RSA_public_key(const struct RSA_public_key *a
     || (a->k == b->k && mpz_cmp(&a->n, &b->n) == 0 && mpz_cmp(&a->e, &b->e) == 0);
 }
 
+static void calculate_rsa_ckaid(struct RSA_public_key *rsa)
+{
+    if(rsa->key_rfc3110.len == 0) {
+        /* key has no 3110 representation, need to cons up one */
+        unsigned int e_size     = mpz_sizeinbase(&rsa->e, 256);
+        unsigned int key3110len = rsa->k + 1 + e_size;
+        rsa->key_rfc3110.ptr = alloc_bytes(key3110len, "rfc3110 format of public key [created]");
+        rsa->key_rfc3110.len = key3110len;
+        unsigned char *here = rsa->key_rfc3110.ptr;
+
+        here[0] = e_size;
+        here++;
+        mpz_export(here, NULL, 1, 1, 1, 0, &rsa->e);
+        here += e_size;
+        mpz_export(here, NULL, 1, 1, 1, 0, &rsa->n);
+    }
+
+    /* maybe #ifdef SHA2 ? */
+    /* calculate the hash of the public key, using SHA-2 */
+    sha256_hash_buffer(rsa->key_rfc3110.ptr, rsa->key_rfc3110.len,
+                       rsa->key_ckaid, sizeof(rsa->key_ckaid));
+}
+
 void
 install_public_key(struct pubkey *pk, struct pubkey_list **head)
 {
@@ -1654,26 +1685,7 @@ install_public_key(struct pubkey *pk, struct pubkey_list **head)
     switch(pk->alg) {
     case PUBKEY_ALG_RSA: {
         struct RSA_public_key *rsa = &pk->u.rsa;
-
-        if(rsa->key_rfc3110.len == 0) {
-            /* key has no 3110 representation, need to cons up one */
-            unsigned int e_size     = mpz_sizeinbase(&rsa->e, 256);
-            unsigned int key3110len = rsa->k + 1 + e_size;
-            rsa->key_rfc3110.ptr = alloc_bytes(key3110len, "rfc3110 format of public key [created]");
-            rsa->key_rfc3110.len = key3110len;
-            unsigned char *here = rsa->key_rfc3110.ptr;
-
-            here[0] = e_size;
-            here++;
-            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->e);
-            here += e_size;
-            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->n);
-        }
-
-        /* maybe #ifdef SHA2 ? */
-        /* calculate the hash of the public key, using SHA-2 */
-        sha256_hash_buffer(rsa->key_rfc3110.ptr, rsa->key_rfc3110.len,
-                           rsa->key_ckaid, sizeof(rsa->key_ckaid));
+        calculate_rsa_ckaid(rsa);
     }
     case PUBKEY_ALG_DSA:
         break;
