@@ -1668,6 +1668,7 @@ static void calculate_rsa_ckaid(struct RSA_public_key *rsa)
                        rsa->key_ckaid, sizeof(rsa->key_ckaid));
 }
 
+
 void
 install_public_key(struct pubkey *pk, struct pubkey_list **head)
 {

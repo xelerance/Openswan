@@ -499,19 +499,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
       err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
                      &msg->keyval.len);
 
-      {
-        unsigned char key_ckaid[CKAID_BUFSIZE];
-        char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
-
-        /* maybe #ifdef SHA2 ? */
-        /* calculate the hash of the public key, using SHA-2 */
-        sha256_hash_buffer(keyspace, msg->keyval.len, key_ckaid, sizeof(key_ckaid));
-
-        datatot(key_ckaid, sizeof(key_ckaid), 'G',
-                ckaid_print_buf, sizeof(ckaid_print_buf));
-
-        starter_log(LOG_LEVEL_ERR, "loading key: %s", ckaid_print_buf);
-      }
+      //log_ckaid("loading key %s", msg->keyval.ptr, msg->keyval.len);
 
       if (err) {
         starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
