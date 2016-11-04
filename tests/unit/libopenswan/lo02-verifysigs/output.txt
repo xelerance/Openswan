@@ -1,5 +1,5 @@
 ./verifysigs loading secrets from "key-0512.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQOkietpl
+./verifysigs loaded private key for keyid: PPK_RSA:AQOkietpl/F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
 | signing hash with RSA Key *AQOkietpl
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -12,7 +12,7 @@
 | v2rsa computed hash:
 |   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
 ./verifysigs loading secrets from "key-1024.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQN3OKgAN
+./verifysigs loaded private key for keyid: PPK_RSA:AQN3OKgAN/EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
 | signing hash with RSA Key *AQN3OKgAN
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -29,7 +29,7 @@
 | v2rsa computed hash:
 |   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
 ./verifysigs loading secrets from "key-2048.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQO8vQM7b
+./verifysigs loaded private key for keyid: PPK_RSA:AQO8vQM7b/9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
 | signing hash with RSA Key *AQO8vQM7b
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -54,7 +54,7 @@
 | v2rsa computed hash:
 |   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
 ./verifysigs loading secrets from "key-3072.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQOnXoqI3
+./verifysigs loaded private key for keyid: PPK_RSA:AQOnXoqI3/5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
 | signing hash with RSA Key *AQOnXoqI3
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -87,7 +87,7 @@
 | v2rsa computed hash:
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
 ./verifysigs loading secrets from "key-4096.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQPRudGr2
+./verifysigs loaded private key for keyid: PPK_RSA:AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
 | signing hash with RSA Key *AQPRudGr2
 signed_len: 31
 0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 91 
@@ -206,7 +206,7 @@ signed_len: 31
 | v2rsa computed hash:
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
 ./verifysigs loading secrets from "key-8192.secrets"
-./verifysigs loaded private key for keyid: PPK_RSA:AQNvWxgGb
+./verifysigs loaded private key for keyid: PPK_RSA:AQNvWxgGb/2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
 | signing hash with RSA Key *AQNvWxgGb
 5b  ff 0a fb d8  3a 0e 1c fa  ad 51 00 f0 
 0080: 3d a0 35 e7  0d d7 91 22  5b 14 72 12  d7 01 8c ac 
