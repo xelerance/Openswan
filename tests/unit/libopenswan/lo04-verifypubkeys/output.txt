@@ -66,11 +66,13 @@
 | pad_len calculated: 350 hash_len: 31
 | v2rsa decrypted SIG:
 |   76 f5 d9 c1  82 6f 05 b1  04 5b ee f2  f6 73 13 9d
+ckaid: F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
 0000: 07 80 ec b7  59 ba e6 5c  4a da ec c7  5b 51 d3 92 
 0010: fa 00 ce 3f  dd f7 d9 cc  03 18 4c 6e  77 78 81 c8 
 0020: 0a d1 73 a6  4d 61 5a 14  4e 5f 7a 47  f6 cf 49 b9 
 0030: ae e3 56 c1  40 9a 33 96  54 2c 27 20  83 1e 17 f6 
 
+ckaid: EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
 0000: 14 8b eb 3b  fc a3 5b e5  5d 75 be 6d  12 65 5d 00 
 0010: 63 96 bd 5a  ae c3 9e 5d  d3 cd 14 74  d5 c0 79 01 
 0020: 6e 03 75 7e  4e a0 88 b8  40 bb 2d 82  b4 f2 2d a8 
@@ -80,6 +82,7 @@
 0060: 26 96 44 50  ca c0 d4 c5  7b 50 a8 89  91 de 77 0f 
 0070: 76 21 61 43  b3 d6 98 22  71 d5 9c 86  57 c4 03 39 
 
+ckaid: 9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
 0000: 9d 46 a6 15  7a 21 23 8b  fc 28 93 4d  24 15 2a 27 
 0010: c4 8f b8 43  03 82 d2 4a  3e 2c e1 56  9f 48 c3 e0 
 0020: 41 bc 2d 80  08 97 c7 92  26 7d c4 65  b8 65 d2 4b 
@@ -97,6 +100,7 @@
 00e0: d4 03 a6 b5  36 4a e2 77  ce 2a 97 db  15 a8 bb ca 
 00f0: fb 33 7a 7e  f4 75 31 13  7d fe 54 0b  d3 45 18 69 
 
+ckaid: 5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
 0000: a5 c2 03 99  e9 e5 79 94  8f 19 34 66  36 e5 8c a2 
 0010: 0f 53 f8 12  73 8a ae 35  cf 67 73 4c  e5 3a 69 52 
 0020: 97 f6 20 ff  be 0b c9 2f  7f d3 48 f5  26 13 8e ce 
@@ -122,6 +126,7 @@
 0160: a5 ad 03 78  28 59 bb b2  c4 c2 d1 c9  52 ce 7e 49 
 0170: 27 73 16 6c  d4 91 41 6f  43 b8 25 93  fb 54 0b d4 
 
+ckaid: 1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
 0000: bb 0c 40 24  ac fd 91 c9  cf fe e0 26  78 82 0f d4 
 0010: c8 8a cb f8  f6 65 26 7e  0e 10 c1 80  cb 2c 83 94 
 0020: 62 1b da 35  29 9e 6f 02  e9 0f 62 ce  ba 1d ed 11 
@@ -135,12 +140,7 @@
 00a0: 96 e2 eb 0c  b4 ae 91 fd  bf d5 7f df  df 1a 7e 9e 
 00b0: cb 6a 81 d1  23 04 af 10  7b 18 7a f3  7c aa 7a 8f 
 00c0: 8c 4d d2 c1  32 ed e6 44  57 f0 66 7c  8a 47 e8 7d 
-00d0: f6 de 9d 7d  4b 5d 76 47  7b e2 85 ed  cc ca d9 20 
-00e0: d8 a5 39 84  a1 6f 59 29  93 c6 66 17  5b d8 5b 7c 
-00f0: 54 af 04 fd  34 8b 17 f3  be e1 29 43  86 ef f0 f9 
-0100: 02 01 62 84  cd d6 25 79  73 41 88 e2  f6 82 4d 2c 
-0110: 89 47 e1 2c  78 37 24 0b  41 7e 58 83  a8 85 e4 22 
-0120: f4 33 ed d9  a5 da 74 65  | verify_sh decrypted SIG1:
+00d0: f6 de 9d 7d  4b 5d 76 47  7b e2| verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -176,7 +176,12 @@
 | pad_len calculated: 478 hash_len: 31
 | v2rsa decrypted SIG:
 |   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
-0b 87 8f 36  f5 ac 18 1b 
+ 85 ed  cc ca d9 20 
+00e0: d8 a5 39 84  a1 6f 59 29  93 c6 66 17  5b d8 5b 7c 
+00f0: 54 af 04 fd  34 8b 17 f3  be e1 29 43  86 ef f0 f9 
+0100: 02 01 62 84  cd d6 25 79  73 41 88 e2  f6 82 4d 2c 
+0110: 89 47 e1 2c  78 37 24 0b  41 7e 58 83  a8 85 e4 22 
+0120: f4 33 ed d9  a5 da 74 65  0b 87 8f 36  f5 ac 18 1b 
 0130: dc 22 59 ea  39 98 2d 32  57 25 29 f8  b3 96 03 e1 
 0140: 8e 17 8c 5f  bd fa f6 04  87 18 82 a1  94 05 c8 cd 
 0150: c9 e7 c8 26  08 b7 f2 0b  c2 c3 86 19  c5 ac a8 d2 
@@ -191,6 +196,7 @@
 01e0: 57 96 f8 61  02 e7 60 63  8b 94 48 88  77 26 7c 92 
 01f0: 54 24 18 e6  07 2b 6e 6a  0b 7b f9 2d  18 79 4d 74 
 
+ckaid: 2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
 0000: 67 bc a3 8f  38 79 7d db  3b 08 2b a3  6c db 91 f9 
 0010: c5 0b bd 8a  ef c8 ef a4  e1 3e f8 c3  a4 24 06 65 
 0020: f2 fa 9c cd  60 93 74 38  e1 6f 6f 46  bf 4c 05 a4 
@@ -242,13 +248,7 @@
 0300: a9 82 af 13  23 2e 56 fe  34 26 d2 61  df 20 d0 f9 
 0310: 29 b6 13 90  7c c5 3f 01  43 13 ca b6  03 1a 50 ba 
 0320: 6a 34 7e 6b  42 f0 f9 78  41 21 94 15  73 0c 3a cd 
-0330: 1b 44 dc c9  cb 7c 0d 73  bd 1a 35 c7  f9 6b e1 90 
-0340: 14 20 cd 8d  95 e1 ae 04  4c f0 86 72  96 71 82 b9 
-0350: 6d 90 b4 f8  99 62 1a 17  03 ad e6 97  78 3d a1 e1 
-0360: 76 fd 9a 68  76 a4 5f 95  9a 73 34 f2  d0 65 a1 d2 
-0370: 12 c6 85 0b  fe e9 8d 80  5b 4d a6 46  fd 07 20 da 
-0380: 89 39 7e 8d  3d f7 d6 db  58 bf 11 d8  7f 7c f0 b2 
-0390: 95 | verify_sh decrypted SIG1:
+0330: 1b 44 dc | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 |   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -317,7 +317,13 @@
 | v2rsa decrypted SIG:
 |   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
 ./verifypubkeys leak detective found no leaks
-33 1a 68  43 c9 14 53  58 a8 1e f0  fd db e3 4e 
+c9  cb 7c 0d 73  bd 1a 35 c7  f9 6b e1 90 
+0340: 14 20 cd 8d  95 e1 ae 04  4c f0 86 72  96 71 82 b9 
+0350: 6d 90 b4 f8  99 62 1a 17  03 ad e6 97  78 3d a1 e1 
+0360: 76 fd 9a 68  76 a4 5f 95  9a 73 34 f2  d0 65 a1 d2 
+0370: 12 c6 85 0b  fe e9 8d 80  5b 4d a6 46  fd 07 20 da 
+0380: 89 39 7e 8d  3d f7 d6 db  58 bf 11 d8  7f 7c f0 b2 
+0390: 95 33 1a 68  43 c9 14 53  58 a8 1e f0  fd db e3 4e 
 03a0: aa 86 49 63  e7 f9 fa 3a  45 d7 42 1a  24 f1 1d de 
 03b0: 17 11 17 b1  25 98 41 82  be 15 9c 0f  4f be d2 bb 
 03c0: 56 c3 9b 56  74 7e 7b 28  91 bb d0 ab  12 f5 01 6c 
