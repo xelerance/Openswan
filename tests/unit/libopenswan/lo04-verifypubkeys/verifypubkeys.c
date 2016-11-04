@@ -19,7 +19,7 @@ void exit_tool(int stat)
     exit(stat);
 }
 
-void verify_signature(unsigned int keysize_bits)
+void verify_signature(const char *keyname, unsigned int keysize_bits)
 {
     struct pubkey_list *head = NULL;
     size_t signed_len;
@@ -42,7 +42,11 @@ void verify_signature(unsigned int keysize_bits)
         char   pubkey_file_name[512];
         char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
 
-        snprintf(pubkey_file_name, sizeof(pubkey_file_name), "pubkey-%04d.pubkey", keysize_bits);
+        if(keyname) {
+            snprintf(pubkey_file_name, sizeof(pubkey_file_name), "pubkey-%s.pubkey", keyname);
+        } else {
+            snprintf(pubkey_file_name, sizeof(pubkey_file_name), "pubkey-%04d.pubkey", keysize_bits);
+        }
 
         pubkey_file = fopen(pubkey_file_name, "r");
         if(!pubkey_file) {
@@ -83,7 +87,11 @@ void verify_signature(unsigned int keysize_bits)
         printf("ckaid: %s\n", ckaid_print_buf);
     }
 
-    snprintf(sig_buf_name, sizeof(sig_buf_name), "sig-%04d.bin", keysize_bits);
+    if(keyname) {
+        snprintf(sig_buf_name, sizeof(sig_buf_name), "sig-%s.bin", keyname);
+    } else {
+        snprintf(sig_buf_name, sizeof(sig_buf_name), "sig-%04d.bin", keysize_bits);
+    }
     infile = fopen(sig_buf_name, "rb");
     if(!infile) {
         perror(sig_buf_name);
@@ -140,12 +148,12 @@ int main(int argc, char *argv[])
 #endif
 
     set_debugging(DBG_CONTROL|DBG_CRYPT);
-    verify_signature(512);
-    verify_signature(1024);
-    verify_signature(2048);
-    verify_signature(3072);
-    verify_signature(4096);
-    verify_signature(8192);
+    verify_signature(NULL, 512);
+    verify_signature(NULL, 1024);
+    verify_signature(NULL, 2048);
+    verify_signature(NULL, 3072);
+    verify_signature(NULL, 4096);
+    verify_signature(NULL, 8192);
 
     report_leaks();
     tool_close_log();
