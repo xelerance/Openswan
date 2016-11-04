@@ -166,6 +166,7 @@ extern err_t add_public_key(const struct id *id
 
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
+
 extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
 
 extern void free_public_key(struct pubkey *pk);
