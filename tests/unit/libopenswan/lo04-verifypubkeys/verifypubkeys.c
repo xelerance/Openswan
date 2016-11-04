@@ -21,11 +21,13 @@ void exit_tool(int stat)
 
 void verify_signature(unsigned int keysize_bits)
 {
+    struct pubkey_list *head = NULL;
     size_t signed_len;
     char   signature_buf[8192];
     char   sig_buf_name[512];
     unsigned int keysize = keysize_bits / 8;
-    struct RSA_public_key pubkey;
+    struct RSA_public_key *pubkey;
+    struct pubkey pk;
     FILE *infile;
 
     {
@@ -38,6 +40,7 @@ void verify_signature(unsigned int keysize_bits)
         size_t pubkey_bin_space_len;
 
         char   pubkey_file_name[512];
+        char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
 
         snprintf(pubkey_file_name, sizeof(pubkey_file_name), "pubkey-%04d.pubkey", keysize_bits);
 
@@ -67,11 +70,17 @@ void verify_signature(unsigned int keysize_bits)
         setchunk(pubkey_binary, pubkey_bin_space, pubkey_bin_space_len);
 
         /* this decodes the public key from the binary (wire) representation of it */
-        e = unpack_RSA_public_key(&pubkey, &pubkey_binary);
+        e = unpack_RSA_public_key(&pk.u.rsa, &pubkey_binary);
+        pk.alg = PUBKEY_ALG_RSA;
         if(e) {
             printf("error: %s decoding public key", e);
             exit(11);
         }
+        install_public_key(&pk, &head);
+
+        datatot(pk.u.rsa.key_ckaid, sizeof(pk.u.rsa.key_ckaid),
+                'G', ckaid_print_buf, sizeof(ckaid_print_buf));
+        printf("ckaid: %s\n", ckaid_print_buf);
     }
 
     snprintf(sig_buf_name, sizeof(sig_buf_name), "sig-%04d.bin", keysize_bits);
@@ -101,7 +110,7 @@ void verify_signature(unsigned int keysize_bits)
         size_t       hash_len = 16;
         err_t e = NULL;
 
-        e = verify_signed_hash(&pubkey, s, sizeof(s), &sig, signed_len, sig_val, sig_len);
+        e = verify_signed_hash(&pk.u.rsa, s, sizeof(s), &sig, signed_len, sig_val, sig_len);
         if(e) puts(e);
         assert(e == NULL);
 
