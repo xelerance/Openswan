@@ -153,6 +153,7 @@ int main(int argc, char *argv[])
     verify_signature(NULL, 2048);
     verify_signature(NULL, 3072);
     verify_signature(NULL, 4096);
+    verify_signature("4096b", 4096);
     verify_signature(NULL, 8192);
 
     report_leaks();
