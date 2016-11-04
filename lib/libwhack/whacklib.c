@@ -148,7 +148,10 @@ err_t pack_whack_msg (struct whackpacker *wp)
 
     if(wp->msg->keyval.ptr)
     {
-	memcpy(wp->str_next, wp->msg->keyval.ptr, wp->msg->keyval.len);
+      if (wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len) {
+        return "no space for public key";
+      }
+      memcpy(wp->str_next, wp->msg->keyval.ptr, wp->msg->keyval.len);
     }
     wp->msg->keyval.ptr = NULL;
     wp->str_next += wp->msg->keyval.len;
