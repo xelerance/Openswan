@@ -60,9 +60,7 @@
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
-#ifdef KLIPS_MAST
 #include <ipsec_saref.h>
-#endif
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
