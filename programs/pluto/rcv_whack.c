@@ -69,6 +69,9 @@
 #include "timer.h"
 #include "hostpair.h"
 
+#include "sha2.h"
+#include "secrets.h"
+
 #include "kernel_alg.h"
 #include "ike_alg.h"
 
@@ -230,6 +233,19 @@ key_add_request(const struct whack_message *msg)
 	}
 	else
 	{
+            {
+                unsigned char key_ckaid[CKAID_BUFSIZE];
+                char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
+
+                /* maybe #ifdef SHA2 ? */
+                /* calculate the hash of the public key, using SHA-2 */
+                sha256_hash_buffer(msg->keyval.ptr, msg->keyval.len, key_ckaid, sizeof(key_ckaid));
+
+                datatot(key_ckaid, sizeof(key_ckaid), 'G',
+                        ckaid_print_buf, sizeof(ckaid_print_buf));
+
+                openswan_log("loaded key: %s", ckaid_print_buf);
+            }
 	    ugh = add_public_key(&keyid, DAL_LOCAL, msg->pubkey_alg
 		, &msg->keyval, &pluto_pubkeys);
 	    if (ugh != NULL)
