@@ -499,6 +499,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
       err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
                      &msg->keyval.len);
 
+      starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, msg->keyval.len);
       log_ckaid("loading key %s", keyspace, msg->keyval.len);
 
       if (err) {
