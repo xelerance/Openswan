@@ -473,6 +473,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
                               const char *lr)
 {
   unsigned char keyspace[1024 + 4];
+  size_t        keylen;
   const char *err;
 
   msg->whack_key = TRUE;
@@ -497,10 +498,10 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
 
     case PUBKEY_PREEXCHANGED:
       err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
-                     &msg->keyval.len);
+                     &keylen);
 
-      starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, msg->keyval.len);
-      log_ckaid("loading key %s", keyspace, msg->keyval.len);
+      //starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, keylen);
+      log_ckaid("loading key %s", keyspace, keylen);
 
       if (err) {
         starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
@@ -508,7 +509,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
         return 1;
       }
       else {
-        msg->keyval.ptr = (unsigned char *)keyspace;
+        clonereplacechunk(msg->keyval, keyspace, keylen, "rsakey");
         return 0;
       }
     }
