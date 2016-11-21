@@ -501,7 +501,7 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
                      &keylen);
 
       //starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, keylen);
-      log_ckaid("loading key %s", keyspace, keylen);
+      //log_ckaid("loading key %s", keyspace, keylen);
 
       if (err) {
         starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
