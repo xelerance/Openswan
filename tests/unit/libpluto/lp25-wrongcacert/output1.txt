@@ -4,7 +4,7 @@
 ./wrongcacert adjusting ipsec.d to ../samples/wrongcert
 ./wrongcacert loading secrets from "../samples/gatewaycert.secrets"
 ./wrongcacert   loaded private key file '../samples/wrongcert/private/moonKey.pem' (1675 bytes)
-./wrongcacert loaded private key for keyid: PPK_RSA:AwEAAaR8B
+./wrongcacert loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -935,6 +935,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 93.184.216.34:500 (usi
 ./wrongcacert leak: struct connection, item size: X
 ./wrongcacert leak: alg_info_ike, item size: X
 ./wrongcacert leak: 2 * id list, item size: X
+./wrongcacert leak: rfc3110 format of public key [created], item size: X
 ./wrongcacert leak: secret, item size: X
 ./wrongcacert leak: policies path, item size: X
 ./wrongcacert leak: ocspcerts path, item size: X

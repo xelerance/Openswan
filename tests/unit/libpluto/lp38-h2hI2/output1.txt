@@ -2,12 +2,14 @@
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./h2hI2 loading secrets from "../samples/parker.secrets"
-./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV
+./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hI2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hI2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -691,6 +693,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./h2hI2 leak: sa copy prop_conj, item size: X
 ./h2hI2 leak: struct state in new_state(), item size: X
 ./h2hI2 leak: 2 * id list, item size: X
+./h2hI2 leak: rfc3110 format of public key [created], item size: X
 ./h2hI2 leak: secret, item size: X
 ./h2hI2 leak: 2 * hasher name, item size: X
 ./h2hI2 leak: policies path, item size: X

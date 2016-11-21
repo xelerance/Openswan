@@ -2,12 +2,14 @@
 ./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./initiateselfI2 loading secrets from "../samples/rw.secrets"
-./initiateselfI2 loaded private key for keyid: PPK_RSA:AQOa+OIzC
+./initiateselfI2 loaded private key for keyid: PPK_RSA:AQOa+OIzC/4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./initiateselfI2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./initiateselfI2 loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
@@ -706,6 +708,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./initiateselfI2 leak: rfc3110 format of public key, item size: X
 ./initiateselfI2 leak: pubkey, item size: X
 ./initiateselfI2 leak: 2 * id list, item size: X
+./initiateselfI2 leak: rfc3110 format of public key [created], item size: X
 ./initiateselfI2 leak: secret, item size: X
 ./initiateselfI2 leak: 2 * hasher name, item size: X
 ./initiateselfI2 leak: policies path, item size: X

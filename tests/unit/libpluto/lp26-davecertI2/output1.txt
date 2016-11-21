@@ -4,7 +4,7 @@
 ./davecertI2 adjusting ipsec.d to ../samples/davecert
 ./davecertI2 loading secrets from "../samples/davecert.secrets"
 ./davecertI2   loaded private key file '../samples/davecert/private/daveKey.pem' (1679 bytes)
-./davecertI2 loaded private key for keyid: PPK_RSA:AwEAAeOoT
+./davecertI2 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -1020,6 +1020,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./davecertI2 leak: pubkey, item size: X
 ./davecertI2 leak: certificate filename, item size: X
 ./davecertI2 leak: 2 * id list, item size: X
+./davecertI2 leak: rfc3110 format of public key [created], item size: X
 ./davecertI2 leak: secret, item size: X
 ./davecertI2 leak: policies path, item size: X
 ./davecertI2 leak: ocspcerts path, item size: X

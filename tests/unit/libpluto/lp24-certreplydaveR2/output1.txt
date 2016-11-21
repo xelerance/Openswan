@@ -4,7 +4,7 @@
 ./certreplydaveR2 adjusting ipsec.d to ../samples/gatewaycert
 ./certreplydaveR2 loading secrets from "../samples/gatewaycert.secrets"
 ./certreplydaveR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
-./certreplydaveR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B
+./certreplydaveR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -3370,6 +3370,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./certreplydaveR2 leak: struct connection, item size: X
 ./certreplydaveR2 leak: alg_info_ike, item size: X
 ./certreplydaveR2 leak: 2 * id list, item size: X
+./certreplydaveR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplydaveR2 leak: secret, item size: X
 ./certreplydaveR2 leak: policies path, item size: X
 ./certreplydaveR2 leak: ocspcerts path, item size: X

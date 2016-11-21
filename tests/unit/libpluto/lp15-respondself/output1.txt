@@ -2,12 +2,14 @@
 ./respondselfR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./respondselfR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./respondselfR1 loading secrets from "../samples/jj.secrets"
-./respondselfR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./respondselfR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./respondselfR1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./respondselfR1 loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
@@ -249,6 +251,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 ./respondselfR1 leak: default conf ipsecd_dir, item size: X
 ./respondselfR1 leak: default conf ipsec_conf_dir, item size: X
 ./respondselfR1 leak: 2 * id list, item size: X
+./respondselfR1 leak: rfc3110 format of public key [created], item size: X
 ./respondselfR1 leak: secret, item size: X
 ./respondselfR1 leak: 2 * hasher name, item size: X
 ./respondselfR1 leak detective found Z leaks, total size X

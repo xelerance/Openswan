@@ -4,7 +4,7 @@
 ./certificateselfI2 adjusting ipsec.d to ../samples/rwcert
 ./certificateselfI2 loading secrets from "../samples/rwcert.secrets"
 ./certificateselfI2   loaded private key file '../samples/rwcert/private/carolKey.pem' (1679 bytes)
-./certificateselfI2 loaded private key for keyid: PPK_RSA:AwEAAbfz1
+./certificateselfI2 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -988,6 +988,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./certificateselfI2 leak: pubkey, item size: X
 ./certificateselfI2 leak: certificate filename, item size: X
 ./certificateselfI2 leak: 2 * id list, item size: X
+./certificateselfI2 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI2 leak: secret, item size: X
 ./certificateselfI2 leak: policies path, item size: X
 ./certificateselfI2 leak: ocspcerts path, item size: X

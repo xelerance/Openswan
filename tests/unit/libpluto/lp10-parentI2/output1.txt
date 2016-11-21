@@ -2,12 +2,14 @@
 ./parentI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./parentI2 loading secrets from "../samples/parker.secrets"
-./parentI2 loaded private key for keyid: PPK_RSA:AQN7wUerV
+./parentI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentI2 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentI2 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -705,6 +707,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI2 leak: sa copy prop_conj, item size: X
 ./parentI2 leak: struct state in new_state(), item size: X
 ./parentI2 leak: 2 * id list, item size: X
+./parentI2 leak: rfc3110 format of public key [created], item size: X
 ./parentI2 leak: secret, item size: X
 ./parentI2 leak: 2 * hasher name, item size: X
 ./parentI2 leak: policies path, item size: X

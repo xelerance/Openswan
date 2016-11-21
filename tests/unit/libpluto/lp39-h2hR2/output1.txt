@@ -2,12 +2,14 @@
 ./h2hR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./h2hR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./h2hR2 loading secrets from "../samples/jj.secrets"
-./h2hR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./h2hR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -783,6 +785,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./h2hR2 leak: rfc3110 format of public key, item size: X
 ./h2hR2 leak: pubkey, item size: X
 ./h2hR2 leak: 2 * id list, item size: X
+./h2hR2 leak: rfc3110 format of public key [created], item size: X
 ./h2hR2 leak: secret, item size: X
 ./h2hR2 leak: 2 * hasher name, item size: X
 ./h2hR2 leak: policies path, item size: X
