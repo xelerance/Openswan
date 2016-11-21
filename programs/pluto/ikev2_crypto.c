@@ -76,6 +76,9 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 
 	sz = k->pub.k;
 
+        /* record what key we did the signature with */
+        memcpy(st->st_our_keyid, k->pub.keyid, KEYID_BUF);
+
         /*
          * this is the prefix of the ASN/DER goop that lives inside RSA-SHA1
          * signatures.  If the signing hash changes, this needs to change

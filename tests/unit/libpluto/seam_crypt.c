@@ -69,7 +69,10 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 			      , unsigned char *idhash
 			      , pb_stream *a_pbs)
 {
+  static int fakesig = 1;
+
 	out_zero(192, a_pbs, "fake rsa sig");
+        snprintf(st->st_our_keyid, sizeof(st->st_our_keyid), "fakesig%u", fakesig++);
 	return TRUE;
 }
 
@@ -99,11 +102,14 @@ ikev2_verify_rsa_sha1(struct state *st
 			    , const struct gw_info *gateways_from_dns
 			    , pb_stream *sig_pbs)
 {
+  static int fakecheck = 1;
   struct pubkey_list *p, **pp;
   struct connection *c = st->st_connection;
   int pathlen;
 
   pp = &pluto_pubkeys;
+
+  snprintf(st->st_their_keyid, sizeof(st->st_their_keyid), "fakecheck%u", fakecheck++);
 
   {
 

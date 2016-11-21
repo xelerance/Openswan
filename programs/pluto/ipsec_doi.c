@@ -927,8 +927,9 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     }
 
     snprintf(b, sad_len-(b-sadetails)-1
-	     , " {auth=%s cipher=%s_%d%s%s prf=%s group=modp%d}"
+	     , " {auth=%s oursig=%s theirsig=%s cipher=%s_%d%s%s prf=%s group=modp%d}"
 	     , authname
+             , st->st_our_keyid, st->st_their_keyid
 	     , st->st_oakley.encrypter->common.name
 	     , st->st_oakley.enckeylen
 	     , integstr, integname

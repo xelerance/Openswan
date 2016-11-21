@@ -208,6 +208,8 @@ take_a_crack(struct tac_state *s
     s->tried_cnt++;
     if (ugh == NULL)
     {
+        /* record which key was successful! */
+        memcpy(s->st->st_their_keyid, kr->u.rsa.keyid, KEYID_BUF);
 	DBG(DBG_CRYPT | DBG_CONTROL
 	    , DBG_log("an RSA Sig check passed with *%s [%s]"
 		, k->keyid, story));
