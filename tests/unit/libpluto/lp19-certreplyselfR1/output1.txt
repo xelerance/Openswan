@@ -4,7 +4,7 @@
 ./certreplyselfR1 adjusting ipsec.d to ../samples/gatewaycert
 ./certreplyselfR1 loading secrets from "../samples/gatewaycert.secrets"
 ./certreplyselfR1   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
-./certreplyselfR1 loaded private key for keyid: PPK_RSA:AwEAAaR8B
+./certreplyselfR1 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -252,6 +252,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 ./certreplyselfR1 leak: certificate filename, item size: X
 ./certreplyselfR1 leak: alg_info_ike, item size: X
 ./certreplyselfR1 leak: 2 * id list, item size: X
+./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
 ./certreplyselfR1 leak: secret, item size: X
 ./certreplyselfR1 leak: policies path, item size: X
 ./certreplyselfR1 leak: ocspcerts path, item size: X

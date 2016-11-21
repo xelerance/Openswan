@@ -2,12 +2,14 @@
 ./rekeyikev2-R1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./rekeyikev2-R1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./rekeyikev2-R1 loading secrets from "../samples/jj.secrets"
-./rekeyikev2-R1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./rekeyikev2-R1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./rekeyikev2-R1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./rekeyikev2-R1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -1442,6 +1444,7 @@ sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 leak: rfc3110 format of public key, item size: X
 ./rekeyikev2-R1 leak: pubkey, item size: X
 ./rekeyikev2-R1 leak: 2 * id list, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key [created], item size: X
 ./rekeyikev2-R1 leak: secret, item size: X
 ./rekeyikev2-R1 leak: 2 * hasher name, item size: X
 ./rekeyikev2-R1 leak: policies path, item size: X

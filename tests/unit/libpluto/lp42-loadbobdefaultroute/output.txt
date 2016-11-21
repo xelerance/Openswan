@@ -1,7 +1,7 @@
 ./loadbob adjusting ipsec.d to ../../../functional/10-defaultroute/bob
 ./loadbob loading secrets from "../../../functional/10-defaultroute/bob.secrets"
 ./loadbob   loaded private key file '../../../functional/10-defaultroute/bob/private/bobKey.pem' (1675 bytes)
-./loadbob loaded private key for keyid: PPK_RSA:AwEAAbXtb
+./loadbob loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -51,6 +51,7 @@ RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKO
 ./loadbob leak: pubkey, item size: X
 ./loadbob leak: certificate filename, item size: X
 ./loadbob leak: 2 * id list, item size: X
+./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: secret, item size: X
 ./loadbob leak: policies path, item size: X
 ./loadbob leak: ocspcerts path, item size: X
