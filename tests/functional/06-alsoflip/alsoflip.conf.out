@@ -21,6 +21,7 @@ conn dnsh2h2
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn dnsh2h2
 
 # begin conn openswan
@@ -37,6 +38,7 @@ conn openswan
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn openswan
 
 # begin conn mytunnel
@@ -55,6 +57,7 @@ conn mytunnel
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn mytunnel
 
 # end of config

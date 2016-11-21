@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         osw_load_preshared_secrets(&pluto_secrets
                                    , TRUE
                                    , "../samples/parker.secrets"
-                                   , &pass);
+                                   , &pass, NULL);
     }
     fprintf(stderr, "listening now\n");
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;

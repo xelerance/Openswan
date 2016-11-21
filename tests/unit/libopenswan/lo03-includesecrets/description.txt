@@ -1,0 +1,5 @@
+This unit test case reads an ipsec.secrets file, with a series of include
+statements.
+It then verifies that a particular key can be found.
+
+

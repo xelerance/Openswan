@@ -1,0 +1,11 @@
+This test case is an IKEv2 initiator --- this tests use of aliases in the
+initiator, such as when leftsubnets= (plural) is used.
+
+
+
+
+
+
+
+
+

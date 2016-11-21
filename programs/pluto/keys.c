@@ -114,7 +114,7 @@ void load_preshared_secrets(int whackfd)
 			       , TRUE
 #endif
 			       , pluto_shared_secrets_file
-			       , &pass);
+			       , &pass, NULL);
 }
 
 void free_preshared_secrets(void)
@@ -776,12 +776,17 @@ void list_public_keys(bool utc, bool check_pub_keys)
 
 	    if(!check_pub_keys || (check_pub_keys && strncmp(check_expiry_msg, "ok", 2)))
 	    {
+                char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
 		idtoa(&key->id, id_buf, IDTOA_BUF);
-		whack_log(RC_COMMENT, "%s, %4d RSA Key %s (%s private key), until %s %s"
+                datatot(key->u.rsa.key_ckaid, sizeof(key->u.rsa.key_ckaid), 'G',
+                        ckaid_print_buf, sizeof(ckaid_print_buf));
+
+		whack_log(RC_COMMENT, "%s, %4d RSA Key %s/%s (%s private key), until %s %s"
 			  , timetoa(&key->installed_time, utc,
 				    installed_buf, sizeof(installed_buf))
 			  , 8*key->u.rsa.k
 			  , key->u.rsa.keyid
+                          , ckaid_print_buf
 			  , (has_private_rawkey(key) ? "has" : "no")
 			  , timetoa(&key->until_time, utc,
 				    expires_buf, sizeof(expires_buf))

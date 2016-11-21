@@ -142,7 +142,7 @@ orient(struct connection *c, unsigned int pluto_port)
 {
     struct spd_route *sr;
     bool result;
-    unsigned int family = c->addr_family;
+    unsigned int family = c->end_addr_family;
 
     if (!oriented(*c))
     {

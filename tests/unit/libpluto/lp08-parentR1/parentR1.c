@@ -15,7 +15,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/jj.secrets"
-			       , NULL);
+			       , NULL, NULL);
 }
 #include "../lp08-parentR1/parentR1_main.c"
 

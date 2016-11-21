@@ -4,7 +4,7 @@
 ./certreplyR2 adjusting ipsec.d to ../samples/gatewaycert
 ./certreplyR2 loading secrets from "../samples/gatewaycert.secrets"
 ./certreplyR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)
-./certreplyR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B
+./certreplyR2 loaded private key for keyid: PPK_RSA:AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -273,7 +273,7 @@ RC=2      rw-any
 | emitting length of ISAKMP Message: 376
 | complete v2 state transition with STF_OK
 ./certreplyR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
-./certreplyR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+./certreplyR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -418,7 +418,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
@@ -1516,9 +1516,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | out calculated auth:
 |   8e 06 1e 5b  f8 cf 41 bb  7e 82 0c 9b
 | complete v2 state transition with STF_OK
-./certreplyR2 transition from state STATE_PARENT_R1 to state STATE_CHILD_C1_KEYED
+./certreplyR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
+./certreplyR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 ./certreplyR2 negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.34,93.184.216.34 proto:0 port:0-65535]
-./certreplyR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
+./certreplyR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -1646,10 +1647,12 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: st_skeyseed in duplicate_state, item size: X
 ./certreplyR2 leak: st_enc_key in duplicate_state, item size: X
 ./certreplyR2 leak: struct state in new_state(), item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
 ./certreplyR2 leak: pubkey, item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
@@ -1668,6 +1671,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: ca string, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: connection name, item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
 ./certreplyR2 leak: pubkey, item size: X
@@ -1675,10 +1679,12 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: x509cert, item size: X
 ./certreplyR2 leak: host cert, item size: X
 ./certreplyR2 leak: certificate filename, item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
 ./certreplyR2 leak: pubkey, item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: issuer dn, item size: X
 ./certreplyR2 leak: keep id name, item size: X
 ./certreplyR2 leak: pubkey entry, item size: X
@@ -1714,6 +1720,7 @@ sending 1452 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 ./certreplyR2 leak: struct connection, item size: X
 ./certreplyR2 leak: alg_info_ike, item size: X
 ./certreplyR2 leak: 2 * id list, item size: X
+./certreplyR2 leak: rfc3110 format of public key [created], item size: X
 ./certreplyR2 leak: secret, item size: X
 ./certreplyR2 leak: policies path, item size: X
 ./certreplyR2 leak: ocspcerts path, item size: X
