@@ -592,9 +592,9 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		else if (match > best_match)
 		{
 		    DBG(DBG_CONTROL,
-			DBG_log("best_match %d>%d best=%p (line=%d)"
+			DBG_log("best_match %d>%d line=%d"
 				, best_match, match
-				, s, s->secretlineno));
+				, s->secretlineno));
 
 		    /* this is the best match so far */
 		    best_match = match;
@@ -608,8 +608,8 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 	}
     }
     DBG(DBG_CONTROL,
-	DBG_log("concluding with best_match=%d best=%p (lineno=%d)"
-		, best_match, best, best? best->secretlineno : -1));
+	DBG_log("concluding with best_match=%d lineno=%d"
+		, best_match, best? best->secretlineno : -1));
 
     return best;
 }
