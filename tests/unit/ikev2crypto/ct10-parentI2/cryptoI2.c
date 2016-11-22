@@ -1,9 +1,9 @@
 #include "../lp10-parentI2/parentI2_head.c"
-#include "seam_keys.c"
+#include "seam_keys2.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
 
-#define TESTNAME "h2hI2"
+#define TESTNAME "cryptoI2"
 
 static void init_local_interface(void)
 {
