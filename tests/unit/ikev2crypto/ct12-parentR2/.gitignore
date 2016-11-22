@@ -1,0 +1,8 @@
+OUTPUT
+core.*
+cryptoR2
+cryptoR2.o
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
