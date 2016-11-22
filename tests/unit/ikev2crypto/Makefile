@@ -17,4 +17,5 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 clean check:
+	@${MAKE} -C ct10-parentI2    $@
 	@${MAKE} -C ct12-parentR2    $@
