@@ -68,4 +68,5 @@ clean check:
 	@${MAKE} -C lp46-rekeyikev2-I1   $@
 	@${MAKE} -C lp47-rekeyikev2-R1   $@
 	@${MAKE} -C lp48-rekeyikev2-inCR1 $@
+	@${MAKE} -C lp50-rekey-no-reply-rekey $@
 
