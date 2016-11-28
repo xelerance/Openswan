@@ -538,6 +538,9 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 ./rekey-no-reply-I1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+
+
+
 now pretend (1) that the keylife timer is up, and rekey the connection
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
@@ -840,6 +843,10 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | complete v2 state transition with STF_OK
 ./rekey-no-reply-I1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 ./rekey-no-reply-I1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/00000000)
+Newly created state is #3
+
+
+
 now pretend (2) that the keylife timer is up, and rekey the connection
 RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate

@@ -40,7 +40,7 @@ so_serial_t rekeyit_once(unsigned int pass, so_serial_t n)
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
     char output[128];
 
-    fprintf(stderr, "now pretend (%u) that the keylife timer is up, and rekey the connection\n", pass);
+    fprintf(stderr, "\n\n\nnow pretend (%u) that the keylife timer is up, and rekey the connection\n", pass);
     show_states_status();
 
     timer_list();
@@ -56,7 +56,7 @@ so_serial_t rekeyit_once(unsigned int pass, so_serial_t n)
                            , (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"));
         ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
     } else {
-        fprintf(stderr, "no state #2 found\n");
+        fprintf(stderr, "no state #%lu found\n", n);
     }
 
     passert(kn->oakley_group == tc14_oakleygroup);
@@ -66,7 +66,8 @@ so_serial_t rekeyit_once(unsigned int pass, so_serial_t n)
     clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);  /* maybe change nonce for rekey? */
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
 
-    {
+    new_sa = 0;
+    if(continuation) {
         struct dh_continuation *dh = (struct dh_continuation *)continuation;
         struct msg_digest *md = dh->md;
         struct state *const st = md->st;
