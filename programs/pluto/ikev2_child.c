@@ -1112,7 +1112,6 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *st      = md->st;
-    struct state *o_st     = NULL;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
@@ -1198,36 +1197,31 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
      * SA2(i), TSi and TSr and
      *    (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
      */
-    o_st = state_with_serialno(st->st_replaced);
-    if(o_st) {
-        c0 = st->st_connection;
-        if(c0) {
-            lset_t policy = c0->policy;
-            chunk_t child_spi, notify_data;
-            unsigned int next_payload = ISAKMP_NEXT_NONE;
-            st->st_connection = c0;
+    c0 = st->st_connection;
+    if(c0) {
+        lset_t policy = c0->policy;
+        chunk_t child_spi, notify_data;
+        unsigned int next_payload = ISAKMP_NEXT_NONE;
+        st->st_connection = c0;
 
-            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                next_payload = ISAKMP_NEXT_v2N;
-            }
+        if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+            next_payload = ISAKMP_NEXT_v2N;
+        }
 
-	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
+        ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
-	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
-	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
+        st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
+        st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
-	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
+        ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
 
-            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
-                memset(&child_spi, 0, sizeof(child_spi));
-                memset(&notify_data, 0, sizeof(notify_data));
-                ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
-                          &child_spi,
-                          v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
-            }
-        } else {
-            openswan_log("no pending SAs found, PARENT SA keyed only");
+        if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+            DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
+            memset(&child_spi, 0, sizeof(child_spi));
+            memset(&notify_data, 0, sizeof(notify_data));
+            ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
+                      &child_spi,
+                      v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
         }
     }
 
