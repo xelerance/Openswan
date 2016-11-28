@@ -840,12 +840,12 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | complete v2 state transition with STF_OK
 ./rekeyikev2-I1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 ./rekeyikev2-I1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/00000000)
-RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=2; idle; import:admin initiate
+RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=0; msgid=0; idle; import:admin initiate
 ./rekeyikev2-I1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekeyikev2-I1 deleting state #3 (STATE_CHILD_C0_KEYING)
+./rekeyikev2-I1 deleting state #3 (STATE_CHILD_C1_REKEY)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -861,7 +861,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed
 |    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: none
+|    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 03
 | ***emit IKEv2 Encryption Payload:
 |    next payload type: ISAKMP_NEXT_v2D
@@ -884,14 +884,15 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed
 | data before encryption:
 |   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
 | data after encryption:
-|   eb fc ea 17  5d ec 43 d6  af f7 4d ba  1b 9b 0a 35
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 00  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   eb fc ea 17  5d ec 43 d6  af f7 4d ba  1b 9b 0a 35
-|   a1 a7 7d 64  8b 5e b2 8f  92 df 9d a3
-./rekeyikev2-I1 deleting state #1 (STATE_CHILD_C1_REKEY)
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
+|   13 95 e9 47  e3 35 79 4b  7f e1 27 93
+| pass 1: considering PARENT SAs to delete
+./rekeyikev2-I1 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
 | **emit ISAKMP Message:
@@ -902,7 +903,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: none
+|    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 04
 | ***emit IKEv2 Encryption Payload:
 |    next payload type: ISAKMP_NEXT_v2D
@@ -923,18 +924,13 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
-|   30 93 b3 5a  b6 84 ca 8e  78 4d 0a ad  cd f7 e3 3e
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 00  00 00 00 04  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   30 93 b3 5a  b6 84 ca 8e  78 4d 0a ad  cd f7 e3 3e
-|   24 7c 02 15  c1 90 0b f2  8b 93 68 3f
-| pass 1: considering PARENT SAs to delete
-./rekeyikev2-I1 deleting state #1 (STATE_IKESA_DEL)
-| considering request to delete IKE parent state
-| now deleting the IKE (or parent) state
-./rekeyikev2-I1 leak: request packet for informational exchange, item size: X
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+|   4a 21 e4 b4  7a ae c5 28  b6 ea e0 30
 ./rekeyikev2-I1 leak: reply packet for ikev2_out_C1_tail, item size: X
 ./rekeyikev2-I1 leak: db_v2_trans, item size: X
 ./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
@@ -1003,7 +999,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./rekeyikev2-I1 leak: sa copy prop array, item size: X
 ./rekeyikev2-I1 leak: sa copy prop conj array, item size: X
 ./rekeyikev2-I1 leak: sa copy prop_conj, item size: X
-./rekeyikev2-I1 leak: saved first received packet, item size: X
 ./rekeyikev2-I1 leak: st_nr in duplicate_state, item size: X
 ./rekeyikev2-I1 leak: st_ni in duplicate_state, item size: X
 ./rekeyikev2-I1 leak: st_skey_pr in duplicate_state, item size: X
@@ -1016,14 +1011,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./rekeyikev2-I1 leak: st_skeyseed in duplicate_state, item size: X
 ./rekeyikev2-I1 leak: st_enc_key in duplicate_state, item size: X
 ./rekeyikev2-I1 leak: struct state in new_state(), item size: X
-./rekeyikev2-I1 leak: calculated skey_prshared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_pishared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_ershared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_eishared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_arshared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_aishared secret, item size: X
-./rekeyikev2-I1 leak: calculated skey_dshared secret, item size: X
-./rekeyikev2-I1 leak: calculated sharedshared secret, item size: X
 ./rekeyikev2-I1 leak: ikev2_inR1outI2 KE, item size: X
 ./rekeyikev2-I1 leak: db_attrs, item size: X
 ./rekeyikev2-I1 leak: db_v2_trans, item size: X
@@ -1056,44 +1043,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./rekeyikev2-I1 leak: db_attrs, item size: X
 ./rekeyikev2-I1 leak: db_v2_trans, item size: X
 ./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: nonce, item size: X
-./rekeyikev2-I1 leak: Gr, item size: X
-./rekeyikev2-I1 leak: saved first packet, item size: X
-./rekeyikev2-I1 leak: sa in main_outI1, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_prop, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: db_attrs, item size: X
-./rekeyikev2-I1 leak: db_v2_trans, item size: X
-./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: initiator nonce, item size: X
-./rekeyikev2-I1 leak: long term secret, item size: X
-./rekeyikev2-I1 leak: saved gi value, item size: X
 ./rekeyikev2-I1 leak: msg_digest, item size: X
 ./rekeyikev2-I1 leak: ikev2_outI1 KE, item size: X
 ./rekeyikev2-I1 leak: db_attrs, item size: X
@@ -1127,12 +1076,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./rekeyikev2-I1 leak: db_attrs, item size: X
 ./rekeyikev2-I1 leak: db_v2_trans, item size: X
 ./rekeyikev2-I1 leak: db_v2_prop_conj, item size: X
-./rekeyikev2-I1 leak: 12 * sa copy attrs array, item size: X
-./rekeyikev2-I1 leak: sa copy trans array, item size: X
-./rekeyikev2-I1 leak: sa copy prop array, item size: X
-./rekeyikev2-I1 leak: sa copy prop conj array, item size: X
-./rekeyikev2-I1 leak: sa copy prop_conj, item size: X
-./rekeyikev2-I1 leak: struct state in new_state(), item size: X
 ./rekeyikev2-I1 leak: keep id name, item size: X
 ./rekeyikev2-I1 leak: pubkey entry, item size: X
 ./rekeyikev2-I1 leak: rfc3110 format of public key, item size: X

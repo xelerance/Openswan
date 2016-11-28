@@ -1038,7 +1038,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
         ke->md->from_state = STATE_CHILD_C1_REKEY;
         ke->md->svm = &ikev2_childrekey_microcode;
         ke->md->st  = st;
-        ke->md->pst = parentst;
+        ke->md->pst = st;   /* the pst is what will have it's state transitioned by
+                               success_v2_state_transition */
         set_suspended(st, ke->md);
 
         if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
