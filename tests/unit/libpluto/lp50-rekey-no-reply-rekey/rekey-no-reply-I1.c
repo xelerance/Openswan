@@ -1,4 +1,5 @@
 #include "../lp13-parentI3/parentI3_head.c"
+#include "ike_continuations.h"
 
 static void init_loaded(void)
 {   /* nothing */ }
@@ -32,19 +33,22 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
     recv_pcap_packet,
 };
 
-void rekeyit()
+so_serial_t rekeyit_once(unsigned int pass, so_serial_t n)
 {
+    so_serial_t new_sa;
     struct state *st = NULL;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+    char output[128];
 
-    fprintf(stderr, "now pretend that the keylife timer is up, and rekey the connection\n");
+    fprintf(stderr, "now pretend (%u) that the keylife timer is up, and rekey the connection\n", pass);
     show_states_status();
 
     timer_list();
-    st = state_with_serialno(2);
+    st = state_with_serialno(n);
 
     /* capture the rekey message */
-    send_packet_setup_pcap("OUTPUT/rekeyikev2-I1.pcap");
+    snprintf(output, 128, "OUTPUT/rekeyikev2-%u-I1.pcap", pass);
+    send_packet_setup_pcap(output);
 
     if(st) {
         DBG(DBG_LIFECYCLE
@@ -62,10 +66,29 @@ void rekeyit()
     clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);  /* maybe change nonce for rekey? */
     clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
 
+    {
+        struct dh_continuation *dh = (struct dh_continuation *)continuation;
+        struct msg_digest *md = dh->md;
+        struct state *const st = md->st;
+
+        new_sa = st->st_serialno;
+    }
     run_continuation(crypto_req);
 
     send_packet_close();
+
+    fprintf(stderr, "Newly created state is #%lu\n", new_sa);
+
+    return new_sa;
 }
+
+void rekeyit()
+{
+    so_serial_t sst = rekeyit_once(1, 2);
+    //resend_packet();
+    rekeyit_once(2, sst);
+}
+
 
 #include "../lp13-parentI3/parentI3_main.c"
 
