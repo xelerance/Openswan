@@ -879,43 +879,43 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | v2 peer, cookies and msgid match on #3
-| v2 state object #3 found, in STATE_UNDEFINED
-| state found and its state is:STATE_UNDEFINED msgid: 00002
+| v2 state object #3 found, in STATE_CHILD_C0_KEYING
+| state found and its state is:STATE_CHILD_C0_KEYING msgid: 00002
 | considering state entry: 0
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_I1
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 1
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_I1
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_UNDEFINED, needs STATE_CHILD_C0_KEYING
+|   reject: recv_type: ISAKMP_v2_CHILD_SA, needs ISAKMP_v2_AUTH
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_R1
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_R1
 | considering state entry: 5
-|   reject: in state: STATE_UNDEFINED, needs STATE_CHILD_C1_REKEY
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_CHILD_C1_REKEY
 | considering state entry: 6
-|   reject: in state: STATE_UNDEFINED, needs STATE_CHILD_C1_REKEY
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_CHILD_C1_REKEY
 | considering state entry: 7
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_R2
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_R2
 | considering state entry: 8
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_R2
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_R2
 | considering state entry: 9
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_I2
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I2
 | considering state entry: 10
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_R1
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_R1
 | considering state entry: 11
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_I3
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I3
 | considering state entry: 12
-|   reject: in state: STATE_UNDEFINED, needs STATE_PARENT_R2
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_R2
 | considering state entry: 13
-|   reject: in state: STATE_UNDEFINED, needs STATE_IKESA_DEL
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_IKESA_DEL
 | did not found valid state; giving up
-RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_UNDEFINED ((null)); none in -1s; nodpd; msgid=2; idle; import:admin initiate
+RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=0; msgid=0; idle; import:admin initiate
 ./rekeyikev2-inCR1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekeyikev2-inCR1 deleting state #3 (STATE_UNDEFINED)
+./rekeyikev2-inCR1 deleting state #3 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf

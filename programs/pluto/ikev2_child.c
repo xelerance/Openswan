@@ -1006,7 +1006,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
 stf_status ikev2child_outC1(int whack_sock UNUSED
                             , struct state *parentst
                             , struct connection *c
-                            , lset_t policy UNUSED
+                            , lset_t policy
                             , unsigned long try /* how many attempts so far */ UNUSED
                             , so_serial_t replacing
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
@@ -1025,6 +1025,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
     // record which state we are aiming to replace.
     st->st_replaced = replacing;
+    st->st_policy = policy;
+    st->st_state  = STATE_CHILD_C0_KEYING;
 
     /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
     {

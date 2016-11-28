@@ -840,12 +840,12 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | complete v2 state transition with STF_OK
 ./rekeyikev2-I1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 ./rekeyikev2-I1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/00000000)
-RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_UNDEFINED ((null)); none in -1s; nodpd; msgid=2; idle; import:admin initiate
+RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=3,recv=0; msgid=0; idle; import:admin initiate
 ./rekeyikev2-I1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekeyikev2-I1 deleting state #3 (STATE_UNDEFINED)
+./rekeyikev2-I1 deleting state #3 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
