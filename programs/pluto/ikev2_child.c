@@ -1348,11 +1348,13 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
 
-    md->pst = parentst;
+    /* not clear if this really ever needs to be set */
 
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
     insert_state(st);
+    md->st  = st;
+    md->transition_state = st;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
@@ -1512,6 +1514,10 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
     unsigned char *authstart;
 
     authstart = reply_stream.cur;
+
+    /* at this point, the child will be the one making the transition */
+    md->transition_state = st;
+
     /* send response */
     {
         unsigned char *encstart;

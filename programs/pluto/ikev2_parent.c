@@ -584,6 +584,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
         md->st = st;
         md->from_state = STATE_IKEv2_BASE;
+        md->transition_state = st;
     }
 
     /* check,as a responder, are we under dos attack or not
@@ -1324,6 +1325,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     msgid_t        mid = INVALID_MSGID;
     bool send_cert = FALSE;
 
+    md->transition_state = st;
+
     finish_dh_v2(st, r);
 
     if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
@@ -1732,6 +1735,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *authstart;
     unsigned int np;
     int v2_notify_num = 0;
+
+    md->transition_state = st;
 
     /* extract calculated values from r */
     finish_dh_v2(st, r);
