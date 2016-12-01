@@ -899,6 +899,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         /* we do not delete_state st1 yet, because initiator could retransmit */
         if (rn != NOTHING_WRONG) {
+            //delete_event(st1);
             event_schedule(EVENT_SO_DISCARD, EVENT_HALF_OPEN_TIMEOUT, st1);
             return STF_FAIL + rn;
         }
@@ -1317,6 +1318,7 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
            , md->iface->port);
 
     /* create a new parent event to rekey again */
+    delete_event(st);
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now. we need to go calculate our g^y, then calculate the g^xy */
@@ -1359,6 +1361,7 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
            , md->iface->port);
 
     /* create a new parent event to rekey again */
+    delete_event(st);
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     return ikev2child_inCI1_tail(md, st, FALSE);
