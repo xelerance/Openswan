@@ -195,7 +195,7 @@ sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| complete v2 state transition with STF_FAIL
+| #1 complete v2 state transition with STF_FAIL
 ./parentR1 STATE_CHILDSA_DEL: INVALID_KEY_INFORMATION
 ./parentR1 sending  notification v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:

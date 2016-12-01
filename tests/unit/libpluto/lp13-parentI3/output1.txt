@@ -404,7 +404,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
 |   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ./parentI3 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)
@@ -531,7 +531,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 ./parentI3 STATE_PARENT_I3: PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000000)
 ./parentI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]

@@ -462,7 +462,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
 |   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
 |   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./initiateselfI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ./initiateselfI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)

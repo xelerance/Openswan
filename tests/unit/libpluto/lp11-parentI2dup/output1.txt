@@ -390,7 +390,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 528
 | emitting length of ISAKMP Message: 556
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./parentI2duplicate transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 ./parentI2duplicate STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)

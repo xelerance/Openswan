@@ -207,7 +207,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./certreplyselfR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./certreplyselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 oursig= theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
@@ -1276,7 +1276,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   c8 3f 23 f4  b2 77 41 cc  c5 ad a7 29  d8 d0 35 32
 | out calculated auth:
 |   ed 24 a7 23  8a f3 6d 39  b8 e4 6e c1
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./certreplyselfR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 ./certreplyselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 | sending reply packet to 93.184.216.34:500 (from port 500)

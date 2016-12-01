@@ -1270,7 +1270,8 @@ void complete_v2_state_transition(struct msg_digest **mdp
 
     /* advance the state */
     DBG(DBG_CONTROL
-	, DBG_log("complete v2 state transition with %s"
+	, DBG_log("#%lu complete v2 state transition with %s"
+                  , st ? st->st_serialno : 0
 		  , enum_name(&stfstatus_name, (result > STF_FAIL) ? STF_FAIL : result)));
 
     switch(result) {

@@ -201,7 +201,7 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./h2hR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./h2hR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 oursig= theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 192.168.1.1:500 (from port 500)
@@ -705,7 +705,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   99 ad d1 2f  fc 8e 5e 84  76 d0 40 cc  4e b7 74 25
 | out calculated auth:
 |   3e 9a 34 b2  a4 8b bf e4  d5 2c 15 05
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./h2hR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 ./h2hR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 ./h2hR2 negotiated tunnel [132.213.238.7,132.213.238.7 proto:0 port:0-65535] -> [192.168.1.1,192.168.1.1 proto:0 port:0-65535]

@@ -203,7 +203,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./respondselfR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./respondselfR1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 oursig= theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)

@@ -204,7 +204,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./respondselfR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 ./respondselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 oursig= theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
@@ -713,7 +713,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a2 7b 7e 12  16 2d e1 13  78 4b 27 d1  ea 7d 30 e7
 | out calculated auth:
 |   ba cb 97 b7  b4 b5 fc 70  7f a3 81 e4
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./respondselfR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 ./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 ./respondselfR2 negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.34,93.184.216.34 proto:0 port:0-65535]
