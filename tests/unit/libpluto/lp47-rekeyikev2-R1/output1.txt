@@ -847,6 +847,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #3 bucket: 28
+./rekeyikev2-R1 msgid=2 CHILD_SA PFS rekey message received from 192.168.1.1:500 on eth0 (port=500)
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f

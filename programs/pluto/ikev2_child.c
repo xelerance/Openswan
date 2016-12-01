@@ -1310,6 +1310,12 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
     md->st = st;
     set_cur_state(st);
 
+    loglog(RC_COMMENT, "msgid=%u CHILD_SA PFS rekey message received from %s:%u on %s (port=%d)"
+           , md->msgid_received
+           , ip_str(&md->sender), (unsigned)md->sender_port
+           , md->iface->ip_dev->id_rname
+           , md->iface->port);
+
     /* create a new parent event to rekey again */
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
@@ -1345,6 +1351,12 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
     insert_state(st);
+
+    loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
+           , md->msgid_received
+           , ip_str(&md->sender), (unsigned)md->sender_port
+           , md->iface->ip_dev->id_rname
+           , md->iface->port);
 
     /* create a new parent event to rekey again */
     event_schedule(EVENT_SO_DISCARD, 0, st);
