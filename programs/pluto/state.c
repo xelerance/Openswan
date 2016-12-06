@@ -930,6 +930,7 @@ duplicate_state(struct state *st)
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;
+    nst->st_sa_logged  = FALSE;
 
 #   define clone_chunk(ch, name) \
 	clonetochunk(nst->ch, st->ch.ptr, st->ch.len, name)

@@ -278,6 +278,8 @@ struct state
     /* message ID sequence for things we receive (as responder) */
     msgid_t            st_msgid_lastrecv;      /* last one peer sent */
 
+    bool               st_sa_logged;           /* set if this SA has been logged */
+
     /* symmetric stuff */
 
     /* initiator stuff */

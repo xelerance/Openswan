@@ -157,6 +157,7 @@ const struct state_v2_microcode ikev2_childrekey_microcode =
 
 /* microcode for input packet processing */
 static const struct state_v2_microcode v2_state_microcode_table[] = {
+    /* state 0 */
     { .svm_name   = "initiator-V2_init",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_PARENT_I2,
@@ -167,6 +168,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
+    /* state 1 */
     { .svm_name   = "initiator-failure",
       .state      = STATE_PARENT_I1,
       .next_state = STATE_IKESA_DEL,
@@ -177,6 +179,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
+    /* state 2 */
     { .svm_name   = "initiator-auth-process",
       .state      = STATE_CHILD_C0_KEYING,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -189,6 +192,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 3 */
     { .svm_name   = "responder-V2_init",
       .state      = STATE_UNDEFINED,
       .next_state = STATE_PARENT_R1,
@@ -198,6 +202,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
+    /* state 4 */
     { .svm_name   = "responder-auth-process",
       .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R2,
@@ -210,6 +215,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 5 */
     { .svm_name   = "rekey-childSA-ack-with-pfs",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -222,6 +228,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 6 */
     { .svm_name   = "rekey-childSA-ack-without-pfs",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -234,6 +241,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 7 */
     { .svm_name   = "rekey-child-SA-responder-with-PFS",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -246,6 +254,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_NULL
     },
 
+    /* state 8 */
     { .svm_name   = "rekey-child-SA-responder-without-pfs",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -258,7 +267,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_NULL
     },
 
-    /* Informational Exchange*/
+    /* state 9: Informational Exchange*/
     { .svm_name   = "initiator-insecure-informational",
       .state      = STATE_PARENT_I2,
       .next_state = STATE_PARENT_I2,
@@ -270,7 +279,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
 
-    /* Informational Exchange*/
+    /* state 10: Informational Exchange*/
     { .svm_name   = "responder-insecure-informational",
       .state      = STATE_PARENT_R1,
       .next_state = STATE_PARENT_R1,
@@ -281,7 +290,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
-    /* Informational Exchange*/
+    /* state 11: Informational Exchange*/
     { .svm_name   = "initiator-informational",
       .state      = STATE_PARENT_I3,
       .next_state = STATE_PARENT_I3,
@@ -292,7 +301,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
-    /* Informational Exchange*/
+    /* state 12: Informational Exchange*/
     { .svm_name   = "responder-authenticated-informational",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_PARENT_R2,
@@ -303,7 +312,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
-    /* Informational Exchange*/
+    /* state 13: Informational Exchange*/
     { .svm_name   = "delete-ike-sa",
       .state      = STATE_IKESA_DEL,
       .next_state = STATE_IKESA_DEL,
@@ -1006,16 +1015,25 @@ static void success_v2_state_transition(struct msg_digest **mdp)
     struct msg_digest *md = *mdp;
     const struct state_v2_microcode *svm = md->svm;
     enum state_kind from_state = md->from_state;
+    enum state_kind to_state;
     struct state *pst = md->pst;
     struct state *st  = md->st;
     enum rc_type w;
 
+    to_state = svm->next_state;
     openswan_log("transition from state %s to state %s"
                  , enum_name(&state_names, from_state)
-                 , enum_name(&state_names, svm->next_state));
+                 , enum_name(&state_names, to_state));
+
+    DBG(DBG_CONTROL,
+        DBG_log("v2_state_transition: st is #%lu; pst is #%lu; transition_st is #%lu"
+                , st ? st->st_serialno : 0
+                , pst ? pst->st_serialno : 0
+                , md->transition_state ? md->transition_state->st_serialno : 0));
+
 
     if(md->transition_state) {
-        change_state(md->transition_state, svm->next_state);
+        change_state(md->transition_state, to_state);
     }
     if(pst == NULL) {
         if(IS_CHILD_SA(st)) {
@@ -1032,7 +1050,7 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 
     /* tell whack and log of progress */
     {
-	const char *story = enum_name(&state_stories, pst->st_state);
+	const char *story = enum_name(&state_stories, to_state);
 	char sadetails[128];
 
 	passert(pst->st_state >= STATE_IKEv2_BASE);
@@ -1046,15 +1064,17 @@ static void success_v2_state_transition(struct msg_digest **mdp)
 	    w = RC_SUCCESS;
 	}
 
-	/* document IPsec SA details for admin's pleasure */
-        if(IS_PARENT_SA_ESTABLISHED(pst->st_state)) {
+	/* document Parent SA details for admin's pleasure if first message */
+        if(IS_PARENT_SA_ESTABLISHED(pst->st_state)
+           && pst->st_sa_logged == FALSE) {
+            pst->st_sa_logged = TRUE;
 	    fmt_isakmp_sa_established(pst, sadetails,sizeof(sadetails));
 	}
 
 	/* tell whack and logs our progress */
 	loglog(w
 	       , "%s: %s%s (msgid: %08u/%08u)"
-	       , enum_name(&state_names, pst->st_state)
+	       , enum_name(&state_names, to_state)
 	       , story
 	       , sadetails, md->msgid_received, pst->st_msgid_lastrecv);
 

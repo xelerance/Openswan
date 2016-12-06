@@ -350,7 +350,9 @@ enum phase1_role {
 #define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
 #endif
 
-#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1 || (s) == STATE_PARENT_R2 || (s) == STATE_IKESA_DEL)
+#define IS_PARENT_SA_HALFOPEN(s) ((s) == STATE_PARENT_I1 || (s) == STATE_PARENT_R1)
+
+#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R2 || (s) == STATE_IKESA_DEL)
 /*
  * Issue here is that our child sa appears as a STATE_PARENT_I3/STATE_PARENT_R2 state which it should not
  * So we fall back to checking if it is cloned, and therefor really a child
@@ -358,7 +360,7 @@ enum phase1_role {
 #define IS_CHILD_SA_ESTABLISHED(st) ( (((st->st_state == STATE_PARENT_I3) || (st->st_state == STATE_PARENT_R2)) && (st->st_clonedfrom != SOS_NOBODY)) || (st->st_state == STATE_CHILDSA_DEL) || (st->st_state == STATE_CHILD_C1_KEYED))
 
 #define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
-#define IS_PARENT_SA(st) (!IS_CHILD_SA(st))
+#define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
 
 
 /* kind of struct connection

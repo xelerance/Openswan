@@ -1039,8 +1039,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
         ke->md->from_state = STATE_CHILD_C1_REKEY;
         ke->md->svm = &ikev2_childrekey_microcode;
         ke->md->st  = st;
-        ke->md->pst = st;   /* the pst is what will have it's state transitioned by
-                               success_v2_state_transition */
+        ke->md->transition_state = st;  /* this have it's state transitioned by
+                                        success_v2_state_transition */
         set_suspended(st, ke->md);
 
         if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
@@ -1309,6 +1309,7 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
     st->st_msgid = md->msgid_received;
     insert_state(st);
     md->st = st;
+    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
     set_cur_state(st);
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA PFS rekey message received from %s:%u on %s (port=%d)"
@@ -1355,6 +1356,7 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
     insert_state(st);
     md->st  = st;
     md->transition_state = st;
+    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
@@ -1751,6 +1753,7 @@ static void ikev2child_inCR1_continue(struct pluto_crypto_req_cont *pcrc
     set_suspended(st, NULL);        /* no longer connected or suspended */
     set_cur_state(st);
     st->st_calculating = FALSE;
+    md->transition_state = st;
     passert(ugh == NULL);
 
     /* extract calculated values from r */

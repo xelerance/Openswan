@@ -406,6 +406,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
+| v2_state_transition: st is #2; pst is #1; transition_st is #1
 ./rekeyikev2-inCR1 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)
 sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (using #2)
@@ -532,7 +533,8 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | empty esp_info, returning defaults
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
-./rekeyikev2-inCR1 STATE_PARENT_I3: PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000000)
+| v2_state_transition: st is #2; pst is #0; transition_st is #0
+./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/00000000)
 ./rekeyikev2-inCR1 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
 ./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
@@ -838,6 +840,7 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 |   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
 | #3 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
+| v2_state_transition: st is #3; pst is #0; transition_st is #3
 ./rekeyikev2-inCR1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/00000000)
 2: output to /dev/null
 2: input from rekeyCR1.pcap
@@ -943,20 +946,20 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | peer keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
 |   2a 58 ce d8
-| complete v2 state transition with STF_OK
+| #3 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
-./rekeyikev2-inCR1 STATE_PARENT_I3: PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000002/00000000)
-RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_REKEY (CHILD SA being rekeyed); none in -1s; newest IPSEC; nodpd; msgid=2; idle; import:admin initiate
+| v2_state_transition: st is #3; pst is #0; transition_st is #3
+./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/00000000)
+./rekeyikev2-inCR1 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
+./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
+| releasing whack for #X (sock=Y)
+| releasing whack for #X (sock=Y)
+RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=2,next=3,recv=0; msgid=0; idle; import:admin initiate
 ./rekeyikev2-inCR1 deleting connection
 | pass 0: considering CHILD SAs to delete
-./rekeyikev2-inCR1 deleting state #3 (STATE_CHILD_C1_REKEY)
-| received request to delete child state
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
-| state hash entry 28
-./rekeyikev2-inCR1 deleting state #2 (STATE_CHILD_C1_KEYED)
+./rekeyikev2-inCR1 deleting state #3 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete equest
 | **emit ISAKMP Message:
@@ -969,6 +972,47 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 03
+| ***emit IKEv2 Encryption Payload:
+|    next payload type: ISAKMP_NEXT_v2D
+|    critical bit: none
+| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
+| *****emit IKEv2 Delete Payload:
+|    next payload type: ISAKMP_NEXT_NONE
+|    critical bit: none
+|    protocol ID: 3
+|    SPI size: 4
+|    number of SPIs: 1
+| emitting 4 raw bytes of local spis into IKEv2 Delete Payload
+| local spis  34 56 78 12
+| emitting length of IKEv2 Delete Payload: 12
+| emitting 4 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03
+| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 48
+| emitting length of ISAKMP Message: 76
+| data before encryption:
+|   00 00 00 0c  03 04 00 01  34 56 78 12  00 01 02 03
+| data after encryption:
+|   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
+sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
+|   bc 97 31 52  72 72 67 dd  48 83 e2 02
+./rekeyikev2-inCR1 deleting state #2 (STATE_CHILD_C1_KEYED)
+| received request to delete child state
+| sending Child SA delete equest
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    next payload type: ISAKMP_NEXT_v2E
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_INFORMATIONAL
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 04
 | ***emit IKEv2 Encryption Payload:
 |    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
@@ -993,10 +1037,10 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-|   13 95 e9 47  e3 35 79 4b  7f e1 27 93
+|   d8 28 80 26  76 d3 5c b5  ac de 1a 26
 | pass 1: considering PARENT SAs to delete
 ./rekeyikev2-inCR1 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
@@ -1010,7 +1054,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 04
+|    message ID:  00 00 00 05
 | ***emit IKEv2 Encryption Payload:
 |    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
@@ -1033,10 +1077,10 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   4a 21 e4 b4  7a ae c5 28  b6 ea e0 30
+|   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
 ./rekeyikev2-inCR1 leak: skeyseed_t1, item size: X
 ./rekeyikev2-inCR1 leak: responder keys, item size: X
 ./rekeyikev2-inCR1 leak: initiator keys, item size: X
