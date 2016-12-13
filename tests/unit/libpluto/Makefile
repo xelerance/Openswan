@@ -69,4 +69,5 @@ clean check:
 	@${MAKE} -C lp47-rekeyikev2-R1   $@
 	@${MAKE} -C lp48-rekeyikev2-inCR1 $@
 	@${MAKE} -C lp50-rekey-no-reply-rekey $@
+	@${MAKE} -C lp52-davecert-gatewayID-I1  $@
 
