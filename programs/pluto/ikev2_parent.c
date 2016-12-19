@@ -1806,7 +1806,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                 /* should we check if we should accept a cert payload ?
                  *  has_preloaded_public_key(st)
                  */
-                openswan_log("v2_CERT received, attempting to validate");
+                openswan_log("v2_CERT received on reponder, attempting to validate");
                 ikev2_decode_cert(md);
             }
     }
@@ -2138,7 +2138,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
          *  has_preloaded_public_key(st)
          */
         /* in v1 code it is  decode_cert(struct msg_digest *md) */
-        openswan_log("v2_CERT received, attempting to validate");
+        openswan_log("v2_CERT received on initiator, attempting to validate");
         ikev2_decode_cert(md);
     }
 

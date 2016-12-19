@@ -695,7 +695,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a5 a5 75 2e
 | idhash verify I2  03 00 00 00  63 61 72 6f  6c 40 73 74  72 6f 6e 67
 |   73 77 61 6e  2e 6f 72 67
-| has a v2_CERT payload going to process it
+./wrongcacert v2_CERT received on reponder, attempting to validate
 | L0 - certificate:
 | L1 - tbsCertificate:
 | L2 - DEFAULT v1:

@@ -770,7 +770,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   a5 a5 75 2e
 | idhash verify I2  03 00 00 00  63 61 72 6f  6c 40 73 74  72 6f 6e 67
 |   73 77 61 6e  2e 6f 72 67
-| has a v2_CERT payload going to process it
+./certreplydaveR2 v2_CERT received on reponder, attempting to validate
 | L0 - certificate:
 | L1 - tbsCertificate:
 | L2 - DEFAULT v1:
@@ -913,6 +913,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   3d 6e cc 19  9e c2 d1 9f  9d ee 43 7f  8c 44 e9 6d
 |   a5
 | reached self-signed root ca
+./certreplydaveR2 0: validated X509 certificate: 'C=CH, O=Linux strongSwan, OU=Research, CN=carol@strongswan.org', added to trusted database
 | Public key validated
 |  keyid: *AwEAAbfz1
 |  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
@@ -2322,7 +2323,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   6e 31 11 30  0f 06 03 55  04 0b 0c 08  4f 70 65 6e
 |   73 77 61 6e  31 1a 30 18  06 03 55 04  03 0c 11 64
 |   61 76 65 40  6f 70 65 6e  73 77 61 6e  2e 6f 72 67
-| has a v2_CERT payload going to process it
+./certreplydaveR2 v2_CERT received on reponder, attempting to validate
 | L0 - certificate:
 | L1 - tbsCertificate:
 | L2 - DEFAULT v1:
@@ -2455,6 +2456,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   3d 6e cc 19  9e c2 d1 9f  9d ee 43 7f  8c 44 e9 6d
 |   a5
 | reached self-signed root ca
+./certreplydaveR2 0: validated X509 certificate: 'C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org', added to trusted database
 | Public key validated
 |  keyid: *AwEAAeOoT
 |  Modulus: e3a84cc6ccc7e3b77ce74f154b04cafacb0646c0dc08c1c8aa5d06b77c5541abcfa800a9f38a50daa4c42c3e45e0f3b791282fd3b889cfe2c2339a9d04873c9cc3cd947f51703c7fda9b6d5e411db36c9e8476c2d49721fb4b869b103b437442942de0bd2bd7740e70993ac106f2b645ab0ccc1ebf90368008e0d8ed10c7a6e3df261d9573dbe6f0506c17b86e77fc54c9211eaf1a2b4a5dd3b07b5dc590b801141085bc86c25e4573d8e7a647605cee8580f449b3dfe28d50b6d5baf87909535501315716ecbce277480fe2c84ced69a9d8f1810eeac33e7d24c8bf7505882de7edc5cb29ceecef5785f9f47f37c7a7b87947ffea685ca873dc80e7b9c7ec67
