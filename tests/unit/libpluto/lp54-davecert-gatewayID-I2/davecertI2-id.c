@@ -13,7 +13,7 @@ static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
     memset(&pass, 0, sizeof(pass));
-    osw_init_ipsecdir("../samples/davecert");
+    osw_init_ipsecdir("../samples/selfsigned");
 
     rnd_offset = 13;
 
