@@ -105,6 +105,7 @@ extern struct secret *osw_get_defaultsecret(struct secret *secrets);
 struct pubkey {
     struct id id;
     unsigned refcnt;	/* reference counted! */
+    bool trusted_key;   /* if this key has been loaded from disk, or validated */
     enum dns_auth_level dns_auth_level;
     char *dns_sig;
     time_t installed_time

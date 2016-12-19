@@ -783,10 +783,11 @@ void list_public_keys(bool utc, bool check_pub_keys)
                 datatot(key->u.rsa.key_ckaid, sizeof(key->u.rsa.key_ckaid), 'G',
                         ckaid_print_buf, sizeof(ckaid_print_buf));
 
-		whack_log(RC_COMMENT, "%s, %4d RSA Key %s/%s (%s private key), until %s %s"
+		whack_log(RC_COMMENT, "%s, %4d RSA %s key %s/%s (%s private key), until %s %s"
 			  , timetoa(&key->installed_time, utc,
 				    installed_buf, sizeof(installed_buf))
 			  , 8*key->u.rsa.k
+                          , key->trusted_key ? "trusted" : "       "
 			  , key->u.rsa.keyid
                           , ckaid_print_buf
 			  , (has_private_rawkey(key) ? "has" : "no")

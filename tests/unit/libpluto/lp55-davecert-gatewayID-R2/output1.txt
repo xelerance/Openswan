@@ -712,7 +712,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |        serial:   00:c3:08:37:91:aa:63:d0:c5
 |        pubkey:   2048 RSA Key AwEAAb8Rq
 |        validity: not before Dec 13 20:15:41 UTC 2016 ok
-|                  not after  Jan 12 20:15:41 UTC 2017 warning (expires in 29 days)
+|                  not after  Jan 12 20:15:41 UTC 2017 warning (expires SOMETIME)
 |        subjkey:  9f:04:1a:6d:ee:62:bf:69:ea:3f:18:e6:ae:43:6e:a1:a2:03:1a:0f
 |        authkey:  9f:04:1a:6d:ee:62:bf:69:ea:3f:18:e6:ae:43:6e:a1:a2:03:1a:0f
 | NOW, count: 1
@@ -721,7 +721,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |        serial:   00:85:16:ad:46:19:21:00:5a
 |        pubkey:   2048 RSA Key AwEAAcgKO
 |        validity: not before Dec 13 20:15:40 UTC 2016 ok
-|                  not after  Jan 12 20:15:40 UTC 2017 warning (expires in 29 days)
+|                  not after  Jan 12 20:15:40 UTC 2017 warning (expires SOMETIME)
 |        subjkey:  47:05:5c:9f:fb:8a:74:c7:33:60:81:8e:53:76:98:9e:cb:36:9f:d7
 |        authkey:  47:05:5c:9f:fb:8a:74:c7:33:60:81:8e:53:76:98:9e:cb:36:9f:d7
 | checking alg=1 == 1, keyid=dave@openswan.org same_id=1
@@ -733,16 +733,16 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 RC=0
 RC=0 List of Public Keys:
 RC=0
-RC=0 Dec 13 20:41:46 UTC 2016, 2048 RSA Key AwEAAb8Rq/2B3F C8B8 FF8D 4598 3E24 43DC 0D5A 573A BA79 C020 (no private key), until Jan 12 20:15:41 UTC 2017 ok
+RC=0 Dec 19 19:11:59 UTC 2016, 2048 RSA         key AwEAAb8Rq/2B3F C8B8 FF8D 4598 3E24 43DC 0D5A 573A BA79 C020 (no private key), until Jan 12 20:15:41 UTC 2017 ok
 RC=0        ID_USER_FQDN 'dave@openswan.org'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org, E=testing@xelerance.com'
-RC=0 Dec 13 20:41:46 UTC 2016, 2048 RSA Key AwEAAb8Rq/2B3F C8B8 FF8D 4598 3E24 43DC 0D5A 573A BA79 C020 (no private key), until Jan 12 20:15:41 UTC 2017 ok
+RC=0 Dec 19 19:11:59 UTC 2016, 2048 RSA         key AwEAAb8Rq/2B3F C8B8 FF8D 4598 3E24 43DC 0D5A 573A BA79 C020 (no private key), until Jan 12 20:15:41 UTC 2017 ok
 RC=0        ID_DER_ASN1_DN 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org, E=testing@xelerance.com'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org, E=testing@xelerance.com'
-RC=0 Dec 13 20:41:46 UTC 2016, 2048 RSA Key AwEAAcgKO/C116 C2A6 144E 369D 77D5 7EB5 4695 540B C4EA EE1C (has private key), until Jan 12 20:15:40 UTC 2017 ok
+RC=0 Dec 19 19:11:59 UTC 2016, 2048 RSA         key AwEAAcgKO/C116 C2A6 144E 369D 77D5 7EB5 4695 540B C4EA EE1C (has private key), until Jan 12 20:15:40 UTC 2017 ok
 RC=0        ID_FQDN '@moon.strongswan.org'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'
-RC=0 Dec 13 20:41:46 UTC 2016, 2048 RSA Key AwEAAcgKO/C116 C2A6 144E 369D 77D5 7EB5 4695 540B C4EA EE1C (has private key), until Jan 12 20:15:40 UTC 2017 ok
+RC=0 Dec 19 19:11:59 UTC 2016, 2048 RSA         key AwEAAcgKO/C116 C2A6 144E 369D 77D5 7EB5 4695 540B C4EA EE1C (has private key), until Jan 12 20:15:40 UTC 2017 ok
 RC=0        ID_DER_ASN1_DN 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'
 ./davecertR2-id RSA authentication failed

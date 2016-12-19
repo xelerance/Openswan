@@ -9,6 +9,9 @@ static void init_local_interface(void)
     init_jamesjohnson_interface();
 }
 
+bool now_regression;
+time_t regression_time;
+
 static void init_fake_secrets(void)
 {
     prompt_pass_t pass;
@@ -19,6 +22,9 @@ static void init_fake_secrets(void)
 			       , TRUE
 			       , "../samples/gatewaycert.secrets"
 			       , NULL, NULL);
+
+    now_regression = TRUE;
+    regression_time = 1482174719; /* Mon Dec 19 14:12:09 EST 2016 */
 }
 
 static void init_loaded(void)
