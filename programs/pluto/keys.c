@@ -742,7 +742,6 @@ add_public_key(const struct id *id
     pk->alg = alg;
     pk->until_time = UNDEFINED_TIME;
     pk->issuer = empty_chunk;
-    pk->trusted_key = TRUE;
 
     install_public_key(pk, head);
     return NULL;
@@ -788,7 +787,7 @@ void list_public_keys(bool utc, bool check_pub_keys)
 			  , timetoa(&key->installed_time, utc,
 				    installed_buf, sizeof(installed_buf))
 			  , 8*key->u.rsa.k
-                          , key->trusted_key ? "trusted" : "       "
+                          , enum_name(&dns_auth_level_names, key->dns_auth_level)
 			  , key->u.rsa.keyid
                           , ckaid_print_buf
 			  , (has_private_rawkey(key) ? "has" : "no")

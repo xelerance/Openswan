@@ -651,10 +651,14 @@ struct keyword_enum_values kw_host_list;
  */
 enum dns_auth_level {
     DAL_UNSIGNED,	/* AD in response, but no signature: no authentication */
-    DAL_NOTSEC,	/* no AD in response: authentication impossible */
-    DAL_SIGNED,	/* AD and signature in response: authentic */
-    DAL_LOCAL	/* locally provided (pretty good) */
+    DAL_NOTSEC,	   /* no AD in response: authentication impossible */
+    DAL_SIGNED,	   /* AD and signature in response: authentic */
+    DAL_TRUSTEDCA, /* signed by locally trusted certificate authroity */
+    DAL_LOCAL,	   /* locally provided (pretty good) */
+    DAL_CERTFILE,  /* loaded from local certificate container */
 };
+extern enum_names dns_auth_level_names;
+
 
 /*
  * define a macro for use in error messages

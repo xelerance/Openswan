@@ -160,10 +160,10 @@ extern struct pubkey *reference_key(struct pubkey *pk);
 extern void unreference_key(struct pubkey **pkp);
 
 extern err_t add_public_key(const struct id *id
-    , enum dns_auth_level dns_auth_level
-    , enum pubkey_alg alg
-    , const chunk_t *key
-    , struct pubkey_list **head);
+                            , enum dns_auth_level dns_auth_level
+                            , enum pubkey_alg alg
+                            , const chunk_t *key
+                            , struct pubkey_list **head);
 
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);

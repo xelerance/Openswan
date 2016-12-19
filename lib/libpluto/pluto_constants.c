@@ -281,6 +281,20 @@ static const char *const stfstatus_names[] = {
 enum_names stfstatus_name =
   {STF_IGNORE, STF_FAIL, stfstatus_names, NULL};
 
+/* Timer events */
+static const char *const dns_auth_level_name[] = {
+    "unsigned",
+    "notsec",
+    "dndsec",
+    "trustca",
+    "localf",
+    "localc"
+};
+
+enum_names dns_auth_level_names =
+    { DAL_UNSIGNED, DAL_CERTFILE, dns_auth_level_name, NULL };
+
+
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.
  */

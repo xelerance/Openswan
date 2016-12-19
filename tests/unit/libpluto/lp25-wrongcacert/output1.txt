@@ -815,10 +815,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 RC=0
 RC=0 List of Public Keys:
 RC=0
-RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA         key AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 (has private key), until Aug 26 14:44:56 UTC 2019 ok
+RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 (has private key), until Aug 26 14:44:56 UTC 2019 ok
 RC=0        ID_FQDN '@moon.strongswan.org'
 RC=0        Issuer 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
-RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA         key AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 (has private key), until Aug 26 14:44:56 UTC 2019 ok
+RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAaR8B/11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 (has private key), until Aug 26 14:44:56 UTC 2019 ok
 RC=0        ID_DER_ASN1_DN 'C=CH, O=Linux strongSwan, CN=moon.strongswan.org'
 RC=0        Issuer 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 ./wrongcacert RSA authentication failed
