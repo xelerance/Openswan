@@ -943,7 +943,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |        authkey:  5d:a7:dd:70:06:51:32:7e:e7:b6:6d:b3:b5:e5:e0:60:ea:2e:4d:ef
 |        aserial:  00
 | checking alg=1 == 1, keyid=carol@strongswan.org same_id=1
-|   trusted_ca called with a=C=CH, O=Linux strongSwan, CN=strongSwan Root CA b=C=CH, O=Linux strongSwan, CN=strongSwan Root CA
 | key issuer CA is 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:

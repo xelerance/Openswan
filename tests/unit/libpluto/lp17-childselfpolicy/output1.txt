@@ -421,7 +421,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@example.com same_id=1
-|   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
