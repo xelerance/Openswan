@@ -469,7 +469,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | checking alg=1 == 1, keyid=@maryjane01.emmjay.credil.org same_id=0
 | checking alg=1 == 1, keyid=@jamesjohnson.emmjay.credil.org same_id=0
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
-|   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:

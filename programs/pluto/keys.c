@@ -298,7 +298,7 @@ RSA_check_signature_gen(struct state *st
 
             if (key->alg == PUBKEY_ALG_RSA
                 && same_id(&st->ikev2.st_peer_id, &key->id)
-                && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+                && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca(key->issuer, c->spd.that.ca, &pathlen)))
 	    {
 		time_t tnow;
 
