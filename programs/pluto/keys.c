@@ -742,6 +742,7 @@ add_public_key(const struct id *id
     pk->alg = alg;
     pk->until_time = UNDEFINED_TIME;
     pk->issuer = empty_chunk;
+    pk->trusted_key = TRUE;
 
     install_public_key(pk, head);
     return NULL;
