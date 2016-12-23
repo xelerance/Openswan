@@ -73,4 +73,5 @@ clean check:
 	@${MAKE} -C lp53-davecert-gatewayID-R1  $@
 	@${MAKE} -C lp54-davecert-gatewayID-I2  $@
 	@${MAKE} -C lp55-davecert-gatewayID-R2  $@
+	@${MAKE} -C lp56-rekeyv2nopfs-I1  $@
 

@@ -1052,7 +1052,11 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
                 delete_state(st);
             }
         } else {
-            /* this case is that st_sec already is initialized */
+            /* this case is that st_sec already is initialized, not doing PFS,
+             * but we still need a new random nonce
+             */
+            set_cur_state(st);
+            fill_rnd_chunk(&st->st_ni, DEFAULT_NONCE_SIZE);
             e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
         }
 
@@ -1113,6 +1117,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *st      = md->st;
+    struct connection *c = st->st_connection;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
@@ -1122,8 +1127,10 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *authstart;
     struct connection *c0 = NULL;
 
-    unpack_v2KE(st, r, &st->st_gi);
-    unpack_nonce(&st->st_ni, r);
+    if(c->policy & POLICY_PFS) {
+        unpack_v2KE(st, r, &st->st_gi);
+        unpack_nonce(&st->st_ni, r);
+    }
 
     /* beginning of data going out */
     authstart = reply_stream.cur;
@@ -1152,7 +1159,12 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /* insert an Encryption payload header */
-    e.isag_np = ISAKMP_NEXT_v2KE;
+    if(c->policy & POLICY_PFS) {
+        e.isag_np = ISAKMP_NEXT_v2KE;
+    } else {
+        e.isag_np = ISAKMP_NEXT_v2Ni;
+    }
+
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
@@ -1174,9 +1186,11 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     e_pbs_cipher.cur = e_pbs.cur;
     encstart = e_pbs_cipher.cur;
 
-    /* send KE */
-    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
-        return STF_INTERNAL_ERROR;
+    if(c->policy & POLICY_PFS) {
+        /* send KE */
+        if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
+            return STF_INTERNAL_ERROR;
+    }
 
     /* send NONCE */
     {
