@@ -48,15 +48,22 @@ Loading conn aragorn--correlhorn-extrude
 	while loading conn 'aragorn--correlhorn-extrude' also including 'correlhorn-extrude'
 Loading conn cassidy--tygerteam-home88
 Loading conn cassidy-left
+cassidy-left: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn dooku--cassidy-net
 	while loading conn 'dooku--cassidy-net' also including 'dooku-base'
 	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
+dooku--cassidy-net: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn dooku-base
+dooku-base: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn cassidy-base
+cassidy-base: inconsistent left/right tunnel address family: policy=value:0 left=value:0 right=value:0
 Loading conn knothole--cassidy
 Loading conn marajade-extrude
+marajade-extrude: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
 Loading conn marajade-extrude-new
+marajade-extrude-new: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
 Loading conn correlhorn-extrude
+correlhorn-extrude: inconsistent left/right end address family: policy=value:0 left=value:0 right=value:0
 Enabling OE conns
 did not find conn: packetdefault, loading implicit
 did not find conn: clear, loading implicit

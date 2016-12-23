@@ -2,12 +2,14 @@
 ./h2hR1-noikev2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./h2hR1-noikev2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./h2hR1-noikev2 loading secrets from "../samples/jj.secrets"
-./h2hR1-noikev2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./h2hR1-noikev2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR1-noikev2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR1-noikev2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel-no-ikev2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+SAREFTRACK
@@ -117,7 +119,7 @@ RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+S
 | searching for connection with policy = IKEv2ALLOW/-
 | find_host_connection2 returns empty (ike=mytunnel-no-ikev2/none)
 ./h2hR1-noikev2 connection refused, IKEv2 not authorized
-| complete v2 state transition with STF_FAIL
+| #0 complete v2 state transition with STF_FAIL
 ./h2hR1-noikev2 no-state: AUTHENTICATION_FAILED
 ./h2hR1-noikev2 sending  notification v2N_AUTHENTICATION_FAILED to 192.168.1.1:500
 | **emit ISAKMP Message:
@@ -160,6 +162,7 @@ sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 ./h2hR1-noikev2 leak: default conf ipsecd_dir, item size: X
 ./h2hR1-noikev2 leak: default conf ipsec_conf_dir, item size: X
 ./h2hR1-noikev2 leak: 2 * id list, item size: X
+./h2hR1-noikev2 leak: rfc3110 format of public key [created], item size: X
 ./h2hR1-noikev2 leak: secret, item size: X
 ./h2hR1-noikev2 leak: 2 * hasher name, item size: X
 ./h2hR1-noikev2 leak detective found Z leaks, total size X

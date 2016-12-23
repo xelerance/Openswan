@@ -30,8 +30,19 @@ struct connection;
 extern time_t get_time_maybe_fake(time_t *when);
 extern void set_fake_x509_time(time_t now);
 
+extern const u_char der_digestinfo[];
+extern const int der_digestinfo_len;
+
+/* encrypt(sign) a hash using a private key */
 extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
+
+/* decrypt(verify) a signature to recover the contained hash */
+extern err_t verify_signed_hash(const struct RSA_public_key *k
+                                , u_char *s, unsigned int s_max_octets /* working space: RSA_MAX_OCTETS */
+                                , u_char **psig                     /* result parameter; points to hash */
+                                , size_t hash_len
+                                , const u_char *sig_val, size_t sig_len);
 
 #ifdef HAVE_LIBNSS
 extern int sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val

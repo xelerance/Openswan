@@ -32,6 +32,7 @@
     <arg choice='opt'><arg choice='plain'>--file </arg><arg choice='plain'><replaceable>secretfile</replaceable></arg></arg>
     <arg choice='opt'><arg choice='plain'>--keynum </arg><arg choice='plain'><replaceable>count</replaceable></arg></arg>
     <arg choice='opt'><arg choice='plain'>--id </arg><arg choice='plain'><replaceable>identity</replaceable></arg></arg>
+    <arg choice='opt'><arg choice='plain'>--secretroot </arg><arg choice='plain'><replaceable>pathname</replaceable></arg></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -117,6 +118,11 @@ directives)
 option overrides the default for where the key information should be
 found, and takes it from the specified
 <emphasis remap='I'>secretfile</emphasis>.</para>
+</refsect1>
+
+<para>The
+<option>--secretroot</option>
+option provides a prefix to add to all include directives that may occur in the <emphasis remap='I'>secretfile</emphasis>.</para> This permits files which have absolute pathnames in this include directives to be loaded even after moving them elsewhere.
 </refsect1>
 
 <refsect1 id='diagnostics'><title>DIAGNOSTICS</title>

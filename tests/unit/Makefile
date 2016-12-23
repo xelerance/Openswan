@@ -19,4 +19,5 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 check:
 	@${MAKE} -C libopenswan check
 	@${MAKE} -C libpluto    check
+	@${MAKE} -C ikev2crypto check
 

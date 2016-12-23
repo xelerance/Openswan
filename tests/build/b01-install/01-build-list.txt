@@ -89,6 +89,7 @@
 ./usr/local/man/man8/ipsec_ranbits.8
 ./usr/local/man/man8/ipsec_rsasigkey.8
 ./usr/local/man/man8/ipsec_secrets.8
+./usr/local/man/man8/ipsec_setup.8
 ./usr/local/man/man8/ipsec_showdefaults.8
 ./usr/local/man/man8/ipsec_showhostkey.8
 ./usr/local/man/man8/ipsec_spi.8

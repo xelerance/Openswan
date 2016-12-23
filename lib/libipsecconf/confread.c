@@ -131,14 +131,14 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
-	cfg->conn_default.options[KBF_CONNADDRFAMILY] = AF_INET;
+	cfg->conn_default.options[KBF_CLIENTADDRFAMILY] = AF_INET;
 
-	cfg->conn_default.left.addr_family = AF_INET;
+	cfg->conn_default.left.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
 	cfg->conn_default.left.nexttype  = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.left.nexthop);
 
-	cfg->conn_default.right.addr_family = AF_INET;
+	cfg->conn_default.right.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
 	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
@@ -381,7 +381,7 @@ static bool validate_end(struct starter_conn *conn_st
     }
 
     end->addrtype=end->options[KNCF_IP];
-    end->addr_family = family;
+    end->end_addr_family = family;
     newfamily = family;
 
     /* validate the KSCF_IP/KNCF_IP */
@@ -421,7 +421,7 @@ static bool validate_end(struct starter_conn *conn_st
 		}
 	}
 	if(family == 0) {
-		end->addr_family = newfamily;
+		end->end_addr_family = newfamily;
 	}
 
 	if(er) {
@@ -466,8 +466,8 @@ static bool validate_end(struct starter_conn *conn_st
 	char *value = end->strings[KSCF_SUBNET];
 	unsigned int client_family = AF_UNSPEC;
 
-	if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
-	    client_family = conn_st->options[KBF_ENDADDRFAMILY];
+	if(conn_st->tunnel_addr_family != 0) {
+	    client_family = conn_st->tunnel_addr_family;
         }
 
         if ( ((strlen(value)>=6) && (strncmp(value,"vhost:",6)==0)) ||
@@ -478,10 +478,12 @@ static bool validate_end(struct starter_conn *conn_st
 	else {
 	    end->has_client = TRUE;
 	    er = ttosubnet(value, 0, client_family, &(end->subnet));
+            client_family = end->subnet.addr.u.v4.sin_family;
 	}
 
-
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
+
+        end->tunnel_addr_family = client_family;
     }
 
     /* set nexthop address to something consistent, by default */
@@ -729,9 +731,9 @@ bool translate_conn (struct starter_conn *conn
 
                 /* keyname[0] test looks for left=/right= */
 		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s (ignored)"
+			 , "duplicate string key '%s' in conn %s (line=%u) while processing def %s (ignored)"
 			 , keyname
-			 , conn->name
+			 , conn->name, kw->lineno
 			 , sl->name);
 
 		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
@@ -790,15 +792,9 @@ bool translate_conn (struct starter_conn *conn
 
 	    if((*set_options)[field] == k_set)
 	    {
+                bool fatal = FALSE;
+
 		*error = tmp_err;
-		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , keyname
-			 , conn->name
-			 , sl->name);
-
-		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
-
 		/* only fatal if we try to change values */
 		if((*the_options)[field] != kw->number
 		   || !((*the_options)[field] == LOOSE_ENUM_OTHER
@@ -807,9 +803,21 @@ bool translate_conn (struct starter_conn *conn
 			&& (*the_strings)[field] != NULL
 			&& strcmp(kw->keyword.string, (*the_strings)[field])==0))
 		{
+                    fatal = TRUE;
 		    err++;
-		    break;
 		}
+		snprintf(tmp_err, sizeof(tmp_err)
+			 , "duplicate loose key '%s' in conn %s (line=%u) while processing def %s%s"
+			 , keyname
+			 , conn->name, kw->lineno
+			 , sl->name, fatal ? "(FATAL!)":"");
+
+		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
+
+                if(fatal) {
+		    break;
+                }
+
 	    }
 
 	    (*the_options)[field] = kw->number;
@@ -841,8 +849,8 @@ bool translate_conn (struct starter_conn *conn
 	    if((*set_options)[field] == k_set)
 	    {
 		starter_log(LOG_LEVEL_INFO
-                            , "duplicate key '%s' in conn %s while processing def %s"
-                            , keyname, conn->name, sl->name);
+                            , "duplicate enum key '%s' in conn %s (line=%u) while processing def %s"
+                            , keyname, conn->name, kw->lineno, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -851,8 +859,8 @@ bool translate_conn (struct starter_conn *conn
 	    }
 
 #if 0
-	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u\n",
-			keyname, field, kw->number);
+	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u at line=%u\n",
+			keyname, field, kw->number, kw->lineno);
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
@@ -984,6 +992,55 @@ char **process_alsos(struct starter_config *cfg
     return alsos;
 }
 
+static int validate_family_consistency(const char *connname,
+                                       const char *addrtype,
+                                       unsigned int left,
+                                       unsigned int right,
+                                       unsigned int family)
+{
+        if(left == 0 &&
+           family      == 0 &&
+           right != 0) {
+            left = family = right;
+        }
+
+        if(left  != 0 &&
+           family       == 0 &&
+           right == 0) {
+            right = family = left;
+        }
+
+        if(left  == 0 &&
+           family       != 0 &&
+           right == 0) {
+            right = left = family;
+        }
+
+        if(left  != 0 &&
+           family       == 0 &&
+           right != 0 &&
+           left  == right) {
+            family = right;
+        }
+
+        /* if the end_address family is *STILL* 0, then it must be that there is an
+           inconsistency in the left/right ends.
+        */
+        if(family == 0) {
+            char b1[KEYWORD_NAME_BUFLEN];
+            char b2[KEYWORD_NAME_BUFLEN];
+            char b3[KEYWORD_NAME_BUFLEN];
+            starter_log(LOG_LEVEL_ERR,
+                        "%s: inconsistent left/right %s address family: policy=%s left=%s right=%s",
+                        connname,
+                        addrtype,
+                        keyword_name(&kw_connaddrfamily_list, family, b1),
+                        keyword_name(&kw_connaddrfamily_list, left, b2),
+                        keyword_name(&kw_connaddrfamily_list, right, b3));
+        }
+
+        return family;
+}
 
 static int load_conn (struct starter_config *cfg
 		      , struct starter_conn *conn
@@ -1195,19 +1252,36 @@ static int load_conn (struct starter_config *cfg
 	}
     }
 
+    if(conn->options_set[KBF_ENDADDRFAMILY]) {
+        conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
+    }
+    if(conn->options_set[KBF_CLIENTADDRFAMILY]) {
+        conn->tunnel_addr_family = conn->options[KBF_CLIENTADDRFAMILY];
+    }
+
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
-    /*
-     * TODO:
-     * verify both ends are using the same inet family, if one end
-     * is "%any" or "%defaultroute", then perhaps adjust it.
-     * ensource this for left,leftnexthop,right,rightnexthop
-     * Ideally, phase out connaddrfamily= which now wrongly assumes
-     * left,leftnextop,leftsubnet are the same inet family
-     * Currently, these tests are implicitely done, and wrongly
-     * in case of 6in4 and 4in6 tunnels
-     */
 
+    if(!defaultconn) {
+        /*
+         * At this point, the two ends should be sufficiently well declared that
+         * one can verify if the two ends are using the same address family.
+         * This is a bit more complex and just an ==, as one end may be unspecified.
+         * In that case, it should adopt the family of the other end. If both
+         * are unspecified, then this is an error, unless the conn already
+         * has an end/tunnel family specified.
+         */
+
+        conn->end_addr_family = validate_family_consistency(conn->name, "end",
+                                                            conn->left.end_addr_family,
+                                                            conn->right.end_addr_family,
+                                                            conn->end_addr_family);
+
+        conn->tunnel_addr_family = validate_family_consistency(conn->name, "tunnel",
+                                                            conn->left.tunnel_addr_family,
+                                                            conn->right.tunnel_addr_family,
+                                                            conn->tunnel_addr_family);
+    }
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
