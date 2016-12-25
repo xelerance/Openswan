@@ -1,0 +1,26 @@
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak: rname, item size: X
+./bestif leak: vname, item size: X
+./bestif leak: device port, item size: X
+./bestif leak: device name, item size: X
+./bestif leak detective found Z leaks, total size X
+best: ipsec5 eth1

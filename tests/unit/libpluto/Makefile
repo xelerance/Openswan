@@ -75,4 +75,5 @@ clean check:
 	@${MAKE} -C lp56-rekeyv2nopfs-I1  $@
 	@${MAKE} -C lp57-rekeyv2nopfs-R1  $@
 	@${MAKE} -C lp58-rekeyv2nopfs-inCR1  $@
+	@${MAKE} -C lp60-bestif                 $@
 
