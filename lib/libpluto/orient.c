@@ -70,9 +70,10 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
     struct end        *e1  = &sr->this;
     const struct af_info *afi;
     unsigned int       desired_port;
-    bool done = FALSE;
     int family1= sr->this.host_addr.u.v4.sin_family;
     int family2= sr->that.host_addr.u.v4.sin_family;
+    struct iface_port *best_ifp;
+    unsigned int       best_score;
 
     switch(family) {
     case AF_INET6:
@@ -94,28 +95,53 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         e1 = &sr->that;
     }
 
-    while(!done && iflist) {
-        ifp = iflist;
-        if(family == 0 || iflist->ip_addr.u.v4.sin_family == family) {
-#if 0
-            DBG_log("  ports: %u vs %u",
-                    iflist->port, desired_port);
-#endif
-            if(iflist->port == desired_port) {
-                done = TRUE;
-            }
-        }
-        iflist = iflist->next;
-    }
+    best_ifp = NULL;
+    best_score = 0;
 
-    if(!done) ifp = NULL;
+    for(ifp = iflist; ifp != NULL; ifp = ifp->next) {
+        int score = 0;
+        /* the port must always match, not a best case */
+        if(ifp->port != desired_port) continue;
+
+        /* the family MUST match, unless it is zero */
+        if(ifp->ip_addr.u.v4.sin_family != family && family !=0) continue;
+
+        /* if family==0, then give this us 10 points if this IF if
+         * INET4, and 20 points if this IF is INET6
+         */
+        switch(iflist->ip_addr.u.v4.sin_family) {
+        case AF_INET:
+            score = 10;
+
+            /* if the IF is *not* a loopback device, take another 10 points */
+            if(!isloopbackaddr(&iflist->ip_addr)) {
+                score += 10;
+            }
+            break;
+
+        case AF_INET6:
+            /* if the IF is *not* a loopback device, take another 10 points */
+            if(!isloopbackaddr(&iflist->ip_addr)) {
+                score += 10;
+            }
+
+            /* if the IF is *not* a ULA, then take another 10 points */
+            if((iflist->ip_addr.u.v6.sin6_addr.s6_addr[0] & 0xfe) != 0xfc)
+                score += 10;
+        }
+
+        if(score > best_score) {
+            best_ifp = ifp;
+            best_score = score;
+        }
+    }
 
     DBG(DBG_CONTROLMORE,
         DBG_log("  picking maching interface for family[%u,%u]: %s resulted in: %s"
                 , family, family2
-                , afi ? afi->name : "<family:0>", ifp ? ifp->addrname : "none"));
+                , afi ? afi->name : "<family:0>", best_ifp ? best_ifp->addrname : "none"));
 
-    return ifp;
+    return best_ifp;
 }
 
 
