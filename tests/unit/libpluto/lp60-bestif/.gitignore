@@ -1,0 +1,7 @@
+OUTPUT
+core.*
+*.o
+bestif.o
+.gdbinit
+bestif
+core
