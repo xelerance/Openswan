@@ -147,7 +147,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | inserting state object #1 bucket: 28
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
 | considering state entry: 0
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #0 initiator-V2_init
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
@@ -489,7 +489,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | considering state entry: 1
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #2 initiator-auth-process
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 ./parentI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
 | ikev2 verify required CA is '%any'

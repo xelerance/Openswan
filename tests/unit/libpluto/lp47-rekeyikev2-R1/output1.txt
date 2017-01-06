@@ -103,7 +103,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | considering state entry: 2
 |   reject:state needed and state unavailable
 | considering state entry: 3
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
@@ -289,7 +289,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
@@ -837,18 +837,16 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | considering state entry: 4
 |   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_R1
 | considering state entry: 5
-|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 6
 |   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 7
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #7 rekey-child-SA-responder
 | duplicating state object #1
 | creating state object #3 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #3 bucket: 28
-./rekeyikev2-R1 msgid=2 CHILD_SA PFS rekey message received from 192.168.1.1:500 on eth0 (port=500)
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -987,6 +985,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |    length: 48
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
+./rekeyikev2-R1 msgid=2 CHILD_SA PFS rekey message received from 192.168.1.1:500 on eth0 (port=500)
 | DH public value received:
 |   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
 |   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab

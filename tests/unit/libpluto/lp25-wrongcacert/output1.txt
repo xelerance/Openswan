@@ -107,7 +107,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | considering state entry: 2
 |   reject:state needed and state unavailable
 | considering state entry: 3
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
@@ -357,7 +357,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0x640a06435c7c4b31 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf

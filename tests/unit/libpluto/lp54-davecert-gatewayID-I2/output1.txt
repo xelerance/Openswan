@@ -182,7 +182,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #0 initiator-V2_init
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ****parse IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE

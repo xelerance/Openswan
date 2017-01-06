@@ -215,7 +215,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
-    /* state 5 */
+    /* state 5: must come before without-pfs, as lack of P(KE) will cause this one to fail */
     { .svm_name   = "rekey-childSA-ack-with-pfs",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -783,7 +783,7 @@ process_v2_packet(struct msg_digest **mdp)
 	}
     }
 
-    DBG(DBG_CONTROL, DBG_log("Now lets proceed with state specific processing"));
+    DBG(DBG_CONTROL, DBG_log("now proceed with state specific processing using state #%u %s", svm_num, svm->svm_name));
     DBG(DBG_PARSING,
 	if (pbs_left(&md->message_pbs) != 0)
 	    DBG_log("removing %d bytes of padding", (int) pbs_left(&md->message_pbs)));
