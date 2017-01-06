@@ -1312,19 +1312,9 @@ static stf_status
 ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs);
 
 
-stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
+static stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 {
-    struct state *parentst = md->st;   /* this is parent state! */
-    struct state *st;
-
-    md->pst = parentst;
-
-    st = duplicate_state(parentst);
-    st->st_msgid = md->msgid_received;
-    insert_state(st);
-    md->st = st;
-    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
-    set_cur_state(st);
+    struct state *st = md->st;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
@@ -1358,19 +1348,9 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 }
 
 
-stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
+static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
 {
-    struct state *parentst = md->st;   /* this is parent state! */
-    struct state *st;
-
-    /* not clear if this really ever needs to be set */
-
-    st = duplicate_state(parentst);
-    st->st_msgid = md->msgid_received;
-    insert_state(st);
-    md->st  = st;
-    md->transition_state = st;
-    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
+    struct state *st = md->st;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
@@ -1378,11 +1358,44 @@ stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
            , md->iface->ip_dev->id_rname
            , md->iface->port);
 
+    return ikev2child_inCI1_tail(md, st, FALSE);
+}
+
+stf_status ikev2child_inCI1(struct msg_digest *md)
+{
+    struct state *parentst = md->st;   /* this is parent state! */
+    struct state *st;
+
+    md->pst = parentst;
+
+    st = duplicate_state(parentst);
+    st->st_msgid = md->msgid_received;
+    insert_state(st);
+    md->st = st;
+    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
+    md->transition_state = st;
+    set_cur_state(st);
+
     /* create a new parent event to rekey again */
     delete_event(st);
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
-    return ikev2child_inCI1_tail(md, st, FALSE);
+    /* now decrypt payload and extract values */
+    {
+        stf_status ret;
+        ret = ikev2_decrypt_msg(md, RESPONDER);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            delete_state(st);
+            return ret;
+        }
+    }
+
+    if(md->chain[ISAKMP_NEXT_v2KE]) {
+        return ikev2child_inCI1_pfs(md);
+    } else {
+        return ikev2child_inCI1_nopfs(md);
+    }
 }
 
 /*
@@ -1427,17 +1440,6 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     unpack_nonce(&st->st_nr, r);
     unpack_v2KE(st, r, &st->st_gr);
 
-    /* now decrypt payload and extract values */
-    {
-        stf_status ret;
-        ret = ikev2_decrypt_msg(md, RESPONDER);
-        if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-            delete_state(st);
-            goto out;
-        }
-    }
-
     /* Gi in */
     e = accept_v2_KE(md, st, &st->st_gi, "Gi");
     if(e != STF_OK) {
@@ -1471,7 +1473,6 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
         }
     }
 
- out:
     reset_globals();
     return;
 
@@ -1691,15 +1692,10 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
     return STF_OK;
 }
 
-stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
+static stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
 {
     struct state *st = md->st;
     stf_status e;
-
-    e = ikev2child_inCR1_decrypt(md);
-    if(e != STF_OK) {
-        return e;
-    }
 
     /* Gr in */
     e = accept_v2_KE(md, st, &st->st_gr, "Gr");
@@ -1729,7 +1725,7 @@ stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
     }
 }
 
-stf_status ikev2child_inCR1_nopfs(struct msg_digest *md)
+stf_status ikev2child_inCR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     stf_status e;
@@ -1738,7 +1734,12 @@ stf_status ikev2child_inCR1_nopfs(struct msg_digest *md)
     if(e != STF_OK) {
         return e;
     }
-    return ikev2child_inCR1_tail(md, st);
+
+    if(md->chain[ISAKMP_NEXT_v2KE]) {
+        return ikev2child_inCR1_pfs(md);
+    } else {
+        return ikev2child_inCR1_tail(md, st);
+    }
 }
 
 /*

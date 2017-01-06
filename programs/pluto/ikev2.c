@@ -215,57 +215,58 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
-    /* state 5: must come before without-pfs, as lack of P(KE) will cause this one to fail */
-    { .svm_name   = "rekey-childSA-ack-with-pfs",
+    /* state 5: empty */
+    { .svm_name   = "none",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Nr),
       .opt_enc_payloads = 0,
-      .processor  = ikev2child_inCR1_pfs,
+      .processor  = NULL,
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_SA_REPLACE,
     },
 
     /* state 6 */
-    { .svm_name   = "rekey-childSA-ack-without-pfs",
+    { .svm_name   = "rekey-childSA-ack",
       .state      = STATE_CHILD_C1_REKEY,
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  SMF2_INITIATOR | SMF2_STATENEEDED,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Nr),
       .opt_enc_payloads = 0,
-      .processor  = ikev2child_inCR1_nopfs,
+      .processor  = ikev2child_inCR1,
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_SA_REPLACE,
     },
 
     /* state 7 */
-    { .svm_name   = "rekey-child-SA-responder-with-PFS",
-      .state      = STATE_PARENT_R2,
-      .next_state = STATE_CHILD_C1_KEYED,
-      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
-      .req_clear_payloads = P(E),
-      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(KE) | P(Ni),
-      .opt_enc_payloads = 0,
-      .processor  = ikev2child_inCI1_pfs,
-      .recv_type  = ISAKMP_v2_CHILD_SA,
-      .timeout_event = EVENT_NULL
-    },
-
-    /* state 8 */
-    { .svm_name   = "rekey-child-SA-responder-without-pfs",
+    { .svm_name   = "rekey-child-SA-responder",
       .state      = STATE_PARENT_R2,
       .next_state = STATE_CHILD_C1_KEYED,
       .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
       .req_clear_payloads = P(E),
       .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
-      .opt_enc_payloads = 0,
-      .processor  = ikev2child_inCI1_nopfs,
+      .opt_enc_payloads = P(KE),
+      .processor  = ikev2child_inCI1,
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_NULL
     },
+
+    /* state 8 -- EMPTY for now*/
+    { .svm_name   = "none",
+      .state      = 0,
+      .next_state = 0,
+      .flags =  /* not SMF2_INITIATOR */ SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = 0,
+      .req_enc_payloads = 0,
+      .opt_enc_payloads = 0,
+      .processor  = NULL,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_NULL
+    },
+
 
     /* state 9: Informational Exchange*/
     { .svm_name   = "initiator-insecure-informational",
@@ -719,6 +720,7 @@ process_v2_packet(struct msg_digest **mdp)
     svm_num=0;
     for(svm = v2_state_microcode_table; svm->state != STATE_IKEv2_ROOF; svm_num++,svm++) {
         DBG(DBG_CONTROLMORE, DBG_log("considering state entry: %u", svm_num));
+        if(svm->processor == NULL) continue;  /* let there be empty states for historical reasons */
 	if(svm->flags & SMF2_STATENEEDED) {
 	    if(st==NULL) {
                 DBG(DBG_CONTROLMORE,DBG_log("  reject:state needed and state unavailable"));
