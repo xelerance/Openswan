@@ -1028,6 +1028,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
     st->st_replaced = replacing;
     st->st_policy = policy;
     st->st_state  = STATE_CHILD_C0_KEYING;
+    set_cur_state(st);
 
     /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
     {
@@ -1051,6 +1052,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
                 loglog(RC_CRYPTOFAILED, "system too busy");
                 delete_state(st);
             }
+            reset_globals();
+
         } else {
             /* this case is that st_sec already is initialized, not doing PFS,
              * but we still need a new random nonce
@@ -1058,9 +1061,9 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
             set_cur_state(st);
             fill_rnd_chunk(&st->st_ni, DEFAULT_NONCE_SIZE);
             e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
+            complete_v2_state_transition(&ke->md, e);
+            pfree(ke);
         }
-
-        reset_globals();
 
         return e;
     }
