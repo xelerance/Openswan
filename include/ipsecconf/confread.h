@@ -45,12 +45,14 @@ typedef enum keyword_set str_set[KEY_STRINGS_MAX];
 typedef enum keyword_set int_set[KEY_NUMERIC_MAX];
 
 struct starter_end {
-    sa_family_t addr_family;
+    sa_family_t end_addr_family;
     enum keyword_host addrtype;
     enum keyword_host nexttype;
-    ip_address addr, nexthop, sourceip;
-    bool has_client;
-    ip_subnet subnet;
+    ip_address addr, nexthop;
+    bool has_client;   /* if true, then next three are meaningful */
+    sa_family_t tunnel_addr_family;
+    ip_address  sourceip;
+    ip_subnet   subnet;
     char *iface;
     char *id;
 
@@ -98,6 +100,8 @@ struct starter_conn {
     unsigned long id;
 
     enum keyword_auto desired_state;
+    sa_family_t end_addr_family;
+    sa_family_t tunnel_addr_family;
 
     enum {
 	STATE_INVALID,

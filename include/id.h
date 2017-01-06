@@ -49,6 +49,8 @@ extern const struct id *resolve_myid(const struct id *id);
 extern void set_myFQDN(void);
 extern void free_myFQDN(void);
 
+extern void log_ckaid(const char *fmt, const unsigned char *key, unsigned int keylen);
+
 extern err_t atoid(char *src, struct id *id, bool myid_ok);
 extern void iptoid(const ip_address *ip, struct id *id);
 extern unsigned char* temporary_cyclic_buffer(void);

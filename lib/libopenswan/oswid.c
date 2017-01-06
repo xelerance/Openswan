@@ -16,6 +16,9 @@
 #include "constants.h"
 #include "id.h"
 #include "openswan/ipsec_policy.h"
+#include "sha2.h"
+#include "secrets.h"
+#include "oswlog.h"
 
 enum myid_state myid_state = MYID_UNKNOWN;
 struct id myids[MYID_SPECIFIED+1];	/* %myid */
@@ -28,3 +31,21 @@ const struct id *resolve_myid(const struct id *id)
     return (id);
   }
 }
+
+
+void log_ckaid(const char *fmt, const unsigned char *key, unsigned int keylen)
+{
+    unsigned char key_ckaid[CKAID_BUFSIZE];
+    char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
+
+    /* maybe #ifdef SHA2 ? */
+    /* calculate the hash of the public key, using SHA-2 */
+    sha256_hash_buffer(key, keylen, key_ckaid, sizeof(key_ckaid));
+
+    datatot(key_ckaid, sizeof(key_ckaid), 'G',
+            ckaid_print_buf, sizeof(ckaid_print_buf));
+
+    DBG_log(fmt, ckaid_print_buf);
+}
+
+

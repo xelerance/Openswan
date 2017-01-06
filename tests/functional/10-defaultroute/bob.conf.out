@@ -28,6 +28,7 @@ conn nat-t
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn nat-t
 
 # end of config

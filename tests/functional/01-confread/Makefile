@@ -26,6 +26,7 @@ check:
 	${READWRITE} --rootdir=dooku --config dooku.conf | tee ../OUTPUTS/dooku.conf.raw | diff - dooku.conf.out
 	${READWRITE} --rootdir=cassidy --config cassidy.conf | tee ../OUTPUTS/cassidy.conf.raw | diff - cassidy.conf.out
 	${READWRITE} --rootdir=dooku --config ../../unit/libpluto/samples/h2h.conf | tee ../OUTPUTS/h2h.conf.raw | diff - h2h.conf.out
+	${READWRITE} --rootdir=dooku --config berri-strongswan.conf | tee ../OUTPUTS/certpercent.conf.raw | diff - certpercent.conf.out
 	: ${READWRITE} --rootdir=dooku --config brokenspace.conf | tee ../OUTPUTS/brokenspace.conf.raw | diff - brokenspace.conf.out
 	[ ! -f core ]
 
@@ -35,6 +36,7 @@ update:
 	cp ../OUTPUTS/dooku.conf.raw         dooku.conf.out
 	cp ../OUTPUTS/cassidy.conf.raw       cassidy.conf.out
 	cp ../OUTPUTS/h2h.conf.raw           h2h.conf.out
+	cp ../OUTPUTS/certpercent.conf.raw           certpercent.conf.out
 
 # Local Variables:
 # compile-command: "(cd ../../../programs/readwriteconf && make clean && make programs) && make check"

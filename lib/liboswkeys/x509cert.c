@@ -1659,7 +1659,7 @@ parse_x509cert(chunk_t blob, u_int level0, x509cert_t *cert)
 	}
 	objectID++;
     }
-    time(&cert->installed);
+    cert->installed = now();
     return TRUE;
 }
 

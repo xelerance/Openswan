@@ -138,7 +138,7 @@ static void sha256_transform(sha256_context *ctx, const unsigned char *datap)
                (((u_int32_t)(datap[2]))<<8 ) | ((u_int32_t)(datap[3]));
         datap += 4;
     } while(++j < 16);
-    
+
     /* initialize variables a...h */
     a = ctx->sha_H[0];
     b = ctx->sha_H[1];
@@ -233,7 +233,7 @@ void sha256_final(sha256_context *ctx)
     ctx->sha_out[62] = bitLength >> 8;
     ctx->sha_out[63] = bitLength;
     sha256_transform(ctx, &ctx->sha_out[0]);
-    
+
     /* return results in ctx->sha_out[0...31] */
     datap = &ctx->sha_out[0];
     j = 0;
@@ -250,7 +250,7 @@ void sha256_final(sha256_context *ctx)
     memset(&ctx->sha_out[32], 0, sizeof(sha256_context) - 32);
 }
 #endif
-void sha256_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
+void sha256_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int ole)
 {
     sha256_context ctx;
 
@@ -323,7 +323,7 @@ static void sha512_transform(sha512_context *ctx, const unsigned char *datap)
                (((u_int64_t)(datap[6]))<<8 ) | ((u_int64_t)(datap[7]));
         datap += 8;
     } while(++j < 16);
-    
+
     /* initialize variables a...h */
     a = ctx->sha_H[0];
     b = ctx->sha_H[1];
@@ -426,7 +426,7 @@ void sha512_final(sha512_context *ctx)
     ctx->sha_out[126] = bitLength >> 8;
     ctx->sha_out[127] = bitLength;
     sha512_transform(ctx, &ctx->sha_out[0]);
-    
+
     /* return results in ctx->sha_out[0...63] */
     datap = &ctx->sha_out[0];
     j = 0;
@@ -447,7 +447,7 @@ void sha512_final(sha512_context *ctx)
     memset(&ctx->sha_out[64], 0, sizeof(sha512_context) - 64);
 }
 #endif
-void sha512_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
+void sha512_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int ole)
 {
     sha512_context ctx;
 
@@ -491,7 +491,7 @@ void sha384_init(sha512_context *ctx)
 #endif
 }
 
-void sha384_hash_buffer(unsigned char *ib, int ile, unsigned char *ob, int ole)
+void sha384_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int ole)
 {
     sha512_context ctx;
 

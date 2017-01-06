@@ -58,8 +58,10 @@ lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
 	flp->fp = f;
 	flp->lino = 0;
 	flp->bdry = B_none;
+        flp->tok_buffer = malloc(1);
+        flp->tok_buflen = 1;
 
-	flp->cur = flp->buffer;	/* nothing loaded yet */
+	flp->cur   = flp->tok_buffer;
 	flp->under = *flp->cur = '\0';
 
 	(void) shift();	/* prime tok */
@@ -73,6 +75,9 @@ lexopen(struct file_lex_position *new_flp, const char *name, bool optional)
 void
 lexclose(void)
 {
+    if(flp->tok_buffer) free(flp->tok_buffer);
+    flp->tok_buffer = NULL;
+    flp->tok_buflen = 0;
     fclose(flp->fp);
     flp = flp->previous;
 }
@@ -94,8 +99,9 @@ lexclose(void)
 bool
 shift(void)
 {
-    char *p = flp->cur;
+    char *p   = flp->cur;
     char *sor = NULL;	/* start of record for any new lines */
+    int   linelen = 0;
 
     passert(flp->bdry == B_none);
 
@@ -108,8 +114,8 @@ shift(void)
 	{
 	case '\0':	/* end of line */
 	case '#':	/* comment to end of line: treat as end of line */
-	    /* get the next line */
-	    if (fgets(flp->buffer, sizeof(flp->buffer)-1, flp->fp) == NULL)
+            /* get the next line */
+            if((linelen = getline(&flp->tok_buffer, &flp->tok_buflen, flp->fp)) == -1)
 	    {
 		flp->bdry = B_file;
 		flp->tok = flp->cur = NULL;
@@ -119,13 +125,12 @@ shift(void)
 	    {
 		/* strip trailing whitespace, including \n */
 
-		for (p = flp->buffer+strlen(flp->buffer)-1
-		; p>flp->buffer && isspace(p[-1]); p--)
-		    ;
+		for (p = flp->tok_buffer+linelen
+                         ; p > flp->tok_buffer && isspace(p[-1]); p--);
 		*p = '\0';
 
 		flp->lino++;
-		sor = p = flp->buffer;
+		sor = p = flp->tok_buffer;
 	    }
 	    break;	/* try again for a token */
 
@@ -194,7 +199,7 @@ shift(void)
 	    /* we have a start-of-record: return it, deferring "real" token */
 	    flp->bdry = B_record;
 	    flp->tok = NULL;
-	    flp->under = *p;
+            flp->under = (p ? *p : '\0');
 	    flp->cur = p;
 	    return FALSE;
 	}
@@ -221,3 +226,10 @@ flushline(const char *m)
 	return FALSE;
     }
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */

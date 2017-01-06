@@ -60,9 +60,7 @@
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
-#ifdef KLIPS_MAST
 #include <ipsec_saref.h>
-#endif
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -480,7 +478,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , metric_str
 		    , connmtu_str
 		    , prettypolicy(c->policy)
-		    , (c->addr_family == AF_INET) ? 4 : 6
+		    , (c->end_addr_family == AF_INET) ? 4 : 6
 #ifdef XAUTH
 		    , secure_xauth_username_str
 #endif
