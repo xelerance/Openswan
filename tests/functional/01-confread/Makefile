@@ -18,10 +18,9 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 
-check:
+check: OUTPUT
 	-@rm -f core
-	mkdir -p ../OUTPUTS
-	${READWRITE} --config ${OBJDIRTOP}/programs/_confread/ipsec.conf | tee ../OUTPUTS/default.ipsec.conf.raw | diff - default.ipsec.conf.out
+	../readwritetest ${READWRITE} default.ipsec.conf ${OBJDIRTOP}/programs/_confread/ipsec.conf
 	${READWRITE} --config moon-base.conf | tee ../OUTPUTS/moon-base.conf.raw | diff - moon-base.conf.out
 	${READWRITE} --rootdir=dooku --config dooku.conf | tee ../OUTPUTS/dooku.conf.raw | diff - dooku.conf.out
 	${READWRITE} --rootdir=cassidy --config cassidy.conf | tee ../OUTPUTS/cassidy.conf.raw | diff - cassidy.conf.out
@@ -29,6 +28,9 @@ check:
 	${READWRITE} --rootdir=dooku --config berri-strongswan.conf | tee ../OUTPUTS/certpercent.conf.raw | diff - certpercent.conf.out
 	: ${READWRITE} --rootdir=dooku --config brokenspace.conf | tee ../OUTPUTS/brokenspace.conf.raw | diff - brokenspace.conf.out
 	[ ! -f core ]
+
+OUTPUT:
+	mkdir -p OUTPUT
 
 update:
 	cp ../OUTPUTS/default.ipsec.conf.raw default.ipsec.conf.out
