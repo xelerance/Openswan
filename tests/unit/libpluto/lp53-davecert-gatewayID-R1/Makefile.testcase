@@ -1,0 +1,12 @@
+# -*- makefile -*-
+TESTNAME=davecert-R1-id
+CONNNAME=rw-dave
+ENDNAME=gatewaycert-id
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} davecertI1-id.pcap OUTPUT/${TESTNAME}.pcap
+
+pcapupdate:
+	cp ../lp52-davecert-gatewayID-I1/OUTPUT/davecertI1-id.pcap .
+
+# Local Variables:
+# gdb-command: "make check"
+# End Variables:

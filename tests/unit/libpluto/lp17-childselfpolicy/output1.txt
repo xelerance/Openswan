@@ -2,12 +2,14 @@
 ./respondselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./respondselfR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./respondselfR2 loading secrets from "../samples/jj.secrets"
-./respondselfR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./respondselfR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./respondselfR2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./respondselfR2 loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
@@ -104,7 +106,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | considering state entry: 2
 |   reject:state needed and state unavailable
 | considering state entry: 3
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=93.184.216.34:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=93.184.216.34:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
@@ -202,9 +204,10 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./respondselfR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
-./respondselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+| v2_state_transition: st is #1; pst is #0; transition_st is #1
+./respondselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -282,11 +285,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0x640a06435c7c4b31 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
@@ -418,7 +421,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@example.com same_id=1
-|   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
@@ -549,9 +551,10 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
 | out calculated auth:
 |   ef 87 94 81  a8 d6 f6 2e  a5 9b f7 3f
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./respondselfR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
-./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+| v2_state_transition: st is #1; pst is #1; transition_st is #1
+./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -573,7 +576,6 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   53 d7 65 83  3f d9 8e 29  72 ca 5d f7  fb 7d c3 cd
 |   ef 87 94 81  a8 d6 f6 2e  a5 9b f7 3f
-| releasing whack for #X (sock=Y)
 ./respondselfR2 leak: ikev2_inI2outR2 KE, item size: X
 ./respondselfR2 leak: ikev2_inI1outR1 KE, item size: X
 ./respondselfR2 leak: msg_digest, item size: X
@@ -587,11 +589,14 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: struct connection, item size: X
 ./respondselfR2 leak: keep id name, item size: X
 ./respondselfR2 leak: pubkey entry, item size: X
+./respondselfR2 leak: rfc3110 format of public key, item size: X
 ./respondselfR2 leak: pubkey, item size: X
 ./respondselfR2 leak: keep id name, item size: X
 ./respondselfR2 leak: pubkey entry, item size: X
+./respondselfR2 leak: rfc3110 format of public key, item size: X
 ./respondselfR2 leak: pubkey, item size: X
 ./respondselfR2 leak: 2 * id list, item size: X
+./respondselfR2 leak: rfc3110 format of public key [created], item size: X
 ./respondselfR2 leak: secret, item size: X
 ./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak: policies path, item size: X

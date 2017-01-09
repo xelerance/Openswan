@@ -61,28 +61,9 @@
 
 #include "oswcrypto.h"
 
-#ifdef HAVE_LIBNSS
- /* nspr */
-# include <prerror.h>
-# include <prinit.h>
-# include <prmem.h>
- /* nss */
-# include <key.h>
-# include <keyt.h>
-# include <nss.h>
-# include <pk11pub.h>
-# include <seccomon.h>
-# include <secerr.h>
-# include <secport.h>
-# include <time.h>
-# include "oswconf.h"
-#endif
-
-// this linked list is part of pluto for now.
-//struct secret *pluto_secrets = NULL;
-
 /*
- * compute an RSA signature with PKCS#1 padding
+ * compute an RSA signature with PKCS#1 padding: Note that this assumes that any DER encoding is
+ *    **INCLUDED** as part of the hash_val/hash_len.
  */
 void
 sign_hash(const struct RSA_private_key *k
@@ -122,6 +103,62 @@ sign_hash(const struct RSA_private_key *k
     pfree(ch.ptr);
 
     mpz_clear(t1);
+}
+
+/*
+ * verify an RSA signature with PKCS#1 padding.
+ *   psig, which must be non-NULL, is set to where the decoded signature is
+ *      s, is some working area which is of size "s_max_octets"
+ *   hash_len is expected result size.
+ *   sig_val  is actual signature blob.
+ *
+ */
+err_t verify_signed_hash(const struct RSA_public_key *k
+                         , u_char *s, unsigned int s_max_octets
+                         , u_char **psig
+                         , size_t hash_len
+                         , const u_char *sig_val, size_t sig_len)
+{
+    unsigned int padlen;
+
+    /* actual exponentiation; see PKCS#1 v2.0 5.1 */
+    {
+	chunk_t temp_s;
+	MP_INT c;
+
+	n_to_mpz(&c, sig_val, sig_len);
+	oswcrypto.mod_exp(&c, &c, &k->e, &k->n);
+
+	temp_s = mpz_to_n(&c, sig_len);	/* back to octets */
+        if(s_max_octets < sig_len) {
+            return "2""exponentiation failed; too many octets";
+        }
+	memcpy(s, temp_s.ptr, sig_len);
+	pfree(temp_s.ptr);
+	mpz_clear(&c);
+    }
+
+    /* check signature contents */
+    /* verify padding (not including any DER digest info! */
+    padlen = sig_len - 3 - hash_len;
+    /* now check padding */
+
+    DBG(DBG_CRYPT,
+	DBG_dump("verify_sh decrypted SIG1:", s, sig_len));
+    DBG(DBG_CRYPT, DBG_log("pad_len calculated: %d hash_len: %d", padlen, (int)hash_len));
+
+    /* skip padding */
+    if(s[0]    != 0x00
+       || s[1] != 0x01
+       || s[padlen+2] != 0x00) {
+	return "3""SIG padding does not check out";
+    }
+
+    s += padlen + 3;
+    (*psig) = s;
+
+    /* return SUCCESS */
+    return NULL;
 }
 
 /*

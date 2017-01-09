@@ -56,6 +56,14 @@ size_t dstlen;
 		outblocksize = 2;
 		prefix = "0x";
 		break;
+	case 'G':       /* GnuPG fingerprint format */
+		inblocksize = 1;
+		outblocksize = 2;
+		prefix = "";
+                breakevery = 4;
+                breakchar  = ' ';
+                format = 'X';
+		break;
 	case ':':
 		format = 'x';
 		breakevery = 2;
@@ -160,7 +168,8 @@ size_t nreal;			/* how much of the input block is real */
 int format;
 char *out;
 {
-	static char hex[] = "0123456789abcdef";
+	static char lowerhex[] = "0123456789abcdef";
+	static char upperhex[] = "0123456789ABCDEF";
 	static char base64[] =	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 				"abcdefghijklmnopqrstuvwxyz"
 				"0123456789+/";
@@ -172,8 +181,14 @@ char *out;
 	case 'x':
 		user_assert(nreal == 1);
 		c = (unsigned char)*src;
-		*out++ = hex[c >> 4];
-		*out++ = hex[c & 0xf];
+		*out++ = lowerhex[c >> 4];
+		*out++ = lowerhex[c & 0xf];
+		break;
+	case 'X':
+		user_assert(nreal == 1);
+		c = (unsigned char)*src;
+		*out++ = upperhex[c >> 4];
+		*out++ = upperhex[c & 0xf];
 		break;
 	case 's':
 		c1 = (unsigned char)*src++;
@@ -230,3 +245,6 @@ size_t dstlen;
 {
 	return datatot(src, srclen, format, dst, dstlen);
 }
+
+/* for testing, use ttodata.c */
+

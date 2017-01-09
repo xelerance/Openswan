@@ -1,7 +1,7 @@
 ./certificateselfI1 adjusting ipsec.d to ../samples/rwcert
 ./certificateselfI1 loading secrets from "../samples/rwcert.secrets"
 ./certificateselfI1   loaded private key file '../samples/rwcert/private/carolKey.pem' (1679 bytes)
-./certificateselfI1 loaded private key for keyid: PPK_RSA:AwEAAbfz1
+./certificateselfI1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -498,7 +498,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./certificateselfI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./certificateselfI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./certificateselfI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 ./certificateselfI1 deleting state #1 (STATE_PARENT_I1)
 ./certificateselfI1 deleting connection
 | pass 0: considering CHILD SAs to delete
@@ -536,16 +536,19 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./certificateselfI1 leak: db_attrs, item size: X
 ./certificateselfI1 leak: db_v2_trans, item size: X
 ./certificateselfI1 leak: db_v2_prop_conj, item size: X
+./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: issuer dn, item size: X
 ./certificateselfI1 leak: keep id name, item size: X
 ./certificateselfI1 leak: pubkey entry, item size: X
 ./certificateselfI1 leak: pubkey, item size: X
+./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: issuer dn, item size: X
 ./certificateselfI1 leak: keep id name, item size: X
 ./certificateselfI1 leak: pubkey entry, item size: X
 ./certificateselfI1 leak: pubkey, item size: X
 ./certificateselfI1 leak: certificate filename, item size: X
 ./certificateselfI1 leak: 2 * id list, item size: X
+./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: secret, item size: X
 ./certificateselfI1 leak: policies path, item size: X
 ./certificateselfI1 leak: ocspcerts path, item size: X

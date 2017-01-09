@@ -32,12 +32,17 @@
 struct state;	 /* forward declaration */
 struct secret;  /* opaque definition, private to secrets.c */
 
+#define CKAID_BUFSIZE 20
+
 struct RSA_public_key
 {
-    char keyid[KEYID_BUF];	/* see ipsec_keyblobtoid(3) */
+    char keyid[KEYID_BUF];	    /* see ipsec_keyblobtoid(3) */
+    unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
 
     /* length of modulus n in octets: [RSA_MIN_OCTETS, RSA_MAX_OCTETS] */
     unsigned k;
+
+    chunk_t        key_rfc3110;     /* Raw Public key format */
 
     /* public: */
     MP_INT
@@ -100,6 +105,7 @@ extern struct secret *osw_get_defaultsecret(struct secret *secrets);
 struct pubkey {
     struct id id;
     unsigned refcnt;	/* reference counted! */
+    bool trusted_key;   /* if this key has been loaded from disk, or validated */
     enum dns_auth_level dns_auth_level;
     char *dns_sig;
     time_t installed_time
@@ -154,13 +160,14 @@ extern struct pubkey *reference_key(struct pubkey *pk);
 extern void unreference_key(struct pubkey **pkp);
 
 extern err_t add_public_key(const struct id *id
-    , enum dns_auth_level dns_auth_level
-    , enum pubkey_alg alg
-    , const chunk_t *key
-    , struct pubkey_list **head);
+                            , enum dns_auth_level dns_auth_level
+                            , enum pubkey_alg alg
+                            , const chunk_t *key
+                            , struct pubkey_list **head);
 
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
+
 extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
 
 extern void free_public_key(struct pubkey *pk);
@@ -168,7 +175,7 @@ extern void free_public_key(struct pubkey *pk);
 extern void osw_load_preshared_secrets(struct secret **psecrets
 				       , int verbose
 				       , const char *secrets_file
-				       , prompt_pass_t *pass);
+				       , prompt_pass_t *pass, const char *root_dir);
 extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);

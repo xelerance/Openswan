@@ -137,6 +137,7 @@ ikev2parent_outI1_withstate(struct state *st
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
+    st->st_policy         = policy & ~POLICY_IPSEC_MASK;
 
     if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
@@ -583,6 +584,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
         md->st = st;
         md->from_state = STATE_IKEv2_BASE;
+        md->transition_state = st;
     }
 
     /* check,as a responder, are we under dos attack or not
@@ -857,6 +859,11 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
         freeanychunk(st->st_firstpacket_me);
     clonetochunk(st->st_firstpacket_me, reply_stream.start
                  , pbs_offset(&reply_stream), "saved first packet");
+
+
+    /* while waiting for initiator to continue, arrange to die if nothing happens */
+    delete_event(st);
+    event_schedule(EVENT_SO_DISCARD, 300, st);
 
     /* note: retransimission is driven by initiator */
 
@@ -1289,6 +1296,9 @@ static stf_status ikev2_send_auth(struct connection *c
     } else if(c->policy & POLICY_PSK) {
         if(!ikev2_calculate_psk_auth(pst, role, idhash_out, &a_pbs))
             return STF_FAIL + AUTHENTICATION_FAILED;
+
+        /* hard to identify PSKs without giving them away */
+        strcpy(st->st_our_keyid, "psk");
     }
 
     close_output_pbs(&a_pbs);
@@ -1315,6 +1325,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     msgid_t        mid = INVALID_MSGID;
     bool send_cert = FALSE;
 
+    md->transition_state = st;
+
     finish_dh_v2(st, r);
 
     if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
@@ -1334,6 +1346,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(pst);
+    st->st_policy = pst->st_connection->policy & POLICY_IPSEC_MASK;
 
     st->st_msgid = mid;
     insert_state(st);
@@ -1343,9 +1356,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     /* parent had crypto failed, replace it with rekey! */
     delete_event(pst);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
-
-    /* need to force parent state to I2 */
-    change_state(pst, STATE_PARENT_I2);
 
     /* record first packet for later checking of signature */
     clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
@@ -1502,6 +1512,9 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
                           &child_spi,
                           v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
             }
+
+            /* need to force child to KEYING */
+            change_state(st, STATE_CHILD_C0_KEYING);
         } else {
             openswan_log("no pending SAs found, PARENT SA keyed only");
         }
@@ -1723,6 +1736,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned int np;
     int v2_notify_num = 0;
 
+    md->transition_state = st;
+
     /* extract calculated values from r */
     finish_dh_v2(st, r);
 
@@ -1791,8 +1806,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                 /* should we check if we should accept a cert payload ?
                  *  has_preloaded_public_key(st)
                  */
-                DBG(DBG_CONTROLMORE
-                    , DBG_log("has a v2_CERT payload going to process it "));
+                openswan_log("v2_CERT received on reponder, attempting to validate");
                 ikev2_decode_cert(md);
             }
     }
@@ -1861,6 +1875,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      */
     change_state(st, STATE_PARENT_R2);
     c->newest_isakmp_sa = st->st_serialno;
+    md->pst = st;
 
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
@@ -2123,8 +2138,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
          *  has_preloaded_public_key(st)
          */
         /* in v1 code it is  decode_cert(struct msg_digest *md) */
-        DBG(DBG_CONTROLMORE
-            , DBG_log("has a v2_CERT payload going to decode it"));
+        openswan_log("v2_CERT received on initiator, attempting to validate");
         ikev2_decode_cert(md);
     }
 
@@ -2229,6 +2243,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         loglog(RC_LOG_SERIOUS, "failed to installed IPsec Child SAs");
         return STF_FATAL;
     }
+
+    /* need to force child to KEYED */
+    change_state(st, STATE_CHILD_C1_KEYED);
 
     /*
      * Delete previous retransmission event.

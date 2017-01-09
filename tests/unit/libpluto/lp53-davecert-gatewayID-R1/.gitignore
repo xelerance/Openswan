@@ -1,0 +1,9 @@
+OUTPUT
+core.*
+davecert-R1-id
+*.o
+parentR1.pcap
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit

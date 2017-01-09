@@ -67,6 +67,7 @@ struct msg_digest {
     bool new_iv_set;
     struct state *st;	/* current state object */
     struct state *pst;  /* parent state object (if any) */
+    struct state *transition_state;  /* state to transition/advance, if any */
 
     enum phase1_role role;
     msgid_t          msgid_received;

@@ -27,4 +27,8 @@ check:
 	@${MAKE} -C 08-sitelocalv6 check
 	@${MAKE} -C 09-v6inv4 check
 	@${MAKE} -C 10-defaultroute check
+	@${MAKE} -C 11-subnets      check
+	@${MAKE} -C 12-rwcertwrite  check
+	@${MAKE} -C 13-bigpubkey  check
+
 

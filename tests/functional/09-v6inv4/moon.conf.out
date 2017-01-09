@@ -30,6 +30,8 @@ conn net-net
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn net-net
 
 # end of config

@@ -62,6 +62,13 @@ typedef struct const_chunk constchunk_t;
     { (ch).ptr = clone_bytes((addr), (ch).len = (size), name); }
 #define strtochunk(ch, str, name) \
   { (ch).len = strlen(str)+1; clonetochunk(ch, str, ch.len, name); }
+
+#define chunk_clone(OLD, NAME) (chunk_t)			\
+	{							\
+		.ptr = clone_bytes((OLD).ptr, (OLD).len, NAME), \
+		.len = (OLD).len,				\
+	}
+
 #define clonereplacechunk(ch, addr, size, name) \
     { pfreeany((ch).ptr); clonetochunk(ch, addr, size, name); }
 #define chunkcpy(dst, chunk) \

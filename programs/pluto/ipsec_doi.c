@@ -336,6 +336,7 @@ static initiator_function *pick_initiator(struct connection *c UNUSED, lset_t po
 
 so_serial_t
 ipsecdoi_initiate(int whack_sock
+                  , struct state *old_parent_state
                   , struct state *old_child_state
 		  , struct connection *c
 		  , lset_t policy
@@ -354,18 +355,18 @@ ipsecdoi_initiate(int whack_sock
      */
     so_serial_t created;
 
-    struct state *st = NULL;
+    if(old_parent_state == NULL) {
+        if(old_child_state) {
+            old_parent_state = state_with_serialno(old_child_state->st_clonedfrom);
+        }
 
-    if(old_child_state) {
-        st = state_with_serialno(old_child_state->st_clonedfrom);
+        if(old_parent_state == NULL) {
+            old_parent_state = find_phase1_state(c
+                                   , ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
+        }
     }
 
-    if(st == NULL) {
-        st = find_phase1_state(c
-                               , ISAKMP_SA_ESTABLISHED_STATES | PHASE1_INITIATOR_STATES);
-    }
-
-    if (st == NULL)
+    if (old_parent_state == NULL)
     {
         if(!c->spd.that.host_address_list.addresses_available
            && isanyaddr(&c->spd.that.host_addr)) {
@@ -386,15 +387,17 @@ ipsecdoi_initiate(int whack_sock
     else if (HAS_IPSEC_POLICY(policy)) {
 
       /* boost priority if necessary */
-      if(st->st_import < importance) st->st_import = importance;
+      if(old_child_state) {
+        if(old_child_state->st_import < importance) old_child_state->st_import = importance;
+      }
 
-      if (!IS_ISAKMP_SA_ESTABLISHED(st->st_state)) {
+      if (!IS_ISAKMP_SA_ESTABLISHED(old_parent_state->st_state)) {
 	/* leave our Phase 2 negotiation pending */
-	add_pending(whack_sock, st, c, policy, try
+	add_pending(whack_sock, old_child_state, c, policy, try
 		    , replacing
 		    , uctx
 		   );
-	return st->st_serialno;
+	return old_child_state ? old_child_state->st_serialno : SOS_NOBODY;
       }
       else {
 
@@ -402,11 +405,11 @@ ipsecdoi_initiate(int whack_sock
 	 * we already have it from when we negotiated the ISAKMP SA!
 	 * It isn't clear what to do with the error return.
 	 */
-	(void) ipsec_outI1(whack_sock, st, c, policy, try
+	(void) ipsec_outI1(whack_sock, old_parent_state, c, policy, try
 			   , replacing
 			   , uctx
 			  );
-	return st->st_serialno;
+	return old_parent_state->st_serialno;
       }
     }
 
@@ -434,6 +437,11 @@ ipsecdoi_replace(struct state *st
     int whack_sock = dup_any(st->st_whack_sock);
     lset_t policy = st->st_policy;
     so_serial_t  newstateno;
+
+    struct state *old_parent_state = state_with_serialno(st->st_clonedfrom);
+    if(old_parent_state == NULL) {
+        old_parent_state = st;
+    }
 
     if (IS_PHASE1(st->st_state) || IS_PARENT_SA(st) || IS_PHASE15(st->st_state))
     {
@@ -477,7 +485,10 @@ ipsecdoi_replace(struct state *st
 		policy |= POLICY_TUNNEL;
 	}
 	passert(HAS_IPSEC_POLICY(policy));
-	ipsecdoi_initiate(whack_sock, st, st->st_connection, policy, try
+	ipsecdoi_initiate(whack_sock
+                          , old_parent_state
+                          , st
+                          , st->st_connection, policy, try
 			  , st->st_serialno, st->st_import
 			  , st->sec_ctx);
     }
@@ -927,8 +938,9 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     }
 
     snprintf(b, sad_len-(b-sadetails)-1
-	     , " {auth=%s cipher=%s_%d%s%s prf=%s group=modp%d}"
+	     , " {auth=%s oursig=%s theirsig=%s cipher=%s_%d%s%s prf=%s group=modp%d}"
 	     , authname
+             , st->st_our_keyid, st->st_their_keyid
 	     , st->st_oakley.encrypter->common.name
 	     , st->st_oakley.enckeylen
 	     , integstr, integname
