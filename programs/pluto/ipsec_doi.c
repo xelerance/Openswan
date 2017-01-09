@@ -387,7 +387,9 @@ ipsecdoi_initiate(int whack_sock
     else if (HAS_IPSEC_POLICY(policy)) {
 
       /* boost priority if necessary */
-      if(old_child_state->st_import < importance) old_child_state->st_import = importance;
+      if(old_child_state) {
+        if(old_child_state->st_import < importance) old_child_state->st_import = importance;
+      }
 
       if (!IS_ISAKMP_SA_ESTABLISHED(old_parent_state->st_state)) {
 	/* leave our Phase 2 negotiation pending */
@@ -395,7 +397,7 @@ ipsecdoi_initiate(int whack_sock
 		    , replacing
 		    , uctx
 		   );
-	return old_child_state->st_serialno;
+	return old_child_state ? old_child_state->st_serialno : SOS_NOBODY;
       }
       else {
 
