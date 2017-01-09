@@ -998,48 +998,67 @@ static int validate_family_consistency(const char *connname,
                                        unsigned int right,
                                        unsigned int family)
 {
-        if(left == 0 &&
-           family      == 0 &&
-           right != 0) {
-            left = family = right;
-        }
+    unsigned int nfamily = AF_LOCAL; /* an invalid value */
 
-        if(left  != 0 &&
-           family       == 0 &&
-           right == 0) {
-            right = family = left;
-        }
-
-        if(left  == 0 &&
-           family       != 0 &&
-           right == 0) {
-            right = left = family;
-        }
-
-        if(left  != 0 &&
-           family       == 0 &&
-           right != 0 &&
-           left  == right) {
-            family = right;
-        }
-
-        /* if the end_address family is *STILL* 0, then it must be that there is an
-           inconsistency in the left/right ends.
-        */
-        if(family == 0) {
-            char b1[KEYWORD_NAME_BUFLEN];
-            char b2[KEYWORD_NAME_BUFLEN];
-            char b3[KEYWORD_NAME_BUFLEN];
-            starter_log(LOG_LEVEL_ERR,
-                        "%s: inconsistent left/right %s address family: policy=%s left=%s right=%s",
-                        connname,
-                        addrtype,
-                        keyword_name(&kw_connaddrfamily_list, family, b1),
-                        keyword_name(&kw_connaddrfamily_list, left, b2),
-                        keyword_name(&kw_connaddrfamily_list, right, b3));
-        }
-
+    /* they could all be equal and consistent */
+    if(left == family && right == family) {
         return family;
+    }
+
+    /* if right has a family, use it */
+    if(left == 0 &&
+       family      == 0 &&
+       right != 0) {
+        left = nfamily = right;
+    }
+
+    /* if left has a family, use it */
+    if(left  != 0 &&
+       family       == 0 &&
+       right == 0) {
+        right = nfamily = left;
+    }
+
+    /* if left and right are blank, then set them from family */
+    if(left  == 0 &&
+       family       != 0 &&
+       right == 0) {
+        nfamily = right = left = family;
+    }
+
+    /* if family is blank, and left and right are set to the same value,
+     * then set family to that value.
+     */
+    if(left  != 0 &&
+       family       == 0 &&
+       right != 0 &&
+       left  == right) {
+        nfamily = right;
+    }
+
+    /* they could be all unspecified, which is not inconsistent, just not useful */
+    if(left == 0 && family == 0 && right == 0) {
+        return AF_UNSPEC;
+    }
+
+    /* if the end_address family is *STILL* 0, then it must be that there is an
+       inconsistency in the left/right ends.
+    */
+    if(nfamily == AF_LOCAL) {
+        char b1[KEYWORD_NAME_BUFLEN];
+        char b2[KEYWORD_NAME_BUFLEN];
+        char b3[KEYWORD_NAME_BUFLEN];
+        starter_log(LOG_LEVEL_ERR,
+                    "%s: inconsistent left/right %s address family: policy=%s left=%s right=%s",
+                    connname,
+                    addrtype,
+                    keyword_name(&kw_connaddrfamily_list, family, b1),
+                    keyword_name(&kw_connaddrfamily_list, left, b2),
+                    keyword_name(&kw_connaddrfamily_list, right, b3));
+        return AF_UNSPEC;
+    }
+
+    return nfamily;
 }
 
 static int load_conn (struct starter_config *cfg
