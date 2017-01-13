@@ -98,8 +98,20 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
     best_ifp = NULL;
     best_score = 0;
 
+    DBG(DBG_CONTROLMORE,
+        DBG_log("pick_if looking for port: %u, family: %u",
+                desired_port, family));
+
     for(ifp = iflist; ifp != NULL; ifp = ifp->next) {
         int score = 0;
+
+        DBG(DBG_CONTROLMORE,
+            DBG_log("  considering %s port: %u, family: %u, best: %s/%u",
+                    ifp->ip_dev->id_rname,
+                    ifp->port, ifp->ip_addr.u.v4.sin_family,
+                    best_ifp ? best_ifp->ip_dev->id_rname : "<none>",
+                    best_score));
+
         /* the port must always match, not a best case */
         if(ifp->port != desired_port) continue;
 
