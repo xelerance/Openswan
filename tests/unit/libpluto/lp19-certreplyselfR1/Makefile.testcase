@@ -1,5 +1,8 @@
+# -*- makefile -*-
 TESTNAME=certreplyselfR1
 CONNNAME=rw-any
 ENDNAME=gatewaycert
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1.pcap OUTPUT/${TESTNAME}.pcap
 
+pcapupdate:
+	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap parentI1.pcap
