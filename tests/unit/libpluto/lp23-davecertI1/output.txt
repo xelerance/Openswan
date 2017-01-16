@@ -17,6 +17,8 @@ processing whack msg time: X size: Y
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
 | orient home matching on public/private keys: this=no[%address] that=yes[%defaultroute]
 |   orient home matched on that having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 port: 500, family: 2, best: <none>/0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
 |   orient home finished with: 1 [0.0.0.0]
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
@@ -37,6 +39,8 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
 | orient home matching on public/private keys: this=yes[%defaultroute] that=no[%address]
 |   orient home matched on this having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 port: 500, family: 2, best: <none>/0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
 |   orient home finished with: 1 [0.0.0.0]
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14

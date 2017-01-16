@@ -20,6 +20,8 @@ processing whack msg time: X size: Y
 | orient nat-t checking against if: eth0 (AF_INET:10.2.0.10:500)
 | orient nat-t matching on public/private keys: this=no[%any] that=yes[%defaultroute]
 |   orient nat-t matched on that having private key
+| pick_if looking for port: 500, family: 0
+|   considering eth0 port: 500, family: 2, best: <none>/0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 10.2.0.10
 |   orient nat-t finished with: 1 [10.2.0.10]
 | find_host_pair: looking for me=<invalid>:500 %any him=<invalid>:500 exact-match
