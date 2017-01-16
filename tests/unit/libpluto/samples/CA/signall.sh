@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ROOT=../
-for HOSTNAME in dave carol
+for HOSTNAME in dave carol moon
 do
     CRT=${HOSTNAME}cert/certs/${HOSTNAME}Cert.pem
     KEY=${HOSTNAME}cert/private/${HOSTNAME}Key.pem
