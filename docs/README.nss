@@ -3,14 +3,14 @@ Author: Avesh Agarwal email: avagarwa@redhat.com
 
 About NSS crypto library
 --------------------------
-Please visit http://www.mozilla.org/projects/security/pki/nss/
+Please visit https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
  
 NSS crypto library is user space library. It is only used with Pluto (user
 space IKE daemon) for cryptographic operations. When using NSS, it does not
 impact the way IPSEC kernel (KLIPS or NETKEY) works. The usefulness of using
 NSS lies in the fact that the secret information (like private keys or
 anything else) never comes out of NSS database. Openswan with NSS supports
-IKEV1, IKEv2, authentication using PSK, Raw RSA Sig key, and Digital Certs.
+IKEV1, IKEv2, authentication using PSK, Raw RSA Sig key and Digital Certs.
 
 
 How to enable NSS crypto library with Openswan
@@ -23,14 +23,14 @@ Basic NSS tools required
 -------------------------
 certutil: To create/modify/delete NSS db, certificates etc. More description
 can be found at
-http://www.mozilla.org/projects/security/pki/nss/tools/certutil.html
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Reference/NSS_tools_:_certutil
 
 pk12util: To import/export certificates or keys in to/out of NSS db. More
 description can be found at
-http://www.mozilla.org/projects/security/pki/nss/tools/pk12util.html  
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_pk12util
 
 modutil: To put NSS into FIPS mode. 
-http://www.mozilla.org/projects/security/pki/nss/tools/modutil.html
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_modutil
 
 
 Creating database before using NSS with Pluto (Openswan)
@@ -56,7 +56,7 @@ However, database password must be provided in FIPS mode.
 
 About the password file "nsspassword"
 -------------------------------------
-If you create the database with a password, and want to run NSS in FIPS mode,
+If you create the database with a password and want to run NSS in FIPS mode,
 you must create a password file with the name "nsspassword" in the
 /etc/ipsec.d before running pluto with NSS. The "nsspassword" file must
 contain the password you provided when creating NSS database. 
@@ -64,7 +64,7 @@ contain the password you provided when creating NSS database.
 Important thing to note: 
 i) You only need the "nsspassword" file if you run pluto in FIPS. In other way,
 if you run pluto in normal or NonFIPS mode, then you can create the NSS
-database without password, and you need not create a "nsspassword" file.
+database without password and you need not create a "nsspassword" file.
 However, if the NSS db is created with a password, the "nsspassword" file must
 also be provided.
 
@@ -74,7 +74,7 @@ token_1_name:its_password
 token_2_name:its_password  
 
 For example, the name of NSS softtoken (or NSS database) is
-"NSS Certificate DB" in NonFIPS mode, and assume that its password is xyz.
+"NSS Certificate DB" in NonFIPS mode and assume that its password is xyz.
 So an entry for this in nsspassword file can be: 
 
 NSS Certificate DB:xyz
@@ -117,27 +117,29 @@ sig keys with Pluto.
 
 Creating certificates with NSS
 -------------------------------
-i)To create a certificate authority (CA certificate):
+i) To create a certificate authority (CA certificate):
 
-certutil -S -k rsa -n <ca-cert-nickname> -s "CN=ca-cert-common-name" -w 12 \
- -d . -t "C,C,C" -x -d /etc/ipsec.d
+certutil -S -k rsa -g 2048 -Z SHA256 -n <ca-cert-nickname> \
+ -s "CN=ca-cert-common-name" -v 120 -t "C,C,C" -x -d /etc/ipsec.d
 
-It creates a certificate with RSA keys (-k rsa) with the nick name
-"ca-cert-nickname", and with common name "ca-cert-common-name". The option
-"-w" specifies the certificates validy period. "-t" specifies the attributes
-of the certificate. "C" is require for creating a CA certificate. "-x" mean
-self signed. "-d" specifies the path of the database directory.
+It creates a certificate with a 2048 bit (-g) RSA key (-k) using SHA256 (-Z)
+with the nick name "ca-cert-nickname" and common name "ca-cert-common-name".
+The option "-v" specifies the certificate validy period in months. "-t"
+specifies the attributes of the certificate. "C" is require for creating a CA
+certificate. "-x" mean self signed. "-d" specifies the path of the database
+directory.
 
 Important thing to note: It is not a requirement to create the CA in NSS
 database. The CA certificate can be obtained from anywhere in the world.
 
 ii) To create a user certificate signed by the above CA
 
-certutil -S -k rsa -c <ca-cert-nickname> -n <user-cert-nickname> \
- -s "CN=user-cet-common-name" -w 12 -t "u,u,u" -d /etc/ipsec.d 
+certutil -S -k rsa -g 2048 -Z SHA256 -n <user-cert-nickname> \
+ -s "CN=user-cet-common-name" -v 12 -t "u,u,u" -c <ca-cert-nickname> \
+ -d /etc/ipsec.d
 
 It creates a user cert with nick name "user-cert-nickname" with attributes
-"u,u,u" signed by the CA cert "ca-cert-name". 
+"u,u,u" signed by the CA cert "ca-cert-name".
 
 Important thing to note: You must provided a nick name when creating a user
 cert, because Pluto reads the user cert from the NSS database based on
@@ -166,7 +168,7 @@ There is no need to provide private key file information or its password.
 3) changes in the directories in /etc/ipsec.d/ (cacerts, certs, private)  
 i)You need not have "private" or "certs" directory.
 
-ii) If you obtain a CA certificate from outside, and it is not inside NSS
+ii) If you obtain a CA certificate from outside and it is not inside NSS
 database, then you need to put the certificate inside "cacerts" directory, so
 that Pluto can read it. If the CA certificate is created in the NSS database,
 or imported from outside inside the NSS database, you need not have "cacerts"
@@ -208,7 +210,7 @@ w1.x1.y1.z1 <---> w2.x2.y2.z2
 
 Note: In this example setup, both machines are using NSS. If you want to use
 NSS only at one machine, say machine 1, you can use the following procedure
-only at machine 1, and you can use traditional ipsec setup at machine 2.
+only at machine 1 and you use traditional ipsec setup at machine 2.
 
 1. Create a new (if not already) nss db on both machines as follows:
 
@@ -217,8 +219,8 @@ certutil -N -d <path-to-ipsec.d dir>/ipsec.d
 2. Creating CA certs at both machines:
 
 On machine 1:
-certutil -S -k rsa -n cacert1 -s "CN=cacert1" -v 12 -d . -t "C,C,C" -x -d \
- <path-to-ipsec.d dir>/ipsec.d
+certutil -S -k rsa -g 2048 -Z SHA256 -n cacert1 -s "CN=cacert1" -v 120 \
+ -t "C,C,C" -x -d /etc/ipsec.d
 
 As we want to use the same certificate  "cacert1" at machine 2, it needs to be
 exported first. To export the cacert1, do the following at machine 1:
@@ -239,13 +241,13 @@ Now machine 2 also has the CA certificates "cacert1" in its NSS database.
 3. Creating user certs at both machines:
 
 On machine 1:
-certutil -S -k rsa -c cacert1 -n usercert1 -s "CN=usercert1" -v 12 -t "u,u,u" \
- -d /etc/ipsec.d
+certutil -S -k rsa -g 2048 -Z SHA256 -c cacert1 -n usercert1 \
+ -s "CN=usercert1" -v 12 -t "u,u,u" -d /etc/ipsec.d
 (Note this cert is signed by "cacert1")
 
 On machine 2:
-certutil -S -k rsa -c cacert1 -n usercert2 -s "CN=usercert2" -v 12 -t "u,u,u" \
- -d /etc/ipsec.d
+certutil -S -k rsa -g 2048 -Z SHA256 -c cacert1 -n usercert2 \
+ -s "CN=usercert2" -v 12 -t "u,u,u" -d /etc/ipsec.d
 (Note this cert is signed by "cacert1" too)
 
 4. Preparing ipsec.conf at both machines
