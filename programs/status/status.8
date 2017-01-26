@@ -7,7 +7,7 @@
 .\"    Source: [FIXME: source]
 .\"  Language: English
 .\"
-.TH "STATUSS" "8" "01/24/2017" "[FIXME: source]" "[FIXME: manual]"
+.TH "STATUS" "8" "01/24/2017" "[FIXME: source]" "[FIXME: manual]"
 .\" -----------------------------------------------------------------
 .\" * set default formatting
 .\" -----------------------------------------------------------------
@@ -22,12 +22,15 @@
 ipsec_status \- asks pluto for current connection status
 .SH "SYNOPSIS"
 .HP \w'\fBipsec\fR\ 'u
-\fBipsec\fR \fIstatus\fR
+\fBipsec\fR \fIstatus\fR [connection name]
 .SH "DESCRIPTION"
 .PP
 \fIstatus\fR
-is used to ask pluto for current connecdton status\&. It is the equivalent to running the commands
+is used to ask pluto for current connection status\&. It is the equivalent to running the commands
 \fIipsec whack --status\fR\&.
+
+If the \fIconnection name\fR is defined then it does the equivalent of:
+\fIipsec whack --status | grep -F connection name\fR.
 .SH "SEE ALSO"
 .PP
 \fBipsec\fR(8),
