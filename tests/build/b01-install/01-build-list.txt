@@ -46,6 +46,7 @@
 ./usr/local/libexec/ipsec/showhostkey
 ./usr/local/libexec/ipsec/spi
 ./usr/local/libexec/ipsec/spigrp
+./usr/local/libexec/ipsec/status
 ./usr/local/libexec/ipsec/tncfg
 ./usr/local/libexec/ipsec/verify
 ./usr/local/libexec/ipsec/whack
@@ -94,6 +95,7 @@
 ./usr/local/man/man8/ipsec_showhostkey.8
 ./usr/local/man/man8/ipsec_spi.8
 ./usr/local/man/man8/ipsec_spigrp.8
+./usr/local/man/man8/ipsec_status.8
 ./usr/local/man/man8/ipsec_tncfg.8
 ./usr/local/man/man8/ipsec_verify.8
 ./usr/local/man/man8/ipsec_whack.8
