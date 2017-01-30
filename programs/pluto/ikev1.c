@@ -1953,7 +1953,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
     passert(result == STF_INLINE || result == STF_IGNORE || result == STF_SUSPEND
             || st == NULL || (st && st->st_calculating==FALSE));
 
-    if(md->transition_state != NULL) {
+    if(md->transition_state == NULL) {
         md->transition_state = st;
     }
 
