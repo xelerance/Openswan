@@ -1004,7 +1004,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
                             , struct pluto_crypto_req *r);
 
 
-stf_status ikev2child_outC1(int whack_sock UNUSED
+stf_status ikev2child_outC1(int whack_sock
                             , struct state *parentst
                             , struct connection *c
                             , lset_t policy
@@ -1018,6 +1018,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
     /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(parentst);
+    st->st_whack_sock = whack_sock;
     ret = allocate_msgid_from_parent(parentst, &st->st_msgid);
 
     if(ret != STF_OK) return ret;
