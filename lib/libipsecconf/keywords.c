@@ -444,6 +444,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* aggr/xauth/modeconfig */
     {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
+    {"aggressive",  kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
     {"xauthserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHSERVER,  NOT_ENUM},
     {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
     {"xauthname",   kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},
