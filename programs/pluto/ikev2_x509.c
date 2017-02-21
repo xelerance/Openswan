@@ -119,6 +119,9 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 
     cert.isac_enc = mycert.type;
 
+    /* XXX SENDING of CERT REQ in IKEv2 is broken. TURN IT OFF FOR NOW */
+    send_certreq = 0;
+
     if(send_certreq){
         cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 	if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
