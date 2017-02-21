@@ -1,5 +1,6 @@
 CONNNAME=gateway--any
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/parentI2.pcap
+PCAPOUTPUT=parentI2.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap      OUTPUT/${PCAPOUTPUT}
 ENDNAME=rw
 
 TESTNAME=initiateselfI2

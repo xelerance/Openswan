@@ -1,3 +1,6 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
 
 static void init_loaded(void)
@@ -35,6 +38,10 @@ void recv_pcap_I3_rekey(u_char *user
     struct state *st = NULL;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
+    /* create a socket for a possible whack process that is doing --up */
+    int fake_whack_fd = open("/dev/null", O_RDWR);
+    passert(fake_whack_fd != -1);
+
     recv_pcap_packet(user, h, bytes);
 
     fprintf(stderr, "now pretend that the keylife timer is up, and rekey the connection\n");
@@ -42,15 +49,21 @@ void recv_pcap_I3_rekey(u_char *user
 
     timer_list();
     st = state_with_serialno(2);
+    st->st_whack_sock = fake_whack_fd;
 
     if(st) {
         DBG(DBG_LIFECYCLE
             , openswan_log("replacing stale %s SA"
                            , (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"));
+
         ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
     } else {
         fprintf(stderr, "no state #2 found\n");
     }
+
+    /* find new state! */
+    st = state_with_serialno(3);
+    passert(st->st_whack_sock != -1);
 
     passert(kn->oakley_group == tc14_oakleygroup);
 

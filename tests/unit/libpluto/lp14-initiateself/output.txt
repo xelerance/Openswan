@@ -1,10 +1,12 @@
 ./initiateselfI1 loading secrets from "../samples/rw.secrets"
-./initiateselfI1 loaded private key for keyid: PPK_RSA:AQOa+OIzC
+./initiateselfI1 loaded private key for keyid: PPK_RSA:AQOa+OIzC/4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./initiateselfI1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./initiateselfI1 loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
@@ -499,7 +501,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./initiateselfI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./initiateselfI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./initiateselfI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 ./initiateselfI1 deleting state #1 (STATE_PARENT_I1)
 ./initiateselfI1 deleting connection
 | pass 0: considering CHILD SAs to delete
@@ -539,9 +541,11 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./initiateselfI1 leak: db_v2_prop_conj, item size: X
 ./initiateselfI1 leak: keep id name, item size: X
 ./initiateselfI1 leak: pubkey entry, item size: X
+./initiateselfI1 leak: rfc3110 format of public key, item size: X
 ./initiateselfI1 leak: pubkey, item size: X
 ./initiateselfI1 leak: keep id name, item size: X
 ./initiateselfI1 leak: pubkey entry, item size: X
+./initiateselfI1 leak: rfc3110 format of public key, item size: X
 ./initiateselfI1 leak: pubkey, item size: X
 ./initiateselfI1 leak: policies path, item size: X
 ./initiateselfI1 leak: ocspcerts path, item size: X
@@ -556,5 +560,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./initiateselfI1 leak: default conf ipsecd_dir, item size: X
 ./initiateselfI1 leak: default conf ipsec_conf_dir, item size: X
 ./initiateselfI1 leak: 2 * id list, item size: X
+./initiateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./initiateselfI1 leak: secret, item size: X
 ./initiateselfI1 leak detective found Z leaks, total size X

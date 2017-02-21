@@ -2,12 +2,14 @@
 ./rekeyikev2-R1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./rekeyikev2-R1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./rekeyikev2-R1 loading secrets from "../samples/jj.secrets"
-./rekeyikev2-R1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./rekeyikev2-R1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./rekeyikev2-R1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./rekeyikev2-R1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -101,7 +103,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | considering state entry: 2
 |   reject:state needed and state unavailable
 | considering state entry: 3
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
@@ -199,9 +201,10 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | emitting length of ISAKMP Message: 376
-| complete v2 state transition with STF_OK
+| #1 complete v2 state transition with STF_OK
 ./rekeyikev2-R1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
-./rekeyikev2-R1 STATE_PARENT_R1: received v2I1, sent v2R1 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000)
+| v2_state_transition: st is #1; pst is #0; transition_st is #1
+./rekeyikev2-R1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 192.168.1.1:500 (from port 500)
 sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -282,11 +285,11 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R1, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
@@ -431,7 +434,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
-|   trusted_ca called with a=(empty) b=(empty)
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
 | **emit ISAKMP Message:
@@ -733,10 +735,12 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 |   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
 | out calculated auth:
 |   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
-| complete v2 state transition with STF_OK
-./rekeyikev2-R1 transition from state STATE_PARENT_R1 to state STATE_CHILD_C1_KEYED
+| #2 complete v2 state transition with STF_OK
+./rekeyikev2-R1 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
+| v2_state_transition: st is #2; pst is #1; transition_st is #1
+./rekeyikev2-R1 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 ./rekeyikev2-R1 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
-./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000000)
+./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.168.1.1:500 (from port 500)
 sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using #2)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -827,17 +831,16 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 | considering state entry: 1
 |   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I1
 | considering state entry: 2
-|   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_I2
+|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C0_KEYING
 | considering state entry: 3
 |   reject:state unneeded and state available
 | considering state entry: 4
 |   reject: in state: STATE_PARENT_R2, needs STATE_PARENT_R1
 | considering state entry: 5
-|   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 6
 |   reject: in state: STATE_PARENT_R2, needs STATE_CHILD_C1_REKEY
 | considering state entry: 7
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #7 rekey-child-SA-responder
 | duplicating state object #1
 | creating state object #3 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -982,6 +985,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |    length: 48
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSr (len=48)
+./rekeyikev2-R1 msgid=2 CHILD_SA PFS rekey message received from 192.168.1.1:500 on eth0 (port=500)
 | DH public value received:
 |   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
 |   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
@@ -1303,12 +1307,14 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 |   ff 42 00 3b  4b 58 2d c6  99 88 af 98  58 73 b0 8d
 | out calculated auth:
 |   fe 0f 04 6f  24 bf 55 d8  56 bf ea 4d
-| complete v2 state transition with STF_OK
-./rekeyikev2-R1 transition from state STATE_PARENT_R2 to state STATE_CHILD_C1_KEYED
+| #3 complete v2 state transition with STF_OK
+./rekeyikev2-R1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
+| v2_state_transition: st is #3; pst is #1; transition_st is #3
+./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/00000002)
 ./rekeyikev2-R1 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
-./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none} (msgid: 00000002)
+./rekeyikev2-R1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.168.1.1:500 (from port 500)
-sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using #3)
+sending 492 bytes for STATE_CHILD_C1_REKEY through eth0:500 to 192.168.1.1:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 20  00 00 00 02  00 00 01 ec  28 00 01 d0
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1433,11 +1439,14 @@ sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using
 ./rekeyikev2-R1 leak: struct connection, item size: X
 ./rekeyikev2-R1 leak: keep id name, item size: X
 ./rekeyikev2-R1 leak: pubkey entry, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key, item size: X
 ./rekeyikev2-R1 leak: pubkey, item size: X
 ./rekeyikev2-R1 leak: keep id name, item size: X
 ./rekeyikev2-R1 leak: pubkey entry, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key, item size: X
 ./rekeyikev2-R1 leak: pubkey, item size: X
 ./rekeyikev2-R1 leak: 2 * id list, item size: X
+./rekeyikev2-R1 leak: rfc3110 format of public key [created], item size: X
 ./rekeyikev2-R1 leak: secret, item size: X
 ./rekeyikev2-R1 leak: 2 * hasher name, item size: X
 ./rekeyikev2-R1 leak: policies path, item size: X

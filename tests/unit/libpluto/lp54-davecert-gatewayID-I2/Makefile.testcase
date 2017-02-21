@@ -1,0 +1,14 @@
+# -*- makefile -*-
+CONNNAME=home
+ENDNAME=davecert-id
+PCAPOUTPUT=davecertI2-id.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} davecert-R1-id.pcap  OUTPUT/${PCAPOUTPUT}
+
+TESTNAME=davecertI2-id
+
+pcapupdate:
+	cp ../lp53-davecert-gatewayID-R1/OUTPUT/davecert-R1-id.pcap .
+
+
+
+

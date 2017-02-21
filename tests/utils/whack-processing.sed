@@ -6,3 +6,4 @@ s/ *$//
 /kernel_alg_esp_info/d
 s/releasing whack for .* (sock=.*)/releasing whack for #X (sock=Y)/
 /newest ISAKMP SA/d
+s/(expires .*)/(expires SOMETIME)/

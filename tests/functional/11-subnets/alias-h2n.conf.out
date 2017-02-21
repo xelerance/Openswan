@@ -1,0 +1,17 @@
+debugging mode enabled
+end of file ../../unit/libpluto/samples/alias-h2n.conf
+Loading conn parker--dailyplanet
+conn: "parker--dailyplanet/1x0" sending RSA keys for left
+writing record 1 to whack file
+conn: "parker--dailyplanet/1x0" sending RSA keys for right
+writing record 2 to whack file
+emitting conn parker--dailyplanet/1x0 with end-family: 2 and tunnel-family: 10
+writing record 3 to whack file
+conn: "parker--dailyplanet/2x0" sending RSA keys for left
+writing record 4 to whack file
+conn: "parker--dailyplanet/2x0" sending RSA keys for right
+writing record 5 to whack file
+emitting conn parker--dailyplanet/2x0 with end-family: 2 and tunnel-family: 10
+writing record 6 to whack file
+opening file: ../../unit/libpluto/samples/alias-h2n.conf
+processing conn: parker--dailyplanet vs parker--dailyplanet

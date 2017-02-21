@@ -155,7 +155,7 @@ initiate_a_connection(struct connection *c
 
 	{
 	    whackfd = dup(whackfd);
-	    ipsecdoi_initiate(whackfd, NULL, c, c->policy, 1
+	    ipsecdoi_initiate(whackfd, NULL, NULL, c, c->policy, 1
 			      , SOS_NOBODY, importance
                               , NULL_POLICY
 			     );
@@ -810,7 +810,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 	}
 
 	if(!loggedit) { openswan_log("%s", demandbuf); loggedit=TRUE; }
-	ipsecdoi_initiate(b->whackfd, NULL, c, c->policy, 1
+	ipsecdoi_initiate(b->whackfd, NULL, NULL, c, c->policy, 1
 			  , SOS_NOBODY, pcim_local_crypto
 			  , uctx);
 	b->whackfd = NULL_FD;	/* protect from close */
@@ -1230,7 +1230,7 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 				, ours, ourport, his, hisport, b->transport_proto
 				, oppo_step_name[b->step], b->want));
 
-		    ipsecdoi_initiate(b->whackfd, NULL, c, c->policy, 1
+		    ipsecdoi_initiate(b->whackfd, NULL, NULL, c, c->policy, 1
 				      , SOS_NOBODY, pcim_local_crypto
 					, NULL /*shall we pass uctx for opportunistic connections?*/
 				     );

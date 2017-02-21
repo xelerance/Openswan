@@ -1,0 +1,9 @@
+This unit test case reads an ipsec.secrets file to find an RSA key in it.
+It then uses the private key found within to sign something (pseudo-random),
+and then uses the public key to validate that the signature was sane.
+
+As an side affect of doing this, the signatures are written to a file
+(in binary), which is used in lo04-verifypubkeys.
+The public keys can be extracted from the *.secrets file using showhostkey,
+using the "make update" target in the lo04-verifypubkeys test case.
+

@@ -1050,6 +1050,11 @@ The delete form deletes a named connection description and any SAs established o
 The deletestate form deletes the state object with the specified serial number\&. This is useful for selectively deleting instances of connections\&.
 .RE
 .PP
+\fB\-\-route\fR, \fB\-\-name\fR\ \&\fIconnection\-name\fR
+.RS 4
+When a routing is attempted for a connection, there must not already be a routing for a different connection with the same subnet but different interface or destination, or if there is, it must not be being used by an IPsec SA\&. Otherwise the attempt will fail\&.
+.RE
+.PP
 The route form of the
 \fBwhack\fR
 command tells
@@ -1057,11 +1062,6 @@ command tells
 to set up routing for a connection\&. Although like a traditional route, it uses an ipsec device as a virtual interface\&. Once routing is set up, no packets will be sent \(lqin the clear\(rq to the peer\'s client specified in the connection\&. A TRAP shunt eroute will be installed; if outbound traffic is caught, Pluto will initiate the connection\&. An explicit
 \fBwhack\fR
 route is not always needed: if it hasn\'t been done when an IPsec SA is being installed, one will be automatically attempted\&.
-.PP
-\fB\-\-route\fR, \fB\-\-name\fR\ \&\fIconnection\-name\fR
-.RS 4
-When a routing is attempted for a connection, there must not already be a routing for a different connection with the same subnet but different interface or destination, or if there is, it must not be being used by an IPsec SA\&. Otherwise the attempt will fail\&.
-.RE
 .PP
 \fB\-\-unroute\fR, \fB\-\-name\fR\ \&\fIconnection\-name\fR
 .RS 4
@@ -1073,16 +1073,6 @@ to undo a routing\&.
 \fBpluto\fR
 will refuse if an IPsec SA is using the connection\&. If another connection is sharing the same routing, it will be left in place\&. Without a routing, packets will be sent without encryption or authentication\&.
 .RE
-.PP
-The initiate form tells
-\fBpluto\fR
-to initiate a negotiation with another
-\fBpluto\fR
-(or other IKE daemon) according to the named connection\&. Initiation requires a route that
-\fB\-\-route\fR
-would provide; if none is in place at the time an IPsec SA is being installed,
-\fBpluto\fR
-attempts to set one up\&.
 .PP
 \fB\-\-initiate\fR, \fB\-\-name\fR\ \&\fIconnection\-name\fR, \fB\-\-asynchronous\fR
 .RS 4
@@ -1102,20 +1092,31 @@ closes the channel, causing
 to terminate\&.
 .RE
 .PP
-The opportunistic initiate form is mainly used for debugging\&.
+The initiate form tells
+\fBpluto\fR
+to initiate a negotiation with another
+\fBpluto\fR
+(or other IKE daemon) according to the named connection\&. Initiation requires a route that
+\fB\-\-route\fR
+would provide; if none is in place at the time an IPsec SA is being installed,
+\fBpluto\fR
+attempts to set one up\&.
 .PP
 \fB\-\-tunnelipv4\fR, \fB\-\-tunnelipv6\fR, \fB\-\-oppohere\fR\ \&\fIip\-address\fR, \fB\-\-oppothere\fR\ \&\fIip\-address\fR
 .RS 4
+The opportunistic initiate form is mainly used for debugging\&.
+.RE
+.PP
 This will cause
 \fBpluto\fR
 to attempt to opportunistically initiate a connection from here to the there, even if a previous attempt had been made\&. The whack log will show the progress of this attempt\&.
-.RE
-.PP
-Ending an connection
 .PP
 \fB\-\-terminate\fR, \fB\-\-name\fR\ \&\fIconnection\-name\fR
 .RS 4
-the terminate form tells
+Ending an connection
+.RE
+.PP
+The terminate form tells
 \fIpluto\fR
 to delete any sas that use the specified connection and to stop any negotiations in process\&. it does not prevent new negotiations from starting (the delete form has this effect)\&.
 .RE
@@ -1144,11 +1145,6 @@ brings our end down as well for all the known connections to the specified
 \fIip\-address\fR
 .RE
 .PP
-The public key for informs
-\fBpluto\fR
-of the RSA public key for a potential peer\&. Private keys must be kept secret, so they are kept in
-\fBipsec.secrets\fR(5)\&.
-.PP
 \fB\-\-keyid\ \&\fR\fIid\fR
 .RS 4
 specififies the identity of the peer for which a public key should be used\&. Its form is identical to the identity in the connection\&. If no public key is specified,
@@ -1167,6 +1163,16 @@ specifies the value of the RSA public key\&. It is a sequence of bytes as descri
 \fBipsec_ttodata\fR(3)\&. For example, a base 64 numeral starts with 0s\&.
 .RE
 .PP
+The public key form informs
+\fBpluto\fR
+of the RSA public key for a potential peer\&. Private keys must be kept secret, so they are kept in
+\fBipsec.secrets\fR(5)\&.
+.PP
+\fB\-\-listen\fR
+.RS 4
+start listening for IKE traffic on public interfaces\&.
+.PP
+.RE
 The listen form tells
 \fBpluto\fR
 to start listening for IKE requests on its public interfaces\&. To avoid race conditions, it is normal to load the appropriate connections into
@@ -1181,33 +1187,28 @@ to read the
 \fIipsec\&.secrets\fR
 file\&. So listen may useful more than once\&.
 .PP
-\fB\-\-listen\fR
-.RS 4
-start listening for IKE traffic on public interfaces\&.
 .RE
-.PP
 \fB\-\-unlisten\fR
 .RS 4
 stop listening for IKE traffic on public interfaces\&.
 .RE
 .PP
+\fB\-\-status\fR
+.RS 4
 The status form will display information about the internal state of
 \fBpluto\fR: information about each potential connection, about each state object, and about each shunt that
 \fBpluto\fR
 is managing without an associated connection\&.
 .PP
-\fB\-\-status\fR
-.RS 4
 .RE
 .PP
+\fB\-\-shutdown\fR
+.RS 4
 The shutdown form is the proper way to shut down
 \fBpluto\fR\&. It will tear down the SAs on this machine that
 \fBpluto\fR
 has negotiated\&. It does not inform its peers, so the SAs on their machines remain\&.
 .PP
-\fB\-\-shutdown\fR
-.RS 4
-.RE
 .SS "Examples"
 .PP
 It would be normal to start
