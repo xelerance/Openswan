@@ -1,0 +1,12 @@
+This test case is an IKEv2 initiator -- the public and private key are
+contained in a certificate, but rightid=FQDN is set, so the IKEv2 ID will
+be the FQDN, not the certificate DN.
+
+This is the important I2 phase where the certificate and ID is sent.
+
+Use "make pcapupdate" to update the R1 packet.
+
+
+
+
+

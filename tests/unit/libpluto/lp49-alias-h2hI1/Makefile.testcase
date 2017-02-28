@@ -1,0 +1,8 @@
+CONNNAME=parker--dailyplanet
+ENDNAME=alias-h2n
+UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=alias-h2nI1
+
+

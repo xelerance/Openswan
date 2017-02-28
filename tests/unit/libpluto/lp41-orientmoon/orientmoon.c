@@ -19,7 +19,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
                                , TRUE
                                , "../samples/moon.secrets"
-                               , NULL);
+                               , NULL, NULL);
 }
 
 #include "../lp07-orient/orienttest_main.c"

@@ -608,7 +608,7 @@ extract_end(struct connection *conn
             , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
-    unsigned int family = conn->addr_family;
+    unsigned int family = conn->end_addr_family;
 
     /* decode id, if any */
     if (src->id == NULL)
@@ -745,17 +745,21 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
     if ((this->host_type == KH_IPADDR || this->host_type == KH_IFACE)
-	&& wm->addr_family != 0
-	&& (wm->addr_family != addrtypeof(&this->host_addr)
-	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
+	&& wm->end_addr_family != 0
+	&& (wm->end_addr_family != addrtypeof(&this->host_addr)
+	    || wm->end_addr_family != addrtypeof(&this->host_nexthop)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
+        const struct af_info *addr, *nexthop;
+        addr    = aftoinfo(addrtypeof(&this->host_addr));
+        nexthop = aftoinfo(addrtypeof(&this->host_nexthop));
+
 	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
-	       , (wm->addr_family)     ? aftoinfo(wm->addr_family)->name                 : "NULL"
-	       , (&this->host_addr)    ? aftoinfo(addrtypeof(&this->host_addr))->name    : "NULL"
-	       , (&this->host_nexthop) ? aftoinfo(addrtypeof(&this->host_nexthop))->name : "NULL");
+	       , (wm->end_addr_family) ? aftoinfo(wm->end_addr_family)->name             : "NULL"
+	       , (addr)    ? addr->name    : "NULL"
+	       , (nexthop) ? nexthop->name : "NULL");
 	return FALSE;
     }
 
@@ -870,7 +874,7 @@ add_connection(const struct whack_message *wm)
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
 
-    int family = wm->addr_family;
+    int family = wm->end_addr_family;
 
     alg_info_ike = NULL;
 
@@ -1084,7 +1088,7 @@ add_connection(const struct whack_message *wm)
           }
         }
 
-	c->addr_family = family;
+	c->end_addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
 	c->requested_ca = NULL;

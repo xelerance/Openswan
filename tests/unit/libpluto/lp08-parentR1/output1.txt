@@ -2,12 +2,14 @@
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentR1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./parentR1 loading secrets from "../samples/jj.secrets"
-./parentR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./parentR1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentR1 loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentR1 loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -96,7 +98,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | considering state entry: 2
 |   reject:state needed and state unavailable
 | considering state entry: 3
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #3 responder-V2_init
 | find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
 | find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %address him=192.168.1.1:500
@@ -193,7 +195,7 @@ sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| complete v2 state transition with STF_FAIL
+| #1 complete v2 state transition with STF_FAIL
 ./parentR1 STATE_CHILDSA_DEL: INVALID_KEY_INFORMATION
 ./parentR1 sending  notification v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:
@@ -277,6 +279,7 @@ sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 ./parentR1 leak: default conf ipsecd_dir, item size: X
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * id list, item size: X
+./parentR1 leak: rfc3110 format of public key [created], item size: X
 ./parentR1 leak: secret, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
 ./parentR1 leak detective found Z leaks, total size X

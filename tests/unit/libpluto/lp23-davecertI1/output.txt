@@ -1,7 +1,7 @@
 ./davecertI1 adjusting ipsec.d to ../samples/davecert
 ./davecertI1 loading secrets from "../samples/davecert.secrets"
 ./davecertI1   loaded private key file '../samples/davecert/private/daveKey.pem' (1679 bytes)
-./davecertI1 loaded private key for keyid: PPK_RSA:AwEAAeOoT
+./davecertI1 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -10,9 +10,9 @@ processing whack msg time: X size: Y
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 ./davecertI1   loading certificate from daveCert.pem
-./davecertI1   loaded host cert file '../samples/davecert/certs/daveCert.pem' (1489 bytes)
+./davecertI1   loaded host cert file '../samples/davecert/certs/daveCert.pem' (1379 bytes)
 | certificate is valid
-| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org is 0
+| counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com is 0
 | counting wild cards for @moon.strongswan.org is 0
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
 | orient home matching on public/private keys: this=no[%address] that=yes[%defaultroute]
@@ -22,15 +22,15 @@ processing whack msg time: X size: Y
 | find_host_pair: looking for me=<invalid>:500 %address him=132.213.238.7:500 exact-match
 | find_host_pair: concluded with <none>
 | connect_to_host_pair: <invalid>:500 %address 132.213.238.7:500 -> hp:none
-| find_ID_host_pair: looking for me=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org him=@moon.strongswan.org (exact)
+| find_ID_host_pair: looking for me=C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com him=@moon.strongswan.org (exact)
 |   concluded with <none>
 ./davecertI1 adding connection: "home"
-| %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16
+| %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   orient home finished with: 1 [0.0.0.0]
-RC=0 "home": %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "home": %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;
-RC=0 "home":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
+RC=0 "home":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'...'%any'
 RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
@@ -497,7 +497,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./davecertI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 ./davecertI1 deleting state #1 (STATE_PARENT_I1)
 ./davecertI1 deleting connection
 | pass 0: considering CHILD SAs to delete
@@ -535,12 +535,14 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./davecertI1 leak: db_attrs, item size: X
 ./davecertI1 leak: db_v2_trans, item size: X
 ./davecertI1 leak: db_v2_prop_conj, item size: X
+./davecertI1 leak: rfc3110 format of public key [created], item size: X
 ./davecertI1 leak: issuer dn, item size: X
 ./davecertI1 leak: keep id name, item size: X
 ./davecertI1 leak: pubkey entry, item size: X
 ./davecertI1 leak: pubkey, item size: X
 ./davecertI1 leak: certificate filename, item size: X
 ./davecertI1 leak: 2 * id list, item size: X
+./davecertI1 leak: rfc3110 format of public key [created], item size: X
 ./davecertI1 leak: secret, item size: X
 ./davecertI1 leak: policies path, item size: X
 ./davecertI1 leak: ocspcerts path, item size: X

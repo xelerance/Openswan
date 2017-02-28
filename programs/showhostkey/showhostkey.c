@@ -62,7 +62,8 @@ char usage[] = "Usage: ipsec showhostkey [--ipseckey] | [--left ] | [--right ]\n
              "                         [--dump ] [--list ] \n"
              "                         [--dhclient ] [--file secretfile ] \n"
              "                         [--keynum count ] [--id identity ]\n"
-             "                         [--rsaid keyid ] [--verbose] [--version]\n";
+             "                         [--rsaid keyid ] [--verbose] [--version]\n"
+             "                         [--secretroot pathname]\n";
 
 struct option opts[] = {
   {"help",	no_argument,	NULL,	'?',},
@@ -78,6 +79,7 @@ struct option opts[] = {
   {"keynum",	required_argument,NULL,	'n',},
   {"id",	required_argument,NULL,	'i',},
   {"rsaid",	required_argument,NULL,	'I',},
+  {"secretroot",required_argument,NULL,	'R',},
   {"version",	no_argument,	 NULL,	'V',},
   {"verbose",	no_argument,	 NULL,	'v',},
   {0,		0,	NULL,	0,}
@@ -370,6 +372,7 @@ int main(int argc, char *argv[])
     bool list_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
+    const char *rootdir=NULL;
     char *gateway = NULL;
     int precedence = 10;
     int verbose=0;
@@ -404,6 +407,10 @@ int main(int argc, char *argv[])
 	    dump_flg=TRUE;
 	    break;
 
+        case 'R': /* --secretroot */
+            rootdir=optarg;
+            break;
+
 	case 'K':
 	    ipseckey_flg=TRUE;
 	    gateway=clone_str(optarg, "gateway");
@@ -421,7 +428,6 @@ int main(int argc, char *argv[])
 	    break;
 
 	case 's':
-	case 'R':
 	case 'c':
 	    break;
 
@@ -510,7 +516,7 @@ int main(int argc, char *argv[])
 
     load_oswcrypto();
     osw_load_preshared_secrets(&host_secrets, verbose>0?TRUE:FALSE,
-			       secrets_file, &pass);
+			       secrets_file, &pass, rootdir);
 
 #ifdef HAVE_LIBNSS
     if (nss_initialized) {

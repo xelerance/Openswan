@@ -111,7 +111,8 @@ ip_subnet *dst;
 			return "subnet mask bit count too large";
 		i = bc;
 	} else if(af == AF_INET) {
-		oops = ttoaddr(mask, mlen, af, &masktmp);
+                memset(&masktmp, 0, sizeof(masktmp));
+		oops = ttoaddr_num(mask, mlen, af, &masktmp);
 		if (oops != NULL)
 			return oops;
 		i = masktocount(&masktmp);
@@ -219,7 +220,7 @@ struct rtab {
 	{4, "_",				NULL},
 	{4, "_/_",			NULL},
 	{4, "1.2.3.1",			NULL},
-	{4, "1.2.3.1/_",			NULL},
+	{4, "1.2.3.1/_",		NULL},
 	{4, "1.2.3.1/24._",		NULL},
 	{4, "1.2.3.1/99",		NULL},
 	{4, "localhost/32", 		NULL},

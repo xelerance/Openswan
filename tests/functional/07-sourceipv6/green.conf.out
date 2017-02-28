@@ -23,6 +23,7 @@ conn peel
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn peel
 
 # begin conn berri
@@ -40,6 +41,7 @@ conn berri
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn berri
 
 # begin conn green
@@ -66,6 +68,8 @@ conn green
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn green
 
 # end of config

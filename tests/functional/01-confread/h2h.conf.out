@@ -30,6 +30,7 @@ conn berri
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
 # end conn berri
 
 # begin conn peel
@@ -50,6 +51,7 @@ conn peel
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
 # end conn peel
 
 # begin conn berrinet
@@ -73,6 +75,8 @@ conn berrinet
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn berrinet
 
 # begin conn peelnet
@@ -96,6 +100,8 @@ conn peelnet
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn peelnet
 
 # begin conn green
@@ -122,6 +128,8 @@ conn green
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn green
 
 # begin conn mytunnel
@@ -144,6 +152,7 @@ conn mytunnel
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
 # end conn mytunnel
 
 # begin conn mytunnel-no-ikev1
@@ -166,6 +175,7 @@ conn mytunnel-no-ikev1
 	authby=rsasig
 	phase2=esp
 	ikev2=insist
+	endaddrfamily=ipv4
 # end conn mytunnel-no-ikev1
 
 # begin conn mytunnel-no-ikev2
@@ -187,6 +197,7 @@ conn mytunnel-no-ikev2
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn mytunnel-no-ikev2
 
 # end of config
