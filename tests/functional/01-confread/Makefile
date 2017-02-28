@@ -23,6 +23,7 @@ check: OUTPUT
 	../readwritetest ${READWRITE} "" default.ipsec.conf ${OBJDIRTOP}/programs/_confread/ipsec.conf
 	../readwritetest ${READWRITE} "" moon-base.conf  moon-base.conf
 	../readwritetest ${READWRITE} dooku dooku.conf dooku.conf
+	../readwritetest ${READWRITE} cycle    cycle.conf    cycle.conf
 	../readwritetest ${READWRITE} cassidy   cassidy.conf cassidy.conf
 	../readwritetest ${READWRITE} dooku h2h.conf ../../unit/libpluto/samples/h2h.conf
 	../readwritetest ${READWRITE} dooku certpercent.conf berri-strongswan.conf
