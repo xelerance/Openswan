@@ -22,6 +22,7 @@ PROGRAM=whack
 PROGLIBS=${WHACKLIB} ${LIBIPSECCONF} ${LIBPLUTO}
 
 # reach into pluto for now.
+CFLAGS=-DDEBUG
 INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
 INCLUDES+=-I${srcdir}
 
