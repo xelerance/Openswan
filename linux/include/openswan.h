@@ -27,18 +27,6 @@
 #endif
 
 /*
- * When using uclibc, malloc(0) returns NULL instead of success. This is
- * to make it use the inbuilt work-around.
- * See: http://osdir.com/ml/network.freeswan.devel/2003-11/msg00009.html
- */
-#ifdef __UCLIBC__
-# if !defined(__MALLOC_GLIBC_COMPAT__) && !defined(MALLOC_GLIBC_COMPAT)
-#  warning Please compile uclibc with GLIBC_COMPATIBILITY defined
-# endif
-#endif
-
-
-/*
  * We've just got to have some datatypes defined...  And annoyingly, just
  * where we get them depends on whether we're in userland or not.
  */

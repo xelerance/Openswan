@@ -1,0 +1,11 @@
+CONNNAME=parker1--jj2--nopfs
+ENDNAME=parker
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/rekeyv2nopfs-R1.pcap ../lp12-parentR2/parentI1.pcap ../lp12-parentR2/parentI2.pcap rekeyCI1.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+TESTNAME=rekeyv2nopfs-R1
+
+all: check
+
+pcapupdate:
+	cp ../lp56-rekeyv2nopfs-I1/OUTPUT/rekeyv2nopfs-I1.pcap rekeyCI1.pcap
+

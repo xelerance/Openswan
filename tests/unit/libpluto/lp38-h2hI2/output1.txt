@@ -2,12 +2,14 @@
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./h2hI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./h2hI2 loading secrets from "../samples/parker.secrets"
-./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV
+./h2hI2 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hI2 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hI2 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
@@ -98,7 +100,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   0c 0d 0e 0f  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000)
+./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
@@ -176,7 +178,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
-| Now lets proceed with state specific processing
+| now proceed with state specific processing using state #0 initiator-V2_init
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ****parse IKEv2 Proposal Substructure Payload:
 |    next payload type: ISAKMP_NEXT_NONE
@@ -453,9 +455,10 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
 |   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
 |   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
-| complete v2 state transition with STF_OK
+| #2 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
-./h2hI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001)
+| v2_state_transition: st is #2; pst is #1; transition_st is #1
+./h2hI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
 | sending reply packet to 132.213.238.7:500 (from port 500)
 sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (using #2)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -491,7 +494,7 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
 ./h2hI2 deleting connection
 | pass 0: considering CHILD SAs to delete
-./h2hI2 deleting state #2 (STATE_PARENT_I2)
+./h2hI2 deleting state #2 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
@@ -691,6 +694,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./h2hI2 leak: sa copy prop_conj, item size: X
 ./h2hI2 leak: struct state in new_state(), item size: X
 ./h2hI2 leak: 2 * id list, item size: X
+./h2hI2 leak: rfc3110 format of public key [created], item size: X
 ./h2hI2 leak: secret, item size: X
 ./h2hI2 leak: 2 * hasher name, item size: X
 ./h2hI2 leak: policies path, item size: X

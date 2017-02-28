@@ -8,12 +8,16 @@ a tunnel to that end point (the /32).
 parentI1.pcap is copied from ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap
 parentI2.pcap is copied from ../lp20-certificateselfI2/OUTPUT/certificateselfI2.pcap
 
-The UNIT1/R2-dump test with packet from parentI2_allzero.pcap proposes a TSi
+The UNIT2/R2-dump test with packet from parentI2_allzero.pcap proposes a TSi
 of 0.0.0.0-0.0.0.0, that is the uninitialized TSi, which is wrong, and
-should be rejected.
+should be rejected.  This is UNITTEST2, and has output file: output2.txt.
+UNIT2/R2 has been disabled because updating the _allzero.pcap error input is
+difficult to do.
 
-The UNIT2/R2-any test with packet from parentI2.pcap proposes a TSi which
+The UNIT1/R2-any test with packet from parentI2.pcap proposes a TSi which
 is example.com (93.184.216.34/32) to a policy of %any.
+This is UNITTEST1, and has output file: output1.txt.
+
 
 
 

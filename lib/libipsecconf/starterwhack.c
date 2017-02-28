@@ -41,6 +41,8 @@
 #include "oswlog.h"
 #include "whack.h"
 #include "id.h"
+#include "secrets.h"
+#include "sha2.h"
 
 static void
 update_ports(struct whack_message * m)
@@ -338,7 +340,10 @@ static int set_whack_end(struct starter_config *cfg
 
         /* may get overridden if IPHOSTNAME */
 	w->host_addr_name = l->strings[KSCF_IP];
-        anyaddr(l->addr_family, &w->host_addr);
+        anyaddr(l->end_addr_family, &w->host_addr);
+        if(l->tunnel_addr_family == 0) {
+          l->tunnel_addr_family = l->end_addr_family;
+        }
 
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
@@ -364,11 +369,11 @@ static int set_whack_end(struct starter_config *cfg
 	case KH_GROUP:
 	case KH_OPPOGROUP:
 		/* policy should have been set to OPPO */
-		anyaddr(l->addr_family, &w->host_addr);
+		anyaddr(l->end_addr_family, &w->host_addr);
 		break;
 
 	case KH_ANY:
-		anyaddr(l->addr_family, &w->host_addr);
+		anyaddr(l->end_addr_family, &w->host_addr);
 		break;
 
         case KH_NOTSET:
@@ -411,7 +416,7 @@ static int set_whack_end(struct starter_config *cfg
 		w->client = l->subnet;
 	}
 	else {
-		w->client.addr.u.v4.sin_family = l->addr_family;
+		w->client.addr.u.v4.sin_family = l->tunnel_addr_family;
 	}
 	w->updown = l->strings[KSCF_UPDOWN];
 	w->host_port = IKE_UDP_PORT;
@@ -467,7 +472,8 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
                               unsigned char *rsakey,
                               const char *lr)
 {
-  char keyspace[1024 + 4];
+  unsigned char keyspace[1024 + 4];
+  size_t        keylen;
   const char *err;
 
   msg->whack_key = TRUE;
@@ -491,15 +497,19 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
       break;
 
     case PUBKEY_PREEXCHANGED:
-      err = atobytes((char *)rsakey, 0, keyspace, sizeof(keyspace),
-                     &msg->keyval.len);
+      err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
+                     &keylen);
+
+      //starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, keylen);
+      //log_ckaid("loading key %s", keyspace, keylen);
+
       if (err) {
         starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
                     connection_name(conn), lr, keynum, err);
         return 1;
       }
       else {
-        msg->keyval.ptr = (unsigned char *)keyspace;
+        clonereplacechunk(msg->keyval, keyspace, keylen, "rsakey");
         return 0;
       }
     }
@@ -546,11 +556,15 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	msg->whack_delete = TRUE;      /* always do replace for now */
 	msg->name = connection_name(conn);
 
-	msg->addr_family = conn->left.addr_family;
-	if(msg->addr_family == 0) {
-	  msg->addr_family = conn->right.addr_family;
-        }
-	msg->tunnel_addr_family = conn->left.addr_family;
+        /* XXX maybe before here, we have already validated that left/right are
+         *     in the same address family.
+         */
+	msg->end_addr_family = conn->end_addr_family;
+        msg->tunnel_addr_family = conn->tunnel_addr_family;
+        starter_log(LOG_LEVEL_DEBUG,
+                    "emitting conn %s with end-family: %u and tunnel-family: %u\n",
+                    conn->name,
+                    msg->end_addr_family, msg->tunnel_addr_family);
 
 	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
 	msg->sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
@@ -761,7 +775,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		lnet = conn->left.subnet;
 		lc=0;
 	} else {
-		one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left");
+		one_subnet_from_string(conn, &leftnets, conn->tunnel_addr_family, &lnet, "left");
 		lc=1;
 	}
 
@@ -769,7 +783,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		rnet = conn->right.subnet;
 		rc=0;
 	} else {
-		one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+		one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right");
 		rc=1;
 	}
 
@@ -805,7 +819,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		 * left.
 		 */
 		rc++;
-		if(!one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right")) {
+		if(!one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right")) {
 			/* reset right, and advance left! */
 			rightnets = "";
 			if(conn->right.strings_set[KSCF_SUBNETS]) {
@@ -817,13 +831,13 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 				rnet = conn->right.subnet;
 				rc=0;
 			} else {
-				one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+				one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right");
 				rc = 1;
 			}
 
 			/* left */
 			lc++;
-			if(!one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left")) {
+			if(!one_subnet_from_string(conn, &leftnets, conn->tunnel_addr_family, &lnet, "left")) {
 				done = 1;
 			}
 		}

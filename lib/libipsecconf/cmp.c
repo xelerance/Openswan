@@ -35,7 +35,8 @@
 static int starter_cmp_end (struct starter_end *c1, struct starter_end *c2)
 {
 	if ((!c1) || (!c2)) return -1;
-	VARCMP(addr_family);
+	VARCMP(end_addr_family);
+	VARCMP(tunnel_addr_family);
 	ADDCMP(addr);
 	ADDCMP(nexthop);
 	VARCMP(has_client);

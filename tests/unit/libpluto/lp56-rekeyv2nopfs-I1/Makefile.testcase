@@ -1,0 +1,6 @@
+TESTNAME=rekeyv2nopfs-I1
+CONNNAME=parker1--jj2--nopfs
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null ../lp10-parentI2/parentR1.pcap ../lp13-parentI3/parentR2.pcap
+ENDNAME=parker
+

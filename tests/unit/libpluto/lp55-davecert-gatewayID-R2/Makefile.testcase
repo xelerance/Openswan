@@ -1,0 +1,18 @@
+# -*- makefile -*-
+TESTNAME=davecertR2-id
+CONNNAME=rw-dave
+UNITTEST1PCAP=OUTPUT/davecertR2-id.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} davecertI1-id.pcap davecertI2-id.pcap
+ENDNAME=gatewaycert-id
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+
+pcapupdate:
+	cp ../lp52-davecert-gatewayID-I1/OUTPUT/davecertI1-id.pcap .
+	cp ../lp54-davecert-gatewayID-I2/OUTPUT/davecertI2-id.pcap .
+
+
+# Local Variables:
+# gdb-command: ""
+# End Variables:
+#
+
