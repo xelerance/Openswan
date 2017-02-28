@@ -983,6 +983,7 @@ ipsec_outI1(int whack_sock
                            , isakmp_sa
                            , c,policy,try,replacing,uctx);
 #else
+        openswan_log("IKEv1 disabled at compile time");
         return STF_FAIL;
 #endif
     }
