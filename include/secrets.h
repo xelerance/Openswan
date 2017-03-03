@@ -119,6 +119,9 @@ struct pubkey {
     } u;
 };
 
+/* do mass rename later on */
+typedef struct pubkey osw_public_key;
+
 struct pubkey_list {
     struct pubkey *key;
     struct pubkey_list *next;

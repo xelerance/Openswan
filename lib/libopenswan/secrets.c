@@ -47,6 +47,7 @@
 #include "oswtime.h"
 #include "id.h"
 #include "x509.h"
+#include "secrets_int.h"
 #include "secrets.h"
 #include "certs.h"
 #include "lex.h"
@@ -68,12 +69,7 @@
 /* this does not belong here, but leave it here for now */
 const struct id empty_id;	/* ID_NONE */
 
-struct fld {
-    const char *name;
-    size_t offset;
-};
-
-static const struct fld RSA_private_field[] =
+const struct fld RSA_private_field[] =
 {
     { "Modulus", offsetof(struct RSA_private_key, pub.n) },
     { "PublicExponent", offsetof(struct RSA_private_key, pub.e) },
@@ -89,6 +85,7 @@ static const struct fld RSA_private_field[] =
 #endif
 
 };
+const int RSA_private_field_count = elemsof(RSA_private_field);
 
 static void calculate_rsa_ckaid(struct RSA_public_key *rsa);
 static err_t osw_process_psk_secret(const struct secret *secrets
@@ -100,57 +97,12 @@ static err_t osw_process_rsa_keyfile(struct secret **psecrets
 				     , struct RSA_private_key *rsak
 				     , prompt_pass_t *pass);
 
-#ifdef DEBUG
-static void
-RSA_show_key_fields(struct RSA_private_key *k, int fieldcnt)
-{
-    const struct fld *p;
-
-    DBG_log(" keyid: *%s", k->pub.keyid);
-
-    for (p = RSA_private_field; p < &RSA_private_field[fieldcnt]; p++)
-    {
-	MP_INT *n = (MP_INT *) ((char *)k + p->offset);
-	size_t sz = mpz_sizeinbase(n, 16);
-	char buf[RSA_MAX_OCTETS * 2 + 2];	/* ought to be big enough */
-
-	passert(sz <= sizeof(buf));
-	mpz_get_str(buf, 16, n);
-
-	DBG_log(" %s: %s", p->name, buf);
-    }
-}
-
-/* debugging info that compromises security! */
-#ifndef HAVE_LIBNSS
-static void
-RSA_show_private_key(struct RSA_private_key *k)
-{
-    RSA_show_key_fields(k, elemsof(RSA_private_field));
-}
-#endif
-
-static void
-RSA_show_public_key(struct RSA_public_key *k)
-{
-    /* Kludge: pretend that it is a private key, but only display the
-     * first two fields (which are the public key).
-     */
-    passert(offsetof(struct RSA_private_key, pub) == 0);
-    RSA_show_key_fields((struct RSA_private_key *)k, 2);
-}
-#endif
-
 #ifdef HAVE_LIBNSS
 static const char *
 RSA_public_key_sanity(struct RSA_private_key *k)
 {
     /* note that the *last* error found is reported */
     err_t ugh = NULL;
-
-#ifdef DEBUG    /* debugging info that compromises security */
-    DBG(DBG_PRIVATE, RSA_show_public_key(&k->pub));
-#endif
 
     /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
  *      * We actually require more (for security).
@@ -171,10 +123,6 @@ RSA_private_key_sanity(struct RSA_private_key *k)
     /* note that the *last* error found is reported */
     err_t ugh = NULL;
     mpz_t t, u, q1;
-
-#ifdef DEBUG	/* debugging info that compromises security */
-    DBG(DBG_PRIVATE, RSA_show_private_key(k));
-#endif
 
     /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
      * We actually require more (for security).
@@ -348,10 +296,6 @@ allocate_RSA_public_key(const cert_t cert)
     n_to_mpz(&pk->u.rsa.n, n.ptr, n.len);
 
     form_keyid(e, n, pk->u.rsa.keyid, &pk->u.rsa.k);
-
-#ifdef DEBUG
-    DBG(DBG_PRIVATE, RSA_show_public_key(&pk->u.rsa));
-#endif
 
     pk->alg = PUBKEY_ALG_RSA;
     pk->id  = empty_id;
@@ -1561,75 +1505,6 @@ free_public_keys(struct pubkey_list **keys)
 {
     while (*keys != NULL)
 	*keys = free_public_keyentry(*keys);
-}
-
-/* decode of RSA pubkey chunk
- * - format specified in RFC 2537 RSA/MD5 Keys and SIGs in the DNS
- * - exponent length in bytes (1 or 3 octets)
- *   + 1 byte if in [1, 255]
- *   + otherwise 0x00 followed by 2 bytes of length
- * - exponent
- * - modulus
- */
-err_t
-unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
-{
-    chunk_t exponent;
-    chunk_t mod;
-
-    rsa->keyid[0] = '\0';	/* in case of keybolbtoid failure */
-
-    if (pubkey->len < 3)
-	return "RSA public key blob way to short";	/* not even room for length! */
-
-    rsa->key_rfc3110 = chunk_clone(*pubkey, "rfc3110 format of public key");
-
-    if (pubkey->ptr[0] != 0x00)
-    {
-	setchunk(exponent, pubkey->ptr + 1, pubkey->ptr[0]);
-    }
-    else
-    {
-	setchunk(exponent, pubkey->ptr + 3
-	    , (pubkey->ptr[1] << BITS_PER_BYTE) + pubkey->ptr[2]);
-    }
-
-    if (pubkey->len - (exponent.ptr - pubkey->ptr) < exponent.len + RSA_MIN_OCTETS_RFC)
-	return "RSA public key blob too short";
-
-    mod.ptr = exponent.ptr + exponent.len;
-    mod.len = &pubkey->ptr[pubkey->len] - mod.ptr;
-
-    if (mod.len < RSA_MIN_OCTETS)
-	return RSA_MIN_OCTETS_UGH;
-
-    if (mod.len > RSA_MAX_OCTETS)
-	return RSA_MAX_OCTETS_UGH;
-
-    if (mod.len > pubkey->ptr + pubkey->len - mod.ptr)
-       return "RSA public key blob too short";
-
-    n_to_mpz(&rsa->e, exponent.ptr, exponent.len);
-    n_to_mpz(&rsa->n, mod.ptr, mod.len);
-
-    keyblobtoid(pubkey->ptr, pubkey->len, rsa->keyid, sizeof(rsa->keyid));
-
-#ifdef DEBUG
-    DBG(DBG_PRIVATE, RSA_show_public_key(rsa));
-#endif
-
-
-    rsa->k = mpz_sizeinbase(&rsa->n, 2);	/* size in bits, for a start */
-    rsa->k = (rsa->k + BITS_PER_BYTE - 1) / BITS_PER_BYTE;	/* now octets */
-
-    if (rsa->k != mod.len)
-    {
-	mpz_clear(&rsa->e);
-	mpz_clear(&rsa->n);
-	return "RSA modulus shorter than specified";
-    }
-
-    return NULL;
 }
 
 bool
