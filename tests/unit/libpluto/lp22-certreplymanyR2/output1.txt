@@ -898,9 +898,6 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | reached self-signed root ca
 ./certreplyR2 0: validated X509 certificate: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com', added to trusted database
 | Public key validated
-|  keyid: *AwEAAbfz1
-|  Modulus: b7f3d43717cadfec3802e2d4867f45cb8f6b99bee1f892493db05565ab970de15237a2c0b7e0a0baed29a197e22f80b7cd99a25da675b1171693bef6ac579623f6bb47dec6a3f8981b99bacdc42c0f3610e2f4950d9a8408bc3b7a9a7e40cc05282fa1e26913035ed34520879de0ee14fb770f2d4a070f1aa4245aeb4820a4fd4fa7bf1db1cd8d1b58970f59947b29f204988e0fd0eaf57aa1fb6db9e3140fd351bfcc3663beab9d14665067f71a5345166831667b42251b9896d9f157b55c085a29a726ae62dfdf3e68c0c5b3d1ba11ca69c9f3233abcdc8c5fe5f4a3313965b8609f5855ff34610d5da981a8286444b1e6b821cd7b1c51a7db361754b5d211
-|  PublicExponent: 10001
 | ikev2 verify required CA is 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 |
 | List of X.509 End Certificates:
