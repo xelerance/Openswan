@@ -6,7 +6,7 @@
 #include "openswan/ipsec_policy.h"
 #include "oswalloc.h"
 #include "oswlog.h"
-#include "id.h"
+#include "secrets.h"
 const char *progname;
 
 void exit_tool(int stat)
@@ -21,7 +21,7 @@ void t1(void)
   osw_public_key opk;
 
   str2pubkey(key1, PPK_RSA, &opk);
-  assert(key1.ckaid, "1234 1234");
+  assert(strcmp(key1.ckaid, "1234 1234")==0);
 }
 
 
