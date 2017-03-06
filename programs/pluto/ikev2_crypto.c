@@ -68,16 +68,16 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 	unsigned char  signed_octets[SHA1_DIGEST_SIZE+16];
 	size_t         signed_len;
 	const struct connection *c = st->st_connection;
-	const struct RSA_private_key *k = get_RSA_private_key(c);
+	const struct private_key_stuff *pks = get_RSA_private_key(c);
 	unsigned int sz;
 
-	if (k == NULL)
+	if (pks == NULL)
 	    return 0;	/* failure: no key to use */
 
-	sz = k->pub.k;
+	sz = pks->pub->u.rsa.k;
 
         /* record what key we did the signature with */
-        memcpy(st->st_our_keyid, k->pub.keyid, KEYID_BUF);
+        memcpy(st->st_our_keyid, pks->pub->u.rsa.keyid, KEYID_BUF);
 
         /*
          * this is the prefix of the ASN/DER goop that lives inside RSA-SHA1
@@ -100,7 +100,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 		u_char sig_val[RSA_MAX_OCTETS];
 
 		/* now generate signature blob */
-		sign_hash(k, signed_octets, signed_len
+		sign_hash(pks, signed_octets, signed_len
 			  , sig_val, sz);
 		out_raw(sig_val, sz, a_pbs, "rsa signature");
 	}

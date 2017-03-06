@@ -125,13 +125,17 @@ int print_key(struct secret *secret
 	idtoa(&l->id, idb, IDTOA_BUF);
 
 	switch(pks->kind) {
+        case PPK_GUESS:
+            /* should never occur in real structures */
+            break;
+
 	case PPK_PSK:
 	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
 
 	case PPK_RSA:
-	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
+	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->pub->u.rsa.keyid,idb);
 	    break;
 
 	case PPK_XAUTH:
@@ -172,7 +176,7 @@ int pickbyid(struct secret *secret,
 {
     char *rsakeyid = (char *)uservoid;
 
-    if(strcmp(pks->u.RSA_private_key.pub.keyid, rsakeyid)==0) {
+    if(strcmp(pks->pub->u.rsa.keyid, rsakeyid)==0) {
 	return 0;
     }
     return 1;
@@ -192,7 +196,7 @@ char *get_default_keyid(struct secret *host_secrets)
 {
     struct private_key_stuff *pks = osw_get_pks(host_secrets);
 
-    return pks->u.RSA_private_key.pub.keyid;
+    return pks->pub->u.rsa.keyid;
 }
 
 
@@ -285,7 +289,7 @@ void show_dnskey(struct secret *s
 	exit(5);
     }
 
-    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+    keyblob = pubkey_to_rfc3110(&pks->pub->u.rsa, &keybloblen);
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
@@ -349,12 +353,12 @@ void show_confkey(struct secret *s
 	exit(5);
     }
 
-    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+    keyblob = pubkey_to_rfc3110(&pks->pub->u.rsa, &keybloblen);
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     printf("\t# rsakey %s\n",
-	   pks->u.RSA_private_key.pub.keyid);
+	   pks->pub->u.rsa.keyid);
     printf("\t%srsasigkey=%s\n", side,
 	   base64);
 }

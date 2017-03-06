@@ -181,7 +181,7 @@ ocsp_location_t *ocsp_cache = NULL;
 /* static temporary storage for ocsp requestor information */
 static x509cert_t *ocsp_requestor_cert = NULL;
 
-static const struct RSA_private_key *ocsp_requestor_pri = NULL;
+static const struct private_key_stuff *ocsp_requestor_pks = NULL;
 
 /* asn.1 definitions for parsing */
 
@@ -645,11 +645,11 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 
     /* initialize temporary static storage */
     ocsp_requestor_cert = NULL;
-    ocsp_requestor_pri  = NULL;
+    ocsp_requestor_pks  = NULL;
 
     for (;;)
     {
-	    const struct RSA_private_key *pri;
+        const struct private_key_stuff *pks;
 
 	/* looking for a certificate from the same issuer */
 	cert = get_x509cert(location->issuer, location->authKeySerialNumber
@@ -664,15 +664,15 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 	)
 
 	    /* look for a matching private key in the chained list */
-	    pri = osw_get_x509_private_key(pluto_secrets, cert);
+	    pks = osw_get_x509_private_stuff(pluto_secrets, cert);
 
-	    if (pri != NULL)
+	    if (pks != NULL)
 	    {
 		DBG(DBG_CONTROL,
 		    DBG_log("matching private key found")
 		)
 		ocsp_requestor_cert = cert;
-		ocsp_requestor_pri = pri;
+		ocsp_requestor_pks  = pks;
 		return TRUE;
 	    }
     }
@@ -680,17 +680,17 @@ get_ocsp_requestor_cert(ocsp_location_t *location)
 }
 
 static chunk_t
-generate_signature(chunk_t digest, const struct RSA_private_key *pri)
+generate_signature(chunk_t digest, const struct private_key_stuff *pks)
 {
     chunk_t sigdata;
     u_char *pos;
     size_t siglen = 0;
 
     /* RSA signature is done in software */
-    siglen = pri->pub.k;
+    siglen = pks->pub->u.rsa.k;
     pos = build_asn1_object(&sigdata, ASN1_BIT_STRING, 1 + siglen);
     *pos++ = 0x00;
-    sign_hash(pri, digest.ptr, digest.len, pos, siglen);
+    sign_hash(pks, digest.ptr, digest.len, pos, siglen);
     return sigdata;
 }
 
@@ -726,7 +726,7 @@ build_signature(chunk_t tbsRequest)
 
     /* generate the RSA signature */
     sigdata = generate_signature(digest_info
-	, ocsp_requestor_pri);
+                                 , ocsp_requestor_pks);
     freeanychunk(digest_info);
 
     /* has the RSA signature generation been successful? */

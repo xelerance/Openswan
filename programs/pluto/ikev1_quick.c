@@ -1498,10 +1498,10 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
     case vos_our_client:
 	next_step = vos_his_client;
 	{
-	    const struct RSA_private_key *pri = get_RSA_private_key(c);
+	    const struct private_key_stuff *pks = get_RSA_private_key(c);
 	    struct gw_info *gwp;
 
-	    if (pri == NULL)
+	    if (pks == NULL)
 	    {
 		ugh = "we don't know our own key";
 		break;
@@ -1522,7 +1522,8 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
 		    ugh = NULL;	/* good! */
 		    break;
 		}
-		else if (same_RSA_public_key(&pri->pub, &gwp->key->u.rsa))
+		else if (same_RSA_public_key(&pks->pub->u.rsa
+                                             , &gwp->key->u.rsa))
 		{
 		    ugh = NULL;	/* good! */
 		    break;
@@ -1534,9 +1535,9 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
     case vos_our_txt:
 	next_step = vos_his_client;
 	{
-	    const struct RSA_private_key *pri = get_RSA_private_key(c);
+	    const struct private_key_stuff *pks = get_RSA_private_key(c);
 
-	    if (pri == NULL)
+	    if (pks == NULL)
 	    {
 		ugh = "we don't know our own key";
 		break;
@@ -1553,7 +1554,8 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
 		    ugh = "our client delegation depends on our " RRNAME " record, but it has the wrong public key";
 #endif
 		    if (gwp->gw_key_present
-		    && same_RSA_public_key(&pri->pub, &gwp->key->u.rsa))
+		    && same_RSA_public_key(&pks->pub->u.rsa
+                                           , &gwp->key->u.rsa))
 		    {
 			ugh = NULL;	/* good! */
 			break;
@@ -1570,9 +1572,9 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
     case vos_our_key:
 	next_step = vos_his_client;
 	{
-	    const struct RSA_private_key *pri = get_RSA_private_key(c);
+	    const struct private_key_stuff *pks = get_RSA_private_key(c);
 
-	    if (pri == NULL)
+	    if (pks == NULL)
 	    {
 		ugh = "we don't know our own key";
 		break;
@@ -1584,7 +1586,8 @@ quick_inI1_outR1_process_answer(struct verify_oppo_bundle *b
 		for (kp = ac->keys_from_dns; kp != NULL; kp = kp->next)
 		{
 		    ugh = "our client delegation depends on our " RRNAME " record, but it has the wrong public key";
-		    if (same_RSA_public_key(&pri->pub, &kp->key->u.rsa))
+		    if (same_RSA_public_key(&pks->pub->u.rsa
+                                            , &kp->key->u.rsa))
 		    {
 			/* do this only once a day */
 			if (!logged_txt_warning)

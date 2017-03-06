@@ -59,7 +59,7 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
     hexdump(thingtosign, 0, signed_len);
 
     /* XXX should also run this with a signature_buf that is TOO SMALL */
-    sign_hash(&pks1->u.RSA_private_key, thingtosign, signed_len,
+    sign_hash(pks1, thingtosign, signed_len,
               signature_buf, keysize);
 
     hexdump(signature_buf, 0, sizeof(signature_buf));
@@ -85,7 +85,7 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
         const u_char *sig_val = signature_buf;
         size_t        sig_len = keysize;
         size_t       hash_len = 16;
-        const struct RSA_public_key *k = &pks1->u.RSA_private_key.pub;
+        const struct RSA_public_key *k = &pks1->pub->u.rsa;
         err_t e = NULL;
 
         e = verify_signed_hash(k, s, sizeof(s), &sig, signed_len, sig_val, sig_len);

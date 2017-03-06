@@ -34,20 +34,34 @@
 #include "mpzfuncs.h"
 
 
-#ifdef DEBUG
+#if 0
 static void
-RSA_show_key_fields(struct RSA_private_key *k, int fieldcnt)
+RSA_show_key_fields(struct private_key_stuff *pks, int fieldcnt)
 {
     const struct fld *p;
 
-    DBG_log(" keyid: *%s", k->pub.keyid);
+    DBG_log(" keyid: *%s", pks->pub->u.rsa.keyid);
 
     for (p = RSA_private_field; p < &RSA_private_field[fieldcnt]; p++)
     {
-	MP_INT *n = (MP_INT *) ((char *)k + p->offset);
-	size_t sz = mpz_sizeinbase(n, 16);
+        MP_INT *n;
+	size_t sz;
 	char buf[RSA_MAX_OCTETS * 2 + 2];	/* ought to be big enough */
 
+        switch(p->type) {
+        default:
+        case PRIVATE:
+            n = (MP_INT *) ((char *)(&pks->u.RSA_private_key) + p->offset);
+            break;
+        case MODULUS:
+            n = &pks->pub->u.rsa.n;
+            break;
+        case PUBLIC_E:
+            n = &pks->pub->u.rsa.e;
+            break;
+        }
+
+	sz = mpz_sizeinbase(n, 16);
 	passert(sz <= sizeof(buf));
 	mpz_get_str(buf, 16, n);
 
@@ -56,23 +70,6 @@ RSA_show_key_fields(struct RSA_private_key *k, int fieldcnt)
 }
 
 /* debugging info that compromises security! */
-#if 0
-static void
-RSA_show_private_key(struct RSA_private_key *k)
-{
-    RSA_show_key_fields(k, RSA_private_field_count);
-}
-#endif
-
-static void
-RSA_show_public_key(struct RSA_public_key *k)
-{
-    /* Kludge: pretend that it is a private key, but only display the
-     * first two fields (which are the public key).
-     */
-    passert(offsetof(struct RSA_private_key, pub) == 0);
-    RSA_show_key_fields((struct RSA_private_key *)k, 2);
-}
 #endif
 
 
@@ -126,11 +123,6 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
     n_to_mpz(&rsa->n, mod.ptr, mod.len);
 
     keyblobtoid(pubkey->ptr, pubkey->len, rsa->keyid, sizeof(rsa->keyid));
-
-#ifdef DEBUG
-    DBG(DBG_PRIVATE, RSA_show_public_key(rsa));
-#endif
-
 
     rsa->k = mpz_sizeinbase(&rsa->n, 2);	/* size in bits, for a start */
     rsa->k = (rsa->k + BITS_PER_BYTE - 1) / BITS_PER_BYTE;	/* now octets */

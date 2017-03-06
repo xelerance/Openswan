@@ -34,7 +34,8 @@ extern const u_char der_digestinfo[];
 extern const int der_digestinfo_len;
 
 /* encrypt(sign) a hash using a private key */
-extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
+extern void sign_hash(const struct private_key_stuff *pks
+                      , const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 
 /* decrypt(verify) a signature to recover the contained hash */
@@ -45,14 +46,17 @@ extern err_t verify_signed_hash(const struct RSA_public_key *k
                                 , const u_char *sig_val, size_t sig_len);
 
 #ifdef HAVE_LIBNSS
-extern int sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val
-				, size_t hash_len, u_char *sig_val, size_t sig_len);
+extern int sign_hash_nss(const struct private_key_stuff *pks
+                         , const u_char *hash_val
+                         , size_t hash_len
+                         , u_char *sig_val, size_t sig_len);
+
 extern err_t RSA_signature_verify_nss(const struct RSA_public_key *k
 					, const u_char *hash_val, size_t hash_len
 					,const u_char *sig_val, size_t sig_len);
 #endif
 
-extern const struct RSA_private_key *get_RSA_private_key(const struct connection *c);
+extern const struct private_key_stuff *get_RSA_private_key(const struct connection *c);
 
 extern const struct RSA_private_key *get_x509_private_key(/*const*/ x509cert_t *cert);
 
