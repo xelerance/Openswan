@@ -596,7 +596,7 @@ check_key_recs(enum myid_state try_state
      * If so, treat as a kind of failure.
      */
     enum myid_state old_myid_state = myid_state;
-    const struct RSA_private_key *our_RSA_pri;
+    const struct private_key_stuff *our_RSA_pks;
     err_t ugh = NULL;
 
     myid_state = try_state;
@@ -606,7 +606,7 @@ check_key_recs(enum myid_state try_state
     {
 	ugh = "%myid was specified while we were guessing";
     }
-    else if ((our_RSA_pri = get_RSA_private_key(c)) == NULL)
+    else if ((our_RSA_pks = get_RSA_private_key(c)) == NULL)
     {
 	ugh = "we don't know our own RSA key";
     }
@@ -626,7 +626,8 @@ check_key_recs(enum myid_state try_state
 	{
 	    ugh = "all our KEY RRs have the wrong public key";
 	    if (kr->key->alg == PUBKEY_ALG_RSA
-	    && same_RSA_public_key(&our_RSA_pri->pub, &kr->key->u.rsa))
+	    && same_RSA_public_key(&our_RSA_pks->pub->u.rsa
+                                   , &kr->key->u.rsa))
 	    {
 		ugh = NULL;	/* good! */
 		break;
@@ -652,7 +653,7 @@ check_txt_recs(enum myid_state try_state
      * If so, treat as a kind of failure.
      */
     enum myid_state old_myid_state = myid_state;
-    const struct RSA_private_key *our_RSA_pri;
+    const struct private_key_stuff *our_RSA_pks;
     err_t ugh = NULL;
 
     myid_state = try_state;
@@ -662,7 +663,7 @@ check_txt_recs(enum myid_state try_state
     {
 	ugh = "%myid was specified while we were guessing";
     }
-    else if ((our_RSA_pri = get_RSA_private_key(c)) == NULL)
+    else if ((our_RSA_pks = get_RSA_private_key(c)) == NULL)
     {
 	ugh = "we don't know our own RSA key";
     }
@@ -682,7 +683,8 @@ check_txt_recs(enum myid_state try_state
 	{
 	    ugh = "all our TXT RRs have the wrong public key";
 	    if (gwp->key->alg == PUBKEY_ALG_RSA
-	    && same_RSA_public_key(&our_RSA_pri->pub, &gwp->key->u.rsa))
+	    && same_RSA_public_key(&our_RSA_pks->pub->u.rsa
+                                   , &gwp->key->u.rsa))
 	    {
 		ugh = NULL;	/* good! */
 		break;
@@ -995,13 +997,13 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		 * a chance that we did the wrong query.
 		 * If so, treat as a kind of failure.
 		 */
-		const struct RSA_private_key *our_RSA_pri = get_RSA_private_key(c);
+		const struct private_key_stuff *our_RSA_pks = get_RSA_private_key(c);
 
 		next_step = fos_his_client;	/* normal situation */
 
 		passert(sr != NULL);
 
-		if (our_RSA_pri == NULL)
+		if (our_RSA_pks == NULL)
 		{
 		    ugh = "we don't know our own RSA key";
 		}
@@ -1042,7 +1044,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 			    ugh = NULL;	/* good! */
 			    break;
 			}
-			if (same_RSA_public_key(&our_RSA_pri->pub, &gwp->key->u.rsa))
+			if (same_RSA_public_key(&our_RSA_pks->pub->u.rsa
+                                                , &gwp->key->u.rsa))
 			{
 			    ugh = NULL;	/* good! */
 			    break;
@@ -1061,11 +1064,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		 * a chance that we did the wrong query.
 		 * If so, treat as a kind of failure.
 		 */
-		const struct RSA_private_key *our_RSA_pri = get_RSA_private_key(c);
+		const struct private_key_stuff *our_RSA_pks = get_RSA_private_key(c);
 
 		next_step = fos_his_client;	/* unless we decide to look for KEY RR */
 
-		if (our_RSA_pri == NULL)
+		if (our_RSA_pks == NULL)
 		{
 		    ugh = "we don't know our own RSA key";
 		}
@@ -1087,7 +1090,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 
 			ugh = "TXT RR for us has wrong key";
 			if (gwp->gw_key_present
-			&& same_RSA_public_key(&our_RSA_pri->pub, &gwp->key->u.rsa))
+			&& same_RSA_public_key(&our_RSA_pks->pub->u.rsa
+                                               , &gwp->key->u.rsa))
 			{
 			    DBG(DBG_CONTROL,
 				DBG_log("initiate on demand found TXT with right public key at: %s"
@@ -1121,11 +1125,11 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		 * a chance that we did the wrong query.
 		 * If so, treat as a kind of failure.
 		 */
-		const struct RSA_private_key *our_RSA_pri = get_RSA_private_key(c);
+		const struct private_key_stuff *our_RSA_pks = get_RSA_private_key(c);
 
 		next_step = fos_his_client;	/* always */
 
-		if (our_RSA_pri == NULL)
+		if (our_RSA_pks == NULL)
 		{
 		    ugh = "we don't know our own RSA key";
 		}
@@ -1145,7 +1149,8 @@ initiate_ondemand_body(struct find_oppo_bundle *b
 		    {
 			ugh = "all our KEY RRs have the wrong public key (and no good TXT RR)";
 			if (kr->key->alg == PUBKEY_ALG_RSA
-			&& same_RSA_public_key(&our_RSA_pri->pub, &kr->key->u.rsa))
+			&& same_RSA_public_key(&our_RSA_pks->pub->u.rsa
+                                               , &kr->key->u.rsa))
 			{
 			    /* do this only once a day */
 			    if (!logged_txt_warning)

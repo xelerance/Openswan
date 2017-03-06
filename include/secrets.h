@@ -32,13 +32,15 @@
 struct state;	 /* forward declaration */
 struct secret;  /* opaque definition, private to secrets.c */
 
+/* do mass rename later on */
+typedef struct pubkey osw_public_key;
+
+
 #define CKAID_BUFSIZE 20
 
 struct RSA_public_key
 {
     char keyid[KEYID_BUF];	    /* see ipsec_keyblobtoid(3) */
-    unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
-
     /* length of modulus n in octets: [RSA_MIN_OCTETS, RSA_MAX_OCTETS] */
     unsigned k;
 
@@ -54,8 +56,6 @@ struct RSA_public_key
 };
 
 struct RSA_private_key {
-    struct RSA_public_key pub;	/* must be at start for RSA_show_public_key */
-
     MP_INT
 	d,	/* private exponent: (e^-1) mod ((p-1) * (q-1)) */
 	/* help for Chinese Remainder Theorem speedup: */
@@ -76,9 +76,12 @@ extern err_t unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pu
 
 struct private_key_stuff {
     enum PrivateKeyKind kind;
+    osw_public_key *pub;
+
     union {
 	chunk_t preshared_secret;
 	struct RSA_private_key RSA_private_key;
+        /* struct ECDSA_private_key ECDSA_private_key; */
 	/* struct smartcard *smartcard; */
     } u;
 };
@@ -113,14 +116,14 @@ struct pubkey {
 	, last_worked_time
 	, until_time;
     chunk_t issuer;
+
+    unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
+
     enum pubkey_alg alg;
     union {
 	struct RSA_public_key rsa;
     } u;
 };
-
-/* do mass rename later on */
-typedef struct pubkey osw_public_key;
 
 struct pubkey_list {
     struct pubkey *key;
@@ -171,7 +174,7 @@ extern err_t add_public_key(const struct id *id
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
 
-extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
+extern void install_public_key(osw_public_key *pk, struct pubkey_list **head);
 
 extern void free_public_key(struct pubkey *pk);
 
@@ -200,6 +203,10 @@ extern void unlock_certs_and_keys(const char *who);
 #include "x509.h"
 extern const struct RSA_private_key*
 osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert);
+
+extern const struct private_key_stuff *
+osw_get_x509_private_stuff(struct secret *secrets, x509cert_t *cert);
+
 
 #endif /* _SECRETS_H */
 /*

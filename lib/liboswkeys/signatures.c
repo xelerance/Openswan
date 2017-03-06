@@ -60,13 +60,14 @@
 #include "mpzfuncs.h"
 
 #include "oswcrypto.h"
+#include "pluto/keys.h"
 
 /*
  * compute an RSA signature with PKCS#1 padding: Note that this assumes that any DER encoding is
  *    **INCLUDED** as part of the hash_val/hash_len.
  */
 void
-sign_hash(const struct RSA_private_key *k
+sign_hash(const struct private_key_stuff *pks
 	  , const u_char *hash_val, size_t hash_len
 	  , u_char *sig_val, size_t sig_len)
 {
@@ -74,10 +75,12 @@ sign_hash(const struct RSA_private_key *k
     mpz_t t1;
     size_t padlen;
     u_char *p = sig_val;
+    const struct RSA_private_key *k = &pks->u.RSA_private_key;
 
     DBG(DBG_CONTROL | DBG_CRYPT,
-	DBG_log("signing hash with RSA Key *%s", k->pub.keyid)
-    )
+	DBG_log("signing hash with RSA Key *%s", pks->pub->u.rsa.keyid)
+        );
+
     /* PKCS#1 v1.5 8.1 encryption-block formatting */
     *p++ = 0x00;
     *p++ = 0x01;	/* BT (block type) 01 */

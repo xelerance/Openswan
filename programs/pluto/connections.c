@@ -2311,7 +2311,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     struct connection *best_found = NULL;
     lset_t auth_policy;
     lset_t p1mode_policy = aggrmode ? POLICY_AGGRESSIVE : LEMPTY;
-    const struct RSA_private_key *my_RSA_pri = NULL;
+    const struct private_key_stuff *my_RSA_pks = NULL;
     bool wcpip;	/* wildcard Peer IP? */
     int wildcards, best_wildcards;
     int our_pathlen, best_our_pathlen, peer_pathlen, best_peer_pathlen;
@@ -2372,8 +2372,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    /* at this point, we've committed to our RSA private key:
 	     * we used it in our previous message.
 	     */
-	    my_RSA_pri = get_RSA_private_key(c);
-	    if (my_RSA_pri == NULL)
+	    my_RSA_pks = get_RSA_private_key(c);
+	    if (my_RSA_pks == NULL)
 		return NULL;	/* cannot determine my RSA private key! */
 	}
 	break;
@@ -2471,11 +2471,12 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 		 * used in the SIG_I payload that we sent previously.
 		 */
 		{
-		    const struct RSA_private_key *pri
+		    const struct private_key_stuff *pks
 			= get_RSA_private_key(d);
 
-		    if (pri == NULL || (initiator && (
-			!same_RSA_public_key(&my_RSA_pri->pub, &pri->pub))))
+		    if (pks == NULL || (initiator && (
+			!same_RSA_public_key(&my_RSA_pks->pub->u.rsa
+                                             , &pks->pub->u.rsa))))
 			    continue;
 		}
 		break;

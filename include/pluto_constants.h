@@ -674,6 +674,7 @@ extern enum_names dns_auth_level_names;
  * private key types for keys.h
  */
 enum PrivateKeyKind {
+  PPK_GUESS = 0,        /* no idea, guess via some method */
     PPK_PSK = 1,
     /* PPK_DSS, */	/* not implemented */
     PPK_RSA = 3,

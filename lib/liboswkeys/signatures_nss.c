@@ -79,7 +79,7 @@
 /* makes subsequent code comparisons easier */
 #define lsw_return_nss_password_file_info osw_return_nss_password_file_info
 
-int sign_hash(const struct RSA_private_key *k
+int sign_hash(const struct private_key_stuff *pks
               , const u_char *hash_val, size_t hash_len
               , u_char *sig_val, size_t sig_len)
 {
@@ -88,6 +88,7 @@ int sign_hash(const struct RSA_private_key *k
     SECItem data;
     SECItem ckaId;
     PK11SlotInfo *slot = NULL;
+    const struct RSA_private_key *k = &pks->u.RSA_private_key;
 
     DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));
 

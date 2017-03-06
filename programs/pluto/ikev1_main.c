@@ -447,14 +447,14 @@ RSA_sign_hash(struct connection *c
 	      , const u_char *hash_val, size_t hash_len)
 {
     size_t sz = 0;
-    const struct RSA_private_key *k = get_RSA_private_key(c);
+    const struct private_key_stuff *pks = get_RSA_private_key(c);
 
-    if (k == NULL)
+    if (pks == NULL)
 	return 0;	/* failure: no key to use */
 
-    sz = k->pub.k;
+    sz = pks->pub->u.rsa.k;
     passert(RSA_MIN_OCTETS <= sz && 4 + hash_len < sz && sz <= RSA_MAX_OCTETS);
-    sign_hash(k, hash_val, hash_len, sig_val, sz);
+    sign_hash(pks, hash_val, hash_len, sig_val, sz);
     return sz;
 }
 
