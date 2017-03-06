@@ -1220,7 +1220,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	if (tokeqword("include"))
 	{
 	    /* an include directive */
-	    char fn[MAX_TOK_LEN];	/* space for filename (I hope) */
+	    char *fn = NULL;
 	    char *p = fn;
 	    char *end_prefix = strrchr(flp->filename, '/');
 
@@ -1238,11 +1238,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    {
 		size_t pl = end_prefix - flp->filename + 1;
 
-		/* "clamp" length to prevent problems now;
-		 * will be rediscovered and reported later.
-		 */
-		if (pl > sizeof(fn))
-		    pl = sizeof(fn);
+                fn = alloca(pl+1);
 		memcpy(fn, flp->filename, pl);
 		p += pl;
 	    }
@@ -1268,84 +1264,85 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    s = alloc_thing(struct secret, "secret");
 
 	    if (s != NULL) {
-	    s->ids = NULL;
-	    s->pks.kind = PPK_PSK;	/* default */
-	    setchunk(s->pks.u.preshared_secret, NULL, 0);
-	    s->secretlineno=flp->lino;
-	    s->next = NULL;
+                zero(s);
+                s->ids = NULL;
+                s->pks.kind = PPK_PSK;	/* default */
+                setchunk(s->pks.u.preshared_secret, NULL, 0);
+                s->secretlineno=flp->lino;
+                s->next = NULL;
 
 #ifdef HAVE_LIBNSS
-	    s->pks.u.RSA_private_key.pub.nssCert = NULL;
+                s->pks.u.RSA_private_key.pub.nssCert = NULL;
 #endif
 
-	    //while(s != NULL)
-	    while(1)
-	    {
-		struct id id;
-		err_t ugh;
+                //while(s != NULL)
+                while(1)
+                    {
+                        struct id id;
+                        err_t ugh;
 
-		if (tokeq(":"))
-		{
-		    /* found key part */
-		    shift();	/* discard explicit separator */
-		    process_secret(psecrets, verbose, s, pass);
-		    //s = NULL;
-		    break;
-		}
+                        if (tokeq(":"))
+                            {
+                                /* found key part */
+                                shift();	/* discard explicit separator */
+                                process_secret(psecrets, verbose, s, pass);
+                                //s = NULL;
+                                break;
+                            }
 
-		/* an id
-		 * See RFC2407 IPsec Domain of Interpretation 4.6.2
-		 */
+                        /* an id
+                         * See RFC2407 IPsec Domain of Interpretation 4.6.2
+                         */
 
-		if (tokeq("%any"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV4_ADDR;
-		    ugh = anyaddr(AF_INET, &id.ip_addr);
-		}
-		else if (tokeq("%any6"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV6_ADDR;
-		    ugh = anyaddr(AF_INET6, &id.ip_addr);
-		}
-		else
-		{
-		    ugh = atoid(flp->tok, &id, FALSE);
-		}
+                        if (tokeq("%any"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV4_ADDR;
+                                ugh = anyaddr(AF_INET, &id.ip_addr);
+                            }
+                        else if (tokeq("%any6"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV6_ADDR;
+                                ugh = anyaddr(AF_INET6, &id.ip_addr);
+                            }
+                        else
+                            {
+                                ugh = atoid(flp->tok, &id, FALSE);
+                            }
 
-		if (ugh != NULL)
-		{
-		    loglog(RC_LOG_SERIOUS
-			   , "ERROR \"%s\" line %d: index \"%s\" %s"
-			   , flp->filename, flp->lino, flp->tok, ugh);
-		}
-		else
-		{
-		    struct id_list *i = alloc_thing(struct id_list
-						    , "id_list");
-		    char idb[IDTOA_BUF];
+                        if (ugh != NULL)
+                            {
+                                loglog(RC_LOG_SERIOUS
+                                       , "ERROR \"%s\" line %d: index \"%s\" %s"
+                                       , flp->filename, flp->lino, flp->tok, ugh);
+                            }
+                        else
+                            {
+                                struct id_list *i = alloc_thing(struct id_list
+                                                                , "id_list");
+                                char idb[IDTOA_BUF];
 
-		    i->id = id;
-		    unshare_id_content(&i->id);
-		    i->next = s->ids;
-		    s->ids = i;
-		    idtoa(&id, idb, IDTOA_BUF);
-		    DBG(DBG_CONTROL,
-			DBG_log("id type added to secret(%p) %s: %s",
-				s,
-				enum_name(&ppk_names,s->pks.kind),
-				idb));
-		}
-		if (!shift())
-		{
-		    /* unexpected Record Boundary or EOF */
-		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
-			   , flp->filename, flp->lino);
-		    pfree(s);
-		    break;
-		}
-	    }
+                                i->id = id;
+                                unshare_id_content(&i->id);
+                                i->next = s->ids;
+                                s->ids = i;
+                                idtoa(&id, idb, IDTOA_BUF);
+                                DBG(DBG_CONTROL,
+                                    DBG_log("id type added to secret(%p) %s: %s",
+                                            s,
+                                            enum_name(&ppk_names,s->pks.kind),
+                                            idb));
+                            }
+                        if (!shift())
+                            {
+                                /* unexpected Record Boundary or EOF */
+                                loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
+                                       , flp->filename, flp->lino);
+                                pfree(s);
+                                break;
+                            }
+                    }
 	    }
 	}
     }

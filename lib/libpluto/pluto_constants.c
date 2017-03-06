@@ -146,6 +146,7 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 
+    "STATE_CHILD_C0_KEYING",
     "STATE_CHILD_C1_KEYED",
     "STATE_CHILD_C1_REKEY",
 
@@ -205,6 +206,7 @@ const char *const state_story[] = {
 	"received v2I1, sent v2R1",             /* STATE_PARENT_R1 */
 	"received v2I2, PARENT SA established", /* STATE_PARENT_R2 */
 
+        "CHILD SA keying",                      /* STATE_CHILD_C0_KEYING */
         "CHILD SA established",                 /* STATE_CHILD_C1_KEYED */
         "CHILD SA being rekeyed",               /* STATE_CHILD_C1_REKEY */
 
