@@ -26,6 +26,14 @@ then
     fail=true
 fi
 
+if [ ! -f /usr/bin/make ];
+then
+    echo You need to install make.
+    echo "    apt-get install make"
+    echo "or  yum install make"
+    fail=true
+fi
+
 if $fail;
 then 
    exit 1;
