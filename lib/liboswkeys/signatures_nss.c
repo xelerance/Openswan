@@ -113,8 +113,8 @@ int sign_hash(const struct private_key_stuff *pks
     if(privateKey==NULL) {
         DBG(DBG_CRYPT,
             DBG_log("Can't find the private key from the NSS CKA_ID"));
-	if(k->pub.nssCert != NULL) {
-	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info());
+	if(pks->pub->nssCert != NULL) {
+	   privateKey = PK11_FindKeyByAnyCert(pks->pub->nssCert,  osw_return_nss_password_file_info());
            if (privateKey == NULL) {
                loglog(RC_LOG_SERIOUS,
                       "Can't find the private key from the NSS CERT (err %d)",
