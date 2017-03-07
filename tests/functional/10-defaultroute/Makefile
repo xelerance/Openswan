@@ -37,10 +37,16 @@ update:
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
 
 step1:
-	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} --ipsecdir ${CONFBASE} 2>&1
+	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} --ipsecdir ${CONFBASE} --secretsfile ${CONFBASE}.secrets 2>&1
 
 step2:
 	@${ADDCONN} --verbose ${CTLBASE} --config ${CONFFILE} nat-t >OUTPUT/addconn.${TESTNAME}.txt
+
+step2b:
+	@${WHACKBIN} ${CTLBASE} --debug-control --debug-controlmore
+
+step2c:
+	@${WHACKBIN} ${CTLBASE} --rereadsecrets
 
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
