@@ -30,7 +30,7 @@ all:
 step1:
 	@rm -f OUTPUT/base.pid
 	@echo "file ${PLUTOBIN}" >.gdbinit
-	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
+	@echo "set args --nhelpers 1 ${CTLBASE} --secretsfile ../../unit/libopenswan/lo02-verifysigs/key-4096.secrets ${SOCKETS} --nofork " >>.gdbinit
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} --secretsfile ../../unit/libopenswan/lo02-verifysigs/key-4096.secrets ${SOCKETS} 2>&1
 
 step2:
@@ -49,12 +49,12 @@ check: OUTPUT
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
 	@mkdir -p ${OUTPUTS}/cacerts ${OUTPUTS}/aacerts ${OUTPUTS}/ocspcerts ${OUTPUTS}/crls
-	-rm -f OUTPUT.pid
+	-rm -f OUTPUT/base.pid
 
 update:
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.big-key-green.raw >pluto.big-key-green.out
 	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed OUTPUT/pluto.whack.raw >pluto.whack.out
 
 clean:
-	rm -rf OUTPUT OUTPUT.pid
+	rm -rf OUTPUT OUTPUT/base.pid
 
