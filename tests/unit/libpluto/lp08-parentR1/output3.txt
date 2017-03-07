@@ -253,6 +253,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 10.10.5.4:500 (using
 ./parentR1 leak: default conf ipsec_conf_dir, item size: X
 ./parentR1 leak: 2 * id list, item size: X
 ./parentR1 leak: rfc3110 format of public key [created], item size: X
+./parentR1 leak: pubkey, item size: X
 ./parentR1 leak: secret, item size: X
 ./parentR1 leak: 2 * hasher name, item size: X
 ./parentR1 leak detective found Z leaks, total size X

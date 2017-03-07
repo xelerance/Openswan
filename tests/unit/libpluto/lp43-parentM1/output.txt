@@ -495,5 +495,6 @@ RC=105 STATE_MAIN_I1: initiate
 ./parentM1 leak: default conf ipsec_conf_dir, item size: X
 ./parentM1 leak: 2 * id list, item size: X
 ./parentM1 leak: rfc3110 format of public key [created], item size: X
+./parentM1 leak: pubkey, item size: X
 ./parentM1 leak: secret, item size: X
 ./parentM1 leak detective found Z leaks, total size X

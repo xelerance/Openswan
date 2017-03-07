@@ -657,6 +657,7 @@ sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./parentR2anychoice leak: pubkey, item size: X
 ./parentR2anychoice leak: 2 * id list, item size: X
 ./parentR2anychoice leak: rfc3110 format of public key [created], item size: X
+./parentR2anychoice leak: pubkey, item size: X
 ./parentR2anychoice leak: secret, item size: X
 ./parentR2anychoice leak: 2 * hasher name, item size: X
 ./parentR2anychoice leak: policies path, item size: X

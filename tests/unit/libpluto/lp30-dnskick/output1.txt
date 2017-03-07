@@ -51,6 +51,7 @@ RC=0 "cpe":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SARE
 ./kickdns leak: default conf ipsec_conf_dir, item size: X
 ./kickdns leak: 2 * id list, item size: X
 ./kickdns leak: rfc3110 format of public key [created], item size: X
+./kickdns leak: pubkey, item size: X
 ./kickdns leak: secret, item size: X
 ./kickdns leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

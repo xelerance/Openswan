@@ -96,6 +96,7 @@ RC=2      mytunnel
 ./IDhostpair leak: default conf ipsec_conf_dir, item size: X
 ./IDhostpair leak: 2 * id list, item size: X
 ./IDhostpair leak: rfc3110 format of public key [created], item size: X
+./IDhostpair leak: pubkey, item size: X
 ./IDhostpair leak: secret, item size: X
 ./IDhostpair leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

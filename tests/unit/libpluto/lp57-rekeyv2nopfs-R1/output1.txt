@@ -1263,6 +1263,7 @@ should have found a continuation, but none was found
 ./rekeyv2nopfs-R1 leak: pubkey, item size: X
 ./rekeyv2nopfs-R1 leak: 2 * id list, item size: X
 ./rekeyv2nopfs-R1 leak: rfc3110 format of public key [created], item size: X
+./rekeyv2nopfs-R1 leak: pubkey, item size: X
 ./rekeyv2nopfs-R1 leak: secret, item size: X
 ./rekeyv2nopfs-R1 leak: 2 * hasher name, item size: X
 ./rekeyv2nopfs-R1 leak: policies path, item size: X

@@ -801,6 +801,7 @@ sending 396 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (usi
 ./respondselfR2 leak: pubkey, item size: X
 ./respondselfR2 leak: 2 * id list, item size: X
 ./respondselfR2 leak: rfc3110 format of public key [created], item size: X
+./respondselfR2 leak: pubkey, item size: X
 ./respondselfR2 leak: secret, item size: X
 ./respondselfR2 leak: 2 * hasher name, item size: X
 ./respondselfR2 leak: policies path, item size: X

@@ -266,6 +266,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 ./davecert-R1-id leak: certificate filename, item size: X
 ./davecert-R1-id leak: 2 * id list, item size: X
 ./davecert-R1-id leak: rfc3110 format of public key [created], item size: X
+./davecert-R1-id leak: pubkey, item size: X
 ./davecert-R1-id leak: secret, item size: X
 ./davecert-R1-id leak: policies path, item size: X
 ./davecert-R1-id leak: ocspcerts path, item size: X

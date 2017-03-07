@@ -828,6 +828,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 to 192.168.1.1:500 (using
 ./cryptoR2 leak: pubkey, item size: X
 ./cryptoR2 leak: 2 * id list, item size: X
 ./cryptoR2 leak: rfc3110 format of public key [created], item size: X
+./cryptoR2 leak: pubkey, item size: X
 ./cryptoR2 leak: secret, item size: X
 ./cryptoR2 leak: 2 * hasher name, item size: X
 ./cryptoR2 leak: policies path, item size: X

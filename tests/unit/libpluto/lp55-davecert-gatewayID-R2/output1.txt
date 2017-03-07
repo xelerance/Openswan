@@ -1471,6 +1471,7 @@ sending 1468 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.35:500 (us
 ./davecertR2-id leak: struct connection, item size: X
 ./davecertR2-id leak: 2 * id list, item size: X
 ./davecertR2-id leak: rfc3110 format of public key [created], item size: X
+./davecertR2-id leak: pubkey, item size: X
 ./davecertR2-id leak: secret, item size: X
 ./davecertR2-id leak: policies path, item size: X
 ./davecertR2-id leak: ocspcerts path, item size: X
