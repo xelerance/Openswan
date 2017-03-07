@@ -1277,6 +1277,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./rekeyikev2-inCR1 leak: default conf ipsec_conf_dir, item size: X
 ./rekeyikev2-inCR1 leak: 2 * id list, item size: X
 ./rekeyikev2-inCR1 leak: rfc3110 format of public key [created], item size: X
+./rekeyikev2-inCR1 leak: pubkey, item size: X
 ./rekeyikev2-inCR1 leak: secret, item size: X
 ./rekeyikev2-inCR1 leak: 2 * hasher name, item size: X
 ./rekeyikev2-inCR1 leak detective found Z leaks, total size X

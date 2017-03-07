@@ -709,6 +709,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 ./parentI2 leak: struct state in new_state(), item size: X
 ./parentI2 leak: 2 * id list, item size: X
 ./parentI2 leak: rfc3110 format of public key [created], item size: X
+./parentI2 leak: pubkey, item size: X
 ./parentI2 leak: secret, item size: X
 ./parentI2 leak: 2 * hasher name, item size: X
 ./parentI2 leak: policies path, item size: X

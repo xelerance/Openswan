@@ -82,7 +82,7 @@ void verify_signature(const char *keyname, unsigned int keysize_bits)
         }
         install_public_key(&pk, &head);
 
-        datatot(pk.u.rsa.key_ckaid, sizeof(pk.u.rsa.key_ckaid),
+        datatot(pk.key_ckaid, sizeof(pk.key_ckaid),
                 'G', ckaid_print_buf, sizeof(ckaid_print_buf));
         printf("ckaid: %s\n", ckaid_print_buf);
     }

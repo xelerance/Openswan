@@ -930,6 +930,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 93.184.216.34:500 (usi
 ./wrongcacert leak: alg_info_ike, item size: X
 ./wrongcacert leak: 2 * id list, item size: X
 ./wrongcacert leak: rfc3110 format of public key [created], item size: X
+./wrongcacert leak: pubkey, item size: X
 ./wrongcacert leak: secret, item size: X
 ./wrongcacert leak: policies path, item size: X
 ./wrongcacert leak: ocspcerts path, item size: X

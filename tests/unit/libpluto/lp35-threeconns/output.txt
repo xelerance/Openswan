@@ -112,6 +112,7 @@ RC=0 "vzhost1-vzhost-mondev":   ESP algorithms loaded: none
 ./threeconns leak: default conf ipsec_conf_dir, item size: X
 ./threeconns leak: 2 * id list, item size: X
 ./threeconns leak: rfc3110 format of public key [created], item size: X
+./threeconns leak: pubkey, item size: X
 ./threeconns leak: secret, item size: X
 ./threeconns leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

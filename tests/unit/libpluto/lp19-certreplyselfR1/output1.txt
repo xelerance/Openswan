@@ -254,6 +254,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 ./certreplyselfR1 leak: alg_info_ike, item size: X
 ./certreplyselfR1 leak: 2 * id list, item size: X
 ./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
+./certreplyselfR1 leak: pubkey, item size: X
 ./certreplyselfR1 leak: secret, item size: X
 ./certreplyselfR1 leak: policies path, item size: X
 ./certreplyselfR1 leak: ocspcerts path, item size: X

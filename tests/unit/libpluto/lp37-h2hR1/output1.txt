@@ -250,6 +250,7 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 ./h2hR1 leak: default conf ipsec_conf_dir, item size: X
 ./h2hR1 leak: 2 * id list, item size: X
 ./h2hR1 leak: rfc3110 format of public key [created], item size: X
+./h2hR1 leak: pubkey, item size: X
 ./h2hR1 leak: secret, item size: X
 ./h2hR1 leak: 2 * hasher name, item size: X
 ./h2hR1 leak detective found Z leaks, total size X
