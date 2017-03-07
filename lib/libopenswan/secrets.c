@@ -674,6 +674,16 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
     return has_key;
 }
 
+void private_key_setup(struct private_key_stuff *pks)
+{
+    if(pks->pub == NULL) {
+        pks->pub = alloc_thing(osw_public_key, "pubkey");
+        pks->pub->alg = PUBKEY_ALG_RSA;
+        reference_key(pks->pub);
+    }
+}
+
+
 /* digest a secrets file
  *
  * The file is a sequence of records.  A record is a maximal sequence of
@@ -782,10 +792,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	mpz_t u;
 	u_int i;
 
-        if(pks->pub == NULL) {
-            pks->pub = alloc_thing(osw_public_key, "pubkey");
-            reference_key(pks->pub);
-        }
+        private_key_setup(pks);
 
 	for (i = 0; ugh == NULL && i < elemsof(RSA_private_field); i++)
 	{
@@ -942,6 +949,7 @@ osw_process_rsa_secret(const struct secret *secrets
 
     /* short cut */
     struct RSA_private_key *rsak = &pks->u.RSA_private_key;
+    private_key_setup(pks);
 
     for (p = RSA_private_field; p < &RSA_private_field[elemsof(RSA_private_field)]; p++)
     {
@@ -1294,6 +1302,8 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 #ifdef HAVE_LIBNSS
                 s->pks.u.RSA_private_key.pub.nssCert = NULL;
 #endif
+                private_key_setup(&s->pks);
+
 
                 //while(s != NULL)
                 while(1)
