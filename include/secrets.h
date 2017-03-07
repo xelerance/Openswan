@@ -50,9 +50,6 @@ struct RSA_public_key
     MP_INT
 	n,	/* modulus: p * q */
 	e;	/* exponent: relatively prime to (p-1) * (q-1) [probably small] */
-#ifdef HAVE_LIBNSS
-    CERTCertificate *nssCert;
-#endif
 };
 
 struct RSA_private_key {
@@ -120,6 +117,10 @@ struct pubkey {
     unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
 
     enum pubkey_alg alg;
+
+#ifdef HAVE_LIBNSS
+    CERTCertificate *nssCert;
+#endif
     union {
 	struct RSA_public_key rsa;
     } u;
@@ -159,7 +160,7 @@ extern void form_keyid(chunk_t e, chunk_t n, char* keyid, unsigned *keysize);
 
 #ifdef HAVE_LIBNSS
 extern void form_keyid_from_nss(SECItem e, SECItem n, char* keyid, unsigned *keysize);
-extern err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName);
+extern err_t extract_and_add_secret_from_nss_cert_file(struct private_key_stuff *pks, char *nssHostCertNickName);
 #endif
 
 extern struct pubkey *reference_key(struct pubkey *pk);

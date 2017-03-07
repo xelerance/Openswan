@@ -1,5 +1,5 @@
 /*
- * mechanisms for preshared keys (public, private, and preshared secrets)
+ * Mechanismsg for preshared keys (public, private, and preshared secrets)
  * this is the library for reading (and later, writing!) the ipsec.secrets
  * files.
  *
@@ -96,26 +96,26 @@ static err_t osw_process_rsa_keyfile(struct secret **psecrets
                                      , struct private_key_stuff *pks
 				     , prompt_pass_t *pass);
 
-#ifdef HAVE_LIBNSS
 static const char *
-RSA_public_key_sanity(struct RSA_private_key *k)
+RSA_public_key_sanity_base(struct private_key_stuff *k)
 {
     /* note that the *last* error found is reported */
     err_t ugh = NULL;
 
     /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
- *      * We actually require more (for security).
- *           */
-    if (k->pub.k < RSA_MIN_OCTETS)
-        return RSA_MIN_OCTETS_UGH;
+     * We actually require more (for security).
+     */
+    if (k->pub->u.rsa.k < RSA_MIN_OCTETS)
+	return RSA_MIN_OCTETS_UGH;
 
     /* we picked a max modulus size to simplify buffer allocation */
-    if (k->pub.k > RSA_MAX_OCTETS)
-        return RSA_MAX_OCTETS_UGH;
+    if (k->pub->u.rsa.k > RSA_MAX_OCTETS)
+	return RSA_MAX_OCTETS_UGH;
 
    return ugh;
 }
-#else
+
+#ifndef HAVE_LIBNSS
 static const char *
 RSA_private_key_sanity(struct private_key_stuff *k)
 {
@@ -130,15 +130,8 @@ RSA_private_key_sanity(struct private_key_stuff *k)
     RSA_show_key_fields(k);
 #endif
 
-    /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
-     * We actually require more (for security).
-     */
-    if (k->pub->u.rsa.k < RSA_MIN_OCTETS)
-	return RSA_MIN_OCTETS_UGH;
-
-    /* we picked a max modulus size to simplify buffer allocation */
-    if (k->pub->u.rsa.k > RSA_MAX_OCTETS)
-	return RSA_MAX_OCTETS_UGH;
+    ugh = RSA_public_key_sanity_base(k);
+    if(ugh) return ugh;
 
     mpz_init(t);
     mpz_init(u);
@@ -591,12 +584,14 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
 }
 
 #ifdef HAVE_LIBNSS
-err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
+err_t extract_and_add_secret_from_nss_cert_file(struct private_key_stuff *pks, char *nssHostCertNickName)
 {
     err_t ugh = NULL;
     SECItem *certCKAID;
     SECKEYPublicKey *pubk;
     CERTCertificate *nssCert;
+
+    struct RSA_private_key *rsak = &pks->u.RSA_private_key;
 
     DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file  start"));
 
@@ -630,17 +625,17 @@ err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, ch
     }
     DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: ckaid found"));
 
-    rsak->pub.nssCert=nssCert;
+    pks->pub->nssCert=nssCert;
 
     rsak->ckaid_len=certCKAID->len;
     memcpy(rsak->ckaid,certCKAID->data,certCKAID->len);
 
-    n_to_mpz(&rsak->pub.e, pubk->u.rsa.publicExponent.data, pubk->u.rsa.publicExponent.len);
-    n_to_mpz(&rsak->pub.n, pubk->u.rsa.modulus.data, pubk->u.rsa.modulus.len);
+    n_to_mpz(&pks->pub->u.rsa.e, pubk->u.rsa.publicExponent.data, pubk->u.rsa.publicExponent.len);
+    n_to_mpz(&pks->pub->u.rsa.n, pubk->u.rsa.modulus.data, pubk->u.rsa.modulus.len);
 
-    form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, rsak->pub.keyid, &rsak->pub.k);
+    form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, pks->pub->u.rsa.keyid, &pks->pub->u.rsa.k);
 
-    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);*/
+    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",pks->u.rsa.k);*/
     SECITEM_FreeItem(certCKAID, PR_TRUE);
 
 error2:
@@ -781,8 +776,8 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
     }
 
 #ifdef HAVE_LIBNSS
-    ugh = extract_and_add_secret_from_nss_cert_file(&pks->u.RSA_private_key, filename);
-    if(ugh==NULL) return RSA_public_key_sanity(pks);
+    ugh = extract_and_add_secret_from_nss_cert_file(pks, filename);
+    if(ugh==NULL) return RSA_public_key_sanity_base(pks);
 #else
     key = load_rsa_private_key(filename, verbose, pass);
     if (key == NULL)
@@ -1054,7 +1049,7 @@ osw_process_rsa_secret(const struct secret *secrets
                      , pub_bytes[0].ptr, pub_bytes[0].len
                      , pks->pub->u.rsa.keyid, sizeof(pks->pub->u.rsa.keyid));
 #ifdef HAVE_LIBNSS
-	return RSA_public_key_sanity(pks);
+	return RSA_public_key_sanity_base(pks);
 #else
 	return RSA_private_key_sanity(pks);
 #endif
@@ -1300,7 +1295,7 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
                 s->next = NULL;
 
 #ifdef HAVE_LIBNSS
-                s->pks.u.RSA_private_key.pub.nssCert = NULL;
+                s->pks.pub->nssCert = NULL;
 #endif
                 private_key_setup(&s->pks);
 
