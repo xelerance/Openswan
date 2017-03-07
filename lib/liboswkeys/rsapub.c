@@ -34,43 +34,34 @@
 #include "mpzfuncs.h"
 
 
-#if 0
 static void
-RSA_show_key_fields(struct private_key_stuff *pks, int fieldcnt)
+RSA_show_key_field(const char *name, MP_INT *num)
 {
-    const struct fld *p;
+    int sz;
+    char buf[RSA_MAX_OCTETS * 2 + 2];	/* ought to be big enough */
 
-    DBG_log(" keyid: *%s", pks->pub->u.rsa.keyid);
+    sz = mpz_sizeinbase(num, 16);
+    passert(sz <= sizeof(buf));
+    mpz_get_str(buf, 16, num);
 
-    for (p = RSA_private_field; p < &RSA_private_field[fieldcnt]; p++)
-    {
-        MP_INT *n;
-	size_t sz;
-	char buf[RSA_MAX_OCTETS * 2 + 2];	/* ought to be big enough */
-
-        switch(p->type) {
-        default:
-        case PRIVATE:
-            n = (MP_INT *) ((char *)(&pks->u.RSA_private_key) + p->offset);
-            break;
-        case MODULUS:
-            n = &pks->pub->u.rsa.n;
-            break;
-        case PUBLIC_E:
-            n = &pks->pub->u.rsa.e;
-            break;
-        }
-
-	sz = mpz_sizeinbase(n, 16);
-	passert(sz <= sizeof(buf));
-	mpz_get_str(buf, 16, n);
-
-	DBG_log(" %s: %s", p->name, buf);
-    }
+    DBG_log(" %s: %s", name, buf);
 }
 
-/* debugging info that compromises security! */
-#endif
+void
+RSA_show_key_fields(struct private_key_stuff *pks)
+{
+    DBG_log(" keyid: *%s", pks->pub->u.rsa.keyid);
+
+    RSA_show_key_field("Modulus", &pks->pub->u.rsa.n);
+    RSA_show_key_field("PublicExponent", &pks->pub->u.rsa.e);
+
+    RSA_show_key_field("PrivateExponent", &pks->u.RSA_private_key.d);
+    RSA_show_key_field("Prime1", &pks->u.RSA_private_key.p);
+    RSA_show_key_field("Prime2", &pks->u.RSA_private_key.q);
+    RSA_show_key_field("Exponent1", &pks->u.RSA_private_key.dP);
+    RSA_show_key_field("Exponent2", &pks->u.RSA_private_key.dQ);
+    RSA_show_key_field("Coefficient", &pks->u.RSA_private_key.qInv);
+}
 
 
 /* decode of RSA pubkey chunk

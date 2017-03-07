@@ -186,6 +186,8 @@ extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);
 
+extern void RSA_show_key_fields(struct private_key_stuff *pks);
+
 extern struct secret *osw_find_secret_by_id(struct secret *secrets
 					    , enum PrivateKeyKind kind
 					    , const struct id *my_id
