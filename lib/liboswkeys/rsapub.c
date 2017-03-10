@@ -32,7 +32,7 @@
 #include "secrets_int.h"
 #include "secrets.h"
 #include "mpzfuncs.h"
-
+#include "sha2.h"
 
 static void
 RSA_show_key_field(const char *name, MP_INT *num)
@@ -127,6 +127,39 @@ unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
 
     return NULL;
 }
+
+void calculate_rsa_ckaid(osw_public_key *pub)
+{
+    if(pub->alg == PUBKEY_ALG_RSA) {
+        struct RSA_public_key *rsa = &pub->u.rsa;
+
+        if(rsa->key_rfc3110.len == 0) {
+            /* key has no 3110 representation, need to cons up one */
+            unsigned int e_size     = mpz_sizeinbase(&rsa->e, 256);
+            unsigned int key3110len = rsa->k + 1 + e_size;
+            rsa->key_rfc3110.ptr = alloc_bytes(key3110len, "rfc3110 format of public key [created]");
+            rsa->key_rfc3110.len = key3110len;
+            unsigned char *here = rsa->key_rfc3110.ptr;
+
+            here[0] = e_size;
+            here++;
+            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->e);
+            here += e_size;
+            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->n);
+        }
+
+        /* maybe #ifdef SHA2 ? */
+        /* calculate the hash of the public key, using SHA-2 */
+        sha256_hash_buffer(rsa->key_rfc3110.ptr, rsa->key_rfc3110.len,
+                           pub->key_ckaid, sizeof(pub->key_ckaid));
+
+        datatot(pub->key_ckaid, sizeof(pub->key_ckaid), 'G',
+                pub->key_ckaid_print_buf, sizeof(pub->key_ckaid_print_buf));
+
+
+    }
+}
+
 
 /*
  * Local Variables:

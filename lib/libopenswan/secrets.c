@@ -49,10 +49,10 @@
 #include "x509.h"
 #include "secrets_int.h"
 #include "secrets.h"
+#include "oswkeys.h"
 #include "certs.h"
 #include "lex.h"
 #include "mpzfuncs.h"
-#include "sha2.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -86,7 +86,6 @@ const struct fld RSA_private_field[] =
 };
 const int RSA_private_field_count = elemsof(RSA_private_field);
 
-static void calculate_rsa_ckaid(osw_public_key *pub);
 static err_t osw_process_psk_secret(const struct secret *secrets
 				    , chunk_t *psk);
 static err_t osw_process_rsa_secret(const struct secret *secrets
@@ -1581,34 +1580,6 @@ same_RSA_public_key(const struct RSA_public_key *a
     return a == b
     || (a->k == b->k && mpz_cmp(&a->n, &b->n) == 0 && mpz_cmp(&a->e, &b->e) == 0);
 }
-
-static void calculate_rsa_ckaid(osw_public_key *pub)
-{
-    if(pub->alg == PUBKEY_ALG_RSA) {
-        struct RSA_public_key *rsa = &pub->u.rsa;
-
-        if(rsa->key_rfc3110.len == 0) {
-            /* key has no 3110 representation, need to cons up one */
-            unsigned int e_size     = mpz_sizeinbase(&rsa->e, 256);
-            unsigned int key3110len = rsa->k + 1 + e_size;
-            rsa->key_rfc3110.ptr = alloc_bytes(key3110len, "rfc3110 format of public key [created]");
-            rsa->key_rfc3110.len = key3110len;
-            unsigned char *here = rsa->key_rfc3110.ptr;
-
-            here[0] = e_size;
-            here++;
-            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->e);
-            here += e_size;
-            mpz_export(here, NULL, 1, 1, 1, 0, &rsa->n);
-        }
-
-        /* maybe #ifdef SHA2 ? */
-        /* calculate the hash of the public key, using SHA-2 */
-        sha256_hash_buffer(rsa->key_rfc3110.ptr, rsa->key_rfc3110.len,
-                           pub->key_ckaid, sizeof(pub->key_ckaid));
-    }
-}
-
 
 void
 install_public_key(osw_public_key *pk, struct pubkey_list **head)
