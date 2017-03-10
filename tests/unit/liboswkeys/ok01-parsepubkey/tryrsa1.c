@@ -6,6 +6,7 @@
 #include "openswan/ipsec_policy.h"
 #include "oswalloc.h"
 #include "oswlog.h"
+#include "oswkeys.h"
 #include "secrets.h"
 const char *progname;
 
@@ -19,9 +20,12 @@ void t1(void)
 {
   const char *key1 = "0sAQOkietplPhkvb/uE9j2UhlB1dSMb3YMgXXQ5r6xMVzHGjASxbMeWCtUbkMI2jGmJzRjUzRvQOIHg14yC3lE4O2j";
   osw_public_key opk;
+  err_t ugh = str2pubkey(key1, PUBKEY_ALG_RSA, &opk);
 
-  str2pubkey(key1, PPK_RSA, &opk);
-  assert(strcmp(key1.ckaid, "1234 1234")==0);
+  assert(ugh == NULL);
+
+  printf("ckaid: %s\n", opk.key_ckaid_print_buf);
+  assert(strcmp(opk.key_ckaid_print_buf, "1234 1234")==0);
 }
 
 
