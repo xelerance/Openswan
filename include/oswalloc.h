@@ -35,7 +35,7 @@ extern void report_leaks(void);
 
 #define clone_thing(orig, name) clone_bytes((const void *)&(orig), sizeof(orig), (name))
 #define clone_str(str, name) \
-    ((str) == NULL? NULL : clone_bytes((str), strlen((str))+1, (name)))
+    ((str) == NULL? NULL : clone_bytes((str), strlen((const char *)(str))+1, (name)))
 
 #define pfreeany(p) { if ((p) != NULL) pfree(p); }
 #define replace(p, q) { pfreeany(p); (p) = (q); }
