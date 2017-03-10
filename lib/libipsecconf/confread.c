@@ -36,6 +36,8 @@
 
 #include "oswalloc.h"
 #include "libopenswan.h"
+#include "secrets.h"
+#include "oswkeys.h"
 
 #include "ipsecconf/parser.h"
 #include "ipsecconf/files.h"
@@ -539,16 +541,26 @@ static bool validate_end(struct starter_conn *conn_st
 	    if(end->strings[KSCF_RSAKEY1] != NULL)
 	    {
 		char *value = end->strings[KSCF_RSAKEY1];
+                osw_public_key opk1;
 
                 pfreeany(end->rsakey1);
                 end->rsakey1 = (unsigned char *)clone_str(value,"end->rsakey1");
+                if(str2pubkey(end->rsakey1, PPK_RSA, &opk1) == NULL) {
+                    end->rsakey1_ckaid = clone_str(opk1.key_ckaid, "end->rsakey2_ckaid");
+                    free_public_key(&opk1);
+                }
 	    }
 	    if(end->strings[KSCF_RSAKEY2] != NULL)
 	    {
 		char *value = end->strings[KSCF_RSAKEY2];
+                osw_public_key opk2;
 
                 pfreeany(end->rsakey2);
                 end->rsakey2 = (unsigned char *)clone_str(value,"end->rsakey2");
+                if(str2pubkey(end->rsakey2, PPK_RSA, &opk2) == NULL) {
+                    end->rsakey2_ckaid = clone_str(opk2.key_ckaid, "end->rsakey2_ckaid");
+                    free_public_key(&opk2);
+                }
 	    }
 	}
     }
