@@ -161,6 +161,39 @@ void calculate_rsa_ckaid(osw_public_key *pub)
 }
 
 
+err_t
+str2pubkey(const unsigned char *key1, enum pubkey_alg kind, osw_public_key *opk)
+{
+    err_t ugh = NULL;
+    chunk_t pubkey;
+
+    /*
+     * initialize keyspace to be as big as the input base64, as the
+     * decoded value can not be bigger than it.
+     */
+    pubkey.len = strlen((const char *)key1);
+    pubkey.ptr = (unsigned char *)alloca(pubkey.len);
+
+
+    switch(kind) {
+    case PUBKEY_ALG_RSA:
+        opk->alg = kind;
+        ugh = atobytes((const char *)key1, 0, (char *)pubkey.ptr, pubkey.len, &pubkey.len);
+        if(ugh != NULL) return ugh;
+
+        ugh = unpack_RSA_public_key(&opk->u.rsa, &pubkey);
+        if(ugh != NULL) return ugh;
+
+        calculate_rsa_ckaid(opk);
+        return NULL;
+
+    default:
+        return "unknown ALG";
+    }
+
+}
+
+
 /*
  * Local Variables:
  * c-basic-offset:4
