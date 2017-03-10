@@ -59,6 +59,11 @@ struct whack_end {
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
     char *groups;       /* access control groups (if any) -- parsed by pluto */
 
+    /* note that "cert" is reused as rsakey1_ckaid
+     *      and  "ca"   is reused as rsakey2_ckaid
+     */
+
+
     enum keyword_host host_type;
     ip_address host_addr,
 	host_nexthop,

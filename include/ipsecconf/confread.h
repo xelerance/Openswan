@@ -58,7 +58,9 @@ struct starter_end {
 
     enum pubkey_source rsakey1_type, rsakey2_type;
     unsigned char *rsakey1;
+    char          *rsakey1_ckaid;
     unsigned char *rsakey2;
+    char          *rsakey2_ckaid;
     u_int16_t port;
     u_int8_t  protocol;
     bool has_client_wildcard;
