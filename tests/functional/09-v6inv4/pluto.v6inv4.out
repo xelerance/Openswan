@@ -16,12 +16,13 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'rootCA.pem' (1525 bytes)
-Could not change to directory '../../unit/libpluto/samples/moon/aacerts': No such file or directory
-Could not change to directory '../../unit/libpluto/samples/moon/ocspcerts': No such file or directory
-Could not change to directory '../../unit/libpluto/samples/moon/crls': 2 No such file or directory
-  loading certificate from moonCert.pem 
-  loaded host cert file '../../unit/libpluto/samples/moon/certs/moonCert.pem' (1411 bytes)
 adding connection: "net-net"
+loading secrets from "../../unit/libpluto/samples/moon.secrets"
+002 loading secrets from "../../unit/libpluto/samples/moon.secrets"
+  loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (1679 bytes)
+002   loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (1679 bytes)
+loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
+002 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 000 using kernel interface: noklips
 000 %myid = (none)
 000 debug none
@@ -62,5 +63,6 @@ adding connection: "net-net"
 000 "net-net":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  
+forgetting secrets
 "net-net": deleting connection
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
