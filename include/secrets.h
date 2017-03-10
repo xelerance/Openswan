@@ -115,6 +115,7 @@ struct pubkey {
     chunk_t issuer;
 
     unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
+    char key_ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];  /* a buffer for above, produced by datatot */
 
     enum pubkey_alg alg;
 
