@@ -6,6 +6,15 @@ See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
 v2.6.50dev (2017)
 
+v.2.6.49.1 (February 28, 2017)
+
+Always build whack with debug options and define IKEv1 as on
+
+* mark IKEv1 as disabled at compile time [mcr]
+* define IKEV1 as on, as we can not remove IKEv1 yet, but one piece of code anticipated it [mcr]
+* always build whack with debug options [mcr]
+* debian: stop depending on iproute that's just a virtual package [Simon Deziel]
+
 v2.6.49 (August 8, 2016)
 
 Implements the IKEv2 child rekey facility in IKEv2.
