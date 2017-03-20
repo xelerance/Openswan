@@ -323,6 +323,7 @@ struct whackpacker {
     unsigned char        *str_roof;
     unsigned char        *str_next;
     int                   n;
+    int                   cnt;
 };
 
 extern err_t pack_whack_msg(struct whackpacker *wp);
