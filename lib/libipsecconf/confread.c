@@ -594,10 +594,12 @@ static bool validate_end(struct starter_conn *conn_st
 
     /* copy certificate path name */
     if(end->strings_set[KSCF_CERT]) {
+        end->rsakey1_type = PUBKEY_CERTIFICATE;
         end->cert = clone_str(end->strings[KSCF_CERT], "KSCF_CERT");
     }
 
     if(end->strings_set[KSCF_CA]) {
+        end->rsakey1_type = PUBKEY_CERTIFICATE;
         end->ca = clone_str(end->strings[KSCF_CA], "KSCF_CA");
     }
 
