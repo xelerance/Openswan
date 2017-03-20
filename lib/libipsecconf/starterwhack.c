@@ -438,13 +438,13 @@ static int set_whack_end(struct starter_config *cfg
           w->cert = l->rsakey1_ckaid;
           w->ca   = l->rsakey2_ckaid;
         }
+	w->keytype = l->rsakey1_type;
 
 	w->updown = l->updown;
 	w->virt   = NULL;
 	w->protocol = l->protocol;
 	w->port = l->port;
 	w->virt = l->virt;
-	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
 
 	if(l->options_set[KNCF_XAUTHSERVER]) {
 		w->xauth_server = l->options[KNCF_XAUTHSERVER];

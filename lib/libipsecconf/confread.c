@@ -145,11 +145,6 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
 
-	/* default is to look in DNS */
-	cfg->conn_default.left.key_from_DNS_on_demand = TRUE;
-	cfg->conn_default.right.key_from_DNS_on_demand = TRUE;
-
-
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
 
@@ -532,11 +527,10 @@ static bool validate_end(struct starter_conn *conn_st
 	switch(end->rsakey1_type) {
 	case PUBKEY_DNS:
 	case PUBKEY_DNSONDEMAND:
-	    end->key_from_DNS_on_demand = TRUE;
+            /* pass it on */
 	    break;
 
 	default:
-	    end->key_from_DNS_on_demand = FALSE;
 	    /* validate the KSCF_RSAKEY1/RSAKEY2 */
 	    if(end->strings[KSCF_RSAKEY1] != NULL)
 	    {

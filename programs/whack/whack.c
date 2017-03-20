@@ -1325,7 +1325,7 @@ main(int argc, char **argv)
 		end_seen |= LELEM(END_CLIENT - END_FIRST);
 	    }
 	    if (new_policy & POLICY_OPPO)
-		msg.right.key_from_DNS_on_demand = TRUE;
+		msg.right.keytype = PUBKEY_DNSONDEMAND;
 	    continue;
 	}
 
@@ -1426,7 +1426,7 @@ main(int argc, char **argv)
 	    continue;
 
 	case END_DNSKEYONDEMAND:	/* --dnskeyondemand */
-	    msg.right.key_from_DNS_on_demand = TRUE;
+	    msg.right.keytype = PUBKEY_DNSONDEMAND;
 	    continue;
 
 	case END_UPDOWN:	/* --updown <updown> */

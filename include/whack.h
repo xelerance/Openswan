@@ -38,7 +38,7 @@
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 25)
 
-#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38UL)
+#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 39UL)
 
 /* mark top-bit with size of int,
  * so that mis-matches in integer size are easier to diagnose */
@@ -70,7 +70,7 @@ struct whack_end {
 	host_srcip;
     ip_subnet client;
 
-    bool key_from_DNS_on_demand;
+    enum pubkey_source keytype; /* possibly redundant with ipsec_cert_type */
     bool has_client;
     bool has_client_wildcard;
     bool has_port_wildcard;
