@@ -193,6 +193,7 @@ int serialize_whack_msg(struct whack_message *msg)
 	/**
 	 * Pack strings
 	 */
+        wp.cnt = 0;
 	wp.msg = msg;
 	wp.str_next = (unsigned char *)msg->string;
 	wp.str_roof = (unsigned char *)&msg->string[sizeof(msg->string)];

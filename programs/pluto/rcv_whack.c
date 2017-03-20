@@ -637,6 +637,7 @@ whack_handle(int whackctlfd)
 
         wp.msg = &msg;
         wp.n   = n;
+        wp.cnt = 0;
         wp.str_next = msg.string;
         wp.str_roof = (unsigned char *)&msg + n;
 
