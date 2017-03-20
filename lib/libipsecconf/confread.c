@@ -525,12 +525,17 @@ static bool validate_end(struct starter_conn *conn_st
 	end->rsakey2_type = end->options[KSCF_RSAKEY2];
 
 	switch(end->rsakey1_type) {
+        case PUBKEY_NOTSET:
+            /* really should not happen! */
+            break;
+
 	case PUBKEY_DNS:
 	case PUBKEY_DNSONDEMAND:
+        case PUBKEY_CERTIFICATE:
             /* pass it on */
 	    break;
 
-	default:
+        case PUBKEY_PREEXCHANGED:
 	    /* validate the KSCF_RSAKEY1/RSAKEY2 */
 	    if(end->strings[KSCF_RSAKEY1] != NULL)
 	    {
