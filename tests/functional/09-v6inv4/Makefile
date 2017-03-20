@@ -49,7 +49,7 @@ step4:
 	@${WHACKBIN} ${CTLBASE} --status
 
 step5:
-	@${WHACKBIN} ${CTLBASE} --rereadsecrets
+	@${WHACKBIN} ${CTLBASE} --rereadsecrets >/dev/null
 
 debug:
 	@${WHACKBIN} ${CTLBASE} --debug-all

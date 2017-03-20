@@ -46,7 +46,7 @@ step2b:
 	@${WHACKBIN} ${CTLBASE} --debug-control --debug-controlmore
 
 step2c:
-	@${WHACKBIN} ${CTLBASE} --rereadsecrets
+	@${WHACKBIN} ${CTLBASE} --rereadsecrets >/dev/null
 
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown
