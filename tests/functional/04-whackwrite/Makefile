@@ -29,6 +29,8 @@ check:
 	@mkdir -p ${OUTPUTS}
 	@rm -f core
 	@echo processing ${SAMPLEDIR}/dooku.conf
+	@echo >.gdbinit  "file ${READWRITE} "
+	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
 	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net | tee -a ${OUTPUTS}/dookuload.out | diff - /dev/null
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@strings ${OUTPUTS}/dookurecord.whack | grep pluto-whack-file >/dev/null
