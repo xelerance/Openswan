@@ -64,7 +64,6 @@ struct starter_end {
     u_int16_t port;
     u_int8_t  protocol;
     bool has_client_wildcard;
-    bool key_from_DNS_on_demand;
     bool has_port_wildcard;
     bool has_id_wildcards;
     char *virt;

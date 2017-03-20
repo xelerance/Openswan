@@ -95,7 +95,7 @@ struct oe_conn oe_packet_default = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
 		.right.end_addr_family = AF_INET,
 		.right.tunnel_addr_family = AF_INET,
@@ -115,7 +115,7 @@ struct oe_conn oe_packet_default = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -228,7 +228,7 @@ struct oe_conn oe_clear_or_private = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
 		.right.end_addr_family = AF_INET,
 		.right.tunnel_addr_family = AF_INET,
@@ -248,7 +248,7 @@ struct oe_conn oe_clear_or_private = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -303,7 +303,7 @@ struct oe_conn oe_private_or_clear = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
 		.right.end_addr_family = AF_INET,
 		.right.tunnel_addr_family = AF_INET,
@@ -323,7 +323,7 @@ struct oe_conn oe_private_or_clear = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -381,7 +381,7 @@ struct oe_conn oe_private = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
 		.right.end_addr_family = AF_INET,
 		.right.tunnel_addr_family = AF_INET,
@@ -401,7 +401,7 @@ struct oe_conn oe_private = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -444,7 +444,7 @@ struct oe_conn oe_block = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
 		.right.end_addr_family = AF_INET,
 		.right.tunnel_addr_family = AF_INET,
@@ -464,7 +464,7 @@ struct oe_conn oe_block = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 

@@ -628,38 +628,58 @@ extract_end(struct connection *conn
 
     dst->ca = empty_chunk;
 
-    /* decode CA distinguished name, if any */
-    if (src->ca != NULL)
-    {
-	if streq(src->ca, "%same")
-	    same_ca = TRUE;
-	else if (!streq(src->ca, "%any"))
-	{
-	    err_t ugh;
+    switch(src->keytype) {
+    case PUBKEY_NOTSET:
+        break;
 
-	    dst->ca.ptr = temporary_cyclic_buffer();
-	    dst->ca.len = IDTOA_BUF;
-	    ugh = atodn(src->ca, &dst->ca);
-	    if (ugh != NULL)
-	    {
-		openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
-		dst->ca = empty_chunk;
-	    }
-	}
-    }
+    case PUBKEY_DNSONDEMAND:
+        dst->key_from_DNS_on_demand = TRUE;
+        break;
 
-    if(src->sendcert == cert_forcedtype) {
-	/* certificate is a blob */
-	dst->cert.forced = TRUE;
-	dst->cert.type = src->certtype;
+    case PUBKEY_DNS:
+        /* synchrononous fetch */
+        dst->key_from_DNS_on_demand = FALSE;
+        break;
+
+    case PUBKEY_CERTIFICATE:
+        /* decode CA distinguished name, if any */
+        if (src->ca != NULL)
+            {
+                if streq(src->ca, "%same")
+                            same_ca = TRUE;
+                else if (!streq(src->ca, "%any"))
+                    {
+                        err_t ugh;
+
+                        dst->ca.ptr = temporary_cyclic_buffer();
+                        dst->ca.len = IDTOA_BUF;
+                        ugh = atodn(src->ca, &dst->ca);
+                        if (ugh != NULL)
+                            {
+                                openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
+                                dst->ca = empty_chunk;
+                            }
+                    }
+            }
+
+        if(src->sendcert == cert_forcedtype) {
+            /* certificate is a blob */
+            dst->cert.forced = TRUE;
+            dst->cert.type = src->certtype;
 #ifdef HAVE_LIBNSS
-	load_cert_from_nss(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
+            load_cert_from_nss(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
 #else
-	load_cert(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
+            load_cert(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
 #endif
-    } else {
-	/* load local end certificate and extract ID, if any */
-	load_end_certificate(src->cert, dst);
+        } else {
+            /* load local end certificate and extract ID, if any */
+            load_end_certificate(src->cert, dst);
+        }
+        break;
+
+    case PUBKEY_PREEXCHANGED:
+        openswan_log("use keyid: %s / %s", src->cert, src->ca);
+        break;
     }
 
     /* does id has wildcards? */
@@ -701,7 +721,6 @@ extract_end(struct connection *conn
     dst->protocol = src->protocol;
     dst->port = src->port;
     dst->has_port_wildcard = src->has_port_wildcard;
-    dst->key_from_DNS_on_demand = src->key_from_DNS_on_demand;
     dst->has_client = src->has_client;
     dst->has_client_wildcard = src->has_client_wildcard;
     dst->updown = src->updown;
