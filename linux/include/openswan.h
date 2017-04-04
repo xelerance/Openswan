@@ -321,6 +321,11 @@ size_t splitkeytoid(const unsigned char *e, size_t elen, const unsigned char *m,
 err_t ttoprotoport(char *src, size_t src_len, u_int8_t *proto, u_int16_t *port,
                                                        int *has_port_wildcard);
 
+/* used to process ckaid in hex */
+#define CKAID_BUFSIZE 20
+extern err_t ckaidhex2ckaid(char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE]);
+
+
 /* initializations */
 void initsaid(const ip_address *addr, ipsec_spi_t spi, int proto, ip_said *dst);
 err_t loopbackaddr(int af, ip_address *dst);
