@@ -63,11 +63,12 @@ pack_str(struct whackpacker *wp, char **p)
     {
 	strcpy((char *)wp->str_next, s);
 	wp->str_next += len;
+        wp->cnt++;
 #if 0
-        fprintf(stderr, "%u: packing string: %s\n", wp->cnt, *p);
+        DBG_log("packing: %u", wp->cnt);
+        DBG_dump("str", s, len);
 #endif
 	*p = NULL;	/* don't send pointers on the wire! */
-        wp->cnt++;
 	return TRUE;
     }
 }
@@ -96,11 +97,11 @@ unpack_str(struct whackpacker *wp, char **p)
 	unsigned char *s = (wp->str_next == end? NULL : wp->str_next);
 
 	*p = (char *)s;
+        wp->cnt++;
 #if 0
         fprintf(stderr, "%u: unpacked string: %s\n", wp->cnt, *p);
 #endif
 	wp->str_next = end + 1;
-        wp->cnt++;
 	return TRUE;
     }
 }
