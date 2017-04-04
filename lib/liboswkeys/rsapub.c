@@ -155,8 +155,6 @@ void calculate_rsa_ckaid(osw_public_key *pub)
 
         datatot(pub->key_ckaid, sizeof(pub->key_ckaid), 'G',
                 pub->key_ckaid_print_buf, sizeof(pub->key_ckaid_print_buf));
-
-
     }
 }
 

@@ -31,7 +31,7 @@ check:
 	@echo processing ${SAMPLEDIR}/dooku.conf
 	@echo >.gdbinit  "file ${READWRITE} "
 	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
-	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net | tee -a ${OUTPUTS}/dookuload.out | diff - /dev/null
+	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net 2>&1 | tee -a ${OUTPUTS}/dookuload.out | diff - dookuload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@strings ${OUTPUTS}/dookurecord.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/dookurecord.whack | grep dooku--cassidy-net >/dev/null
@@ -43,7 +43,7 @@ check:
 	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj2
 	@echo >.gdbinit2b  "file ${READWRITE} "
 	@echo >>.gdbinit2b "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj "
-	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj | tee ${OUTPUTS}/parkerload.out | diff - /dev/null
+	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj 2>&1 | tee ${OUTPUTS}/parkerload.out | diff - parkerload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@strings ${OUTPUTS}/parkerrecord.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep parker1--jj2 >/dev/null
@@ -60,6 +60,9 @@ check:
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt
+	cp ../OUTPUTS/dookuload.out    dookuload.txt
+	cp ../OUTPUTS/parkerload.out   parkerload.txt
+
 
 
 
