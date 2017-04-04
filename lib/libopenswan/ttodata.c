@@ -374,6 +374,14 @@ size_t errlen;
 	return (const char *)errp;
 }
 
+/*
+ * process a hex-encoded ckaid into a binary representation.
+ */
+err_t ckaidhex2ckaid(char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE])
+{
+    return ttodatav(key_ckaid_hex, 0, 16, (char *)ckaid, sizeof(ckaid), NULL, NULL, 0, TTODATAV_IGNORESPACE);
+}
+
 
 
 #ifdef TTODATA_MAIN

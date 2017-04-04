@@ -36,8 +36,6 @@ struct secret;  /* opaque definition, private to secrets.c */
 typedef struct pubkey osw_public_key;
 
 
-#define CKAID_BUFSIZE 20
-
 struct RSA_public_key
 {
     char keyid[KEYID_BUF];	    /* see ipsec_keyblobtoid(3) */
