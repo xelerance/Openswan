@@ -92,6 +92,9 @@ unsigned int flags;
 		decode = unhex;
 		underscoreok = 1;
 		ingroup = 2;
+		if(flags & TTODATAV_IGNORESPACE) {
+			skipSpace = 1;
+		}
 		break;
 	case 64:
 		decode = unb64;
@@ -484,6 +487,7 @@ struct artab {
 #	    define IGNORESPACE_BIAS 1000
 	char *ascii;		/* NULL for end */
 	char *data;		/* NULL for error expected */
+  unsigned int flags;
 } atodatatab[] = {
 	{ 0, "",			NULL, },
 	{ 0, "0",			NULL, },
@@ -502,6 +506,7 @@ struct artab {
 	{ 0, "0X_aBc0",		NULL, },
 	{ 0, "0Xa_Bc0",		NULL, },
 	{ 16, "aBc0eEd8",	"\xab\xc0\xee\xd8", },
+	{ 16, "aBc0 eE d8",	"\xab\xc0\xee\xd8", TTODATAV_IGNORESPACE },
 	{ 0, "0s",		NULL, },
 	{ 0, "0sA",		NULL, },
 	{ 0, "0sBA",		NULL, },
@@ -663,19 +668,19 @@ char *pgm;
 		}
 
 		if (base >= IGNORESPACE_BIAS) {
-			base = base - IGNORESPACE_BIAS;
-			check(r, buf, n, ttodatav(r->ascii, 0, base, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
-			if (xbase != 0)
-				check(r, buf, n, ttodatav(r->ascii+2, 0, xbase, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
+                    base = base - IGNORESPACE_BIAS;
+                    check(r, buf, n, ttodatav(r->ascii, 0, base, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
+                    if (xbase != 0)
+                        check(r, buf, n, ttodatav(r->ascii+2, 0, xbase, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
 		} else {
-			check(r, buf, n, ttodata(r->ascii, 0, base, buf, sizeof(buf), &n), &status);
-			if (base == 64 || xbase == 64)
-				check(r, buf, n, ttodatav(r->ascii, 0, base, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
-			if (xbase != 0) {
-				check(r, buf, n, ttodata(r->ascii+2, 0, xbase, buf, sizeof(buf), &n), &status);
-				if (base == 64 || xbase == 64)
-					check(r, buf, n, ttodatav(r->ascii+2, 0, xbase, buf, sizeof(buf), &n, NULL, 0, TTODATAV_IGNORESPACE), &status);
-			}
+                    check(r, buf, n, ttodatav(r->ascii, 0, base, buf, sizeof(buf), &n, NULL, 0, r->flags), &status);
+                    if (base == 64 || xbase == 64)
+                        check(r, buf, n, ttodatav(r->ascii,   0, base,  buf, sizeof(buf), &n, NULL, 0, r->flags | TTODATAV_IGNORESPACE), &status);
+                    if (xbase != 0) {
+                        check(r, buf, n, ttodatav(r->ascii+2, 0, xbase, buf, sizeof(buf), &n, NULL, 0, r->flags), &status);
+                        if (base == 64 || xbase == 64)
+                            check(r, buf, n, ttodatav(r->ascii+2, 0, xbase, buf, sizeof(buf), &n, NULL, 0, r->flags | TTODATAV_IGNORESPACE), &status);
+                    }
 		}
 	}
 	for (dr = datatoatab; dr->data != NULL; dr++) {
@@ -720,3 +725,10 @@ char *pgm;
 }
 
 #endif /* TTODATA_MAIN */
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: pluto
+ * End:
+ */
