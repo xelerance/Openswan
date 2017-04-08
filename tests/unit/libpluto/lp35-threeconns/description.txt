@@ -1,3 +1,4 @@
 This test case loads three conns from a whack file created on vzhost1.
 With 2.6.46dr1 + dbc93dad pluto is observed to exit.
 
+Changes to whack format renders this test case unuseable.

@@ -13,7 +13,9 @@ processing whack msg time: X size: Y
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection parker1--jj2 with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+./parentI2 use keyid: 1:<> / 2:<>
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
+./parentI2 use keyid: 1:<> / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
@@ -235,7 +237,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_ALWAYSSEND and I did not get a certificate request
+|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
 |  so do not send cert.
 | I did not send a certificate because I do not have one.
 | *****emit IKEv2 Identification Payload:

@@ -24,6 +24,19 @@ void transfer_to_public_keys(struct gw_info *gateways_from_dns
 struct pubkey_list *pluto_pubkeys = NULL;	/* keys from ipsec.conf */
 struct secret *pluto_secrets = NULL;
 
+/*
+ *  find a public key by ckaid
+ */
+struct pubkey *find_public_keys(unsigned char ckaid[CKAID_BUFSIZE])
+{
+  return NULL;
+}
+
+struct pubkey *find_key_by_string(const char *key_hex)
+{
+  return NULL;
+}
+
 struct pubkey *osw_get_public_key_by_end(struct end *him)
 {
   return NULL;
