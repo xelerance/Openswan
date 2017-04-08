@@ -379,7 +379,7 @@ size_t errlen;
  */
 err_t ckaidhex2ckaid(const char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE])
 {
-    return ttodatav(key_ckaid_hex, 0, 16, (char *)ckaid, sizeof(ckaid), NULL, NULL, 0, TTODATAV_IGNORESPACE);
+    return ttodatav(key_ckaid_hex, 0, 16, (char *)ckaid, CKAID_BUFSIZE, NULL, NULL, 0, TTODATAV_IGNORESPACE);
 }
 
 
@@ -515,6 +515,7 @@ struct artab {
 	{ 0, "0Xa_Bc0",		NULL, },
 	{ 16, "aBc0eEd8",	"\xab\xc0\xee\xd8", },
 	{ 16, "aBc0 eE d8",	"\xab\xc0\xee\xd8", TTODATAV_IGNORESPACE },
+	{ 16, "2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701", "\x2A\x3A\x92\xD4\xE0\xFA\x5C\xD7\x8D\xE1\xD1\x33\x0C\x62\x69\x85\x2B\x6E\xD7\x01", TTODATAV_IGNORESPACE },
 	{ 0, "0s",		NULL, },
 	{ 0, "0sA",		NULL, },
 	{ 0, "0sBA",		NULL, },
