@@ -68,6 +68,12 @@ extern void remove_x509_public_key(/*const*/ x509cert_t *cert);
 extern void list_public_keys(bool utc, bool check_pub_keys);
 extern void list_psks(void);
 
+/* look up public keys */
+extern struct pubkey *find_public_keys(unsigned char ckaid[CKAID_BUFSIZE]);
+extern struct pubkey *find_key_by_string(const char *key_hex);
+
+
+
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 extern void transfer_to_public_keys(struct gw_info *gateways_from_dns
 #ifdef USE_KEYRR

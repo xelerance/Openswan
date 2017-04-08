@@ -763,6 +763,41 @@ add_public_key(const struct id *id
 }
 
 /*
+ *  find a public key by ckaid
+ */
+struct pubkey *find_public_keys(unsigned char ckaid[CKAID_BUFSIZE])
+{
+    struct pubkey_list *p = pluto_pubkeys;
+
+    for(; p != NULL; p = p->next)
+    {
+	struct pubkey *key = p->key;
+
+        if(memcmp(ckaid, key->key_ckaid, CKAID_BUFSIZE) == 0) {
+            return key;
+        }
+    }
+    return NULL;
+}
+
+struct pubkey *find_key_by_string(const char *key_hex)
+{
+    struct pubkey *key1 = NULL;
+    unsigned char ckaid[CKAID_BUFSIZE];
+    err_t e = ckaidhex2ckaid(key_hex, ckaid);
+
+    if(e) {
+        openswan_log("failed to parse ckaid: %s", e);
+    } else if((key1 = find_public_keys(ckaid)) == NULL) {
+        openswan_log("can not find public key: %s", key_hex);
+    } else {
+        reference_key(key1);
+    }
+    return key1;
+}
+
+
+/*
  *  list all public keys in the chained list
  */
 void list_public_keys(bool utc, bool check_pub_keys)
