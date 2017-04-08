@@ -546,7 +546,7 @@ static bool validate_end(struct starter_conn *conn_st
                 pfreeany(end->rsakey1);
                 end->rsakey1 = (unsigned char *)clone_str(value,"end->rsakey1");
                 if(str2pubkey(end->rsakey1, PUBKEY_ALG_RSA, &opk1) == NULL) {
-                    end->rsakey1_ckaid = clone_str(opk1.key_ckaid_print_buf, "end->rsakey2_ckaid");
+                    end->rsakey1_ckaid = clone_str(opk1.key_ckaid_print_buf, "end->rsakey1_ckaid");
                     free_RSA_public_content(&opk1.u.rsa);
                 }
 	    }
@@ -1536,6 +1536,12 @@ static void confread_free_conn(struct starter_conn *conn)
     pfreeany(conn->right.id);
     pfreeany(conn->right.rsakey1);
     pfreeany(conn->right.rsakey2);
+
+    pfreeany(conn->left.rsakey1_ckaid);
+    pfreeany(conn->left.rsakey2_ckaid);
+    pfreeany(conn->right.rsakey1_ckaid);
+    pfreeany(conn->right.rsakey2_ckaid);
+
     for(i=0; i<KSCF_MAX; i++) {
         pfreeany(conn->left.strings[i]);
         pfreeany(conn->right.strings[i]);
