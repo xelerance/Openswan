@@ -323,7 +323,7 @@ err_t ttoprotoport(char *src, size_t src_len, u_int8_t *proto, u_int16_t *port,
 
 /* used to process ckaid in hex */
 #define CKAID_BUFSIZE 20
-extern err_t ckaidhex2ckaid(char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE]);
+extern err_t ckaidhex2ckaid(const char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE]);
 
 
 /* initializations */
