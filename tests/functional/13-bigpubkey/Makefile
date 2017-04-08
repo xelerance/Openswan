@@ -34,7 +34,7 @@ step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} --secretsfile ../../unit/libopenswan/lo02-verifysigs/key-4096.secrets ${SOCKETS} 2>&1
 
 step2:
-	@${ADDCONN} --verbose ${CTLBASE} --config green.conf big-key-green berri-vzhost-mondev-v6
+	@${ADDCONN} --verbose ${CTLBASE} --config green.conf big-key-green berri-vzhost-mondev-v6 >&2
 
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown

@@ -34,7 +34,7 @@ RC=0 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute ow
 RC=0 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
 RC=0 "nat-t":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 |   orient nat-t finished with: 1 [10.2.0.10]
 ./loadbob deleting connection
 | pass 0: considering CHILD SAs to delete
@@ -52,6 +52,7 @@ RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKO
 ./loadbob leak: certificate filename, item size: X
 ./loadbob leak: 2 * id list, item size: X
 ./loadbob leak: rfc3110 format of public key [created], item size: X
+./loadbob leak: pubkey, item size: X
 ./loadbob leak: secret, item size: X
 ./loadbob leak: policies path, item size: X
 ./loadbob leak: ocspcerts path, item size: X

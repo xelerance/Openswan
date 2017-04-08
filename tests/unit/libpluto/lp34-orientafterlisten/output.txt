@@ -7,6 +7,8 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:<> / 2:<>
 ./orienttest adding connection: "parker1--jj2"
 processing parker1--jj2
 RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credil.org]...192.168.1.1[@parker01.emmjay.credil.org]===fd68:c9f9:4157:2:0:1::/96; unrouted; eroute owner: #0

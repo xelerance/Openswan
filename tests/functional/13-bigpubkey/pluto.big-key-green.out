@@ -15,25 +15,20 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
 loaded key: 1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
-002 loaded key: 1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
 loaded key: A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3
-002 loaded key: A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3
+use keyid: 1:1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462 / 2:<>
+use keyid: 1:A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3 / 2:<>
 adding connection: "big-key-green"
-002 adding connection: "big-key-green"
 loaded key: 9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA
-002 loaded key: 9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA
 loaded key: 170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051
-002 loaded key: 170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051
+use keyid: 1:9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA / 2:<>
+use keyid: 1:170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051 / 2:<>
 adding connection: "berri-vzhost-mondev-v6/1x0"
-002 adding connection: "berri-vzhost-mondev-v6/1x0"
 loaded key: 9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA
-002 loaded key: 9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA
 loaded key: 170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051
-002 loaded key: 170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051
+use keyid: 1:9022 ACBE C280 7AE8 EA58 661E 7D96 BC78 993A 48EA / 2:<>
+use keyid: 1:170D 1236 8159 D8A8 A3B7 E5F7 240E E4E7 7502 4051 / 2:<>
 adding connection: "berri-vzhost-mondev-v6/2x0"
-002 adding connection: "berri-vzhost-mondev-v6/2x0"
-opening file: ZZ
-loading named conns: big-key-green berri-vzhost-mondev-v6
 listening for IKE messages
 no public interfaces found
 loading secrets from "../../unit/libopenswan/lo02-verifysigs/key-4096.secrets"

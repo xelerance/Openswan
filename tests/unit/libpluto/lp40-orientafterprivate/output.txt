@@ -7,6 +7,8 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:<> / 2:<>
 ./orienttest adding connection: "parker1--jj2"
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -16,6 +18,8 @@ processing whack msg time: X size: Y
 ./orienttest loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:<> / 2:<>
 |      FAILs -- himid mismatch
 ./orienttest adding connection: "ikev2:parker--jj"
 processing parker1--jj2
@@ -109,6 +113,7 @@ RC=2 ID hostpairs:
 ./orienttest leak: my FQDN, item size: X
 ./orienttest leak: 2 * id list, item size: X
 ./orienttest leak: rfc3110 format of public key [created], item size: X
+./orienttest leak: pubkey, item size: X
 ./orienttest leak: secret, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X
