@@ -678,7 +678,15 @@ extract_end(struct connection *conn
         break;
 
     case PUBKEY_PREEXCHANGED:
-        openswan_log("use keyid: %s / %s", src->cert, src->ca);
+        if(src->cert) {
+            dst->key1 = find_key_by_string(src->cert);
+        }
+        if(src->ca) {
+            dst->key2 = find_key_by_string(src->ca);
+        }
+        openswan_log("use keyid: 1:%s / 2:%s"
+                     , dst->key1 ? dst->key1->key_ckaid_print_buf : "<>"
+                     , dst->key2 ? dst->key2->key_ckaid_print_buf : "<>");
         break;
     }
 
@@ -3216,6 +3224,24 @@ show_one_connection(struct connection *c, logfunc logger)
 		  , instance
 		  , this_ca
 		  , that_ca);
+    }
+
+    /* show public keys */
+    if(c->spd.this.key1 || c->spd.this.key2) {
+        logger(RC_COMMENT
+               , "\"%s\"%s:   keys: 1:%s 2:%s..."
+               , c->name
+               , instance
+               , c->spd.this.key1 ? c->spd.this.key1->key_ckaid_print_buf : "none"
+               , c->spd.this.key2 ? c->spd.this.key2->key_ckaid_print_buf : "none");
+    }
+    if(c->spd.that.key1 || c->spd.that.key2) {
+        logger(RC_COMMENT
+               , "\"%s\"%s:        ....1:%s 2:%s "
+               , c->name
+               , instance
+               , c->spd.that.key1 ? c->spd.that.key1->key_ckaid_print_buf : "none"
+               , c->spd.that.key2 ? c->spd.that.key2->key_ckaid_print_buf : "none");
     }
 
     logger(RC_COMMENT
