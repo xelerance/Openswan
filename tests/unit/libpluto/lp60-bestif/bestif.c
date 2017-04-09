@@ -48,47 +48,6 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #define TESTNAME "bestif"
 
-struct iface_dev  parker_ifd1 = {
-	.id_count = 1,
-	.id_vname = "ipsec0",
-	.id_rname = "eth0"
-};
-
-struct iface_port parker_if1 = {
-	.ip_dev = &parker_ifd1,
-	.port   = 500,
-        .socktypename = "AF_INET",
-	.ip_addr.u.v4.sin_family = AF_INET,
-	.ip_addr.u.v4.sin_addr.s_addr = 0xc0a80101, /* 192.168.1.1 -- see htonl() below */
-	.fd     = -1,
-	.next   = NULL,
-	.ike_float = 0,
-	.change    = IFN_KEEP
-};
-
-struct iface_port parker_if1b = {
-	.ip_dev = &parker_ifd1,
-	.port   = 4500,
-	.ip_addr.u.v4.sin_family = AF_INET,
-	.ip_addr.u.v4.sin_addr.s_addr = 0xc0a80101, /* 192.168.1.1 -- see htonl() below */
-	.fd     = -1,
-	.next   = NULL,
-	.ike_float = 0,
-	.change    = IFN_KEEP
-};
-
-struct iface_port parker_if2 = {
-	.ip_dev = &parker_ifd1,
-	.port   = 500,
-	.ip_addr.u.v6.sin6_family = AF_INET6,
-        /* filled in below */
-	.fd     = -1,
-	.next   = NULL,
-	.ike_float = 0,
-	.change    = IFN_KEEP
-};
-
-
 int main(int argc, char *argv[])
 {
     int   len;
@@ -107,6 +66,8 @@ int main(int argc, char *argv[])
 
     progname = argv[0];
     leak_detective = 1;
+
+    set_debugging(DBG_ALL);
 
     tool_init_log();
     init_fake_vendorid();
