@@ -106,11 +106,12 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         int score = 0;
 
         DBG(DBG_CONTROLMORE,
-            DBG_log("  considering %s port: %u, family: %u, best: %s/%u",
+            DBG_log("  considering %s port: %u, family: %u, best: %s/%u %d",
                     ifp->ip_dev->id_rname,
                     ifp->port, ifp->ip_addr.u.v4.sin_family,
                     best_ifp ? best_ifp->ip_dev->id_rname : "<none>",
-                    best_score));
+                    best_score,
+                    isloopbackaddr(&iflist->ip_addr)));
 
         /* the port must always match, not a best case */
         if(ifp->port != desired_port) continue;
