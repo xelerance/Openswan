@@ -122,24 +122,24 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         /* if family==0, then give this us 10 points if this IF if
          * INET4, and 20 points if this IF is INET6
          */
-        switch(iflist->ip_addr.u.v4.sin_family) {
+        switch(ifp->ip_addr.u.v4.sin_family) {
         case AF_INET:
             score = 10;
 
             /* if the IF is *not* a loopback device, take another 10 points */
-            if(!isloopbackaddr(&iflist->ip_addr)) {
+            if(!isloopbackaddr(&ifp->ip_addr)) {
                 score += 10;
             }
             break;
 
         case AF_INET6:
             /* if the IF is *not* a loopback device, take another 10 points */
-            if(!isloopbackaddr(&iflist->ip_addr)) {
+            if(!isloopbackaddr(&ifp->ip_addr)) {
                 score += 10;
             }
 
             /* if the IF is *not* a ULA, then take another 10 points */
-            if((iflist->ip_addr.u.v6.sin6_addr.s6_addr[0] & 0xfe) != 0xfc)
+            if((ifp->ip_addr.u.v6.sin6_addr.s6_addr[0] & 0xfe) != 0xfc)
                 score += 10;
         }
 
