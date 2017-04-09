@@ -1,3 +1,11 @@
+| pick_if looking for port: 500, family: 2
+|   considering eth3 port: 500, family: 10, best: <none>/0
+|   considering eth1 port: 500, family: 2, best: <none>/0
+|   considering lo port: 500, family: 10, best: eth1/10
+|   considering lo port: 500, family: 2, best: eth1/10
+|   considering eth0 port: 500, family: 10, best: eth1/10
+|   considering eth0 port: 500, family: 2, best: eth1/10
+|   picking maching interface for family[2,5071]: AF_INET resulted in:
 ./bestif leak: rname, item size: X
 ./bestif leak: vname, item size: X
 ./bestif leak: device port, item size: X
