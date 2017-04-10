@@ -191,6 +191,8 @@ extern void RSA_show_key_fields(struct private_key_stuff *pks);
 extern struct secret *osw_find_secret_by_id(struct secret *secrets
 					    , enum PrivateKeyKind kind
 					    , const struct id *my_id
+                                            , osw_public_key *key1
+                                            , osw_public_key *key2
 					    , const struct id *his_id
 					    , bool asym);
 

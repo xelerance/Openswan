@@ -515,7 +515,10 @@ osw_get_secret(const struct connection *c
 
     best = osw_find_secret_by_id(pluto_secrets
 				 , kind
-				 , my_id, his_id, asym);
+				 , my_id
+                                 , c->spd.this.key1
+                                 , c->spd.this.key2
+                                 , his_id, asym);
 
     return best;
 }
@@ -541,7 +544,7 @@ osw_get_xauthsecret(const struct connection *c UNUSED
 
     best = osw_find_secret_by_id(pluto_secrets
 				 , PPK_XAUTH
-				 , &xa_id, NULL, TRUE);
+				 , &xa_id, NULL, NULL, NULL, TRUE);
 
     return best;
 }
