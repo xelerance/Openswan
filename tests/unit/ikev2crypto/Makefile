@@ -19,3 +19,4 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 clean check:
 	@${MAKE} -C ct10-parentI2    $@
 	@${MAKE} -C ct12-parentR2    $@
+	@${MAKE} -C ct14-bigkeyI2    $@

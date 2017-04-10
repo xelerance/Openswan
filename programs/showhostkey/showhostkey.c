@@ -219,7 +219,7 @@ struct secret *pick_key(struct secret *host_secrets
     }
 
     s = osw_find_secret_by_id(host_secrets, PPK_RSA
-			      , &id, NULL, TRUE /* asymmetric */);
+			      , &id, NULL, NULL, NULL, TRUE /* asymmetric */);
 
     if(s==NULL) {
 	char abuf[IDTOA_BUF];

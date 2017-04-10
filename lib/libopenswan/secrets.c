@@ -390,16 +390,19 @@ struct secret *osw_find_secret_by_public_key(struct secret *secrets
 struct secret *osw_find_secret_by_id(struct secret *secrets
 				     , enum PrivateKeyKind kind
 				     , const struct id *my_id
+                                     , osw_public_key *key1
+                                     , osw_public_key *key2
 				     , const struct id *his_id
 				     , bool asym)
 {
     char idstr1[IDTOA_BUF], idme[IDTOA_BUF]
 	, idhim[IDTOA_BUF], idhim2[IDTOA_BUF];
     enum {	/* bits */
-	match_default = 01,
-	match_any = 02,
-	match_him = 04,
-	match_me = 010
+	match_default = 0x1,
+	match_any     = 0x2,
+	match_him     = 0x4,
+	match_me      = 0x8,
+        match_me_pubkey = 0x10
     };
     unsigned int best_match = 0;
     struct secret *s, *best = NULL;
@@ -475,11 +478,25 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    match |= match_default;
 	    }
 
+            if(key1) {
+                if(key1 == s->pks.pub ||
+                   memcmp(key1->key_ckaid, s->pks.pub->key_ckaid, sizeof(key1->key_ckaid))==0) {
+                    match = match_me_pubkey;
+                }
+            }
+            if(key2) {
+                if(key2 == s->pks.pub ||
+                   memcmp(key2->key_ckaid, s->pks.pub->key_ckaid, sizeof(key2->key_ckaid))==0) {
+                    match = match_me_pubkey;
+                }
+            }
+
 	    DBG(DBG_CONTROL,
 		DBG_log("line %d: match=%d\n", s->secretlineno, match));
 
 	    switch (match)
 	    {
+            case match_me_pubkey:
 	    case match_me:
 		/* if this is an asymmetric (eg. public key) system,
 		 * allow this-side-only match to count, even if
@@ -526,8 +543,8 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    }
 		    if (!same)
 		    {
-			loglog(RC_LOG_SERIOUS, "multiple ipsec.secrets entries with distinct secrets match endpoints:"
-			    " first secret used");
+			loglog(RC_LOG_SERIOUS, "multiple ipsec.secrets entries with distinct secrets match endpoints: %s",
+                               (match == match_me_pubkey ? " matched by public key" : " first secret used"));
 			best = s;	/* list is backwards: take latest in list */
 		    }
 		}
