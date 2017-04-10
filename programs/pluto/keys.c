@@ -457,20 +457,6 @@ osw_get_secret(const struct connection *c
 	return best;
     }
 
-#if 0
-    /* is there a raw RSA key assigned to this connection? */
-    if (kind == PPK_RSA) {
-	osw_public_key *my_public_key = allocate_RSA_public_key(c->spd.this.cert);
-	passert(my_public_key != NULL);
-
-	best = osw_find_secret_by_public_key(pluto_secrets
-					     , my_public_key, kind);
-
-	free_public_key(my_public_key);
-	return best;
-    }
-#endif
-
 #if defined(AGGRESSIVE)
     if (his_id_was_instantiated(c)
         && (!(c->policy & POLICY_AGGRESSIVE))
