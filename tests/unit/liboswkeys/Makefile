@@ -17,7 +17,8 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 clean check:
-	true
+	@${MAKE} -C ok01-parsepubkey   $@
+
 
 
 

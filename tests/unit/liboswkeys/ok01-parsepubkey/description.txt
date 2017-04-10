@@ -1,0 +1,3 @@
+This tests parsing a public key from a base64 string using the str2pubkey
+function, and generating an appropriate key_ckaid.
+

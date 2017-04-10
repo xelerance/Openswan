@@ -25,7 +25,7 @@ void t1(void)
   assert(ugh == NULL);
 
   printf("ckaid: %s\n", opk.key_ckaid_print_buf);
-  assert(strcmp(opk.key_ckaid_print_buf, "1234 1234")==0);
+  assert(strcmp(opk.key_ckaid_print_buf, "F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3")==0);
 }
 
 
