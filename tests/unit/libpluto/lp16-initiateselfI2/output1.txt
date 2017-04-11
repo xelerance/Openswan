@@ -26,7 +26,7 @@ processing whack msg time: X size: Y
 | orient gateway--any matching on public/private keys: this=no[%address] that=yes[%any]
 |   orient gateway--any matched on that having private key
 | pick_if looking for port: 500, family: 2
-|   considering eth0 port: 500, family: 2, best: <none>/0
+|   considering eth0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 93.184.216.34
 |   orient gateway--any finished with: 1 [93.184.216.34]
 | find_host_pair: looking for me=0.0.0.0:500 %address him=132.213.238.7:500 exact-match
@@ -51,7 +51,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | orient gateway--any matching on public/private keys: this=yes[%any] that=no[%address]
 |   orient gateway--any matched on this having private key
 | pick_if looking for port: 500, family: 2
-|   considering eth0 port: 500, family: 2, best: <none>/0
+|   considering eth0 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 93.184.216.34
 |   orient gateway--any finished with: 1 [93.184.216.34]
 | ICOOKIE:  80 01 02 03  04 05 06 07
