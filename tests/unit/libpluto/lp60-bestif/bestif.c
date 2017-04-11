@@ -48,17 +48,52 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #define TESTNAME "bestif"
 
+int run_permutted_test(unsigned int numbers[6])
+{
+    int i = 0;
+    struct spd_route sr1;
+    struct iface_port *best1;
+
+    sr1.that.host_addr.u.v4.sin_port = 500;
+    sr1.that.host_addr.u.v4.sin_family=AF_INET;
+    ttoaddr_num("132.213.238.7", 0, AF_INET, &sr1.this.host_addr);
+    sr1.this.host_addr.u.v4.sin_port = 500;
+
+    /* generate the permutation desired */
+    interfaces = NULL;
+    for(i=0; i<6; i++) {
+        int selected = numbers[i];
+        if(selected > 5) {
+            return 1;
+        }
+        add_if_to_list(ifaces[selected]);
+    }
+
+    best1 = pick_matching_interfacebyfamily(interfaces,
+                                            500,
+                                            AF_INET,
+                                            &sr1);
+
+    printf("%d%d%d%d%d%d ", numbers[0],numbers[1],numbers[2],numbers[3],numbers[4],numbers[5]);
+    if(best1) {
+        printf("bestif: %s\n",    best1->ip_dev->id_rname);
+    } else {
+        printf("failed to pick\n");
+        return 16;
+    }
+
+    return 0;
+}
+
+
 int main(int argc, char *argv[])
 {
     int   len;
     char *infile;
     char *conn_name;
     int  lineno=0;
-    struct connection *c1;
-    struct state *st;
-    struct iface_port *best1;
-    struct spd_route sr1;
-
+    int  numbers[IFACES_COUNT];
+    int exits = 0;
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;
@@ -67,25 +102,60 @@ int main(int argc, char *argv[])
     progname = argv[0];
     leak_detective = 1;
 
+    /* point stderr at same place as stdout */
+    setbuf(stderr, NULL);
+    setbuf(stdout, NULL);
+
     set_debugging(DBG_ALL);
 
     tool_init_log();
     init_fake_vendorid();
-    init_gatefun_interface();
 
     /* skip argv0 */
     argc--;
     argv++;
 
-    sr1.this.host_addr.u.v6.sin6_port = 500;
-    sr1.that.host_addr.u.v4.sin_port = 500;
+    if(argc > 0 ) {
+        if(argc == 6) {
+            numbers[0] = atoi(argv[0]);
+            numbers[1] = atoi(argv[1]);
+            numbers[2] = atoi(argv[2]);
+            numbers[3] = atoi(argv[3]);
+            numbers[4] = atoi(argv[4]);
+            numbers[5] = atoi(argv[5]);
+            exits = run_permutted_test(numbers);
+        }
+        exit(exits);
+    }
 
-    best1 = pick_matching_interfacebyfamily(interfaces,
-                                            500,
-                                            AF_INET,
-                                            &sr1);
-
-    printf("best: %s %s\n", best1->ip_dev->id_vname, best1->ip_dev->id_rname);
+    for(numbers[0] = 0; numbers[0] < IFACES_COUNT; numbers[0]++) {
+        for(numbers[1] = 0; numbers[1] < IFACES_COUNT; numbers[1]++) {
+            if(numbers[1] == numbers[0]) continue;
+            for(numbers[2] = 0; numbers[2] < IFACES_COUNT; numbers[2]++) {
+                if(numbers[2] == numbers[0]) continue;
+                if(numbers[2] == numbers[1]) continue;
+                for(numbers[3] = 0; numbers[3] < IFACES_COUNT; numbers[3]++) {
+                    if(numbers[3] == numbers[0]) continue;
+                    if(numbers[3] == numbers[1]) continue;
+                    if(numbers[3] == numbers[2]) continue;
+                    for(numbers[4] = 0; numbers[4] < IFACES_COUNT; numbers[4]++) {
+                        if(numbers[4] == numbers[0]) continue;
+                        if(numbers[4] == numbers[1]) continue;
+                        if(numbers[4] == numbers[2]) continue;
+                        if(numbers[4] == numbers[3]) continue;
+                        for(numbers[5] = 0; numbers[5] < IFACES_COUNT; numbers[5]++) {
+                            if(numbers[5] == numbers[0]) continue;
+                            if(numbers[5] == numbers[1]) continue;
+                            if(numbers[5] == numbers[2]) continue;
+                            if(numbers[5] == numbers[3]) continue;
+                            if(numbers[5] == numbers[4]) continue;
+                            exits += run_permutted_test(numbers);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     report_leaks();
 

@@ -22,6 +22,7 @@ void add_if_to_list(struct ifmake *ifm)
   ifport->socktypename = (ifm->family == AF_INET6 ? "AF_INET" : "AF_INET6");
 
   ttoaddr_num(ifm->ifaddr, 0, ifm->family, &ifport->ip_addr);
+  addrtot(&ifport->ip_addr, 0, ifport->addrname, sizeof(ifport->addrname));
   ifport->fd = -1;
   ifport->ike_float = ifm->ike_float;
   ifport->change = IFN_KEEP;
@@ -38,6 +39,8 @@ struct ifmake if_04 = {AF_INET6, "::1", 500, FALSE, "lo"};
 struct ifmake if_05 = {AF_INET, "132.213.238.7", 500, FALSE, "eth1"};
 struct ifmake if_06 = {AF_INET6, "fd68:c9f9:4157::1234", 500, FALSE, "eth3"};
 
+struct ifmake *ifaces[] = {&if_01, &if_02, &if_03, &if_04, &if_05, &if_06};
+#define IFACES_COUNT 6
 
 void init_gatefun_interface(void)
 {
