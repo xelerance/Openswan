@@ -50,9 +50,9 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 | orient ikev2:parker--jj matching on public/private keys: this=no[%defaultroute] that=no[%address]
 |   orient ikev2:parker--jj matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 2
-|   considering eth0 port: 500, family: 2, best: <none>/0
-|   considering eth0 port: 4500, family: 2, best: eth0/20
-|   considering eth0 port: 500, family: 10, best: eth0/20
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 1.1.168.192 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient ikev2:parker--jj finished with: 1 [192.168.1.1]
 | connection ikev2:parker--jj is now oriented
