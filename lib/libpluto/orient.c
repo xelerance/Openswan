@@ -66,7 +66,7 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
                                                    int pluto_port,
                                                    int family, struct spd_route *sr)
 {
-    struct iface_port *ifp = interfaces;
+    struct iface_port *ifp = NULL;
     struct end        *e1  = &sr->this;
     const struct af_info *afi;
     unsigned int       desired_port;
@@ -106,8 +106,8 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         int score = 0;
 
         DBG(DBG_CONTROLMORE,
-            DBG_log("  considering %s port: %u, family: %u, best: %s/%u %d",
-                    ifp->ip_dev->id_rname,
+            DBG_log("  considering %s %s port: %u, family: %u, best: %s/%u %d",
+                    ifp->ip_dev->id_rname, ifp->addrname,
                     ifp->port, ifp->ip_addr.u.v4.sin_family,
                     best_ifp ? best_ifp->ip_dev->id_rname : "<none>",
                     best_score,
@@ -130,6 +130,18 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
             if(!isloopbackaddr(&ifp->ip_addr)) {
                 score += 10;
             }
+
+            /* if the IF interface address matches the the IP address directly, then
+             * take another 20 points.
+             */
+#if 0
+            DBG_log("%08x vs %08x",
+                    ntohl(ifp->ip_addr.u.v4.sin_addr.s_addr), ntohl(e1->host_addr.u.v4.sin_addr.s_addr));
+#endif
+
+            if(ifp->ip_addr.u.v4.sin_addr.s_addr ==  e1->host_addr.u.v4.sin_addr.s_addr && e1->host_addr.u.v4.sin_addr.s_addr != 0) {
+                score += 20;
+            }
             break;
 
         case AF_INET6:
@@ -141,6 +153,17 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
             /* if the IF is *not* a ULA, then take another 10 points */
             if((ifp->ip_addr.u.v6.sin6_addr.s6_addr[0] & 0xfe) != 0xfc)
                 score += 10;
+
+            /*
+             * if the IF interface address exactly matches the the IP address directly, then
+             * take another 128 points: so has to be bigger than 10+10 above.
+             */
+            if(memcmp(&ifp->ip_addr.u.v6.sin6_addr, &e1->host_addr.u.v6.sin6_addr, 16)==0) {
+                score += 128;
+            }
+
+            /* partial matches on IPv6 might be worth while too? */
+
         }
 
         if(score > best_score) {
