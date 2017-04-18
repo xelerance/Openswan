@@ -133,6 +133,9 @@ LC_ALL=C export LC_ALL
 #		is NetworkManager used for resolv.conf update
 #
 
+
+fullsubnet=32
+
 # rpm based systems
 if [ -f /etc/sysconfig/pluto_updown ]
 then
@@ -326,7 +329,7 @@ addsource() {
     if ! ip -o route get ${PLUTO_MY_SOURCEIP%/*} | grep -q ^local; then
 
 	if [ -z "$PLUTO_IS_PEER_CISCO" -o "$PLUTO_IS_PEER_CISCO" = 0 ]; then
-	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/32 dev ${PLUTO_INTERFACE%:*}"
+	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/$fullsubnet dev ${PLUTO_INTERFACE%:*}"
 	else
 	it="ip addr add ${PLUTO_MY_SOURCEIP%/*}/${PLUTO_PEER_CLIENT##*/} dev ${PLUTO_INTERFACE%:*}"
 	fi
@@ -438,7 +441,12 @@ doroute() {
     fi
     return $st
 }
- 
+
+case $PLUTO_CONN_ADDRFAMILY in
+    ipv4) fullsubnet=32;;
+    ipv6) fullsubnet=128;;
+esac
+
 
 # the big choice
 case "$PLUTO_VERB" in
