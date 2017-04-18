@@ -1917,7 +1917,6 @@ setup_half_ipsec_sa(struct state *parent_st
 
     /* set up AH SA, if any */
 
-    DBG(DBG_KLIPS, DBG_log("ah maybe"));
     if (st->st_ah.present)
     {
         ipsec_spi_t ah_spi = inbound? st->st_ah.our_spi : st->st_ah.attrs.spi;
