@@ -1,7 +1,7 @@
-/* netlink interface to the kernel's IPsec mechanism
+/* netlink interface to the kernel's (XFRM/NETKEY) IPsec mechanism
  *
  * Copyright (C) 2003-2008 Herbert Xu
- * Copyright (C) 2006-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006-2017 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2006 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2007 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2007 Ilia Sotnikov
@@ -964,7 +964,8 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
-    req.n.nlmsg_type = replace ? XFRM_MSG_UPDSA : XFRM_MSG_NEWSA;
+    //req.n.nlmsg_type = replace ? XFRM_MSG_UPDSA : XFRM_MSG_NEWSA;
+    req.n.nlmsg_type = XFRM_MSG_NEWSA;
 
     ip2xfrm(sa->src, &req.p.saddr);
     ip2xfrm(sa->dst, &req.p.id.daddr);
@@ -974,7 +975,8 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.family = sa->src->u.v4.sin_family;
 
     if(DBGP(DBG_NETKEY)) {
-        DBG_log("creating SA spi=%08x@%08x proto=%u family=%u"
+        DBG_log("%s SA spi=%08x@%08x proto=%u family=%u"
+                , replace ? "updating" : "creating"
                 , htonl(req.p.id.spi), htonl(req.p.id.daddr.a4), req.p.id.proto, req.p.family);
     }
 
@@ -994,6 +996,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     }
 
     /* indent matching libreswan */
+    {
 	/*
 	 * We only add traffic selectors for transport mode. The problem is
 	 * that Tunnel mode ipsec with ipcomp is layered so that ipcomp
@@ -1267,6 +1270,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 		return netlink_add_sa(sa, FALSE);
 	}
 	return ret;
+    }
 }
 
 /** netlink_del_sa - Delete an SA from the Kernel
