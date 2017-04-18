@@ -1772,7 +1772,7 @@ setup_half_ipsec_sa(struct state *parent_st
 	    outgoing_ref_set  = TRUE;
 	}
 
-        if (!kernel_ops->add_sa(said_next, replace)) {
+        if (!kernel_ops->add_sa(said_next, FALSE)) {
 	    DBG(DBG_KLIPS, DBG_log("add_sa tunnel failed"));
             goto fail;
 	}
