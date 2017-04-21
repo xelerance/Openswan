@@ -51,9 +51,6 @@ void init_parker_interface(bool doipv6)
 
   parker_if1b.ip_addr.u.v4.sin_addr.s_addr = htonl(parker_if1b.ip_addr.u.v4.sin_addr.s_addr);
   init_iface_port(&parker_if1b);
-
-  parker_if1b.ip_addr.u.v4.sin_addr.s_addr = htonl(parker_if1b.ip_addr.u.v4.sin_addr.s_addr);
-  init_iface_port(&parker_if1b);
   parker_if1b.next = interfaces;
   interfaces = &parker_if1b;
 
