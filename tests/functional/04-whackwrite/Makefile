@@ -29,7 +29,9 @@ check:
 	@mkdir -p ${OUTPUTS}
 	@rm -f core
 	@echo processing ${SAMPLEDIR}/dooku.conf
-	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net | tee -a ${OUTPUTS}/dookuload.out | diff - /dev/null
+	@echo >.gdbinit  "file ${READWRITE} "
+	@echo >>.gdbinit "set args --verbose --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net"
+	${READWRITE} --rootdir=${SAMPLEDIR}/dooku --config ${SAMPLEDIR}/dooku.conf --whackout=${OUTPUTS}/dookurecord.whack dooku--cassidy-net 2>&1 | tee ${OUTPUTS}/dookuload.out | diff - dookuload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@strings ${OUTPUTS}/dookurecord.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/dookurecord.whack | grep dooku--cassidy-net >/dev/null
@@ -41,7 +43,7 @@ check:
 	@echo processing ${SAMPLEDIR}/parker.conf parker1-jj2
 	@echo >.gdbinit2b  "file ${READWRITE} "
 	@echo >>.gdbinit2b "set args --verbose --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj "
-	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj | tee ${OUTPUTS}/parkerload.out | diff - /dev/null
+	@${READWRITE} --rootdir=${SAMPLE2DIR}/parker --config ${SAMPLE2DIR}/parker.conf --whackout=${OUTPUTS}/parkerrecord.whack parker1--jj2 ikev2:parker--jj 2>&1 | tee ${OUTPUTS}/parkerload.out | diff - parkerload.txt
 	@if [ -r core ]; then echo CORE DUMP; exit 1; fi
 	@strings ${OUTPUTS}/parkerrecord.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/parkerrecord.whack | grep parker1--jj2 >/dev/null
@@ -50,7 +52,7 @@ check:
 	@echo testing ${SAMPLEDIR}/parker.conf with --all
 	@echo >.gdbinit3 "file ${READWRITE} "
 	@echo >>.gdbinit3 "set args ${TEST3ARGS}"
-	@${READWRITE} ${TEST3ARGS} | tee ${OUTPUTS}/parkerload2.out | diff - /dev/null
+	@${READWRITE} ${TEST3ARGS} 2>&1 | tee ${OUTPUTS}/parkerload2.out | diff - parkerload2.txt
 	@strings ${OUTPUTS}/parkerrecord2.whack | grep pluto-whack-file >/dev/null
 	@strings ${OUTPUTS}/parkerrecord2.whack | grep parker1--jj2 >/dev/null
 	@strings ${OUTPUTS}/parkerrecord2.whack | grep ikev2:parker--jj >/dev/null
@@ -58,6 +60,10 @@ check:
 
 update:
 	cp ../OUTPUTS/parker1load.out  output2.txt
+	cp ../OUTPUTS/parkerload2.out  parkerload2.txt
+	cp ../OUTPUTS/dookuload.out    dookuload.txt
+	cp ../OUTPUTS/parkerload.out   parkerload.txt
+
 
 
 

@@ -1,0 +1,8 @@
+OUTPUT
+core.*
+*.o
+rekeyv2nopfs-R1
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit

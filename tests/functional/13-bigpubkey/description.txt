@@ -1,0 +1,10 @@
+This test validates that a big public key (4096 bits) is loaded sanely
+by addconn into pluto, using the whackmsg transport.
+(tests/unit/lo02-verifysigs loads the public key with the private key,
+while tests/unit/lo04-verifypubkeys loads the public keys directly from
+their base64 representation)
+
+The key in berri.conf comes from: tests/unit/libopenswan/lo04-verifypubkeys/pubkey-4096.pubkey
+The ipsec.secrets used is from tests/unit/libopenswan/lo02-verifysigs/key-4096.secrets.
+
+

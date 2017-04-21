@@ -1,0 +1,17 @@
+This test case is an IKEv2 initiator on I2.
+This uses the proper cryptographic options to form a *signature*
+(the DH is still link seamed to constants).
+
+In this test case, there are two keys loaded (via twosecrets.secrets),
+and pluto must pick the one that corresponds to the public mentioned in
+leftrsasigkey=.  This is key: AQN7wUerV, the 2048 bit one.
+
+It is a copy of lp10-parentI2 and ct10.
+
+
+
+
+
+
+
+

@@ -1,3 +1,6 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 1384, bad cksum 0 (->cccd)!)
-    132.213.238.7.500 > 93.184.216.34.500: isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[R]:
-    (v2e: len=1324)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 64, bad cksum 0 (->d1f5)!)
+    132.213.238.7.500 > 93.184.216.34.500: isakmp 2.0 msgid 00000000: parent_sa ikev2_init[R]:
+    (n: prot_id=isakmp type=24(authentication_failed))
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 104, bad cksum 0 (->d1cd)!)
+    132.213.238.7.500 > 93.184.216.34.500: isakmp 2.0 msgid 00000001: child_sa  inf2:
+    (v2e: len=44)

@@ -171,6 +171,9 @@ struct end {
     cert_t  cert;		/* end certificate */
 
     chunk_t ca;			/* CA distinguished name */
+
+    struct pubkey *key1, *key2;  /* references to the public key to be used to authenticate this connection */
+
     struct ietfAttrList *groups;/* access control groups */
 
     struct virtual_t *virt;
@@ -262,7 +265,7 @@ struct connection {
     lset_t extra_debugging;
 
     /* note: if the client is the gateway, the following must be equal */
-    sa_family_t addr_family;		/* between gateways */
+    sa_family_t end_addr_family;	/* between gateways */
     sa_family_t tunnel_addr_family;	/* between clients */
 
     struct connection *policy_next; /* if multiple policies,

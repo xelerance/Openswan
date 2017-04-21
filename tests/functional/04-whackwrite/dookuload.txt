@@ -1,0 +1,3 @@
+writing record 1 to whack file
+writing record 2 to whack file
+writing record 3 to whack file

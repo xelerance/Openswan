@@ -1,10 +1,12 @@
 ./threeconns loading secrets from "../samples/parker.secrets"
-./threeconns loaded private key for keyid: PPK_RSA:AQN7wUerV
+./threeconns loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./threeconns loaded key: 16F4 0495 C87E ACE1 C98D DFE5 12E2 15B4 9799 BBC3
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./threeconns loaded key: CAF2 6DCD 2A21 3302 32A9 88A8 7A5D BB3D 3C33 C16C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection vzhost1-vzhost-mondev with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
@@ -109,6 +111,8 @@ RC=0 "vzhost1-vzhost-mondev":   ESP algorithms loaded: none
 ./threeconns leak: default conf ipsecd_dir, item size: X
 ./threeconns leak: default conf ipsec_conf_dir, item size: X
 ./threeconns leak: 2 * id list, item size: X
+./threeconns leak: rfc3110 format of public key [created], item size: X
+./threeconns leak: pubkey, item size: X
 ./threeconns leak: secret, item size: X
 ./threeconns leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO

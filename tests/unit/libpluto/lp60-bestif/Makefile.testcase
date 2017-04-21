@@ -1,0 +1,8 @@
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+SAMPLEDIR=../samples
+WHACKREFFILE=/dev/null
+ENDNAME=parker
+CONNNAME=parker1--jj2 ikev2:parker--jj
+UNITTESTARGS=
+
+TESTNAME=bestif

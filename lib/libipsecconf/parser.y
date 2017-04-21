@@ -37,7 +37,7 @@
 static char parser_errstring[ERRSTRING_LEN+1];
 void yyerror(const char *s);
 extern int yylex (void);
-static struct kw_list *alloc_kwlist(void);
+static struct kw_list *alloc_kwlist(unsigned int lineno);
 static struct starter_comments *alloc_comment(void);
 static void process_keyword_equal(struct keyword kw, struct kw_list *new, const char *const_string);
 
@@ -149,7 +149,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
+		new = alloc_kwlist(parser_cur_lineno());
 		if (!new) {
 		    yyerror("can't allocate memory in statement_kw");
 		} else {
@@ -185,7 +185,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
+		new = alloc_kwlist(parser_cur_lineno());
 		if (!new) {
 		    yyerror("can't allocate memory in statement_kw");
 		} else {
@@ -206,7 +206,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
+		new = alloc_kwlist(parser_cur_lineno());
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -224,7 +224,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
+		new = alloc_kwlist(parser_cur_lineno());
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -278,7 +278,7 @@ statement_kw:
 	        if(!fail)
                 {
 		  assert(_parser_kw != NULL);
-		  new = alloc_kwlist();
+                  new = alloc_kwlist(parser_cur_lineno());
 		  if (new) {
 		    new->keyword = $1;
 		    new->number = val;
@@ -328,7 +328,8 @@ statement_kw:
 	        if(!fail)
                 {
 		  assert(_parser_kw != NULL);
-		  new = alloc_kwlist();
+		  new = alloc_kwlist(parser_cur_lineno());
+
 		  if (new) {
 		    new->keyword = $1;
 		    new->number = val;
@@ -347,7 +348,7 @@ statement_kw:
 		struct kw_list *new;
 
 		assert(_parser_kw != NULL);
-		new = alloc_kwlist();
+		new = alloc_kwlist(parser_cur_lineno());
 		if (new) {
 		    new->keyword = $1;
 		    new->number = $<num>3;  /* Should not be necessary! */
@@ -471,12 +472,13 @@ void parser_free_conf (struct config_parsed *cfg)
 	}
 }
 
-struct kw_list *alloc_kwlist(void)
+struct kw_list *alloc_kwlist(unsigned int lineno)
 {
 	struct kw_list *new;
 
 	new = (struct kw_list *)malloc(sizeof(struct kw_list));
 	memset(new, 0, sizeof(struct kw_list));
+        new->lineno = lineno;
 	return new;
 }
 

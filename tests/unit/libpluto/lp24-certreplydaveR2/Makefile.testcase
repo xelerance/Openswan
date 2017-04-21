@@ -10,6 +10,12 @@ ENDNAME=gatewaycert
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 
+pcapupdate:
+	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap carolI1.pcap
+	cp ../lp20-certificateselfI2/OUTPUT/parentI2.pcap          carolI2.pcap
+	cp ../lp23-davecertI1/OUTPUT/davecertI1.pcap               davecertI1.pcap
+	cp ../lp26-davecertI2/OUTPUT/parentI2.pcap                 davecertI2.pcap
+
 # Local Variables:
 # gdb-command: ""
 # End Variables:

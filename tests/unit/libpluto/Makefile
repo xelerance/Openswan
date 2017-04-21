@@ -34,11 +34,11 @@ clean check:
 	@${MAKE} -C lp14-initiateself $@
 	@${MAKE} -C lp15-respondself $@
 	@${MAKE} -C lp16-initiateselfI2 $@
-	: @${MAKE} -C lp17-childselfpolicy $@
+	@${MAKE} -C lp17-childselfpolicy $@
 	@${MAKE} -C lp18-certificateselfI1 $@
 	@${MAKE} -C lp19-certreplyselfR1 $@
 	@${MAKE} -C lp20-certificateselfI2 $@
-	: @${MAKE} -C lp21-certreplyselfR2 $@
+	@${MAKE} -C lp21-certreplyselfR2 $@
 	@${MAKE} -C lp22-certreplymanyR2  $@
 	@${MAKE} -C lp23-davecertI1       $@
 	@${MAKE} -C lp24-certreplydaveR2  $@
@@ -49,12 +49,11 @@ clean check:
 	@${MAKE} -C lp29-adns              $@
 	@${MAKE} -C lp30-dnskick           $@
 	@${MAKE} -C lp31-IDhostpair       $@
-	: @${MAKE} -C lp32-parentR2anychoice $@
+	@${MAKE} -C lp32-parentR2anychoice $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp33-dnsload2          $@
 	@${MAKE} -C lp33-IDanypair         $@
 	@${MAKE} -C lp34-orientafterlisten  $@
-	@if [ $$(uname -m) == "x86_64" ]; then ${MAKE} -C lp35-threeconns  $@; fi
 	@${MAKE} -C lp36-h2hI1            $@
 	@${MAKE} -C lp37-h2hR1            $@
 	@${MAKE} -C lp38-h2hI2            $@
@@ -68,4 +67,13 @@ clean check:
 	@${MAKE} -C lp46-rekeyikev2-I1   $@
 	@${MAKE} -C lp47-rekeyikev2-R1   $@
 	@${MAKE} -C lp48-rekeyikev2-inCR1 $@
+	@${MAKE} -C lp50-rekey-no-reply-rekey $@
+	@${MAKE} -C lp52-davecert-gatewayID-I1  $@
+	@${MAKE} -C lp53-davecert-gatewayID-R1  $@
+	@${MAKE} -C lp54-davecert-gatewayID-I2  $@
+	@${MAKE} -C lp55-davecert-gatewayID-R2  $@
+	@${MAKE} -C lp56-rekeyv2nopfs-I1  $@
+	@${MAKE} -C lp57-rekeyv2nopfs-R1  $@
+	@${MAKE} -C lp58-rekeyv2nopfs-inCR1  $@
+	@${MAKE} -C lp60-bestif                 $@
 

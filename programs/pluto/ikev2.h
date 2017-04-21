@@ -65,10 +65,8 @@ extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
-extern stf_status ikev2child_inCI1_pfs(struct msg_digest *md);
-extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
-extern stf_status ikev2child_inCR1_pfs(struct msg_digest *md);
-extern stf_status ikev2child_inCR1_nopfs(struct msg_digest *md);
+extern stf_status ikev2child_inCI1(struct msg_digest *md);
+extern stf_status ikev2child_inCR1(struct msg_digest *md);
 extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
                                                           , struct state *st);
 extern stf_status ikev2_child_notify_process(struct msg_digest *md

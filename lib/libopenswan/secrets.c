@@ -1,5 +1,5 @@
 /*
- * mechanisms for preshared keys (public, private, and preshared secrets)
+ * Mechanismsg for preshared keys (public, private, and preshared secrets)
  * this is the library for reading (and later, writing!) the ipsec.secrets
  * files.
  *
@@ -47,7 +47,9 @@
 #include "oswtime.h"
 #include "id.h"
 #include "x509.h"
+#include "secrets_int.h"
 #include "secrets.h"
+#include "oswkeys.h"
 #include "certs.h"
 #include "lex.h"
 #include "mpzfuncs.h"
@@ -67,171 +69,117 @@
 /* this does not belong here, but leave it here for now */
 const struct id empty_id;	/* ID_NONE */
 
-struct fld {
-    const char *name;
-    size_t offset;
-};
-
-static const struct fld RSA_private_field[] =
+const struct fld RSA_private_field[] =
 {
-    { "Modulus", offsetof(struct RSA_private_key, pub.n) },
-    { "PublicExponent", offsetof(struct RSA_private_key, pub.e) },
-
-    { "PrivateExponent", offsetof(struct RSA_private_key, d) },
-    { "Prime1", offsetof(struct RSA_private_key, p) },
-    { "Prime2", offsetof(struct RSA_private_key, q) },
-    { "Exponent1", offsetof(struct RSA_private_key, dP) },
-    { "Exponent2", offsetof(struct RSA_private_key, dQ) },
-    { "Coefficient", offsetof(struct RSA_private_key, qInv) },
+    { "Modulus",         MODULUS, 0 }, /* pub.n */
+    { "PublicExponent",  PUBLIC_E, 0}, /* pub.e */
+    { "PrivateExponent", PRIVATE, offsetof(struct RSA_private_key, d) },
+    { "Prime1",          PRIVATE, offsetof(struct RSA_private_key, p) },
+    { "Prime2",          PRIVATE, offsetof(struct RSA_private_key, q) },
+    { "Exponent1",       PRIVATE, offsetof(struct RSA_private_key, dP) },
+    { "Exponent2",       PRIVATE, offsetof(struct RSA_private_key, dQ) },
+    { "Coefficient",     PRIVATE, offsetof(struct RSA_private_key, qInv) },
 #ifdef HAVE_LIBNSS
-    { "CKAIDNSS", offsetof(struct RSA_private_key, ckaid) },
+    { "CKAIDNSS",        PRIVATE, offsetof(struct RSA_private_key, ckaid) },
 #endif
 
 };
+const int RSA_private_field_count = elemsof(RSA_private_field);
 
 static err_t osw_process_psk_secret(const struct secret *secrets
 				    , chunk_t *psk);
 static err_t osw_process_rsa_secret(const struct secret *secrets
-				    , struct RSA_private_key *rsak);
+                                    , struct private_key_stuff *pks);
 static err_t osw_process_rsa_keyfile(struct secret **psecrets
 				     , int verbose
-				     , struct RSA_private_key *rsak
+                                     , struct private_key_stuff *pks
 				     , prompt_pass_t *pass);
 
-#ifdef DEBUG
-static void
-RSA_show_key_fields(struct RSA_private_key *k, int fieldcnt)
-{
-    const struct fld *p;
-
-    DBG_log(" keyid: *%s", k->pub.keyid);
-
-    for (p = RSA_private_field; p < &RSA_private_field[fieldcnt]; p++)
-    {
-	MP_INT *n = (MP_INT *) ((char *)k + p->offset);
-	size_t sz = mpz_sizeinbase(n, 16);
-	char buf[RSA_MAX_OCTETS * 2 + 2];	/* ought to be big enough */
-
-	passert(sz <= sizeof(buf));
-	mpz_get_str(buf, 16, n);
-
-	DBG_log(" %s: %s", p->name, buf);
-    }
-}
-
-/* debugging info that compromises security! */
-#ifndef HAVE_LIBNSS
-static void
-RSA_show_private_key(struct RSA_private_key *k)
-{
-    RSA_show_key_fields(k, elemsof(RSA_private_field));
-}
-#endif
-
-static void
-RSA_show_public_key(struct RSA_public_key *k)
-{
-    /* Kludge: pretend that it is a private key, but only display the
-     * first two fields (which are the public key).
-     */
-    passert(offsetof(struct RSA_private_key, pub) == 0);
-    RSA_show_key_fields((struct RSA_private_key *)k, 2);
-}
-#endif
-
-#ifdef HAVE_LIBNSS
 static const char *
-RSA_public_key_sanity(struct RSA_private_key *k)
+RSA_public_key_sanity_base(struct private_key_stuff *k)
 {
     /* note that the *last* error found is reported */
     err_t ugh = NULL;
 
-#ifdef DEBUG    /* debugging info that compromises security */
-    DBG(DBG_PRIVATE, RSA_show_public_key(&k->pub));
-#endif
-
     /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
- *      * We actually require more (for security).
- *           */
-    if (k->pub.k < RSA_MIN_OCTETS)
-        return RSA_MIN_OCTETS_UGH;
+     * We actually require more (for security).
+     */
+    if (k->pub->u.rsa.k < RSA_MIN_OCTETS)
+	return RSA_MIN_OCTETS_UGH;
 
     /* we picked a max modulus size to simplify buffer allocation */
-    if (k->pub.k > RSA_MAX_OCTETS)
-        return RSA_MAX_OCTETS_UGH;
+    if (k->pub->u.rsa.k > RSA_MAX_OCTETS)
+	return RSA_MAX_OCTETS_UGH;
 
    return ugh;
 }
-#else
+
+#ifndef HAVE_LIBNSS
 static const char *
-RSA_private_key_sanity(struct RSA_private_key *k)
+RSA_private_key_sanity(struct private_key_stuff *k)
 {
     /* note that the *last* error found is reported */
     err_t ugh = NULL;
     mpz_t t, u, q1;
 
-#ifdef DEBUG	/* debugging info that compromises security */
-    DBG(DBG_PRIVATE, RSA_show_private_key(k));
+    if(k->kind != PPK_RSA)
+        return "Not an RSA key";
+
+#if 0	/* debugging info that compromises security */
+    RSA_show_key_fields(k);
 #endif
 
-    /* PKCS#1 1.5 section 6 requires modulus to have at least 12 octets.
-     * We actually require more (for security).
-     */
-    if (k->pub.k < RSA_MIN_OCTETS)
-	return RSA_MIN_OCTETS_UGH;
-
-    /* we picked a max modulus size to simplify buffer allocation */
-    if (k->pub.k > RSA_MAX_OCTETS)
-	return RSA_MAX_OCTETS_UGH;
+    ugh = RSA_public_key_sanity_base(k);
+    if(ugh) return ugh;
 
     mpz_init(t);
     mpz_init(u);
     mpz_init(q1);
 
     /* check that n == p * q */
-    mpz_mul(u, &k->p, &k->q);
-    if (mpz_cmp(u, &k->pub.n) != 0)
+    mpz_mul(u, &k->u.RSA_private_key.p, &k->u.RSA_private_key.q);
+    if (mpz_cmp(u, &k->pub->u.rsa.n) != 0)
 	ugh = "n != p * q";
 
     /* check that e divides neither p-1 nor q-1 */
-    mpz_sub_ui(t, &k->p, 1);
-    mpz_mod(t, t, &k->pub.e);
+    mpz_sub_ui(t, &k->u.RSA_private_key.p, 1);
+    mpz_mod(t, t, &k->pub->u.rsa.e);
     if (mpz_cmp_ui(t, 0) == 0)
 	ugh = "e divides p-1";
 
-    mpz_sub_ui(t, &k->q, 1);
-    mpz_mod(t, t, &k->pub.e);
+    mpz_sub_ui(t, &k->u.RSA_private_key.q, 1);
+    mpz_mod(t, t, &k->pub->u.rsa.e);
     if (mpz_cmp_ui(t, 0) == 0)
 	ugh = "e divides q-1";
 
     /* check that d is e^-1 (mod lcm(p-1, q-1)) */
     /* see PKCS#1v2, aka RFC 2437, for the "lcm" */
-    mpz_sub_ui(q1, &k->q, 1);
-    mpz_sub_ui(u, &k->p, 1);
+    mpz_sub_ui(q1, &k->u.RSA_private_key.q, 1);
+    mpz_sub_ui(u, &k->u.RSA_private_key.p, 1);
     mpz_gcd(t, u, q1);		/* t := gcd(p-1, q-1) */
     mpz_mul(u, u, q1);		/* u := (p-1) * (q-1) */
     mpz_divexact(u, u, t);	/* u := lcm(p-1, q-1) */
 
-    mpz_mul(t, &k->d, &k->pub.e);
+    mpz_mul(t, &k->u.RSA_private_key.d, &k->pub->u.rsa.e);
     mpz_mod(t, t, u);
     if (mpz_cmp_ui(t, 1) != 0)
 	ugh = "(d * e) mod (lcm(p-1, q-1)) != 1";
 
     /* check that dP is d mod (p-1) */
-    mpz_sub_ui(u, &k->p, 1);
-    mpz_mod(t, &k->d, u);
-    if (mpz_cmp(t, &k->dP) != 0)
+    mpz_sub_ui(u, &k->u.RSA_private_key.p, 1);
+    mpz_mod(t, &k->u.RSA_private_key.d, u);
+    if (mpz_cmp(t, &k->u.RSA_private_key.dP) != 0)
 	ugh = "dP is not congruent to d mod (p-1)";
 
     /* check that dQ is d mod (q-1) */
-    mpz_sub_ui(u, &k->q, 1);
-    mpz_mod(t, &k->d, u);
-    if (mpz_cmp(t, &k->dQ) != 0)
+    mpz_sub_ui(u, &k->u.RSA_private_key.q, 1);
+    mpz_mod(t, &k->u.RSA_private_key.d, u);
+    if (mpz_cmp(t, &k->u.RSA_private_key.dQ) != 0)
 	ugh = "dQ is not congruent to d mod (q-1)";
 
     /* check that qInv is (q^-1) mod p */
-    mpz_mul(t, &k->qInv, &k->q);
-    mpz_mod(t, t, &k->p);
+    mpz_mul(t, &k->u.RSA_private_key.qInv, &k->u.RSA_private_key.q);
+    mpz_mod(t, t, &k->u.RSA_private_key.p);
     if (mpz_cmp_ui(t, 1) != 0)
 	ugh = "qInv is not conguent ot (q^-1) mod p";
 
@@ -347,10 +295,6 @@ allocate_RSA_public_key(const cert_t cert)
 
     form_keyid(e, n, pk->u.rsa.keyid, &pk->u.rsa.k);
 
-#ifdef DEBUG
-    DBG(DBG_PRIVATE, RSA_show_public_key(&pk->u.rsa));
-#endif
-
     pk->alg = PUBKEY_ALG_RSA;
     pk->id  = empty_id;
     pk->issuer = empty_chunk;
@@ -360,6 +304,7 @@ allocate_RSA_public_key(const cert_t cert)
 
 void free_RSA_public_content(struct RSA_public_key *rsa)
 {
+    freeanychunk(rsa->key_rfc3110);
     mpz_clear(&rsa->n);
     mpz_clear(&rsa->e);
 }
@@ -401,8 +346,8 @@ struct secret *osw_foreach_secret(struct secret *secrets,
 }
 
 struct secret_byid {
-    int            kind;
-    struct pubkey *my_public_key;
+    int             kind;
+    osw_public_key *my_public_key;
 };
 
 int osw_check_secret_byid(struct secret *secret,
@@ -414,12 +359,12 @@ int osw_check_secret_byid(struct secret *secret,
     DBG(DBG_CONTROL,
 	DBG_log("searching for certificate %s:%s vs %s:%s"
 		, enum_name(&ppk_names, pks->kind)
-		, (pks->kind==PPK_RSA?pks->u.RSA_private_key.pub.keyid : "N/A")
+		, (pks->kind==PPK_RSA ? pks->pub->u.rsa.keyid : "N/A")
 		, enum_name(&ppk_names, sb->kind)
 		, sb->my_public_key->u.rsa.keyid)
 	);
     if (pks->kind == sb->kind &&
-	same_RSA_public_key(&pks->u.RSA_private_key.pub
+	same_RSA_public_key(&pks->pub->u.rsa
 			    , &sb->my_public_key->u.rsa))
     {
 	return 0;
@@ -445,16 +390,19 @@ struct secret *osw_find_secret_by_public_key(struct secret *secrets
 struct secret *osw_find_secret_by_id(struct secret *secrets
 				     , enum PrivateKeyKind kind
 				     , const struct id *my_id
+                                     , osw_public_key *key1
+                                     , osw_public_key *key2
 				     , const struct id *his_id
 				     , bool asym)
 {
     char idstr1[IDTOA_BUF], idme[IDTOA_BUF]
 	, idhim[IDTOA_BUF], idhim2[IDTOA_BUF];
     enum {	/* bits */
-	match_default = 01,
-	match_any = 02,
-	match_him = 04,
-	match_me = 010
+	match_default = 0x1,
+	match_any     = 0x2,
+	match_him     = 0x4,
+	match_me      = 0x8,
+        match_me_pubkey = 0x10
     };
     unsigned int best_match = 0;
     struct secret *s, *best = NULL;
@@ -530,11 +478,25 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    match |= match_default;
 	    }
 
+            if(key1) {
+                if(key1 == s->pks.pub ||
+                   memcmp(key1->key_ckaid, s->pks.pub->key_ckaid, sizeof(key1->key_ckaid))==0) {
+                    match = match_me_pubkey;
+                }
+            }
+            if(key2) {
+                if(key2 == s->pks.pub ||
+                   memcmp(key2->key_ckaid, s->pks.pub->key_ckaid, sizeof(key2->key_ckaid))==0) {
+                    match = match_me_pubkey;
+                }
+            }
+
 	    DBG(DBG_CONTROL,
 		DBG_log("line %d: match=%d\n", s->secretlineno, match));
 
 	    switch (match)
 	    {
+            case match_me_pubkey:
 	    case match_me:
 		/* if this is an asymmetric (eg. public key) system,
 		 * allow this-side-only match to count, even if
@@ -570,8 +532,8 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 			 * make the assumption that equal public keys
 			 * mean equal private keys.  This ought to work.
 			 */
-			same = same_RSA_public_key(&s->pks.u.RSA_private_key.pub
-						   , &best->pks.u.RSA_private_key.pub);
+			same = same_RSA_public_key(&s->pks.pub->u.rsa
+						   , &best->pks.pub->u.rsa);
 			break;
 		    case PPK_XAUTH:
 			/* We don't support this yet, but no need to die */
@@ -581,17 +543,17 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 		    }
 		    if (!same)
 		    {
-			loglog(RC_LOG_SERIOUS, "multiple ipsec.secrets entries with distinct secrets match endpoints:"
-			    " first secret used");
+			loglog(RC_LOG_SERIOUS, "multiple ipsec.secrets entries with distinct secrets match endpoints: %s",
+                               (match == match_me_pubkey ? " matched by public key" : " first secret used"));
 			best = s;	/* list is backwards: take latest in list */
 		    }
 		}
 		else if (match > best_match)
 		{
 		    DBG(DBG_CONTROL,
-			DBG_log("best_match %d>%d best=%p (line=%d)"
+			DBG_log("best_match %d>%d line=%d"
 				, best_match, match
-				, s, s->secretlineno));
+				, s->secretlineno));
 
 		    /* this is the best match so far */
 		    best_match = match;
@@ -605,8 +567,8 @@ struct secret *osw_find_secret_by_id(struct secret *secrets
 	}
     }
     DBG(DBG_CONTROL,
-	DBG_log("concluding with best_match=%d best=%p (lineno=%d)"
-		, best_match, best, best? best->secretlineno : -1));
+	DBG_log("concluding with best_match=%d lineno=%d"
+		, best_match, best? best->secretlineno : -1));
 
     return best;
 }
@@ -618,7 +580,7 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
 {
     struct secret *s;
     bool has_key = FALSE;
-    struct pubkey *pubkey;
+    osw_public_key *pubkey;
 
     pubkey = allocate_RSA_public_key(cert);
 
@@ -627,7 +589,7 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
     for (s = secrets; s != NULL; s = s->next)
     {
 	if (s->pks.kind == PPK_RSA &&
-	    same_RSA_public_key(&s->pks.u.RSA_private_key.pub, &pubkey->u.rsa))
+	    same_RSA_public_key(&s->pks.pub->u.rsa, &pubkey->u.rsa))
 	{
 	    has_key = TRUE;
 	    break;
@@ -638,12 +600,14 @@ bool osw_has_private_key(struct secret *secrets, cert_t cert)
 }
 
 #ifdef HAVE_LIBNSS
-err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName)
+err_t extract_and_add_secret_from_nss_cert_file(struct private_key_stuff *pks, char *nssHostCertNickName)
 {
     err_t ugh = NULL;
     SECItem *certCKAID;
     SECKEYPublicKey *pubk;
     CERTCertificate *nssCert;
+
+    struct RSA_private_key *rsak = &pks->u.RSA_private_key;
 
     DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file  start"));
 
@@ -677,17 +641,17 @@ err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, ch
     }
     DBG(DBG_CRYPT, DBG_log("NSS: extract_and_add_secret_from_nss_cert_file: ckaid found"));
 
-    rsak->pub.nssCert=nssCert;
+    pks->pub->nssCert=nssCert;
 
     rsak->ckaid_len=certCKAID->len;
     memcpy(rsak->ckaid,certCKAID->data,certCKAID->len);
 
-    n_to_mpz(&rsak->pub.e, pubk->u.rsa.publicExponent.data, pubk->u.rsa.publicExponent.len);
-    n_to_mpz(&rsak->pub.n, pubk->u.rsa.modulus.data, pubk->u.rsa.modulus.len);
+    n_to_mpz(&pks->pub->u.rsa.e, pubk->u.rsa.publicExponent.data, pubk->u.rsa.publicExponent.len);
+    n_to_mpz(&pks->pub->u.rsa.n, pubk->u.rsa.modulus.data, pubk->u.rsa.modulus.len);
 
-    form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, rsak->pub.keyid, &rsak->pub.k);
+    form_keyid_from_nss(pubk->u.rsa.publicExponent,pubk->u.rsa.modulus, pks->pub->u.rsa.keyid, &pks->pub->u.rsa.k);
 
-    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",rsak->pub.k);*/
+    /*loglog(RC_LOG_SERIOUS, "extract_and_add_secret_from_nsscert: before free (value of k %d)",pks->u.rsa.k);*/
     SECITEM_FreeItem(certCKAID, PR_TRUE);
 
 error2:
@@ -712,7 +676,7 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
     for (s = secrets; s != NULL; s = s->next)
     {
 	if (s->pks.kind == PPK_RSA &&
-	    same_RSA_public_key(&s->pks.u.RSA_private_key.pub, &pk->u.rsa))
+	    same_RSA_public_key(&s->pks.pub->u.rsa, &pk->u.rsa))
 	{
 	    has_key = TRUE;
 	    break;
@@ -720,6 +684,16 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
     }
     return has_key;
 }
+
+void private_key_setup(struct private_key_stuff *pks)
+{
+    if(pks->pub == NULL) {
+        pks->pub = alloc_thing(osw_public_key, "pubkey");
+        pks->pub->alg = PUBKEY_ALG_RSA;
+        reference_key(pks->pub);
+    }
+}
+
 
 /* digest a secrets file
  *
@@ -766,7 +740,7 @@ bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk)
  */
 err_t osw_process_rsa_keyfile(struct secret **psecrets
 			      , int verbose
-			      , struct RSA_private_key *rsak
+			      , struct private_key_stuff *pks
 			      , prompt_pass_t *pass)
 {
     char filename[BUF_LEN];
@@ -818,8 +792,8 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
     }
 
 #ifdef HAVE_LIBNSS
-    ugh = extract_and_add_secret_from_nss_cert_file(rsak, filename);
-    if(ugh==NULL) return RSA_public_key_sanity(rsak);
+    ugh = extract_and_add_secret_from_nss_cert_file(pks, filename);
+    if(ugh==NULL) return RSA_public_key_sanity_base(pks);
 #else
     key = load_rsa_private_key(filename, verbose, pass);
     if (key == NULL)
@@ -829,9 +803,26 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	mpz_t u;
 	u_int i;
 
+        private_key_setup(pks);
+
 	for (i = 0; ugh == NULL && i < elemsof(RSA_private_field); i++)
 	{
-	    MP_INT *n = (MP_INT *) ((char *)rsak + RSA_private_field[i].offset);
+            const struct fld *f1 = &RSA_private_field[i];
+            MP_INT *n = NULL;
+
+
+            switch(f1->type) {
+            default:
+            case PRIVATE:
+                n = (MP_INT *) ((char *)(&pks->u.RSA_private_key) + f1->offset);
+                break;
+            case MODULUS:
+                n = &pks->pub->u.rsa.n;
+                break;
+            case PUBLIC_E:
+                n = &pks->pub->u.rsa.e;
+                break;
+            }
 
 	    if (key->field[i].len > 0)
 	    {
@@ -840,6 +831,7 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 	    }
 	    else
 	    {
+                struct RSA_private_key *rsak = &pks->u.RSA_private_key;
 		/* PGP RSA private key format - missing fields */
 		switch (i)
 		{
@@ -866,9 +858,9 @@ err_t osw_process_rsa_keyfile(struct secret **psecrets
 		}
 	    }
 	}
-	form_keyid(key->field[1], key->field[0], rsak->pub.keyid,
-		   &rsak->pub.k);
-	ugh = RSA_private_key_sanity(rsak);
+	form_keyid(key->field[1], key->field[0], pks->pub->u.rsa.keyid,
+		   &pks->pub->u.rsa.k);
+	ugh = RSA_private_key_sanity(pks);
 	pfree(key->keyobject.ptr);
 	pfree(key);
     }
@@ -955,7 +947,7 @@ static err_t osw_process_xauth_secret(const struct secret *secrets, chunk_t *xau
  */
 static err_t
 osw_process_rsa_secret(const struct secret *secrets
-		       , struct RSA_private_key *rsak)
+                       , struct private_key_stuff *pks)
 {
     unsigned char buf[RSA_MAX_ENCODING_BYTES];	/* limit on size of binary representation of key */
     const struct fld *p;
@@ -965,6 +957,10 @@ osw_process_rsa_secret(const struct secret *secrets
     unsigned char *eb_next = ebytes;
     chunk_t pub_bytes[2];
     chunk_t *pb_next = &pub_bytes[0];
+
+    /* short cut */
+    struct RSA_private_key *rsak = &pks->u.RSA_private_key;
+    private_key_setup(pks);
 
     for (p = RSA_private_field; p < &RSA_private_field[elemsof(RSA_private_field)]; p++)
     {
@@ -1003,7 +999,20 @@ osw_process_rsa_secret(const struct secret *secrets
 	    }
            else {
 #endif
-	    MP_INT *n = (MP_INT *) ((char *)rsak + p->offset);
+               MP_INT *n = NULL;
+
+               switch(p->type) {
+               default:
+               case PRIVATE:
+                   n = (MP_INT *) ((char *)rsak + p->offset);
+                   break;
+               case MODULUS:
+                   n = &pks->pub->u.rsa.n;
+                   break;
+               case PUBLIC_E:
+                   n = &pks->pub->u.rsa.e;
+                   break;
+               }
 
 	    n_to_mpz(n, buf, sz);
 	    if (pb_next < &pub_bytes[elemsof(pub_bytes)])
@@ -1048,17 +1057,17 @@ osw_process_rsa_secret(const struct secret *secrets
     }
     else
     {
-	unsigned bits = mpz_sizeinbase(&rsak->pub.n, 2);
+	unsigned bits = mpz_sizeinbase(&pks->pub->u.rsa.n, 2);
 
-	rsak->pub.k = (bits + BITS_PER_BYTE - 1) / BITS_PER_BYTE;
-	rsak->pub.keyid[0] = '\0';	/* in case of splitkeytoid failure */
+	pks->pub->u.rsa.k = (bits + BITS_PER_BYTE - 1) / BITS_PER_BYTE;
+	pks->pub->u.rsa.keyid[0] = '\0';	/* in case of splitkeytoid failure */
 	splitkeytoid(pub_bytes[1].ptr, pub_bytes[1].len
-	    , pub_bytes[0].ptr, pub_bytes[0].len
-	    , rsak->pub.keyid, sizeof(rsak->pub.keyid));
+                     , pub_bytes[0].ptr, pub_bytes[0].len
+                     , pks->pub->u.rsa.keyid, sizeof(pks->pub->u.rsa.keyid));
 #ifdef HAVE_LIBNSS
-	return RSA_public_key_sanity(rsak);
+	return RSA_public_key_sanity_base(pks);
 #else
-	return RSA_private_key_sanity(rsak);
+	return RSA_private_key_sanity(pks);
 #endif
     }
 }
@@ -1066,11 +1075,11 @@ osw_process_rsa_secret(const struct secret *secrets
 /*
  * get the matching RSA private key belonging to a given X.509 certificate
  */
-const struct RSA_private_key*
-osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert)
+const struct private_key_stuff *
+osw_get_x509_private_stuff(struct secret *secrets, x509cert_t *cert)
 {
     struct secret *s;
-    const struct RSA_private_key *pri = NULL;
+    const struct private_key_stuff *pks = NULL;
     cert_t c;
     struct pubkey *pubkey;
 
@@ -1085,15 +1094,27 @@ osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert)
     for (s = secrets; s != NULL; s = s->next)
     {
 	if (s->pks.kind == PPK_RSA &&
-	    same_RSA_public_key(&s->pks.u.RSA_private_key.pub, &pubkey->u.rsa))
+	    same_RSA_public_key(&s->pks.pub->u.rsa, &pubkey->u.rsa))
 	{
-	    pri = &s->pks.u.RSA_private_key;
+            pks = &s->pks;
 	    break;
 	}
     }
     free_public_key(pubkey);
-    return pri;
+    return pks;
 }
+
+const struct RSA_private_key*
+osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert)
+{
+    const struct private_key_stuff *pks = osw_get_x509_private_stuff(secrets, cert);
+    if(pks) {
+        return &pks->u.RSA_private_key;
+    } else {
+        return NULL;
+    }
+}
+
 
 static void
 process_secret(struct secret **psecrets, int verbose,
@@ -1133,17 +1154,26 @@ process_secret(struct secret **psecrets, int verbose,
 	}
 	else if (tokeq("{"))
 	{
-	    ugh = osw_process_rsa_secret(secrets, &s->pks.u.RSA_private_key);
+	    ugh = osw_process_rsa_secret(secrets, &s->pks);
 	}
 	else
 	{
 	    ugh = osw_process_rsa_keyfile(psecrets, verbose,
-					  &s->pks.u.RSA_private_key,pass);
+					  &s->pks,pass);
 	}
+
+        calculate_rsa_ckaid(s->pks.pub);
+
 	if(!ugh && verbose) {
-	    openswan_log("loaded private key for keyid: %s:%s",
+            char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
+
+            datatot(s->pks.pub->key_ckaid, sizeof(s->pks.pub->key_ckaid),
+                    'G', ckaid_print_buf, sizeof(ckaid_print_buf));
+
+	    openswan_log("loaded private key for keyid: %s:%s/%s",
 			 enum_name(&ppk_names, s->pks.kind),
-			 s->pks.u.RSA_private_key.pub.keyid);
+			 s->pks.pub->u.rsa.keyid,
+                         ckaid_print_buf);
 	}
     }
     else if (tokeqword("pin"))
@@ -1198,7 +1228,7 @@ process_secret(struct secret **psecrets, int verbose,
 static void osw_process_secrets_file(struct secret **psecrets
 				     , int verbose
 				     , const char *file_pat
-				     , prompt_pass_t *pass);
+				     , prompt_pass_t *pass, const char *rootdir);
 
 
 static void
@@ -1219,11 +1249,6 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 
 	if (tokeqword("include"))
 	{
-	    /* an include directive */
-	    char fn[MAX_TOK_LEN];	/* space for filename (I hope) */
-	    char *p = fn;
-	    char *end_prefix = strrchr(flp->filename, '/');
-
 	    if (!shift())
 	    {
 		loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of include directive"
@@ -1231,33 +1256,43 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 		continue;   /* abandon this record */
 	    }
 
-	    /* if path is relative and including file's pathname has
-	     * a non-empty dirname, prefix this path with that dirname.
-	     */
-	    if (flp->tok[0] != '/' && end_prefix != NULL)
 	    {
-		size_t pl = end_prefix - flp->filename + 1;
+		    /* an include directive */
+		    unsigned int pathname_len = flp->cur - flp->tok;
+		    unsigned int fn_len = strlen(flp->root_dir)+1+strlen(flp->filename)+pathname_len+1;
+		    char *fn = alloca(fn_len);
+		    char *p = fn;
+		    char *end_prefix = strrchr(flp->filename, '/');
 
-		/* "clamp" length to prevent problems now;
-		 * will be rediscovered and reported later.
-		 */
-		if (pl > sizeof(fn))
-		    pl = sizeof(fn);
-		memcpy(fn, flp->filename, pl);
-		p += pl;
-	    }
-	    if (flp->cur - flp->tok >= &fn[sizeof(fn)] - p)
-	    {
-		loglog(RC_LOG_SERIOUS, "\"%s\" line %d: include pathname too long"
-		    , flp->filename, flp->lino);
-		continue;   /* abandon this record */
-	    }
-	    strcpy(p, flp->tok);
-	    (void) shift();	/* move to Record Boundary, we hope */
-	    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
-	    {
-		osw_process_secrets_file(psecrets, verbose, fn, pass);
-		flp->tok = NULL;	/* correct, but probably redundant */
+		    /* insert root_dir and / into p, and advance it */
+		    strcpy(p, flp->root_dir);
+		    /* if(flp->root_dir[0] != '\0') strcat(p,"/"); */
+		    fn_len -= strlen(p);
+		    p       = p + strlen(p);
+
+		    /* if path is relative and including file's pathname has
+		     * a non-empty dirname, prefix this path with that dirname.
+		     */
+		    if (flp->tok[0] != '/' && end_prefix != NULL)
+		    {
+			size_t pl = end_prefix - flp->filename + 1;
+
+			memcpy(fn, flp->filename, pl);
+			p += pl;
+		    }
+		    if (pathname_len >= fn_len)
+		    {
+			loglog(RC_LOG_SERIOUS, "\"%s\" line %d: include pathname too long (%u > %u)"
+			    , flp->filename, flp->lino, pathname_len, fn_len);
+			continue;   /* abandon this record */
+		    }
+		    strcpy(p, flp->tok);
+		    (void) shift();	/* move to Record Boundary, we hope */
+		    if (flushline("ignoring malformed INCLUDE -- expected Record Boundary after filename"))
+		    {
+			osw_process_secrets_file(psecrets, verbose, fn, pass, flp->root_dir);
+			flp->tok = NULL;	/* correct, but probably redundant */
+		    }
 	    }
 	}
 	else
@@ -1268,84 +1303,87 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
 	    s = alloc_thing(struct secret, "secret");
 
 	    if (s != NULL) {
-	    s->ids = NULL;
-	    s->pks.kind = PPK_PSK;	/* default */
-	    setchunk(s->pks.u.preshared_secret, NULL, 0);
-	    s->secretlineno=flp->lino;
-	    s->next = NULL;
+                zero(s);
+                s->ids = NULL;
+                s->pks.kind = PPK_PSK;	/* default */
+                setchunk(s->pks.u.preshared_secret, NULL, 0);
+                s->secretlineno=flp->lino;
+                s->next = NULL;
 
 #ifdef HAVE_LIBNSS
-	    s->pks.u.RSA_private_key.pub.nssCert = NULL;
+                s->pks.pub->nssCert = NULL;
 #endif
+                private_key_setup(&s->pks);
 
-	    //while(s != NULL)
-	    while(1)
-	    {
-		struct id id;
-		err_t ugh;
 
-		if (tokeq(":"))
-		{
-		    /* found key part */
-		    shift();	/* discard explicit separator */
-		    process_secret(psecrets, verbose, s, pass);
-		    //s = NULL;
-		    break;
-		}
+                //while(s != NULL)
+                while(1)
+                    {
+                        struct id id;
+                        err_t ugh;
 
-		/* an id
-		 * See RFC2407 IPsec Domain of Interpretation 4.6.2
-		 */
+                        if (tokeq(":"))
+                            {
+                                /* found key part */
+                                shift();	/* discard explicit separator */
+                                process_secret(psecrets, verbose, s, pass);
+                                //s = NULL;
+                                break;
+                            }
 
-		if (tokeq("%any"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV4_ADDR;
-		    ugh = anyaddr(AF_INET, &id.ip_addr);
-		}
-		else if (tokeq("%any6"))
-		{
-		    id = empty_id;
-		    id.kind = ID_IPV6_ADDR;
-		    ugh = anyaddr(AF_INET6, &id.ip_addr);
-		}
-		else
-		{
-		    ugh = atoid(flp->tok, &id, FALSE);
-		}
+                        /* an id
+                         * See RFC2407 IPsec Domain of Interpretation 4.6.2
+                         */
 
-		if (ugh != NULL)
-		{
-		    loglog(RC_LOG_SERIOUS
-			   , "ERROR \"%s\" line %d: index \"%s\" %s"
-			   , flp->filename, flp->lino, flp->tok, ugh);
-		}
-		else
-		{
-		    struct id_list *i = alloc_thing(struct id_list
-						    , "id_list");
-		    char idb[IDTOA_BUF];
+                        if (tokeq("%any"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV4_ADDR;
+                                ugh = anyaddr(AF_INET, &id.ip_addr);
+                            }
+                        else if (tokeq("%any6"))
+                            {
+                                id = empty_id;
+                                id.kind = ID_IPV6_ADDR;
+                                ugh = anyaddr(AF_INET6, &id.ip_addr);
+                            }
+                        else
+                            {
+                                ugh = atoid(flp->tok, &id, FALSE);
+                            }
 
-		    i->id = id;
-		    unshare_id_content(&i->id);
-		    i->next = s->ids;
-		    s->ids = i;
-		    idtoa(&id, idb, IDTOA_BUF);
-		    DBG(DBG_CONTROL,
-			DBG_log("id type added to secret(%p) %s: %s",
-				s,
-				enum_name(&ppk_names,s->pks.kind),
-				idb));
-		}
-		if (!shift())
-		{
-		    /* unexpected Record Boundary or EOF */
-		    loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
-			   , flp->filename, flp->lino);
-		    pfree(s);
-		    break;
-		}
-	    }
+                        if (ugh != NULL)
+                            {
+                                loglog(RC_LOG_SERIOUS
+                                       , "ERROR \"%s\" line %d: index \"%s\" %s"
+                                       , flp->filename, flp->lino, flp->tok, ugh);
+                            }
+                        else
+                            {
+                                struct id_list *i = alloc_thing(struct id_list
+                                                                , "id_list");
+                                char idb[IDTOA_BUF];
+
+                                i->id = id;
+                                unshare_id_content(&i->id);
+                                i->next = s->ids;
+                                s->ids = i;
+                                idtoa(&id, idb, IDTOA_BUF);
+                                DBG(DBG_CONTROL,
+                                    DBG_log("id type added to secret(%p) %s: %s",
+                                            s,
+                                            enum_name(&ppk_names,s->pks.kind),
+                                            idb));
+                            }
+                        if (!shift())
+                            {
+                                /* unexpected Record Boundary or EOF */
+                                loglog(RC_LOG_SERIOUS, "\"%s\" line %d: unexpected end of id list"
+                                       , flp->filename, flp->lino);
+                                pfree(s);
+                                break;
+                            }
+                    }
 	    }
 	}
     }
@@ -1358,11 +1396,17 @@ globugh(const char *epath, int eerrno)
     return 1;	/* stop glob */
 }
 
+/*
+ * root_dir is prefixed to all filenames: this permits test cases to specify what appear to be
+ *          full pathnames, but to actually operate on a sub-directory.
+ *
+ * file_pat is not meant to be relative to root_dir.
+ */
 static void
 osw_process_secrets_file(struct secret **psecrets
 			 , int verbose
 			 , const char *file_pat
-			 , prompt_pass_t *pass)
+			 , prompt_pass_t *pass, const char *root_dir)
 {
     struct file_lex_position pos;
     char **fnp;
@@ -1370,6 +1414,7 @@ osw_process_secrets_file(struct secret **psecrets
 
     memset(&globbuf, 0, sizeof(glob_t));
     pos.depth = flp == NULL? 0 : flp->depth + 1;
+    pos.root_dir = root_dir ? root_dir : "";
 
     if (pos.depth > 10)
     {
@@ -1452,7 +1497,7 @@ osw_free_preshared_secrets(struct secret **psecrets)
 		pfree(s->pks.u.preshared_secret.ptr);
 		break;
 	    case PPK_RSA:
-		free_RSA_public_content(&s->pks.u.RSA_private_key.pub);
+                unreference_key(&s->pks.pub);
 		mpz_clear(&s->pks.u.RSA_private_key.d);
 		mpz_clear(&s->pks.u.RSA_private_key.p);
 		mpz_clear(&s->pks.u.RSA_private_key.q);
@@ -1475,10 +1520,10 @@ void
 osw_load_preshared_secrets(struct secret **psecrets
 			   , int verbose
 			   , const char *secrets_file
-			   , prompt_pass_t *pass)
+			   , prompt_pass_t *pass, const char *root_dir)
 {
     osw_free_preshared_secrets(psecrets);
-    (void) osw_process_secrets_file(psecrets, verbose, secrets_file, pass);
+    (void) osw_process_secrets_file(psecrets, verbose, secrets_file, pass, root_dir);
 }
 
 
@@ -1540,76 +1585,9 @@ free_public_keys(struct pubkey_list **keys)
 	*keys = free_public_keyentry(*keys);
 }
 
-/* decode of RSA pubkey chunk
- * - format specified in RFC 2537 RSA/MD5 Keys and SIGs in the DNS
- * - exponent length in bytes (1 or 3 octets)
- *   + 1 byte if in [1, 255]
- *   + otherwise 0x00 followed by 2 bytes of length
- * - exponent
- * - modulus
- */
-err_t
-unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pubkey)
-{
-    chunk_t exponent;
-    chunk_t mod;
-
-    rsa->keyid[0] = '\0';	/* in case of keybolbtoid failure */
-
-    if (pubkey->len < 3)
-	return "RSA public key blob way to short";	/* not even room for length! */
-
-    if (pubkey->ptr[0] != 0x00)
-    {
-	setchunk(exponent, pubkey->ptr + 1, pubkey->ptr[0]);
-    }
-    else
-    {
-	setchunk(exponent, pubkey->ptr + 3
-	    , (pubkey->ptr[1] << BITS_PER_BYTE) + pubkey->ptr[2]);
-    }
-
-    if (pubkey->len - (exponent.ptr - pubkey->ptr) < exponent.len + RSA_MIN_OCTETS_RFC)
-	return "RSA public key blob too short";
-
-    mod.ptr = exponent.ptr + exponent.len;
-    mod.len = &pubkey->ptr[pubkey->len] - mod.ptr;
-
-    if (mod.len < RSA_MIN_OCTETS)
-	return RSA_MIN_OCTETS_UGH;
-
-    if (mod.len > RSA_MAX_OCTETS)
-	return RSA_MAX_OCTETS_UGH;
-
-    if (mod.len > pubkey->ptr + pubkey->len - mod.ptr)
-       return "RSA public key blob too short";
-
-    n_to_mpz(&rsa->e, exponent.ptr, exponent.len);
-    n_to_mpz(&rsa->n, mod.ptr, mod.len);
-
-    keyblobtoid(pubkey->ptr, pubkey->len, rsa->keyid, sizeof(rsa->keyid));
-
-#ifdef DEBUG
-    DBG(DBG_PRIVATE, RSA_show_public_key(rsa));
-#endif
-
-
-    rsa->k = mpz_sizeinbase(&rsa->n, 2);	/* size in bits, for a start */
-    rsa->k = (rsa->k + BITS_PER_BYTE - 1) / BITS_PER_BYTE;	/* now octets */
-
-    if (rsa->k != mod.len)
-    {
-	mpz_clear(&rsa->e);
-	mpz_clear(&rsa->n);
-	return "RSA modulus shorter than specified";
-    }
-
-    return NULL;
-}
-
 bool
 same_RSA_public_key(const struct RSA_public_key *a
-    , const struct RSA_public_key *b)
+                    , const struct RSA_public_key *b)
 {
 #ifdef HAVE_LIBNSS
     DBG(DBG_CRYPT, DBG_log("k did %smatch", (a->k == b->k) ? "" : "NOT "));
@@ -1621,7 +1599,7 @@ same_RSA_public_key(const struct RSA_public_key *a
 }
 
 void
-install_public_key(struct pubkey *pk, struct pubkey_list **head)
+install_public_key(osw_public_key *pk, struct pubkey_list **head)
 {
     struct pubkey_list *p = alloc_thing(struct pubkey_list, "pubkey entry");
 
@@ -1630,6 +1608,17 @@ install_public_key(struct pubkey *pk, struct pubkey_list **head)
     /* copy issuer dn */
     if (pk->issuer.ptr != NULL)
 	pk->issuer.ptr = clone_bytes(pk->issuer.ptr, pk->issuer.len, "issuer dn");
+
+
+
+
+    switch(pk->alg) {
+    case PUBKEY_ALG_RSA: {
+        calculate_rsa_ckaid(pk);
+    }
+    case PUBKEY_ALG_DSA:
+        break;
+    }
 
     /* store the time the public key was installed */
     pk->installed_time = now();

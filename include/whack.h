@@ -38,7 +38,7 @@
 
 #define WHACK_BASIC_MAGIC (((((('w' << 8) + 'h') << 8) + 'k') << 8) + 25)
 
-#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 38UL)
+#define WHACK_MAGIC_BASE (u_int32_t)(((((('o' << 8) + 'h') << 8) + 'k') << 8) + 39UL)
 
 /* mark top-bit with size of int,
  * so that mis-matches in integer size are easier to diagnose */
@@ -59,13 +59,18 @@ struct whack_end {
     char *ca;		/* distinguished name string (if any) -- parsed by pluto */
     char *groups;       /* access control groups (if any) -- parsed by pluto */
 
+    /* note that "cert" is reused as rsakey1_ckaid
+     *      and  "ca"   is reused as rsakey2_ckaid
+     */
+
+
     enum keyword_host host_type;
     ip_address host_addr,
 	host_nexthop,
 	host_srcip;
     ip_subnet client;
 
-    bool key_from_DNS_on_demand;
+    enum pubkey_source keytype; /* possibly redundant with ipsec_cert_type */
     bool has_client;
     bool has_client_wildcard;
     bool has_port_wildcard;
@@ -163,7 +168,7 @@ struct whack_message {
     struct whack_end right;
 
     /* note: if the client is the gateway, the following must be equal */
-    sa_family_t addr_family;	/* between gateways */
+    sa_family_t end_addr_family;	/* between gateways */
     sa_family_t tunnel_addr_family;	/* between clients */
 
     char *ike;		/* ike algo string (separated by commas) */
@@ -318,6 +323,7 @@ struct whackpacker {
     unsigned char        *str_roof;
     unsigned char        *str_next;
     int                   n;
+    int                   cnt;
 };
 
 extern err_t pack_whack_msg(struct whackpacker *wp);

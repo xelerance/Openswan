@@ -19,7 +19,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/parker.secrets"
-			       , NULL);
+			       , NULL, NULL);
 }
 
 #include "../lp02-parentI1/parentI1_main.c"

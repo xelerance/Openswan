@@ -40,6 +40,8 @@
 #include "whack.h"
 #include "oswlog.h"
 
+#include "secrets.h"
+
 /**
  * Pack a string to a whack messages
  *
@@ -61,6 +63,11 @@ pack_str(struct whackpacker *wp, char **p)
     {
 	strcpy((char *)wp->str_next, s);
 	wp->str_next += len;
+        wp->cnt++;
+#if 0
+        DBG_log("packing: %u", wp->cnt);
+        DBG_dump("str", s, len);
+#endif
 	*p = NULL;	/* don't send pointers on the wire! */
 	return TRUE;
     }
@@ -90,6 +97,10 @@ unpack_str(struct whackpacker *wp, char **p)
 	unsigned char *s = (wp->str_next == end? NULL : wp->str_next);
 
 	*p = (char *)s;
+        wp->cnt++;
+#if 0
+        fprintf(stderr, "%u: unpacked string: %s\n", wp->cnt, *p);
+#endif
 	wp->str_next = end + 1;
 	return TRUE;
     }
@@ -148,7 +159,11 @@ err_t pack_whack_msg (struct whackpacker *wp)
 
     if(wp->msg->keyval.ptr)
     {
-	memcpy(wp->str_next, wp->msg->keyval.ptr, wp->msg->keyval.len);
+      if (wp->str_roof - wp->str_next < (ptrdiff_t)wp->msg->keyval.len) {
+        return "no space for public key";
+      }
+      memcpy(wp->str_next, wp->msg->keyval.ptr, wp->msg->keyval.len);
+      //log_ckaid("whack msg: %s", (unsigned char *)wp->str_next, wp->msg->keyval.len);
     }
     wp->msg->keyval.ptr = NULL;
     wp->str_next += wp->msg->keyval.len;
