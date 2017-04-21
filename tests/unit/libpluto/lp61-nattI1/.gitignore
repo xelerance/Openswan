@@ -1,0 +1,8 @@
+OUTPUT
+*.o
+core.*
+.gdb1init
+.gdb2init
+.gdb3init
+.gdbinit
+nattI1
