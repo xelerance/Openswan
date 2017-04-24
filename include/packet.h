@@ -48,6 +48,8 @@ enum field_type {
     ft_af_loose_enum, /* Attribute Format + enumeration, some names known */
     ft_set,	/* bits representing set */
     ft_raw,	/* bytes to be left in network-order */
+    ft_np,	/* enum of ISAKMP next payload values, location noted */
+    ft_np_in,	/* ditto, but inside structure location noted */
     ft_zig,	/* should be zero, ignore if not. Continue */
     ft_end,	/* end of field list */
 };
@@ -74,6 +76,9 @@ struct packet_byte_stream
 	*start,
 	*cur,	/* current position in stream */
 	*roof;	/* byte after last in PBS (actually just a limit on output) */
+
+    u_int8_t   *next_payload_pointer;
+
     /* For an output PBS, the length field will be filled in later so
      * we need to record its particulars.  Note: it may not be aligned.
      */
@@ -99,6 +104,9 @@ extern bool in_raw(void *bytes, size_t len, pb_stream *ins, const char *name);
 
 extern bool out_struct(const void *struct_ptr, struct_desc *sd,
     pb_stream *outs, pb_stream *obj_pbs);
+extern void pbs_set_np(pb_stream *outs, u_int8_t np);
+extern void pbs_copy_np(pb_stream *from, pb_stream *to);
+
 extern bool out_generic(u_int8_t np, struct_desc *sd,
     pb_stream *outs, pb_stream *obj_pbs);
 extern bool out_generic_raw(u_int8_t np, struct_desc *sd,

@@ -117,6 +117,8 @@ ikev2_out_sa(pb_stream *outs
     bool ret = FALSE;
     unsigned int  pc_cnt;
 
+    pbs_set_np(outs, ISAKMP_NEXT_v2SA);
+
     /* SA header out */
     {
 	struct ikev2_sa sa;

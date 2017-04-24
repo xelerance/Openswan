@@ -402,17 +402,20 @@ ikev2_parent_outI1_common(struct msg_digest *md
         struct isakmp_hdr hdr;
 
         zero(&hdr);        /* default to 0 */
-        if(DBGP(IMPAIR_MAJOR_VERSION_BUMP)) /* testing fake major new IKE version, should fail */
-            hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
-        else if(DBGP(IMPAIR_MINOR_VERSION_BUMP)) /* testing fake minor new IKE version, should success */
-            hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
-        else /* normal production case with real version */
-            hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+        /* testing fake major new IKE version, should fail */
 
-        if(st->st_dcookie.ptr)
-            hdr.isa_np   = ISAKMP_NEXT_v2N;
-        else
-            hdr.isa_np   = ISAKMP_NEXT_v2SA;
+        if(DBGP(IMPAIR_MAJOR_VERSION_BUMP))
+            hdr.isa_version = IKEv2_MAJOR_BUMP << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+
+        /* testing fake minor new IKE version, should success */
+        else if(DBGP(IMPAIR_MINOR_VERSION_BUMP))
+            hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_BUMP;
+        else {
+
+            /* normal production case with real version */
+            hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+        }
+
         hdr.isa_xchg = ISAKMP_v2_SA_INIT;
         hdr.isa_flags = ISAKMP_FLAGS_I;
         memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
@@ -428,16 +431,17 @@ ikev2_parent_outI1_common(struct msg_digest *md
      * responder
      */
 
-    if(st->st_dcookie.ptr)
-        {
-            chunk_t child_spi;
-            memset(&child_spi, 0, sizeof(child_spi));
-            ship_v2N (ISAKMP_NEXT_v2SA, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-                      (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-                      ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-                      &child_spi,
-                      v2N_COOKIE, &st->st_dcookie, &md->rbody);
-        }
+    if(st->st_dcookie.ptr) {
+        chunk_t child_spi;
+        memset(&child_spi, 0, sizeof(child_spi));
+
+        ship_v2N(0, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
+                 (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
+                 ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+                 &child_spi,
+                 v2N_COOKIE, &st->st_dcookie, &md->rbody);
+    }
+
     /* SA out */
     {
         u_char *sa_start = md->rbody.cur;
@@ -2358,7 +2362,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
                 openswan_log("error initializing hdr for notify message");
                 return;
             }
-
     }
     child_spi.ptr = NULL;
     child_spi.len = 0;
@@ -2382,14 +2385,17 @@ send_v2_notification(struct state *p1st, u_int16_t type
 }
 
 /* add notify payload to the rbody */
-bool ship_v2N (unsigned int np, u_int8_t  critical,
-               u_int8_t protoid, chunk_t *spi,
-               u_int16_t type, chunk_t *n_data, pb_stream *rbody)
+bool ship_v2N(unsigned int np, u_int8_t  critical,
+              u_int8_t protoid, chunk_t *spi,
+              u_int16_t type, chunk_t *n_data, pb_stream *rbody)
 {
     struct ikev2_notify n;
     pb_stream n_pbs;
     DBG(DBG_CONTROLMORE
         ,DBG_log("Adding a v2N Payload"));
+
+    pbs_set_np(rbody, ISAKMP_NEXT_v2N);
+
     n.isan_np =  np;
     n.isan_critical = critical;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
