@@ -3,6 +3,7 @@
  * Copyright (C) 1998-2001,2013-2014  D. Hugh Redelmeier.
  * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2005-2017 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

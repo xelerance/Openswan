@@ -1,7 +1,7 @@
 /* parsing packets: formats and tools
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
- * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2017 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
