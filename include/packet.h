@@ -535,12 +535,12 @@ extern struct_desc isakmp_nonce_desc;
  * !                                                               !
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
- 
+
 extern struct_desc isakmp_attr_desc;
- 
+
 /* From draft-dukes-ike-mode-cfg
 3.2. Attribute Payload
-                           1                   2                   3  
+                           1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      ! Next Payload  !   RESERVED    !         Payload Length        !
@@ -676,7 +676,7 @@ extern const struct_desc *payload_desc(unsigned p);
 /*
  * IKEv2 structures
  */
-/* 
+/*
  * 3.2.  Generic Payload Header
  */
 struct ikev2_generic
@@ -766,7 +766,7 @@ struct ikev2_a
 extern struct_desc ikev2_a_desc;
 
 /* rfc4306 section 3.6 CERT Payload */
-struct ikev2_cert 
+struct ikev2_cert
 {
     u_int8_t  isac_np;	    /* Next payload */
     u_int8_t  isac_critical;
@@ -783,7 +783,7 @@ struct ikev2_cert
 extern struct_desc ikev2_certificate_desc;
 
 /* rfc4306 section 3.6 CERTREQ Payload */
-struct ikev2_certreq 
+struct ikev2_certreq
 {
     u_int8_t  isacertreq_np;	    /* Next payload */
     u_int8_t  isacertreq_critical;
@@ -803,7 +803,7 @@ extern struct_desc  ikev2_certificate_req_desc;
 extern struct_desc ikev2_nonce_desc;
 
 /* rfc4306 section 3.10 NOTIFY Payload */
-struct ikev2_notify 
+struct ikev2_notify
 {
     u_int8_t  isan_np;		/* Next payload */
     u_int8_t  isan_critical;
@@ -816,7 +816,7 @@ extern struct_desc ikev2_notify_desc;
 
 
 /* IKEv2 Delete Payload
- * layout from RFC 5996 Section 3.11 
+ * layout from RFC 5996 Section 3.11
  * This is followed by a variable length SPI.
  *
  *                      1                   2                   3
@@ -908,4 +908,4 @@ union payload {
  * c-style: pluto
  * End:
  */
- 
+
