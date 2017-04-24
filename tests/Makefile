@@ -21,3 +21,16 @@ check:
 	@${MAKE} -C unit       check
 	@${MAKE} -C build      check
 
+clean:
+	@${MAKE} -C functional clean
+	@${MAKE} -C unit       clean
+	@${MAKE} -C build      clean
+
+programs:
+	@true
+
+install:
+	@true
+
+
+
