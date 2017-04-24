@@ -16,9 +16,9 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-check:
-	@${MAKE} -C libopenswan check
-	@${MAKE} -C libpluto    check
-	@${MAKE} -C ikev2crypto check
-	@${MAKE} -C liboswkeys  check
+clean check:
+	@${MAKE} -C libopenswan $@
+	@${MAKE} -C libpluto    $@
+	@${MAKE} -C ikev2crypto $@
+	@${MAKE} -C liboswkeys  $@
 
