@@ -518,12 +518,12 @@ ikev2_parent_outI1_common(struct msg_digest *md
     }
 
     /* send KE */
-    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &md->rbody, ISAKMP_NEXT_v2Ni))
+    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &md->rbody, 0))
         return STF_INTERNAL_ERROR;
 
 
     /* send NONCE */
-    if(!justship_v2Nonce(st, &md->rbody, &st->st_ni, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_ni, 0)) {
         return STF_INTERNAL_ERROR;
     }
 
@@ -533,9 +533,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
 
     /* Send Vendor VID if needed */
     {
-        int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-
-        if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
+        pbs_set_np(&md->rbody,  ISAKMP_NEXT_v2V);
+        if (!out_generic_raw(0, &isakmp_vendor_id_desc, &md->rbody
                              , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
             return STF_INTERNAL_ERROR;
     }
