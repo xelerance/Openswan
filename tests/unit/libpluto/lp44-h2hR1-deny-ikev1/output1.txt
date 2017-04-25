@@ -104,13 +104,11 @@ RC=205 STATE_MAIN_R0: INVALID_MAJOR_VERSION
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_N
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_INFO
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Notification Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    DOI: ISAKMP_DOI_IPSEC
 |    protocol ID: 1
 |    SPI size: 0

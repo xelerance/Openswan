@@ -225,7 +225,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			      , pb_stream *outpbs
 			      , enum phase1_role role
-                              , unsigned int next_payload
+                              , unsigned int next_payload UNUSED
 			      , struct connection *c0
 			      , lset_t policy UNUSED)
 {
@@ -245,10 +245,12 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr, ts_i);
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2TSi);
+	ret = ikev2_emit_ts(md, outpbs, 0, ts_i);
 	if(ret!=STF_OK) return ret;
 
-        ret = ikev2_emit_ts(md, outpbs, next_payload, ts_r);
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2TSr);
+        ret = ikev2_emit_ts(md, outpbs, 0, ts_r);
 	if(ret!=STF_OK) return ret;
     }
 
@@ -889,6 +891,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         notification_t rn;
         pb_stream r_sa_pbs;
 
+        /* set the np for this structure */
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2SA);
+
         r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
         if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
             return STF_INTERNAL_ERROR;
@@ -1163,15 +1168,8 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_INTERNAL_ERROR;
     }
 
-    /* insert an Encryption payload header */
-    if(c->policy & POLICY_PFS) {
-        e.isag_np = ISAKMP_NEXT_v2KE;
-    } else {
-        e.isag_np = ISAKMP_NEXT_v2Ni;
-    }
-
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-
+    pbs_set_np(&md->rbody, ISAKMP_NEXT_v2E);
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
         return STF_INTERNAL_ERROR;
     }
@@ -1185,10 +1183,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     get_rnd_bytes(iv, ivsize);
 
     /* note where cleartext starts */
-    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-    e_pbs_cipher.container = &e_pbs;
-    e_pbs_cipher.desc = NULL;
-    e_pbs_cipher.cur = e_pbs.cur;
+    init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
     encstart = e_pbs_cipher.cur;
 
     if(c->policy & POLICY_PFS) {
@@ -1203,7 +1198,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         pb_stream pb;
 
         memset(&in, 0, sizeof(in));
-        in.isag_np = ISAKMP_NEXT_v2SA;
+        pbs_set_np(&e_pbs_cipher, ISAKMP_NEXT_v2Ni);
         in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
         if(!out_struct(&in, &ikev2_nonce_desc, &e_pbs_cipher, &pb) ||
@@ -1597,10 +1592,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
         get_rnd_bytes(iv, ivsize);
 
         /* note where cleartext starts */
-        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
-        e_pbs_cipher.container = &e_pbs;
-        e_pbs_cipher.desc = NULL;
-        e_pbs_cipher.cur = e_pbs.cur;
+        init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
         encstart = e_pbs_cipher.cur;
 
         if(e.isag_np != ISAKMP_NEXT_NONE) {
@@ -1608,17 +1600,14 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
 
             /* insert Nonce and KE (if PFS) */
 
+            if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, 0)) {
+                return STF_INTERNAL_ERROR;
+            }
+
             /* see if we are supposed to send the KE */
             if(dopfs) {
-                if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2KE)) {
+                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, 0))
                     return STF_INTERNAL_ERROR;
-                }
-                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2SA))
-                    return STF_INTERNAL_ERROR;
-            } else {
-                if(!justship_v2Nonce(st, &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2SA)) {
-                    return STF_INTERNAL_ERROR;
-                }
             }
 
             /* must have enough to build an CHILD_SA... go do that! */

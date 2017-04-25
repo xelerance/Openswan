@@ -131,22 +131,18 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   64 0a 06 43  5c 7c 4b 31
-|    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -155,24 +151,21 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 48
+|    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
 | ***emit IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
@@ -193,14 +186,13 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
 |   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
 | emitting length of IKEv2 Key Exchange Payload: 264
+|    next-payload: ISAKMP_NEXT_v2Ni [@76=0x28]
 | ***emit IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16

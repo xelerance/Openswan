@@ -48,26 +48,22 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_SA
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Security Association Payload:
-|    next payload type: ISAKMP_NEXT_VID
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | out_sa pcn: 0 has 1 valid proposals
 | out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 12
 | ****emit ISAKMP Proposal Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    number of transforms: 12
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 0
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -98,7 +94,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 1
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -129,7 +124,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 2
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -157,7 +151,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 3
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -185,7 +178,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 4
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -216,7 +208,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 5
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -247,7 +238,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 6
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -275,7 +265,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [5 is OAKLEY_GROUP_MODP1536]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 7
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -303,7 +292,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [5 is OAKLEY_GROUP_MODP1536]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 8
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -331,7 +319,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [2 is OAKLEY_GROUP_MODP1024]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 9
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -359,7 +346,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [2 is OAKLEY_GROUP_MODP1024]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 10
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -390,7 +376,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform number: 11
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -423,13 +408,11 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | emitting length of ISAKMP Proposal Payload: 416
 | emitting length of ISAKMP Security Association Payload: 428
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_VID
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20

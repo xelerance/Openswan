@@ -167,13 +167,11 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_AUTH
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 01
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2IDi
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | IKEv2 thinking whether to send my certificate:
@@ -182,7 +180,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |  so do not send cert.
 | I did not send a certificate because I do not have one.
 | *****emit IKEv2 Identification Payload:
-|    next payload type: ISAKMP_NEXT_v2AUTH
 |    critical bit: none
 |    id_type: ID_FQDN
 | emitting 26 raw bytes of my identity into IKEv2 Identification Payload
@@ -195,17 +192,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 |  payload after AUTH will be ISAKMP_NEXT_v2SA
 | *****emit IKEv2 Authentication Payload:
-|    next payload type: ISAKMP_NEXT_v2SA
 |    critical bit: none
 |    auth method: v2_AUTH_RSA
 | emitting 192 zero bytes of fake rsa sig into IKEv2 Authentication Payload
 | emitting length of IKEv2 Authentication Payload: 200
 | empty esp_info, returning defaults
+|    next-payload: ISAKMP_NEXT_v2SA [@34=0x21]
 | *****emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: none
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 1
 |    proto ID: 3
 |    spi size: 4
@@ -213,7 +208,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -222,18 +216,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 2
 |    proto ID: 3
 |    spi size: 4
@@ -241,7 +232,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -250,18 +240,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 3
 |    proto ID: 3
 |    spi size: 4
@@ -269,23 +256,19 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 4
 |    proto ID: 3
 |    spi size: 4
@@ -293,24 +276,21 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | emitting length of IKEv2 Security Association Payload: 156
+|    next-payload: ISAKMP_NEXT_v2TSi [@234=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_v2TSr
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -324,8 +304,8 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | ipv6 high  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
+|    next-payload: ISAKMP_NEXT_v2TSr [@390=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -555,17 +535,14 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 02
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 3
 |    SPI size: 4
@@ -603,17 +580,14 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 03
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 1
 |    SPI size: 0

@@ -97,6 +97,7 @@ typedef struct packet_byte_stream pb_stream;
 #define pbs_left(pbs) ((size_t)((pbs)->roof - (pbs)->cur))
 
 extern void init_pbs(pb_stream *pbs, u_int8_t *start, size_t len, const char *name);
+extern void init_sub_pbs(pb_stream *parent_pbs, pb_stream *child_pbs, const char *name);
 
 extern bool in_struct(void *struct_ptr, struct_desc *sd,
     pb_stream *ins, pb_stream *obj_pbs);

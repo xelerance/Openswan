@@ -74,7 +74,7 @@ struct_desc isakmp_hdr_desc = { "ISAKMP Message", isa_fields, sizeof(struct isak
  */
 
 static field_desc isag_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_end, 0, NULL, NULL }
@@ -148,7 +148,7 @@ struct_desc isakmp_xauth_attribute_desc = {
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isasa_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 32/BITS_PER_BYTE, "DOI", &doi_names },
@@ -754,7 +754,7 @@ struct_desc ikev2_trans_attr_desc = {
  *
  */
 static field_desc ikev2ke_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
@@ -797,7 +797,7 @@ struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
  */
 
 static field_desc ikev2id_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
@@ -1094,9 +1094,20 @@ struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selector",
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  *             Figure 21:  Encrypted Payload Format
+ *
+ * Unlike other payloads, the encrypted payload is a container, so the
+ * next payload is set to the inner type. No next payload is allowed
+ * otherwise.
  */
+static field_desc ikev2e_fields[] = {
+    { ft_np_in,8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_set,  8/BITS_PER_BYTE, "critical bit", critical_names},
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
 struct_desc ikev2_e_desc = { "IKEv2 Encryption Payload",
-			      ikev2generic_fields,
+			      ikev2e_fields,
 			     sizeof(struct ikev2_generic)};
 
 
@@ -1164,6 +1175,19 @@ init_pbs(pb_stream *pbs, u_int8_t *start, size_t len, const char *name)
     pbs->roof = start + len;
     pbs->lenfld = NULL;
     pbs->lenfld_desc = NULL;
+    pbs->next_payload_pointer = NULL;
+}
+
+void
+init_sub_pbs(pb_stream *parent_pbs, pb_stream *child_pbs, const char *name)
+{
+    init_pbs(child_pbs, parent_pbs->cur
+             , parent_pbs->roof - parent_pbs->cur, name);
+
+    child_pbs->container = parent_pbs;
+    child_pbs->desc = NULL;
+    child_pbs->cur = parent_pbs->cur;
+    child_pbs->next_payload_pointer = parent_pbs->next_payload_pointer;
 }
 
 #ifdef DEBUG
@@ -1191,6 +1215,10 @@ DBG_print_struct(const char *label, const void *struct_ptr
 
 	switch (fp->field_type)
 	{
+	case ft_np:	/* these are next-payload values, and are often zero, because they */
+	case ft_np_in:	/* updated when the next payload is inserted. Omit as confusing */
+            inp += 1;
+            break;
 	case ft_mbz:	/* must be zero */
 	case ft_zig:
 	    inp += i;
@@ -1199,8 +1227,6 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	case ft_len:	/* length of this struct and any following crud */
 	case ft_lv:	/* length/value field of attribute */
 	case ft_enum:	/* value from an enumeration */
-	case ft_np:	/* value from an enumeration */
-	case ft_np_in:	/* value from an enumeration */
 	case ft_loose_enum:	/* value from an enumeration with only some names known */
 	case ft_af_enum:	/* Attribute Format + value from an enumeration */
 	case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
@@ -1775,6 +1801,11 @@ out_modify_previous_np(u_int8_t np, pb_stream *outs)
 void pbs_set_np(pb_stream *outs, u_int8_t np)
 {
     passert(outs->next_payload_pointer != NULL);
+    DBG(DBG_EMITTING, DBG_log("   next-payload: %s [@%ld=0x%2x]"
+                              , enum_show(&payload_names, np)
+                              , outs->next_payload_pointer - outs->start
+                              , np));
+
     *outs->next_payload_pointer = np;
 }
 

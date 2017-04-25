@@ -129,14 +129,13 @@ RC=0 "mytunnel-no-ikev2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2Init+S
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_v2N
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
 | ***emit IKEv2 Notify Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0

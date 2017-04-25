@@ -157,7 +157,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   56 11 47 13  4b 1d 6d 52
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_INIT
@@ -174,23 +173,19 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | state hash entry 6
 | v2 state object not found
 | ***parse IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
 |    length: 508
 | processing payload: ISAKMP_NEXT_v2SA (len=508)
 | ***parse IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    length: 264
 |    transform type: 14
 | processing payload: ISAKMP_NEXT_v2KE (len=264)
 | ***parse IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 |    length: 20
 | processing payload: ISAKMP_NEXT_v2Ni (len=20)
 | ***parse IKEv2 Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16)

@@ -357,7 +357,7 @@ bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce
     pb_stream pb;
 
     memset(&in, 0, sizeof(in));
-    pbs_set_np(outpbs, ISAKMP_NEXT_v2N);
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2Ni);
 
     in.isag_np = np;
     in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
@@ -527,9 +527,11 @@ ikev2_parent_outI1_common(struct msg_digest *md
         return STF_INTERNAL_ERROR;
     }
 
+#if 0
     if(!justship_v2nat(st, &md->rbody)) {
         return STF_INTERNAL_ERROR;
     }
+#endif
 
     /* Send Vendor VID if needed */
     {
@@ -1964,9 +1966,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         }
 
         /* insert an Encryption payload header */
-        e.isag_np = ISAKMP_NEXT_v2IDr;
         e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
+        pbs_set_np(&md->rbody, ISAKMP_NEXT_v2E);
         if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
             return STF_INTERNAL_ERROR;
         }
@@ -1980,10 +1982,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         get_rnd_bytes(iv, ivsize);
 
         /* note where cleartext starts */
-        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
-        e_pbs_cipher.container = &e_pbs;
-        e_pbs_cipher.desc = NULL;
-        e_pbs_cipher.cur = e_pbs.cur;
+        init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
         encstart = e_pbs_cipher.cur;
 
         /* decide to send CERT payload before we generate IDr */
@@ -2011,6 +2010,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
             id_start = e_pbs_cipher.cur;
 
+            pbs_set_np(&e_pbs_cipher, ISAKMP_NEXT_v2IDr);
             if (!out_struct(&r_id
                             , &ikev2_id_desc
                             , &e_pbs_cipher
