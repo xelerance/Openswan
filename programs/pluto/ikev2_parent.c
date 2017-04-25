@@ -326,6 +326,8 @@ justship_v2KE(struct state *st UNUSED
     struct ikev2_ke v2ke;
     pb_stream kepbs;
 
+    pbs_set_np(outs, ISAKMP_NEXT_v2KE);
+
     memset(&v2ke, 0, sizeof(v2ke));
     v2ke.isak_np      = np;
     v2ke.isak_group   = oakley_group;
@@ -355,6 +357,8 @@ bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce
     pb_stream pb;
 
     memset(&in, 0, sizeof(in));
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2N);
+
     in.isag_np = np;
     in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
@@ -366,6 +370,48 @@ bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce
        !out_raw(nonce->ptr, nonce->len, &pb, "IKEv2 nonce"))
         return FALSE;
     close_output_pbs(&pb);
+
+    return TRUE;
+}
+
+bool justship_v2nat(struct state *st, pb_stream *outpbs)
+{
+    SHA1_CTX srchash;
+    unsigned char digest[SHA1_DIGEST_SIZE];
+    chunk_t hash_chunk;
+    unsigned char thingstohash[COOKIE_SIZE/*spiI*/+COOKIE_SIZE/*spiR*/+16/*IPaddr*/+2/*port*/];
+    unsigned char *next = thingstohash;
+    unsigned char *addrptr;
+    size_t addrlen;
+    bool success;
+
+    memcpy(next, st->st_icookie, COOKIE_SIZE);   next += COOKIE_SIZE;
+    memcpy(next, st->st_rcookie, COOKIE_SIZE);   next += COOKIE_SIZE;
+
+    addrlen = addrbytesptr(&st->st_localaddr, &addrptr);
+    memcpy(next, addrptr, addrlen);  next += addrlen;
+
+    next[0] = st->st_localport >> 8;
+    next[1] = st->st_localport & 0xff;
+    next += 2;
+
+    SHA1Init(&srchash);
+    SHA1Update(&srchash, thingstohash, (next - thingstohash));
+    SHA1Final(digest, &srchash);
+    setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
+
+    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+                       0, NULL, v2N_NAT_DETECTION_SOURCE_IP,
+                       &hash_chunk, outpbs);
+    if(!success) return FALSE;
+
+#if 0
+    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+                            u_int8_t protoid, chunk_t *spi,
+                            u_int16_t type,
+                            chunk_t *n_data, pb_stream *rbody);
+    if(!success) return FALSE;
+#endif
 
     return TRUE;
 }
@@ -478,6 +524,10 @@ ikev2_parent_outI1_common(struct msg_digest *md
 
     /* send NONCE */
     if(!justship_v2Nonce(st, &md->rbody, &st->st_ni, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+        return STF_INTERNAL_ERROR;
+    }
+
+    if(!justship_v2nat(st, &md->rbody)) {
         return STF_INTERNAL_ERROR;
     }
 
@@ -2404,7 +2454,9 @@ bool ship_v2N(unsigned int np, u_int8_t  critical,
     }
 
     n.isan_protoid =  protoid;
-    n.isan_spisize = spi->len;
+    if(spi) {
+        n.isan_spisize = spi->len;
+    }
     n.isan_type = type;
 
     if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs)) {
@@ -2412,7 +2464,7 @@ bool ship_v2N(unsigned int np, u_int8_t  critical,
         return FALSE;
     }
 
-    if(spi->len > 0) {
+    if(spi && spi->len > 0) {
         if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI ")) {
             openswan_log("error writing SPI to notify payload");
             return FALSE;

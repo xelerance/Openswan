@@ -248,6 +248,7 @@ extern bool justship_v2KE(struct state *st UNUSED
                           , chunk_t *g, unsigned int oakley_group
                           , pb_stream *outs, u_int8_t np);
 extern bool justship_v2Nonce(struct state *st, pb_stream *outpbs, chunk_t *nonce, unsigned int np);
+extern bool justship_v2nat(struct state *st, pb_stream *outpbs);
 
 extern void ikev2_padup_pre_encrypt(struct msg_digest *md
                                     , pb_stream *e_pbs_cipher);
