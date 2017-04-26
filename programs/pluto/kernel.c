@@ -444,6 +444,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    "%s "           /* optional mtu */
 		    "PLUTO_CONN_POLICY='%s' "
 		    "PLUTO_CONN_ADDRFAMILY='ipv%d' "
+		    "PLUTO_CONN_CLIENTFAMILY='ipv%d' "
+		    "PLUTO_CONN_ENDFAMILY='ipv%d' "
 #ifdef XAUTH
 		    "%s "           /* XAUTH username - if any */
 #endif
@@ -480,6 +482,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , metric_str
 		    , connmtu_str
 		    , prettypolicy(c->policy)
+		    , (c->end_addr_family == AF_INET) ? 4 : 6
+		    , (c->tunnel_addr_family == AF_INET) ? 4 : 6
 		    , (c->end_addr_family == AF_INET) ? 4 : 6
 #ifdef XAUTH
 		    , secure_xauth_username_str

@@ -122,8 +122,14 @@ LC_ALL=C export LC_ALL
 #
 #	PLUTO_CONNECTION_TYPE
 #
-#       PLUTO_CONN_ADDRFAMILY
-#               is the family type, "ipv4" or "ipv6"
+#       PLUTO_CONN_ADDRFAMILY  --- deprecated
+#               is the family of the end type, "ipv4" or "ipv6"
+#
+#       PLUTO_CONN_ENDFAMILY
+#               is the family type of the tunnel end points, "ipv4" or "ipv6"
+#
+#       PLUTO_CONN_CLIENTFAMILY
+#               is the family type of the inner packets: "ipv4" or "ipv6"
 #
 #	PLUTO_PROTO_STACK
 #		is the local IPsec kernel stack used, eg KLIPS, NETKEY,
@@ -441,7 +447,7 @@ doroute() {
     return $st
 }
 
-case $PLUTO_CONN_ADDRFAMILY in
+case $PLUTO_CONN_CLIENTFAMILY in
     ipv4) fullsubnet=32;;
     ipv6) fullsubnet=128;;
 esac
