@@ -527,11 +527,9 @@ ikev2_parent_outI1_common(struct msg_digest *md
         return STF_INTERNAL_ERROR;
     }
 
-#if 0
     if(!justship_v2nat(st, &md->rbody)) {
         return STF_INTERNAL_ERROR;
     }
-#endif
 
     /* Send Vendor VID if needed */
     {
