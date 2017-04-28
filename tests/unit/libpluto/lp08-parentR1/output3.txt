@@ -36,8 +36,8 @@ RC=0 "any1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.credi
 RC=0 "any1--jj2":     myip=unset; hisip=unset;
 RC=0 "any1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
-| *received 836 bytes from 10.10.5.4:500 on eth0 (port=500)
-|   56 11 47 13  4b 1d 6d 52  00 00 00 00  00 00 00 00
+| *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
@@ -71,34 +71,34 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 |   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
 |   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
 |   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   cd 28 ed 56  01 b3 cf 68  8c db a8 f1  2a 85 29 02
-|   5c c8 0b c0  16 67 1c 66  25 f0 66 1d  0c 70 84 0d
-|   7c b1 47 31  4d 5c f6 44  a2 0c 6a 4c  21 58 01 ed
-|   f2 aa 91 21  ae b0 d1 d8  3d bc a0 46  d5 05 12 5e
-|   8e da 81 8d  d1 05 27 da  18 57 ed 32  a3 ea de 8e
-|   13 fb 77 ec  db 59 58 aa  16 15 2e 7a  0d 5e 65 db
-|   0f c7 35 ce  a2 f9 c1 bf  63 9b ff 5e  14 97 a9 ba
-|   bd 69 93 3c  2e 9f 76 b6  b6 fe 4c ac  a3 54 60 48
-|   5d d0 61 18  26 ca 51 25  13 d1 55 8b  13 0d c8 ad
-|   17 83 cb dc  b7 e3 ea 00  c9 e7 66 75  6b 9e 82 9b
-|   b0 9d 15 ba  ff 37 2c ce  ba b1 8c 7d  8c 4d 63 c0
-|   66 4b d6 33  49 fe 8d 36  2b ad 84 6b  7e 9e eb a1
-|   af 8d 7b 53  65 58 46 ea  35 f8 51 04  52 f3 2f eb
-|   33 9c cc f1  bf 9a 6d 54  7e 7d aa 9b  4e 06 3d 9d
-|   d3 fb 25 df  37 9b 75 00  97 f0 f6 ba  ab b1 6c f1
-|   23 c5 68 50  4c ab f0 9f  0f 81 f9 e0  d5 f7 4d 58
-|   2b 00 00 14  1f c5 78 27  34 b4 87 be  5e 3a 7c 5a
-|   16 48 e8 b6  00 00 00 10  4f 53 57 6b  53 4f 59 66
-|   48 78 66 5d
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
+|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
-| ICOOKIE:  56 11 47 13  4b 1d 6d 52
+| ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 6
+| state hash entry 4
 | v2 state object not found
-| ICOOKIE:  56 11 47 13  4b 1d 6d 52
+| ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 6
+| state hash entry 4
 | v2 state object not found
 | considering state entry: 0
 |   reject:state needed and state unavailable
@@ -108,11 +108,11 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 |   reject:state needed and state unavailable
 | considering state entry: 3
 | now proceed with state specific processing using state #3 responder-V2_init
-| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=10.10.5.4:500 policy=IKEv2ALLOW/-
-| find_host_pair: looking for me=132.213.238.7:500 %address him=10.10.5.4:500 any-match
+| find_host_connection2 called from ikev2parent_inI1outR1, me=132.213.238.7:500 him=192.168.1.1:500 policy=IKEv2ALLOW/-
+| find_host_pair: looking for me=132.213.238.7:500 %address him=192.168.1.1:500 any-match
 | find_host_pair: comparing to me=132.213.238.7:500 %any him=0.0.0.0:500
 | find_host_pair: concluded with any1--jj2
-| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/10.10.5.4:500 -> hp:any1--jj2
+| found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %address/192.168.1.1:500 -> hp:any1--jj2
 | searching for connection with policy = IKEv2ALLOW/-
 | found policy = RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK (any1--jj2)
 | find_host_connection2 returns any1--jj2 (ike=none/none)
@@ -121,16 +121,16 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | orient any1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient any1--jj2 finished with: 1 [132.213.238.7]
-| ICOOKIE:  56 11 47 13  4b 1d 6d 52
-| RCOOKIE:  a9 e1 ff 4d  1c 8b b8 19
-| state hash entry 12
-| inserting state object #1 bucket: 12
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #1 bucket: 28
 | will not send/process a dcookie
 | **emit ISAKMP Message:
 |    initiator cookie:
-|   56 11 47 13  4b 1d 6d 52
+|   80 01 02 03  04 05 06 07
 |    responder cookie:
-|   a9 e1 ff 4d  1c 8b b8 19
+|   de bc 58 3a  8f 40 d0 cf
 |    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
@@ -209,9 +209,9 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 ./parentR1 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./parentR1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
-| sending reply packet to 10.10.5.4:500 (from port 500)
-sending 376 bytes for STATE_IKEv2_START through eth0:500 to 10.10.5.4:500 (using #1)
-|   56 11 47 13  4b 1d 6d 52  a9 e1 ff 4d  1c 8b b8 19
+| sending reply packet to 192.168.1.1:500 (from port 500)
+sending 376 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08

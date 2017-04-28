@@ -1,5 +1,9 @@
+# -*- makefile -*-
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 TESTNAME=parentI2
 CONNNAME=parker1--jj2
 ENDNAME=parker
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} parentR1.pcap OUTPUT/${TESTNAME}.pcap
+
+pcapupdate:
+	cp ../lp08-parentR1/OUTPUT/parentR1.pcap .
