@@ -101,7 +101,7 @@ sending 864 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  2b 00 00 1c  00 01 40 04  ea 59 1e 1b
+|   d3 20 e9 e3  2b 00 00 1c  00 00 40 04  ea 59 1e 1b
 |   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./rekey-no-reply-I1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1

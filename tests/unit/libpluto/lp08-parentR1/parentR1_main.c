@@ -20,7 +20,7 @@ void recv_pcap_packet(u_char *user
     /* find st involved */
     st = state_with_serialno(1);
     if(st) {
-        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+        st->st_connection->extra_debugging = DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
         /* now fill in the KE values from a constant.. not calculated */
         clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);

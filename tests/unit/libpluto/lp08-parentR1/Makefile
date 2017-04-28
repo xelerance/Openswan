@@ -140,5 +140,5 @@ clean:
 
 pcapupdate:
 	# note that input parentI1badKE is magic from the network.
-	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parker1.pcap
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
 

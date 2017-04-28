@@ -136,6 +136,37 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 1
 |    proto ID: 1

@@ -33,9 +33,9 @@ RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
-| *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 864 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 60  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -84,9 +84,10 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  2b 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -123,6 +124,15 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| received a notify..
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
+| processing v2N_NAT_DETECTION_SOURCE_IP
+| received nat-t hash  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| calculated nat-t  h  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -134,6 +144,37 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 1
 |    proto ID: 1

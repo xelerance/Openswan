@@ -29,6 +29,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o

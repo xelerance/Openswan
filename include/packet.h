@@ -811,7 +811,29 @@ extern struct_desc  ikev2_certificate_req_desc;
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
 
-/* rfc4306 section 3.10 NOTIFY Payload */
+/* rfc4306 section 3.10 NOTIFY Payload
+                        1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Next Payload  |C|  RESERVED   |         Payload Length        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Protocol ID  |   SPI Size    |      Notify Message Type      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   ~                Security Parameter Index (SPI)                 ~
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   ~                       Notification Data                       ~
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+note that the protocol_ID is *0* whenever SPI SIZE is zero, which
+applies to many IKE PARENT SA things like NAT_*
+
+*/
+
+
 struct ikev2_notify
 {
     u_int8_t  isan_np;		/* Next payload */

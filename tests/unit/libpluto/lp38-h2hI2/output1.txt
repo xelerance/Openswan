@@ -99,7 +99,7 @@ sending 864 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   1d cb e0 75  ca dd 45 ad  d7 17 f9 02  ef e0 f9 78
 |   d1 1e 82 8f  c2 b7 aa 25  19 6f 2f 08  4d 2b df dc
 |   29 00 00 14  80 01 02 03  04 05 06 07  08 09 0a 0b
-|   0c 0d 0e 0f  2b 00 00 1c  00 01 40 04  ea 59 1e 1b
+|   0c 0d 0e 0f  2b 00 00 1c  00 00 40 04  ea 59 1e 1b
 |   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1

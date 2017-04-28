@@ -376,35 +376,19 @@ bool justship_v2Nonce(struct state *st UNUSED, pb_stream *outpbs, chunk_t *nonce
 
 bool justship_v2nat(struct state *st, pb_stream *outpbs)
 {
-    SHA1_CTX srchash;
     unsigned char digest[SHA1_DIGEST_SIZE];
     chunk_t hash_chunk;
-    unsigned char thingstohash[COOKIE_SIZE/*spiI*/+COOKIE_SIZE/*spiR*/+16/*IPaddr*/+2/*port*/];
-    unsigned char *next = thingstohash;
-    unsigned char *addrptr;
-    size_t addrlen;
     bool success;
 
-    memcpy(next, st->st_icookie, COOKIE_SIZE);   next += COOKIE_SIZE;
-    memcpy(next, st->st_rcookie, COOKIE_SIZE);   next += COOKIE_SIZE;
-
-    addrlen = addrbytesptr(&st->st_localaddr, &addrptr);
-    memcpy(next, addrptr, addrlen);  next += addrlen;
-
-    next[0] = st->st_localport >> 8;
-    next[1] = st->st_localport & 0xff;
-    next += 2;
-
-    SHA1Init(&srchash);
-    SHA1Update(&srchash, thingstohash, (next - thingstohash));
-    SHA1Final(digest, &srchash);
+    calculate_nat_hash(st->st_icookie, st->st_rcookie, st->st_localaddr, st->st_localport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
 
     success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
-                       0, NULL, v2N_NAT_DETECTION_SOURCE_IP,
+                       v2N_noSA, NULL, v2N_NAT_DETECTION_SOURCE_IP,
                        &hash_chunk, outpbs);
     if(!success) return FALSE;
 
+    /* now send the notify about NAT_DETECTION_DESTINATION_IP */
 #if 0
     success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
                             u_int8_t protoid, chunk_t *spi,
@@ -832,6 +816,20 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
     /* record first packet for later checking of signature */
     clonetochunk(st->st_firstpacket_him, md->message_pbs.start
                  , pbs_offset(&md->message_pbs), "saved first received packet");
+
+
+    /*
+     * verify the NAT DETECTION notify messages before answering.
+     * on the responder side, this allows us to detect when *we* are behind
+     * at NAPT (probably with a port-forward).
+     *
+     * If we are, then we set a bit saying so, which later on will make us pick the
+     * UDP encapsulation for packets.  It is up to the initiator to switch ports
+     * from 500 to 4500.  Could be they have already done so, we do not care here.
+     */
+    if(md->chain[ISAKMP_NEXT_v2N]) {
+        ikev2_process_notifies(st, md);
+    }
 
 
     /* make sure HDR is at start of a clean buffer */
@@ -2451,6 +2449,7 @@ bool ship_v2N(unsigned int np, u_int8_t  critical,
     }
 
     n.isan_protoid =  protoid;
+    n.isan_spisize = 0;
     if(spi) {
         n.isan_spisize = spi->len;
     }

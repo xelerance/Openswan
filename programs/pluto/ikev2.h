@@ -233,6 +233,24 @@ extern void send_v2_notification(struct state *p1st, u_int16_t type
 				 , u_char *rcookie
 				 , chunk_t *data);
 
+extern void calculate_nat_hash(const unsigned char cookie_i[COOKIE_SIZE]
+                               , const unsigned char cookie_r[COOKIE_SIZE]
+                               , const ip_address addr
+                               , const unsigned short port
+                               , unsigned char digest[SHA1_DIGEST_SIZE]);
+
+extern stf_status process_nat_payload(struct state *st
+                                      , struct msg_digest *md
+                                      , struct payload_digest *p
+                                      , const char *payload_name
+                                      , v2_notification_t notify_type
+                                      , chunk_t *data);
+
+extern stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md);
+
+
+
+
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
 extern stf_status ikev2_send_cert( struct state *st

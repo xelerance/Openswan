@@ -1120,6 +1120,13 @@ typedef enum {
     /* 40960 - 65535 Private Use */
     } v2_notification_t;
 
+enum v2_notify_protocol {
+  v2N_noSA = 0,
+  v2N_IKE_SA = 1,
+  v2N_AH     = 2,
+  v2N_ESP    = 3,
+};
+
 
 /* Public key algorithm number
  * Same numbering as used in DNSsec
