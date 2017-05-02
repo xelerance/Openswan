@@ -354,6 +354,10 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
         return STF_INTERNAL_ERROR;
     }
 
+    if(!justship_v2nat(st, &md->rbody)) {
+        return STF_INTERNAL_ERROR;
+    }
+
     /* Send VendrID if needed VID */
     {
         pbs_set_np(&md->rbody, ISAKMP_NEXT_v2V);
