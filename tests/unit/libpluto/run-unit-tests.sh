@@ -2,8 +2,7 @@
 
 for f in $(make testlist)
 do
-    (cd $f; echo; echo $f $f $f $f;
-     echo; echo;
+    (cd $f; banner $f
      while ! make check;
      do
          make update && git add -p .
