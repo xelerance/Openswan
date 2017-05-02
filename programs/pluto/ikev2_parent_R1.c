@@ -350,15 +350,14 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     /* send NONCE */
     unpack_nonce(&st->st_nr, r);
-    if(!justship_v2Nonce(st, &md->rbody, &st->st_nr, numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE)) {
+    if(!justship_v2Nonce(st, &md->rbody, &st->st_nr, 0)) {
         return STF_INTERNAL_ERROR;
     }
 
     /* Send VendrID if needed VID */
     {
-        int np = --numvidtosend > 0 ? ISAKMP_NEXT_v2V : ISAKMP_NEXT_NONE;
-
-        if (!out_generic_raw(np, &isakmp_vendor_id_desc, &md->rbody
+        pbs_set_np(&md->rbody, ISAKMP_NEXT_v2V);
+        if (!out_generic_raw(0, &isakmp_vendor_id_desc, &md->rbody
                              , pluto_vendorid, strlen(pluto_vendorid), "Vendor ID"))
             return STF_INTERNAL_ERROR;
     }

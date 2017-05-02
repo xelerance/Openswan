@@ -225,6 +225,7 @@ RC=0 "any1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREF
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
+|    next-payload: ISAKMP_NEXT_v2V [@340=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
