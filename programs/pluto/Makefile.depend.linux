@@ -1146,8 +1146,10 @@ ikev2_parent.o: ikev2_parent.c ../../include/openswan.h \
  ../../include/pluto/log.h spdb.h ipsec_doi.h \
  ikev1_quick.h ../../include/pluto/vendor.h timer.h \
  ../../include/oswtime.h ike_continuations.h cookie.h \
- ../../include/pluto/rnd.h pending.h kernel.h tpm/tpm.h \
- ikev2_parent_I1.c ikev2_parent_R1.c
+ ../../include/pluto/rnd.h pending.h kernel.h \
+ ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/demux.h tpm/tpm.h ikev2_parent_I1.c \
+ ikev2_parent_R1.c ikev2_parent_I2.c
 ikev2_parent_I1.o: ikev2_parent_I1.c
 ikev2_parent_R1.o: ikev2_parent_R1.c
 ikev2_prfplus.o: ikev2_prfplus.c ../../include/openswan.h \
