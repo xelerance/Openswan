@@ -10,6 +10,9 @@ UNITTEST2ARGS=
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 
+pcapupdate:
+	@true
+
 # Local Variables:
 # gdb-command: "gud-gdb wrongcacert"
 # End Variables:

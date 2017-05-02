@@ -1,7 +1,11 @@
+# -*- makefile -*-
 CONNNAME=home
 ENDNAME=davecert
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 
 TESTNAME=davecertI1
 
+
+pcapupdate:
+	@true
 

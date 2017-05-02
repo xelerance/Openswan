@@ -1,3 +1,4 @@
+# -*- makefile -*-
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} h2hR1.pcap OUTPUT/h2hI2.pcap
 TESTNAME=h2hI2

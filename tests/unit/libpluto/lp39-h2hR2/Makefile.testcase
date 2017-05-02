@@ -1,4 +1,5 @@
 # -*- makefile -*-
+# -*- makefile -*-
 TESTNAME=h2hR2
 CONNNAME=mytunnel
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}

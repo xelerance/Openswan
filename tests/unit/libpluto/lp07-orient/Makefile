@@ -105,3 +105,6 @@ clean:
 	rm -f ${TESTNAME} ${WHACKFILE} *.o
 
 
+pcapupdate:
+	@true
+

@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=parker--dailyplanet
 ENDNAME=alias-h2n
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}

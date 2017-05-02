@@ -104,3 +104,6 @@ update1:
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
 
+
+pcapupdate:
+	@true

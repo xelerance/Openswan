@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=vzhost1-vzhost-mondev
 ENDNAME=vzhost1
 WHACKFILE=OUTPUT/threeconns.whack

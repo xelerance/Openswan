@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=parker
 ENDNAME=jamesjohnson
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} nattI1.pcap OUTPUT/nattR1.pcap

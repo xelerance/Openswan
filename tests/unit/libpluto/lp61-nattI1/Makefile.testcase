@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=parker1--jj2
 ENDNAME=parker
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}

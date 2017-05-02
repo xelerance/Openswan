@@ -74,8 +74,8 @@ UNITTESTS=lp01-spdbtest \
 	lp58-rekeyv2nopfs-inCR1  \
 	lp60-bestif                 \
 
-clean check:
-	@for unittest in $(UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+clean check pcapupdate:
+	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}

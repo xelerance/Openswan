@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=parker1--jj2
 ENDNAME=parker
 UNITTEST1ARGS=${WHACKFILE} parker1--jj2 OUTPUT/rekeytwice-CI1.pcap ../lp12-parentR2/parentI1.pcap ../lp12-parentR2/parentI2.pcap rekeyikev2-1-I1.pcap rekeyikev2-2-I1.pcap

@@ -1,3 +1,4 @@
+# -*- makefile -*-
 CONNNAME=mytunnel
 ENDNAME=h2h
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} h2hI1.pcap OUTPUT/h2hR1.pcap
