@@ -164,13 +164,12 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
     if(!success) return FALSE;
 
     /* now send the notify about NAT_DETECTION_DESTINATION_IP */
-#if 0
+    calculate_nat_hash(st->st_icookie, st->st_rcookie, st->st_remoteaddr, st->st_remoteport, digest);
+    setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
     success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
-                            u_int8_t protoid, chunk_t *spi,
-                            u_int16_t type,
-                            chunk_t *n_data, pb_stream *rbody);
+                       v2N_noSA, NULL, v2N_NAT_DETECTION_DESTINATION_IP,
+                       &hash_chunk, outpbs);
     if(!success) return FALSE;
-#endif
 
     return TRUE;
 }
