@@ -224,7 +224,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *authstart;
     struct state *pst = st;
     msgid_t        mid = INVALID_MSGID;
-    bool send_cert = FALSE;
 
     md->transition_state = st;
 
@@ -306,10 +305,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     get_rnd_bytes(iv, ivsize);
 
     /* note where cleartext starts */
-    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-    e_pbs_cipher.container = &e_pbs;
-    e_pbs_cipher.desc = NULL;
-    e_pbs_cipher.cur = e_pbs.cur;
+    init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
     encstart = e_pbs_cipher.cur;
 
     /* send out the IDi payload */
@@ -318,10 +314,11 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
         pb_stream r_id_pbs;
         chunk_t         id_b;
         struct hmac_ctx id_ctx;
+
+        /* for calculation of hash of ID payload */
         unsigned char *id_start;
         unsigned int   id_len;
 
-        hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
         build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b, &c->spd.this);
         r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
         if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
@@ -329,47 +326,43 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
             r_id.isai_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
         }
 
-        {  /* decide to send CERT payload */
-            send_cert = doi_send_ikev2_cert_thinking(st);
+        r_id.isai_np = 0;
 
-            if(send_cert)
-                r_id.isai_np = ISAKMP_NEXT_v2CERT;
-            else
-                r_id.isai_np = ISAKMP_NEXT_v2AUTH;
-        }
-
+        pbs_set_np(&e_pbs_cipher, ISAKMP_NEXT_v2IDi);
         id_start = e_pbs_cipher.cur;
         if (!out_struct(&r_id
                         , &ikev2_id_desc
                         , &e_pbs_cipher
-                        , &r_id_pbs)
-            || !out_chunk(id_b, &r_id_pbs, "my identity"))
+                        , &r_id_pbs)) {
             return STF_INTERNAL_ERROR;
+        }
 
-        /* HASH of ID is not done over common header */
+        if(!out_chunk(id_b, &r_id_pbs, "my identity")) {
+            return STF_INTERNAL_ERROR;
+        }
+
+        /* HASH of ID is not done over common (NP/length) header */
         id_start += 4;
-
-        close_output_pbs(&r_id_pbs);
+        id_len   = r_id_pbs.cur - id_start;
 
         /* calculate hash of IDi for AUTH below */
-        id_len = e_pbs_cipher.cur - id_start;
+        hmac_init_chunk(&id_ctx, pst->st_oakley.prf_hasher, pst->st_skey_pi);
         DBG(DBG_CRYPT, DBG_dump_chunk("idhash calc pi", pst->st_skey_pi));
         DBG(DBG_CRYPT, DBG_dump("idhash calc I2", id_start, id_len));
         hmac_update(&id_ctx, id_start, id_len);
         idhash = alloca(pst->st_oakley.prf_hasher->hash_digest_len);
         hmac_final(idhash, &id_ctx);
+
+        close_output_pbs(&r_id_pbs);
     }
 
     /* send [CERT,] payload RFC 4306 3.6, 1.2) */
-    {
-
-        if(send_cert) {
-            stf_status certstat = ikev2_send_cert( st, md
-                                                       , INITIATOR
-                                                   , ISAKMP_NEXT_v2AUTH
-                                                   , &e_pbs_cipher);
-            if(certstat != STF_OK) return certstat;
-        }
+    if(doi_send_ikev2_cert_thinking(st)) {
+        stf_status certstat = ikev2_send_cert( st, md
+                                               , INITIATOR
+                                               , ISAKMP_NEXT_v2AUTH
+                                               , &e_pbs_cipher);
+        if(certstat != STF_OK) return certstat;
     }
 
     /* send out the AUTH payload */

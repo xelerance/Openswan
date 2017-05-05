@@ -419,6 +419,9 @@ static stf_status ikev2_send_auth(struct connection *c
         return STF_FAIL;
     }
 
+    /* set the next payload here just in case */
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2AUTH);
+
     if (!out_struct(&a
                     , &ikev2_a_desc
                     , outpbs
@@ -1401,10 +1404,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
             get_rnd_bytes(iv, ivsize);
 
             /* note where cleartext starts */
-            init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-            e_pbs_cipher.container = &e_pbs;
-            e_pbs_cipher.desc = NULL;
-            e_pbs_cipher.cur = e_pbs.cur;
+            init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
             encstart = e_pbs_cipher.cur;
 
             if(md->chain[ISAKMP_NEXT_v2D]) {
@@ -1774,10 +1774,7 @@ void ikev2_delete_out(struct state *st)
         get_rnd_bytes(iv, ivsize);
 
         /* note where cleartext starts */
-        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-        e_pbs_cipher.container = &e_pbs;
-        e_pbs_cipher.desc = NULL;
-        e_pbs_cipher.cur = e_pbs.cur;
+        init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
         encstart = e_pbs_cipher.cur;
 
         {
