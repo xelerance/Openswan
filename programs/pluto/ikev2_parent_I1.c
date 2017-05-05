@@ -63,6 +63,13 @@ ikev2parent_outI1(int whack_sock
 
     if(newstateno) *newstateno = st->st_serialno;
 
+    /*
+     * initialize the local end point address, so that NAT calculation will
+     * have something to work with.
+     */
+    st->st_localaddr = st->st_interface->ip_addr;
+    st->st_localport = st->st_interface->port;
+
     return
         ikev2parent_outI1_withstate(st, whack_sock, c
                                     , predecessor, policy

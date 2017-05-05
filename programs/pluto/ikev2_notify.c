@@ -74,12 +74,13 @@ void calculate_nat_hash(const unsigned char cookie_i[COOKIE_SIZE]
 
     addrlen = addrbytesptr(&addr, &addrptr);
     memcpy(next, addrptr, addrlen);  next += addrlen;
+    passert(addrlen == 4 || addrlen == 16);
 
     next[0] = port >> 8;
     next[1] = port & 0xff;
     next += 2;
 
-    DBG(DBG_PARSING, DBG_dump("nat chunk", thingstohash, (next - thingstohash)));
+    DBG(DBG_EMITTING|DBG_PARSING|DBG_CONTROLMORE, DBG_dump("nat chunk", thingstohash, (next - thingstohash)));
 
     SHA1Init(&srchash);
     SHA1Update(&srchash, thingstohash, (next - thingstohash));

@@ -159,7 +159,8 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
     chunk_t hash_chunk;
     bool success;
 
-    calculate_nat_hash(st->st_icookie, st->st_rcookie, st->st_localaddr, st->st_localport, digest);
+    calculate_nat_hash(st->st_icookie, st->st_rcookie,
+                       st->st_localaddr, st->st_localport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
 
     success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
