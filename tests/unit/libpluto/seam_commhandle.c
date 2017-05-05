@@ -10,6 +10,7 @@ void recv_pcap_setup(char *file)
     char   eb1[256];  /* error buffer for pcap open */
 
     pt = pcap_open_offline(file, eb1);
+    DBG_log("  =========== input from from %s ========", file);
     if(!pt) {
 	fprintf(stderr, "can not open %s: %s\n", file, eb1);
 	exit(50);
