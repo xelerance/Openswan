@@ -36,6 +36,7 @@ RC=0 "rw-any":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=D
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
 0: input from parentI1.pcap
+|   =========== input from from parentI1.pcap ========
 | *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
@@ -255,6 +256,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/parentR2.pcap
 1: input from parentI2.pcap
+|   =========== input from from parentI2.pcap ========
 | *received 1564 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 08  00 00 00 01  00 00 06 1c  23 00 06 00

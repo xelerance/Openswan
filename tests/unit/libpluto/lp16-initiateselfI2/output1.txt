@@ -37,6 +37,7 @@ processing whack msg time: X size: Y
 ./initiateselfI2 adding connection: "gateway--any"
 | %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   =========== input from from parentR1.pcap ========
 |   orient gateway--any finished with: 1 [93.184.216.34]
 RC=0 "gateway--any": %any[@example.com]...132.213.238.7[@jamesjohnson.emmjay.credil.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "gateway--any":     myip=unset; hisip=unset;

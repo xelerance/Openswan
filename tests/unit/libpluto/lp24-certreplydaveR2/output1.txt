@@ -109,9 +109,10 @@ RC=2      rw-carol
 RC=2   IDpair: @moon.testing.openswan.org/              (none)
 RC=2      rw-any
 0: input from carolI1.pcap
-| *received 836 bytes from 93.184.216.34:500 on eth0 (port=500)
+|   =========== input from from carolI1.pcap ========
+| *received 892 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -160,9 +161,12 @@ RC=2      rw-any
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  0f e1 64 e0
+|   33 44 b5 3d  21 69 c9 2e  8f 62 9c d1  d0 d6 92 a3
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -200,6 +204,9 @@ RC=2      rw-any
 | state hash entry 5
 | inserting state object #1 bucket: 5
 | will not send/process a dcookie
+| received a notify..
+./certreplydaveR2 detected that they are NATed
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -328,6 +335,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: input from carolI2.pcap
+|   =========== input from from carolI2.pcap ========
 | *received 1516 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 08  00 00 00 01  00 00 05 ec  23 00 05 d0
@@ -1516,9 +1524,10 @@ sending 1404 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (us
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 2: input from davecertI1.pcap
-| *received 836 bytes from 93.184.216.35:500 on eth0 (port=500)
+|   =========== input from from davecertI1.pcap ========
+| *received 892 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -1737,6 +1746,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.35:500 (u
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 3: output to OUTPUT/parentR2dave.pcap
 3: input from davecertI2.pcap
+|   =========== input from from davecertI2.pcap ========
 | *received 1628 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
 |   2e 20 23 08  00 00 00 01  00 00 06 5c  23 00 06 40

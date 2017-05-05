@@ -32,6 +32,7 @@ processing whack msg time: X size: Y
 ./davecertI2 adding connection: "home"
 | %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   =========== input from from parentR1dave.pcap ========
 |   orient home finished with: 1 [0.0.0.0]
 RC=0 "home": %any[C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com]...132.213.238.7[@moon.strongswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=daveCert.pem;

@@ -37,9 +37,10 @@ RC=0 "rw-dave":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=daveCe
 RC=0 "rw-dave":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
-| *received 836 bytes from 93.184.216.35:500 on eth0 (port=500)
+|   =========== input from from davecertI1-id.pcap ========
+| *received 892 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -88,9 +89,12 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  d7 ed 74 3d
+|   d3 93 7a 12  d7 56 e4 e0  e4 d5 b8 95  87 a2 39 67
+|   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
+|   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
@@ -127,6 +131,22 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | state hash entry 13
 | inserting state object #1 bucket: 13
 | will not send/process a dcookie
+| received a notify..
+| nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   5d b8 d8 23  01 f4
+| processing v2N_NAT_DETECTION_SOURCE_IP
+| received nat-t hash  d7 ed 74 3d  d3 93 7a 12  d7 56 e4 e0  e4 d5 b8 95
+|   87 a2 39 67
+| calculated nat-t  h  27 32 94 6b  70 cf ee 15  b8 92 a5 e9  51 d9 2d 19
+|   dc a3 b6 67
+| nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
+| processing v2N_NAT_DETECTION_DESTINATION_IP
+| received nat-t hash  cd 75 36 6e  bb c6 07 29  89 9f 33 c9  b7 8c 95 e9
+|   4e ac a8 b1
+| calculated nat-t  h  cd 75 36 6e  bb c6 07 29  89 9f 33 c9  b7 8c 95 e9
+|   4e ac a8 b1
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   8d 0e 0f 10  11 12 13 14

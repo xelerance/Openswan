@@ -32,6 +32,7 @@ processing whack msg time: X size: Y
 ./certificateselfI2 adding connection: "home"
 | %any[@carol.testing.openswan.org]...132.213.238.7[@moon.testing.openswan.org]===10.2.0.0/16
 | ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   =========== input from from parentR1.pcap ========
 |   orient home finished with: 1 [93.184.216.34]
 RC=0 "home": %any[@carol.testing.openswan.org]...132.213.238.7[@moon.testing.openswan.org]===10.2.0.0/16; unrouted; eroute owner: #0
 RC=0 "home":     myip=unset; hisip=unset; mycert=carolCert.pem;
@@ -111,9 +112,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./certificateselfI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./certificateselfI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
-| *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
+| *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -133,9 +134,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
 |   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
 |   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
-|   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
-|   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
-|   75 74 6f 75  6e 69 74 30
+|   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
+|   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
+|   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
+|   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
+|   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | **parse ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -145,7 +149,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
-|    length: 376
+|    length: 432
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -178,12 +182,42 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |    critical bit: none
 |    length: 20
 | processing payload: ISAKMP_NEXT_v2Ni (len=20)
+| ***parse IKEv2 Notify Payload:
+|    critical bit: none
+|    length: 28
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
+| processing payload: ISAKMP_NEXT_v2N (len=28)
+| ***parse IKEv2 Notify Payload:
+|    critical bit: none
+|    length: 28
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
+| processing payload: ISAKMP_NEXT_v2N (len=28)
 | ***parse IKEv2 Vendor ID Payload:
 |    critical bit: none
 |    length: 16
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
+| nat chunk  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   84 d5 ee 07  01 f4
+| processing v2N_NAT_DETECTION_SOURCE_IP
+| received nat-t hash  d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
+|   76 d4 bc 8f
+| calculated nat-t  h  d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
+|   76 d4 bc 8f
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
+| nat chunk  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   5d b8 d8 22  01 f4
+| processing v2N_NAT_DETECTION_DESTINATION_IP
+| received nat-t hash  e0 69 e5 73  67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29
+|   c4 d9 11 09
+| calculated nat-t  h  e0 69 e5 73  67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29
+|   c4 d9 11 09
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
