@@ -615,6 +615,9 @@ extract_end(struct connection *conn
     {
 	dst->id.kind = ID_NONE;
     }
+    else if(strcasecmp(src->id, "%cert")==0) {
+        dst->id.kind = ID_FROMCERT;
+    }
     else
     {
 	err_t ugh = atoid(src->id, &dst->id, TRUE);
