@@ -193,6 +193,8 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@340=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -204,6 +206,8 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 | Notify data  d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
 |   76 d4 bc 8f
 | emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   5d b8 d8 22  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@360=0x29]
 | ***emit IKEv2 Notify Payload:

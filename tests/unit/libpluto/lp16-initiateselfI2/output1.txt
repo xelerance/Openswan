@@ -113,8 +113,8 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  2e b6 bf 43
-|   88 a4 1e 34  4e 8c 3f ec  55 98 5d 47  21 07 f8 48
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  27 ec f2 2b
+|   d5 28 36 92  28 23 8a 58  36 a2 4f d8  ee 6c cd bb
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
@@ -240,21 +240,23 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | ***emit IKEv2 Encryption Payload:
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| IKEv2 thinking whether to send my certificate:
-|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
-|  so do not send cert.
-| I did not send a certificate because I do not have one.
+|    next-payload: ISAKMP_NEXT_v2IDi [@-20=0x23]
 | *****emit IKEv2 Identification Payload:
 |    critical bit: none
 |    id_type: ID_FQDN
 | emitting 11 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  65 78 61 6d  70 6c 65 2e  63 6f 6d
-| emitting length of IKEv2 Identification Payload: 19
 | idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash calc I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| emitting length of IKEv2 Identification Payload: 19
+| IKEv2 thinking whether to send my certificate:
+|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
+|  so do not send cert.
+| I did not send a certificate because I do not have one.
 |  payload after AUTH will be ISAKMP_NEXT_v2SA
+|    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
 | *****emit IKEv2 Authentication Payload:
 |    critical bit: none
 |    auth method: v2_AUTH_RSA

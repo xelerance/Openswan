@@ -380,6 +380,8 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   5d b8 d8 22  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -388,9 +390,11 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 |    SPI size: 0
 |    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
 | emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
-| Notify data  0f e1 64 e0  33 44 b5 3d  21 69 c9 2e  8f 62 9c d1
-|   d0 d6 92 a3
+| Notify data  27 ec f2 2b  d5 28 36 92  28 23 8a 58  36 a2 4f d8
+|   ee 6c cd bb
 | emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -460,8 +464,8 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  0f e1 64 e0
-|   33 44 b5 3d  21 69 c9 2e  8f 62 9c d1  d0 d6 92 a3
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  27 ec f2 2b
+|   d5 28 36 92  28 23 8a 58  36 a2 4f d8  ee 6c cd bb
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
@@ -504,11 +508,6 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 ./certificateselfI1 leak: db_attrs, item size: X
 ./certificateselfI1 leak: db_v2_trans, item size: X
 ./certificateselfI1 leak: db_v2_prop_conj, item size: X
-./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
-./certificateselfI1 leak: issuer dn, item size: X
-./certificateselfI1 leak: keep id name, item size: X
-./certificateselfI1 leak: pubkey entry, item size: X
-./certificateselfI1 leak: pubkey, item size: X
 ./certificateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./certificateselfI1 leak: issuer dn, item size: X
 ./certificateselfI1 leak: keep id name, item size: X

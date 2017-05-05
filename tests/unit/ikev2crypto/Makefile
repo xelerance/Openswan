@@ -19,7 +19,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 UNITTESTS=ct10-parentI2 ct12-parentR2 ct14-bigkeyI2
 
 clean check:
-	@for unittest in $(UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}

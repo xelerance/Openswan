@@ -193,6 +193,8 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@340=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -204,6 +206,8 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Notify data  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
 |   ec 7e 9b fe
 | emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   c0 a8 01 01  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@360=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -490,6 +494,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 to 192.168.1.1:500 (usi
 | assembled IDr payload -- CERT next
 | CHILD SA proposals received
 | going to assemble AUTH payload
+|    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
 | *****emit IKEv2 Authentication Payload:
 |    critical bit: none
 |    auth method: v2_AUTH_RSA

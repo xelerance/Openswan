@@ -379,6 +379,8 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   5d b8 d8 23  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -387,9 +389,11 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 |    SPI size: 0
 |    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
 | emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
-| Notify data  d7 ed 74 3d  d3 93 7a 12  d7 56 e4 e0  e4 d5 b8 95
-|   87 a2 39 67
+| Notify data  27 32 94 6b  70 cf ee 15  b8 92 a5 e9  51 d9 2d 19
+|   dc a3 b6 67
 | emitting length of IKEv2 Notify Payload: 28
+| nat chunk  8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -459,8 +463,8 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  d7 ed 74 3d
-|   d3 93 7a 12  d7 56 e4 e0  e4 d5 b8 95  87 a2 39 67
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  27 32 94 6b
+|   70 cf ee 15  b8 92 a5 e9  51 d9 2d 19  dc a3 b6 67
 |   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30

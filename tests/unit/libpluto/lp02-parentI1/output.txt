@@ -374,6 +374,8 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
 | ***emit IKEv2 Notify Payload:
@@ -385,6 +387,8 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | Notify data  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
 |   70 73 62 f1
 | emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
 | ***emit IKEv2 Notify Payload:
