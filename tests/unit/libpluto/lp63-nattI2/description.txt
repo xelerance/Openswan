@@ -1,0 +1,16 @@
+This test case is an IKEv2 initiator on I2.
+It is behind a NAT, which the responder will detect, and we will also detect
+in this step.
+
+This host is at 192.168.1.1, but it's outside address is
+93.184.216.34:55044 (example.com).
+
+
+
+
+
+
+
+
+
+
