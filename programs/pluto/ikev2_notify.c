@@ -95,9 +95,10 @@ stf_status process_nat_payload(struct state *st
                                , chunk_t *data)
 {
     unsigned char digest[SHA1_DIGEST_SIZE];
+    char addrbuf[ADDRTOT_BUF];
     chunk_t calculated_hash;
     ip_address *addr;
-    short       port;
+    unsigned short port;
 
     switch(notify_type) {
     case v2N_NAT_DETECTION_DESTINATION_IP:
@@ -128,7 +129,9 @@ stf_status process_nat_payload(struct state *st
             openswan_log("detected that I am NATed");
             break;
         case v2N_NAT_DETECTION_SOURCE_IP:
-            openswan_log("detected that they are NATed");
+            addrtot(addr, 0, addrbuf, ADDRTOT_BUF);
+            openswan_log("detected that they are NATed at: %s:%u"
+                         , addrbuf, port);
             break;
         default:
             break;
