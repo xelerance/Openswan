@@ -453,6 +453,11 @@ ikev2_update_nat_ports(struct state *st)
             openswan_log("NAT-T detected, moving to port 4500");
             st->st_remoteport = pluto_port4500;
         }
+
+        /* now pick a new local interface definition for sending traffic out of */
+        st->st_interface = pick_matching_interfacebyfamily(interfaces, pluto_port4500
+                                                           , st->st_remoteaddr.u.v4.sin_family
+                                                           , &st->st_connection->spd);
     }
 }
 

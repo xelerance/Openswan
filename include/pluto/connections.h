@@ -308,6 +308,10 @@ struct connection {
 extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
+extern struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                          int pluto_port,
+                                                          int family, struct spd_route *sr);
+
 extern bool same_peer_ids(const struct connection *c
     , const struct connection *d, const struct id *his_id);
 extern bool compare_end_addr_names(struct end *a, struct end *b);
