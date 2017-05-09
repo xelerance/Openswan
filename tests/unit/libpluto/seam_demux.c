@@ -53,8 +53,14 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    struct pcap_pkthdr pp;
 	    struct iphdr  *ip;
 	    struct udphdr *udp;
+            u_char    *ulp;
 	    u_int32_t *dlt;
 	    int caplen = sizeof(struct iphdr)+sizeof(struct udphdr)+len;
+            int shimlen = 0;
+
+            if ((st->st_interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
+              shimlen = 4;
+            }
 
 	    dlt = (u_int32_t*)buf;
 	    *dlt = PF_INET;
@@ -63,7 +69,7 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    ip->version = 4;
 	    ip->ihl     = 5;
 	    ip->tos     = 0;
-	    ip->tot_len = htons(caplen);
+	    ip->tot_len = htons(caplen+shimlen);
 	    ip->id      = 0;
 	    ip->frag_off= 0;
 	    ip->ttl     = 64;
@@ -72,18 +78,25 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    ip->saddr   = st->st_interface->ip_addr.u.v4.sin_addr.s_addr;
 	    ip->daddr   = st->st_remoteaddr.u.v4.sin_addr.s_addr;
 	    udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
-	    udp->source = htons(500);
+	    udp->source = htons(st->st_interface->port);
 	    udp->dest   = htons(st->st_remoteport);
-	    udp->len    = htons(sizeof(struct udphdr)+len);
+	    udp->len    = htons(sizeof(struct udphdr)+len+shimlen);
 	    udp->check  = 0;
 
-	    memcpy(&buf[sizeof(struct iphdr)+sizeof(struct udphdr)+4],ptr,len);
+            ulp = &buf[sizeof(struct iphdr)+sizeof(struct udphdr)+4];  /* +4 because of pcap_pkthdr */
+            if ((st->st_interface->ike_float == TRUE) && (st->st_tpacket.len != 1)) {
+              /* insert UDP encap shim of 4 bytes of zeros, and advance pointer */
+              ulp[0]=0; ulp[1]=0; ulp[2]=0; ulp[3]=0;
+              ulp+=4;
+            }
+
+	    memcpy(ulp,ptr,len);
 
 	    packet_time  = packet_time + 86400;
 	    pp.ts.tv_sec = packet_time;
 	    pp.ts.tv_usec= 0;
-	    pp.caplen = caplen+4;
-	    pp.len    = caplen+4;
+	    pp.caplen = caplen+4+shimlen;
+	    pp.len    = caplen+4+shimlen;
 	    pcap_dump((u_char *)packet_save, &pp, buf);
     }
 }
