@@ -178,7 +178,7 @@ stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md)
         /* process the SPISIZE */
         if(pbs_left(data_pbs) < p->payload.v2n.isan_spisize) {
           loglog(RC_LOG_SERIOUS, "notify payload %s received with too small spisize: %lu < %u (dropped)"
-                 , payload_name, pbs_left(data_pbs),  p->payload.v2n.isan_spisize);
+                 , payload_name, (long unsigned)pbs_left(data_pbs),  p->payload.v2n.isan_spisize);
         }
         setchunk(spi, data_pbs->cur, p->payload.v2n.isan_spisize);
         data_pbs->cur += p->payload.v2n.isan_spisize;

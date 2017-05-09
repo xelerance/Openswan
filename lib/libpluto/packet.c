@@ -1803,7 +1803,7 @@ void pbs_set_np(pb_stream *outs, u_int8_t np)
     passert(outs->next_payload_pointer != NULL);
     DBG(DBG_EMITTING, DBG_log("   next-payload: %s [@%ld=0x%2x]"
                               , enum_show(&payload_names, np)
-                              , outs->next_payload_pointer - outs->start
+                              , (long)(outs->next_payload_pointer - outs->start)
                               , np));
 
     *outs->next_payload_pointer = np;
