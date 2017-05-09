@@ -20,6 +20,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./respondselfR2 use keyid: 1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E / 2:<>
 | counting wild cards for @example.com is 0
+| orient gateway--any checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient gateway--any checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient gateway--any finished with: 1 [132.213.238.7]
@@ -122,6 +123,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | find_host_connection2 returns gateway--any (ike=none/none)
 ./respondselfR2 tentatively considering connection: gateway--any
 | creating state object #1 at Z
+| orient gateway--any checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient gateway--any checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient gateway--any finished with: 1 [132.213.238.7]
@@ -233,7 +235,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./respondselfR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (using #1)
+sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
@@ -578,7 +580,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 | v2_state_transition: st is #1; pst is #1; transition_st is #1
 ./respondselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 300 bytes for STATE_PARENT_R1 through eth0:500 to 93.184.216.34:500 (using #1)
+sending 300 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 20  00 00 00 01  00 00 01 2c  24 00 01 10
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f

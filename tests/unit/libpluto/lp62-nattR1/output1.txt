@@ -23,10 +23,12 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./nattR1 use keyid: 1:<> / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
+| orient parker checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker checking against if: eth0 (AF_INET:132.213.238.7:500)
 | orient parker matching on public/private keys: this=no[%any] that=no[%defaultroute]
 |   orient parker matched on that being defaultroute, and this lacking private key
 | pick_if looking for port: 500, family: 0
+|   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 132.213.238.7
 |   orient parker finished with: 1 [132.213.238.7]
@@ -129,10 +131,12 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 | find_host_connection2 returns parker (ike=none/none)
 ./nattR1 tentatively considering connection: parker
 | creating state object #1 at Z
+| orient parker checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker checking against if: eth0 (AF_INET:132.213.238.7:500)
 | orient parker matching on public/private keys: this=no[%defaultroute] that=no[%any]
 |   orient parker matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 0
+|   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 132.213.238.7
 |   orient parker finished with: 1 [132.213.238.7]
@@ -292,7 +296,7 @@ RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./nattR1 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:55044 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:55044 (using #1)
+sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:55044 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c

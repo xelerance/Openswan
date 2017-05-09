@@ -17,6 +17,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./parentR1 use keyid: 1:<> / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
+| orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
@@ -112,6 +113,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | find_host_connection2 returns parker1--jj2 (ike=none/none)
 ./parentR1 tentatively considering connection: parker1--jj2
 | creating state object #1 at Z
+| orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
@@ -212,7 +214,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | emitting length of IKEv2 Notify Payload: 10
 | emitting 2 zero bytes of message padding into ISAKMP Message
 | emitting length of ISAKMP Message: 40
-sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (using #1)
+sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 28  00 00 00 0a
 |   01 00 00 11  00 0e 00 00
@@ -242,7 +244,7 @@ sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (u
 |    Notify Message Type: v2N_INVALID_KE_PAYLOAD
 | emitting length of IKEv2 Notify Payload: 8
 | emitting length of ISAKMP Message: 36
-sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (using #1)
+sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 11
