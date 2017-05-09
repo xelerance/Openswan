@@ -27,22 +27,59 @@ void send_packet_setup_pcap(char *file)
 	packet_save = pcap_dump_open(pt, file);
 }
 
+
+#ifdef NAPT_ENABLED
+unsigned short outside_port = 55044;
+
 bool
 send_packet(struct state *st, const char *where, bool verbose)
 {
+    ip_address outsideoffirewall;
+
+    /* example.com: 93.184.216.34 */
+    outsideoffirewall = st->st_interface->ip_addr;
+    inet_pton(AF_INET, "93.184.216.34", &outsideoffirewall.u.v4.sin_addr);
+    outsideoffirewall.u.v4.sin_port = htons(outside_port);
+
+    send_packet_srcnat(st, where, verbose, outsideoffirewall);
+}
+
+#else
+bool
+send_packet(struct state *st, const char *where, bool verbose)
+{
+    ip_address outsideoffirewall;
+
+    /* just copy real values */
+    outsideoffirewall = st->st_interface->ip_addr;
+    outsideoffirewall.u.v4.sin_port = htons(st->st_localport);
+
+  send_packet_srcnat(st, where, verbose, outsideoffirewall);
+}
+#endif
+
+bool
+send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address outsideoffirewall)
+{
     u_int8_t *ptr;
     unsigned long len;
+    char b1[ADDRTOT_BUF], b2[ADDRTOT_BUF];
 
     ptr = st->st_tpacket.ptr;
     len = (unsigned long) st->st_tpacket.len;
 
+    addrtot(&outsideoffirewall, 0, b1, sizeof(b1));
+    addrtot(&st->st_remoteaddr, 0, b2, sizeof(b2));
+
     fprintf(stderr
-	    , "sending %lu bytes for %s through %s:%d to %s:%u (using #%lu)\n"
+	    , "sending %lu bytes for %s through %s:%u [%s:%u] to %s:%u (using #%lu)\n"
 	   , (unsigned long) st->st_tpacket.len
 	   , where
 	   , st->st_interface->ip_dev->id_rname
 	   , st->st_interface->port
-	   , ip_str(&st->st_remoteaddr)
+            , b1
+            , ntohs(outsideoffirewall.u.v4.sin_port)
+            , b2
 	   , st->st_remoteport
 	   , st->st_serialno);
 
@@ -75,10 +112,10 @@ send_packet(struct state *st, const char *where, bool verbose)
 	    ip->ttl     = 64;
 	    ip->protocol= IPPROTO_UDP;
 	    ip->check   = 0;
-	    ip->saddr   = st->st_interface->ip_addr.u.v4.sin_addr.s_addr;
+	    ip->saddr   = outsideoffirewall.u.v4.sin_addr.s_addr;
 	    ip->daddr   = st->st_remoteaddr.u.v4.sin_addr.s_addr;
 	    udp = (struct udphdr *)&buf[sizeof(struct iphdr)+4];
-	    udp->source = htons(st->st_interface->port);
+	    udp->source = outsideoffirewall.u.v4.sin_port;
 	    udp->dest   = htons(st->st_remoteport);
 	    udp->len    = htons(sizeof(struct udphdr)+len+shimlen);
 	    udp->check  = 0;

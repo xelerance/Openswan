@@ -1,3 +1,4 @@
+#define NAPT_ENABLED 1
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_x509.c"
 #include "seam_pending.c"
@@ -7,7 +8,6 @@
 #include "seam_dnskey.c"
 
 #include "seam_host_parker.c"
-#include "seam_demux_napt.c"
 
 #define TESTNAME "nattI1"
 

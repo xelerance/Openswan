@@ -20,6 +20,7 @@ void recv_pcap_setup(char *file)
 }
 
 
+extern unsigned short outside_port;
 
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h
@@ -69,7 +70,22 @@ void recv_pcap_packet_gen(u_char *user
     from.sa_in4.sin_addr.s_addr = ip->saddr;
     from.sa_in4.sin_port        = udp->source;
 
+    while(ifp && (ifp->port != ntohs(udp->dest)
+
+#ifdef NAPT_ENABLED
+                  && outside_port != ntohs(udp->dest)
+#endif
+                  )) {
+      ifp = ifp->next;
+    }
+    if(ifp == NULL) {
+      printf("did not find an interface with port=%u \n", ntohs(udp->dest));
+      exit(10);
+    }
+
     md->iface = ifp;
+
+
     packet_len = h->len - (ike-bytes);
 
     happy(anyaddr(addrtypeof(&ifp->ip_addr), &md->sender));
