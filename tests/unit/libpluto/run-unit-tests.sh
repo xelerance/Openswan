@@ -2,7 +2,7 @@
 
 for f in $(make testlist)
 do
-    (cd $f; figlet $f
+    (cd $f; figlet -t $f
      while ! make check;
      do
          make update && git add -p .
