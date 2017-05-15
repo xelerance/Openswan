@@ -351,6 +351,15 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
 
     DBG(DBG_PARSING, DBG_log("authenticator matched, np=%u", np));
 
+    /*
+     * since the authenticator matched, we update the interface
+     * attached to the state, which (might)  change what port/IP we send
+     * to from now on.  We only do this if we are the responder.
+     */
+    if(md->role == RESPONDER) {
+        st->st_interface = md->iface;
+    }
+
     /* decrypt */
     {
         size_t         blocksize = pst->st_oakley.encrypter->enc_blocksize;
