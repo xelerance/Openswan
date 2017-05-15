@@ -29,7 +29,8 @@ void send_packet_setup_pcap(char *file)
 
 
 #ifdef NAPT_ENABLED
-unsigned short outside_port = 55044;
+unsigned short outside_port500 = 55044;
+unsigned short outside_port4500= 55045;
 
 bool
 send_packet(struct state *st, const char *where, bool verbose)
@@ -39,7 +40,12 @@ send_packet(struct state *st, const char *where, bool verbose)
     /* example.com: 93.184.216.34 */
     outsideoffirewall = st->st_interface->ip_addr;
     inet_pton(AF_INET, "93.184.216.34", &outsideoffirewall.u.v4.sin_addr);
-    outsideoffirewall.u.v4.sin_port = htons(outside_port);
+
+    if(ntohs(outsideoffirewall.u.v4.sin_port) == pluto_port500) {
+      outsideoffirewall.u.v4.sin_port = htons(outside_port500);
+    } else if(ntohs(outsideoffirewall.u.v4.sin_port) == pluto_port4500) {
+      outsideoffirewall.u.v4.sin_port = htons(outside_port4500);
+    }
 
     send_packet_srcnat(st, where, verbose, outsideoffirewall);
 }

@@ -20,7 +20,8 @@ void recv_pcap_setup(char *file)
 }
 
 
-extern unsigned short outside_port;
+extern unsigned short outside_port500;
+extern unsigned short outside_port4500;
 
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h
