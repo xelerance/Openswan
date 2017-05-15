@@ -52,7 +52,7 @@ send_packet(struct state *st, const char *where, bool verbose)
 
     /* just copy real values */
     outsideoffirewall = st->st_interface->ip_addr;
-    outsideoffirewall.u.v4.sin_port = htons(st->st_localport);
+    outsideoffirewall.u.v4.sin_port = htons(st->st_interface->port);
 
   send_packet_srcnat(st, where, verbose, outsideoffirewall);
 }

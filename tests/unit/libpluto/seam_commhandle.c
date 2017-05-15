@@ -99,6 +99,11 @@ void recv_pcap_packet_gen(u_char *user
     cur_from      = &md->sender;
     cur_from_port = md->sender_port;
 
+    if(natt_skip_nonesp(ifp, cur_from, cur_from_port
+                        , &ike, &packet_len) != TRUE) {
+      exit(11);
+    }
+
     /* Clone actual message contents
      * and set up md->packet_pbs to describe it.
      */
