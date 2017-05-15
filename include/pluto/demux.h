@@ -98,6 +98,12 @@ extern void fmt_ipsec_sa_established(struct state *st
 extern void fmt_isakmp_sa_established(struct state *st
 				      , char *sadetails, int sad_len);
 
+extern bool natt_skip_nonesp(const struct iface_port *ifp
+                             , const ip_address *cur_from
+                             , unsigned short cur_from_port
+                             , u_int8_t **p_buffer
+                             , int       *packet_len);
+
 extern void free_md_pool(void);
 
 /* deal with echo request/reply */
