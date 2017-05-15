@@ -293,7 +293,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 1: output to OUTPUT/nattR2.pcap
 1: input from nattI2.pcap
 |   =========== input from from nattI2.pcap ========
-| *received 556 bytes from 192.168.1.1:4500 on eth0 (port=4500)
+| *received 556 bytes from 93.184.216.34:55045 on eth0 (port=4500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -392,6 +392,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | R2 calculated auth:  26 90 84 b1  1f f5 2e 8c  9d 03 99 ac
 | R2  provided  auth:  26 90 84 b1  1f f5 2e 8c  9d 03 99 ac
 | authenticator matched, np=35
+| changing iface from 132.213.238.7:500 to 132.213.238.7:4500
+./nattR2 changing remote addr from 93.184.216.34:55044 to 93.184.216.34:55045
 | data before decryption:
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
@@ -787,8 +789,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./nattR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
 ./nattR2 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
 ./nattR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
-| sending reply packet to 93.184.216.34:55044 (from port 4500)
-sending 444 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55044 (using #2)
+| sending reply packet to 93.184.216.34:55045 (from port 4500)
+sending 444 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f

@@ -357,7 +357,25 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
      * to from now on.  We only do this if we are the responder.
      */
     if(md->role == RESPONDER) {
-        st->st_interface = md->iface;
+        if(st->st_interface != md->iface) {
+            DBG(DBG_CONTROL
+                , DBG_log("changing iface from %s:%u to %s:%u"
+                          , st->st_interface->addrname, st->st_interface->port
+                          , md->iface->addrname,md->iface->port));
+            st->st_interface = md->iface;
+        }
+        if(st->st_remoteport != md->sender_port
+           || addrcmp(&st->st_remoteaddr, &md->sender)!=0) {
+            char b1[ADDRTOT_BUF], b2[ADDRTOT_BUF];
+
+            addrtot(&st->st_remoteaddr, 0, b1, sizeof(b1));
+            addrtot(&md->sender,        0, b2, sizeof(b2));
+            openswan_log("changing remote addr from %s:%u to %s:%u"
+                         , b1, st->st_remoteport
+                         , b2, md->sender_port);
+            st->st_remoteport = md->sender_port;
+            st->st_remoteaddr = md->sender;
+        }
     }
 
     /* decrypt */

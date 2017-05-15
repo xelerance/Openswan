@@ -97,7 +97,7 @@ RC=0 "mytunnel-no-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
 | searching for connection with policy = RSASIG/!IKEv1
 | find_host_connection2 returns empty (ike=none/none)
-./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:62465 but no connection has been authorized with policy=RSASIG
+./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:500 but no connection has been authorized with policy=RSASIG
 | complete state transition with STF_FAIL
 RC=205 STATE_MAIN_R0: INVALID_MAJOR_VERSION
 ./h2hR1-deny-ikev1 sending notification INVALID_MAJOR_VERSION to 192.168.1.1:500

@@ -74,9 +74,18 @@ void recv_pcap_packet_gen(u_char *user
     while(ifp && (ifp->port != ntohs(udp->dest)
 
 #ifdef NAPT_ENABLED
-                  && outside_port != ntohs(udp->dest)
+                  && !(ifp->ike_float==0 && outside_port500 == ntohs(udp->dest))
+                  && !(ifp->ike_float==1 && outside_port4500 == ntohs(udp->dest))
 #endif
                   )) {
+
+#ifdef NAPT_ENABLED
+      fprintf(stderr, "skipping: %s:%u %s outside: %u <=> d: %u\n"
+              , ifp->ip_dev->id_rname, ifp->port
+              , ifp->ike_float ? "float" : ""
+              , (ifp->ike_float ? outside_port4500 : outside_port500)
+              , ntohs(udp->dest));
+#endif
       ifp = ifp->next;
     }
     if(ifp == NULL) {
@@ -84,6 +93,13 @@ void recv_pcap_packet_gen(u_char *user
       exit(10);
     }
 
+#ifdef NAPT_ENABLED
+    fprintf(stderr, "picking: %s:%u %s outside: %u <=> d: %u\n"
+              , ifp->ip_dev->id_rname, ifp->port
+              , ifp->ike_float ? "float" : ""
+              , (ifp->ike_float ? outside_port4500 : outside_port500)
+              , ntohs(udp->dest));
+#endif
     md->iface = ifp;
 
 
