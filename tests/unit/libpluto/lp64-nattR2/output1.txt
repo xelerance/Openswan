@@ -329,7 +329,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   14 e1 a2 60  ee 9b 99 56  10 11 d4 62  ec 13 7c c8
 |   ff 25 00 be  d3 11 ff 52  18 90 c1 47  e3 6c 1d 54
 |   b6 13 e8 b7  26 90 84 b1  1f f5 2e 8c  9d 03 99 ac
-./nattR2 ISAKMP version of ISAKMP Message has an unknown value: 124
 should have found a continuation, but none was found
 ./nattR2 leak: ikev2_inI1outR1 KE, item size: X
 ./nattR2 leak: msg_digest, item size: X
