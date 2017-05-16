@@ -620,54 +620,6 @@ send_v2_notification(struct state *p1st, u_int16_t type
     send_packet(p1st, __FUNCTION__, TRUE);
 }
 
-/* add notify payload to the rbody */
-bool ship_v2N(unsigned int np, u_int8_t  critical,
-              u_int8_t protoid, chunk_t *spi,
-              u_int16_t type, chunk_t *n_data, pb_stream *rbody)
-{
-    struct ikev2_notify n;
-    pb_stream n_pbs;
-    DBG(DBG_CONTROLMORE
-        ,DBG_log("Adding a v2N Payload"));
-
-    pbs_set_np(rbody, ISAKMP_NEXT_v2N);
-
-    n.isan_np =  np;
-    n.isan_critical = critical;
-    if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
-        openswan_log(" setting bogus ISAKMP_PAYLOAD_OPENSWAN_BOGUS flag in ISAKMP payload");
-        n.isan_critical |= ISAKMP_PAYLOAD_OPENSWAN_BOGUS;
-    }
-
-    n.isan_protoid =  protoid;
-    n.isan_spisize = 0;
-    if(spi) {
-        n.isan_spisize = spi->len;
-    }
-    n.isan_type = type;
-
-    if (!out_struct(&n, &ikev2_notify_desc, rbody, &n_pbs)) {
-        openswan_log("error initializing notify payload for notify message");
-        return FALSE;
-    }
-
-    if(spi && spi->len > 0) {
-        if (!out_raw(spi->ptr, spi->len, &n_pbs, "SPI ")) {
-            openswan_log("error writing SPI to notify payload");
-            return FALSE;
-        }
-    }
-    if(n_data != NULL) {
-        if (!out_raw(n_data->ptr, n_data->len, &n_pbs, "Notify data")) {
-            openswan_log("error writing notify payload for notify message");
-            return FALSE;
-        }
-    }
-
-    close_output_pbs(&n_pbs);
-    return TRUE;
-}
-
 /*
  *
  ***************************************************************
