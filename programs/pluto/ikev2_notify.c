@@ -126,11 +126,11 @@ stf_status process_nat_payload(struct state *st
         st->hidden_variables.st_nat_traversal = NAT_T_WITH_RFC_VALUES | NAT_T_DETECTED;
         switch(notify_type) {
         case v2N_NAT_DETECTION_DESTINATION_IP:
-            openswan_log("detected that I am NATed");
+            loglog(RC_COMMENT, "detected that I am NATed");
             break;
         case v2N_NAT_DETECTION_SOURCE_IP:
             addrtot(addr, 0, addrbuf, ADDRTOT_BUF);
-            openswan_log("detected that they are NATed at: %s:%u"
+            loglog(RC_COMMENT, "detected that they are NATed at: %s:%u"
                          , addrbuf, port);
             break;
         default:

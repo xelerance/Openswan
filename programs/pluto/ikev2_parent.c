@@ -477,7 +477,7 @@ ikev2_update_nat_ports(struct state *st)
 {
     if(st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
         if(st->st_remoteport == pluto_port500) {
-            openswan_log("NAT-T detected, moving to port 4500");
+            loglog(RC_COMMENT, "NAT-T detected, moving to port 4500");
             st->st_remoteport = pluto_port4500;
         }
 
