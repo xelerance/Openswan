@@ -1164,7 +1164,7 @@ bool eroute_connection(struct state *st
 		       , char *policy_label
 		       )
 {
-    const ip_address *null_host = aftoinfo(addrtypeof(&sr->this.host_addr))->any;
+    const ip_address *null_host = aftoinfo(addrtypeof(&st->st_remoteaddr))->any;
     const ip_address *this, *that;
     char buf2[256];
 
