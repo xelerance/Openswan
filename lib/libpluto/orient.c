@@ -66,13 +66,14 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
                                                    int pluto_port,
                                                    int family, struct spd_route *sr)
 {
-    struct iface_port *ifp = interfaces;
+    struct iface_port *ifp = NULL;
     struct end        *e1  = &sr->this;
     const struct af_info *afi;
     unsigned int       desired_port;
-    bool done = FALSE;
     int family1= sr->this.host_addr.u.v4.sin_family;
     int family2= sr->that.host_addr.u.v4.sin_family;
+    struct iface_port *best_ifp;
+    unsigned int       best_score;
 
     switch(family) {
     case AF_INET6:
@@ -94,28 +95,89 @@ struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
         e1 = &sr->that;
     }
 
-    while(!done && iflist) {
-        ifp = iflist;
-        if(family == 0 || iflist->ip_addr.u.v4.sin_family == family) {
-#if 0
-            DBG_log("  ports: %u vs %u",
-                    iflist->port, desired_port);
-#endif
-            if(iflist->port == desired_port) {
-                done = TRUE;
-            }
-        }
-        iflist = iflist->next;
-    }
+    best_ifp = NULL;
+    best_score = 0;
 
-    if(!done) ifp = NULL;
+    DBG(DBG_CONTROLMORE,
+        DBG_log("pick_if looking for port: %u, family: %u",
+                desired_port, family));
+
+    for(ifp = iflist; ifp != NULL; ifp = ifp->next) {
+        int score = 0;
+
+        DBG(DBG_CONTROLMORE,
+            DBG_log("  considering %s %s port: %u, family: %u, best: %s/%u %d",
+                    ifp->ip_dev->id_rname, ifp->addrname,
+                    ifp->port, ifp->ip_addr.u.v4.sin_family,
+                    best_ifp ? best_ifp->ip_dev->id_rname : "<none>",
+                    best_score,
+                    isloopbackaddr(&iflist->ip_addr)));
+
+        /* the port must always match, not a best case */
+        if(ifp->port != desired_port) continue;
+
+        /* the family MUST match, unless it is zero */
+        if(ifp->ip_addr.u.v4.sin_family != family && family !=0) continue;
+
+        /* if family==0, then give this us 10 points if this IF if
+         * INET4, and 20 points if this IF is INET6
+         */
+        switch(ifp->ip_addr.u.v4.sin_family) {
+        case AF_INET:
+            score = 10;
+
+            /* if the IF is *not* a loopback device, take another 10 points */
+            if(!isloopbackaddr(&ifp->ip_addr)) {
+                score += 10;
+            }
+
+            /* if the IF interface address matches the the IP address directly, then
+             * take another 20 points.
+             */
+#if 0
+            DBG_log("%08x vs %08x",
+                    ntohl(ifp->ip_addr.u.v4.sin_addr.s_addr), ntohl(e1->host_addr.u.v4.sin_addr.s_addr));
+#endif
+
+            if(ifp->ip_addr.u.v4.sin_addr.s_addr ==  e1->host_addr.u.v4.sin_addr.s_addr && e1->host_addr.u.v4.sin_addr.s_addr != 0) {
+                score += 20;
+            }
+            break;
+
+        case AF_INET6:
+            /* if the IF is *not* a loopback device, take another 10 points */
+            if(!isloopbackaddr(&ifp->ip_addr)) {
+                score += 10;
+            }
+
+            /* if the IF is *not* a ULA, then take another 10 points */
+            if((ifp->ip_addr.u.v6.sin6_addr.s6_addr[0] & 0xfe) != 0xfc)
+                score += 10;
+
+            /*
+             * if the IF interface address exactly matches the the IP address directly, then
+             * take another 128 points: so has to be bigger than 10+10 above.
+             */
+            if(memcmp(&ifp->ip_addr.u.v6.sin6_addr, &e1->host_addr.u.v6.sin6_addr, 16)==0) {
+                score += 128;
+            }
+
+            /* partial matches on IPv6 might be worth while too? */
+
+        }
+
+        if(score > best_score) {
+            best_ifp = ifp;
+            best_score = score;
+        }
+    }
 
     DBG(DBG_CONTROLMORE,
         DBG_log("  picking maching interface for family[%u,%u]: %s resulted in: %s"
                 , family, family2
-                , afi ? afi->name : "<family:0>", ifp ? ifp->addrname : "none"));
+                , afi ? afi->name : "<family:0>", best_ifp ? best_ifp->addrname : "none"));
 
-    return ifp;
+    return best_ifp;
 }
 
 
@@ -142,7 +204,7 @@ orient(struct connection *c, unsigned int pluto_port)
 {
     struct spd_route *sr;
     bool result;
-    unsigned int family = c->addr_family;
+    unsigned int family = c->end_addr_family;
 
     if (!oriented(*c))
     {

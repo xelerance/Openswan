@@ -14,13 +14,12 @@
 OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-PROGLIBS=${WHACKLIB} ${IPSECCONFLIB}
 #EXTRALIBS=${LIBEFENCE}
 
 PROGRAM=readwriteconf
 NOINSTALL=true
 
-PROGLIBS=${WHACKLIB} ${LIBIPSECCONF} ${LIBPLUTO}
+PROGLIBS=${WHACKLIB} ${LIBIPSECCONF} ${LIBPLUTO} ${LIBOSWKEYS}
 
 # reach into pluto for now.
 INCLUDES=-I${OPENSWANSRCDIR}/programs/pluto
@@ -30,5 +29,8 @@ include ${srcdir}../Makefile.program
 
 TAGS:	$(DISTSRC)
 	LC_ALL=C etags $(ETAGSFLAGS) $(DISTSRC) $(LIBOPENSWANDIR)/*.[ch]
+
+vars:
+	@echo ${PROGLIBS}
 
 

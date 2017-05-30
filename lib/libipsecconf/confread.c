@@ -36,6 +36,8 @@
 
 #include "oswalloc.h"
 #include "libopenswan.h"
+#include "secrets.h"
+#include "oswkeys.h"
 
 #include "ipsecconf/parser.h"
 #include "ipsecconf/files.h"
@@ -131,22 +133,17 @@ void ipsecconf_default_values(struct starter_config *cfg)
 	/* now here is a sticker.. we want it on. But pluto has to be smarter first */
 	cfg->conn_default.options[KBF_OPPOENCRYPT] = FALSE;
 
-	cfg->conn_default.options[KBF_CONNADDRFAMILY] = AF_INET;
+	cfg->conn_default.options[KBF_CLIENTADDRFAMILY] = AF_INET;
 
-	cfg->conn_default.left.addr_family = AF_INET;
+	cfg->conn_default.left.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.left.addr);
 	cfg->conn_default.left.nexttype  = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.left.nexthop);
 
-	cfg->conn_default.right.addr_family = AF_INET;
+	cfg->conn_default.right.end_addr_family = AF_INET;
 	anyaddr(AF_INET, &cfg->conn_default.right.addr);
 	cfg->conn_default.right.nexttype = KH_NOTSET;
 	anyaddr(AF_INET, &cfg->conn_default.right.nexthop);
-
-	/* default is to look in DNS */
-	cfg->conn_default.left.key_from_DNS_on_demand = TRUE;
-	cfg->conn_default.right.key_from_DNS_on_demand = TRUE;
-
 
 	cfg->conn_default.options[KBF_AUTO] = STARTUP_NO;
 	cfg->conn_default.state = STATE_LOADED;
@@ -381,7 +378,7 @@ static bool validate_end(struct starter_conn *conn_st
     }
 
     end->addrtype=end->options[KNCF_IP];
-    end->addr_family = family;
+    end->end_addr_family = family;
     newfamily = family;
 
     /* validate the KSCF_IP/KNCF_IP */
@@ -421,7 +418,7 @@ static bool validate_end(struct starter_conn *conn_st
 		}
 	}
 	if(family == 0) {
-		end->addr_family = newfamily;
+		end->end_addr_family = newfamily;
 	}
 
 	if(er) {
@@ -466,8 +463,8 @@ static bool validate_end(struct starter_conn *conn_st
 	char *value = end->strings[KSCF_SUBNET];
 	unsigned int client_family = AF_UNSPEC;
 
-	if(conn_st->options_set[KBF_ENDADDRFAMILY]) {
-	    client_family = conn_st->options[KBF_ENDADDRFAMILY];
+	if(conn_st->tunnel_addr_family != 0) {
+	    client_family = conn_st->tunnel_addr_family;
         }
 
         if ( ((strlen(value)>=6) && (strncmp(value,"vhost:",6)==0)) ||
@@ -478,10 +475,12 @@ static bool validate_end(struct starter_conn *conn_st
 	else {
 	    end->has_client = TRUE;
 	    er = ttosubnet(value, 0, client_family, &(end->subnet));
+            client_family = end->subnet.addr.u.v4.sin_family;
 	}
 
-
 	if (er) ERR_FOUND("bad subnet %ssubnet=%s [%s] family=%s", leftright, value, er, family2str(family));
+
+        end->tunnel_addr_family = client_family;
     }
 
     /* set nexthop address to something consistent, by default */
@@ -526,27 +525,43 @@ static bool validate_end(struct starter_conn *conn_st
 	end->rsakey2_type = end->options[KSCF_RSAKEY2];
 
 	switch(end->rsakey1_type) {
+        case PUBKEY_NOTSET:
+            /* really should not happen! */
+            break;
+
 	case PUBKEY_DNS:
 	case PUBKEY_DNSONDEMAND:
-	    end->key_from_DNS_on_demand = TRUE;
+        case PUBKEY_CERTIFICATE:
+            /* pass it on */
 	    break;
 
-	default:
-	    end->key_from_DNS_on_demand = FALSE;
+        case PUBKEY_PREEXCHANGED:
 	    /* validate the KSCF_RSAKEY1/RSAKEY2 */
-	    if(end->strings[KSCF_RSAKEY1] != NULL)
+	    if(end->strings_set[KSCF_RSAKEY1])
 	    {
 		char *value = end->strings[KSCF_RSAKEY1];
+                osw_public_key opk1;
+                zero(&opk1);
 
                 pfreeany(end->rsakey1);
                 end->rsakey1 = (unsigned char *)clone_str(value,"end->rsakey1");
+                if(str2pubkey(end->rsakey1, PUBKEY_ALG_RSA, &opk1) == NULL) {
+                    end->rsakey1_ckaid = clone_str(opk1.key_ckaid_print_buf, "end->rsakey1_ckaid");
+                    free_RSA_public_content(&opk1.u.rsa);
+                }
 	    }
-	    if(end->strings[KSCF_RSAKEY2] != NULL)
+	    if(end->strings_set[KSCF_RSAKEY2])
 	    {
 		char *value = end->strings[KSCF_RSAKEY2];
+                osw_public_key opk2;
+                zero(&opk2);
 
                 pfreeany(end->rsakey2);
                 end->rsakey2 = (unsigned char *)clone_str(value,"end->rsakey2");
+                if(str2pubkey(end->rsakey2, PUBKEY_ALG_RSA, &opk2) == NULL) {
+                    end->rsakey2_ckaid = clone_str(opk2.key_ckaid_print_buf, "end->rsakey2_ckaid");
+                    free_RSA_public_content(&opk2.u.rsa);
+                }
 	    }
 	}
     }
@@ -580,10 +595,12 @@ static bool validate_end(struct starter_conn *conn_st
 
     /* copy certificate path name */
     if(end->strings_set[KSCF_CERT]) {
+        end->rsakey1_type = PUBKEY_CERTIFICATE;
         end->cert = clone_str(end->strings[KSCF_CERT], "KSCF_CERT");
     }
 
     if(end->strings_set[KSCF_CA]) {
+        end->rsakey1_type = PUBKEY_CERTIFICATE;
         end->ca = clone_str(end->strings[KSCF_CA], "KSCF_CA");
     }
 
@@ -729,9 +746,9 @@ bool translate_conn (struct starter_conn *conn
 
                 /* keyname[0] test looks for left=/right= */
 		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s (ignored)"
+			 , "duplicate string key '%s' in conn %s (line=%u) while processing def %s (ignored)"
 			 , keyname
-			 , conn->name
+			 , conn->name, kw->lineno
 			 , sl->name);
 
 		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
@@ -790,15 +807,9 @@ bool translate_conn (struct starter_conn *conn
 
 	    if((*set_options)[field] == k_set)
 	    {
+                bool fatal = FALSE;
+
 		*error = tmp_err;
-		snprintf(tmp_err, sizeof(tmp_err)
-			 , "duplicate key '%s' in conn %s while processing def %s"
-			 , keyname
-			 , conn->name
-			 , sl->name);
-
-		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
-
 		/* only fatal if we try to change values */
 		if((*the_options)[field] != kw->number
 		   || !((*the_options)[field] == LOOSE_ENUM_OTHER
@@ -807,9 +818,21 @@ bool translate_conn (struct starter_conn *conn
 			&& (*the_strings)[field] != NULL
 			&& strcmp(kw->keyword.string, (*the_strings)[field])==0))
 		{
+                    fatal = TRUE;
 		    err++;
-		    break;
 		}
+		snprintf(tmp_err, sizeof(tmp_err)
+			 , "duplicate loose key '%s' in conn %s (line=%u) while processing def %s%s"
+			 , keyname
+			 , conn->name, kw->lineno
+			 , sl->name, fatal ? "(FATAL!)":"");
+
+		starter_log(LOG_LEVEL_INFO, "%s", tmp_err);
+
+                if(fatal) {
+		    break;
+                }
+
 	    }
 
 	    (*the_options)[field] = kw->number;
@@ -841,8 +864,8 @@ bool translate_conn (struct starter_conn *conn
 	    if((*set_options)[field] == k_set)
 	    {
 		starter_log(LOG_LEVEL_INFO
-                            , "duplicate key '%s' in conn %s while processing def %s"
-                            , keyname, conn->name, sl->name);
+                            , "duplicate enum key '%s' in conn %s (line=%u) while processing def %s"
+                            , keyname, conn->name, kw->lineno, sl->name);
 		if((*the_options)[field] != kw->number)
 		{
 		    err++;
@@ -851,8 +874,8 @@ bool translate_conn (struct starter_conn *conn
 	    }
 
 #if 0
-	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u\n",
-			keyname, field, kw->number);
+	    starter_log(LOG_LEVEL_DEBUG, "#setting %s[%d]=%u at line=%u\n",
+			keyname, field, kw->number, kw->lineno);
 #endif
 	    (*the_options)[field] = kw->number;
 	    (*set_options)[field] = assigned_value;
@@ -984,6 +1007,74 @@ char **process_alsos(struct starter_config *cfg
     return alsos;
 }
 
+static int validate_family_consistency(const char *connname,
+                                       const char *addrtype,
+                                       unsigned int left,
+                                       unsigned int right,
+                                       unsigned int family)
+{
+    unsigned int nfamily = AF_LOCAL; /* an invalid value */
+
+    /* they could all be equal and consistent */
+    if(left == family && right == family) {
+        return family;
+    }
+
+    /* if right has a family, use it */
+    if(left == 0 &&
+       family      == 0 &&
+       right != 0) {
+        left = nfamily = right;
+    }
+
+    /* if left has a family, use it */
+    if(left  != 0 &&
+       family       == 0 &&
+       right == 0) {
+        right = nfamily = left;
+    }
+
+    /* if left and right are blank, then set them from family */
+    if(left  == 0 &&
+       family       != 0 &&
+       right == 0) {
+        nfamily = right = left = family;
+    }
+
+    /* if family is blank, and left and right are set to the same value,
+     * then set family to that value.
+     */
+    if(left  != 0 &&
+       family       == 0 &&
+       right != 0 &&
+       left  == right) {
+        nfamily = right;
+    }
+
+    /* they could be all unspecified, which is not inconsistent, just not useful */
+    if(left == 0 && family == 0 && right == 0) {
+        return AF_UNSPEC;
+    }
+
+    /* if the end_address family is *STILL* 0, then it must be that there is an
+       inconsistency in the left/right ends.
+    */
+    if(nfamily == AF_LOCAL) {
+        char b1[KEYWORD_NAME_BUFLEN];
+        char b2[KEYWORD_NAME_BUFLEN];
+        char b3[KEYWORD_NAME_BUFLEN];
+        starter_log(LOG_LEVEL_ERR,
+                    "%s: inconsistent left/right %s address family: policy=%s left=%s right=%s",
+                    connname,
+                    addrtype,
+                    keyword_name(&kw_connaddrfamily_list, family, b1),
+                    keyword_name(&kw_connaddrfamily_list, left, b2),
+                    keyword_name(&kw_connaddrfamily_list, right, b3));
+        return AF_UNSPEC;
+    }
+
+    return nfamily;
+}
 
 static int load_conn (struct starter_config *cfg
 		      , struct starter_conn *conn
@@ -1195,19 +1286,36 @@ static int load_conn (struct starter_config *cfg
 	}
     }
 
+    if(conn->options_set[KBF_ENDADDRFAMILY]) {
+        conn->end_addr_family = conn->options[KBF_ENDADDRFAMILY];
+    }
+    if(conn->options_set[KBF_CLIENTADDRFAMILY]) {
+        conn->tunnel_addr_family = conn->options[KBF_CLIENTADDRFAMILY];
+    }
+
     err += validate_end(conn, &conn->left,  TRUE,  resolvip, perr);
     err += validate_end(conn, &conn->right, FALSE, resolvip, perr);
-    /*
-     * TODO:
-     * verify both ends are using the same inet family, if one end
-     * is "%any" or "%defaultroute", then perhaps adjust it.
-     * ensource this for left,leftnexthop,right,rightnexthop
-     * Ideally, phase out connaddrfamily= which now wrongly assumes
-     * left,leftnextop,leftsubnet are the same inet family
-     * Currently, these tests are implicitely done, and wrongly
-     * in case of 6in4 and 4in6 tunnels
-     */
 
+    if(!defaultconn) {
+        /*
+         * At this point, the two ends should be sufficiently well declared that
+         * one can verify if the two ends are using the same address family.
+         * This is a bit more complex and just an ==, as one end may be unspecified.
+         * In that case, it should adopt the family of the other end. If both
+         * are unspecified, then this is an error, unless the conn already
+         * has an end/tunnel family specified.
+         */
+
+        conn->end_addr_family = validate_family_consistency(conn->name, "end",
+                                                            conn->left.end_addr_family,
+                                                            conn->right.end_addr_family,
+                                                            conn->end_addr_family);
+
+        conn->tunnel_addr_family = validate_family_consistency(conn->name, "tunnel",
+                                                            conn->left.tunnel_addr_family,
+                                                            conn->right.tunnel_addr_family,
+                                                            conn->tunnel_addr_family);
+    }
 
     if(conn->options_set[KBF_AUTO]) {
 	conn->desired_state = conn->options[KBF_AUTO];
@@ -1428,6 +1536,12 @@ static void confread_free_conn(struct starter_conn *conn)
     pfreeany(conn->right.id);
     pfreeany(conn->right.rsakey1);
     pfreeany(conn->right.rsakey2);
+
+    pfreeany(conn->left.rsakey1_ckaid);
+    pfreeany(conn->left.rsakey2_ckaid);
+    pfreeany(conn->right.rsakey1_ckaid);
+    pfreeany(conn->right.rsakey2_ckaid);
+
     for(i=0; i<KSCF_MAX; i++) {
         pfreeany(conn->left.strings[i]);
         pfreeany(conn->right.strings[i]);

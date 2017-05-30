@@ -30,18 +30,33 @@ struct connection;
 extern time_t get_time_maybe_fake(time_t *when);
 extern void set_fake_x509_time(time_t now);
 
-extern void sign_hash(const struct RSA_private_key *k, const u_char *hash_val
+extern const u_char der_digestinfo[];
+extern const int der_digestinfo_len;
+
+/* encrypt(sign) a hash using a private key */
+extern void sign_hash(const struct private_key_stuff *pks
+                      , const u_char *hash_val
 		      , size_t hash_len, u_char *sig_val, size_t sig_len);
 
+/* decrypt(verify) a signature to recover the contained hash */
+extern err_t verify_signed_hash(const struct RSA_public_key *k
+                                , u_char *s, unsigned int s_max_octets /* working space: RSA_MAX_OCTETS */
+                                , u_char **psig                     /* result parameter; points to hash */
+                                , size_t hash_len
+                                , const u_char *sig_val, size_t sig_len);
+
 #ifdef HAVE_LIBNSS
-extern int sign_hash_nss(const struct RSA_private_key *k, const u_char *hash_val
-				, size_t hash_len, u_char *sig_val, size_t sig_len);
+extern int sign_hash_nss(const struct private_key_stuff *pks
+                         , const u_char *hash_val
+                         , size_t hash_len
+                         , u_char *sig_val, size_t sig_len);
+
 extern err_t RSA_signature_verify_nss(const struct RSA_public_key *k
 					, const u_char *hash_val, size_t hash_len
 					,const u_char *sig_val, size_t sig_len);
 #endif
 
-extern const struct RSA_private_key *get_RSA_private_key(const struct connection *c);
+extern const struct private_key_stuff *get_RSA_private_key(const struct connection *c);
 
 extern const struct RSA_private_key *get_x509_private_key(/*const*/ x509cert_t *cert);
 
@@ -52,6 +67,12 @@ extern void add_pgp_public_key(pgpcert_t *cert, time_t until
 extern void remove_x509_public_key(/*const*/ x509cert_t *cert);
 extern void list_public_keys(bool utc, bool check_pub_keys);
 extern void list_psks(void);
+
+/* look up public keys */
+extern struct pubkey *find_public_keys(unsigned char ckaid[CKAID_BUFSIZE]);
+extern struct pubkey *find_key_by_string(const char *key_hex);
+
+
 
 struct gw_info;	/* forward declaration of tag (defined in dnskey.h) */
 extern void transfer_to_public_keys(struct gw_info *gateways_from_dns

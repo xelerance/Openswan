@@ -27,18 +27,6 @@
 #endif
 
 /*
- * When using uclibc, malloc(0) returns NULL instead of success. This is
- * to make it use the inbuilt work-around.
- * See: http://osdir.com/ml/network.freeswan.devel/2003-11/msg00009.html
- */
-#ifdef __UCLIBC__
-# if !defined(__MALLOC_GLIBC_COMPAT__) && !defined(MALLOC_GLIBC_COMPAT)
-#  warning Please compile uclibc with GLIBC_COMPATIBILITY defined
-# endif
-#endif
-
-
-/*
  * We've just got to have some datatypes defined...  And annoyingly, just
  * where we get them depends on whether we're in userland or not.
  */
@@ -332,6 +320,11 @@ size_t splitkeytoid(const unsigned char *e, size_t elen, const unsigned char *m,
 #define	KEYID_BUF	10	/* up to 9 text digits plus NUL */
 err_t ttoprotoport(char *src, size_t src_len, u_int8_t *proto, u_int16_t *port,
                                                        int *has_port_wildcard);
+
+/* used to process ckaid in hex */
+#define CKAID_BUFSIZE 20
+extern err_t ckaidhex2ckaid(const char *key_ckaid_hex, unsigned char ckaid[CKAID_BUFSIZE]);
+
 
 /* initializations */
 void initsaid(const ip_address *addr, ipsec_spi_t spi, int proto, ip_said *dst);

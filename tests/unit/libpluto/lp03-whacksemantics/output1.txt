@@ -4,6 +4,9 @@ Loading conn dooku--cassidy-net
 	while loading conn 'dooku--cassidy-net' also including 'cassidy-base'
 Loading conn dooku-base
 Loading conn cassidy-base
+emitting conn dooku--cassidy-net with end-family: 0 and tunnel-family: 0
+./whacksemantics use keyid: 1:<> / 2:<>
+./whacksemantics use keyid: 1:<> / 2:<>
 ./whacksemantics adding connection: "dooku--cassidy-net"
 ./whacksemantics leak: 2 * keep id name, item size: X
 ./whacksemantics leak: ID host_pair, item size: X

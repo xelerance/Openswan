@@ -60,6 +60,8 @@ conn cassidy--marajade
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn cassidy--marajade
 
 # begin conn cassidy--marajade-extrude
@@ -83,6 +85,8 @@ conn cassidy--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn cassidy--marajade-extrude
 
 # begin conn istari--marajade-extrude
@@ -107,6 +111,8 @@ conn istari--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn istari--marajade-extrude
 
 # begin conn catfish--marajade-extrude
@@ -130,6 +136,8 @@ conn catfish--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn catfish--marajade-extrude
 
 # begin conn franklin--marajade-extrude
@@ -154,6 +162,8 @@ conn franklin--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn franklin--marajade-extrude
 
 # begin conn aragorn--marajade-extrude
@@ -178,6 +188,8 @@ conn aragorn--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn aragorn--marajade-extrude
 
 # begin conn saruman--marajade-extrude
@@ -201,6 +213,8 @@ conn saruman--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn saruman--marajade-extrude
 
 # begin conn galadriel--marajade-extrude
@@ -224,6 +238,8 @@ conn galadriel--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn galadriel--marajade-extrude
 
 # begin conn grouper--marajade-extrude
@@ -247,6 +263,8 @@ conn grouper--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn grouper--marajade-extrude
 
 # begin conn jarvis--marajade-extrude
@@ -270,6 +288,8 @@ conn jarvis--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn jarvis--marajade-extrude
 
 # begin conn tuna--marajade-extrude
@@ -293,6 +313,8 @@ conn tuna--marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn tuna--marajade-extrude
 
 # begin conn cassidy--correlhorn
@@ -318,6 +340,8 @@ conn cassidy--correlhorn
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn cassidy--correlhorn
 
 # begin conn istari--correlhorn-extrude
@@ -344,6 +368,8 @@ conn istari--correlhorn-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn istari--correlhorn-extrude
 
 # begin conn franklin--correlhorn-extrude
@@ -370,6 +396,8 @@ conn franklin--correlhorn-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn franklin--correlhorn-extrude
 
 # begin conn aragorn--correlhorn-extrude
@@ -396,6 +424,8 @@ conn aragorn--correlhorn-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn aragorn--correlhorn-extrude
 
 # begin conn cassidy--tygerteam-home88
@@ -414,6 +444,8 @@ conn cassidy--tygerteam-home88
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn cassidy--tygerteam-home88
 
 # begin conn cassidy-left
@@ -431,6 +463,7 @@ conn cassidy-left
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn cassidy-left
 
 # begin conn dooku--cassidy-net
@@ -450,6 +483,7 @@ conn dooku--cassidy-net
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn dooku--cassidy-net
 
 # begin conn dooku-base
@@ -465,6 +499,7 @@ conn dooku-base
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn dooku-base
 
 # begin conn cassidy-base
@@ -481,6 +516,7 @@ conn cassidy-base
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn cassidy-base
 
 # begin conn knothole--cassidy
@@ -501,6 +537,8 @@ conn knothole--cassidy
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
 # end conn knothole--cassidy
 
 # begin conn marajade-extrude
@@ -518,6 +556,7 @@ conn marajade-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn marajade-extrude
 
 # begin conn marajade-extrude-new
@@ -536,6 +575,7 @@ conn marajade-extrude-new
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn marajade-extrude-new
 
 # begin conn correlhorn-extrude
@@ -556,6 +596,7 @@ conn correlhorn-extrude
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	tunneladdrfamily=ipv4
 # end conn correlhorn-extrude
 
 # begin conn packetdefault

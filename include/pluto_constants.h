@@ -288,6 +288,7 @@ enum state_kind {
      * for all work states. */
     STATE_PARENT_R1,
     STATE_PARENT_R2,
+    STATE_CHILD_C0_KEYING,     /* initial state for a CHILD SA that has started keying */
     STATE_CHILD_C1_KEYED,      /* terminal state for a CHILD SA that has been successfully keyed */
 
     /* INITIATOR child (re)key states */
@@ -349,7 +350,9 @@ enum phase1_role {
 #define IS_MODE_CFG_ESTABLISHED(s) ((s) == STATE_MODE_CFG_R2)
 #endif
 
-#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R1 || (s) == STATE_PARENT_R2 || (s) == STATE_IKESA_DEL)
+#define IS_PARENT_SA_HALFOPEN(s) ((s) == STATE_PARENT_I1 || (s) == STATE_PARENT_R1)
+
+#define IS_PARENT_SA_ESTABLISHED(s) ((s) == STATE_PARENT_I3 || (s) == STATE_PARENT_I2 || (s) == STATE_PARENT_R2 || (s) == STATE_IKESA_DEL)
 /*
  * Issue here is that our child sa appears as a STATE_PARENT_I3/STATE_PARENT_R2 state which it should not
  * So we fall back to checking if it is cloned, and therefor really a child
@@ -357,7 +360,7 @@ enum phase1_role {
 #define IS_CHILD_SA_ESTABLISHED(st) ( (((st->st_state == STATE_PARENT_I3) || (st->st_state == STATE_PARENT_R2)) && (st->st_clonedfrom != SOS_NOBODY)) || (st->st_state == STATE_CHILDSA_DEL) || (st->st_state == STATE_CHILD_C1_KEYED))
 
 #define IS_CHILD_SA(st)  ((st)->st_clonedfrom != SOS_NOBODY)
-#define IS_PARENT_SA(st) (!IS_CHILD_SA(st))
+#define IS_PARENT_SA(st) ((st)->st_clonedfrom == SOS_NOBODY)
 
 
 /* kind of struct connection
@@ -648,10 +651,14 @@ struct keyword_enum_values kw_host_list;
  */
 enum dns_auth_level {
     DAL_UNSIGNED,	/* AD in response, but no signature: no authentication */
-    DAL_NOTSEC,	/* no AD in response: authentication impossible */
-    DAL_SIGNED,	/* AD and signature in response: authentic */
-    DAL_LOCAL	/* locally provided (pretty good) */
+    DAL_NOTSEC,	   /* no AD in response: authentication impossible */
+    DAL_SIGNED,	   /* AD and signature in response: authentic */
+    DAL_TRUSTEDCA, /* signed by locally trusted certificate authroity */
+    DAL_LOCAL,	   /* locally provided (pretty good) */
+    DAL_CERTFILE,  /* loaded from local certificate container */
 };
+extern enum_names dns_auth_level_names;
+
 
 /*
  * define a macro for use in error messages
@@ -667,6 +674,7 @@ enum dns_auth_level {
  * private key types for keys.h
  */
 enum PrivateKeyKind {
+  PPK_GUESS = 0,        /* no idea, guess via some method */
     PPK_PSK = 1,
     /* PPK_DSS, */	/* not implemented */
     PPK_RSA = 3,

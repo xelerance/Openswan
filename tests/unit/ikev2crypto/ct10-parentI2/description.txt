@@ -1,0 +1,13 @@
+This test case is an IKEv2 initiator on I2.
+This uses the proper cryptographic options to form a *signature*
+(the DH is still link seamed to constants).
+
+It is a copy of lp10-parentI2.
+
+
+
+
+
+
+
+

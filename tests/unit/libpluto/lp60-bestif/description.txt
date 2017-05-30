@@ -1,0 +1,7 @@
+This case tests orient.c's pick_matching_interfacebyfamily ability to pick
+the right interface out of many.
+In particular, the loopback is almost never the correct interface, unless
+it is the only interface.
+
+
+

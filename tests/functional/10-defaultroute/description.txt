@@ -6,4 +6,6 @@ and the whole addconn and starterwhack libraries.
 Since pluto needs port 500/4500 (and 500 is privileged), most tests start it
 with another port (7500), bound to 127.0.0.1.
 
+This test case shows an inconsistent end, left/right, which should be fixed, because
+really it isn't inconsistent, rather it's consistently unspecified.
 

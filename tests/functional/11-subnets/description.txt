@@ -1,0 +1,5 @@
+This test exercises the configuration reading library to load a connection
+with subnets=, which should result in multiple connections being created,
+with a common alias.
+
+

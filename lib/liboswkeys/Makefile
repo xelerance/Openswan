@@ -29,7 +29,8 @@ CFLAGS+=-DUSE_SHA2 -DUSE_AES
 
 ONEFILE=x509dn.c
 SRCS=asn1.c certload.c pem.c pgp.c pkcs.c x509dn.c ocsp.c
-SRCS+=x509cert.c x509lists.c oid.c x509chain.c
+SRCS+=rsapub.c
+SRCS+=x509cert.c x509lists.c oid.c x509chain.c der.c
 ifeq ($(USE_LIBNSS),true)
 SRCS+=signatures_nss.c
 else

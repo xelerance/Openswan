@@ -18,7 +18,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/gatewaycert.secrets"
-			       , &pass);
+			       , &pass, NULL);
 }
 
 /* this step is an INIT, so no state, but need KE values */

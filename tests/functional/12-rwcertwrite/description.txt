@@ -1,0 +1,4 @@
+This test case parses a configuration file with readwriteconf, it produces a
+whack record, which is examined for address family correctness.
+
+

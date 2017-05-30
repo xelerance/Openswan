@@ -23,7 +23,7 @@ check:
 	@rm -rf ${OPENSWANSRCDIR}/OBJ.libnss.${BUILDENV}.${ARCH}
 	@rm -rf ${OPENSWANSRCDIR}/OBJ.nolibnss.${BUILDENV}.${ARCH}
 	@mkdir -p ${buildtmp}
-	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} OBJDIR=OBJ.libnss.${BUILDENV}.${ARCH} USE_LIBNSS=true programs install
+	(cd ${OPENSWANSRCDIR} && DESTDIR=${buildtmp} ./build-nss )
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} OBJDIR=OBJ.nolibnss.${BUILDENV}.${ARCH} USE_LIBNSS=false programs install
 
 

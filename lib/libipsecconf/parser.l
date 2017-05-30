@@ -219,6 +219,7 @@ int parser_y_include (const char *filename)
 		return 0;
 	}
 
+	++ic_private.stack_ptr;
 	if (ic_private.stack_ptr >= MAX_INCLUDE_DEPTH)
 	{
 		yyerror("max inclusion depth reached");
@@ -227,13 +228,13 @@ int parser_y_include (const char *filename)
 
 	if(verbose)
 	{
-		starter_log(LOG_LEVEL_DEBUG, "including file '%s'(%s) from line %s:%d\n"
+             starter_log(LOG_LEVEL_DEBUG, "%d: including file '%s'(%s) from line %s:%d\n"
+                         , ic_private.stack_ptr
 			    , filename, try
 			    , stacktop->filename
 			    , stacktop->line);
 	}
 
-	++ic_private.stack_ptr;
 	stacktop = &ic_private.stack[ic_private.stack_ptr];
 	stacktop->state = YY_CURRENT_BUFFER;
 	stacktop->fileglob = globbuf;

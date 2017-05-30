@@ -35,7 +35,7 @@ extern void report_leaks(void);
 
 #define clone_thing(orig, name) clone_bytes((const void *)&(orig), sizeof(orig), (name))
 #define clone_str(str, name) \
-    ((str) == NULL? NULL : clone_bytes((str), strlen((str))+1, (name)))
+    ((str) == NULL? NULL : clone_bytes((str), strlen((const char *)(str))+1, (name)))
 
 #define pfreeany(p) { if ((p) != NULL) pfree(p); }
 #define replace(p, q) { pfreeany(p); (p) = (q); }
@@ -62,6 +62,13 @@ typedef struct const_chunk constchunk_t;
     { (ch).ptr = clone_bytes((addr), (ch).len = (size), name); }
 #define strtochunk(ch, str, name) \
   { (ch).len = strlen(str)+1; clonetochunk(ch, str, ch.len, name); }
+
+#define chunk_clone(OLD, NAME) (chunk_t)			\
+	{							\
+		.ptr = clone_bytes((OLD).ptr, (OLD).len, NAME), \
+		.len = (OLD).len,				\
+	}
+
 #define clonereplacechunk(ch, addr, size, name) \
     { pfreeany((ch).ptr); clonetochunk(ch, addr, size, name); }
 #define chunkcpy(dst, chunk) \

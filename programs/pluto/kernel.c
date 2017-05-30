@@ -60,9 +60,7 @@
 #include "whack.h"      /* for RC_LOG_SERIOUS */
 #include "keys.h"
 
-#ifdef KLIPS_MAST
 #include <ipsec_saref.h>
-#endif
 
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
@@ -480,7 +478,7 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 		    , metric_str
 		    , connmtu_str
 		    , prettypolicy(c->policy)
-		    , (c->addr_family == AF_INET) ? 4 : 6
+		    , (c->end_addr_family == AF_INET) ? 4 : 6
 #ifdef XAUTH
 		    , secure_xauth_username_str
 #endif
@@ -1774,7 +1772,7 @@ setup_half_ipsec_sa(struct state *parent_st
 	    outgoing_ref_set  = TRUE;
 	}
 
-        if (!kernel_ops->add_sa(said_next, replace)) {
+        if (!kernel_ops->add_sa(said_next, FALSE)) {
 	    DBG(DBG_KLIPS, DBG_log("add_sa tunnel failed"));
             goto fail;
 	}

@@ -608,7 +608,7 @@ extract_end(struct connection *conn
             , struct end *dst, const struct whack_end *src, const char *which)
 {
     bool same_ca = FALSE;
-    unsigned int family = conn->addr_family;
+    unsigned int family = conn->end_addr_family;
 
     /* decode id, if any */
     if (src->id == NULL)
@@ -628,38 +628,66 @@ extract_end(struct connection *conn
 
     dst->ca = empty_chunk;
 
-    /* decode CA distinguished name, if any */
-    if (src->ca != NULL)
-    {
-	if streq(src->ca, "%same")
-	    same_ca = TRUE;
-	else if (!streq(src->ca, "%any"))
-	{
-	    err_t ugh;
+    switch(src->keytype) {
+    case PUBKEY_NOTSET:
+        break;
 
-	    dst->ca.ptr = temporary_cyclic_buffer();
-	    dst->ca.len = IDTOA_BUF;
-	    ugh = atodn(src->ca, &dst->ca);
-	    if (ugh != NULL)
-	    {
-		openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
-		dst->ca = empty_chunk;
-	    }
-	}
-    }
+    case PUBKEY_DNSONDEMAND:
+        dst->key_from_DNS_on_demand = TRUE;
+        break;
 
-    if(src->sendcert == cert_forcedtype) {
-	/* certificate is a blob */
-	dst->cert.forced = TRUE;
-	dst->cert.type = src->certtype;
+    case PUBKEY_DNS:
+        /* synchrononous fetch */
+        dst->key_from_DNS_on_demand = FALSE;
+        break;
+
+    case PUBKEY_CERTIFICATE:
+        /* decode CA distinguished name, if any */
+        if (src->ca != NULL)
+            {
+                if streq(src->ca, "%same")
+                            same_ca = TRUE;
+                else if (!streq(src->ca, "%any"))
+                    {
+                        err_t ugh;
+
+                        dst->ca.ptr = temporary_cyclic_buffer();
+                        dst->ca.len = IDTOA_BUF;
+                        ugh = atodn(src->ca, &dst->ca);
+                        if (ugh != NULL)
+                            {
+                                openswan_log("bad CA string '%s': %s (ignored)", src->ca, ugh);
+                                dst->ca = empty_chunk;
+                            }
+                    }
+            }
+
+        if(src->sendcert == cert_forcedtype) {
+            /* certificate is a blob */
+            dst->cert.forced = TRUE;
+            dst->cert.type = src->certtype;
 #ifdef HAVE_LIBNSS
-	load_cert_from_nss(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
+            load_cert_from_nss(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
 #else
-	load_cert(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
+            load_cert(TRUE, src->cert, TRUE, "forced cert", &dst->cert);
 #endif
-    } else {
-	/* load local end certificate and extract ID, if any */
-	load_end_certificate(src->cert, dst);
+        } else {
+            /* load local end certificate and extract ID, if any */
+            load_end_certificate(src->cert, dst);
+        }
+        break;
+
+    case PUBKEY_PREEXCHANGED:
+        if(src->cert) {
+            dst->key1 = find_key_by_string(src->cert);
+        }
+        if(src->ca) {
+            dst->key2 = find_key_by_string(src->ca);
+        }
+        openswan_log("use keyid: 1:%s / 2:%s"
+                     , dst->key1 ? dst->key1->key_ckaid_print_buf : "<>"
+                     , dst->key2 ? dst->key2->key_ckaid_print_buf : "<>");
+        break;
     }
 
     /* does id has wildcards? */
@@ -701,7 +729,6 @@ extract_end(struct connection *conn
     dst->protocol = src->protocol;
     dst->port = src->port;
     dst->has_port_wildcard = src->has_port_wildcard;
-    dst->key_from_DNS_on_demand = src->key_from_DNS_on_demand;
     dst->has_client = src->has_client;
     dst->has_client_wildcard = src->has_client_wildcard;
     dst->updown = src->updown;
@@ -745,17 +772,21 @@ check_connection_end(const struct whack_end *this, const struct whack_end *that
 , const struct whack_message *wm)
 {
     if ((this->host_type == KH_IPADDR || this->host_type == KH_IFACE)
-	&& wm->addr_family != 0
-	&& (wm->addr_family != addrtypeof(&this->host_addr)
-	    || wm->addr_family != addrtypeof(&this->host_nexthop)))
+	&& wm->end_addr_family != 0
+	&& (wm->end_addr_family != addrtypeof(&this->host_addr)
+	    || wm->end_addr_family != addrtypeof(&this->host_nexthop)))
     {
 	/* this should have been diagnosed by whack, so we need not be clear
 	 * !!! overloaded use of RC_CLASH
 	 */
+        const struct af_info *addr, *nexthop;
+        addr    = aftoinfo(addrtypeof(&this->host_addr));
+        nexthop = aftoinfo(addrtypeof(&this->host_nexthop));
+
 	loglog(RC_CLASH, "address family inconsistency in this connection=%s host=%s/nexthop=%s"
-	       , (wm->addr_family)     ? aftoinfo(wm->addr_family)->name                 : "NULL"
-	       , (&this->host_addr)    ? aftoinfo(addrtypeof(&this->host_addr))->name    : "NULL"
-	       , (&this->host_nexthop) ? aftoinfo(addrtypeof(&this->host_nexthop))->name : "NULL");
+	       , (wm->end_addr_family) ? aftoinfo(wm->end_addr_family)->name             : "NULL"
+	       , (addr)    ? addr->name    : "NULL"
+	       , (nexthop) ? nexthop->name : "NULL");
 	return FALSE;
     }
 
@@ -870,7 +901,7 @@ add_connection(const struct whack_message *wm)
     struct alg_info_ike *alg_info_ike;
     const char *ugh;
 
-    int family = wm->addr_family;
+    int family = wm->end_addr_family;
 
     alg_info_ike = NULL;
 
@@ -1084,7 +1115,7 @@ add_connection(const struct whack_message *wm)
           }
         }
 
-	c->addr_family = family;
+	c->end_addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
 	c->requested_ca = NULL;
@@ -2307,7 +2338,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
     struct connection *best_found = NULL;
     lset_t auth_policy;
     lset_t p1mode_policy = aggrmode ? POLICY_AGGRESSIVE : LEMPTY;
-    const struct RSA_private_key *my_RSA_pri = NULL;
+    const struct private_key_stuff *my_RSA_pks = NULL;
     bool wcpip;	/* wildcard Peer IP? */
     int wildcards, best_wildcards;
     int our_pathlen, best_our_pathlen, peer_pathlen, best_peer_pathlen;
@@ -2368,8 +2399,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	    /* at this point, we've committed to our RSA private key:
 	     * we used it in our previous message.
 	     */
-	    my_RSA_pri = get_RSA_private_key(c);
-	    if (my_RSA_pri == NULL)
+	    my_RSA_pks = get_RSA_private_key(c);
+	    if (my_RSA_pks == NULL)
 		return NULL;	/* cannot determine my RSA private key! */
 	}
 	break;
@@ -2467,11 +2498,12 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 		 * used in the SIG_I payload that we sent previously.
 		 */
 		{
-		    const struct RSA_private_key *pri
+		    const struct private_key_stuff *pks
 			= get_RSA_private_key(d);
 
-		    if (pri == NULL || (initiator && (
-			!same_RSA_public_key(&my_RSA_pri->pub, &pri->pub))))
+		    if (pks == NULL || (initiator && (
+			!same_RSA_public_key(&my_RSA_pks->pub->u.rsa
+                                             , &pks->pub->u.rsa))))
 			    continue;
 		}
 		break;
@@ -3192,6 +3224,24 @@ show_one_connection(struct connection *c, logfunc logger)
 		  , instance
 		  , this_ca
 		  , that_ca);
+    }
+
+    /* show public keys */
+    if(c->spd.this.key1 || c->spd.this.key2) {
+        logger(RC_COMMENT
+               , "\"%s\"%s:   keys: 1:%s 2:%s..."
+               , c->name
+               , instance
+               , c->spd.this.key1 ? c->spd.this.key1->key_ckaid_print_buf : "none"
+               , c->spd.this.key2 ? c->spd.this.key2->key_ckaid_print_buf : "none");
+    }
+    if(c->spd.that.key1 || c->spd.that.key2) {
+        logger(RC_COMMENT
+               , "\"%s\"%s:        ....1:%s 2:%s "
+               , c->name
+               , instance
+               , c->spd.that.key1 ? c->spd.that.key1->key_ckaid_print_buf : "none"
+               , c->spd.that.key2 ? c->spd.that.key2->key_ckaid_print_buf : "none");
     }
 
     logger(RC_COMMENT

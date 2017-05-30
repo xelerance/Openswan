@@ -5,6 +5,7 @@ OBJ.*
 *.rej
 *.orig
 *.bak
+*.swp
 TAGS
 UMLPOOL
 modobj26
