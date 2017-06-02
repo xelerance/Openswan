@@ -969,7 +969,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
      * incoming SAs will have had their SPI# allocated in advance, even if they
      * are in fact "new".
      */
-    if(replace || sa->spi!=0) {
+    if(replace /* || sa->inbound */) {
         req.n.nlmsg_type = XFRM_MSG_UPDSA;
     } else {
         req.n.nlmsg_type = XFRM_MSG_NEWSA;
@@ -984,7 +984,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
     if(DBGP(DBG_NETKEY)) {
         DBG_log("%s SA spi=%08x@%08x proto=%u family=%u"
-                , replace ? "updating" : "creating"
+                , req.n.nlmsg_type == XFRM_MSG_UPDSA ? "updating" : "creating"
                 , htonl(req.p.id.spi), htonl(req.p.id.daddr.a4), req.p.id.proto, req.p.family);
     }
 

@@ -195,22 +195,13 @@ record_and_initiate_opportunistic(const ip_subnet *ours
     }
 }
 
-static unsigned get_proto_reqid(unsigned base, int proto)
+/* 
+ * REQID are used to link IPsec policies and IPsec SA databases together
+ */
+static unsigned get_proto_reqid(void)
 {
-    switch (proto)
-    {
-    default:
-    case IPPROTO_COMP:
-        base++;
-        /* fall through */
-    case IPPROTO_ESP:
-        base++;
-        /* fall through */
-    case IPPROTO_AH:
-        break;
-    }
-
-    return base;
+    unsigned int base = 1025;
+    return ++base;
 }
 
 /* Generate Unique SPI numbers.
@@ -234,20 +225,29 @@ static unsigned get_proto_reqid(unsigned base, int proto)
  * check if the number was previously used (assuming that no
  * SPI lives longer than 4G of its successors).
  */
-ipsec_spi_t
-get_ipsec_spi(ipsec_spi_t avoid, int proto, struct spd_route *sr, bool tunnel)
+bool
+get_ipsec_spi(struct ipsec_proto_info *pi
+	      , int proto
+	      , struct state *st
+	      , bool tunnel)
 {
     static ipsec_spi_t spi = 0; /* host order, so not returned directly! */
     char text_said[SATOT_BUF];
 
-    set_text_said(text_said, &sr->this.host_addr, 0, proto);
+    /* for reasons of esthetics, we avoid using the same spi as the sender */
+    ipsec_spi_t avoid = pi->attrs.spi;
 
-    if (kernel_ops->get_spi)
-        return kernel_ops->get_spi(&sr->that.host_addr
-            , &sr->this.host_addr, proto, tunnel
-            , get_proto_reqid(sr->reqid, proto)
-            , IPSEC_DOI_SPI_OUR_MIN, 0xffffffff
-            , text_said);
+    set_text_said(text_said, &st->st_localaddr, 0, proto);
+
+    if (kernel_ops->get_spi) {
+	pi->our_spi_in_kernel = TRUE;
+	pi->our_spi = kernel_ops->get_spi(&st->st_remoteaddr
+				   , &st->st_localaddr, proto, tunnel
+					  , get_proto_reqid()
+				   , IPSEC_DOI_SPI_OUR_MIN, 0xffffffff
+				   , text_said);
+	return pi->our_spi != 0;
+    }
 
     spi++;
     while (spi < IPSEC_DOI_SPI_OUR_MIN || spi == ntohl(avoid))
@@ -260,7 +260,8 @@ get_ipsec_spi(ipsec_spi_t avoid, int proto, struct spd_route *sr, bool tunnel)
             DBG_dump("generate SPI:", (u_char *)&spi_net, sizeof(spi_net));
         });
 
-    return htonl(spi);
+    pi->our_spi = htonl(spi);
+    return TRUE;
 }
 
 /* Generate Unique CPI numbers.
@@ -272,21 +273,22 @@ get_ipsec_spi(ipsec_spi_t avoid, int proto, struct spd_route *sr, bool tunnel)
  * no matter what order) indicating failure.
  */
 ipsec_spi_t
-get_my_cpi(struct spd_route *sr, bool tunnel)
+get_my_cpi(struct state *st, bool tunnel)
 {
     static cpi_t
         first_busy_cpi = 0,
         latest_cpi;
     char text_said[SATOT_BUF];
 
-    set_text_said(text_said, &sr->this.host_addr, 0, IPPROTO_COMP);
+    set_text_said(text_said, &st->st_localaddr, 0, IPPROTO_COMP);
 
     if (kernel_ops->get_spi)
-        return kernel_ops->get_spi(&sr->that.host_addr
-            , &sr->this.host_addr, IPPROTO_COMP, tunnel
-            , get_proto_reqid(sr->reqid, IPPROTO_COMP)
-            , IPCOMP_FIRST_NEGOTIATED, IPCOMP_LAST_NEGOTIATED
-            , text_said);
+	st->st_ipcomp.our_spi_in_kernel = TRUE;
+        return kernel_ops->get_spi(&st->st_remoteaddr
+				   , &st->st_localaddr, IPPROTO_COMP, tunnel
+				   , get_proto_reqid()
+				   , IPCOMP_FIRST_NEGOTIATED, IPCOMP_LAST_NEGOTIATED
+				   , text_said);
 
     while (!(IPCOMP_FIRST_NEGOTIATED <= first_busy_cpi && first_busy_cpi < IPCOMP_LAST_NEGOTIATED))
     {
@@ -1349,7 +1351,6 @@ static err_t setup_esp_sa(struct connection *c
                           , unsigned int encapsulation
                           , bool inbound
                           , bool outgoing_ref_set
-                          , bool replace
                           , const char *inbound_str
                           , struct kernel_sa *said_next
                           , ip_address src, u_int16_t natt_sport
@@ -1362,6 +1363,7 @@ static err_t setup_esp_sa(struct connection *c
     const struct esp_info *ei;
     u_int16_t key_len;
     char text_said[SATOT_BUF];
+    bool replace = FALSE;
     IPsecSAref_t refhim = st->st_refhim;
 
     /* this maps IKE/IETF values into kernel identifiers */
@@ -1573,24 +1575,14 @@ static err_t setup_esp_sa(struct connection *c
                      said_next->authkeylen);
         });
 
+    replace = FALSE;
     if(inbound) {
         /*
          * set corresponding outbound SA. We can do this on
          * each SA in the bundle without harm.
          */
         said_next->refhim = refhim;
-    } else if (!outgoing_ref_set) {
-        /* on outbound, pick up the SAref if not already done */
-        said_next->ref    = refhim;
-        outgoing_ref_set  = TRUE;
-    }
-
-    if(inbound) {
-        /*
-         * set corresponding outbound SA. We can do this on
-         * each SA in the bundle without harm.
-         */
-        said_next->refhim = refhim;
+	replace = st->st_esp.our_spi_in_kernel;
     } else if (!outgoing_ref_set) {
         /* on outbound, pick up the SAref if not already done */
         said_next->ref    = refhim;
@@ -1646,9 +1638,7 @@ setup_half_ipsec_sa(struct state *parent_st
     int encapsulation;
 
     bool add_selector;
-
-    replace = inbound && (kernel_ops->get_spi != NULL);
-
+ 
     if (inbound)
     {
         src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
@@ -1845,12 +1835,15 @@ setup_half_ipsec_sa(struct state *parent_st
         said_next->sec_ctx = st->sec_ctx;
 #endif
 
+	replace = FALSE;
+
 	if(inbound) {
 	    /*
 	     * set corresponding outbound SA. We can do this on
 	     * each SA in the bundle without harm.
 	     */
 	    said_next->refhim = refhim;
+	    replace = st->st_ipcomp.our_spi_in_kernel;
 	} else if (!outgoing_ref_set) {
 	    /* on outbound, pick up the SAref if not already done */
 	    said_next->ref    = refhim;
@@ -1888,7 +1881,7 @@ setup_half_ipsec_sa(struct state *parent_st
     if (st->st_esp.present)
     {
         err = setup_esp_sa(c, st, encapsulation, inbound
-                           , outgoing_ref_set, replace
+                           , outgoing_ref_set
                            , inbound_str, said_next
                            , src, srcport, dst, dstport
                            , src_client, dst_client);
@@ -1965,24 +1958,14 @@ setup_half_ipsec_sa(struct state *parent_st
         said_next->sec_ctx = st->sec_ctx;
 #endif
 
+	replace = FALSE;
 	if(inbound) {
 	    /*
 	     * set corresponding outbound SA. We can do this on
 	     * each SA in the bundle without harm.
 	     */
 	    said_next->refhim = refhim;
-	} else if (!outgoing_ref_set) {
-	    /* on outbound, pick up the SAref if not already done */
-	    said_next->ref    = refhim;
-	    outgoing_ref_set  = TRUE;
-	}
-
-	if(inbound) {
-	    /*
-	     * set corresponding outbound SA. We can do this on
-	     * each SA in the bundle without harm.
-	     */
-	    said_next->refhim = refhim;
+	    replace = st->st_ah.our_spi_in_kernel;
 	} else if (!outgoing_ref_set) {
 	    /* on outbound, pick up the SAref if not already done */
 	    said_next->ref    = refhim;
@@ -2000,7 +1983,6 @@ setup_half_ipsec_sa(struct state *parent_st
        }
             memset(said_next->authkey, 0, said_next->authkeylen);
 #endif
-
 
 	/*
 	 * SA refs will have been allocated for this SA.
