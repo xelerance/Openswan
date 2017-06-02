@@ -964,8 +964,16 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
-    //req.n.nlmsg_type = replace ? XFRM_MSG_UPDSA : XFRM_MSG_NEWSA;
-    req.n.nlmsg_type = XFRM_MSG_NEWSA;
+
+    /*
+     * incoming SAs will have had their SPI# allocated in advance, even if they
+     * are in fact "new".
+     */
+    if(replace || sa->spi!=0) {
+        req.n.nlmsg_type = XFRM_MSG_UPDSA;
+    } else {
+        req.n.nlmsg_type = XFRM_MSG_NEWSA;
+    }
 
     ip2xfrm(sa->src, &req.p.saddr);
     ip2xfrm(sa->dst, &req.p.id.daddr);
