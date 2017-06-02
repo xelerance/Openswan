@@ -416,9 +416,9 @@ out_sa(pb_stream *outs
                * be allocated?
                */
               {
-                    ipsec_spi_t *spi_ptr = NULL;
-                    int proto = 0;
-                    bool *spi_generated;
+		  struct ipsec_proto_info *pi = NULL;
+		  int proto = 0;
+		  bool *spi_generated;
 
                     spi_generated = NULL;
 
@@ -437,7 +437,7 @@ out_sa(pb_stream *outs
                         trans_desc = &isakmp_ah_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
-                        spi_ptr = &st->st_ah.our_spi;
+			pi = &st->st_ah;
                         spi_generated = &ah_spi_generated;
                         proto = IPPROTO_AH;
                         break;
@@ -447,7 +447,7 @@ out_sa(pb_stream *outs
                         trans_desc = &isakmp_esp_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
-                        spi_ptr = &st->st_esp.our_spi;
+			pi = &st->st_esp;
                         spi_generated = &esp_spi_generated;
                         proto = IPPROTO_ESP;
                         break;
@@ -463,8 +463,7 @@ out_sa(pb_stream *outs
                          */
                         if (!ipcomp_cpi_generated)
                         {
-                              st->st_ipcomp.our_spi = get_my_cpi(
-                                  &st->st_connection->spd, tunnel_mode);
+                              st->st_ipcomp.our_spi = get_my_cpi(st, tunnel_mode);
                               if (st->st_ipcomp.our_spi == 0)
                                   return_on(ret, FALSE);          /* problem generating CPI */
 
@@ -484,21 +483,21 @@ out_sa(pb_stream *outs
                         bad_case(p->protoid);
                     }
 
-                    if (spi_ptr != NULL)
+                    if (pi != NULL)
                     {
                         if (spi_generated != NULL && !*spi_generated)
                         {
-                              *spi_ptr = get_ipsec_spi(0
-                                  , proto
-                                  , &st->st_connection->spd
-                                  , tunnel_mode);
-                              if (*spi_ptr == 0)
-                                  return FALSE;
-                              *spi_generated = TRUE;
+			    if (!get_ipsec_spi(pi
+					       , proto
+					       , st
+					       , tunnel_mode)) {
+				return FALSE;
+			    }
+			    *spi_generated = TRUE;
                         }
-                        if (!out_raw((u_char *)spi_ptr, IPSEC_DOI_SPI_SIZE
-                        , &proposal_pbs, "SPI"))
-                              return_on(ret, FALSE);
+                        if (!out_raw((u_char *)&pi->our_spi, IPSEC_DOI_SPI_SIZE
+				     , &proposal_pbs, "SPI"))
+			    return_on(ret, FALSE);
                     }
               }
 
@@ -1925,7 +1924,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
 }
 
 static void
-echo_proposal(
+echo_proposal(struct state *st,
     struct isakmp_proposal r_proposal,          /* proposal to emit */
     struct isakmp_transform r_trans,          /* winning transformation within it */
     u_int8_t np,                              /* Next Payload for proposal */
@@ -1933,7 +1932,6 @@ echo_proposal(
     struct ipsec_proto_info *pi,          /* info about this protocol instance */
     struct_desc *trans_desc,                    /* descriptor for this transformation */
     pb_stream *trans_pbs,                    /* PBS for incoming transform */
-    struct spd_route *sr,                    /* host details for the association */
     bool tunnel_mode)                              /* true for inner most tunnel SA */
 {
     pb_stream r_proposal_pbs;
@@ -1953,7 +1951,7 @@ echo_proposal(
            * Note: we may fail to generate a satisfactory CPI,
            * but we'll ignore that.
            */
-          pi->our_spi = get_my_cpi(sr, tunnel_mode);
+          pi->our_spi = get_my_cpi(st, tunnel_mode);
           out_raw((u_char *) &pi->our_spi
                + IPSEC_DOI_SPI_SIZE - IPCOMP_CPI_SIZE
               , IPCOMP_CPI_SIZE
@@ -1961,14 +1959,15 @@ echo_proposal(
     }
     else
     {
-          pi->our_spi = get_ipsec_spi(pi->attrs.spi
-              , r_proposal.isap_protoid == PROTO_IPSEC_AH ?
-                    IPPROTO_AH : IPPROTO_ESP
-              , sr
-              , tunnel_mode);
-          /* XXX should check for errors */
-          out_raw((u_char *) &pi->our_spi, IPSEC_DOI_SPI_SIZE
-              , &r_proposal_pbs, "SPI");
+	get_ipsec_spi(pi
+		      , r_proposal.isap_protoid == PROTO_IPSEC_AH ?
+		      IPPROTO_AH : IPPROTO_ESP
+		      , st
+		      , tunnel_mode);
+	
+	/* XXX should check for errors */
+	out_raw((u_char *) &pi->our_spi, IPSEC_DOI_SPI_SIZE
+		, &r_proposal_pbs, "SPI");
     }
 
     /* Transform */
@@ -2559,38 +2558,35 @@ parse_ipsec_sa_body(
 
               /* AH proposal */
               if (ah_seen)
-                    echo_proposal(ah_proposal
+		  echo_proposal(st, ah_proposal
                         , ah_trans
                         , esp_seen || ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
                         , r_sa_pbs
                         , &st->st_ah
                         , &isakmp_ah_transform_desc
                         , &ah_trans_pbs
-                        , &st->st_connection->spd
                         , tunnel_mode && inner_proto == IPPROTO_AH);
 
               /* ESP proposal */
               if (esp_seen)
-                    echo_proposal(esp_proposal
+		  echo_proposal(st, esp_proposal
                         , esp_trans
                         , ipcomp_seen? ISAKMP_NEXT_P : ISAKMP_NEXT_NONE
                         , r_sa_pbs
                         , &st->st_esp
                         , &isakmp_esp_transform_desc
                         , &esp_trans_pbs
-                        , &st->st_connection->spd
                         , tunnel_mode && inner_proto == IPPROTO_ESP);
 
               /* IPCOMP proposal */
               if (ipcomp_seen)
-                    echo_proposal(ipcomp_proposal
+		  echo_proposal(st, ipcomp_proposal
                         , ipcomp_trans
                         , ISAKMP_NEXT_NONE
                         , r_sa_pbs
                         , &st->st_ipcomp
                         , &isakmp_ipcomp_transform_desc
                         , &ipcomp_trans_pbs
-                        , &st->st_connection->spd
                         , tunnel_mode && inner_proto == IPPROTO_COMP);
 
               close_output_pbs(r_sa_pbs);

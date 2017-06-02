@@ -120,6 +120,7 @@ struct ipsec_proto_info {
     bool present;	/* was this transform specified? */
     struct ipsec_trans_attrs attrs;   /* info on remote */
     ipsec_spi_t our_spi;
+    bool        our_spi_in_kernel;  /* true if SPI already installed in kernel */
     u_int16_t keymat_len;	/* same for both */
     u_char *our_keymat;
     u_char *peer_keymat;
