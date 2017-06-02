@@ -9,16 +9,15 @@ ipsec_spi_t spis[4]={ 0x12345678,
 		      0x56781234,
 		      0x78123456};
 static int spinext=0;
-ipsec_spi_t get_ipsec_spi(ipsec_spi_t avoid UNUSED
-			  , int proto UNUSED, struct spd_route *sr UNUSED
+bool get_ipsec_spi(struct ipsec_proto_info *pi UNUSED
+			  , int proto UNUSED, struct state *st UNUSED
 			  , bool tunnel UNUSED)
 {
 	if(spinext == 4) spinext=0;
 	return htonl(spis[spinext++]);
 }
 
-ipsec_spi_t
-get_my_cpi(struct spd_route *sr, bool tunnel)
+ipsec_spi_t get_my_cpi(struct state *st, bool tunnel)
 {
 	if(spinext == 4) spinext=0;
 	return htonl(spis[spinext++]);
