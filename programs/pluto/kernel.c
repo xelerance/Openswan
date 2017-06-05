@@ -1368,6 +1368,7 @@ static err_t setup_esp_sa(struct connection *c
                           , bool outgoing_ref_set
                           , const char *inbound_str
                           , struct kernel_sa *said_next
+                          , u_int8_t natt_type
                           , ip_address src, u_int16_t natt_sport
                           , ip_address dst, u_int16_t natt_dport
                           , ip_subnet src_client
@@ -1423,20 +1424,6 @@ static err_t setup_esp_sa(struct connection *c
 
     /* static const int esp_max = elemsof(esp_info); */
     /* int esp_count; */
-
-#ifdef NAT_TRAVERSAL
-    u_int8_t natt_type = 0;
-    ip_address natt_oa;
-
-    if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
-        if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
-            natt_type = ESPINUDP_WITH_NON_ESP;
-        } else {
-            natt_type = ESPINUDP_WITH_NON_IKE;
-        }
-    }
-    natt_oa = st->hidden_variables.st_nat_oa;
-#endif
 
     if(DBGP(DBG_KLIPS)) {
         char sa_src[ADDRTOT_BUF];
@@ -1571,8 +1558,10 @@ static err_t setup_esp_sa(struct connection *c
     said_next->natt_dport = natt_dport;
     said_next->transid = st->st_esp.attrs.transattrs.encrypt;
     said_next->natt_type = natt_type;
-    said_next->natt_oa = &natt_oa;
+    said_next->natt_oa = &st->hidden_variables.st_nat_oa;
 #endif
+
+
     said_next->outif   = -1;
 #ifdef KLIPS_MAST
     if(st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TRANSPORT
@@ -1632,6 +1621,9 @@ setup_half_ipsec_sa(struct state *parent_st
     struct connection *c = st->st_connection;
     ip_address src, dst;
     u_int16_t srcport, dstport;
+    u_int8_t natt_type = 0;
+    const char *nattype_str = "esp";
+    char srcport_thing[12], dstport_thing[12];
     ip_subnet src_client, dst_client;
     ipsec_spi_t inner_spi = 0;
     unsigned int proto = 0;
@@ -1654,6 +1646,9 @@ setup_half_ipsec_sa(struct state *parent_st
 
     bool add_selector;
 
+    srcport_thing[0]='\0'; /* empty string */
+    dstport_thing[0]='\0';
+
     if (inbound)
     {
         src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
@@ -1669,6 +1664,20 @@ setup_half_ipsec_sa(struct state *parent_st
         dst_client = sr->that.client;
     }
 
+#ifdef NAT_TRAVERSAL
+    if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
+        if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
+            natt_type = ESPINUDP_WITH_NON_ESP;
+            nattype_str = "nonesp";
+        } else {
+            natt_type = ESPINUDP_WITH_NON_IKE;
+            nattype_str = "nonike";
+        }
+        sprintf(srcport_thing, ":%u", srcport);
+        sprintf(dstport_thing, ":%u", dstport);
+    }
+#endif
+
     if(DBGP(DBG_KLIPS)) {
         char sa_src[ADDRTOT_BUF];
         char sa_dst[ADDRTOT_BUF];
@@ -1679,10 +1688,11 @@ setup_half_ipsec_sa(struct state *parent_st
         addrtot(&dst, 0, sa_dst, sizeof(sa_dst));
         subnettot(&src_client, 0, tun_src, sizeof(tun_src));
         subnettot(&dst_client, 0, tun_dst, sizeof(tun_dst));
-        DBG_log("state #%lu(%s): setup %s ipsec between %s<->%s for %s...%s"
+        DBG_log("state #%lu(%s): setup %s %s-ipsec between %s%s<->%s%s for %s...%s"
                 , st->st_serialno, c->name
                 , inbound_str
-                , sa_src, sa_dst
+                , nattype_str
+                , sa_src, srcport_thing, sa_dst, dstport_thing
                 , tun_src, tun_dst);
     }
 
@@ -1897,7 +1907,7 @@ setup_half_ipsec_sa(struct state *parent_st
     {
         err = setup_esp_sa(c, st, encapsulation, inbound
                            , outgoing_ref_set
-                           , inbound_str, said_next
+                           , inbound_str, said_next, natt_type
                            , src, srcport, dst, dstport
                            , src_client, dst_client);
         if(err) goto fail;
