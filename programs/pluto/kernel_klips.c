@@ -339,7 +339,7 @@ klips_do_command(struct connection *c, const struct spd_route *sr
                 cs = "-client-v6";
                 break;
             default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
+                loglog(RC_LOG_SERIOUS, "(klips_do_command) unknown address family");
                 return FALSE;
         }
         verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)

@@ -1498,7 +1498,7 @@ xfrm_to_ip_address(unsigned family, const xfrm_address_t *src, ip_address *dst)
 	initaddr((const void *) &src->a6, sizeof(src->a6), family, dst);
 	return NULL;
     default:
-	return "unknown address family";
+	return "(xfrm) unknown address family";
     }
 }
 
@@ -2472,7 +2472,7 @@ netkey_do_command(struct connection *c, const struct spd_route *sr
                 cs = "-client-v6";
                 break;
             default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
+                loglog(RC_LOG_SERIOUS, "(netkey_do_command) unknown address family");
                 return FALSE;
         }
         verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)

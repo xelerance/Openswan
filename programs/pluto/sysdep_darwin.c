@@ -342,7 +342,7 @@ do_command_darwin(struct connection *c, struct spd_route *sr
                 cs = "-client-v6";
                 break;
             default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
+                loglog(RC_LOG_SERIOUS, "(darwin_do_command)unknown address family");
                 return FALSE;
         }
         verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
