@@ -133,7 +133,7 @@
 
 #if !defined(ESPINUDP_WITH_NON_IKE)
 #define ESPINUDP_WITH_NON_IKE   1  /* draft-ietf-ipsec-nat-t-ike-00/01 */
-#define ESPINUDP_WITH_NON_ESP   2  /* draft-ietf-ipsec-nat-t-ike-02    */
+#define ESPINUDP_WITH_NON_ESP   2  /* ipsec-nat-t-ike-02, rfc3948      */
 #endif
 
 /*

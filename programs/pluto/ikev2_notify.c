@@ -123,7 +123,9 @@ stf_status process_nat_payload(struct state *st
     if(same_chunk(*data, calculated_hash)) {
         DBG(DBG_PARSING|DBG_CONTROLMORE, DBG_log("nat-t payloads for %s match: no NAT", payload_name));
     } else {
-        st->hidden_variables.st_nat_traversal = NAT_T_WITH_RFC_VALUES | NAT_T_DETECTED;
+        st->hidden_variables.st_nat_traversal = NAT_T_WITH_RFC_VALUES |
+            NAT_T_DETECTED;
+
         switch(notify_type) {
         case v2N_NAT_DETECTION_DESTINATION_IP:
             loglog(RC_COMMENT, "detected that I am NATed");

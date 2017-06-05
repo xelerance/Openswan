@@ -1668,7 +1668,7 @@ setup_half_ipsec_sa(struct state *parent_st
     if (st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) {
         if(st->hidden_variables.st_nat_traversal & NAT_T_WITH_PORT_FLOATING) {
             natt_type = ESPINUDP_WITH_NON_ESP;
-            nattype_str = "nonesp";
+            nattype_str = "rfc3849";
         } else {
             natt_type = ESPINUDP_WITH_NON_IKE;
             nattype_str = "nonike";
