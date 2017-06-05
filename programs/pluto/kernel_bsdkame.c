@@ -257,33 +257,11 @@ bsdkame_process_raw_ifaces(struct raw_iface *rifaces)
 
 static bool
 bsdkame_do_command(struct connection *c, struct spd_route *sr
-		 , const char *verb, struct state *st)
+                   , const char *verb, const char *verb_suffix
+                   , struct state *st)
 {
     char cmd[1536];     /* arbitrary limit on shell command length */
     char common_shell_out_str[1024];
-    const char *verb_suffix;
-
-    /* figure out which verb suffix applies */
-    {
-        const char *hs, *cs;
-
-        switch (addrtypeof(&sr->this.host_addr))
-        {
-            case AF_INET:
-                hs = "-host";
-                cs = "-client";
-                break;
-            case AF_INET6:
-                hs = "-host-v6";
-                cs = "-client-v6";
-                break;
-            default:
-                loglog(RC_LOG_SERIOUS, "unknown address family (bsdkame_do_command)");
-                return FALSE;
-        }
-        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
-            ? hs : cs;
-    }
 
     if(fmt_common_shell_out(common_shell_out_str, sizeof(common_shell_out_str), c, sr, st)==-1) {
 	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);

@@ -502,8 +502,8 @@ fmt_common_shell_out(char *buf, int blen, struct connection *c
 	return ((result>=blen) || (result<0))? -1 : result;
 }
 
-bool
-do_command(struct connection *c, const struct spd_route *sr, const char *verb, struct state *st)
+const char *kernel_command_verb_suffix(struct state *st
+                                       , const struct spd_route *sr)
 {
     const char *verb_suffix;
 
@@ -511,7 +511,7 @@ do_command(struct connection *c, const struct spd_route *sr, const char *verb, s
     {
         const char *hs, *cs;
 
-        switch (addrtypeof(&sr->this.host_addr))
+        switch (addrtypeof(&st->st_localaddr))
         {
             case AF_INET:
                 hs = "-host";
@@ -525,15 +525,23 @@ do_command(struct connection *c, const struct spd_route *sr, const char *verb, s
                 loglog(RC_LOG_SERIOUS, "unknown address family (do_command)");
                 return FALSE;
         }
-        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
+        verb_suffix = subnetisaddr(&sr->this.client, &st->st_localaddr)
             ? hs : cs;
     }
+    return verb_suffix;
+}
+
+bool
+do_command(struct connection *c, const struct spd_route *sr
+           , const char *verb, struct state *st)
+{
+    const char *verb_suffix = kernel_command_verb_suffix(st, sr);
 
     DBG(DBG_CONTROL, DBG_log("command executing %s%s"
 			     , verb, verb_suffix));
 
     if(kernel_ops->docommand != NULL) {
-	return (*kernel_ops->docommand)(c,sr, verb, st);
+	return (*kernel_ops->docommand)(c,sr, verb, verb_suffix, st);
     } else {
 	DBG(DBG_CONTROL, DBG_log("no do_command for method %s"
 				 , kernel_ops->kern_name));
