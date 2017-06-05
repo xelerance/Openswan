@@ -195,7 +195,7 @@ record_and_initiate_opportunistic(const ip_subnet *ours
     }
 }
 
-/* 
+/*
  * REQID are used to link IPsec policies and IPsec SA databases together
  */
 static unsigned get_proto_reqid(void)
@@ -1638,7 +1638,7 @@ setup_half_ipsec_sa(struct state *parent_st
     int encapsulation;
 
     bool add_selector;
- 
+
     if (inbound)
     {
         src = parent_st->st_remoteaddr;   srcport = parent_st->st_remoteport;
@@ -2061,9 +2061,9 @@ setup_half_ipsec_sa(struct state *parent_st
             }
 
             /* MCR - should be passed a spd_eroute structure here */
-            (void) raw_eroute(&sr->that.host_addr   /* this_host */
+            (void) raw_eroute(&st->st_remoteaddr    /* this_host */
 			      , &sr->that.client    /* this_client */
-                              , &sr->this.host_addr /* that_host */
+                              , &st->st_localaddr   /* that_host */
 			      , &sr->this.client    /* that_client */
                               , inner_spi              /* spi */
 			      , proto                  /* proto */
