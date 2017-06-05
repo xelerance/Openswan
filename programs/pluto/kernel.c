@@ -522,7 +522,7 @@ do_command(struct connection *c, const struct spd_route *sr, const char *verb, s
                 cs = "-client-v6";
                 break;
             default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
+                loglog(RC_LOG_SERIOUS, "unknown address family (do_command)");
                 return FALSE;
         }
         verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
