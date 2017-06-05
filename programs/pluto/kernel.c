@@ -506,12 +506,19 @@ const char *kernel_command_verb_suffix(struct state *st
                                        , const struct spd_route *sr)
 {
     const char *verb_suffix;
+    const ip_address *local;
+
+    if(st != NULL) {
+        local = &st->st_localaddr;
+    } else {
+        local = &sr->this.host_addr;
+    }
 
     /* figure out which verb suffix applies for logging purposes */
     {
         const char *hs, *cs;
 
-        switch (addrtypeof(&st->st_localaddr))
+        switch (addrtypeof(local))
         {
             case AF_INET:
                 hs = "-host";
@@ -525,7 +532,7 @@ const char *kernel_command_verb_suffix(struct state *st
                 loglog(RC_LOG_SERIOUS, "unknown address family (do_command)");
                 return FALSE;
         }
-        verb_suffix = subnetisaddr(&sr->this.client, &st->st_localaddr)
+        verb_suffix = subnetisaddr(&sr->this.client, local)
             ? hs : cs;
     }
     return verb_suffix;
