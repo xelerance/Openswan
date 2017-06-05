@@ -9,12 +9,13 @@ ipsec_spi_t spis[4]={ 0x12345678,
 		      0x56781234,
 		      0x78123456};
 static int spinext=0;
-bool get_ipsec_spi(struct ipsec_proto_info *pi UNUSED
+bool get_ipsec_spi(struct ipsec_proto_info *pi
 			  , int proto UNUSED, struct state *st UNUSED
 			  , bool tunnel UNUSED)
 {
 	if(spinext == 4) spinext=0;
-	return htonl(spis[spinext++]);
+        pi->our_spi = htonl(spis[spinext++]);
+        return TRUE;
 }
 
 ipsec_spi_t get_my_cpi(struct state *st, bool tunnel)
