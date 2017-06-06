@@ -293,6 +293,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
 
+    ikev2_update_nat_ports(st);
+
     authstart = reply_stream.cur;
     /* send response */
     {

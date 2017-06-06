@@ -494,6 +494,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
 | key issuer CA is '%any'
 | PARENT SA now authenticated, building child and reply
+| pick_if looking for port: 4500, family: 2
+|   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
+|   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0
+|   picking maching interface for family[2,0]: AF_INET resulted in: 132.213.238.7
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
