@@ -1,6 +1,7 @@
 #define OMIT_MAIN_MODE 1
 
 #include "../lp02-parentI1/parentI1_head.c"
+#include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_pending.c"
 #include "seam_whack.c"
@@ -26,7 +27,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/parker.secrets"
-			       , NULL);
+			       , NULL, NULL);
 }
 
 bool no_cr_send = FALSE;

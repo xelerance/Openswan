@@ -1,0 +1,32 @@
+#conn berri--strongswan loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn berri--strongswan
+conn berri--strongswan
+	left=192.139.46.92
+	leftid="%cert"
+	leftsubnet=2620:120:9000:92::/64
+	leftcert=atwater.crt
+	right=192.139.46.81
+	rightid="%cert"
+	rightsubnet=2620:120:9000:81::/64
+	rightsendcert=never
+	rightcert=berri.crt
+	auto=start
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=propose
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
+# end conn berri--strongswan
+
+# end of config

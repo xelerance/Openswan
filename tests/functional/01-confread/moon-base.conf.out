@@ -28,6 +28,8 @@ conn net-net
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn net-net
 
 # begin conn host-host
@@ -49,6 +51,7 @@ conn host-host
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
 # end conn host-host
 
 # begin conn rw
@@ -70,6 +73,8 @@ conn rw
 	overlapip=no
 	authby=rsasig
 	phase2=esp
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv4
 # end conn rw
 
 # end of config

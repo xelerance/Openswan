@@ -6,3 +6,5 @@ CONNNAME=any1--jj2 maryjane1--jj2
 UNITTEST1ARGS=${WHACKFILE} any1--jj2 OUTPUT/${TESTNAME}.pcap parentI1.pcap parentI2.pcap
 ENDNAME=parker
 
+pcapupdate:
+	@true

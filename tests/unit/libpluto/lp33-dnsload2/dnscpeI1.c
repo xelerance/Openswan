@@ -1,4 +1,5 @@
 #include "../lp02-parentI1/parentI1_head.c"
+#include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_whack.c"
 #include "seam_host_parker.c"
@@ -14,7 +15,7 @@ static void init_fake_secrets(void)
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/parker.secrets"
-			       , NULL);
+			       , NULL, NULL);
 }
 
 unsigned int sort_dns_answers;
@@ -73,7 +74,7 @@ int main(int argc, char *argv[])
      * this is now 0, since an address family has *NOT* been chosen,
      * given that this=>%defaultroute, and that=>%dns
      */
-    assert(c1->addr_family == 0);
+    assert(c1->end_addr_family == 0);
 
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);

@@ -2,17 +2,22 @@
 ./h2hR1-deny-ikev1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./h2hR1-deny-ikev1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./h2hR1-deny-ikev1 loading secrets from "../samples/jj.secrets"
-./h2hR1-deny-ikev1 loaded private key for keyid: PPK_RSA:AQOg5H7A4
+./h2hR1-deny-ikev1 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR1-deny-ikev1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./h2hR1-deny-ikev1 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection mytunnel-no-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+./h2hR1-deny-ikev1 use keyid: 1:<> / 2:<>
 | counting wild cards for 192.168.1.1 is 0
+./h2hR1-deny-ikev1 use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
+| orient mytunnel-no-ikev1 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient mytunnel-no-ikev1 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient mytunnel-no-ikev1 finished with: 1 [132.213.238.7]
@@ -29,6 +34,7 @@ RC=0 "mytunnel-no-ikev1": 132.213.238.7...192.168.1.1; unrouted; eroute owner: #
 RC=0 "mytunnel-no-ikev1":     myip=unset; hisip=unset;
 RC=0 "mytunnel-no-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "mytunnel-no-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+|   =========== input from from parentM1.pcap ========
 | *received 492 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   01 10 02 00  00 00 00 00  00 00 01 ec  0d 00 01 ac
@@ -91,7 +97,7 @@ RC=0 "mytunnel-no-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+
 | found_host_pair_conn (find_host_connection2): 132.213.238.7:500 %any/%any:500 -> hp:none
 | searching for connection with policy = RSASIG/!IKEv1
 | find_host_connection2 returns empty (ike=none/none)
-./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:62465 but no connection has been authorized with policy=RSASIG
+./h2hR1-deny-ikev1 initial Main Mode message received on 132.213.238.7:500 but no connection has been authorized with policy=RSASIG
 | complete state transition with STF_FAIL
 RC=205 STATE_MAIN_R0: INVALID_MAJOR_VERSION
 ./h2hR1-deny-ikev1 sending notification INVALID_MAJOR_VERSION to 192.168.1.1:500
@@ -100,20 +106,18 @@ RC=205 STATE_MAIN_R0: INVALID_MAJOR_VERSION
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_N
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_INFO
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Notification Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    DOI: ISAKMP_DOI_IPSEC
 |    protocol ID: 1
 |    SPI size: 0
 |    Notify Message Type: INVALID_MAJOR_VERSION
 | emitting length of ISAKMP Notification Payload: 12
 | emitting length of ISAKMP Message: 40
-sending 40 bytes for notification packet through eth0:500 to 192.168.1.1:500 (using #0)
+sending 40 bytes for notification packet through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #0)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   0b 10 05 00  00 00 00 00  00 00 00 28  00 00 00 0c
 |   00 00 00 01  01 00 00 05
@@ -141,6 +145,8 @@ sending 40 bytes for notification packet through eth0:500 to 192.168.1.1:500 (us
 ./h2hR1-deny-ikev1 leak: default conf ipsecd_dir, item size: X
 ./h2hR1-deny-ikev1 leak: default conf ipsec_conf_dir, item size: X
 ./h2hR1-deny-ikev1 leak: 2 * id list, item size: X
+./h2hR1-deny-ikev1 leak: rfc3110 format of public key [created], item size: X
+./h2hR1-deny-ikev1 leak: pubkey, item size: X
 ./h2hR1-deny-ikev1 leak: secret, item size: X
 ./h2hR1-deny-ikev1 leak: 2 * hasher name, item size: X
 ./h2hR1-deny-ikev1 leak detective found Z leaks, total size X

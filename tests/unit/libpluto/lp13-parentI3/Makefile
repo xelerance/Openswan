@@ -28,6 +28,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -97,7 +98,7 @@ ${WHACKFILE}:
 update: update1
 update1:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
-	[ -f OUTPUT/I2-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt
+	if [ -f OUTPUT/I2-dump.txt ]; then sed -f ${TESTUTILS}/sanity.sed OUTPUT/I2-dump.txt >I2-dump.txt; fi
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap

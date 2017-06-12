@@ -117,6 +117,8 @@ ikev2_out_sa(pb_stream *outs
     bool ret = FALSE;
     unsigned int  pc_cnt;
 
+    pbs_set_np(outs, ISAKMP_NEXT_v2SA);
+
     /* SA header out */
     {
 	struct ikev2_sa sa;
@@ -138,10 +140,10 @@ ikev2_out_sa(pb_stream *outs
     passert(sadb != NULL);
 
     if(!parentSA) {
-	st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
-					   , IPPROTO_ESP
-					   , &st->st_connection->spd
-					   , TRUE /* tunnel */);
+	get_ipsec_spi(&st->st_esp /* avoid this # */
+		      , IPPROTO_ESP
+		      , st
+		      , TRUE /* tunnel */);
     }
 
     /* now send out all the proposals */
@@ -840,10 +842,10 @@ ikev2_emit_winning_sa(
     } else {
 	r_proposal.isap_spisize= 4;
 	st->st_esp.present = TRUE;
-	st->st_esp.our_spi = get_ipsec_spi(0 /* avoid this # */
-					   , IPPROTO_ESP
-					   , &st->st_connection->spd
-					   , TRUE /* tunnel */);
+	get_ipsec_spi(&st->st_esp
+		      , IPPROTO_ESP
+		      , st
+		      , TRUE /* tunnel */);
     }
 
     if(parentSA) {

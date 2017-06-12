@@ -41,6 +41,8 @@
 #include "oswlog.h"
 #include "whack.h"
 #include "id.h"
+#include "secrets.h"
+#include "sha2.h"
 
 static void
 update_ports(struct whack_message * m)
@@ -191,6 +193,7 @@ int serialize_whack_msg(struct whack_message *msg)
 	/**
 	 * Pack strings
 	 */
+        wp.cnt = 0;
 	wp.msg = msg;
 	wp.str_next = (unsigned char *)msg->string;
 	wp.str_roof = (unsigned char *)&msg->string[sizeof(msg->string)];
@@ -338,7 +341,10 @@ static int set_whack_end(struct starter_config *cfg
 
         /* may get overridden if IPHOSTNAME */
 	w->host_addr_name = l->strings[KSCF_IP];
-        anyaddr(l->addr_family, &w->host_addr);
+        anyaddr(l->end_addr_family, &w->host_addr);
+        if(l->tunnel_addr_family == 0) {
+          l->tunnel_addr_family = l->end_addr_family;
+        }
 
 	switch(l->addrtype) {
 	case KH_DEFAULTROUTE:
@@ -364,11 +370,11 @@ static int set_whack_end(struct starter_config *cfg
 	case KH_GROUP:
 	case KH_OPPOGROUP:
 		/* policy should have been set to OPPO */
-		anyaddr(l->addr_family, &w->host_addr);
+		anyaddr(l->end_addr_family, &w->host_addr);
 		break;
 
 	case KH_ANY:
-		anyaddr(l->addr_family, &w->host_addr);
+		anyaddr(l->end_addr_family, &w->host_addr);
 		break;
 
         case KH_NOTSET:
@@ -411,28 +417,35 @@ static int set_whack_end(struct starter_config *cfg
 		w->client = l->subnet;
 	}
 	else {
-		w->client.addr.u.v4.sin_family = l->addr_family;
+		w->client.addr.u.v4.sin_family = l->tunnel_addr_family;
 	}
 	w->updown = l->strings[KSCF_UPDOWN];
 	w->host_port = IKE_UDP_PORT;
 	w->has_client_wildcard = l->has_client_wildcard;
 	w->has_port_wildcard   = l->has_port_wildcard;
 
-	w->cert = l->cert;
-	w->ca   = l->ca;
-	if(l->options_set[KNCF_SENDCERT]) {
-		w->sendcert = l->options[KNCF_SENDCERT];
-        } else {
-                w->sendcert = cert_alwayssend;
+        if(l->rsakey1_type == PUBKEY_CERTIFICATE) {
+          w->cert = l->cert;
+          w->ca   = l->ca;
+          if(l->options_set[KNCF_SENDCERT]) {
+            w->sendcert = l->options[KNCF_SENDCERT];
+          } else {
+            w->sendcert = cert_alwayssend;
+          }
+        } else if(l->rsakey1_type == PUBKEY_PREEXCHANGED) {
+          /* overloading w->cert and w->ca to avoid adding more useless
+           * strings to whack structure. Wish it was JSON...
+           */
+          w->cert = l->rsakey1_ckaid;
+          w->ca   = l->rsakey2_ckaid;
         }
-
+	w->keytype = l->rsakey1_type;
 
 	w->updown = l->updown;
 	w->virt   = NULL;
 	w->protocol = l->protocol;
 	w->port = l->port;
 	w->virt = l->virt;
-	w->key_from_DNS_on_demand = l->key_from_DNS_on_demand;
 
 	if(l->options_set[KNCF_XAUTHSERVER]) {
 		w->xauth_server = l->options[KNCF_XAUTHSERVER];
@@ -465,9 +478,11 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
                               unsigned int keynum,
                               enum pubkey_source key_type,
                               unsigned char *rsakey,
+                              char **p_ckaid,
                               const char *lr)
 {
-  char keyspace[1024 + 4];
+  unsigned char keyspace[1024 + 4];
+  size_t        keylen;
   const char *err;
 
   msg->whack_key = TRUE;
@@ -491,15 +506,19 @@ int starter_whack_build_pkmsg(struct starter_config *cfg,
       break;
 
     case PUBKEY_PREEXCHANGED:
-      err = atobytes((char *)rsakey, 0, keyspace, sizeof(keyspace),
-                     &msg->keyval.len);
+      err = atobytes((char *)rsakey, 0, (char *)keyspace, sizeof(keyspace),
+                     &keylen);
+
+      //starter_log(LOG_LEVEL_ERR, "keyspace: %p len: %d", keyspace, keylen);
+      //log_ckaid("loading key %s", keyspace, keylen);
+
       if (err) {
         starter_log(LOG_LEVEL_ERR, "conn %s/%s: rsakey%u malformed [%s]",
                     connection_name(conn), lr, keynum, err);
         return 1;
       }
       else {
-        msg->keyval.ptr = (unsigned char *)keyspace;
+        clonereplacechunk(msg->keyval, keyspace, keylen, "rsakey");
         return 0;
       }
     }
@@ -520,14 +539,14 @@ static int starter_whack_add_pubkey (struct starter_config *cfg,
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      1, end->rsakey1_type, end->rsakey1, lr)==0) {
+                                     1, end->rsakey1_type, end->rsakey1, &end->rsakey1_ckaid, lr)==0) {
           ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }
 
 	init_whack_msg(&msg);
         if(starter_whack_build_pkmsg(cfg, &msg, conn, end,
-                                      2, end->rsakey2_type, end->rsakey2, lr)==0) {
+                                     2, end->rsakey2_type, end->rsakey2, &end->rsakey2_ckaid, lr)==0) {
           ret = send_whack_msg(cfg, &msg);
           if(ret != 0) return ret;
         }
@@ -546,11 +565,15 @@ int starter_whack_build_basic_conn(struct starter_config *cfg
 	msg->whack_delete = TRUE;      /* always do replace for now */
 	msg->name = connection_name(conn);
 
-	msg->addr_family = conn->left.addr_family;
-	if(msg->addr_family == 0) {
-	  msg->addr_family = conn->right.addr_family;
-        }
-	msg->tunnel_addr_family = conn->left.addr_family;
+        /* XXX maybe before here, we have already validated that left/right are
+         *     in the same address family.
+         */
+	msg->end_addr_family = conn->end_addr_family;
+        msg->tunnel_addr_family = conn->tunnel_addr_family;
+        starter_log(LOG_LEVEL_DEBUG,
+                    "emitting conn %s with end-family: %u and tunnel-family: %u\n",
+                    conn->name,
+                    msg->end_addr_family, msg->tunnel_addr_family);
 
 	msg->sa_ike_life_seconds = conn->options[KBF_IKELIFETIME];
 	msg->sa_ipsec_life_seconds = conn->options[KBF_SALIFETIME];
@@ -761,7 +784,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		lnet = conn->left.subnet;
 		lc=0;
 	} else {
-		one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left");
+		one_subnet_from_string(conn, &leftnets, conn->tunnel_addr_family, &lnet, "left");
 		lc=1;
 	}
 
@@ -769,7 +792,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		rnet = conn->right.subnet;
 		rc=0;
 	} else {
-		one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+		one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right");
 		rc=1;
 	}
 
@@ -805,7 +828,7 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 		 * left.
 		 */
 		rc++;
-		if(!one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right")) {
+		if(!one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right")) {
 			/* reset right, and advance left! */
 			rightnets = "";
 			if(conn->right.strings_set[KSCF_SUBNETS]) {
@@ -817,13 +840,13 @@ int starter_permutate_conns(int (*operation)(struct starter_config *cfg
 				rnet = conn->right.subnet;
 				rc=0;
 			} else {
-				one_subnet_from_string(conn, &rightnets, conn->right.addr_family, &rnet, "right");
+				one_subnet_from_string(conn, &rightnets, conn->tunnel_addr_family, &rnet, "right");
 				rc = 1;
 			}
 
 			/* left */
 			lc++;
-			if(!one_subnet_from_string(conn, &leftnets, conn->left.addr_family, &lnet, "left")) {
+			if(!one_subnet_from_string(conn, &leftnets, conn->tunnel_addr_family, &lnet, "left")) {
 				done = 1;
 			}
 		}

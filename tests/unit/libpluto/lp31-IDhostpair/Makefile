@@ -103,3 +103,5 @@ clean: OUTPUT
 OUTPUT:
 	@mkdir -p OUTPUT
 
+pcapupdate:
+	@true

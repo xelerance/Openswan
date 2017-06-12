@@ -28,6 +28,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -89,9 +90,9 @@ OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt ${SANITYARGS} | diff - output1.txt
-	tcpdump -n -t -v -r OUTPUT/parentI2.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
+	tcpdump -n -t -v -r OUTPUT/${PCAPOUTPUT} | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt
 
-${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}
+${WHACKFILE}: ${SAMPLEDIR}/${ENDNAME}.conf
 	@mkdir -p OUTPUT
 	${READWRITE} --rootdir=${SAMPLEDIR}/${ENDNAME} --config ${SAMPLEDIR}/${ENDNAME}.conf --whackout=${WHACKFILE} ${CONNNAME}
 

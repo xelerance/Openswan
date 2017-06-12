@@ -98,14 +98,14 @@ DISTSRC = \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
 	ikev1_crypto.c ikev1_nss.c \
-        ikev2.c ikev2_parent.c ikev2_child.c ikev2_derived_keys.c \
+        ikev2.c ikev2_parent.c ikev2_parent_I1.c ikev2_parent_R1.c ikev2_child.c ikev2_derived_keys.c ikev2_notify.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
 	ike_alg.c ike_alg_status.c ike_alg.h ikeping.c \
-	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c \
+	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
 	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
@@ -143,7 +143,7 @@ OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
-OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o
+OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
 OBJSPLUTO += ikeping.o kernel.o
 OBJSPLUTO += $(NETKEY_OBJS) $(BSDKAME_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${PFKEYv2_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o

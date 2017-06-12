@@ -146,6 +146,7 @@ static const char *const state_name[] = {
 	"STATE_PARENT_R1",
 	"STATE_PARENT_R2",
 
+    "STATE_CHILD_C0_KEYING",
     "STATE_CHILD_C1_KEYED",
     "STATE_CHILD_C1_REKEY",
 
@@ -205,6 +206,7 @@ const char *const state_story[] = {
 	"received v2I1, sent v2R1",             /* STATE_PARENT_R1 */
 	"received v2I2, PARENT SA established", /* STATE_PARENT_R2 */
 
+        "CHILD SA keying",                      /* STATE_CHILD_C0_KEYING */
         "CHILD SA established",                 /* STATE_CHILD_C1_KEYED */
         "CHILD SA being rekeyed",               /* STATE_CHILD_C1_REKEY */
 
@@ -278,6 +280,20 @@ static const char *const stfstatus_names[] = {
 };
 enum_names stfstatus_name =
   {STF_IGNORE, STF_FAIL, stfstatus_names, NULL};
+
+/* Timer events */
+static const char *const dns_auth_level_name[] = {
+    "unsigned",
+    "notsec",
+    "dndsec",
+    "trustca",
+    "localf",
+    "localc"
+};
+
+enum_names dns_auth_level_names =
+    { DAL_UNSIGNED, DAL_CERTFILE, dns_auth_level_name, NULL };
+
 
 /* Goal BITs for establishing an SA
  * Note: we drop the POLICY_ prefix so that logs are more concise.

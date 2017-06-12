@@ -225,7 +225,7 @@ stf_status ikev2_emit_ts(struct msg_digest *md   UNUSED
 stf_status ikev2_calc_emit_ts(struct msg_digest *md
 			      , pb_stream *outpbs
 			      , enum phase1_role role
-                              , unsigned int next_payload
+                              , unsigned int next_payload UNUSED
 			      , struct connection *c0
 			      , lset_t policy UNUSED)
 {
@@ -245,10 +245,12 @@ stf_status ikev2_calc_emit_ts(struct msg_digest *md
     }
 
     for(sr=&c0->spd; sr != NULL; sr = sr->next) {
-	ret = ikev2_emit_ts(md, outpbs, ISAKMP_NEXT_v2TSr, ts_i);
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2TSi);
+	ret = ikev2_emit_ts(md, outpbs, 0, ts_i);
 	if(ret!=STF_OK) return ret;
 
-        ret = ikev2_emit_ts(md, outpbs, next_payload, ts_r);
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2TSr);
+        ret = ikev2_emit_ts(md, outpbs, 0, ts_r);
 	if(ret!=STF_OK) return ret;
     }
 
@@ -700,8 +702,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                                   , struct state *st1
                                   , pb_stream *outpbs)
 {
-    struct state      *st = md->st;
-    struct connection *c  = st->st_connection;
+    struct state      *pst = md->pst;
+    struct connection *c   = NULL;
     /* struct connection *cb; */
     struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
     stf_status ret;
@@ -709,6 +711,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
     struct traffic_selector tsi[16], tsr[16];
     unsigned int tsi_n, tsr_n;
+
+    if(pst == NULL) pst = md->st;
+    c = pst->st_connection;
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -738,7 +743,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,st,sra,RESPONDER,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
@@ -794,7 +799,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,st, sr,RESPONDER
+                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         int bfit_p;
@@ -832,9 +837,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         if (b->kind == CK_TEMPLATE || b->kind == CK_GROUP) {
             /* instantiate it, filling in peer's ID */
-            b = rw_instantiate(b, &st->st_remoteaddr,
+            b = rw_instantiate(b, &pst->st_remoteaddr,
                                NULL,
-                               &st->ikev2.st_peer_id);
+                               &pst->ikev2.st_peer_id);
         }
 
         if (b != c)
@@ -844,7 +849,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             openswan_log("switched from \"%s\" to \"%s\"%s", c->name, b->name
                          , fmt_connection_inst_name(b, instance, sizeof(instance)));
 
-	    st->st_connection = b;	/* kill reference to c */
+	    pst->st_connection = b;	/* kill reference to c */
 
 	    /* this ensures we don't move cur_connection from NULL to
 	     * something, requiring a reset_cur_connection() */
@@ -865,12 +870,13 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         if(st1 == NULL) {
             /* we are sure, so lets make a state for this child SA */
-            st1 = duplicate_state(st);
+            st1 = duplicate_state(pst);
+            st1->st_policy = c->policy & POLICY_IPSEC_MASK;
             insert_state(st1);
         }
 
-        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, st->st_localaddr);
-        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, st->st_remoteaddr);
+        st1->st_ts_this = ikev2_end_to_ts(&bsr->this, pst->st_localaddr);
+        st1->st_ts_that = ikev2_end_to_ts(&bsr->that, pst->st_remoteaddr);
         ikev2_print_ts(&st1->st_ts_this);
         ikev2_print_ts(&st1->st_ts_that);
     }
@@ -878,13 +884,15 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     /* note that st1 starts == st, but a child SA creation can change that */
     st1->st_connection = c;
     md->st = st1;
-    md->pst= st;
 
     /* start of SA out */
     {
         struct isakmp_sa r_sa = sa_pd->payload.sa;
         notification_t rn;
         pb_stream r_sa_pbs;
+
+        /* set the np for this structure */
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2SA);
 
         r_sa.isasa_np = ISAKMP_NEXT_v2TSi;
         if (!out_struct(&r_sa, &ikev2_sa_desc, outpbs, &r_sa_pbs))
@@ -896,6 +904,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
         /* we do not delete_state st1 yet, because initiator could retransmit */
         if (rn != NOTHING_WRONG) {
+            //delete_event(st1);
             event_schedule(EVENT_SO_DISCARD, EVENT_HALF_OPEN_TIMEOUT, st1);
             return STF_FAIL + rn;
         }
@@ -952,7 +961,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
     ikev2_derive_child_keys(st1, RESPONDER);
     /* install inbound and outbound SPI info */
-    if(!install_ipsec_sa(st, st1, TRUE))
+    if(!install_ipsec_sa(pst, st1, TRUE))
         return STF_FATAL;
 
     /* mark the connection as now having an IPsec SA associated with it. */
@@ -1001,10 +1010,10 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
                             , struct pluto_crypto_req *r);
 
 
-stf_status ikev2child_outC1(int whack_sock UNUSED
+stf_status ikev2child_outC1(int whack_sock
                             , struct state *parentst
                             , struct connection *c
-                            , lset_t policy UNUSED
+                            , lset_t policy
                             , unsigned long try /* how many attempts so far */ UNUSED
                             , so_serial_t replacing
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
@@ -1015,6 +1024,7 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
     /* okay, got a transmit slot, make a child state to send this. */
     st = duplicate_state(parentst);
+    st->st_whack_sock = whack_sock;
     ret = allocate_msgid_from_parent(parentst, &st->st_msgid);
 
     if(ret != STF_OK) return ret;
@@ -1023,6 +1033,9 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
 
     // record which state we are aiming to replace.
     st->st_replaced = replacing;
+    st->st_policy = policy;
+    st->st_state  = STATE_CHILD_C0_KEYING;
+    set_cur_state(st);
 
     /* now. we need to go calculate the g^xy, if we want PFS (almost always do!!!) */
     {
@@ -1034,7 +1047,8 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
         ke->md->from_state = STATE_CHILD_C1_REKEY;
         ke->md->svm = &ikev2_childrekey_microcode;
         ke->md->st  = st;
-        ke->md->pst = parentst;
+        ke->md->transition_state = st;  /* this have it's state transitioned by
+                                        success_v2_state_transition */
         set_suspended(st, ke->md);
 
         if(c->policy & POLICY_PFS || !parentst->st_sec_in_use) {
@@ -1045,12 +1059,18 @@ stf_status ikev2child_outC1(int whack_sock UNUSED
                 loglog(RC_CRYPTOFAILED, "system too busy");
                 delete_state(st);
             }
-        } else {
-            /* this case is that st_sec already is initialized */
-            e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
-        }
+            reset_globals();
 
-        reset_globals();
+        } else {
+            /* this case is that st_sec already is initialized, not doing PFS,
+             * but we still need a new random nonce
+             */
+            set_cur_state(st);
+            fill_rnd_chunk(&st->st_ni, DEFAULT_NONCE_SIZE);
+            e = ikev2child_outC1_tail((struct pluto_crypto_req_cont *)ke, NULL);
+            complete_v2_state_transition(&ke->md, e);
+            pfree(ke);
+        }
 
         return e;
     }
@@ -1107,7 +1127,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     struct dh_continuation *dh = (struct dh_continuation *)pcrc;
     struct msg_digest *md = dh->md;
     struct state *st      = md->st;
-    struct state *o_st     = NULL;
+    struct connection *c = st->st_connection;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
@@ -1117,8 +1137,10 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     unsigned char *authstart;
     struct connection *c0 = NULL;
 
-    unpack_v2KE(st, r, &st->st_gi);
-    unpack_nonce(&st->st_ni, r);
+    if(c->policy & POLICY_PFS) {
+        unpack_v2KE(st, r, &st->st_gi);
+        unpack_nonce(&st->st_ni, r);
+    }
 
     /* beginning of data going out */
     authstart = reply_stream.cur;
@@ -1146,10 +1168,8 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
             return STF_INTERNAL_ERROR;
     }
 
-    /* insert an Encryption payload header */
-    e.isag_np = ISAKMP_NEXT_v2KE;
     e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-
+    pbs_set_np(&md->rbody, ISAKMP_NEXT_v2E);
     if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
         return STF_INTERNAL_ERROR;
     }
@@ -1163,15 +1183,14 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     get_rnd_bytes(iv, ivsize);
 
     /* note where cleartext starts */
-    init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof - e_pbs.cur, "cleartext");
-    e_pbs_cipher.container = &e_pbs;
-    e_pbs_cipher.desc = NULL;
-    e_pbs_cipher.cur = e_pbs.cur;
+    init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
     encstart = e_pbs_cipher.cur;
 
-    /* send KE */
-    if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
-        return STF_INTERNAL_ERROR;
+    if(c->policy & POLICY_PFS) {
+        /* send KE */
+        if(!justship_v2KE(st, &st->st_gi, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2Ni))
+            return STF_INTERNAL_ERROR;
+    }
 
     /* send NONCE */
     {
@@ -1179,7 +1198,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         pb_stream pb;
 
         memset(&in, 0, sizeof(in));
-        in.isag_np = ISAKMP_NEXT_v2SA;
+        pbs_set_np(&e_pbs_cipher, ISAKMP_NEXT_v2Ni);
         in.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
 
         if(!out_struct(&in, &ikev2_nonce_desc, &e_pbs_cipher, &pb) ||
@@ -1193,36 +1212,31 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
      * SA2(i), TSi and TSr and
      *    (v2N_USE_TRANSPORT_MODE notification in transport mode) for it .
      */
-    o_st = state_with_serialno(st->st_replaced);
-    if(o_st) {
-        c0 = st->st_connection;
-        if(c0) {
-            lset_t policy = c0->policy;
-            chunk_t child_spi, notify_data;
-            unsigned int next_payload = ISAKMP_NEXT_NONE;
-            st->st_connection = c0;
+    c0 = st->st_connection;
+    if(c0) {
+        lset_t policy = c0->policy;
+        chunk_t child_spi, notify_data;
+        unsigned int next_payload = ISAKMP_NEXT_NONE;
+        st->st_connection = c0;
 
-            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                next_payload = ISAKMP_NEXT_v2N;
-            }
+        if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+            next_payload = ISAKMP_NEXT_v2N;
+        }
 
-	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
+        ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
-	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
-	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
+        st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
+        st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
-	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
+        ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
 
-            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
-                memset(&child_spi, 0, sizeof(child_spi));
-                memset(&notify_data, 0, sizeof(notify_data));
-                ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
-                          &child_spi,
-                          v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
-            }
-        } else {
-            openswan_log("no pending SAs found, PARENT SA keyed only");
+        if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
+            DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
+            memset(&child_spi, 0, sizeof(child_spi));
+            memset(&notify_data, 0, sizeof(notify_data));
+            ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, 0,
+                      &child_spi,
+                      v2N_USE_TRANSPORT_MODE, &notify_data, &e_pbs_cipher);
         }
     }
 
@@ -1298,18 +1312,18 @@ static stf_status
 ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs);
 
 
-stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
+static stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 {
-    struct state *parentst = md->st;   /* this is parent state! */
-    struct state *st;
+    struct state *st = md->st;
 
-    st = duplicate_state(parentst);
-    st->st_msgid = md->msgid_received;
-    insert_state(st);
-    md->st = st;
-    set_cur_state(st);
+    loglog(RC_COMMENT, "msgid=%u CHILD_SA PFS rekey message received from %s:%u on %s (port=%d)"
+           , md->msgid_received
+           , ip_str(&md->sender), (unsigned)md->sender_port
+           , md->iface->ip_dev->id_rname
+           , md->iface->port);
 
     /* create a new parent event to rekey again */
+    delete_event(st);
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now. we need to go calculate our g^y, then calculate the g^xy */
@@ -1334,19 +1348,54 @@ stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 }
 
 
-stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
+static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
+{
+    struct state *st = md->st;
+
+    loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
+           , md->msgid_received
+           , ip_str(&md->sender), (unsigned)md->sender_port
+           , md->iface->ip_dev->id_rname
+           , md->iface->port);
+
+    return ikev2child_inCI1_tail(md, st, FALSE);
+}
+
+stf_status ikev2child_inCI1(struct msg_digest *md)
 {
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
 
+    md->pst = parentst;
+
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
     insert_state(st);
+    md->st = st;
+    st->st_state   = md->from_state = STATE_CHILD_C1_REKEY;
+    md->transition_state = st;
+    set_cur_state(st);
 
     /* create a new parent event to rekey again */
+    delete_event(st);
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
-    return ikev2child_inCI1_tail(md, st, FALSE);
+    /* now decrypt payload and extract values */
+    {
+        stf_status ret;
+        ret = ikev2_decrypt_msg(md, RESPONDER);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            delete_state(st);
+            return ret;
+        }
+    }
+
+    if(md->chain[ISAKMP_NEXT_v2KE]) {
+        return ikev2child_inCI1_pfs(md);
+    } else {
+        return ikev2child_inCI1_nopfs(md);
+    }
 }
 
 /*
@@ -1391,17 +1440,6 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     unpack_nonce(&st->st_nr, r);
     unpack_v2KE(st, r, &st->st_gr);
 
-    /* now decrypt payload and extract values */
-    {
-        stf_status ret;
-        ret = ikev2_decrypt_msg(md, RESPONDER);
-        if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-            delete_state(st);
-            goto out;
-        }
-    }
-
     /* Gi in */
     e = accept_v2_KE(md, st, &st->st_gi, "Gi");
     if(e != STF_OK) {
@@ -1435,7 +1473,6 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
         }
     }
 
- out:
     reset_globals();
     return;
 
@@ -1489,11 +1526,15 @@ static void ikev2child_inCI1_continue2(struct pluto_crypto_req_cont *pcrc
 }
 
 stf_status
-ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, bool dopfs)
+ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
 {
     unsigned char *authstart;
 
     authstart = reply_stream.cur;
+
+    /* at this point, the child will be the one making the transition */
+    md->transition_state = st;
+
     /* send response */
     {
         unsigned char *encstart;
@@ -1551,10 +1592,7 @@ ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, boo
         get_rnd_bytes(iv, ivsize);
 
         /* note where cleartext starts */
-        init_pbs(&e_pbs_cipher, e_pbs.cur, e_pbs.roof-e_pbs.cur, "cleartext");
-        e_pbs_cipher.container = &e_pbs;
-        e_pbs_cipher.desc = NULL;
-        e_pbs_cipher.cur = e_pbs.cur;
+        init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
         encstart = e_pbs_cipher.cur;
 
         if(e.isag_np != ISAKMP_NEXT_NONE) {
@@ -1562,17 +1600,14 @@ ikev2child_inCI1_tail(struct msg_digest *md UNUSED, struct state *st UNUSED, boo
 
             /* insert Nonce and KE (if PFS) */
 
+            if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, 0)) {
+                return STF_INTERNAL_ERROR;
+            }
+
             /* see if we are supposed to send the KE */
             if(dopfs) {
-                if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2KE)) {
+                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, 0))
                     return STF_INTERNAL_ERROR;
-                }
-                if(!justship_v2KE(st, &st->st_gr, st->st_oakley.groupnum,  &e_pbs_cipher, ISAKMP_NEXT_v2SA))
-                    return STF_INTERNAL_ERROR;
-            } else {
-                if(!justship_v2Nonce(st, &e_pbs_cipher, &st->st_nr, ISAKMP_NEXT_v2SA)) {
-                    return STF_INTERNAL_ERROR;
-                }
             }
 
             /* must have enough to build an CHILD_SA... go do that! */
@@ -1651,15 +1686,10 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
     return STF_OK;
 }
 
-stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
+static stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
 {
     struct state *st = md->st;
     stf_status e;
-
-    e = ikev2child_inCR1_decrypt(md);
-    if(e != STF_OK) {
-        return e;
-    }
 
     /* Gr in */
     e = accept_v2_KE(md, st, &st->st_gr, "Gr");
@@ -1689,7 +1719,7 @@ stf_status ikev2child_inCR1_pfs(struct msg_digest *md)
     }
 }
 
-stf_status ikev2child_inCR1_nopfs(struct msg_digest *md)
+stf_status ikev2child_inCR1(struct msg_digest *md)
 {
     struct state *st = md->st;
     stf_status e;
@@ -1698,7 +1728,12 @@ stf_status ikev2child_inCR1_nopfs(struct msg_digest *md)
     if(e != STF_OK) {
         return e;
     }
-    return ikev2child_inCR1_tail(md, st);
+
+    if(md->chain[ISAKMP_NEXT_v2KE]) {
+        return ikev2child_inCR1_pfs(md);
+    } else {
+        return ikev2child_inCR1_tail(md, st);
+    }
 }
 
 /*
@@ -1727,6 +1762,7 @@ static void ikev2child_inCR1_continue(struct pluto_crypto_req_cont *pcrc
     set_suspended(st, NULL);        /* no longer connected or suspended */
     set_cur_state(st);
     st->st_calculating = FALSE;
+    md->transition_state = st;
     passert(ugh == NULL);
 
     /* extract calculated values from r */

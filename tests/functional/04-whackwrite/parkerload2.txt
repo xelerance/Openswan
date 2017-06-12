@@ -1,0 +1,15 @@
+writing record 1 to whack file
+writing record 2 to whack file
+writing record 3 to whack file
+writing record 4 to whack file
+writing record 5 to whack file
+writing record 6 to whack file
+writing record 7 to whack file
+writing record 8 to whack file
+writing record 9 to whack file
+writing record 10 to whack file
+writing record 11 to whack file
+writing record 12 to whack file
+writing record 13 to whack file
+writing record 14 to whack file
+writing record 15 to whack file

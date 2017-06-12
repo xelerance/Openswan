@@ -120,6 +120,7 @@ struct ipsec_proto_info {
     bool present;	/* was this transform specified? */
     struct ipsec_trans_attrs attrs;   /* info on remote */
     ipsec_spi_t our_spi;
+    bool        our_spi_in_kernel;  /* true if SPI already installed in kernel */
     u_int16_t keymat_len;	/* same for both */
     u_char *our_keymat;
     u_char *peer_keymat;
@@ -278,6 +279,8 @@ struct state
     /* message ID sequence for things we receive (as responder) */
     msgid_t            st_msgid_lastrecv;      /* last one peer sent */
 
+    bool               st_sa_logged;           /* set if this SA has been logged */
+
     /* symmetric stuff */
 
     /* initiator stuff */
@@ -319,6 +322,9 @@ struct state
      */
     u_int8_t           st_peeridentity_protocol;
     u_int16_t          st_peeridentity_port;
+
+    char st_our_keyid[KEYID_BUF];
+    char st_their_keyid[KEYID_BUF];
 
     u_int8_t           st_sec_in_use;      /* bool: does st_sec hold a value */
     MP_INT             st_sec;             /* Our local secret value */

@@ -1,0 +1,11 @@
+This unit test case reads a series of signatures from some binary files.
+(These files were created with lo02-verifysigs), and then uses the public
+keys saved to verify the signatures.
+This validates that big public keys can be properly loaded from an ipsec.conf
+file.
+
+The public keys can be extracted from the *.secrets file using showhostkey,
+using the "make update" target in the lo04-verifypubkeys test case.
+
+The key/sig in 4096b came from peel.testing.xelerance.com. The private key
+was not captured on purpose.

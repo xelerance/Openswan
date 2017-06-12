@@ -14,16 +14,16 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
+loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
+use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
+use keyid: 1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E / 2:<>
 adding connection: "gateway--any"
-002 adding connection: "gateway--any"
-setting rootdir=YY
-opening file: ZZ
-loading named conns: gateway--any
+loaded key: 0A0C F034 36B3 BD76 F701 FDB3 382D 49C9 467C 8BC8
+loaded key: A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3
+use keyid: 1:0A0C F034 36B3 BD76 F701 FDB3 382D 49C9 467C 8BC8 / 2:<>
+use keyid: 1:A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3 / 2:<>
 adding connection: "green"
-002 adding connection: "green"
-setting rootdir=YY
-opening file: ZZ
-loading named conns: green
 "green": deleting connection
 "gateway--any": deleting connection
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

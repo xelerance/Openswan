@@ -1,7 +1,7 @@
-/* netlink interface to the kernel's IPsec mechanism
+/* netlink interface to the kernel's (XFRM/NETKEY) IPsec mechanism
  *
  * Copyright (C) 2003-2008 Herbert Xu
- * Copyright (C) 2006-2008 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2006-2017 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2006 Ken Bantoft <ken@xelerance.com>
  * Copyright (C) 2007 Bart Trojanowski <bart@jukie.net>
  * Copyright (C) 2007 Ilia Sotnikov
@@ -964,7 +964,16 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
     memset(&req, 0, sizeof(req));
     req.n.nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK;
-    req.n.nlmsg_type = replace ? XFRM_MSG_UPDSA : XFRM_MSG_NEWSA;
+
+    /*
+     * incoming SAs will have had their SPI# allocated in advance, even if they
+     * are in fact "new".
+     */
+    if(replace /* || sa->inbound */) {
+        req.n.nlmsg_type = XFRM_MSG_UPDSA;
+    } else {
+        req.n.nlmsg_type = XFRM_MSG_NEWSA;
+    }
 
     ip2xfrm(sa->src, &req.p.saddr);
     ip2xfrm(sa->dst, &req.p.id.daddr);
@@ -974,7 +983,8 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     req.p.family = sa->src->u.v4.sin_family;
 
     if(DBGP(DBG_NETKEY)) {
-        DBG_log("creating SA spi=%08x@%08x proto=%u family=%u"
+        DBG_log("%s SA spi=%08x@%08x proto=%u family=%u"
+                , req.n.nlmsg_type == XFRM_MSG_UPDSA ? "updating" : "creating"
                 , htonl(req.p.id.spi), htonl(req.p.id.daddr.a4), req.p.id.proto, req.p.family);
     }
 
@@ -994,6 +1004,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
     }
 
     /* indent matching libreswan */
+    {
 	/*
 	 * We only add traffic selectors for transport mode. The problem is
 	 * that Tunnel mode ipsec with ipcomp is layered so that ipcomp
@@ -1267,6 +1278,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 		return netlink_add_sa(sa, FALSE);
 	}
 	return ret;
+    }
 }
 
 /** netlink_del_sa - Delete an SA from the Kernel
@@ -1486,7 +1498,7 @@ xfrm_to_ip_address(unsigned family, const xfrm_address_t *src, ip_address *dst)
 	initaddr((const void *) &src->a6, sizeof(src->a6), family, dst);
 	return NULL;
     default:
-	return "unknown address family";
+	return "(xfrm) unknown address family";
     }
 }
 
@@ -2439,33 +2451,11 @@ netlink_get_sa(const struct kernel_sa *sa, u_int *bytes)
 
 static bool
 netkey_do_command(struct connection *c, const struct spd_route *sr
-		 , const char *verb, struct state *st)
+                  , const char *verb, const char *verb_suffix
+                  , struct state *st)
 {
     char cmd[2048];     /* arbitrary limit on shell command length */
     char common_shell_out_str[2048];
-    const char *verb_suffix;
-
-    /* figure out which verb suffix applies */
-    {
-        const char *hs, *cs;
-
-        switch (addrtypeof(&sr->this.host_addr))
-        {
-            case AF_INET:
-                hs = "-host";
-                cs = "-client";
-                break;
-            case AF_INET6:
-                hs = "-host-v6";
-                cs = "-client-v6";
-                break;
-            default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
-                return FALSE;
-        }
-        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
-            ? hs : cs;
-    }
 
     if(fmt_common_shell_out(common_shell_out_str, sizeof(common_shell_out_str), c, sr, st)==-1) {
 	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);

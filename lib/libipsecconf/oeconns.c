@@ -78,7 +78,8 @@ struct oe_conn oe_packet_default = {
 		.desired_state = STARTUP_ROUTE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=TRUE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -94,9 +95,10 @@ struct oe_conn oe_packet_default = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_OPPO,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -113,7 +115,7 @@ struct oe_conn oe_packet_default = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -135,7 +137,8 @@ struct oe_conn oe_clear = {
 		.desired_state = STARTUP_ROUTE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=FALSE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -152,7 +155,8 @@ struct oe_conn oe_clear = {
 			 .maskbits=0
 		 },
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_GROUP,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -207,7 +211,8 @@ struct oe_conn oe_clear_or_private = {
 		.desired_state = STARTUP_ROUTE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=FALSE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -223,9 +228,10 @@ struct oe_conn oe_clear_or_private = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -242,7 +248,7 @@ struct oe_conn oe_clear_or_private = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -280,7 +286,8 @@ struct oe_conn oe_private_or_clear = {
 		.options_set[KBF_SALIFETIME]=TRUE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=FALSE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -296,9 +303,10 @@ struct oe_conn oe_private_or_clear = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -315,7 +323,7 @@ struct oe_conn oe_private_or_clear = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -356,7 +364,8 @@ struct oe_conn oe_private = {
 		.options_set[KBF_SALIFETIME]=TRUE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=FALSE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -372,9 +381,10 @@ struct oe_conn oe_private = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -391,7 +401,7 @@ struct oe_conn oe_private = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 
@@ -417,7 +427,8 @@ struct oe_conn oe_block = {
 		.desired_state = STARTUP_ROUTE,
 
 		.left.addrtype = KH_DEFAULTROUTE,
-		.left.addr_family = AF_INET,
+		.left.end_addr_family = AF_INET,
+		.left.tunnel_addr_family = AF_INET,
 		.left.has_client=FALSE,
 		.left.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -433,9 +444,10 @@ struct oe_conn oe_block = {
 			 },
 			 .maskbits=0
 		 },
-		.left.key_from_DNS_on_demand = TRUE,
+		.left.rsakey1_type = PUBKEY_DNSONDEMAND,
 
-		.right.addr_family = AF_INET,
+		.right.end_addr_family = AF_INET,
+		.right.tunnel_addr_family = AF_INET,
 		.right.addrtype = KH_OPPOGROUP,
 		.right.addr={
 			 .u={.v4 = { .sin_family=AF_INET }},
@@ -452,7 +464,7 @@ struct oe_conn oe_block = {
 		.right.nexthop={
 			 .u={.v4 = { .sin_family=AF_INET }},
 		 },
-		.right.key_from_DNS_on_demand = TRUE,
+		.right.rsakey1_type = PUBKEY_DNSONDEMAND,
 	},
 };
 

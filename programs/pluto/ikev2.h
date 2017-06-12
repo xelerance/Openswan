@@ -65,10 +65,8 @@ extern stf_status ikev2parent_inR1failed(struct msg_digest *md);
 extern stf_status ikev2parent_inR1outI2(struct msg_digest *md);
 extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
-extern stf_status ikev2child_inCI1_pfs(struct msg_digest *md);
-extern stf_status ikev2child_inCI1_nopfs(struct msg_digest *md);
-extern stf_status ikev2child_inCR1_pfs(struct msg_digest *md);
-extern stf_status ikev2child_inCR1_nopfs(struct msg_digest *md);
+extern stf_status ikev2child_inCI1(struct msg_digest *md);
+extern stf_status ikev2child_inCR1(struct msg_digest *md);
 extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
                                                           , struct state *st);
 extern stf_status ikev2_child_notify_process(struct msg_digest *md
@@ -235,6 +233,24 @@ extern void send_v2_notification(struct state *p1st, u_int16_t type
 				 , u_char *rcookie
 				 , chunk_t *data);
 
+extern void calculate_nat_hash(const unsigned char cookie_i[COOKIE_SIZE]
+                               , const unsigned char cookie_r[COOKIE_SIZE]
+                               , const ip_address addr
+                               , const unsigned short port
+                               , unsigned char digest[SHA1_DIGEST_SIZE]);
+
+extern stf_status process_nat_payload(struct state *st
+                                      , struct msg_digest *md
+                                      , struct payload_digest *p
+                                      , const char *payload_name
+                                      , v2_notification_t notify_type
+                                      , chunk_t *data);
+
+extern stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md);
+
+
+
+
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
 extern stf_status ikev2_send_cert( struct state *st
@@ -250,6 +266,7 @@ extern bool justship_v2KE(struct state *st UNUSED
                           , chunk_t *g, unsigned int oakley_group
                           , pb_stream *outs, u_int8_t np);
 extern bool justship_v2Nonce(struct state *st, pb_stream *outpbs, chunk_t *nonce, unsigned int np);
+extern bool justship_v2nat(struct state *st, pb_stream *outpbs);
 
 extern void ikev2_padup_pre_encrypt(struct msg_digest *md
                                     , pb_stream *e_pbs_cipher);

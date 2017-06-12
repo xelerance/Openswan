@@ -1,18 +1,22 @@
 ./parentM1 loading secrets from "../samples/parker.secrets"
-./parentM1 loaded private key for keyid: PPK_RSA:AQN7wUerV
+./parentM1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentM1 loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./parentM1 loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
 | Added new connection t4901 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+./parentM1 use keyid: 1:<> / 2:<>
 | counting wild cards for 192.168.1.1 is 0
+./parentM1 use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
-| orient t4901 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
 |   orient t4901 finished with: 1 [192.168.1.1]
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
@@ -31,7 +35,7 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | creating state object #1 at Z
 | orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
-| orient t4901 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient t4901 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient t4901 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
 |   orient t4901 finished with: 1 [192.168.1.1]
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -44,26 +48,22 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_SA
 |    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
 | ***emit ISAKMP Security Association Payload:
-|    next payload type: ISAKMP_NEXT_VID
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | out_sa pcn: 0 has 1 valid proposals
 | out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 12
 | ****emit ISAKMP Proposal Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    number of transforms: 12
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 0
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -94,7 +94,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 1
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -125,7 +124,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 2
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -153,7 +151,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 3
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -181,7 +178,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [14 is OAKLEY_GROUP_MODP2048]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 4
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -212,7 +208,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 5
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -243,7 +238,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 6
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -271,7 +265,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [5 is OAKLEY_GROUP_MODP1536]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 7
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -299,7 +292,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [5 is OAKLEY_GROUP_MODP1536]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 8
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -327,7 +319,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [2 is OAKLEY_GROUP_MODP1024]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 9
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -355,7 +346,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [2 is OAKLEY_GROUP_MODP1024]
 | emitting length of ISAKMP Transform Payload (ISAKMP): 32
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_T
 |    transform number: 10
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -386,7 +376,6 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 128
 | emitting length of ISAKMP Transform Payload (ISAKMP): 36
 | *****emit ISAKMP Transform Payload (ISAKMP):
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform number: 11
 |    transform ID: KEY_IKE
 | ******emit ISAKMP Oakley attribute:
@@ -419,18 +408,16 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | emitting length of ISAKMP Proposal Payload: 416
 | emitting length of ISAKMP Security Association Payload: 428
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_VID
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
 | out_vendorid(): sending [Dead Peer Detection]
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
 | emitting length of ISAKMP Message: 492
-sending 492 bytes for main_outI1 through eth0:500 to 132.213.238.7:500 (using #1)
+sending 492 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   01 10 02 00  00 00 00 00  00 00 01 ec  0d 00 01 ac
 |   00 00 00 01  00 00 00 01  00 00 01 a0  00 01 00 0c
@@ -492,5 +479,7 @@ RC=105 STATE_MAIN_I1: initiate
 ./parentM1 leak: default conf ipsecd_dir, item size: X
 ./parentM1 leak: default conf ipsec_conf_dir, item size: X
 ./parentM1 leak: 2 * id list, item size: X
+./parentM1 leak: rfc3110 format of public key [created], item size: X
+./parentM1 leak: pubkey, item size: X
 ./parentM1 leak: secret, item size: X
 ./parentM1 leak detective found Z leaks, total size X

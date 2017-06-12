@@ -1,3 +1,4 @@
+# -*- makefile -*-
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=cpenohint
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
@@ -10,3 +11,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/adns.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/pending.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/initiate.o
 EXTRALIBS+=-lresolv
+
+
+pcapupdate:
+	@true

@@ -1,6 +1,10 @@
+# -*- makefile -*-
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=cpe
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
 
 TESTNAME=kickdns
 ENDNAME=dnsdelayclient
+
+pcapupdate:
+	@true

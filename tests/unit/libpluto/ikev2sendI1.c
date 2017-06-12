@@ -5,7 +5,7 @@ struct state *sendI1_short(struct connection *c1, int debugging)
 
 	c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 	ipsecdoi_initiate(/* whack-sock=stdout */1
-                          , NULL
+                          , NULL, NULL
 			  , c1
 			  , c1->policy
 			  , 0
@@ -58,7 +58,7 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 
 	c1->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 	newone = ipsecdoi_initiate(/* whack-sock=stdout */1
-                                   , NULL
+                                   , NULL, NULL
                                    , c1
                                    , c1->policy
                                    , 0 /* try */

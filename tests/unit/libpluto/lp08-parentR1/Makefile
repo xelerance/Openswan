@@ -30,6 +30,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -119,17 +120,25 @@ ${WHACKFILE3}: ${SAMPLEDIR}/parker.conf
 
 update: update3 update2 update1
 update1:
+	-make OUTPUT/R1-dump.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt >output1.txt
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
 
 update2:
+	-make OUTPUT/R1notify-dump.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_2.txt >output2.txt
 	[ -f OUTPUT/R1notify-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1notify-dump.txt >R1notify-dump.txt
 
 update3:
+	-make OUTPUT/R1parker-dump.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_3.txt >output3.txt
 	[ -f OUTPUT/R1parker-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1parker-dump.txt >R1parker-dump.txt
 
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
+
+
+pcapupdate:
+	# note that input parentI1badKE is magic from the network.
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
 

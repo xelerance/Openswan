@@ -1,8 +1,13 @@
+# -*- makefile -*-
 CONNNAME=mytunnel
 ENDNAME=h2h
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=h2hI1
+
+
+pcapupdate:
+	@true
 
 

@@ -84,3 +84,6 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt >output1.txt
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}2.txt >output2.txt
 
+
+pcapupdate:
+	@true

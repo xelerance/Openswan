@@ -1,7 +1,7 @@
 /* parsing packets: formats and tools
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
- * Copyright (C) 2005-2007 Michael Richardson <mcr@xelerance.com>
+ * Copyright (C) 2005-2017 Michael Richardson <mcr@xelerance.com>
  * Copyright (C) 2008 Antony Antony <antony@xelerance.com>
  * Copyright (C) 2008-2011 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
@@ -48,6 +48,8 @@ enum field_type {
     ft_af_loose_enum, /* Attribute Format + enumeration, some names known */
     ft_set,	/* bits representing set */
     ft_raw,	/* bytes to be left in network-order */
+    ft_np,	/* enum of ISAKMP next payload values, location noted */
+    ft_np_in,	/* ditto, but inside structure location noted */
     ft_zig,	/* should be zero, ignore if not. Continue */
     ft_end,	/* end of field list */
 };
@@ -74,6 +76,9 @@ struct packet_byte_stream
 	*start,
 	*cur,	/* current position in stream */
 	*roof;	/* byte after last in PBS (actually just a limit on output) */
+
+    u_int8_t   *next_payload_pointer;
+
     /* For an output PBS, the length field will be filled in later so
      * we need to record its particulars.  Note: it may not be aligned.
      */
@@ -92,6 +97,7 @@ typedef struct packet_byte_stream pb_stream;
 #define pbs_left(pbs) ((size_t)((pbs)->roof - (pbs)->cur))
 
 extern void init_pbs(pb_stream *pbs, u_int8_t *start, size_t len, const char *name);
+extern void init_sub_pbs(pb_stream *parent_pbs, pb_stream *child_pbs, const char *name);
 
 extern bool in_struct(void *struct_ptr, struct_desc *sd,
     pb_stream *ins, pb_stream *obj_pbs);
@@ -99,6 +105,9 @@ extern bool in_raw(void *bytes, size_t len, pb_stream *ins, const char *name);
 
 extern bool out_struct(const void *struct_ptr, struct_desc *sd,
     pb_stream *outs, pb_stream *obj_pbs);
+extern void pbs_set_np(pb_stream *outs, u_int8_t np);
+extern void pbs_copy_np(pb_stream *from, pb_stream *to);
+
 extern bool out_generic(u_int8_t np, struct_desc *sd,
     pb_stream *outs, pb_stream *obj_pbs);
 extern bool out_generic_raw(u_int8_t np, struct_desc *sd,
@@ -535,12 +544,12 @@ extern struct_desc isakmp_nonce_desc;
  * !                                                               !
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
- 
+
 extern struct_desc isakmp_attr_desc;
- 
+
 /* From draft-dukes-ike-mode-cfg
 3.2. Attribute Payload
-                           1                   2                   3  
+                           1                   2                   3
        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      ! Next Payload  !   RESERVED    !         Payload Length        !
@@ -676,7 +685,7 @@ extern const struct_desc *payload_desc(unsigned p);
 /*
  * IKEv2 structures
  */
-/* 
+/*
  * 3.2.  Generic Payload Header
  */
 struct ikev2_generic
@@ -766,7 +775,7 @@ struct ikev2_a
 extern struct_desc ikev2_a_desc;
 
 /* rfc4306 section 3.6 CERT Payload */
-struct ikev2_cert 
+struct ikev2_cert
 {
     u_int8_t  isac_np;	    /* Next payload */
     u_int8_t  isac_critical;
@@ -783,7 +792,7 @@ struct ikev2_cert
 extern struct_desc ikev2_certificate_desc;
 
 /* rfc4306 section 3.6 CERTREQ Payload */
-struct ikev2_certreq 
+struct ikev2_certreq
 {
     u_int8_t  isacertreq_np;	    /* Next payload */
     u_int8_t  isacertreq_critical;
@@ -802,8 +811,30 @@ extern struct_desc  ikev2_certificate_req_desc;
 /* rfc4306, section 3.9, nonce, uses generic header */
 extern struct_desc ikev2_nonce_desc;
 
-/* rfc4306 section 3.10 NOTIFY Payload */
-struct ikev2_notify 
+/* rfc4306 section 3.10 NOTIFY Payload
+                        1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   | Next Payload  |C|  RESERVED   |         Payload Length        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |  Protocol ID  |   SPI Size    |      Notify Message Type      |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   ~                Security Parameter Index (SPI)                 ~
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                                                               |
+   ~                       Notification Data                       ~
+   |                                                               |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+note that the protocol_ID is *0* whenever SPI SIZE is zero, which
+applies to many IKE PARENT SA things like NAT_*
+
+*/
+
+
+struct ikev2_notify
 {
     u_int8_t  isan_np;		/* Next payload */
     u_int8_t  isan_critical;
@@ -816,7 +847,7 @@ extern struct_desc ikev2_notify_desc;
 
 
 /* IKEv2 Delete Payload
- * layout from RFC 5996 Section 3.11 
+ * layout from RFC 5996 Section 3.11
  * This is followed by a variable length SPI.
  *
  *                      1                   2                   3
@@ -908,4 +939,4 @@ union payload {
  * c-style: pluto
  * End:
  */
- 
+

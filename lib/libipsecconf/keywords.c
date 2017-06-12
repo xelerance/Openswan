@@ -38,7 +38,7 @@
 #include "ipsecconf/parserlast.h"
 
 #define VALUES_INITIALIZER(t)	{ t, sizeof(t)/ sizeof(t[0]) }
-#undef KEYWORD_PARSE_DEBUG 
+#undef KEYWORD_PARSE_DEBUG
 
 /*
  * values for keyword types  (used for debugging)
@@ -156,10 +156,14 @@ static const struct keyword_enum_values kw_auto_list = VALUES_INITIALIZER(kw_aut
  */
 static const struct keyword_enum_value kw_connaddrfamily_values[]={
     { "ipv4",   AF_INET },
+    { "v4",     AF_INET },
+    { "inet",   AF_INET },
     { "ipv6",   AF_INET6 },
+    { "v6",     AF_INET6 },
+    { "inet6",  AF_INET6 },
 };
 
-static const struct keyword_enum_values kw_connaddrfamily_list = VALUES_INITIALIZER(kw_connaddrfamily_values);
+const struct keyword_enum_values kw_connaddrfamily_list = VALUES_INITIALIZER(kw_connaddrfamily_values);
 
 /*
  * Values for type={tunnel,transport,udpencap}
@@ -383,8 +387,9 @@ struct keyword_def ipsec_conf_keywords_v2[]={
     {"also",           kv_conn,         kt_appendstring, KSF_ALSO,    NOT_ENUM},
     {"alsoflip",       kv_conn,         kt_appendstring, KSF_ALSOFLIP,NOT_ENUM},
     {"endaddrfamily",  kv_conn,         kt_enum,   KBF_ENDADDRFAMILY,     &kw_connaddrfamily_list},
-    {"connaddrfamily", kv_conn,         kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
-    {"clientaddrfamily", kv_conn,       kt_enum,   KBF_CONNADDRFAMILY,    &kw_connaddrfamily_list},
+    {"connaddrfamily", kv_conn,         kt_enum,   KBF_CLIENTADDRFAMILY,    &kw_connaddrfamily_list},
+    {"clientaddrfamily", kv_conn,       kt_enum,   KBF_CLIENTADDRFAMILY,    &kw_connaddrfamily_list},
+    {"tunneladdrfamily", kv_conn,       kt_enum,   KBF_CLIENTADDRFAMILY,    &kw_connaddrfamily_list},
     {"type",           kv_conn,         kt_enum,   KBF_TYPE,        &kw_type_list},
     {"authby",         kv_conn|kv_auto, kt_enum,   KBF_AUTHBY,     &kw_authby_list},
     {"keyexchange",    kv_conn|kv_auto, kt_enum,   KBF_KEYEXCHANGE, &kw_keyexchange_list},
@@ -439,6 +444,7 @@ struct keyword_def ipsec_conf_keywords_v2[]={
 
     /* aggr/xauth/modeconfig */
     {"aggrmode",    kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
+    {"aggressive",  kv_conn|kv_auto, kt_invertbool,      KBF_AGGRMODE,NOT_ENUM},
     {"xauthserver", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHSERVER,  NOT_ENUM},
     {"xauthclient", kv_conn|kv_auto|kv_leftright, kt_bool, KNCF_XAUTHCLIENT, NOT_ENUM},
     {"xauthname",   kv_conn|kv_auto|kv_leftright, kt_string, KSCF_XAUTHUSERNAME, NOT_ENUM},

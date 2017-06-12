@@ -1,7 +1,11 @@
+# -*- makefile -*-
 CONNNAME=gateway--any
 ENDNAME=rw
 UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 
 TESTNAME=initiateselfI1
+
+pcapupdate:
+	@true
 
 

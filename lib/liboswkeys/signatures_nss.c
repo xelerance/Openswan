@@ -61,7 +61,6 @@
 
 #include "oswcrypto.h"
 
-#ifdef HAVE_LIBNSS
  /* nspr */
 # include <prerror.h>
 # include <prinit.h>
@@ -76,12 +75,11 @@
 # include <secport.h>
 # include <time.h>
 # include "oswconf.h"
-#endif
 
-// this linked list is part of pluto for now.
-//struct secret *pluto_secrets = NULL;
+/* makes subsequent code comparisons easier */
+#define lsw_return_nss_password_file_info osw_return_nss_password_file_info
 
-int sign_hash(const struct RSA_private_key *k
+int sign_hash(const struct private_key_stuff *pks
               , const u_char *hash_val, size_t hash_len
               , u_char *sig_val, size_t sig_len)
 {
@@ -90,6 +88,7 @@ int sign_hash(const struct RSA_private_key *k
     SECItem data;
     SECItem ckaId;
     PK11SlotInfo *slot = NULL;
+    const struct RSA_private_key *k = &pks->u.RSA_private_key;
 
     DBG(DBG_CRYPT, DBG_log("RSA_sign_hash: Started using NSS"));
 
@@ -114,8 +113,8 @@ int sign_hash(const struct RSA_private_key *k
     if(privateKey==NULL) {
         DBG(DBG_CRYPT,
             DBG_log("Can't find the private key from the NSS CKA_ID"));
-	if(k->pub.nssCert != NULL) {
-	   privateKey = PK11_FindKeyByAnyCert(k->pub.nssCert,  osw_return_nss_password_file_info());
+	if(pks->pub->nssCert != NULL) {
+	   privateKey = PK11_FindKeyByAnyCert(pks->pub->nssCert,  osw_return_nss_password_file_info());
            if (privateKey == NULL) {
                loglog(RC_LOG_SERIOUS,
                       "Can't find the private key from the NSS CERT (err %d)",
@@ -154,93 +153,106 @@ int sign_hash(const struct RSA_private_key *k
     return signature.len;
 }
 
-err_t RSA_signature_verify_nss(const struct RSA_public_key *k
-                              , const u_char *hash_val, size_t hash_len
-                               ,const u_char *sig_val, size_t sig_len)
+err_t verify_signed_hash(const struct RSA_public_key *k
+                         , u_char *s, unsigned int s_max_octets
+                         , u_char **psig
+                         , size_t hash_len
+                         , const u_char *sig_val, size_t sig_len)
 {
-   SECKEYPublicKey *publicKey;
-   PRArenaPool *arena;
-   SECStatus retVal = SECSuccess;
-   SECItem nss_n, nss_e;
-   SECItem signature, data;
-   chunk_t n,e;
+	SECKEYPublicKey *publicKey;
+	PRArenaPool *arena;
+	SECStatus retVal;
+	SECItem nss_n, nss_e;
+	SECItem signature, data;
+        err_t   ret = NULL;
 
-    /*Converting n and e to form public key in SECKEYPublicKey data structure*/
+	/* Converting n and e to form public key in SECKEYPublicKey data structure */
 
-    arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
-    if (arena == NULL) {
-	PORT_SetError (SEC_ERROR_NO_MEMORY);
-	return "10" "NSS error: Not enough memory to create arena";
-    }
+	arena = PORT_NewArena(DER_DEFAULT_CHUNKSIZE);
+	if (arena == NULL) {
+		PORT_SetError(SEC_ERROR_NO_MEMORY);
+		return "10" "NSS error: Not enough memory to create arena";
+	}
 
-    publicKey = (SECKEYPublicKey *) PORT_ArenaZAlloc (arena, sizeof (SECKEYPublicKey));
-    if (!publicKey) {
-	PORT_FreeArena (arena, PR_FALSE);
-	PORT_SetError (SEC_ERROR_NO_MEMORY);
-	return "11" "NSS error: Not enough memory to create publicKey";
-    }
+	publicKey = (SECKEYPublicKey *)
+		PORT_ArenaZAlloc(arena, sizeof(SECKEYPublicKey));
+	if (publicKey == NULL) {
+		PORT_FreeArena(arena, PR_FALSE);
+		PORT_SetError(SEC_ERROR_NO_MEMORY);
+		return "11" "NSS error: Not enough memory to create publicKey";
+	}
 
-    publicKey->arena = arena;
-    publicKey->keyType = rsaKey;
-    publicKey->pkcs11Slot = NULL;
-    publicKey->pkcs11ID = CK_INVALID_HANDLE;
+	publicKey->arena = arena;
+	publicKey->keyType = rsaKey;
+	publicKey->pkcs11Slot = NULL;
+	publicKey->pkcs11ID = CK_INVALID_HANDLE;
 
-    /* Converting n(modulus) and e(exponent) from mpz_t form to chunk_t */
-    n = mpz_to_n_autosize(&k->n);
-    e = mpz_to_n_autosize(&k->e);
+        /* Converting n(modulus) and e(exponent) from mpz_t form to chunk_t */
+        chunk_t n = mpz_to_n_autosize(&k->n);    /* chunk_t n = chunk_clone(k->n, "n"); */
+        chunk_t e = mpz_to_n_autosize(&k->e);    /* chunk_t e = chunk_clone(k->e, "e"); */
 
-    /*Converting n and e to nss_n and nss_e*/
-    nss_n.data = n.ptr;
-    nss_n.len = (unsigned int)n.len;
-    nss_n.type = siBuffer;
+	/* Converting n and e to nss_n and nss_e */
+	nss_n.data = n.ptr;
+	nss_n.len = (unsigned int)n.len;
+	nss_n.type = siBuffer;
 
-    nss_e.data = e.ptr;
-    nss_e.len = (unsigned int)e.len;
-    nss_e.type = siBuffer;
+	nss_e.data = e.ptr;
+	nss_e.len = (unsigned int)e.len;
+	nss_e.type = siBuffer;
 
-    retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
-    if (retVal == SECSuccess) {
-	retVal = SECITEM_CopyItem (arena, &publicKey->u.rsa.publicExponent, &nss_e);
-    }
+	retVal = SECITEM_CopyItem(arena, &publicKey->u.rsa.modulus, &nss_n);
+	if (retVal == SECSuccess) {
+		retVal = SECITEM_CopyItem(arena,
+					  &publicKey->u.rsa.publicExponent,
+					  &nss_e);
+	}
 
-    if(retVal != SECSuccess) {
-	pfree(n.ptr);
-	pfree(e.ptr);
-	SECKEY_DestroyPublicKey (publicKey);
-	return "12" "NSS error: Not able to copy modulus or exponent or both while forming SECKEYPublicKey structure";
-    }
-    signature.type = siBuffer;
-    signature.data = DISCARD_CONST(unsigned char *, sig_val);
-    signature.len  = (unsigned int)sig_len;
+	if (retVal != SECSuccess) {
+		ret = "12NSS error: Not able to copy modulus or exponent or both while forming SECKEYPublicKey structure";
+	}
+	signature.type = siBuffer;
+	signature.data = DISCARD_CONST(unsigned char *, sig_val);
+	signature.len  = (unsigned int)sig_len;
 
-    data.len = (unsigned int)sig_len;
-    data.data = alloc_bytes(data.len, "NSS decrypted signature");
-    data.type = siBuffer;
+	data.len = (unsigned int)sig_len;
+	data.data = alloc_bytes(data.len, "NSS decrypted signature");
+	data.type = siBuffer;
 
-    if(PK11_VerifyRecover(publicKey, &signature, &data, osw_return_nss_password_file_info()) == SECSuccess ) {
-	DBG(DBG_CRYPT,DBG_dump("NSS RSA verify: decrypted sig: ", data.data, data.len));
-    }
-    else {
-        DBG(DBG_CRYPT,DBG_log("NSS RSA verify: decrypting signature is failed"));
-        return "13" "NSS error: Not able to decrypt";
-    }
+	if (PK11_VerifyRecover(publicKey, &signature, &data,
+			       osw_return_nss_password_file_info()) ==
+	    SECSuccess ) {
+		DBG(DBG_CRYPT,
+		    DBG_dump("NSS RSA verify: decrypted sig: ", data.data,
+			     data.len));
+	} else {
+		DBG(DBG_CRYPT,
+		    DBG_log("NSS RSA verify: decrypting signature is failed"));
+		ret = "13" "NSS error: Not able to decrypt";
+                goto out;
+	}
 
-    if(memcmp(data.data+data.len-hash_len, hash_val, hash_len)!=0) {
-	pfree(data.data);
-	loglog(RC_LOG_SERIOUS, "RSA Signature NOT verified");
-	return "14" "NSS error: Not able to verify";
-    }
+        /*
+         * now, point *psig at the result space, having copied it to
+         * s.
+         */
+        if(hash_len > s_max_octets) {
+            loglog(RC_LOG_SERIOUS, "RSA Signature NOT verified: hash too big for buffer");
+            ret = "15" "NSS error: hash too big for buffer";
+            goto out;
+        }
 
-    DBG(DBG_CRYPT,DBG_dump("NSS RSA verify: hash value: ", hash_val, hash_len));
+        /* copy last hash_len bytes, because there is ASN.1 padding in front */
+        memcpy(s, data.data+data.len-hash_len, hash_len);
+        if(psig) *psig = s;
+        ret = NULL;
 
-    pfree(data.data);
-    pfree(n.ptr);
-    pfree(e.ptr);
-    SECKEY_DestroyPublicKey (publicKey);
+ out:
+        if(n.ptr) pfree(n.ptr);
+        if(e.ptr) pfree(e.ptr);
+        if(data.data) pfree(data.data);
+        if(publicKey) SECKEY_DestroyPublicKey(publicKey);
 
-    DBG(DBG_CRYPT, DBG_log("RSA Signature verified"));
-
-    return NULL;
+	return ret;
 }
 
 /*
