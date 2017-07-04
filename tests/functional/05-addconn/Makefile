@@ -31,10 +31,10 @@ step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
-	@${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any
+	@${ADDCONN} --verbose ${CTLBASE} --config ${SAMPLES}/rw.conf --rootdir ${SAMPLES}/rw gateway--any        >&2
 
 step2b:
-	@${ADDCONN} --verbose ${CTLBASE} --config ../07-sourceipv6/green.conf --rootdir ../07-sourceipv6 green
+	@${ADDCONN} --verbose ${CTLBASE} --config ../07-sourceipv6/green.conf --rootdir ../07-sourceipv6 green   >&2
 
 step3:
 	@${WHACKBIN} ${CTLBASE} --shutdown

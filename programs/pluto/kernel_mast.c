@@ -402,34 +402,12 @@ mast_process_raw_ifaces(struct raw_iface *rifaces)
 
 static bool
 mast_do_command(struct connection *c, const struct spd_route *sr
-		, const char *verb, struct state *st)
+		, const char *verb, const char *verb_suffix
+                , struct state *st)
 {
     char cmd[2048];     /* arbitrary limit on shell command length */
     char common_shell_out_str[2048];
-    const char *verb_suffix;
     IPsecSAref_t ref,refhim;
-
-    /* figure out which verb suffix applies */
-    {
-        const char *hs, *cs;
-
-        switch (addrtypeof(&sr->this.host_addr))
-        {
-            case AF_INET:
-                hs = "-host";
-                cs = "-client";
-                break;
-            case AF_INET6:
-                hs = "-host-v6";
-                cs = "-client-v6";
-                break;
-            default:
-                loglog(RC_LOG_SERIOUS, "unknown address family");
-                return FALSE;
-        }
-        verb_suffix = subnetisaddr(&sr->this.client, &sr->this.host_addr)
-            ? hs : cs;
-    }
 
     if(fmt_common_shell_out(common_shell_out_str, sizeof(common_shell_out_str), c, sr, st)==-1) {
 	loglog(RC_LOG_SERIOUS, "%s%s command too long!", verb, verb_suffix);
@@ -522,6 +500,8 @@ mast_sag_eroute_replace(struct state *st, const struct spd_route *sr)
 	struct state *old_st;
 	bool success;
 
+        const char *verb_suffix = kernel_command_verb_suffix(st, sr);
+
 	/* The state, st, has the new SAref values, but we need to remove
 	 * the rule based on the previous state with the old SAref values.
 	 * So we have to find it the hard way (it's a cpu hog). */
@@ -539,11 +519,11 @@ mast_sag_eroute_replace(struct state *st, const struct spd_route *sr)
 			(int)st->st_refhim);
 
 	/* add the new rule */
-	success = mast_do_command(c, sr, "spdadd", st);
+	success = mast_do_command(c, sr, "spdadd", verb_suffix, st);
 
 	/* drop the old rule -- we ignore failure */
 	if (old_st->st_serialno != st->st_serialno)
-	    (void)mast_do_command(c, sr, "spddel", old_st);
+          (void)mast_do_command(c, sr, "spddel", verb_suffix, old_st);
 
 	return success;
 }
@@ -555,6 +535,8 @@ mast_sag_eroute(struct state *st, const struct spd_route *sr
 {
     bool ok;
     bool addop = FALSE;
+
+    const char *verb_suffix = kernel_command_verb_suffix(st, sr);
 
     DBG_log("mast_sag_eroute called op=%u/%s", op, opname);
 
@@ -594,10 +576,10 @@ mast_sag_eroute(struct state *st, const struct spd_route *sr
 	return TRUE;
 
     case ERO_ADD:
-	return mast_do_command(st->st_connection, sr, "spdadd", st);
+      return mast_do_command(st->st_connection, sr, "spdadd", verb_suffix, st);
 
     case ERO_DELETE:
-	return mast_do_command(st->st_connection, sr, "spddel", st);
+      return mast_do_command(st->st_connection, sr, "spddel", verb_suffix, st);
 
     case ERO_REPLACE:
 	return mast_sag_eroute_replace(st, sr);

@@ -1,0 +1,13 @@
+This test case is an IKEv2 initiator -- the client dave will use it's
+certificate to authenticate, but it will use a different ID.
+The rightid= should override the certicate, not the other way around.
+
+
+
+
+
+
+
+
+
+

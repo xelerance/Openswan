@@ -21,6 +21,9 @@ PROGRAM=setup
 NOINSTALL=true
 EXTRA8MAN=setup.8
 
+MANDIR=$(MANTREE)/man8
+MANSRCDIR=${OPENSWANSRCDIR}/programs/setup
+
 include ${srcdir}../Makefile.program
 
 # We have to install the setup program into the rc.d directories.
@@ -35,10 +38,19 @@ doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LI
 	@mkdir -p $(RCDIR) $(BINDIR)
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
+	@for f in $(EXTRA8MAN) ; \
+	do \
+		$(INSTALL) $(INSTMANFLAGS) ${srcdir}$$f $(MANDIR)/ipsec_$$f;\
+	done;
+
 
 install_file_list::
 	@echo $(RCDIR)/ipsec
 	@echo $(BINDIR)/setup
+	@for f in $(EXTRA8MAN) ; \
+	do \
+		echo $(MANDIR)/ipsec_$$f;\
+	done;
 
 cleanall::
 	@rm -f setup

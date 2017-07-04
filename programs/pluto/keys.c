@@ -114,7 +114,7 @@ void load_preshared_secrets(int whackfd)
 			       , TRUE
 #endif
 			       , pluto_shared_secrets_file
-			       , &pass);
+			       , &pass, NULL);
 }
 
 void free_preshared_secrets(void)
@@ -208,6 +208,8 @@ take_a_crack(struct tac_state *s
     s->tried_cnt++;
     if (ugh == NULL)
     {
+        /* record which key was successful! */
+        memcpy(s->st->st_their_keyid, kr->u.rsa.keyid, KEYID_BUF);
 	DBG(DBG_CRYPT | DBG_CONTROL
 	    , DBG_log("an RSA Sig check passed with *%s [%s]"
 		, k->keyid, story));
@@ -296,7 +298,7 @@ RSA_check_signature_gen(struct state *st
 
             if (key->alg == PUBKEY_ALG_RSA
                 && same_id(&st->ikev2.st_peer_id, &key->id)
-                && trusted_ca(key->issuer, c->spd.that.ca, &pathlen))
+                && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca(key->issuer, c->spd.that.ca, &pathlen)))
 	    {
 		time_t tnow;
 
@@ -445,7 +447,7 @@ osw_get_secret(const struct connection *c
 	    c->spd.this.cert.type == CERT_PKCS7_WRAPPED_X509 ||
 	    c->spd.this.cert.type == CERT_PGP))
     {
-	struct pubkey *my_public_key = allocate_RSA_public_key(c->spd.this.cert);
+	osw_public_key *my_public_key = allocate_RSA_public_key(c->spd.this.cert);
 	passert(my_public_key != NULL);
 
 	best = osw_find_secret_by_public_key(pluto_secrets
@@ -454,9 +456,11 @@ osw_get_secret(const struct connection *c
 	free_public_key(my_public_key);
 	return best;
     }
+
 #if defined(AGGRESSIVE)
-    if (his_id_was_instantiated(c) && (!(c->policy & POLICY_AGGRESSIVE)) && isanyaddr(&c->spd.that.host_addr) )
-    {
+    if (his_id_was_instantiated(c)
+        && (!(c->policy & POLICY_AGGRESSIVE))
+        && isanyaddr(&c->spd.that.host_addr)) {
 	DBG(DBG_CONTROL,
 	    DBG_log("instantiating him to 0.0.0.0"));
 
@@ -473,21 +477,20 @@ osw_get_secret(const struct connection *c
 	      && (kind == PPK_PSK)
 	      && (((c->kind == CK_TEMPLATE)
 		   && (c->spd.that.id.kind == ID_NONE))
-		 || ((c->kind == CK_INSTANCE)
-		     && (id_is_ipaddr(&c->spd.that.id))
-		     /* Check if we are a road warrior instantiation, not a vnet: instantiation */
-		     && (isanyaddr(&c->spd.that.host_addr)))
-		 )
-	    )
-    {
-	DBG(DBG_CONTROL,
-	    DBG_log("replace him to 0.0.0.0"));
+                  || ((c->kind == CK_INSTANCE)
+                      && (id_is_ipaddr(&c->spd.that.id))
+                      /* Check if we are a road warrior instantiation, not a vnet: instantiation */
+                      && (isanyaddr(&c->spd.that.host_addr)))
+                  )
+              ) {
+        DBG(DBG_CONTROL,
+            DBG_log("replace him to 0.0.0.0"));
 
-	/* roadwarrior: replace him with 0.0.0.0 */
-	rw_id.kind = ID_IPV4_ADDR;
-	happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
-	his_id = &rw_id;
-	idtoa(his_id, idhim2, IDTOA_BUF);
+        /* roadwarrior: replace him with 0.0.0.0 */
+        rw_id.kind = ID_IPV4_ADDR;
+        happy(anyaddr(addrtypeof(&c->spd.that.host_addr), &rw_id.ip_addr));
+        his_id = &rw_id;
+        idtoa(his_id, idhim2, IDTOA_BUF);
     }
 #endif
 
@@ -498,7 +501,10 @@ osw_get_secret(const struct connection *c
 
     best = osw_find_secret_by_id(pluto_secrets
 				 , kind
-				 , my_id, his_id, asym);
+				 , my_id
+                                 , c->spd.this.key1
+                                 , c->spd.this.key2
+                                 , his_id, asym);
 
     return best;
 }
@@ -524,7 +530,7 @@ osw_get_xauthsecret(const struct connection *c UNUSED
 
     best = osw_find_secret_by_id(pluto_secrets
 				 , PPK_XAUTH
-				 , &xa_id, NULL, TRUE);
+				 , &xa_id, NULL, NULL, NULL, TRUE);
 
     return best;
 }
@@ -585,12 +591,12 @@ has_private_key(cert_t cert)
 /* find the appropriate RSA private key (see get_secret).
  * Failure is indicated by a NULL pointer.
  */
-const struct RSA_private_key *
+const struct private_key_stuff *
 get_RSA_private_key(const struct connection *c)
 {
     struct secret *s = osw_get_secret(c
-					, &c->spd.this.id, &c->spd.that.id
-					, PPK_RSA, TRUE);
+                                      , &c->spd.this.id, &c->spd.that.id
+                                      , PPK_RSA, TRUE);
     const struct private_key_stuff *pks = NULL;
 
     if(s != NULL) pks = osw_get_pks(s);
@@ -600,10 +606,10 @@ get_RSA_private_key(const struct connection *c)
 	if (s == NULL)
 	    DBG_log("no RSA key Found");
 	else
-	    DBG_log("rsa key %s found", pks->u.RSA_private_key.pub.keyid);
+	    DBG_log("rsa key %s found", pks->pub->u.rsa.keyid);
 	);
 #endif
-    return s == NULL? NULL : &pks->u.RSA_private_key;
+    return s == NULL? NULL : pks;
 }
 
 /*
@@ -746,6 +752,41 @@ add_public_key(const struct id *id
 }
 
 /*
+ *  find a public key by ckaid
+ */
+struct pubkey *find_public_keys(unsigned char ckaid[CKAID_BUFSIZE])
+{
+    struct pubkey_list *p = pluto_pubkeys;
+
+    for(; p != NULL; p = p->next)
+    {
+	struct pubkey *key = p->key;
+
+        if(memcmp(ckaid, key->key_ckaid, CKAID_BUFSIZE) == 0) {
+            return key;
+        }
+    }
+    return NULL;
+}
+
+struct pubkey *find_key_by_string(const char *key_hex)
+{
+    struct pubkey *key1 = NULL;
+    unsigned char ckaid[CKAID_BUFSIZE];
+    err_t e = ckaidhex2ckaid(key_hex, ckaid);
+
+    if(e) {
+        openswan_log("failed to parse ckaid: %s", e);
+    } else if((key1 = find_public_keys(ckaid)) == NULL) {
+        openswan_log("can not find public key: %s", key_hex);
+    } else {
+        reference_key(key1);
+    }
+    return key1;
+}
+
+
+/*
  *  list all public keys in the chained list
  */
 void list_public_keys(bool utc, bool check_pub_keys)
@@ -776,12 +817,18 @@ void list_public_keys(bool utc, bool check_pub_keys)
 
 	    if(!check_pub_keys || (check_pub_keys && strncmp(check_expiry_msg, "ok", 2)))
 	    {
+                char ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];
 		idtoa(&key->id, id_buf, IDTOA_BUF);
-		whack_log(RC_COMMENT, "%s, %4d RSA Key %s (%s private key), until %s %s"
+                datatot(key->key_ckaid, sizeof(key->key_ckaid), 'G',
+                        ckaid_print_buf, sizeof(ckaid_print_buf));
+
+		whack_log(RC_COMMENT, "%s, %4d RSA %s key %s/%s (%s private key), until %s %s"
 			  , timetoa(&key->installed_time, utc,
 				    installed_buf, sizeof(installed_buf))
 			  , 8*key->u.rsa.k
+                          , enum_name(&dns_auth_level_names, key->dns_auth_level)
 			  , key->u.rsa.keyid
+                          , ckaid_print_buf
 			  , (has_private_rawkey(key) ? "has" : "no")
 			  , timetoa(&key->until_time, utc,
 				    expires_buf, sizeof(expires_buf))

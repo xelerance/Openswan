@@ -120,6 +120,7 @@ void
 ikev2_decode_cert(struct msg_digest *md)
 {
     struct payload_digest *p;
+    unsigned certnum = 0;
 
     for (p = md->chain[ISAKMP_NEXT_v2CERT]; p != NULL; p = p->next)
     {
@@ -135,6 +136,10 @@ ikev2_decode_cert(struct msg_digest *md)
 	    {
 		if (verify_x509cert(&cert2, strict_crl_policy, &valid_until))
 		{
+                    char sbuf[ASN1_BUF_LEN];
+                    dntoa(sbuf, ASN1_BUF_LEN, cert2.subject);
+                    openswan_log("%u: validated X509 certificate: '%s', added to trusted database"
+                                 , certnum, sbuf);
 		    DBG(DBG_X509 | DBG_PARSING,
 			DBG_log("Public key validated")
                         );
@@ -154,17 +159,25 @@ ikev2_decode_cert(struct msg_digest *md)
 	{
 	    x509cert_t *cert2 = NULL;
 
-	    if (parse_pkcs7_cert(blob, &cert2))
+	    if (parse_pkcs7_cert(blob, &cert2)) {
+                char sbuf[ASN1_BUF_LEN];
+                dntoa(sbuf, ASN1_BUF_LEN, cert2->subject);
+                openswan_log("%u: validated pkcs7 certificate: '%s', added to trusted database"
+                             , certnum, sbuf);
 		store_x509certs(&cert2, strict_crl_policy);
+            }
 	    else
 		plog("Syntax error in PKCS#7 wrapped X.509 certificates");
 	}
 	else
 	{
-	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate payload",
-		   enum_show(&ikev2_cert_type_names, v2cert->isac_enc));
+	    loglog(RC_LOG_SERIOUS, "%u: ignoring %s certificate payload"
+                   , certnum
+		   , enum_show(&ikev2_cert_type_names, v2cert->isac_enc));
 	    DBG_cond_dump_chunk(DBG_PARSING, "CERT:\n", blob);
 	}
+
+        certnum++;
     }
 }
 

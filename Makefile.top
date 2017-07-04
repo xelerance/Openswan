@@ -31,6 +31,7 @@ SUBDIRS?=lib programs
 
 clean::
 	-(cd ${OPENSWANSRCDIR} && $(MAKE) modclean && $(MAKE) mod26clean)
+	-${MAKE} -C tests clean
 
 distclean:	clean
 	rm -f out.kpatch

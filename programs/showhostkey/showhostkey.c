@@ -62,7 +62,8 @@ char usage[] = "Usage: ipsec showhostkey [--ipseckey] | [--left ] | [--right ]\n
              "                         [--dump ] [--list ] \n"
              "                         [--dhclient ] [--file secretfile ] \n"
              "                         [--keynum count ] [--id identity ]\n"
-             "                         [--rsaid keyid ] [--verbose] [--version]\n";
+             "                         [--rsaid keyid ] [--verbose] [--version]\n"
+             "                         [--secretroot pathname]\n";
 
 struct option opts[] = {
   {"help",	no_argument,	NULL,	'?',},
@@ -78,6 +79,7 @@ struct option opts[] = {
   {"keynum",	required_argument,NULL,	'n',},
   {"id",	required_argument,NULL,	'i',},
   {"rsaid",	required_argument,NULL,	'I',},
+  {"secretroot",required_argument,NULL,	'R',},
   {"version",	no_argument,	 NULL,	'V',},
   {"verbose",	no_argument,	 NULL,	'v',},
   {0,		0,	NULL,	0,}
@@ -123,13 +125,17 @@ int print_key(struct secret *secret
 	idtoa(&l->id, idb, IDTOA_BUF);
 
 	switch(pks->kind) {
+        case PPK_GUESS:
+            /* should never occur in real structures */
+            break;
+
 	case PPK_PSK:
 	    printf("%d(%d): PSK keyid: %s\n", lineno, count, idb);
 	    if(disclose) printf("    psk: \"%s\"\n", pskbuf);
 	    break;
 
 	case PPK_RSA:
-	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->u.RSA_private_key.pub.keyid,idb);
+	    printf("%d(%d): RSA keyid: %s with id: %s\n", lineno, count, pks->pub->u.rsa.keyid,idb);
 	    break;
 
 	case PPK_XAUTH:
@@ -170,7 +176,7 @@ int pickbyid(struct secret *secret,
 {
     char *rsakeyid = (char *)uservoid;
 
-    if(strcmp(pks->u.RSA_private_key.pub.keyid, rsakeyid)==0) {
+    if(strcmp(pks->pub->u.rsa.keyid, rsakeyid)==0) {
 	return 0;
     }
     return 1;
@@ -190,7 +196,7 @@ char *get_default_keyid(struct secret *host_secrets)
 {
     struct private_key_stuff *pks = osw_get_pks(host_secrets);
 
-    return pks->u.RSA_private_key.pub.keyid;
+    return pks->pub->u.rsa.keyid;
 }
 
 
@@ -213,7 +219,7 @@ struct secret *pick_key(struct secret *host_secrets
     }
 
     s = osw_find_secret_by_id(host_secrets, PPK_RSA
-			      , &id, NULL, TRUE /* asymmetric */);
+			      , &id, NULL, NULL, NULL, TRUE /* asymmetric */);
 
     if(s==NULL) {
 	char abuf[IDTOA_BUF];
@@ -283,7 +289,7 @@ void show_dnskey(struct secret *s
 	exit(5);
     }
 
-    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+    keyblob = pubkey_to_rfc3110(&pks->pub->u.rsa, &keybloblen);
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
@@ -347,12 +353,12 @@ void show_confkey(struct secret *s
 	exit(5);
     }
 
-    keyblob = pubkey_to_rfc3110(&pks->u.RSA_private_key.pub, &keybloblen);
+    keyblob = pubkey_to_rfc3110(&pks->pub->u.rsa, &keybloblen);
 
     datatot(keyblob, keybloblen, 's', base64, sizeof(base64));
 
     printf("\t# rsakey %s\n",
-	   pks->u.RSA_private_key.pub.keyid);
+	   pks->pub->u.rsa.keyid);
     printf("\t%srsasigkey=%s\n", side,
 	   base64);
 }
@@ -370,6 +376,7 @@ int main(int argc, char *argv[])
     bool list_flg=FALSE;
     bool ipseckey_flg=FALSE;
     bool dhclient_flg=FALSE;
+    const char *rootdir=NULL;
     char *gateway = NULL;
     int precedence = 10;
     int verbose=0;
@@ -404,6 +411,10 @@ int main(int argc, char *argv[])
 	    dump_flg=TRUE;
 	    break;
 
+        case 'R': /* --secretroot */
+            rootdir=optarg;
+            break;
+
 	case 'K':
 	    ipseckey_flg=TRUE;
 	    gateway=clone_str(optarg, "gateway");
@@ -421,7 +432,6 @@ int main(int argc, char *argv[])
 	    break;
 
 	case 's':
-	case 'R':
 	case 'c':
 	    break;
 
@@ -510,7 +520,7 @@ int main(int argc, char *argv[])
 
     load_oswcrypto();
     osw_load_preshared_secrets(&host_secrets, verbose>0?TRUE:FALSE,
-			       secrets_file, &pass);
+			       secrets_file, &pass, rootdir);
 
 #ifdef HAVE_LIBNSS
     if (nss_initialized) {

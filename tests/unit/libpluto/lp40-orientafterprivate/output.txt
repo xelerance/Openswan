@@ -1,17 +1,25 @@
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:<> / 2:<>
 ./orienttest adding connection: "parker1--jj2"
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
 | processing whack message of size: A
 processing whack msg time: X size: Y
+./orienttest use keyid: 1:<> / 2:<>
+./orienttest use keyid: 1:<> / 2:<>
 |      FAILs -- himid mismatch
 ./orienttest adding connection: "ikev2:parker--jj"
 processing parker1--jj2
@@ -32,7 +40,7 @@ RC=2   IDpair: @jamesjohnson.emmjay.credil.org/@parker01.emmjay.credil.org
 RC=2      parker1--jj2
 ./orienttest adjusting ipsec.d to ../samples/parker
 ./orienttest loading secrets from "../samples/parker.secrets"
-./orienttest loaded private key for keyid: PPK_RSA:AQN7wUerV
+./orienttest loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 listening now
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 ./orienttest listening for IKE messages
@@ -41,6 +49,10 @@ Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
 | orient ikev2:parker--jj checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
 | orient ikev2:parker--jj matching on public/private keys: this=no[%defaultroute] that=no[%address]
 |   orient ikev2:parker--jj matched on this being defaultroute, and that lacking private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
+|   considering eth0 1.1.168.192 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/20 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient ikev2:parker--jj finished with: 1 [192.168.1.1]
 | connection ikev2:parker--jj is now oriented
@@ -104,6 +116,8 @@ RC=2 ID hostpairs:
 ./orienttest leak: myid string, item size: X
 ./orienttest leak: my FQDN, item size: X
 ./orienttest leak: 2 * id list, item size: X
+./orienttest leak: rfc3110 format of public key [created], item size: X
+./orienttest leak: pubkey, item size: X
 ./orienttest leak: secret, item size: X
 ./orienttest leak: policies path, item size: X
 ./orienttest leak: ocspcerts path, item size: X

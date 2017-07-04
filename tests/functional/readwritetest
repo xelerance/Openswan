@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# $1 is READWRITE
+# $2 --rootdir for ${READWRITE}
+# $3 is NAME
+# $4 is CONFIG
+# REFERENCE stdout is in ${NAME}.out, raw is OUTPUT/${NAME}.raw
+# REFERENCE stderr is in ${NAME}.err, raw is OUTPUT/${NAME}.err
+
+READWRITE=$1
+ROOTDIR=$2
+NAME=$3
+CONFIG=$4
+REFOUT=${NAME}.out
+REFERR=${NAME}.err
+TEEOUT=OUTPUT/${REFOUT}
+TEEERR=OUTPUT/${REFERR}
+
+set -e
+${READWRITE} --rootdir=${ROOTDIR} --config ${CONFIG} 2>${TEEERR} | tee ${TEEOUT} | diff - ${REFOUT}
+diff ${TEEERR} ${REFERR}

@@ -18,16 +18,20 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 
-check:
+check: OUTPUT
 	-@rm -f core
-	mkdir -p ../OUTPUTS
-	${READWRITE} --config ${OBJDIRTOP}/programs/_confread/ipsec.conf | tee ../OUTPUTS/default.ipsec.conf.raw | diff - default.ipsec.conf.out
-	${READWRITE} --config moon-base.conf | tee ../OUTPUTS/moon-base.conf.raw | diff - moon-base.conf.out
-	${READWRITE} --rootdir=dooku --config dooku.conf | tee ../OUTPUTS/dooku.conf.raw | diff - dooku.conf.out
-	${READWRITE} --rootdir=cassidy --config cassidy.conf | tee ../OUTPUTS/cassidy.conf.raw | diff - cassidy.conf.out
-	${READWRITE} --rootdir=dooku --config ../../unit/libpluto/samples/h2h.conf | tee ../OUTPUTS/h2h.conf.raw | diff - h2h.conf.out
-	: ${READWRITE} --rootdir=dooku --config brokenspace.conf | tee ../OUTPUTS/brokenspace.conf.raw | diff - brokenspace.conf.out
+	../readwritetest ${READWRITE} "" default.ipsec.conf ${OBJDIRTOP}/programs/_confread/ipsec.conf
+	../readwritetest ${READWRITE} "" moon-base.conf  moon-base.conf
+	../readwritetest ${READWRITE} dooku dooku.conf dooku.conf
+	../readwritetest ${READWRITE} cycle    cycle.conf    cycle.conf
+	../readwritetest ${READWRITE} cassidy   cassidy.conf cassidy.conf
+	../readwritetest ${READWRITE} dooku h2h.conf ../../unit/libpluto/samples/h2h.conf
+	../readwritetest ${READWRITE} dooku certpercent.conf berri-strongswan.conf
+	: ../readwritetest ${READWRITE} dooku brokenspace.conf brokenspace.conf
 	[ ! -f core ]
+
+OUTPUT:
+	mkdir -p OUTPUT
 
 update:
 	cp ../OUTPUTS/default.ipsec.conf.raw default.ipsec.conf.out
@@ -35,6 +39,7 @@ update:
 	cp ../OUTPUTS/dooku.conf.raw         dooku.conf.out
 	cp ../OUTPUTS/cassidy.conf.raw       cassidy.conf.out
 	cp ../OUTPUTS/h2h.conf.raw           h2h.conf.out
+	cp ../OUTPUTS/certpercent.conf.raw           certpercent.conf.out
 
 # Local Variables:
 # compile-command: "(cd ../../../programs/readwriteconf && make clean && make programs) && make check"

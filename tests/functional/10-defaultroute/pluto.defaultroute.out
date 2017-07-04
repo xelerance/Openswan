@@ -19,6 +19,9 @@ Using 'no_kernel' interface code on
   loading certificate from bobCert.pem 
   loaded host cert file 'bob/certs/bobCert.pem' (1489 bytes)
 adding connection: "nat-t"
+loading secrets from "bob.secrets"
+  loaded private key file 'bob/private/bobKey.pem' (1675 bytes)
+loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE
 000 using kernel interface: noklips
 000 %myid = (none)
 000 debug none
@@ -55,9 +58,10 @@ adding connection: "nat-t"
 000 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
 000 "nat-t":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 000 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1 
-000 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: ; kind=CK_PERMANENT
+000 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: ; kind=CK_PERMANENT
 000 "nat-t":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000  
 000  
+forgetting secrets
 "nat-t": deleting connection
 pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

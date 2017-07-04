@@ -1,4 +1,4 @@
-/* 
+/*
  * Pluto interface to crypto
  *
  * Copyright (C) 2008 David McCullough <david_mccullough@securecomputing.com>
@@ -30,9 +30,6 @@
 #include <oswalloc.h>
 
 #include <oswcrypto.h>
-
-/* leave the {0}, it is required on OSX */
-struct oswcrypto_meth oswcrypto = {0};
 
 /*
  * Do the modular exponentiation with Chinese Remainder Theorem in sofware

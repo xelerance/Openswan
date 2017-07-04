@@ -1,7 +1,7 @@
 ./loadbob adjusting ipsec.d to ../../../functional/10-defaultroute/bob
 ./loadbob loading secrets from "../../../functional/10-defaultroute/bob.secrets"
 ./loadbob   loaded private key file '../../../functional/10-defaultroute/bob/private/bobKey.pem' (1675 bytes)
-./loadbob loaded private key for keyid: PPK_RSA:AwEAAbXtb
+./loadbob loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
@@ -20,6 +20,8 @@ processing whack msg time: X size: Y
 | orient nat-t checking against if: eth0 (AF_INET:10.2.0.10:500)
 | orient nat-t matching on public/private keys: this=no[%any] that=yes[%defaultroute]
 |   orient nat-t matched on that having private key
+| pick_if looking for port: 500, family: 0
+|   considering eth0 10.2.0.10 port: 500, family: 2, best: <none>/0 0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 10.2.0.10
 |   orient nat-t finished with: 1 [10.2.0.10]
 | find_host_pair: looking for me=<invalid>:500 %any him=<invalid>:500 exact-match
@@ -34,21 +36,25 @@ RC=0 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute ow
 RC=0 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
 RC=0 "nat-t":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 RC=0 "nat-t":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
-RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK+lKOD+rKOD; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "nat-t":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
 |   orient nat-t finished with: 1 [10.2.0.10]
 ./loadbob deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X
 ./loadbob leak: pubkey, item size: X
+./loadbob leak: rfc3110 format of public key [created], item size: X
 ./loadbob leak: issuer dn, item size: X
 ./loadbob leak: keep id name, item size: X
 ./loadbob leak: pubkey entry, item size: X
 ./loadbob leak: pubkey, item size: X
 ./loadbob leak: certificate filename, item size: X
 ./loadbob leak: 2 * id list, item size: X
+./loadbob leak: rfc3110 format of public key [created], item size: X
+./loadbob leak: pubkey, item size: X
 ./loadbob leak: secret, item size: X
 ./loadbob leak: policies path, item size: X
 ./loadbob leak: ocspcerts path, item size: X

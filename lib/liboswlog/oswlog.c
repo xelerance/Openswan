@@ -1,4 +1,4 @@
-/* error logging functions
+/* error logging functions -- used outside of pluto!
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2001  D. Hugh Redelmeier.
  * Copyright (C) 2007-2010 Paul Wouters <paul@xelerance.com>

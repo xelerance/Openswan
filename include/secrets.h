@@ -32,25 +32,25 @@
 struct state;	 /* forward declaration */
 struct secret;  /* opaque definition, private to secrets.c */
 
+/* do mass rename later on */
+typedef struct pubkey osw_public_key;
+
+
 struct RSA_public_key
 {
-    char keyid[KEYID_BUF];	/* see ipsec_keyblobtoid(3) */
-
+    char keyid[KEYID_BUF];	    /* see ipsec_keyblobtoid(3) */
     /* length of modulus n in octets: [RSA_MIN_OCTETS, RSA_MAX_OCTETS] */
     unsigned k;
+
+    chunk_t        key_rfc3110;     /* Raw Public key format */
 
     /* public: */
     MP_INT
 	n,	/* modulus: p * q */
 	e;	/* exponent: relatively prime to (p-1) * (q-1) [probably small] */
-#ifdef HAVE_LIBNSS
-    CERTCertificate *nssCert;
-#endif
 };
 
 struct RSA_private_key {
-    struct RSA_public_key pub;	/* must be at start for RSA_show_public_key */
-
     MP_INT
 	d,	/* private exponent: (e^-1) mod ((p-1) * (q-1)) */
 	/* help for Chinese Remainder Theorem speedup: */
@@ -71,9 +71,12 @@ extern err_t unpack_RSA_public_key(struct RSA_public_key *rsa, const chunk_t *pu
 
 struct private_key_stuff {
     enum PrivateKeyKind kind;
+    osw_public_key *pub;
+
     union {
 	chunk_t preshared_secret;
 	struct RSA_private_key RSA_private_key;
+        /* struct ECDSA_private_key ECDSA_private_key; */
 	/* struct smartcard *smartcard; */
     } u;
 };
@@ -100,6 +103,7 @@ extern struct secret *osw_get_defaultsecret(struct secret *secrets);
 struct pubkey {
     struct id id;
     unsigned refcnt;	/* reference counted! */
+    bool trusted_key;   /* if this key has been loaded from disk, or validated */
     enum dns_auth_level dns_auth_level;
     char *dns_sig;
     time_t installed_time
@@ -107,7 +111,15 @@ struct pubkey {
 	, last_worked_time
 	, until_time;
     chunk_t issuer;
+
+    unsigned char key_ckaid[CKAID_BUFSIZE];  /* typically, 20 bytes, presented in hex */
+    char key_ckaid_print_buf[CKAID_BUFSIZE*2 + (CKAID_BUFSIZE/2)+2];  /* a buffer for above, produced by datatot */
+
     enum pubkey_alg alg;
+
+#ifdef HAVE_LIBNSS
+    CERTCertificate *nssCert;
+#endif
     union {
 	struct RSA_public_key rsa;
     } u;
@@ -147,35 +159,40 @@ extern void form_keyid(chunk_t e, chunk_t n, char* keyid, unsigned *keysize);
 
 #ifdef HAVE_LIBNSS
 extern void form_keyid_from_nss(SECItem e, SECItem n, char* keyid, unsigned *keysize);
-extern err_t extract_and_add_secret_from_nss_cert_file(struct RSA_private_key *rsak, char *nssHostCertNickName);
+extern err_t extract_and_add_secret_from_nss_cert_file(struct private_key_stuff *pks, char *nssHostCertNickName);
 #endif
 
 extern struct pubkey *reference_key(struct pubkey *pk);
 extern void unreference_key(struct pubkey **pkp);
 
 extern err_t add_public_key(const struct id *id
-    , enum dns_auth_level dns_auth_level
-    , enum pubkey_alg alg
-    , const chunk_t *key
-    , struct pubkey_list **head);
+                            , enum dns_auth_level dns_auth_level
+                            , enum pubkey_alg alg
+                            , const chunk_t *key
+                            , struct pubkey_list **head);
 
 extern bool same_RSA_public_key(const struct RSA_public_key *a
     , const struct RSA_public_key *b);
-extern void install_public_key(struct pubkey *pk, struct pubkey_list **head);
+
+extern void install_public_key(osw_public_key *pk, struct pubkey_list **head);
 
 extern void free_public_key(struct pubkey *pk);
 
 extern void osw_load_preshared_secrets(struct secret **psecrets
 				       , int verbose
 				       , const char *secrets_file
-				       , prompt_pass_t *pass);
+				       , prompt_pass_t *pass, const char *root_dir);
 extern void osw_free_preshared_secrets(struct secret **psecrets);
 
 extern bool osw_has_private_rawkey(struct secret *secrets, struct pubkey *pk);
 
+extern void RSA_show_key_fields(struct private_key_stuff *pks);
+
 extern struct secret *osw_find_secret_by_id(struct secret *secrets
 					    , enum PrivateKeyKind kind
 					    , const struct id *my_id
+                                            , osw_public_key *key1
+                                            , osw_public_key *key2
 					    , const struct id *his_id
 					    , bool asym);
 
@@ -190,6 +207,10 @@ extern void unlock_certs_and_keys(const char *who);
 #include "x509.h"
 extern const struct RSA_private_key*
 osw_get_x509_private_key(struct secret *secrets, x509cert_t *cert);
+
+extern const struct private_key_stuff *
+osw_get_x509_private_stuff(struct secret *secrets, x509cert_t *cert);
+
 
 #endif /* _SECRETS_H */
 /*
