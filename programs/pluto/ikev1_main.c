@@ -2216,6 +2216,12 @@ main_inR3_tail(struct msg_digest *md
 
     ISAKMP_SA_established(st->st_connection, st->st_serialno);
 
+    if(isanyaddr(&st->st_localaddr) || st->st_localport == 0) {
+        /* record where packet arrived to */
+        st->st_localaddr  = md->iface->ip_addr;
+        st->st_localport  = md->iface->port;
+    }
+
     passert((st->st_policy & POLICY_PFS)==0 || st->st_pfs_group != NULL );
 
     /* ??? If c->gw_info != NULL,

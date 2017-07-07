@@ -134,8 +134,9 @@ accept_PFS_KE(struct msg_digest *md, chunk_t *dest
  */
 
 static bool
-emit_subnet_id(ip_subnet *net
+emit_subnet_id(struct end *e
 	       , u_int8_t np
+               , ip_address endpoint
 	       , u_int8_t protoid
 	       , u_int16_t port
 	       , pb_stream *outs)
@@ -147,20 +148,27 @@ emit_subnet_id(ip_subnet *net
     size_t tal;
     const struct af_info *ai;
     bool usehost = FALSE;
-    int masklen;
+    ip_subnet clientnet;
 
-    ai = aftoinfo(subnettypeof(net));
+    clientnet = e->client;
 
-    passert(ai != NULL);
-
-    maskof(net, &ta);
-    masklen = masktocount(&ta);
-#if 1
-    if(masklen == ai->mask_cnt)
-    {
-	usehost = TRUE;
+    if(!e->has_client) {
+        /* we propose the IP address of the interface that we are using. */
+        /*
+         * we could instead propose 0.0.0.0->255.255.255.255 and let the other
+         * end narrow the TS, but if one wants that, it is easy to just specify
+         * in the configuration file: rightsubnet=0.0.0.0/0.
+         *
+         * When there is NAT involved, we may really want a tunnel to the
+         * address that this end point thinks it is.  That works only when
+         * virtual_ip includes the IP involved.
+         *
+         */
+        addrtosubnet(&endpoint, &clientnet);
     }
-#endif
+
+    ai = aftoinfo(subnettypeof(&clientnet));
+    passert(ai != NULL);
 
     id.isaiid_np = np;
     id.isaiid_idtype = (usehost ? ai->id_addr : ai->id_subnet);
@@ -170,14 +178,14 @@ emit_subnet_id(ip_subnet *net
     if (!out_struct(&id, &isakmp_ipsec_identification_desc, outs, &id_pbs))
 	return FALSE;
 
-    networkof(net, &ta);
+    networkof(&clientnet, &ta);
     tal = addrbytesptr(&ta, &tbp);
     if (!out_raw(tbp, tal, &id_pbs, "client network"))
 	return FALSE;
 
     if(!usehost)
     {
-	maskof(net, &ta);
+	maskof(&clientnet, &ta);
 	tal = addrbytesptr(&ta, &tbp);
 	if (!out_raw(tbp, tal, &id_pbs, "client mask"))
 	    return FALSE;
@@ -970,12 +978,14 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
     if (has_client)
     {
 	/* IDci (we are initiator), then IDcr (peer is responder) */
-	if (!emit_subnet_id(&c->spd.this.client
+	if (!emit_subnet_id(&c->spd.this
 			    , ISAKMP_NEXT_ID
+                            , st->st_localaddr
 			    , st->st_myuserprotoid
 			    , st->st_myuserport, &rbody)
-	    || !emit_subnet_id(&c->spd.that.client
+	    || !emit_subnet_id(&c->spd.that
 			       , ISAKMP_NEXT_NONE
+                               , st->st_remoteaddr
 			       , st->st_peeruserprotoid
 			       , st->st_peeruserport, &rbody))
 	{
