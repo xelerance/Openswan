@@ -575,21 +575,23 @@ check_net_id(struct isakmp_ipsec_id *id
 	     , pb_stream *id_pbs
 	     , u_int8_t *protoid
 	     , u_int16_t *port
-	     , ip_subnet *net
+	     , struct end *end
+             , ip_address *endip
 	     , const char *which)
 {
     ip_subnet net_temp;
     bool bad_proposal=FALSE;
+    char subxmt[SUBNETTOT_BUF];
+    char subrec[SUBNETTOT_BUF];
 
     if (!decode_net_id(id, id_pbs, &net_temp, which))
 	return FALSE;
 
-    if (!samesubnet(net, &net_temp)) {
-	char subrec[SUBNETTOT_BUF];
-	char subxmt[SUBNETTOT_BUF];
-	subnettot(net, 0, subxmt, sizeof(subxmt));
-	subnettot(&net_temp, 0, subrec, sizeof(subrec));
-	loglog(RC_LOG_SERIOUS, "%s subnet returned doesn't match my proposal - us:%s vs them:%s",
+    subnettot(&end->client, 0, subxmt, sizeof(subxmt));
+    subnettot(&net_temp, 0, subrec, sizeof(subrec));
+
+    if (end->has_client && !samesubnet(&end->client, &net_temp)) {
+	loglog(RC_LOG_SERIOUS, "%s subnet returned does not match my proposal - us:%s vs them:%s",
 		which,subxmt,subrec);
 #ifdef ALLOW_MICROSOFT_BAD_PROPOSAL
 	loglog(RC_LOG_SERIOUS, "Allowing questionable proposal anyway [ALLOW_MICROSOFT_BAD_PROPOSAL]");
@@ -597,7 +599,12 @@ check_net_id(struct isakmp_ipsec_id *id
 #else
 	bad_proposal = TRUE;
 #endif
+    } else if(!end->has_client && !subnetisaddr(&net_temp, endip)) {
+        loglog(RC_LOG_SERIOUS, "%s subnet returned does not match my self-proposal - us:%s vs them:%s",
+               which,subxmt,subrec);
+        bad_proposal = TRUE;
     }
+
     if(*protoid != id->isaiid_protoid) {
 	loglog(RC_LOG_SERIOUS, "%s peer returned protocol id does not match my proposal - us%d vs them: %d"
 		, which, *protoid, id->isaiid_protoid);
@@ -2475,7 +2482,8 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 	    /* IDci (we are initiator) */
 	    if (!check_net_id(&IDci->payload.ipsec_id, &IDci->pbs
 			      , &st->st_myuserprotoid, &st->st_myuserport
-			      , &st->st_connection->spd.this.client
+			      , &st->st_connection->spd.this
+                              , &st->st_localaddr
 			      , "our client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
@@ -2487,7 +2495,8 @@ quick_inR1_outI2_cryptotail(struct dh_continuation *dh
 
 	    if (!check_net_id(&IDcr->payload.ipsec_id, &IDcr->pbs
 			      , &st->st_peeruserprotoid, &st->st_peeruserport
-			      , &st->st_connection->spd.that.client
+			      , &st->st_connection->spd.that
+                              , &st->st_remoteaddr
 			      , "peer client"))
 		return STF_FAIL + INVALID_ID_INFORMATION;
 
