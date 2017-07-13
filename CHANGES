@@ -4,10 +4,12 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.50rc1 (July 6, 2017)
+v2.6.50rc2 (July 13, 2018)
 
 Bug fixes for RSA key size and other issues
 
+* IKEv1 proposal from self=%any should use localaddr in proposal [MCR]
+* The check on the peers reply should also use localaddr when checking [MCR]
 * Protect kernel_command_verb_suffix against NULL st, which occurs during
   unroute operations [MCR]
 * Log source of unknown address family [MCR]
