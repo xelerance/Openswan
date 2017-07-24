@@ -9,7 +9,7 @@
 #include "log.h"
 #include "libtwofish/twofish_cbc.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #define  TWOFISH_CBC_BLOCK_SIZE	(128/BITS_PER_BYTE)
 #define  TWOFISH_KEY_MIN_LEN	128

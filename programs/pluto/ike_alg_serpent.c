@@ -9,7 +9,7 @@
 #include "log.h"
 #include "libserpent/serpent_cbc.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #define  SERPENT_CBC_BLOCK_SIZE	(128/BITS_PER_BYTE)
 #define  SERPENT_KEY_MIN_LEN	128

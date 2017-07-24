@@ -54,7 +54,7 @@
 #include "whack.h"	/* needs connections.h */
 #include "timer.h"
 #include "kernel_alg.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "plutoalg.h"
 #include "pluto/virtual.h" /* for show_virtual_private */
 

@@ -73,7 +73,7 @@
 #include "secrets.h"
 
 #include "kernel_alg.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #ifdef TPM
 #include "tpm/tpm.h"
