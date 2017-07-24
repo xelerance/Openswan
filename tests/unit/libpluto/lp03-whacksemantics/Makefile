@@ -42,7 +42,6 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2.o
 ifeq ($(USE_EXTRACRYPTO),true)
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
@@ -55,7 +54,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${LIBIPSECCONF} ${WHACKLIB} ${LIBOPENSWAN} ${LIBOSWKEYS}
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${LIBWHACK} ${LIBOSWLOG}
+EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE} ${CRYPTOLIBS} ${LIBWHACK} ${LIBOSWLOG}
 EXTRALIBS+=${LIBOPENSWAN} -lgmp ${LIBEFENCE} -lpcap
 
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}    ${HAVE_EFENCE}
