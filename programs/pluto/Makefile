@@ -85,15 +85,15 @@ DISTGCRYPT = \
 	smallprime.c
 
 DISTSRC = \
-        connections.c initiate.c terminate.c connections.h \
+        connections.c initiate.c terminate.c \
 	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
-	crypto.h crypto.c \
+	crypto.c \
 	db_ops.c \
-	demux.c demux.h msgdigest.c \
+	demux.c msgdigest.c \
 	dnskey.c dnskey.h \
-	dpd.c dpd.h \
+	dpd.c  \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
@@ -104,17 +104,17 @@ DISTSRC = \
 	${NETKEY_SRCS} \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
-	ike_alg.c ike_alg_status.c ike_alg.h ikeping.c \
+	ike_alg_status.c ikeping.c \
 	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
 	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
-	log.c log.h \
+	log.c \
 	plutomain.c plutoalg.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	keys.c \
-	server.c server.h \
+	server.c \
 	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
 	state.c state.h \
 	stubs.c \
@@ -154,7 +154,7 @@ OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
-OBJSPLUTO += ike_alg.o ike_alg_status.o db_ops.o
+OBJSPLUTO += ike_alg_status.o db_ops.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}

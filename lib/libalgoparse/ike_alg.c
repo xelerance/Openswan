@@ -28,23 +28,18 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
+#include "pluto/defs.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
-#include "state.h"
+//#include "pluto/state.h"
 #include "packet.h"
-#include "log.h"
+#include "oswlog.h"
 #include "whack.h"
-#include "spdb.h"
+//#include "pluto/spdb.h"
 #include "alg_info.h"
-#include "ike_alg.h"
-#include "db_ops.h"
-#include "id.h"
-#include "pluto/connections.h"
-#include "kernel.h"
-#include "plutoalg.h"
+#include "pluto/ike_alg.h"
 
 #define return_on(var, val) { (var) = (val); goto return_out; }
 
@@ -308,17 +303,6 @@ return_out:
 	openswan_log("ike_alg_register_enc(): Activating %s: %s (ret=%d)",
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return 0;
-}
-
-/* Get pfsgroup for this connection */
-const struct oakley_group_desc *
-ike_alg_pfsgroup(struct connection *c, lset_t policy)
-{
-	const struct oakley_group_desc * ret = NULL;
-	if ( (policy & POLICY_PFS) &&
-			c->alg_info_esp && c->alg_info_esp->esp_pfsgroup)
-		ret = lookup_group(c->alg_info_esp->esp_pfsgroup);
-	return ret;
 }
 
 /*

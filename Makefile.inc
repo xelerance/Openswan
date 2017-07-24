@@ -538,7 +538,7 @@ LIBOPENSWANDIR=${OPENSWANSRCDIR}/lib/libopenswan
 LIBOPENSWAN=${OBJDIRTOP}/lib/libopenswan/libopenswan.a
 OPENSWANLIB=${LIBOPENSWAN}
 LIBPLUTO=${OBJDIRTOP}/lib/libpluto/libpluto.a
-PLUTOLIB=${LIBPLUTO}
+LIBALGOPARSE=${OBJDIRTOP}/lib/libalgoparse/libalgoparse.a
 LIBOSWLOG=${OBJDIRTOP}/lib/liboswlog/liboswlog.a
 LIBOSWKEYS=${OBJDIRTOP}/lib/liboswkeys/liboswkeys.a
 
@@ -563,6 +563,9 @@ LIBSERPENT=${OBJDIRTOP}/lib/libcrypto/libserpent/libserpent.a
 LIBSHA2=${OBJDIRTOP}/lib/libcrypto/libsha2/libsha2.a
 CRYPTOLIBS= ${LIBOSWCRYPTO}
 CRYPTOLIBS+=${LIBAES} ${LIBSHA1} ${LIBMD5} ${LIBMD2} ${LIBDESLITE} ${LIBSHA2}
+
+IKE_CRYPTO_DEFINES=-DUSE_AES -DUSE_3DES -DUSE_SHA2
+
 
 ifeq ($(USE_EXTRACRYPTO),true)
 CRYPTOLIBS+= ${LIBSERPENT} ${LIBTWOFISH} ${LIBBLOWFISH}
