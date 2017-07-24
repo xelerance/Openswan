@@ -63,9 +63,9 @@
 
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "pluto_crypt.h"

@@ -58,7 +58,7 @@
 #include "pkcs.h"
 #include "plutoalg.h"
 #include "pluto_crypt.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "oswcrypto.h"
 #include "ikev2.h"
 
