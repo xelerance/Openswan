@@ -17,6 +17,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/functional/08-${TESTNAME}
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
+REMOVEHELPERS=${TESTUTILS}/removehelpers.sed
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 PLUTOBIN=${OBJDIRTOP}/programs/pluto/pluto
 ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
@@ -30,11 +31,11 @@ CONFFILE=${CONFBASE}.conf
 check: ${OUTPUTS}
 	mkdir -p ${OUTPUTS}
 	${READWRITE} --debug --config ${CONFFILE} | tee ${OUTPUTS}/bob.conf.raw | diff - bob.conf.out
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2c step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.${TESTNAME}.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2 step2c step4; sleep 1; make --no-print-directory step3)| tee ${OUTPUTS}/pluto.${TESTNAME}.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${REMOVEHELPERS} -f ${TESTUTILS}/randomhelper.sed | diff - pluto.${TESTNAME}.out;
 
 update:
 	cp ${OUTPUTS}/bob.conf.raw     bob.conf.out
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ../05-addconn/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${REMOVEHELPERS} -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.${TESTNAME}.raw >pluto.${TESTNAME}.out
 
 step1:
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} --ipsecdir ${CONFBASE} --secretsfile ${CONFBASE}.secrets 2>&1
