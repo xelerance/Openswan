@@ -33,7 +33,7 @@
 #include "defs.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
 #include "state.h"
 #include "packet.h"
@@ -41,7 +41,7 @@
 #include "whack.h"
 #include "spdb.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "db_ops.h"
 #include "id.h"
 #include "pluto/connections.h"

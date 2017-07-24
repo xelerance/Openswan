@@ -59,7 +59,7 @@
 #include "whack.h"
 #include "alg_info.h"
 #include "spdb.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "xauth.h"
@@ -70,7 +70,7 @@
 #include "pluto/virtual.h"
 
 #include "pluto_crypt.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "ikev1.h"
 
 stf_status aggr_not_present(int whack_sock UNUSED

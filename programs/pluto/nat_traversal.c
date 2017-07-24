@@ -64,12 +64,12 @@
 #include "kernel.h"
 #include "whack.h"
 #include "timer.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #include "cookie.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "vendor.h"
 
 #include "natt_defines.h"
