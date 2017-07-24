@@ -1,6 +1,8 @@
 #ifndef _IKE_ALG_H
 #define _IKE_ALG_H
 
+#include "constants.h"
+
 /* forward reference */
 struct connection;
 

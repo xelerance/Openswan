@@ -22,7 +22,7 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
+SRCS=addrtoa.c addrtot.c addrtypeof.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c familytot.c \
 	goodmask.c id.c initaddr.c initsaid.c initsubnet.c \
@@ -247,6 +247,6 @@ checkprograms:
 # this should be a generic process.
 # Gather dependencies caused by explicit #includes within .c files
 depend:
-	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS)))) | grep '\.c' | xargs $(GCC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} ) | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
+	(ls $(wildcard $(SRCS)) $(wildcard $(addprefix ${KLIPSSRCDIR}/,$(SRCS)))) | grep '\.c' | xargs $(CC) -MM ${CFLAGS} ${PORTINCLUDE} ${ALLFLAGS} | sed -e 's,${OPENSWANSRCDIR},../..,g' >Makefile.depend
 
 -include ${srcdir}Makefile.depend

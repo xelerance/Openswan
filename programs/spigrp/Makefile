@@ -16,6 +16,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 PROGRAM=spigrp
 EXTRA5PROC=${PROGRAM}.5
+PROGLIBS+=${LIBALGOPARSE}
 
 include ${srcdir}../Makefile.program
 
