@@ -83,7 +83,14 @@ struct artab {
   char *decode;		/* expected result after output */
   bool  err;            /* if TRUE, then err shall be set */
 } atodatatab[] = {
-  { "3des-md5-modp1024",NULL, FALSE, },
+  { "3des-md5-modp1024",
+    "3DES_CBC(5)_000-MD5(1)_000-MODP1024(2); flags=-strict", FALSE,},
+  { "aes-md5-modp1024",
+    "AES_CBC(7)_000-MD5(1)_000-MODP1024(2); flags=-strict",  FALSE,},
+  { "aes-sha1-modp1024",
+    "AES_CBC(7)_000-SHA1(2)_000-MODP1024(2); flags=-strict", FALSE,},
+  { "aes-sha1-modp1536",
+    "AES_CBC(7)_000-SHA1(2)_000-MODP1536(5); flags=-strict", FALSE,},
   { "foobar",           NULL, TRUE, },
   { NULL,		NULL, FALSE, },
 };
@@ -104,6 +111,11 @@ char *pgm;
           alg_info_ike = alg_info_ike_create_from_str(r->ascii,
                                                       &err);
           if(r->err && err != NULL) {
+              /* expected to fail, things are okay */
+              continue;
+          }
+
+          if(err != NULL) {
             status++;
             fprintf(stderr, "failed to decode: %s, error: %s\n",
                     r->ascii, err);
@@ -111,6 +123,7 @@ char *pgm;
           }
 
           alg_info_snprint(buf, sizeof(buf), alg_info_ike, TRUE);
+
           if(r->decode != NULL && strcmp(r->decode, buf) != 0) {
             fprintf(stderr, "failed to decode: %s to %s. Got: %s\n",
                     r->ascii, r->decode, buf);
