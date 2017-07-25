@@ -1,0 +1,1 @@
+failed to decode: foobar, error: enc_alg not found, enc_alg="foobar", auth_alg="", modp=""
