@@ -46,7 +46,7 @@
 #include "id.h"
 #include "pluto/connections.h"
 #include "kernel.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 
 /*
  * 	Show registered IKE algorithms
