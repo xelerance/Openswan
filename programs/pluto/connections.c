@@ -894,7 +894,7 @@ gen_reqid(void)
 	    return reqid;
     } while (reqid != start);
 
-    exit_log("unable to allocate reqid");
+    openswan_exit_log("unable to allocate reqid");
     return 0; /* never reached, here to make compiler happy */
 }
 

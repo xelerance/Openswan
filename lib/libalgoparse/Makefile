@@ -31,7 +31,7 @@ MANDIR=$(MANTREE)/man3
 
 ONEFILE=alg_info.c
 SRCS=alg_info.c ike_alg.c
-SRCS+=plutoalg.c
+SRCS+=plutoalg.c groups.c
 SRCS+=
 
 #
