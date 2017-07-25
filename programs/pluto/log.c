@@ -121,7 +121,7 @@ u_int16_t cur_from_port;	/* host order */
 void
 pluto_init_log(void)
 {
-    set_exit_log_func(exit_log);
+    set_exit_log_func(openswan_exit_log);
     if (log_to_stderr)
 	setbuf(stderr, NULL);
     if (log_to_syslog)
@@ -510,7 +510,7 @@ openswan_log_errno_routine(int e, const char *message, ...)
 }
 
 void
-exit_log(const char *message, ...)
+openswan_exit_log(const char *message, ...)
 {
     va_list args;
     char m[LOG_WIDTH];	/* longer messages will be truncated */
