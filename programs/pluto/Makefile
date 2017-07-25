@@ -105,12 +105,13 @@ DISTSRC = \
 	${KLIPS_SRCS} ${MAST_SRCS} ${WIN2K_SRCS} \
 	kernel_noklips.c kernel_noklips.h \
 	ike_alg_status.c ikeping.c \
-	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
+	ike_alg_aes.c ike_alginit.c \
+	ikev2_alg.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
 	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
 	log.c \
-	plutomain.c plutoalg.c \
+	plutomain.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	keys.c \
@@ -139,7 +140,7 @@ OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
-OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
+OBJSPLUTO += foodgroups.o log.o state.o plutomain.o ikev2_alg.o server.o
 OBJSPLUTO += timer.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
