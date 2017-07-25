@@ -33,6 +33,7 @@
 #endif
 
 #include "mpzfuncs.h"
+#include "algoparse.h"
 
 extern void init_crypto(void);
 
