@@ -18,6 +18,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 clean check:
 	@${MAKE} -C libopenswan $@
+	@${MAKE} -C libalgoparse $@
 	@${MAKE} -C libpluto    $@
 	@${MAKE} -C ikev2crypto $@
 	@${MAKE} -C liboswkeys  $@
