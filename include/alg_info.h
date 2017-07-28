@@ -40,18 +40,20 @@ enum parser_state_esp {
 	ST_ERR
 };
 
-/* XXX:jjo to implement different parser for ESP and IKE */
 struct parser_context {
 	unsigned state, old_state;
 	unsigned protoid;
 	char ealg_buf[16];
 	char aalg_buf[16];
+	char prfalg_buf[16];
 	char modp_buf[16];
 	int (*ealg_getbyname)(const char *const str, int len);
 	int (*aalg_getbyname)(const char *const str, int len);
+	int (*prfalg_getbyname)(const char *const str, int len);
 	int (*modp_getbyname)(const char *const str, int len);
 	char *ealg_str;
 	char *aalg_str;
+	char *prfalg_str;
 	char *modp_str;
 	int eklen;
 	int aklen;
@@ -68,17 +70,16 @@ struct esp_info {
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 	u_int8_t encryptalg;	/* normally  encryptalg=transid */
-	u_int16_t authalg;	/* normally  authalg=auth+1
-				 * Paul: apparently related to magic at
-				 * lib/libopenswan/alg_info.c alg_info_esp_aa2sadb() */
+        u_int16_t authalg;	/* normally  authalg=auth+1     */
 };
 
 struct ike_info {
     bool      ike_default;
-    u_int16_t ike_ealg;	  /* encrytion algorithm - bit 15set for reserved*/
-    u_int8_t  ike_halg;   /* hash algorithm */
-    size_t    ike_eklen;     /* how many bits required by encryption algo */
-    size_t    ike_hklen;     /* how many bits required by hash algo */
+    u_int16_t ike_ealg;	      /* encrytion algorithm - bit 15set for reserved*/
+    u_int8_t  ike_halg;       /* hash algorithm */
+    u_int8_t  ike_prfalg;     /* prf algorithm (IKEv2) */
+    size_t    ike_eklen;      /* how many bits (of key) required by encryption algo */
+    size_t    ike_hklen;      /* how many bits (of key) required by hash algo */
     oakley_group_t ike_modp;  /* which modp group to use */
 };
 
