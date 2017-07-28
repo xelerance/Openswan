@@ -6,8 +6,11 @@ void kernel_alg_show_connection(struct connection *c, const char *instance);
 
 struct ike_info;
 #define IKEALGBUF_LEN strlen("00000_000-00000_000-00000")
-extern char *alg_info_snprint_ike1(struct ike_info *ike_info
+
+#define alg_info_sprint_ike1(ii,eklen,aklen,buf,buflen) alg_info_sprint_ike2(ii,eklen,aklen,NULL,buf,buflen)
+extern char *alg_info_snprint_ike2(struct ike_info *ike_info
 				   , int eklen, int aklen
+                                   , int  *usedsize
 				   , char *buf, int buflen);
 
 extern struct alg_info_ike *

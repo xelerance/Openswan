@@ -296,18 +296,23 @@ alg_info_snprint_phase2(char *buf, size_t buflen, struct alg_info_esp *alg_info)
 }
 
 
-char *alg_info_snprint_ike1(struct ike_info *ike_info
+char *alg_info_snprint_ike2(struct ike_info *ike_info
 			    , int eklen, int aklen
+                            , int *usedsize
 			    , char *buf
 			    , int buflen)
 {
-    snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
+    int ret;
+    ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s-%s(%d)"
 	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")
 	     , ike_info->ike_ealg, eklen
 	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 	     , ike_info->ike_halg, aklen
+	     , enum_name(&oakley_hash_names, ike_info->ike_prfalg)+ sizeof("OAKLEY")
 	     , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 	     , ike_info->ike_modp);
+
+    if(usedsize) *usedsize = ret;
     return buf;
 }
 
@@ -340,16 +345,15 @@ alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info)
 		aklen=ike_info->ike_hklen;
 		if (!aklen)
 		    aklen=hash_desc->hash_digest_len * BITS_PER_BYTE;
-		ret=snprintf(ptr, buflen, "%s%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
-			     , sep
-			     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
-			     , ike_info->ike_ealg, eklen
-			     , enum_name(&oakley_hash_names, ike_info->ike_halg)+sizeof("OAKLEY")
-			     , ike_info->ike_halg, aklen
-			     , enum_name(&oakley_group_names, ike_info->ike_modp)+sizeof("OAKLEY_GROUP")
-			     , ike_info->ike_modp);
+
+                ret=snprintf(ptr, buflen, "%s", sep);
+                if(ret >= 0 && ret <= buflen) {
+                    ptr+= ret;  buflen-= ret;
+                    alg_info_snprint_ike2(ike_info, eklen, aklen, &ret, ptr, buflen);
+                }
+
 		if ( ret < 0 || (size_t)ret >= buflen) {
-		   DBG_log("alg_info_snprint_ike: buffer too short for snprintf");
+		   DBG_log("alg_info_snprint_ike: buffer too short for algorithm list");
 		   break;
 		}
 		ptr+=ret;
