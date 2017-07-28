@@ -91,6 +91,10 @@ struct artab {
     "AES_CBC(7)_000-SHA1(2)_000-MODP1024(2); flags=-strict", FALSE,},
   { "aes-sha1-modp1536",
     "AES_CBC(7)_000-SHA1(2)_000-MODP1536(5); flags=-strict", FALSE,},
+
+  /* a modern definition from draft-ietf-ipsecme-rfc7321bis/ */
+  { "aes256-sha256-prfsha256-modp2048",
+    "AES_CBC(7)_256-SHA2(5)_000-PRFSHA2(5)-MODP2048(11); flags=-strict", FALSE,},
   { "foobar",           NULL, TRUE, },
   { NULL,		NULL, FALSE, },
 };
