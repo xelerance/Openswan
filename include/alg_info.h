@@ -1,8 +1,7 @@
 /*
  * Algorithm info parsing and creation functions
  * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
- *
- * alg_info.h,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
+ * Updated Michael Richardson Copyright 2017 <mcr@xelerance.com> for IKEv2
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,14 +19,14 @@
 
 #include "constants.h"
 
-/*	
- *	Creates a new alg_info by parsing passed string		
+/*
+ *	Creates a new alg_info by parsing passed string
  */
 enum parser_state_esp {
         ST_INI,         /* parse esp= string */
 	ST_INI_AA,      /* parse ah= string */
 	ST_EA,		/* encrypt algo   */
-	ST_EA_END,	
+	ST_EA_END,
 	ST_EK,		/* enc. key length */
 	ST_EK_END,
 	ST_AA,		/* auth algo */
@@ -63,7 +62,7 @@ struct parser_context {
 };
 
 struct esp_info {
-        bool     esp_default; 
+        bool     esp_default;
 	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
 	u_int16_t auth;		/* AUTH */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
@@ -142,9 +141,9 @@ int alg_info_snprint(char *buf, int buflen
 
 void alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info);
 #define ALG_INFO_ESP_FOREACH(ai, ai_esp, i) \
-	for (i=(ai)->alg_info_cnt,ai_esp=(ai)->esp; i--; ai_esp++) 
+	for (i=(ai)->alg_info_cnt,ai_esp=(ai)->esp; i--; ai_esp++)
 #define ALG_INFO_IKE_FOREACH(ai, ai_ike, i) \
-	for (i=(ai)->alg_info_cnt,ai_ike=(ai)->ike; i--; ai_ike++) 
+	for (i=(ai)->alg_info_cnt,ai_ike=(ai)->ike; i--; ai_ike++)
 
 extern int alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int str_len);
 extern int alg_enum_search_ppfix (enum_names *ed, const char *prefix
