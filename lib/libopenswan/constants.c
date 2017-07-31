@@ -511,7 +511,7 @@ enum_names *oakley_attr_val_descs[] = {
 	NULL,			/* OAKLEY_GROUP_CURVE_B */
 	&oakley_lifetime_names,	/* OAKLEY_LIFE_TYPE */
 	NULL,			/* OAKLEY_LIFE_DURATION */
-	&oakley_prf_names,	/* OAKLEY_PRF */
+	&ikev2_prf_names,	/* OAKLEY_PRF */
 	NULL,			/* OAKLEY_KEY_LENGTH */
 	NULL,			/* OAKLEY_FIELD_SIZE */
 	NULL,			/* OAKLEY_GROUP_ORDER */
@@ -765,13 +765,22 @@ static const char *const oakley_lifetime_name[] = {
 enum_names oakley_lifetime_names =
     { OAKLEY_LIFE_SECONDS, OAKLEY_LIFE_KILOBYTES, oakley_lifetime_name, NULL };
 
-/* Oakley PRF attribute (none defined) */
+/* IKEv2 PRF attribute (none defined) */
+static const char *const ikev2_prf_name[] = {
+    "PRFMD5",
+    "PRFSHA1",
+    "PRFTIGER",
+    "PRFAES128XCBC"
+    "PRFSHA2_256",
+    "PRFSHA2_384",
+    "PRFSHA2_512",
+    "PRFAES128CMAC"
+};
 
-enum_names oakley_prf_names =
-    { 1, 0, NULL, NULL };
+enum_names ikev2_prf_names =
+    { IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_CMAC, ikev2_prf_name, NULL };
 
 /* Oakley Encryption Algorithm attribute */
-
 static const char *const oakley_enc_name[] = {
 	"OAKLEY_DES_CBC",
 	"OAKLEY_IDEA_CBC",
