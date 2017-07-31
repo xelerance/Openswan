@@ -104,6 +104,12 @@ struct alg_info_ike {
 	struct ike_info ike[64];
 };
 
+typedef void alg_info_adder(struct alg_info *alg_info
+                               , int ealg_id, int ek_bits
+                               , int aalg_id, int ak_bits
+                               , int modp_id
+                               , bool permitmann);
+
 #define ESPTOINFO(X) (struct alg_info *)X
 #define IKETOINFO(X) (struct alg_info *)X
 
