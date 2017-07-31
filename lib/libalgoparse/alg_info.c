@@ -1017,16 +1017,11 @@ alg_info_snprint(char *buf, int buflen
     case PROTO_ISAKMP:
 	if(permitike) {
 	    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
-		snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)"
-			    , enum_name(&oakley_enc_names, ike_info->ike_ealg)+sizeof("OAKLEY")
-			    , ike_info->ike_ealg
-			    , (int)ike_info->ike_eklen
-			    , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
-			    , ike_info->ike_halg
-			    , (int)ike_info->ike_hklen
-			    , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
-			    , ike_info->ike_modp);
-		size_t np = strlen(ptr);
+                int np;
+                alg_info_snprint_ike2(ike_info,
+                                      ike_info->ike_eklen,
+                                      ike_info->ike_hklen,
+                                      &np, ptr, buflen);
 		ptr += np;
 		buflen -= np;
                 if ( cnt > 0) {
