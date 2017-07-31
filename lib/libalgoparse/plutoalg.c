@@ -303,12 +303,14 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
 			    , int buflen)
 {
     int ret;
+    const char *prfname = enum_show(&oakley_hash_names, ike_info->ike_prfalg)+sizeof("OAKLEY");
+    assert(prfname != NULL);
     ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s-%s(%d)"
 	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")
 	     , ike_info->ike_ealg, eklen
 	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 	     , ike_info->ike_halg, aklen
-	     , enum_name(&oakley_hash_names, ike_info->ike_prfalg)+ sizeof("OAKLEY")
+	     , prfname
 	     , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 	     , ike_info->ike_modp);
 
@@ -332,7 +334,10 @@ alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info)
 	ALG_INFO_IKE_FOREACH(alg_info, ike_info, cnt) {
 	    if (ike_alg_enc_present(ike_info->ike_ealg)
 		&& (ike_alg_hash_present(ike_info->ike_halg))
+		&& (ike_alg_hash_present(ike_info->ike_prfalg))
 		&& (lookup_group(ike_info->ike_modp))) {
+
+                passert(ike_info != NULL);
 
 		enc_desc=ike_alg_get_encrypter(ike_info->ike_ealg);
 		passert(enc_desc != NULL);

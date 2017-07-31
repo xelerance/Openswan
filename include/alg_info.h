@@ -141,6 +141,12 @@ int alg_info_snprint(char *buf, int buflen
 		     , struct alg_info *alg_info, bool permitike);
 
 void alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info);
+extern char *alg_info_snprint_ike2(struct ike_info *ike_info
+                                   , int eklen, int aklen
+                                   , int *usedsize
+                                   , char *buf
+                                   , int buflen);
+
 #define ALG_INFO_ESP_FOREACH(ai, ai_esp, i) \
 	for (i=(ai)->alg_info_cnt,ai_esp=(ai)->esp; i--; ai_esp++)
 #define ALG_INFO_IKE_FOREACH(ai, ai_ike, i) \
