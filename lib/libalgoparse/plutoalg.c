@@ -303,7 +303,7 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
 			    , int buflen)
 {
     int ret;
-    const char *prfname = enum_show(&oakley_hash_names, ike_info->ike_prfalg)+sizeof("OAKLEY");
+    const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
     assert(prfname != NULL);
     ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s-%s(%d)"
 	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")

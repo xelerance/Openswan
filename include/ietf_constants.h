@@ -586,6 +586,9 @@ enum ikev2_trans_type_encr {
 	IKEv2_ENCR_INVALID  = 65536
 };
 
+/* https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml#ikev2-parameters-6
+   extern enum_names ikev2_prf_names;
+*/
 enum ikev2_trans_type_prf {
 	IKEv2_PRF_HMAC_MD5      = 1, /* RFC2104 */
 	IKEv2_PRF_HMAC_SHA1     = 2, /* RFC2104 */
@@ -830,8 +833,6 @@ typedef u_int16_t ipsec_auth_t;
 /* Oakley PRF attribute (none defined)
  * draft-ietf-ipsec-ike-01.txt appendix A
  */
-/* extern enum_names oakley_prf_names; */
-
 /* HMAC (see rfc2104.txt) */
 
 #define HMAC_IPAD            0x36
