@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.50rc2 (July 13, 2018)
+v2.6.50 (August 3, 2017)
 
 Bug fixes for RSA key size and other issues
 
