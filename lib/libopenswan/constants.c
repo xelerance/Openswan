@@ -1565,7 +1565,7 @@ enum_show(enum_names *ed, unsigned long val)
 static char bitnamesbuf[200];   /* only one!  I hope that it is big enough! */
 
 int
-enum_search(enum_names *ed, const char *str)
+enum_search_cmp(enum_names *ed, const char *str, size_t len, strcmpfunc cmp)
 {
     enum_names	*p;
     const char *ptr;
@@ -1575,11 +1575,22 @@ enum_search(enum_names *ed, const char *str)
 	for (en=p->en_first; en<=p->en_last; en++) {
 	    ptr=p->en_names[en - p->en_first];
 	    if (ptr==0) continue;
-	    /* if (strncmp(ptr, str, strlen(ptr))==0) */
-	    if (strcmp(ptr, str)==0)
+	    if (cmp(ptr, str, len)==0)
 		    return en;
 	}
     return -1;
+}
+
+int
+enum_search(enum_names *ed, const char *str)
+{
+    return enum_search_cmp(ed, str, strlen(str), strncmp);
+}
+
+int
+enum_search_nocase(enum_names *ed, const char *str, size_t len)
+{
+    return enum_search_cmp(ed, str, len, strncasecmp);
 }
 
 /* construct a string to name the bits on in a set
