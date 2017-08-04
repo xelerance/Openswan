@@ -279,6 +279,7 @@ static void
 alg_info_esp_add (struct alg_info *alg_info,
 		  int ealg_id, int ek_bits,
 		  int aalg_id, int ak_bits,
+                  int prfalg_id UNUSED,
 		  int modp_id, bool permit_manconn)
 {
 	/*	Policy: default to 3DES */
@@ -316,6 +317,7 @@ static void
 alg_info_ah_add (struct alg_info *alg_info,
 		  int ealg_id, int ek_bits,
 		  int aalg_id, int ak_bits,
+                 int prfalg_id UNUSED,
 		  int modp_id, bool permit_manconn)
 {
     if(aalg_id > 0 ||
@@ -605,7 +607,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group)
 		    , bool permitike)
 {
-	int ealg_id, aalg_id;
+    int ealg_id, aalg_id, prfalg_id;
 	int modp_id = 0;
 
 	ealg_id=aalg_id=-1;
@@ -662,6 +664,9 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   p_ctx->aalg_buf,
 				   aalg_id));
 	}
+
+        prfalg_id = aalg_id;
+
 	if (p_ctx->modp_getbyname && *p_ctx->modp_buf) {
 	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf));
 	    if (modp_id<0) {
@@ -683,6 +688,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 	(*alg_info_add)(alg_info
 			,ealg_id, p_ctx->eklen
 			,aalg_id, p_ctx->aklen
+                        ,prfalg_id
 			,modp_id, permitike);
 	return 0;
  out:
@@ -710,7 +716,7 @@ alg_info_parse_str (struct alg_info *alg_info
 
 	/* use default if nul esp string */
 	if (!*alg_str) {
-	    (*alg_info_add)(alg_info, 0, 0, 0, 0, 0, 0);
+	    (*alg_info_add)(alg_info, 0, 0, 0, 0, 0, 0, 0);
 	}
 
 	for(ret=0,ptr=alg_str;ret<ST_EOF;) {

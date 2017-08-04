@@ -100,7 +100,11 @@ out:
 }
 
 static void
-__alg_info_ike_add (struct alg_info_ike *alg_info, int ealg_id, unsigned ek_bits, int aalg_id, unsigned ak_bits, unsigned int modp_id)
+__alg_info_ike_add (struct alg_info_ike *alg_info,
+                    int ealg_id, unsigned ek_bits,
+                    int aalg_id, unsigned ak_bits,
+                    int prfalg_id,
+                    unsigned int modp_id)
 {
 	struct ike_info *ike_info=alg_info->ike;
 	unsigned cnt=alg_info->alg_info_cnt, i;
@@ -119,6 +123,7 @@ __alg_info_ike_add (struct alg_info_ike *alg_info, int ealg_id, unsigned ek_bits
 	ike_info[cnt].ike_eklen=ek_bits;
 	ike_info[cnt].ike_halg=aalg_id;
 	ike_info[cnt].ike_hklen=ak_bits;
+	ike_info[cnt].ike_prfalg=prfalg_id;
 	ike_info[cnt].ike_modp=modp_id;
 	alg_info->alg_info_cnt++;
 	DBG(DBG_CRYPT, DBG_log("__alg_info_ike_add() "
@@ -143,6 +148,7 @@ static void
 alg_info_ike_add (struct alg_info *alg_info
 		  , int ealg_id, int ek_bits
 		  , int aalg_id, int ak_bits
+                  , int prfalg_id
 		  , int modp_id, int permitmann UNUSED)
 {
 	int i=0, n_groups;
@@ -164,15 +170,16 @@ in_loop:
 				__alg_info_ike_add((struct alg_info_ike *)alg_info,
 						ealg_id, ek_bits,
 						aalg_id, ak_bits,
+                                                   prfalg_id,
 						modp_id);
 			else {
 				/*	Policy: default to MD5 and SHA */
 				__alg_info_ike_add((struct alg_info_ike *)alg_info,
 						ealg_id, ek_bits, \
-						OAKLEY_MD5, ak_bits, modp_id);
+                                                   OAKLEY_MD5, ak_bits, prfalg_id, modp_id);
 				__alg_info_ike_add((struct alg_info_ike *)alg_info,
 						ealg_id, ek_bits, \
-						OAKLEY_SHA, ak_bits, modp_id);
+                                                   OAKLEY_SHA, ak_bits, prfalg_id, modp_id);
 			}
 		}
 	}

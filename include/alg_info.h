@@ -107,6 +107,7 @@ struct alg_info_ike {
 typedef void alg_info_adder(struct alg_info *alg_info
                                , int ealg_id, int ek_bits
                                , int aalg_id, int ak_bits
+                            , int prfalg_id
                                , int modp_id
                                , bool permitmann);
 
@@ -169,11 +170,7 @@ extern int alg_info_parse_str (struct alg_info *alg_info
 			       , const char *alg_str
 			       , const char **err_p
 			       , void (*parser_init)(struct parser_context *p_ctx)
-			       , void (*alg_info_add)(struct alg_info *alg_info
-						      , int ealg_id, int ek_bits
-						      , int aalg_id, int ak_bits
-						      , int modp_id
-						      , bool permitmann)
+                               , alg_info_adder alg_info_add
 			       , const struct oakley_group_desc *(*lookup_group_f)(u_int16_t group)
 			       , bool permitmann);
 
