@@ -36,6 +36,7 @@
 #include "pluto/plutoalg.h"
 #include "pluto/crypto.h"
 #include "oswlog.h"
+#include "algparse.h"
 
 /**
  * 	Search oakley_enc_names for a match, eg:
@@ -79,6 +80,36 @@ aalg_getbyname_ike(const char *const str, int len)
 out:
 	return ret;
 }
+
+/**
+ * 	Search  prf_hash_names for a match, eg:
+ * 		"md5" <=> "PRFMD5"
+ * @param str String containing Hash name (eg: MD5, SHA1)
+ * @param len Length of Hash (eg: 256,512)
+ * @return int Registered # of Hash ALG if loaded.
+ */
+static int
+prfalg_getbyname_ike(const char *const str, int len)
+{
+	int ret=-1;
+	unsigned num;
+	if (!str||!*str)
+            goto out;
+
+        /* look for the name by literal name, upcasing first */
+	ret = enum_search_nocase(&ikev2_prf_names, str, len);
+
+	if (ret>=0) goto out;
+
+        /* let the user override with an explicit number! */
+        /* extract length that was consumed to check that it fit */
+	sscanf(str, "prf%d%n", &ret, &num);
+	if (ret >=0 && num != len)
+		ret=-1;
+out:
+	return ret;
+}
+
 /**
  * 	Search oakley_group_names for a match, eg:
  * 		"modp1024" <=> "OAKLEY_GROUP_MODP1024"
@@ -312,12 +343,12 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
     int ret;
     const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
     assert(prfname != NULL);
-    ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s-%s(%d)"
+    ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)-%s(%d)"
 	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")
 	     , ike_info->ike_ealg, eklen
 	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
 	     , ike_info->ike_halg, aklen
-	     , prfname
+                   , prfname, ike_info->ike_prfalg
 	     , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
 	     , ike_info->ike_modp);
 
@@ -387,10 +418,12 @@ parser_init_ike(struct parser_context *p_ctx)
     p_ctx->ealg_str=p_ctx->ealg_buf;
     p_ctx->aalg_str=p_ctx->aalg_buf;
     p_ctx->modp_str=p_ctx->modp_buf;
+    p_ctx->prfalg_str=p_ctx->prfalg_buf;
     p_ctx->state=ST_INI;
     p_ctx->ealg_getbyname=ealg_getbyname_ike;
     p_ctx->aalg_getbyname=aalg_getbyname_ike;
     p_ctx->modp_getbyname=modp_getbyname_ike;
+    p_ctx->prfalg_getbyname=prfalg_getbyname_ike;
     p_ctx->ealg_permit=TRUE;
     p_ctx->aalg_permit=TRUE;
 }

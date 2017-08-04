@@ -33,6 +33,7 @@
 #include "alg_info.h"
 #include "oswlog.h"
 #include "oswalloc.h"
+#include "algparse.h"
 
 #ifdef HAVE_LIBNSS
 #include "oswconf.h"
@@ -153,6 +154,7 @@ alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int
 	ret=enum_search(ed, buf);
 	return ret;
 }
+
 /*
  * 	Search enum_name array with in prefixed and postfixed uppercase
  */
@@ -339,26 +341,28 @@ alg_info_ah_add (struct alg_info *alg_info,
     }
 }
 
-static const char *parser_state_esp_names[] = {
-	"ST_INI",
-	"ST_INI_AA",
-	"ST_EA",
-	"ST_EA_END",
-	"ST_EK",
-	"ST_EK_END",
-	"ST_AA",
-	"ST_AA_END",
-	"ST_AK",
-	"ST_AK_END",
-	"ST_MOPD",
-	"ST_FLAG_STRICT",
-	"ST_END",
-	"ST_EOF",
-	"ST_ERR"
+static const char *parser_state_names[] = {
+    "ST_INI",            /* start here for IKE and ESP */
+    "ST_INI_AA",         /* start here for AH */
+    "ST_EA",             /* Encryption Algorithm start */
+    "ST_EA_END",         /* end */
+    "ST_EK",             /* enc. algorithm key size */
+    "ST_EK_END",         /* end of above */
+    "ST_AA",             /* start of authentication/integrity algorightm */
+    "ST_AA_END",         /* end */
+    "ST_AK",             /* authorization key size */
+    "ST_AK_END",         /* end of above */
+    "ST_PRF",            /* Pseudo-random-function (PRF) start */
+    "ST_PRF_END",        /* end of PRF */
+    "ST_MOPD",           /* start of DH group name */
+    "ST_FLAG_STRICT",    /* strict flag starts here */
+    "ST_END",            /* all done */
+    "ST_EOF",            /* hit end of data prematurely */
+    "ST_ERR"
 };
 
-static const char *parser_state_name_esp(enum parser_state_esp state) {
-	return parser_state_esp_names[state];
+static const char *parser_state_name(enum parser_state_esp state) {
+	return parser_state_names[state];
 }
 
 static inline void parser_set_state(struct parser_context *p_ctx, enum parser_state_esp state) {
@@ -386,6 +390,7 @@ parser_machine(struct parser_context *p_ctx)
 	    case ST_EK:
 	    case ST_AA:
 	    case ST_AK:
+	    case ST_PRF:
 	    case ST_MODP:
 	    case ST_FLAG_STRICT:
 		{
@@ -498,15 +503,12 @@ parser_machine(struct parser_context *p_ctx)
 		parser_set_state(p_ctx, ST_AK);
 		goto re_eval;
 	    }
-	    /* Only allow modpXXXX string if we have
-	     * a modp_getbyname method
+	    /* Only allow modpXXXX or PRF string if we have
+	     * a modp_getbyname method and a prfalg_getbyname
 	     */
-	    if ((p_ctx->modp_getbyname) && isalpha(ch)) {
-		parser_set_state(p_ctx, ST_MODP);
-		goto re_eval;
-	    }
 	    p_ctx->err="Non initial digit found for auth keylen";
-	    goto err;
+            goto consider_prf_modp;
+
 	case ST_AK:
 	    if (ch=='-'||ch==';') {
 		parser_set_state(p_ctx, ST_AK_END);
@@ -518,23 +520,37 @@ parser_machine(struct parser_context *p_ctx)
 	    }
 	    p_ctx->err="Non digit found for auth keylen";
 	    goto err;
+
 	case ST_AK_END:
-	    /* Only allow modpXXXX string if we have
-	     * a modp_getbyname method
-	     */
-	    if ((p_ctx->modp_getbyname) && isalpha(ch)) {
-		parser_set_state(p_ctx, ST_MODP);
+	    p_ctx->err="Non alpha char found after auth keylen";
+        consider_prf_modp:
+	    if ((p_ctx->modp_getbyname) && (p_ctx->prfalg_getbyname) && isalpha(ch)) {
+		parser_set_state(p_ctx, ST_PRF);
 		goto re_eval;
 	    }
-	    p_ctx->err="Non alpha char found after auth keylen";
 	    goto err;
+
+        case ST_PRF:
+            if(ch=='-') {
+                parser_set_state(p_ctx, ST_MODP);
+                break;
+            }
+            /* assume string is PRF, and if it does not start with PRF, skip to modp */
+	    if (isalnum(ch)) {
+		*(p_ctx->prfalg_str++)=ch;
+		break;
+	    }
+	    p_ctx->err="Non alphanum char found in prf string";
+	    goto err;
+
 	case ST_MODP:
 	    if (isalnum(ch)) {
 		*(p_ctx->modp_str++)=ch;
 		break;
 	    }
-	    p_ctx->err="Non alphanum char found after in modp string";
+	    p_ctx->err="Non alphanum char found in modp string";
 	    goto err;
+
 	case ST_FLAG_STRICT:
 	    if (ch == 0) {
 		parser_set_state(p_ctx, ST_END);
@@ -665,9 +681,25 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   aalg_id));
 	}
 
-        prfalg_id = aalg_id;
+        modp_id = -1;
+        if(p_ctx->prfalg_getbyname && *p_ctx->prfalg_buf) {
+            prfalg_id = p_ctx->prfalg_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
 
-	if (p_ctx->modp_getbyname && *p_ctx->modp_buf) {
+            if(prfalg_id < 0) {
+                /* see if it's a modp algorithm! */
+                modp_id = p_ctx->modp_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
+                if(modp_id < 0) {
+                    DBG_log("algo parse: %s is not valid PRF algorithm nor modp group",
+                            p_ctx->prfalg_buf);
+                    p_ctx->err="invalid PRF algorithm found";
+                }
+                prfalg_id = aalg_id;
+            }
+        } else {
+            prfalg_id = aalg_id;
+        }
+
+	if (modp_id == -1 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
 	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf));
 	    if (modp_id<0) {
 		p_ctx->err="modp group not found";
@@ -678,11 +710,11 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   "modp_getbyname(\"%s\")=%d",
 				   p_ctx->modp_buf,
 				   modp_id));
+        }
 
-	    if (modp_id && !lookup_group(modp_id)) {
-		p_ctx->err="found modp group id, but not supported";
-		goto out;
-	    }
+        if (modp_id && !lookup_group(modp_id)) {
+            p_ctx->err="found modp group id, but not supported";
+            goto out;
 	}
 
 	(*alg_info_add)(alg_info
@@ -729,7 +761,6 @@ alg_info_parse_str (struct alg_info *alg_info
 
 	    case ST_END:
 	    case ST_EOF:
-
 		DBG(DBG_CRYPT, DBG_log("alg_info_parse_str() "
 				       "ealg_buf=%s aalg_buf=%s "
 				       "eklen=%d  aklen=%d",
@@ -760,7 +791,7 @@ alg_info_parse_str (struct alg_info *alg_info
 			 " (old_state=%s)",
 			 ctx.err,
 			 (int)(ptr-alg_str-1), alg_str ,
-			 parser_state_name_esp(ctx.old_state) );
+			 parser_state_name(ctx.old_state) );
 
 		goto err;
 	    default:
