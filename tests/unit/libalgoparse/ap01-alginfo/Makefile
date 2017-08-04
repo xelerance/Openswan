@@ -46,3 +46,6 @@ update:
 
 
 
+# Local Variables:
+# compile-command: "make check"
+# End:
