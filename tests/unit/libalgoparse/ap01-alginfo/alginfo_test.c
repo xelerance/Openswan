@@ -84,13 +84,13 @@ struct artab {
   bool  err;            /* if TRUE, then err shall be set */
 } atodatatab[] = {
   { "3des-md5-modp1024",
-    "3DES_CBC(5)_000-MD5(1)_000-MODP1024(2); flags=-strict", FALSE,},
+    "3DES_CBC(5)_000-MD5(1)_000-PRFMD5(1)-MODP1024(2); flags=-strict", FALSE,},
   { "aes-md5-modp1024",
-    "AES_CBC(7)_000-MD5(1)_000-MODP1024(2); flags=-strict",  FALSE,},
+    "AES_CBC(7)_000-MD5(1)_000-PRFMD5(1)-MODP1024(2); flags=-strict",  FALSE,},
   { "aes-sha1-modp1024",
-    "AES_CBC(7)_000-SHA1(2)_000-MODP1024(2); flags=-strict", FALSE,},
+    "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1024(2); flags=-strict", FALSE,},
   { "aes-sha1-modp1536",
-    "AES_CBC(7)_000-SHA1(2)_000-MODP1536(5); flags=-strict", FALSE,},
+    "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1536(5); flags=-strict", FALSE,},
 
   /* a modern definition from draft-ietf-ipsecme-rfc7321bis/ */
   { "aes256-sha256-prfsha256-modp2048",
