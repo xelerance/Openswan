@@ -99,14 +99,14 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		alg_info_snprint(buf, sizeof(buf)-1,
 				 (struct alg_info *)c->alg_info_ike, TRUE);
 		whack_log(RC_COMMENT
-		    , "\"%s\"%s:   IKE algorithms wanted: %s"
+		    , "\"%s\"%s:   IKEv2 algorithms wanted: %s"
 		    , c->name
 		    , instance
 		    , buf);
 
 		alg_info_snprint_ike(buf, sizeof(buf), c->alg_info_ike);
 		whack_log(RC_COMMENT
-		    , "\"%s\"%s:   IKE algorithms found:  %s"
+		    , "\"%s\"%s:   IKEv2 algorithms found:  %s"
 		    , c->name
 		    , instance
 		    , buf);
