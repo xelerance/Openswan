@@ -791,27 +791,8 @@ static const char *const oakley_enc_name[] = {
 	"OAKLEY_AES_CBC",
     };
 
-#ifdef NO_EXTRA_IKE
 enum_names oakley_enc_names =
     { OAKLEY_DES_CBC, OAKLEY_AES_CBC, oakley_enc_name, NULL };
-#else
-static const char *const oakley_enc_name_draft_aes_cbc_02[] = {
-	"OAKLEY_MARS_CBC"	/*	65001	*/,
-	"OAKLEY_RC6_CBC"     	/*	65002	*/,
-	"OAKLEY_ID_65003"	/*	65003	*/,
-	"OAKLEY_SERPENT_CBC"	/*	65004	*/,
-	"OAKLEY_TWOFISH_CBC"	/*	65005	*/,
-};
-static const char *const oakley_enc_name_ssh[] = {
-	"OAKLEY_TWOFISH_CBC_SSH",
-};
-enum_names oakley_enc_names_ssh =
-    { 65289, 65289, oakley_enc_name_ssh, NULL };
-enum_names oakley_enc_names_draft_aes_cbc_02 =
-    { 65001, 65005, oakley_enc_name_draft_aes_cbc_02, &oakley_enc_names_ssh };
-enum_names oakley_enc_names =
-    { OAKLEY_DES_CBC, OAKLEY_AES_CBC, oakley_enc_name, &oakley_enc_names_draft_aes_cbc_02 };
-#endif
 
 /* Oakley Hash Algorithm attribute */
 
@@ -898,40 +879,28 @@ static const char *const oakley_group_name[] = {
 	"OAKLEY_GROUP_MODP1536",
     };
 
-static const char *const oakley_group_name_rfc3526[] = {
+/* from rfc3526, rfc5114 and rfc5903 */
+static const char *const oakley_group_name_rfc3526_rfc5114_rfc5903[] = {
 	"OAKLEY_GROUP_MODP2048",
 	"OAKLEY_GROUP_MODP3072",
 	"OAKLEY_GROUP_MODP4096",
 	"OAKLEY_GROUP_MODP6144",
-	"OAKLEY_GROUP_MODP8192"
-};
-
-#ifdef USE_MODP_RFC5114
-static const char *const oakley_group_name_rfc5114[] = {
+	"OAKLEY_GROUP_MODP8192",
+        "OAKLEY_GROUP_ECP256",
+        "OAKLEY_GROUP_ECP384",
+        "OAKLEY_GROUP_ECP512",
         "OAKLEY_GROUP_DH22",
         "OAKLEY_GROUP_DH23",
         "OAKLEY_GROUP_DH24"
 };
-#endif
 
-#ifdef USE_MODP_RFC5114
-enum_names oakley_group_names_rfc5114 =
-    { OAKLEY_GROUP_DH22, OAKLEY_GROUP_DH24,
-            oakley_group_name_rfc5114, NULL };
-#endif
-
-enum_names oakley_group_names_rfc3526 =
-    { OAKLEY_GROUP_MODP2048, OAKLEY_GROUP_MODP8192,
-	    oakley_group_name_rfc3526,
-#ifdef USE_MODP_RFC5114
-	    &oakley_group_names_rfc5114 };
-#else
-	    NULL };
-#endif
+enum_names oakley_group_names_rfc3526_rfc5114_rfc5903 =
+    { OAKLEY_GROUP_MODP2048, OAKLEY_GROUP_DH24,
+            oakley_group_name_rfc3526_rfc5114_rfc5903, NULL };
 
 enum_names oakley_group_names =
     { OAKLEY_GROUP_MODP768, OAKLEY_GROUP_MODP1536,
-	    oakley_group_name, &oakley_group_names_rfc3526 };
+	    oakley_group_name, &oakley_group_names_rfc3526_rfc5114_rfc5903 };
 
 /* Oakley Group Type attribute */
 
