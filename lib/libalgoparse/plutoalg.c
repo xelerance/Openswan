@@ -165,10 +165,30 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 /*
  * 	Proposals will be built by looping over default_ike_groups array and
  * 	merging alg_info (ike_info) contents
+ *
+ * defaults according to:  https://datatracker.ietf.org/doc/draft-ietf-ipsecme-rfc4307bis/
  */
 static int default_ike_groups[] = {
+    OAKLEY_GROUP_MODP2048,          /* MUST */
+    /* OAKLEY_GROUP_ECP256, */
+    OAKLEY_GROUP_MODP1536,          /* SHOULD NOT, needed for backwards compatible */
+    OAKLEY_GROUP_MODP3072,          /* included for future proofing */
+    /* OAKLEY_GROUP_ECP384, */
+    /* OAKLEY_GROUP_ECP512, */
+};
+
+static int default_prf_algs[] = {
+    IKEv2_PRF_HMAC_SHA2_256,        /* MUST */
+    IKEv2_PRF_HMAC_SHA2_512,        /* SHOULD+ */
+    IKEv2_PRF_HMAC_SHA1             /* SHOULD- */
+};
+static int default_integ_algs[] = {
 	OAKLEY_GROUP_MODP1536,
-	OAKLEY_GROUP_MODP1024
+	OAKLEY_GROUP_MODP2048
+};
+static int default_cipher_algs[] = {
+	OAKLEY_GROUP_MODP1536,
+	OAKLEY_GROUP_MODP2048
 };
 
 /*
@@ -181,38 +201,58 @@ alg_info_ike_add (struct alg_info *alg_info
                   , int prfalg_id
 		  , int modp_id, int permitmann UNUSED)
 {
-	int i=0, n_groups;
-	n_groups=elemsof(default_ike_groups);
-	/* if specified modp_id avoid loop over default_ike_groups */
-	if (modp_id) {
-		n_groups=0;
-		goto in_loop;
-	}
+    int n_groups, n_prfs, n_integs, n_ciphers;
+    int i_group, i_prf, i_integ, i_cipher;
+    int *groups, *prfs, *integs, *ciphers;
 
-	for (;n_groups--;i++) {
-		modp_id=default_ike_groups[i];
-in_loop:
-		/*	Policy: default to 3DES */
-		if (ealg_id==0)
-			ealg_id=OAKLEY_3DES_CBC;
-		if (ealg_id>0) {
-			if (aalg_id>0)
-				__alg_info_ike_add((struct alg_info_ike *)alg_info,
-						ealg_id, ek_bits,
-						aalg_id, ak_bits,
-                                                   prfalg_id,
-						modp_id);
-			else {
-				/*	Policy: default to MD5 and SHA */
-				__alg_info_ike_add((struct alg_info_ike *)alg_info,
-						ealg_id, ek_bits, \
-                                                   OAKLEY_MD5, ak_bits, prfalg_id, modp_id);
-				__alg_info_ike_add((struct alg_info_ike *)alg_info,
-						ealg_id, ek_bits, \
-                                                   OAKLEY_SHA, ak_bits, prfalg_id, modp_id);
-			}
+    n_groups=elemsof(default_ike_groups);
+    groups  =default_ike_groups;
+    n_prfs  =elemsof(default_prf_algs);
+    prfs    =default_prf_algs;
+    n_integs=elemsof(default_integ_algs);
+    integs  =default_integ_algs;
+    n_ciphers=elemsof(default_cipher_algs);
+    ciphers =default_cipher_algs;
+
+    /* if specified modp_id avoid loop over default_ike_groups */
+    if(modp_id) {
+        n_groups=1;
+        groups = &modp_id;
+    }
+    if(prfalg_id) {
+        n_prfs=1;
+        prfs  = &prfalg_id;
+    }
+    if(aalg_id) {
+        n_integs = 1;
+        integs= &aalg_id;
+    }
+    if(ealg_id) {
+        n_ciphers = 1;
+        ciphers = &ealg_id;
+    }
+
+    for (i_group=0; i_group < n_groups; i_group++) {
+        int x_modp_id = groups[i_group];
+
+        for(i_prf=0; i_prf < n_prfs; i_prf++) {
+            int x_prf_id = prfs[i_prf];
+
+            for(i_integ=0; i_integ < n_integs; i_integ++) {
+                int x_integ = integs[i_integ];
+
+                for(i_cipher=0; i_cipher < n_ciphers; i_cipher++) {
+                    int x_cipher = ciphers[i_cipher];
+
+                    __alg_info_ike_add((struct alg_info_ike *)alg_info,
+                                       x_cipher, ek_bits,
+                                       x_integ,  ak_bits,
+                                       x_prf_id, x_modp_id);
 		}
-	}
+            }
+        }
+    }
+
 }
 
 

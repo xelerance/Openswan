@@ -21,6 +21,7 @@
 #include "openswan.h"
 #include "ike_alg.h"
 #include "plutoalg.h"
+#include "oswlog.h"
 
 struct artab;
 static void check(struct artab *r, char *buf, size_t n, err_t oops, int *status);
@@ -52,6 +53,8 @@ main(int argc, char *argv[])
         const  char *err;
 
         progname = argv[0];
+
+        set_debugging(DBG_ALL);
 
 	if (argc < 2) {
 		fprintf(stderr, "Usage: %s {alginfo|-r}\n", pgm);
