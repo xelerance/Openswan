@@ -17,6 +17,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 UNITTESTS=ap01-alginfo
+UNITTESTS+=ap02-algonames
 
 clean check pcapupdate:
 	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
