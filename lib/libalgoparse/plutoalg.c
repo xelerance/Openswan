@@ -46,8 +46,7 @@
  * @param len Length of ALG (eg: 256,512)
  * @return int Registered # of ALG if loaded.
  */
-static int
-ealg_getbyname_ike(const char *const str, int len)
+int ealg_getbyname_ike(const char *const str, int len)
 {
 	int ret=-1;
 	if (!str||!*str)
