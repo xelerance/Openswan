@@ -45,3 +45,6 @@ enum parser_state_esp {
 	ST_ERR
 };
 
+/* exported for unit tests only */
+extern int ealg_getbyname_ike(const char *const str, int len);
+
