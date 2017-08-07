@@ -22,6 +22,7 @@
 #include "ike_alg.h"
 #include "plutoalg.h"
 #include "oswlog.h"
+#include "lib/libalgoparse/algparse.h"
 
 const char *progname;
 
@@ -35,7 +36,16 @@ struct artab {
     char *ascii;		/* string to process */
     int   proto;
 } atodatatab[] = {
-    { IKEv2_TRANS_TYPE_ENCR,  "aes", IKEv2_ENCR_AES_CBC },
+    { IKEv2_TRANS_TYPE_ENCR,  "aes_cbc", IKEv2_ENCR_AES_CBC },
+    { IKEv2_TRANS_TYPE_ENCR,  "aes_ctr", IKEv2_ENCR_AES_CTR },
+    { IKEv2_TRANS_TYPE_ENCR,  "idea",    IKEv2_ENCR_IDEA },
+    { IKEv2_TRANS_TYPE_ENCR,  "aes_ccm_16", IKEv2_ENCR_AES_CCM_16 },
+    { IKEv2_TRANS_TYPE_DH,    "modp1024", OAKLEY_GROUP_MODP1024 },
+    { IKEv2_TRANS_TYPE_DH,    "modp1536", OAKLEY_GROUP_MODP1536 },
+    { IKEv2_TRANS_TYPE_DH,    "modp2048", OAKLEY_GROUP_MODP2048 },
+    { IKEv2_TRANS_TYPE_DH,    "ecp256",   OAKLEY_GROUP_ECP256 },
+    { IKEv2_TRANS_TYPE_DH,    "ecp384",   OAKLEY_GROUP_ECP384 },
+    { IKEv2_TRANS_TYPE_DH,    "ecp512",   OAKLEY_GROUP_ECP512 },
     { 0,		NULL, FALSE, },
 };
 
@@ -59,7 +69,14 @@ static void regress(void)
             continue;
         }
 
-        item = enum_search_nocase(lookup, r->ascii, strlen(r->ascii));
+        switch(r->trans_type) {
+        case IKEv2_TRANS_TYPE_ENCR:
+            item = ealg_getbyname_ike(r->ascii, strlen(r->ascii));
+            break;
+        default:
+            item = enum_search_nocase(lookup, r->ascii, strlen(r->ascii));
+        }
+
         passert(item == r->proto);
     }
 
@@ -85,10 +102,8 @@ main(int argc, char *argv[])
         const  char *err;
 
         progname = argv[0];
-        set_debugging(DBG_ALL);
 
         regress();
-
 	exit(0);
 }
 
