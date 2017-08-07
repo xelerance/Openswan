@@ -693,10 +693,10 @@ parser_alg_info_add(struct parser_context *p_ctx
                             p_ctx->prfalg_buf);
                     p_ctx->err="invalid PRF algorithm found";
                 }
-                prfalg_id = aalg_id;
+                prfalg_id = 0;
             }
         } else {
-            prfalg_id = aalg_id;
+            prfalg_id = 0;
         }
 
 	if (modp_id == -1 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
