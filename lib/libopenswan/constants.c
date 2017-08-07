@@ -530,9 +530,7 @@ static const char *const ipsec_attr_name[] = {
 	"KEY_ROUNDS",
 	"COMPRESS_DICT_SIZE",
 	"COMPRESS_PRIVATE_ALG",
-#ifdef HAVE_LABELED_IPSEC
 	"ECN_TUNNEL",
-#endif
     };
 
 static const char *const ipsec_var_attr_name[] = {
@@ -544,12 +542,9 @@ static const char *const ipsec_var_attr_name[] = {
 	NULL,
 	NULL,
 	"COMPRESS_PRIVATE_ALG (variable length)",
-#ifdef HAVE_LABELED_IPSEC
 	"NULL", /*ECN TUNNEL*/
-#endif
     };
 
-#ifdef HAVE_LABELED_IPSEC
 static const char *const ipsec_private_attr_name[] = {
 	"SECCTX" /*32001*/
 };
@@ -559,7 +554,6 @@ enum_names ipsec_private_attr_names_tv = {
 
 enum_names ipsec_private_attr_names = {
   SECCTX, SECCTX, ipsec_private_attr_name, &ipsec_private_attr_names_tv};
-#endif
 
 static enum_names ipsec_attr_desc_tv = {
     SA_LIFE_TYPE + ISAKMP_ATTR_AF_TV,
@@ -605,9 +599,7 @@ enum_names *ipsec_attr_val_descs[] = {
 	NULL,			/* KEY_ROUNDS */
 	NULL,			/* COMPRESS_DICT_SIZE */
 	NULL,			/* COMPRESS_PRIVATE_ALG */
-#ifdef HAVE_LABELED_IPSEC
 	NULL,			/*ECN_TUNNEL*/
-#endif
     };
 const unsigned int ipsec_attr_val_descs_size=elemsof(ipsec_attr_val_descs);
 
