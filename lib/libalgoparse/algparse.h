@@ -47,4 +47,4 @@ enum parser_state_esp {
 
 /* exported for unit tests only */
 extern int ealg_getbyname_ike(const char *const str, int len);
-
+extern int modp_getbyname_ike(const char *const str, int len);

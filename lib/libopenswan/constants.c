@@ -896,6 +896,7 @@ static const char *const oakley_group_name_rfc3526_rfc5114_rfc5903[] = {
         "OAKLEY_GROUP_DH23",
         "OAKLEY_GROUP_DH24"
 };
+
 /* from rfc8031 -- EdDSA curves */
 static const char *const oakley_group_name_rfc8031[] = {
 	"OAKLEY_GROUP_X25519",
@@ -913,6 +914,15 @@ enum_names oakley_group_names_rfc3526_rfc5114_rfc5903 =
 enum_names oakley_group_names =
     { OAKLEY_GROUP_MODP768, OAKLEY_GROUP_MODP1536,
 	    oakley_group_name, &oakley_group_names_rfc3526_rfc5114_rfc5903 };
+
+const struct keyword_enum_value ikev2_group_name_aliases[]={
+    { "secp256r1",   OAKLEY_GROUP_ECP256 },
+};
+
+enum_and_keyword_names ikev2_group_names = {
+ official_names: &oakley_group_names,
+ aliases: { ikev2_group_name_aliases, elemsof(ikev2_group_name_aliases) },
+};
 
 /* Oakley Group Type attribute */
 
