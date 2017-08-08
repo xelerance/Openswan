@@ -1,7 +1,6 @@
 /*
  * test case for
- *    converting from text form of ike=
- *    to a structure to represent it.
+ *    list of algorithm names
  *
  * Copyright (C) 2017 Michael Richardson <mcr@xelerance.com>
  *
@@ -58,6 +57,8 @@ struct artab {
     { IKEv2_TRANS_TYPE_DH,    "ecp256",   OAKLEY_GROUP_ECP256 },
     { IKEv2_TRANS_TYPE_DH,    "ecp384",   OAKLEY_GROUP_ECP384 },
     { IKEv2_TRANS_TYPE_DH,    "ecp512",   OAKLEY_GROUP_ECP512 },
+    { IKEv2_TRANS_TYPE_DH,    "x25519",   OAKLEY_GROUP_X25519 },
+    { IKEv2_TRANS_TYPE_DH,    "x448",     OAKLEY_GROUP_X448 },
     { 0,		NULL, FALSE, },
 };
 
@@ -125,5 +126,6 @@ main(int argc, char *argv[])
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto
+ * compile-command: "make check"
  * End:
  */

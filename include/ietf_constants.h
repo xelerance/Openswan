@@ -947,6 +947,8 @@ enum ike_trans_type_dh {
 	OAKLEY_GROUP_DH22         = 22,
 	OAKLEY_GROUP_DH23         = 23,
 	OAKLEY_GROUP_DH24         = 24,
+        OAKLEY_GROUP_X25519       = 31,
+        OAKLEY_GROUP_X448         = 32,
 };
 
 /* Oakley Group Type attribute
