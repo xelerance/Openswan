@@ -121,7 +121,7 @@ out:
  * @param len Length of Hash (eg: 1024,1536,2048)
  * @return int Registered # of MODP Group, if supported.
  */
-static int
+int
 modp_getbyname_ike(const char *const str, int len)
 {
 	int ret=-1;
@@ -129,6 +129,10 @@ modp_getbyname_ike(const char *const str, int len)
 		goto out;
 	ret=alg_enum_search_prefix(&oakley_group_names,"OAKLEY_GROUP_",str,len);
 	if (ret>=0) goto out;
+
+        ret = keyword_search(&ikev2_group_names.aliases, str);
+	if (ret>=0) goto out;
+
 	ret=alg_enum_search_ppfix(&oakley_group_names, "OAKLEY_GROUP_", " (extension)", str, len);
 out:
 	return ret;
