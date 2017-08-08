@@ -269,9 +269,6 @@ enum ikev2_trans_type_encr v1tov2_encr(int oakley)
 	return IKEv2_ENCR_CAST;
     case OAKLEY_AES_CBC:
 	return IKEv2_ENCR_AES_CBC;
-    case OAKLEY_TWOFISH_CBC_SSH:
-    case OAKLEY_TWOFISH_CBC:
-    case OAKLEY_SERPENT_CBC:
     default:
 	return IKEv2_ENCR_INVALID;
     }
