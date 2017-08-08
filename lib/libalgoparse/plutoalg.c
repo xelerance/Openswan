@@ -37,6 +37,7 @@
 #include "pluto/crypto.h"
 #include "oswlog.h"
 #include "algparse.h"
+#include "enum_names.h"
 
 /**
  * 	Search oakley_enc_names for a match, eg:
@@ -73,6 +74,10 @@ aalg_getbyname_ike(const char *const str, int len)
 		goto out;
 	ret=alg_enum_search_prefix(&oakley_hash_names,"OAKLEY_",str,len);
 	if (ret>=0) goto out;
+
+        ret = keyword_search(&ikev2_auth_alg_names.aliases, str);
+	if (ret>=0) goto out;
+
 	sscanf(str, "id%d%n", &ret, &num);
 	if (ret >=0 && num!=strlen(str))
 		ret=-1;
