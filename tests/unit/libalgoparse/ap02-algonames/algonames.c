@@ -55,6 +55,7 @@ struct artab {
     { IKEv2_TRANS_TYPE_DH,    "modp1536", OAKLEY_GROUP_MODP1536 },
     { IKEv2_TRANS_TYPE_DH,    "modp2048", OAKLEY_GROUP_MODP2048 },
     { IKEv2_TRANS_TYPE_DH,    "ecp256",   OAKLEY_GROUP_ECP256 },
+    { IKEv2_TRANS_TYPE_DH,    "secp256r1",OAKLEY_GROUP_ECP256 },
     { IKEv2_TRANS_TYPE_DH,    "ecp384",   OAKLEY_GROUP_ECP384 },
     { IKEv2_TRANS_TYPE_DH,    "ecp512",   OAKLEY_GROUP_ECP512 },
     { IKEv2_TRANS_TYPE_DH,    "x25519",   OAKLEY_GROUP_X25519 },
@@ -85,6 +86,9 @@ static void regress(void)
         switch(r->trans_type) {
         case IKEv2_TRANS_TYPE_ENCR:
             item = ealg_getbyname_ike(r->ascii, strlen(r->ascii));
+            break;
+        case IKEv2_TRANS_TYPE_DH:
+            item = modp_getbyname_ike(r->ascii, strlen(r->ascii));
             break;
         default:
             item = enum_search_nocase(lookup, r->ascii, strlen(r->ascii));
