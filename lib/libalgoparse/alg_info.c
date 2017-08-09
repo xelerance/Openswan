@@ -43,7 +43,6 @@
 struct oakley_group_desc;
 
 /* sadb/ESP aa attrib converters */
-/* Paul: but aa is two octets, is sadb? */
 enum ipsec_authentication_algo
 alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 {
@@ -67,6 +66,42 @@ alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
 		    bad_case(auth);
 	}
 	return 0;
+}
+
+/* translate IKEv2 INTEG algorithm into IKEv2 PRF algorithm */
+enum ikev2_trans_type_prf
+alg_info_ikev2_integ2prf(enum ikev2_trans_type_integ integ)
+{
+    switch(integ) {
+    case IKEv2_AUTH_KPDK_MD5:
+    case IKEv2_AUTH_HMAC_MD5_128:
+    case IKEv2_AUTH_HMAC_MD5_96:
+        return(IKEv2_PRF_HMAC_MD5);
+
+    case IKEv2_AUTH_HMAC_SHA1_160:
+    case IKEv2_AUTH_HMAC_SHA1_96:
+        return(IKEv2_PRF_HMAC_SHA1);
+
+    case IKEv2_AUTH_AES_CMAC_96:
+    case IKEv2_AUTH_AES_128_GMAC:
+    case IKEv2_AUTH_AES_192_GMAC:
+    case IKEv2_AUTH_AES_256_GMAC:
+    case IKEv2_AUTH_AES_XCBC_96:
+        return(IKEv2_PRF_AES128_XCBC);
+
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
+	return(IKEv2_PRF_HMAC_SHA2_256);
+    case IKEv2_AUTH_HMAC_SHA2_384_192:
+	return(IKEv2_PRF_HMAC_SHA2_384);
+    case IKEv2_AUTH_HMAC_SHA2_512_256:
+	return(IKEv2_PRF_HMAC_SHA2_512);
+
+    case IKEv2_AUTH_DES_MAC:
+    case IKEv2_AUTH_NONE:
+    default:
+        bad_case(integ);
+    }
+    return 0;
 }
 
 /*
@@ -682,6 +717,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 	}
 
         modp_id = -1;
+        prfalg_id = 0;
         if(p_ctx->prfalg_getbyname && *p_ctx->prfalg_buf) {
             prfalg_id = p_ctx->prfalg_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
 
@@ -695,8 +731,9 @@ parser_alg_info_add(struct parser_context *p_ctx
                 }
                 prfalg_id = 0;
             }
-        } else {
-            prfalg_id = 0;
+        }
+        if(prfalg_id == 0) {
+            prfalg_id = alg_info_ikev2_integ2prf(aalg_id);
         }
 
 	if (modp_id == -1 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
