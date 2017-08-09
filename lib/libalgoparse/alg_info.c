@@ -712,7 +712,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   modp_id));
         }
 
-        if (modp_id && !lookup_group(modp_id)) {
+        if (modp_id > 0 && lookup_group && !lookup_group(modp_id)) {
             p_ctx->err="found modp group id, but not supported";
             goto out;
 	}

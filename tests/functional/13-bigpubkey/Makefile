@@ -57,4 +57,5 @@ update:
 
 clean:
 	rm -rf OUTPUT OUTPUT/base.pid
+	-make OUTPUT
 
