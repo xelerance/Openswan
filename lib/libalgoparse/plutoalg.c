@@ -150,14 +150,18 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 	/* 	check for overflows 	*/
 	passert(cnt < elemsof(alg_info->ike));
 	/*	dont add duplicates	*/
-	for (i=0;i<cnt;i++)
-		if (	ike_info[i].ike_ealg==ealg_id &&
-			(!ek_bits || ike_info[i].ike_eklen==ek_bits) &&
-			ike_info[i].ike_halg==aalg_id &&
-			(!ak_bits || ike_info[i].ike_hklen==ak_bits) &&
-			ike_info[i].ike_modp==modp_id
-		   )
-			return;
+
+        /* search for a duplicate entry, and if found, return immediately */
+	for (i=0;i<cnt;i++) {
+            if (ike_info[i].ike_ealg==ealg_id
+                && (!ek_bits || ike_info[i].ike_eklen==ek_bits)
+                && ike_info[i].ike_halg==aalg_id
+                && (!ak_bits || ike_info[i].ike_hklen==ak_bits)
+                && ike_info[i].ike_modp==modp_id) {
+                return;
+            }
+        }
+
 	ike_info[cnt].ike_ealg=ealg_id;
 	ike_info[cnt].ike_eklen=ek_bits;
 	ike_info[cnt].ike_halg=aalg_id;
@@ -165,6 +169,7 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 	ike_info[cnt].ike_prfalg=prfalg_id;
 	ike_info[cnt].ike_modp=modp_id;
 	alg_info->alg_info_cnt++;
+
 	DBG(DBG_CRYPT, DBG_log("__alg_info_ike_add() "
 				"ealg=%d aalg=%d modp_id=%d, cnt=%d",
 				ealg_id, aalg_id, modp_id,
