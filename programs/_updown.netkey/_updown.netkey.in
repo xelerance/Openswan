@@ -400,7 +400,7 @@ doroute() {
     parms="$PLUTO_PEER_CLIENT"
     parms2=$IPRARGS
 
-    if [ -n "$PLUTO_NEXT_HOP" ]; then
+    if [ "$PLUTO_CONN_CLIENTFAMILY" = "$PLUTO_CONN_ENDFAMILY" -a -n "$PLUTO_NEXT_HOP" ]; then
 	parms2="$parms2 via $PLUTO_NEXT_HOP"
     else
         parms2="$params dev $PLUTO_INTERFACE"
@@ -415,7 +415,7 @@ doroute() {
     parms2="$parms2 $IPROUTEARGS"
 
     # make sure whe have sourceip locally in this machine
-    if [ "$1" = "replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then
+    if [ X"$1" = X"replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then
 	addsource
 	# use sourceip as route default source
 	parms2="$parms2 src ${PLUTO_MY_SOURCEIP%/*}"
