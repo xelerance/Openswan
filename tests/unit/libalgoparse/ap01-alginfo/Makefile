@@ -44,6 +44,8 @@ check:
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
+clean:
+	-rm -f algoinfo_test
 
 
 # Local Variables:
