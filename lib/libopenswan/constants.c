@@ -783,6 +783,17 @@ static const char *const ikev2_prf_name[] = {
 enum_names ikev2_prf_names =
     { IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_CMAC, ikev2_prf_name, NULL };
 
+const struct keyword_enum_value ikev2_prf_alg_aliases[]={
+    { "sha256",      IKEv2_PRF_HMAC_SHA2_256 },
+    { "sha384",      IKEv2_PRF_HMAC_SHA2_384 },
+    { "sha512",      IKEv2_PRF_HMAC_SHA2_512 },
+};
+
+enum_and_keyword_names ikev2_prf_alg_names = {
+ official_names: &ikev2_prf_names,
+ aliases: { ikev2_prf_alg_aliases, elemsof(ikev2_prf_alg_aliases) },
+};
+
 /* Oakley Encryption Algorithm attribute */
 static const char *const oakley_enc_name[] = {
 	"OAKLEY_DES_CBC",
