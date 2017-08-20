@@ -397,14 +397,33 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
 {
     int ret;
     const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
+    const char *modpname = enum_name(&oakley_group_names, ike_info->ike_modp);
+    const char *encname  = enum_name(&oakley_enc_names, ike_info->ike_ealg);
+    const char *hashname = enum_name(&oakley_hash_names, ike_info->ike_halg);
+    if(modpname != NULL) {
+        modpname += sizeof("OAKLEY_GROUP");
+    } else {
+        modpname = "inv-modp";
+    }
+    if(encname != NULL) {
+        encname  += sizeof("OAKLEY");
+    } else {
+        encname = "inv-enc";
+    }
+    if(hashname != NULL) {
+        hashname += sizeof("OAKLEY");
+    } else {
+        hashname = "inv-hash";
+    }
     assert(prfname != NULL);
+    assert(ike_info!= NULL);
     ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)-%s(%d)"
-	     , enum_name(&oakley_enc_names, ike_info->ike_ealg)+ sizeof("OAKLEY")
+                   , encname
 	     , ike_info->ike_ealg, eklen
-	     , enum_name(&oakley_hash_names, ike_info->ike_halg)+ sizeof("OAKLEY")
+	     , hashname
 	     , ike_info->ike_halg, aklen
                    , prfname, ike_info->ike_prfalg
-	     , enum_name(&oakley_group_names, ike_info->ike_modp)+ sizeof("OAKLEY_GROUP")
+                   , modpname
 	     , ike_info->ike_modp);
 
     if(usedsize) *usedsize = ret;
