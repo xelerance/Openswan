@@ -102,7 +102,9 @@ prfalg_getbyname_ike(const char *const str, int len)
 
         /* look for the name by literal name, upcasing first */
 	ret = enum_search_nocase(&ikev2_prf_names, str, len);
+	if (ret>=0) goto out;
 
+        ret = keyword_search(&ikev2_prf_alg_names.aliases, str);
 	if (ret>=0) goto out;
 
         /* let the user override with an explicit number! */
