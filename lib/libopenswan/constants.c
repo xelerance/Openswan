@@ -1530,7 +1530,7 @@ int keyword_search(const struct keyword_enum_values *kevs,
     const struct keyword_enum_value *kev;
 
     for(kevcount = kevs->valuesize, kev = kevs->values;
-        kevcount > 0 && strcasecmp(str, kev->name)==0;
+        kevcount > 0 && strcasecmp(str, kev->name)!=0;
         kev++, kevcount--);
 
     if(kevcount==0) {
