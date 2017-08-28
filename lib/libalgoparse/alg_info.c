@@ -716,29 +716,25 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   aalg_id));
 	}
 
-        modp_id = -1;
-        prfalg_id = 0;
+        modp_id   = -1;
+        prfalg_id = -1;
         if(p_ctx->prfalg_getbyname && *p_ctx->prfalg_buf) {
             prfalg_id = p_ctx->prfalg_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
 
-            if(prfalg_id < 0) {
+            if(prfalg_id <= 0) {
                 /* see if it's a modp algorithm! */
-                modp_id = p_ctx->modp_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
-                if(modp_id < 0) {
-                    DBG_log("algo parse: %s is not valid PRF algorithm nor modp group",
-                            p_ctx->prfalg_buf);
-                    p_ctx->err="invalid PRF algorithm found";
-                }
-                prfalg_id = 0;
+                strcpy(p_ctx->modp_buf, p_ctx->prfalg_buf);
+                p_ctx->prfalg_buf[0]='\0';
+                prfalg_id = -1;
             }
         }
-        if(prfalg_id == 0) {
+        if(prfalg_id == -1) {
             prfalg_id = alg_info_ikev2_integ2prf(aalg_id);
         }
 
-	if (modp_id == -1 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
+	if (modp_id <= 0 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
 	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf));
-	    if (modp_id<0) {
+	    if (modp_id <= 0) {
 		p_ctx->err="modp group not found";
 		goto out;
 	    }
