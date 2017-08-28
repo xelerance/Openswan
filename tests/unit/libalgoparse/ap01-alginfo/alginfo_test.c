@@ -132,7 +132,9 @@ char *pgm;
           alg_info_snprint(buf, sizeof(buf), alg_info_ike, TRUE);
 
           if(r->decode != NULL && strcmp(r->decode, buf) != 0) {
-            fprintf(stderr, "failed to decode: %s to %s. Got: %s\n",
+            fprintf(stderr, "failed to decode: %s\n"
+                    "  to %s. \n"
+                    "Got: %s\n",
                     r->ascii, r->decode, buf);
             status++;
             continue;
