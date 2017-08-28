@@ -93,9 +93,10 @@ out:
  * @return int Registered # of Hash ALG if loaded.
  */
 static int
-prfalg_getbyname_ike(const char *const str, int len)
+prfalg_getbyname_ike(const char *const str, const int len)
 {
 	int ret=-1;
+        int algo=0;
 	unsigned num;
 	if (!str||!*str)
             goto out;
@@ -109,9 +110,11 @@ prfalg_getbyname_ike(const char *const str, int len)
 
         /* let the user override with an explicit number! */
         /* extract length that was consumed to check that it fit */
-	sscanf(str, "prf%d%n", &ret, &num);
-	if (ret >=0 && num != len)
-		ret=-1;
+	sscanf(str, "prf%d%n", &algo, &num);
+	if (algo >=0 && num == len) {
+            ret = algo;
+        }
+
 out:
 	return ret;
 }
