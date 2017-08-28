@@ -1595,6 +1595,13 @@ enum_search_cmp(enum_names *ed, const char *str, size_t len, strcmpfunc cmp)
 	for (en=p->en_first; en<=p->en_last; en++) {
 	    ptr=p->en_names[en - p->en_first];
 	    if (ptr==0) continue;
+
+            /* the len constraint applies to the test ("str") being looked for
+             * not to the enumerated type, which must match entirely.
+             * so continue if the enumerated type does not end at that intended
+             * spot */
+            if(ptr[len] != '\0') continue;
+
 	    if (cmp(ptr, str, len)==0)
 		    return en;
 	}
