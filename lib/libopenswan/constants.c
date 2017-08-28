@@ -635,7 +635,7 @@ enum_names enc_mode_names =
     { ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS, ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS, enc_draft_mode_name, &enc_rfc_mode_names };
 
 
-/* Auth Algorithm attribute */
+/* Auth Algorithm attribute (IKEv1) */
 
 static const char *const auth_alg_name_stolen_use[] = {
 	"AUTH_ALGORITHM_NULL_KAME", /* according to our source code comments from jjo, needs verification */
