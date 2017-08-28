@@ -233,20 +233,20 @@ alg_info_ike_add (struct alg_info *alg_info
     n_ciphers=elemsof(default_cipher_algs);
     ciphers =default_cipher_algs;
 
-    /* if specified modp_id avoid loop over default_ike_groups */
-    if(modp_id) {
+    /* for each item that is in fact specified, do not loop over the defaults */
+    if(modp_id > 0) {
         n_groups=1;
         groups = &modp_id;
     }
-    if(prfalg_id) {
+    if(prfalg_id > 0) {
         n_prfs=1;
         prfs  = &prfalg_id;
     }
-    if(aalg_id) {
+    if(aalg_id  > 0) {
         n_integs = 1;
         integs= &aalg_id;
     }
-    if(ealg_id) {
+    if(ealg_id  > 0) {
         n_ciphers = 1;
         ciphers = &ealg_id;
     }
