@@ -927,8 +927,6 @@ enum ikev2_auth_method {
  */
 /* extern enum_names oakley_group_names; */
 
-typedef enum ike_trans_type_dh oakley_group_t;
-
 /*	IKEv2: you must also touch: constants.c, crypto.c */
 enum ikev2_trans_type_dh {
 	OAKLEY_GROUP_MODP768      = 1,
