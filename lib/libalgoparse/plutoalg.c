@@ -176,9 +176,9 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 	alg_info->alg_info_cnt++;
 
 	DBG(DBG_CRYPT, DBG_log("__alg_info_ike_add() "
-				"ealg=%d aalg=%d modp_id=%d, cnt=%d",
-				ealg_id, aalg_id, modp_id,
-				alg_info->alg_info_cnt));
+                               "ealg=%d aalg=%d prfalg_id=%d modp_id=%d, cnt=%d",
+                               ealg_id, aalg_id, prfalg_id, modp_id,
+                               alg_info->alg_info_cnt));
 }
 
 /*
