@@ -530,7 +530,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 }
 
 bool
-ikev2_acceptable_group(struct state *st, oakley_group_t group)
+ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group)
 {
     struct db_sa *sadb = st->st_sadb;
     struct db_v2_prop *pd;

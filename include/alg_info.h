@@ -36,7 +36,7 @@ struct ike_info {
     u_int8_t  ike_prfalg;     /* prf algorithm (IKEv2) */
     size_t    ike_eklen;      /* how many bits (of key) required by encryption algo */
     size_t    ike_hklen;      /* how many bits (of key) required by hash algo */
-    oakley_group_t ike_modp;  /* which modp group to use */
+    enum ikev2_trans_type_dh ike_modp;  /* which modp group to use */
 };
 
 #define ALG_INFO_COMMON \

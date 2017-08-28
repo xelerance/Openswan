@@ -189,7 +189,7 @@ extern struct db_sa *sa_v2_convert(struct db_sa *f);
 extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
 extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
 extern enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth);
-extern bool ikev2_acceptable_group(struct state *st, oakley_group_t group);
+extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);
 
 
 
