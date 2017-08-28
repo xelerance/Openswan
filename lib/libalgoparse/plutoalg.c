@@ -107,6 +107,10 @@ prfalg_getbyname_ike(const char *const str, const int len)
 
         ret = keyword_search(&ikev2_prf_alg_names.aliases, str);
 	if (ret>=0) goto out;
+        if(strncasecmp(str, "prf", 3)==0) {
+            ret = keyword_search(&ikev2_prf_alg_names.aliases, str+3);
+            if (ret>=0) goto out;
+        }
 
         /* let the user override with an explicit number! */
         /* extract length that was consumed to check that it fit */
