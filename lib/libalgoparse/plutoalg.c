@@ -405,9 +405,9 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
 {
     int ret;
     const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
-    const char *modpname = enum_name(&oakley_group_names, ike_info->ike_modp);
-    const char *encname  = enum_name(&oakley_enc_names, ike_info->ike_ealg);
-    const char *hashname = enum_name(&oakley_hash_names, ike_info->ike_halg);
+    const char *modpname = enum_name(ikev2_group_names.official_names, ike_info->ike_modp);
+    const char *encname  = enum_name(&trans_type_encr_names,  ike_info->ike_ealg);
+    const char *hashname = enum_name(&trans_type_integ_names, ike_info->ike_halg);
     if(modpname != NULL) {
         modpname += sizeof("OAKLEY_GROUP");
     } else {
