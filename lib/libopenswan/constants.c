@@ -1228,7 +1228,7 @@ enum_names trans_type_encr_names =
 
 const struct keyword_enum_value ikev2_encr_name_aliases[]={
     { "3des_cbc",   IKEv2_ENCR_3DES },
-    { "aes",        IKEv2_ENCR_AES_CBC },
+    { "aes",        IKEv2_ENCR_AES_CBC, 128 },
 };
 
 enum_and_keyword_names ikev2_encr_names = {
