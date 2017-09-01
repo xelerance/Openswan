@@ -41,7 +41,7 @@
 
 /**
  * 	Search oakley_enc_names for a match, eg:
- * 		"3des_cbc" <=> "OAKLEY_3DES_CBC"
+ * 		"3des"
  *
  * @param str String containing ALG name (eg: AES, 3DES)
  * @param len Length of ALG (eg: 256,512)
@@ -52,9 +52,13 @@ int ealg_getbyname_ike(const char *const str, int len)
 	int ret=-1;
 	if (!str||!*str)
 		goto out;
-	ret=alg_enum_search_prefix(&oakley_enc_names,"OAKLEY_",str,len);
+        /* look for the name by literal name, upcasing first */
+	ret = enum_search_nocase(ikev2_encr_names.official_names, str, len);
 	if (ret>=0) goto out;
-	ret=alg_enum_search_ppfix(&oakley_enc_names, "OAKLEY_", "_CBC", str, len);
+
+        ret = keyword_search(&ikev2_encr_names.aliases, str);
+	if (ret>=0) goto out;
+
 out:
 	return ret;
 }
@@ -207,12 +211,12 @@ static int default_prf_algs[] = {
     IKEv2_PRF_HMAC_SHA1             /* SHOULD- */
 };
 static int default_integ_algs[] = {
-	OAKLEY_GROUP_MODP1536,
-	OAKLEY_GROUP_MODP2048
+    IKEv2_AUTH_HMAC_SHA2_256_128,
+    IKEv2_AUTH_HMAC_SHA1_96,
 };
 static int default_cipher_algs[] = {
-	OAKLEY_GROUP_MODP1536,
-	OAKLEY_GROUP_MODP2048
+    IKEv2_ENCR_AES_CBC,
+    IKEv2_ENCR_AES_GCM_8,          /* IoT SHOULD */
 };
 
 /*
@@ -404,37 +408,52 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
 			    , int buflen)
 {
     int ret;
+    char *curbuf = buf;
+    const int   totlen = buflen;
     const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
     const char *modpname = enum_name(ikev2_group_names.official_names, ike_info->ike_modp);
-    const char *encname  = enum_name(&trans_type_encr_names,  ike_info->ike_ealg);
-    const char *hashname = enum_name(&trans_type_integ_names, ike_info->ike_halg);
+    const char *encname  = enum_name(ikev2_encr_names.official_names,  ike_info->ike_ealg);
+    const char *hashname = enum_name(ikev2_integ_names.official_names, ike_info->ike_halg);
     if(modpname != NULL) {
-        modpname += sizeof("OAKLEY_GROUP");
+        modpname += sizeof("OAKLEY_GROUP_")-1;
     } else {
         modpname = "inv-modp";
     }
-    if(encname != NULL) {
-        encname  += sizeof("OAKLEY");
-    } else {
-        encname = "inv-enc";
-    }
-    if(hashname != NULL) {
-        hashname += sizeof("OAKLEY");
-    } else {
-        hashname = "inv-hash";
-    }
     assert(prfname != NULL);
     assert(ike_info!= NULL);
-    ret = snprintf(buf, buflen-1, "%s(%d)_%03d-%s(%d)_%03d-%s(%d)-%s(%d)"
-                   , encname
-	     , ike_info->ike_ealg, eklen
-	     , hashname
-	     , ike_info->ike_halg, aklen
-                   , prfname, ike_info->ike_prfalg
-                   , modpname
-	     , ike_info->ike_modp);
+    if(eklen == 0) {
+        ret = snprintf(curbuf, buflen-1, "%s(%d)"
+                       , encname
+                       , ike_info->ike_ealg);
+    } else {
+        ret = snprintf(curbuf, buflen-1, "%s(%d)_%03d"
+                       , encname
+                       , ike_info->ike_ealg, eklen);
+    }
+    if(ret <= 0)  return "invalid ikeinfo";
+    curbuf += ret;
+    buflen -= ret;
 
-    if(usedsize) *usedsize = ret;
+    if(aklen == 0) {
+        ret = snprintf(curbuf, buflen-1, "-%s(%d)"
+                       , hashname
+                       , ike_info->ike_halg);
+    } else {
+        ret = snprintf(curbuf, buflen-1, "-%s(%d)_%03d"
+                       , hashname
+                       , ike_info->ike_halg, aklen);
+    }
+    if(ret <= 0)  return "invalid ikeinfo";
+    curbuf += ret;
+    buflen -= ret;
+
+    ret = snprintf(curbuf, buflen-1, "-%s(%d)-%s(%d)"
+                       , prfname, ike_info->ike_prfalg
+                       , modpname
+                       , ike_info->ike_modp);
+    buflen -= ret;
+
+    if(usedsize) *usedsize = (totlen - buflen);
     return buf;
 }
 

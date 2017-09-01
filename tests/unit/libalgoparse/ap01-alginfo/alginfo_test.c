@@ -21,6 +21,7 @@
 #include "openswan.h"
 #include "ike_alg.h"
 #include "plutoalg.h"
+#include "alg_info.h"
 #include "oswlog.h"
 
 struct artab;
@@ -83,23 +84,40 @@ main(int argc, char *argv[])
 
 struct artab {
   char *ascii;		/* string to process */
+    enum ikev2_trans_type_encr  encr_id;  unsigned int eklen;
+    enum ikev2_trans_type_integ hash_id;
+    enum ikev2_trans_type_prf   prf_id;
+    enum ikev2_trans_type_dh    modp_id;
   char *decode;		/* expected result after output */
   bool  err;            /* if TRUE, then err shall be set */
 } atodatatab[] = {
   { "3des-md5-modp1024",
-    "3DES_CBC(5)_000-MD5(1)_000-PRFMD5(1)-MODP1024(2); flags=-strict", FALSE,},
+    IKEv2_ENCR_3DES, 0, IKEv2_AUTH_HMAC_MD5_96,
+    IKEv2_PRF_HMAC_MD5,OAKLEY_GROUP_MODP1024,
+    "3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict", FALSE,},
+  { "3des_cbc-md5-modp1024",      /* test out the alias for encr algorithms */
+    IKEv2_ENCR_3DES, 0, IKEv2_AUTH_HMAC_MD5_96,
+    IKEv2_PRF_HMAC_MD5,OAKLEY_GROUP_MODP1024,
+    "3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict", FALSE,},
   { "aes-md5-modp1024",
+    IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_MD5_96,
+    IKEv2_PRF_HMAC_MD5,OAKLEY_GROUP_MODP1024,
     "AES_CBC(7)_000-MD5(1)_000-PRFMD5(1)-MODP1024(2); flags=-strict",  FALSE,},
   { "aes-sha1-modp1024",
+    IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_SHA1_96,
+    IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1024,
     "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1024(2); flags=-strict", FALSE,},
   { "aes-sha1-modp1536",
+    IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_SHA1_96,
+    IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1536,
     "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1536(5); flags=-strict", FALSE,},
 
   /* a modern definition from draft-ietf-ipsecme-rfc7321bis/ */
   { "aes256-sha256-prfsha256-modp2048",
+    IKEv2_ENCR_AES_CBC, 256, IKEv2_AUTH_HMAC_SHA1_96,
+    IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1536,
     "AES_CBC(7)_256-SHA2(5)_000-PRFSHA2(5)-MODP2048(11); flags=-strict", FALSE,},
-  { "foobar",           NULL, TRUE, },
-  { NULL,		NULL, FALSE, },
+  { NULL, 0,0,0,0,0,		NULL, FALSE, },
 };
 
 static void			/* should not return at all, in fact */
@@ -129,7 +147,21 @@ char *pgm;
             continue;
           }
 
-          alg_info_snprint(buf, sizeof(buf), alg_info_ike, TRUE);
+          if(alg_info_ike->ike[0].ike_ealg != r->encr_id) {
+              fprintf(stderr, "failed to decode: %s\n"
+                      "  expected encr_id: %d\n"
+                      "  got:              %d\n",
+                      r->ascii, r->encr_id, alg_info_ike->ike[0].ike_ealg);
+          }
+          if(alg_info_ike->ike[0].ike_eklen != r->eklen) {
+              fprintf(stderr, "failed to decode: %s\n"
+                      "  expected enc_len: %d\n"
+                      "  got:              %d\n",
+                      r->ascii, (int)r->eklen, (int)alg_info_ike->ike[0].ike_eklen);
+          }
+
+
+          alg_info_snprint(buf, sizeof(buf), IKETOINFO(alg_info_ike), TRUE);
 
           if(r->decode != NULL && strcmp(r->decode, buf) != 0) {
             fprintf(stderr, "failed to decode: %s\n"
