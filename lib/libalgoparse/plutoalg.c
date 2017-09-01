@@ -199,6 +199,9 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
 static int default_ike_groups[] = {
     OAKLEY_GROUP_MODP2048,          /* MUST */
     /* OAKLEY_GROUP_ECP256, */
+#if 0
+    OAKLEY_GROUP_X25519,            /* EdDSA */
+#endif
     OAKLEY_GROUP_MODP1536,          /* SHOULD NOT, needed for backwards compatible */
     OAKLEY_GROUP_MODP3072,          /* included for future proofing */
     /* OAKLEY_GROUP_ECP384, */
