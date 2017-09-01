@@ -57,6 +57,8 @@ extern enum_and_keyword_names ikev2_auth_alg_names;
 extern enum_names ikev2_prf_names;
 extern enum_and_keyword_names ikev2_prf_alg_names;
 extern enum_and_keyword_names ikev2_group_names;
+extern enum_and_keyword_names ikev2_encr_names;
+extern enum_and_keyword_names ikev2_integ_names;
 
 extern enum_names oakley_lifetime_names;
 extern enum_names oakley_enc_names;

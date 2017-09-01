@@ -770,14 +770,14 @@ enum_names oakley_lifetime_names =
 
 /* IKEv2 PRF attribute (none defined) */
 static const char *const ikev2_prf_name[] = {
-    "PRFMD5",
-    "PRFSHA1",
-    "PRFTIGER",
-    "PRFAES128XCBC"
-    "PRFSHA2_256",
-    "PRFSHA2_384",
-    "PRFSHA2_512",
-    "PRFAES128CMAC"
+    "prfmd5",
+    "prfsha1",
+    "prftiger",
+    "prfaes128xcbc"
+    "prfsha2_256",
+    "prfsha2_384",
+    "prfsha2_512",
+    "prfaes128cmac"
 };
 
 enum_names ikev2_prf_names =
@@ -1209,7 +1209,7 @@ const char *const critical_names[] = {
 
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={
-    "des-iv64",
+    "des_iv64",
     "des",
     "3des",
     "rc5",
@@ -1217,14 +1217,27 @@ const char *const trans_type_encr_name[]={
     "cast",
     "blowfish",
     "3idea",
-    "des-iv32",
+    "des_iv32",
     "res10",
     "null",
-    "aes-cbc",
-    "aes-ctr",
+    "aes_cbc",
+    "aes_ctr",
 };
 enum_names trans_type_encr_names =
 { IKEv2_ENCR_DES_IV64, IKEv2_ENCR_AES_CTR, trans_type_encr_name, NULL};
+
+const struct keyword_enum_value ikev2_encr_name_aliases[]={
+    { "3des_cbc",   IKEv2_ENCR_3DES },
+    { "aes",        IKEv2_ENCR_AES_CBC },
+};
+
+enum_and_keyword_names ikev2_encr_names = {
+ official_names: &trans_type_encr_names,
+ aliases: { ikev2_encr_name_aliases, elemsof(ikev2_encr_name_aliases) },
+};
+
+
+
 
 /* Transform-type PRF */
 const char *const trans_type_prf_name[]={
@@ -1242,26 +1255,41 @@ enum_names trans_type_prf_names =
 
 /* Transform-type Integrity */
 const char *const trans_type_integ_name[]={
-    "auth-none",
-    "auth-hmac-md5-96",
-    "auth-hmac-sha1-96",
-    "auth-des-mac",
-    "auth-kpdk-md5",
-    "auth-aes-xcbc-96",
-    "AUTH_HMAC_MD5_128",
-    "AUTH_HMAC_SHA1_160",
-    "AUTH_AES_CMAC_96",
-    "AUTH_AES_128_GMAC",
-    "AUTH_AES_192_GMAC",
-    "AUTH_AES_256_GMAC",
-    "AUTH_HMAC_SHA2_256_128",
-    "AUTH_HMAC_SHA2_384_192",
-    "AUTH_HMAC_SHA2_512_256",
+    "none",
+    "hmac_md5_96",
+    "hmac_sha1_96",
+    "des_mac",
+    "kpdk_md5",
+    "aes_xcbc_96",
+    "HMAC_MD5_128",
+    "HMAC_SHA1_160",
+    "AES_CMAC_96",
+    "AES_128_GMAC",
+    "AES_192_GMAC",
+    "AES_256_GMAC",
+    "HMAC_SHA2_256_128",
+    "HMAC_SHA2_384_192",
+    "HMAC_SHA2_512_256",
 };
 enum_names trans_type_integ_names =
 { IKEv2_AUTH_NONE, IKEv2_AUTH_HMAC_SHA2_512_256, trans_type_integ_name, NULL};
 
-/* Transform-type Integrity */
+const struct keyword_enum_value ikev2_integ_name_aliases[]={
+    { "hmac_md5",   IKEv2_AUTH_HMAC_MD5_96 },
+    { "hmac_sha1",  IKEv2_AUTH_HMAC_SHA1_96 },
+    { "sha1",       IKEv2_AUTH_HMAC_SHA1_96 },
+    { "sha256",     IKEv2_AUTH_HMAC_SHA2_256_128 },
+    { "sha384",     IKEv2_AUTH_HMAC_SHA2_384_192 },
+    { "sha512",     IKEv2_AUTH_HMAC_SHA2_512_256 },
+};
+
+enum_and_keyword_names ikev2_integ_names = {
+ official_names: &trans_type_integ_names,
+ aliases: { ikev2_integ_name_aliases, elemsof(ikev2_integ_name_aliases) },
+};
+
+
+/* Transform_type Integrity */
 const char *const trans_type_esn_name[]={
     "esn-disabled",
     "esn-enabled",

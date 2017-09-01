@@ -845,7 +845,7 @@ typedef u_int16_t ipsec_auth_t;
  * and from http://www.isi.edu/in-notes/iana/assignments/ipsec-registry
  */
 
-/* extern enum_names oakley_enc_names; (IKEv1 only) */
+/* OBSOLETED: extern enum_names oakley_enc_names; (IKEv1 only) */
 enum oakley_enc_ikev1 {
   OAKLEY_DES_CBC     =1,
   OAKLEY_IDEA_CBC    =2,
