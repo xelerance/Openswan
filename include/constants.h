@@ -137,6 +137,7 @@ extern const char *bitnamesofb(const char *const table[]
 struct keyword_enum_value {
     const char  *name;
     unsigned int value;
+    int          valueaux;
 };
 
 struct keyword_enum_values {
