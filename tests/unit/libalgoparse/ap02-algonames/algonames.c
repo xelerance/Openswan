@@ -34,7 +34,11 @@ struct artab {
     int   trans_type;
     char *ascii;		/* string to process */
     int   proto;
+    int   keysize;
 } atodatatab[] = {
+    { IKEv2_TRANS_TYPE_ENCR,  "aes", IKEv2_ENCR_AES_CBC, 128 },
+    { IKEv2_TRANS_TYPE_ENCR,  "aes128", IKEv2_ENCR_AES_CBC, 128 },
+    { IKEv2_TRANS_TYPE_ENCR,  "aes256", IKEv2_ENCR_AES_CBC, 256 },
     { IKEv2_TRANS_TYPE_ENCR,  "aes_cbc", IKEv2_ENCR_AES_CBC },
     { IKEv2_TRANS_TYPE_ENCR,  "aes_ctr", IKEv2_ENCR_AES_CTR },
     { IKEv2_TRANS_TYPE_ENCR,  "idea",    IKEv2_ENCR_IDEA },
@@ -73,6 +77,7 @@ static void regress(void)
     for (r = atodatatab; r->ascii != NULL; r++) {
         enum_names *lookup = NULL;
         unsigned int item;
+        unsigned int auxinfo;
 
         if(r->trans_type < ikev2_transid_val_descs_size) {
            lookup = ikev2_transid_val_descs[r->trans_type];
@@ -83,18 +88,22 @@ static void regress(void)
             continue;
         }
 
+        auxinfo = 0;
         switch(r->trans_type) {
         case IKEv2_TRANS_TYPE_ENCR:
-            item = ealg_getbyname_ike(r->ascii, strlen(r->ascii));
+            item = ealg_getbyname_ike(r->ascii, strlen(r->ascii), &auxinfo);
             break;
         case IKEv2_TRANS_TYPE_DH:
-            item = modp_getbyname_ike(r->ascii, strlen(r->ascii));
+            item = modp_getbyname_ike(r->ascii, strlen(r->ascii), &auxinfo);
             break;
         default:
             item = enum_search_nocase(lookup, r->ascii, strlen(r->ascii));
         }
 
         passert(item == r->proto);
+        if(r->keysize != 0) {
+            passert(auxinfo == r->keysize);
+        }
     }
 
     exit(status);
