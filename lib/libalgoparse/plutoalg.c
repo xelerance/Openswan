@@ -47,17 +47,21 @@
  * @param len Length of ALG (eg: 256,512)
  * @return int Registered # of ALG if loaded.
  */
-int ealg_getbyname_ike(const char *const str, int len)
+int ealg_getbyname_ike(const char *const str, int len, unsigned int *auxp)
 {
-	int ret=-1;
+    const struct keyword_enum_value *kev;
+    int ret=-1;
 	if (!str||!*str)
 		goto out;
         /* look for the name by literal name, upcasing first */
 	ret = enum_search_nocase(ikev2_encr_names.official_names, str, len);
 	if (ret>=0) goto out;
 
-        ret = keyword_search(&ikev2_encr_names.aliases, str);
-	if (ret>=0) goto out;
+        kev = keyword_search_aux(&ikev2_encr_names.aliases, str);
+        if(kev == NULL) goto out;
+
+        if(auxp) *auxp=kev->valueaux;
+        ret = kev->value;
 
 out:
 	return ret;
@@ -70,7 +74,7 @@ out:
  * @return int Registered # of Hash ALG if loaded.
  */
 static int
-aalg_getbyname_ike(const char *const str, int len)
+aalg_getbyname_ike(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	unsigned num;
@@ -97,7 +101,7 @@ out:
  * @return int Registered # of Hash ALG if loaded.
  */
 static int
-prfalg_getbyname_ike(const char *const str, const int len)
+prfalg_getbyname_ike(const char *const str, const int len, unsigned int *auxp)
 {
 	int ret=-1;
         int algo=0;
@@ -135,7 +139,7 @@ out:
  * @return int Registered # of MODP Group, if supported.
  */
 int
-modp_getbyname_ike(const char *const str, int len)
+modp_getbyname_ike(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	if (!str||!*str)
@@ -413,7 +417,7 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
     int ret;
     char *curbuf = buf;
     const int   totlen = buflen;
-    const char *prfname = enum_show(&ikev2_prf_names, ike_info->ike_prfalg);
+    const char *prfname  = enum_name(ikev2_prf_alg_names.official_names,ike_info->ike_prfalg);
     const char *modpname = enum_name(ikev2_group_names.official_names, ike_info->ike_modp);
     const char *encname  = enum_name(ikev2_encr_names.official_names,  ike_info->ike_ealg);
     const char *hashname = enum_name(ikev2_integ_names.official_names, ike_info->ike_halg);

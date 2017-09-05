@@ -102,21 +102,21 @@ struct artab {
   { "aes-md5-modp1024",
     IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_MD5_96,
     IKEv2_PRF_HMAC_MD5,OAKLEY_GROUP_MODP1024,
-    "AES_CBC(7)_000-MD5(1)_000-PRFMD5(1)-MODP1024(2); flags=-strict",  FALSE,},
+    "aes_cbc(12)_128-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict",  FALSE,},
   { "aes-sha1-modp1024",
     IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_SHA1_96,
     IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1024,
-    "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1024(2); flags=-strict", FALSE,},
+    "aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP1024(2); flags=-strict", FALSE,},
   { "aes-sha1-modp1536",
     IKEv2_ENCR_AES_CBC, 128, IKEv2_AUTH_HMAC_SHA1_96,
     IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1536,
-    "AES_CBC(7)_000-SHA1(2)_000-PRFSHA1(2)-MODP1536(5); flags=-strict", FALSE,},
+    "aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP1536(5); flags=-strict", FALSE,},
 
   /* a modern definition from draft-ietf-ipsecme-rfc7321bis/ */
   { "aes256-sha256-prfsha256-modp2048",
-    IKEv2_ENCR_AES_CBC, 256, IKEv2_AUTH_HMAC_SHA1_96,
-    IKEv2_PRF_HMAC_SHA1,OAKLEY_GROUP_MODP1536,
-    "AES_CBC(7)_256-SHA2(5)_000-PRFSHA2(5)-MODP2048(11); flags=-strict", FALSE,},
+    IKEv2_ENCR_AES_CBC, 256, IKEv2_AUTH_HMAC_SHA2_256_128,
+    IKEv2_PRF_HMAC_SHA2_256,OAKLEY_GROUP_MODP2048,
+    "aes_cbc(12)_256-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14); flags=-strict", FALSE,},
   { NULL, 0,0,0,0,0,		NULL, FALSE, },
 };
 
@@ -158,6 +158,27 @@ char *pgm;
                       "  expected enc_len: %d\n"
                       "  got:              %d\n",
                       r->ascii, (int)r->eklen, (int)alg_info_ike->ike[0].ike_eklen);
+          }
+
+          if(alg_info_ike->ike[0].ike_halg != r->hash_id) {
+              fprintf(stderr, "failed to decode: %s\n"
+                      "  expected hash_id: %d\n"
+                      "  got:              %d\n",
+                      r->ascii, r->hash_id, alg_info_ike->ike[0].ike_halg);
+          }
+
+          if(alg_info_ike->ike[0].ike_prfalg != r->prf_id) {
+              fprintf(stderr, "failed to decode: %s\n"
+                      "  expected prf_id: %d\n"
+                      "  got:              %d\n",
+                      r->ascii, r->prf_id, alg_info_ike->ike[0].ike_prfalg);
+          }
+
+          if(alg_info_ike->ike[0].ike_modp != r->modp_id) {
+              fprintf(stderr, "failed to decode: %s\n"
+                      "  expected encr_id: %d\n"
+                      "  got:              %d\n",
+                      r->ascii, r->modp_id, alg_info_ike->ike[0].ike_modp);
           }
 
 
