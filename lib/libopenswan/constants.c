@@ -773,7 +773,7 @@ static const char *const ikev2_prf_name[] = {
     "prfmd5",
     "prfsha1",
     "prftiger",
-    "prfaes128xcbc"
+    "prfaes128xcbc",
     "prfsha2_256",
     "prfsha2_384",
     "prfsha2_512",
@@ -1261,15 +1261,15 @@ const char *const trans_type_integ_name[]={
     "des_mac",
     "kpdk_md5",
     "aes_xcbc_96",
-    "HMAC_MD5_128",
-    "HMAC_SHA1_160",
-    "AES_CMAC_96",
-    "AES_128_GMAC",
-    "AES_192_GMAC",
-    "AES_256_GMAC",
-    "HMAC_SHA2_256_128",
-    "HMAC_SHA2_384_192",
-    "HMAC_SHA2_512_256",
+    "hmac_md5_128",
+    "hmac_sha1_160",
+    "aes_cmac_96",
+    "aes_128_gmac",
+    "aes_192_gmac",
+    "aes_256_gmac",
+    "hmac_sha2_256_128",
+    "hmac_sha2_384_192",
+    "hmac_sha2_512_256",
 };
 enum_names trans_type_integ_names =
 { IKEv2_AUTH_NONE, IKEv2_AUTH_HMAC_SHA2_512_256, trans_type_integ_name, NULL};
@@ -1551,8 +1551,8 @@ enum_name(enum_names *ed, unsigned long val)
 	return enum_name_default(ed, val, NULL);
 }
 
-int keyword_search(const struct keyword_enum_values *kevs,
-                   const char *str)
+const struct keyword_enum_value *keyword_search_aux(const struct keyword_enum_values *kevs
+                                              , const char *str)
 {
     int kevcount;
     const struct keyword_enum_value *kev;
@@ -1562,11 +1562,20 @@ int keyword_search(const struct keyword_enum_values *kevs,
         kev++, kevcount--);
 
     if(kevcount==0) {
-        return -1;
+        return NULL;
     } else {
-        return kev->value;
+        return kev;
     }
 }
+
+int keyword_search(const struct keyword_enum_values *kevs,
+                   const char *str)
+{
+    const struct keyword_enum_value *kev = keyword_search_aux(kevs, str);
+    if(kev) return kev->value;
+    return -1;
+}
+
 
 
 /* look up an enum in a starter friendly way */

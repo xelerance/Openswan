@@ -31,12 +31,14 @@ TESTNUMBER=lo06-datatot
 TESTNAME=alginfo-test
 UNITTESTARGS=-r
 
-check:
+programs ${TESTNAME}:
 	@mkdir -p OUTPUT
 	@echo CC alginfo_test.c -o ${TESTNAME}
 	@${CC} alginfo_test.c   -o ${TESTNAME} ${EXTRAFLAGS} ${EXTRALIBS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
+
+check: ${TESTNAME}
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
@@ -45,7 +47,7 @@ update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
 clean:
-	-rm -f algoinfo_test
+	-rm -f ${TESTNAME}
 
 
 # Local Variables:
