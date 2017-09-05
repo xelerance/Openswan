@@ -1,0 +1,5 @@
+cryptoI1
+*.o
+OUTPUT
+.gdb1init
+.gdbinit

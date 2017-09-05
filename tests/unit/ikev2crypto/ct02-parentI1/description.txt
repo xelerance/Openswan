@@ -1,0 +1,13 @@
+This test case is an IKEv2 initiator on I1.
+A series of different ike= algorithms are given, and the expected proposal
+is examined to see if the results are what is anticipated.
+
+
+
+
+
+
+
+
+
+
