@@ -183,8 +183,7 @@ alg_enum_search_prefix (enum_names *ed, const char *prefix, const char *str, int
 	while (str_len--&&len--&&*str) *ptr++=toupper(*str++);
 	*ptr=0;
 
-	DBG(DBG_CRYPT, DBG_log("enum_search_prefix () "
-				"calling enum_search(%p, \"%s\")", ed, buf));
+	DBG(DBG_CRYPT, DBG_log("enum_search_prefix (\"%s\")", buf));
 
 	ret=enum_search(ed, buf);
 	return ret;
@@ -218,7 +217,7 @@ alg_enum_search_ppfix (enum_names *ed, const char *prefix
  */
 #define ESP_MAGIC_ID 0x00ffff01
 static int
-ealg_getbyname_esp(const char *const str, int len)
+ealg_getbyname_esp(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	if (!str||!*str)
@@ -237,7 +236,7 @@ out:
  * 		"md5" <=> "AUTH_ALGORITHM_HMAC_MD5"
  */
 static int
-aalg_getbyname_esp(const char *const str, int len)
+aalg_getbyname_esp(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	unsigned num;
@@ -260,7 +259,7 @@ out:
 	return ret;
 }
 static int
-modp_getbyname_esp(const char *const str, int len)
+modp_getbyname_esp(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	if (!str||!*str)
@@ -658,12 +657,14 @@ parser_alg_info_add(struct parser_context *p_ctx
 		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group)
 		    , bool permitike)
 {
+    unsigned int auxinfo;
     int ealg_id, aalg_id, prfalg_id;
 	int modp_id = 0;
 
 	ealg_id=aalg_id=-1;
 	if (p_ctx->ealg_permit && *p_ctx->ealg_buf) {
-	    ealg_id=p_ctx->ealg_getbyname(p_ctx->ealg_buf, strlen(p_ctx->ealg_buf));
+            auxinfo = 0;
+	    ealg_id=p_ctx->ealg_getbyname(p_ctx->ealg_buf, strlen(p_ctx->ealg_buf), &auxinfo);
 	    if (ealg_id==ESP_MAGIC_ID) {
 		ealg_id=p_ctx->eklen;
 		p_ctx->eklen=0;
@@ -690,7 +691,9 @@ parser_alg_info_add(struct parser_context *p_ctx
 				p_ctx->eklen = p_ctx->eklen + 4 *  BITS_PER_BYTE;
 			}
 
-	    }
+	    } else if(p_ctx->eklen == 0) {
+                p_ctx->eklen = auxinfo;
+            }
 
 	    DBG(DBG_CRYPT, DBG_log("parser_alg_info_add() "
 				   "ealg_getbyname(\"%s\")=%d",
@@ -698,11 +701,16 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   ealg_id));
 	}
 	if (p_ctx->aalg_permit && *p_ctx->aalg_buf) {
-	    aalg_id=p_ctx->aalg_getbyname(p_ctx->aalg_buf, strlen(p_ctx->aalg_buf));
+            auxinfo = 0;
+	    aalg_id=p_ctx->aalg_getbyname(p_ctx->aalg_buf, strlen(p_ctx->aalg_buf), &auxinfo);
 	    if (aalg_id<0) {
 		p_ctx->err="hash_alg not found";
 		goto out;
 	    }
+
+            if(p_ctx->aklen == 0) {
+                p_ctx->aklen = auxinfo;
+            }
 
 #ifdef HAVE_LIBNSS
             if ( Pluto_IsFIPS() && ((aalg_id == OAKLEY_SHA2_256 ) ||(aalg_id == OAKLEY_SHA2_384 ) || (aalg_id == OAKLEY_SHA2_512 ))  ) {
@@ -719,7 +727,8 @@ parser_alg_info_add(struct parser_context *p_ctx
         modp_id   = -1;
         prfalg_id = -1;
         if(p_ctx->prfalg_getbyname && *p_ctx->prfalg_buf) {
-            prfalg_id = p_ctx->prfalg_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf));
+            auxinfo = 0;
+            prfalg_id = p_ctx->prfalg_getbyname(p_ctx->prfalg_buf, strlen(p_ctx->prfalg_buf), &auxinfo);
 
             if(prfalg_id <= 0) {
                 /* see if it's a modp algorithm! */
@@ -733,7 +742,8 @@ parser_alg_info_add(struct parser_context *p_ctx
         }
 
 	if (modp_id <= 0 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
-	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf));
+            auxinfo = 0;
+	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf), &auxinfo);
 	    if (modp_id <= 0) {
 		p_ctx->err="modp group not found";
 		goto out;
@@ -847,6 +857,7 @@ alg_info_discover_pfsgroup_hack(struct alg_info_esp *aie
     char *pfs_name;
     static char err_buf[256];
     int ret;
+    unsigned int auxinfo;
 
     pfs_name=index(esp_buf, ';');
 
@@ -856,7 +867,8 @@ alg_info_discover_pfsgroup_hack(struct alg_info_esp *aie
 
 	/* if pfs strings AND first char is not '0' */
 	if (*pfs_name && pfs_name[0]!='0') {
-	    ret=modp_getbyname_esp(pfs_name, strlen(pfs_name));
+            auxinfo = 0;
+	    ret=modp_getbyname_esp(pfs_name, strlen(pfs_name), &auxinfo);
 	    if (ret<0) {
 		/* Bomb if pfsgroup not found */
 		DBG(DBG_CRYPT, DBG_log("alg_info_*_create_from_str(): "
