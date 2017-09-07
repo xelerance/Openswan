@@ -17,6 +17,7 @@ addons:
       - make
       - flex
       - bison
+      - python-minimal
       - libgmp-dev
       - libgmp3-dev
       - libpcap0.8-dev
