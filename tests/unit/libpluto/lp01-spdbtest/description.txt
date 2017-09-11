@@ -1,0 +1,18 @@
+The purpose of this test case was to exercise the SADB copy code.
+The SADB structure and the copy was IKEv1 specific, and IKEv2
+versions were produced from the IKEv1.  This is limiting for the IKEv2,
+and IKEv1 is obsoleted.
+
+The test case now prints the IKEv2 default structures which are
+derived from the libalgoparse defaults.
+IKEv2 does not negotiate the AUTH mechanism (and it can even be asymmetric),
+so there is not the cross-product of authentication methods and other
+parameters needed.
+
+This test case starts by printing all of the possible IKEv2 parameters
+that are enabled by default, and then it translates them into IKEv1
+options and prints that.  The result is validated to be similiar
+to what this test case looked like when it was IKEv1 focused.
+
+
+
