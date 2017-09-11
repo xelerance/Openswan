@@ -536,6 +536,24 @@ parser_init_ike(struct parser_context *p_ctx)
     p_ctx->aalg_permit=TRUE;
 }
 
+struct alg_info *
+alg_info_ike_defaults(void)
+{
+    struct alg_info_ike *ike_info;
+
+    alg_info_ike=alloc_thing (struct alg_info_ike, "alg_info_ike");
+    if (!alg_info_ike) goto out;
+    alg_info_ike->alg_info_protoid=PROTO_ISAKMP;
+
+    /* call with all zeros, to get entire default permutation */
+    alg_info_ike_add (alg_info,0,0,
+                      0,0,
+                      0,0, 0);
+ out:
+    return IKE_TO_INFO(ike_info);
+}
+
+
 struct alg_info_ike *
 alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
 {
