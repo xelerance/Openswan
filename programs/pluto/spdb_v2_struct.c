@@ -199,19 +199,12 @@ ikev2_out_sa(pb_stream *outs
 		pb_stream at_pbs;
 		unsigned int attr_cnt;
 
-#if 0
-		XXX;
-		if() {
-		}
-#endif
-
 		memset(&t, 0, sizeof(t));
 		if(ts_cnt+1 < vpc->trans_cnt) {
 		    t.isat_np      = ISAKMP_NEXT_T;
 		} else {
 		    t.isat_np      = ISAKMP_NEXT_NONE;
 		}
-
 
 		t.isat_length = 0;
 		t.isat_type   = tr->transform_type;
@@ -944,30 +937,17 @@ ikev2_parse_parent_sa_body(
     unsigned int lastpropnum=-1;
     bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
-    struct db_sa *sadb;
     struct trans_attrs ta;
-    struct connection *c = st->st_connection;
-    int    policy_index = POLICY_ISAKMP(c->policy
-					, c->spd.this.xauth_server
-					, c->spd.this.xauth_client);
-
     struct ikev2_transform_list itl0, *itl;
 
     memset(&itl0, 0, sizeof(struct ikev2_transform_list));
     itl = &itl0;
 
     /* find the policy structures */
-    sadb = st->st_sadb;
-    if(!sadb) {
-	st->st_sadb = &oakley_sadb[policy_index];
-	sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
-				 , st->st_sadb, 0);
-	if(sadb != NULL) {
-	    st->st_sadb = sadb;
-	}
-	sadb = st->st_sadb;
+    if(!st->st_sadb) {
+        st->st_sadb = ikev2_sadb_from_alg(st->st_connection->alg_info_ike
+                                          , SADB_NOLIMIT);
     }
-    sadb = st->st_sadb = sa_v2_convert(sadb);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1035,7 +1015,7 @@ ikev2_parse_parent_sa_body(
 
 	np = proposal.isap_np;
 
-	if(ikev2_match_transform_list_parent(sadb
+	if(ikev2_match_transform_list_parent(st->st_sadb
 					     , proposal.isap_propnum
 					     , itl)) {
 
@@ -1256,11 +1236,9 @@ ikev2_parse_child_sa_body(
     itl = &itl0;
 
     /* find the policy structures */
-    p2alg = kernel_alg_makedb(c->policy
-			      , c->alg_info_esp
-			      , TRUE);
-
-    p2alg = sa_v2_convert(p2alg);
+    p2alg = ikev2_kernel_alg_makedb(c->policy
+                                    , c->alg_info_esp
+                                    , TRUE);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1435,11 +1413,9 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 	return STF_FATAL;
     }
 
-    p2alg = kernel_alg_makedb(policy
-			      , c->alg_info_esp
-			      , TRUE);
-
-    p2alg = sa_v2_convert(p2alg);
+    p2alg = ikev2_kernel_alg_makedb(policy
+                                    , c->alg_info_esp
+                                    , TRUE);
 
     ikev2_out_sa(outpbs
 		 , proto

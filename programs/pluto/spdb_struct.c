@@ -86,39 +86,30 @@ struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy
  *
- * Note: maxtrans is an enum, not a count
+ * Note: maxtrans is an enum, not a count, see header for reasons.
  * 	Should probably be declared an enum at some point.
  * 	-1 - ???
  * 	 0 - No limit
  * 	 1 - One proposal - period
- * 	 2 - One DH group, take first DH group and ignore any that don't match
+ * 	 2 - One DH group, take first DH group and ignore any that don't matc
  *
  */
 struct db_sa *
-oakley_alg_makedb(struct alg_info_ike *ai
-		  , struct db_sa *base
-		  , int maxtrans)
+ikev2_sadb_from_alg(struct alg_info_ike *ai
+                    , enum alg_desired_maximum maxtrans)
 {
-    /* struct db_context inprog UNUSED; */
-    struct db_sa *gsp = NULL;
-    struct db_sa *emp_sp = NULL;
+    struct db_context *dbc;
+    struct db_sa *ike_policy = NULL;
     struct ike_info *ike_info;
-    unsigned ealg, halg, modp, eklen=0;
+    unsigned ealg, halg, modp, prfalg, eklen=0;
     /* Next two are for multiple proposals in agressive mode... */
     unsigned last_modp=0, wrong_modp=0;
     struct encrypt_desc *enc_desc;
     int transcnt = 0;
     int i;
 
-    /*
-     * start by copying the proposal that would have been picked by
-     * standard defaults.
-     */
-
-    if (!ai) {
-	DBG(DBG_CRYPT,DBG_log("no IKE algorithms for this connection "));
-
-	return NULL;
+    if(ai == NULL) {
+        ai = (struct alg_info_ike *)alg_info_ike_defaults();
     }
 
     gsp = NULL;

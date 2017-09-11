@@ -27,7 +27,7 @@ struct db_attr {
 	enum ikev1_oakley_attr oakley;	/* ISAKMP_ATTR_AF_TV is implied;
 					   0 for end */
 	enum ikev1_ipsec_attr  ipsec;
-	unsigned int ikev2;
+	unsigned int ikev2;          /* one of: ikev2_trans_type_{prf,encr,dh,esn,integ} */
     } type;
     u_int16_t val;
 };
@@ -53,29 +53,33 @@ struct db_prop_conj {
 	unsigned int prop_cnt;	/* number of elements */
 };
 
+struct db_v2_attr {
+    unsigned int ikev2;
+    u_int16_t    val;
+};
+
 /* transform - IKEv2 */
 struct db_v2_trans {
-	enum ikev2_trans_type    transform_type;
-	u_int16_t                transid;	        /* Transform-Id */
-	struct db_attr *attrs;	 /* array of attributes */
-	unsigned int attr_cnt;	         /* number of elements */
+    enum ikev2_trans_type    transform_type;
+    u_int16_t                transid;	        /* Transform-Id */
+    struct db_v2_attr *attrs;	 /* array of attributes */
+    unsigned int attr_cnt;	         /* number of elements */
 };
 
 /* proposal - IKEv2 */
-/* transforms are OR of each unique transform_type */
+/* transforms are OR of each unique prop */
 struct db_v2_prop_conj {
-	u_int8_t            propnum;
-	u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
-	struct db_v2_trans *trans;	/* array (disjunction-OR) */
-	unsigned int        trans_cnt;	/* number of elements */
-	/* SPI size and value isn't part of DB */
+    u_int8_t            propnum;        /* OR with other propnum== */
+    u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
+    struct db_v2_trans *trans;	/* array (disjunction-OR) */
+    unsigned int        trans_cnt;	/* number of elements */
 };
 
-/* conjunction (AND) of proposals - IKEv2 */
-/* this is, for instance, ESP+AH, etc.    */
+/* top-level list of proposals */
 struct db_v2_prop {
-	struct db_v2_prop_conj  *props;	/* array */
-	unsigned int prop_cnt;	        /* number of elements... AND*/
+    struct db_v2_prop_conj  *props;	/* array */
+    u_int8_t     conjnum;               /* number of next conjunction */
+    unsigned int prop_cnt;	        /* number of elements... AND*/
 };
 
 /* security association */
@@ -185,12 +189,9 @@ extern void print_sa_v2_prop(struct db_v2_prop *pc);
 extern void sa_v2_print(struct db_sa *f);
 
 /* IKEv1 <-> IKEv2 things */
-extern struct db_sa *sa_v2_convert(struct db_sa *f);
-extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
-extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
-extern enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth);
+extern struct db_sa *sa_v1_convert(struct db_sa *f);
+extern int  v2tov1_encr(enum ikev2_trans_type_encr);
 extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);
-
 
 
 #endif /*  _SPDB_H_ */
