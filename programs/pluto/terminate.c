@@ -98,7 +98,7 @@ terminate_connection(const char *nm)
     struct connection *c, *n;
     int count;
 
-    c = con_by_name(nm, TRUE);
+    c = con_by_name(nm, FALSE);
 
     if(c) {
 	for (; c != NULL; c = n)
