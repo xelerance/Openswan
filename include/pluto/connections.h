@@ -211,6 +211,7 @@ struct connection {
     char *name;
     char *connalias;
     lset_t policy;
+    struct db_sa *ike_policies;
     time_t sa_ike_life_seconds;
     time_t sa_ipsec_life_seconds;
     time_t sa_rekey_margin;
