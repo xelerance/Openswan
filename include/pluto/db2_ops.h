@@ -26,6 +26,14 @@
  *    |     +-- Transform ESN ( Name = ESNs )
  *    |     +-- Transform ESN ( Name = No ESNs )
  *    |
+ *    +--- Proposal #1 ( Proto ID = AH(2), SPI size = 4,
+ *    |     |            7 transforms,      SPI = 0x052357bb )
+ *    |     |
+ *    |     +-- Transform INTEG ( Name = AUTH_HMAC_SHA1_96 )
+ *    |     +-- Transform INTEG ( Name = AUTH_AES_XCBC_96 )
+ *    |     +-- Transform ESN ( Name = ESNs )
+ *    |     +-- Transform ESN ( Name = No ESNs )
+ *    |
  *    +--- Proposal #2 ( Proto ID = ESP(3), SPI size = 4,
  *          |            4 transforms,      SPI = 0x35a1d6f2 )
  *          |
@@ -74,8 +82,11 @@ int db2_prop_init(struct db2_context *ctx
                   , int max_trans
                   , int max_attrs);
 
-/*	Free all resourses for this db */
+/*	Clear out a db object */
 void db2_destroy(struct db2_context *ctx);
+
+/*	Free a db object itself, and things contained in it */
+void db2_free(struct db2_context *ctx);
 
 /*      Start with a new proposal */
 int db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize);
