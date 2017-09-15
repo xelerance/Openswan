@@ -122,11 +122,12 @@ out:
   }
   ctx->max_trans = max_trans;
   ctx->max_attrs = max_attrs;
+  ctx->max_conj  = max_conj;
   ctx->trans_cur = ctx->trans0;
   ctx->attrs_cur = ctx->attrs0;
-  //ctx->prop.protoid = protoid;
-  //ctx->prop.trans = ctx->trans0;
-  //ctx->prop.trans_cnt = 0;
+  ctx->conj_cur  = ctx->conj0;
+  ctx->prop.props = ctx->conj0;
+  ctx->prop.prop_cnt = 0;
   return ret;
 }
 
@@ -255,23 +256,72 @@ db_attrs_expand(struct db_context *ctx, int delta_attrs)
 out:
 	return ret;
 }
+#endif
 
-/*	Allocate a new db object */
-struct db_context *
-db_prop_new(u_int8_t protoid, int max_trans, int max_attrs)
+/*	Expand storage for transforms by number delta_trans */
+static int
+db2_prop_expand(struct db2_context *ctx, int delta_conj)
 {
-	struct db_context *ctx;
-	ctx = ALLOC_BYTES_ST ( sizeof (struct db_context), "db_context", db_context_st);
-	if (!ctx) goto out;
+  /*	Start a new proposal, expand conj0 is needed */
+  int ret = -1;
+  struct db_v2_prop_conj *new_conj, *old_conj;
+  int max_conj = ctx->max_conj + delta_conj;
+  ptrdiff_t offset;
 
-	if (db_prop_init(ctx, protoid, max_trans, max_attrs) < 0) {
-		PFREE_ST(ctx, db_context_st);
-		ctx=NULL;
-	}
+  old_conj = ctx->conj0;
+  new_conj = ALLOC_BYTES_ST ( sizeof (struct db_v2_prop_conj) * max_conj,
+                              "db_context->conj (expand)", db_conj_st);
+  if (!new_conj)
+    goto out;
+  memcpy(new_conj, old_conj, ctx->max_conj * sizeof(struct db_v2_prop_conj));
+
+  /* update conj0 (obviously) */
+  ctx->conj0 = ctx->prop.props = new_conj;
+
+  /* update conj_cur (by offset) */
+  offset = (char *)(new_conj) - (char *)(old_conj);
+  {
+    char *cctx = (char *)(ctx->conj_cur);
+
+    cctx += offset;
+    ctx->conj_cur = (struct db_v2_prop_conj *)cctx;
+  }
+
+  /* update elem count */
+  ctx->max_conj = max_conj;
+  if(old_conj) {
+    PFREE_ST(old_conj, db_conj_st);
+  }
+  ret = 0;
 out:
-	return ctx;
+  return ret;
 }
 
+int
+db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
+{
+  /*	skip incrementing current conj pointer the 1st time*/
+  if (ctx->conj_cur && ctx->conj_cur->trans_cnt)
+    ctx->conj_cur++;
+
+  /*
+   *	Strategy: if more space is needed, expand by
+   *	          <current_size>/2 + 1
+   */
+  if ((ctx->conj_cur - ctx->conj0) >= ctx->max_conj) {
+    if (db2_prop_expand(ctx, ctx->max_conj/2 + 1)<0)
+      return -1;
+  }
+
+  ctx->conj_cur->protoid = protoid;
+  ctx->conj_cur->spisize = spisize;
+  ctx->conj_cur->trans   = ctx->trans_cur;
+  ctx->conj_cur->trans_cnt = 0;
+  ctx->prop.prop_cnt++;
+  return 0;
+}
+
+#if 0
 /*	Start a new transform, expand trans0 is needed */
 int
 db_trans_add(struct db_context *ctx, u_int8_t transid)
