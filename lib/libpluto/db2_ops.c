@@ -1,8 +1,8 @@
 /*
- * Dynamic db (proposal, transforms, attributes) handling.
- * Author: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
+ * Dynamic db (proposal, transforms, attributes) handling for IKEv2.
+ * based upon db_ops.c by: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  *
- * db_ops.c,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp
+ * Copyright (C) 2017: Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -23,8 +23,11 @@
  * subsecuent transforms).
  *
  * Resizing for both trans0 and attrs0 is supported:
+ * - For conj0:  quite simple, just allocate and copy trans. vector content
+ *               also update conj_cur (by offset)
  * - For trans0: quite simple, just allocate and copy trans. vector content
- *               also update trans_cur (by offset)
+ *               also update trans_cur (by offset), but also must move
+ *               all the attributes upwards.
  * - For attrs0: after allocating and copying attrs, I must rewrite each
  *               trans->attrs present in trans0; to achieve this, calculate
  *               attrs pointer offset (new minus old) and iterate over
@@ -34,9 +37,13 @@
  * db_context structure:
  * 	+---------------------+
  *	|  prop               |
+ *	|    .conj            | --+
+ *	|    .conj_cnt        |   |
+ *	+---------------------+ <-+
+ *	|  conj0              | ----> { conj#1 | ... | conj#i | ...   }
  *	|    .protoid         |
- *	|    .trans           | --+
- *	|    .trans_cnt       |   |
+ *	+---------------------+                       ^
+ *	|  conj_cur           | ----------------------' current conj.
  *	+---------------------+ <-+
  *	|  trans0             | ----> { trans#1 | ... | trans#i | ...   }
  *	+---------------------+                       ^
@@ -65,6 +72,7 @@
 #include "pluto/defs.h"
 #include "packet.h"
 #include "pluto/db2_ops.h"
+#include "oswlog.h"
 
 #include <assert.h>
 
@@ -83,6 +91,7 @@ db2_prop_init(struct db2_context *ctx
 {
   int ret=-1;
 
+  db2_destroy(ctx);  /* free up any conj0/trans0/attrs0 from before */
   ctx->conj0  = NULL;
   ctx->trans0 = NULL;
   ctx->attrs0 = NULL;
@@ -90,7 +99,7 @@ db2_prop_init(struct db2_context *ctx
   if (max_conj > 0) { /* quite silly if not */
     ctx->conj0 = ALLOC_BYTES_ST (sizeof(struct db_v2_prop_conj)*max_conj,
                                   "db_context->conj", db_conj_st);
-    if (!ctx->trans0) goto out;
+    if (!ctx->conj0) goto out;
   }
 
   if (max_trans > 0) { /* quite silly if not */
@@ -107,17 +116,9 @@ db2_prop_init(struct db2_context *ctx
   ret = 0;
 
 out:
-  if (ret < 0 && ctx->trans0) {
-    PFREE_ST(ctx->trans0, db_trans_st);
-    ctx->trans0 = NULL;
-  }
-  if (ret < 0 && ctx->attrs0) {
-    PFREE_ST(ctx->attrs0, db_trans_st);
-    ctx->attrs0 = NULL;
-  }
-  if (ret < 0 && ctx->conj0) {
-    PFREE_ST(ctx->conj0, db_trans_st);
-    ctx->conj0 = NULL;
+  if(ret <0) {
+    db2_destroy(ctx);
+    return ret;
   }
   ctx->max_trans = max_trans;
   ctx->max_attrs = max_attrs;
@@ -127,6 +128,42 @@ out:
   //ctx->prop.trans = ctx->trans0;
   //ctx->prop.trans_cnt = 0;
   return ret;
+}
+
+struct db2_context *db2_prop_new(int max_conj
+                                 , int max_trans
+                                 , int max_attrs)
+{
+  struct db2_context *new_db2;
+  new_db2 = ALLOC_BYTES_ST(sizeof(struct db2_context),
+                            "db_context->conj", db2_context);
+
+  if(new_db2 && db2_prop_init(new_db2, max_conj, max_trans, max_attrs) < 0) {
+    if(new_db2) PFREE_ST(new_db2, db2_context);
+    return NULL;
+  }
+  return new_db2;
+}
+
+/*	Clear out a db object */
+void
+db2_destroy(struct db2_context *ctx)
+{
+  if(ctx == NULL) return;
+  if (ctx->conj0)  PFREE_ST(ctx->conj0,  db_conj_st);
+  if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
+  if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
+  ctx->conj0  = NULL;
+  ctx->trans0 = NULL;
+  ctx->attrs0 = NULL;
+}
+
+/*	Free a db object itself, and things contained in it */
+void
+db2_free(struct db2_context *ctx)
+{
+  db2_destroy(ctx);
+  PFREE_ST(ctx, db_context_st);
 }
 
 #if 0
@@ -235,15 +272,6 @@ out:
 	return ctx;
 }
 
-/*	Free a db object */
-void
-db_destroy(struct db_context *ctx)
-{
-	if (ctx->trans0) PFREE_ST(ctx->trans0, db_trans_st);
-	if (ctx->attrs0) PFREE_ST(ctx->attrs0, db_attrs_st);
-	PFREE_ST(ctx, db_context_st);
-}
-
 /*	Start a new transform, expand trans0 is needed */
 int
 db_trans_add(struct db_context *ctx, u_int8_t transid)
@@ -301,65 +329,49 @@ db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 	return db_attr_add (ctx, &attr);
 }
 
+#endif
+
 /*
  * From below to end just testing stuff ....
  */
-static void db_v2_prop_print(struct db_v2_prop *p)
+static void db2_prop_print(struct db_v2_prop_conj *p)
 {
-	struct db_trans *t;
-	struct db_attr *a;
-	int ti, ai;
-	enum_names *n, *n_at, *n_av;
+  struct db_v2_trans *t;
+  struct db_v2_attr *a;
+  int ti, ai;
+  enum_names *n;
 
-	DBG_log("protoid=\"%s\"\n", enum_name(&protocol_names, p->protoid));
-	for (ti=0, t=p->trans; ti< p->trans_cnt; ti++, t++) {
-		switch( p->protoid) {
-			case PROTO_ISAKMP:
-				n=&isakmp_transformid_names;
-				break;
-			case PROTO_IPSEC_ESP:
-				n=&esp_transformid_names;
-				break;
-			case PROTO_IPSEC_AH:
-				n=&ah_transformid_names;
-				break;
-			default:
-				continue;
-		}
-		DBG_log("  transid=\"%s\"\n", enum_name(n, t->transid));
-
-		for (ai=0, a=t->attrs; ai < t->attr_cnt; ai++, a++) {
-			int i;
-			switch( p->protoid) {
-				case PROTO_ISAKMP:
-					n_at=&oakley_attr_names;
-					i=a->type|ISAKMP_ATTR_AF_TV;
-					n_av=oakley_attr_val_descs[(i)&ISAKMP_ATTR_RTYPE_MASK];
-					break;
-
-				case PROTO_IPSEC_AH:
-				case PROTO_IPSEC_ESP:
-					n_at=&ipsec_attr_names;
-					i=a->type|ISAKMP_ATTR_AF_TV;
-					n_av=ipsec_attr_val_descs[(i)&ISAKMP_ATTR_RTYPE_MASK];
-					break;
-				default:
-					continue;
-			}
-			DBG_log("    type=\"%s\" value=\"%s\"\n",
-				enum_name(n_at, i),
-				enum_name(n_av, a->val));
-		}
-	}
+  DBG_log("%u:  protoid=\"%s\" [trans: %u]\n"
+          , p->propnum
+          , enum_name(&protocol_names, p->protoid)
+          , p->trans_cnt);
+  for (ti=0, t=p->trans; ti< p->trans_cnt; ti++, t++) {
+    if(p->protoid < ikev2_transid_val_descs_size) {
+      n = ikev2_transid_val_descs[p->protoid];
+    } else {
+      continue;
+    }
+    DBG_log("    transid=\"%s\" [attrs: %u]\n"
+            , enum_name(n, t->transid)
+            , t->attr_cnt);
+    for (ai=0, a=t->attrs; ai < t->attr_cnt; ai++, a++) {
+      DBG_log("      type=\"%s\" value=\"%u\"\n",
+              enum_name(&ikev2_trans_attr_descs, a->ikev2),
+              a->val);
+    }
+  }
 
 }
 
-void db_print(struct db_context *ctx)
+void db2_print(struct db2_context *ctx)
 {
-	DBG_log("trans_cur diff=%d, attrs_cur diff=%d\n",
-			ctx->trans_cur - ctx->trans0,
-			ctx->attrs_cur - ctx->attrs0);
-	db_prop_print(&ctx->prop);
+  int i;
+  if(ctx == NULL) return;
+  DBG_log("proposals: cnt=%u (next=%u)",
+          ctx->prop.prop_cnt, ctx->prop.conjnum);
+
+  for(i=0; i < ctx->prop.prop_cnt; i++) {
+    db2_prop_print(&ctx->prop.props[i]);
+  }
 }
 
-#endif

@@ -1292,7 +1292,9 @@ const char *const trans_type_name[]={
 enum_names trans_type_names =
 { IKEv2_TRANS_TYPE_ENCR, IKEv2_TRANS_TYPE_ESN, trans_type_name, NULL};
 
-/* for each IKEv2 transform attribute,which enum_names describes its values? */
+/* for each IKEv2 transform type (aka "protocol_names"),
+   which enum_names describes its values?
+*/
 enum_names *ikev2_transid_val_descs[] = {
     NULL,
     &trans_type_encr_names, /* 1 */
