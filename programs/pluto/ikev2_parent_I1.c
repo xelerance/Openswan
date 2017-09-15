@@ -174,7 +174,7 @@ ikev2parent_outI1_withstate(struct state *st
                                     struct db_v2_trans *tr = &vpc->trans[ts_cnt];
                                     if(tr!=NULL
                                        && tr->transform_type == IKEv2_TRANS_TYPE_DH) {
-                                        groupnum = tr->transid;
+                                        groupnum = tr->value;
                                     }
                                 }
                             }

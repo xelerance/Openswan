@@ -138,6 +138,77 @@ sa_print(struct db_sa *f)
     }
 }
 
+static void
+print_sa_v2_attr(struct db_v2_attr *at)
+{
+    //const struct enum_names *en = NULL;
+
+    if(at->ikev2 == 0) {
+	return;
+    }
+
+    printf("        type: %u(%s) val: %u(%s)\n"
+	   , at->ikev2, enum_name(&ikev2_trans_attr_descs, at->ikev2)
+	   , at->val, "unknown");
+}
+
+void
+print_sa_v2_trans(struct db_v2_trans *tr)
+{
+    unsigned int i;
+    const struct enum_names *en = NULL;
+
+    if(tr->transform_type <= ikev2_transid_val_descs_size) {
+	en = ikev2_transid_val_descs[tr->transform_type];
+    }
+
+    printf("      type: %u(%s) value: %u(%s) attr_cnt: %u\n"
+	   , tr->transform_type
+	   , enum_name(&trans_type_names, tr->transform_type)
+	   , tr->value, en ? enum_name(en, tr->value) : "unknown"
+	   , tr->attr_cnt);
+    for(i=0; i<tr->attr_cnt; i++) {
+	print_sa_v2_attr(&tr->attrs[i]);
+    }
+}
+
+void
+print_sa_v2_prop_conj(struct db_v2_prop_conj *dp)
+{
+    unsigned int i;
+    printf("    proposal #%u protoid: %u (%s) cnt: %u\n"
+	   , dp->propnum
+	   , dp->protoid
+	   , enum_name(&protocol_names, dp->protoid)
+	   , dp->trans_cnt);
+    for(i=0; i<dp->trans_cnt; i++) {
+	print_sa_v2_trans(&dp->trans[i]);
+    }
+}
+
+void
+print_sa_v2_prop(struct db_v2_prop *pc)
+{
+    unsigned int i;
+    printf("  conjunctions cnt: %u\n",
+	   pc->prop_cnt);
+    for(i=0; i<pc->prop_cnt; i++) {
+	    print_sa_v2_prop_conj(&pc->props[i]);
+    }
+}
+
+void
+sa_v2_print(struct db_sa *f)
+{
+	unsigned int i;
+	printf("sav2 disjoint cnt: %u\n",
+	       f->prop_disj_cnt);
+	for(i=0; i<f->prop_disj_cnt; i++) {
+		print_sa_v2_prop(&f->prop_disj[i]);
+	}
+}
+
+
 /*
  * Local Variables:
  * c-style: pluto

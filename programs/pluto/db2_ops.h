@@ -54,8 +54,8 @@ struct db2_context {
   int                     max_trans;    /* size of trans list */
   struct db_v2_trans *trans_cur;  /* current transform ptr */
 
-  struct db_attr *attrs0;	  /* attr. list, dynamically sized */
-  struct db_attr *attrs_cur;	  /* current attribute ptr */
+  struct db_v2_attr *attrs0;	  /* attr. list, dynamically sized */
+  struct db_v2_attr *attrs_cur;	  /* current attribute ptr */
   int max_attrs;	          /* size of attrs list */
 };
 

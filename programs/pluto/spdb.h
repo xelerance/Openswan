@@ -60,8 +60,8 @@ struct db_v2_attr {
 
 /* transform - IKEv2 */
 struct db_v2_trans {
-    enum ikev2_trans_type    transform_type;
-    u_int16_t                transid;	        /* Transform-Id */
+    enum ikev2_trans_type    transform_type;    /* ENCR, PRF, etc.*/
+    u_int16_t                value;	        /* Transform-Id */
     struct db_v2_attr *attrs;	 /* array of attributes */
     unsigned int attr_cnt;	         /* number of elements */
 };
@@ -71,7 +71,8 @@ struct db_v2_trans {
 struct db_v2_prop_conj {
     u_int8_t            propnum;        /* OR with other propnum== */
     u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
-    struct db_v2_trans *trans;	/* array (disjunction-OR) */
+    u_int8_t            spisize;        /* for proposal */
+    struct db_v2_trans *trans;	     /* array (disjunction-OR when transform_type==) */
     unsigned int        trans_cnt;	/* number of elements */
 };
 
