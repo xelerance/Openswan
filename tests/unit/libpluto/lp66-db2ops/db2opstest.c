@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
 
     /* now add some stuff to it! */
     db2_prop_add(dc2, PROTO_ISAKMP, 0);
-#if 0
     db2_trans_add(dc2, IKEv2_TRANS_TYPE_ENCR, IKEv2_ENCR_AES_CBC);
 
+#if 0
     db2_attr_add(dc2,  IKEv2_KEY_LENGTH, 128);
     db2_trans_add(dc2, IKEv2_TRANS_TYPE_INTEG, IKEv2_AUTH_HMAC_SHA1_96);
     db2_trans_add(dc2, IKEv2_TRANS_TYPE_PRF,   IKEv2_PRF_HMAC_SHA1);

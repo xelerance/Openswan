@@ -208,15 +208,15 @@ ikev2_out_sa(pb_stream *outs
 
 		t.isat_length = 0;
 		t.isat_type   = tr->transform_type;
-		t.isat_transid= tr->transid;
+		t.isat_transid= tr->value;
 
 		if (!out_struct(&t, &ikev2_trans_desc, &t_pbs, &at_pbs))
 		    return_on(ret, FALSE);
 
 		for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		    struct db_attr *attr = &tr->attrs[attr_cnt];
+		    struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		    ikev2_out_attr(attr->type.ikev2, attr->val
+		    ikev2_out_attr(attr->ikev2, attr->val
 			, &ikev2_trans_attr_desc, ikev2_trans_attr_val_descs
 			, &at_pbs);
 		}
@@ -548,7 +548,7 @@ ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group)
 
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_DH:
-		if(tr->transid == group)
+		if(tr->value == group)
 		    return TRUE;
 		break;
 	    default:
@@ -598,38 +598,44 @@ spdb_v2_match_parent(struct db_sa *sadb
 	    tr = &pj->trans[tr_cnt];
 
 	    for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		struct db_attr *attr = &tr->attrs[attr_cnt];
+		struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		if (attr->type.ikev2 == IKEv2_KEY_LENGTH)
+		if (attr->ikev2 == IKEv2_KEY_LENGTH)
 			keylen = attr->val;
 	    }
 
-/* shouldn't these assignments of tr->transid be inside their if statements? */
+            /* the assignments are outside of the if, because they are
+             * used to debug things when the match fails
+             */
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
-		encrid = tr->transid;
-		if(tr->transid == encr_transform && keylen == encr_keylen)
+                encrid = tr->value;
+                if(tr->value == encr_transform && keylen == encr_keylen) {
 		    encr_matched=TRUE;
+                }
 		break;
 
 	    case IKEv2_TRANS_TYPE_INTEG:
-		integid = tr->transid;
-		if(tr->transid == integ_transform && keylen == integ_keylen)
+                integid = tr->value;
+		if(tr->value == integ_transform && keylen == integ_keylen) {
 		    integ_matched=TRUE;
-		keylen = integ_keylen;
+                }
+                keylen = integ_keylen;
 		break;
 
 	    case IKEv2_TRANS_TYPE_PRF:
-		prfid = tr->transid;
-		if(tr->transid == prf_transform && keylen == prf_keylen)
+                prfid = tr->value;
+		if(tr->value == prf_transform && keylen == prf_keylen) {
 		    prf_matched=TRUE;
-		keylen = prf_keylen;
+                }
+                keylen = prf_keylen;
 		break;
 
 	    case IKEv2_TRANS_TYPE_DH:
-		dhid = tr->transid;
-		if(tr->transid == dh_transform)
+                dhid = tr->value;
+		if(tr->value == dh_transform) {
 		    dh_matched=TRUE;
+                }
 		break;
 
 	    default:
@@ -1116,28 +1122,28 @@ spdb_v2_match_child(struct db_sa *sadb
 	    tr = &pj->trans[tr_cnt];
 
 	    for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		struct db_attr *attr = &tr->attrs[attr_cnt];
+		struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		if (attr->type.ikev2 == IKEv2_KEY_LENGTH)
+		if (attr->ikev2 == IKEv2_KEY_LENGTH)
 			keylen = attr->val;
 	    }
 
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
-		encrid = tr->transid;
-		if(tr->transid == encr_transform && keylen == encr_keylen)
+		encrid = tr->value;
+		if(tr->value == encr_transform && keylen == encr_keylen)
 		    encr_matched=TRUE;
 		break;
 
 	    case IKEv2_TRANS_TYPE_INTEG:
-		integid = tr->transid;
-		if(tr->transid == integ_transform && keylen == integ_keylen)
+		integid = tr->value;
+		if(tr->value == integ_transform && keylen == integ_keylen)
 		    integ_matched=TRUE;
 		break;
 
 	    case IKEv2_TRANS_TYPE_ESN:
-		esnid = tr->transid;
-		if(tr->transid == esn_transform)
+		esnid = tr->value;
+		if(tr->value == esn_transform)
 		    esn_matched=TRUE;
 		break;
 
