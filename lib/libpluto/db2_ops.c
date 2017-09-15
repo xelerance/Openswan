@@ -168,42 +168,6 @@ db2_free(struct db2_context *ctx)
 }
 
 #if 0
-/*	Expand storage for transforms by number delta_trans */
-static int
-db_trans_expand(struct db_context *ctx, int delta_trans)
-{
-	int ret = -1;
-	struct db_trans *new_trans, *old_trans;
-	int max_trans = ctx->max_trans + delta_trans;
-	ptrdiff_t offset;
-
-	old_trans = ctx->trans0;
-	new_trans = ALLOC_BYTES_ST ( sizeof (struct db_trans) * max_trans,
-			"db_context->trans (expand)", db_trans_st);
-	if (!new_trans)
-		goto out;
-	memcpy(new_trans, old_trans, ctx->max_trans * sizeof(struct db_trans));
-
-	/* update trans0 (obviously) */
-	ctx->trans0 = ctx->prop.trans = new_trans;
-	/* update trans_cur (by offset) */
-	offset = (char *)(new_trans) - (char *)(old_trans);
-
-	{
-	  char *cctx = (char *)(ctx->trans_cur);
-
-	  cctx += offset;
-	  ctx->trans_cur = (struct db_trans *)cctx;
-	}
-	/* update elem count */
-	ctx->max_trans = max_trans;
-	if(old_trans) {
-		PFREE_ST(old_trans, db_trans_st);
-	}
-	ret = 0;
-out:
-	return ret;
-}
 /*
  *	Expand storage for attributes by delta_attrs number AND
  *	rewrite trans->attr pointers
@@ -321,35 +285,85 @@ db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
   return 0;
 }
 
-#if 0
-/*	Start a new transform, expand trans0 is needed */
-int
-db_trans_add(struct db_context *ctx, u_int8_t transid)
+/*	Expand storage for transforms by number delta_trans */
+static int
+db2_trans_expand(struct db2_context *ctx, int delta_trans)
 {
-	/*	skip incrementing current trans pointer the 1st time*/
-	if (ctx->trans_cur && ctx->trans_cur->attr_cnt)
-		ctx->trans_cur++;
-	/*
-	 *	Strategy: if more space is needed, expand by
-	 *	          <current_size>/2 + 1
-	 *
-	 *	This happens to produce a "reasonable" sequence
-	 *	after few allocations, eg.:
-	 *	0,1,2,4,8,13,20,31,47
-	 */
-	passert(ctx->trans_cur != NULL);
-	if ((ctx->trans_cur - ctx->trans0) >= ctx->max_trans) {
-		/* XXX:jjo if fails should shout and flag it */
-		if (db_trans_expand(ctx, ctx->max_trans/2 + 1)<0)
-			return -1;
-	}
-	ctx->trans_cur->transid = transid;
-	ctx->trans_cur->attrs=ctx->attrs_cur;
-	ctx->trans_cur->attr_cnt = 0;
-	ctx->prop.trans_cnt++;
-	return 0;
+  int ret = -1;
+  struct db_v2_trans *new_trans, *old_trans;
+  int max_trans = ctx->max_trans + delta_trans;
+  ptrdiff_t offset;
+  struct db_v2_prop_conj *pc;
+  int                     pi;
+
+  old_trans = ctx->trans0;
+  new_trans = ALLOC_BYTES_ST ( sizeof (struct db_v2_trans) * max_trans,
+                               "db_context->trans (expand)", db_trans_st);
+  if (!new_trans)
+    goto out;
+  memcpy(new_trans, old_trans, ctx->max_trans * sizeof(struct db_v2_trans));
+
+  /* update trans0 (obviously) */
+  ctx->trans0 = new_trans;
+
+  /* update trans_cur (by offset) */
+  offset = (char *)(new_trans) - (char *)(old_trans);
+
+  {
+    char *cctx = (char *)(ctx->trans_cur);
+
+    cctx += offset;
+    ctx->trans_cur = (struct db_v2_trans *)cctx;
+  }
+
+  /* now walk through all the prop_conj, and adjust the pointer */
+  for (pc=ctx->prop.props, pi=0; pi < ctx->prop.prop_cnt; pc++, pi++) {
+    char *transx = (char *)(pc->trans);
+    transx += offset;
+    pc->trans = (struct db_v2_trans *)transx;
+  }
+
+  /* update elem count */
+  ctx->max_trans = max_trans;
+  if(old_trans) {
+    PFREE_ST(old_trans, db_trans_st);
+  }
+  ret = 0;
+ out:
+  return ret;
 }
 
+/*	Start a new transform, expand trans0 is needed */
+int
+db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
+{
+  /*	skip incrementing current trans pointer the 1st time*/
+  if (ctx->trans_cur && ctx->trans_cur->attr_cnt)
+    ctx->trans_cur++;
+
+  /*
+   *	Strategy: if more space is needed, expand by
+   *	          <current_size>/2 + 1
+   *
+   *	This happens to produce a "reasonable" sequence
+   *	after few allocations, eg.:
+   *	0,1,2,4,8,13,20,31,47
+   */
+  passert(ctx->trans_cur != NULL);
+  if ((ctx->trans_cur - ctx->trans0) >= ctx->max_trans) {
+    if (db2_trans_expand(ctx, ctx->max_trans/2 + 1)<0)
+      return -1;
+  }
+
+  ctx->trans_cur->transform_type = transid;
+  ctx->trans_cur->value          = value;
+  ctx->trans_cur->attrs   = ctx->attrs_cur;
+  ctx->trans_cur->attr_cnt = 0;
+  ctx->conj_cur->trans_cnt++;
+  return 0;
+}
+
+#if 0
 /*	Add attr copy to current transform, expanding attrs0 if needed */
 int
 db_attr_add(struct db_context *ctx, const struct db_attr *a)
@@ -401,8 +415,9 @@ static void db2_prop_print(struct db_v2_prop_conj *p)
     } else {
       continue;
     }
-    DBG_log("    transid=\"%s\" [attrs: %u]\n"
-            , enum_name(n, t->transid)
+    DBG_log("    %s value=\"%s\" [attrs: %u]\n"
+            , enum_name(&trans_type_names, t->transform_type)
+            , enum_name(n, t->value)
             , t->attr_cnt);
     for (ai=0, a=t->attrs; ai < t->attr_cnt; ai++, a++) {
       DBG_log("      type=\"%s\" value=\"%u\"\n",

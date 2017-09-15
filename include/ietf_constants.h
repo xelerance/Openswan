@@ -538,7 +538,7 @@ enum ikev2_protocol_names {
 };
 
 /*
- * IKEv2 proposal
+ * IKEv2 proposal (type is enum_names: trans_type_names )
  * See http://www.iana.org/assignments/ikev2-parameters
  */
 enum ikev2_trans_type {
