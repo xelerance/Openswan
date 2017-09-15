@@ -67,21 +67,20 @@ struct db_v2_trans {
 };
 
 /* proposal - IKEv2 */
-/* conjective proposals are ANDed together, are are recognized because they
- * all have the same proposal number.
- */
+/* transforms are OR of each unique prop */
 struct db_v2_prop_conj {
     u_int8_t            propnum;        /* OR with other propnum== */
     u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
+    u_int8_t            spisize;        /* for proposal */
     struct db_v2_trans *trans;	/* array (disjunction-OR) */
     unsigned int        trans_cnt;	/* number of elements */
 };
 
-/* top-level list of proposals (which are OR'ed together) */
+/* top-level list of proposals */
 struct db_v2_prop {
     struct db_v2_prop_conj  *props;	/* array */
     u_int8_t     conjnum;               /* number of next conjunction */
-    unsigned int prop_cnt;	        /* number of elements in props array */
+    unsigned int prop_cnt;	        /* number of elements in props*/
 };
 
 /* security association */
