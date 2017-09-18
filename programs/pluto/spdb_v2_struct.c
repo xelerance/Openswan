@@ -66,13 +66,14 @@
 
 /* Taken from spdb_v1_struct.c, as the format is similar */
 bool
-ikev2_out_attr(int type
+ikev2_out_attr(unsigned int type
 	, unsigned long val
 	, struct_desc *attr_desc
 	, enum_names **attr_val_descs USED_BY_DEBUG
 	, pb_stream *pbs)
 {
     struct ikev2_trans_attr attr;
+    enum_names *d;
 
     if (val >> 16 == 0)
     {
@@ -97,11 +98,12 @@ ikev2_out_attr(int type
 		return FALSE;
 	close_output_pbs(&val_pbs);
     }
-    DBG(DBG_EMITTING,
-	enum_names *d = attr_val_descs[type];
 
-	if (d != NULL)
-		DBG_log("    [%lu is %s]", val, enum_show(d, val)));
+    DBG(DBG_EMITTING,
+        if(type < ikev2_trans_attr_val_descs_size
+           && (d = attr_val_descs[type])!=NULL) {
+            DBG_log("    [%lu is %s]", val, enum_show(d, val));
+        })
     return TRUE;
 }
 

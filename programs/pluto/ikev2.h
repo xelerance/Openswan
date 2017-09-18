@@ -42,7 +42,7 @@ extern stf_status ikev2parent_outI1_withstate(struct state *st
 
 extern void ikev2_delete_out(struct state *st);
 
-bool ikev2_out_attr(int type
+bool ikev2_out_attr(unsigned int type
         , unsigned long val
         , struct_desc *attr_desc
         , enum_names **attr_val_descs USED_BY_DEBUG
