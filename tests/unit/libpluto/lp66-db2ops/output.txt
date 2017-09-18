@@ -2,7 +2,7 @@
 | proposals: cnt=1 (next=0)
 | 0:  protoid="PROTO_ISAKMP" [trans: 1] 
 |     trans-type-encr value="aes_cbc" [attrs: 1] 
-|       type="(null)" value="128" 
+|       type="KEY_LENGTH" value="128" 
 ./lp66-db2ops leak: db_context->attrs, item size: 88
 ./lp66-db2ops leak: db_context->trans, item size: 240
 ./lp66-db2ops leak: 2 * db_context->conj, item size: 88

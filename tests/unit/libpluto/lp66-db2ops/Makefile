@@ -31,14 +31,14 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 TESTNAME=lp66-db2ops
 
 
-programs:
+${TESTNAME} programs:
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
 	${CC} -o ${TESTNAME} ${EXTRAFLAGS} db2opstest.c ${EXTRALIBS}
 	@echo "file ../${TESTNAME}"       >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
-check:
+check: ${TESTNAME}
 	${COREULIMIT} && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
