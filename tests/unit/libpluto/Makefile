@@ -16,8 +16,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-UNITTESTS=lp01-spdbtest \
-	lp02-parentI1 \
+UNITTESTS=lp02-parentI1 \
 	lp03-whacksemantics \
 	lp04-nsscert  \
 	lp05-sha256cert \
