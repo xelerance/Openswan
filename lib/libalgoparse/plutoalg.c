@@ -541,16 +541,16 @@ alg_info_ike_defaults(void)
 {
     struct alg_info_ike *ike_info;
 
-    alg_info_ike=alloc_thing (struct alg_info_ike, "alg_info_ike");
-    if (!alg_info_ike) goto out;
-    alg_info_ike->alg_info_protoid=PROTO_ISAKMP;
+    ike_info=alloc_thing (struct alg_info_ike, "alg_info_ike");
+    if (!ike_info) goto out;
+    ike_info->alg_info_protoid=PROTO_ISAKMP;
 
     /* call with all zeros, to get entire default permutation */
-    alg_info_ike_add (alg_info,0,0,
+    alg_info_ike_add (IKETOINFO(ike_info),0,0,
                       0,0,
                       0,0, 0);
  out:
-    return IKE_TO_INFO(ike_info);
+    return IKETOINFO(ike_info);
 }
 
 
