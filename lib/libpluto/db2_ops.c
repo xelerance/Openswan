@@ -167,61 +167,6 @@ db2_free(struct db2_context *ctx)
   PFREE_ST(ctx, db_context_st);
 }
 
-#if 0
-/*
- *	Expand storage for attributes by delta_attrs number AND
- *	rewrite trans->attr pointers
- */
-static int
-db_attrs_expand(struct db_context *ctx, int delta_attrs)
-{
-	int ret = -1;
-	struct db_attr *new_attrs, *old_attrs;
-	struct db_trans *t;
-	unsigned int ti;
-	int max_attrs = ctx->max_attrs + delta_attrs;
-	ptrdiff_t offset;
-
-	old_attrs = ctx->attrs0;
-	new_attrs = ALLOC_BYTES_ST ( sizeof (struct db_attr) * max_attrs,
-			"db_context->attrs (expand)", db_attrs_st);
-	if (!new_attrs)
-		goto out;
-
-	memcpy(new_attrs, old_attrs, ctx->max_attrs * sizeof(struct db_attr));
-
-	/* update attrs0 and attrs_cur (obviously) */
-	offset = (char *)(new_attrs) - (char *)(old_attrs);
-
-	{
-	  char *actx = (char *)(ctx->attrs0);
-
-	  actx += offset;
-	  ctx->attrs0 = (struct db_attr *)actx;
-
-	  actx = (char *)ctx->attrs_cur;
-	  actx += offset;
-	  ctx->attrs_cur = (struct db_attr *)actx;
-	}
-
-	/* for each transform, rewrite attrs pointer by offsetting it */
-	for (t=ctx->prop.trans, ti=0; ti < ctx->prop.trans_cnt; t++, ti++) {
-	  {
-	    char *actx = (char *)(t->attrs);
-
-	    actx += offset;
-	    t->attrs = (struct db_attr *)actx;
-	  }
-	}
-	/* update elem count */
-	ctx->max_attrs = max_attrs;
-	if(old_attrs) PFREE_ST(old_attrs, db_attrs_st);
-	ret = 0;
-out:
-	return ret;
-}
-#endif
-
 /*	Expand storage for transforms by number delta_trans */
 static int
 db2_prop_expand(struct db2_context *ctx, int delta_conj)
@@ -363,37 +308,77 @@ db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
   return 0;
 }
 
-#if 0
-/*	Add attr copy to current transform, expanding attrs0 if needed */
-int
-db_attr_add(struct db_context *ctx, const struct db_attr *a)
-{
-	/*
-	 *	Strategy: if more space is needed, expand by
-	 *	          <current_size>/2 + 1
-	 */
-	if ((ctx->attrs_cur - ctx->attrs0) >= ctx->max_attrs) {
-		/* XXX:jjo if fails should shout and flag it */
-		if (db_attrs_expand(ctx, ctx->max_attrs/2 + 1) < 0)
-			return -1;
-	}
-	*ctx->attrs_cur++=*a;
-	ctx->trans_cur->attr_cnt++;
-	return 0;
-}
-/*	Add attr copy (by value) to current transform,
- *	expanding attrs0 if needed, just calls db_attr_add().
+/*
+ *	Expand storage for attributes by delta_attrs number AND
+ *	rewrite trans->attr pointers
  */
-int
-db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
+static int
+db2_attrs_expand(struct db2_context *ctx, int delta_attrs)
 {
-	struct db_attr attr;
-	attr.type.oakley = type;
-	attr.val = val;
-	return db_attr_add (ctx, &attr);
+  int ret = -1;
+  struct db_v2_attr *new_attrs, *old_attrs;
+  struct db_v2_trans *t;
+  int max_attrs = ctx->max_attrs + delta_attrs;
+  ptrdiff_t offset;
+
+  old_attrs = ctx->attrs0;
+  new_attrs = ALLOC_BYTES_ST ( sizeof (struct db_v2_attr) * max_attrs,
+                               "db_context->attrs (expand)", db_attrs_st);
+  if (!new_attrs)
+    goto out;
+
+  memcpy(new_attrs, old_attrs, ctx->max_attrs * sizeof(struct db_attr));
+
+  /* update attrs0 and attrs_cur (obviously) */
+  offset = (char *)(new_attrs) - (char *)(old_attrs);
+
+  {
+    char *actx = (char *)(ctx->attrs0);
+
+    actx += offset;
+    ctx->attrs0 = (struct db_v2_attr *)actx;
+
+    actx = (char *)ctx->attrs_cur;
+    actx += offset;
+    ctx->attrs_cur = (struct db_v2_attr *)actx;
+  }
+
+  /* for each transform, rewrite attrs pointer by offsetting it */
+  for (t=ctx->trans0; t <= ctx->trans_cur; t++) {
+    {
+      char *actx = (char *)(t->attrs);
+
+      actx += offset;
+      t->attrs = (struct db_v2_attr *)actx;
+    }
+  }
+
+  /* update elem count */
+  ctx->max_attrs = max_attrs;
+  if(old_attrs) PFREE_ST(old_attrs, db_attrs_st);
+  ret = 0;
+ out:
+  return ret;
 }
 
-#endif
+/*	Add attr copy to current transform, expanding attrs0 if needed */
+int
+db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val)
+{
+  /*
+   *	Strategy: if more space is needed, expand by
+   *	          <current_size>/2 + 1
+   */
+  if ((ctx->attrs_cur - ctx->attrs0) >= ctx->max_attrs) {
+    if (db2_attrs_expand(ctx, ctx->max_attrs/2 + 1) < 0)
+      return -1;
+  }
+  ctx->attrs_cur->ikev2 = type;
+  ctx->attrs_cur->val   = val;
+  ctx->attrs_cur++;
+  ctx->trans_cur->attr_cnt++;
+  return 0;
+}
 
 /*
  * From below to end just testing stuff ....
