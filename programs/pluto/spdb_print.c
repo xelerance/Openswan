@@ -139,17 +139,16 @@ sa_print(struct db_sa *f)
 }
 
 static void
-print_sa_v2_attr(struct db_attr *at)
+print_sa_v2_attr(struct db_v2_attr *at)
 {
     //const struct enum_names *en = NULL;
 
-    if(at->type.ikev2 == 0) {
+    if(at->ikev2 == 0) {
 	return;
     }
 
-    //en = NULL; /* XXX */
     printf("        type: %u(%s) val: %u(%s)\n"
-	   , at->type.ikev2, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
+	   , at->ikev2, enum_name(&ikev2_trans_attr_descs, at->ikev2)
 	   , at->val, "unknown");
 }
 
@@ -166,7 +165,7 @@ print_sa_v2_trans(struct db_v2_trans *tr)
     printf("      type: %u(%s) value: %u(%s) attr_cnt: %u\n"
 	   , tr->transform_type
 	   , enum_name(&trans_type_names, tr->transform_type)
-	   , tr->transid, en ? enum_name(en, tr->transid) : "unknown"
+	   , tr->value, en ? enum_name(en, tr->value) : "unknown"
 	   , tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
 	print_sa_v2_attr(&tr->attrs[i]);
