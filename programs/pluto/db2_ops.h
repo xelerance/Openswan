@@ -88,6 +88,9 @@ int db2_attr_add_values(struct db2_context *ctx
                        , u_int16_t type
                        , u_int16_t val);
 
+/*	Start a new transform */
+void db2_prop_close(struct db2_context *ctx);
+
 /*	Get proposal from db object */
 static __inline__ struct db2_prop *db2_prop_get(struct db2_context *ctx) {
 	return &ctx->prop;
