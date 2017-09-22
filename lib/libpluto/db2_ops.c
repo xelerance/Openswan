@@ -285,7 +285,7 @@ int
 db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
 {
   /*	skip incrementing current trans pointer the 1st time*/
-  if (ctx->trans_cur && ctx->trans_cur->attr_cnt)
+  if (ctx->trans_cur && ctx->trans_cur->transform_type)
     ctx->trans_cur++;
 
   /*
