@@ -43,6 +43,9 @@ check: ${TESTNAME}
 	diff OUTPUT/${TESTNAME}.txt output.txt
 	@: recordresults lib-$testobj "$testexpect" "$stat" lib-$testobj false
 
+clean:
+	rm -f ${TESTNAME}
+
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
