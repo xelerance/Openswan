@@ -1222,9 +1222,18 @@ const char *const trans_type_encr_name[]={
     "null",
     "aes_cbc",
     "aes_ctr",
+    "aes_ccm_8",
+    "aes_ccm_12",
+    "aes_ccm_16",
+    "unassigned_17",
+    "aes_gcm_8",
+    "aes_gcm_12",
+    "aes_gcm_16",
+    "null_aes_gmac",
+    "p1619_xts_aes",
 };
 enum_names trans_type_encr_names =
-{ IKEv2_ENCR_DES_IV64, IKEv2_ENCR_AES_CTR, trans_type_encr_name, NULL};
+{ IKEv2_ENCR_DES_IV64, IKEv2_IEEE_P1619_XTS_AES, trans_type_encr_name, NULL};
 
 const struct keyword_enum_value ikev2_encr_name_aliases[]={
     { "3des_cbc",   IKEv2_ENCR_3DES },
