@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
     db2_attr_add(dc2,  IKEv2_KEY_LENGTH, 256);
 
     db2_trans_add(dc2, IKEv2_TRANS_TYPE_INTEG, IKEv2_AUTH_AES_XCBC_96);
+    db2_print(dc2);
 
     /* second proposal */
     db2_prop_add(dc2, PROTO_ISAKMP, 0);
