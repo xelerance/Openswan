@@ -128,6 +128,7 @@ out:
   ctx->conj_cur  = ctx->conj0;
   ctx->prop.props = ctx->conj0;
   ctx->prop.prop_cnt = 0;
+  ctx->prop.conjnum   = 1;
   return ret;
 }
 
@@ -222,6 +223,7 @@ db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
       return -1;
   }
 
+  ctx->conj_cur->propnum = ctx->prop.conjnum;
   ctx->conj_cur->protoid = protoid;
   ctx->conj_cur->spisize = spisize;
   ctx->conj_cur->trans   = ctx->trans_cur;
@@ -378,6 +380,12 @@ db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val)
   ctx->attrs_cur++;
   ctx->trans_cur->attr_cnt++;
   return 0;
+}
+
+/*	Start a new proposal, an alternative to current one */
+void db2_prop_close(struct db2_context *ctx)
+{
+  ctx->prop.conjnum++;
 }
 
 /*
