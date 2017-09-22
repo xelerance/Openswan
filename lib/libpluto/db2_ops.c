@@ -403,8 +403,8 @@ static void db2_prop_print(struct db_v2_prop_conj *p)
           , enum_name(&protocol_names, p->protoid)
           , p->trans_cnt);
   for (ti=0, t=p->trans; ti< p->trans_cnt; ti++, t++) {
-    if(p->protoid < ikev2_transid_val_descs_size) {
-      n = ikev2_transid_val_descs[p->protoid];
+    if(t->transform_type < ikev2_transid_val_descs_size) {
+      n = ikev2_transid_val_descs[t->transform_type];
     } else {
       continue;
     }
