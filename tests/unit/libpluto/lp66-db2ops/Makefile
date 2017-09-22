@@ -31,7 +31,7 @@ EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 TESTNAME=lp66-db2ops
 
 
-${TESTNAME} programs:
+${TESTNAME} programs: db2opstest.c ${LIBPLUTO}
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
 	${CC} -o ${TESTNAME} ${EXTRAFLAGS} db2opstest.c ${EXTRALIBS}
