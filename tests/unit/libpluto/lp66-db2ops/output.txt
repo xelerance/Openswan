@@ -1,8 +1,24 @@
-| proposals: cnt=0 (next=0)
-| proposals: cnt=1 (next=0)
-| 0:  protoid="PROTO_ISAKMP" [trans: 1] 
-|     trans-type-encr value="aes_cbc" [attrs: 1] 
-|       type="KEY_LENGTH" value="128" 
+| proposals: cnt=0 (next=1)
+| proposals: cnt=2 (next=2)
+| 1:  protoid="PROTO_ISAKMP" [trans: 6]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-integ value="(null)" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="(null)" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-dh value="modp2048" [attrs: 0]
+|     (null) value="(null)" [attrs: 0]
+|     trans-type-encr value="aes_ctr" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+| 1:  protoid="PROTO_ISAKMP" [trans: 5]
+|     trans-type-encr value="GCM_8" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-encr value="GCM_12" [attrs: 1]
+|       type="KEY_LENGTH" value="256"
+|     trans-type-prf value="HMAC_SHA2_256" [attrs: 0]
+|     trans-type-integ value="AES_128_GMAC" [attrs: 0]
+|     trans-type-dh value="MODP3072" [attrs: 0]
 ./lp66-db2ops leak: db_context->attrs, item size: 88
 ./lp66-db2ops leak: db_context->trans, item size: 240
 ./lp66-db2ops leak: 2 * db_context->conj, item size: 88

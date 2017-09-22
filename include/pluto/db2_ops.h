@@ -103,7 +103,7 @@ int db2_attr_add(struct db2_context *ctx
                  , u_int16_t val);
 
 /*	Start a new transform */
-int db2_prop_close(struct db2_context *ctx);
+void db2_prop_close(struct db2_context *ctx);
 
 /*	Get proposal from db object */
 static __inline__ struct db_v2_prop *db2_prop_get(struct db2_context *ctx) {
