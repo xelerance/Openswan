@@ -207,6 +207,15 @@ out:
   return ret;
 }
 
+/*	Find space for a new transform */
+static void
+db2_trans_increment(struct db2_context *ctx)
+{
+  /*	skip incrementing current trans pointer the 1st time*/
+  if (ctx->trans_cur && ctx->trans_cur->transform_type)
+    ctx->trans_cur++;
+}
+
 int
 db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
 {
@@ -226,6 +235,9 @@ db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize)
   ctx->conj_cur->propnum = ctx->prop.conjnum;
   ctx->conj_cur->protoid = protoid;
   ctx->conj_cur->spisize = spisize;
+
+  /* bump to next available transaction, if neccessary */
+  db2_trans_increment(ctx);
   ctx->conj_cur->trans   = ctx->trans_cur;
   ctx->conj_cur->trans_cnt = 0;
   ctx->prop.prop_cnt++;
@@ -284,9 +296,7 @@ db2_trans_expand(struct db2_context *ctx, int delta_trans)
 int
 db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
 {
-  /*	skip incrementing current trans pointer the 1st time*/
-  if (ctx->trans_cur && ctx->trans_cur->transform_type)
-    ctx->trans_cur++;
+  db2_trans_increment(ctx);
 
   /*
    *	Strategy: if more space is needed, expand by
