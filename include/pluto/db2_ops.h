@@ -114,4 +114,8 @@ int db2_ops_show_status(void);
 
 extern void db2_print(struct db2_context *ctx);
 
+struct alg_info;  /* forward reference */
+extern struct db2_context *alginfo2db2(struct alg_info *ai);
+
+
 #endif /* _DB_OPS_H */
