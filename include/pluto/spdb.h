@@ -149,16 +149,6 @@ extern void print_sa_prop(struct db_sa *f, struct db_prop *dp);
 extern void print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
 
-extern void print_sa_v2_trans(struct db_v2_trans *tr);
-extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp);
-extern void print_sa_v2_prop(struct db_v2_prop *pc);
-extern void sa_v2_print(struct db_sa *f);
-
-/* IKEv1 <-> IKEv2 things */
-extern struct db_sa *sa_v1_convert(struct db_sa *f);
-extern int  v2tov1_encr(enum ikev2_trans_type_encr);
-
-
 #endif /*  _SPDB_H_ */
 
 /*
