@@ -27,7 +27,7 @@ struct db_attr {
 	enum ikev1_oakley_attr oakley;	/* ISAKMP_ATTR_AF_TV is implied;
 					   0 for end */
 	enum ikev1_ipsec_attr  ipsec;
-	unsigned int ikev2;
+	unsigned int ikev2;          /* one of: ikev2_trans_type_{prf,encr,dh,esn,integ} */
     } type;
     u_int16_t val;
 };
@@ -53,38 +53,44 @@ struct db_prop_conj {
 	unsigned int prop_cnt;	/* number of elements */
 };
 
+struct db_v2_attr {
+    unsigned int ikev2;
+    u_int16_t    val;
+};
+
 /* transform - IKEv2 */
 struct db_v2_trans {
-	enum ikev2_trans_type    transform_type;
-	u_int16_t                transid;	        /* Transform-Id */
-	struct db_attr *attrs;	 /* array of attributes */
-	unsigned int attr_cnt;	         /* number of elements */
+    enum ikev2_trans_type    transform_type;    /* ENCR, PRF, etc.*/
+    u_int16_t                value;	        /* Transform-Id */
+    struct db_v2_attr *attrs;	 /* array of attributes */
+    unsigned int attr_cnt;	         /* number of elements */
 };
 
 /* proposal - IKEv2 */
-/* transforms are OR of each unique transform_type */
+/* transforms are OR of each unique prop */
 struct db_v2_prop_conj {
-	u_int8_t            propnum;
+    u_int8_t            propnum;        /* OR with other propnum== */
 	u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
-	struct db_v2_trans *trans;	/* array (disjunction-OR) */
+    u_int8_t            spisize;        /* for proposal */
+    struct db_v2_trans *trans;	     /* array (disjunction-OR when transform_type==) */
 	unsigned int        trans_cnt;	/* number of elements */
-	/* SPI size and value isn't part of DB */
 };
 
-/* conjunction (AND) of proposals - IKEv2 */
-/* this is, for instance, ESP+AH, etc.    */
+/* top-level list of proposals */
 struct db_v2_prop {
 	struct db_v2_prop_conj  *props;	/* array */
-	unsigned int prop_cnt;	        /* number of elements... AND*/
+    u_int8_t     conjnum;               /* number of next conjunction */
+    unsigned int prop_cnt;	        /* number of elements in props*/
 };
 
 /* security association */
 struct db_sa {
-    bool                    dynamic;    /* set if these items were allocated */
     bool                    parentSA;   /* set if this is a parent/oakley */
+    struct db_context      *prop_v1_ctx;
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
 
+    struct db2_context     *prop_ctx;   /* if non-null, then attr/etc. are from it */
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
@@ -118,39 +124,6 @@ extern struct db_sa ipsec_sadb[1 << 3];
 /* for db_prop_conj */
 #define AD_PC(x) props: x, prop_cnt: elemsof(x)
 
-extern bool out_sa(
-    pb_stream *outs,
-    struct db_sa *sadb,
-    struct state *st,
-    bool oakley_mode,
-    bool aggressive_mode,
-    u_int8_t np);
-
-#if 0
-extern complaint_t accept_oakley_auth_method(
-    struct state *st,   /* current state object */
-    u_int32_t amethod,  /* room for larger values */
-    bool credcheck);    /* whether we can check credentials now */
-#endif
-
-extern lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs);
-
-extern notification_t parse_isakmp_sa_body(
-    pb_stream *sa_pbs,	/* body of input SA Payload */
-    const struct isakmp_sa *sa,	/* header of input SA Payload */
-    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
-    bool selection,	/* if this SA is a selection, only one tranform can appear */
-    struct state *st);	/* current state object */
-
-/* initialize a state with the aggressive mode parameters */
-extern int init_am_st_oakley(struct state *st, lset_t policy);
-
-extern notification_t parse_ipsec_sa_body(
-    pb_stream *sa_pbs,	/* body of input SA Payload */
-    const struct isakmp_sa *sa,	/* header of input SA Payload */
-    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
-    bool selection,	/* if this SA is a selection, only one tranform can appear */
-    struct state *st);	/* current state object */
 
 extern void free_sa_attr(struct db_attr *attr);
 extern void free_sa_trans(struct db_trans *tr);
@@ -164,6 +137,13 @@ extern struct db_sa *sa_copy_sa(struct db_sa *sa, int extra);
 extern struct db_sa *sa_copy_sa_first(struct db_sa *sa);
 extern struct db_sa *sa_merge_proposals(struct db_sa *a, struct db_sa *b);
 
+extern int v2tov1_encr(enum ikev2_trans_type_encr encr);
+extern int v2tov1_encr_child(enum ikev2_trans_type_encr encr);
+
+extern int v2tov1_integ(enum ikev2_trans_type_integ v2integ);
+extern int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ);
+
+extern bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role role);
 
 /* in spdb_struct.c */
 extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
@@ -173,10 +153,11 @@ extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
 /* in spdb_print.c - normally never used in pluto */
 extern void print_sa_attr_oakley(struct db_attr *at);
 extern void print_sa_attr_ipsec(struct db_attr *at);
-extern void print_sa_trans(struct db_sa *f, struct db_trans *tr);
-extern void print_sa_prop(struct db_sa *f, struct db_prop *dp);
-extern void print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
+extern void print_sa_trans(bool parentSA, struct db_trans *tr);
+extern void print_sa_prop(bool parentSA, struct db_prop *dp);
+extern void print_sa_prop_conj(bool parentSA, struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
+extern void db_print(struct db_context *ctx);
 
 extern void print_sa_v2_trans(struct db_v2_trans *tr);
 extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp);
@@ -184,13 +165,8 @@ extern void print_sa_v2_prop(struct db_v2_prop *pc);
 extern void sa_v2_print(struct db_sa *f);
 
 /* IKEv1 <-> IKEv2 things */
-extern struct db_sa *sa_v2_convert(struct db_sa *f);
-extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
-extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
-extern enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth);
-extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);
-
-
+extern struct db_sa *sa_v1_convert(struct db_sa *f);
+extern int  v2tov1_encr(enum ikev2_trans_type_encr);
 
 #endif /*  _SPDB_H_ */
 

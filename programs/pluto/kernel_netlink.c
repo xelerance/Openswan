@@ -480,14 +480,7 @@ void init_netlink(void)
      */
     init_pfkey();
 
-#ifdef HAVE_AEAD
-    /* ??? why do we have to wire these in?
-     * -- MCR knows not either.
-     * presumably because they aren't auth and aren't just crypto,
-     * so they don't fit into kernel cryptoapi well.
-     **/
-    linux_pfkey_add_aead();
-#endif /* HAVE_AEAD */
+    xfrm_init_base_algorithms();
 }
 
 /* called periodically to cleanup expired bare shunts, like what

@@ -13,6 +13,8 @@
  * for more details.
  */
 
+#include "kernel_alg.h"  /* for kernel_alg_info */
+
 #if defined(linux) && defined(NETKEY_SUPPORT)
 extern const struct kernel_ops netkey_kernel_ops;
 extern sparse_names xfrm_type_names;
@@ -56,5 +58,12 @@ extern bool netlink_shunt_eroute(struct connection *c
 extern bool netlink_sag_eroute(struct state *st, const struct spd_route *sr
                                , unsigned op, const char *opname);
 extern bool netlink_eroute_idle(struct state *st, time_t idle_max);
+
+extern void xfrm_kernel_alg_add(struct kernel_alg_info *kai);
+extern struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type
+                                                    , u_int32_t trans_num);
+
+extern void xfrm_init_base_algorithms(void);
+
 
 #endif

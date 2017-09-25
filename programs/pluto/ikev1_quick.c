@@ -64,6 +64,7 @@
 #include "pkcs.h"
 #include "asn1.h"
 
+#include "db2_ops.h"
 #include "sha1.h"
 #include "md5.h"
 #include "pluto/crypto.h" /* requires sha1.h and md5.h */
@@ -214,60 +215,17 @@ compute_proto_keymat(struct state *st
     switch (protoid)
     {
     case PROTO_IPSEC_ESP:
-	    switch (pi->attrs.transattrs.encrypt)
-	    {
-	    case ESP_NULL:
-		needed_len = 0;
-		break;
-	    case ESP_DES:
-		needed_len = DES_CBC_BLOCK_SIZE;
-		break;
-	    case ESP_3DES:
-		needed_len = DES_CBC_BLOCK_SIZE * 3;
-		break;
-	    case ESP_AES:
-		needed_len = AES_CBC_BLOCK_SIZE;
-		/* if an attribute is set, then use that! */
-		if(st->st_esp.attrs.transattrs.enckeylen) {
-		    needed_len = st->st_esp.attrs.transattrs.enckeylen/8;
-		}
-		break;
-
-	    default:
 		if((needed_len=kernel_alg_esp_enc_keylen(pi->attrs.transattrs.encrypt))>0) {
-			/* XXX: check key_len "coupling with kernel.c's */
 			if (pi->attrs.transattrs.enckeylen) {
 				needed_len=pi->attrs.transattrs.enckeylen/8;
-				DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
-						"key_len=%d from peer",
-						(int)needed_len));
 			}
-			break;
 		}
-		bad_case(pi->attrs.transattrs.encrypt);
-	    }
 	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
 				     "needed_len (after ESP enc)=%d",
 				     (int)needed_len));
 
-	    switch ((unsigned int)pi->attrs.transattrs.integ_hash)
-	    {
-	    case AUTH_ALGORITHM_NONE:
-		break;
-	    case AUTH_ALGORITHM_HMAC_MD5:
-		needed_len += HMAC_MD5_KEY_LEN;
-		break;
-	    case AUTH_ALGORITHM_HMAC_SHA1:
-		needed_len += HMAC_SHA1_KEY_LEN;
-		break;
-	    default:
-	      if (kernel_alg_esp_auth_ok(pi->attrs.transattrs.integ_hash, NULL) == NULL) {
+        if (ESP_AALG_PRESENT(pi->attrs.transattrs.integ_hash)) {
 		  needed_len += kernel_alg_esp_auth_keylen(pi->attrs.transattrs.integ_hash);
-		  break;
-	      }
-	    case AUTH_ALGORITHM_DES_MAC:
-		bad_case(pi->attrs.transattrs.integ_hash);
-		break;
 
 	    }
 	    DBG(DBG_PARSING, DBG_log("compute_proto_keymat:"
@@ -276,20 +234,8 @@ compute_proto_keymat(struct state *st
 	    break;
 
     case PROTO_IPSEC_AH:
-	    switch (pi->attrs.transattrs.encrypt)
-	    {
-	    case AH_MD5:
-		needed_len = HMAC_MD5_KEY_LEN;
-		break;
-	    case AH_SHA:
-		needed_len = HMAC_SHA1_KEY_LEN;
-		break;
-	    default:
-		if (kernel_alg_ah_auth_ok(pi->attrs.transattrs.integ_hash, NULL)) {
+        if (ESP_AALG_PRESENT(pi->attrs.transattrs.integ_hash)) {
 		    needed_len += kernel_alg_ah_auth_keylen(pi->attrs.transattrs.integ_hash);
-		    break;
-		}
-		bad_case(pi->attrs.transattrs.encrypt);
 	    }
 	    break;
 
@@ -743,7 +689,7 @@ quick_outI1_continue(struct pluto_crypto_req_cont *pcrc
     passert(qke->md == NULL);	// there is no md, because we are initiating
 
     set_cur_state(st);	/* we must reset before exit */
-    //set_suspended(st, NULL);
+    set_suspended(st, NULL);
     e = quick_outI1_tail(pcrc, r, st);
     if (e == STF_INTERNAL_ERROR)
 	loglog(RC_LOG_SERIOUS, "%s: quick_outI1_tail() failed with STF_INTERNAL_ERROR", __FUNCTION__);
@@ -889,6 +835,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
        st->hidden_variables.st_nat_traversal = 0;
     }
 #endif
+    st->st_sadb = alginfo2child_db2(st->st_connection->alg_info_esp);
 
     /* set up reply */
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
@@ -926,8 +873,8 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	    pm |= POLICY_COMPRESS;
 
 	if (!out_sa(&rbody
-		    , &ipsec_sadb[(st->st_policy & pm) >> POLICY_IPSEC_SHIFT]
-		    , st, FALSE, FALSE, ISAKMP_NEXT_NONCE))
+                    , st->st_sadb
+		    , st, /*oakley_mode*/FALSE, INITIATOR, /* aggr */FALSE, ISAKMP_NEXT_NONCE))
 	{
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
@@ -1183,7 +1130,7 @@ quick_inI1_outR1(struct msg_digest *md)
     struct verify_oppo_bundle b;
 
     /* we are responding to this exchange */
-    if (p1st->st_orig_initiator) {
+    if (p1st->st_ikev2_orig_initiator) {
 	loglog(RC_LOG_SERIOUS,
 	       "Unexpected quick mode R1 state for INITIATOR of #%ld",
 	       p1st->st_serialno);
@@ -1285,12 +1232,6 @@ quick_inI1_outR1(struct msg_digest *md)
     b.new_iv_len = p1st->st_new_iv_len;
     save_new_iv(p1st, b.new_iv);
 
-    /*
-     * FIXME - DAVIDM
-     * "b" is on the stack,  for OPPO  tunnels this will be bad, in
-     * quick_inI1_outR1_start_query it saves a pointer to it before
-     * a crypto (async op).
-     */
     return quick_inI1_outR1_authtail(&b, NULL);
 }
 
@@ -1348,7 +1289,7 @@ quick_inI1_outR1_continue(struct adns_continuation *cr, err_t ugh)
     /* if st == NULL, our state has been deleted -- just clean up */
     if (st != NULL)
     {
-	assert_suspended(st, b->md);
+	passert(st->st_suspended_md == b->md);
 	set_suspended(st, NULL);	/* no longer connected or suspended */
 	cur_state = st;
 	if (!b->failure_ok && ugh != NULL)
@@ -1392,7 +1333,7 @@ quick_inI1_outR1_start_query(struct verify_oppo_bundle *b
 
     /* Record that state is used by a suspended md */
     b->step = next_step;    /* not just vc->b.step */
-    vc->b = *b;
+    vc->b = *b;             /* copies entire structure */
     passert(p1st->st_suspended_md == NULL);
     set_suspended(p1st, b->md);
 
@@ -1715,12 +1656,28 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
     our.port       = b->my.port;
     our.protocol   = b->my.proto;
     our.has_client = TRUE;
+    our.host_addr  = p1st->st_localaddr;
 
     peer.host_type  = KH_IPADDR;
     peer.client     = b->his.net;
     peer.port       = b->his.port;
     peer.protocol   = b->his.proto;
     peer.has_client = TRUE;
+    peer.host_addr  = p1st->st_remoteaddr;
+
+    /*
+     * check that if we are not behind a NAT, that a /32 is proposed, and that the thing proposed
+     * is the same as the address from which the connection came from
+     */
+    if(p1st->hidden_variables.st_nat_traversal == 0
+       && subnetishost(&peer.client)
+       && addrinsubnet(&p1st->st_remoteaddr, &peer.client)) {
+        /* it's a proposal for hosts own IP address, not behind a NAT */
+        peer.client_is_self = TRUE;
+
+    } else if(is_virtual_net_allowed(c, &peer.client, &p1st->st_remoteaddr)) {
+        peer.client_is_self = TRUE;
+    }
 
     {
 	char s1[ENDCLIENTTOT_BUF],d1[ENDCLIENTTOT_BUF];
@@ -1728,8 +1685,8 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	endclienttot(&our, s1, sizeof(s1));
 	endclienttot(&peer,d1, sizeof(d1));
 
-	openswan_log("the peer proposed: %s -> %s"
-		     , s1, d1);
+	openswan_log("the peer proposed: %s -> %s (self=%s)"
+		     , s1, d1, peer.client_is_self ? "true" : "false");
     }
 
     /* Now that we have identities of client subnets, we must look for
@@ -1741,7 +1698,7 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 #ifdef NAT_TRAVERSAL
 #ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
     if( (p1st->hidden_variables.st_nat_traversal & NAT_T_DETECTED)
-	&& !(p1st->st_policy & POLICY_TUNNEL)
+	&& !(p1st->st_connection->policy & POLICY_TUNNEL)
 	&&  (p1st->hidden_variables.st_nat_traversal & (LELEM(NAT_TRAVERSAL_NAT_BHND_ME) | LELEM(NAT_TRAVERSAL_NAT_BHND_PEER)) )
 	&& (p == NULL) )
         {
@@ -1873,37 +1830,33 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 #endif
 	    c = p;
 	}
+    }
 
-	/* XXX Though c == p, they are used intermixed in the below section */
-	/* fill in the client's true ip address/subnet */
-	DBG(DBG_CONTROLMORE
-	    , DBG_log("client wildcard: %s  port wildcard: %s  virtual: %s"
+    /* fill in the client's true ip address/subnet */
+    DBG(DBG_CONTROLMORE
+	, DBG_log("client wildcard: %s  port wildcard: %s  virtual: %s"
 		      , c->spd.that.has_client_wildcard ? "yes" : "no"
 		      , c->spd.that.has_port_wildcard  ? "yes" : "no"
 		      , is_virtual_connection(c) ? "yes" : "no"));
 
-	if (c->spd.that.has_client_wildcard)
-	{
+    if (c->spd.that.has_client_wildcard) {
 	    c->spd.that.client = *his_net;
 	    c->spd.that.has_client_wildcard = FALSE;
-	}
+    }
 
         /* fill in the client's true port */
-        if (p->spd.that.has_port_wildcard)
-        {
+    if (c->spd.that.has_port_wildcard) {
             int port = htons(b->his.port);
 
-            setportof(port, &p->spd.that.host_addr);
-            setportof(port, &p->spd.that.client.addr);
+        setportof(port, &c->spd.that.host_addr);
+        setportof(port, &c->spd.that.client.addr);
 
-            p->spd.that.port = b->his.port;
-            p->spd.that.has_port_wildcard = FALSE;
-        }
+        c->spd.that.port = b->his.port;
+        c->spd.that.has_port_wildcard = FALSE;
+    }
 
 
-
-	if (is_virtual_connection(c))
-	{
+    if (is_virtual_connection(c)) {
 	    char cthat[END_BUF];
 
 	    c->spd.that.client = *his_net;
@@ -1920,7 +1873,6 @@ quick_inI1_outR1_authtail(struct verify_oppo_bundle *b
 	    DBG(DBG_CONTROLMORE
 		, DBG_log("setting phase 2 virtual values to %s"
 			  , cthat));
-	}
     }
     passert((p1st->st_policy & POLICY_PFS)==0 || p1st->st_pfs_group != NULL );
 

@@ -155,3 +155,42 @@ extern bool
 do_command(struct connection *c, const struct spd_route *sr
            , const char *verb, struct state *st);
 #endif
+
+extern bool out_sa(
+    pb_stream *outs,
+    struct db_sa *sadb,
+    struct state *st,
+    bool oakley_mode,
+    enum phase1_role role,
+    bool aggressive_mode,
+    u_int8_t np);
+
+#if 0
+extern complaint_t accept_oakley_auth_method(
+    struct state *st,   /* current state object */
+    u_int32_t amethod,  /* room for larger values */
+    bool credcheck);    /* whether we can check credentials now */
+#endif
+
+extern lset_t preparse_isakmp_sa_body(pb_stream *sa_pbs);
+
+extern notification_t parse_isakmp_sa_body(
+    pb_stream *sa_pbs,	/* body of input SA Payload */
+    const struct isakmp_sa *sa,	/* header of input SA Payload */
+    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
+    bool selection,	/* if this SA is a selection, only one tranform can appear */
+    struct state *st);	/* current state object */
+
+/* initialize a state with the aggressive mode parameters */
+extern int init_am_st_oakley(struct state *st, lset_t policy);
+
+extern notification_t parse_ipsec_sa_body(
+    pb_stream *sa_pbs,	/* body of input SA Payload */
+    const struct isakmp_sa *sa,	/* header of input SA Payload */
+    pb_stream *r_sa_pbs,	/* if non-NULL, where to emit winning SA */
+    bool selection,	/* if this SA is a selection, only one tranform can appear */
+    struct state *st);	/* current state object */
+/* spdb_v1_struct.c */
+extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
+                                      , bool oneproposal
+                                      , enum phase1_role role);
