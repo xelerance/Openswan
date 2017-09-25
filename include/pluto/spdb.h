@@ -123,7 +123,7 @@ extern struct db_sa ipsec_sadb[1 << 3];
 /* for db_prop_conj */
 #define AD_PC(x) props: x, prop_cnt: elemsof(x)
 
-
+struct state;
 extern bool out_sa(
     pb_stream *outs,
     struct db_sa *sadb,

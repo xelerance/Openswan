@@ -2,7 +2,7 @@
 #ifndef _DB_OPS_H
 #define _DB_OPS_H
 
-#include "spdb.h"
+#include "pluto/spdb.h"
 
 /*
  * from RFC7296, section 3.3:
@@ -62,14 +62,12 @@ struct db2_context {
 /*
  * 	Allocate a new db object
  */
-struct db2_context * db2_prop_new(u_int8_t protoid
-                                  , int max_conj
+struct db2_context * db2_prop_new(int max_conj
                                   , int max_trans
                                   , int max_attrs);
 
 /* Initialize object for proposal building  */
 int db2_prop_init(struct db2_context *ctx
-                  , u_int8_t protoid
                   , int max_conj
                   , int max_trans
                   , int max_attrs);
@@ -78,26 +76,41 @@ int db2_prop_init(struct db2_context *ctx
 void db2_destroy(struct db2_context *ctx);
 
 /*	Start a new transform */
-int db2_trans_add(struct db2_context *ctx, u_int8_t transid);
+int db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value);
 
 /*	Add a new attribute by copying db_attr content */
-int db2_attr_add(struct db2_context *db_ctx, const struct db_attr *attr);
+int db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val);
+
 
 /*	Add a new attribute by value */
 int db2_attr_add_values(struct db2_context *ctx
                        , u_int16_t type
                        , u_int16_t val);
 
+/*	Free a db object itself, and things contained in it */
+void db2_free(struct db2_context *ctx);
+
+/*      Start with a new proposal */
+int db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize);
+
+/*      Then add an alternative to a propsal */
+int db2_prop_alternative(struct db2_context *ctx, u_int8_t protoid);
+
+
 /*	Start a new transform */
 void db2_prop_close(struct db2_context *ctx);
 
 /*	Get proposal from db object */
-static __inline__ struct db2_prop *db2_prop_get(struct db2_context *ctx) {
+static __inline__ struct db_v2_prop *db2_prop_get(struct db2_context *ctx) {
 	return &ctx->prop;
 }
 /*	Show stats (allocation, etc) */
 int db2_ops_show_status(void);
 
 extern void db2_print(struct db2_context *ctx);
+
+struct alg_info;  /* forward reference */
+extern struct db2_context *alginfo2db2(struct alg_info *ai);
+
 
 #endif /* _DB_OPS_H */
