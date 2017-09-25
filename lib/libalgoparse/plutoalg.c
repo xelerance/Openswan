@@ -120,6 +120,17 @@ prfalg_getbyname_ike(const char *const str, const int len, unsigned int *auxp)
             if (ret>=0) goto out;
         }
 
+        /* finally, try the name again with "prf" pre-pended to it */
+        {
+            char *prfname = alloca(len + 4);
+            if(prfname) {
+                strcpy(prfname, "prf");
+                strncat(prfname, str, len);
+                ret = enum_search_nocase(&ikev2_prf_names, prfname, strlen(prfname));
+                if (ret>=0) goto out;
+            }
+        }
+
         /* let the user override with an explicit number! */
         /* extract length that was consumed to check that it fit */
 	sscanf(str, "prf%d%n", &algo, &num);
