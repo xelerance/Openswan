@@ -27,7 +27,9 @@
 #include <time.h>
 #include <gmp.h>    /* GNU MP library */
 #include "pluto/quirks.h"
+#include "pluto/ike_alg.h"
 #include "id.h"
+#include "alg_info.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -71,10 +73,11 @@ extern msgid_t generate_msgid(struct state *isakmp_sa);
  * Names are chosen to match corresponding names in state.
  */
 struct trans_attrs {
-    u_int16_t encrypt;		/* Encryption algorithm */
+    enum ikev2_trans_type_encr   encrypt;		/* Encryption algorithm */
     u_int16_t enckeylen;	/* encryption key len (bits) */
-    oakley_hash_t prf_hash;	/* Hash algorithm for PRF */
-    oakley_hash_t integ_hash;	/* Hash algorithm for integ */
+    enum ikev2_trans_type_prf    prf_hash;	/* Hash algorithm for PRF */
+    enum ikev2_trans_type_integ  integ_hash;	/* Hash algorithm for integ */
+    enum ikev2_trans_type_esn esn;  /* if Extended Sequence Numbers are enabled */
 
     oakley_auth_t auth;		/* Authentication method (RSA,PSK) */
 #ifdef XAUTH
@@ -87,12 +90,13 @@ struct trans_attrs {
 
     /* used in phase1/PARENT SA */
     const struct ike_encr_desc *encrypter; /* package of encryption routines */
-    const struct ike_integ_desc *prf_hasher;     /* package of hashing routines */
+    const struct ike_prf_desc *prf_hasher;     /* pseudo-random function => hash */
     const struct ike_integ_desc *integ_hasher; /* package of hashing routines */
+    const struct ike_dh_desc       *group_calculator; /* g^xy */
     const struct oakley_group_desc *group;	/* Oakley group */
 
     /* used in phase2/CHILD_SA */
-    struct esp_info *ei;
+    struct esp_info ei;
 };
 
 /* IPsec (Phase 2 / Quick Mode) transform and attributes
@@ -203,7 +207,7 @@ struct hidden_variables {
 
 /* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
-    u_int8_t  ts_type;
+    enum ikev2_ts_type ts_type;
     u_int8_t  ipprotoid;
     u_int16_t startport;
     u_int16_t endport;
@@ -244,7 +248,7 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
-    bool               st_orig_initiator;    /* if we keyed the parent SA */
+    bool               st_ikev2_orig_initiator;  /* if we keyed the parent SA */
     u_char             st_ike_maj;
     u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
@@ -288,6 +292,8 @@ struct state
     u_int16_t          st_localport;
 
     struct db_sa      *st_sadb;
+    /* keys received inband, which were validated */
+    struct pubkey_list *st_keylist;
 
     /* IKEv1 things */
     msgid_t            st_msgid;               /* MSG-ID from header.
@@ -459,10 +465,10 @@ struct state
 };
 #define NULL_STATE NULL
 
-#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_orig_initiator)
+#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_ikev2_orig_initiator)
 #define IKEv2_ORIG_INITIATOR_FLAG(st) (IKEv2_IS_ORIG_INITIATOR(st)?ISAKMP_FLAGS_I : 0)
 
-/* map state->st_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
+/* map state->st_ikev2_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
 #define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st) ? INITIATOR : RESPONDER )
 
 extern bool states_use_connection(struct connection *c);
@@ -488,6 +494,7 @@ extern void release_whack(struct state *st);
 extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);
 extern void free_state(struct state *st);
+extern void cleanup_state(struct state *st);
 extern void delete_state(struct state *st);
 extern void do_state_frees(void);
 struct connection;	/* forward declaration of tag */

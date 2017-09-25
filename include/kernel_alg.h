@@ -80,15 +80,10 @@ extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai
 					     , lset_t policy
 					     , bool logit);
 
-/* returns pointer to static buffer, no reentrant */
-extern bool kernel_alg_ikev2_esp_info(struct esp_info *ei
+extern bool kernel_alg_esp_info(struct esp_info *ei  /* fill this in, or NULL */
                                       , enum ikev2_trans_type_encr sadb_ealg
                                       , u_int16_t keylen
                                       , enum ikev2_trans_type_integ sadb_aalg);
-
-extern struct esp_info *kernel_alg_esp_info(u_int8_t transid
-					    , u_int16_t keylen
-					    , u_int16_t auth);
 
 /* indexed by kernel algorithm number */
 extern struct pluto_sadb_alg esp_aalg[];

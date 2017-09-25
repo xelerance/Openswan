@@ -603,67 +603,6 @@ kernel_alg_esp_ok_final(int ealg, unsigned int key_len, int aalg, struct alg_inf
 	return TRUE;
 }
 
-struct db_sa *
-kernel_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
-{
-    struct db_context *dbnew;
-    struct db_prop *p;
-    struct db_prop_conj pc;
-    struct db_sa t, *n;
-
-    memset(&t, 0, sizeof(t));
-
-    if(ei == NULL) {
-	struct db_sa *sadb;
-	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
-
-#if 0
-y	if (can_do_IPcomp)
-	    pm |= POLICY_COMPRESS;
-#endif
-
-	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
-
-	/* make copy, to keep from freeing the static policies */
-	sadb = sa_copy_sa(sadb, 0);
-	sadb->parentSA = FALSE;
-
-	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
-	return sadb;
-    }
-
-    dbnew=kernel_alg_db_new(ei, policy, logit);
-
-    if(!dbnew) {
-	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
-	return NULL;
-    }
-
-    p = db_prop_get(dbnew);
-
-    if(!p) {
-	DBG(DBG_CONTROL, DBG_log("failed to get proposal from context, returning empty"));
-	db_destroy(dbnew);
-	return NULL;
-    }
-
-    pc.prop_cnt = 1;
-    pc.props = p;
-    t.prop_conj_cnt = 1;
-    t.prop_conjs = &pc;
-
-    /* make a fresh copy */
-    n = sa_copy_sa(&t, 0);
-    n->parentSA = FALSE;
-
-    db_destroy(dbnew);
-
-    DBG(DBG_CONTROL
-	, DBG_log("returning new proposal from esp_info"));
-    return n;
-}
-
-
 /*
  * Local Variables:
  * c-basic-offset:4

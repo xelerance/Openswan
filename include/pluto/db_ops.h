@@ -34,6 +34,8 @@ int db_trans_add(struct db_context *ctx, u_int8_t transid);
 int db_attr_add(struct db_context *db_ctx, const struct db_attr *attr);
 /*	Add a new attribute by value */
 int db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val);
+/*	Add a new attribute by value */
+int db_attr_add_ipsec_values(struct db_context *ctx,  u_int16_t type, u_int16_t val);
 
 /*	Get proposal from db object */
 static __inline__ struct db_prop *db_prop_get(struct db_context *ctx) {

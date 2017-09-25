@@ -110,7 +110,7 @@ static int guess_dhgroup(struct state *st, struct connection *c)
 
                 if (groupcnt == c->proposal_index) {
                     /* select this proposal's DH group, on this iteration */
-                    guess = tr->transid;
+                    guess = tr->value;
                 } else if (guess) {
                     /* we have selected a guess already, and there is another
                      * option we can come back for next time */
@@ -150,9 +150,6 @@ ikev2parent_outI1_withstate(struct state *st
 {
     int    groupnum;
     int    need_to_add_pending = 0;
-    int    policy_index = POLICY_ISAKMP(policy
-                                        , c->spd.this.xauth_server
-                                        , c->spd.this.xauth_client);
     stf_status e;
 
     /* assumption is that we are starting with a new state,
@@ -168,7 +165,7 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
-    st->st_orig_initiator = TRUE;
+    st->st_ikev2_orig_initiator = TRUE;
 
     if (c->first_msgid == 0) {
 	    e = allocate_msgid_from_parent(st, &st->st_msgid);
@@ -231,20 +228,11 @@ ikev2parent_outI1_withstate(struct state *st
      * now, we need to initialize st->st_oakley, specifically, the group
      * number needs to be initialized.
      */
-
-    st->st_sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
-                             , &oakley_sadb[policy_index], 0);
-    if (!st->st_sadb)
-        st->st_sadb = &oakley_sadb[policy_index];
-    st->st_sadb = sa_v2_convert(st->st_sadb);
+    groupnum = 0;
+    st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
 
     groupnum = guess_dhgroup(st, c);
-    if (groupnum < 0) {
-        /* we had groups, but we tried them all already */
-        return STF_FATAL;
-
-    } else if (groupnum == 0) {
-        /* we didn't have any group specified */
+    if(groupnum == 0) {
         groupnum = OAKLEY_GROUP_MODP2048;
     }
 
@@ -405,10 +393,6 @@ ikev2_parent_outI1_common(struct msg_digest *md
         /* if we  have an OpenPGP certificate we assume an
          * OpenPGP peer and have to send the Vendor ID
          */
-        if(st->st_sadb->prop_disj_cnt == 0 || st->st_sadb->prop_disj) {
-            st->st_sadb = sa_v2_convert(st->st_sadb);
-        }
-
         if (!ikev2_out_sa(&md->rbody
                           , PROTO_ISAKMP
                           , st->st_sadb

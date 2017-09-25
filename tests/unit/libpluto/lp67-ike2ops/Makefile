@@ -12,12 +12,14 @@
 # for more details.
 
 OPENSWANSRCDIR?=$(shell cd ../../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto/lp66-db2ops
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE}
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
+
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBGMP}

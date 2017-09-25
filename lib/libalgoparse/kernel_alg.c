@@ -405,10 +405,10 @@ kernel_alg_ah_auth_keylen(enum ikev2_trans_type_integ authnum)
     return kernel_alg_esp_auth_keylen(authnum);
 }
 
-bool kernel_alg_ikev2_esp_info(struct esp_info *ei
-                               , enum ikev2_trans_type_encr sadb_ealg
-                               , u_int16_t keylen
-                               , enum ikev2_trans_type_integ sadb_aalg)
+bool kernel_alg_esp_info(struct esp_info *ei
+                         , enum ikev2_trans_type_encr sadb_ealg
+                         , u_int16_t keylen
+                         , enum ikev2_trans_type_integ sadb_aalg)
 {
           if (!ESP_EALG_PRESENT(sadb_ealg)) {
               DBG(DBG_PARSING,
@@ -474,71 +474,6 @@ bool kernel_alg_ikev2_esp_info(struct esp_info *ei
           }
           return TRUE;
 }
-
-/* sadb/ESP aa attrib converters */
-enum ipsec_authentication_algo
-alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
-{
-	switch(auth) {
-        case AUTH_ALGORITHM_HMAC_MD5:
-            return AH_MD5;
-        case AUTH_ALGORITHM_HMAC_SHA1:
-            return AH_SHA;
-        case AUTH_ALGORITHM_HMAC_SHA2_256:
-            return AH_SHA2_256;
-        case AUTH_ALGORITHM_HMAC_SHA2_384:
-            return AH_SHA2_384;
-        case AUTH_ALGORITHM_HMAC_SHA2_512:
-            return AH_SHA2_512;
-        case AUTH_ALGORITHM_HMAC_RIPEMD:
-            return AH_RIPEMD;
-        case AUTH_ALGORITHM_NONE:
-            return AH_NONE;
-
-        default:
-            bad_case(auth);
-	}
-	return 0;
-}
-
-/* libalgoparse: to be removed */
-err_t
-kernel_alg_esp_auth_ok(int auth, struct alg_info_esp *nfo UNUSED)
-{
-    if(ESP_AALG_PRESENT(alg_info_esp_aa2sadb(auth))) {
-        return NULL; /* present */
-    } else {
-        return "bad auth alg";
-    }
-}
-
-err_t
-kernel_alg_ah_auth_ok(int auth,
-                          struct alg_info_esp *alg_info __attribute__((unused)))
-{
-    int ret=(ESP_AALG_PRESENT(alg_info_esp_aa2sadb(auth)));
-
-    if(ret) {
-        return NULL;
-    } else {
-        return "bad auth alg";
-    }
-}
-
-struct esp_info *
-kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
-{
-    enum ikev2_trans_type_encr sadb_ealg  = v1tov2_encr(transid);
-    enum ikev2_trans_type_integ sadb_aalg = v1tov2_integ(auth);
-    static struct esp_info ei2;
-
-    if(kernel_alg_ikev2_esp_info(&ei2, sadb_ealg, keylen, sadb_aalg)) {
-        return &ei2;
-    } else {
-        return NULL;
-    }
-}
-
 
 /*
  * Local Variables:

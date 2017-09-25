@@ -59,6 +59,7 @@
 #include "pending.h"
 #include "kernel.h"
 #include "pluto/nat_traversal.h"
+#include "pluto/db2_ops.h"
 
 #include "tpm/tpm.h"
 

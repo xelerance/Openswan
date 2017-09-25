@@ -62,7 +62,7 @@ sa_replace(struct state *st, int type)
 	"SA REPLACE: #%ld parent=%s orig_init=%s nat_bhnd_{me=%s peer=%s} (%08x)",
 		st->st_serialno,
 		IS_PARENT_SA(st) ? "Y" : "N",
-		st->st_orig_initiator ? "Y" : "N",
+		st->st_ikev2_orig_initiator ? "Y" : "N",
 		(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_ME))  ? "Y" : "N",
 		(st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))  ? "Y" : "N",
 		st->hidden_variables.st_nat_traversal));
@@ -103,7 +103,7 @@ sa_replace(struct state *st, int type)
     }
 #ifdef NAT_TRAVERSAL
     else if (IS_PARENT_SA(st)  /* this is the parent SA */
-    && !st->st_orig_initiator  /* we are original responder */
+    && !st->st_ikev2_orig_initiator  /* we are original responder */
     && st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))
     {
 	/* this is a parent SA, we are the original responder, and

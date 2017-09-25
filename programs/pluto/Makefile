@@ -114,7 +114,7 @@ DISTSRC = \
 	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	signatures.c keymgmt.c \
 	server.c \
-	spdb.c spdb_struct.c spdb_v1_struct.c spdb_print.c spdb.h \
+	spdb_struct.c spdb_v1_struct.c \
 	state.c \
 	stubs.c \
 	${SYSDEP_SRC} \
@@ -150,11 +150,11 @@ OBJSPLUTO += kernel_noklips.o rcv_whack.o
 OBJSPLUTO += ${IPSECPOLICY_OBJS} demux.o msgdigest.o keymgmt.o signatures.o dnskey.o
 OBJSPLUTO += pluto_crypt.o crypt_utils.o build_ke.o crypt_ke.o crypt_dh.o crypt_start_dh.o
 OBJSPLUTO += ikev2_derived_keys.o ikev2_prfplus.o
-OBJSPLUTO += spdb.o spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
+OBJSPLUTO += spdb_struct.o spdb_v1_struct.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
-OBJSPLUTO += ike_alg_status.o db_ops.o
+OBJSPLUTO += ike_alg_status.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}

@@ -62,13 +62,10 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
-#include "pluto/state.h"
-#include "packet.h"
+#include "pluto/defs.h"
 #include "pluto/spdb.h"
-#include "db_ops.h"
-#include "log.h"
-#include "whack.h"
+#include "pluto/db_ops.h"
+#include "oswlog.h"
 
 #include <assert.h>
 
@@ -322,6 +319,7 @@ db_attr_add(struct db_context *ctx, const struct db_attr *a)
 	ctx->trans_cur->attr_cnt++;
 	return 0;
 }
+
 /*	Add attr copy (by value) to current transform,
  *	expanding attrs0 if needed, just calls db_attr_add().
  */
@@ -333,84 +331,18 @@ db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 	attr.val = val;
 	return db_attr_add (ctx, &attr);
 }
-#ifndef NO_DB_OPS_STATS
-int
-db_ops_show_status(void)
-{
-	whack_log(RC_COMMENT, "stats db_ops: "
-			DB_OPS_STATS_DESC " :"
-			DB_OPS_STATS_STR("context")
-			DB_OPS_STATS_STR("trans")
-			DB_OPS_STATS_STR("attrs"),
-			DB_OPS_STATS_F(db_context_st),
-			DB_OPS_STATS_F(db_trans_st),
-			DB_OPS_STATS_F(db_attrs_st)
-			);
-	return 0;
-}
-#endif /* NO_DB_OPS_STATS */
-/*
- * From below to end just testing stuff ....
+
+/*	Add attr copy (by value) to current transform,
+ *	expanding attrs0 if needed, just calls db_attr_add(), but for IPsec attributes
  */
-#if defined(TEST)
-static void db_prop_print(struct db_prop *p)
+int
+db_attr_add_ipsec_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 {
-	struct db_trans *t;
-	struct db_attr *a;
-	int ti, ai;
-	enum_names *n, *n_at, *n_av;
-
-	DBG_log("protoid=\"%s\"\n", enum_name(&protocol_names, p->protoid));
-	for (ti=0, t=p->trans; ti< p->trans_cnt; ti++, t++) {
-		switch( p->protoid) {
-			case PROTO_ISAKMP:
-				n=&isakmp_transformid_names;
-				break;
-			case PROTO_IPSEC_ESP:
-				n=&esp_transformid_names;
-				break;
-			case PROTO_IPSEC_AH:
-				n=&ah_transformid_names;
-				break;
-			default:
-				continue;
-		}
-		DBG_log("  transid=\"%s\"\n", enum_name(n, t->transid));
-
-		for (ai=0, a=t->attrs; ai < t->attr_cnt; ai++, a++) {
-			int i;
-			switch( p->protoid) {
-				case PROTO_ISAKMP:
-					n_at=&oakley_attr_names;
-					i=a->type|ISAKMP_ATTR_AF_TV;
-					n_av=oakley_attr_val_descs[(i)&ISAKMP_ATTR_RTYPE_MASK];
-					break;
-
-				case PROTO_IPSEC_AH:
-				case PROTO_IPSEC_ESP:
-					n_at=&ipsec_attr_names;
-					i=a->type|ISAKMP_ATTR_AF_TV;
-					n_av=ipsec_attr_val_descs[(i)&ISAKMP_ATTR_RTYPE_MASK];
-					break;
-				default:
-					continue;
-			}
-			DBG_log("    type=\"%s\" value=\"%s\"\n",
-				enum_name(n_at, i),
-				enum_name(n_av, a->val));
-		}
-	}
-
+	struct db_attr attr;
+	attr.type.ipsec = type;
+	attr.val = val;
+	return db_attr_add (ctx, &attr);
 }
-
-void db_print(struct db_context *ctx)
-{
-	DBG_log("trans_cur diff=%d, attrs_cur diff=%d\n",
-			ctx->trans_cur - ctx->trans0,
-			ctx->attrs_cur - ctx->attrs0);
-	db_prop_print(&ctx->prop);
-}
-#endif
 
 #if defined(TEST)
 

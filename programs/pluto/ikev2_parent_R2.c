@@ -491,7 +491,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
      * at this point, the other end has proven who they are, and so we should stop
      * setting the I bit....
      */
-    st->st_orig_initiator = FALSE;
+    st->st_ikev2_orig_initiator = FALSE;
 
     /* keep it for a retransmit if necessary */
     freeanychunk(st->st_tpacket);
