@@ -73,7 +73,7 @@ typedef u_int32_t pfkey_seq_t;
 static pfkey_seq_t pfkey_seq = 0;	/* sequence number for our PF_KEY messages */
 
 /* The orphaned_holds table records %holds for which we
- * pfkey_scan_proc_shunts found no representation of in any connection.
+ * scan_proc_shunts found no representation of in any connection.
  * The corresponding ACQUIRE message might have been lost.
  */
 struct eroute_info *orphaned_holds = NULL;
@@ -996,7 +996,7 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 					 , K_SADB_EXT_SA
 					 , sa->spi	/* in network order */
 					 , sa->replay_window, K_SADB_SASTATE_MATURE
-					 , sa->authalg, sa->encalg, 0)
+					 , sa->esp_info.transid, sa->esp_info.auth, 0)
 			  , "pfkey_sa Add SA", sa->text_said, extensions);
     if(!success) return FALSE;
 
@@ -1010,10 +1010,10 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 			       , extensions);
     if(!success) return FALSE;
 
-    if(sa->authkeylen != 0) {
+    if(sa->esp_info.authkeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_AUTH]
 					      , K_SADB_EXT_KEY_AUTH
-					      , sa->authkeylen * BITS_PER_BYTE
+					      , sa->esp_info.authkeylen * BITS_PER_BYTE
 					      , sa->authkey)
 			      , "pfkey_key_a Add SA"
 			      , sa->text_said, extensions);
@@ -1038,10 +1038,10 @@ bool pfkey_add_sa(struct kernel_sa *sa, bool replace)
 	    if(!success) return FALSE;
     }
 
-    if(sa->enckeylen != 0) {
+    if(sa->esp_info.enckeylen != 0) {
 	success = pfkey_build(pfkey_key_build(&extensions[K_SADB_EXT_KEY_ENCRYPT]
 					      , K_SADB_EXT_KEY_ENCRYPT
-					      , sa->enckeylen * BITS_PER_BYTE
+					      , sa->esp_info.enckeylen * BITS_PER_BYTE
 					      , sa->enckey)
 			      , "pfkey_key_e Add SA"
 			      , sa->text_said, extensions);

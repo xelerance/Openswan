@@ -320,3 +320,4 @@ extern void ikev2_calculate_sighash(struct state *st
                                     , unsigned char *idhash
                                     , chunk_t firstpacket
                                     , unsigned char *sig_octets);
+extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);

@@ -55,6 +55,8 @@
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
 #include "db_ops.h"
+#include "pluto/db2_ops.h"
+#include "ikev1.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -64,126 +66,87 @@
 #include "security_selinux.h"
 #endif
 
-#ifdef HAVE_LABELED_IPSEC
-static bool
-parse_secctx_attr (pb_stream *pbs, struct state *st)
+/* enable this for deeper debugging into extrapolate loop */
+#define EXTRAPOLATE_DEBUG 0
+int v2tov1_encr(enum ikev2_trans_type_encr encr)
 {
-		/*supported length is 256 bytes (257 including \0)*/
-		char sec_ctx_value[MAX_SECCTX_LEN];
-		u_int8_t  ctx_doi;
-		u_int8_t  ctx_alg;
-		u_int16_t net_ctx_len, ctx_len;
-		int i=0;
-
-		DBG(DBG_PARSING, DBG_log("received sec ctx"));
-
-		/*doing sanity check*/
-		if(pbs_left(pbs) < (sizeof(ctx_doi) + sizeof(ctx_alg) + sizeof(ctx_len) + 1) ) {
-			DBG(DBG_PARSING, DBG_log("received perhaps corrupted security ctx (should not happen really)"));
-			return FALSE;
-		}
-
-		/*reading ctx doi*/
-		memcpy (&ctx_doi, pbs->cur, sizeof(ctx_doi));
-		pbs->cur += sizeof(ctx_doi);
-
-		/*reading ctx alg*/
-		memcpy (&ctx_alg, pbs->cur, sizeof(ctx_alg));
-		pbs->cur += sizeof(ctx_alg);
-
-		/*reading ctx length*/
-		memcpy (&net_ctx_len, pbs->cur, sizeof(ctx_len));
-		pbs->cur += sizeof(ctx_len);
-		ctx_len = ntohs(net_ctx_len);
-
-		DBG(DBG_PARSING, DBG_log("   received ctx_doi = %d, ctx_alg = %d, ctx_len = %d", ctx_doi , ctx_alg, ctx_len));
-
-		/* verifying remaining buffer length and ctx length matches or not (checking for any corruption)*/
-		if(ctx_len != pbs_left(pbs) ) {
-			DBG(DBG_PARSING, DBG_log("received ctx length seems to be different than the length of string present in the buffer"));
-			DBG(DBG_PARSING, DBG_log("received ctx_len = %d, buffer left = %lu", ctx_len, pbs_left(pbs)));
-			return FALSE;
-		}
-
-		/* do not process security labels longer than MAX_SECCTX_LEN */
-		 if(pbs_left(pbs) > MAX_SECCTX_LEN) {
-		    DBG(DBG_PARSING, DBG_log("received security ctx longer than MAX_SECCTX_LEN which is not supported"));
-		    return FALSE;
-		}
-
-		/* reading security label*/
-		memcpy(sec_ctx_value, pbs->cur, pbs_left(pbs));
-		i = pbs_left(pbs);
-
-		/*
-		 * Checking if the received security label contains \0.
-		 * We expect the received label to have '\0', however to be
-		 * compliant with implementations that don't send \0
-		 * we can add a \0 if there is space left in the buffer.
-		 */
-
-		if( sec_ctx_value[i-1] != '\0') {
-			/*check if we have space left and then append \0*/
-			if (i < MAX_SECCTX_LEN) {
-			sec_ctx_value[i] = '\0';
-			i=i+1;
-			} else {
-			/*there is no space left*/
-			DBG(DBG_PARSING, DBG_log("received security label > MAX_SECCTX_LEN (should not happen really)"));
-			return FALSE;
-			}
-		}
-
-		/*while (pbs_left(pbs) != 0){
-		sec_ctx_value[i++]= *pbs->cur++;
-		    if(i == MAX_SECCTX_LEN){
-		    DBG(DBG_PARSING, DBG_log("security label reached maximum length (MAX_SECCTX_LEN) allowed"));
-		    break;
-		    }
-		}*/
-
-		//sec_ctx_value[i]='\0';
-		DBG(DBG_PARSING, DBG_log("   sec ctx value: %s, len=%d", sec_ctx_value, i));
-
-		if(st->sec_ctx == NULL && st->st_state==STATE_QUICK_R0) {
-		    DBG_log("Receievd sec ctx in responder state");
-		    st->sec_ctx = alloc_thing(struct xfrm_user_sec_ctx_ike , "struct xfrm_user_sec_ctx_ike");
-		    memcpy (st->sec_ctx->sec_ctx_value, sec_ctx_value, i);
-		    st->sec_ctx->ctx_len = i;
-		    st->sec_ctx->ctx_alg = ctx_alg;
-		    st->sec_ctx->ctx_doi = ctx_doi;
-
-	/* lets verify if the received security label is within range of this connection's policy's security label*/
-	   if(!st->st_connection->labeled_ipsec) {
-		DBG_log("This state (connection) is not labeled ipsec enabled, so can not proceed");
-		return FALSE;
-	   }
-	   else if( st->st_connection->policy_label != NULL && within_range(st->sec_ctx->sec_ctx_value, st->st_connection->policy_label)) {
-		DBG_log("security context verification succedded");
-	   }
-	   else {
-		DBG_log("security context verification failed (perhaps policy_label is not confgured for this connection)");
-		return FALSE;
-	   }
-
-	}
-	else if (st->st_state==STATE_QUICK_I1 ) {
-	DBG(DBG_PARSING, DBG_log("Initiator state received security context from responder state, now verifying if both are same"));
-	   if(!strcmp(st->sec_ctx->sec_ctx_value, sec_ctx_value)) {
-		DBG_log("security contexts are verified in the initiator state");
-	   }
-	   else {
-		DBG_log("security context verification failed in the initiator state"
-				"(shouldnt reach here unless responder (or something in between) is modifying the security context");
-		return FALSE;
-	   }
-	}
-	else if (st->st_state==STATE_QUICK_R0) {
-		DBG_log("Receievd sec ctx in responder state again, already stored it so doing nothing now");
-	}
-	return TRUE;
+    switch(encr) {
+    case IKEv2_ENCR_DES:
+        return OAKLEY_DES_CBC;
+    case  IKEv2_ENCR_IDEA:
+        return OAKLEY_IDEA_CBC;
+    case  IKEv2_ENCR_BLOWFISH:
+        return OAKLEY_BLOWFISH_CBC;
+    case  IKEv2_ENCR_RC5:
+        return OAKLEY_RC5_R16_B64_CBC;
+    case  IKEv2_ENCR_3DES:
+        return OAKLEY_3DES_CBC;
+    case  IKEv2_ENCR_CAST:
+        return OAKLEY_CAST_CBC;
+    case  IKEv2_ENCR_AES_CBC:
+        return OAKLEY_AES_CBC;
+    default:
+	return 0;
+    }
 }
-#endif
+
+int v2tov1_encr_child(enum ikev2_trans_type_encr encr)
+{
+    switch(encr) {
+    case IKEv2_ENCR_DES:
+        return ESP_DES;
+    case  IKEv2_ENCR_IDEA:
+        return ESP_IDEA;
+    case  IKEv2_ENCR_BLOWFISH:
+        return ESP_BLOWFISH;
+    case  IKEv2_ENCR_RC5:
+        return ESP_RC5;
+    case  IKEv2_ENCR_3DES:
+        return ESP_3DES;
+    case  IKEv2_ENCR_CAST:
+        return ESP_CAST;
+    case  IKEv2_ENCR_AES_CBC:
+        return ESP_AES;
+    default:
+	return 0;
+    }
+}
+
+int v2tov1_integ(enum ikev2_trans_type_integ v2integ)
+{
+    switch(v2integ) {
+    case IKEv2_AUTH_HMAC_MD5_96:
+        return OAKLEY_MD5;
+    case IKEv2_AUTH_HMAC_SHA1_96:
+        return OAKLEY_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
+        return OAKLEY_SHA2_256;
+     case IKEv2_AUTH_HMAC_SHA2_384_192:
+         return OAKLEY_SHA2_384;
+     case IKEv2_AUTH_HMAC_SHA2_512_256:
+         return OAKLEY_SHA2_512;
+     default:
+         return -1;
+     }
+}
+
+int v2tov1_integ_child(enum ikev2_trans_type_integ v2integ)
+{
+    switch(v2integ) {
+    case IKEv2_AUTH_HMAC_MD5_96:
+        return AUTH_ALGORITHM_HMAC_MD5;
+    case IKEv2_AUTH_HMAC_SHA1_96:
+        return AUTH_ALGORITHM_HMAC_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
+        return AUTH_ALGORITHM_HMAC_SHA2_256;
+    case IKEv2_AUTH_HMAC_SHA2_384_192:
+        return AUTH_ALGORITHM_HMAC_SHA2_384;
+    case IKEv2_AUTH_HMAC_SHA2_512_256:
+        return AUTH_ALGORITHM_HMAC_SHA2_512;
+    default:
+        return IKEv2_AUTH_INVALID;
+   }
+}
 
 /** output an attribute (within an SA) */
 bool
@@ -232,6 +195,364 @@ out_attr(int type
 
 #define return_on(var, val) do { var=val;goto return_out; } while(0);
 
+struct db_sa *
+ikev1_alg_makedb(lset_t policy, struct alg_info_ike *ei, bool oneproposal UNUSED
+                 , enum phase1_role role)
+{
+    struct db_sa *sadb;
+
+    sadb = alginfo2parent_db2(ei);
+    sadb->parentSA = TRUE;
+
+    if(!extrapolate_v1_from_v2(sadb, policy, role)) {
+        openswan_log("failed to create v1 PARENTSA policy from v2 settings");
+        return NULL;
+    }
+
+    DBG(DBG_EMITTING,
+        DBG_log("Translated IKEv2 policy to: ");
+        sa_print(sadb));
+
+    return sadb;
+
+}
+
+struct db_sa *
+kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei, enum phase1_role role)
+{
+	struct db_sa *sadb;
+
+    sadb = alginfo2child_db2(ei);
+	sadb->parentSA = FALSE;
+
+    if(!extrapolate_v1_from_v2(sadb, policy, role)) {
+        openswan_log("failed to create v1 IPsec policy from v2 settings");
+	return NULL;
+    }
+
+    DBG(DBG_EMITTING,
+        DBG_log("Translated IKEv2 policy to: ");
+        sa_print(sadb));
+
+    return sadb;
+}
+
+struct db_trans_flat {
+    u_int8_t               protoid;	        /* Protocol-Id */
+    u_int16_t              auth_method;     	/* conveyed another way in ikev2*/
+    u_int16_t              encr_transid;	/* Transform-Id */
+    u_int16_t              integ_transid;	/* Transform-Id */
+    u_int16_t              prf_transid;		/* Transform-Id */
+    u_int16_t              group_transid;	/* Transform-Id */
+    u_int16_t              encr_keylen;		/* Key length in bits */
+};
+
+/* static, if not for unit testing */
+bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role role)
+{
+    unsigned int prop_disj;
+    int tot_combos, cur_combo;
+    //int propnum = 0;
+    int i;
+    int transform_values[IKEv2_TRANS_TYPE_COUNT];
+    struct db_trans_flat *dtf;
+    struct db_trans_flat *cur_dtf;
+
+    /* if already did it, then just return */
+    if(sadb->prop_conjs != NULL) return TRUE;
+
+    /* the v2 info might be empty */
+    if(sadb->prop_disj_cnt < 1) return TRUE;
+
+    if(!sadb->prop_v1_ctx) {
+        sadb->prop_v1_ctx = db_prop_new(sadb->prop_disj->props[0].protoid,
+                      sadb->prop_disj->props[0].trans_cnt,
+                      10 /* attributes */);
+
+    }
+
+    /* first count number of combinations expressed in IKEv2, so we can
+     * allocate a table big for all the combinations */
+    tot_combos = 0;
+    prop_disj  = 0;
+#if EXTRAPOLATE_DEBUG
+    /* enable this when debugging problems with tot_combos */
+    DBG_log("%u disj_cnt: %d/%d", tot_combos, prop_disj, sadb->prop_disj_cnt);
+#endif
+    for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
+        unsigned int prop_conj;
+        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
+#if EXTRAPOLATE_DEBUG
+        /* enable this when debugging problems with tot_combos */
+        DBG_log("%u disj_cnt: %d/%d conj: 0/%d", tot_combos, prop_disj, sadb->prop_disj_cnt, pd->prop_cnt);
+#endif
+
+        /* reset the transform values */
+        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+            transform_values[i] = -1;
+        }
+
+        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
+            unsigned int trans_i;
+            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+#if EXTRAPOLATE_DEBUG
+            /* enable this when debugging problems with tot_combos */
+            DBG_log("%u disj_cnt: %d/%d conj: %d/%d trans: 0/%d"
+                    , tot_combos, prop_disj, sadb->prop_disj_cnt
+                    , prop_conj, pd->prop_cnt
+                    , pc->trans_cnt);
+#endif
+            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
+                //unsigned int attr_i;
+                struct db_v2_trans *tr = &pc->trans[trans_i];
+#if EXTRAPOLATE_DEBUG
+                /* enable this when debugging problems with tot_combos */
+                DBG_log("%u disj_cnt: %d/%d conj: %d/%d trans: %d/%d type: %d"
+                        , tot_combos, prop_disj, sadb->prop_disj_cnt
+                        , prop_conj, pd->prop_cnt
+                        , trans_i, pc->trans_cnt, tr->transform_type);
+#endif
+
+                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
+                /* IKEv1 does not negotiate PRF, so ignore options like that */
+                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
+
+#if EXTRAPOLATE_DEBUG
+                /* enable this when debugging problems with tot_combos */
+                DBG_log("%u A: %u,%u,%u, noticing type[%u]=>%d (vs: %d)"
+                        , tot_combos
+                        , prop_disj, prop_conj, trans_i
+                        , tr->transform_type, tr->value
+                        , transform_values[tr->transform_type]);
+#endif
+
+                if(transform_values[tr->transform_type]==-1) {
+                    transform_values[tr->transform_type] = tr->value;
+                }
+                if(transform_values[tr->transform_type] != tr->value) {
+                    transform_values[tr->transform_type] = tr->value;
+
+                    /*
+                     * this may duplicate entries if they are not in order,
+                     * but that's okay, because the duplicate check below
+                     * will get rid of them.
+                     */
+                    tot_combos++;
+                    DBG(DBG_EMITTING
+                        ,DBG_log("counted combo %d: dh:%d encr:%d integ:%d"
+                                 , tot_combos
+                                 , transform_values[IKEv2_TRANS_TYPE_DH]
+                                 , transform_values[IKEv2_TRANS_TYPE_ENCR]
+                                 , transform_values[IKEv2_TRANS_TYPE_INTEG]));
+                }
+            }
+        }
+    }
+
+    /* there is probably an additional combination at the end */
+    if((transform_values[IKEv2_TRANS_TYPE_DH] != -1 || sadb->parentSA == FALSE)
+       && transform_values[IKEv2_TRANS_TYPE_ENCR] != -1
+       && transform_values[IKEv2_TRANS_TYPE_INTEG] != -1) {
+        tot_combos++;
+    }
+    /* make a list of them all */
+    dtf = alloca(sizeof(struct db_trans_flat)*tot_combos);
+    memset(dtf, 0, sizeof(struct db_trans_flat)*tot_combos);
+    cur_dtf = dtf;
+
+    cur_combo=0;
+
+    if(tot_combos == 0) {
+        openswan_log("can not extrapolate IKEv1 policy from empty IKEv2 policy");
+        return FALSE;
+    }
+
+    /* make sure we saw combinations for all the things we care about */
+    if(transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
+       || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1) {
+        openswan_log("can not extrapolate IKEv1 policy from v2 policy missing encryption or integrity settings");
+        return FALSE;
+    }
+
+    if(sadb->parentSA == TRUE) {
+        if(transform_values[IKEv2_TRANS_TYPE_DH] == -1) {
+            openswan_log("can not extrapolate IKEv1 parent policy from v2 policy missing group settings");
+            return FALSE;
+        }
+    }
+    for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
+        unsigned int prop_conj;
+        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
+        /* reset the transform values */
+        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+            transform_values[i] = -1;
+        }
+
+        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
+            unsigned int trans_i;
+            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
+                //int attr_i;
+                struct db_v2_trans *tr = &pc->trans[trans_i];
+
+                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
+
+                /* IKEv1 does not negotiate PRF, so ignore options like that */
+                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
+
+#if 0
+                DBG_log("B: %u,%u,%u, cc: %u setting type: tt[%u]=%d vs %d",
+                        prop_disj, prop_conj, trans_i, cur_combo,
+                        tr->transform_type,
+                        transform_values[tr->transform_type],
+                        tr->value);
+#endif
+                if(transform_values[tr->transform_type]==-1) {
+                    transform_values[tr->transform_type] = tr->value;
+                }
+
+                switch(tr->transform_type) {
+                case IKEv2_TRANS_TYPE_DH:
+                    cur_dtf->group_transid = tr->value;
+                    break;
+
+                case IKEv2_TRANS_TYPE_ENCR:
+                    cur_dtf->encr_transid = tr->value;
+                    break;
+
+                case IKEv2_TRANS_TYPE_INTEG:
+                    cur_dtf->integ_transid = tr->value;
+                    break;
+
+                default:
+                    /* if the trans_type is of another type, then just continue,
+                     * because there is no value in the combinations IKEv1 can
+                     * not express
+                     */
+                    continue;
+                }
+
+                if(transform_values[tr->transform_type] != tr->value) {
+                    int combo_i;
+                    struct db_trans_flat *old_dtf = cur_dtf;
+                    transform_values[tr->transform_type] = tr->value;
+
+                    /* do a duplicate check, which is a linear search */
+                    for(combo_i = 0; combo_i < cur_combo; combo_i++) {
+#if 0
+                        DBG_log("%d: checking combo dh:%d:%d encr:%d:%d integ:%d:%d"
+                            , combo_i
+                            , cur_dtf->group_transid
+                            , dtf[combo_i].group_transid
+                            , cur_dtf->encr_transid
+                            , dtf[combo_i].encr_transid
+                            , cur_dtf->integ_transid
+                            , dtf[combo_i].integ_transid);
+#endif
+                        if(cur_dtf->group_transid  == dtf[combo_i].group_transid
+                           && cur_dtf->encr_transid == dtf[combo_i].encr_transid
+                           && cur_dtf->integ_transid == dtf[combo_i].integ_transid) {
+                            /* it is duplicate */
+#if 0
+                            DBG_log("    combo duplicate of %u", combo_i);
+#endif
+                            break;
+                }
+                    }
+                    if(combo_i < cur_combo) continue;
+
+                    /*
+                     * some of the encr or integ values might not exist in IKEv1,
+                     * so skip them.
+                     */
+                    if(v2tov1_encr(cur_dtf->encr_transid) == 0
+                       || v2tov1_integ(cur_dtf->integ_transid) == 0) {
+                        continue;
+                    }
+
+                    DBG(DBG_EMITTING
+                        ,DBG_log("new combo %d: dh:%d encr:%d integ:%d"
+                                 , cur_combo
+                                 , cur_dtf->group_transid
+                                 , cur_dtf->encr_transid
+                                 , cur_dtf->integ_transid));
+                    cur_dtf++;
+                    *cur_dtf = *old_dtf;
+                    ++cur_combo;
+                    passert(cur_combo <= tot_combos);
+                }
+            }
+        }
+    }
+
+    /*
+     * check the last entry, in cur_dtf, and if it is different than dtf[cur_combo]
+     * (assuming cur_combo>0), add it to the list.
+     * if cur_combo == 0, then it's the only entry!
+     */
+    if(cur_combo == 0
+       || (cur_dtf->group_transid != dtf[cur_combo].group_transid
+           || cur_dtf->encr_transid != dtf[cur_combo].encr_transid
+           || cur_dtf->integ_transid != dtf[cur_combo].integ_transid)) {
+        cur_combo++;
+    }
+
+    cur_dtf = dtf;
+    for(i=0; i<cur_combo; i++, cur_dtf++) {
+        if(sadb->parentSA) {
+            lset_t policies[][2] = {
+                { POLICY_PSK,              OAKLEY_PRESHARED_KEY},
+                { POLICY_RSASIG,           OAKLEY_RSA_SIG      },
+                { POLICY_XAUTH|POLICY_PSK,    XAUTHInitPreShared},
+                { POLICY_XAUTH|POLICY_RSASIG, XAUTHInitRSA     },
+            };
+
+            unsigned int pol_j;
+            for(pol_j = 0; pol_j < elemsof(policies); pol_j++) {
+                lset_t possible = policies[pol_j][0];
+                if((policy & possible) == possible) {  /* must match exactly */
+
+                    unsigned int oakley_auth_alg = policies[pol_j][1];
+
+                    if(role == RESPONDER) {
+                        oakley_auth_alg++;   /* because they are sequential */
+                    }
+
+                    db_trans_add(sadb->prop_v1_ctx, KEY_IKE);
+                    db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_AUTHENTICATION_METHOD,
+                                       oakley_auth_alg);
+                    db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_ENCRYPTION_ALGORITHM,
+                           v2tov1_encr(cur_dtf->encr_transid));
+                    db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_HASH_ALGORITHM,
+                           v2tov1_integ(cur_dtf->integ_transid));
+                    db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_GROUP_DESCRIPTION,
+                                       cur_dtf->group_transid);
+                }
+            }
+        } else {
+            /* child SA policy */
+            db_trans_add(sadb->prop_v1_ctx, v2tov1_encr_child(cur_dtf->encr_transid));
+            db_attr_add_ipsec_values(sadb->prop_v1_ctx, AUTH_ALGORITHM,
+                               v2tov1_integ(cur_dtf->integ_transid));
+            if(cur_dtf->group_transid) {
+                db_attr_add_ipsec_values(sadb->prop_v1_ctx, GROUP_DESCRIPTION,
+                                         cur_dtf->group_transid);
+            }
+            /* XXX could add ESN here too !*/
+        }
+    }
+
+    sadb->prop_conjs = alloc_thing(struct db_prop_conj, "v1 policy proposal conj");
+    sadb->prop_conj_cnt = 1;
+    if(!sadb->prop_conjs) { return FALSE; }
+
+    sadb->prop_conjs->props    = &sadb->prop_v1_ctx->prop;
+    sadb->prop_conjs->prop_cnt =  1;
+
+    return TRUE;
+}
+
+
 /**
  * Output an SA, as described by a db_sa.
  * This has the side-effect of allocating SPIs for us.
@@ -241,7 +562,8 @@ bool
 out_sa(pb_stream *outs
        , struct db_sa *sadb
        , struct state *st
-       , bool oakley_mode
+       , bool phase_one_mode
+       , enum phase1_role role
        , bool aggressive_mode UNUSED
        , u_int8_t np)
 {
@@ -251,84 +573,67 @@ out_sa(pb_stream *outs
     bool ah_spi_generated = FALSE
           , esp_spi_generated = FALSE
           , ipcomp_cpi_generated = FALSE;
-    struct db_sa *revised_sadb;
 
-
-    if(oakley_mode) {
-        /* Aggr-Mode - Max transforms == 2 - Multiple transforms, 1 DH group */
-          revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-                                               , sadb
-                                               , aggressive_mode ? 2 : -1);
-    } else {
-          revised_sadb=kernel_alg_makedb(st->st_connection->policy
-                                               , st->st_connection->alg_info_esp
-                                               , TRUE);
-
-          /* add IPcomp proposal if policy asks for it */
-
-          if (revised_sadb && ((st->st_policy) & POLICY_COMPRESS)) {
-
-              struct db_trans *ipcomp_trans = alloc_thing(struct db_trans, "ipcomp_trans");
-
-              /* allocate space for 2 proposals */
-              struct db_prop *ipcomp_prop = alloc_bytes( (sizeof (struct db_prop) * 2), "ipcomp_prop");
-
-              if (ipcomp_trans && ipcomp_prop) {
-
-                    passert (revised_sadb->prop_conjs->prop_cnt == 1);
-
-                    /* construct the IPcomp proposal  */
-                    ipcomp_trans->transid = IPCOMP_DEFLATE;
-                    ipcomp_trans->attrs = NULL;
-                    ipcomp_trans->attr_cnt = 0;
-
-                    /* copy the original proposal */
-                    ipcomp_prop[0].protoid           = revised_sadb->prop_conjs->props->protoid;
-                    ipcomp_prop[0].trans           = revised_sadb->prop_conjs->props->trans;
-                    ipcomp_prop[0].trans_cnt = revised_sadb->prop_conjs->props->trans_cnt;
-
-                    /* and add our IPcomp proposal */
-                    ipcomp_prop[1].protoid = PROTO_IPCOMP;
-                    ipcomp_prop[1].trans = ipcomp_trans;
-                    ipcomp_prop[1].trans_cnt = 1;
-
-                    /* free the old proposal, and ... */
-                    pfree (revised_sadb->prop_conjs->props);
-
-                    /* ... use our new one instead */
-                    revised_sadb->prop_conjs->props = ipcomp_prop;
-                    revised_sadb->prop_conjs->prop_cnt += 1;
-
-              }
-              else {
-                    /* couldn't alloc something, so skip adding the proposal */
-                    if (ipcomp_trans)
-                        pfreeany (ipcomp_trans);
-                    if (ipcomp_prop)
-                        pfreeany (ipcomp_prop);
-              }
-          }
+    if(!extrapolate_v1_from_v2(sadb, st->st_policy, role)) {
+        openswan_log("can not derive IKEv1 policy from IKEv2 settings, failed");
+        return_on(ret, FALSE);
     }
 
-    /* more sanity */
-    if(revised_sadb != NULL) {
-          sadb = revised_sadb;
+    if(!phase_one_mode && ((st->st_policy) & POLICY_COMPRESS)) {
+        /* add IPcomp proposal if policy asks for it */
+        struct db_trans *ipcomp_trans = alloc_thing(struct db_trans, "ipcomp_trans");
+
+        /* allocate space for 2 proposals */
+        struct db_prop *ipcomp_prop = alloc_bytes( (sizeof (struct db_prop) * 2), "ipcomp_prop");
+
+        if (ipcomp_trans && ipcomp_prop) {
+            passert(sadb->prop_conjs->prop_cnt == 1);
+
+            /* construct the IPcomp proposal  */
+            ipcomp_trans->transid = IPCOMP_DEFLATE;
+            ipcomp_trans->attrs = NULL;
+            ipcomp_trans->attr_cnt = 0;
+
+            /* copy the original proposal */
+            ipcomp_prop[0].protoid   = sadb->prop_conjs->props->protoid;
+            ipcomp_prop[0].trans     = sadb->prop_conjs->props->trans;
+            ipcomp_prop[0].trans_cnt = sadb->prop_conjs->props->trans_cnt;
+
+            /* and add our IPcomp proposal */
+            ipcomp_prop[1].protoid = PROTO_IPCOMP;
+            ipcomp_prop[1].trans = ipcomp_trans;
+            ipcomp_prop[1].trans_cnt = 1;
+
+            /* free the old proposal, and ... */
+            pfree (sadb->prop_conjs->props);
+
+            /* ... use our new one instead */
+            sadb->prop_conjs->props = ipcomp_prop;
+            sadb->prop_conjs->prop_cnt += 1;
+        }
+        else {
+            /* couldn't alloc something, so skip adding the proposal */
+            if (ipcomp_trans)
+                pfreeany (ipcomp_trans);
+            if (ipcomp_prop)
+                pfreeany (ipcomp_prop);
+        }
     }
 
     /* SA header out */
     {
-          struct isakmp_sa sa;
+        struct isakmp_sa sa;
 
-          sa.isasa_np = np;
-          st->st_doi = sa.isasa_doi = ISAKMP_DOI_IPSEC;          /* all we know */
-          if (!out_struct(&sa, &isakmp_sa_desc, outs, &sa_pbs))
-              return_on(ret, FALSE);
+        sa.isasa_np = np;
+        st->st_doi = sa.isasa_doi = ISAKMP_DOI_IPSEC;          /* all we know */
+        if (!out_struct(&sa, &isakmp_sa_desc, outs, &sa_pbs))
+            return_on(ret, FALSE);
     }
 
     /* within SA: situation out */
     st->st_situation = SIT_IDENTITY_ONLY;
     if (!out_struct(&st->st_situation, &ipsec_sit_desc, &sa_pbs, NULL))
-          return_on(ret, FALSE);
+        return_on(ret, FALSE);
 
     /* within SA: Proposal Payloads
      *
@@ -378,7 +683,7 @@ out_sa(pb_stream *outs
 
               proposal.isap_proposal = pcn;
               proposal.isap_protoid = p->protoid;
-              proposal.isap_spisize = oakley_mode ? 0
+              proposal.isap_spisize = phase_one_mode ? 0
                     : p->protoid == PROTO_IPCOMP ? IPCOMP_CPI_SIZE
                     : IPSEC_DOI_SPI_SIZE;
 
@@ -405,7 +710,7 @@ out_sa(pb_stream *outs
                * Set trans_desc.
                * Set attr_desc.
                * Set attr_val_descs.
-               * If not oakley_mode, emit SPI.
+               * If not phase_one_mode, emit SPI.
                * We allocate SPIs on demand.
                * All ESPs in an SA will share a single SPI.
                * All AHs in an SAwill share a single SPI.
@@ -425,7 +730,7 @@ out_sa(pb_stream *outs
                     switch (p->protoid)
                     {
                     case PROTO_ISAKMP:
-                        passert(oakley_mode);
+                        passert(phase_one_mode);
                         trans_desc = &isakmp_isakmp_transform_desc;
                         attr_desc = &isakmp_oakley_attribute_desc;
                         attr_val_descs = oakley_attr_val_descs;
@@ -433,7 +738,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPSEC_AH:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_ah_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -443,7 +748,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPSEC_ESP:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_esp_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -453,7 +758,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPCOMP:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_ipcomp_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -508,6 +813,7 @@ out_sa(pb_stream *outs
                     pb_stream trans_pbs;
                     struct isakmp_transform trans;
                     unsigned int an;
+                    lset_t transmitted = LEMPTY;
 
                     trans.isat_np = (tn == p->trans_cnt - 1)
                         ? ISAKMP_NEXT_NONE : ISAKMP_NEXT_T;
@@ -525,7 +831,7 @@ out_sa(pb_stream *outs
                     if (p->protoid != PROTO_IPCOMP
                     && st->st_pfs_group != NULL)
                     {
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         passert(st->st_pfs_group != &unset_group);
                         out_attr(GROUP_DESCRIPTION, st->st_pfs_group->group
                               , attr_desc, attr_val_descs
@@ -535,7 +841,7 @@ out_sa(pb_stream *outs
                     /* automatically generate duration
                      * and, for Phase 2 / Quick Mode, encapsulation.
                      */
-                    if (oakley_mode)
+                    if (phase_one_mode)
                     {
                         out_attr(OAKLEY_LIFE_TYPE, OAKLEY_LIFE_SECONDS
                               , attr_desc, attr_val_descs
@@ -558,8 +864,6 @@ out_sa(pb_stream *outs
                         if (p->protoid != PROTO_IPCOMP
                         || st->st_policy & POLICY_TUNNEL)
                         {
-#ifdef NAT_TRAVERSAL
-#ifndef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
                               if ((st->hidden_variables.st_nat_traversal & NAT_T_DETECTED) &&
                                         (!(st->st_policy & POLICY_TUNNEL))) {
                                         /* Inform user that we will not respect policy and only
@@ -569,31 +873,18 @@ out_sa(pb_stream *outs
                                                   "Transport Mode not allowed due to security concerns -- "
                                                   "using Tunnel mode.  Rebuild Openswan with USE_NAT_TRAVERSAL_TRANSPORT_MODE=true in Makefile.inc to support transport mode.");
                               }
-#endif
-#endif
 
+                              transmitted |= LELEM(ENCAPSULATION_MODE);
                               out_attr(ENCAPSULATION_MODE
-#ifdef NAT_TRAVERSAL
-#ifdef I_KNOW_TRANSPORT_MODE_HAS_SECURITY_CONCERN_BUT_I_WANT_IT
                                   , NAT_T_ENCAPSULATION_MODE(st,st->st_policy)
-#else
-                                        /* If NAT-T is detected, use UDP_TUNNEL as long as Transport
-                                         * Mode has security concerns.
-                                         *
-                                         * User has been informed of that
-                                         */
-                                  , NAT_T_ENCAPSULATION_MODE(st,POLICY_TUNNEL)
-#endif
-#else /* ! NAT_TRAVERSAL */
-                                  , st->st_policy & POLICY_TUNNEL
-                                    ? ENCAPSULATION_MODE_TUNNEL : ENCAPSULATION_MODE_TRANSPORT
-#endif
                                   , attr_desc, attr_val_descs
                                   , &trans_pbs);
                         }
+                        transmitted |= LELEM(SA_LIFE_TYPE);
                         out_attr(SA_LIFE_TYPE, SA_LIFE_TYPE_SECONDS
                               , attr_desc, attr_val_descs
                               , &trans_pbs);
+                        transmitted |= LELEM(SA_LIFE_DURATION);
                         out_attr(SA_LIFE_DURATION
                               , st->st_connection->sa_ipsec_life_seconds
                               , attr_desc, attr_val_descs
@@ -624,19 +915,32 @@ out_sa(pb_stream *outs
                     }
 
                     /* spit out attributes from table */
-                    for (an = 0; an != t->attr_cnt; an++)
+                    for (an = 0; an < t->attr_cnt; an++)
                     {
                         struct db_attr *a = &t->attrs[an];
+                        const enum_names *thing;
+                        int type;
 
-                        if(oakley_mode) {
-                              out_attr(a->type.oakley, a->val
-                                         , attr_desc, attr_val_descs
-                                         , &trans_pbs);
+                        if(phase_one_mode) {
+                            type = a->type.oakley;
+                            thing= &oakley_attr_names;
                         } else {
-                                        out_attr(a->type.ipsec,  a->val , attr_desc, attr_val_descs , &trans_pbs);
-
+                            type = a->type.ipsec;
+                            thing= &ipsec_attr_names;
                         }
 
+                        if(0) {
+                            DBG(DBG_EMITTING
+                                , DBG_log("emitting transform for %s with value %u"
+                                          , enum_name(thing, type)
+                                          , a->val));
+                        }
+
+                        if(transmitted & LELEM(type)) continue;
+                        transmitted |= LELEM(type);
+                        out_attr(type, a->val
+                                 , attr_desc, attr_val_descs
+                                 , &trans_pbs);
                     }
 
                     close_output_pbs(&trans_pbs);
@@ -650,8 +954,8 @@ out_sa(pb_stream *outs
 
 return_out:
 
-    if (revised_sadb)
-          free_sa(revised_sadb);
+    if (sadb)
+          free_sa(sadb);
     return ret;
 }
 
@@ -969,86 +1273,70 @@ parse_isakmp_sa_body(
               struct isakmp_attribute a;
               pb_stream attr_pbs;
               u_int32_t val;          /* room for larger values */
+              enum ikev1_oakley_attr attr;
 
               if (!in_struct(&a, &isakmp_oakley_attribute_desc, &trans_pbs, &attr_pbs))
                     return BAD_PROPOSAL_SYNTAX;
 
-              passert((a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK) < 32);
+              if((a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK) >= 32) {
+                  /* was a passert(), so you can crash Pluto by sending attributes >32 ?? */
+
+                  loglog(RC_LOG_SERIOUS, "ignoring unknown attribute %u in Oakley Transform %u"
+                         , a.isaat_af_type
+                         , trans.isat_transnum);
+                  continue;
+              }
 
               if (LHAS(seen_attrs, a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK))
               {
                     loglog(RC_LOG_SERIOUS, "repeated %s attribute in Oakley Transform %u"
-                        , enum_show(&oakley_attr_names, a.isaat_af_type)
+                        , enum_show(&oakley_attr_names, a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)
                         , trans.isat_transnum);
                     return BAD_PROPOSAL_SYNTAX;
               }
 
-              seen_attrs |= LELEM(a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK);
+              attr = a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK;
+              seen_attrs |= LELEM(attr);
 
               val = a.isaat_lv;
 
               DBG(DBG_PARSING,
               {
-                    enum_names *vdesc = oakley_attr_val_descs
-                        [a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK];
+                  enum_names *vdesc;
+                  if(val < oakley_attr_val_descs_size) {
+                      vdesc = oakley_attr_val_descs[val];
 
-                    if (vdesc != NULL)
-                    {
+                      if (vdesc != NULL) {
                         const char *nm = enum_name(vdesc, val);
 
                         if (nm != NULL)
                               DBG_log("   [%u is %s]", (unsigned)val, nm);
+                      }
+                  } else {
+                      DBG_log("   invalid oakley attr: %d", val);
                     }
               });
 
               switch (a.isaat_af_type)
               {
                     case OAKLEY_ENCRYPTION_ALGORITHM | ISAKMP_ATTR_AF_TV:
-                        if (ike_alg_enc_ok(val, 0, c->alg_info_ike, &ugh, ugh_buf, sizeof(ugh_buf))) {
-                        /* if (ike_alg_enc_present(val)) { */
-                              ta.encrypt = val;
-                              ta.encrypter = crypto_get_encrypter(val);
+                        if (ikev1_alg_enc_ok(val, 0, c->alg_info_ike, &ugh, ugh_buf, sizeof(ugh_buf))) {
+                            ta.encrypter = ikev1_alg_get_encr(val);
+                            ta.encrypt   = ta.encrypter->common.algo_v2id;
                               ta.enckeylen = ta.encrypter->keydeflen;
-                        } else
-                        switch (val)
-                        {
-#if defined(USE_1DES)
-                        case OAKLEY_DES_CBC:
-                              openswan_log("1DES is not encryption");
-                              /* FALL THROUGH */
-#endif
-                        case OAKLEY_3DES_CBC:
-                              ta.encrypt = val;
-                              ta.encrypter = crypto_get_encrypter(val);
-                              break;
-
-#if !defined(USE_1DES)
-                        case OAKLEY_DES_CBC:
-#endif
-                        default:
-                              ugh = builddiag("%s is not supported"
-                                  , enum_show(&oakley_enc_names, val));
                         }
                         break;
 
                     case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
                         if (ikev1_alg_integ_present(val, 0)) {
-                              ta.prf_hash = val;
-                              ta.prf_hasher = crypto_get_hasher(val);
-                        } else
-/* #else */
-                        switch (val)
-                        {
-                        case OAKLEY_MD5:
-                        case OAKLEY_SHA:
-                              ta.prf_hash = val;
-                              ta.prf_hasher = crypto_get_hasher(val);
-                              break;
-                        default:
+                              ta.integ_hasher = ikev1_crypto_get_hasher(val);
+                              ta.integ_hash   = ta.integ_hasher->common.algo_v2id;
+                              ta.prf_hasher   = ta.integ_hasher;
+                              ta.prf_hash     = ta.integ_hash;
+                        } else {
                               ugh = builddiag("%s is not supported"
                                   , enum_show(&oakley_hash_names, val));
                         }
-/* #endif */
                         break;
 
                     case OAKLEY_AUTHENTICATION_METHOD | ISAKMP_ATTR_AF_TV:
@@ -1290,25 +1578,11 @@ parse_isakmp_sa_body(
               if (ugh != NULL)
               {
                     loglog(RC_LOG_SERIOUS, "%s.  Attribute %s"
-                        , ugh, enum_show(&oakley_attr_names, a.isaat_af_type));
+                        , ugh, enum_show(&oakley_attr_names, attr));
                     break;
               }
           }
 
-#if 0
-          /*
-           * ML: at last check for allowed transforms in alg_info_ike
-           *     (ALG_INFO_F_STRICT flag)
-           */
-          /* XXX the strict flag is no longer supported in this intermediate version */
-          if (ugh == NULL)
-          {
-                    if (!ike_alg_ok_final(ta.encrypt, ta.enckeylen, ta.prf_hash,
-                              ta.group ? ta.group->group : 65535, c->alg_info_ike)) {
-                              ugh = "OAKLEY proposal refused";
-                    }
-          }
-#endif
 
           if (ugh == NULL)
           {
@@ -1415,54 +1689,50 @@ parse_isakmp_sa_body(
 /* Initialize st_oakley field of state for use when initiating in
  * aggressive mode.
  *
- * This should probably get more of its parameters, like what group to use,
- * from the connection specification, but it's not there yet.
- * This should ideally be done by passing them via whack.
+ * This will return at most one proposal, since AGGR is dumb.
  *
  */
 
-/* XXX MCR. I suspect that actually all of this is redundent */
 bool
 init_am_st_oakley(struct state *st, lset_t policy)
 {
     struct trans_attrs ta;
+    struct connection *c = st->st_connection;
+    struct db_sa *sadb;
+
+    sadb = ikev1_alg_makedb(policy, c->alg_info_ike, TRUE, INITIATOR);
+    if(sadb == NULL) {
+        return FALSE;
+    }
+
+    /* now wanter into the proposed proposal, and extract what we need */
+
     struct db_attr  *enc, *hash, *auth, *grp;
     struct db_trans *trans;
     struct db_prop  *prop;
     struct db_prop_conj *cprop;
-    struct db_sa    *sa;
-    struct db_sa    *revised_sadb;
-    struct connection *c = st->st_connection;
-    unsigned int policy_index = POLICY_ISAKMP(policy
-                                                        , c->spd.this.xauth_server
-                                                        , c->spd.this.xauth_client);
-
-    memset(&ta, 0, sizeof(ta));
 
     /* When this SA expires (seconds) */
     ta.life_seconds = st->st_connection->sa_ike_life_seconds;
     ta.life_kilobytes = 1000000;
 
-    passert(policy_index < elemsof(oakley_am_sadb));
-    sa = &oakley_am_sadb[policy_index];
-
-    /* Max transforms == 2 - Multiple transforms, 1 DH group */
-    revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-                                           , sa, 2);
-
-
-    if(revised_sadb == NULL) {
-          return FALSE;
+    if(sadb->prop_conj_cnt != 1) {
+        return FALSE;
     }
-    passert(revised_sadb->prop_conj_cnt == 1);
-    cprop = &revised_sadb->prop_conjs[0];
 
-    passert(cprop->prop_cnt == 1);
+    cprop = &sadb->prop_conjs[0];
+
+    if(cprop->prop_cnt != 1) {
+        return FALSE;
+    }
     prop = &cprop->props[0];
 
     trans = &prop->trans[0];
 
-    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
+    if(!(trans->attr_cnt == 4 || trans->attr_cnt == 5)) {
+        return FALSE;
+    }
+
     enc  = &trans->attrs[0];
     hash = &trans->attrs[1];
     auth = &trans->attrs[2];
@@ -1541,7 +1811,7 @@ static const struct ipsec_trans_attrs null_ipsec_trans_attrs = {
 
 static bool
 parse_ipsec_transform(struct isakmp_transform *trans
-, struct ipsec_trans_attrs *attrs
+                      , struct ipsec_trans_attrs *attrs   /* must be in IKEv2 number space */
 , pb_stream *prop_pbs
 , pb_stream *trans_pbs
 , struct_desc *trans_desc
@@ -1598,6 +1868,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
           pb_stream attr_pbs;
           enum_names *vdesc;
           u_int32_t val;          /* room for larger value */
+          u_int32_t type;
           bool ipcomp_inappropriate = is_ipcomp;          /* will get reset if OK */
 
           if (!in_struct(&a, &isakmp_ipsec_attribute_desc, trans_pbs, &attr_pbs))
@@ -1611,23 +1882,17 @@ parse_ipsec_transform(struct isakmp_transform *trans
           if (LHAS(seen_attrs, a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK))
           {
               loglog(RC_LOG_SERIOUS, "repeated %s attribute in IPsec Transform %u"
-                    , enum_show(&ipsec_attr_names, a.isaat_af_type)
+                    , enum_show(&ipsec_attr_names, a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK)
                     , trans->isat_transnum);
               return FALSE;
           }
 
-          seen_attrs |= LELEM(a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK);
+          type = a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK;
+          seen_attrs |= LELEM(type);
 
           val = a.isaat_lv;
 
-          vdesc  = ipsec_attr_val_descs[a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK
-#ifdef HAVE_LABELED_IPSEC
-          /* The original code (without labeled ipsec) assumes a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK) < 32, */
-          /* so for retaining the same behavior when this is < 32 and if more than >= 32 setting it to 0, */
-          /* which is NULL in ipsec_attr_val_desc*/
-                                                  >= 32 ? 0 : a.isaat_af_type & ISAKMP_ATTR_RTYPE_MASK
-#endif
-                                             ];
+          vdesc  = ipsec_attr_val_descs[type];
           if (vdesc != NULL)
           {
               if (enum_name(vdesc, val) == NULL)
@@ -1642,10 +1907,10 @@ parse_ipsec_transform(struct isakmp_transform *trans
                               , (unsigned)val, enum_show(vdesc, val)));
           }
 
-          switch (a.isaat_af_type)
+          switch (type)
           {
 #ifdef HAVE_LABELED_IPSEC
-             case SECCTX | ISAKMP_ATTR_AF_TLV:
+          case SECCTX:
                     {
                     pb_stream *   pbs=&attr_pbs;
                         if (!parse_secctx_attr (pbs, st)) {
@@ -1654,7 +1919,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
                 }
                     break;
 #endif
-              case SA_LIFE_TYPE | ISAKMP_ATTR_AF_TV:
+          case SA_LIFE_TYPE:
                     ipcomp_inappropriate = FALSE;
                     if (LHAS(seen_durations, val))
                     {
@@ -1665,10 +1930,11 @@ parse_ipsec_transform(struct isakmp_transform *trans
                     seen_durations |= LELEM(val);
                     life_type = val;
                     break;
-              case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TLV:
+          case SA_LIFE_DURATION:
+              if((a.isaat_af_type & ISAKMP_ATTR_AF_TV) == 0) {
                     val = decode_long_duration(&attr_pbs);
                     /* fall through */
-              case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TV:
+              }
                     ipcomp_inappropriate = FALSE;
                     if (!LHAS(seen_attrs, SA_LIFE_DURATION))
                     {
@@ -1696,10 +1962,11 @@ parse_ipsec_transform(struct isakmp_transform *trans
                               attrs->life_kilobytes = val;
                               break;
                         default:
-                              bad_case(life_type);
+                      loglog(RC_LOG_SERIOUS, "invalid life type: %u", life_type);
+                      return FALSE;
                     }
                     break;
-              case GROUP_DESCRIPTION | ISAKMP_ATTR_AF_TV:
+          case GROUP_DESCRIPTION:
                     if (is_ipcomp)
                     {
                         /* Accept reluctantly.  Should not happen, according to
@@ -1718,7 +1985,7 @@ parse_ipsec_transform(struct isakmp_transform *trans
                     }
                     break;
 
-              case ENCAPSULATION_MODE | ISAKMP_ATTR_AF_TV:
+          case ENCAPSULATION_MODE:
                     ipcomp_inappropriate = FALSE;
 #ifdef NAT_TRAVERSAL
                     switch (val) {
@@ -1814,26 +2081,26 @@ parse_ipsec_transform(struct isakmp_transform *trans
                     attrs->encapsulation = val;
 #endif
                     break;
-              case AUTH_ALGORITHM | ISAKMP_ATTR_AF_TV:
-                    attrs->transattrs.integ_hash = val;
+          case AUTH_ALGORITHM:
+                    attrs->transattrs.integ_hash = ikev1toikev2integ(val);
                     break;
-              case KEY_LENGTH | ISAKMP_ATTR_AF_TV:
+          case KEY_LENGTH:
                     attrs->transattrs.enckeylen = val;
                     break;
 #if 0
-              case KEY_ROUNDS | ISAKMP_ATTR_AF_TV:
+          case KEY_ROUNDS:
                     attrs->key_rounds = val;
                     break;
 #endif
 #if 0 /* not yet implemented */
-              case COMPRESS_DICT_SIZE | ISAKMP_ATTR_AF_TV:
+          case COMPRESS_DICT_SIZE:
                     break;
-              case COMPRESS_PRIVATE_ALG | ISAKMP_ATTR_AF_TV:
+          case COMPRESS_PRIVATE_ALG:
                     break;
 
-              case SA_LIFE_DURATION | ISAKMP_ATTR_AF_TLV:
+          case SA_LIFE_DURATION:
                     break;
-              case COMPRESS_PRIVATE_ALG | ISAKMP_ATTR_AF_TLV:
+          case COMPRESS_PRIVATE_ALG:
                     break;
 #endif
               default:
@@ -2031,9 +2298,13 @@ parse_ipsec_sa_body(
     while (next_full)
     {
           int propno = next_proposal.isap_proposal;
-          pb_stream ah_prop_pbs, esp_prop_pbs, ipcomp_prop_pbs;
+          pb_stream esp_prop_pbs, ipcomp_prop_pbs;
           struct isakmp_proposal ah_proposal, esp_proposal, ipcomp_proposal;
-          ipsec_spi_t ah_spi, esp_spi, ipcomp_cpi;
+#ifdef IPSEC_IKEV1_AH_BROKEN
+          pb_stream ah_prop_pbs;
+          ipsec_spi_t ah_spi = 0;
+#endif
+          ipsec_spi_t esp_spi, ipcomp_cpi;
           bool ah_seen = FALSE, esp_seen = FALSE, ipcomp_seen = FALSE;
           int inner_proto = 0;
           bool tunnel_mode = FALSE;
@@ -2045,7 +2316,6 @@ parse_ipsec_sa_body(
 
           ipcomp_cpi = 0;
           esp_spi = 0;
-          ah_spi = 0;
 
           memset(&ah_proposal, 0, sizeof(ah_proposal));
           memset(&esp_proposal, 0, sizeof(esp_proposal));
@@ -2151,6 +2421,7 @@ parse_ipsec_sa_body(
 
               switch (next_proposal.isap_protoid)
               {
+#ifdef IPSEC_IKEV1_AH_BROKEN
               case PROTO_IPSEC_AH:
                     if (ah_seen)
                     {
@@ -2162,6 +2433,7 @@ parse_ipsec_sa_body(
                     ah_proposal = next_proposal;
                     ah_spi = next_spi;
                     break;
+#endif
 
               case PROTO_IPSEC_ESP:
                     if (esp_seen)
@@ -2222,6 +2494,7 @@ parse_ipsec_sa_body(
 
           if (ah_seen)
           {
+#ifdef IPSEC_IKEV1_AH_BROKEN
               int previous_transnum = -1;
               int tn;
 
@@ -2244,7 +2517,7 @@ parse_ipsec_sa_body(
 
                     previous_transnum = ah_trans.isat_transnum;
 
-                    /* we must understand ah_attrs.transid
+                    /* we must understand ah_attrs.transid:
                      * COMBINED with ah_attrs.transattrs.integ_hash.
                      * See RFC 2407 "IPsec DOI" section 4.4.3
                      * The following combinations are legal,
@@ -2256,8 +2529,9 @@ parse_ipsec_sa_body(
                      * AH_SHA, AUTH_ALGORITHM_HMAC_SHA1
                      * AH_DES, AUTH_ALGORITHM_DES_MAC (unimplemented)
                      */
-                    switch ((unsigned int)ah_attrs.transattrs.integ_hash)
+                    switch (ah_attrs.transattrs.integ_hash)
                     {
+AA                        XXXX;
                         case AUTH_ALGORITHM_NONE:
                               loglog(RC_LOG_SERIOUS, "AUTH_ALGORITHM attribute missing in AH Transform");
                               return BAD_PROPOSAL_SYNTAX;
@@ -2303,6 +2577,10 @@ parse_ipsec_sa_body(
               inner_proto = IPPROTO_AH;
               if (ah_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
                     tunnel_mode = TRUE;
+#else
+              loglog(RC_LOG_SERIOUS, "AH in IKEv1 mode is not supported. Proposal rejected");
+              continue;
+#endif
           }
 
           if (esp_seen)
@@ -2327,97 +2605,29 @@ parse_ipsec_sa_body(
 
                     previous_transnum = esp_trans.isat_transnum;
 
-                    ugh = "no alg";
-
-                    if(c->alg_info_esp) {
                         ugh = kernel_alg_esp_enc_ok(esp_attrs.transattrs.encrypt
                                                             , esp_attrs.transattrs.enckeylen
                                                             , c->alg_info_esp);
-                    }
 
                     if(ugh != NULL) {
-                        switch (esp_attrs.transattrs.encrypt)
-                              {
-                              case ESP_AES:
-                              case ESP_3DES:
-                                  break;
-
-#ifdef SUPPORT_ESP_NULL          /* should be about as secure as AH-only */
-#warning "Building with ESP-Null"
-                              case ESP_NULL:
-                                  if (esp_attrs.transattrs.integ_hash == AUTH_ALGORITHM_NONE)
-                                        {
-                                            loglog(RC_LOG_SERIOUS, "ESP_NULL requires auth algorithm");
-                                            return BAD_PROPOSAL_SYNTAX;
-                                        }
-
-                                  if (st->st_policy & POLICY_ENCRYPT)
-                                        {
-                                            DBG(DBG_CONTROL | DBG_CRYPT
-                                                  , DBG_log("ESP_NULL Transform Proposal from %s"
-                                                              " does not satisfy POLICY_ENCRYPT"
-                                                              , ip_str(&c->spd.that.host_addr)));
-                                            continue;   /* try another */
-                                        }
-                                  break;
-#endif
-
-                              case ESP_DES:          /* NOT safe */
-                                  loglog(RC_LOG_SERIOUS, "1DES was proposed, it is insecure");
-                              default:
-                                  loglog(RC_LOG_SERIOUS, "kernel algorithm does not like: %s", ugh);
+                        loglog(RC_LOG_SERIOUS, "proposal refused due to: %s", ugh);
                                   loglog(RC_LOG_SERIOUS, "unsupported ESP Transform %s from %s"
                                            , enum_show(&esp_transformid_names, esp_attrs.transattrs.encrypt)
                                            , ip_str(&c->spd.that.host_addr));
                                   continue;   /* try another */
-                              }
                     }
 
-                    ugh = kernel_alg_esp_auth_ok(esp_attrs.transattrs.integ_hash, c->alg_info_esp);
-
-                    if(ugh != NULL) {
-                        switch ((unsigned int)esp_attrs.transattrs.integ_hash)
-                              {
-                              case AUTH_ALGORITHM_NONE:
-                                  if (!ah_seen)
-                                        {
-                                            DBG(DBG_CONTROL | DBG_CRYPT
-                                                  , DBG_log("ESP from %s must either have AUTH or be combined with AH"
-                                                              , ip_str(&c->spd.that.host_addr)));
-                                            continue;   /* try another */
-                                        }
-                                  break;
-                              case AUTH_ALGORITHM_HMAC_MD5:
-                              case AUTH_ALGORITHM_HMAC_SHA1:
-                                  break;
-                              default:
+                    if(!ESP_AALG_PRESENT(esp_attrs.transattrs.integ_hash)) {
                                   loglog(RC_LOG_SERIOUS, "unsupported ESP auth alg %s from %s"
-                                           , enum_show(&auth_alg_names, esp_attrs.transattrs.integ_hash)
+                               , enum_show(&trans_type_integ_names, esp_attrs.transattrs.integ_hash)
                                            , ip_str(&c->spd.that.host_addr));
                                   continue;   /* try another */
-                              }
-                    }
-
-                    if (ah_seen && ah_attrs.encapsulation != esp_attrs.encapsulation)
-                    {
-                        /* ??? This should be an error, but is it? */
-                        loglog(RC_LOG_SERIOUS
-                                 , "AH and ESP transforms disagree about encapsulation; TUNNEL presumed");
                     }
 
                     break;          /* we seem to be happy */
               }
               if (tn == esp_proposal.isap_notrans)
                     continue;          /* we didn't find a nice one */
-              /*
-               * ML: at last check for allowed transforms in alg_info_esp
-               *     (ALG_INFO_F_STRICT flag)
-               *
-               */
-              if (c->alg_info_esp!=NULL
-                    && !kernel_alg_esp_ok_final(esp_attrs.transattrs.encrypt, esp_attrs.transattrs.enckeylen,
-                                                      esp_attrs.transattrs.integ_hash, c->alg_info_esp))
-                        continue;
               esp_attrs.spi = esp_spi;
               inner_proto = IPPROTO_ESP;
               if (esp_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)

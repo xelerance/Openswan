@@ -1000,7 +1000,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
-    nst->st_orig_initiator = st->st_orig_initiator;
+    nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;

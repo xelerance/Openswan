@@ -275,7 +275,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 
     /* Set up state */
     cur_state = md->st = st = new_state();	/* (caller will reset cur_state) */
-    st->st_orig_initiator = FALSE; /* we are responding to this exchange */
+    st->st_ikev2_orig_initiator = FALSE; /* we are responding to this exchange */
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
@@ -1033,7 +1033,7 @@ aggr_outI1(int whack_sock,
     cur_state = st = new_state();
     if(newstateno) *newstateno = st->st_serialno;
 
-    st->st_orig_initiator = TRUE; /* we are initiating this exchange */
+    st->st_ikev2_orig_initiator = TRUE; /* we are initiating this exchange */
     st->st_connection = c;
 #ifdef HAVE_LABELED_IPSEC
     st->sec_ctx = NULL;
@@ -1162,15 +1162,16 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* SA out */
     {
 	u_char *sa_start = md->rbody.cur;
-	int    policy_index = POLICY_ISAKMP(st->st_policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
+        struct db_sa *oakley_sa = ikev1_alg_makedb(st->st_policy
+                                                   , c->alg_info_ike
+                                                   , TRUE /* one proposal for aggr */
+                                                   , INITIATOR);
 
-	if (!out_sa(&md->rbody
-		    , &oakley_am_sadb[policy_index], st
-		    , TRUE, TRUE, ISAKMP_NEXT_KE))
-	{
-	    cur_state = NULL;
+        if(oakley_sa == NULL
+           || !out_sa(&md->rbody
+                      , oakley_sa, st
+                      , /* oakley mode */TRUE, INITIATOR, /*aggr */TRUE, ISAKMP_NEXT_KE)) {
+            reset_cur_state();
 	    return STF_INTERNAL_ERROR;
 	}
 
@@ -1178,6 +1179,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	passert(st->st_p1isa.ptr == NULL);	/* no leak! */
 	clonetochunk(st->st_p1isa, sa_start, md->rbody.cur - sa_start,
 		     "sa in aggr_outI1");
+        free_sa(oakley_sa);
     }
 
     /* KE out */

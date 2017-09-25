@@ -26,6 +26,7 @@ struct esp_info {
         bool     esp_default;
 	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
 	u_int16_t auth;		/* AUTH */
+    enum ikev2_trans_type_compress compress;	/* IPCOMP */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 	u_int8_t encryptalg;	/* normally  encryptalg=transid */
