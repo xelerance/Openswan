@@ -408,7 +408,7 @@ static void db2_prop_print(struct db_v2_prop_conj *p)
   int ti, ai;
   enum_names *n;
 
-  DBG_log("%u:  protoid=\"%s\" [trans: %u]\n"
+  DBG_log("%u:  protoid=\"%s\" [trans: %u]"
           , p->propnum
           , enum_name(&protocol_names, p->protoid)
           , p->trans_cnt);
@@ -418,12 +418,12 @@ static void db2_prop_print(struct db_v2_prop_conj *p)
     } else {
       continue;
     }
-    DBG_log("    %s value=\"%s\" [attrs: %u]\n"
+    DBG_log("    %s value=\"%s\" [attrs: %u]"
             , enum_name(&trans_type_names, t->transform_type)
             , enum_name(n, t->value)
             , t->attr_cnt);
     for (ai=0, a=t->attrs; ai < t->attr_cnt; ai++, a++) {
-      DBG_log("      type=\"%s\" value=\"%u\"\n",
+      DBG_log("      type=\"%s\" value=\"%u\"",
               enum_name(&ikev2_trans_attr_descs, a->ikev2),
               a->val);
     }
