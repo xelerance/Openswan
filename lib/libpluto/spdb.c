@@ -16,6 +16,8 @@
  * for more details.
  */
 
+#define AGGRESSIVE 1
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,7 +33,7 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#include "defs.h"
+#include "pluto/defs.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -42,9 +44,10 @@
 #include "pluto/connections.h"	/* needs id.h */
 #include "pluto/state.h"
 #include "packet.h"
-#include "keys.h"
-#include "kernel.h"	/* needs connections.h */
-#include "log.h"
+#include "pluto/keys.h"
+#include "pluto/kernel.h"	/* needs connections.h */
+#include "pluto/log.h"
+#include "oswlog.h"
 #include "pluto/spdb.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 
@@ -55,11 +58,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
-#include "db_ops.h"
-
-#ifdef NAT_TRAVERSAL
-#include "nat_traversal.h"
-#endif
+#include "pluto/db2_ops.h"
 
 /**************** Oakley (main mode) SA database ****************/
 
@@ -1108,7 +1107,6 @@ struct db_sa *sa_copy_sa(struct db_sa *sa, int extra)
     struct db_sa *nsa;
 
     nsa = clone_thing(*sa, "sa copy prop_conj");
-    nsa->dynamic = TRUE;
     nsa->parentSA= sa->parentSA;
 
     nsa->prop_conjs =

@@ -854,7 +854,6 @@ show_status(void)
 {
     show_kernel_interface();
     show_ifaces_status();
-    show_secrets_status();
     show_myid_status();
     show_debug_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
@@ -864,10 +863,6 @@ show_status(void)
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     ike_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#ifndef NO_DB_OPS_STATS
-    db_ops_show_status();
-    whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
     show_connections_status(whack_log);
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_states_status();

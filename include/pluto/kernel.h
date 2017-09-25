@@ -16,6 +16,7 @@
 #ifndef _KERNEL_H_
 
 #include <net/if.h>
+#include "alg_info.h"
 
 /* global variables */
 extern u_int16_t pluto_port500;	        /* Pluto's port (usually 500) */
@@ -89,12 +90,8 @@ struct kernel_sa {
 	unsigned replay_window;
 	unsigned reqid;
 
-	unsigned authalg;
-	unsigned authkeylen;
-	unsigned char *authkey;
-
-	unsigned encalg;
-	unsigned enckeylen;
+    struct esp_info esp_info;      /* details about algorithm chosen */
+    unsigned char *authkey;        /* actual key */
 	unsigned char *enckey;
 
 	int outif;
