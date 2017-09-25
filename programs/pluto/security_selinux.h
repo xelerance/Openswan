@@ -24,4 +24,8 @@
 void init_avc(void);
 int within_range(security_context_t sl, security_context_t range);
 
+/* in labelled_ipsec.c */
+extern bool parse_secctx_attr (pb_stream *pbs, struct state *st);
+
+
 #endif /* _SECURITY_SELINUX_H */
