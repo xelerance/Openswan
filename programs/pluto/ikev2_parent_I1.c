@@ -139,8 +139,8 @@ ikev2parent_outI1_withstate(struct state *st
      */
     groupnum = 0;
 
-    st->st_sadb = ikev2_sadb_from_alg(st->st_connection->alg_info_ike
-                                     , SADB_NOLIMIT);
+    st->st_sadb = alginfo2db2((struct alg_info *)st->st_connection->alg_info_ike);
+
     {
         unsigned int  pc_cnt;
 
