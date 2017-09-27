@@ -31,7 +31,7 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#include "defs.h"
+#include "pluto/defs.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"
@@ -40,12 +40,9 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
 #include "packet.h"
-#include "keys.h"
-#include "kernel.h"	/* needs connections.h */
-#include "log.h"
-#include "spdb.h"
+#include "oswlog.h"
+#include "pluto/spdb.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 
 #include "sha1.h"
@@ -55,11 +52,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
-#include "db_ops.h"
-
-#ifdef NAT_TRAVERSAL
-#include "nat_traversal.h"
-#endif
+#include "pluto/db2_ops.h"
 
 /**************** Oakley (main mode) SA database ****************/
 
