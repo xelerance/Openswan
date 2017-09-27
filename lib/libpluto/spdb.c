@@ -1052,13 +1052,18 @@ free_sa(struct db_sa *f)
 	f->prop_conj_cnt=0;
     }
 
-    for(i=0; i<f->prop_disj_cnt; i++) {
-	free_sa_v2_prop_disj(&f->prop_disj[i]);
-    }
-    if(f->prop_disj) {
-	pfree(f->prop_disj);
-	f->prop_disj=NULL;
-	f->prop_disj_cnt=0;
+    if(f->prop_ctx) {
+        db2_free(f->prop_ctx);
+        f->prop_ctx = NULL;
+    } else {
+        for(i=0; i<f->prop_disj_cnt; i++) {
+            free_sa_v2_prop_disj(&f->prop_disj[i]);
+        }
+        if(f->prop_disj) {
+            pfree(f->prop_disj);
+            f->prop_disj=NULL;
+            f->prop_disj_cnt=0;
+        }
     }
 
     if(f) {
@@ -1103,7 +1108,6 @@ struct db_sa *sa_copy_sa(struct db_sa *sa, int extra)
     struct db_sa *nsa;
 
     nsa = clone_thing(*sa, "sa copy prop_conj");
-    nsa->dynamic = TRUE;
     nsa->parentSA= sa->parentSA;
 
     nsa->prop_conjs =

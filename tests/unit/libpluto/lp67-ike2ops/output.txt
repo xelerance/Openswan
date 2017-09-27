@@ -1,18 +1,24 @@
-| proposals: cnt=1 (next=2)
+| for input ike=aes128-sha1-prfsha1-modp2048
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 |     trans-type-encr value="aes_cbc" [attrs: 1]
 |       type="KEY_LENGTH" value="128"
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-| proposals: cnt=1 (next=2)
+| for input ike=aes128-sha1-sha1-modp2048
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 |     trans-type-encr value="aes_cbc" [attrs: 1]
 |       type="KEY_LENGTH" value="128"
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-| proposals: cnt=12 (next=13)
+| IKEv2 defaults 
+| proposals: cnt=1
+|  disj: cnt=12 [next=13]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
@@ -73,6 +79,4 @@
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
 |     trans-type-encr value="aes_gcm_8" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
-./lp67-ike2ops leak: 3 * alg_info_ike, item size: 2064
-./lp67-ike2ops leak detective found 3 leaks, total size 2064
-for input ike=aes128-sha1-prfsha1-modp2048for input ike=aes128-sha1-sha1-modp2048IKEv2 defaults
+./lp67-ike2ops leak detective found no leaks
