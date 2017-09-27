@@ -71,9 +71,9 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
-    dc = alginfo2db2(ai);
+    sadb = alginfo2db2(ai);
 
-    db2_print(dc);
+    sa_v2_print(sadb);
     db2_free(dc);
 
 

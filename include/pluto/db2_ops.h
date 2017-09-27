@@ -113,9 +113,10 @@ static __inline__ struct db_v2_prop *db2_prop_get(struct db2_context *ctx) {
 int db2_ops_show_status(void);
 
 extern void db2_print(struct db2_context *ctx);
+extern void sa_v2_print(struct db_sa *sa);
 
 struct alg_info;  /* forward reference */
-extern struct db2_context *alginfo2db2(struct alg_info *ai);
+extern struct db_sa *alginfo2db2(struct alg_info *ai);
 
 
 #endif /* _DB_OPS_H */

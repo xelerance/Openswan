@@ -443,3 +443,28 @@ void db2_print(struct db2_context *ctx)
   }
 }
 
+/*
+ * From below to end just testing stuff ....
+ */
+static void db2_propj_print(struct db_v2_prop *pj)
+{
+  int i;
+
+  DBG_log(" disj: cnt=%u [next=%u]", pj->prop_cnt, pj->conjnum);
+  for(i=0; i < pj->prop_cnt; i++) {
+    db2_prop_print(&pj->props[i]);
+  }
+}
+
+void sa_v2_print(struct db_sa *sa)
+{
+  int i;
+  if(sa == NULL) return;
+  DBG_log("proposals: cnt=%u",
+          sa->prop_disj_cnt);
+
+  for(i=0; i < sa->prop_disj_cnt; i++) {
+    db2_propj_print(&sa->prop_disj[i]);
+  }
+}
+

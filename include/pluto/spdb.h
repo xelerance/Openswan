@@ -135,6 +135,9 @@ extern struct db_sa *sa_copy_sa(struct db_sa *sa, int extra);
 extern struct db_sa *sa_copy_sa_first(struct db_sa *sa);
 extern struct db_sa *sa_merge_proposals(struct db_sa *a, struct db_sa *b);
 
+extern int v2tov1_encr(enum ikev2_trans_type_encr encr);
+
+extern bool extrapolate_v1_from_v2(struct db_sa *sadb);
 
 /* in spdb_struct.c */
 extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
