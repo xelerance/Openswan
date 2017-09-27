@@ -237,81 +237,6 @@ return_out:
     return ret;
 }
 
-struct db_trans_flat {
-    u_int8_t               protoid;	        /* Protocol-Id */
-    u_int16_t              auth_method;     	/* conveyed another way in ikev2*/
-    u_int16_t              encr_transid;	/* Transform-Id */
-    u_int16_t              integ_transid;	/* Transform-Id */
-    u_int16_t              prf_transid;		/* Transform-Id */
-    u_int16_t              group_transid;	/* Transform-Id */
-    u_int16_t              encr_keylen;		/* Key length in bits */
-};
-
-enum ikev2_trans_type_encr v1tov2_encr(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_DES_CBC:
-	return IKEv2_ENCR_DES;
-    case OAKLEY_IDEA_CBC:
-	return IKEv2_ENCR_IDEA;
-    case OAKLEY_BLOWFISH_CBC:
-	return IKEv2_ENCR_BLOWFISH;
-    case OAKLEY_RC5_R16_B64_CBC:
-	return IKEv2_ENCR_RC5;
-    case OAKLEY_3DES_CBC:
-	return IKEv2_ENCR_3DES;
-    case OAKLEY_CAST_CBC:
-	return IKEv2_ENCR_CAST;
-    case OAKLEY_AES_CBC:
-	return IKEv2_ENCR_AES_CBC;
-    default:
-	return IKEv2_ENCR_INVALID;
-    }
-}
-
-enum ikev2_trans_type_integ v1tov2_integ(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_MD5:
-        return IKEv2_AUTH_HMAC_MD5_96;
-    case OAKLEY_SHA1:
-        return IKEv2_AUTH_HMAC_SHA1_96;
-    case OAKLEY_SHA2_256:
-        return IKEv2_AUTH_HMAC_SHA2_256_128;
-    default:
-        return IKEv2_AUTH_INVALID;
-   }
-}
-
-enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth)
-{
-    switch(ikev1_phase2_auth) {
-    case AUTH_ALGORITHM_HMAC_MD5:
-	return IKEv2_AUTH_HMAC_MD5_96;
-    case AUTH_ALGORITHM_HMAC_SHA1:
-	return IKEv2_AUTH_HMAC_SHA1_96;
-    case AUTH_ALGORITHM_HMAC_SHA2_256:
-	return IKEv2_AUTH_HMAC_SHA2_256_128;
-    default:
-	return IKEv2_AUTH_INVALID;
-   }
-}
-
-
-static enum ikev2_trans_type_prf v1tov2_prf(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_MD5:
-        return IKEv2_PRF_HMAC_MD5;
-    case OAKLEY_SHA1:
-        return IKEv2_PRF_HMAC_SHA1;
-    case OAKLEY_SHA2_256:
-        return IKEv2_PRF_HMAC_SHA2_256;
-    default:
-        return IKEv2_PRF_INVALID;
-    }
-}
-
 struct db_sa *sa_v2_convert(struct db_sa *f)
 {
     unsigned int pcc, prc, tcc, pr_cnt, pc_cnt, propnum;
@@ -523,6 +448,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 
     return f;
 }
+#endif
 
 bool
 ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group)
