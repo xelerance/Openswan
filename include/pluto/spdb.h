@@ -85,11 +85,11 @@ struct db_v2_prop {
 
 /* security association */
 struct db_sa {
-    bool                    dynamic;    /* set if these items were allocated */
     bool                    parentSA;   /* set if this is a parent/oakley */
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
 
+    struct db2_context     *prop_ctx;   /* if non-null, then attr/etc. are from it */
     struct db_v2_prop      *prop_disj;  /* array */
     unsigned int prop_disj_cnt;         /* number of elements... OR */
 };
