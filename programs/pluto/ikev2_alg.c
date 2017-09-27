@@ -294,7 +294,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	}
 
 	if (c->alg_info_esp) {
-	    alg_info_snprint_phase2(buf, sizeof(buf), c->alg_info_esp);
+	    alg_info_snprint_phase2(buf, sizeof(buf), (struct alg_info_esp *)c->alg_info_esp);
 	    whack_log(RC_COMMENT
 		      , "\"%s\"%s:   %s algorithms loaded: %s"
 		      , c->name

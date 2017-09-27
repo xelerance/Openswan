@@ -79,6 +79,7 @@
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
 #endif
+#include "ike_alg.h"
 
 #include "pluto/virtual.h"
 
