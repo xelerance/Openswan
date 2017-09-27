@@ -191,7 +191,10 @@ main_outI1(int whack_sock
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
 
-        st->st_sadb = sa_v1_convert(c->ike_policies);
+        if(!extrapolate_v1_from_v2(st->st_sadb)) {
+            openswan_log("can not derive IKEv1 policy from IKEv2 settings");
+            return STF_INTERNAL_ERROR;
+        }
 
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_sa(&md.rbody
