@@ -94,9 +94,6 @@ static __inline__ struct encrypt_desc *ike_alg_get_encrypter(int alg)
 }
 const struct oakley_group_desc * ike_alg_pfsgroup(struct connection *c, lset_t policy);
 
-extern struct db_sa *oakley_alg_makedb(struct alg_info_ike *ai
-				       , struct db_sa *basic
-				       , int maxtrans);
 enum alg_desired_maximum {
     SADB_NOLIMIT     = 1,
     SADB_ONEPROPOSAL = 2,

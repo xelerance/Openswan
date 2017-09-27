@@ -34,9 +34,10 @@
 
 #include <assert.h>
 
-struct db2_context *alginfo2db2(struct alg_info *ai)
+struct db_sa *alginfo2db2(struct alg_info *ai)
 {
   struct db2_context *dc = db2_prop_new(10,10,10);
+  struct db_sa *sadb;
   int cnt;
 
   switch(ai->alg_info_protoid) {
@@ -93,7 +94,20 @@ struct db2_context *alginfo2db2(struct alg_info *ai)
     break;
   }
 
-  return dc;
+  /*
+   * it is unclear how what to do with db_context object, as it has the top-level
+   * db_prop object, but we want an array of these, so copy the prop object.
+   */
+  sadb = alloc_thing(struct db_sa, "v2 policy database");
+  sadb->prop_conjs = alloc_thing(struct db_prop_conj, "v1 policy proposal conj");
+  if(!sadb->prop_conjs) { return FALSE; }
+
+  sadb->prop_conjs->props = clone_thing(dc->prop, "v1 policy proposal");
+
+  /* free context, but not objects attached */
+  pfree(dc);
+
+  return sadb;
 }
 
 /*

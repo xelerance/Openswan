@@ -88,12 +88,7 @@ ikev2parent_outI1_withstate(struct state *st
                             , struct xfrm_user_sec_ctx_ike * uctx UNUSED
                             )
 {
-    struct db_sa *sadb;
     int    groupnum;
-    int    policy_index = POLICY_ISAKMP(policy
-                                        , c->spd.this.xauth_server
-                                        , c->spd.this.xauth_client);
-
 
     /* set up new state */
     st->st_ikev2 = TRUE;
@@ -145,13 +140,8 @@ ikev2parent_outI1_withstate(struct state *st
      */
     groupnum = 0;
 
-    st->st_sadb = &oakley_sadb[policy_index];
-    sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
-                             , st->st_sadb, 0);
-    if(sadb != NULL) {
-        st->st_sadb = sadb;
-    }
-    sadb = st->st_sadb = sa_v2_convert(st->st_sadb);
+    st->st_sadb = alginfo2db2((struct alg_info *)st->st_connection->alg_info_ike);
+
     {
         unsigned int  pc_cnt;
 
@@ -342,10 +332,6 @@ ikev2_parent_outI1_common(struct msg_digest *md
         /* if we  have an OpenPGP certificate we assume an
          * OpenPGP peer and have to send the Vendor ID
          */
-        if(st->st_sadb->prop_disj_cnt == 0 || st->st_sadb->prop_disj) {
-            st->st_sadb = sa_v2_convert(st->st_sadb);
-        }
-
         if (!ikev2_out_sa(&md->rbody
                           , PROTO_ISAKMP
                           , st->st_sadb

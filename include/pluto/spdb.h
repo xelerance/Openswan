@@ -170,6 +170,9 @@ extern struct db_sa *sa_copy_sa(struct db_sa *sa, int extra);
 extern struct db_sa *sa_copy_sa_first(struct db_sa *sa);
 extern struct db_sa *sa_merge_proposals(struct db_sa *a, struct db_sa *b);
 
+extern int v2tov1_encr(enum ikev2_trans_type_encr encr);
+
+extern bool extrapolate_v1_from_v2(struct db_sa *sadb);
 
 /* in spdb_struct.c */
 extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
@@ -183,20 +186,6 @@ extern void print_sa_trans(struct db_sa *f, struct db_trans *tr);
 extern void print_sa_prop(struct db_sa *f, struct db_prop *dp);
 extern void print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc);
 extern void sa_print(struct db_sa *f);
-
-extern void print_sa_v2_trans(struct db_v2_trans *tr);
-extern void print_sa_v2_prop_conj(struct db_v2_prop_conj *dp);
-extern void print_sa_v2_prop(struct db_v2_prop *pc);
-extern void sa_v2_print(struct db_sa *f);
-
-/* IKEv1 <-> IKEv2 things */
-extern struct db_sa *sa_v2_convert(struct db_sa *f);
-extern enum ikev2_trans_type_encr v1tov2_encr(int oakley);
-extern enum ikev2_trans_type_integ v1tov2_integ(int oakley);
-extern enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth);
-extern bool ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group);
-
-
 
 #endif /*  _SPDB_H_ */
 

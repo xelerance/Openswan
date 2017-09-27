@@ -55,7 +55,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
-#include "db_ops.h"
+#include "pluto/db2_ops.h"
 #include "ikev2.h"
 
 #ifdef NAT_TRAVERSAL
@@ -208,7 +208,6 @@ ikev2_out_sa(pb_stream *outs
 		    t.isat_np      = ISAKMP_NEXT_NONE;
 		}
 
-
 		t.isat_length = 0;
 		t.isat_type   = tr->transform_type;
 		t.isat_transid= tr->value;
@@ -236,293 +235,6 @@ ikev2_out_sa(pb_stream *outs
 
 return_out:
     return ret;
-}
-
-struct db_trans_flat {
-    u_int8_t               protoid;	        /* Protocol-Id */
-    u_int16_t              auth_method;     	/* conveyed another way in ikev2*/
-    u_int16_t              encr_transid;	/* Transform-Id */
-    u_int16_t              integ_transid;	/* Transform-Id */
-    u_int16_t              prf_transid;		/* Transform-Id */
-    u_int16_t              group_transid;	/* Transform-Id */
-    u_int16_t              encr_keylen;		/* Key length in bits */
-};
-
-enum ikev2_trans_type_encr v1tov2_encr(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_DES_CBC:
-	return IKEv2_ENCR_DES;
-    case OAKLEY_IDEA_CBC:
-	return IKEv2_ENCR_IDEA;
-    case OAKLEY_BLOWFISH_CBC:
-	return IKEv2_ENCR_BLOWFISH;
-    case OAKLEY_RC5_R16_B64_CBC:
-	return IKEv2_ENCR_RC5;
-    case OAKLEY_3DES_CBC:
-	return IKEv2_ENCR_3DES;
-    case OAKLEY_CAST_CBC:
-	return IKEv2_ENCR_CAST;
-    case OAKLEY_AES_CBC:
-	return IKEv2_ENCR_AES_CBC;
-    default:
-	return IKEv2_ENCR_INVALID;
-    }
-}
-
-enum ikev2_trans_type_integ v1tov2_integ(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_MD5:
-        return IKEv2_AUTH_HMAC_MD5_96;
-    case OAKLEY_SHA1:
-        return IKEv2_AUTH_HMAC_SHA1_96;
-    case OAKLEY_SHA2_256:
-        return IKEv2_AUTH_HMAC_SHA2_256_128;
-    default:
-        return IKEv2_AUTH_INVALID;
-   }
-}
-
-enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth)
-{
-    switch(ikev1_phase2_auth) {
-    case AUTH_ALGORITHM_HMAC_MD5:
-	return IKEv2_AUTH_HMAC_MD5_96;
-    case AUTH_ALGORITHM_HMAC_SHA1:
-	return IKEv2_AUTH_HMAC_SHA1_96;
-    case AUTH_ALGORITHM_HMAC_SHA2_256:
-	return IKEv2_AUTH_HMAC_SHA2_256_128;
-    default:
-	return IKEv2_AUTH_INVALID;
-   }
-}
-
-
-static enum ikev2_trans_type_prf v1tov2_prf(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_MD5:
-        return IKEv2_PRF_HMAC_MD5;
-    case OAKLEY_SHA1:
-        return IKEv2_PRF_HMAC_SHA1;
-    case OAKLEY_SHA2_256:
-        return IKEv2_PRF_HMAC_SHA2_256;
-    default:
-        return IKEv2_PRF_INVALID;
-    }
-}
-
-struct db_sa *sa_v2_convert(struct db_sa *f)
-{
-    unsigned int pcc, prc, tcc, pr_cnt, pc_cnt, propnum;
-    int tot_trans, i;
-    struct db_trans_flat   *dtfset;
-    struct db_trans_flat   *dtfone;
-    struct db_trans_flat   *dtflast;
-    struct db_v2_attr      *attrs;
-    struct db_v2_trans     *tr;
-    struct db_v2_prop_conj *pc;
-    struct db_v2_prop      *pr;
-
-    if(!f) return NULL;
-    if(!f->dynamic) f = sa_copy_sa(f, 0);
-
-    tot_trans=0;
-    for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
-	struct db_prop_conj *dpc = &f->prop_conjs[pcc];
-
-	if(dpc->props == NULL) continue;
-	for(prc=0; prc < dpc->prop_cnt; prc++) {
-	    struct db_prop *dp = &dpc->props[prc];
-
-	    if(dp->trans == NULL) continue;
-	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
-		tot_trans++;
-	    }
-	}
-    }
-
-    dtfset = alloc_bytes(sizeof(struct db_trans_flat)*tot_trans, "spdb_v2_dtfset");
-
-    tot_trans=0;
-    for(pcc=0; pcc<f->prop_conj_cnt; pcc++) {
-	struct db_prop_conj *dpc = &f->prop_conjs[pcc];
-
-	if(dpc->props == NULL) continue;
-	for(prc=0; prc < dpc->prop_cnt; prc++) {
-	    struct db_prop *dp = &dpc->props[prc];
-
-	    if(dp->trans == NULL) continue;
-	    for(tcc=0; tcc<dp->trans_cnt; tcc++) {
-		struct db_trans *tr=&dp->trans[tcc];
-		struct db_trans_flat *dtfone = &dtfset[tot_trans];
-		unsigned int attr_cnt;
-
-		dtfone->protoid      = dp->protoid;
-		if(!f->parentSA) dtfone->encr_transid = tr->transid;
-
-		for(attr_cnt=0; attr_cnt<tr->attr_cnt; attr_cnt++) {
-		    struct db_attr *attr = &tr->attrs[attr_cnt];
-
-		    if(f->parentSA) {
-			switch(attr->type.oakley) {
-
-			case OAKLEY_AUTHENTICATION_METHOD:
-			    dtfone->auth_method = attr->val;
-			    break;
-
-			case OAKLEY_ENCRYPTION_ALGORITHM:
-			    dtfone->encr_transid = v1tov2_encr(attr->val);
-			    break;
-
-			case OAKLEY_HASH_ALGORITHM:
-			    dtfone->integ_transid = v1tov2_integ(attr->val);
-			    dtfone->prf_transid = v1tov2_prf(attr->val);
-			    break;
-
-			case OAKLEY_GROUP_DESCRIPTION:
-			    dtfone->group_transid = attr->val;
-			    break;
-
-			case OAKLEY_KEY_LENGTH:
-			    dtfone->encr_keylen = attr->val;
-			    break;
-
-			default:
-				openswan_log("sa_v2_convert(): Ignored unknown IKEv2 transform attribute type: %d",attr->type.oakley);
-			    break;
-			}
-		    } else {
-			switch(attr->type.ipsec) {
-			case AUTH_ALGORITHM:
-			    dtfone->integ_transid = v1phase2tov2child_integ(attr->val);
-			    break;
-
-			case KEY_LENGTH:
-			    dtfone->encr_keylen = attr->val;
-			    break;
-
-			case ENCAPSULATION_MODE:
-			    /* XXX */
-			    break;
-
-			default:
-			    break;
-			}
-		    }
-		}
-		tot_trans++;
-	    }
-	}
-    }
-
-    pr=NULL;
-    pr_cnt=0;
-    if(tot_trans >= 1) {
-	pr = alloc_bytes(sizeof(struct db_v2_prop), "db_v2_prop");
-    }
-    dtflast = NULL;
-    tr = NULL;
-    pc = NULL; pc_cnt = 0;
-    propnum=1;
-
-    for(i=0; i < tot_trans; i++) {
-	int tr_cnt;
-	int tr_pos;
-
-	dtfone = &dtfset[i];
-
-	if(dtfone->protoid == PROTO_ISAKMP) tr_cnt = 4;
-	else tr_cnt=3;
-
-	if(dtflast != NULL) {
-	    /*
-	     * see if previous protoid is identical to this
-	     * one, and if so, then this is a disjunction (OR),
-	     * otherwise, it's conjunction (AND)
-	     */
-	    if(dtflast->protoid == dtfone->protoid) {
-		/* need to extend pr (list of disjunctions) by one */
-		struct db_v2_prop *pr1;
-		pr_cnt++;
-		pr1 = alloc_bytes(sizeof(struct db_v2_prop)*(pr_cnt+1), "db_v2_prop");
-		memcpy(pr1, pr, sizeof(struct db_v2_prop)*pr_cnt);
-		pfree(pr);
-		pr = pr1;
-
-		/* need to zero this, so it gets allocated */
-		propnum++;
-		pc = NULL;
-		pc_cnt=0;
-	    } else {
-		struct db_v2_prop_conj *pc1;
-		/* need to extend pc (list of conjuections) by one */
-		pc_cnt++;
-
-		pc1 = alloc_bytes(sizeof(struct db_v2_prop_conj)*(pc_cnt+1), "db_v2_prop_conj");
-		memcpy(pc1, pc, sizeof(struct db_v2_prop_conj)*pc_cnt);
-		pfree(pc);
-		pc = pc1;
-		pr[pr_cnt].props=pc;
-		pr[pr_cnt].prop_cnt=pc_cnt+1;
-
-		/* do not increment propnum! */
-	    }
-	}
-	dtflast = dtfone;
-
-	if(!pc) {
-	    pc = alloc_bytes(sizeof(struct db_v2_prop_conj), "db_v2_prop_conj");
-	    pc_cnt=0;
-	    pr[pr_cnt].props = pc;
-	    pr[pr_cnt].prop_cnt = pc_cnt+1;
-	}
-
-	tr = alloc_bytes(sizeof(struct db_v2_trans)*(tr_cnt), "db_v2_trans");
-	pc[pc_cnt].trans=tr;  pc[pc_cnt].trans_cnt = tr_cnt;
-
-	pc[pc_cnt].propnum = propnum;
-	pc[pc_cnt].protoid = dtfset->protoid;
-
-	tr_pos = 0;
-	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ENCR;
-	tr[tr_pos].value          = dtfone->encr_transid;
-	if(dtfone->encr_keylen > 0 ) {
-	    attrs = alloc_bytes(sizeof(struct db_v2_attr), "db_attrs");
-	    tr[tr_pos].attrs = attrs;
-	    tr[tr_pos].attr_cnt = 1;
-	    attrs->ikev2 = IKEv2_KEY_LENGTH;
-	    attrs->val = dtfone->encr_keylen;
-	}
-	tr_pos++;
-
-	tr[tr_pos].value          = dtfone->integ_transid;
-	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_INTEG;
-	tr_pos++;
-
-	if(dtfone->protoid == PROTO_ISAKMP) {
-	    /* XXX Let the user set the PRF.*/
-	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_PRF;
-	    tr[tr_pos].value          = dtfone->prf_transid;
-	    tr_pos++;
-	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_DH;
-	    tr[tr_pos].value          = dtfone->group_transid;
-	    tr_pos++;
-	} else {
-	    tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ESN;
-	    tr[tr_pos].value          = IKEv2_ESN_DISABLED;
-	    tr_pos++;
-	}
-	passert(tr_cnt == tr_pos);
-    }
-
-    f->prop_disj = pr;
-    f->prop_disj_cnt = pr_cnt+1;
-
-    pfree(dtfset);
-
-    return f;
 }
 
 bool
@@ -946,30 +658,16 @@ ikev2_parse_parent_sa_body(
     unsigned int lastpropnum=-1;
     bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
-    struct db_sa *sadb;
     struct trans_attrs ta;
-    struct connection *c = st->st_connection;
-    int    policy_index = POLICY_ISAKMP(c->policy
-					, c->spd.this.xauth_server
-					, c->spd.this.xauth_client);
-
     struct ikev2_transform_list itl0, *itl;
 
     memset(&itl0, 0, sizeof(struct ikev2_transform_list));
     itl = &itl0;
 
     /* find the policy structures */
-    sadb = st->st_sadb;
-    if(!sadb) {
-	st->st_sadb = &oakley_sadb[policy_index];
-	sadb = oakley_alg_makedb(st->st_connection->alg_info_ike
-				 , st->st_sadb, 0);
-	if(sadb != NULL) {
-	    st->st_sadb = sadb;
-	}
-	sadb = st->st_sadb;
+    if(!st->st_sadb) {
+        st->st_sadb = alginfo2db2((struct alg_info *)st->st_connection->alg_info_ike);
     }
-    sadb = st->st_sadb = sa_v2_convert(sadb);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1037,7 +735,7 @@ ikev2_parse_parent_sa_body(
 
 	np = proposal.isap_np;
 
-	if(ikev2_match_transform_list_parent(sadb
+	if(ikev2_match_transform_list_parent(st->st_sadb
 					     , proposal.isap_propnum
 					     , itl)) {
 
@@ -1258,11 +956,7 @@ ikev2_parse_child_sa_body(
     itl = &itl0;
 
     /* find the policy structures */
-    p2alg = kernel_alg_makedb(c->policy
-			      , c->alg_info_esp
-			      , TRUE);
-
-    p2alg = sa_v2_convert(p2alg);
+    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1424,7 +1118,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 			       , pb_stream *outpbs
 			       , unsigned int np
 			       , struct connection *c
-			       , lset_t policy)
+			       , lset_t policy UNUSED)
 {
     int proto;
     struct db_sa *p2alg;
@@ -1437,12 +1131,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 	return STF_FATAL;
     }
 
-    p2alg = kernel_alg_makedb(policy
-			      , c->alg_info_esp
-			      , TRUE);
-
-    p2alg = sa_v2_convert(p2alg);
-
+    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
     ikev2_out_sa(outpbs
 		 , proto
 		 , p2alg

@@ -186,16 +186,19 @@ main_outI1(int whack_sock
     /* SA out */
     {
 	u_char *sa_start = md.rbody.cur;
-	int    policy_index = POLICY_ISAKMP(policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
 
 	/* if we  have an OpenPGP certificate we assume an
 	 * OpenPGP peer and have to send the Vendor ID
 	 */
+
+        if(!extrapolate_v1_from_v2(st->st_sadb)) {
+            openswan_log("can not derive IKEv1 policy from IKEv2 settings");
+            return STF_INTERNAL_ERROR;
+        }
+
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_sa(&md.rbody
-		    , &oakley_sadb[policy_index], st, TRUE, FALSE, np))
+		    , st->st_sadb, st, TRUE, FALSE, np))
 	{
 	    openswan_log("outsa fail");
 	    reset_cur_state();

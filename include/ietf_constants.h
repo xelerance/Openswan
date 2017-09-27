@@ -557,6 +557,7 @@ enum ikev2_trans_type {
 	IKEv2_TRANS_TYPE_DH   = 4,   /* same as in IKEv1 */
 	IKEv2_TRANS_TYPE_ESN  = 5,
 };
+#define IKEv2_TRANS_TYPE_COUNT 6
 
 enum ikev2_trans_type_encr {
 	IKEv2_ENCR_DES_IV64 = 1,

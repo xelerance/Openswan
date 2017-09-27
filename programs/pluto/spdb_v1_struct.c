@@ -55,6 +55,8 @@
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
 #include "db_ops.h"
+#include "pluto/db2_ops.h"
+#include "ikev1.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
@@ -64,6 +66,41 @@
 #include "security_selinux.h"
 #endif
 
+int v2tov1_encr(enum ikev2_trans_type_encr encr)
+{
+    switch(encr) {
+    case IKEv2_ENCR_DES:
+        return OAKLEY_DES_CBC;
+    case  IKEv2_ENCR_IDEA:
+        return OAKLEY_IDEA_CBC;
+    case  IKEv2_ENCR_BLOWFISH:
+        return OAKLEY_BLOWFISH_CBC;
+    case  IKEv2_ENCR_RC5:
+        return OAKLEY_RC5_R16_B64_CBC;
+    case  IKEv2_ENCR_3DES:
+        return OAKLEY_3DES_CBC;
+    case  IKEv2_ENCR_CAST:
+        return OAKLEY_CAST_CBC;
+    case  IKEv2_ENCR_AES_CBC:
+        return OAKLEY_AES_CBC;
+    default:
+	return 0;
+    }
+}
+
+static int v2tov1_integ(enum ikev2_trans_type_integ v2integ)
+{
+    switch(v2integ) {
+    case IKEv2_AUTH_HMAC_MD5_96:
+        return OAKLEY_MD5;
+    case IKEv2_AUTH_HMAC_SHA1_96:
+        return OAKLEY_SHA1;
+    case IKEv2_AUTH_HMAC_SHA2_256_128:
+        return OAKLEY_SHA2_256;
+    default:
+        return IKEv2_AUTH_INVALID;
+   }
+}
 
 /** output an attribute (within an SA) */
 bool
@@ -112,6 +149,241 @@ out_attr(int type
 
 #define return_on(var, val) do { var=val;goto return_out; } while(0);
 
+struct db_sa *
+ikev1_alg_makedb(lset_t policy UNUSED
+                 , struct alg_info_ike *ei, bool oneproposal UNUSED
+                 , enum phase1_role role UNUSED)
+{
+    struct db_sa *sadb;
+
+    sadb = alginfo2db2((struct alg_info *)ei);
+    sadb->parentSA = TRUE;
+
+    if(!extrapolate_v1_from_v2(sadb)) {
+        openswan_log("failed to create v1 PARENTSA policy from v2 settings");
+        return NULL;
+    }
+
+    DBG(DBG_EMITTING,
+        DBG_log("Translated IKEv2 policy to: ");
+        sa_print(sadb));
+
+    return sadb;
+
+}
+
+struct db_sa *
+kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei UNUSED, bool logit UNUSED)
+{
+#if 0
+    struct db_context *dbnew;
+    struct db_prop *p;
+    struct db_prop_conj pc;
+    struct db_sa t, *n;
+
+    memset(&t, 0, sizeof(t));
+
+    if(ei == NULL) {
+	struct db_sa *sadb;
+	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
+
+#if 0
+y	if (can_do_IPcomp)
+	    pm |= POLICY_COMPRESS;
+#endif
+
+	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
+
+	/* make copy, to keep from freeing the static policies */
+	sadb = sa_copy_sa(sadb, 0);
+	sadb->parentSA = FALSE;
+
+	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
+	return sadb;
+    }
+
+    dbnew=kernel_alg_db_new(ei, policy, logit);
+
+    if(!dbnew) {
+	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
+	return NULL;
+    }
+
+    p = db_prop_get(dbnew);
+
+    if(!p) {
+	DBG(DBG_CONTROL, DBG_log("failed to get proposal from context, returning empty"));
+	db_destroy(dbnew);
+	return NULL;
+    }
+
+    pc.prop_cnt = 1;
+    pc.props = p;
+    t.prop_conj_cnt = 1;
+    t.prop_conjs = &pc;
+
+    /* make a fresh copy */
+    n = sa_copy_sa(&t, 0);
+    n->parentSA = FALSE;
+
+    db_destroy(dbnew);
+
+    DBG(DBG_CONTROL
+	, DBG_log("returning new proposal from esp_info"));
+    return n;
+#endif
+    return NULL;
+}
+
+struct db_trans_flat {
+    u_int8_t               protoid;	        /* Protocol-Id */
+    u_int16_t              auth_method;     	/* conveyed another way in ikev2*/
+    u_int16_t              encr_transid;	/* Transform-Id */
+    u_int16_t              integ_transid;	/* Transform-Id */
+    u_int16_t              prf_transid;		/* Transform-Id */
+    u_int16_t              group_transid;	/* Transform-Id */
+    u_int16_t              encr_keylen;		/* Key length in bits */
+};
+
+/* static, if not for unit testing */
+bool extrapolate_v1_from_v2(struct db_sa *sadb)
+{
+    unsigned int prop_disj;
+    int tot_combos, cur_combo;
+    //int propnum = 0;
+    int i;
+    int transform_values[IKEv2_TRANS_TYPE_COUNT];
+    struct db_context *ctx;
+    struct db_trans_flat *dtf;
+    struct db_trans_flat *cur_dtf;
+
+    /* if already did it, then just return */
+    if(sadb->prop_conjs != NULL) return TRUE;
+
+    /* the v2 info might be empty */
+    if(sadb->prop_disj_cnt < 1) return TRUE;
+
+    ctx = db_prop_new(sadb->prop_disj->props[0].protoid,
+                      sadb->prop_disj->props[0].trans_cnt,
+                      10 /* attributes */);
+
+    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+        transform_values[i] = -1;
+    }
+
+    /* first count number of combinations expressed in IKEv2, so we can
+     * allocate a table big for all the combinations */
+    tot_combos = 0;
+    for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
+        unsigned int prop_conj;
+        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
+
+        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
+            unsigned int trans_i;
+            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
+                //unsigned int attr_i;
+                struct db_v2_trans *tr = &pc->trans[trans_i];
+
+                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
+
+                if(transform_values[tr->transform_type]==-1) {
+                    transform_values[tr->transform_type] = tr->value;
+                }
+                if(transform_values[tr->transform_type] != tr->value) {
+                    tot_combos++;
+                }
+            }
+        }
+    }
+
+    /* make a list of them all */
+    dtf = alloca(sizeof(struct db_trans_flat)*tot_combos);
+    cur_dtf = dtf;
+
+    cur_combo=0;
+
+    for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
+        unsigned int prop_conj;
+        struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
+
+        for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
+            unsigned int trans_i;
+            struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+            for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
+                //int attr_i;
+                struct db_v2_trans *tr = &pc->trans[trans_i];
+
+                if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
+
+                if(transform_values[tr->transform_type]==-1) {
+                    transform_values[tr->transform_type] = tr->value;
+                }
+
+                switch(tr->transform_type) {
+                case IKEv2_TRANS_TYPE_DH:
+                    cur_dtf->group_transid = tr->value;
+                    break;
+
+                case IKEv2_TRANS_TYPE_ENCR:
+                    cur_dtf->encr_transid = tr->value;
+                    break;
+
+                case IKEv2_TRANS_TYPE_INTEG:
+                    cur_dtf->integ_transid = tr->value;
+                    break;
+
+                default:
+                    /* if the trans_type is of another type, then just continue,
+                     * because there is no value in the combinations IKEv1 can
+                     * not express
+                     */
+                    continue;
+
+#if 0
+                    cur_dtf.protoid = ;
+                    cur_dtf.auth_method = ;
+                    cur_dtf.group_transid = ;
+                    cur_dtf.encr_keylen = ;
+#endif
+                }
+
+                if(transform_values[tr->transform_type] != tr->value) {
+                    cur_dtf++;
+                    cur_combo++;
+                    passert(cur_combo < tot_combos);
+                }
+            }
+        }
+    }
+
+
+    cur_dtf = dtf;
+    for(i=0; i<cur_combo; i++, cur_dtf++) {
+        db_trans_add(ctx, KEY_IKE);
+        db_attr_add_values(ctx, OAKLEY_ENCRYPTION_ALGORITHM,
+                           v2tov1_encr(cur_dtf->encr_transid));
+        db_attr_add_values(ctx, OAKLEY_HASH_ALGORITHM,
+                           v2tov1_integ(cur_dtf->integ_transid));
+        db_attr_add_values(ctx, OAKLEY_GROUP_DESCRIPTION,    cur_dtf->group_transid);
+    }
+
+    /*
+     * it is unclear how what to do with db_context object, as it has the top-level
+     * db_prop object, but we want an array of these, so copy the prop object.
+     */
+    sadb->prop_conjs = alloc_thing(struct db_prop_conj, "v1 policy proposal conj");
+    if(!sadb->prop_conjs) { return FALSE; }
+
+    sadb->prop_conjs->props = clone_thing(ctx->prop, "v1 policy proposal");
+
+    /* free context, but not objects attached */
+    pfree(ctx);
+
+    return TRUE;
+}
+
+
 /**
  * Output an SA, as described by a db_sa.
  * This has the side-effect of allocating SPIs for us.
@@ -121,7 +393,7 @@ bool
 out_sa(pb_stream *outs
        , struct db_sa *sadb
        , struct state *st
-       , bool oakley_mode
+       , bool phase_one_mode
        , bool aggressive_mode UNUSED
        , u_int8_t np)
 {
@@ -131,84 +403,64 @@ out_sa(pb_stream *outs
     bool ah_spi_generated = FALSE
           , esp_spi_generated = FALSE
           , ipcomp_cpi_generated = FALSE;
-    struct db_sa *revised_sadb;
 
+    extrapolate_v1_from_v2(sadb);
 
-    if(oakley_mode) {
-        /* Aggr-Mode - Max transforms == 2 - Multiple transforms, 1 DH group */
-          revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-                                               , sadb
-                                               , aggressive_mode ? 2 : -1);
-    } else {
-          revised_sadb=kernel_alg_makedb(st->st_connection->policy
-                                               , st->st_connection->alg_info_esp
-                                               , TRUE);
+    if(!phase_one_mode && ((st->st_policy) & POLICY_COMPRESS)) {
+        /* add IPcomp proposal if policy asks for it */
+        struct db_trans *ipcomp_trans = alloc_thing(struct db_trans, "ipcomp_trans");
 
-          /* add IPcomp proposal if policy asks for it */
+        /* allocate space for 2 proposals */
+        struct db_prop *ipcomp_prop = alloc_bytes( (sizeof (struct db_prop) * 2), "ipcomp_prop");
 
-          if (revised_sadb && ((st->st_policy) & POLICY_COMPRESS)) {
+        if (ipcomp_trans && ipcomp_prop) {
+            passert(sadb->prop_conjs->prop_cnt == 1);
 
-              struct db_trans *ipcomp_trans = alloc_thing(struct db_trans, "ipcomp_trans");
+            /* construct the IPcomp proposal  */
+            ipcomp_trans->transid = IPCOMP_DEFLATE;
+            ipcomp_trans->attrs = NULL;
+            ipcomp_trans->attr_cnt = 0;
 
-              /* allocate space for 2 proposals */
-              struct db_prop *ipcomp_prop = alloc_bytes( (sizeof (struct db_prop) * 2), "ipcomp_prop");
+            /* copy the original proposal */
+            ipcomp_prop[0].protoid   = sadb->prop_conjs->props->protoid;
+            ipcomp_prop[0].trans     = sadb->prop_conjs->props->trans;
+            ipcomp_prop[0].trans_cnt = sadb->prop_conjs->props->trans_cnt;
 
-              if (ipcomp_trans && ipcomp_prop) {
+            /* and add our IPcomp proposal */
+            ipcomp_prop[1].protoid = PROTO_IPCOMP;
+            ipcomp_prop[1].trans = ipcomp_trans;
+            ipcomp_prop[1].trans_cnt = 1;
 
-                    passert (revised_sadb->prop_conjs->prop_cnt == 1);
+            /* free the old proposal, and ... */
+            pfree (sadb->prop_conjs->props);
 
-                    /* construct the IPcomp proposal  */
-                    ipcomp_trans->transid = IPCOMP_DEFLATE;
-                    ipcomp_trans->attrs = NULL;
-                    ipcomp_trans->attr_cnt = 0;
-
-                    /* copy the original proposal */
-                    ipcomp_prop[0].protoid           = revised_sadb->prop_conjs->props->protoid;
-                    ipcomp_prop[0].trans           = revised_sadb->prop_conjs->props->trans;
-                    ipcomp_prop[0].trans_cnt = revised_sadb->prop_conjs->props->trans_cnt;
-
-                    /* and add our IPcomp proposal */
-                    ipcomp_prop[1].protoid = PROTO_IPCOMP;
-                    ipcomp_prop[1].trans = ipcomp_trans;
-                    ipcomp_prop[1].trans_cnt = 1;
-
-                    /* free the old proposal, and ... */
-                    pfree (revised_sadb->prop_conjs->props);
-
-                    /* ... use our new one instead */
-                    revised_sadb->prop_conjs->props = ipcomp_prop;
-                    revised_sadb->prop_conjs->prop_cnt += 1;
-
-              }
-              else {
-                    /* couldn't alloc something, so skip adding the proposal */
-                    if (ipcomp_trans)
-                        pfreeany (ipcomp_trans);
-                    if (ipcomp_prop)
-                        pfreeany (ipcomp_prop);
-              }
-          }
-    }
-
-    /* more sanity */
-    if(revised_sadb != NULL) {
-          sadb = revised_sadb;
+            /* ... use our new one instead */
+            sadb->prop_conjs->props = ipcomp_prop;
+            sadb->prop_conjs->prop_cnt += 1;
+        }
+        else {
+            /* couldn't alloc something, so skip adding the proposal */
+            if (ipcomp_trans)
+                pfreeany (ipcomp_trans);
+            if (ipcomp_prop)
+                pfreeany (ipcomp_prop);
+        }
     }
 
     /* SA header out */
     {
-          struct isakmp_sa sa;
+        struct isakmp_sa sa;
 
-          sa.isasa_np = np;
-          st->st_doi = sa.isasa_doi = ISAKMP_DOI_IPSEC;          /* all we know */
-          if (!out_struct(&sa, &isakmp_sa_desc, outs, &sa_pbs))
-              return_on(ret, FALSE);
+        sa.isasa_np = np;
+        st->st_doi = sa.isasa_doi = ISAKMP_DOI_IPSEC;          /* all we know */
+        if (!out_struct(&sa, &isakmp_sa_desc, outs, &sa_pbs))
+            return_on(ret, FALSE);
     }
 
     /* within SA: situation out */
     st->st_situation = SIT_IDENTITY_ONLY;
     if (!out_struct(&st->st_situation, &ipsec_sit_desc, &sa_pbs, NULL))
-          return_on(ret, FALSE);
+        return_on(ret, FALSE);
 
     /* within SA: Proposal Payloads
      *
@@ -258,7 +510,7 @@ out_sa(pb_stream *outs
 
               proposal.isap_proposal = pcn;
               proposal.isap_protoid = p->protoid;
-              proposal.isap_spisize = oakley_mode ? 0
+              proposal.isap_spisize = phase_one_mode ? 0
                     : p->protoid == PROTO_IPCOMP ? IPCOMP_CPI_SIZE
                     : IPSEC_DOI_SPI_SIZE;
 
@@ -285,7 +537,7 @@ out_sa(pb_stream *outs
                * Set trans_desc.
                * Set attr_desc.
                * Set attr_val_descs.
-               * If not oakley_mode, emit SPI.
+               * If not phase_one_mode, emit SPI.
                * We allocate SPIs on demand.
                * All ESPs in an SA will share a single SPI.
                * All AHs in an SAwill share a single SPI.
@@ -305,7 +557,7 @@ out_sa(pb_stream *outs
                     switch (p->protoid)
                     {
                     case PROTO_ISAKMP:
-                        passert(oakley_mode);
+                        passert(phase_one_mode);
                         trans_desc = &isakmp_isakmp_transform_desc;
                         attr_desc = &isakmp_oakley_attribute_desc;
                         attr_val_descs = oakley_attr_val_descs;
@@ -313,7 +565,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPSEC_AH:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_ah_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -323,7 +575,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPSEC_ESP:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_esp_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -333,7 +585,7 @@ out_sa(pb_stream *outs
                         break;
 
                     case PROTO_IPCOMP:
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         trans_desc = &isakmp_ipcomp_transform_desc;
                         attr_desc = &isakmp_ipsec_attribute_desc;
                         attr_val_descs = ipsec_attr_val_descs;
@@ -405,7 +657,7 @@ out_sa(pb_stream *outs
                     if (p->protoid != PROTO_IPCOMP
                     && st->st_pfs_group != NULL)
                     {
-                        passert(!oakley_mode);
+                        passert(!phase_one_mode);
                         passert(st->st_pfs_group != &unset_group);
                         out_attr(GROUP_DESCRIPTION, st->st_pfs_group->group
                               , attr_desc, attr_val_descs
@@ -415,7 +667,7 @@ out_sa(pb_stream *outs
                     /* automatically generate duration
                      * and, for Phase 2 / Quick Mode, encapsulation.
                      */
-                    if (oakley_mode)
+                    if (phase_one_mode)
                     {
                         out_attr(OAKLEY_LIFE_TYPE, OAKLEY_LIFE_SECONDS
                               , attr_desc, attr_val_descs
@@ -508,7 +760,7 @@ out_sa(pb_stream *outs
                     {
                         struct db_attr *a = &t->attrs[an];
 
-                        if(oakley_mode) {
+                        if(phase_one_mode) {
                               out_attr(a->type.oakley, a->val
                                          , attr_desc, attr_val_descs
                                          , &trans_pbs);
@@ -531,8 +783,8 @@ out_sa(pb_stream *outs
 return_out:
 
 #if defined(KERNEL_ALG) || defined(IKE_ALG)
-    if (revised_sadb)
-          free_sa(revised_sadb);
+    if (sadb)
+          free_sa(sadb);
 #endif
     return ret;
 }
@@ -1306,54 +1558,47 @@ parse_isakmp_sa_body(
 /* Initialize st_oakley field of state for use when initiating in
  * aggressive mode.
  *
- * This should probably get more of its parameters, like what group to use,
- * from the connection specification, but it's not there yet.
- * This should ideally be done by passing them via whack.
+ * This will return at most one proposal, since AGGR is dumb.
  *
  */
 
-/* XXX MCR. I suspect that actually all of this is redundent */
 bool
 init_am_st_oakley(struct state *st, lset_t policy)
 {
     struct trans_attrs ta;
+    struct connection *c = st->st_connection;
+    struct db_sa *sadb;
+
+    sadb = ikev1_alg_makedb(policy, c->alg_info_ike, TRUE, INITIATOR);
+
+    /* now wanter into the proposed proposal, and extract what we need */
+
     struct db_attr  *enc, *hash, *auth, *grp;
     struct db_trans *trans;
     struct db_prop  *prop;
     struct db_prop_conj *cprop;
-    struct db_sa    *sa;
-    struct db_sa    *revised_sadb;
-    struct connection *c = st->st_connection;
-    unsigned int policy_index = POLICY_ISAKMP(policy
-                                                        , c->spd.this.xauth_server
-                                                        , c->spd.this.xauth_client);
-
-    memset(&ta, 0, sizeof(ta));
 
     /* When this SA expires (seconds) */
     ta.life_seconds = st->st_connection->sa_ike_life_seconds;
     ta.life_kilobytes = 1000000;
 
-    passert(policy_index < elemsof(oakley_am_sadb));
-    sa = &oakley_am_sadb[policy_index];
-
-    /* Max transforms == 2 - Multiple transforms, 1 DH group */
-    revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-                                           , sa, 2);
-
-
-    if(revised_sadb == NULL) {
-          return FALSE;
+    if(sadb->prop_conj_cnt != 1) {
+        return FALSE;
     }
-    passert(revised_sadb->prop_conj_cnt == 1);
-    cprop = &revised_sadb->prop_conjs[0];
 
-    passert(cprop->prop_cnt == 1);
+    cprop = &sadb->prop_conjs[0];
+
+    if(cprop->prop_cnt != 1) {
+        return FALSE;
+    }
     prop = &cprop->props[0];
 
     trans = &prop->trans[0];
 
-    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
+    if(!(trans->attr_cnt == 4 || trans->attr_cnt == 5)) {
+        return FALSE;
+    }
+
     enc  = &trans->attrs[0];
     hash = &trans->attrs[1];
     auth = &trans->attrs[2];
@@ -1844,7 +2089,7 @@ echo_proposal(struct state *st,
 		      IPPROTO_AH : IPPROTO_ESP
 		      , st
 		      , tunnel_mode);
-	
+
 	/* XXX should check for errors */
 	out_raw((u_char *) &pi->our_spi, IPSEC_DOI_SPI_SIZE
 		, &r_proposal_pbs, "SPI");

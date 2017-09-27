@@ -153,3 +153,8 @@ extern bool
 do_command(struct connection *c, const struct spd_route *sr
            , const char *verb, struct state *st);
 #endif
+
+/* spdb_v1_struct.c */
+extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
+                                      , bool oneproposal
+                                      , enum phase1_role role);

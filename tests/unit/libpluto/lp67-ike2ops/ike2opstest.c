@@ -71,9 +71,15 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
+<<<<<<< HEAD
+    sadb = alginfo2db2(ai);
+
+    sa_v2_print(sadb);
+=======
     dc = alginfo2db2(ai);
 
     db2_print(dc);
+>>>>>>> 6842a5214... wo#6269 . generate db2 IKEv2 algorithm structure from alg_info structure
     db2_free(dc);
 
 
