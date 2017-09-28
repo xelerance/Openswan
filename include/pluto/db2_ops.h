@@ -113,4 +113,5 @@ extern void sa_v2_print(struct db_sa *sa);
 struct alg_info;  /* forward reference */
 extern struct db_sa *alginfo2db2(struct alg_info *ai);
 
-#endif /* _DB_OPS_H */
+
+#endif /* _DB2_OPS_H */

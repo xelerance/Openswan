@@ -54,6 +54,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
+#include "pluto/db_ops.h"
 #include "pluto/db2_ops.h"
 
 /**************** Oakley (main mode) SA database ****************/
