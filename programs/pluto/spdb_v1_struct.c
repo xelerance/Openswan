@@ -253,7 +253,6 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
     //int propnum = 0;
     int i;
     int transform_values[IKEv2_TRANS_TYPE_COUNT];
-    struct db_context *ctx;
     struct db_trans_flat *dtf;
     struct db_trans_flat *cur_dtf;
 
@@ -263,9 +262,11 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
     /* the v2 info might be empty */
     if(sadb->prop_disj_cnt < 1) return TRUE;
 
-    ctx = db_prop_new(sadb->prop_disj->props[0].protoid,
-                      sadb->prop_disj->props[0].trans_cnt,
-                      10 /* attributes */);
+    if(!sadb->prop_v1_ctx) {
+        sadb->prop_v1_ctx = db_prop_new(sadb->prop_disj->props[0].protoid,
+                                        sadb->prop_disj->props[0].trans_cnt,
+                                        10 /* attributes */);
+    }
 
     for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
         transform_values[i] = -1;
@@ -360,25 +361,20 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
 
     cur_dtf = dtf;
     for(i=0; i<cur_combo; i++, cur_dtf++) {
-        db_trans_add(ctx, KEY_IKE);
-        db_attr_add_values(ctx, OAKLEY_ENCRYPTION_ALGORITHM,
+        db_trans_add(sadb->prop_v1_ctx, KEY_IKE);
+        db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_ENCRYPTION_ALGORITHM,
                            v2tov1_encr(cur_dtf->encr_transid));
-        db_attr_add_values(ctx, OAKLEY_HASH_ALGORITHM,
+        db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_HASH_ALGORITHM,
                            v2tov1_integ(cur_dtf->integ_transid));
-        db_attr_add_values(ctx, OAKLEY_GROUP_DESCRIPTION,    cur_dtf->group_transid);
+        db_attr_add_values(sadb->prop_v1_ctx, OAKLEY_GROUP_DESCRIPTION,
+                           cur_dtf->group_transid);
     }
 
-    /*
-     * it is unclear how what to do with db_context object, as it has the top-level
-     * db_prop object, but we want an array of these, so copy the prop object.
-     */
     sadb->prop_conjs = alloc_thing(struct db_prop_conj, "v1 policy proposal conj");
     if(!sadb->prop_conjs) { return FALSE; }
 
-    sadb->prop_conjs->props = clone_thing(ctx->prop, "v1 policy proposal");
-
-    /* free context, but not objects attached */
-    pfree(ctx);
+    sadb->prop_conjs->props    = &sadb->prop_v1_ctx->prop;
+    sadb->prop_conjs->prop_cnt =  1;
 
     return TRUE;
 }

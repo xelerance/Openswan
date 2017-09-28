@@ -1044,8 +1044,13 @@ free_sa(struct db_sa *f)
     unsigned int i;
     if(f == NULL) return;
 
-    for(i=0; i<f->prop_conj_cnt; i++) {
-	free_sa_prop_conj(&f->prop_conjs[i]);
+    if(f->prop_v1_ctx) {
+        db_destroy(f->prop_v1_ctx);
+        f->prop_v1_ctx = NULL;
+    } else {
+        for(i=0; i<f->prop_conj_cnt; i++) {
+            free_sa_prop_conj(&f->prop_conjs[i]);
+        }
     }
     if(f->prop_conjs) {
 	pfree(f->prop_conjs);
