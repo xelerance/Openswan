@@ -62,13 +62,10 @@
 
 #include "sysdep.h"
 #include "constants.h"
-#include "defs.h"
-#include "state.h"
-#include "packet.h"
-#include "spdb.h"
-#include "db_ops.h"
-#include "log.h"
-#include "whack.h"
+#include "pluto/defs.h"
+#include "pluto/spdb.h"
+#include "pluto/db_ops.h"
+#include "oswlog.h"
 
 #include <assert.h>
 
@@ -333,22 +330,7 @@ db_attr_add_values(struct db_context *ctx,  u_int16_t type, u_int16_t val)
 	attr.val = val;
 	return db_attr_add (ctx, &attr);
 }
-#ifndef NO_DB_OPS_STATS
-int
-db_ops_show_status(void)
-{
-	whack_log(RC_COMMENT, "stats db_ops: "
-			DB_OPS_STATS_DESC " :"
-			DB_OPS_STATS_STR("context")
-			DB_OPS_STATS_STR("trans")
-			DB_OPS_STATS_STR("attrs"),
-			DB_OPS_STATS_F(db_context_st),
-			DB_OPS_STATS_F(db_trans_st),
-			DB_OPS_STATS_F(db_attrs_st)
-			);
-	return 0;
-}
-#endif /* NO_DB_OPS_STATS */
+
 /*
  * From below to end just testing stuff ....
  */

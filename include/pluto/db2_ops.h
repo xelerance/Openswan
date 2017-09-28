@@ -1,6 +1,6 @@
 /*	db_ops.h,v 1.1.2.1 2003/11/21 18:12:23 jjo Exp	*/
-#ifndef _DB_OPS_H
-#define _DB_OPS_H
+#ifndef _DB2_OPS_H
+#define _DB2_OPS_H
 
 #include "pluto/spdb.h"
 
@@ -119,4 +119,4 @@ struct alg_info;  /* forward reference */
 extern struct db_sa *alginfo2db2(struct alg_info *ai);
 
 
-#endif /* _DB_OPS_H */
+#endif /* _DB2_OPS_H */

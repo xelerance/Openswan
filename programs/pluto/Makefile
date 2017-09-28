@@ -90,7 +90,6 @@ DISTSRC = \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
 	crypto.c \
-	db_ops.c \
 	demux.c msgdigest.c \
 	dnskey.c dnskey.h \
 	dpd.c  \
@@ -156,7 +155,7 @@ OBJSPLUTO += spdb_struct.o spdb_v1_struct.o spdb_print.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alg_aes.o ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
 OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
-OBJSPLUTO += ike_alg_status.o db_ops.o
+OBJSPLUTO += ike_alg_status.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
 OBJSPLUTO += ${X509_OBJS} ${HAVE_THREADS_OBJS}
