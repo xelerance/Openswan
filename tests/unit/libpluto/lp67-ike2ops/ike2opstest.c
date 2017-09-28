@@ -2,6 +2,7 @@
 #define AGGRESSIVE 1
 #define XAUTH 1
 #define PRINT_SA_DEBUG 1
+#define DEBUG 1
 #include <stdlib.h>
 
 #include "constants.h"
@@ -11,6 +12,15 @@
 #include "pluto/db2_ops.h"
 #include "pluto/state.h"
 #include "alg_info.h"
+
+#include "sysqueue.h"
+#include "pluto/connections.h"
+#include "kernel.h"
+#include "../seam_kernel.c"
+#include "../seam_log.c"
+#include "../seam_crypto_desc.c"
+#include "../seam_keys.c"
+#include "../seam_whack.c"
 
 const char *progname;
 
@@ -47,6 +57,14 @@ int main(int argc, char *argv[])
     alg_info_free(ai);
 
     sa_v2_print(sadb);
+
+    if(!extrapolate_v1_from_v2(sadb)) {
+        DBG_log("failed to create v1");
+        exit(11);
+    }
+    DBG_log("v1:");
+    sa_print(sadb);
+
     free_sa(sadb);
 
     ikepolicy="aes128-sha1-sha1-modp2048";

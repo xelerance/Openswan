@@ -1,4 +1,13 @@
 #include "kernel.h"
+
+bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
+
+ipsec_spi_t
+uniquify_his_cpi(ipsec_spi_t cpi, struct state *st)
+{
+  return 0x00005678;
+}
+
 void delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS) {}
 
 bool install_inbound_ipsec_sa(struct state *parent_st, struct state *st) { return TRUE; }
