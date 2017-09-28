@@ -86,6 +86,7 @@ struct db_v2_prop {
 /* security association */
 struct db_sa {
     bool                    parentSA;   /* set if this is a parent/oakley */
+    struct db_context      *prop_v1_ctx;
     struct db_prop_conj    *prop_conjs; /* array */
     unsigned int prop_conj_cnt;         /* number of elements */
 
