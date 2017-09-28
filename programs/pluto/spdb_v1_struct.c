@@ -274,7 +274,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
 
     /* first count number of combinations expressed in IKEv2, so we can
      * allocate a table big for all the combinations */
-    tot_combos = 0;
+    tot_combos = 1;
     for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
         unsigned int prop_conj;
         struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
@@ -282,6 +282,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
         for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
             unsigned int trans_i;
             struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+
             for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                 //unsigned int attr_i;
                 struct db_v2_trans *tr = &pc->trans[trans_i];
@@ -300,9 +301,14 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
 
     /* make a list of them all */
     dtf = alloca(sizeof(struct db_trans_flat)*tot_combos);
+    memset(dtf, 0, sizeof(struct db_trans_flat)*tot_combos);
     cur_dtf = dtf;
 
-    cur_combo=0;
+    cur_combo=1;
+
+    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+        transform_values[i] = -1;
+    }
 
     for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
         unsigned int prop_conj;
@@ -318,6 +324,15 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
                 if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
 
                 if(transform_values[tr->transform_type]==-1) {
+                    transform_values[tr->transform_type] = tr->value;
+
+                } else if(transform_values[tr->transform_type] != tr->value) {
+                    struct db_trans_flat *old_dtf = cur_dtf;
+                    cur_dtf++;
+                    *cur_dtf = *old_dtf;
+                    ++cur_combo;
+                    passert(cur_combo <= tot_combos);
+
                     transform_values[tr->transform_type] = tr->value;
                 }
 
@@ -349,11 +364,6 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
 #endif
                 }
 
-                if(transform_values[tr->transform_type] != tr->value) {
-                    cur_dtf++;
-                    cur_combo++;
-                    passert(cur_combo < tot_combos);
-                }
             }
         }
     }
@@ -371,6 +381,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
     }
 
     sadb->prop_conjs = alloc_thing(struct db_prop_conj, "v1 policy proposal conj");
+    sadb->prop_conj_cnt = 1;
     if(!sadb->prop_conjs) { return FALSE; }
 
     sadb->prop_conjs->props    = &sadb->prop_v1_ctx->prop;
