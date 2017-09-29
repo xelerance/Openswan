@@ -51,16 +51,16 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
         db2_prop_add(dc, PROTO_ISAKMP, 0);
-        db2_trans_add(dc,IKEv2_TRANS_TYPE_PRF,   ike_info->ike_prfalg);
-        db2_trans_add(dc,IKEv2_TRANS_TYPE_DH,    ike_info->ike_modp);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  ike_info->ike_ealg);
         if(ike_info->ike_eklen) {
             db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_eklen);
         }
+        db2_trans_add(dc,IKEv2_TRANS_TYPE_PRF,   ike_info->ike_prfalg);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, ike_info->ike_halg);
         if(ike_info->ike_hklen) {
             db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_hklen);
         }
+        db2_trans_add(dc,IKEv2_TRANS_TYPE_DH,    ike_info->ike_modp);
         db2_prop_close(dc);
     }
 
