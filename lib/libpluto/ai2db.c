@@ -42,7 +42,11 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
     int cnt;
 
     sadb = alloc_thing(struct db_sa, "v2 policy database");
-    dc = sadb->prop_ctx = db2_prop_new(10,10,10);
+    dc = sadb->prop_ctx = db2_prop_new(2,2,2);
+
+    if(ai == NULL) {
+        ai = alg_info_ike_defaults();
+    }
 
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {

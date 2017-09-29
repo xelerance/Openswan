@@ -33,11 +33,9 @@
 #include "md5.h"
 #include "pluto/crypto.h"
 
-//#include "pluto/state.h"
 #include "packet.h"
 #include "oswlog.h"
 #include "whack.h"
-//#include "pluto/spdb.h"
 #include "alg_info.h"
 #include "pluto/ike_alg.h"
 
