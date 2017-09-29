@@ -52,8 +52,6 @@ loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
 000  
-000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
-000  
 000 "nat-t": %any[bob@strongswan.org]...%any===10.1.0.0/16; unrouted; eroute owner: #0
 000 "nat-t":     myip=unset; hisip=unset; mycert=bobCert.pem;
 000 "nat-t":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
