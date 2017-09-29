@@ -55,7 +55,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
-#include "db_ops.h"
+#include "pluto/db2_ops.h"
 #include "ikev2.h"
 
 #ifdef NAT_TRAVERSAL
@@ -879,8 +879,7 @@ ikev2_parse_parent_sa_body(
 
     /* find the policy structures */
     if(!st->st_sadb) {
-        st->st_sadb = ikev2_sadb_from_alg(st->st_connection->alg_info_ike
-                                          , SADB_NOLIMIT);
+        st->st_sadb = alginfo2db2((struct alg_info *)st->st_connection->alg_info_ike);
     }
 
     gotmatch = FALSE;
@@ -1170,9 +1169,7 @@ ikev2_parse_child_sa_body(
     itl = &itl0;
 
     /* find the policy structures */
-    p2alg = ikev2_kernel_alg_makedb(c->policy
-                                    , c->alg_info_esp
-                                    , TRUE);
+    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1334,7 +1331,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 			       , pb_stream *outpbs
 			       , unsigned int np
 			       , struct connection *c
-			       , lset_t policy)
+			       , lset_t policy UNUSED)
 {
     int proto;
     struct db_sa *p2alg;
@@ -1347,10 +1344,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 	return STF_FATAL;
     }
 
-    p2alg = ikev2_kernel_alg_makedb(policy
-                                    , c->alg_info_esp
-                                    , TRUE);
-
+    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
     ikev2_out_sa(outpbs
 		 , proto
 		 , p2alg
