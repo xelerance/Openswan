@@ -18,6 +18,7 @@
 #include "pluto/connections.h"
 #include "kernel.h"
 #include "../seam_kernel.c"
+#include "../seam_ipcomp.c"
 #include "../seam_log.c"
 #include "../seam_crypto_desc.c"
 #include "../seam_keys.c"
