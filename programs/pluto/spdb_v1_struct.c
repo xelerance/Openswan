@@ -150,18 +150,18 @@ out_attr(int type
 #define return_on(var, val) do { var=val;goto return_out; } while(0);
 
 struct db_sa *
-ikev1_alg_makedb(lset_t policy UNUSED
-                 , struct alg_info_ike *ei, bool oneproposal UNUSED
-                 , enum phase1_role role UNUSED)
+ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei, bool oneproposal UNUSED)
 {
     struct db_sa *sadb;
 
     sadb = alginfo2db2((struct alg_info *)ei);
     sadb->parentSA = TRUE;
 
+    sa_v2_print(sadb);
+
     if(!extrapolate_v1_from_v2(sadb)) {
-        openswan_log("failed to create v1 PARENTSA policy from v2 settings");
-        return NULL;
+        DBG_log("failed to create v1");
+        exit(11);
     }
 
     DBG(DBG_EMITTING,
@@ -1576,7 +1576,7 @@ init_am_st_oakley(struct state *st, lset_t policy)
     struct connection *c = st->st_connection;
     struct db_sa *sadb;
 
-    sadb = ikev1_alg_makedb(policy, c->alg_info_ike, TRUE, INITIATOR);
+    sadb = ikev1_alg_makedb(policy, c->alg_info_ike, TRUE);
 
     /* now wanter into the proposed proposal, and extract what we need */
 
