@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "oswalloc.h"
 #include "oswlog.h"
+#include "oswcrypto.h"
 #include "secrets.h"
 #include "id.h"
 #include "pluto/keys.h"
