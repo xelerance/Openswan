@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     err_t e = NULL;
     struct db2_context *dc;
     struct db_sa *sadb;
-    struct alg_info *ai;
+    struct alg_info_ike *ai;
     const char *ikepolicy;
 
     progname = argv[0];
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 
     ikepolicy="aes128-sha1-prfsha1-modp2048";
     DBG_log("for input ike=%s", ikepolicy);
-    ai = (struct alg_info *)alg_info_ike_create_from_str(ikepolicy, &e);
+    ai = alg_info_ike_create_from_str(ikepolicy, &e);
 
     if(e) {
         DBG_log("failed to parse %s: %s\n", ikepolicy, e);
@@ -79,9 +79,9 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
-    sadb = alginfo2db2(ai);
+    sadb = alginfo2parent_db2(ai);
     sadb->parentSA = TRUE;
-    alg_info_free(ai);
+    alg_info_free((struct alg_info *)ai);
 
     sa_v2_print(sadb);
 
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 #if 1
     ikepolicy="aes128-sha1-sha1-modp2048";
     DBG_log("for input ike=%s", ikepolicy);
-    ai = (struct alg_info *)alg_info_ike_create_from_str(ikepolicy, &e);
+    ai = alg_info_ike_create_from_str(ikepolicy, &e);
 
     if(e) {
         DBG_log("failed to parse %s: %s\n", ikepolicy, e);
@@ -105,15 +105,15 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
-    sadb = alginfo2db2(ai);
-    alg_info_free(ai);
+    sadb = alginfo2parent_db2(ai);
+    alg_info_free((struct alg_info *)ai);
 
     sa_v2_print(sadb);
     free_sa(sadb);
 
     /* now do the defaults */
     DBG_log("IKEv2 defaults\n");
-    ai = alg_info_ike_defaults();
+    ai = (struct alg_info_ike *)alg_info_ike_defaults();
 
     if(e) {
         DBG_log("failed to parse %s: %s\n", ikepolicy, e);
@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
-    sadb = alginfo2db2(ai);
-    alg_info_free(ai);
+    sadb = alginfo2parent_db2(ai);
+    alg_info_free((struct alg_info *)ai);
 
     sa_v2_print(sadb);
     free_sa(sadb);
