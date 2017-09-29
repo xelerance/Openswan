@@ -157,11 +157,9 @@ ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei, bool oneproposal
     sadb = alginfo2db2((struct alg_info *)ei);
     sadb->parentSA = TRUE;
 
-    sa_v2_print(sadb);
-
     if(!extrapolate_v1_from_v2(sadb)) {
-        DBG_log("failed to create v1");
-        exit(11);
+        openswan_log("failed to create v1 PARENTSA policy from v2 settings");
+        return NULL;
     }
 
     DBG(DBG_EMITTING,
@@ -173,66 +171,23 @@ ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei, bool oneproposal
 }
 
 struct db_sa *
-kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei UNUSED, bool logit UNUSED)
+kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei)
 {
-#if 0
-    struct db_context *dbnew;
-    struct db_prop *p;
-    struct db_prop_conj pc;
-    struct db_sa t, *n;
+    struct db_sa *sadb;
 
-    memset(&t, 0, sizeof(t));
+    sadb = alginfo2db2((struct alg_info *)ei);
+    sadb->parentSA = FALSE;
 
-    if(ei == NULL) {
-	struct db_sa *sadb;
-	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
-
-#if 0
-y	if (can_do_IPcomp)
-	    pm |= POLICY_COMPRESS;
-#endif
-
-	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
-
-	/* make copy, to keep from freeing the static policies */
-	sadb = sa_copy_sa(sadb, 0);
-	sadb->parentSA = FALSE;
-
-	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
-	return sadb;
+    if(!extrapolate_v1_from_v2(sadb)) {
+        openswan_log("failed to create v1 IPsec policy from v2 settings");
+        return NULL;
     }
 
-    dbnew=kernel_alg_db_new(ei, policy, logit);
+    DBG(DBG_EMITTING,
+        DBG_log("Translated IKEv2 policy to: ");
+        sa_print(sadb));
 
-    if(!dbnew) {
-	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
-	return NULL;
-    }
-
-    p = db_prop_get(dbnew);
-
-    if(!p) {
-	DBG(DBG_CONTROL, DBG_log("failed to get proposal from context, returning empty"));
-	db_destroy(dbnew);
-	return NULL;
-    }
-
-    pc.prop_cnt = 1;
-    pc.props = p;
-    t.prop_conj_cnt = 1;
-    t.prop_conjs = &pc;
-
-    /* make a fresh copy */
-    n = sa_copy_sa(&t, 0);
-    n->parentSA = FALSE;
-
-    db_destroy(dbnew);
-
-    DBG(DBG_CONTROL
-	, DBG_log("returning new proposal from esp_info"));
-    return n;
-#endif
-    return NULL;
+    return sadb;
 }
 
 struct db_trans_flat {
@@ -1647,7 +1602,6 @@ init_am_st_oakley(struct state *st, lset_t policy)
     return TRUE;
 }
 #endif
-
 
 /**
  * Parse the body of an IPsec SA Payload (i.e. Phase 2 / Quick Mode).
