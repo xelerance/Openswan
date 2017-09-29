@@ -45,7 +45,7 @@ print_sa_attr_oakley(struct db_attr *at)
     if(at->type.oakley <= oakley_attr_val_descs_size) {
 	en = oakley_attr_val_descs[at->type.oakley];
     }
-    printf("        type: %u(%s) val: %u(%s)\n"
+    DBG_log("        type: %u(%s) val: %u(%s)\n"
 	   , at->type.oakley, enum_name(&oakley_attr_names, at->type.oakley+ISAKMP_ATTR_AF_TV)
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
@@ -62,7 +62,7 @@ print_sa_attr_ipsec(struct db_attr *at)
     if(at->type.ipsec <= ipsec_attr_val_descs_size) {
 	en = ipsec_attr_val_descs[at->type.ipsec];
     }
-    printf("        type: %u(%s) val: %u(%s)\n"
+    DBG_log("        type: %u(%s) val: %u(%s)\n"
 	   , at->type.ipsec
            , enum_name(&ipsec_attr_names, at->type.ipsec+ISAKMP_ATTR_AF_TV)
 	   , at->val
@@ -73,7 +73,7 @@ void
 print_sa_trans(bool parentSA, struct db_trans *tr)
 {
     unsigned int i;
-    printf("      transform: %u cnt: %u\n",
+    DBG_log("      transform: %u cnt: %u\n",
 	   tr->transid, tr->attr_cnt);
     for(i=0; i<tr->attr_cnt; i++) {
 	if(parentSA) {
@@ -88,7 +88,7 @@ void
 print_sa_prop(bool parentSA, struct db_prop *dp)
 {
     unsigned int i;
-    printf("    protoid: %u (%s) cnt: %u\n"
+    DBG_log("    protoid: %u (%s) cnt: %u\n"
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
@@ -101,7 +101,7 @@ void
 print_sa_prop_conj(bool parentSA, struct db_prop_conj *pc)
 {
     unsigned int i;
-    printf("  conjunctions cnt: %u\n",
+    DBG_log("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
     for(i=0; i<pc->prop_cnt; i++) {
 	print_sa_prop(parentSA, &pc->props[i]);
@@ -112,7 +112,7 @@ void
 sa_print(struct db_sa *f)
 {
     unsigned int i;
-    printf("sa disjunct cnt: %u\n",
+    DBG_log("sa disjunct cnt: %u\n",
 	   f->prop_conj_cnt);
     for(i=0; i<f->prop_conj_cnt; i++) {
 	print_sa_prop_conj(f->parentSA, &f->prop_conjs[i]);
