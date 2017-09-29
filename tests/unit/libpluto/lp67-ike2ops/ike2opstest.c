@@ -44,12 +44,16 @@ int main(int argc, char *argv[])
 
     tool_init_log();
 
+    setbuf(stdout, NULL);  /* make stdout unbuffered so stdout/stderr interleave */
+
     {
         struct db_context *ctx = db_prop_new(PROTO_ISAKMP,
                                              10,/* transforms */
                                              10 /* attributes */);
         passert(v2tov1_encr(IKEv2_ENCR_AES_CBC) == OAKLEY_AES_CBC);
         passert(v2tov1_integ(IKEv2_AUTH_HMAC_SHA1_96)== OAKLEY_SHA1);
+
+        printf("testing db1 ops\n");
 
         db_trans_add(ctx, KEY_IKE);
         db_attr_add_values(ctx, OAKLEY_ENCRYPTION_ALGORITHM,
@@ -60,6 +64,7 @@ int main(int argc, char *argv[])
                            OAKLEY_GROUP_MODP2048);
 
         db_print(ctx);
+        db_destroy(ctx);
     }
 
 
