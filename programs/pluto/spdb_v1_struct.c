@@ -88,7 +88,7 @@ int v2tov1_encr(enum ikev2_trans_type_encr encr)
     }
 }
 
-static int v2tov1_integ(enum ikev2_trans_type_integ v2integ)
+int v2tov1_integ(enum ikev2_trans_type_integ v2integ)
 {
     switch(v2integ) {
     case IKEv2_AUTH_HMAC_MD5_96:

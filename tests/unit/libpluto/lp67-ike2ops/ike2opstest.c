@@ -9,6 +9,7 @@
 #include "oswalloc.h"
 #include "oswlog.h"
 #include "pluto/defs.h"
+#include "pluto/db_ops.h"
 #include "pluto/db2_ops.h"
 #include "pluto/state.h"
 #include "alg_info.h"
@@ -43,6 +44,25 @@ int main(int argc, char *argv[])
 
     tool_init_log();
 
+    {
+        struct db_context *ctx = db_prop_new(PROTO_ISAKMP,
+                                             10,/* transforms */
+                                             10 /* attributes */);
+        passert(v2tov1_encr(IKEv2_ENCR_AES_CBC) == OAKLEY_AES_CBC);
+        passert(v2tov1_integ(IKEv2_AUTH_HMAC_SHA1_96)== OAKLEY_SHA1);
+
+        db_trans_add(ctx, KEY_IKE);
+        db_attr_add_values(ctx, OAKLEY_ENCRYPTION_ALGORITHM,
+                           OAKLEY_AES_CBC);
+        db_attr_add_values(ctx, OAKLEY_HASH_ALGORITHM,
+                           OAKLEY_SHA1);
+        db_attr_add_values(ctx, OAKLEY_GROUP_DESCRIPTION,
+                           OAKLEY_GROUP_MODP2048);
+
+        db_print(ctx);
+    }
+
+
     ikepolicy="aes128-sha1-prfsha1-modp2048";
     DBG_log("for input ike=%s", ikepolicy);
     ai = (struct alg_info *)alg_info_ike_create_from_str(ikepolicy, &e);
@@ -62,11 +82,12 @@ int main(int argc, char *argv[])
         DBG_log("failed to create v1");
         exit(11);
     }
-    DBG_log("v1:");
+    printf("v1:");
     sa_print(sadb);
 
     free_sa(sadb);
 
+#if 1
     ikepolicy="aes128-sha1-sha1-modp2048";
     DBG_log("for input ike=%s", ikepolicy);
     ai = (struct alg_info *)alg_info_ike_create_from_str(ikepolicy, &e);
@@ -98,6 +119,7 @@ int main(int argc, char *argv[])
 
     sa_v2_print(sadb);
     free_sa(sadb);
+#endif
 
     report_leaks();
     tool_close_log();
