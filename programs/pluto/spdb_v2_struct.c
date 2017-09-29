@@ -666,7 +666,7 @@ ikev2_parse_parent_sa_body(
 
     /* find the policy structures */
     if(!st->st_sadb) {
-        st->st_sadb = alginfo2db2((struct alg_info *)st->st_connection->alg_info_ike);
+        st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
     }
 
     gotmatch = FALSE;
@@ -956,7 +956,7 @@ ikev2_parse_child_sa_body(
     itl = &itl0;
 
     /* find the policy structures */
-    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
+    p2alg = alginfo2child_db2(c->alg_info_esp);
 
     gotmatch = FALSE;
     conjunction = FALSE;
@@ -1131,7 +1131,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 	return STF_FATAL;
     }
 
-    p2alg = alginfo2db2((struct alg_info *)c->alg_info_esp);
+    p2alg = alginfo2child_db2(c->alg_info_esp);
     ikev2_out_sa(outpbs
 		 , proto
 		 , p2alg

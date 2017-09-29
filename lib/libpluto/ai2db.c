@@ -34,73 +34,83 @@
 
 #include <assert.h>
 
-struct db_sa *alginfo2db2(struct alg_info *ai)
+struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 {
     struct db2_context *dc;
     struct db_sa *sadb;
+    struct ike_info *ike_info;
     int cnt;
 
     sadb = alloc_thing(struct db_sa, "v2 policy database");
     dc = sadb->prop_ctx = db2_prop_new(10,10,10);
 
-  switch(ai->alg_info_protoid) {
-  case PROTO_IPSEC_ESP:
-    {
-      struct esp_info *esp_info;
-      ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
-        db2_prop_add(dc, PROTO_IPSEC_ESP, 4);
-        db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  esp_info->encryptalg);
-        if(esp_info->enckeylen) {
-          db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->enckeylen);
-        }
-        db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
-        if(esp_info->authkeylen) {
-          db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
-        }
-        db2_prop_close(dc);
-      }
-    }
-    break;
-
-  case PROTO_IPSEC_AH:
-    {
-      struct esp_info *esp_info;
-      ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
-        db2_prop_add(dc, PROTO_IPSEC_AH, 4);
-        db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
-        if(esp_info->authkeylen) {
-          db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
-        }
-        db2_prop_close(dc);
-      }
-    }
-    break;
-
-  case PROTO_ISAKMP:
-    {
-      struct ike_info *ike_info;
-      ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
+    passert(ai->alg_info_protoid == PROTO_ISAKMP);
+    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
         db2_prop_add(dc, PROTO_ISAKMP, 0);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_PRF,   ike_info->ike_prfalg);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_DH,    ike_info->ike_modp);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  ike_info->ike_ealg);
         if(ike_info->ike_eklen) {
-          db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_eklen);
+            db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_eklen);
         }
         db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, ike_info->ike_halg);
         if(ike_info->ike_hklen) {
-          db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_hklen);
+            db2_attr_add(dc, IKEv2_KEY_LENGTH, ike_info->ike_hklen);
         }
         db2_prop_close(dc);
-      }
     }
+
+    sadb->prop_disj = &sadb->prop_ctx->prop;
+    sadb->prop_disj_cnt = 1;
+
+    return sadb;
+}
+
+struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
+{
+    struct db2_context *dc;
+    struct db_sa *sadb;
+    struct esp_info *esp_info;
+    int cnt;
+
+    sadb = alloc_thing(struct db_sa, "v2 policy database");
+    dc = sadb->prop_ctx = db2_prop_new(10,10,10);
+
+    switch(ai->alg_info_protoid) {
+    case PROTO_IPSEC_ESP:
+        ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
+            db2_prop_add(dc, PROTO_IPSEC_ESP, 4);
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  esp_info->encryptalg);
+            if(esp_info->enckeylen) {
+                db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->enckeylen);
+            }
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
+            if(esp_info->authkeylen) {
+                db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
+            }
+            db2_prop_close(dc);
+        }
+        break;
+
+    case PROTO_IPSEC_AH:
+        ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
+            db2_prop_add(dc, PROTO_IPSEC_AH, 4);
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
+            if(esp_info->authkeylen) {
+                db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
+            }
+            db2_prop_close(dc);
+        }
     break;
-  }
 
-  sadb->prop_disj = &sadb->prop_ctx->prop;
-  sadb->prop_disj_cnt = 1;
+    case PROTO_ISAKMP:
+        return NULL;
+    }
 
-  return sadb;
+    sadb->prop_disj = &sadb->prop_ctx->prop;
+    sadb->prop_disj_cnt = 1;
+
+    return sadb;
 }
 
 /*

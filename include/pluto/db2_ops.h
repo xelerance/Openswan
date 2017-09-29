@@ -110,8 +110,10 @@ int db2_ops_show_status(void);
 extern void db2_print(struct db2_context *ctx);
 extern void sa_v2_print(struct db_sa *sa);
 
-struct alg_info;  /* forward reference */
-extern struct db_sa *alginfo2db2(struct alg_info *ai);
+struct alg_info_ike;  /* forward reference */
+struct alg_info_esp;  /* forward reference */
+extern struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai);
+extern struct db_sa *alginfo2child_db2(struct alg_info_esp *ai);
 
 
 #endif /* _DB2_OPS_H */

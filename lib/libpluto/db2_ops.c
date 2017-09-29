@@ -168,6 +168,8 @@ db2_free(struct db2_context *ctx)
   PFREE_ST(ctx, db_context_st);
 }
 
+static void db2_trans_increment(struct db2_context *ctx);
+
 /*	Expand storage for transforms by number delta_trans */
 static int
 db2_prop_expand(struct db2_context *ctx, int delta_conj)
@@ -205,15 +207,6 @@ db2_prop_expand(struct db2_context *ctx, int delta_conj)
   ret = 0;
 out:
   return ret;
-}
-
-/*	Find space for a new transform */
-static void
-db2_trans_increment(struct db2_context *ctx)
-{
-  /*	skip incrementing current trans pointer the 1st time*/
-  if (ctx->trans_cur && ctx->trans_cur->transform_type)
-    ctx->trans_cur++;
 }
 
 int
@@ -292,11 +285,13 @@ db2_trans_expand(struct db2_context *ctx, int delta_trans)
   return ret;
 }
 
-/*	Start a new transform, expand trans0 is needed */
-int
-db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
+/*	Find space for a new transform */
+static void
+db2_trans_increment(struct db2_context *ctx)
 {
-  db2_trans_increment(ctx);
+  /*	skip incrementing current trans pointer the 1st time*/
+  if (ctx->trans_cur && ctx->trans_cur->transform_type)
+    ctx->trans_cur++;
 
   /*
    *	Strategy: if more space is needed, expand by
@@ -309,8 +304,15 @@ db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
   passert(ctx->trans_cur != NULL);
   if ((ctx->trans_cur - ctx->trans0) >= ctx->max_trans) {
     if (db2_trans_expand(ctx, ctx->max_trans/2 + 1)<0)
-      return -1;
+      return;
   }
+}
+
+/*	Start a new transform, expand trans0 is needed */
+int
+db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value)
+{
+  db2_trans_increment(ctx);
 
   ctx->trans_cur->transform_type = transid;
   ctx->trans_cur->value          = value;
