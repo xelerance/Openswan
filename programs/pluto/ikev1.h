@@ -188,3 +188,6 @@ extern notification_t parse_ipsec_sa_body(
     bool selection,	/* if this SA is a selection, only one tranform can appear */
     struct state *st);	/* current state object */
 
+/* spdb_v1_struct.c */
+extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
+                                      , bool oneproposal);

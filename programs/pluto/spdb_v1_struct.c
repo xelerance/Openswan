@@ -55,6 +55,7 @@
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
 #include "db_ops.h"
+#include "db2_ops.h"
 #include "ikev1.h"
 
 #ifdef NAT_TRAVERSAL
@@ -148,65 +149,27 @@ out_attr(int type
 
 #define return_on(var, val) do { var=val;goto return_out; } while(0);
 
-#if 0
 struct db_sa *
-ikev1_alg_makedb(lset_t policy, struct alg_info_esp *ei, bool logit)
+ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei, bool oneproposal UNUSED)
 {
-    struct db_context *dbnew;
-    struct db_prop *p;
-    struct db_prop_conj pc;
-    struct db_sa t, *n;
+    struct db_sa *sadb;
 
-    memset(&t, 0, sizeof(t));
+    sadb = alginfo2db2((struct alg_info *)ei);
+    sadb->parentSA = TRUE;
 
-    if(ei == NULL) {
-	struct db_sa *sadb;
-	lset_t pm = POLICY_ENCRYPT | POLICY_AUTHENTICATE;
+    sa_v2_print(sadb);
 
-#if 0
-y	if (can_do_IPcomp)
-	    pm |= POLICY_COMPRESS;
-#endif
-
-	sadb = &ipsec_sadb[(policy & pm) >> POLICY_IPSEC_SHIFT];
-
-	/* make copy, to keep from freeing the static policies */
-	sadb = sa_copy_sa(sadb, 0);
-	sadb->parentSA = FALSE;
-
-	DBG(DBG_CONTROL, DBG_log("empty esp_info, returning defaults"));
-	return sadb;
+    if(!extrapolate_v1_from_v2(sadb)) {
+        DBG_log("failed to create v1");
+        exit(11);
     }
 
-    dbnew=kernel_alg_db_new(ei, policy, logit);
+    DBG(DBG_EMITTING,
+        DBG_log("Translated IKEv2 policy to: ");
+        sa_print(sadb));
 
-    if(!dbnew) {
-	DBG(DBG_CONTROL, DBG_log("failed to translate esp_info to proposal, returning empty"));
-	return NULL;
-    }
+    return sadb;
 
-    p = db_prop_get(dbnew);
-
-    if(!p) {
-	DBG(DBG_CONTROL, DBG_log("failed to get proposal from context, returning empty"));
-	db_destroy(dbnew);
-	return NULL;
-    }
-
-    pc.prop_cnt = 1;
-    pc.props = p;
-    t.prop_conj_cnt = 1;
-    t.prop_conjs = &pc;
-
-    /* make a fresh copy */
-    n = sa_copy_sa(&t, 0);
-    n->parentSA = FALSE;
-
-    db_destroy(dbnew);
-
-    DBG(DBG_CONTROL
-	, DBG_log("returning new proposal from esp_info"));
-    return n;
 }
 
 struct db_sa *
@@ -1596,58 +1559,51 @@ parse_isakmp_sa_body(
     return NO_PROPOSAL_CHOSEN;
 }
 
-#if 0 && defined(AGGRESSIVE)
+#if defined(AGGRESSIVE)
 /* Initialize st_oakley field of state for use when initiating in
  * aggressive mode.
  *
- * This should probably get more of its parameters, like what group to use,
- * from the connection specification, but it's not there yet.
- * This should ideally be done by passing them via whack.
+ * This will return at most one proposal, since AGGR is dumb.
  *
  */
 
-/* XXX MCR. I suspect that actually all of this is redundent */
 bool
 init_am_st_oakley(struct state *st, lset_t policy)
 {
     struct trans_attrs ta;
+    struct connection *c = st->st_connection;
+    struct db_sa *sadb;
+
+    sadb = ikev1_alg_makedb(policy, c->alg_info_ike, TRUE);
+
+    /* now wanter into the proposed proposal, and extract what we need */
+
     struct db_attr  *enc, *hash, *auth, *grp;
     struct db_trans *trans;
     struct db_prop  *prop;
     struct db_prop_conj *cprop;
-    struct db_sa    *sa;
-    struct db_sa    *revised_sadb;
-    struct connection *c = st->st_connection;
-    unsigned int policy_index = POLICY_ISAKMP(policy
-                                                        , c->spd.this.xauth_server
-                                                        , c->spd.this.xauth_client);
-
-    memset(&ta, 0, sizeof(ta));
 
     /* When this SA expires (seconds) */
     ta.life_seconds = st->st_connection->sa_ike_life_seconds;
     ta.life_kilobytes = 1000000;
 
-    passert(policy_index < elemsof(oakley_am_sadb));
-    sa = &oakley_am_sadb[policy_index];
-
-    /* Max transforms == 2 - Multiple transforms, 1 DH group */
-    revised_sadb=oakley_alg_makedb(st->st_connection->alg_info_ike
-                                           , sa, 2);
-
-
-    if(revised_sadb == NULL) {
-          return FALSE;
+    if(sadb->prop_conj_cnt != 1) {
+        return FALSE;
     }
-    passert(revised_sadb->prop_conj_cnt == 1);
-    cprop = &revised_sadb->prop_conjs[0];
 
-    passert(cprop->prop_cnt == 1);
+    cprop = &sadb->prop_conjs[0];
+
+    if(cprop->prop_cnt != 1) {
+        return FALSE;
+    }
     prop = &cprop->props[0];
 
     trans = &prop->trans[0];
 
-    passert(trans->attr_cnt == 4 || trans->attr_cnt == 5);
+    if(!(trans->attr_cnt == 4 || trans->attr_cnt == 5)) {
+        return FALSE;
+    }
+
     enc  = &trans->attrs[0];
     hash = &trans->attrs[1];
     auth = &trans->attrs[2];

@@ -1145,12 +1145,11 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
     /* SA out */
     {
 	u_char *sa_start = md->rbody.cur;
-	int    policy_index = POLICY_ISAKMP(st->st_policy
-					    , c->spd.this.xauth_server
-					    , c->spd.this.xauth_client);
-
+        struct db_sa *oakley_sa = ikev1_alg_makedb(st->st_policy
+                                                   , c->alg_info_ike
+                                                   , TRUE /* one proposal for aggr */);
 	if (!out_sa(&md->rbody
-		    , &oakley_am_sadb[policy_index], st
+		    , oakley_sa, st
 		    , TRUE, TRUE, ISAKMP_NEXT_KE))
 	{
 	    cur_state = NULL;
@@ -1161,6 +1160,7 @@ aggr_outI1_tail(struct pluto_crypto_req_cont *pcrc
 	passert(st->st_p1isa.ptr == NULL);	/* no leak! */
 	clonetochunk(st->st_p1isa, sa_start, md->rbody.cur - sa_start,
 		     "sa in aggr_outI1");
+        free_sa(oakley_sa);
     }
 
     /* KE out */
