@@ -209,7 +209,7 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
  * 	Proposals will be built by looping over default_ike_groups array and
  * 	merging alg_info (ike_info) contents
  *
- * defaults according to:  https://datatracker.ietf.org/doc/draft-ietf-ipsecme-rfc4307bis/
+ * defaults according to:  https://datatracker.ietf.org/doc/RFC8247
  */
 static int default_ike_groups[] = {
     OAKLEY_GROUP_MODP2048,          /* MUST */
