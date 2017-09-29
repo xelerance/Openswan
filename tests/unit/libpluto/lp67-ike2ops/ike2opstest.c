@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
     passert(ai != NULL);
 
     sadb = alginfo2db2(ai);
+    sadb->parentSA = TRUE;
     alg_info_free(ai);
 
     sa_v2_print(sadb);
