@@ -154,7 +154,7 @@ ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei, bool oneproposal
 {
     struct db_sa *sadb;
 
-    sadb = alginfo2db2((struct alg_info *)ei);
+    sadb = alginfo2parent_db2(ei);
     sadb->parentSA = TRUE;
 
     if(!extrapolate_v1_from_v2(sadb)) {
@@ -175,7 +175,7 @@ kernel_alg_makedb(lset_t policy UNUSED, struct alg_info_esp *ei)
 {
     struct db_sa *sadb;
 
-    sadb = alginfo2db2((struct alg_info *)ei);
+    sadb = alginfo2child_db2(ei);
     sadb->parentSA = FALSE;
 
     if(!extrapolate_v1_from_v2(sadb)) {
