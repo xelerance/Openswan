@@ -19,7 +19,6 @@ include $(OPENSWANSRCDIR)/Makefile.inc
 EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-#EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
@@ -35,10 +34,8 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
@@ -68,12 +65,14 @@ TESTNAME=whacksemantics
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
-check:
+${TESTNAME} programs:
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
 	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
+
+check: ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/conndebug.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST2ARGS} >OUTPUT/${TESTNAME}2.txt 2>&1

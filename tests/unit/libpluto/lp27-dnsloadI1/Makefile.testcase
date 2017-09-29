@@ -1,7 +1,7 @@
 # -*- makefile -*-
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 CONNNAME=cpe
-UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
 
 TESTNAME=dnscpeI1
 ENDNAME=dnsdelayclient

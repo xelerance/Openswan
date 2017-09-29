@@ -241,57 +241,20 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    Notify Message Type: v2N_INVALID_KE_PAYLOAD
+|    Notify Message Type: v2N_UNUSED_15
 | emitting length of IKEv2 Notify Payload: 8
 | emitting length of ISAKMP Message: 36
 sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
-|   01 00 00 11
-| state transition function for STATE_CHILDSA_DEL failed: INVALID_KEY_INFORMATION
+|   01 00 00 0f
+| state transition function for STATE_PARENT_R1 failed: BAD_PROPOSAL_SYNTAX
+./parentR1 deleting state #1 (STATE_PARENT_R1)
 ./parentR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./parentR1 leak: 2 * notification packet, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_prop, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: db_attrs, item size: X
-./parentR1 leak: db_v2_trans, item size: X
-./parentR1 leak: db_v2_prop_conj, item size: X
-./parentR1 leak: 12 * sa copy attrs array, item size: X
-./parentR1 leak: sa copy trans array, item size: X
-./parentR1 leak: sa copy prop array, item size: X
-./parentR1 leak: sa copy prop conj array, item size: X
-./parentR1 leak: sa copy prop_conj, item size: X
-./parentR1 leak: saved first received packet, item size: X
+./parentR1 leak: alg_info_ike, item size: X
 ./parentR1 leak: ikev2_inI1outR1 KE, item size: X
-./parentR1 leak: struct state in new_state(), item size: X
 ./parentR1 leak: msg_digest, item size: X
 ./parentR1 leak: policies path, item size: X
 ./parentR1 leak: ocspcerts path, item size: X
