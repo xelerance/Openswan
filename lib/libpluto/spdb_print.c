@@ -27,32 +27,11 @@
 #include "constants.h"
 #include "oswlog.h"
 
-#include "defs.h"
-#include "id.h"
-#include "x509.h"
-#include "pgp.h"
-#include "certs.h"
-#ifdef XAUTH_USEPAM
-#include <security/pam_appl.h>
-#endif
-#include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
-#include "packet.h"
-#include "keys.h"
-#include "kernel.h"	/* needs connections.h */
-#include "log.h"
-#include "spdb.h"
+#include "pluto/defs.h"
+#include "pluto/spdb.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 
-#include "sha1.h"
-#include "md5.h"
-#include "pluto/crypto.h" /* requires sha1.h and md5.h */
-
-#include "alg_info.h"
-#include "kernel_alg.h"
-#include "pluto/ike_alg.h"
-#include "db_ops.h"
-#include "spdb.h"
+#include "pluto/db_ops.h"
 
 void
 print_sa_attr_oakley(struct db_attr *at)
