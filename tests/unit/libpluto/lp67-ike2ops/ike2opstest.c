@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
     /* now do the defaults */
     DBG_log("IKEv2 defaults\n");
-    ai = (struct alg_info_ike *)alg_info_ike_defaults();
+    ai = alg_info_ike_defaults();
 
     if(e) {
         DBG_log("failed to parse %s: %s\n", ikepolicy, e);

@@ -547,7 +547,7 @@ parser_init_ike(struct parser_context *p_ctx)
     p_ctx->aalg_permit=TRUE;
 }
 
-struct alg_info *
+struct alg_info_ike *
 alg_info_ike_defaults(void)
 {
     struct alg_info_ike *ike_info;
@@ -561,7 +561,7 @@ alg_info_ike_defaults(void)
                       0,0,
                       0,0, 0);
  out:
-    return IKETOINFO(ike_info);
+    return ike_info;
 }
 
 
