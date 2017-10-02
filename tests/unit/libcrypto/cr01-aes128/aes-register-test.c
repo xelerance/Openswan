@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     char  inbuf[256];
     char  outbuf[256];
     char  keybuf[16] = "thisthisthisthis";
-    char  ivbuf[16];
+    char  ivbuf[AES_CBC_BLOCK_SIZE];
 
     progname = argv[0];
     leak_detective=1;
