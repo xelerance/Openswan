@@ -19,7 +19,6 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
@@ -50,7 +49,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}

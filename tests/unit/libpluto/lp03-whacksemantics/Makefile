@@ -45,7 +45,6 @@ ifeq ($(USE_EXTRACRYPTO),true)
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}

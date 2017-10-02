@@ -17,8 +17,8 @@
  */
 
 #include <mpzfuncs.h>
-#include <klips-crypto/aes.h>
-#include <klips-crypto/aes_cbc.h>
+#include <crypto/aes.h>
+#include <crypto/aes_cbc.h>
 #include <klips-crypto/des.h>
 
 #define clear_crypto_space(wc, space) do { \
@@ -27,7 +27,7 @@
   } while(0)
 
 
-
+/* XXX Qhis really HAS to go... */
 struct oswcrypto_meth {
 	void (*rsa_mod_exp_crt)(mpz_t dst, const mpz_t src, const mpz_t p,
 							const mpz_t dP, const mpz_t q, const mpz_t qP,

@@ -19,7 +19,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS} ${LIBGMP}
 EXTRALIBS+=${CRYPTOLIBS} ${LIBOSWLOG} ${LIBOPENSWAN}
@@ -35,7 +34,7 @@ include Makefile.testcase
 ${TESTNAME} programs: ${TESTSRC} ${LIBPLUTO}
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
-	${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRALIBS}
+	@${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"       >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
