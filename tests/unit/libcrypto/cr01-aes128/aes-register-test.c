@@ -46,6 +46,10 @@ int main(int argc, char *argv[])
     for(i=0; i<sizeof(inbuf); i++) {
         inbuf[i] = i&0xff;
     }
+    /* initialize the IV */
+    for(i=0; i<sizeof(ivbuf); i++) {
+        ivbuf[i] = i&0xff;
+    }
     memcpy(outbuf, inbuf, sizeof(outbuf));
 
     printf("plaintext input:\n");
@@ -59,6 +63,10 @@ int main(int argc, char *argv[])
     printf("ciphertext output:\n");
     hexdump(outbuf, 0, sizeof(outbuf));
 
+    /* reset the IV */
+    for(i=0; i<sizeof(ivbuf); i++) {
+        ivbuf[i] = i&0xff;
+    }
     /* now decrypt! */
     aes->do_crypt(outbuf, sizeof(outbuf),
                   keybuf, sizeof(keybuf),
