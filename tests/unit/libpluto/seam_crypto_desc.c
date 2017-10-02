@@ -13,7 +13,7 @@ void do_hash_init_abort(void *ctx) { abort(); }
 void do_hash_update_abort(void *ctx, const u_char *b, size_t s) { abort(); }
 void do_hash_final_abort(u_int8_t *out, void *ctx) { abort(); }
 
-struct hash_desc h1 = {
+struct ike_integ_desc h1 = {
  .common = { .name = "hello", .officname = "there" },
  .hash_init   = do_hash_init_abort,
  .hash_update = do_hash_update_abort,
@@ -21,16 +21,16 @@ struct hash_desc h1 = {
 
 };
 
-struct encrypt_desc e1 = {
+struct ike_encr_desc e1 = {
  .common = { .name = "encrypt", .officname = "funfun" },
  .do_crypt = do_crypt_abort
 };
 
-struct hash_desc *crypto_get_hasher(enum ikev2_trans_type_integ alg)
+struct ike_integ_desc *crypto_get_hasher(enum ikev2_trans_type_integ alg)
 {
   return &h1;
 }
-struct encrypt_desc *crypto_get_encrypter(enum ikev2_trans_type_encr ealg)
+struct ike_encr_desc *crypto_get_encrypter(enum ikev2_trans_type_encr ealg)
 {
   return &e1;
 }

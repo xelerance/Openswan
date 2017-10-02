@@ -17,8 +17,8 @@
  */
 
 #include <mpzfuncs.h>
-#include <klips-crypto/aes.h>
-#include <klips-crypto/aes_cbc.h>
+#include <crypto/aes.h>
+#include <crypto/aes_cbc.h>
 #include <klips-crypto/des.h>
 
 #define clear_crypto_space(wc, space) do { \
