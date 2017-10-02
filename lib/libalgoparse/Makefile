@@ -30,7 +30,7 @@ LIB=lib${LIBRARY}.a
 MANDIR=$(MANTREE)/man3
 
 ONEFILE=alg_info.c
-SRCS=alg_info.c ike_alg.c
+SRCS=alg_info.c
 SRCS+=plutoalg.c groups.c
 SRCS+=
 
