@@ -1,0 +1,20 @@
+This test is very similar to libpluto/lp67, in that it creates a bunch of
+IKEv1 and IKEv2 policies from an ike= line.  But the libpluto tests do not
+generally load many (any) of the crypto modules.  If asked if a particulary
+crypto algorithm is loaded, the libpluto tests are mocked out to always say
+yes.
+
+This test has a set of traditional (AES, SHA1, SHA2_256) loaded, but not the
+legacy ones (3DES, MD5), nor the new fancy ones (GCM, CTR, etc.).
+
+
+
+
+
+
+
+
+
+
+
+
