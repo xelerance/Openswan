@@ -1133,7 +1133,7 @@ parse_isakmp_sa_body(
 
                     case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
 #ifdef IKE_ALG
-                        if (ike_alg_hash_present(val)) {
+                        if (ike_alg_integ_present(val, 0)) {
                               ta.prf_hash = val;
                               ta.prf_hasher = crypto_get_hasher(val);
                         } else

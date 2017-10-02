@@ -9,22 +9,23 @@ struct connection;
 struct ike_alg {
     const char *name;
     const char *officname;
-    u_int16_t algo_type;
+    enum ikev2_trans_type algo_type;
     u_int16_t algo_id;
     enum ikev2_trans_type_encr algo_v2id;
     struct ike_alg *algo_next;
 };
 
-struct encrypt_desc {
+struct ike_encr_desc {
     struct ike_alg common;
     size_t   enc_ctxsize;
     size_t   enc_blocksize;
-/* Is this always true?  usually with CBC methods. Maybe not with others */
+
+    /* Is this always true?  usually with CBC methods. Maybe not with others */
 #define iv_size enc_blocksize
     unsigned keydeflen;
     unsigned keymaxlen;
     unsigned keyminlen;
-    void (*do_crypt)(u_int8_t *dat
+    void (*do_crypt)(u_int8_t *dat         /* encrypts and decrypts *INPLACE */
 		     , size_t datasize
 		     , u_int8_t *key
 		     , size_t key_size
@@ -34,7 +35,7 @@ struct encrypt_desc {
 
 typedef void (*hash_update_t)(void *, const u_char *, size_t) ;
 
-struct hash_desc {
+struct ike_integ_desc {
     struct ike_alg common;
     size_t hash_key_size;          /* in bits */
     size_t hash_ctx_size;
@@ -45,6 +46,29 @@ struct hash_desc {
     void (*hash_final)(u_int8_t *out, void *ctx);
 };
 
+/* for now, the API is identical */
+#define ike_prf_desc ike_integ_desc
+#if 0
+struct ike_prf_desc {
+    struct ike_alg common;
+    size_t hash_key_size;          /* in bits */
+    size_t hash_ctx_size;
+    size_t hash_digest_len;
+    size_t hash_integ_len;        /*truncated output len when used as an integrity algorithm in IKEV2*/
+    void (*hash_init)(void *ctx);
+    hash_update_t hash_update;
+    void (*hash_final)(u_int8_t *out, void *ctx);
+};
+#endif
+
+
+struct ike_dh_desc {
+    struct ike_alg common;
+    size_t dh_key_size;          /* in bits */
+    size_t dh_ctx_size;
+    /* XXX: not sure, g^x routine here */
+};
+
 struct alg_info_ike; /* forward reference */
 struct alg_info_esp;
 
@@ -53,11 +77,17 @@ void ike_alg_show_status(void);
 void ike_alg_show_connection(struct connection *c, const char *instance);
 
 #define IKE_EALG_FOR_EACH(a) \
-	for(a=ike_alg_base[IKE_ALG_ENCRYPT];a;a=a->algo_next)
+	for(a=ike_alg_base[IKEv2_TRANS_TYPE_ENCR];a;a=a->algo_next)
 #define IKE_HALG_FOR_EACH(a) \
-	for(a=ike_alg_base[IKE_ALG_HASH];a;a=a->algo_next)
-bool ike_alg_enc_present(int ealg);
-bool ike_alg_hash_present(int halg);
+	for(a=ike_alg_base[IKEv2_TRANS_TYPE_INTEG];a;a=a->algo_next)
+#define IKE_PRFALG_FOR_EACH(a) \
+	for(a=ike_alg_base[IKEv2_TRANS_TYPE_PRF];a;a=a->algo_next)
+#define IKE_DH_ALG_FOR_EACH(idx) for(idx = 0; idx != oakley_group_size; idx++)
+
+bool ike_alg_enc_present(int ealg, unsigned int keysize);
+bool ike_alg_integ_present(int halg, unsigned int keysize);
+bool ike_alg_prf_present(int halg);
+bool ike_alg_dh_present(int halg);
 bool ike_alg_enc_ok(int ealg, unsigned key_len, struct alg_info_ike *alg_info_ike, const char **, char *, size_t);
 bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, struct alg_info_ike *alg_info_ike);
 
@@ -68,15 +98,11 @@ int ike_alg_init(void);
  *	here with other name as a way to assure that the
  *	algorithm hook type is supported (detected at compile time)
  */
-#define IKE_ALG_ENCRYPT	0
-#define IKE_ALG_HASH	1
-#define IKE_ALG_INTEG	2
-#define IKE_ALG_MAX	3
-extern struct ike_alg *ike_alg_base[IKE_ALG_MAX+1];
+extern struct ike_alg *ike_alg_base[IKEv2_TRANS_TYPE_COUNT+1];
 int ike_alg_add(struct ike_alg *, bool quiet);
-int ike_alg_register_enc(struct encrypt_desc *e);
-int ike_alg_register_hash(struct hash_desc *a);
-struct ike_alg *ike_alg_find(unsigned algo_type
+int ike_alg_register_enc(struct ike_encr_desc *e);
+int ike_alg_register_hash(struct ike_integ_desc *a);
+struct ike_alg *ike_alg_find(enum ikev2_trans_type algo_type
 			     , unsigned algo_id
 			     , unsigned keysize);
 
@@ -84,14 +110,23 @@ struct ike_alg *ike_alg_ikev2_find(unsigned algo_type
 				   , enum ikev2_trans_type_encr algo_v2id
 				   , unsigned keysize);
 
-static __inline__ struct hash_desc *ike_alg_get_hasher(int alg)
+static __inline__ struct ike_encr_desc *ike_alg_get_encr(int alg)
 {
-	return (struct hash_desc *) ike_alg_find(IKE_ALG_HASH, alg, 0);
+    return (struct ike_encr_desc *) ike_alg_find(IKEv2_TRANS_TYPE_ENCR, alg, 0);
 }
-static __inline__ struct encrypt_desc *ike_alg_get_encrypter(int alg)
+static __inline__ struct ike_integ_desc *ike_alg_get_integ(int halg)
 {
-	return (struct encrypt_desc *) ike_alg_find(IKE_ALG_ENCRYPT, alg, 0);
+    return (struct ike_integ_desc *) ike_alg_find(IKEv2_TRANS_TYPE_INTEG, halg, 0);
 }
+static __inline__ struct ike_prf_desc *ike_alg_get_prf(int prfalg)
+{
+	return (struct ike_prf_desc *) ike_alg_find(IKEv2_TRANS_TYPE_PRF, prfalg, 0);
+}
+static __inline__ struct ike_dh_desc *ike_alg_get_dh(int alg)
+{
+	return (struct ike_dh_desc *) ike_alg_find(IKEv2_TRANS_TYPE_DH, alg, 0);
+}
+
 const struct oakley_group_desc * ike_alg_pfsgroup(struct connection *c, lset_t policy);
 
 enum alg_desired_maximum {

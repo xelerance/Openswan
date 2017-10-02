@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     passert(ike_alg_enc_present(IKEv2_ENCR_AES_CBC, 128));
     passert(ike_alg_enc_present(IKEv2_ENCR_AES_CBC, 256));
 
-    aes = ike_alg_get_encrypter(IKEv2_ENCR_AES_CBC);
+    aes = ike_alg_get_encr(IKEv2_ENCR_AES_CBC);
 
     /* initialize the sample */
     for(i=0; i<sizeof(inbuf); i++) {
