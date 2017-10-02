@@ -65,6 +65,8 @@ struct pcr_skeyid_q {
 
   /* inputs */
   u_int16_t     oakley_group;
+
+  /* XXX should be switched for IKEv2 values */
   oakley_auth_t auth;
   oakley_hash_t integ_hash;
   oakley_hash_t prf_hash;
@@ -80,7 +82,7 @@ struct pcr_skeyid_q {
   wire_chunk_t secret;
 #ifdef HAVE_LIBNSS
   /* u_int16_t encrypt_algo; */
-  const struct encrypt_desc *encrypter;
+  const struct ike_encr_desc *encrypter;
   wire_chunk_t   pubk;
 #endif
 };

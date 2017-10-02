@@ -768,7 +768,7 @@ ikev2_parse_parent_sa_body(
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
     ta.enckeylen = itl->encr_keylens[itl->encr_i] > 0 ?
 			itl->encr_keylens[itl->encr_i] : 0;
-    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
+    ta.encrypter = (struct ike_encr_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_ENCR
 							     , ta.encrypt
 							     , ta.enckeylen);
     passert(ta.encrypter != NULL);
@@ -776,11 +776,11 @@ ikev2_parse_parent_sa_body(
 	ta.enckeylen = ta.encrypter->keydeflen;
 
     ta.integ_hash  = itl->integ_transforms[itl->integ_i];
-    ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
+    ta.integ_hasher= (struct ike_integ_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_INTEG,ta.integ_hash, 0);
     passert(ta.integ_hasher != NULL);
 
     ta.prf_hash    = itl->prf_transforms[itl->prf_i];
-    ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
+    ta.prf_hasher  = (struct ike_prf_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_PRF, ta.prf_hash, 0);
     passert(ta.prf_hasher != NULL);
 
     ta.groupnum    = itl->dh_transforms[itl->dh_i];
@@ -1071,7 +1071,7 @@ ikev2_parse_child_sa_body(
 
     /* this is REALLY not correct, because this is not an IKE algorithm */
     /* XXX maybe we can leave this to ikev2 child key derivation */
-    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
+    ta.encrypter = (struct ike_encr_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_ENCR
 							     , ta.encrypt
 							     , ta.enckeylen);
     if (ta.encrypter)

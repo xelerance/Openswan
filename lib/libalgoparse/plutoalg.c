@@ -484,21 +484,21 @@ alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info)
 	int cnt;
 	int eklen, aklen;
 	const char *sep="";
-	struct encrypt_desc *enc_desc;
-	struct hash_desc *hash_desc;
+	struct ike_encr_desc *enc_desc;
+	struct ike_integ_desc *hash_desc;
 
 
 	ALG_INFO_IKE_FOREACH(alg_info, ike_info, cnt) {
-	    if (ike_alg_enc_present(ike_info->ike_ealg)
-		&& (ike_alg_hash_present(ike_info->ike_halg))
-		&& (ike_alg_hash_present(ike_info->ike_prfalg))
+	    if (ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen)
+		&& (ike_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen))
+		&& (ike_alg_prf_present(ike_info->ike_prfalg))
 		&& (lookup_group(ike_info->ike_modp))) {
 
                 passert(ike_info != NULL);
 
-		enc_desc=ike_alg_get_encrypter(ike_info->ike_ealg);
+		enc_desc=ike_alg_get_encr(ike_info->ike_ealg);
 		passert(enc_desc != NULL);
-		hash_desc=ike_alg_get_hasher(ike_info->ike_halg);
+		hash_desc=ike_alg_get_integ(ike_info->ike_halg);
 		passert(hash_desc != NULL);
 
 		eklen=ike_info->ike_eklen;

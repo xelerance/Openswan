@@ -66,9 +66,7 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 
 	passert(ipi->attrs.transattrs.ei != NULL);
 	memset(&childsacalc, 0, sizeof(childsacalc));
-	childsacalc.prf_hasher = (struct hash_desc *)
-		ike_alg_ikev2_find(IKE_ALG_HASH
-				   , IKEv2_PRF_HMAC_SHA1, 0);
+	childsacalc.prf_hasher = ike_alg_get_prf(IKEv2_PRF_HMAC_SHA1);
 
 	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
 	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);

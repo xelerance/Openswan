@@ -48,29 +48,56 @@
  * 	- registration
  * 	- lookup
  *=========================================================*/
-struct ike_alg *ike_alg_base[IKE_ALG_MAX+1] = {NULL, NULL};
+struct ike_alg *ike_alg_base[IKEv2_TRANS_TYPE_COUNT+1] = {NULL, NULL};
+
 /*	check if IKE encrypt algo is present */
-bool ike_alg_enc_present(int ealg)
+bool ike_alg_enc_present(int ealg, unsigned keysize)
 {
-	struct encrypt_desc *enc_desc = ike_alg_get_encrypter(ealg);
-	return enc_desc ? enc_desc->enc_blocksize : 0;
+	struct ike_encr_desc *encr_desc = ike_alg_get_encr(ealg);
+
+        if(encr_desc == NULL) return FALSE;
+
+        if(keysize != 0 &&
+           (keysize < encr_desc->keyminlen ||
+            keysize > encr_desc->keymaxlen)) {
+            return FALSE;
+        }
+
+        return TRUE;
 }
 
 /*	check if IKE hash algo is present */
-bool ike_alg_hash_present(int halg)
+bool ike_alg_integ_present(int halg, unsigned int keysize)
 {
-	struct hash_desc *hash_desc = ike_alg_get_hasher(halg);
-	return hash_desc ? hash_desc->hash_digest_len : 0;
+	struct ike_integ_desc *integ_desc = ike_alg_get_integ(halg);
+	return integ_desc ? integ_desc->hash_digest_len : 0;
 }
 
+/*	check if IKE PRF algo is present */
+bool ike_alg_prf_present(int prfalg)
+{
+	struct ike_prf_desc *prf_desc = ike_alg_get_prf(prfalg);
+        if(prf_desc != NULL) return TRUE;
+        return FALSE;
+}
+
+/*	check if IKE DH group algo is present */
+bool ike_alg_group_present(int modpid)
+{
+	struct ike_dh_desc *modp_desc = ike_alg_get_dh(modpid);
+        if(modp_desc) return TRUE;
+        return FALSE;
+}
+
+// DEPRECATE?
 bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		struct alg_info_ike *alg_info_ike __attribute__((unused)),
 		const char **errp, char *ugh_buf, size_t ugh_buf_len)
 {
 	int ret=TRUE;
-	struct encrypt_desc *enc_desc;
+	struct ike_encr_desc *enc_desc;
 
-	enc_desc = ike_alg_get_encrypter(ealg);
+	enc_desc = ike_alg_get_encr(ealg);
 	if (!enc_desc) {
 		/* failure: encrypt algo must be present */
 		snprintf(ugh_buf, ugh_buf_len, "encrypt algo not found");
@@ -110,6 +137,7 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		*errp = ugh_buf;
 	return ret;
 }
+
 /*
  * ML: make F_STRICT logic consider enc,hash/auth,modp algorithms
  */
@@ -159,7 +187,7 @@ ike_alg_find(unsigned algo_type, unsigned algo_id, unsigned keysize __attribute_
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {
-		if (e->algo_id==algo_id)
+		if (e->algo_v2id==algo_id)
 			break;
 	}
 	return e;
@@ -186,9 +214,9 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 {
 	int ret=0;
 	const char *ugh="No error";
-	if (a->algo_type > IKE_ALG_MAX)
+	if (a->algo_type > IKEv2_TRANS_TYPE_COUNT)
 	{
-		ugh="Invalid algo_type is larger then IKE_ALG_MAX";
+		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_MAX";
 		return_on(ret,-EINVAL);
 	}
 	if (ike_alg_find(a->algo_type, a->algo_id, 0))
@@ -211,12 +239,12 @@ return_out:
  * 	Validate and register IKE hash algorithm object
  */
 int
-ike_alg_register_hash(struct hash_desc *hash_desc)
+ike_alg_register_hash(struct ike_integ_desc *hash_desc)
 {
 	const char *alg_name = "<none>";
 	int ret=0;
 
-	if (hash_desc->common.algo_id > OAKLEY_HASH_MAX) {
+	if (hash_desc->common.algo_id > IKEv2_AUTH_INVALID) {
 		plog ("ike_alg_register_hash(): hash alg=%d < max=%d",
 				hash_desc->common.algo_id, OAKLEY_HASH_MAX);
 		return_on(ret,-EINVAL);
@@ -261,18 +289,16 @@ return_out:
  * 	Validate and register IKE encryption algorithm object
  */
 int
-ike_alg_register_enc(struct encrypt_desc *enc_desc)
+ike_alg_register_enc(struct ike_encr_desc *enc_desc)
 {
 	const char *alg_name;
 	int ret=0;
 
-#if OAKLEY_ENCRYPT_MAX < 255
-	if (enc_desc->common.algo_id > OAKLEY_ENCRYPT_MAX) {
+	if (enc_desc->common.algo_id > IKEv2_ENCR_INVALID) {
 		plog ("ike_alg_register_enc(): enc alg=%d < max=%d\n",
-				enc_desc->common.algo_id, OAKLEY_ENCRYPT_MAX);
+				enc_desc->common.algo_id, IKEv2_ENCR_INVALID);
 		return_on(ret, -EINVAL);
 	}
-#endif
 
 	/* XXX struct algo_aes_ccm_8 up to algo_aes_gcm_16, where
 	 * "commin.algo_id" is not defined need this officename fallback.
@@ -289,10 +315,8 @@ ike_alg_register_enc(struct encrypt_desc *enc_desc)
 			alg_name="<NULL>";
 		}
 	}
-#if OAKLEY_ENCRYPT_MAX < 255
-return_out:
-#endif
 
+return_out:
 	if (ret==0) {
             ret=ike_alg_add((struct ike_alg *)enc_desc, FALSE);
         }

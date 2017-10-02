@@ -284,14 +284,14 @@ skeyid_preshared(const chunk_t pss
                  , const chunk_t ni
                  , const chunk_t nr
                  , const chunk_t shared_chunk
-                 , const struct hash_desc *hasher
+                 , const struct ike_prf_desc *hasher
                  , chunk_t *skeyid_chunk)
 #else
 static void
 skeyid_preshared(const chunk_t pss
 		 , const chunk_t ni
 		 , const chunk_t nr
-		 , const struct hash_desc *hasher
+		 , const struct ike_prf_desc *hasher
 		 , chunk_t *skeyid)
 #endif
 {
@@ -404,7 +404,7 @@ static void
 skeyid_digisig(const chunk_t ni
 	       , const chunk_t nr
 	       , const chunk_t shared_chunk
-	       , const struct hash_desc *hasher
+	       , const struct ike_prf_desc *hasher
 	       , chunk_t *skeyid_chunk)
 {
     struct hmac_ctx ctx;
@@ -503,8 +503,8 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     )
 {
     oakley_auth_t auth = skq->auth;
-    oakley_hash_t hash = skq->prf_hash;
-    const struct hash_desc *hasher = crypto_get_hasher(hash);
+    oakley_hash_t hash = skq->prf_hash;       /* v2 to v1 hash convert? */
+    const struct ike_prf_desc *hasher = crypto_get_hasher(hash);
     chunk_t pss;
     chunk_t ni;
     chunk_t nr;
@@ -514,8 +514,7 @@ calc_skeyids_iv(struct pcr_skeyid_q *skq
     chunk_t rcookie;
 #ifdef HAVE_LIBNSS
     PK11SymKey *shared, *skeyid, *skeyid_d, *skeyid_a, *skeyid_e, *enc_key;
-    /* const struct encrypt_desc *encrypter = crypto_get_encrypter(skq->encrypt_algo);*/
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
 #endif
 
     /* this doesn't take any memory */
@@ -1248,7 +1247,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct hash_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
+    const struct ike_prf_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_PRF, skq->prf_hash, 0);
     passert(hasher);
 
 
@@ -1269,7 +1268,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
     passert(skeyseed_k);
 
 #else
-    vpss.prf_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, skq->prf_hash, 0);
+    vpss.prf_hasher = ike_alg_get_prf(skq->prf_hash);
     passert(vpss.prf_hasher);
 
     /* generate SKEYSEED from key=(Ni|Nr), hash of shared */
@@ -1312,7 +1311,7 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 	/* SK_p needs PRF hasher*2 key bits */
 	/* SK_e needs keysize*2 key bits */
 	/* SK_a needs hash's key bits size */
-	const struct hash_desc *integ_hasher = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG, skq->integ_hash, 0);
+	const struct ike_integ_desc *integ_hasher = ike_alg_get_integ(skq->integ_hash);
 #ifdef HAVE_LIBNSS
        int skd_bytes = hasher->hash_key_size;
        int skp_bytes = hasher->hash_key_size;

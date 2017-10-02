@@ -51,6 +51,8 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
+#include "pluto/ike_alg.h"
+#include "pluto/plutoalg.h"
 #include "packet.h"
 #include "keys.h"
 #include "demux.h"	/* needs packet.h */
@@ -73,9 +75,7 @@
 #include "md5.h"
 #include "pluto/crypto.h" /* requires sha1.h and md5.h */
 
-#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
-#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "ikev1.h"
 #include "ikev1_continuations.h"
