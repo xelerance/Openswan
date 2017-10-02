@@ -5,6 +5,11 @@
 #define DEBUG 1
 #include <stdlib.h>
 
+#ifndef TESTKEY
+#define TESTKEY "thisthisthisthis";
+#define TESTKEYLEN 16
+#endif
+
 #include "constants.h"
 #include "hexdump.c"
 #include "oswalloc.h"
@@ -27,7 +32,7 @@ int main(int argc, char *argv[])
     const struct ike_encr_desc *aes;
     char  inbuf[256];
     char  outbuf[256];
-    char  keybuf[16] = "thisthisthisthis";
+    char  keybuf[TESTKEYLEN] = TESTKEY;
     char  ivbuf[AES_CBC_BLOCK_SIZE];
 
     progname = argv[0];
