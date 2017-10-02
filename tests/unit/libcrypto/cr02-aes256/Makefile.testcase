@@ -1,0 +1,3 @@
+TESTNAME=cr02-aes256
+TESTSRC=aes-register-test.c
+
