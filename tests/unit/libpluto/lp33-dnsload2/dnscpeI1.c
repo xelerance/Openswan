@@ -3,6 +3,7 @@
 #include "seam_x509.c"
 #include "seam_whack.c"
 #include "seam_host_parker.c"
+#include "seam_makealg.c"
 #define TESTNAME "dnscpeI1"
 
 static void init_local_interface(void)
