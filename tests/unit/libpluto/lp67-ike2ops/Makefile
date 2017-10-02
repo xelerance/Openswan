@@ -12,7 +12,6 @@
 # for more details.
 
 OPENSWANSRCDIR?=$(shell cd ../../../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto/lp66-db2ops
 include $(OPENSWANSRCDIR)/Makefile.inc
 
 EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE}
@@ -30,13 +29,13 @@ EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
 EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
 
-TESTNAME=lp67-ike2ops
+include Makefile.testcase
 
 
-${TESTNAME} programs: ike2opstest.c ${LIBPLUTO}
+${TESTNAME} programs: ${TESTSRC} ${LIBPLUTO}
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
-	${CC} -o ${TESTNAME} ${EXTRAFLAGS} ike2opstest.c ${EXTRALIBS}
+	${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTSRC} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"       >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
