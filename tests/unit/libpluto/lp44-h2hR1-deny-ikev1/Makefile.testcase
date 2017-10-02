@@ -6,8 +6,8 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=h2hR1-deny-ikev1
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
 

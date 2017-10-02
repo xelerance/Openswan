@@ -20,7 +20,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/virtual.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "constants.h"
+#include "oswlog.h"
 #include "oswalloc.h"
 #include "pluto/defs.h"
 #include "state.h"

@@ -76,7 +76,7 @@ UNITTESTS=lp02-parentI1 \
 	lp66-db2ops \
 	lp67-ike2ops
 
-clean check pcapupdate:
+clean check pcapupdate programs:
 	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:

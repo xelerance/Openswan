@@ -1,5 +1,6 @@
 #include "../lp07-orient/orienttest_head.c"
 #include "seam_host_moon.c"
+#include "oswconf.h"
 
 #define TESTNAME "orientmoon"
 
