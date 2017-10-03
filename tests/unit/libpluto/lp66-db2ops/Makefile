@@ -33,7 +33,7 @@ TESTNAME=lp66-db2ops
 ${TESTNAME} programs: db2opstest.c ${LIBPLUTO}
 	@mkdir -p OUTPUT
 	@echo CC ${TESTNAME}.c
-	${CC} -o ${TESTNAME} ${EXTRAFLAGS} db2opstest.c ${EXTRALIBS}
+	@${CC} -o ${TESTNAME} ${EXTRAFLAGS} db2opstest.c ${EXTRALIBS}
 	@echo "file ../${TESTNAME}"       >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 

@@ -108,7 +108,7 @@ DISTSRC = \
 	ikev2_alg.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
-	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
+	${EXTRA_CRYPTO_SRCS} \
 	log.c \
 	plutomain.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
@@ -154,7 +154,7 @@ OBJSPLUTO += ikev2_derived_keys.o ikev2_prfplus.o
 OBJSPLUTO += spdb_struct.o spdb_v1_struct.o security_selinux.o
 OBJSPLUTO += vendor.o nat_traversal.o virtual.o
 OBJSPLUTO += ike_alginit.o ikev2_rsa.o ikev2_psk.o ikev2_x509.o
-OBJSPLUTO += ${EXTRA_CRYPTO_OBJS} ike_alg_sha2.o
+OBJSPLUTO += ${EXTRA_CRYPTO_OBJS}
 OBJSPLUTO += ike_alg_status.o
 OBJSPLUTO += ${XAUTH_OBJS}
 OBJSPLUTO += ${AGGRESSIVE_OBJS} ${CRYPTO_OBJS}
