@@ -16,7 +16,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-UNITTESTS=cr01-aes128 cr02-aes256
+UNITTESTS=cr01-aes128 cr02-aes256 cr03-cryptoinit cr04-sha2
 
 clean check:
 	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
