@@ -1,2 +1,5 @@
-./cr01-aes128 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
-./cr01-aes128 leak detective found no leaks
+./cr03-cryptoinit ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./cr03-cryptoinit ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./cr03-cryptoinit ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./cr03-cryptoinit leak: 2 * hasher name, item size: 16
+./cr03-cryptoinit leak detective found 2 leaks, total size 16
