@@ -48,7 +48,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
 endif
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
 EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}

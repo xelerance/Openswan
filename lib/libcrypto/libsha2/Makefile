@@ -4,7 +4,7 @@ srcdir?=./
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
-OBJS := hmac_sha2.o sha2.o
+OBJS := hmac_sha2.o sha2.o ike_alg_sha2.o
 
 ONEFILE=sha2.c
 LIBRARY=crypto/libsha2
