@@ -23,9 +23,7 @@
 
 #include "sha1.h"
 #include "md5.h"
-#ifdef USE_SHA2
 #include "sha2.h"
-#endif
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -89,10 +87,8 @@ void crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc
 union hash_ctx {
     MD5_CTX ctx_md5;
     SHA1_CTX ctx_sha1;
-#ifdef USE_SHA2
     sha256_context ctx_sha256;
     sha512_context ctx_sha512;
-#endif
 };
 
 
@@ -107,10 +103,8 @@ struct hmac_ctx {
     size_t hmac_digest_len;	/* copy of h->hash_digest_len */
     union hash_ctx hash_ctx;	/* ctx for hash function */
     u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
-#ifdef USE_SHA2
     sha256_context ctx_sha256;
     sha512_context ctx_sha512;
-#endif
 #ifdef HAVE_LIBNSS
     PK11SymKey *ikey, *okey;
     PK11Context* ctx_nss;
