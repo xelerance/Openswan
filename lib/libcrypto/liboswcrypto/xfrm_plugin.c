@@ -219,7 +219,7 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_MAX";
 		return_on(ret,-EINVAL);
 	}
-	if (ike_alg_find(a->algo_type, a->algo_id, 0))
+	if (ike_alg_find(a->algo_type, a->algo_v2id, 0))
 	{
 		ugh="Algorithm type already exists";
 		return_on(ret,-EEXIST);
