@@ -69,6 +69,7 @@ build_ke.o: build_ke.c \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h pluto_crypt.h \
  ../../include/osw_select.h \
  ../../include/oswlog.h \
@@ -76,9 +77,9 @@ build_ke.o: build_ke.c \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 connections.o: connections.c \
  ../../include/openswan.h \
@@ -118,13 +119,13 @@ connections.o: connections.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ipsec_doi.h ikev1_quick.h kernel.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
  ../../include/whack.h \
  ../../include/alg_info.h \
- ../../include/pluto/spdb.h \
- ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/pluto/spdb.h plutocerts.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h xauth.h \
@@ -170,13 +171,13 @@ crypt_dh.o: crypt_dh.c \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h pluto_crypt.h \
  ../../include/osw_select.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
- ../../include/pluto/ike_alg.h \
  ../../include/secrets.h \
  ../../include/id.h \
  ../../include/x509.h \
@@ -187,9 +188,9 @@ crypt_dh.o: crypt_dh.c \
  ../../include/secrets.h \
  ../../include/pgp.h ikev2_prfplus.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 crypt_ke.o: crypt_ke.c \
  ../../include/openswan.h \
@@ -218,6 +219,7 @@ crypt_ke.o: crypt_ke.c \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h pluto_crypt.h \
  ../../include/osw_select.h \
  ../../include/pluto/crypto.h \
@@ -226,9 +228,9 @@ crypt_ke.o: crypt_ke.c \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 crypt_start_dh.o: crypt_start_dh.c \
  ../../include/openswan.h \
@@ -257,13 +259,13 @@ crypt_start_dh.o: crypt_start_dh.c \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h pluto_crypt.h \
  ../../include/osw_select.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
- ../../include/pluto/ike_alg.h \
  ../../include/secrets.h \
  ../../include/id.h \
  ../../include/x509.h \
@@ -296,6 +298,7 @@ crypt_utils.o: crypt_utils.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/pluto/rnd.h pluto_crypt.h \
  ../../include/osw_select.h \
@@ -319,6 +322,7 @@ crypto.o: crypto.c ../../include/openswan.h \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
@@ -328,12 +332,11 @@ crypto.o: crypto.c ../../include/openswan.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/alg_info.h \
- ../../include/pluto/ike_alg.h tpm/tpm.h \
+ ../../include/alg_info.h tpm/tpm.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h
 demux.o: demux.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -362,6 +365,7 @@ demux.o: demux.c ../../include/openswan.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -369,7 +373,6 @@ demux.o: demux.c ../../include/openswan.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -410,7 +413,8 @@ dnskey.o: dnskey.c ../../include/openswan.h \
  ../../include/secrets.h dnskey.h \
  ../../include/packet.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ../../include/oswtime.h \
  ../../include/pluto/server.h
 dpd.o: dpd.c ../../include/openswan.h \
@@ -430,6 +434,7 @@ dpd.o: dpd.c ../../include/openswan.h \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/x509.h \
  ../../include/pgp.h \
  ../../include/certs.h \
@@ -614,37 +619,20 @@ hostpair.o: hostpair.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ipsec_doi.h ikev1_quick.h kernel.h \
  ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
  ../../include/whack.h \
  ../../include/alg_info.h \
- ../../include/pluto/spdb.h \
- ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/pluto/spdb.h plutocerts.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
-ike_alg_sha2.o: ike_alg_sha2.c \
- ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/pluto/defs.h \
- ../../include/oswalloc.h \
- ../../include/constants.h \
- ../../include/pluto/log.h \
- ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/sha2.h \
- ../../include/alg_info.h \
- ../../include/pluto/ike_alg.h
 ike_alg_status.o: ike_alg_status.c \
  ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
@@ -667,6 +655,7 @@ ike_alg_status.o: ike_alg_status.c \
  ../../include/algoparse.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/packet.h \
  ../../include/pluto/log.h \
@@ -675,7 +664,6 @@ ike_alg_status.o: ike_alg_status.c \
  ../../include/whack.h \
  ../../include/pluto/spdb.h \
  ../../include/alg_info.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/db_ops.h \
  ../../include/pluto/spdb.h \
  ../../include/pluto/connections.h \
@@ -740,6 +728,7 @@ ikev1.o: ikev1.c ../../include/openswan.h \
  ../../include/alg_info.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -747,7 +736,6 @@ ikev1.o: ikev1.c ../../include/openswan.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -781,6 +769,7 @@ ikev1_aggr.o: ikev1_aggr.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -814,7 +803,6 @@ ikev1_aggr.o: ikev1_aggr.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h pluto_crypt.h \
@@ -844,6 +832,7 @@ ikev1_crypto.o: ikev1_crypto.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -879,11 +868,10 @@ ikev1_crypto.o: ikev1_crypto.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h ikev1.h \
  ikev1_continuations.h ike_continuations.h
 ikev1_nss.o: ikev1_nss.c \
@@ -904,6 +892,7 @@ ikev1_nss.o: ikev1_nss.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -939,11 +928,10 @@ ikev1_nss.o: ikev1_nss.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h ikev1.h \
  ikev1_continuations.h ike_continuations.h
 ikev1_quick.o: ikev1_quick.c \
@@ -962,6 +950,7 @@ ikev1_quick.o: ikev1_quick.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -996,7 +985,6 @@ ikev1_quick.o: ikev1_quick.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
@@ -1037,6 +1025,7 @@ ikev2.o: ikev2.c ../../include/openswan.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -1044,7 +1033,6 @@ ikev2.o: ikev2.c ../../include/openswan.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -1134,6 +1122,7 @@ ikev2_child.o: ikev2_child.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -1141,7 +1130,6 @@ ikev2_child.o: ikev2_child.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -1187,6 +1175,7 @@ ikev2_derived_keys.o: ikev2_derived_keys.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -1197,8 +1186,7 @@ ikev2_derived_keys.o: ikev2_derived_keys.c \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev2.h \
- ikev2_prfplus.h ../../include/pluto/ike_alg.h \
- ../../include/alg_info.h \
+ ikev2_prfplus.h ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h
@@ -1218,6 +1206,7 @@ ikev2_notify.o: ikev2_notify.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/pluto/connections.h \
  ../../include/x509.h \
@@ -1244,7 +1233,6 @@ ikev2_notify.o: ikev2_notify.c \
  ../../include/pluto/quirks.h \
  ../../include/secrets.h \
  ../../include/pluto/x509lists.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
@@ -1274,6 +1262,7 @@ ikev2_parent.o: ikev2_parent.c \
  ../../include/constants.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/pluto/connections.h \
  ../../include/x509.h \
@@ -1300,7 +1289,6 @@ ikev2_parent.o: ikev2_parent.c \
  ../../include/pluto/quirks.h \
  ../../include/secrets.h \
  ../../include/pluto/x509lists.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
@@ -1346,13 +1334,13 @@ ikev2_prfplus.o: ikev2_prfplus.c \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h pluto_crypt.h \
  ../../include/osw_select.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
- ../../include/pluto/ike_alg.h \
  ../../include/secrets.h \
  ../../include/id.h \
  ../../include/x509.h \
@@ -1391,6 +1379,7 @@ ikev2_psk.o: ikev2_psk.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -1398,7 +1387,6 @@ ikev2_psk.o: ikev2_psk.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -1436,6 +1424,7 @@ ikev2_rsa.o: ikev2_rsa.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -1443,7 +1432,6 @@ ikev2_rsa.o: ikev2_rsa.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -1453,9 +1441,9 @@ ikev2_rsa.o: ikev2_rsa.c \
  ../../include/pluto/keys.h \
  ../../include/secrets.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 ikev2_x509.o: ikev2_x509.c \
  ../../include/openswan.h \
@@ -1492,13 +1480,13 @@ ikev2_x509.o: ikev2_x509.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/md5.h \
  ../../include/sha1.h \
  ../../include/pluto/crypto.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h ikev2.h \
  ../../include/pluto/vendor.h \
  ../../include/pluto/dpd.h \
@@ -1542,14 +1530,14 @@ initiate.o: initiate.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ipsec_doi.h ikev1_quick.h kernel.h \
  ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
  ../../include/whack.h \
  ../../include/alg_info.h \
- ../../include/pluto/spdb.h \
- ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/pluto/spdb.h plutocerts.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h xauth.h \
@@ -1576,6 +1564,7 @@ ipsec_doi.o: ipsec_doi.c \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/x509.h \
  ../../include/pgp.h \
  ../../include/certs.h \
@@ -1589,6 +1578,7 @@ ipsec_doi.o: ipsec_doi.c \
  ../../include/pluto/log.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
+ ../../include/pluto/plutoalg.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h \
@@ -1608,12 +1598,10 @@ ipsec_doi.o: ipsec_doi.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/plutoalg.h pluto_crypt.h \
- ../../include/osw_select.h ikev1.h \
- ikev1_continuations.h ike_continuations.h ikev2.h xauth.h \
+ pluto_crypt.h ../../include/osw_select.h \
+ ikev1.h ikev1_continuations.h ike_continuations.h ikev2.h xauth.h \
  ../../include/pluto/vendor.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
@@ -1649,7 +1637,8 @@ kernel.o: kernel.c ../../include/openswan.h \
  ../../include/pluto/defs.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ../../include/oswtime.h kernel.h \
  kernel_netlink.h kernel_pfkey.h kernel_noklips.h kernel_bsdkame.h \
  ../../include/packet.h \
@@ -1698,7 +1687,8 @@ kernel_klips.o: kernel_klips.c \
  ../../include/pluto/defs.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h kernel.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h kernel.h \
  kernel_pfkey.h timer.h \
  ../../include/oswtime.h \
  ../../include/pluto/log.h \
@@ -1744,7 +1734,8 @@ kernel_mast.o: kernel_mast.c \
  ../../include/pluto/defs.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h kernel.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h kernel.h \
  kernel_pfkey.h timer.h \
  ../../include/oswtime.h \
  ../../include/pluto/log.h \
@@ -1782,6 +1773,7 @@ kernel_netlink.o: kernel_netlink.c \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/pluto/connections.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -1806,8 +1798,7 @@ kernel_netlink.o: kernel_netlink.c \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../include/pluto/ike_alg.h
+ ../../linux/include/klips-crypto/aes.h
 kernel_noklips.o: kernel_noklips.c \
  ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
@@ -1871,6 +1862,7 @@ keys.o: keys.c ../../include/openswan.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/lex.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h adns.h dnskey.h \
@@ -1884,9 +1876,9 @@ keys.o: keys.c ../../include/openswan.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/x509lists.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
@@ -1922,6 +1914,7 @@ labelled_ipsec.o: labelled_ipsec.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
@@ -1938,7 +1931,6 @@ labelled_ipsec.o: labelled_ipsec.c \
  ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/db_ops.h \
  ../../include/pluto/spdb.h \
  ../../include/pluto/nat_traversal.h \
@@ -1966,6 +1958,7 @@ log.o: log.c ../../include/openswan.h \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/x509.h \
  ../../include/pgp.h \
  ../../include/certs.h \
@@ -1982,7 +1975,6 @@ log.o: log.c ../../include/openswan.h \
  ../../include/oswtime.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/plutoalg.h \
  ../../include/pluto/virtual.h \
  ../../include/pluto/db_ops.h \
@@ -2017,6 +2009,7 @@ msgdigest.o: msgdigest.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -2024,7 +2017,6 @@ msgdigest.o: msgdigest.c \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -2085,6 +2077,7 @@ nat_traversal.o: nat_traversal.c \
  ../../include/pluto/server.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -2101,8 +2094,7 @@ nat_traversal.o: nat_traversal.c \
  ../../include/pluto/demux.h \
  ../../include/pluto/quirks.h kernel.h \
  ../../include/whack.h timer.h \
- ../../include/oswtime.h \
- ../../include/pluto/ike_alg.h cookie.h \
+ ../../include/oswtime.h cookie.h \
  ../../include/sha1.h \
  ../../include/md5.h \
  ../../include/pluto/crypto.h \
@@ -2147,6 +2139,7 @@ pending.o: pending.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -2176,6 +2169,7 @@ pluto_crypt.o: pluto_crypt.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/pluto/rnd.h pluto_crypt.h \
  ../../include/osw_select.h \
@@ -2186,9 +2180,9 @@ pluto_crypt.o: pluto_crypt.c \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 plutomain.o: plutomain.c \
  ../../include/openswan.h \
@@ -2233,7 +2227,8 @@ plutomain.o: plutomain.c \
  ../../include/secrets.h adns.h dnskey.h \
  ../../include/pluto/rnd.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h ipsec_doi.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h ipsec_doi.h \
  ikev1_quick.h ../../include/pluto/ocsp.h \
  fetch.h timer.h ../../include/oswtime.h \
  ../../include/sha1.h \
@@ -2248,9 +2243,9 @@ plutomain.o: plutomain.c \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/oswcrypto.h \
- ../../linux/include/klips-crypto/aes.h \
- ../../linux/include/klips-crypto/aes_cbc.h \
- ../../linux/include/klips-crypto/aes.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
  ../../include/klips-crypto/des.h
 primegen.o: primegen.c \
  ../../include/openswan.h \
@@ -2301,7 +2296,8 @@ rcv_info.o: rcv_info.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h ipsec_doi.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h ipsec_doi.h \
  ikev1_quick.h kernel.h rcv_whack.h \
  ../../include/pluto/log.h \
  ../../include/pluto/keys.h \
@@ -2345,7 +2341,8 @@ rcv_whack.o: rcv_whack.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h ipsec_doi.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h ipsec_doi.h \
  ikev1_quick.h kernel.h rcv_whack.h \
  ../../include/pluto/whackfile.h \
  ../../include/pluto/log.h \
@@ -2355,8 +2352,7 @@ rcv_whack.o: rcv_whack.c \
  ../../include/oswtime.h hostpair.h \
  ../../include/sha2.h \
  ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h
+ ../../include/openswan/pfkeyv2.h
 security_selinux.o: security_selinux.c
 server.o: server.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
@@ -2374,6 +2370,7 @@ server.o: server.c ../../include/openswan.h \
  ../../include/id.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/x509.h \
  ../../include/pgp.h \
  ../../include/certs.h \
@@ -2455,6 +2452,7 @@ spdb_struct.o: spdb_struct.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
@@ -2471,7 +2469,6 @@ spdb_struct.o: spdb_struct.c \
  ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/db_ops.h \
  ../../include/pluto/spdb.h \
  ../../include/pluto/nat_traversal.h \
@@ -2510,6 +2507,7 @@ spdb_v1_struct.o: spdb_v1_struct.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
@@ -2526,7 +2524,6 @@ spdb_v1_struct.o: spdb_v1_struct.c \
  ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/db_ops.h \
  ../../include/pluto/spdb.h \
  ../../include/pluto/db2_ops.h \
@@ -2569,6 +2566,7 @@ spdb_v2_struct.o: spdb_v2_struct.c \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
@@ -2588,7 +2586,6 @@ spdb_v2_struct.o: spdb_v2_struct.c \
  ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/pluto/ike_alg.h \
  ../../include/pluto/db2_ops.h \
  ../../include/pluto/spdb.h ikev2.h \
  ../../include/pluto/nat_traversal.h \
@@ -2620,7 +2617,8 @@ state.o: state.c ../../include/openswan.h \
  ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h kernel.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h kernel.h \
  ../../include/pluto/log.h \
  ../../include/packet.h \
  ../../include/pluto/keys.h \
@@ -2675,7 +2673,8 @@ stubs.o: stubs.c ../../include/openswan.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ../../include/oswtime.h ipsec_doi.h \
  ikev1_quick.h kernel.h \
  ../../include/pluto/log.h \
@@ -2684,7 +2683,6 @@ stubs.o: stubs.c ../../include/openswan.h \
  ../../include/whack.h \
  ../../include/alg_info.h \
  ../../include/pluto/spdb.h \
- ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h xauth.h \
@@ -2730,7 +2728,8 @@ sysdep_linux.o: sysdep_linux.c \
  ../../include/pluto/defs.h \
  ../../include/pluto/log.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ../../include/oswtime.h kernel.h \
  kernel_netlink.h kernel_pfkey.h kernel_noklips.h \
  ../../include/packet.h \
@@ -2777,14 +2776,14 @@ terminate.o: terminate.c \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/state.h \
- ../../include/pluto/quirks.h timer.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h timer.h \
  ipsec_doi.h ikev1_quick.h kernel.h \
  ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
  ../../include/whack.h \
  ../../include/alg_info.h \
- ../../include/pluto/spdb.h \
- ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/pluto/spdb.h plutocerts.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/pluto/plutoalg.h xauth.h \
@@ -2819,6 +2818,7 @@ timer.o: timer.c ../../include/openswan.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/packet.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
@@ -2870,6 +2870,7 @@ vendor.o: vendor.c ../../include/openswan.h \
  ../../include/pluto/quirks.h kernel.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 virtual.o: virtual.c ../../include/openswan.h \
@@ -3000,6 +3001,7 @@ x509keys.o: x509keys.c \
  ../../include/pluto/log.h hostpair.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/md2.h \
  ../../include/md5.h \
  ../../include/sha1.h \
@@ -3025,6 +3027,7 @@ xauth.o: xauth.c ../../include/openswan.h \
  ../../include/pluto/defs.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/id.h \
  ../../include/x509.h \
  ../../include/pgp.h \
@@ -3053,6 +3056,5 @@ xauth.o: xauth.c ../../include/openswan.h \
  ../../include/pluto/crypto.h \
  ../../include/sha2.h \
  ../../include/mpzfuncs.h \
- ../../include/algoparse.h \
- ../../include/pluto/ike_alg.h xauth.h \
+ ../../include/algoparse.h xauth.h \
  ../../include/pluto/virtual.h
