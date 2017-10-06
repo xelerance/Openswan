@@ -31,6 +31,7 @@
 #include "pluto/db2_ops.h"
 #include "alg_info.h"
 #include "oswlog.h"
+#include "pluto/ike_alg.h"
 
 #include <assert.h>
 
@@ -50,6 +51,25 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
 
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
+
+        if(!ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen)
+           || !ike_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen)
+           || !ike_alg_prf_present(ike_info->ike_prfalg)
+           || !ike_alg_group_present(ike_info->ike_modp)) {
+
+            char missing_alg_buf[64];
+            char *ptr = missing_alg_buf;
+            int ret = -1;
+
+            alg_info_snprint_ike2(ike_info, ike_info->ike_eklen, ike_info->ike_hklen
+                                  , &ret, ptr, sizeof(missing_alg_buf));
+            DBG(DBG_EMITTING,
+                DBG_log("not including %s in policy, as algorithm missing"
+                        , missing_alg_buf));
+            /* XXX should probably log which algorithm is missing */
+            continue;
+        }
+
         db2_prop_add(dc, PROTO_ISAKMP, 0);
         db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  ike_info->ike_ealg);
         if(ike_info->ike_eklen) {
