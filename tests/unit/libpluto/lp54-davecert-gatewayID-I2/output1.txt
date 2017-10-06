@@ -1,6 +1,7 @@
 ./davecertI2-id ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecertI2-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./davecertI2-id adjusting ipsec.d to ../samples/selfsigned
 ./davecertI2-id loading secrets from "../samples/davecert.secrets"
 ./davecertI2-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (1679 bytes)
@@ -1018,7 +1019,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id leak: cacert path, item size: X
 ./davecertI2-id leak: acert path, item size: X
 ./davecertI2-id leak: override ipsec.d, item size: X
-./davecertI2-id leak: 2 * hasher name, item size: X
+./davecertI2-id leak: 3 * hasher name, item size: X
 ./davecertI2-id leak: policies path, item size: X
 ./davecertI2-id leak: ocspcerts path, item size: X
 ./davecertI2-id leak: aacerts path, item size: X
