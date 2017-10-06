@@ -102,6 +102,7 @@ extern struct ike_alg *ike_alg_base[IKEv2_TRANS_TYPE_COUNT+1];
 int ike_alg_add(struct ike_alg *, bool quiet);
 int ike_alg_register_enc(struct ike_encr_desc *e);
 int ike_alg_register_hash(struct ike_integ_desc *a);
+int ike_alg_register_prf(struct ike_prf_desc *a);
 struct ike_alg *ike_alg_find(enum ikev2_trans_type algo_type
 			     , unsigned algo_id
 			     , unsigned keysize);
