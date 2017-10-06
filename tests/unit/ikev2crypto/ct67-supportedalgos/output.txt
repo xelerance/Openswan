@@ -1,9 +1,9 @@
 testing db1 ops
-    protoid: 1 (PROTO_ISAKMP) cnt: 1
-      transform: 1 cnt: 3
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1 
+|       transform: 1 cnt: 3 
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 | for input ike=aes128-sha1-prfsha1-modp2048
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
@@ -13,13 +13,13 @@ testing db1 ops
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
-v1:sa disjunct cnt: 1
-  conjunctions cnt: 1
-    protoid: 1 (PROTO_ISAKMP) cnt: 1
-      transform: 1 cnt: 3
-        type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC)
-        type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1)
-        type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048)
+v1:| sa disjunct cnt: 1 
+|   conjunctions cnt: 1 
+|     protoid: 1 (PROTO_ISAKMP) cnt: 1 
+|       transform: 1 cnt: 3 
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 | for input ike=aes128-sha1-sha1-modp2048
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
@@ -29,7 +29,7 @@ v1:sa disjunct cnt: 1
 |     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
-| IKEv2 defaults
+| IKEv2 defaults 
 | proposals: cnt=1
 |  disj: cnt=12 [next=13]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]

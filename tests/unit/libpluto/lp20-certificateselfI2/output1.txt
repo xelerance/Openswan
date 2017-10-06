@@ -1,6 +1,7 @@
 ./certificateselfI2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./certificateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./certificateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./certificateselfI2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./certificateselfI2 adjusting ipsec.d to ../samples/rwcert
 ./certificateselfI2 loading secrets from "../samples/rwcert.secrets"
 ./certificateselfI2   loaded private key file '../samples/rwcert/private/carolKey.pem' (1679 bytes)
@@ -912,7 +913,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:500] to 13
 ./certificateselfI2 leak: cacert path, item size: X
 ./certificateselfI2 leak: acert path, item size: X
 ./certificateselfI2 leak: override ipsec.d, item size: X
-./certificateselfI2 leak: 2 * hasher name, item size: X
+./certificateselfI2 leak: 3 * hasher name, item size: X
 ./certificateselfI2 leak: policies path, item size: X
 ./certificateselfI2 leak: ocspcerts path, item size: X
 ./certificateselfI2 leak: aacerts path, item size: X
