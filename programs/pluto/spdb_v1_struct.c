@@ -265,6 +265,16 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
         transform_values[i] = -1;
     }
 
+    if(tot_combos == 1 &&
+       (transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
+        || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1
+        || transform_values[IKEv2_TRANS_TYPE_PRF] == -1
+        || transform_values[IKEv2_TRANS_TYPE_DH] == -1)) {
+        openswan_log("can not extrapolate IKEv1 policy from empty IKEv2 policy");
+        return FALSE;
+    }
+
+
     for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
         unsigned int prop_conj;
         struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
