@@ -286,6 +286,56 @@ return_out:
 }
 
 /*
+ * 	Validate and register IKE PRF algorithm object
+ */
+int
+ike_alg_register_prf(struct ike_prf_desc *prf_desc)
+{
+	const char *alg_name = "<none>";
+	int ret=0;
+
+	if (prf_desc->common.algo_id > IKEv2_AUTH_INVALID) {
+		plog ("ike_alg_register_hash(): hash alg=%d < max=%d",
+				prf_desc->common.algo_id, OAKLEY_HASH_MAX);
+		return_on(ret,-EINVAL);
+	}
+	if (prf_desc->hash_ctx_size > sizeof (union hash_ctx)) {
+		plog ("ike_alg_register_hash(): hash alg=%d has "
+				"ctx_size=%d > hash_ctx=%d",
+				prf_desc->common.algo_id,
+				(int)prf_desc->hash_ctx_size,
+				(int)sizeof (union hash_ctx));
+		return_on(ret,-EOVERFLOW);
+	}
+	if (!(prf_desc->hash_init&&prf_desc->hash_update&&prf_desc->hash_final)) {
+		plog ("ike_alg_register_hash(): hash alg=%d needs  "
+				"hash_init(), hash_update() and hash_final()",
+				prf_desc->common.algo_id);
+		return_on(ret,-EINVAL);
+	}
+
+	alg_name=enum_name(&trans_type_prf_names, prf_desc->common.algo_v2id);
+
+	if (!alg_name) {
+		plog ("ike_alg_register_hash(): WARNING: hash alg=%d not found in "
+				"constants.c:oakley_hash_names  ",
+				prf_desc->common.algo_id);
+		alg_name="<NULL>";
+	}
+
+	if(prf_desc->common.name == NULL) {
+	    prf_desc->common.name = clone_str(alg_name, "hasher name");
+	}
+
+return_out:
+	if (ret==0)
+            ret=ike_alg_add((struct ike_alg *)prf_desc, TRUE);
+	openswan_log("ike_alg_register_prf(): Activating %s: %s (ret=%d)",
+			alg_name, ret==0? "Ok" : "FAILED", ret);
+	return ret;
+}
+
+/*
  * 	Validate and register IKE encryption algorithm object
  */
 int

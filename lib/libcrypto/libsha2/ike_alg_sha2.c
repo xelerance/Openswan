@@ -114,7 +114,7 @@ int ike_alg_sha2_init(void)
 	    ret = ike_alg_register_hash(&integ_desc_sha2_256);
         }
 	if (!ret){
-	    ret = ike_alg_register_hash(&hash_desc_sha2_256);
+	    ret = ike_alg_register_prf(&hash_desc_sha2_256);
         }
 
 	return ret;
