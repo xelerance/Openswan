@@ -1,6 +1,7 @@
 ./davecert-R1-id ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./davecert-R1-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./davecert-R1-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./davecert-R1-id adjusting ipsec.d to ../samples/selfsigned
 ./davecert-R1-id loading secrets from "../samples/gatewaycert.secrets"
 ./davecert-R1-id   loaded private key file '../samples/selfsigned/private/moonKey.pem' (1675 bytes)
@@ -357,6 +358,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./davecert-R1-id leak: default conf conffile, item size: X
 ./davecert-R1-id leak: default conf ipsecd_dir, item size: X
 ./davecert-R1-id leak: default conf ipsec_conf_dir, item size: X
-./davecert-R1-id leak: 2 * hasher name, item size: X
+./davecert-R1-id leak: 3 * hasher name, item size: X
 ./davecert-R1-id leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
