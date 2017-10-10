@@ -1,4 +1,6 @@
-#include "ike2opstest.c"
+#include "ike2opstest_head.c"
+#include "ike2opstest_main.c"
+
 
  /*
  * Local Variables:
