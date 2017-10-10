@@ -52,10 +52,15 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
     passert(ai->alg_info_protoid == PROTO_ISAKMP);
     ALG_INFO_IKE_FOREACH((struct alg_info_ike *)ai, ike_info, cnt) {
 
-        if(!ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen)
-           || !ike_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen)
-           || !ike_alg_prf_present(ike_info->ike_prfalg)
-           || !ike_alg_group_present(ike_info->ike_modp)) {
+        bool enc_present = ike_alg_enc_present(ike_info->ike_ealg, ike_info->ike_eklen);
+        bool integ_present=ike_alg_integ_present(ike_info->ike_halg, ike_info->ike_hklen);
+        bool prf_present = ike_alg_prf_present(ike_info->ike_prfalg);
+        bool group_present=ike_alg_group_present(ike_info->ike_modp);
+
+        if(!enc_present
+           || !integ_present
+           || !prf_present
+           || !group_present) {
 
             char missing_alg_buf[64];
             char *ptr = missing_alg_buf;
@@ -65,8 +70,9 @@ struct db_sa *alginfo2parent_db2(struct alg_info_ike *ai)
                                   , &ret, ptr, sizeof(missing_alg_buf));
             DBG(DBG_EMITTING,
                 DBG_log("not including %s in policy, as algorithm missing"
-                        , missing_alg_buf));
-            /* XXX should probably log which algorithm is missing */
+                        "(enc:%u,integ:%u,prf:%u,group:%u)"
+                        , missing_alg_buf
+                        , enc_present, integ_present, prf_present, group_present));
             continue;
         }
 
