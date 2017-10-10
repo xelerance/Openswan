@@ -223,13 +223,9 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
                                         10 /* attributes */);
     }
 
-    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-        transform_values[i] = -1;
-    }
-
     /* first count number of combinations expressed in IKEv2, so we can
      * allocate a table big for all the combinations */
-    tot_combos = 1;
+    tot_combos = 0;
     for(prop_disj=0; prop_disj<sadb->prop_disj_cnt; prop_disj++) {
         unsigned int prop_conj;
         struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
@@ -237,6 +233,16 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
         for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
             unsigned int trans_i;
             struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+
+            /* reset the transform values */
+            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+                transform_values[i] = -1;
+            }
+
+            /* must represent the initial set of things */
+            if(pc->trans_cnt > 0) {
+                tot_combos++;
+            }
 
             for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                 //unsigned int attr_i;
@@ -261,11 +267,7 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
 
     cur_combo=1;
 
-    for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-        transform_values[i] = -1;
-    }
-
-    if(tot_combos == 1 &&
+    if(tot_combos == 0 &&
        (transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
         || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1
         || transform_values[IKEv2_TRANS_TYPE_PRF] == -1
@@ -282,6 +284,12 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb)
         for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
             unsigned int trans_i;
             struct db_v2_prop_conj *pc = &pd->props[prop_conj];
+
+            /* reset the transform values */
+            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+                transform_values[i] = -1;
+            }
+
             for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                 //int attr_i;
                 struct db_v2_trans *tr = &pc->trans[trans_i];
