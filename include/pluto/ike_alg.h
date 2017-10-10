@@ -2,6 +2,7 @@
 #define _IKE_ALG_H
 
 #include "constants.h"
+#include "gmp.h"
 
 /* forward reference */
 struct connection;
@@ -64,9 +65,8 @@ struct ike_prf_desc {
 
 struct ike_dh_desc {
     struct ike_alg common;
-    size_t dh_key_size;          /* in bits */
-    size_t dh_ctx_size;
-    /* XXX: not sure, g^x routine here */
+    const MP_INT  *generator;
+    const MP_INT  *modulus;
 };
 
 struct alg_info_ike; /* forward reference */

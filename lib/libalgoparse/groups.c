@@ -27,6 +27,7 @@
 #include "ietf_constants.h"
 #include "pluto/defs.h"
 #include "pluto/crypto.h"
+#include "pluto/ike_alg.h"
 #include "pluto/log.h"
 #include "algoparse.h"
 
@@ -36,9 +37,6 @@
  */
 
 static MP_INT
-#if defined(USE_VERYWEAK_DH1) 	/* modp768 not sufficiently strong */
-    modp768_modulus,
-#endif
     modp1024_modulus,
     modp1536_modulus,
     modp2048_modulus,
@@ -61,9 +59,6 @@ MP_INT generator_dh22,
 const struct oakley_group_desc unset_group = {0, NULL, NULL, 0};      /* magic signifier */
 
 const struct oakley_group_desc oakley_group[] = {
-#if defined(USE_VERYWEAK_DH1)           /* modp768 not sufficiently strong */
-    { OAKLEY_GROUP_MODP768, &groupgenerator, &modp768_modulus, BYTES_FOR_BITS(768) },
-#endif
     { OAKLEY_GROUP_MODP1024, &groupgenerator, &modp1024_modulus, BYTES_FOR_BITS(1024) },
     { OAKLEY_GROUP_MODP1536, &groupgenerator, &modp1536_modulus, BYTES_FOR_BITS(1536) },
     { OAKLEY_GROUP_MODP2048, &groupgenerator, &modp2048_modulus, BYTES_FOR_BITS(2048) },
@@ -90,16 +85,33 @@ lookup_group(u_int16_t group)
     return NULL;
 }
 
+bool ike_alg_register_group(enum ikev2_trans_type_dh modpid,
+                            /* enum algorithm_type: DH, EdDSA, etc. */
+                            const MP_INT *generator,
+                            const MP_INT *modulus)
+{
+  struct ike_dh_desc *newgroup;
+  newgroup = alloc_thing(struct ike_dh_desc, "group description");
+
+  newgroup->common.algo_type = IKEv2_TRANS_TYPE_DH;
+  newgroup->common.algo_id   = modpid;
+  newgroup->common.algo_v2id = modpid;
+  newgroup->common.officname = enum_name(&oakley_group_names,modpid);
+
+  newgroup->generator = generator;
+  newgroup->modulus   = modulus;
+
+  return ike_alg_add((struct ike_alg*)newgroup, TRUE);
+};
+
 void
 init_crypto_groups(void)
 {
-    if (mpz_init_set_str(&groupgenerator, MODP_GENERATOR, 10) != 0
+  /* this puts the hex/decimal representations into the objects */
+  if (mpz_init_set_str(&groupgenerator, MODP_GENERATOR, 10) != 0
     ||  mpz_init_set_str(&generator_dh22, MODP_GENERATOR_DH22, 16) != 0
     ||  mpz_init_set_str(&generator_dh23, MODP_GENERATOR_DH23, 16) != 0
     ||  mpz_init_set_str(&generator_dh24, MODP_GENERATOR_DH24, 16) != 0
-#if defined(USE_VERYWEAK_DH1)	                        /* modp768 not sufficiently strong */
-    || mpz_init_set_str(&modp768_modulus, MODP768_MODULUS, 16) != 0
-#endif
     || mpz_init_set_str(&modp1024_modulus, MODP1024_MODULUS, 16) != 0
     || mpz_init_set_str(&modp1536_modulus, MODP1536_MODULUS, 16) != 0
     || mpz_init_set_str(&modp2048_modulus, MODP2048_MODULUS, 16) != 0
@@ -111,7 +123,21 @@ init_crypto_groups(void)
     || mpz_init_set_str(&dh23_modulus, MODP2048_MODULUS_DH23, 16) != 0
     || mpz_init_set_str(&dh24_modulus, MODP2048_MODULUS_DH24, 16) != 0
       ) {
-      openswan_exit_log("mpz_init_set_str() failed in init_crypto()");
-     }
+    openswan_exit_log("mpz_init_set_str() failed in init_crypto()");
+  }
+
+  /* this actually registers the groups with the IKE algorithm system */
+  ike_alg_register_group(OAKLEY_GROUP_MODP1024, &groupgenerator, &modp1024_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP1536, &groupgenerator, &modp1536_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP2048, &groupgenerator, &modp2048_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP3072, &groupgenerator, &modp3072_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP4096, &groupgenerator, &modp4096_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP6144, &groupgenerator, &modp6144_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_MODP8192, &groupgenerator, &modp8192_modulus);
+
+  ike_alg_register_group(OAKLEY_GROUP_DH22, &generator_dh22, &dh22_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_DH23, &generator_dh23, &dh23_modulus);
+  ike_alg_register_group(OAKLEY_GROUP_DH24, &generator_dh24, &dh24_modulus);
+
 }
 
