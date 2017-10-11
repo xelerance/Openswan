@@ -15,7 +15,7 @@ OPENSWANSRCDIR?=$(shell cd ../..; pwd)
 srcdir?=$(shell pwd)/
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-SUBDIRS=libaes libdes libmd5 libsha1 libsha2 libmd2
+SUBDIRS=libaes libdes libmd5 libsha1 libsha2
 
 ifeq ($(USE_EXTRACRYPTO),true)
 SUBDIRS+=libblowfish libtwofish libserpent

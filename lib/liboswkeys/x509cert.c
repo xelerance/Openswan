@@ -693,16 +693,6 @@ compute_digest(chunk_t tbs, int alg, chunk_t *digest)
 {
     switch (alg)
     {
-	case OID_MD2:
-	case OID_MD2_WITH_RSA:
-	{
-	    MD2_CTX context;
-	    MD2Init(&context);
-	    MD2Update(&context, tbs.ptr, tbs.len);
-	    MD2Final(digest->ptr, &context);
-	    digest->len = MD2_DIGEST_SIZE;
-	    return TRUE;
-	}
 	case OID_MD5:
 	case OID_MD5_WITH_RSA:
 	{
