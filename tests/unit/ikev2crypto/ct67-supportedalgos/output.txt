@@ -1,3 +1,7 @@
+./ct67-supportedalgos ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./ct67-supportedalgos ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./ct67-supportedalgos ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./ct67-supportedalgos ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 testing db1 ops
 |     protoid: 1 (PROTO_ISAKMP) cnt: 1 
 |       transform: 1 cnt: 3 
@@ -5,6 +9,13 @@ testing db1 ops
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 | for input ike=aes128-sha1-prfsha1-modp2048
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha1 eklen=128  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| enum_search_prefix ("OAKLEY_SHA1")
+| parser_alg_info_add() aalg_getbyname("sha1")=2
+| enum_search_prefix ("OAKLEY_GROUP_MODP2048")
+| parser_alg_info_add() modp_getbyname("modp2048")=14
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=14, cnt=1
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
@@ -21,6 +32,13 @@ v1:| sa disjunct cnt: 1
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 | for input ike=aes128-sha1-sha1-modp2048
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha1 eklen=128  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| enum_search_prefix ("OAKLEY_SHA1")
+| parser_alg_info_add() aalg_getbyname("sha1")=2
+| enum_search_prefix ("OAKLEY_GROUP_MODP2048")
+| parser_alg_info_add() modp_getbyname("modp2048")=14
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=14, cnt=1
 | proposals: cnt=1
 |  disj: cnt=1 [next=2]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
@@ -30,8 +48,26 @@ v1:| sa disjunct cnt: 1
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
 | IKEv2 defaults 
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=14, cnt=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=14, cnt=3
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=14, cnt=4
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=5, cnt=5
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=5, cnt=6
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=5, cnt=7
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=5, cnt=8
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=15, cnt=9
+| __alg_info_ike_add() ealg=18 aalg=12 prfalg_id=5 modp_id=15, cnt=10
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=5 modp_id=15, cnt=11
+| __alg_info_ike_add() ealg=18 aalg=2 prfalg_id=5 modp_id=15, cnt=12
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | proposals: cnt=1
-|  disj: cnt=12 [next=13]
+|  disj: cnt=6 [next=7]
 | 1:  protoid="PROTO_ISAKMP" [trans: 4]
 |     trans-type-encr value="aes_cbc" [attrs: 0]
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
@@ -62,4 +98,6 @@ v1:| sa disjunct cnt: 1
 |     trans-type-prf value="prf-hmac-sha2-256" [attrs: 0]
 |     trans-type-integ value="hmac_sha1_96" [attrs: 0]
 |     trans-type-dh value="OAKLEY_GROUP_MODP3072" [attrs: 0]
-./ct67-supportedalgos leak detective found no leaks
+./ct67-supportedalgos leak: 3 * hasher name, item size: 16
+./ct67-supportedalgos leak: 10 * group description, item size: 56
+./ct67-supportedalgos leak detective found 13 leaks, total size 72
