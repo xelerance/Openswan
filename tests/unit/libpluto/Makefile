@@ -74,7 +74,8 @@ UNITTESTS=lp02-parentI1 \
 	lp60-bestif                 \
 	lp61-nattI1 lp62-nattR1 lp63-nattI2 lp64-nattR2 lp65-nattI3 \
 	lp66-db2ops \
-	lp67-ike2ops
+	lp67-ike2ops \
+	lp68-badproposal
 
 clean check pcapupdate programs:
 	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done

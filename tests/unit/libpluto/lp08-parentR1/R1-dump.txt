@@ -1,8 +1,8 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 456, bad cksum 0 (->449f)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 460, bad cksum 0 (->449b)!)
     132.213.238.7.500 > 192.168.1.1.500: isakmp 2.0 msgid 00000000: parent_sa ikev2_init[R]:
-    (sa: len=40
-        (p: #1 protoid=isakmp transform=4 len=40
-            (t: #1 type=encr id=aes )
+    (sa: len=44
+        (p: #1 protoid=isakmp transform=4 len=44
+            (t: #1 type=encr id=aes (type=keylen value=0080))
             (t: #2 type=integ id=#12 )
             (t: #3 type=prf id=#5 )
             (t: #4 type=dh id=modp2048 )))
