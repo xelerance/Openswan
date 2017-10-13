@@ -300,7 +300,6 @@ spdb_v2_match_parent(struct db_sa *sadb
 	pd = &sadb->prop_disj[pd_cnt];
 	encrid = integid = prfid = dhid = esnid = 0;
 	encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
-	if(pd->prop_cnt != 1) continue;
 
 	/* In PARENT SAs, we only support one conjunctive item */
 	pj = &pd->props[0];
@@ -668,6 +667,7 @@ ikev2_parse_parent_sa_body(
     if(!st->st_sadb) {
         st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
     }
+    //sa_v2_print(st->st_sadb);
 
     gotmatch = FALSE;
     conjunction = FALSE;
