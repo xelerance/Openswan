@@ -1086,7 +1086,6 @@ main(int argc, char **argv)
     init_connections();
     init_crypto();
     init_crypto_helpers(nhelpers);
-    load_oswcrypto();
     init_demux();
     init_kernel();
     init_id();

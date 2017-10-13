@@ -217,6 +217,9 @@ init_crypto(void)
 	    ike_alg_add((struct ike_alg *) &crypto_integ_md5,   FALSE);
 	}
 #endif
+
+        /* this loads the old switch for DES/AES, and needs to be obsoleted */
+        load_oswcrypto();
 }
 
 /* Encryption Routines
