@@ -1215,6 +1215,7 @@ DBG_print_struct(const char *label, const void *struct_ptr
     {
 	int i = fp->size;
 	u_int32_t n = 0;
+	u_int32_t actual_n = 0;
 
 	switch (fp->field_type)
 	{
@@ -1248,6 +1249,8 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	    default:
 		bad_case(i);
 	    }
+            actual_n = n;
+
 	    switch (fp->field_type)
 	    {
 	    case ft_len:	/* length of this struct and any following crud */
@@ -1263,12 +1266,14 @@ DBG_print_struct(const char *label, const void *struct_ptr
 	    case ft_np_in:      /* value from an enumeration with next payload*/
 	    case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
-		if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+		if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV) {
 		    immediate = TRUE;
-		/* FALL THROUGH */
+                    actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
+                }
+		/* Fall THROUGH */
 	    case ft_enum:	/* value from an enumeration */
 	    case ft_loose_enum:	/* value from an enumeration with only some names known */
-		DBG_log("   %s: %s", fp->name, enum_show(fp->desc, n));
+		DBG_log("   %s: %s", fp->name, enum_show(fp->desc, actual_n));
 		break;
 	    case ft_set:	/* bits representing set */
 		DBG_log("   %s: %s", fp->name, bitnamesof(fp->desc, n));
@@ -1364,7 +1369,7 @@ in_struct(void *struct_ptr, struct_desc *sd
     {
 	u_int8_t *roof = cur + sd->size;    /* may be changed by a length field */
 	u_int8_t *outp = struct_ptr;
-	bool immediate = FALSE;
+	bool immediate = FALSE;             /* value is stored in length field */
 	field_desc *fp;
 
 	for (fp = sd->fields; ugh == NULL; fp++)
@@ -1421,18 +1426,28 @@ in_struct(void *struct_ptr, struct_desc *sd
 	    case ft_set:	/* bits representing set */
 	    {
 		u_int32_t n = 0;
+                u_int32_t actual_n = 0;
 
 		/* Reportedly fails on arm, see bug #775 */
 		for (; i != 0; i--)
 		    n = (n << BITS_PER_BYTE) | *cur++;
+
+                actual_n = n;
 
 		switch (fp->field_type)
 		{
 		case ft_len:	/* length of this struct and any following crud */
 		case ft_lv:	/* length/value field of attribute */
 		{
-		    u_int32_t len = fp->field_type == ft_len? n
-			: immediate? sd->size : n + sd->size;
+		    u_int32_t len;
+
+                    if(fp->field_type == ft_len) {
+                        len = n;
+                    } else if(immediate) {
+                        len = sd->size;
+                    } else {
+                        len = n + sd->size;
+                    }
 
 		    if (len < sd->size)
 		    {
@@ -1456,14 +1471,16 @@ in_struct(void *struct_ptr, struct_desc *sd
 		    break;
 
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
-		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV) {
 			immediate = TRUE;
+                        actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
+                    }
 		    /* FALL THROUGH */
 		case ft_enum:	/* value from an enumeration */
-		    if (enum_name(fp->desc, n) == NULL)
+		    if (enum_name(fp->desc, actual_n) == NULL)
 		    {
-			ugh = builddiag("%s of %s has an unknown value: %lu"
-			    , fp->name, sd->name, (unsigned long)n);
+			ugh = builddiag("%s of %s has an unknown in value: %lu"
+			    , fp->name, sd->name, (unsigned long)actual_n);
 		    }
 		    /* FALL THROUGH */
 		case ft_loose_enum:	/* value from an enumeration with only some names known */
@@ -1649,6 +1666,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
 
 	    {
 		u_int32_t n = 0;
+                u_int32_t actual_n = 0;
 
 		switch (i)
 		{
@@ -1664,6 +1682,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
 		default:
 		    bad_case(i);
 		}
+                actual_n = n;
 
 		switch (fp->field_type)
 		{
@@ -1686,14 +1705,16 @@ out_struct(const void *struct_ptr, struct_desc *sd
 		    break;
 
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
-		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV) {
 			immediate = TRUE;
+                        actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
+                    }
 		    /* FALL THROUGH */
 		case ft_enum:	/* value from an enumeration */
-		    if (enum_name(fp->desc, n) == NULL)
+		    if (enum_name(fp->desc, actual_n) == NULL)
 		    {
-			ugh = builddiag("%s of %s has an unknown value: %lu"
-			    , fp->name, sd->name, (unsigned long)n);
+			ugh = builddiag("%s of %s has an unknown out value: %lu"
+			    , fp->name, sd->name, (unsigned long)actual_n);
 		    }
 		    /* FALL THROUGH */
 		case ft_loose_enum:	/* value from an enumeration with only some names known */
