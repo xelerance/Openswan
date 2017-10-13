@@ -50,7 +50,7 @@ uninstall:
 taroldinstall:
 	tar --ignore-failed-read -c -z -f oldFreeSWAN.tar.gz `$(MAKE) --no-print-directory install_file_list`
 
-TAGSFILES=$(wildcard include/*.h lib/lib*/*.c programs/*/*.c linux/include/*.h linux/include/openswan/*.h linux/net/ipsec/*.[ch])
+TAGSFILES=$(wildcard include/*.h lib/lib*/*.c lib/lib*/*/*.c programs/*/*.c linux/include/*.h linux/include/openswan/*.h linux/net/ipsec/*.[ch])
 
 tags:	$(TAGSFILES)
 	@LC_ALL=C ctags $(CTAGSFLAGS) ${TAGSFILES}
