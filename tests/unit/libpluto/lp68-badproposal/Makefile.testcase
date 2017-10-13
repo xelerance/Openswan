@@ -1,0 +1,7 @@
+# -*- makefile -*-
+CONNNAME=parker
+ENDNAME=jamesjohnson
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentI1badKE.pcap OUTPUT/parentI1badKE.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=badproposalR1

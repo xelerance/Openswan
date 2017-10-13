@@ -1,0 +1,12 @@
+ENDNAME=parker
+CONNNAME=parker1--jj2
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+WHACKFILE3=${OUTPUTS}/any1.record.${ARCH}
+UNITTEST1ARGS=${WHACKFILE} parker1--jj2 parentI1.pcap      OUTPUT/parentR1.pcap
+
+TESTNAME=parentR1
+
+pcapupdate:
+	# note that input parentI1badKE is magic from the network.
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
+
