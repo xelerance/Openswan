@@ -3,4 +3,5 @@
 ./cr03-cryptoinit ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./cr03-cryptoinit ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./cr03-cryptoinit leak: 3 * hasher name, item size: 16
-./cr03-cryptoinit leak detective found 3 leaks, total size 16
+./cr03-cryptoinit leak: 10 * group description, item size: 56
+./cr03-cryptoinit leak detective found 13 leaks, total size 72

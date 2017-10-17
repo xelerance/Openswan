@@ -2,6 +2,7 @@
  * Kernel runtime algorithm handling interface definitions
  * Originally by: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  * Reworked into openswan 2.x by Michael Richardson <mcr@xelerance.com>
+ * (C)opyright 2017 Michael Richardson <mcr@xelerance.com>
  * (C)opyright 2012 Paul Wouters <pwouters@redhat.com>
  * (C)opyright 2012 Paul Wouters <paul@libreswan.org>
  *
@@ -39,59 +40,6 @@
 #include "algparse.h"
 #include "enum_names.h"
 
-/**
- * 	Search oakley_enc_names for a match, eg:
- * 		"3des"
- *
- * @param str String containing ALG name (eg: AES, 3DES)
- * @param len Length of ALG (eg: 256,512)
- * @return int Registered # of ALG if loaded.
- */
-int ealg_getbyname_ike(const char *const str, int len, unsigned int *auxp)
-{
-    const struct keyword_enum_value *kev;
-    int ret=-1;
-	if (!str||!*str)
-		goto out;
-        /* look for the name by literal name, upcasing first */
-	ret = enum_search_nocase(ikev2_encr_names.official_names, str, len);
-	if (ret>=0) goto out;
-
-        kev = keyword_search_aux(&ikev2_encr_names.aliases, str);
-        if(kev == NULL) goto out;
-
-        if(auxp) *auxp=kev->valueaux;
-        ret = kev->value;
-
-out:
-	return ret;
-}
-/**
- * 	Search  oakley_hash_names for a match, eg:
- * 		"md5" <=> "OAKLEY_MD5"
- * @param str String containing Hash name (eg: MD5, SHA1)
- * @param len Length of Hash (eg: 256,512)
- * @return int Registered # of Hash ALG if loaded.
- */
-static int
-aalg_getbyname_ike(const char *const str, int len, unsigned int *auxp)
-{
-	int ret=-1;
-	unsigned num;
-	if (!str||!*str)
-		goto out;
-	ret=alg_enum_search_prefix(&oakley_hash_names,"OAKLEY_",str,len);
-	if (ret>=0) goto out;
-
-        ret = keyword_search(&ikev2_auth_alg_names.aliases, str);
-	if (ret>=0) goto out;
-
-	sscanf(str, "id%d%n", &ret, &num);
-	if (ret >=0 && num!=strlen(str))
-		ret=-1;
-out:
-	return ret;
-}
 
 /**
  * 	Search  prf_hash_names for a match, eg:
@@ -245,7 +193,7 @@ alg_info_ike_add (struct alg_info *alg_info
 		  , int ealg_id, int ek_bits
 		  , int aalg_id, int ak_bits
                   , int prfalg_id
-		  , int modp_id, int permitmann UNUSED)
+		  , int modp_id)
 {
     int n_groups, n_prfs, n_integs, n_ciphers;
     int i_group, i_prf, i_integ, i_cipher;
@@ -539,9 +487,9 @@ parser_init_ike(struct parser_context *p_ctx)
     p_ctx->modp_str=p_ctx->modp_buf;
     p_ctx->prfalg_str=p_ctx->prfalg_buf;
     p_ctx->state=ST_INI;
-    p_ctx->ealg_getbyname=ealg_getbyname_ike;
-    p_ctx->aalg_getbyname=aalg_getbyname_ike;
-    p_ctx->modp_getbyname=modp_getbyname_ike;
+    p_ctx->ealg_getbyname=ealg_getbyname;
+    p_ctx->aalg_getbyname=aalg_getbyname;
+    p_ctx->modp_getbyname=modp_getbyname;
     p_ctx->prfalg_getbyname=prfalg_getbyname_ike;
     p_ctx->ealg_permit=TRUE;
     p_ctx->aalg_permit=TRUE;
@@ -559,11 +507,10 @@ alg_info_ike_defaults(void)
     /* call with all zeros, to get entire default permutation */
     alg_info_ike_add (IKETOINFO(ike_info),0,0,
                       0,0,
-                      0,0, 0);
+                      0,0);
  out:
     return ike_info;
 }
-
 
 struct alg_info_ike *
 alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
@@ -581,8 +528,7 @@ alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
 			       alg_str, err_p,
 			       parser_init_ike,
 			       alg_info_ike_add,
-			       lookup_group,
-			       TRUE) < 0)
+			       lookup_group) < 0)
 	{
 		pfreeany(alg_info_ike);
 		alg_info_ike=NULL;

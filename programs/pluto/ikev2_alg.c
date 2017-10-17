@@ -271,6 +271,15 @@ void kernel_alg_show_status(void)
 		 );
 	}
 }
+
+static const char *pfs_group_from_state(struct state *st)
+{
+    return st->st_pfs_group ?
+        enum_show(&oakley_group_names,
+                  st->st_pfs_group->group)
+        : "phase1";
+}
+
 void
 kernel_alg_show_connection(struct connection *c, const char *instance)
 {
@@ -285,7 +294,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	if(c->alg_info_esp == NULL) return;
 
 	if (c->alg_info_esp) {
-	    alg_info_snprint(buf, sizeof(buf), (struct alg_info *)c->alg_info_esp, TRUE);
+	    alg_info_snprint(buf, sizeof(buf), (struct alg_info *)c->alg_info_esp);
 	    whack_log(RC_COMMENT
 		      , "\"%s\"%s:   %s algorithms wanted: %s"
 		      , c->name
@@ -305,38 +314,23 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	st = state_with_serialno(c->newest_ipsec_sa);
 	if (st && st->st_esp.present)
 		whack_log(RC_COMMENT
-		, "\"%s\"%s:   %s algorithm newest: %s_%03d-%s; pfsgroup=%s"
-		, c->name
+                          , "\"%s\"%s:   %s algorithm newest: %s_%03d-%s-%s"
+                          , c->name
 			  , instance, satype
-		, enum_show(&esp_transformid_names
-			    ,st->st_esp.attrs.transattrs.encrypt)
-		+4 /* strlen("ESP_") */
-		, st->st_esp.attrs.transattrs.enckeylen
-		, enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)+
-		+15 /* strlen("AUTH_ALGORITHM_") */
-		, c->policy & POLICY_PFS ?
-			c->alg_info_esp->esp_pfsgroup ?
-					enum_show(&oakley_group_names,
-						c->alg_info_esp->esp_pfsgroup)
-						+13 /*strlen("OAKLEY_GROUP_")*/
-				: "<Phase1>"
-			: "<N/A>"
+                          , enum_show(&esp_transformid_names
+                                      ,st->st_esp.attrs.transattrs.encrypt)
+                          , st->st_esp.attrs.transattrs.enckeylen
+                          , enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)
+                          , c->policy & POLICY_PFS ? pfs_group_from_state(st) : "nopfs"
 		    );
 
 	if (st && st->st_ah.present)
 		whack_log(RC_COMMENT
-		, "\"%s\"%s:   %s algorithm newest: %s; pfsgroup=%s"
-		, c->name
+		, "\"%s\"%s:   %s algorithm newest: %s-%s"
+                          , c->name
 			  , instance, satype
-		, enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)+
-		+15 /* strlen("AUTH_ALGORITHM_") */
-		, c->policy & POLICY_PFS ?
-			c->alg_info_esp->esp_pfsgroup ?
-					enum_show(&oakley_group_names,
-						c->alg_info_esp->esp_pfsgroup)
-						+13 /*strlen("OAKLEY_GROUP_")*/
-				: "<Phase1>"
-			: "<N/A>"
+                          , enum_show(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash)
+                          , c->policy & POLICY_PFS ? pfs_group_from_state(st) : "nopfs"
 	);
 
 }

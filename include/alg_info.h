@@ -19,14 +19,18 @@
 
 #include "constants.h"
 
+
 struct esp_info {
         bool     esp_default;
-	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
+    u_int8_t  transid;	/* ESP transform (AES, 3DES, etc.)*/
 	u_int16_t auth;		/* AUTH */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
-	u_int8_t encryptalg;	/* normally  encryptalg=transid */
-        u_int16_t authalg;	/* normally  authalg=auth+1     */
+
+    /* used for mapping KLIPS kernel numbers to IKEv1 numbers */
+    u_int8_t encryptalg;
+    u_int16_t authalg;
+    enum ikev2_trans_type_dh pfs_group;
 };
 
 struct ike_info {
@@ -52,7 +56,6 @@ struct alg_info {
 struct alg_info_esp {
 	ALG_INFO_COMMON;
 	struct esp_info esp[64];
-	int esp_pfsgroup;
 };
 
 struct alg_info_ike {
@@ -61,11 +64,10 @@ struct alg_info_ike {
 };
 
 typedef void alg_info_adder(struct alg_info *alg_info
-                               , int ealg_id, int ek_bits
-                               , int aalg_id, int ak_bits
+                            , int ealg_id, int ek_bits
+                            , int aalg_id, int ak_bits
                             , int prfalg_id
-                               , int modp_id
-                               , bool permitmann);
+                            , int modp_id);
 
 #define ESPTOINFO(X) (struct alg_info *)X
 #define IKETOINFO(X) (struct alg_info *)X
@@ -89,12 +91,10 @@ void alg_info_free(struct alg_info *alg_info);
 void alg_info_addref(struct alg_info *alg_info);
 void alg_info_delref(struct alg_info **alg_info);
 struct alg_info_esp * alg_info_esp_create_from_str(const char *alg_str
-						   , err_t *err_p
-						   , bool permitmann);
+						   , err_t *err_p);
 
 struct alg_info_esp * alg_info_ah_create_from_str(const char *alg_str
-						  , err_t *err_p
-						  , bool permitmann);
+						  , err_t *err_p);
 
 struct alg_info_ike * alg_info_ike_create_from_str(const char *alg_str
 						   , err_t *err_p);
@@ -104,7 +104,7 @@ extern struct alg_info_ike *alg_info_ike_defaults(void);
 
 int alg_info_parse(const char *str);
 int alg_info_snprint(char *buf, int buflen
-		     , struct alg_info *alg_info, bool permitike);
+		     , struct alg_info *alg_info);
 
 void alg_info_snprint_ike(char *buf, size_t buflen, struct alg_info_ike *alg_info);
 extern char *alg_info_snprint_ike2(struct ike_info *ike_info
@@ -130,8 +130,7 @@ extern int alg_info_parse_str (struct alg_info *alg_info
 			       , const char **err_p
 			       , void (*parser_init)(struct parser_context *p_ctx)
                                , alg_info_adder alg_info_add
-			       , const struct oakley_group_desc *(*lookup_group_f)(u_int16_t group)
-			       , bool permitmann);
+			       , const struct oakley_group_desc *(*lookup_group_f)(u_int16_t group));
 
 #endif /* ALG_INFO_H */
 

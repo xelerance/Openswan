@@ -425,14 +425,7 @@ int decode_esp(char *algname)
 {
   int esp_alg;
 
-  if(!strcmp(algname, "3des-md5-96")) {
-    esp_alg = XF_ESP3DESMD596;
-  } else if(!strcmp(algname, "3des-sha1-96")) {
-    esp_alg = XF_ESP3DESSHA196;
-  } else if(!strcmp(algname, "3des")) {
-    esp_alg = XF_ESP3DES;
-#ifdef KERNEL_ALG
-  } else if((alg_info=alg_info_esp_create_from_str(algname, &alg_err, FALSE))) {
+  if((alg_info=alg_info_esp_create_from_str(algname, &alg_err))) {
     int esp_ealg_id, esp_aalg_id;
 
     esp_alg = XF_OTHER_ALG;
@@ -481,11 +474,6 @@ int decode_esp(char *algname)
 	  exit(1);
 	}
     }
-#endif /* KERNEL_ALG */
-  } else {
-    fprintf(stderr, "%s: Invalid encryption algorithm '%s' follows '--esp' option.\n",
-	    progname, algname);
-    exit(1);
   }
   return esp_alg;
 }

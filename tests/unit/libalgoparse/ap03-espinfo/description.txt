@@ -1,0 +1,4 @@
+This test case validates parsing of esp= lines that would appear in a
+configuration file, but are passed through (as a string) to pluto as
+the policy for the CHILD SA.
+

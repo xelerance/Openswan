@@ -18,8 +18,11 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 UNITTESTS=cr01-aes128 cr02-aes256 cr03-cryptoinit cr04-sha2
 
-clean check:
+clean:
 	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+check:
+	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}

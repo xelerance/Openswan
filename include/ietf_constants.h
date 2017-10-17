@@ -559,6 +559,7 @@ enum ikev2_trans_type {
 };
 #define IKEv2_TRANS_TYPE_COUNT 6
 
+/** IKEv2 encryption (enum_names: trans_type_encr_names) */
 enum ikev2_trans_type_encr {
 	IKEv2_ENCR_DES_IV64 = 1,
 	IKEv2_ENCR_DES      = 2,
@@ -926,9 +927,9 @@ enum ikev2_auth_method {
 /* Oakley Group Description attribute
  * draft-ietf-ipsec-ike-01.txt appendix A
  */
-/* extern enum_names oakley_group_names; */
 
 /*	IKEv2: you must also touch: constants.c, crypto.c */
+/* extern enum_names oakley_group_names; */
 enum ikev2_trans_type_dh {
 	OAKLEY_GROUP_MODP768      = 1,
 	OAKLEY_GROUP_MODP1024     = 2,
