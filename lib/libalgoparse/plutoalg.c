@@ -2,6 +2,7 @@
  * Kernel runtime algorithm handling interface definitions
  * Originally by: JuanJo Ciarlante <jjo-ipsec@mendoza.gov.ar>
  * Reworked into openswan 2.x by Michael Richardson <mcr@xelerance.com>
+ * (C)opyright 2017 Michael Richardson <mcr@xelerance.com>
  * (C)opyright 2012 Paul Wouters <pwouters@redhat.com>
  * (C)opyright 2012 Paul Wouters <paul@libreswan.org>
  *
@@ -245,7 +246,7 @@ alg_info_ike_add (struct alg_info *alg_info
 		  , int ealg_id, int ek_bits
 		  , int aalg_id, int ak_bits
                   , int prfalg_id
-		  , int modp_id, int permitmann UNUSED)
+		  , int modp_id)
 {
     int n_groups, n_prfs, n_integs, n_ciphers;
     int i_group, i_prf, i_integ, i_cipher;
@@ -559,11 +560,10 @@ alg_info_ike_defaults(void)
     /* call with all zeros, to get entire default permutation */
     alg_info_ike_add (IKETOINFO(ike_info),0,0,
                       0,0,
-                      0,0, 0);
+                      0,0);
  out:
     return ike_info;
 }
-
 
 struct alg_info_ike *
 alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
@@ -581,8 +581,7 @@ alg_info_ike_create_from_str (const char *alg_str, const char **err_p)
 			       alg_str, err_p,
 			       parser_init_ike,
 			       alg_info_ike_add,
-			       lookup_group,
-			       TRUE) < 0)
+			       lookup_group) < 0)
 	{
 		pfreeany(alg_info_ike);
 		alg_info_ike=NULL;

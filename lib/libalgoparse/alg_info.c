@@ -42,32 +42,6 @@
 /* abstract reference */
 struct oakley_group_desc;
 
-/* sadb/ESP aa attrib converters */
-enum ipsec_authentication_algo
-alg_info_esp_aa2sadb(enum ikev1_auth_attribute auth)
-{
-	switch(auth) {
-		case AUTH_ALGORITHM_HMAC_MD5:
-		    return AH_MD5;
-		case AUTH_ALGORITHM_HMAC_SHA1:
-		    return AH_SHA;
-		case AUTH_ALGORITHM_HMAC_SHA2_256:
-		    return AH_SHA2_256;
-		case AUTH_ALGORITHM_HMAC_SHA2_384:
-		    return AH_SHA2_384;
-		case AUTH_ALGORITHM_HMAC_SHA2_512:
-		    return AH_SHA2_512;
-		case AUTH_ALGORITHM_HMAC_RIPEMD:
-		    return AH_RIPEMD;
-		case AUTH_ALGORITHM_NONE:
-		    return AH_NONE;
-
-		default:
-		    bad_case(auth);
-	}
-	return 0;
-}
-
 /* translate IKEv2 INTEG algorithm into IKEv2 PRF algorithm */
 enum ikev2_trans_type_prf
 alg_info_ikev2_integ2prf(enum ikev2_trans_type_integ integ)
@@ -141,30 +115,6 @@ alg_info_esp_v2tov1aa(enum ikev2_trans_type_integ ti)
 	bad_case(ti);
     }
     return 0;
-}
-
-int /* __attribute__ ((unused)) */
-alg_info_esp_sadb2aa(int sadb_aalg)
-{
-	int auth=0;
-	switch(sadb_aalg) {
-		/* Paul: why is this using a mix of SADB_AALG_* and AUTH_ALGORITHM_* */
-		case SADB_AALG_MD5HMAC:
-		case SADB_AALG_SHA1HMAC:
-			auth=sadb_aalg-1;
-			break;
-			/* since they are the same ...  :)  */
-		case AUTH_ALGORITHM_HMAC_SHA2_256:
-		case AUTH_ALGORITHM_HMAC_SHA2_384:
-		case AUTH_ALGORITHM_HMAC_SHA2_512:
-		case AUTH_ALGORITHM_HMAC_RIPEMD:
-			auth=sadb_aalg;
-			break;
-		default:
-			/* loose ... */
-			auth=sadb_aalg;
-	}
-	return auth;
 }
 
 /*
@@ -274,105 +224,6 @@ out:
 void
 alg_info_free(struct alg_info *alg_info) {
 	pfreeany(alg_info);
-}
-
-/*
- *	Raw add routine: only checks for no duplicates
- */
-static void
-__alg_info_esp_add (struct alg_info_esp *alg_info
-		    , int ealg_id, unsigned ek_bits
-		    , int aalg_id, unsigned ak_bits)
-{
-	struct esp_info *esp_info=alg_info->esp;
-	unsigned cnt=alg_info->alg_info_cnt, i;
-	/* 	check for overflows 	*/
-	passert(cnt < elemsof(alg_info->esp));
-	/*	dont add duplicates	*/
-	for (i=0;i<cnt;i++)
-		if (	esp_info[i].esp_ealg_id==ealg_id &&
-			(!ek_bits || esp_info[i].esp_ealg_keylen==ek_bits) &&
-			esp_info[i].esp_aalg_id==aalg_id &&
-			(!ak_bits || esp_info[i].esp_aalg_keylen==ak_bits))
-			return;
-	esp_info[cnt].esp_ealg_id=ealg_id;
-	esp_info[cnt].esp_ealg_keylen=ek_bits;
-	esp_info[cnt].esp_aalg_id=aalg_id;
-	esp_info[cnt].esp_aalg_keylen=ak_bits;
-	/* sadb values */
-	esp_info[cnt].encryptalg=ealg_id;
-	esp_info[cnt].authalg=alg_info_esp_aa2sadb(aalg_id);
-	alg_info->alg_info_cnt++;
-	DBG(DBG_CRYPT, DBG_log("__alg_info_esp_add() "
-				"ealg=%d aalg=%d cnt=%d",
-				ealg_id, aalg_id, alg_info->alg_info_cnt));
-}
-
-/*
- *	Add ESP alg info _with_ logic (policy):
- */
-static void
-alg_info_esp_add (struct alg_info *alg_info,
-		  int ealg_id, int ek_bits,
-		  int aalg_id, int ak_bits,
-                  int prfalg_id UNUSED,
-		  int modp_id, bool permit_manconn)
-{
-	/*	Policy: default to 3DES */
-	if (ealg_id==0)
-		ealg_id=ESP_3DES;
-
-	if (ealg_id>0) {
-
-	    if(aalg_id > 0 ||
-	       (permit_manconn && aalg_id == 0))
-		{
-			if (aalg_id == INT_MAX)
-				aalg_id = 0;
-			__alg_info_esp_add((struct alg_info_esp *)alg_info,
-					ealg_id, ek_bits,
-					aalg_id, ak_bits);
-		}
-	    else
-		{
-			/*	Policy: default to MD5 and SHA1 */
-			__alg_info_esp_add((struct alg_info_esp *)alg_info,
-					ealg_id, ek_bits, \
-					AUTH_ALGORITHM_HMAC_MD5, ak_bits);
-			__alg_info_esp_add((struct alg_info_esp *)alg_info,
-					ealg_id, ek_bits, \
-					AUTH_ALGORITHM_HMAC_SHA1, ak_bits);
-		}
-	}
-}
-
-/*
- *	Add AH alg info _with_ logic (policy):
- */
-static void
-alg_info_ah_add (struct alg_info *alg_info,
-		  int ealg_id, int ek_bits,
-		  int aalg_id, int ak_bits,
-                 int prfalg_id UNUSED,
-		  int modp_id, bool permit_manconn)
-{
-    if(aalg_id > 0 ||
-       (permit_manconn && aalg_id == 0))
-    {
-	__alg_info_esp_add((struct alg_info_esp *)alg_info,
-			   ealg_id, ek_bits,
-			   aalg_id, ak_bits);
-    }
-    else
-    {
-	/*	Policy: default to MD5 and SHA1 */
-	__alg_info_esp_add((struct alg_info_esp *)alg_info,
-			   ealg_id, ek_bits,				\
-			   AUTH_ALGORITHM_HMAC_MD5, ak_bits);
-	__alg_info_esp_add((struct alg_info_esp *)alg_info,
-			   ealg_id, ek_bits,				\
-			   AUTH_ALGORITHM_HMAC_SHA1, ak_bits);
-    }
 }
 
 static const char *parser_state_names[] = {
@@ -654,8 +505,7 @@ static int
 parser_alg_info_add(struct parser_context *p_ctx
 		    , struct alg_info *alg_info
 		    , alg_info_adder *alg_info_add
-		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group)
-		    , bool permitike)
+		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group))
 {
     unsigned int auxinfo;
     int ealg_id, aalg_id, prfalg_id;
@@ -764,7 +614,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 			,ealg_id, p_ctx->eklen
 			,aalg_id, p_ctx->aklen
                         ,prfalg_id
-			,modp_id, permitike);
+			,modp_id);
 	return 0;
  out:
 	return -1;
@@ -776,8 +626,7 @@ alg_info_parse_str (struct alg_info *alg_info
 		    , const char **err_p
 		    , void (*parser_init)(struct parser_context *p_ctx)
                     , alg_info_adder *alg_info_add
-		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group)
-		    , bool permitmann)
+		    , const struct oakley_group_desc *(*lookup_group)(u_int16_t group))
 {
 	struct parser_context ctx;
 	int ret;
@@ -791,7 +640,7 @@ alg_info_parse_str (struct alg_info *alg_info
 
 	/* use default if nul esp string */
 	if (!*alg_str) {
-	    (*alg_info_add)(alg_info, 0, 0, 0, 0, 0, 0, 0);
+	    (*alg_info_add)(alg_info, 0, 0, 0, 0, 0, 0);
 	}
 
 	for(ret=0,ptr=alg_str;ret<ST_EOF;) {
@@ -812,8 +661,7 @@ alg_info_parse_str (struct alg_info *alg_info
 
 		if (parser_alg_info_add(&ctx, alg_info
 					, alg_info_add
-					, lookup_group
-					, permitmann)<0) {
+					, lookup_group)<0) {
 		    snprintf(err_buf, sizeof(err_buf),
 			     "%s, enc_alg=\"%s\", auth_alg=\"%s\", "
 			     "modp=\"%s\"",
@@ -893,8 +741,7 @@ alg_info_discover_pfsgroup_hack(struct alg_info_esp *aie
 
 struct alg_info_esp *
 alg_info_esp_create_from_str (const char *alg_str
-			      , const char **err_p
-			      , bool permitmann)
+			      , const char **err_p)
 {
     struct alg_info_esp *alg_info_esp;
     char esp_buf[256];
@@ -919,8 +766,7 @@ alg_info_esp_create_from_str (const char *alg_str
 			   , esp_buf, err_p
 			   , parser_init_esp
 			   , alg_info_esp_add
-			   , NULL
-			   , permitmann);
+			   , NULL);
 
  out:
     if (ret<0)
@@ -934,8 +780,7 @@ alg_info_esp_create_from_str (const char *alg_str
 
 struct alg_info_esp *
 alg_info_ah_create_from_str (const char *alg_str
-			     , const char **err_p
-			     , bool permitmann)
+			     , const char **err_p)
 {
     struct alg_info_esp *alg_info_esp;
     char esp_buf[256];
@@ -958,8 +803,7 @@ alg_info_ah_create_from_str (const char *alg_str
 			   , esp_buf, err_p
 			   , parser_init_ah
 			   , alg_info_ah_add
-			   , NULL
-			   , permitmann);
+			   , NULL);
 
     if (ret<0)
 	{
@@ -1011,8 +855,7 @@ alg_info_delref(struct alg_info **alg_info_p)
 /*	snprint already parsed transform list (alg_info)	*/
 int
 alg_info_snprint(char *buf, int buflen
-		 , struct alg_info *alg_info
-		 , bool permitike)
+		 , struct alg_info *alg_info)
 {
     char *ptr=buf;
     struct esp_info *esp_info;
@@ -1089,26 +932,23 @@ alg_info_snprint(char *buf, int buflen
         }
 
     case PROTO_ISAKMP:
-	if(permitike) {
-	    ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
-                int np;
-                alg_info_snprint_ike2(ike_info,
-                                      ike_info->ike_eklen,
-                                      ike_info->ike_hklen,
-                                      &np, ptr, buflen);
-		ptr += np;
-		buflen -= np;
-                if ( cnt > 0) {
-                        snprintf(ptr, buflen, ", ");
-			np = strlen(ptr);
-			ptr += np;
-			buflen -= np;
-                }
-		if(buflen <= 0) goto out;
-	    }
-	    break;
-	}
-	/* FALLTHROUGH */
+        ALG_INFO_IKE_FOREACH((struct alg_info_ike *)alg_info, ike_info, cnt) {
+            int np;
+            alg_info_snprint_ike2(ike_info,
+                                  ike_info->ike_eklen,
+                                  ike_info->ike_hklen,
+                                  &np, ptr, buflen);
+            ptr += np;
+            buflen -= np;
+            if ( cnt > 0) {
+                snprintf(ptr, buflen, ", ");
+                np = strlen(ptr);
+                ptr += np;
+                buflen -= np;
+            }
+            if(buflen <= 0) goto out;
+        }
+        break;
 
     default:
 	snprintf(buf, buflen, "INVALID protoid=%d\n",
