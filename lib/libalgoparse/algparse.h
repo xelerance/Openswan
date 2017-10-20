@@ -52,13 +52,13 @@ extern int modp_getbyname(const char *const str, int len, unsigned int *auxp);
 
 struct alg_info; /* forward reference */
 extern void alg_info_esp_add (struct alg_info *alg_info,
-                              int ealg_id, int ek_bits,
-                              int aalg_id, int ak_bits,
-                              int prfalg_id UNUSED,
-                              int modp_id);
+                              enum ikev2_trans_type_encr  ealg_id, int ek_bits,
+                              enum ikev2_trans_type_integ aalg_id, int ak_bits,
+                              enum ikev2_trans_type_prf   prfalg_id UNUSED,
+                              enum ikev2_trans_type_dh    modp_id);
 extern void alg_info_ah_add (struct alg_info *alg_info,
-                             int ealg_id, int ek_bits,
-                             int aalg_id, int ak_bits,
-                             int prfalg_id UNUSED,
-                             int modp_id);
+                              enum ikev2_trans_type_encr  ealg_id, int ek_bits,
+                              enum ikev2_trans_type_integ aalg_id, int ak_bits,
+                              enum ikev2_trans_type_prf   prfalg_id UNUSED,
+                             enum ikev2_trans_type_dh    modp_id);
 

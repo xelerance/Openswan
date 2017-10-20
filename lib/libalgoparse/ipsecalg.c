@@ -130,10 +130,10 @@ __alg_info_esp_add (struct alg_info_esp *alg_info
  */
 void
 alg_info_esp_add (struct alg_info *alg_info,
-		  int ealg_id, int ek_bits,
-		  int aalg_id, int ak_bits,
-                  int prfalg_id UNUSED,
-		  int modp_id)
+		  enum ikev2_trans_type_encr  ealg_id, int ek_bits,
+		  enum ikev2_trans_type_integ aalg_id, int ak_bits,
+                  enum ikev2_trans_type_prf   prfalg_id UNUSED,
+		  enum ikev2_trans_type_dh    modp_id)
 {
     /*	Policy: default to AES_CBC */
     if (ealg_id==0)
@@ -163,10 +163,10 @@ alg_info_esp_add (struct alg_info *alg_info,
  */
 void
 alg_info_ah_add (struct alg_info *alg_info,
-                 int ealg_id, int ek_bits,
-                 int aalg_id, int ak_bits,
-                 int prfalg_id UNUSED,
-                 int modp_id)
+                 enum ikev2_trans_type_encr  ealg_id, int ek_bits,
+                 enum ikev2_trans_type_integ aalg_id, int ak_bits,
+                 enum ikev2_trans_type_prf   prfalg_id UNUSED,
+                 enum ikev2_trans_type_dh    modp_id)
 {
     ealg_id = 0;  /* AH has no encryption */
 
