@@ -91,10 +91,10 @@ static void regress(void)
         auxinfo = 0;
         switch(r->trans_type) {
         case IKEv2_TRANS_TYPE_ENCR:
-            item = ealg_getbyname_ike(r->ascii, strlen(r->ascii), &auxinfo);
+            item = ealg_getbyname(r->ascii, strlen(r->ascii), &auxinfo);
             break;
         case IKEv2_TRANS_TYPE_DH:
-            item = modp_getbyname_ike(r->ascii, strlen(r->ascii), &auxinfo);
+            item = modp_getbyname(r->ascii, strlen(r->ascii), &auxinfo);
             break;
         default:
             item = enum_search_nocase(lookup, r->ascii, strlen(r->ascii));

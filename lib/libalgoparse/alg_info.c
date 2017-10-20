@@ -34,6 +34,7 @@
 #include "oswlog.h"
 #include "oswalloc.h"
 #include "algparse.h"
+#include "enum_names.h"
 
 #ifdef HAVE_LIBNSS
 #include "oswconf.h"
@@ -161,46 +162,52 @@ alg_enum_search_ppfix (enum_names *ed, const char *prefix
 	return ret;
 }
 
-/*
- * 	Search esp_transformid_names for a match, eg:
- * 		"3des" <=> "ESP_3DES"
+
+/**
+ * 	Search oakley_enc_names for a match, eg:
+ * 		"3des"
+ *
+ * @param str String containing ALG name (eg: AES, 3DES)
+ * @param len Length of ALG (eg: 256,512)
+ * @return int Registered # of ALG if loaded.
  */
-#define ESP_MAGIC_ID 0x00ffff01
-static int
-ealg_getbyname_esp(const char *const str, int len, unsigned int *auxp)
+int ealg_getbyname(const char *const str, int len, unsigned int *auxp)
 {
-	int ret=-1;
+    const struct keyword_enum_value *kev;
+    int ret=-1;
 	if (!str||!*str)
 		goto out;
-	/* leave special case for eg:  "id248" string */
-	if (strcmp("id", str)==0)
-		return ESP_MAGIC_ID;
-	ret=alg_enum_search_prefix(&esp_transformid_names, "ESP_", str, len);
+        /* look for the name by literal name, upcasing first */
+	ret = enum_search_nocase(ikev2_encr_names.official_names, str, len);
+	if (ret>=0) goto out;
+
+        kev = keyword_search_aux(&ikev2_encr_names.aliases, str);
+        if(kev == NULL) goto out;
+
+        if(auxp) *auxp=kev->valueaux;
+        ret = kev->value;
+
 out:
 	return ret;
 }
-
-
-/*
- * 	Search auth_alg_names for a match, eg:
- * 		"md5" <=> "AUTH_ALGORITHM_HMAC_MD5"
+/**
+ * 	Search  oakley_hash_names for a match, eg:
+ * 		"md5" <=> "OAKLEY_MD5"
+ * @param str String containing Hash name (eg: MD5, SHA1)
+ * @param len Length of Hash (eg: 256,512)
+ * @return int Registered # of Hash ALG if loaded.
  */
-static int
-aalg_getbyname_esp(const char *const str, int len, unsigned int *auxp)
+int aalg_getbyname(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	unsigned num;
 	if (!str||!*str)
 		goto out;
-	ret=alg_enum_search_prefix(&auth_alg_names,"AUTH_ALGORITHM_HMAC_",str,len);
-	if (ret>=0) goto out;
-	ret=alg_enum_search_prefix(&auth_alg_names,"AUTH_ALGORITHM_",str,len);
+	ret=alg_enum_search_prefix(&oakley_hash_names,"OAKLEY_",str,len);
 	if (ret>=0) goto out;
 
-	/* Special value for no authentication since zero is already used. */
-	ret = INT_MAX;
-	if (!strncasecmp(str, "null", len))
-		goto out;
+        ret = keyword_search(&ikev2_auth_alg_names.aliases, str);
+	if (ret>=0) goto out;
 
 	sscanf(str, "id%d%n", &ret, &num);
 	if (ret >=0 && num!=strlen(str))
@@ -208,15 +215,27 @@ aalg_getbyname_esp(const char *const str, int len, unsigned int *auxp)
 out:
 	return ret;
 }
-static int
-modp_getbyname_esp(const char *const str, int len, unsigned int *auxp)
+
+/**
+ * 	Search oakley_group_names for a match, eg:
+ * 		"modp1024" <=> "OAKLEY_GROUP_MODP1024"
+ * @param str String MODP Name (eg: MODP)
+ * @param len Length of Hash (eg: 1024,1536,2048)
+ * @return int Registered # of MODP Group, if supported.
+ */
+int modp_getbyname(const char *const str, int len, unsigned int *auxp)
 {
 	int ret=-1;
 	if (!str||!*str)
 		goto out;
-	ret=alg_enum_search_prefix(&oakley_group_names,"OAKLEY_GROUP_",str,len);
+	ret=alg_enum_search_prefix(ikev2_group_names.official_names,
+                                   "OAKLEY_GROUP_",str,len);
 	if (ret>=0) goto out;
-	ret=alg_enum_search_ppfix(&oakley_group_names, "OAKLEY_GROUP_", " (extension)", str, len);
+
+        /* finally, look for aliases. */
+        ret = keyword_search(&ikev2_group_names.aliases, str);
+	if (ret>=0) goto out;
+
 out:
 	return ret;
 }
@@ -474,9 +493,9 @@ parser_init_esp(struct parser_context *p_ctx)
     p_ctx->aalg_permit = TRUE;
     p_ctx->state=ST_INI;
 
-    p_ctx->ealg_getbyname=ealg_getbyname_esp;
-    p_ctx->aalg_getbyname=aalg_getbyname_esp;
-
+    p_ctx->ealg_getbyname=ealg_getbyname;
+    p_ctx->aalg_getbyname=aalg_getbyname;
+    p_ctx->modp_getbyname=modp_getbyname;
 }
 
 /*
@@ -497,8 +516,8 @@ parser_init_ah(struct parser_context *p_ctx)
     p_ctx->state=ST_INI_AA;
 
     p_ctx->ealg_getbyname=NULL;
-    p_ctx->aalg_getbyname=aalg_getbyname_esp;
-
+    p_ctx->aalg_getbyname=aalg_getbyname;
+    p_ctx->modp_getbyname=modp_getbyname;
 }
 
 static int
@@ -515,10 +534,6 @@ parser_alg_info_add(struct parser_context *p_ctx
 	if (p_ctx->ealg_permit && *p_ctx->ealg_buf) {
             auxinfo = 0;
 	    ealg_id=p_ctx->ealg_getbyname(p_ctx->ealg_buf, strlen(p_ctx->ealg_buf), &auxinfo);
-	    if (ealg_id==ESP_MAGIC_ID) {
-		ealg_id=p_ctx->eklen;
-		p_ctx->eklen=0;
-	    }
 	    if (ealg_id<0) {
 		p_ctx->err="enc_alg not found";
 		goto out;
@@ -557,6 +572,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 		p_ctx->err="hash_alg not found";
 		goto out;
 	    }
+
 
             if(p_ctx->aklen == 0) {
                 p_ctx->aklen = auxinfo;
@@ -697,54 +713,11 @@ alg_info_parse_str (struct alg_info *alg_info
 	return -1;
 }
 
-static bool
-alg_info_discover_pfsgroup_hack(struct alg_info_esp *aie
-				, char *esp_buf
-				, const char **err_p)
-{
-    char *pfs_name;
-    static char err_buf[256];
-    int ret;
-    unsigned int auxinfo;
-
-    pfs_name=index(esp_buf, ';');
-
-    if(pfs_name) {
-	*pfs_name='\0';
-	pfs_name++;
-
-	/* if pfs strings AND first char is not '0' */
-	if (*pfs_name && pfs_name[0]!='0') {
-            auxinfo = 0;
-	    ret=modp_getbyname_esp(pfs_name, strlen(pfs_name), &auxinfo);
-	    if (ret<0) {
-		/* Bomb if pfsgroup not found */
-		DBG(DBG_CRYPT, DBG_log("alg_info_*_create_from_str(): "
-				       "pfsgroup \"%s\" not found",
-				       pfs_name));
-		if (*err_p) {
-		    snprintf(err_buf, sizeof(err_buf),
-			     "pfsgroup \"%s\" not found",
-			     pfs_name);
-		    *err_p=err_buf;
-		}
-		return FALSE;
-	    }
-	    aie->esp_pfsgroup=ret;
-	}
-    } else
-	aie->esp_pfsgroup = 0;
-
-    return TRUE;
-}
-
-
 struct alg_info_esp *
 alg_info_esp_create_from_str (const char *alg_str
 			      , const char **err_p)
 {
     struct alg_info_esp *alg_info_esp;
-    char esp_buf[256];
     int ret =0;
 
     /*
@@ -756,14 +729,9 @@ alg_info_esp_create_from_str (const char *alg_str
 
     if (!alg_info_esp) goto out;
 
-    strcpy(esp_buf, alg_str);
-    if(!alg_info_discover_pfsgroup_hack(alg_info_esp, esp_buf, err_p)) {
-	return NULL;
-    }
-
     alg_info_esp->alg_info_protoid=PROTO_IPSEC_ESP;
     ret=alg_info_parse_str((struct alg_info *)alg_info_esp
-			   , esp_buf, err_p
+			   , alg_str, err_p
 			   , parser_init_esp
 			   , alg_info_esp_add
 			   , NULL);
@@ -783,7 +751,6 @@ alg_info_ah_create_from_str (const char *alg_str
 			     , const char **err_p)
 {
     struct alg_info_esp *alg_info_esp;
-    char esp_buf[256];
     int ret =0;
 
     /*
@@ -793,14 +760,9 @@ alg_info_ah_create_from_str (const char *alg_str
      */
     alg_info_esp=alloc_thing (struct alg_info_esp, "alg_info_esp");
 
-    strcpy(esp_buf, alg_str);
-    if(!alg_info_discover_pfsgroup_hack(alg_info_esp, esp_buf, err_p)) {
-	return NULL;
-    }
-
     alg_info_esp->alg_info_protoid=PROTO_IPSEC_AH;
     ret=alg_info_parse_str((struct alg_info *)alg_info_esp
-			   , esp_buf, err_p
+			   , alg_str, err_p
 			   , parser_init_ah
 			   , alg_info_ah_add
 			   , NULL);
