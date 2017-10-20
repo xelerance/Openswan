@@ -159,7 +159,7 @@ __alg_info_ike_add (struct alg_info_ike *alg_info,
  *
  * defaults according to:  https://datatracker.ietf.org/doc/RFC8247
  */
-static int default_ike_groups[] = {
+static enum ikev2_trans_type_dh default_ike_groups[] = {
     OAKLEY_GROUP_MODP2048,          /* MUST */
     /* OAKLEY_GROUP_ECP256, */
 #if 0
@@ -171,16 +171,16 @@ static int default_ike_groups[] = {
     /* OAKLEY_GROUP_ECP512, */
 };
 
-static int default_prf_algs[] = {
+static enum ikev2_trans_type_prf default_prf_algs[] = {
     IKEv2_PRF_HMAC_SHA2_256,        /* MUST */
     IKEv2_PRF_HMAC_SHA2_512,        /* SHOULD+ */
     IKEv2_PRF_HMAC_SHA1             /* SHOULD- */
 };
-static int default_integ_algs[] = {
+static enum ikev2_trans_type_integ default_integ_algs[] = {
     IKEv2_AUTH_HMAC_SHA2_256_128,
     IKEv2_AUTH_HMAC_SHA1_96,
 };
-static int default_cipher_algs[] = {
+static enum ikev2_trans_type_encr  default_cipher_algs[] = {
     IKEv2_ENCR_AES_CBC,
     IKEv2_ENCR_AES_GCM_8,          /* IoT SHOULD */
 };
@@ -190,14 +190,17 @@ static int default_cipher_algs[] = {
  */
 static void
 alg_info_ike_add (struct alg_info *alg_info
-		  , int ealg_id, int ek_bits
-		  , int aalg_id, int ak_bits
-                  , int prfalg_id
-		  , int modp_id)
+		  , enum ikev2_trans_type_encr  ealg_id, int ek_bits
+		  , enum ikev2_trans_type_integ aalg_id, int ak_bits
+                  , enum ikev2_trans_type_prf   prfalg_id UNUSED
+		  , enum ikev2_trans_type_dh    modp_id)
 {
+    enum ikev2_trans_type_encr  *ciphers;
+    enum ikev2_trans_type_integ *integs;
+    enum ikev2_trans_type_prf   *prfs;
+    enum ikev2_trans_type_dh    *groups;
     int n_groups, n_prfs, n_integs, n_ciphers;
     int i_group, i_prf, i_integ, i_cipher;
-    int *groups, *prfs, *integs, *ciphers;
 
     n_groups=elemsof(default_ike_groups);
     groups  =default_ike_groups;
