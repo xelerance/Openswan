@@ -294,7 +294,7 @@ kernel_alg_show_connection(struct connection *c, const char *instance)
 	if(c->alg_info_esp == NULL) return;
 
 	if (c->alg_info_esp) {
-	    alg_info_snprint(buf, sizeof(buf), (struct alg_info *)c->alg_info_esp, TRUE);
+	    alg_info_snprint(buf, sizeof(buf), (struct alg_info *)c->alg_info_esp);
 	    whack_log(RC_COMMENT
 		      , "\"%s\"%s:   %s algorithms wanted: %s"
 		      , c->name
