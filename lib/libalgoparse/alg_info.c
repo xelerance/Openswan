@@ -410,7 +410,7 @@ parser_machine(struct parser_context *p_ctx)
 	    /* Only allow modpXXXX or PRF string if we have
 	     * a modp_getbyname method and a prfalg_getbyname
 	     */
-	    p_ctx->err="Non initial digit found for auth keylen";
+	    p_ctx->err="Invalid auth keylen found";
             goto consider_prf_modp;
 
 	case ST_AK:
@@ -422,7 +422,7 @@ parser_machine(struct parser_context *p_ctx)
 		p_ctx->aklen=p_ctx->aklen*10+ch-'0';
 		break;
 	    }
-	    p_ctx->err="Non digit found for auth keylen";
+	    p_ctx->err="Non-numeric digit found in keylen";
 	    goto err;
 
 	case ST_AK_END:
@@ -430,6 +430,10 @@ parser_machine(struct parser_context *p_ctx)
         consider_prf_modp:
 	    if ((p_ctx->modp_getbyname) && (p_ctx->prfalg_getbyname) && isalpha(ch)) {
 		parser_set_state(p_ctx, ST_PRF);
+		goto re_eval;
+	    }
+	    if ((p_ctx->modp_getbyname) && isalpha(ch)) {
+		parser_set_state(p_ctx, ST_MODP);
 		goto re_eval;
 	    }
 	    goto err;
