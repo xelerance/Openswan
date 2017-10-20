@@ -607,7 +607,8 @@ parser_alg_info_add(struct parser_context *p_ctx
                 prfalg_id = -1;
             }
         }
-        if(prfalg_id == -1) {
+        if(p_ctx->prfalg_getbyname && prfalg_id == -1) {
+            /* only set this if caller was seeking a PRF value */
             prfalg_id = alg_info_ikev2_integ2prf(aalg_id);
         }
 
