@@ -22,7 +22,7 @@
 
 struct esp_info {
         bool     esp_default;
-	u_int8_t transid;	/* ESP transform (AES, 3DES, etc.)*/
+    u_int8_t  transid;	/* ESP transform (AES, 3DES, etc.)*/
 	u_int16_t auth;		/* AUTH */
 	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
 	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
@@ -56,7 +56,6 @@ struct alg_info {
 struct alg_info_esp {
 	ALG_INFO_COMMON;
 	struct esp_info esp[64];
-	int esp_pfsgroup;
 };
 
 struct alg_info_ike {

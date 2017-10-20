@@ -110,11 +110,11 @@ struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
     case PROTO_IPSEC_ESP:
         ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
             db2_prop_add(dc, PROTO_IPSEC_ESP, 4);
-            db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  esp_info->encryptalg);
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_ENCR,  esp_info->transid);
             if(esp_info->enckeylen) {
                 db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->enckeylen);
             }
-            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->auth);
             if(esp_info->authkeylen) {
                 db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
             }
@@ -125,7 +125,7 @@ struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
     case PROTO_IPSEC_AH:
         ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
             db2_prop_add(dc, PROTO_IPSEC_AH, 4);
-            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->authalg);
+            db2_trans_add(dc,IKEv2_TRANS_TYPE_INTEG, esp_info->auth);
             if(esp_info->authkeylen) {
                 db2_attr_add(dc, IKEv2_KEY_LENGTH, esp_info->authkeylen);
             }

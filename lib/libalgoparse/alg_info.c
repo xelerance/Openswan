@@ -838,15 +838,25 @@ alg_info_snprint(char *buf, int buflen
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
 		snprintf(ptr, buflen, "%s(%d)_%03d-%s(%d)_%03d"
-			    , enum_name(&esp_transformid_names, esp_info->esp_ealg_id)+sizeof("ESP")
+			    , enum_name(&trans_type_encr_names, esp_info->esp_ealg_id)
 			    , esp_info->esp_ealg_id
 			    , (int)esp_info->esp_ealg_keylen
-			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id) + (esp_info->esp_aalg_id ? sizeof("AUTH_ALGORITHM_HMAC") : sizeof("AUTH_ALGORITHM"))
+			    , enum_name(&trans_type_integ_names, esp_info->esp_aalg_id)
 			    , esp_info->esp_aalg_id
 			    , (int)esp_info->esp_aalg_keylen);
 		size_t np = strlen(ptr);
 		ptr += np;
 		buflen -= np;
+
+                if (esp_info->pfs_group) {
+                    snprintf(ptr, buflen, "-%s(%d)"
+                             , enum_name(&oakley_group_names, esp_info->pfs_group)
+                             , esp_info->pfs_group);
+                    size_t np = strlen(ptr);
+                    ptr += np;
+                    buflen -= np;
+                    if(buflen <= 0) goto out;
+                }
 		if ( cnt > 0) {
 			snprintf(ptr, buflen, ", ");
 			np = strlen(ptr);
@@ -854,16 +864,7 @@ alg_info_snprint(char *buf, int buflen
 			buflen -= np;
 		}
 		if(buflen <= 0) goto out;
-	    }
-	    if (alg_info_esp->esp_pfsgroup) {
-		snprintf(ptr, buflen, "; pfsgroup=%s(%d)"
-			, enum_name(&oakley_group_names, alg_info_esp->esp_pfsgroup)+ sizeof("OAKLEY_GROUP")
-		        , alg_info_esp->esp_pfsgroup);
-		size_t np = strlen(ptr);
-		ptr += np;
-		buflen -= np;
-		if(buflen <= 0) goto out;
-	    }
+            }
 	    break;
 	}
 
@@ -872,12 +873,21 @@ alg_info_snprint(char *buf, int buflen
 	    struct alg_info_esp *alg_info_esp=(struct alg_info_esp *)alg_info;
 	    ALG_INFO_ESP_FOREACH(alg_info_esp, esp_info, cnt) {
 		snprintf(ptr, buflen, "%s(%d)_%03d"
-			    , enum_name(&auth_alg_names, esp_info->esp_aalg_id)+sizeof("AUTH_ALGORITHM_HMAC")
+			    , enum_name(&trans_type_integ_names, esp_info->esp_aalg_id)
 			    , esp_info->esp_aalg_id
 			    , (int)esp_info->esp_aalg_keylen);
 		size_t np = strlen(ptr);
 		ptr += np;
 		buflen -= np;
+                if (esp_info->pfs_group) {
+                    snprintf(ptr, buflen, "-%s(%d)"
+                             , enum_name(&oakley_group_names, esp_info->pfs_group)
+                             , esp_info->pfs_group);
+                    size_t np = strlen(ptr);
+                    ptr += np;
+                    buflen -= np;
+                    if(buflen <= 0) goto out;
+                }
 		if ( cnt > 0) {
 			snprintf(ptr, buflen, ", ");
 			np = strlen(ptr);
@@ -885,16 +895,7 @@ alg_info_snprint(char *buf, int buflen
 			buflen -= np;
 		}
 		if(buflen <= 0) goto out;
-	    }
-	    if (alg_info_esp->esp_pfsgroup) {
-		snprintf(ptr, buflen, "; pfsgroup=%s(%d)"
-			, enum_name(&oakley_group_names, alg_info_esp->esp_pfsgroup)+ sizeof("OAKLEY_GROUP")
-			, alg_info_esp->esp_pfsgroup);
-		size_t np = strlen(ptr);
-		ptr += np;
-		buflen -= np;
-		if(buflen <= 0) goto out;
-	    }
+                }
 	    break;
         }
 
