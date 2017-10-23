@@ -198,7 +198,7 @@ alg_info_esp_defaults(void)
 
     esp_info=alloc_thing (struct alg_info_esp, "alg_info_esp");
     if (!esp_info) goto out;
-    esp_info->alg_info_protoid=PROTO_ISAKMP;
+    esp_info->alg_info_protoid=PROTO_IPSEC_ESP;
 
     /* call with all zeros, to get entire default permutation */
     alg_info_esp_add (ESPTOINFO(esp_info),0,0,
