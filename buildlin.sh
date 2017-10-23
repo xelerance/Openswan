@@ -2,7 +2,7 @@
 
 fail=false
 
-if [ ! -f /usr/include/gmp.h ];
+if [ ! -f /usr/include/gmp.h ] && [ ! -f /usr/include/*/gmp.h ];
 then
     echo You need to install libgmp-dev.
     echo "    apt-get install libgmp-dev"
