@@ -1,5 +1,6 @@
 /* repeats existing test case */
 #include "../lp08-parentR1/parentR1_head.c"
+#include "seam_x509.c"
 #include "../seam_host_jamesjohnson.c"
 
 #define TESTNAME "badproposalR1"
