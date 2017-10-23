@@ -532,7 +532,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 {
     unsigned int auxinfo;
     int ealg_id, aalg_id, prfalg_id;
-	int modp_id = 0;
+    enum ikev2_trans_type_dh    modp_id= OAKLEY_INVALID_GROUP;
 
 	ealg_id=aalg_id=-1;
 	if (p_ctx->ealg_permit && *p_ctx->ealg_buf) {
@@ -594,7 +594,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   aalg_id));
 	}
 
-        modp_id   = -1;
+        modp_id   = OAKLEY_INVALID_GROUP;
         prfalg_id = -1;
         if(p_ctx->prfalg_getbyname && *p_ctx->prfalg_buf) {
             auxinfo = 0;
@@ -612,10 +612,10 @@ parser_alg_info_add(struct parser_context *p_ctx
             prfalg_id = alg_info_ikev2_integ2prf(aalg_id);
         }
 
-	if (modp_id <= 0 && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
+	if (modp_id == OAKLEY_INVALID_GROUP && p_ctx->modp_getbyname && *p_ctx->modp_buf) {
             auxinfo = 0;
 	    modp_id=p_ctx->modp_getbyname(p_ctx->modp_buf, strlen(p_ctx->modp_buf), &auxinfo);
-	    if (modp_id <= 0) {
+	    if (modp_id == OAKLEY_INVALID_GROUP) {
 		p_ctx->err="modp group not found";
 		goto out;
 	    }
@@ -626,7 +626,7 @@ parser_alg_info_add(struct parser_context *p_ctx
 				   modp_id));
         }
 
-        if (modp_id > 0 && lookup_group && !lookup_group(modp_id)) {
+        if (modp_id != OAKLEY_INVALID_GROUP && lookup_group && !lookup_group(modp_id)) {
             p_ctx->err="found modp group id, but not supported";
             goto out;
 	}
@@ -848,9 +848,9 @@ alg_info_snprint(char *buf, int buflen
 		ptr += np;
 		buflen -= np;
 
-                if (esp_info->pfs_group) {
+                if (esp_info->pfs_group != OAKLEY_INVALID_GROUP) {
                     snprintf(ptr, buflen, "-%s(%d)"
-                             , enum_name(&oakley_group_names, esp_info->pfs_group)
+                             , alg_info_modp_shortname(esp_info->pfs_group)
                              , esp_info->pfs_group);
                     size_t np = strlen(ptr);
                     ptr += np;
@@ -879,9 +879,9 @@ alg_info_snprint(char *buf, int buflen
 		size_t np = strlen(ptr);
 		ptr += np;
 		buflen -= np;
-                if (esp_info->pfs_group) {
+                if (esp_info->pfs_group != OAKLEY_INVALID_GROUP) {
                     snprintf(ptr, buflen, "-%s(%d)"
-                             , enum_name(&oakley_group_names, esp_info->pfs_group)
+                             , alg_info_modp_shortname(esp_info->pfs_group)
                              , esp_info->pfs_group);
                     size_t np = strlen(ptr);
                     ptr += np;

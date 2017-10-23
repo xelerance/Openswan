@@ -101,7 +101,9 @@ alg_info_esp_sadb2aa(int sadb_aalg)
 static void
 __alg_info_esp_add (struct alg_info_esp *alg_info
 		    , int ealg_id, unsigned ek_bits
-		    , int aalg_id, unsigned ak_bits)
+		    , int aalg_id, unsigned ak_bits
+                    , enum ikev2_trans_type_dh    modp_id)
+
 {
 	struct esp_info *esp_info=alg_info->esp;
 	unsigned cnt=alg_info->alg_info_cnt, i;
@@ -118,6 +120,7 @@ __alg_info_esp_add (struct alg_info_esp *alg_info
 	esp_info[cnt].esp_ealg_keylen=ek_bits;
 	esp_info[cnt].esp_aalg_id=aalg_id;
 	esp_info[cnt].esp_aalg_keylen=ak_bits;
+        esp_info[cnt].pfs_group = modp_id;
 	/* sadb values */
 	alg_info->alg_info_cnt++;
 	DBG(DBG_CRYPT, DBG_log("__alg_info_esp_add() "
@@ -145,15 +148,15 @@ alg_info_esp_add (struct alg_info *alg_info,
                 aalg_id = 0;
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                ealg_id, ek_bits,
-                               aalg_id, ak_bits);
+                               aalg_id, ak_bits, modp_id);
         } else  {
             /*	Policy: default to SHA256 and SHA1 */
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                ealg_id, ek_bits,
-                               IKEv2_AUTH_HMAC_SHA2_256_128, 128);
+                               IKEv2_AUTH_HMAC_SHA2_256_128, 128, modp_id);
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                ealg_id, ek_bits,
-                               IKEv2_AUTH_HMAC_SHA1_96, 128);
+                               IKEv2_AUTH_HMAC_SHA1_96, 128, modp_id);
         }
     }
 }
@@ -174,17 +177,17 @@ alg_info_ah_add (struct alg_info *alg_info,
         {
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                0, 0,
-                               aalg_id, ak_bits);
+                               aalg_id, ak_bits, modp_id);
         }
     else
         {
             /*	Policy: default to SHA256 and SHA1 */
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                0,0,
-                               IKEv2_AUTH_HMAC_SHA2_256_128, 128);
+                               IKEv2_AUTH_HMAC_SHA2_256_128, 128, modp_id);
             __alg_info_esp_add((struct alg_info_esp *)alg_info,
                                0,0,
-                               IKEv2_AUTH_HMAC_SHA1_96, 128);
+                               IKEv2_AUTH_HMAC_SHA1_96, 128, modp_id);
     }
 }
 
