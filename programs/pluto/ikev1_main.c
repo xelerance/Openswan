@@ -83,6 +83,7 @@
 #include "pluto_crypt.h"
 #include "ikev1.h"
 #include "ikev1_continuations.h"
+#include "pluto/db2_ops.h"
 
 #include "oswcrypto.h"
 
@@ -142,6 +143,8 @@ main_outI1(int whack_sock
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv1_MAJOR_VERSION;
     st->st_ike_min        = IKEv1_MINOR_VERSION;
+
+    st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
 
     change_state(st, STATE_MAIN_I1);
 
