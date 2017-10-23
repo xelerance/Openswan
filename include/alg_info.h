@@ -101,6 +101,7 @@ struct alg_info_ike * alg_info_ike_create_from_str(const char *alg_str
 
 /* generate list of defaults (all permutations) */
 extern struct alg_info_ike *alg_info_ike_defaults(void);
+extern struct alg_info_esp *alg_info_esp_defaults(void);
 
 int alg_info_parse(const char *str);
 int alg_info_snprint(char *buf, int buflen

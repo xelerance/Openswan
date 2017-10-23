@@ -1141,6 +1141,7 @@ stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
     }
 
     p2alg = alginfo2child_db2(c->alg_info_esp);
+    passert(p2alg != NULL);
     ikev2_out_sa(outpbs
 		 , proto
 		 , p2alg

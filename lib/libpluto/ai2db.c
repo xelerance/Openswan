@@ -106,6 +106,10 @@ struct db_sa *alginfo2child_db2(struct alg_info_esp *ai)
     sadb = alloc_thing(struct db_sa, "v2 policy database");
     dc = sadb->prop_ctx = db2_prop_new(10,10,10);
 
+    if(ai == NULL) {
+        ai = alg_info_esp_defaults();
+    }
+
     switch(ai->alg_info_protoid) {
     case PROTO_IPSEC_ESP:
         ALG_INFO_ESP_FOREACH((struct alg_info_esp *)ai, esp_info, cnt) {
