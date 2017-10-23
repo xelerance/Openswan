@@ -761,11 +761,6 @@ out_sa(pb_stream *outs
     ret = TRUE;
 
 return_out:
-
-#if defined(KERNEL_ALG) || defined(IKE_ALG)
-    if (sadb)
-          free_sa(sadb);
-#endif
     return ret;
 }
 
