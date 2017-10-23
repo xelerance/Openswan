@@ -369,6 +369,17 @@ alg_info_snprint_phase2(char *buf, size_t buflen, struct alg_info_esp *alg_info)
     }
 }
 
+const char *alg_info_modp_shortname(enum ikev2_trans_type_dh    modp_id)
+{
+    const char *modpname = enum_name(ikev2_group_names.official_names, modp_id);
+
+    if(modpname != NULL) {
+        modpname += sizeof("OAKLEY_GROUP_")-1;
+    } else {
+        modpname = "inv-modp";
+    }
+    return modpname;
+}
 
 char *alg_info_snprint_ike2(struct ike_info *ike_info
 			    , int eklen, int aklen
@@ -380,14 +391,9 @@ char *alg_info_snprint_ike2(struct ike_info *ike_info
     char *curbuf = buf;
     const int   totlen = buflen;
     const char *prfname  = enum_name(ikev2_prf_alg_names.official_names,ike_info->ike_prfalg);
-    const char *modpname = enum_name(ikev2_group_names.official_names, ike_info->ike_modp);
+    const char *modpname = alg_info_modp_shortname(ike_info->ike_modp);
     const char *encname  = enum_name(ikev2_encr_names.official_names,  ike_info->ike_ealg);
     const char *hashname = enum_name(ikev2_integ_names.official_names, ike_info->ike_halg);
-    if(modpname != NULL) {
-        modpname += sizeof("OAKLEY_GROUP_")-1;
-    } else {
-        modpname = "inv-modp";
-    }
     assert(prfname != NULL);
     assert(ike_info!= NULL);
     if(eklen == 0) {

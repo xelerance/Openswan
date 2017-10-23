@@ -18,6 +18,7 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 UNITTESTS=ap01-alginfo
 UNITTESTS+=ap02-algonames
+UNITTESTS+=ap03-espinfo
 
 clean check pcapupdate:
 	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done

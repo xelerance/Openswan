@@ -50,6 +50,8 @@ extern int ealg_getbyname(const char *const str, int len, unsigned int *auxp);
 extern int aalg_getbyname(const char *const str, int len, unsigned int *auxp);
 extern int modp_getbyname(const char *const str, int len, unsigned int *auxp);
 
+extern const char *alg_info_modp_shortname(enum ikev2_trans_type_dh    modp_id);
+
 struct alg_info; /* forward reference */
 extern void alg_info_esp_add (struct alg_info *alg_info,
                               enum ikev2_trans_type_encr  ealg_id, int ek_bits,

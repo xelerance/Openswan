@@ -950,6 +950,7 @@ enum ikev2_trans_type_dh {
 	OAKLEY_GROUP_DH24         = 24,
         OAKLEY_GROUP_X25519       = 31,
         OAKLEY_GROUP_X448         = 32,
+        OAKLEY_INVALID_GROUP      = 4294967295,  /* -1 */
 };
 
 /* Oakley Group Type attribute
