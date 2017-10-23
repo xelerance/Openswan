@@ -3,7 +3,7 @@
 void
 init_crypto(void)
 {
-  load_oswcrypto();
+  /* NOTHING for NOW */
 }
 
 const struct oakley_group_desc unset_group = {0, NULL, NULL, 0};      /* magic signifier */
