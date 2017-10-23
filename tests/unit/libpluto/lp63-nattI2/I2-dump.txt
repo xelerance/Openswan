@@ -1,3 +1,3 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 588, bad cksum 0 (->cfe9)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 496, bad cksum 0 (->d045)!)
     93.184.216.34.55045 > 132.213.238.7.4500: NONESP-encap: isakmp 2.0 msgid 00000001: child_sa  ikev2_auth[I]:
-    (v2e: len=524)
+    (v2e: len=432)
