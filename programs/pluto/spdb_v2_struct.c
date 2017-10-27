@@ -487,7 +487,14 @@ ikev2_match_transform_list_parent(struct db_sa *sadb
 
                         if(winning) {
                             winning->encrypt   = itl->encr_transforms[itl->encr_i];
-                            winning->enckeylen = itl->encr_keylens[itl->encr_i];
+
+                            if(itl->encr_keylens[itl->encr_i] == -1 ||
+                               itl->encr_keylens[itl->encr_i] == 0) {
+                                winning->enckeylen = 0;
+                            } else {
+                                winning->enckeylen = itl->encr_keylens[itl->encr_i];
+                            }
+
                             winning->prf_hash  = itl->prf_transforms[itl->prf_i];
                             /* winning->prfkeylen = itl->prf_keylens[itl->prf_i]; */
                             winning->integ_hash  = itl->integ_transforms[itl->integ_i];
@@ -821,11 +828,6 @@ ikev2_parse_parent_sa_body(
     if(!gotmatch) {
 	return NO_PROPOSAL_CHOSEN;
     }
-
-    /* there might be some work to do here if there was a conjunction,
-     * not sure yet about that case.
-     */
-
 
     /*
      * since we found something that matched, we might need to emit the

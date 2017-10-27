@@ -178,9 +178,7 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    transform type: 4
 |    transform ID: 14
 | collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
-| collected 1 encr 1 integ 1 prf and  1 dh
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| prop_disj_cnt: 1
 | selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 40
