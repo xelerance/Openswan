@@ -729,9 +729,6 @@ ikev2_parse_parent_sa_body(
     struct trans_attrs ta;
     struct ikev2_transform_list itl0, *itl;
 
-    memset(&itl0, 0, sizeof(struct ikev2_transform_list));
-    itl = &itl0;
-
     /* find the policy structures */
     if(!st->st_sadb) {
         st->st_sadb = alginfo2parent_db2(st->st_connection->alg_info_ike);
@@ -743,6 +740,9 @@ ikev2_parse_parent_sa_body(
     zero(&ta);
 
     while(np == ISAKMP_NEXT_P) {
+        memset(&itl0, 0, sizeof(struct ikev2_transform_list));
+        itl = &itl0;
+
 	/*
 	 * note: we don't support ESN,
 	 * so ignore any proposal that insists on it
@@ -1034,6 +1034,9 @@ ikev2_parse_child_sa_body(
 	 * note: we don't support ESN,
 	 * so ignore any proposal that insists on it
 	 */
+
+        memset(&itl0, 0, sizeof(struct ikev2_transform_list));
+        itl = &itl0;
 
 	if(!in_struct(&proposal, &ikev2_prop_desc, sa_pbs, &proposal_pbs))
 	    return PAYLOAD_MALFORMED;
