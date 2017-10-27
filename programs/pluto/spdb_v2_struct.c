@@ -437,7 +437,8 @@ struct ikev2_transform_list {
 static bool
 ikev2_match_transform_list_parent(struct db_sa *sadb
 				  , unsigned int propnum
-				  , struct ikev2_transform_list *itl)
+				  , struct ikev2_transform_list *itl
+                                  , struct trans_attrs *winning)
 {
     if(itl->encr_trans_next < 1) {
 	openswan_log("ignored proposal %u with no cipher transforms",
@@ -483,6 +484,17 @@ ikev2_match_transform_list_parent(struct db_sa *sadb
 					    itl->prf_transforms[itl->prf_i],
 					    itl->prf_keylens[itl->prf_i],
 					    itl->dh_transforms[itl->dh_i])) {
+
+                        if(winning) {
+                            winning->encrypt   = itl->encr_transforms[itl->encr_i];
+                            winning->enckeylen = itl->encr_keylens[itl->encr_i];
+                            winning->prf_hash  = itl->prf_transforms[itl->prf_i];
+                            /* winning->prfkeylen = itl->prf_keylens[itl->prf_i]; */
+                            winning->integ_hash  = itl->integ_transforms[itl->integ_i];
+                            /* winning->prfkeylen = itl->integ_keylens[itl->integ_i]; */
+                            winning->groupnum  = itl->dh_transforms[itl->dh_i];
+                        }
+
 			return TRUE;
 		    }
 		}
@@ -771,7 +783,8 @@ ikev2_parse_parent_sa_body(
 
 	if(ikev2_match_transform_list_parent(st->st_sadb
 					     , proposal.isap_propnum
-					     , itl)) {
+					     , itl
+                                             , &ta)) {
 
 	    winning_prop = proposal;
 	    gotmatch = TRUE;
@@ -795,13 +808,11 @@ ikev2_parse_parent_sa_body(
      * not sure yet about that case.
      */
 
+
     /*
      * since we found something that matched, we might need to emit the
      * winning value.
      */
-    ta.encrypt   = itl->encr_transforms[itl->encr_i];
-    ta.enckeylen = itl->encr_keylens[itl->encr_i] > 0 ?
-			itl->encr_keylens[itl->encr_i] : 0;
     ta.encrypter = (struct ike_encr_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_ENCR
 							     , ta.encrypt
 							     , ta.enckeylen);
@@ -809,15 +820,11 @@ ikev2_parse_parent_sa_body(
     if (ta.enckeylen <= 0)
 	ta.enckeylen = ta.encrypter->keydeflen;
 
-    ta.integ_hash  = itl->integ_transforms[itl->integ_i];
     ta.integ_hasher= (struct ike_integ_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_INTEG,ta.integ_hash, 0);
     passert(ta.integ_hasher != NULL);
-
-    ta.prf_hash    = itl->prf_transforms[itl->prf_i];
     ta.prf_hasher  = (struct ike_prf_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_PRF, ta.prf_hash, 0);
     passert(ta.prf_hasher != NULL);
 
-    ta.groupnum    = itl->dh_transforms[itl->dh_i];
     ta.group       = lookup_group(ta.groupnum);
 
     st->st_oakley = ta;
