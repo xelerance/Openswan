@@ -118,7 +118,6 @@ RC=0 "gateway--any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 5
 | will not send/process a dcookie
 | received a notify..
-| ikev2 parent inI1outR1: calculated ke+nonce, sending R1
 | nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   5d b8 d8 22  01 f4
 | processing v2N_NAT_DETECTION_SOURCE_IP
