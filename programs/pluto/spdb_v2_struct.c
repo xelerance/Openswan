@@ -290,11 +290,13 @@ spdb_v2_match_parent(struct db_sa *sadb
 	      , unsigned dh_transform)
 {
     struct db_v2_prop *pd;
-    unsigned int       pd_cnt;
+    unsigned int       pd_cnt, attempt;
     bool encr_matched, integ_matched, prf_matched, dh_matched;
 
+    attempt = 1;
     encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 
+    //DBG_log("prop_disj_cnt: %u", sadb->prop_disj_cnt);
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
 	struct db_v2_prop_conj  *pj;
 	struct db_v2_trans      *tr;
@@ -366,27 +368,43 @@ spdb_v2_match_parent(struct db_sa *sadb
 	    }
 
 	    /* esn_matched not tested! */
-	    if(dh_matched && prf_matched && integ_matched && encr_matched)
+	    if(dh_matched && prf_matched && integ_matched && encr_matched) {
+                if(DBGP(DBG_CONTROL)) {
+                    DBG_log("selected proposal %u encr=%s[%d] integ=%s[%d] prf=%s[%d] modp=%s"
+                            , propnum
+                            , enum_name(&trans_type_encr_names, encrid), encr_keylen
+                            , enum_name(&trans_type_integ_names, integid), integ_keylen
+                            , enum_name(&trans_type_prf_names, prfid), prf_keylen
+                            , enum_name(&oakley_group_names, dhid));
+                }
+
 		return TRUE;
+            }
 	}
+
+        /* only dumped when there is no match: it can be volumnous */
 	if(DBGP(DBG_CONTROLMORE)) {
-	/* note: enum_show uses a static buffer so more than one call per
-	   statement is dangerous */
-	    DBG_log("proposal %u %s encr= (policy:%s[%d] vs offered:%s[%d])"
+            /* note: enum_show uses a static buffer so more than one call per
+               statement is dangerous */
+	    DBG_log("proposal %u %6s encr= (policy:%20s[%d] vs offered:%s[%d]) [%u,%u]"
 		    , propnum
-		    , encr_matched ? "succeeded" : "failed"
+		    , encr_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_encr_names, encrid), encr_keylen
-		    , enum_show(&trans_type_encr_names, encr_transform), encr_keylen_policy);
-	    DBG_log("            %s integ=(policy:%s[%d] vs offered:%s[%d])"
-		    , integ_matched ? "succeeded" : "failed"
+		    , enum_show(&trans_type_encr_names, encr_transform), encr_keylen_policy
+                    , pd_cnt, attempt++);
+	    DBG_log("proposal %u %6s integ=(policy:%20s[%d] vs offered:%s[%d])"
+                    , propnum
+		    , integ_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_integ_names, integid), integ_keylen
 		    , enum_show(&trans_type_integ_names, integ_transform), integ_keylen_policy);
-	    DBG_log("            %s prf=  (policy:%s[%d] vs offered:%s[%d])"
-		    , prf_matched ? "succeeded" : "failed"
+	    DBG_log("proposal %u %6s prf=  (policy:%20s[%d] vs offered:%s[%d])"
+                    , propnum
+		    , prf_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_prf_names, prfid), prf_keylen
 		    , enum_show(&trans_type_prf_names, prf_transform), prf_keylen_policy);
-	    DBG_log("            %s dh=   (policy:%s vs offered:%s)"
-		    , dh_matched ? "succeeded" : "failed"
+	    DBG_log("proposal %u %6s dh=   (policy:%20s vs offered:%s)"
+                    , propnum
+		    , dh_matched ? "succ" : "failed"
 		    , enum_name(&oakley_group_names, dhid)
 		    , enum_show(&oakley_group_names, dh_transform));
 	}
@@ -450,6 +468,13 @@ ikev2_match_transform_list_parent(struct db_sa *sadb
 	for(itl->integ_i=0; itl->integ_i < itl->integ_trans_next; itl->integ_i++) {
 	    for(itl->prf_i=0; itl->prf_i < itl->prf_trans_next; itl->prf_i++) {
 		for(itl->dh_i=0; itl->dh_i < itl->dh_trans_next; itl->dh_i++) {
+                    DBG(DBG_PARSING,
+                        DBG_log("encr: %u<=%u integ: %u<=%u prf: %u<=%u dh: %u<=%u",
+                                itl->encr_i,  itl->encr_trans_next,
+                                itl->integ_i, itl->integ_trans_next,
+                                itl->prf_i,   itl->prf_trans_next,
+                                itl->dh_i,    itl->dh_trans_next));
+
 		    if(spdb_v2_match_parent(sadb, propnum,
 					    itl->encr_transforms[itl->encr_i],
 					    itl->encr_keylens[itl->encr_i],
@@ -878,16 +903,18 @@ spdb_v2_match_child(struct db_sa *sadb
 		return TRUE;
 	}
 	if(DBGP(DBG_CONTROLMORE)) {
-	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
+	    DBG_log("proposal %u %s encr= (policy:%20s vs offered:%s)"
 		    , propnum
 		    , encr_matched ? "failed" : "     "
 		    , enum_name(&trans_type_encr_names, encrid)
 		    , enum_name(&trans_type_encr_names, encr_transform));
-	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
+	    DBG_log("proposal %u %s integ=(policy:%20s vs offered:%s)"
+                    , propnum
 		    , integ_matched ? "failed" : "     "
 		    , enum_name(&trans_type_integ_names, integid)
 		    , enum_name(&trans_type_integ_names, integ_transform));
-	    DBG_log("            %s esn=  (policy:%s vs offered:%s)"
+	    DBG_log("proposal %u %s esn=  (policy:%20s vs offered:%s)"
+                    , propnum
 		    , esn_matched ? "failed" : "     "
 		    , enum_name(&trans_type_esn_names, esnid)
 		    , enum_name(&trans_type_esn_names, esn_transform));
