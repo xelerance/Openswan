@@ -1,0 +1,6 @@
+This test case is an IKEv2 responder -- it uses a certificate with a wildcard
+right= policy that accepts any ID that is properly validated.
+
+This test case is a devolved version of lp24, which just goes as far as
+producing the R1 packet for dave.  It's otherwise identical to lp24.
+
