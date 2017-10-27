@@ -509,6 +509,10 @@ ikev2_process_transforms(struct ikev2_prop *prop
 			 , pb_stream *prop_pbs
 			 ,  struct ikev2_transform_list *itl)
 {
+    unsigned int encr_x, integ_x, prf_x, dh_x;
+
+    encr_x=integ_x=prf_x=dh_x=0;
+
     while(prop->isap_numtrans-- > 0) {
 	pb_stream trans_pbs;
 	pb_stream attr_pbs;
@@ -543,6 +547,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 	    if(itl->encr_trans_next < MAX_TRANS_LIST) {
 		itl->encr_keylens[itl->encr_trans_next]=keylen;
 		itl->encr_transforms[itl->encr_trans_next++]=trans.isat_transid;
+                encr_x = trans.isat_transid;
 	    } /* show failure with else */
 	    break;
 
@@ -550,6 +555,7 @@ ikev2_process_transforms(struct ikev2_prop *prop
 	    if(itl->integ_trans_next < MAX_TRANS_LIST) {
 		itl->integ_keylens[itl->integ_trans_next]=keylen;
 		itl->integ_transforms[itl->integ_trans_next++]=trans.isat_transid;
+                integ_x = trans.isat_transid;
 	    }
 	    break;
 
@@ -557,12 +563,14 @@ ikev2_process_transforms(struct ikev2_prop *prop
 	    if(itl->prf_trans_next < MAX_TRANS_LIST) {
 		itl->prf_keylens[itl->prf_trans_next]=keylen;
 		itl->prf_transforms[itl->prf_trans_next++]=trans.isat_transid;
+                prf_x = trans.isat_transid;
 	    }
 	    break;
 
 	case IKEv2_TRANS_TYPE_DH:
 	    if(itl->dh_trans_next < MAX_TRANS_LIST) {
 		itl->dh_transforms[itl->dh_trans_next++]=trans.isat_transid;
+                dh_x = trans.isat_transid;
 	    }
 	    break;
 
@@ -572,7 +580,22 @@ ikev2_process_transforms(struct ikev2_prop *prop
 	    }
 	    break;
 	}
+
+        DBG(DBG_PARSING,
+            DBG_log("collect encr: %u<=%u integ: %u<=%u prf: %u<=%u dh: %u<=%u",
+                    encr_x,  itl->encr_trans_next,
+                    integ_x, itl->integ_trans_next,
+                    prf_x,   itl->prf_trans_next,
+                    dh_x,    itl->dh_trans_next));
     }
+
+#if 0
+    DBG_log("collected %u encr %u integ %u prf and  %u dh",
+            itl->encr_trans_next,
+            itl->integ_trans_next,
+            itl->prf_trans_next,
+            itl->dh_trans_next);
+#endif
     return STF_OK;
 }
 
