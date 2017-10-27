@@ -7,4 +7,5 @@ ENDNAME=rw
 TESTNAME=initiateselfI2
 
 pcapupdate:
-	@true
+	cp ../lp15-respondself/OUTPUT/respondselfR1.pcap parentR1.pcap
+
