@@ -63,13 +63,13 @@
 static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role
-		    , unsigned int np, pb_stream *outpbs);
+		    , pb_stream *outpbs);
 
 /* Send v2CERT and v2 CERT */
 stf_status
 ikev2_send_cert( struct state *st, struct msg_digest *md
-		, enum phase1_role role
-		, unsigned int np, pb_stream *outpbs)
+                 , enum phase1_role role
+                 , pb_stream *outpbs)
 {
     struct ikev2_cert cert;
     /*  flag : to send a certificate request aka CERTREQ */
@@ -130,16 +130,6 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	}
 	cert.isac_np = ISAKMP_NEXT_v2CERTREQ;
     }
-    else {
-	cert.isac_np = np;
-	/*
-	 * If we have a remote id configured in the conn,
-	 * we can send it here to signal we insist on it.
-	 * if (st->st_connection->spd.that.id)
-	 *   cert.isaa_np = ISAKMP_NEXT_v2IDr;
-	 */
-
-    }
 
     /*   send own (Initiator CERT) */
     {
@@ -166,25 +156,25 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     if(send_certreq) {
 	DBG(DBG_CONTROL
 	    , DBG_log("going to send a certreq"));
-	ikev2_send_certreq(st, md, role, np, outpbs);
+	ikev2_send_certreq(st, md, role, outpbs);
     }
     return STF_OK;
 }
 static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role UNUSED
-		    , unsigned int np, pb_stream *outpbs)
+		    , pb_stream *outpbs)
 {
-    if (st->st_connection->kind == CK_PERMANENT)
-	{
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+    if (st->st_connection->kind == CK_PERMANENT) {
 	DBG(DBG_CONTROL
 	    , DBG_log("connection->kind is CK_PERMANENT so send CERTREQ"));
 
-	    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
-				   , st->st_connection->spd.that.ca
-				   , outpbs, np))
-		return STF_INTERNAL_ERROR;
-	}
+        if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
+                                     , st->st_connection->spd.that.ca
+                                     , outpbs, 0))
+            return STF_INTERNAL_ERROR;
+    }
     else
 	{
 	    generalName_t *ca = NULL;
@@ -199,9 +189,10 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
 
 		    for (gn = ca; gn != NULL; gn = gn->next)
 			{
+                            pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
 			    if (!build_and_ship_CR(CERT_X509_SIGNATURE,
 						   gn->name, outpbs
-		       ,gn->next == NULL ? np : ISAKMP_NEXT_CR))
+                                                   , 0))
 				return STF_INTERNAL_ERROR;
 			}
 		    free_generalNames(ca, FALSE);
@@ -211,7 +202,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md
 	            DBG(DBG_CONTROL
 	                , DBG_log("Not a roadwarrior instance, sending empty CA in CERTREQ"));
 		    if (!build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
-					   , outpbs, np))
+					   , outpbs, 0))
 			return STF_INTERNAL_ERROR;
 		}
 	}

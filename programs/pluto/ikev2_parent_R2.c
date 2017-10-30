@@ -167,7 +167,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 
     /*Once the message has been decrypted, then only we can check for auth payload*/
-    /*check the presense of auth payload now so that it does not crash in rehash_state if auth payload has not been received*/
+    /* check the presense of auth payload now so that it
+     * does not crash in rehash_state if auth payload has not been
+     * received
+     */
     if(!md->chain[ISAKMP_NEXT_v2AUTH]) {
         openswan_log("no authentication payload found");
         return STF_FAIL;
@@ -362,12 +365,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             build_id_payload((struct isakmp_ipsec_id *)&r_id, &id_b,
                              &c->spd.this);
             r_id.isai_critical = ISAKMP_PAYLOAD_NONCRITICAL;
-
-            if(send_cert)
-                r_id.isai_np = ISAKMP_NEXT_v2CERT;
-            else
-                r_id.isai_np = ISAKMP_NEXT_v2AUTH;
-
+            r_id.isai_np = 0;
             id_start = e_pbs_cipher.cur;
 
             pbs_set_np(&e_pbs_cipher, ISAKMP_NEXT_v2IDr);
@@ -397,10 +395,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         if(send_cert) {
             stf_status certstat = ikev2_send_cert(st, md
                                                   , RESPONDER
-                                                  , ISAKMP_NEXT_v2AUTH
                                                   , &e_pbs_cipher);
             if(certstat != STF_OK) return certstat;
-            }
+        }
 
         /* since authentication good,
          * see if there is a child SA being proposed */
