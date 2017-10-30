@@ -7,7 +7,8 @@ ENDNAME=davecert
 TESTNAME=davecertI2
 
 pcapupdate:
-	@true
+	cp ../lp70-certreplydaveR1/OUTPUT/parentR1dave.pcap parentR1dave.pcap
+
 
 
 

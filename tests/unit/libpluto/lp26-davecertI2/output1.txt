@@ -105,127 +105,14 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   6e 69 74 30
 ./davecertI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./davecertI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
-| *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
-|   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
-|   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
-|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
-|   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
-|   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
-|   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
-|   b1 53 18 07  81 e8 1d 07  c6 19 1c de  dc 1f 2c 26
-|   d2 0b 59 f9  67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d
-|   8e d0 30 08  0b ed 95 b0  65 2f 5c a6  36 7e 92 2d
-|   da cb 88 54  e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29
-|   be 2c a4 55  68 01 45 bc  56 a9 84 b9  2b 1b bf 9a
-|   fc 84 67 5f  d3 04 79 90  b7 fa 89 5b  04 06 d5 9a
-|   50 92 16 4b  d6 33 40 be  2a 44 94 74  33 a7 a5 c1
-|   1f 88 5b eb  4e d2 bb 94  b9 22 db e3  b6 5a 8c f9
-|   d6 43 5d 5e  5d c9 19 b8  c8 81 53 01  95 09 02 7b
-|   c0 2a b0 c8  5d 2c 69 78  6c e8 f6 5d  e4 90 43 83
-|   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
-|   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
-|   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
-|   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
-|   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
-|   75 74 6f 75  6e 69 74 30
-| **parse ISAKMP Message:
-|    initiator cookie:
-|   8d 0e 0f 10  11 12 13 14
-|    responder cookie:
-|   5d 73 ce 75  3d b1 db 6d
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
-|    length: 376
-|  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
-| I am IKE SA Initiator
-| ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
-| state hash entry 15
-| v2 state object not found
-| ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| v2 peer and cookies match on #1
-| v2 state object #1 (home) found, in STATE_PARENT_I1
-| ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  00 00 00 00  00 00 00 00
-| state hash entry 4
-| ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
-| state hash entry 15
-| inserting state object #1 bucket: 15
-| state found and its state is:STATE_PARENT_I1 msgid: 00000
-| ***parse IKEv2 Security Association Payload:
-|    critical bit: none
-|    length: 48
-| processing payload: ISAKMP_NEXT_v2SA (len=48)
-| ***parse IKEv2 Key Exchange Payload:
-|    critical bit: none
-|    length: 264
-|    transform type: 14
-| processing payload: ISAKMP_NEXT_v2KE (len=264)
-| ***parse IKEv2 Nonce Payload:
-|    critical bit: none
-|    length: 20
-| processing payload: ISAKMP_NEXT_v2Ni (len=20)
-| ***parse IKEv2 Vendor ID Payload:
-|    critical bit: none
-|    length: 16
-| processing payload: ISAKMP_NEXT_v2V (len=16)
-| considering state entry: 0
-| now proceed with state specific processing using state #0 initiator-V2_init
-| ikev2 parent inR1: calculating g^{xy} in order to send I2
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 44
-|    prop #: 1
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 12
-|    transform type: 1
-|    transform ID: 12
-| ******parse IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 1   succ encr= (policy:             aes_cbc[128] vs offered:aes_cbc[-1]) [0,1]
-| proposal 1 failed integ=(policy:   hmac_sha2_256_128[-1] vs offered:hmac_sha1_96[-1])
-| proposal 1 failed prf=  (policy:   prf-hmac-sha2-256[-1] vs offered:prf-hmac-sha1[-1])
-| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| #1 complete v2 state transition with STF_FAIL
-./davecertI2 STATE_PARENT_I1: NO_PROPOSAL_CHOSEN
-| state transition function for STATE_PARENT_I1 failed: NO_PROPOSAL_CHOSEN
 ./davecertI2 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./davecertI2 deleting state #1 (STATE_PARENT_I1)
 | considering request to delete IKE parent state
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
-| state hash entry 15
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 | pass 1: considering PARENT SAs to delete
-./davecertI2 leak: nonce, item size: X
-./davecertI2 leak: Gr, item size: X
 ./davecertI2 leak: saved first packet, item size: X
 ./davecertI2 leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./davecertI2 leak: sa in main_outI1, item size: X
