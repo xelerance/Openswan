@@ -820,11 +820,9 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
-| RCOOKIE:  5d 73 ce 75  3d b1 db 6d
-| state hash entry 15
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
 | pass 1: considering PARENT SAs to delete
-./davecertI2 leak: nonce, item size: X
-./davecertI2 leak: Gr, item size: X
 ./davecertI2 leak: saved first packet, item size: X
 ./davecertI2 leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./davecertI2 leak: sa in main_outI1, item size: X
