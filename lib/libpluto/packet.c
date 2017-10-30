@@ -1146,18 +1146,20 @@ static struct_desc *const payload_descs[] = {
     NULL, NULL, NULL, NULL,             /* 22,23,24,25 */
     NULL, NULL, NULL, NULL,             /* 26,27,28,29 */
     NULL, NULL, NULL,                   /* 30,31,32 */
-    &ikev2_sa_desc,                     /* 33 */
-    &ikev2_ke_desc,                     /* 34 */
-    &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
-    &ikev2_certificate_desc,            /* 37 */
-    &ikev2_certificate_req_desc,	/* 38*/
-    &ikev2_a_desc,                      /* 39 */
-    &ikev2_nonce_desc,                  /* 40 */
-    &ikev2_notify_desc,                 /* 41 */
-    &ikev2_delete_desc,                 /* 42 */
-    &ikev2_vendor_id_desc,              /* 43 */
-    &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
-    &ikev2_e_desc,                      /* 46 */
+    &ikev2_sa_desc,                     /* 33 ISAKMP_NEXT_v2SA */
+    &ikev2_ke_desc,                     /* 34 ISAKMP_NEXT_v2KE */
+    &ikev2_id_desc,                     /* 35 ISAKMP_NEXT_v2IDi */
+    &ikev2_id_desc,                     /* 36 ISAKMP_NEXT_v2IDr */
+    &ikev2_certificate_desc,            /* 37 ISAKMP_NEXT_v2CERT */
+    &ikev2_certificate_req_desc,	/* 38 ISAKMP_NEXT_v2CERTREQ */
+    &ikev2_a_desc,                      /* 39 ISAKMP_NEXT_v2AUTH */
+    &ikev2_nonce_desc,                  /* 40 ISAKMP_NEXT_v2Ni/ISAKMP_NEXT_v2Nr */
+    &ikev2_notify_desc,                 /* 41 ISAKMP_NEXT_v2N */
+    &ikev2_delete_desc,                 /* 42 ISAKMP_NEXT_v2D */
+    &ikev2_vendor_id_desc,              /* 43 ISAKMP_NEXT_v2V */
+    &ikev2_ts_desc,                     /* 44 ISAKMP_NEXT_v2TSi */
+    &ikev2_ts_desc,                     /* 45 ISAKMP_NEXT_v2TSr */
+    &ikev2_e_desc,                      /* 46 ISAKMP_NEXT_v2E */
 };
 
 const struct_desc *payload_desc(unsigned p)
