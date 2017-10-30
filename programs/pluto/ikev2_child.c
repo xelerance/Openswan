@@ -1552,6 +1552,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
     authstart = reply_stream.cur;
 
     /* at this point, the child will be the one making the transition */
+    set_cur_state(st);
     md->transition_state = st;
 
     /* send response */
@@ -1761,6 +1762,8 @@ stf_status ikev2child_inCR1(struct msg_digest *md)
     if(md->chain[ISAKMP_NEXT_v2KE]) {
         return ikev2child_inCR1_pfs(md);
     } else {
+	set_cur_state(st);
+	md->transition_state = st;
         return ikev2child_inCR1_tail(md, st);
     }
 }
