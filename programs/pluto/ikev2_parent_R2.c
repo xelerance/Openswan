@@ -317,7 +317,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             /* let the isa_version reply be the same as what the sender had */
             r_hdr.isa_np    = ISAKMP_NEXT_v2E;
             r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
-            r_hdr.isa_flags = ISAKMP_FLAGS_R;
+            r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
             r_hdr.isa_msgid = htonl(md->msgid_received);
             memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
             memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
@@ -465,6 +465,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* let TCL hack it before we mark the length. */
     TCLCALLOUT("v2_avoidEmitting", st, st->st_connection, md);
+
+    /*
+     * at this point, the other end has proven who they are, and so we should stop
+     * setting the I bit....
+     */
+    st->st_ikev2_orig_initiator = FALSE;
 
     /* keep it for a retransmit if necessary */
     freeanychunk(st->st_tpacket);

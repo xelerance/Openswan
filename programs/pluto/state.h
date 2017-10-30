@@ -204,6 +204,7 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
+    bool               st_ikev2_orig_initiator;  /* if we keyed the parent SA */
     u_char             st_ike_maj;
     u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
@@ -416,6 +417,9 @@ struct state
 
 };
 #define NULL_STATE NULL
+
+#define IKEv2_ORIG_INITIATOR_FLAG(st) (st->st_ikev2_orig_initiator?ISAKMP_FLAGS_I : 0)
+
 
 extern bool states_use_connection(struct connection *c);
 

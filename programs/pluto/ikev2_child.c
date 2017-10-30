@@ -1160,9 +1160,13 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np    = ISAKMP_NEXT_v2E;
         r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
-        r_hdr.isa_flags = ISAKMP_FLAGS_I|ISAKMP_FLAGS_E;
+
+        /* we should set the I bit, if we are the original initiator of the
+         * the parent SA.
+         */
+        r_hdr.isa_flags = ISAKMP_FLAGS_E|IKEv2_ORIG_INITIATOR_FLAG(st);
         r_hdr.isa_msgid = htonl(st->st_msgid);
-        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE); /* XXX */
+        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             return STF_INTERNAL_ERROR;
@@ -1568,7 +1572,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             /* let the isa_version reply be the same as what the sender had */
             r_hdr.isa_np    = ISAKMP_NEXT_v2E;
             r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
-            r_hdr.isa_flags = ISAKMP_FLAGS_R;
+            r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
             r_hdr.isa_msgid = htonl(md->msgid_received);
             memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
             memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);

@@ -510,6 +510,17 @@ extern const char *const flag_bit_names[];
 #define ISAKMP_FLAG_ENCRYPTION   0x1  /* repeat of above */
 #define ISAKMP_FLAG_COMMIT       0x2
 
+/*
+ * the I bit is set on messages from the original initiator,
+ * i.e. the end-point which last rekeyed the parent SA.
+ */
+#define IKEv2_ORIGINAL_INITIATOR(flags)  (flags & ISAKMP_FLAGS_I)
+/*
+ * the R bit is set up by the responder, so if it is not set, then
+ * we must be the responder.
+ */
+#define IKEv2_MSG_FROM_INITIATOR(flags)  !(flags & ISAKMP_FLAGS_R)
+
 
 /* Situation definition for IPsec DOI */
 extern const char *const sit_bit_names[];

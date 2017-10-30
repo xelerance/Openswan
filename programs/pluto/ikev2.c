@@ -559,7 +559,7 @@ process_v2_packet(struct msg_digest **mdp)
     /* NOTE: in_struct() did not change the byte order, so make a copy in local order */
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
-    if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+    if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	/* then I am the responder */
 
 	md->role = RESPONDER;
@@ -761,7 +761,7 @@ process_v2_packet(struct msg_digest **mdp)
 	DBG(DBG_CONTROL, DBG_log("did not found valid state; giving up"));
 
 	/* no useful state */
-	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	    /* must be an initiator message, so we are the responder */
 
 	    /* XXX need to be more specific */
@@ -1370,9 +1370,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 
 	if(md->note > 0) {
 		/* only send a notify is this packet was a question, not if it was an answer */
-		if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-		     SEND_NOTIFICATION(md->note);
-		}
+            if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
+                SEND_NOTIFICATION(md->note);
+            }
 	}
 
 	DBG(DBG_CONTROL,
