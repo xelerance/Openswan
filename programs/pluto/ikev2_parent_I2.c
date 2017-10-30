@@ -360,7 +360,6 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     if(doi_send_ikev2_cert_thinking(st)) {
         stf_status certstat = ikev2_send_cert( st, md
                                                , INITIATOR
-                                               , ISAKMP_NEXT_v2AUTH
                                                , &e_pbs_cipher);
         if(certstat != STF_OK) return certstat;
     }
