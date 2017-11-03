@@ -1173,17 +1173,14 @@ ikev2_parse_child_sa_body(
     } else
 	passert(ta.encrypt == IKEv2_ENCR_NULL);
 
-    /* this is really a mess having so many different numbers for auth
-     * algorithms.
-     */
-    ta.integ_hash  = itl->integ_transforms[itl->integ_i];
+    ta.integ_hasher= (struct ike_integ_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_INTEG,ta.integ_hash, 0);
+    passert(ta.integ_hasher != NULL);
+
     /*
      * here we obtain auth value for esp,
      * but loosse what is correct to be sent in the propoasl
      * so preserve the winning proposal.
      */
-    ta1 = ta;
-    ta.integ_hash  = alg_info_esp_v2tov1aa(ta.integ_hash);
 
     st->st_esp.attrs.transattrs = ta;
     st->st_esp.present = TRUE;
