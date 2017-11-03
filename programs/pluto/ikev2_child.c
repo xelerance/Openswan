@@ -1385,8 +1385,18 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now decrypt payload and extract values */
-    {
+    if (IKEv2_IS_ORIG_INITIATOR(md->pst)) {
         stf_status ret;
+	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as INITIATOR"));
+        ret = ikev2_decrypt_msg(md, INITIATOR);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            delete_state(st);
+            return ret;
+        }
+    } else {
+        stf_status ret;
+	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as RESPONDER"));
         ret = ikev2_decrypt_msg(md, RESPONDER);
         if(ret != STF_OK) {
             loglog(RC_LOG_SERIOUS, "unable to decrypt message");
@@ -1400,6 +1410,11 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     } else {
         return ikev2child_inCI1_nopfs(md);
     }
+}
+
+stf_status ikev2child_inI3(struct msg_digest *md)
+{
+	return ikev2child_inCI1(md);
 }
 
 /*
@@ -1573,7 +1588,8 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             r_hdr.isa_np    = ISAKMP_NEXT_v2E;
             r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
             r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
-            r_hdr.isa_msgid = htonl(md->msgid_received);
+	    /* also let teh isa_msgid reply be the same as what sender sent */
+            //r_hdr.isa_msgid = htonl(md->msgid_received);
             memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
             memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
             if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
@@ -1637,10 +1653,19 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             close_output_pbs(&md->rbody);
             close_output_pbs(&reply_stream);
 
-            ret = ikev2_encrypt_msg(md, RESPONDER,
-                                    authstart,
-                                    iv, encstart, authloc,
-                                    &e_pbs, &e_pbs_cipher);
+	    if (IKEv2_IS_ORIG_INITIATOR(md->pst)) {
+		    DBG(DBG_CONTROLMORE, DBG_log("encrypting payload as INITIATOR"));
+		    ret = ikev2_encrypt_msg(md, INITIATOR,
+					    authstart,
+					    iv, encstart, authloc,
+					    &e_pbs, &e_pbs_cipher);
+	    } else {
+		    DBG(DBG_CONTROLMORE, DBG_log("encrypting payload as RESPONDER"));
+		    ret = ikev2_encrypt_msg(md, RESPONDER,
+					    authstart,
+					    iv, encstart, authloc,
+					    &e_pbs, &e_pbs_cipher);
+	    }
             if(ret != STF_OK) return ret;
         }
     }
