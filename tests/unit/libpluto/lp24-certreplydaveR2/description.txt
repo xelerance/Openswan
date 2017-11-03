@@ -8,3 +8,11 @@ from *Dave*, and replies to it.
 carolI1.pcap is copied from ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap
 carolI2.pcap is copied from ../lp20-certificateselfI2/OUTPUT/certificateselfI2.pcap
 
+davecertI1.pcap from ../lp23-davecertI1/OUTPUT/davecertI1.pcap
+davecertI2.pcap from ../lp26-davecertI2/OUTPUT/parentI2.pcap
+
+Originally the test case did not emit the parentR1dave.pcap, it was produced
+because the test was half-run, but now it runs both.
+
+
+So, in fact the is the daveR1 response, despite being named R2.
