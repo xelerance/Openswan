@@ -588,13 +588,15 @@ process_v2_packet(struct msg_digest **mdp)
         }
 
 	if(pst) {
-	    if(pst->st_msgid_lastrecv >  md->msgid_received){
+	    if(pst->st_msgid_lastrecv != INVALID_MSGID
+	       && pst->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
 		openswan_log("received too old retransmit: %u < %u"
 			     , md->msgid_received, pst->st_msgid_lastrecv);
 		return;
 	    }
-	    if(pst->st_msgid_lastrecv == md->msgid_received){
+	    if(pst->st_msgid_lastrecv != INVALID_MSGID
+	       && pst->st_msgid_lastrecv == md->msgid_received){
 		/* this is a recent retransmit, resend our reply */
                 /* is it ever the case that *st* is the wrong child? No, looked it up by msgid */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
