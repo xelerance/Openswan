@@ -430,8 +430,9 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             ret = ikev2_child_sa_respond(md, NULL, &e_pbs_cipher);
             if(ret > STF_FAIL) {
                 v2_notify_num = ret - STF_FAIL;
-                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
-                np = ISAKMP_NEXT_NONE;
+                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)));
+                return ret;
+
             } else if(ret != STF_OK) {
                 DBG_log("ikev2_child_sa_respond returned %s", stf_status_name(ret));
                 np = ISAKMP_NEXT_NONE;
