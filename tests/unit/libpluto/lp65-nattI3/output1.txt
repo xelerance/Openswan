@@ -164,6 +164,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/40 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -214,8 +215,105 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to
 1: output to /dev/null
 1: input from nattR2.pcap
 |   =========== input from from nattR2.pcap ========
+skipping: eth0:500  outside: 55044 <=> d: 55045
+picking: eth0:4500 float outside: 55045 <=> d: 55045
+| *received 448 bytes from 132.213.238.7:4500 on eth0 (port=4500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 23 20  00 00 00 01  00 00 01 c0  24 00 01 a4
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
+|   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
+|   c1 fc 19 db  f7 a0 0a 58  95 e0 43 74  1f 5e e0 33
+|   f2 06 29 c9  8d 3e 52 00  37 22 20 6c  47 af 94 1c
+|   6a 93 b3 97  1f ff 5c 1b  70 b3 48 6a  c7 5f 27 b3
+|   e4 bf e1 17  0e 15 c1 47  77 7b 53 88  6c 4a cb 12
+|   d0 82 94 13  cf 66 cc 4c  d8 b2 8e c1  39 07 b9 a5
+|   12 f6 e0 69  cb ad 11 c1  e9 58 33 21  a8 bb a9 ec
+|   40 9e ba 01  5c 8d e8 04  ac b9 22 b2  c6 ce c8 a9
+|   79 a2 02 52  da d8 f7 41  ae 9c 82 85  5f f2 f5 a3
+|   3f f7 09 de  d6 e7 31 43  51 69 8f 8d  fa 0b 41 e6
+|   d8 07 00 68  9e b7 92 3d  47 93 37 e6  14 e0 48 0d
+|   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
+|   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
+|   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
+|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
+|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
+|   44 93 ae 9a  00 2c d4 9d  32 aa 19 f0  df 7b ed 5e
+|   5c 7e 7d c1  73 c0 1b dd  b1 1a 05 5f  8f ec 9d be
+|   d7 74 35 57  5f 62 84 76  61 09 a3 4f  dd 83 81 af
+|   d5 6e dc 5b  c9 85 38 a8  ce 21 44 ea  a3 59 12 ac
+|   2b 00 a4 6e  40 b0 fc 6c  c8 2e ae 3f  7a 9a 24 1a
+|   91 59 dd 04  2b 6a e2 c8  80 12 23 25  84 c5 ab 6a
+|   15 1e 4d f5  dd 81 d9 0b  07 43 b1 59  36 df 19 3a
+|   d2 01 ec 6c  2a b7 5d 98  21 77 a3 a4  92 e9 a9 bc
+|  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
+| I am IKE SA Initiator
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v2 peer, cookies and msgid match on #2
+| v2 state object #2 found, in STATE_CHILD_C0_KEYING
+| state found and its state is:STATE_CHILD_C0_KEYING msgid: 00001
+| considering state entry: 0
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
+| considering state entry: 1
+|   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
+| considering state entry: 2
+| now proceed with state specific processing using state #2 initiator-auth-process
+| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
+./nattI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
+| ikev2 verify required CA is '%any'
+| checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
+| key issuer CA is '%any'
+|  checking narrowing - responding to R2
+| checking TSi(1)/TSr(1) selectors, looking for exact match
+|   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
+|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
+| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
+|       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
+|  prefix fitness found a better match c parker1--jj2
+|     evaluate_connection_port_fit tsi_n[1], best=-1
+|    tsi[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0], range_i=65536 best=-1
+|    tsr[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0] tsr_n[0], range=65536/65536 best=-1
+|     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
+|     port_fitness 131072
+|   port fitness found better match c parker1--jj2, tsi[0],tsr[0]
+| protocol 0 and tsi[0].ipprotoid 0: exact match
+| protocol 0 and tsr[0].ipprotoid 0: exact match
+|     best protocol fit so far: tsi[0] fitrange_i 255, tsr[0] fitrange_r 255, matchiness 510
+|     protocol_fitness 510
+|    protocol fitness found better match c parker1--jj2, tsi[0],tsr[0]
+| found an acceptable TSi/TSr Traffic Selector
+| printing contents struct traffic_selector
+|   ts_type: IKEv2_TS_IPV6_ADDR_RANGE
+|   ipprotoid: 0
+|   startport: 0
+|   endport: 65535
+|   ip low: fd68:c9f9:4157:2:0:1::
+|   ip high: fd68:c9f9:4157:2:0:1:ffff:ffff
+| printing contents struct traffic_selector
+|   ts_type: IKEv2_TS_IPV6_ADDR_RANGE
+|   ipprotoid: 0
+|   startport: 0
+|   endport: 65535
+|   ip low: fd68:c9f9:4157::
+|   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
+| proposal 1,0 match  encr= (policy:             aes_cbc vs offered:aes_cbc)
+| proposal 1,0 failed integ=(policy:   hmac_sha2_256_128 vs offered:none)
+| proposal 1,0 match  esn=  (policy:        esn-disabled vs offered:esn-disabled)
+| proposal 1,1 match  encr= (policy:             aes_cbc vs offered:aes_cbc)
+| proposal 1,1 failed integ=(policy:        hmac_sha1_96 vs offered:none)
+| proposal 1,1 match  esn=  (policy:        esn-disabled vs offered:esn-disabled)
+| #2 complete v2 state transition with STF_FAIL
+./nattI3 STATE_CHILD_C0_KEYING: NO_PROPOSAL_CHOSEN
+| state transition function for STATE_CHILD_C0_KEYING failed: NO_PROPOSAL_CHOSEN
+now look at the resulting SAs produced.
 RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2); none in -1s; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=0; msgid=0; idle; import:admin initiate
 ./nattI3 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./nattI3 deleting state #2 (STATE_CHILD_C0_KEYING)
@@ -223,53 +321,27 @@ RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I2 (sent v2I2, expected v2R2);
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
-./nattI3 deleting state #1 (STATE_PARENT_I2)
+| pass 1: considering PARENT SAs to delete
+./nattI3 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   64 0a 06 43  5c 7c 4b 31
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 02
-| ***emit IKEv2 Encryption Payload:
-|    critical bit: none
-| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| *****emit IKEv2 Delete Payload:
-|    critical bit: none
-|    protocol ID: 1
-|    SPI size: 0
-|    number of SPIs: 0
-| emitting length of IKEv2 Delete Payload: 8
-| emitting 8 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07
-| emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 52
-| emitting length of ISAKMP Message: 80
 sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to 132.213.238.7:4500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   cc 69 b7 54  9e 81 b1 3d  fa a9 ea ac  08 ab 7c cf
-| pass 1: considering PARENT SAs to delete
-./nattI3 deleting state #1 (STATE_IKESA_DEL)
-| considering request to delete IKE parent state
-| now deleting the IKE (or parent) state
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
-./nattI3 leak: request packet for informational exchange, item size: X
+./nattI3 leak: alg_info_esp, item size: X
+./nattI3 leak: db_context->attrs, item size: X
+./nattI3 leak: db_context->trans, item size: X
+./nattI3 leak: 2 * db_context->conj, item size: X
+./nattI3 leak: v2 policy database, item size: X
 ./nattI3 leak: reply packet, item size: X
 ./nattI3 leak: alg_info_esp, item size: X
 ./nattI3 leak: db_context->attrs, item size: X
 ./nattI3 leak: db_context->trans, item size: X
 ./nattI3 leak: 2 * db_context->conj, item size: X
 ./nattI3 leak: v2 policy database, item size: X
-./nattI3 leak: saved first received packet, item size: X
 ./nattI3 leak: st_nr in duplicate_state, item size: X
 ./nattI3 leak: st_ni in duplicate_state, item size: X
 ./nattI3 leak: st_skey_pr in duplicate_state, item size: X
@@ -282,31 +354,10 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI3 leak: st_skeyseed in duplicate_state, item size: X
 ./nattI3 leak: st_enc_key in duplicate_state, item size: X
 ./nattI3 leak: struct state in new_state(), item size: X
-./nattI3 leak: calculated skey_prshared secret, item size: X
-./nattI3 leak: calculated skey_pishared secret, item size: X
-./nattI3 leak: calculated skey_ershared secret, item size: X
-./nattI3 leak: calculated skey_eishared secret, item size: X
-./nattI3 leak: calculated skey_arshared secret, item size: X
-./nattI3 leak: calculated skey_aishared secret, item size: X
-./nattI3 leak: calculated skey_dshared secret, item size: X
-./nattI3 leak: calculated sharedshared secret, item size: X
 ./nattI3 leak: ikev2_inR1outI2 KE, item size: X
-./nattI3 leak: nonce, item size: X
-./nattI3 leak: Gr, item size: X
-./nattI3 leak: saved first packet, item size: X
-./nattI3 leak: sa in main_outI1, item size: X
-./nattI3 leak: initiator nonce, item size: X
-./nattI3 leak: long term secret, item size: X
-./nattI3 leak: saved gi value, item size: X
 ./nattI3 leak: msg_digest, item size: X
 ./nattI3 leak: ikev2_outI1 KE, item size: X
-./nattI3 leak: db_context->trans (expand), item size: X
-./nattI3 leak: db_context->conj (expand), item size: X
 ./nattI3 leak: alg_info_ike, item size: X
-./nattI3 leak: db_context->attrs, item size: X
-./nattI3 leak: db_context->conj, item size: X
-./nattI3 leak: v2 policy database, item size: X
-./nattI3 leak: struct state in new_state(), item size: X
 ./nattI3 leak: keep id name, item size: X
 ./nattI3 leak: pubkey entry, item size: X
 ./nattI3 leak: rfc3110 format of public key, item size: X
@@ -334,3 +385,4 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI3 leak: 3 * hasher name, item size: X
 ./nattI3 leak: 10 * group description, item size: X
 ./nattI3 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
