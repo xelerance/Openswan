@@ -699,7 +699,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 2c 00
 |   00 2c 00 00  00 28 01 03  04 03 12 34  56 78 03 00
 |   00 0c 01 00  00 0c 80 0e  00 80 03 00  00 08 03 00
-|   00 0c 00 00  00 08 05 00  00 00 2d 00  00 30 01 00
+|   00 00 00 00  00 08 05 00  00 00 2d 00  00 30 01 00
 |   00 00 08 00  00 28 00 00  ff ff fd 68  c9 f9 41 57
 |   00 02 00 00  00 01 00 00  00 00 fd 68  c9 f9 41 57
 |   00 02 00 00  00 01 ff ff  ff ff 00 00  00 30 01 00
@@ -724,13 +724,13 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
 |   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
 |   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   a4 de 9a eb  10 24 61 19  27 da 8a 9b  ff 3f 7f 85
-|   a9 c0 18 f9  23 6d e0 32  33 ca 20 5b  5c dc 26 0c
-|   66 92 c6 6b  e1 c9 ee ff  d8 d0 41 97  7e b6 6e be
-|   af f6 9e 38  bd 3e 93 ae  c9 73 2e 3e  f5 ed 42 24
-|   f6 4f a7 db  58 3f b9 80  2f 3a 1c 98  fc 1e 46 8c
-|   dc 93 ee 6c  ec df 40 4d  3d 08 d7 ed  92 6b d5 f8
-|   9f 6c f9 41  2f 99 27 d2  2e 5b a5 77  5a 93 b6 3f
+|   44 93 ae 9a  00 2c d4 9d  32 aa 19 f0  df 7b ed 5e
+|   5c 7e 7d c1  73 c0 1b dd  b1 1a 05 5f  8f ec 9d be
+|   d7 74 35 57  5f 62 84 76  61 09 a3 4f  dd 83 81 af
+|   d5 6e dc 5b  c9 85 38 a8  ce 21 44 ea  a3 59 12 ac
+|   2b 00 a4 6e  40 b0 fc 6c  c8 2e ae 3f  7a 9a 24 1a
+|   91 59 dd 04  2b 6a e2 c8  80 12 23 25  84 c5 ab 6a
+|   15 1e 4d f5  dd 81 d9 0b  07 43 b1 59  36 df 19 3a
 | data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 23 20  00 00 00 01  00 00 01 c0  24 00 01 a4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -751,15 +751,15 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
 |   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
 |   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   a4 de 9a eb  10 24 61 19  27 da 8a 9b  ff 3f 7f 85
-|   a9 c0 18 f9  23 6d e0 32  33 ca 20 5b  5c dc 26 0c
-|   66 92 c6 6b  e1 c9 ee ff  d8 d0 41 97  7e b6 6e be
-|   af f6 9e 38  bd 3e 93 ae  c9 73 2e 3e  f5 ed 42 24
-|   f6 4f a7 db  58 3f b9 80  2f 3a 1c 98  fc 1e 46 8c
-|   dc 93 ee 6c  ec df 40 4d  3d 08 d7 ed  92 6b d5 f8
-|   9f 6c f9 41  2f 99 27 d2  2e 5b a5 77  5a 93 b6 3f
+|   44 93 ae 9a  00 2c d4 9d  32 aa 19 f0  df 7b ed 5e
+|   5c 7e 7d c1  73 c0 1b dd  b1 1a 05 5f  8f ec 9d be
+|   d7 74 35 57  5f 62 84 76  61 09 a3 4f  dd 83 81 af
+|   d5 6e dc 5b  c9 85 38 a8  ce 21 44 ea  a3 59 12 ac
+|   2b 00 a4 6e  40 b0 fc 6c  c8 2e ae 3f  7a 9a 24 1a
+|   91 59 dd 04  2b 6a e2 c8  80 12 23 25  84 c5 ab 6a
+|   15 1e 4d f5  dd 81 d9 0b  07 43 b1 59  36 df 19 3a
 | out calculated auth:
-|   5f 48 04 e7  5b 70 5f 44  f3 ed cb 37  fc 7d 89 82
+|   d2 01 ec 6c  2a b7 5d 98  21 77 a3 a4  92 e9 a9 bc
 | #2 complete v2 state transition with STF_OK
 ./nattR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -788,14 +788,14 @@ sending 448 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
 |   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
 |   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   a4 de 9a eb  10 24 61 19  27 da 8a 9b  ff 3f 7f 85
-|   a9 c0 18 f9  23 6d e0 32  33 ca 20 5b  5c dc 26 0c
-|   66 92 c6 6b  e1 c9 ee ff  d8 d0 41 97  7e b6 6e be
-|   af f6 9e 38  bd 3e 93 ae  c9 73 2e 3e  f5 ed 42 24
-|   f6 4f a7 db  58 3f b9 80  2f 3a 1c 98  fc 1e 46 8c
-|   dc 93 ee 6c  ec df 40 4d  3d 08 d7 ed  92 6b d5 f8
-|   9f 6c f9 41  2f 99 27 d2  2e 5b a5 77  5a 93 b6 3f
-|   5f 48 04 e7  5b 70 5f 44  f3 ed cb 37  fc 7d 89 82
+|   44 93 ae 9a  00 2c d4 9d  32 aa 19 f0  df 7b ed 5e
+|   5c 7e 7d c1  73 c0 1b dd  b1 1a 05 5f  8f ec 9d be
+|   d7 74 35 57  5f 62 84 76  61 09 a3 4f  dd 83 81 af
+|   d5 6e dc 5b  c9 85 38 a8  ce 21 44 ea  a3 59 12 ac
+|   2b 00 a4 6e  40 b0 fc 6c  c8 2e ae 3f  7a 9a 24 1a
+|   91 59 dd 04  2b 6a e2 c8  80 12 23 25  84 c5 ab 6a
+|   15 1e 4d f5  dd 81 d9 0b  07 43 b1 59  36 df 19 3a
+|   d2 01 ec 6c  2a b7 5d 98  21 77 a3 a4  92 e9 a9 bc
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 ./nattR2 leak: reply packet, item size: X
