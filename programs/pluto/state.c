@@ -196,6 +196,10 @@ new_state(void)
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
     st->st_whack_sock = NULL_FD;
 
+    /* we have not received any messages from other side yet */
+    st->st_msgid_lastack = INVALID_MSGID;
+    st->st_msgid_lastrecv = INVALID_MSGID;
+
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
     anyaddr(AF_INET, &st->hidden_variables.st_natd);
 
