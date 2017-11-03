@@ -393,3 +393,4 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI3 leak: 3 * hasher name, item size: X
 ./nattI3 leak: 10 * group description, item size: X
 ./nattI3 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
