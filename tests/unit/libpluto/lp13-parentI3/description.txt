@@ -1,0 +1,4 @@
+This is part five of the lp02/lp08/lp10/lp12 basic IKEv2 test case.
+This accepts the final R2 message from the responder (authenticating it) and
+sets up the connections into the kernel.
+
