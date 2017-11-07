@@ -114,16 +114,16 @@ sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
         if(alg_id == 0) goto fail;
 
         if (alg_id<=SADB_AALG_MAX) {
-            wanted_structure = esp_ealg;
-            counter = &esp_ealg_num;
+            wanted_structure = esp_aalg;
+            counter = &esp_aalg_num;
             break;
         }
         goto fail;
 
     case SADB_EXT_SUPPORTED_ENCRYPT:
         if (alg_id<=K_SADB_EALG_MAX) {
-            wanted_structure = esp_aalg;
-            counter = &esp_aalg_num;
+            wanted_structure = esp_ealg;
+            counter = &esp_ealg_num;
             break;
         }
         goto fail;
