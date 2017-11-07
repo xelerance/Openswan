@@ -10,4 +10,6 @@ TESTNAME=parentR2
 
 
 pcapupdate:
-	@true
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
+	cp ../lp10-parentI2/OUTPUT/parentI2.pcap parentI2.pcap
+
