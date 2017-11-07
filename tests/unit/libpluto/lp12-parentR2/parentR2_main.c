@@ -89,7 +89,6 @@ int main(int argc, char *argv[])
     oco = osw_init_options();
     tool_init_log();
     init_crypto();
-    load_oswcrypto();
     init_fake_vendorid();
     init_local_interface();
     init_fake_secrets();

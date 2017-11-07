@@ -64,6 +64,8 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 
+all: programs
+
 include Makefile.testcase
 
 EF_DISABLE_BANNER=1

@@ -424,20 +424,31 @@ kernel_alg_ah_auth_keylen(int auth)
 }
 
 struct esp_info *
-kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
+kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg,
+                    u_int16_t keylen,
+                    enum ikev2_trans_type_integ sadb_aalg)
 {
-          int sadb_aalg, sadb_ealg;
           static struct esp_info ei_buf;
-          sadb_ealg=transid;
-          sadb_aalg=auth;
 
-          if (!ESP_EALG_PRESENT(sadb_ealg))
-                    goto none;
-          if (!ESP_AALG_PRESENT(sadb_aalg))
-                    goto none;
+          if (!ESP_EALG_PRESENT(sadb_ealg)) {
+              DBG(DBG_PARSING,
+                  DBG_log("kernel_alg_esp_info(): kernel does not have ealg=%s(%d)"
+                          , enum_name(&trans_type_encr_names, sadb_ealg)
+                          , sadb_ealg));
+              return NULL;
+          }
+          if (!ESP_AALG_PRESENT(sadb_aalg)) {
+              DBG(DBG_PARSING,
+                  DBG_log("kernel_alg_esp_info():"
+                          "kernel does not have ealg=%s(%d)"
+                          , enum_name(&trans_type_integ_names, sadb_aalg)
+                          , sadb_aalg));
+              return NULL;
+          }
+
           memset(&ei_buf, 0, sizeof (ei_buf));
-          ei_buf.transid=transid;
-          ei_buf.auth=auth;
+          ei_buf.transid=sadb_ealg;
+          ei_buf.auth=sadb_aalg;
 
           /* don't return "default" keylen because this value is used from
            * setup_half_ipsec_sa() to "validate" keylen
@@ -452,8 +463,8 @@ kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
               ei_buf.enckeylen = keylen/BITS_PER_BYTE;
           } else {
               DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
-                                             "transid=%d, proposed keylen=%u is invalid, not %u<X<%u "
-                                             , transid, keylen
+                                             "ealg=%d, proposed keylen=%u is invalid, not %u<X<%u "
+                                             , sadb_ealg, keylen
                                              , esp_ealg[sadb_ealg].sadb_alg_maxbits
                                              , esp_ealg[sadb_ealg].sadb_alg_minbits));
               /* proposed key length is invalid! */
@@ -464,15 +475,11 @@ kernel_alg_esp_info(u_int8_t transid, u_int16_t keylen, u_int16_t auth)
           DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
                                    "transid=%d, auth=%d, ei=%p, "
                                    "enckeylen=%d, authkeylen=%d",
-                                   transid, auth, &ei_buf,
+                                   sadb_ealg, sadb_aalg, &ei_buf,
                                    (int)ei_buf.enckeylen, (int)ei_buf.authkeylen
-                 ));
+                                   ));
           return &ei_buf;
-none:
-          DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
-                    "transid=%d, auth=%d, ei=NULL",
-                    transid, auth));
-          return NULL;
+
 }
 
 /*
