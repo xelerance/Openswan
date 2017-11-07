@@ -1047,7 +1047,7 @@ ikev2_parse_child_sa_body(
     bool conjunction, gotmatch;
     struct ikev2_prop winning_prop;
     struct db_sa *p2alg;
-    struct trans_attrs ta,ta1;
+    struct trans_attrs ta;
     struct connection *c = st->st_connection;
     struct ikev2_transform_list itl0, *itl;
 
@@ -1060,7 +1060,6 @@ ikev2_parse_child_sa_body(
     gotmatch = FALSE;
     conjunction = FALSE;
     zero(&ta);
-    zero(&ta1);
 
     while(np == ISAKMP_NEXT_P) {
 	/*
@@ -1194,7 +1193,7 @@ ikev2_parse_child_sa_body(
     if (r_sa_pbs != NULL)
     {
 	return ikev2_emit_winning_sa(st, r_sa_pbs
-				     , ta1
+				     , ta
 				     , /*parentSA*/FALSE
 				     , winning_prop);
     }
