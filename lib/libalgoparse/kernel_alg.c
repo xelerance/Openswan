@@ -48,37 +48,103 @@ struct sadb_alg esp_ealg[K_SADB_EALG_MAX+1];
 int esp_ealg_num=0;
 int esp_aalg_num=0;
 
+/*
+ * map of Linux Kernel algorithm identifiers to IKEv2 identifiers
+ * The ESP encryption identifiers are identical to IKEv2.
+ * The ESP integrity  identifiers are not.
+ * The kernel modules should know their IKEv2 identifier and tell us, and maybe
+ * they do, but it isn't known for sure.
+ */
+struct aalg_mapping {
+    enum ipsec_authentication_algo kernel_integ;
+    enum ikev2_trans_type_integ    ikev2_integ;
+};
+
+static struct aalg_mapping aalg_mapping[] = {
+    {AH_NONE,     	IKEv2_AUTH_NONE},
+    {AH_MD5,            IKEv2_AUTH_HMAC_MD5_96},
+    {AH_SHA,            IKEv2_AUTH_HMAC_SHA1_96},
+    {AH_DES,            IKEv2_AUTH_DES_MAC},
+    {AH_SHA2_256,      	IKEv2_AUTH_HMAC_SHA2_256_128},
+    {AH_SHA2_384, 	IKEv2_AUTH_HMAC_SHA2_384_192},
+    {AH_SHA2_512,       IKEv2_AUTH_HMAC_SHA2_512_256},
+    {AH_AES_XCBC_MAC,   IKEv2_AUTH_AES_XCBC_96},
+    {AH_AES_128_GMAC,	IKEv2_AUTH_AES_128_GMAC},
+    {AH_AES_192_GMAC,   IKEv2_AUTH_AES_192_GMAC},
+    {AH_AES_256_GMAC, 	IKEv2_AUTH_AES_256_GMAC},
+
+#if 0
+    /* not sure how: */
+	IKEv2_AUTH_HMAC_MD5_128      = 6,  /* RFC4595 */
+	IKEv2_AUTH_HMAC_SHA1_160     = 7,  /* RFC4595 */
+    /* maps to kernel, or if it even does. */
+#endif
+};
+const static unsigned aalg_mapping_len = elemsof(aalg_mapping);
+
+
+enum ikev2_trans_type_integ kernelalg2ikev2(enum ipsec_authentication_algo kernel_integ)
+{
+    struct aalg_mapping *am = aalg_mapping;
+    int i;
+
+    for(i=0; i<aalg_mapping_len; i++, am++) {
+        if(am->kernel_integ == kernel_integ) {
+            return am->ikev2_integ;
+        }
+    }
+
+    /* but 0 is also AH_NONE, but integrity is always required for ESP,
+     * and is never optional for AH, so it's okay */
+    return 0;
+}
+
+
 static struct sadb_alg *
 sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
 {
-          struct sadb_alg *alg_p=NULL;
-          switch(exttype) {
-                    case SADB_EXT_SUPPORTED_AUTH:
-                              if (alg_id<=SADB_AALG_MAX)
-                                        break;
-                              goto fail;
-                    case SADB_EXT_SUPPORTED_ENCRYPT:
-                              if (alg_id<=K_SADB_EALG_MAX)
-                                        break;
-                              goto fail;
-                    default:
-                              goto fail;
-          }
+    struct sadb_alg *wanted_structure = NULL;
+    int    *counter=NULL;
+    struct sadb_alg *alg_p=NULL;
 
-          switch(satype) {
-                    case SADB_SATYPE_AH:
-                    case SADB_SATYPE_ESP:
-                              alg_p=(exttype == SADB_EXT_SUPPORTED_ENCRYPT)?
-                                        &esp_ealg[alg_id] : &esp_aalg[alg_id];
-                              /* get for write: increment elem count */
-                              if (rw) {
-                                        (exttype == SADB_EXT_SUPPORTED_ENCRYPT)?
-                                                  esp_ealg_num++ : esp_aalg_num++;
-                              }
-                              break;
-                    default:
-                              goto fail;
-          }
+    switch(exttype) {
+    case SADB_EXT_SUPPORTED_AUTH:
+        /* translate the algorithm ID into IKEv2 space */
+        alg_id = kernelalg2ikev2(alg_id);
+        if(alg_id == 0) goto fail;
+
+        if (alg_id<=SADB_AALG_MAX) {
+            wanted_structure = esp_ealg;
+            counter = &esp_ealg_num;
+            break;
+        }
+        goto fail;
+
+    case SADB_EXT_SUPPORTED_ENCRYPT:
+        if (alg_id<=K_SADB_EALG_MAX) {
+            wanted_structure = esp_aalg;
+            counter = &esp_aalg_num;
+            break;
+        }
+        goto fail;
+    default:
+        goto fail;
+    }
+    if(!wanted_structure) goto fail;
+
+    switch(satype) {
+    case SADB_SATYPE_AH:
+    case SADB_SATYPE_ESP:
+        alg_p = &wanted_structure[alg_id];
+
+        /* get for write: increment elem count */
+        if (rw) {
+            (*counter)++;
+        }
+        break;
+    default:
+        goto fail;
+    }
 fail:
           return alg_p;
 }
@@ -104,7 +170,7 @@ kernel_alg_init(void)
           esp_ealg_num=esp_aalg_num=0;
 }
 
-/* used by test skaffolding */
+/* used by test skaffolding to stub in support for algorithms without kernel telling us*/
 int
 kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
 {
@@ -114,6 +180,7 @@ kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
           DBG(DBG_KLIPS, DBG_log("kernel_alg_add():"
                     "satype=%d, exttype=%d, alg_id=%d",
                     satype, exttype, sadb_alg->sadb_alg_id));
+
           if (!(alg_p=sadb_alg_ptr(satype, exttype, alg_id, 1))) {
               DBG_log("kernel_alg_add(%d,%d,%d) fails because alg combo is invalid\n"
                         , satype, exttype, sadb_alg->sadb_alg_id);
@@ -127,10 +194,10 @@ kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
 
           /*           This logic "mimics" KLIPS: first algo implementation will be used */
           if (alg_p->sadb_alg_id) {
-                    DBG(DBG_KLIPS, DBG_log("kernel_alg_add(): discarding already setup "
-                                                  "satype=%d, exttype=%d, alg_id=%d",
-                                                  satype, exttype, sadb_alg->sadb_alg_id));
-                    return 0;
+              DBG(DBG_KLIPS, DBG_log("kernel_alg_add(): discarding already setup "
+                                     "satype=%d, exttype=%d, alg_id=%d",
+                                     satype, exttype, sadb_alg->sadb_alg_id));
+              return 0;
           }
           *alg_p=*sadb_alg;
           return 1;
