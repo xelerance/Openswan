@@ -250,9 +250,11 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
     }
 
     if(init == INITIATOR) {
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as INITIATOR"));
         cipherkey = &pst->st_skey_ei;
         authkey   = &pst->st_skey_ai;
     } else {
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as RESPONDER"));
         cipherkey = &pst->st_skey_er;
         authkey   = &pst->st_skey_ar;
     }
@@ -641,7 +643,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
     /* decrypt things. */
     {
 	stf_status ret;
-        if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
+        if(IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
            DBG(DBG_CONTROLMORE
               , DBG_log("received informational exchange request from INITIATOR"));
            ret = ikev2_decrypt_msg(md, RESPONDER);
@@ -855,10 +857,19 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                 close_output_pbs(&md->rbody);
                 close_output_pbs(&reply_stream);
 
-                ret = ikev2_encrypt_msg(md, RESPONDER,
-                                        authstart,
-                                        iv, encstart, authloc,
-                                        &e_pbs, &e_pbs_cipher);
+		if (IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
+			/* packet arrived from INITIATOR, we encrypt as RESPONDER */
+			ret = ikev2_encrypt_msg(md, RESPONDER,
+						authstart,
+						iv, encstart, authloc,
+						&e_pbs, &e_pbs_cipher);
+		} else {
+			/* packet arrived from RESPONDER, we encrypt as INITIATOR */
+			ret = ikev2_encrypt_msg(md, INITIATOR,
+						authstart,
+						iv, encstart, authloc,
+						&e_pbs, &e_pbs_cipher);
+		}
                 if(ret != STF_OK) return ret;
             }
 
