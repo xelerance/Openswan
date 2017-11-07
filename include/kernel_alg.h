@@ -85,7 +85,6 @@ extern int esp_aalg_num;
 extern int kernel_alg_add(int satype, int exttype
 			  , const struct sadb_alg *sadb_alg);
 
-
-
+extern enum ikev2_trans_type_integ kernelalg2ikev2(enum ipsec_authentication_algo kernel_integ);
 
 #endif /* _KERNEL_ALG_H */
