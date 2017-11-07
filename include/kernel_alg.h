@@ -57,9 +57,9 @@ extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai
 					     , bool logit);
 
 /* returns pointer to static buffer, no reentrant */
-extern struct esp_info *kernel_alg_esp_info(u_int8_t transid
-					    , u_int16_t keylen
-					    , u_int16_t auth);
+extern struct esp_info *kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg,
+                                            u_int16_t keylen,
+                                            enum ikev2_trans_type_integ sadb_aalg);
 
 extern struct sadb_alg esp_aalg[];
 extern struct sadb_alg esp_ealg[];
@@ -84,6 +84,8 @@ extern int esp_aalg_num;
 /* used by test skaffold */
 extern int kernel_alg_add(int satype, int exttype
 			  , const struct sadb_alg *sadb_alg);
+
+
 
 
 #endif /* _KERNEL_ALG_H */
