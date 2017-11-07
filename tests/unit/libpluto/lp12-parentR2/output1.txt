@@ -141,7 +141,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 1
 |    proto ID: 1

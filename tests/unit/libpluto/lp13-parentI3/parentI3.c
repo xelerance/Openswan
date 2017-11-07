@@ -29,6 +29,7 @@ void recv_pcap_packet2(u_char *user
     struct state *st;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
+    cur_debugging |= DBG_PARSING;
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */

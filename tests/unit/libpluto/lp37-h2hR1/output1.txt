@@ -175,7 +175,7 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |    transform ID: 14
 | collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 40
 |    prop #: 2
