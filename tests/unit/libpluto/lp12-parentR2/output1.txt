@@ -1,6 +1,7 @@
 ./parentR2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./parentR2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./parentR2 loading secrets from "../samples/jj.secrets"
 ./parentR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 | processing whack message of size: A
@@ -38,59 +39,46 @@ RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; 
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
 0: input from parentI1.pcap
 |   =========== input from from parentI1.pcap ========
-| *received 836 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 628 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
-|   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
-|   02 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 28  03 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 02
-|   03 00 00 08  02 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  04 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 0e  02 00 00 2c  05 01 00 04
-|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
-|   03 00 00 02  03 00 00 08  02 00 00 02  00 00 00 08
-|   04 00 00 05  02 00 00 2c  06 01 00 04  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  07 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 05  02 00 00 28  08 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 05
-|   02 00 00 28  09 01 00 04  03 00 00 08  01 00 00 03
-|   03 00 00 08  03 00 00 02  03 00 00 08  02 00 00 02
-|   00 00 00 08  04 00 00 02  02 00 00 28  0a 01 00 04
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   03 00 00 08  02 00 00 01  00 00 00 08  04 00 00 02
-|   02 00 00 2c  0b 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
-|   02 00 00 02  00 00 00 08  04 00 00 02  00 00 00 2c
-|   0c 01 00 04  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  03 00 00 08  02 00 00 01
-|   00 00 00 08  04 00 00 02  28 00 01 08  00 0e 00 00
-|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
-|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
-|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
-|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
-|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
-|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
-|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
-|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
-|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
-|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
-|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
-|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
-|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
-|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
-|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
-|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
+|   18 4f a0 1e  5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53
+|   5d 17 6a be  1b c5 70 ab  34 47 bc 09  14 7c aa 91
+|   9c 8f 81 dc  1e f9 87 cd  6a ec fa f3  a5 9e 37 bc
+|   ac 3d fd e1  32 8e e8 b3  fe d3 8b f4  7b 50 34 13
+|   33 7a 93 ea  e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2
+|   55 ce 45 22  9f c7 c9 48  43 a3 e2 64  b5 5d 43 38
+|   c8 fe f1 d3  06 43 f0 0a  e8 6d 61 8c  60 78 d9 98
+|   d3 1b 3b 5e  f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62
+|   b2 3e 0b 17  af 6c b8 31  08 d7 19 5a  7b c4 54 c2
+|   13 47 98 c2  cc d2 16 29  75 6c 03 fb  1e 9c 9d 21
+|   0c a1 e6 c2  f3 f2 49 2c  f6 06 73 c1  96 1e ce 58
+|   81 01 1c cb  16 dc f9 fc  c7 93 08 75  58 16 57 71
+|   69 96 66 b7  a9 81 7f f7  37 4d 7c 41  38 62 a6 39
+|   00 81 ca 3d  1d fc f7 b5  08 38 d4 34  70 22 6c 21
+|   d2 5b 20 a1  d2 ba 2a d1  89 f3 20 79  ce ac 1e c2
+|   ec 7d ae 76  94 40 39 a0  29 00 00 14  20 98 9d 37
+|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  29 00 00 1c
+|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
+|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
+|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
@@ -129,6 +117,13 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| received a notify..
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   84 d5 ee 07  01 f4
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -140,39 +135,139 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
-./parentR2 af+type of IKEv2 Attribute Substructure Payload has an unknown value: 32782
-| #1 complete v2 state transition with STF_FAIL
-./parentR2 STATE_PARENT_R1: BAD_PROPOSAL_SYNTAX
-./parentR2 sending  notification v2N_UNUSED_15 to 192.168.1.1:500
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP2048(14 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP2048(14) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
+| not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
+| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| ****emit IKEv2 Proposal Substructure Payload:
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 1
+|    transform ID: 12
+| ******emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 3
+|    transform ID: 12
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 2
+|    transform ID: 5
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 4
+|    transform ID: 14
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| emitting length of IKEv2 Proposal Substructure Payload: 44
+| emitting length of IKEv2 Security Association Payload: 48
+|    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
+| ***emit IKEv2 Key Exchange Payload:
+|    critical bit: none
+|    transform type: 14
+| emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
+| ikev2 g^x  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
+| emitting length of IKEv2 Key Exchange Payload: 264
+|    next-payload: ISAKMP_NEXT_v2Ni [@76=0x28]
+| ***emit IKEv2 Nonce Payload:
+|    critical bit: none
+| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
+| IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   84 d5 ee 07  01 f4
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
+|    next-payload: ISAKMP_NEXT_v2N [@340=0x29]
 | ***emit IKEv2 Notify Payload:
 |    critical bit: none
-|    Protocol ID: PROTO_ISAKMP
+|    Protocol ID: PROTO_RESERVED
 |    SPI size: 0
-|    Notify Message Type: v2N_UNUSED_15
-| emitting length of IKEv2 Notify Payload: 8
-| emitting length of ISAKMP Message: 36
-sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
+|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe
+| emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   c0 a8 01 01  01 f4
+| Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@360=0x29]
+| ***emit IKEv2 Notify Payload:
+|    critical bit: none
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  81 b5 74 15  c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab
+|   25 31 bf 62
+| emitting length of IKEv2 Notify Payload: 28
+|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| emitting length of ISAKMP Message: 432
+| #1 complete v2 state transition with STF_OK
+./parentR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
+| v2_state_transition: st is #1; pst is #0; transition_st is #1
+./parentR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
+| sending reply packet to 192.168.1.1:500 (from port 500)
+sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
-|   01 00 00 0f
-| state transition function for STATE_PARENT_R1 failed: BAD_PROPOSAL_SYNTAX
+|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
+|   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
+|   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
+|   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
+|   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
+|   b1 53 18 07  81 e8 1d 07  c6 19 1c de  dc 1f 2c 26
+|   d2 0b 59 f9  67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d
+|   8e d0 30 08  0b ed 95 b0  65 2f 5c a6  36 7e 92 2d
+|   da cb 88 54  e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29
+|   be 2c a4 55  68 01 45 bc  56 a9 84 b9  2b 1b bf 9a
+|   fc 84 67 5f  d3 04 79 90  b7 fa 89 5b  04 06 d5 9a
+|   50 92 16 4b  d6 33 40 be  2a 44 94 74  33 a7 a5 c1
+|   1f 88 5b eb  4e d2 bb 94  b9 22 db e3  b6 5a 8c f9
+|   d6 43 5d 5e  5d c9 19 b8  c8 81 53 01  95 09 02 7b
+|   c0 2a b0 c8  5d 2c 69 78  6c e8 f6 5d  e4 90 43 83
+|   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
+|   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
+|   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
+|   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
+|   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
+|   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
+|   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/parentR2.pcap
 1: input from parentI2.pcap
 |   =========== input from from parentI2.pcap ========
-| *received 556 bytes from 192.168.1.1:500 on eth0 (port=500)
+| *received 464 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
+|   2e 20 23 08  00 00 00 01  00 00 01 d0  23 00 01 b4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
@@ -188,24 +283,18 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
 |   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
 |   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
-|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
-|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
-|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
-|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
-|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
-|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
-|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
-|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
-|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
-|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
-|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
-|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
-|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
-|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
-|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
-|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
-|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
-|   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
+|   66 54 10 b7  7e 52 fc 43  3a f7 55 99  46 8a e2 9f
+|   02 6d 36 d6  5d 78 99 44  fe 0a d4 00  67 d9 46 82
+|   8e 90 a6 c6  6e b8 4b 21  a2 41 ba 80  5e cc 6f 3b
+|   2e b1 65 2f  09 b9 21 6d  6a 2e af cc  48 d8 0d 2e
+|   dc 05 49 c9  d6 83 28 d0  fd 8f 2d 04  45 b1 13 31
+|   d7 f6 94 4d  b9 38 c7 ad  e8 49 d7 84  48 ba d9 b4
+|   dd 5d 3e 0f  8e 17 54 1f  1a 3f 6a 6c  15 ad 50 6a
+|   f6 b7 b0 aa  b5 e9 c9 04  0f 04 e3 4f  79 36 64 d3
+|   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
+|   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
+|   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
+|   bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -230,11 +319,11 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
 | ikev2 parent SA details
-| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
-| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
+| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
+| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | decrypting as RESPONDER, using INITIATOR keys
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
+|   2e 20 23 08  00 00 00 01  00 00 01 d0  23 00 01 b4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
 |   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
@@ -250,25 +339,19 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
 |   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
 |   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
-|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
-|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
-|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
-|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
-|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
-|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
-|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
-|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
-|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
-|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
-|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
-|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
-|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
-|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
-|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
-|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
-|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
-| R2 calculated auth:  30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
-| R2  provided  auth:  30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
+|   66 54 10 b7  7e 52 fc 43  3a f7 55 99  46 8a e2 9f
+|   02 6d 36 d6  5d 78 99 44  fe 0a d4 00  67 d9 46 82
+|   8e 90 a6 c6  6e b8 4b 21  a2 41 ba 80  5e cc 6f 3b
+|   2e b1 65 2f  09 b9 21 6d  6a 2e af cc  48 d8 0d 2e
+|   dc 05 49 c9  d6 83 28 d0  fd 8f 2d 04  45 b1 13 31
+|   d7 f6 94 4d  b9 38 c7 ad  e8 49 d7 84  48 ba d9 b4
+|   dd 5d 3e 0f  8e 17 54 1f  1a 3f 6a 6c  15 ad 50 6a
+|   f6 b7 b0 aa  b5 e9 c9 04  0f 04 e3 4f  79 36 64 d3
+|   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
+|   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
+|   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
+| R2 calculated auth:  bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
+| R2  provided  auth:  bf 68 95 eb  3d dd 41 eb  8e b7 91 ec  6d 8b ec 91
 | authenticator matched, np=35
 | data before decryption:
 |   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
@@ -285,23 +368,17 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
 |   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
 |   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
-|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
-|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
-|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
-|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
-|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
-|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
-|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
-|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
-|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
-|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
-|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
-|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
-|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
-|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
-|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
-|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
-|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+|   66 54 10 b7  7e 52 fc 43  3a f7 55 99  46 8a e2 9f
+|   02 6d 36 d6  5d 78 99 44  fe 0a d4 00  67 d9 46 82
+|   8e 90 a6 c6  6e b8 4b 21  a2 41 ba 80  5e cc 6f 3b
+|   2e b1 65 2f  09 b9 21 6d  6a 2e af cc  48 d8 0d 2e
+|   dc 05 49 c9  d6 83 28 d0  fd 8f 2d 04  45 b1 13 31
+|   d7 f6 94 4d  b9 38 c7 ad  e8 49 d7 84  48 ba d9 b4
+|   dd 5d 3e 0f  8e 17 54 1f  1a 3f 6a 6c  15 ad 50 6a
+|   f6 b7 b0 aa  b5 e9 c9 04  0f 04 e3 4f  79 36 64 d3
+|   c1 80 67 b8  b0 c6 68 fc  74 72 06 9c  76 1c 22 c0
+|   9f a6 6b 7a  7a 7a 3c 81  d0 f8 1e b4  33 0c bb 37
+|   bf ff b1 0c  f2 99 69 ef  63 48 f5 69  6e 77 cc 6e
 | decrypted payload:  27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
 |   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
 |   72 67 21 00  00 c8 01 00  00 00 00 00  00 00 00 00
@@ -316,24 +393,18 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
-|   00 00 00 00  00 00 00 00  00 00 2c 00  00 9c 02 00
-|   00 28 01 03  04 03 12 34  56 78 03 00  00 0c 01 00
-|   00 0c 80 0e  00 80 03 00  00 08 03 00  00 02 00 00
-|   00 08 05 00  00 00 02 00  00 28 02 03  04 03 12 34
-|   56 78 03 00  00 0c 01 00  00 0c 80 0e  00 80 03 00
-|   00 08 03 00  00 01 00 00  00 08 05 00  00 00 02 00
-|   00 24 03 03  04 03 12 34  56 78 03 00  00 08 01 00
-|   00 03 03 00  00 08 03 00  00 02 00 00  00 08 05 00
-|   00 00 00 00  00 24 04 03  04 03 12 34  56 78 03 00
-|   00 08 01 00  00 03 03 00  00 08 03 00  00 01 00 00
-|   00 08 05 00  00 00 2d 00  00 30 01 00  00 00 08 00
-|   00 28 00 00  ff ff fd 68  c9 f9 41 57  00 02 00 00
-|   00 01 00 00  00 00 fd 68  c9 f9 41 57  00 02 00 00
-|   00 01 ff ff  ff ff 00 00  00 30 01 00  00 00 08 00
-|   00 28 00 00  ff ff fd 68  c9 f9 41 57  00 00 00 00
-|   00 00 00 00  00 00 fd 68  c9 f9 41 57  00 00 ff ff
-|   ff ff ff ff  ff ff 00 01  02 03 04 05  06 07 08 09
-| striping 10 bytes as pad
+|   00 00 00 00  00 00 00 00  00 00 2c 00  00 44 02 00
+|   00 20 01 03  04 02 12 34  56 78 03 00  00 08 01 00
+|   00 0c 00 00  00 0c 03 00  00 0c 80 0e  00 80 00 00
+|   00 20 02 03  04 02 12 34  56 78 03 00  00 08 01 00
+|   00 0c 00 00  00 0c 03 00  00 02 80 0e  00 80 2d 00
+|   00 30 01 00  00 00 08 00  00 28 00 00  ff ff fd 68
+|   c9 f9 41 57  00 02 00 00  00 01 00 00  00 00 fd 68
+|   c9 f9 41 57  00 02 00 00  00 01 ff ff  ff ff 00 00
+|   00 30 01 00  00 00 08 00  00 28 00 00  ff ff fd 68
+|   c9 f9 41 57  00 00 00 00  00 00 00 00  00 00 fd 68
+|   c9 f9 41 57  00 00 ff ff  ff ff ff ff  ff ff 00 01
+| striping 2 bytes as pad
 | **parse IKEv2 Identification Payload:
 |    critical bit: none
 |    length: 34
@@ -346,8 +417,8 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | processing payload: ISAKMP_NEXT_v2AUTH (len=200)
 | **parse IKEv2 Security Association Payload:
 |    critical bit: none
-|    length: 156
-| processing payload: ISAKMP_NEXT_v2SA (len=156)
+|    length: 68
+| processing payload: ISAKMP_NEXT_v2SA (len=68)
 | **parse IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    length: 48
@@ -472,37 +543,36 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |    next-payload: ISAKMP_NEXT_v2SA [@38=0x21]
 | *****emit IKEv2 Security Association Payload:
 |    critical bit: none
-| empty esp_info, returning defaults
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
 | ***parse IKEv2 Proposal Substructure Payload:
-|    length: 40
+|    length: 32
 |    prop #: 1
 |    proto ID: 3
 |    spi size: 4
-|    # transforms: 3
+|    # transforms: 2
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
 | CHILD SA SPI  12 34 56 78
 | SPI received: 12345678
 | ****parse IKEv2 Transform Substructure Payload:
-|    length: 12
+|    length: 8
 |    transform type: 1
+|    transform ID: 12
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 3
 |    transform ID: 12
 | *****parse IKEv2 Attribute Substructure Payload:
 |    af+type: KEY_LENGTH
 |    length/value: 128
-| ****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 2
-| ****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 5
-|    transform ID: 0
+| collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
 | ***parse IKEv2 Proposal Substructure Payload:
-|    length: 40
+|    length: 32
 |    prop #: 2
 |    proto ID: 3
 |    spi size: 4
-|    # transforms: 3
+|    # transforms: 2
 | parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
 | CHILD SA SPI  12 34 56 78
 | SPI received: 12345678
@@ -515,22 +585,18 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
-|    transform ID: 12
-| ********emit IKEv2 Attribute Substructure Payload:
-|    af+type: KEY_LENGTH
-|    length/value: 128
-|     [128 is 128??]
-| emitting length of IKEv2 Transform Substructure Payload: 12
+|    transform ID: 0
+| emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
-|    transform ID: 2
+|    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
-| emitting length of IKEv2 Proposal Substructure Payload: 40
-| emitting length of IKEv2 Security Association Payload: 44
+| emitting length of IKEv2 Proposal Substructure Payload: 36
+| emitting length of IKEv2 Security Association Payload: 40
 |    next-payload: ISAKMP_NEXT_v2TSi [@238=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
@@ -546,7 +612,7 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | ipv6 high  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-|    next-payload: ISAKMP_NEXT_v2TSr [@282=0x2d]
+|    next-payload: ISAKMP_NEXT_v2TSr [@278=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    number of TS: 1
@@ -601,15 +667,15 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 2c 00
-|   00 2c 00 00  00 28 01 03  04 03 12 34  56 78 03 00
-|   00 0c 01 00  00 0c 80 0e  00 80 03 00  00 08 03 00
-|   00 02 00 00  00 08 05 00  00 00 2d 00  00 30 01 00
-|   00 00 08 00  00 28 00 00  ff ff fd 68  c9 f9 41 57
-|   00 02 00 00  00 01 00 00  00 00 fd 68  c9 f9 41 57
-|   00 02 00 00  00 01 ff ff  ff ff 00 00  00 30 01 00
-|   00 00 08 00  00 28 00 00  ff ff fd 68  c9 f9 41 57
-|   00 00 00 00  00 00 00 00  00 00 fd 68  c9 f9 41 57
-|   00 00 ff ff  ff ff ff ff  ff ff 00 01  02 03 04 05
+|   00 28 00 00  00 24 01 03  04 03 12 34  56 78 03 00
+|   00 08 01 00  00 00 03 00  00 08 03 00  00 00 00 00
+|   00 08 05 00  00 00 2d 00  00 30 01 00  00 00 08 00
+|   00 28 00 00  ff ff fd 68  c9 f9 41 57  00 02 00 00
+|   00 01 00 00  00 00 fd 68  c9 f9 41 57  00 02 00 00
+|   00 01 ff ff  ff ff 00 00  00 30 01 00  00 00 08 00
+|   00 28 00 00  ff ff fd 68  c9 f9 41 57  00 00 00 00
+|   00 00 00 00  00 00 fd 68  c9 f9 41 57  00 00 ff ff
+|   ff ff ff ff  ff ff 00 01  02 03 04 05  06 07 08 09
 | data after encryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -626,17 +692,17 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
-|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
-|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   14 f4 c8 bc  fa 9b cf 92  69 69 86 55  7b 4e c6 b3
-|   bb 68 e6 d1  3b ed 7c 9e  1c 96 d1 cc  e2 ec cb c2
-|   e2 fc d5 60  ce 12 9f 9f  0e 65 a0 54  fb 44 4d 33
-|   2d 5c 31 47  f5 95 a8 ca  70 81 d2 ee  9f 04 9b 9b
-|   5a 3c 92 93  70 80 1e 90  1c d5 c4 5b  79 be 96 94
-|   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
-|   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
+|   05 86 d5 09  54 b0 4b 00  68 9c f7 4a  c2 dc 12 4f
+|   67 54 b7 4f  98 96 43 f8  e7 88 9d 81  95 a1 f6 c9
+|   76 b5 ea 57  2a 8b 6b c0  f6 54 61 34  1f 1e b1 1b
+|   02 8c 3d 34  8a 67 01 3d  4c b7 a8 b5  22 55 a2 f2
+|   9e 0b d8 1e  a0 63 c3 f4  94 f3 27 b7  dd ee 2a e1
+|   8c 21 1a 14  8f 36 d3 a2  50 6b 57 f2  04 77 26 5e
+|   cc b5 ea ce  a4 11 3d 0f  57 cf 57 2e  1b 3e 1f 07
+|   4b 00 8f 88  d7 c1 74 b4  6e 19 1d d1  2e 43 c3 4a
+|   58 7f 36 5f  54 a3 0a 15  fb 5f f7 19  d9 9f a2 f9
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
+|   2e 20 23 20  00 00 00 01  00 00 01 c0  24 00 01 a4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -653,27 +719,27 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
-|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
-|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   14 f4 c8 bc  fa 9b cf 92  69 69 86 55  7b 4e c6 b3
-|   bb 68 e6 d1  3b ed 7c 9e  1c 96 d1 cc  e2 ec cb c2
-|   e2 fc d5 60  ce 12 9f 9f  0e 65 a0 54  fb 44 4d 33
-|   2d 5c 31 47  f5 95 a8 ca  70 81 d2 ee  9f 04 9b 9b
-|   5a 3c 92 93  70 80 1e 90  1c d5 c4 5b  79 be 96 94
-|   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
-|   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
+|   05 86 d5 09  54 b0 4b 00  68 9c f7 4a  c2 dc 12 4f
+|   67 54 b7 4f  98 96 43 f8  e7 88 9d 81  95 a1 f6 c9
+|   76 b5 ea 57  2a 8b 6b c0  f6 54 61 34  1f 1e b1 1b
+|   02 8c 3d 34  8a 67 01 3d  4c b7 a8 b5  22 55 a2 f2
+|   9e 0b d8 1e  a0 63 c3 f4  94 f3 27 b7  dd ee 2a e1
+|   8c 21 1a 14  8f 36 d3 a2  50 6b 57 f2  04 77 26 5e
+|   cc b5 ea ce  a4 11 3d 0f  57 cf 57 2e  1b 3e 1f 07
+|   4b 00 8f 88  d7 c1 74 b4  6e 19 1d d1  2e 43 c3 4a
+|   58 7f 36 5f  54 a3 0a 15  fb 5f f7 19  d9 9f a2 f9
 | out calculated auth:
-|   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
+|   87 e6 66 e0  e0 44 d1 8f  cf 46 8d ff  29 d4 c6 9b
 | #2 complete v2 state transition with STF_OK
 ./parentR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./parentR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000001/00000001)
+./parentR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
 ./parentR2 negotiated tunnel [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535]
-./parentR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
+./parentR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
 | sending reply packet to 192.168.1.1:500 (from port 500)
-sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #2)
+sending 448 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #2)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
+|   2e 20 23 20  00 00 00 01  00 00 01 c0  24 00 01 a4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -690,16 +756,16 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   bb 1d 13 08  66 5d 87 c4  86 8a 38 f3  05 57 97 5c
 |   e1 dc 5c ac  36 b4 e1 93  68 57 da 98  6c 69 99 c3
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
-|   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
-|   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   14 f4 c8 bc  fa 9b cf 92  69 69 86 55  7b 4e c6 b3
-|   bb 68 e6 d1  3b ed 7c 9e  1c 96 d1 cc  e2 ec cb c2
-|   e2 fc d5 60  ce 12 9f 9f  0e 65 a0 54  fb 44 4d 33
-|   2d 5c 31 47  f5 95 a8 ca  70 81 d2 ee  9f 04 9b 9b
-|   5a 3c 92 93  70 80 1e 90  1c d5 c4 5b  79 be 96 94
-|   fe 3e e9 26  40 48 ae 09  00 c4 47 35  2e b1 6c c4
-|   a0 ef fd 33  7a 65 05 55  d1 ff c0 9a  b0 a2 7f fb
-|   2f e8 96 e0  25 30 6d 60  47 f4 91 cc
+|   05 86 d5 09  54 b0 4b 00  68 9c f7 4a  c2 dc 12 4f
+|   67 54 b7 4f  98 96 43 f8  e7 88 9d 81  95 a1 f6 c9
+|   76 b5 ea 57  2a 8b 6b c0  f6 54 61 34  1f 1e b1 1b
+|   02 8c 3d 34  8a 67 01 3d  4c b7 a8 b5  22 55 a2 f2
+|   9e 0b d8 1e  a0 63 c3 f4  94 f3 27 b7  dd ee 2a e1
+|   8c 21 1a 14  8f 36 d3 a2  50 6b 57 f2  04 77 26 5e
+|   cc b5 ea ce  a4 11 3d 0f  57 cf 57 2e  1b 3e 1f 07
+|   4b 00 8f 88  d7 c1 74 b4  6e 19 1d d1  2e 43 c3 4a
+|   58 7f 36 5f  54 a3 0a 15  fb 5f f7 19  d9 9f a2 f9
+|   87 e6 66 e0  e0 44 d1 8f  cf 46 8d ff  29 d4 c6 9b
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 ./parentR2 leak: reply packet, item size: X
@@ -735,6 +801,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./parentR2 leak: st_enc_key in duplicate_state, item size: X
 ./parentR2 leak: struct state in new_state(), item size: X
 ./parentR2 leak: ikev2_inI2outR2 KE, item size: X
+./parentR2 leak: alg_info_ike, item size: X
 ./parentR2 leak: ikev2_inI1outR1 KE, item size: X
 ./parentR2 leak: msg_digest, item size: X
 ./parentR2 leak: 2 * keep id name, item size: X
@@ -758,7 +825,8 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./parentR2 leak: rfc3110 format of public key [created], item size: X
 ./parentR2 leak: pubkey, item size: X
 ./parentR2 leak: secret, item size: X
-./parentR2 leak: 2 * hasher name, item size: X
+./parentR2 leak: 3 * hasher name, item size: X
+./parentR2 leak: 10 * group description, item size: X
 ./parentR2 leak: policies path, item size: X
 ./parentR2 leak: ocspcerts path, item size: X
 ./parentR2 leak: aacerts path, item size: X
