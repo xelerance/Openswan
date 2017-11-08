@@ -164,7 +164,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/40 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
-| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -238,14 +238,14 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   2a b8 60 09  8f 1f d2 d0  27 0b e5 b8  bf 6b e2 83
 |   5d af f9 88  7c 09 47 32  c7 c7 72 61  b0 29 20 0b
 |   a1 79 22 95  8b 5f 46 ab  30 48 6c 4f  21 93 99 84
-|   44 93 ae 9a  00 2c d4 9d  32 aa 19 f0  df 7b ed 5e
-|   5c 7e 7d c1  73 c0 1b dd  b1 1a 05 5f  8f ec 9d be
-|   d7 74 35 57  5f 62 84 76  61 09 a3 4f  dd 83 81 af
-|   d5 6e dc 5b  c9 85 38 a8  ce 21 44 ea  a3 59 12 ac
-|   2b 00 a4 6e  40 b0 fc 6c  c8 2e ae 3f  7a 9a 24 1a
-|   91 59 dd 04  2b 6a e2 c8  80 12 23 25  84 c5 ab 6a
-|   15 1e 4d f5  dd 81 d9 0b  07 43 b1 59  36 df 19 3a
-|   d2 01 ec 6c  2a b7 5d 98  21 77 a3 a4  92 e9 a9 bc
+|   a4 de 9a eb  10 24 61 19  27 da 8a 9b  ff 3f 7f 85
+|   a9 c0 18 f9  23 6d e0 32  33 ca 20 5b  5c dc 26 0c
+|   66 92 c6 6b  e1 c9 ee ff  d8 d0 41 97  7e b6 6e be
+|   af f6 9e 38  bd 3e 93 ae  c9 73 2e 3e  f5 ed 42 24
+|   f6 4f a7 db  58 3f b9 80  2f 3a 1c 98  fc 1e 46 8c
+|   dc 93 ee 6c  ec df 40 4d  3d 08 d7 ed  92 6b d5 f8
+|   9f 6c f9 41  2f 99 27 d2  2e 5b a5 77  5a 93 b6 3f
+|   5f 48 04 e7  5b 70 5f 44  f3 ed cb 37  fc 7d 89 82
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -300,37 +300,43 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
-| proposal 1,0 match  encr= (policy:             aes_cbc vs offered:aes_cbc)
-| proposal 1,0 failed integ=(policy:   hmac_sha2_256_128 vs offered:none)
-| proposal 1,0 match  esn=  (policy:        esn-disabled vs offered:esn-disabled)
-| proposal 1,1 match  encr= (policy:             aes_cbc vs offered:aes_cbc)
-| proposal 1,1 failed integ=(policy:        hmac_sha1_96 vs offered:none)
-| proposal 1,1 match  esn=  (policy:        esn-disabled vs offered:esn-disabled)
-| #2 complete v2 state transition with STF_FAIL
-./nattI3 STATE_CHILD_C0_KEYING: NO_PROPOSAL_CHOSEN
-| state transition function for STATE_CHILD_C0_KEYING failed: NO_PROPOSAL_CHOSEN
+| #2 complete v2 state transition with STF_OK
+./nattI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
+| v2_state_transition: st is #2; pst is #0; transition_st is #0
+./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/00000000)
+./nattI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
+./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
+| releasing whack for #X (sock=Y)
+| releasing whack for #X (sock=Y)
 now look at the resulting SAs produced.
-RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=0; msgid=0; idle; import:admin initiate
-RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C0_KEYING (CHILD SA keying); none in -1s; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=0,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
 ./nattI3 deleting connection
 | pass 0: considering CHILD SAs to delete
-./nattI3 deleting state #2 (STATE_CHILD_C0_KEYING)
+./nattI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| ICOOKIE:  80 01 02 03  04 05 06 07
-| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
-| state hash entry 5
+| sending Child SA delete equest
+sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to 132.213.238.7:4500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
+|   48 db 1d 2d  1c 08 f9 ca  e1 0c 11 8c  94 72 6e 4c
 | pass 1: considering PARENT SAs to delete
 ./nattI3 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
 sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to 132.213.238.7:4500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
+|   2e 20 25 08  00 00 00 03  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   cc 69 b7 54  9e 81 b1 3d  fa a9 ea ac  08 ab 7c cf
+|   27 c2 35 d0  73 ac 82 92  04 13 01 7a  a4 4d 92 fe
+./nattI3 leak: skeyseed_t1, item size: X
+./nattI3 leak: responder keys, item size: X
+./nattI3 leak: initiator keys, item size: X
 ./nattI3 leak: alg_info_esp, item size: X
 ./nattI3 leak: db_context->attrs, item size: X
 ./nattI3 leak: db_context->trans, item size: X
@@ -385,4 +391,3 @@ sending 80 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI3 leak: 3 * hasher name, item size: X
 ./nattI3 leak: 10 * group description, item size: X
 ./nattI3 leak detective found Z leaks, total size X
-Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
