@@ -1,3 +1,3 @@
-IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 264, bad cksum 0 (->455f)!)
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 268, bad cksum 0 (->455b)!)
     132.213.238.7.500 > 192.168.1.1.500: isakmp 2.0 msgid 00000002: child_sa  child_sa[R]:
-    (v2e: len=204)
+    (v2e: len=208)
