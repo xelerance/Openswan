@@ -251,7 +251,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .opt_enc_payloads = P(KE),
       .processor  = ikev2child_inCI1,
       .recv_type  = ISAKMP_v2_CHILD_SA,
-      .timeout_event = EVENT_NULL,
+      .timeout_event = EVENT_SA_REPLACE,
     },
 
     /* state 8 -- EMPTY for now*/
