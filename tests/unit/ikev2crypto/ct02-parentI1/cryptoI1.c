@@ -23,11 +23,6 @@ static void init_fake_secrets(void)
 			       , NULL, NULL);
 }
 
-#define INIT_LOADED init_loaded
-static void init_loaded(struct connection *c UNUSED) {
-    init_crypto();
-}
-
 #include "../lp02-parentI1/parentI1_main.c"
 
  /*
