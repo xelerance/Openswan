@@ -276,7 +276,7 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
         // r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np    = ISAKMP_NEXT_v2E;
         r_hdr.isa_xchg  = ISAKMP_v2_AUTH;
-        r_hdr.isa_flags = ISAKMP_FLAGS_I;
+        r_hdr.isa_flags = IKEv2_ORIG_INITIATOR_FLAG(pst);
         r_hdr.isa_msgid = htonl(st->st_msgid);
         memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);

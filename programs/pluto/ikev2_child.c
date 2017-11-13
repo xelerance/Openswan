@@ -959,7 +959,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         }
     }
 
+    /* in this case, RESPONDER means the responder to this message */
     ikev2_derive_child_keys(st1, RESPONDER);
+
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(pst, st1, TRUE))
         return STF_FATAL;
@@ -1160,9 +1162,13 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np    = ISAKMP_NEXT_v2E;
         r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
-        r_hdr.isa_flags = ISAKMP_FLAGS_I|ISAKMP_FLAGS_E;
+
+        /* we should set the I bit, if we are the original initiator of the
+         * the parent SA.
+         */
+        r_hdr.isa_flags = ISAKMP_FLAGS_E|IKEv2_ORIG_INITIATOR_FLAG(st);
         r_hdr.isa_msgid = htonl(st->st_msgid);
-        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE); /* XXX */
+        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
         memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             return STF_INTERNAL_ERROR;
@@ -1351,12 +1357,21 @@ static stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
 {
     struct state *st = md->st;
+    int rn;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
            , ip_str(&md->sender), (unsigned)md->sender_port
            , md->iface->ip_dev->id_rname
            , md->iface->port);
+
+    /* process nonce coming in */
+    rn = accept_v2_nonce(md, &st->st_ni, "Ni");
+    if(rn != v2N_NOTHING_WRONG) {
+	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
+	return STF_INTERNAL_ERROR;
+    }
 
     return ikev2child_inCI1_tail(md, st, FALSE);
 }
@@ -1381,8 +1396,18 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now decrypt payload and extract values */
-    {
+    if (IKEv2_IS_ORIG_INITIATOR(md->pst)) {
         stf_status ret;
+	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as INITIATOR"));
+        ret = ikev2_decrypt_msg(md, INITIATOR);
+        if(ret != STF_OK) {
+            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+            delete_state(st);
+            return ret;
+        }
+    } else {
+        stf_status ret;
+	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as RESPONDER"));
         ret = ikev2_decrypt_msg(md, RESPONDER);
         if(ret != STF_OK) {
             loglog(RC_LOG_SERIOUS, "unable to decrypt message");
@@ -1396,6 +1421,11 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     } else {
         return ikev2child_inCI1_nopfs(md);
     }
+}
+
+stf_status ikev2child_inI3(struct msg_digest *md)
+{
+	return ikev2child_inCI1(md);
 }
 
 /*
@@ -1533,6 +1563,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
     authstart = reply_stream.cur;
 
     /* at this point, the child will be the one making the transition */
+    set_cur_state(st);
     md->transition_state = st;
 
     /* send response */
@@ -1568,8 +1599,9 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             /* let the isa_version reply be the same as what the sender had */
             r_hdr.isa_np    = ISAKMP_NEXT_v2E;
             r_hdr.isa_xchg  = ISAKMP_v2_CHILD_SA;
-            r_hdr.isa_flags = ISAKMP_FLAGS_R;
-            r_hdr.isa_msgid = htonl(md->msgid_received);
+            r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
+	    /* also let teh isa_msgid reply be the same as what sender sent */
+            //r_hdr.isa_msgid = htonl(md->msgid_received);
             memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
             memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
             if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
@@ -1633,10 +1665,19 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             close_output_pbs(&md->rbody);
             close_output_pbs(&reply_stream);
 
-            ret = ikev2_encrypt_msg(md, RESPONDER,
-                                    authstart,
-                                    iv, encstart, authloc,
-                                    &e_pbs, &e_pbs_cipher);
+	    if (IKEv2_IS_ORIG_INITIATOR(md->pst)) {
+		    DBG(DBG_CONTROLMORE, DBG_log("encrypting payload as INITIATOR"));
+		    ret = ikev2_encrypt_msg(md, INITIATOR,
+					    authstart,
+					    iv, encstart, authloc,
+					    &e_pbs, &e_pbs_cipher);
+	    } else {
+		    DBG(DBG_CONTROLMORE, DBG_log("encrypting payload as RESPONDER"));
+		    ret = ikev2_encrypt_msg(md, RESPONDER,
+					    authstart,
+					    iv, encstart, authloc,
+					    &e_pbs, &e_pbs_cipher);
+	    }
             if(ret != STF_OK) return ret;
         }
     }
@@ -1732,6 +1773,8 @@ stf_status ikev2child_inCR1(struct msg_digest *md)
     if(md->chain[ISAKMP_NEXT_v2KE]) {
         return ikev2child_inCR1_pfs(md);
     } else {
+	set_cur_state(st);
+	md->transition_state = st;
         return ikev2child_inCR1_tail(md, st);
     }
 }
