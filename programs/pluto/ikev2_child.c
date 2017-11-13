@@ -959,7 +959,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
         }
     }
 
+    /* in this case, RESPONDER means the responder to this message */
     ikev2_derive_child_keys(st1, RESPONDER);
+
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(pst, st1, TRUE))
         return STF_FATAL;
@@ -1355,12 +1357,21 @@ static stf_status ikev2child_inCI1_pfs(struct msg_digest *md)
 static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
 {
     struct state *st = md->st;
+    int rn;
 
     loglog(RC_COMMENT, "msgid=%u CHILD_SA no-PFS rekey message received from %s:%u on %s (port=%d)"
            , md->msgid_received
            , ip_str(&md->sender), (unsigned)md->sender_port
            , md->iface->ip_dev->id_rname
            , md->iface->port);
+
+    /* process nonce coming in */
+    rn = accept_v2_nonce(md, &st->st_ni, "Ni");
+    if(rn != v2N_NOTHING_WRONG) {
+	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
+	return STF_INTERNAL_ERROR;
+    }
 
     return ikev2child_inCI1_tail(md, st, FALSE);
 }
