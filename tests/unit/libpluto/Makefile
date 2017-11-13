@@ -60,7 +60,9 @@ UNITTESTS_I1+=lp23-davecertI1
 UNITTESTS_R1+=lp70-certreplydaveR1
 UNITTESTS_I2+=lp26-davecertI2
 UNITTESTS_R2+=lp24-certreplydaveR2
-UNITTESTS_R2+=lp25-wrongcacert
+
+# disabled due to issue #6602
+#UNITTESTS_R2+=lp25-wrongcacert
 
 UNITTESTS_I1+=lp27-dnsloadI1
 UNITTESTS_R2+=lp32-parentR2anychoice
