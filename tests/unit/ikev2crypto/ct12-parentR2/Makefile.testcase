@@ -10,5 +10,6 @@ ENDNAME=parker
 TESTNAME=cryptoR2
 
 pcapupdate:
+	cp ../ct02-parentI1/OUTPUT/cryptoI1.pcap parentI1.pcap
 	cp ../ct10-parentI2/OUTPUT/cryptoI2.pcap parentI2.pcap
 
