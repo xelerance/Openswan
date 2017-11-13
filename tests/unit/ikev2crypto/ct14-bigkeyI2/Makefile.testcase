@@ -5,4 +5,5 @@ CONNNAME=parker1--jj2
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} parentR1.pcap OUTPUT/${TESTNAME}.pcap
 ENDNAME=parker
 
-
+pcapupdate:
+	cp ../../libpluto/lp37-h2hR1/OUTPUT/h2hR1.pcap parentR1.pcap
