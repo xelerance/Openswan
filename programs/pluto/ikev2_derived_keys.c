@@ -101,6 +101,9 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
  *
  */
 
+	DBG(DBG_CRYPT,
+	    DBG_log("%s: my role is %s", __FUNCTION__, ROLE_NAME(role)));
+
 	v2genbytes(&ikeymat, st->st_esp.keymat_len
 		   , "initiator keys", &childsacalc);
 
