@@ -420,6 +420,8 @@ struct state
 
 #define IKEv2_ORIG_INITIATOR_FLAG(st) (st->st_ikev2_orig_initiator?ISAKMP_FLAGS_I : 0)
 
+/* map state->st_ikev2_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
+#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st1) ? INITIATOR : RESPONDER )
 
 extern bool states_use_connection(struct connection *c);
 
