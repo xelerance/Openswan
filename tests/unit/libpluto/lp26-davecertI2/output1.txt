@@ -113,7 +113,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./davecertI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./davecertI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+./davecertI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
 |   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
@@ -475,6 +475,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 1600
 | emitting length of ISAKMP Message: 1628
+| encrypting as INITIATOR
 | data before encryption:
 |   25 00 00 a7  09 00 00 00  30 81 9c 31  0b 30 09 06
 |   03 55 04 06  13 02 43 41  31 0b 30 09  06 03 55 04
@@ -676,7 +677,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | #2 complete v2 state transition with STF_OK
 ./davecertI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./davecertI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
+./davecertI2 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/4294967295)
 | sending reply packet to 132.213.238.7:500 (from port 500)
 sending 1628 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.35:500] to 132.213.238.7:500 (using #2)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
@@ -814,6 +815,7 @@ sending 1628 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.35:500] to 1
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
+| encrypting as INITIATOR
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
