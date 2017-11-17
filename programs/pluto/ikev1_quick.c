@@ -932,7 +932,7 @@ quick_outI1_tail(struct pluto_crypto_req_cont *pcrc
 
 	if (!out_sa(&rbody
 		    , &ipsec_sadb[(st->st_policy & pm) >> POLICY_IPSEC_SHIFT]
-		    , st, FALSE, FALSE, ISAKMP_NEXT_NONCE))
+		    , st, /*oakley_mode*/FALSE, INITIATOR, /* aggr */FALSE, ISAKMP_NEXT_NONCE))
 	{
 	    reset_cur_state();
 	    return STF_INTERNAL_ERROR;
