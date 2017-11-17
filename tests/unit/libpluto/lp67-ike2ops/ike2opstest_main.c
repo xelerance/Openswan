@@ -63,14 +63,15 @@ int main(int argc, char *argv[])
 
     sa_v2_print(sadb);
 
-    if(!extrapolate_v1_from_v2(sadb)) {
+    if(!extrapolate_v1_from_v2(sadb, POLICY_PSK, INITIATOR)) {
         DBG_log("failed to create v1");
         exit(11);
     }
-    printf("v1:");
+    printf("v1 (PSK):");
     sa_print(sadb);
 
     free_sa(sadb);
+#endif
 
 #if 1
     ikepolicy="aes128-sha1-sha1-modp2048";
