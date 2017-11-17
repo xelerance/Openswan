@@ -474,27 +474,9 @@ const char *const oakley_attr_bit_names[] = {
 	NULL
     };
 
-static const char *const oakley_var_attr_name[] = {
-	"OAKLEY_GROUP_PRIME (variable length)",
-	"OAKLEY_GROUP_GENERATOR_ONE (variable length)",
-	"OAKLEY_GROUP_GENERATOR_TWO (variable length)",
-	"OAKLEY_GROUP_CURVE_A (variable length)",
-	"OAKLEY_GROUP_CURVE_B (variable length)",
-	NULL,
-	"OAKLEY_LIFE_DURATION (variable length)",
-	NULL,
-	NULL,
-	NULL,
-	"OAKLEY_GROUP_ORDER (variable length)",
-    };
-
-static enum_names oakley_attr_desc_tv = {
-    OAKLEY_ENCRYPTION_ALGORITHM + ISAKMP_ATTR_AF_TV,
-    OAKLEY_GROUP_ORDER + ISAKMP_ATTR_AF_TV, oakley_attr_bit_names, NULL };
-
 enum_names oakley_attr_names = {
-    OAKLEY_GROUP_PRIME, OAKLEY_GROUP_ORDER,
-    oakley_var_attr_name, &oakley_attr_desc_tv };
+    OAKLEY_ENCRYPTION_ALGORITHM,
+    OAKLEY_GROUP_ORDER,             oakley_attr_bit_names, NULL };
 
 /* for each Oakley attribute, which enum_names describes its values? */
 enum_names *oakley_attr_val_descs[] = {

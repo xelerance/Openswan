@@ -1466,8 +1466,10 @@ in_struct(void *struct_ptr, struct_desc *sd
 		    break;
 		}
 		case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
-		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV) {
 			immediate = TRUE;
+                        actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
+                    }
 		    break;
 
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
@@ -1699,9 +1701,12 @@ out_struct(const void *struct_ptr, struct_desc *sd
 		    obj.lenfld = cur;
 		    obj.lenfld_desc = fp;
 		    break;
+
 		case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
-		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
+		    if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV) {
 			immediate = TRUE;
+                        actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
+                    }
 		    break;
 
 		case ft_af_enum:	/* Attribute Format + value from an enumeration */
@@ -1710,15 +1715,17 @@ out_struct(const void *struct_ptr, struct_desc *sd
                         actual_n = n & ISAKMP_ATTR_RTYPE_MASK;
                     }
 		    /* FALL THROUGH */
-		case ft_enum:	/* value from an enumeration */
+		case ft_enum:	        /* value from an enumeration */
 		    if (enum_name(fp->desc, actual_n) == NULL)
 		    {
 			ugh = builddiag("%s of %s has an unknown out value: %lu"
 			    , fp->name, sd->name, (unsigned long)actual_n);
 		    }
-		    /* FALL THROUGH */
-		case ft_loose_enum:	/* value from an enumeration with only some names known */
+                    break;
+
+		case ft_loose_enum:	/* value from an enumeration with only some names known*/
 		    break;
+
 		case ft_set:	/* bits representing set */
 		    if (!testset(fp->desc, n))
 		    {
