@@ -85,6 +85,20 @@ int main(int argc, char *argv[])
 
     free_sa(sadb);
 
+    printf("\nRSA+PSK:\n");
+    sadb = alginfo2parent_db2(ai);
+    sadb->parentSA = TRUE;
+
+    sa_v2_print(sadb);
+    if(!extrapolate_v1_from_v2(sadb, POLICY_PSK|POLICY_RSASIG, INITIATOR)) {
+        DBG_log("failed to create v1");
+        exit(11);
+    }
+    printf("v1 (RSA+PSK):");
+    sa_print(sadb);
+
+    free_sa(sadb);
+
     alg_info_free((struct alg_info *)ai);
 
 #if 1
