@@ -46,8 +46,9 @@ print_sa_attr_oakley(struct db_attr *at)
 	en = oakley_attr_val_descs[at->type.oakley];
     }
     DBG_log("        type: %u(%s) val: %u(%s)\n"
-	   , at->type.oakley, enum_name(&oakley_attr_names, at->type.oakley+ISAKMP_ATTR_AF_TV)
-	   , at->val,  en ? enum_name(en, at->val) : "unknown");
+            , at->type.oakley
+            , enum_name(&oakley_attr_names, at->type.oakley)
+            , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
 
 void
