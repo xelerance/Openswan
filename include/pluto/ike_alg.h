@@ -144,7 +144,9 @@ extern struct db_sa *ikev2_kernel_alg_makedb(lset_t policy
 				       , bool logit);
 
 extern struct db_sa *kernel_alg_makedb(lset_t policy
-				       , struct alg_info_esp *ei);
+				       , struct alg_info_esp *ei
+                                       , enum phase1_role role);
+
 
 /* used if USE_SHA2 set, which is now default */
 extern int ike_alg_sha2_init(void);

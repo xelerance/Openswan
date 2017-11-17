@@ -159,6 +159,7 @@ extern bool out_sa(
     struct db_sa *sadb,
     struct state *st,
     bool oakley_mode,
+    enum phase1_role role,
     bool aggressive_mode,
     u_int8_t np);
 
@@ -190,5 +191,6 @@ extern notification_t parse_ipsec_sa_body(
 
 /* spdb_v1_struct.c */
 extern struct db_sa *ikev1_alg_makedb(lset_t policy UNUSED, struct alg_info_ike *ei
-                                      , bool oneproposal);
+                                      , bool oneproposal
+                                      , enum phase1_role role);
 

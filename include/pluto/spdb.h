@@ -125,13 +125,6 @@ extern struct db_sa ipsec_sadb[1 << 3];
 #define AD_PC(x) props: x, prop_cnt: elemsof(x)
 
 struct state;
-extern bool out_sa(
-    pb_stream *outs,
-    struct db_sa *sadb,
-    struct state *st,
-    bool oakley_mode,
-    bool aggressive_mode,
-    u_int8_t np);
 
 #if 0
 extern complaint_t accept_oakley_auth_method(
@@ -174,7 +167,7 @@ extern struct db_sa *sa_merge_proposals(struct db_sa *a, struct db_sa *b);
 extern int v2tov1_encr(enum ikev2_trans_type_encr encr);
 extern int v2tov1_integ(enum ikev2_trans_type_integ v2integ);
 
-extern bool extrapolate_v1_from_v2(struct db_sa *sadb);
+extern bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role role);
 
 /* in spdb_struct.c */
 extern bool out_attr(int type, unsigned long val, struct_desc *attr_desc
