@@ -201,7 +201,8 @@ main_outI1(int whack_sock
 
 	int np = numvidtosend > 0 ? ISAKMP_NEXT_VID : ISAKMP_NEXT_NONE;
 	if (!out_sa(&md.rbody
-		    , st->st_sadb, st, TRUE, FALSE, np))
+		    , st->st_sadb, st, /* oakley_mode*/TRUE, INITIATOR
+                    , /* aggr */FALSE, np))
 	{
 	    openswan_log("outsa fail");
 	    reset_cur_state();
