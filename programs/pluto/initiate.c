@@ -143,7 +143,7 @@ initiate_a_connection(struct connection *c
 
 	if(c->policy & (POLICY_ENCRYPT|POLICY_AUTHENTICATE)) {
 	    struct alg_info_esp *alg = c->alg_info_esp;
-	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg);
+	    struct db_sa *phase2_sa = kernel_alg_makedb(c->policy, alg, INITIATOR);
 
 	    if(alg != NULL && phase2_sa == NULL) {
 		whack_log(RC_NOALGO, "can not initiate: no acceptable kernel algorithms loaded");
