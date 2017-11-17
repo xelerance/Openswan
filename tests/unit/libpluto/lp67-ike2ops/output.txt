@@ -48,6 +48,29 @@ v1 (RSA):| sa disjunct cnt: 1
 |         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
 |         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
 |         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
+
+RSA+PSK:
+| proposals: cnt=1
+|  disj: cnt=1 [next=2]
+| 1:  protoid="PROTO_ISAKMP" [trans: 4]
+|     trans-type-encr value="aes_cbc" [attrs: 1]
+|       type="KEY_LENGTH" value="128"
+|     trans-type-prf value="prf-hmac-sha1" [attrs: 0]
+|     trans-type-integ value="hmac_sha1_96" [attrs: 0]
+|     trans-type-dh value="OAKLEY_GROUP_MODP2048" [attrs: 0]
+v1 (RSA+PSK):| sa disjunct cnt: 1 
+|   conjunctions cnt: 1 
+|     protoid: 1 (PROTO_ISAKMP) cnt: 2 
+|       transform: 1 cnt: 4 
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 1(OAKLEY_PRESHARED_KEY) 
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
+|       transform: 1 cnt: 4 
+|         type: 3(OAKLEY_AUTHENTICATION_METHOD) val: 3(OAKLEY_RSA_SIG) 
+|         type: 1(OAKLEY_ENCRYPTION_ALGORITHM) val: 7(OAKLEY_AES_CBC) 
+|         type: 2(OAKLEY_HASH_ALGORITHM) val: 2(OAKLEY_SHA1) 
+|         type: 4(OAKLEY_GROUP_DESCRIPTION) val: 14(OAKLEY_GROUP_MODP2048) 
 | for input ike=aes128-sha1-sha1-modp2048
 | alg_info_parse_str() ealg_buf=aes aalg_buf=sha1 eklen=128  aklen=0
 | parser_alg_info_add() ealg_getbyname("aes")=12
