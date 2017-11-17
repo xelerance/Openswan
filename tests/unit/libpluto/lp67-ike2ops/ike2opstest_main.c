@@ -57,9 +57,9 @@ int main(int argc, char *argv[])
     }
     passert(ai != NULL);
 
+    printf("\nPSK:\n");
     sadb = alginfo2parent_db2(ai);
     sadb->parentSA = TRUE;
-    alg_info_free((struct alg_info *)ai);
 
     sa_v2_print(sadb);
 
@@ -69,9 +69,23 @@ int main(int argc, char *argv[])
     }
     printf("v1 (PSK):");
     sa_print(sadb);
+    free_sa(sadb);
+
+    printf("\nRSA:\n");
+    sadb = alginfo2parent_db2(ai);
+    sadb->parentSA = TRUE;
+
+    sa_v2_print(sadb);
+    if(!extrapolate_v1_from_v2(sadb, POLICY_RSASIG, INITIATOR)) {
+        DBG_log("failed to create v1");
+        exit(11);
+    }
+    printf("v1 (RSA):");
+    sa_print(sadb);
 
     free_sa(sadb);
-#endif
+
+    alg_info_free((struct alg_info *)ai);
 
 #if 1
     ikepolicy="aes128-sha1-sha1-modp2048";
