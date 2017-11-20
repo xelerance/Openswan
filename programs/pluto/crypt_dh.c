@@ -92,7 +92,7 @@ static CK_MECHANISM_TYPE nss_hmac_mech(const struct hash_desc *hasher)
 }
 */
 
-static CK_MECHANISM_TYPE nss_encryption_mech(const struct encrypt_desc *encrypter)
+static CK_MECHANISM_TYPE nss_encryption_mech(const struct ike_encr_desc *encrypter)
 {
 CK_MECHANISM_TYPE mechanism=0x80000000;
 
@@ -1247,11 +1247,11 @@ calc_skeyseed_v2(struct pcr_skeyid_q *skq
 		  , (long unsigned)keysize));
 
 #ifdef HAVE_LIBNSS
-    const struct ike_prf_desc *hasher = (struct hash_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_PRF, skq->prf_hash, 0);
+    const struct ike_prf_desc *hasher = (struct ike_prf_desc *)ike_alg_ikev2_find(IKEv2_TRANS_TYPE_PRF, skq->prf_hash, 0);
     passert(hasher);
 
 
-    const struct encrypt_desc *encrypter = skq->encrypter;
+    const struct ike_encr_desc *encrypter = skq->encrypter;
     passert(encrypter);
 
 
