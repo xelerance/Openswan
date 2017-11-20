@@ -24,6 +24,7 @@
 #include "pluto/state.h"
 
 #include "whackmsgtestlib.c"
+#include "seam_rnd.c"
 #include "seam_timer.c"
 #include "seam_vendor.c"
 #include "seam_fakevendor.c"
