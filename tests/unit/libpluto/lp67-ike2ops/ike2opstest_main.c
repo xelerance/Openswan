@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 
     setbuf(stdout, NULL);  /* make stdout unbuffered so stdout/stderr interleave */
 
+#if 1
     {
         struct db_context *ctx = db_prop_new(PROTO_ISAKMP,
                                              10,/* transforms */
@@ -100,6 +101,21 @@ int main(int argc, char *argv[])
     free_sa(sadb);
 
     alg_info_free((struct alg_info *)ai);
+#endif
+
+    printf("\ndefault RSA:\n");
+    sadb = alginfo2parent_db2(NULL);
+    sadb->parentSA = TRUE;
+
+    sa_v2_print(sadb);
+    if(!extrapolate_v1_from_v2(sadb, POLICY_RSASIG, INITIATOR)) {
+        DBG_log("failed to create v1");
+        exit(11);
+    }
+    printf("default v1 (RSA):");
+    sa_print(sadb);
+
+    free_sa(sadb);
 
 #if 1
     ikepolicy="aes128-sha1-sha1-modp2048";
