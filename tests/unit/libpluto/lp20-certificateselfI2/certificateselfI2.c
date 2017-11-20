@@ -22,6 +22,7 @@ static void init_fake_secrets(void)
 }
 static void init_loaded(void) {}
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
