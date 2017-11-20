@@ -72,6 +72,11 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 
 	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
 	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);
+
+	DBG(DBG_CRYPT,
+	    DBG_dump("childsacalc.ni", childsacalc.ni.ptr, childsacalc.ni.len);
+	    DBG_dump("childsacalc.nr", childsacalc.nr.ptr, childsacalc.nr.len));
+
 	childsacalc.spii.len=0;
 	childsacalc.spir.len=0;
 
@@ -100,6 +105,9 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
  *    the authentication key is taken from the next octets.
  *
  */
+
+	DBG(DBG_CRYPT,
+	    DBG_log("%s: my role is %s", __FUNCTION__, ROLE_NAME(role)));
 
 	v2genbytes(&ikeymat, st->st_esp.keymat_len
 		   , "initiator keys", &childsacalc);

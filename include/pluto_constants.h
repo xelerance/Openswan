@@ -306,6 +306,11 @@ enum phase1_role {
   RESPONDER=2
 };
 
+#define ROLE_NAME(role) ( \
+	role == INITIATOR ? "INITIATOR" : \
+	role == RESPONDER ? "RESPONDER" : \
+	"???" )
+
 
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
 

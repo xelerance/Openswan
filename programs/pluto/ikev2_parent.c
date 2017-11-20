@@ -250,9 +250,11 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
     }
 
     if(init == INITIATOR) {
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as INITIATOR"));
         cipherkey = &pst->st_skey_ei;
         authkey   = &pst->st_skey_ai;
     } else {
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as RESPONDER"));
         cipherkey = &pst->st_skey_er;
         authkey   = &pst->st_skey_ar;
     }
@@ -590,8 +592,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
         memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
         n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;
         n_hdr.isa_np = ISAKMP_NEXT_v2N;
-        n_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
-        n_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
+
+        n_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(p1st);
         n_hdr.isa_msgid = htonl(p1st->st_msgid);
 
         if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody))
@@ -641,7 +643,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
     /* decrypt things. */
     {
 	stf_status ret;
-        if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+        if(IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
            DBG(DBG_CONTROLMORE
               , DBG_log("received informational exchange request from INITIATOR"));
            ret = ikev2_decrypt_msg(md, RESPONDER);
@@ -663,7 +665,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
         struct state *const st = md->st;
 
         /* Only send response if it is request (we are responder!) */
-        if (!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+        if (IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
             unsigned char *authstart;
             pb_stream      e_pbs, e_pbs_cipher;
             struct ikev2_generic e;
@@ -688,14 +690,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                 r_hdr.isa_xchg = ISAKMP_v2_INFORMATIONAL;
                 r_hdr.isa_np = ISAKMP_NEXT_v2E;
                 r_hdr.isa_msgid = htonl(md->msgid_received);
-
-                /*set initiator bit if we are initiator*/
-                if(md->role == INITIATOR) {
-                    r_hdr.isa_flags |= ISAKMP_FLAGS_I;
-                }
-
-                r_hdr.isa_flags  |=  ISAKMP_FLAGS_R;
-
+                r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
 
                 if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
                     {
@@ -862,10 +857,19 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                 close_output_pbs(&md->rbody);
                 close_output_pbs(&reply_stream);
 
-                ret = ikev2_encrypt_msg(md, RESPONDER,
-                                        authstart,
-                                        iv, encstart, authloc,
-                                        &e_pbs, &e_pbs_cipher);
+		if (IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
+			/* packet arrived from INITIATOR, we encrypt as RESPONDER */
+			ret = ikev2_encrypt_msg(md, RESPONDER,
+						authstart,
+						iv, encstart, authloc,
+						&e_pbs, &e_pbs_cipher);
+		} else {
+			/* packet arrived from RESPONDER, we encrypt as INITIATOR */
+			ret = ikev2_encrypt_msg(md, INITIATOR,
+						authstart,
+						iv, encstart, authloc,
+						&e_pbs, &e_pbs_cipher);
+		}
                 if(ret != STF_OK) return ret;
             }
 
@@ -1084,12 +1088,12 @@ void ikev2_delete_out(struct state *st)
 
             /*set initiator bit if we are initiator*/
             if(pst->st_state == STATE_PARENT_I2 || pst->st_state == STATE_PARENT_I3) {
-                r_hdr.isa_flags |= ISAKMP_FLAGS_I;
                 role = INITIATOR;
             }
             else {
                 role = RESPONDER;
             }
+            r_hdr.isa_flags = IKEv2_ORIG_INITIATOR_FLAG(pst);
 
             if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &rbody))
                 {

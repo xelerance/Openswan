@@ -1026,6 +1026,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 high  0a 02 ff ff
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
+| childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+| childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| ikev2_derive_child_keys: my role is RESPONDER
 | prf+[1]:  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4
 | prf+[2]:  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
@@ -1045,6 +1048,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 1440
 | emitting length of ISAKMP Message: 1468
+| encrypting as RESPONDER
 | data before encryption:
 |   25 00 00 1b  02 00 00 00  6d 6f 6f 6e  2e 73 74 72
 |   6f 6e 67 73  77 61 6e 2e  6f 72 67 27  00 04 38 04
