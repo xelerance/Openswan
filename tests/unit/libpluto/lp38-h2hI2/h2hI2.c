@@ -1,3 +1,4 @@
+#define SEAM_CRYPTO
 #include "../lp10-parentI2/parentI2_head.c"
 #include "seam_keys.c"
 #include "seam_x509.c"
