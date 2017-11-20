@@ -2,6 +2,7 @@
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_crypt.c"
+#include "seam_gr_sha1_group14.c"
 
 #define TESTNAME "rekeyikev2-R1"
 
@@ -21,6 +22,7 @@ static void init_loaded(void)
 {   /* nothing */ }
 
 #include "../lp47-rekeyikev2-R1/rekeyit.c"
+#include "seam_parentR2.c"
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*
