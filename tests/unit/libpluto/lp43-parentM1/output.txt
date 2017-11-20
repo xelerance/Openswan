@@ -62,17 +62,30 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    exchange type: ISAKMP_XCHG_IDPROT
 |    flags: none
 |    message ID:  00 00 00 00
+| counted combo 1: dh:14 encr:12 integ:2
+| counted combo 2: dh:14 encr:12 integ:12
+| counted combo 3: dh:5 encr:12 integ:12
+| counted combo 4: dh:5 encr:12 integ:2
+| counted combo 5: dh:5 encr:12 integ:12
+| counted combo 6: dh:15 encr:12 integ:12
+| counted combo 7: dh:15 encr:12 integ:2
+| new combo 0: dh:14 encr:12 integ:2
+| new combo 1: dh:14 encr:12 integ:12
+| new combo 2: dh:5 encr:12 integ:12
+| new combo 3: dh:5 encr:12 integ:2
+| new combo 4: dh:15 encr:12 integ:12
+| new combo 5: dh:15 encr:12 integ:2
 | ***emit ISAKMP Security Association Payload:
 |    DOI: ISAKMP_DOI_IPSEC
 | ****emit IPsec DOI SIT:
 |    IPsec DOI SIT: SIT_IDENTITY_ONLY
 | out_sa pcn: 0 has 1 valid proposals
-| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 1
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 6
 | ****emit ISAKMP Proposal Payload:
 |    proposal number: 0
 |    protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    number of transforms: 1
+|    number of transforms: 6
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 0
 |    transform ID: KEY_IKE
@@ -92,17 +105,10 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 2
 |     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
 |     [14 is OAKLEY_GROUP_MODP2048]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 1
 |    transform ID: KEY_IKE
@@ -119,20 +125,13 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
 |    length/value: 14
 |     [14 is OAKLEY_GROUP_MODP2048]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 2
 |    transform ID: KEY_IKE
@@ -145,21 +144,17 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 3600
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 14
-|     [14 is OAKLEY_GROUP_MODP2048]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 3
 |    transform ID: KEY_IKE
@@ -172,21 +167,17 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |    length/value: 3600
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
+|    length/value: 7
+|     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
+|    length/value: 2
+|     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 14
-|     [14 is OAKLEY_GROUP_MODP2048]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 4
 |    transform ID: KEY_IKE
@@ -203,20 +194,13 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
+|    length/value: 4
+|     [4 is OAKLEY_SHA2_256]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
+|    length/value: 15
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
 | *****emit ISAKMP Transform Payload (ISAKMP):
 |    transform number: 5
 |    transform ID: KEY_IKE
@@ -233,190 +217,15 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 |     [7 is OAKLEY_AES_CBC]
 | ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 6
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
 |    length/value: 2
 |     [2 is OAKLEY_SHA1]
 | ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
 |    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 7
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 5
-|     [5 is OAKLEY_GROUP_MODP1536]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 8
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 2
-|     [2 is OAKLEY_GROUP_MODP1024]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 9
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 5
-|     [5 is OAKLEY_3DES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 2
-|     [2 is OAKLEY_GROUP_MODP1024]
-| emitting length of ISAKMP Transform Payload (ISAKMP): 32
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 10
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 7
-|     [7 is OAKLEY_AES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 2
-|     [2 is OAKLEY_SHA1]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 2
-|     [2 is OAKLEY_GROUP_MODP1024]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
-| *****emit ISAKMP Transform Payload (ISAKMP):
-|    transform number: 11
-|    transform ID: KEY_IKE
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_TYPE
-|    length/value: 1
-|     [1 is OAKLEY_LIFE_SECONDS]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_LIFE_DURATION
-|    length/value: 3600
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
-|    length/value: 7
-|     [7 is OAKLEY_AES_CBC]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_HASH_ALGORITHM
-|    length/value: 1
-|     [1 is OAKLEY_MD5]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_AUTHENTICATION_METHOD
-|    length/value: 3
-|     [3 is OAKLEY_RSA_SIG]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_GROUP_DESCRIPTION
-|    length/value: 2
-|     [2 is OAKLEY_GROUP_MODP1024]
-| ******emit ISAKMP Oakley attribute:
-|    af+type: OAKLEY_KEY_LENGTH
-|    length/value: 128
-| emitting length of ISAKMP Transform Payload (ISAKMP): 36
-| emitting length of ISAKMP Proposal Payload: 416
-| emitting length of ISAKMP Security Association Payload: 428
+|    length/value: 15
+|     [15 is OAKLEY_GROUP_MODP3072]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 28
+| emitting length of ISAKMP Proposal Payload: 176
+| emitting length of ISAKMP Security Association Payload: 188
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
@@ -426,37 +235,22 @@ RC=0 "t4901":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 32,32; inter
 | emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
 | V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 | emitting length of ISAKMP Vendor ID Payload: 20
-| emitting length of ISAKMP Message: 492
-sending 492 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+| emitting length of ISAKMP Message: 252
+sending 252 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   01 10 02 00  00 00 00 00  00 00 01 ec  0d 00 01 ac
-|   00 00 00 01  00 00 00 01  00 00 01 a0  00 01 00 0c
-|   03 00 00 24  00 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 0e
-|   80 0e 00 80  03 00 00 24  01 01 00 00  80 0b 00 01
-|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
-|   80 04 00 0e  80 0e 00 80  03 00 00 20  02 01 00 00
-|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 02
-|   80 03 00 03  80 04 00 0e  03 00 00 20  03 01 00 00
-|   80 0b 00 01  80 0c 0e 10  80 01 00 05  80 02 00 01
-|   80 03 00 03  80 04 00 0e  03 00 00 24  04 01 00 00
-|   80 0b 00 01  80 0c 0e 10  80 01 00 07  80 02 00 02
-|   80 03 00 03  80 04 00 05  80 0e 00 80  03 00 00 24
+|   01 10 02 00  00 00 00 00  00 00 00 fc  0d 00 00 bc
+|   00 00 00 01  00 00 00 01  00 00 00 b0  00 01 00 06
+|   03 00 00 1c  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 02  80 04 00 0e  03 00 00 1c
+|   01 01 00 00  80 0b 00 01  80 0c 0e 10  80 01 00 07
+|   80 02 00 04  80 04 00 0e  03 00 00 1c  02 01 00 00
+|   80 0b 00 01  80 0c 0e 10  80 01 00 07  80 02 00 04
+|   80 04 00 05  03 00 00 1c  03 01 00 00  80 0b 00 01
+|   80 0c 0e 10  80 01 00 07  80 02 00 02  80 04 00 05
+|   03 00 00 1c  04 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 01 00 07  80 02 00 04  80 04 00 0f  00 00 00 1c
 |   05 01 00 00  80 0b 00 01  80 0c 0e 10  80 01 00 07
-|   80 02 00 01  80 03 00 03  80 04 00 05  80 0e 00 80
-|   03 00 00 20  06 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 05
-|   03 00 00 20  07 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 05
-|   03 00 00 20  08 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 05  80 02 00 02  80 03 00 03  80 04 00 02
-|   03 00 00 20  09 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 05  80 02 00 01  80 03 00 03  80 04 00 02
-|   03 00 00 24  0a 01 00 00  80 0b 00 01  80 0c 0e 10
-|   80 01 00 07  80 02 00 02  80 03 00 03  80 04 00 02
-|   80 0e 00 80  00 00 00 24  0b 01 00 00  80 0b 00 01
-|   80 0c 0e 10  80 01 00 07  80 02 00 01  80 03 00 03
-|   80 04 00 02  80 0e 00 80  0d 00 00 10  4f 45 70 6c
+|   80 02 00 02  80 04 00 0f  0d 00 00 10  4f 45 70 6c
 |   75 74 6f 75  6e 69 74 30  00 00 00 14  af ca d7 13
 |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 RC=105 STATE_MAIN_I1: initiate
