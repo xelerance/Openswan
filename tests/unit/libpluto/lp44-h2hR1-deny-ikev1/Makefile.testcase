@@ -12,3 +12,8 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
 
 EXTRALIBS+=${LIBPLUTO}
+
+pcapupdate:
+	cp ../lp43-parentM1/OUTPUT/parentM1.pcap parentM1.pcap
+
+
