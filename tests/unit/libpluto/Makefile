@@ -31,7 +31,7 @@ UNITTESTS_0+=lp34-orientafterlisten
 UNITTESTS_0+=lp40-orientafterprivate
 UNITTESTS_0+=lp41-orientmoon
 UNITTESTS_0+=lp42-loadbobdefaultroute
-UNITTESTS_0+=lp50-rekey-no-reply-rekey
+UNITTESTS_I4+=lp50-rekey-no-reply-rekey
 UNITTESTS_0+=lp60-bestif
 UNITTESTS_0+=lp66-db2ops
 UNITTESTS_0+=lp67-ike2ops
@@ -65,7 +65,10 @@ UNITTESTS_R2+=lp24-certreplydaveR2
 #UNITTESTS_R2+=lp25-wrongcacert
 
 UNITTESTS_I1+=lp27-dnsloadI1
-UNITTESTS_R2+=lp32-parentR2anychoice
+
+# disabled due to issue #6602
+#UNITTESTS_R2+=lp32-parentR2anychoice
+
 UNITTESTS_I1+=lp36-h2hI1
 UNITTESTS_R1+=lp37-h2hR1
 UNITTESTS_I2+=lp38-h2hI2
