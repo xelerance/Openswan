@@ -104,6 +104,7 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
+    st->st_ikev2_orig_initiator = TRUE;
 
     if (HAS_IPSEC_POLICY(policy)) {
 #ifdef HAVE_LABELED_IPSEC
@@ -312,7 +313,7 @@ ikev2_parent_outI1_common(struct msg_digest *md
         }
 
         hdr.isa_xchg = ISAKMP_v2_SA_INIT;
-        hdr.isa_flags = ISAKMP_FLAGS_I;
+        hdr.isa_flags = IKEv2_ORIG_INITIATOR_FLAG(st);
         memcpy(hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
         /* R-cookie, msgid are left zero */
 

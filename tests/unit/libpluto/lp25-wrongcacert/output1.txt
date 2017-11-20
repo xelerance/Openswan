@@ -891,6 +891,7 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
+| encrypting as RESPONDER
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:

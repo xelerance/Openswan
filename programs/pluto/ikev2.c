@@ -251,7 +251,7 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .opt_enc_payloads = P(KE),
       .processor  = ikev2child_inCI1,
       .recv_type  = ISAKMP_v2_CHILD_SA,
-      .timeout_event = EVENT_NULL
+      .timeout_event = EVENT_SA_REPLACE,
     },
 
     /* state 8 -- EMPTY for now*/
@@ -324,6 +324,45 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_INFORMATIONAL,
     },
 
+    /* state 14 */
+    { .svm_name   = "rekey-child-SA-initiator",
+      .state      = STATE_PARENT_I3,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
+      .opt_enc_payloads = P(KE),
+      .processor  = ikev2child_inI3,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_SA_REPLACE,
+    },
+
+    /* state 15 */
+    { .svm_name   = "delete-child-SA-req",
+      .state      = STATE_CHILD_C1_KEYED,
+      .next_state = STATE_CHILDSA_DEL,
+      .flags =  SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = P(E),
+      .opt_enc_payloads = P(N) | P(D),
+      .processor  =  process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+      .timeout_event = EVENT_NULL
+    },
+
+    /* state 16 */
+    { .svm_name   = "rekey-child-SA-initiator-2",
+      .state      = STATE_CHILD_C1_KEYED,
+      .next_state = STATE_CHILD_C1_KEYED,
+      .flags =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = P(E),
+      .req_enc_payloads = P(SA) | P(TSi) | P(TSr) | P(Ni),
+      .opt_enc_payloads = P(KE),
+      .processor  = ikev2child_inI3,
+      .recv_type  = ISAKMP_v2_CHILD_SA,
+      .timeout_event = EVENT_SA_REPLACE,
+    },
+
+//TODO: need a state to handle ack to INFORMATIONAL when in STATE_CHILDSA_DEL ?
 
     /* last entry */
     { .svm_name   = "invalid-transition",
@@ -548,6 +587,7 @@ process_v2_packet(struct msg_digest **mdp)
     enum isakmp_xchg_types ix;
     unsigned int svm_num;
     lset_t seen = LEMPTY;
+    int ret;
 
     /* Look for an state which matches the various things we know */
     /*
@@ -559,7 +599,7 @@ process_v2_packet(struct msg_digest **mdp)
     /* NOTE: in_struct() did not change the byte order, so make a copy in local order */
     md->msgid_received = ntohl(md->hdr.isa_msgid);
 
-    if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+    if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	/* then I am the responder */
 
 	md->role = RESPONDER;
@@ -588,13 +628,15 @@ process_v2_packet(struct msg_digest **mdp)
         }
 
 	if(pst) {
-	    if(pst->st_msgid_lastrecv >  md->msgid_received){
+	    if(pst->st_msgid_lastrecv != INVALID_MSGID
+	       && pst->st_msgid_lastrecv >  md->msgid_received){
 		/* this is an OLD retransmit. we can't do anything */
 		openswan_log("received too old retransmit: %u < %u"
 			     , md->msgid_received, pst->st_msgid_lastrecv);
 		return;
 	    }
-	    if(pst->st_msgid_lastrecv == md->msgid_received){
+	    if(pst->st_msgid_lastrecv != INVALID_MSGID
+	       && pst->st_msgid_lastrecv == md->msgid_received){
 		/* this is a recent retransmit, resend our reply */
                 /* is it ever the case that *st* is the wrong child? No, looked it up by msgid */
 		send_packet(st, "ikev2-responder-retransmit", FALSE);
@@ -758,10 +800,10 @@ process_v2_packet(struct msg_digest **mdp)
     }
 
     if(svm->state == STATE_IKEv2_ROOF) {
-	DBG(DBG_CONTROL, DBG_log("did not found valid state; giving up"));
+	DBG(DBG_CONTROL, DBG_log("did not find valid state; giving up"));
 
 	/* no useful state */
-	if(md->hdr.isa_flags & ISAKMP_FLAGS_I) {
+	if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	    /* must be an initiator message, so we are the responder */
 
 	    /* XXX need to be more specific */
@@ -780,8 +822,8 @@ process_v2_packet(struct msg_digest **mdp)
                                      svm->req_clear_payloads, svm->opt_clear_payloads);
 
 	if(stf != STF_OK) {
-	    complete_v2_state_transition(mdp, stf);
-	    return;
+		complete_v2_state_transition(mdp, stf);
+		return;
 	}
     }
 
@@ -792,7 +834,11 @@ process_v2_packet(struct msg_digest **mdp)
 
     md->message_pbs.roof = md->message_pbs.cur;
 
-    complete_v2_state_transition(mdp, (svm->processor)(md));
+    ret = (svm->processor)(md);
+
+    DBG(DBG_CONTROLMORE, DBG_log("processor '%s' returned %d", svm->svm_name, ret));
+
+    complete_v2_state_transition(mdp, ret);
 }
 
 bool
@@ -1370,9 +1416,9 @@ void complete_v2_state_transition(struct msg_digest **mdp
 
 	if(md->note > 0) {
 		/* only send a notify is this packet was a question, not if it was an answer */
-		if(!(md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
-		     SEND_NOTIFICATION(md->note);
-		}
+            if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
+                SEND_NOTIFICATION(md->note);
+            }
 	}
 
 	DBG(DBG_CONTROL,
