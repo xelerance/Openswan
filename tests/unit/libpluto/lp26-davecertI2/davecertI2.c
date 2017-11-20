@@ -31,6 +31,7 @@ static void init_loaded(void)
     load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
 }
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
