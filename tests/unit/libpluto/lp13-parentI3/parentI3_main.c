@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
     init_seam_kernelalgs();
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
-			       , "../samples/parker.secrets"
+			       , SAMPLEDIR "/parker.secrets"
 			       , NULL, NULL);
 
     infile = argv[0];
