@@ -36,6 +36,16 @@ char *oswtimestr(void)
     return datebuf;
 }
 
+const char *pluto_ifn_inst = "";
+char debug_prefix = '|';
+void
+pluto_init_log(void)
+{
+}
+void
+close_log(void)
+{
+}
 
 bool
     logged_myid_fqdn_txt_warning = FALSE,
