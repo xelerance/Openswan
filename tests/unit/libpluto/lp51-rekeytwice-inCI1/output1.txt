@@ -1375,7 +1375,7 @@ sending 492 bytes for STATE_PARENT_R2 through eth0:500 to 192.168.1.1:500 (using
 |   reject: in state: STATE_CHILD_C1_KEYED, needs STATE_PARENT_R2
 | considering state entry: 13
 |   reject: in state: STATE_CHILD_C1_KEYED, needs STATE_IKESA_DEL
-| did not found valid state; giving up
+| did not find valid state; giving up
 ./rekeytwice-inCI1 sending  notification v2N_INVALID_MESSAGE_ID to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
