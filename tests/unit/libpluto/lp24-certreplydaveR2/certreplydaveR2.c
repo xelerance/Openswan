@@ -2,6 +2,7 @@
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 #include "seam_crypt.c"
+#include "seam_gr_sha1_group14.c"
 
 #define TESTNAME "certreplyselfR2"
 
@@ -109,6 +110,7 @@ recv_pcap recv_inputs[]={
     recv_pcap_packet4
 };
 
+#include "seam_parentR2.c"
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*

@@ -1,6 +1,7 @@
 #include "parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
+#include "seam_gr_sha1_group14.c"
 
 #define TESTNAME "parentR2"
 

@@ -2,6 +2,7 @@
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
 #include "seam_crypt.c"
+#include "seam_gr_sha1_group14.c"
 
 #define TESTNAME "davecertR2-id"
 
@@ -31,6 +32,7 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
+#include "seam_parentR2.c"
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*
