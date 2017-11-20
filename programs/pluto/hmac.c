@@ -45,8 +45,8 @@
  */
 
 #ifdef HAVE_LIBNSS
-static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher);
-static SECOidTag nss_hash_oid(const struct hash_desc *hasher);
+static CK_MECHANISM_TYPE nss_hash_mech(const struct ike_integ_desc *hasher);
+static SECOidTag nss_hash_oid(const struct ike_integ_desc *hasher);
 #endif
 
 void
@@ -219,7 +219,7 @@ hmac_final(u_char *output, struct hmac_ctx *ctx)
 }
 
 #ifdef HAVE_LIBNSS
-static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
+static SECOidTag nss_hash_oid(const struct ike_integ_desc *hasher)
 {
     SECOidTag mechanism=0;
 
@@ -234,7 +234,7 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher)
     return mechanism;
 }
 
-static CK_MECHANISM_TYPE nss_hash_mech(const struct hash_desc *hasher)
+static CK_MECHANISM_TYPE nss_hash_mech(const struct ike_integ_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism=0x80000000;
 
@@ -323,7 +323,7 @@ PK11SymKey * PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
 }
 
 
-CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher)
+CK_MECHANISM_TYPE nss_key_derivation_mech(const struct ike_integ_desc *hasher)
 {
     CK_MECHANISM_TYPE mechanism=0x80000000;
 

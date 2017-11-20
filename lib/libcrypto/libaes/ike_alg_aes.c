@@ -27,6 +27,7 @@
 #define  AES_KEY_DEF_LEN	128
 #define  AES_KEY_MAX_LEN	256
 
+#ifndef HAVE_LIBNSS
 static void
 do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc)
 {
@@ -53,6 +54,7 @@ do_aes(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 
     memcpy(iv, new_iv, AES_CBC_BLOCK_SIZE);
 }
+#endif
 
 #ifdef HAVE_LIBNSS
 static void
