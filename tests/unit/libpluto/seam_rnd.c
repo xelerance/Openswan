@@ -17,3 +17,9 @@ void init_secret(void)
 {
 
 }
+
+void
+init_rnd_pool(void)
+{
+}
+

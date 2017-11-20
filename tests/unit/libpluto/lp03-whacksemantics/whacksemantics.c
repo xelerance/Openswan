@@ -24,20 +24,12 @@
 #include "seam_timer.c"
 #include "seam_crypt.c"
 #include "seam_pending.c"
-#if 0
-#include "seam_ikev1.c"
 #include "seam_rnd.c"
-#include "seam_vendor.c"
-#endif
 #include "seam_kernel.c"
 #include "seam_log.c"
 #include "seam_west.c"
 #include "seam_xauth.c"
 #include "seam_terminate.c"
-#if 0
-#include "seam_spdbstruct.c"
-#include "seam_demux.c"
-#endif
 #include "seam_delete.c"
 #include "seam_secretday.c"
 #include "seam_ipsecdoi.c"

@@ -1,4 +1,3 @@
-
 ./nsscert   loaded cacert file 'CAcert.pem' (1927 bytes)
 |   file content is not binary ASN.1
 |   -----BEGIN CERTIFICATE-----

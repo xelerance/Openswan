@@ -15,6 +15,7 @@
 #include "oswtime.h"
 #include "oswcrypto.h"
 
+#include "seam_rnd.c"
 #include "../seam_exitlog.c"
 
 const char *progname;
