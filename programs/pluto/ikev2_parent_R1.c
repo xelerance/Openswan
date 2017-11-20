@@ -312,8 +312,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
         r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         r_hdr.isa_np = ISAKMP_NEXT_v2SA;
-        r_hdr.isa_flags &= ~ISAKMP_FLAGS_I;
-        r_hdr.isa_flags |=  ISAKMP_FLAGS_R;
+        r_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(st);
         r_hdr.isa_msgid = st->st_msgid;
         if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
             return STF_INTERNAL_ERROR;

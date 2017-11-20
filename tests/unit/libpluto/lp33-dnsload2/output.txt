@@ -473,7 +473,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   28 23 8a 58  36 a2 4f d8  ee 6c cd bb  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./dnscpeI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./dnscpeI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+./dnscpeI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 ./dnscpeI1 deleting state #1 (STATE_PARENT_I1)
 ./dnscpeI1 deleting connection
 | pass 0: considering CHILD SAs to delete

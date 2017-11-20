@@ -196,6 +196,10 @@ new_state(void)
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
     st->st_whack_sock = NULL_FD;
 
+    /* we have not received any messages from other side yet */
+    st->st_msgid_lastack = INVALID_MSGID;
+    st->st_msgid_lastrecv = INVALID_MSGID;
+
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
     anyaddr(AF_INET, &st->hidden_variables.st_natd);
 
@@ -927,6 +931,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
+    nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;
