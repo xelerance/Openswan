@@ -94,6 +94,12 @@ UNITTESTS_I2+=lp63-nattI2
 UNITTESTS_R2+=lp64-nattR2
 UNITTESTS_I3+=lp65-nattI3
 
+# these three do not work yet, #6602
+#UNITTESTS_I4+=lp69-parentR1any
+#UNITTESTS_I4+=lp71-childTSwrong
+#UNITTESTS_I4+=lp72-msg1nopropchosen
+
+
 # first runs tests that have no interdependancies
 UNITTESTS=${UNITTESTS_0}
 # then run all the I1,R1,I2,R2,I3
