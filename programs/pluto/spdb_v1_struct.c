@@ -231,19 +231,14 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
         unsigned int prop_conj;
         struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
 
+        /* reset the transform values */
+        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+            transform_values[i] = -1;
+        }
+
         for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
             unsigned int trans_i;
             struct db_v2_prop_conj *pc = &pd->props[prop_conj];
-
-            /* reset the transform values */
-            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-                transform_values[i] = -1;
-            }
-
-            /* must represent the initial set of things */
-            if(pc->trans_cnt > 0) {
-                tot_combos++;
-            }
 
             for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                 //unsigned int attr_i;
@@ -251,14 +246,46 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
                 if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
 
+                /* IKEv1 does not negotiate PRF, so ignore options like that */
+                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
+
+#if 0
+                DBG_log("%u A: %u,%u,%u, noticing type[%u]=>%d (vs: %d)"
+                        , tot_combos
+                        , prop_disj, prop_conj, trans_i
+                        , tr->transform_type, tr->value
+                        , transform_values[tr->transform_type]);
+#endif
+
                 if(transform_values[tr->transform_type]==-1) {
                     transform_values[tr->transform_type] = tr->value;
                 }
                 if(transform_values[tr->transform_type] != tr->value) {
+                    transform_values[tr->transform_type] = tr->value;
+
+                    /*
+                     * this may duplicate entries if they are not in order,
+                     * but that's okay, because the duplicate check below
+                     * will get rid of them.
+                     */
                     tot_combos++;
+                    DBG(DBG_EMITTING
+                        ,DBG_log("counted combo %d: dh:%d encr:%d integ:%d"
+                                 , tot_combos
+                                 , transform_values[IKEv2_TRANS_TYPE_DH]
+                                 , transform_values[IKEv2_TRANS_TYPE_ENCR]
+                                 , transform_values[IKEv2_TRANS_TYPE_INTEG]));
                 }
+
             }
         }
+    }
+
+    /* there is probably an additional combination at the end */
+    if(transform_values[IKEv2_TRANS_TYPE_DH] != -1
+       && transform_values[IKEv2_TRANS_TYPE_ENCR] != -1
+       && transform_values[IKEv2_TRANS_TYPE_INTEG] != -1) {
+        tot_combos++;
     }
 
     /* make a list of them all */
@@ -266,30 +293,39 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
     memset(dtf, 0, sizeof(struct db_trans_flat)*tot_combos);
     cur_dtf = dtf;
 
-    cur_combo=1;
+    cur_combo=0;
 
-    if(tot_combos == 0 &&
-       (transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
-        || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1
-        || transform_values[IKEv2_TRANS_TYPE_PRF] == -1
-        || transform_values[IKEv2_TRANS_TYPE_DH] == -1)) {
+    if(tot_combos == 0) {
         openswan_log("can not extrapolate IKEv1 policy from empty IKEv2 policy");
         return FALSE;
     }
 
+    /* make sure we saw combinations for all the things we care about */
+    if(transform_values[IKEv2_TRANS_TYPE_ENCR] == -1
+       || transform_values[IKEv2_TRANS_TYPE_INTEG] == -1) {
+        openswan_log("can not extrapolate IKEv1 policy from v2 policy missing encryption or integrity settings");
+        return FALSE;
+    }
+
+    if(sadb->parentSA == TRUE) {
+        if(transform_values[IKEv2_TRANS_TYPE_DH] == -1) {
+            openswan_log("can not extrapolate IKEv1 parent policy from v2 policy missing group settings");
+            return FALSE;
+        }
+    }
 
     for(prop_disj=0; prop_disj < sadb->prop_disj_cnt; prop_disj++) {
         unsigned int prop_conj;
         struct db_v2_prop *pd = &sadb->prop_disj[prop_disj];
 
+        /* reset the transform values */
+        for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
+            transform_values[i] = -1;
+        }
+
         for(prop_conj = 0; prop_conj < pd->prop_cnt; prop_conj++) {
             unsigned int trans_i;
             struct db_v2_prop_conj *pc = &pd->props[prop_conj];
-
-            /* reset the transform values */
-            for(i=0; i<IKEv2_TRANS_TYPE_COUNT; i++) {
-                transform_values[i] = -1;
-            }
 
             for(trans_i=0; trans_i < pc->trans_cnt; trans_i++) {
                 //int attr_i;
@@ -297,17 +333,20 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
 
                 if(tr->transform_type >= IKEv2_TRANS_TYPE_COUNT) continue;
 
+                /* IKEv1 does not negotiate PRF, so ignore options like that */
+                if(tr->transform_type == IKEv2_TRANS_TYPE_PRF) continue;
+
+#if 0
+                DBG_log("B: %u,%u,%u, cc: %u setting type: tt[%u]=%d vs %d",
+                        prop_disj, prop_conj, trans_i, cur_combo,
+                        tr->transform_type,
+                        transform_values[tr->transform_type],
+                        tr->value);
+#endif
+
                 if(transform_values[tr->transform_type]==-1) {
                     transform_values[tr->transform_type] = tr->value;
 
-                } else if(transform_values[tr->transform_type] != tr->value) {
-                    struct db_trans_flat *old_dtf = cur_dtf;
-                    cur_dtf++;
-                    *cur_dtf = *old_dtf;
-                    ++cur_combo;
-                    passert(cur_combo <= tot_combos);
-
-                    transform_values[tr->transform_type] = tr->value;
                 }
 
                 switch(tr->transform_type) {
@@ -329,19 +368,64 @@ bool extrapolate_v1_from_v2(struct db_sa *sadb, lset_t policy, enum phase1_role 
                      * not express
                      */
                     continue;
-
-#if 0
-                    cur_dtf.protoid = ;
-                    cur_dtf.auth_method = ;
-                    cur_dtf.group_transid = ;
-                    cur_dtf.encr_keylen = ;
-#endif
                 }
 
+                if(transform_values[tr->transform_type] != tr->value) {
+                    int combo_i;
+                    struct db_trans_flat *old_dtf = cur_dtf;
+                    transform_values[tr->transform_type] = tr->value;
+
+                    /* do a duplicate check, which is a linear search */
+                    for(combo_i = 0; combo_i < cur_combo; combo_i++) {
+#if 0
+                        DBG_log("%d: checking combo dh:%d:%d encr:%d:%d integ:%d:%d"
+                            , combo_i
+                            , cur_dtf->group_transid
+                            , dtf[combo_i].group_transid
+                            , cur_dtf->encr_transid
+                            , dtf[combo_i].encr_transid
+                            , cur_dtf->integ_transid
+                            , dtf[combo_i].integ_transid);
+#endif
+                        if(cur_dtf->group_transid  == dtf[combo_i].group_transid
+                           && cur_dtf->encr_transid == dtf[combo_i].encr_transid
+                           && cur_dtf->integ_transid == dtf[combo_i].integ_transid) {
+                            /* it is duplicate */
+#if 0
+                            DBG_log("    combo duplicate of %u", combo_i);
+#endif
+                            break;
+                        }
+                    }
+                    if(combo_i < cur_combo) continue;
+
+                    DBG(DBG_EMITTING
+                        ,DBG_log("new combo %d: dh:%d encr:%d integ:%d"
+                                 , cur_combo
+                                 , cur_dtf->group_transid
+                                 , cur_dtf->encr_transid
+                                 , cur_dtf->integ_transid));
+
+                    cur_dtf++;
+                    *cur_dtf = *old_dtf;
+                    ++cur_combo;
+                    passert(cur_combo <= tot_combos);
+                }
             }
         }
     }
 
+    /*
+     * check the last entry, in cur_dtf, and if it is different than dtf[cur_combo]
+     * (assuming cur_combo>0), add it to the list.
+     * if cur_combo == 0, then it's the only entry!
+     */
+    if(cur_combo == 0
+       || (cur_dtf->group_transid != dtf[cur_combo].group_transid
+           || cur_dtf->encr_transid != dtf[cur_combo].encr_transid
+           || cur_dtf->integ_transid != dtf[cur_combo].integ_transid)) {
+        cur_combo++;
+    }
 
     cur_dtf = dtf;
     for(i=0; i<cur_combo; i++, cur_dtf++) {
