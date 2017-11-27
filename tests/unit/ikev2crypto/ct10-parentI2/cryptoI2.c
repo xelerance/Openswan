@@ -1,5 +1,7 @@
 #include "../lp10-parentI2/parentI2_head.c"
 #include "seam_keys2.c"
+#include "seam_ke.c"
+#include "seam_dh_v2.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
 
@@ -19,6 +21,8 @@ static void init_fake_secrets(void)
 }
 
 static void init_loaded(void) {}
+
+void delete_cryptographic_continuation(struct state *st) {}
 
 void recv_pcap_packet(u_char *user
 		      , const struct pcap_pkthdr *h
