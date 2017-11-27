@@ -4,6 +4,7 @@
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 #include "seam_crypt.c"
+#include "seam_rsasig.c"
 #include "seam_gr_sha1_group14.c"
 
 #include "../../programs/pluto/hostpair.c"

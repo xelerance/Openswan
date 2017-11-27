@@ -1,5 +1,6 @@
 #define SEAM_CRYPTO
 #include "../lp10-parentI2/parentI2_head.c"
+#include "seam_rsasig.c"
 #include "seam_x509_list.c"
 #include "seam_host_dave.c"
 
