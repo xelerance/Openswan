@@ -19,6 +19,9 @@
 #include "seam_pending.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
+#include "seam_rsasig.c"
+#include "seam_gi_sha1.c"
+#include "seam_dh_v2.c"
 #include "seam_kernel.c"
 #include "seam_rnd.c"
 #include "seam_log.c"
@@ -35,8 +38,6 @@
 #include "seam_dnskey.c"
 #include "seam_natt.c"
 
-#include "seam_gi_sha1.c"
-#include "seam_finish.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 

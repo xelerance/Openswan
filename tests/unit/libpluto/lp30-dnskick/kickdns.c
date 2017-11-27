@@ -39,6 +39,7 @@
 #include "seam_natt.c"
 #include "seam_keys.c"
 #include "seam_crypt.c"
+#include "seam_rsasig.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
 #include "seam_ipsecdoi.c"
