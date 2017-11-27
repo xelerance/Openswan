@@ -1,5 +1,6 @@
 #include "../lp02-parentI1/parentI1_head.c"
 #include "seam_demux.c"
+#include "seam_gr_sha1_group14.c"
 #include "seam_x509.c"
 #include "seam_whack.c"
 #include "seam_host_parker.c"
