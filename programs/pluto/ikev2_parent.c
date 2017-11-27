@@ -271,7 +271,7 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
         memcpy(savediv, iv, blocksize);
 
         /* now, encrypt */
-        (st->st_oakley.encrypter->do_crypt)(encstart,
+        (pst->st_oakley.encrypter->do_crypt)(encstart,
                                             cipherlen,
                                             cipherkey->ptr,
                                             cipherkey->len,
@@ -309,16 +309,19 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
     unsigned char *authstart;
     struct state *pst = st;
 
+    /* IKEv2 crypto state is in parent */
     if(st->st_clonedfrom != 0) {
         pst = state_with_serialno(st->st_clonedfrom);
     }
 
     if(init == INITIATOR) {
-        cipherkey = &st->st_skey_er;
-        authkey   = &st->st_skey_ar;
+        DBG(DBG_CONTROLMORE, DBG_log("decrypting as INITIATOR, using RESPONDER keys"));
+        cipherkey = &pst->st_skey_er;
+        authkey   = &pst->st_skey_ar;
     } else {
-        cipherkey = &st->st_skey_ei;
-        authkey   = &st->st_skey_ai;
+        DBG(DBG_CONTROLMORE, DBG_log("decrypting as RESPONDER, using INITIATOR keys"));
+        cipherkey = &pst->st_skey_ei;
+        authkey   = &pst->st_skey_ai;
     }
 
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
