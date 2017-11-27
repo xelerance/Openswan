@@ -32,7 +32,10 @@ void recv_pcap_packet(u_char *user
 
     recv_pcap_packet_gen(user, h, bytes);
 
-    cur_debugging |= DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
+    st = state_with_serialno(1);
+    if(st) {
+        st->st_connection->extra_debugging = DBG_CRYPT|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
+    }
     run_continuation(crypto_req);
 }
 
