@@ -1,6 +1,7 @@
 #define NAPT_ENABLED 1
 #define SEAM_CRYPTO
 #include "../lp10-parentI2/parentI2_head.c"
+#include "seam_rsasig.c"
 #include "seam_keys.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"

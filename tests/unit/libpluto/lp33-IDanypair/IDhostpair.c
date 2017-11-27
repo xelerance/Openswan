@@ -23,6 +23,7 @@
 #include "seam_initiate.c"
 #include "seam_ikev1.c"
 #include "seam_crypt.c"
+#include "seam_rsasig.c"
 #include "seam_kernel.c"
 #include "seam_rnd.c"
 #include "seam_log.c"
