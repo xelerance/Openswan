@@ -1,8 +1,14 @@
 #include "../../libpluto/lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
+#include "seam_gr_sha1_group14.c"
+#include "seam_crypt.c"
+#include "seam_dh_v2.c"
+#include "seam_ke.c"
 #include "seam_x509.c"
 
 #define TESTNAME "cryptoR2"
+
+void delete_cryptographic_continuation(struct state *st) {}
 
 static void init_local_interface(void)
 {
@@ -27,6 +33,8 @@ void recv_pcap_packet(u_char *user
 {
     struct state *st;
     recv_pcap_packet_gen(user, h, bytes);
+
+    run_continuation(crypto_req);
 }
 
 void recv_pcap_packet2(u_char *user
@@ -35,7 +43,10 @@ void recv_pcap_packet2(u_char *user
 {
     struct state *st;
 
+    cur_debugging |= DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
     recv_pcap_packet_gen(user, h, bytes);
+
+    run_continuation(crypto_req);
 }
 
 #define PCAP_INPUT_COUNT 2
