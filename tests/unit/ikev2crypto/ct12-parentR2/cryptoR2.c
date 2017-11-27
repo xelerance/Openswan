@@ -20,6 +20,24 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
+/* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
+void recv_pcap_packet(u_char *user
+		      , const struct pcap_pkthdr *h
+		      , const u_char *bytes)
+{
+    struct state *st;
+    recv_pcap_packet_gen(user, h, bytes);
+}
+
+void recv_pcap_packet2(u_char *user
+                      , const struct pcap_pkthdr *h
+                      , const u_char *bytes)
+{
+    struct state *st;
+
+    recv_pcap_packet_gen(user, h, bytes);
+}
+
 #define PCAP_INPUT_COUNT 2
 recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
     recv_pcap_packet,

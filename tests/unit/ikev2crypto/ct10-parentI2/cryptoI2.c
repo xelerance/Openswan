@@ -20,6 +20,18 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void) {}
 
+void recv_pcap_packet(u_char *user
+		      , const struct pcap_pkthdr *h
+		      , const u_char *bytes)
+{
+    struct state *st;
+
+    recv_pcap_packet_gen(user, h, bytes);
+
+    cur_debugging |= DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE;
+    run_continuation(crypto_req);
+}
+
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
