@@ -350,6 +350,18 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
     },
 
     /* state 16 */
+    { .svm_name   = "delete-child-SA-ack",
+      .state      = STATE_CHILDSA_DEL,
+      .next_state = STATE_CHILDSA_DEL,
+      .flags      =  SMF2_INITIATOR | SMF2_STATENEEDED | SMF2_REPLY,
+      .req_clear_payloads = P(E),
+      .opt_enc_payloads = P(N) | P(D),
+      .processor  = process_informational_ikev2,
+      .recv_type  = ISAKMP_v2_INFORMATIONAL,
+      .timeout_event = EVENT_NULL,
+    },
+
+    /* state 17 */
     { .svm_name   = "rekey-child-SA-initiator-2",
       .state      = STATE_CHILD_C1_KEYED,
       .next_state = STATE_CHILD_C1_KEYED,
@@ -361,8 +373,6 @@ static const struct state_v2_microcode v2_state_microcode_table[] = {
       .recv_type  = ISAKMP_v2_CHILD_SA,
       .timeout_event = EVENT_SA_REPLACE,
     },
-
-//TODO: need a state to handle ack to INFORMATIONAL when in STATE_CHILDSA_DEL ?
 
     /* last entry */
     { .svm_name   = "invalid-transition",
