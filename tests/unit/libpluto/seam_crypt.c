@@ -1,3 +1,4 @@
+#ifndef SEAM_CRYPT
 #include "pluto_crypt.h"
 struct pluto_crypto_req_cont *continuation = NULL;
 
@@ -24,3 +25,5 @@ void run_continuation(struct pluto_crypto_req *r)
   }
 }
 
+#define SEAM_CRYPT
+#endif

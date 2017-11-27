@@ -1,7 +1,8 @@
-void delete_cryptographic_continuation(struct state *st) {}
-
+#ifndef SEAM_RSASIG
 #include "seam_dh_v2.c"
 #include "seam_ke.c"
+
+void delete_cryptographic_continuation(struct state *st) {}
 
 bool ikev2_calculate_rsa_sha1(struct state *st
 			      , enum phase1_role role
@@ -104,3 +105,5 @@ ikev2_verify_rsa_sha1(struct state *st
   return STF_FAIL + INVALID_KEY_INFORMATION;
 }
 
+#define SEAM_RSASIG
+#endif

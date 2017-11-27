@@ -1,3 +1,6 @@
+#ifndef SEAM_DH_V2
+struct pluto_crypto_req;
+
 stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 		       , struct state *st
 		       , enum crypto_importance importance
@@ -17,4 +20,5 @@ stf_status start_dh_v2(struct pluto_crypto_req_cont *cn
 	return STF_SUSPEND;
 }
 
-
+#define SEAM_DH_V2
+#endif
