@@ -284,9 +284,7 @@ spdb_v2_match_parent(struct db_sa *sadb
 	      , unsigned encr_transform
 	      , int encr_keylen
 	      , unsigned integ_transform
-	      , int integ_keylen
 	      , unsigned prf_transform
-	      , int prf_keylen
 	      , unsigned dh_transform)
 {
     struct db_v2_prop *pd;
@@ -302,11 +300,11 @@ spdb_v2_match_parent(struct db_sa *sadb
 	struct db_v2_trans      *tr;
 	unsigned int             tr_cnt;
 	int encrid, integid, prfid, dhid, esnid;
-        int encr_keylen_policy, integ_keylen_policy, prf_keylen_policy;
+        int encr_keylen_policy;
 
 	pd = &sadb->prop_disj[pd_cnt];
 	encrid = integid = prfid = dhid = esnid = 0;
-	encr_keylen_policy = integ_keylen_policy = prf_keylen_policy = 0;
+	encr_keylen_policy = 0;
 	encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 
 	/* In PARENT SAs, we only support one conjunctive item */
@@ -340,20 +338,16 @@ spdb_v2_match_parent(struct db_sa *sadb
 
 	    case IKEv2_TRANS_TYPE_INTEG:
                 integid = tr->value;
-                integ_keylen_policy = keylen;
-                if(tr->value == integ_transform && (integ_keylen_policy == -1 || integ_keylen_policy == integ_keylen)) {
+                if(tr->value == integ_transform) {
 		    integ_matched=TRUE;
                 }
-                keylen = integ_keylen;
 		break;
 
 	    case IKEv2_TRANS_TYPE_PRF:
                 prfid = tr->value;
-                prf_keylen_policy = keylen;
-		if(tr->value == prf_transform && (prf_keylen_policy == -1 || prf_keylen_policy == prf_keylen)) {
+		if(tr->value == prf_transform) {
 		    prf_matched=TRUE;
                 }
-                keylen = prf_keylen;
 		break;
 
 	    case IKEv2_TRANS_TYPE_DH:
@@ -370,11 +364,11 @@ spdb_v2_match_parent(struct db_sa *sadb
 	    /* esn_matched not tested! */
 	    if(dh_matched && prf_matched && integ_matched && encr_matched) {
                 if(DBGP(DBG_CONTROL)) {
-                    DBG_log("selected proposal %u encr=%s[%d] integ=%s[%d] prf=%s[%d] modp=%s"
+                    DBG_log("selected proposal %u encr=%s[%d] integ=%s prf=%s modp=%s"
                             , propnum
                             , enum_name(&trans_type_encr_names, encrid), encr_keylen
-                            , enum_name(&trans_type_integ_names, integid), integ_keylen
-                            , enum_name(&trans_type_prf_names, prfid), prf_keylen
+                            , enum_name(&trans_type_integ_names, integid)
+                            , enum_name(&trans_type_prf_names, prfid)
                             , enum_name(&oakley_group_names, dhid));
                 }
 
@@ -392,16 +386,16 @@ spdb_v2_match_parent(struct db_sa *sadb
 		    , enum_name(&trans_type_encr_names, encrid), encr_keylen
 		    , enum_show(&trans_type_encr_names, encr_transform), encr_keylen_policy
                     , pd_cnt, attempt++);
-	    DBG_log("proposal %u %6s integ=(policy:%20s[%d] vs offered:%s[%d])"
+	    DBG_log("proposal %u %6s integ=(policy:%20s vs offered:%s)"
                     , propnum
 		    , integ_matched ? "succ" : "failed"
-		    , enum_name(&trans_type_integ_names, integid), integ_keylen
-		    , enum_show(&trans_type_integ_names, integ_transform), integ_keylen_policy);
-	    DBG_log("proposal %u %6s prf=  (policy:%20s[%d] vs offered:%s[%d])"
+		    , enum_name(&trans_type_integ_names, integid)
+		    , enum_show(&trans_type_integ_names, integ_transform));
+	    DBG_log("proposal %u %6s prf=  (policy:%20s vs offered:%s)"
                     , propnum
 		    , prf_matched ? "succ" : "failed"
-		    , enum_name(&trans_type_prf_names, prfid), prf_keylen
-		    , enum_show(&trans_type_prf_names, prf_transform), prf_keylen_policy);
+		    , enum_name(&trans_type_prf_names, prfid)
+		    , enum_show(&trans_type_prf_names, prf_transform));
 	    DBG_log("proposal %u %6s dh=   (policy:%20s vs offered:%s)"
                     , propnum
 		    , dh_matched ? "succ" : "failed"
@@ -480,9 +474,7 @@ ikev2_match_transform_list_parent(struct db_sa *sadb
 					    itl->encr_transforms[itl->encr_i],
 					    itl->encr_keylens[itl->encr_i],
 					    itl->integ_transforms[itl->integ_i],
-					    itl->integ_keylens[itl->integ_i],
 					    itl->prf_transforms[itl->prf_i],
-					    itl->prf_keylens[itl->prf_i],
 					    itl->dh_transforms[itl->dh_i])) {
 
                         if(winning) {
@@ -865,7 +857,6 @@ spdb_v2_match_child(struct db_sa *sadb
 	      , unsigned encr_transform
 	      , int encr_keylen
 	      , unsigned integ_transform
-	      , int integ_keylen
 	      , unsigned esn_transform)
 {
     struct db_v2_prop *pd;
@@ -927,9 +918,7 @@ spdb_v2_match_child(struct db_sa *sadb
                 case IKEv2_TRANS_TYPE_INTEG:
                     integid = tr->value;
                     integ_keylen_policy = keylen;
-                    if(tr->value == integ_transform
-                       && (integ_keylen_policy == -1
-                           || integ_keylen_policy == integ_keylen)) {
+                    if(tr->value == integ_transform) {
                         integ_matched=TRUE;
                     }
                     break;
@@ -1004,7 +993,6 @@ ikev2_match_transform_list_child(struct db_sa *sadb
 				       itl->encr_transforms[itl->encr_i],
 				       itl->encr_keylens[itl->encr_i],
 				       itl->integ_transforms[itl->integ_i],
-				       itl->integ_keylens[itl->integ_i],
 				       itl->esn_transforms[itl->esn_i])) {
 
                     if(winning) {
