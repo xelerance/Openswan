@@ -304,7 +304,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./cryptoI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./cryptoI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+./cryptoI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 ./cryptoI1 deleting state #1 (STATE_PARENT_I1)
 ./cryptoI1 deleting connection
 | pass 0: considering CHILD SAs to delete
