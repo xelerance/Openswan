@@ -642,6 +642,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   5c ee d5 26
 | prf+[4]:  1e 9f 3d b0  17 f3 f7 fc  e8 5e 55 44  63 f0 30 94
 |   2f 4e 11 2a
+| prf+[5]:  ab b9 f5 b7  c1 5b c0 6a  13 78 4e 64  33 75 37 ba
+|   9b fc 2d f6
 | our  keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
 |   2a 58 ce d8  0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1
@@ -775,22 +777,11 @@ sending 448 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./parentR2 leak: skeyseed_t1, item size: X
 ./parentR2 leak: responder keys, item size: X
 ./parentR2 leak: initiator keys, item size: X
-./parentR2 leak: db_v2_trans, item size: X
-./parentR2 leak: db_v2_prop_conj, item size: X
-./parentR2 leak: db_v2_prop, item size: X
-./parentR2 leak: db_v2_trans, item size: X
-./parentR2 leak: db_v2_prop_conj, item size: X
-./parentR2 leak: db_attrs, item size: X
-./parentR2 leak: db_v2_trans, item size: X
-./parentR2 leak: db_v2_prop_conj, item size: X
-./parentR2 leak: db_attrs, item size: X
-./parentR2 leak: db_v2_trans, item size: X
-./parentR2 leak: db_v2_prop_conj, item size: X
-./parentR2 leak: 4 * sa copy attrs array, item size: X
-./parentR2 leak: sa copy trans array, item size: X
-./parentR2 leak: sa copy prop array, item size: X
-./parentR2 leak: sa copy prop conj array, item size: X
-./parentR2 leak: sa copy prop_conj, item size: X
+./parentR2 leak: alg_info_esp, item size: X
+./parentR2 leak: db_context->attrs, item size: X
+./parentR2 leak: db_context->trans, item size: X
+./parentR2 leak: 2 * db_context->conj, item size: X
+./parentR2 leak: v2 policy database, item size: X
 ./parentR2 leak: st_nr in duplicate_state, item size: X
 ./parentR2 leak: st_ni in duplicate_state, item size: X
 ./parentR2 leak: st_skey_pr in duplicate_state, item size: X
