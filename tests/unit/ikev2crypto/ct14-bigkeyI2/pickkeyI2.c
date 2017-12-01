@@ -1,9 +1,15 @@
 #include "../lp10-parentI2/parentI2_head.c"
-#include "seam_keys2.c"
-#include "seam_x509.c"
 #include "seam_host_parker.c"
+#include "seam_keys2.c"
+#include "seam_gr_sha1_group14.c"
+#include "seam_crypt.c"
+#include "seam_dh_v2.c"
+#include "seam_ke.c"
+#include "seam_x509.c"
 
-#define TESTNAME "cryptoI2"
+#define TESTNAME "pickkeyI2"
+
+void delete_cryptographic_continuation(struct state *st) {}
 
 static void init_local_interface(void)
 {
@@ -20,6 +26,7 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void) {}
 
+#include "seam_parentI2.c"
 #include "../lp10-parentI2/parentI2_main.c"
 
  /*
