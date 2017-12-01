@@ -32,7 +32,16 @@ void recv_pcap_packet(u_char *user
 		      , const u_char *bytes)
 {
     struct state *st;
+    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+
     recv_pcap_packet_gen(user, h, bytes);
+
+    st = state_with_serialno(1);
+    if(st) {
+        /* now fill in the KE values from a constant.. not calculated */
+        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+    }
 
     run_continuation(crypto_req);
 }
