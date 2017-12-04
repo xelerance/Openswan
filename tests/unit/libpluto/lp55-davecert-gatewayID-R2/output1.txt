@@ -696,9 +696,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=dave@openswan.org (wildcard)
 |                   comparing to me=@moon.strongswan.org him=dave@openswan.org (rw-dave)
 |   concluded with rw-dave
-| idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi pi verify
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash verify I2  03 00 00 00  64 61 76 65  40 6f 70 65  6e 73 77 61
+| parent SA I2 idhash verify
+|   03 00 00 00  64 61 76 65  40 6f 70 65  6e 73 77 61
 |   6e 2e 6f 72  67
 ./davecertR2-id v2_CERT received on reponder, attempting to validate
 | ikev2 verify required CA is 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=moon.openswan.org, E=testing@xelerance.com'

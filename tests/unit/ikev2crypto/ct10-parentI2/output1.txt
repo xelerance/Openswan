@@ -266,9 +266,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | emitting 26 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  70 61 72 6b  65 72 30 31  2e 65 6d 6d  6a 61 79 2e
 |   63 72 65 64  69 6c 2e 6f  72 67
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash calc I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
+| parent SA I2 idhash calc
+|   02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | emitting length of IKEv2 Identification Payload: 34
 | IKEv2 thinking whether to send my certificate:
@@ -290,6 +292,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | best_match 0>16 line=1
 | concluding with best_match=16 lineno=1
 | rsa key AQN7wUerV found
+| calculate sighash
 | inputs to hash1 (first packet)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
@@ -333,9 +336,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   6e 69 74 30
 | inputs to hash2 (responder nonce)
 |   c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| pidhash len: 32
 | idhash  21 c9 c7 8a  23 af 45 1b  6e 00 8c ba  c3 68 04 9b
 |   ac 3f 06 c6  e0 ac a1 ca  43 98 de f3  12 5f ad bc
-| v2rsa octets  30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 9c
+| v2rsa octets (with ASN1):
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 9c
 |   a2 dc ad 75  9c f0 2e 5b  c6 65 8c 27  bf 87 26 75
 |   41 a2 59
 | signing hash with RSA Key *AQN7wUerV

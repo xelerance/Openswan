@@ -270,9 +270,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | emitting 17 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  64 61 76 65  40 6f 70 65  6e 73 77 61  6e 2e 6f 72
 |   67
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash calc I2  03 00 00 00  64 61 76 65  40 6f 70 65  6e 73 77 61
+| parent SA I2 idhash calc
+|   03 00 00 00  64 61 76 65  40 6f 70 65  6e 73 77 61
 |   6e 2e 6f 72  67
 | emitting length of IKEv2 Identification Payload: 25
 | IKEv2 thinking whether to send my certificate:
