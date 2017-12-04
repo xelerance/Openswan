@@ -11,17 +11,16 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/unit
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-clean check:
-	@${MAKE} -C libopenswan $@
-	@${MAKE} -C libalgoparse $@
-	@${MAKE} -C libcrypto   $@
-	@${MAKE} -C libpluto    $@
-	@${MAKE} -C ikev2crypto $@
-	@${MAKE} -C liboswkeys  $@
-	@${MAKE} -C xfrmmock    $@
+UNITTESTS=
+UNITTESTS+=xf13-parentI3
 
+programs pcapupdate clean check:
+	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}

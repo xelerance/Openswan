@@ -1,0 +1,4 @@
+*.o
+OUTPUT
+.gdb1init
+xf13-parentI3
