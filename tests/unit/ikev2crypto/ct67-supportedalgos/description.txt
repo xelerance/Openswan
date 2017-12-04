@@ -7,6 +7,7 @@ yes.
 This test has a set of traditional (AES, SHA1, SHA2_256) loaded, but not the
 legacy ones (3DES, MD5), nor the new fancy ones (GCM, CTR, etc.).
 
+XXX TODO.
 
 
 
