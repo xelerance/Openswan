@@ -21,6 +21,10 @@ A million repetitions of "a"
 #include <sys/types.h>	/* for u_int*_t */
 
 #include "sha1.h"
+#if 0
+/* use this for deep issues with mis-matched crypto */
+#include "hexdump.c"
+#endif
 #include "oswendian.h" /* sets BYTE_ORDER, LITTLE_ENDIAN, and BIG_ENDIAN */
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
@@ -128,6 +132,11 @@ void SHA1Update(SHA1_CTX* context, const unsigned char* data, u_int32_t len)
 {
   u_int32_t i;
   u_int32_t j;
+
+#if 0
+  fprintf(stderr, "sha1 update with %u bytes\n", len);
+  hexdump(stderr, data, 0, len);
+#endif
 
     j = context->count[0];
     if ((context->count[0] += len << 3) < j)

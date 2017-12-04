@@ -105,7 +105,7 @@ void verify_signature(const char *keyname, unsigned int keysize_bits)
     }
     fclose(infile);
 
-    hexdump(signature_buf, 0, keysize);
+    hexdump(stdout, signature_buf, 0, keysize);
     printf("\n");
 
     signed_len = 16+der_digestinfo_len;

@@ -57,13 +57,13 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
     prng_bytes(&not_very_random, thingtosign+der_digestinfo_len, 16);
     signed_len = 16+der_digestinfo_len;
     printf("signed_len: %d\n", (int)signed_len);
-    hexdump(thingtosign, 0, signed_len);
+    hexdump(stdout, thingtosign, 0, signed_len);
 
     /* XXX should also run this with a signature_buf that is TOO SMALL */
     sign_hash(pks1, thingtosign, signed_len,
               signature_buf, keysize);
 
-    hexdump(signature_buf, 0, sizeof(signature_buf));
+    hexdump(stdout, signature_buf, 0, sizeof(signature_buf));
     {
         char outname[512];
         FILE *outfile;
