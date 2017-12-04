@@ -1,9 +1,8 @@
 This test case is an IKEv2 initiator.
 It tests crypto operations along the entire path.
 
-This test specifically captures the netlink commands which are sent
-and validates that the IPsec (CHILD, phase2) derived keys and algorithms are
-sane.
+This test serves as the template/validation for the xf13-parentI3 test case,
+without the xfrm code enabled.
 
 
 
