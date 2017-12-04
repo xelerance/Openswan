@@ -417,9 +417,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=192.168.1.1 (wildcard)
 |                   comparing to me=132.213.238.7 him=192.168.1.1 (mytunnel)
 |   concluded with mytunnel
-| idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi pi verify
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash verify I2  01 00 00 00  c0 a8 01 01
+| parent SA I2 idhash verify
+|   01 00 00 00  c0 a8 01 01
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=132.213.238.7 same_id=0
 | checking alg=1 == 1, keyid=192.168.1.1 same_id=1

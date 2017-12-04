@@ -420,9 +420,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=@example.com (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@example.com (gateway--any)
 |   concluded with gateway--any
-| idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi pi verify
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash verify I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| parent SA I2 idhash verify
+|   02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@example.com same_id=1
 | key issuer CA is '%any'

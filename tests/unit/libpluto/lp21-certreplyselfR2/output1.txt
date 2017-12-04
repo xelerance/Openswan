@@ -732,9 +732,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | find_ID_host_pair: looking for me=(none) him=C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com (wildcard)
 |                   comparing to me=@moon.testing.openswan.org him=(none) (rw-any)
 |   concluded with rw-any
-| idhash verify pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi pi verify
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash verify I2  09 00 00 00  30 81 b7 31  0b 30 09 06  03 55 04 06
+| parent SA I2 idhash verify
+|   09 00 00 00  30 81 b7 31  0b 30 09 06  03 55 04 06
 |   13 02 43 41  31 10 30 0e  06 03 55 04  08 0c 07 4f
 |   6e 74 61 72  69 6f 31 0f  30 0d 06 03  55 04 07 0c
 |   06 4f 74 74  61 77 61 31  1e 30 1c 06  03 55 04 0a

@@ -276,9 +276,11 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |    id_type: ID_FQDN
 | emitting 11 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  65 78 61 6d  70 6c 65 2e  63 6f 6d
-| idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
-| idhash calc I2  02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
+| parent SA I2 idhash calc
+|   02 00 00 00  65 78 61 6d  70 6c 65 2e  63 6f 6d
 | emitting length of IKEv2 Identification Payload: 19
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
