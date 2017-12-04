@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     memcpy(outbuf, inbuf, sizeof(outbuf));
 
     printf("plaintext input:\n");
-    hexdump(outbuf, 0, sizeof(outbuf));
+    hexdump(stdout, outbuf, 0, sizeof(outbuf));
 
     /* now encrypt! */
     aes->do_crypt(outbuf, sizeof(outbuf),
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                   ivbuf, TRUE);
 
     printf("ciphertext output:\n");
-    hexdump(outbuf, 0, sizeof(outbuf));
+    hexdump(stdout, outbuf, 0, sizeof(outbuf));
 
     /* reset the IV */
     for(i=0; i<sizeof(ivbuf); i++) {
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 
     printf("plaintext output: %s\n",
            memcmp(inbuf, outbuf, sizeof(outbuf))==0 ? "matches" : "failed");
-    hexdump(outbuf, 0, sizeof(outbuf));
+    hexdump(stdout, outbuf, 0, sizeof(outbuf));
 
     report_leaks();
     tool_close_log();

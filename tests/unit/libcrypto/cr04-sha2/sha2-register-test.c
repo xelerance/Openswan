@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     }
 
     printf("plaintext input:\n");
-    hexdump(inbuf, 0, sizeof(outbuf));
+    hexdump(stdout, inbuf, 0, sizeof(outbuf));
 
     hash = alloc_bytes(sha256->hash_digest_len, "digest output");
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     sha256->hash_final(hash, &hc);
 
     printf("hash output:\n");
-    hexdump(hash, 0, sha256->hash_digest_len);
+    hexdump(stdout, hash, 0, sha256->hash_digest_len);
 
     pfreeany(hash);
 
