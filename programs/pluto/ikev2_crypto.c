@@ -94,7 +94,7 @@ bool ikev2_calculate_rsa_sha1(struct state *st
 	passert(RSA_MIN_OCTETS <= sz && 4 + signed_len < sz && sz <= RSA_MAX_OCTETS);
 
 	DBG(DBG_CRYPT
-	    , DBG_dump("v2rsa octets", signed_octets, signed_len));
+	    , DBG_dump("v2rsa octets (with ASN1):", signed_octets, signed_len));
 
 	{
 		u_char sig_val[RSA_MAX_OCTETS];
