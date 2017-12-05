@@ -6,7 +6,6 @@
 #include "seam_ikev1.c"
 #include "seam_ikev1_aggr.c"
 #include "seam_pending.c"
-#include "nat_traversal.h"
 #include "seam_gi_sha1.c"
 #include "seam_finish.c"
 #include "seam_crypt.c"
@@ -20,6 +19,8 @@
 #include "seam_rsasig.c"
 #include "seam_rsa_check.c"
 #include "seam_host_moon.c"
+
+#include "nat_traversal.h"
 
 #define TESTNAME "v1certN3"
 
