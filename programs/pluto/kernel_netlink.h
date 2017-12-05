@@ -13,6 +13,30 @@
  * for more details.
  */
 
-#if defined(linux) && defined(NETKEY_SUPPORT)
-extern const struct kernel_ops netkey_kernel_ops;
+#ifndef _KERNEL_FORCES_H
+
+#include "kernel_forces.h"
+
+extern bool send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
+                             , const char *description, const char *text_said);
+
+extern bool netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said);
+extern bool netlink_get(void);
+extern void netlink_process_msg(void);
+extern bool netkey_do_command(struct connection *c, const struct spd_route *sr
+                              , const char *verb, const char *verb_suffix
+                              , struct state *st);
+
+extern void netlink_acquire(struct nlmsghdr *n);
+extern void netlink_policy_expire(struct nlmsghdr *n);
+extern void init_netlink(void);
+
+extern int netlink_bcast_fd;
+
+#ifndef DEFAULT_UPDOWN
+# define DEFAULT_UPDOWN "ipsec _updown"
+#endif
+
+
+#define _KERNEL_FORCES_H
 #endif
