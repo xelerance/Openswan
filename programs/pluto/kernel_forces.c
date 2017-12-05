@@ -38,7 +38,7 @@
 #include <unistd.h>
 
 #include "kameipsec.h"
-#include <rtnetlink.h>
+#include "linux26/rtnetlink.h"
 #include <xfrm.h>
 
 #include <openswan.h>
@@ -382,7 +382,7 @@ static void linux_pfkey_add_aead(void)
  * @param text_said char
  * @return boolean True if successful
  */
-static bool
+bool
 netlink_raw_eroute(const ip_address *this_host
 		   , const ip_subnet *this_client
 		   , const ip_address *that_host
@@ -689,7 +689,7 @@ netlink_raw_eroute(const ip_address *this_host
  * @param replace boolean - true if this replaces an existing SA
  * @return bool True if successfull
  */
-static bool
+bool
 netlink_add_sa(struct kernel_sa *sa, bool replace)
 {
     struct {
@@ -1025,7 +1025,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
  * @param sa Kernel SA to be deleted
  * @return bool True if successfull
  */
-static bool
+bool
 netlink_del_sa(const struct kernel_sa *sa)
 {
     struct {
@@ -1186,7 +1186,7 @@ linux_pfkey_add_aead(void)
 	ike_alg_register_enc(&algo_aes_gcm_16);
 }
 
-static void
+void
 linux_pfkey_register_response(const struct sadb_msg *msg)
 {
     switch (msg->sadb_msg_satype)
@@ -1204,18 +1204,6 @@ linux_pfkey_register_response(const struct sadb_msg *msg)
     default:
 	break;
     }
-}
-
-/** linux_pfkey_register - Register via PFKEY our capabilities
- *
- */
-static void
-linux_pfkey_register(void)
-{
-    netlink_register_proto(SADB_SATYPE_AH, "AH");
-    netlink_register_proto(SADB_SATYPE_ESP, "ESP");
-    netlink_register_proto(SADB_X_SATYPE_IPCOMP, "IPCOMP");
-    pfkey_close();
 }
 
 /** Create ip_address out of xfrm_address_t.
@@ -1499,7 +1487,7 @@ netlink_policy_expire(struct nlmsghdr *n)
     }
 }
 
-static ipsec_spi_t
+ipsec_spi_t
 netlink_get_spi(const ip_address *src
 , const ip_address *dst
 , int proto
@@ -1580,7 +1568,7 @@ retry:
 
 /* install or remove eroute for SA Group */
 /* (identical to KLIPS version, but refactoring isn't waranteed yet */
-static bool
+bool
 netlink_sag_eroute(struct state *st, const struct spd_route *sr
 		  , unsigned op, const char *opname)
 {
@@ -1674,7 +1662,7 @@ netlink_sag_eroute(struct state *st, const struct spd_route *sr
  * If FALSE, DPD is not necessary. We also return TRUE for errors, as they
  * could mean that the SA is broken and needs to be replace anyway.
  */
-static bool
+bool
 netlink_eroute_idle(struct state *st, time_t idle_max)
 {
     time_t idle_time;
@@ -1686,7 +1674,7 @@ netlink_eroute_idle(struct state *st, time_t idle_max)
 	return (idle_time >= idle_max);
 }
 
-static bool
+bool
 netlink_shunt_eroute(struct connection *c
                    , const struct spd_route *sr
                    , enum routing_t rt_kind
@@ -1824,7 +1812,7 @@ netlink_shunt_eroute(struct connection *c
     }
 }
 
-static void
+void
 netlink_process_raw_ifaces(struct raw_iface *rifaces)
 {
     struct raw_iface *ifp;
@@ -2082,7 +2070,7 @@ add_entry:
  * @param sa Kernel SA to be queried
  * @return bool True if successful
  */
-static bool
+bool
 netlink_get_sa(const struct kernel_sa *sa, u_int *bytes)
 {
     struct {
@@ -2123,39 +2111,6 @@ netlink_process_msg(void)
 	;
 }
 
-const struct kernel_ops netkey_kernel_ops = {
-    kern_name: "netkey",
-    type: USE_NETKEY,
-    inbound_eroute:  TRUE,
-    policy_lifetime: TRUE,
-    async_fdp: &netlink_bcast_fd,
-    replay_window: 32,
-
-    init: init_netlink,
-    pfkey_register: linux_pfkey_register,
-    pfkey_register_response: linux_pfkey_register_response,
-    process_msg: netlink_process_msg,
-    raw_eroute: netlink_raw_eroute,
-    add_sa: netlink_add_sa,
-    del_sa: netlink_del_sa,
-    get_sa: netlink_get_sa,
-    process_queue: NULL,
-    grp_sa: NULL,
-    get_spi: netlink_get_spi,
-    exceptsocket: NULL,
-    docommand: netkey_do_command,
-    process_ifaces: netlink_process_raw_ifaces,
-    shunt_eroute: netlink_shunt_eroute,
-    sag_eroute: netlink_sag_eroute,
-    eroute_idle: netlink_eroute_idle,
-    set_debug: NULL,    /* pfkey_set_debug, */
-    /* We should implement netlink_remove_orphaned_holds
-     * if netlink  specific changes are needed.
-     */
-    remove_orphaned_holds: pfkey_remove_orphaned_holds,
-    overlap_supported: FALSE,
-    sha2_truncbug_support: TRUE,
-};
 #endif /* linux && NETKEY_SUPPORT */
 
 /*

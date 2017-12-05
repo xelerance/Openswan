@@ -38,7 +38,7 @@
 #include <unistd.h>
 
 #include "kameipsec.h"
-#include <rtnetlink.h>
+#include "linux26/rtnetlink.h"
 #include <xfrm.h>
 
 #include <openswan.h>
@@ -67,6 +67,18 @@
 
 static int netlinkfd = NULL_FD;
 int netlink_bcast_fd = NULL_FD;
+
+/** linux_pfkey_register - Register via PFKEY our capabilities
+ *
+ */
+void
+linux_pfkey_register(void)
+{
+    netlink_register_proto(SADB_SATYPE_AH, "AH");
+    netlink_register_proto(SADB_SATYPE_ESP, "ESP");
+    netlink_register_proto(SADB_X_SATYPE_IPCOMP, "IPCOMP");
+    pfkey_close();
+}
 
 /** send_netlink_msg
  *
@@ -216,7 +228,8 @@ send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
     return TRUE;
 }
 
-/** netlink_policy -
+/**
+ * netlink_policy - send a message into NETLINK, and look for an errno-based return
  *
  * @param hdr - Data to check
  * @param enoent_ok - Boolean - OK or not OK.
@@ -393,6 +406,40 @@ void init_netlink(void)
      */
     init_pfkey();
 }
+
+const struct kernel_ops netkey_kernel_ops = {
+    kern_name: "netkey",
+    type: USE_NETKEY,
+    inbound_eroute:  TRUE,
+    policy_lifetime: TRUE,
+    async_fdp: &netlink_bcast_fd,
+    replay_window: 32,
+
+    init: init_netlink,
+    pfkey_register: linux_pfkey_register,
+    pfkey_register_response: linux_pfkey_register_response,
+    process_msg: netlink_process_msg,
+    raw_eroute: netlink_raw_eroute,
+    add_sa: netlink_add_sa,
+    del_sa: netlink_del_sa,
+    get_sa: netlink_get_sa,
+    process_queue: NULL,
+    grp_sa: NULL,
+    get_spi: netlink_get_spi,
+    exceptsocket: NULL,
+    docommand: netkey_do_command,
+    process_ifaces: netlink_process_raw_ifaces,
+    shunt_eroute: netlink_shunt_eroute,
+    sag_eroute: netlink_sag_eroute,
+    eroute_idle: netlink_eroute_idle,
+    set_debug: NULL,    /* pfkey_set_debug, */
+    /* We should implement netlink_remove_orphaned_holds
+     * if netlink  specific changes are needed.
+     */
+    remove_orphaned_holds: pfkey_remove_orphaned_holds,
+    overlap_supported: FALSE,
+    sha2_truncbug_support: TRUE,
+};
 
 #endif /* linux && NETKEY_SUPPORT */
 

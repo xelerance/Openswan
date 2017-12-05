@@ -16,4 +16,45 @@
 #if defined(linux) && defined(NETKEY_SUPPORT)
 extern const struct kernel_ops netkey_kernel_ops;
 extern sparse_names xfrm_type_names;
+
+extern void linux_pfkey_register_response(const struct sadb_msg *msg);
+extern void netlink_process_msg(void);
+extern bool netlink_raw_eroute(const ip_address *this_host
+		   , const ip_subnet *this_client
+		   , const ip_address *that_host
+		   , const ip_subnet *that_client
+		   , ipsec_spi_t spi
+		   , unsigned int proto
+		   , unsigned int transport_proto
+		   , enum eroute_type esatype
+		   , const struct pfkey_proto_info *proto_info
+		   , time_t use_lifetime UNUSED
+		   , enum pluto_sadb_operations sadb_op
+		   , const char *text_said
+		   , char *policy_label UNUSED
+		   );
+
+extern bool netlink_add_sa(struct kernel_sa *sa, bool replace);
+extern bool netlink_get_sa(const struct kernel_sa *sa, u_int *bytes);
+extern bool netlink_del_sa(const struct kernel_sa *sa);
+
+extern ipsec_spi_t netlink_get_spi(const ip_address *src
+                                   , const ip_address *dst
+                                   , int proto
+                                   , bool tunnel_mode
+                                   , unsigned reqid
+                                   , ipsec_spi_t min
+                                   , ipsec_spi_t max
+                                   , const char *text_said);
+
+extern void netlink_process_raw_ifaces(struct raw_iface *rifaces);
+extern bool netlink_shunt_eroute(struct connection *c
+                                 , const struct spd_route *sr
+                                 , enum routing_t rt_kind
+                                 , enum pluto_sadb_operations op
+                                 , const char *opname);
+extern bool netlink_sag_eroute(struct state *st, const struct spd_route *sr
+                               , unsigned op, const char *opname);
+extern bool netlink_eroute_idle(struct state *st, time_t idle_max);
+
 #endif

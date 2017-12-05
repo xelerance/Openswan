@@ -30,6 +30,7 @@ extern bool netkey_do_command(struct connection *c, const struct spd_route *sr
 extern void netlink_acquire(struct nlmsghdr *n);
 extern void netlink_policy_expire(struct nlmsghdr *n);
 extern void init_netlink(void);
+extern void linux_pfkey_register(void);
 
 extern int netlink_bcast_fd;
 
