@@ -220,6 +220,16 @@ init_crypto(void)
 
         /* this loads the old switch for DES/AES, and needs to be obsoleted */
         load_oswcrypto();
+
+#ifdef HAVE_AEAD
+    /* ??? why do we have to wire these in?
+     * -- MCR knows not either.
+     * presumably because they aren't auth and aren't just crypto,
+     * so they don't fit into kernel cryptoapi well.
+     **/
+    linux_pfkey_add_aead();
+#endif /* HAVE_AEAD */
+
 }
 
 /* Encryption Routines
