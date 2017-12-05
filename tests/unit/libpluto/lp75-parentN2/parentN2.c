@@ -7,7 +7,6 @@
 #include "seam_crypt.c"
 #include "seam_ikev1.c"
 #include "seam_ikev1_aggr.c"
-#include "nat_traversal.h"
 #include "seam_dpd.c"
 #include "seam_ikev1_phase2.c"
 #include "seam_ikev1_crypto.c"
@@ -21,6 +20,8 @@
 #include "seam_keys.c"
 #include "seam_rsa_check.c"
 #include "seam_host_jamesjohnson.c"
+
+#include "nat_traversal.h"
 
 #define TESTNAME "parentN2"
 

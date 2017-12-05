@@ -12,6 +12,7 @@
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_debug.c"
+#include "seam_kernel.c"
 
 #define TESTNAME "rekeyParentSA"
 
