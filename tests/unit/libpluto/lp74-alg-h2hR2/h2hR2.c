@@ -5,6 +5,7 @@
 #include "seam_gr_md5.c"
 #include "seam_finish.c"
 #include "seam_keys.c"
+#include "seam_kernel.c"
 
 #define TESTNAME "h2hR2"
 

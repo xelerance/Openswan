@@ -7,6 +7,7 @@
 #include "seam_debug.c"
 #include "seam_rsasig.c"
 #include "seam_keys.c"
+#include "seam_kernel.c"
 
 #define TESTNAME "rekeyParentSA"
 
