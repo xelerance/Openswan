@@ -140,6 +140,11 @@ void process_pfkey_nat_t_new_mapping(
 bool
 nat_traversal_port_float(struct state *st, struct msg_digest *md, bool in);
 
+/*
+ * if not found in kernel, turn it off, so it is not negotiated.
+ */
+extern void disable_nat_traversal(int type);
+
 /**
  * Encapsulation mode macro (see demux.c)
  */

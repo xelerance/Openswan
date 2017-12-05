@@ -110,11 +110,11 @@ PFKEYv2_DIST_SRC=
 PFKEYv2_OBJS=
 endif
 
-NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h
+NETKEY_DIST_SRCS=kernel_netlink.c kernel_netlink.h kernel_forces.c kernel_forces.h
 ifeq ($(USE_NETKEY),true)
 NETKEY_DEFS=-DNETKEY_SUPPORT -DKERNEL26_HAS_KAME_DUPLICATES -DPFKEY
 NETKEY_SRCS=${NETKEY_DIST_SRCS}
-NETKEY_OBJS=kernel_netlink.o
+NETKEY_OBJS=kernel_netlink.o kernel_forces.o
 endif
 
 KLIPS_DIST_SRCS=kernel_klips.c
