@@ -7,6 +7,8 @@
 #include "seam_debug.c"
 #include "seam_rsasig.c"
 #include "seam_keys.c"
+#include "seam_kernel.c"
+
 #include "ikev2_microcode.h"
 
 #define TESTNAME "deleteChildSA-invalid-msgInI3"

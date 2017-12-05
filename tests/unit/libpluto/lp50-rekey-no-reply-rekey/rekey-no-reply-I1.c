@@ -6,6 +6,7 @@
 #include "seam_ikev2_sendI1.c"
 #include "seam_rsasig.c"
 #include "seam_keys.c"
+#include "seam_kernel.c"
 #include "ike_continuations.h"
 
 static void init_fake_secrets(void)

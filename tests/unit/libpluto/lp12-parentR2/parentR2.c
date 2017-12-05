@@ -5,6 +5,7 @@
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_keys.c"
+#include "seam_kernel.c"
 
 #define TESTNAME "parentR2"
 
