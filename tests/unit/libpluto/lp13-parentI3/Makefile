@@ -76,6 +76,10 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS} $(wildc
 	@echo LD ${TESTNAME}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
+${TESTNAME}.E:
+	${CC} -E -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS} >${TESTNAME}.E
+
+
 check: OUTPUT/${TESTNAME}_1.txt
 OUTPUT/${TESTNAME}_1.txt:	${WHACKFILE} ${TESTNAME} output1.txt
 	@mkdir -p OUTPUT

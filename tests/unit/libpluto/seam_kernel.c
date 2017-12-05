@@ -2,6 +2,10 @@
 
 bool can_do_IPcomp = TRUE;  /* can system actually perform IPCOMP? */
 
+u_int16_t pluto_port500  = IKE_UDP_PORT;	/* Pluto's port */
+u_int16_t pluto_port4500 = NAT_IKE_UDP_PORT;	/* Pluto's port NAT */
+
+void unroute_connection(struct connection *c) {}
 void delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS) {}
 
 bool install_inbound_ipsec_sa(struct state *parent_st, struct state *st) { return TRUE; }
@@ -69,4 +73,5 @@ bool assign_hold(struct connection *c USED_BY_DEBUG
                  , const ip_address *src, const ip_address *dst) { return TRUE; }
 
 bool has_bare_hold(const ip_address *src, const ip_address *dst, int transport_proto) { return FALSE;}
+bool trap_connection(struct connection *c) { return TRUE; }
 
