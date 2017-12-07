@@ -1620,6 +1620,40 @@ kernel_noklips.o: kernel_noklips.c ../../include/openswan.h \
  ../../include/pluto/kernel.h kernel_noklips.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h
+kernel_ops.o: kernel_ops.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/rnd.h ../../include/id.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/kernel.h kernel_forces.h kernel_pfkey.h \
+ kernel_noklips.h kernel_bsdkame.h ../../include/packet.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/server.h \
+ ../../include/whack.h ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/ipsec_saref.h
 keymgmt.o: keymgmt.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
