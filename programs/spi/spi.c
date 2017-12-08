@@ -1099,7 +1099,7 @@ main(int argc, char *argv[])
 	case XF_OTHER_ALG:
 		/* validate keysizes */
 		if (proc_read_ok) {
-		       const struct sadb_alg *alg_p;
+		       const struct pluto_sadb_alg *alg_p;
 		       size_t keylen, minbits, maxbits;
 		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP
 						     ,SADB_EXT_SUPPORTED_ENCRYPT
@@ -1107,8 +1107,8 @@ main(int argc, char *argv[])
 		       assert(alg_p != NULL);
 		       keylen=enckeylen * 8;
 
-		       minbits=alg_p->sadb_alg_minbits;
-		       maxbits=alg_p->sadb_alg_maxbits;
+		       minbits=alg_p->kernel_sadb_alg.sadb_alg_minbits;
+		       maxbits=alg_p->kernel_sadb_alg.sadb_alg_maxbits;
 		       /*
 			* if explicit keylen told in encrypt algo, eg "aes128"
 			* check actual keylen "equality"
@@ -1139,8 +1139,8 @@ main(int argc, char *argv[])
 				       esp_info->authalg);
 		       assert(alg_p);
 		       keylen=authkeylen * 8;
-		       minbits=alg_p->sadb_alg_minbits;
-		       maxbits=alg_p->sadb_alg_maxbits;
+		       minbits=alg_p->kernel_sadb_alg.sadb_alg_minbits;
+		       maxbits=alg_p->kernel_sadb_alg.sadb_alg_maxbits;
 		       if (minbits > keylen || maxbits < keylen) {
 			       fprintf(stderr, "%s: invalid auth keylen=%d, "
 					       "must be between %d and %d bits\n",

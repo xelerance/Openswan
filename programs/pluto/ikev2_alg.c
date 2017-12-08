@@ -62,7 +62,7 @@ kernel_alg_policy_algorithms(struct esp_info *esp_info)
                  * esp_ealg ??
                  */
                 esp_info->esp_ealg_keylen=
-                    esp_ealg[ealg_i].sadb_alg_maxbits;
+                    esp_ealg[ealg_i].kernel_sadb_alg.sadb_alg_maxbits;
 
             }
     }
@@ -105,9 +105,7 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    /*	open new transformation */
 	    db_trans_add(db_ctx, ealg_i);
 
-            /* XXX-MCR todo: needs to handle IKEV2 now as well  #3949  */
-	    /* add ESP auth attr (if present) */
-	    if (esp_info->esp_aalg_id != AUTH_ALGORITHM_NONE) {
+	    if (esp_info->esp_aalg_id != IKEv2_AUTH_NONE) {
 		db_attr_add_values(db_ctx,
 				   AUTH_ALGORITHM, esp_info->esp_aalg_id);
 	    }
@@ -115,9 +113,10 @@ kernel_alg_db_add(struct db_context *db_ctx
 	    /*	add keylegth if specified in esp= string */
 	    if (esp_info->esp_ealg_keylen) {
 
-		if(esp_info->esp_ealg_id == ESP_AES_GCM_8
-			|| esp_info->esp_ealg_id == ESP_AES_GCM_12
-			|| esp_info->esp_ealg_id == ESP_AES_GCM_16 ) {
+                /* why is this a special case? XXXX */
+		if(esp_info->esp_ealg_id == IKEv2_ENCR_AES_GCM_8
+			|| esp_info->esp_ealg_id == IKEv2_ENCR_AES_GCM_12
+			|| esp_info->esp_ealg_id == IKEv2_ENCR_AES_GCM_16 ) {
 
 			db_attr_add_values(db_ctx,
 				   KEY_LENGTH, esp_info->esp_ealg_keylen - 4 * BITS_PER_BYTE);
@@ -245,17 +244,17 @@ kernel_alg_db_new(struct alg_info_esp *alg_info, lset_t policy, bool logit)
 void kernel_alg_show_status(void)
 {
 	unsigned sadb_id,id;
-	struct sadb_alg *alg_p;
+	struct pluto_sadb_alg *alg_p;
 	ESP_EALG_FOR_EACH(sadb_id) {
 		id=sadb_id;
 		alg_p=&esp_ealg[sadb_id];
 		whack_log(RC_COMMENT, "algorithm ESP encrypt: id=%d, name=%s, "
 				"ivlen=%d, keysizemin=%d, keysizemax=%d"
 			, id
-			, enum_name(&esp_transformid_names, id)
-			, alg_p->sadb_alg_ivlen
-			, alg_p->sadb_alg_minbits
-			, alg_p->sadb_alg_maxbits
+			, enum_name(&trans_type_encr_names, alg_p->encr_id)
+			, alg_p->kernel_sadb_alg.sadb_alg_ivlen
+			, alg_p->kernel_sadb_alg.sadb_alg_minbits
+			, alg_p->kernel_sadb_alg.sadb_alg_maxbits
 		 );
 
 	}
@@ -265,9 +264,9 @@ void kernel_alg_show_status(void)
 		whack_log(RC_COMMENT, "algorithm ESP auth attr: id=%d, name=%s, "
 				"keysizemin=%d, keysizemax=%d"
 			, id
-			, enum_name(&auth_alg_names, id)
-			, alg_p->sadb_alg_minbits
-			, alg_p->sadb_alg_maxbits
+			, enum_name(&trans_type_integ_names, alg_p->integ_id)
+			, alg_p->kernel_sadb_alg.sadb_alg_minbits
+			, alg_p->kernel_sadb_alg.sadb_alg_maxbits
 		 );
 	}
 }

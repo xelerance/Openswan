@@ -7,8 +7,8 @@ init_seam_kernelalgs(void)
 	struct sadb_alg sa;
 
 	memset(&sa, 0, sizeof(sa));
-	sa.sadb_alg_id = ESP_AES;
-	sa.sadb_alg_ivlen = 16;
+	sa.sadb_alg_id      = ESP_AES;    /* this is a kernel algorithm ID */
+	sa.sadb_alg_ivlen   = 16;
 	sa.sadb_alg_minbits = 128;
 	sa.sadb_alg_maxbits = 512;
 	ret=kernel_alg_add(SADB_SATYPE_ESP, SADB_EXT_SUPPORTED_ENCRYPT,&sa);

@@ -19,6 +19,13 @@
 #define _KERNEL_ALG_H
 #include "openswan/pfkeyv2.h"
 
+struct pluto_sadb_alg {
+  struct sadb_alg kernel_sadb_alg;   /* data from the kernel as to capabilities */
+  enum   ikev2_trans_type exttype;   /* encryption or integrity */
+  enum   ikev2_trans_type_encr   encr_id;   /* this IKEv2 algorithm number */
+  enum   ikev2_trans_type_integ  integ_id;  /* ditto */
+};
+
 struct sadb_msg; /* forward definition */
 
 /* Registration messages from pluto */
@@ -28,8 +35,9 @@ struct alg_info;
 struct esp_info;
 struct alg_info_ike;
 struct alg_info_esp;
+
 /* ESP interface */
-extern struct sadb_alg *kernel_alg_esp_sadb_alg(int alg_id);
+extern struct pluto_sadb_alg *kernel_alg_esp_sadb_alg(int alg_id);
 extern int kernel_alg_esp_ivlen(int alg_id);
 /* returns bool success if esp encrypt alg is present  */
 extern err_t kernel_alg_esp_enc_ok(int alg_id, unsigned int key_len, struct alg_info_esp *nfo);
@@ -49,7 +57,7 @@ extern int kernel_alg_esp_auth_keylen(int auth);
 extern int kernel_alg_proc_read(void);
 
 /* get sadb_alg for passed args */
-extern const struct sadb_alg * kernel_alg_sadb_alg_get(int satype, int exttype, int alg_id);
+extern const struct pluto_sadb_alg * kernel_alg_sadb_alg_get(int satype, int exttype, int alg_id);
 
 struct db_prop;
 extern struct db_context * kernel_alg_db_new(struct alg_info_esp *ai
@@ -61,19 +69,19 @@ extern struct esp_info *kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg
                                             u_int16_t keylen,
                                             enum ikev2_trans_type_integ sadb_aalg);
 
-extern struct sadb_alg esp_aalg[];
-extern struct sadb_alg esp_ealg[];
+extern struct pluto_sadb_alg esp_aalg[];
+extern struct pluto_sadb_alg esp_ealg[];
 extern int esp_ealg_num;
 extern int esp_aalg_num;
 
-#define ESP_EALG_PRESENT(algo) (((algo)<=K_SADB_EALG_MAX)&&(esp_ealg[(algo)].sadb_alg_id!=0))
+#define ESP_EALG_PRESENT(algo) (((algo)<=K_SADB_EALG_MAX)&&(esp_ealg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
 #define ESP_EALG_FOR_EACH(algo) \
 	for (algo=1; algo <= K_SADB_EALG_MAX; algo++) \
 		if (ESP_EALG_PRESENT(algo))
 #define ESP_EALG_FOR_EACH_UPDOWN(algo) \
 	for (algo=K_SADB_EALG_MAX; algo >0 ; algo--) \
 		if (ESP_EALG_PRESENT(algo))
-#define ESP_AALG_PRESENT(algo) ((algo<=SADB_AALG_MAX)&&(esp_aalg[(algo)].sadb_alg_id!=0))
+#define ESP_AALG_PRESENT(algo) ((algo<=SADB_AALG_MAX)&&(esp_aalg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
 #define ESP_AALG_FOR_EACH(algo) \
 	for (algo=1; algo <= SADB_AALG_MAX; algo++) \
 		if (ESP_AALG_PRESENT(algo))
@@ -81,7 +89,7 @@ extern int esp_aalg_num;
 	for (algo=SADB_AALG_MAX; algo >0 ; algo--) \
 		if (ESP_AALG_PRESENT(algo))
 
-/* used by test skaffold */
+/* used by test skaffold -- sadb_alg as if it came from kernel */
 extern int kernel_alg_add(int satype, int exttype
 			  , const struct sadb_alg *sadb_alg);
 

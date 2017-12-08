@@ -1387,49 +1387,6 @@ static err_t setup_esp_sa(struct connection *c
     bool replace = FALSE;
     IPsecSAref_t refhim = st->st_refhim;
 
-    /* this maps IKE/IETF values into kernel identifiers */
-    static const struct esp_info esp_info[] = {
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
-          0, HMAC_MD5_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_MD5HMAC, 0 },
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
-          0, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_SHA1HMAC, 0 },
-
-        { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE, 0,
-          SADB_EALG_DESCBC, SADB_AALG_NONE, 0 },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_EALG_DESCBC, SADB_AALG_MD5HMAC, 0 },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE,
-          HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC, 0 },
-
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE * 3, 0,
-          SADB_EALG_3DESCBC, SADB_AALG_NONE, 0 },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC, 0 },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC, 0 },
-
-        { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
-          AES_CBC_BLOCK_SIZE, 0,
-          SADB_X_EALG_AESCBC, SADB_AALG_NONE, 0 },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
-              AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC, 0 },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
-          AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC, 0 },
-    };
-
-    /* static const int esp_max = elemsof(esp_info); */
-    /* int esp_count; */
-
     if(DBGP(DBG_KLIPS)) {
         char sa_src[ADDRTOT_BUF];
         char sa_dst[ADDRTOT_BUF];
@@ -1444,76 +1401,28 @@ static err_t setup_esp_sa(struct connection *c
                 , esp_spi, sa_src, sa_dst);
     }
 
-    for (ei = esp_info; ; ei++) {
+    /* Check for additional kernel alg */
+    if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
+                                st->st_esp.attrs.transattrs.enckeylen,
+                                st->st_esp.attrs.transattrs.integ_hash))==NULL) {
 
-        /* if it is the last key entry, then ask algo */
-        if (ei == &esp_info[elemsof(esp_info)]) {
-            /* Check for additional kernel alg */
-#ifdef KERNEL_ALG
-            if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
-                                        st->st_esp.attrs.transattrs.enckeylen,
-                                        st->st_esp.attrs.transattrs.integ_hash))!=NULL) {
-                break;
-            }
-#endif
-
-            /* note: enum_show may use a static buffer, so two
-             * calls in one printf would be a mistake.
-             * enum_name does the same job, without a static buffer,
-             * assuming the name will be found.
-             */
-            loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
-                   , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
-                   , st->st_esp.attrs.transattrs.enckeylen
-                   , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-            return "implement not implemented";
-        }
-
-        DBG(DBG_CRYPT
-            , DBG_log("checking transid: %d keylen: %d auth: %d\n"
-                      , ei->transid, ei->enckeylen, ei->auth));
-
-        if (st->st_esp.attrs.transattrs.encrypt == ei->transid
-            && (st->st_esp.attrs.transattrs.enckeylen ==0 || st->st_esp.attrs.transattrs.enckeylen == ei->enckeylen * BITS_PER_BYTE)
-            && st->st_esp.attrs.transattrs.integ_hash == ei->auth)
-            break;
-    }
-
-    if (st->st_esp.attrs.transattrs.encrypt != ei->transid
-        && st->st_esp.attrs.transattrs.enckeylen != ei->enckeylen  * BITS_PER_BYTE
-        && st->st_esp.attrs.transattrs.integ_hash != ei->auth) {
-        loglog(RC_LOG_SERIOUS, "failed to find key info for %s/%s"
+        loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
                , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+               , st->st_esp.attrs.transattrs.enckeylen
                , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-        return "failed to find key info";
+        return "implement not implemented";
     }
 
-    key_len = st->st_esp.attrs.transattrs.enckeylen/BITS_PER_BYTE;
-    if (key_len) {
-        /* XXX: must change to check valid _range_ key_len */
-        if (key_len > ei->enckeylen) {
-            loglog(RC_LOG_SERIOUS, "ESP transform %s passed key_len=%d > %d",
-                   enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt),
-                   (int)key_len, (int)ei->enckeylen);
-            return "wrong key length";
-        }
-    } else {
-        key_len = ei->enckeylen;
-    }
+    key_len = ei->enckeylen;
 
-    /* ifdef 3DES? */
-    /* Grrrrr.... f*cking 7 bits jurassic algos  */
-
-    /* 168 bits in kernel, need 192 bits for keymat_len */
-    if (ei->transid == ESP_3DES && key_len == 21)
-        key_len = 24;
-
-    /* 56 bits in kernel, need 64 bits for keymat_len */
-    if (ei->transid == ESP_DES && key_len == 7)
-        key_len = 8;
+    /*
+     * ifdef 3DES? XXX -- this used to fix up ken_len=21 => ken_len=24.
+     * if 3DES fails, the consider something here.
+     */
 
     /* divide up keying material */
     /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
+
     if(st->st_esp.keymat_len != key_len + ei->authkeylen)
         DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
         st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
@@ -1545,14 +1454,12 @@ static err_t setup_esp_sa(struct connection *c
     }
 
     said_next->authkeylen = ei->authkeylen;
-    /* said_next->authkey = esp_dst_keymat + ei->enckeylen; */
-    said_next->authkey = esp_dst_keymat + key_len;
-    said_next->encalg = ei->encryptalg;
-    /* said_next->enckeylen = ei->enckeylen; */
+    said_next->authkey    = esp_dst_keymat + key_len;
+    said_next->encalg     = ei->encryptalg;
     said_next->enckeylen = key_len;
     said_next->enckey = esp_dst_keymat;
     said_next->encapsulation = encapsulation;
-    said_next->reqid = c->spd.reqid + 1;
+    said_next->reqid      = c->spd.reqid + 1;
 
 #ifdef HAVE_LABELED_IPSEC
     said_next->sec_ctx = st->sec_ctx;
