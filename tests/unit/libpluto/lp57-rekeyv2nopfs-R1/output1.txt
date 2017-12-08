@@ -1211,8 +1211,8 @@ should have found a continuation, but none was found
 ./rekeyv2nopfs-R1 leak: sa copy prop array, item size: X
 ./rekeyv2nopfs-R1 leak: sa copy prop conj array, item size: X
 ./rekeyv2nopfs-R1 leak: sa copy prop_conj, item size: X
+./rekeyv2nopfs-R1 leak: rnd chunk, item size: X
 ./rekeyv2nopfs-R1 leak: nonce, item size: X
-./rekeyv2nopfs-R1 leak: st_nr in duplicate_state, item size: X
 ./rekeyv2nopfs-R1 leak: st_skey_pr in duplicate_state, item size: X
 ./rekeyv2nopfs-R1 leak: st_skey_pi in duplicate_state, item size: X
 ./rekeyv2nopfs-R1 leak: st_skey_er in duplicate_state, item size: X
