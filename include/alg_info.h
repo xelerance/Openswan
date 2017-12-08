@@ -21,14 +21,14 @@
 
 
 struct esp_info {
-        bool     esp_default;
-    u_int8_t  transid;	/* ESP transform (AES, 3DES, etc.)*/
-	u_int16_t auth;		/* AUTH */
-	u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
-	u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
+    bool      esp_default;
+    enum ikev2_trans_type_encr  transid;  /* ESP transform (AES, 3DES, etc.) (in IKEv2 terms )*/
+    enum ikev2_trans_type_integ auth;	 /* AUTH */
+    u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
+    u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 
-    /* used for mapping KLIPS kernel numbers to IKEv1 numbers */
-    u_int8_t encryptalg;
+    /* used for mapping KLIPS kernel numbers to IKEv2 numbers */
+    u_int8_t  encryptalg;
     u_int16_t authalg;
     enum ikev2_trans_type_dh pfs_group;
 };
