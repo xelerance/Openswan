@@ -1373,6 +1373,9 @@ static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
 	return STF_INTERNAL_ERROR;
     }
 
+    /* create a nonce for our reply */
+    fill_rnd_chunk(&st->st_nr, DEFAULT_NONCE_SIZE);
+
     return ikev2child_inCI1_tail(md, st, FALSE);
 }
 
@@ -1631,6 +1634,11 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
             int v2_notify_num = 0;
 
             /* insert Nonce and KE (if PFS) */
+
+	    if (! md->chain[ISAKMP_NEXT_v2Ni]) {
+		    /* XXX: do we want to assert here? */
+		    DBG_log("We are responding with a Ni, but didn't receive a Ni");
+	    }
 
             if(!justship_v2Nonce(st,  &e_pbs_cipher, &st->st_nr, 0)) {
                 return STF_INTERNAL_ERROR;
