@@ -183,7 +183,9 @@ bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, 
  */
 /* XXX:jjo use keysize */
 struct ike_alg *
-ike_alg_find(unsigned algo_type, unsigned algo_id, unsigned keysize __attribute__((unused)))
+ike_alg_find(enum ikev2_trans_type algo_type
+             , unsigned algo_id
+             , unsigned keysize __attribute__((unused)))
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {

@@ -442,8 +442,8 @@ int decode_esp(char *algname)
       fprintf(stdout, "%s: alg_info: cnt=%d ealg[0]=%d aalg[0]=%d\n",
 	      progname,
 	      alg_info->alg_info_cnt,
-	      esp_info->encryptalg,
-	      esp_info->authalg);
+	      esp_info->transid,
+	      esp_info->auth);
     }
     esp_ealg_id=esp_info->esp_ealg_id;
     esp_aalg_id=esp_info->esp_aalg_id;
@@ -1103,7 +1103,7 @@ main(int argc, char *argv[])
 		       size_t keylen, minbits, maxbits;
 		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP
 						     ,SADB_EXT_SUPPORTED_ENCRYPT
-						     ,esp_info->encryptalg);
+						     ,esp_info->transid);
 		       assert(alg_p != NULL);
 		       keylen=enckeylen * 8;
 
@@ -1136,7 +1136,7 @@ main(int argc, char *argv[])
 			       exit(1);
 		       }
 		       alg_p=kernel_alg_sadb_alg_get(SADB_SATYPE_ESP,SADB_EXT_SUPPORTED_AUTH,
-				       esp_info->authalg);
+				       esp_info->auth);
 		       assert(alg_p);
 		       keylen=authkeylen * 8;
 		       minbits=alg_p->kernel_sadb_alg.sadb_alg_minbits;
@@ -1280,7 +1280,7 @@ main(int argc, char *argv[])
 		break;
 #ifdef KERNEL_ALG
 	case XF_OTHER_ALG:
-		authalg= esp_info->authalg;
+		authalg= esp_info->auth;
 		if(debug) {
 			fprintf(stdout, "%s: debug: authalg=%d\n",
 				progname, authalg);
@@ -1305,7 +1305,7 @@ main(int argc, char *argv[])
 		break;
 #ifdef KERNEL_ALG
 	case XF_OTHER_ALG:
-		encryptalg= esp_info->encryptalg;
+		encryptalg= esp_info->transid;
 		if(debug) {
 			fprintf(stdout, "%s: debug: encryptalg=%d\n",
 				progname, encryptalg);
