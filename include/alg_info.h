@@ -19,18 +19,28 @@
 
 #include "constants.h"
 
+/* this structure is private to the kernel implementation */
+struct kernel_alg_info;
 
 struct esp_info {
     bool      esp_default;
     enum ikev2_trans_type_encr  transid;  /* ESP transform (AES, 3DES, etc.) (in IKEv2 terms )*/
-    enum ikev2_trans_type_integ auth;	 /* AUTH */
+    enum ikev2_trans_type_integ auth;	        /* AUTH */
+    enum ikev2_trans_type_compress compress;	/* IPCOMP */
     u_int32_t enckeylen;	/* keylength for ESP transform (bytes)*/
     u_int32_t authkeylen;	/* keylength for AUTH (bytes)*/
 
-    /* used for mapping KLIPS kernel numbers to IKEv2 numbers */
-    u_int8_t  encryptalg;
-    u_int16_t authalg;
     enum ikev2_trans_type_dh pfs_group;
+
+    /*
+     * these are filled in when the kernel module is asked if the algorithm
+     * given in esp_info can be satified.
+     */
+    struct kernel_alg_info *encr_info;
+    struct kernel_alg_info *auth_info;
+    struct kernel_alg_info *compress_info;
+
+
 };
 
 struct ike_info {

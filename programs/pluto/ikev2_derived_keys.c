@@ -61,12 +61,11 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	chunk_t ikeymat,rkeymat;
 	struct ipsec_proto_info *ipi = &st->st_esp;
 
-	ipi->attrs.transattrs.ei=kernel_alg_esp_info(
-		ipi->attrs.transattrs.encrypt,
-		ipi->attrs.transattrs.enckeylen,
-		ipi->attrs.transattrs.integ_hash);
+	kernel_alg_esp_info(&ipi->attrs.transattrs.ei,
+                            ipi->attrs.transattrs.encrypt,
+                            ipi->attrs.transattrs.enckeylen,
+                            ipi->attrs.transattrs.integ_hash);
 
-	passert(ipi->attrs.transattrs.ei != NULL);
 	memset(&childsacalc, 0, sizeof(childsacalc));
 
 	pst = st;
@@ -103,8 +102,8 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	childsacalc.skeyseed = &st->st_skey_d;
 
 	st->st_esp.present = TRUE;
-	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei->enckeylen+
-		st->st_esp.attrs.transattrs.ei->authkeylen;
+	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei.enckeylen+
+		st->st_esp.attrs.transattrs.ei.authkeylen;
 
 
 /*

@@ -499,19 +499,17 @@ kernel_alg_ah_auth_keylen(int auth)
           return a_keylen;
 }
 
-struct esp_info *
-kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg,
-                    u_int16_t keylen,
-                    enum ikev2_trans_type_integ sadb_aalg)
+bool kernel_alg_esp_info(struct esp_info *ei
+                         , enum ikev2_trans_type_encr sadb_ealg
+                         , u_int16_t keylen
+                         , enum ikev2_trans_type_integ sadb_aalg)
 {
-          static struct esp_info ei_buf;
-
           if (!ESP_EALG_PRESENT(sadb_ealg)) {
               DBG(DBG_PARSING,
                   DBG_log("kernel_alg_esp_info(): kernel does not have ealg=%s(%d)"
                           , enum_name(&trans_type_encr_names, sadb_ealg)
                           , sadb_ealg));
-              return NULL;
+              return FALSE;
           }
           if (!ESP_AALG_PRESENT(sadb_aalg)) {
               DBG(DBG_PARSING,
@@ -519,12 +517,14 @@ kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg,
                           "kernel does not have ealg=%s(%d)"
                           , enum_name(&trans_type_integ_names, sadb_aalg)
                           , sadb_aalg));
-              return NULL;
+              return FALSE;
           }
 
-          memset(&ei_buf, 0, sizeof (ei_buf));
-          ei_buf.transid=sadb_ealg;
-          ei_buf.auth=sadb_aalg;
+          if(ei) {
+              memset(ei, 0, sizeof (*ei));
+              ei->transid = sadb_ealg;
+              ei->auth    = sadb_aalg;
+          }
 
           /* don't return "default" keylen because this value is used from
            * setup_half_ipsec_sa() to "validate" keylen
@@ -533,29 +533,37 @@ kernel_alg_esp_info(enum ikev2_trans_type_encr sadb_ealg,
 
           /* if no key length is given, return default */
           if(keylen == 0) {
-              ei_buf.enckeylen = esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits/BITS_PER_BYTE;
+              if(ei) {
+                  ei->enckeylen = esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits/BITS_PER_BYTE;
+              }
+
           } else if(keylen <= esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_maxbits &&
                       keylen >= esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits) {
-              ei_buf.enckeylen = keylen/BITS_PER_BYTE;
+              if(ei) {
+                  ei->enckeylen = keylen/BITS_PER_BYTE;
+              }
+
           } else {
               DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
                                              "ealg=%d, proposed keylen=%u is invalid, not %u<X<%u "
                                              , sadb_ealg, keylen
                                              , esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_maxbits
                                              , esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits));
+
               /* proposed key length is invalid! */
-              return NULL;
+              return FALSE;
           }
 
-          ei_buf.authkeylen=esp_aalg[sadb_aalg].kernel_sadb_alg.sadb_alg_maxbits/BITS_PER_BYTE;
-          DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
-                                   "transid=%d, auth=%d, ei=%p, "
-                                   "enckeylen=%d, authkeylen=%d",
-                                   sadb_ealg, sadb_aalg, &ei_buf,
-                                   (int)ei_buf.enckeylen, (int)ei_buf.authkeylen
-                                   ));
-          return &ei_buf;
-
+          if(ei) {
+              ei->authkeylen=esp_aalg[sadb_aalg].kernel_sadb_alg.sadb_alg_maxbits/BITS_PER_BYTE;
+              DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
+                                       "transid=%d, auth=%d, "
+                                       "enckeylen=%d, authkeylen=%d",
+                                       sadb_ealg, sadb_aalg,
+                                       (int)ei->enckeylen, (int)ei->authkeylen
+                                       ));
+          }
+          return TRUE;
 }
 
 /*

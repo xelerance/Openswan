@@ -1381,7 +1381,7 @@ static err_t setup_esp_sa(struct connection *c
 {
     ipsec_spi_t esp_spi = inbound? st->st_esp.our_spi : st->st_esp.attrs.spi;
     u_char *esp_dst_keymat = inbound? st->st_esp.our_keymat : st->st_esp.peer_keymat;
-    const struct esp_info *ei;
+    struct esp_info ei;
     u_int16_t key_len;
     char text_said[SATOT_BUF];
     bool replace = FALSE;
@@ -1401,10 +1401,10 @@ static err_t setup_esp_sa(struct connection *c
                 , esp_spi, sa_src, sa_dst);
     }
 
-    /* Check for additional kernel alg */
-    if ((ei=kernel_alg_esp_info(st->st_esp.attrs.transattrs.encrypt,
-                                st->st_esp.attrs.transattrs.enckeylen,
-                                st->st_esp.attrs.transattrs.integ_hash))==NULL) {
+    /* Check for kernel alg */
+    if (!kernel_alg_esp_info(&ei, st->st_esp.attrs.transattrs.encrypt,
+                             st->st_esp.attrs.transattrs.enckeylen,
+                             st->st_esp.attrs.transattrs.integ_hash)) {
 
         loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
                , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
@@ -1413,7 +1413,7 @@ static err_t setup_esp_sa(struct connection *c
         return "implement not implemented";
     }
 
-    key_len = ei->enckeylen;
+    key_len = ei.enckeylen;
 
     /*
      * ifdef 3DES? XXX -- this used to fix up ken_len=21 => ken_len=24.
@@ -1423,10 +1423,10 @@ static err_t setup_esp_sa(struct connection *c
     /* divide up keying material */
     /* passert(st->st_esp.keymat_len == ei->enckeylen + ei->authkeylen); */
 
-    if(st->st_esp.keymat_len != key_len + ei->authkeylen)
+    if(st->st_esp.keymat_len != key_len + ei.authkeylen)
         DBG_log("keymat_len=%d key_len=%d authkeylen=%d",
-        st->st_esp.keymat_len, (int)key_len, (int)ei->authkeylen);
-    passert(st->st_esp.keymat_len == (key_len + ei->authkeylen));
+        st->st_esp.keymat_len, (int)key_len, (int)ei.authkeylen);
+    passert(st->st_esp.keymat_len == (key_len + ei.authkeylen));
 
     set_text_said(text_said, &dst, esp_spi, SA_ESP);
 
@@ -1438,26 +1438,23 @@ static err_t setup_esp_sa(struct connection *c
     said_next->spi = esp_spi;
     said_next->esatype = ET_ESP;
     said_next->replay_window = kernel_ops->replay_window;
-    said_next->authalg = ei->authalg;
+    said_next->esp_info  = ei;
 
     /* this is a bug in the 2.6.28/29 kernel, we should remove this code */
-    if( (said_next->authalg == AUTH_ALGORITHM_HMAC_SHA2_256)
+    if( (said_next->esp_info.auth == IKEv2_AUTH_HMAC_SHA2_256_128)
         && (st->st_connection->sha2_truncbug)) {
         if(kernel_ops->sha2_truncbug_support) {
             DBG_log(" authalg converted for sha2 truncation at 96bits instead of IETF's mandated 128bits");
             /* We need to tell the kernel to mangle the sha2_256, as instructed by the user */
-            said_next->authalg = AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG;
+            said_next->esp_info.auth = IKEv2_AUTH_HMAC_SHA2_256_128_TRUNCBUG;
         } else {
             loglog(RC_LOG_SERIOUS, "Error: %s stack does not support sha2_truncbug=yes", kernel_ops->kern_name);
             return "sha2 trunc bug not fixable";
         }
     }
 
-    said_next->authkeylen = ei->authkeylen;
     said_next->authkey    = esp_dst_keymat + key_len;
-    said_next->encalg     = ei->encryptalg;
-    said_next->enckeylen = key_len;
-    said_next->enckey = esp_dst_keymat;
+    said_next->enckey     = esp_dst_keymat;
     said_next->encapsulation = encapsulation;
     said_next->reqid      = c->spd.reqid + 1;
 
@@ -1486,9 +1483,9 @@ static err_t setup_esp_sa(struct connection *c
 
     DBG(DBG_CRYPT, {
             DBG_dump("ESP enckey:",  said_next->enckey,
-                     said_next->enckeylen);
+                     said_next->esp_info.enckeylen);
             DBG_dump("ESP authkey:", said_next->authkey,
-                     said_next->authkeylen);
+                     said_next->esp_info.authkeylen);
         });
 
     replace = FALSE;
@@ -1509,8 +1506,8 @@ static err_t setup_esp_sa(struct connection *c
       bool add_success = kernel_ops->add_sa(said_next, replace);
 
       /* good crypto hygiene, (not just LIBNSS) */
-      memset(said_next->enckey, 0, said_next->enckeylen);
-      memset(said_next->authkey, 0, said_next->authkeylen);
+      memset(said_next->enckey, 0, said_next->esp_info.enckeylen);
+      memset(said_next->authkey, 0, said_next->esp_info.authkeylen);
 
       if(!add_success) {
         return "failed to add sa";
@@ -1760,7 +1757,7 @@ setup_half_ipsec_sa(struct state *parent_st
         said_next->transport_proto = c->spd.this.protocol;
         said_next->spi = ipcomp_spi;
         said_next->esatype = ET_IPCOMP;
-        said_next->encalg = compalg;
+        said_next->esp_info.compress = compalg;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid + 2;
         said_next->text_said = text_said;
@@ -1882,8 +1879,8 @@ setup_half_ipsec_sa(struct state *parent_st
         said_next->spi = ah_spi;
         said_next->esatype = ET_AH;
         said_next->replay_window = kernel_ops->replay_window;
-        said_next->authalg = authalg;
-        said_next->authkeylen = st->st_ah.keymat_len;
+        said_next->esp_info.auth = authalg;
+        said_next->esp_info.authkeylen = st->st_ah.keymat_len;
         said_next->authkey = ah_dst_keymat;
         said_next->encapsulation = encapsulation;
         said_next->reqid = c->spd.reqid;

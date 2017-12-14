@@ -57,4 +57,9 @@ extern bool netlink_sag_eroute(struct state *st, const struct spd_route *sr
                                , unsigned op, const char *opname);
 extern bool netlink_eroute_idle(struct state *st, time_t idle_max);
 
+extern void xfrm_kernel_alg_add(struct kernel_alg_info *kai);
+extern struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type
+                                                    , u_int32_t trans_num);
+
+
 #endif

@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include <linux/pfkeyv2.h>
 #include <unistd.h>
+#include <sysqueue.h>
 
 #include "kameipsec.h"
 #include "linux26/rtnetlink.h"
@@ -73,6 +74,63 @@
 #ifdef XAUTH_USEPAM
 #include <security/pam_appl.h>
 #endif
+
+/*
+ * this is a structure which is used to track an kernel_sa
+ * algorithm information. It is attached to an esp_info
+ * structure by this module when this module validates
+ * that a combination of algorithms negotiated is valid.
+ *
+ * This structure is opaque outside of this module.
+ */
+
+LIST_HEAD(kernel_alg_list_type,kernel_alg_info) xfrm_kernel_algs;
+
+struct kernel_alg_info {
+    LIST_ENTRY(kernel_alg_info)        alg_node;
+    enum ikev2_trans_type              alg_type;
+    union {
+        enum ikev2_trans_type_encr     encr;
+        enum ikev2_trans_type_integ    integ;
+        enum ikev2_trans_type_compress compress;
+    } trans;
+    u_int16_t   kernel_alg_id;
+    const char *kernel_alg_name;
+};
+
+void xfrm_kernel_alg_add(struct kernel_alg_info *kai)
+{
+    LIST_INSERT_HEAD(&xfrm_kernel_algs, kai, alg_node);
+}
+
+struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type
+                                             , u_int32_t trans_num)
+{
+    struct kernel_alg_info *p = xfrm_kernel_algs.lh_first;
+
+    while(p != NULL) {
+        if(p->alg_type == alg_type) {
+            switch(alg_type) {
+            case IKEv2_TRANS_TYPE_COMPRESS:
+                if(p->trans.compress == trans_num) return p;
+                break;
+
+            case IKEv2_TRANS_TYPE_ENCR:
+                if(p->trans.encr == trans_num) return p;
+                break;
+
+            case IKEv2_TRANS_TYPE_INTEG:
+                if(p->trans.integ == trans_num) return p;
+                break;
+
+            default:
+                break;
+            }
+        }
+        p = p->alg_node.le_next;
+    }
+    return NULL;
+}
 
 extern char *pluto_listen;
 
@@ -120,24 +178,66 @@ sparse_names xfrm_type_names = {
 #undef NE
 
 /** Authentication Algs */
-static sparse_names aalg_list = {
-	{ SADB_X_AALG_NULL, "digest_null" },
-	{ SADB_AALG_MD5HMAC, "md5" },
-	{ SADB_AALG_SHA1HMAC, "sha1" },
-	{ SADB_X_AALG_SHA2_256HMAC, "sha256" },
-	{ SADB_X_AALG_SHA2_256HMAC_TRUNCBUG, "hmac(sha256)" },
-	{ SADB_X_AALG_SHA2_256HMAC, "hmac(sha256)" },
-	{ SADB_X_AALG_SHA2_384HMAC, "hmac(sha384)" },
-	{ SADB_X_AALG_SHA2_512HMAC, "hmac(sha512)" },
-	{ SADB_X_AALG_RIPEMD160HMAC, "ripemd160" },
-	{ 0, sparse_end }
-};
 
-/** Encryption algs */
-static sparse_names ealg_list = {
-	{ SADB_EALG_NULL, "cipher_null" },
-	/* { SADB_EALG_DESCBC, "des" }, obsoleted */
-	{ SADB_EALG_3DESCBC, "des3_ede" },
+struct kernel_alg_info algorithms[] = {
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_NONE,
+    .kernel_alg_id = SADB_X_AALG_NULL,
+    .kernel_alg_name= "digest_null",
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_MD5_96,
+    .kernel_alg_id = SADB_AALG_MD5HMAC,
+    .kernel_alg_name= "md5",
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_SHA1_96,
+    .kernel_alg_id = SADB_AALG_SHA1HMAC,
+    .kernel_alg_name= "sha1",
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_SHA2_256_128,
+    .kernel_alg_id = SADB_X_AALG_SHA2_256HMAC,
+    .kernel_alg_name= "sha256"
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_SHA2_256_128_TRUNCBUG,
+    .kernel_alg_id = SADB_X_AALG_SHA2_256HMAC_TRUNCBUG,
+    .kernel_alg_name= "hmac(sha256)"
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_SHA2_384_192,
+    .kernel_alg_id = SADB_X_AALG_SHA2_384HMAC,
+    .kernel_alg_name= "hmac(sha384)"
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_INTEG,
+    .trans.integ   = IKEv2_AUTH_HMAC_SHA2_512_256,
+    .kernel_alg_id = SADB_X_AALG_SHA2_512HMAC,
+    .kernel_alg_name= "hmac(sha512)"
+    },
+
+    /** Encryption algs */
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_ENCR,
+    .trans.encr    = IKEv2_ENCR_NULL,
+    .kernel_alg_id = SADB_EALG_NULL,
+    .kernel_alg_name= "cipher_null",
+    },
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_ENCR,
+    .trans.encr    = IKEv2_ENCR_3DES,
+    .kernel_alg_id = SADB_EALG_3DESCBC,
+    .kernel_alg_name= "des3_ede"
+    },
+
+#if 0
 	{ SADB_X_EALG_CASTCBC, "cast128" },
 	{ SADB_X_EALG_BLOWFISHCBC, "blowfish" },
 	{ SADB_X_EALG_AESCBC, "aes" },
@@ -145,7 +245,7 @@ static sparse_names ealg_list = {
 	{ SADB_X_EALG_CAMELLIACBC, "cbc(camellia)" },
 	{ SADB_X_EALG_SERPENTCBC, "serpent" },
 	{ SADB_X_EALG_TWOFISHCBC, "twofish" },
-	{ 0, sparse_end }
+#endif
 };
 
 /** Compress Algs */
@@ -820,64 +920,60 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
 	attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
 
-	if (sa->authkeylen) {
-		const char *name = sparse_name(aalg_list, sa->authalg);
+	if (sa->esp_info.authkeylen) {
+            const char *name = sa->esp_info.auth_info->kernel_alg_name;
+            //unsigned int authalg = sa->esp_info.auth_info->kernel_alg_id;
 
-		if (name == NULL) {
-			loglog(RC_LOG_SERIOUS,
-				"NETKEY/XFRM: unknown authentication algorithm: %u",
-				sa->authalg);
-			return FALSE;
-		}
+            /*
+             * According to RFC-4868 the hash should be nnn/2, so
+             * 128 bits for SHA256 and 256 for SHA512. The XFRM/NETKEY
+             * kernel uses a default of 96, which was the value in
+             * an earlier draft. The kernel then introduced a new struct
+             * xfrm_algo_auth to  replace struct xfrm_algo to deal with
+             * this.
+             */
 
-		/*
-		 * According to RFC-4868 the hash should be nnn/2, so
-		 * 128 bits for SHA256 and 256 for SHA512. The XFRM/NETKEY
-		 * kernel uses a default of 96, which was the value in
-		 * an earlier draft. The kernel then introduced a new struct
-		 * xfrm_algo_auth to  replace struct xfrm_algo to deal with
-		 * this.
-		 */
-
-		switch (sa->authalg)
+            switch (sa->esp_info.auth_info->kernel_alg_id)
 		{
-		case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG:
-		case AUTH_ALGORITHM_HMAC_SHA2_256:
-		case AUTH_ALGORITHM_HMAC_SHA2_384:
-		case AUTH_ALGORITHM_HMAC_SHA2_512:
+		case SADB_X_AALG_SHA2_256HMAC:
+		case SADB_X_AALG_SHA2_256HMAC_TRUNCBUG:
+		case SADB_X_AALG_SHA2_384HMAC:
+		case SADB_X_AALG_SHA2_512HMAC:
 		{
 			struct xfrm_algo_auth algo;
 
-			algo.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
-			switch(sa->authalg) {
-			case AUTH_ALGORITHM_HMAC_SHA2_256:
+			algo.alg_key_len = sa->esp_info.authkeylen * BITS_PER_BYTE;
+                        switch (sa->esp_info.auth_info->kernel_alg_id)
+                            {
+                            case SADB_X_AALG_SHA2_256HMAC:
 				algo.alg_trunc_len = 128;
 				break;
 
-			case AUTH_ALGORITHM_HMAC_SHA2_256_TRUNCBUG:
+                            case SADB_X_AALG_SHA2_256HMAC_TRUNCBUG:
 				algo.alg_trunc_len = 96;
+
 				/* fixup to the real number, not our private number */
-				sa->authalg = AUTH_ALGORITHM_HMAC_SHA2_256;
+				//authalg = SADB_X_AALG_SHA2_256HMAC;
 				break;
 
-			case AUTH_ALGORITHM_HMAC_SHA2_384:
+                            case SADB_X_AALG_SHA2_384HMAC:
 				algo.alg_trunc_len = 192;
 				break;
 
-			case AUTH_ALGORITHM_HMAC_SHA2_512:
+                            case SADB_X_AALG_SHA2_512HMAC:
 				algo.alg_trunc_len = 256;
 				break;
 			}
 
 			attr->rta_type = XFRMA_ALG_AUTH_TRUNC;
 			attr->rta_len = RTA_LENGTH(
-				sizeof(algo) + sa->authkeylen);
+				sizeof(algo) + sa->esp_info.authkeylen);
 
 			strcpy(algo.alg_name, name);
 			memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 			memcpy((char *)RTA_DATA(
 					attr) + sizeof(algo), sa->authkey,
-				sa->authkeylen);
+				sa->esp_info.authkeylen);
 
 			req.n.nlmsg_len += attr->rta_len;
 			attr = (struct rtattr *)((char *)attr + attr->rta_len);
@@ -887,15 +983,15 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 		{
 			struct xfrm_algo algo_old;
 
-			algo_old.alg_key_len = sa->authkeylen * BITS_PER_BYTE;
+			algo_old.alg_key_len = sa->esp_info.authkeylen * BITS_PER_BYTE;
 			attr->rta_type = XFRMA_ALG_AUTH;
 			attr->rta_len = RTA_LENGTH(
-				sizeof(algo_old) + sa->authkeylen);
+				sizeof(algo_old) + sa->esp_info.authkeylen);
 			strcpy(algo_old.alg_name, name);
 			memcpy(RTA_DATA(attr), &algo_old, sizeof(algo_old));
 			memcpy((char *)RTA_DATA(
 					attr) + sizeof(algo_old), sa->authkey,
-				sa->authkeylen);
+				sa->esp_info.authkeylen);
 
 			req.n.nlmsg_len += attr->rta_len;
 			attr = (struct rtattr *)((char *)attr + attr->rta_len);
@@ -906,16 +1002,16 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 
 	/* ??? why does IPCOMP trump aead and ESP?  Shouldn't all be bundled? */
 
-	aead = get_aead_alg(sa->encalg);
+	aead = get_aead_alg(sa->esp_info.transid);
 	if (sa->esatype == ET_IPCOMP) {
 		struct xfrm_algo algo;
 
-		const char *name = sparse_name(calg_list, sa->encalg);
+		const char *name = sparse_name(calg_list, sa->esp_info.transid);
 
 		if (name == NULL) {
 			loglog(RC_LOG_SERIOUS,
 				"unknown compression algorithm: %u",
-				sa->encalg);
+				sa->esp_info.transid);
 			return FALSE;
 		}
 
@@ -933,38 +1029,39 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 		struct xfrm_algo_aead algo;
 
 		strcpy(algo.alg_name, aead->name);
-		algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+		algo.alg_key_len = sa->esp_info.enckeylen * BITS_PER_BYTE;
 		algo.alg_icv_len = aead->icvlen * BITS_PER_BYTE;
 
 		attr->rta_type = XFRMA_ALG_AEAD;
-		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->esp_info.enckeylen);
 
 		memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 		memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey,
-			sa->enckeylen);
+			sa->esp_info.enckeylen);
 
 		req.n.nlmsg_len += attr->rta_len;
 		attr = (struct rtattr *)((char *)attr + attr->rta_len);
 	} else if (sa->esatype == ET_ESP) {
 		struct xfrm_algo algo;
-		const char *name = sparse_name(ealg_list, sa->encalg);
+
+		const char *name = sa->esp_info.encr_info->kernel_alg_name;
 
 		if (name == NULL) {
 			loglog(RC_LOG_SERIOUS,
 				"unknown encryption algorithm: %u",
-				sa->encalg);
+				sa->esp_info.transid);
 			return FALSE;
 		}
 
 		strcpy(algo.alg_name, name);
-		algo.alg_key_len = sa->enckeylen * BITS_PER_BYTE;
+		algo.alg_key_len = sa->esp_info.enckeylen * BITS_PER_BYTE;
 
 		attr->rta_type = XFRMA_ALG_CRYPT;
-		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->enckeylen);
+		attr->rta_len = RTA_LENGTH(sizeof(algo) + sa->esp_info.enckeylen);
 
 		memcpy(RTA_DATA(attr), &algo, sizeof(algo));
 		memcpy((char *)RTA_DATA(attr) + sizeof(algo), sa->enckey,
-			sa->enckeylen);
+			sa->esp_info.enckeylen);
 
 		req.n.nlmsg_len += attr->rta_len;
 		attr = (struct rtattr *)((char *)attr + attr->rta_len);

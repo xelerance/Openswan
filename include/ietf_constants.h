@@ -551,6 +551,7 @@ extern const char *const critical_names[];
  * See http://www.iana.org/assignments/ikev2-parameters
  */
 enum ikev2_trans_type {
+  IKEv2_TRANS_TYPE_COMPRESS = -1,    /* IKEv2 does not consider this a type */
 	IKEv2_TRANS_TYPE_ENCR = 1,
 	IKEv2_TRANS_TYPE_PRF  = 2,
 	IKEv2_TRANS_TYPE_INTEG= 3,
@@ -631,6 +632,16 @@ enum ikev2_trans_type_integ {
 enum ikev2_trans_type_esn {
 	IKEv2_ESN_DISABLED = 0,
 	IKEv2_ESN_ENABLED  = 1,
+};
+
+/** IKEv1/v2 compression algorithms  */
+/* IPCOMP_* from openswan/ipsec_xform.h */
+enum ikev2_trans_type_compress {
+  IKEv2_COMPRESS_NONE = 0,               /* IPCOMP_NONE */
+  IKEv2_COMPRESS_OUI  = 1,               /* IPCOMP_OUI */
+  IKEv2_COMPRESS_DEFLATE=2,              /* IPCOMP_DEFLATE */
+  IKEv2_COMPRESS_LZS   = 3,              /* IPCOMP_LZS */
+  IKEv2_COMPRESS_V42BIS= 4,              /* IPCOMP_V42BIS */
 };
 
 /* RFC 4306 Section 3.3.5 */
