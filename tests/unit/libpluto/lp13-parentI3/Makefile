@@ -86,7 +86,7 @@ OUTPUT/${TESTNAME}_1.txt:	${WHACKFILE} ${TESTNAME} output1.txt
 	@mkdir -p OUTPUT
 	@echo "file ${TESTNAME}"          >.gdb1init
 	@echo "set args "${UNITTEST1ARGS} >>.gdb1init
-	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
+	ulimit -c unlimited && ${RR} ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}_1.txt 2>&1
 	@if [ -f OUTPUT/${TESTNAME}.pcap ]; then tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I2-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I2-dump.txt; fi
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}_1.txt | diff - output1.txt
 
