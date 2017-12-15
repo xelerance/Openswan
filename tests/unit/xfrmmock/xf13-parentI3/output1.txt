@@ -38,6 +38,16 @@ RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+| installing kernel algorithm none (0)
+| installing kernel algorithm hmac_md5_96 (1)
+| installing kernel algorithm hmac_sha1_96 (2)
+| installing kernel algorithm hmac_sha2_256_128 (12)
+| installing kernel algorithm 252?? (252)
+| installing kernel algorithm hmac_sha2_384_192 (13)
+| installing kernel algorithm hmac_sha2_512_256 (14)
+| installing kernel algorithm null (11)
+| installing kernel algorithm 3des (3)
+| installing kernel algorithm aes_cbc (12)
 | creating state object #1 at Z
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
