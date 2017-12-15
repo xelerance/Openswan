@@ -448,29 +448,25 @@ int decode_esp(char *algname)
     esp_ealg_id=esp_info->esp_ealg_id;
     esp_aalg_id=esp_info->esp_aalg_id;
     if (kernel_alg_proc_read()==0) {
-      err_t ugh;
 
       proc_read_ok++;
 
-      ugh = kernel_alg_esp_enc_ok(esp_ealg_id, 0, 0);
-      if (ugh != NULL)
+      if (!ESP_EALG_PRESENT(esp_ealg_id))
 	{
 	  fprintf(stderr, "%s: ESP encryptalg=%d (\"%s\") "
-		  "not present - %s\n",
+		  "not present\n",
 		  progname,
 		  esp_ealg_id,
-		  enum_name(&esp_transformid_names, esp_ealg_id),
-		  ugh);
+		  enum_name(&esp_transformid_names, esp_ealg_id));
 	  exit(1);
 	}
 
-      ugh = kernel_alg_esp_auth_ok(esp_aalg_id, 0);
-      if (ugh != NULL)
+        if (!ESP_AALG_PRESENT(esp_aalg_id))
 	{
-	  fprintf(stderr, "%s: ESP authalg=%d (\"%s\") - %s "
+	  fprintf(stderr, "%s: ESP authalg=%d (\"%s\") "
 		  "not present\n",
 		  progname, esp_aalg_id,
-		  enum_name(&auth_alg_names, esp_aalg_id), ugh);
+		  enum_name(&auth_alg_names, esp_aalg_id));
 	  exit(1);
 	}
     }

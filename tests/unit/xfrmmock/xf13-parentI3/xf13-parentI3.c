@@ -3,11 +3,15 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_mockxfrm.c"
 #include "seam_ke.c"
 #include "seam_dh_v2.c"
 
 static void init_loaded(void)
-{   /* nothing */ }
+{
+    cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_NETKEY;
+    xfrm_init_base_algorithms();
+}
 
 #define TESTNAME "cryptoI3"
 

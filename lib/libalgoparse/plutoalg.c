@@ -274,12 +274,12 @@ alg_info_snprint_esp(char *buf, size_t buflen, struct alg_info_esp *alg_info)
 	strncat(buf, "none", buflen - 1);
 
 	ALG_INFO_ESP_FOREACH(alg_info, esp_info, cnt) {
-	    if (kernel_alg_esp_enc_ok(esp_info->esp_ealg_id, 0, NULL)) {
+	    if (!ESP_EALG_PRESENT(esp_info->esp_ealg_id)) {
 		DBG_log("esp algid=%d not available", esp_info->esp_ealg_id);
 		continue;
 	    }
 
-	    if (kernel_alg_esp_auth_ok(esp_info->esp_aalg_id, NULL)) {
+	    if (!ESP_AALG_PRESENT(esp_info->esp_aalg_id)) {
 		DBG_log("auth algid=%d not available", esp_info->esp_aalg_id);
 		continue;
 	    }
@@ -330,7 +330,7 @@ alg_info_snprint_ah(char *buf, size_t buflen, struct alg_info_esp *alg_info)
 
 	ALG_INFO_ESP_FOREACH(alg_info, esp_info, cnt) {
 
-	    if (kernel_alg_esp_auth_ok(esp_info->esp_aalg_id, NULL)) {
+	    if (!ESP_AALG_PRESENT(esp_info->esp_aalg_id)) {
 		DBG_log("auth algid=%d not available", esp_info->esp_aalg_id);
 		continue;
 	    }
