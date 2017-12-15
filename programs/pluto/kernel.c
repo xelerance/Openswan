@@ -1848,7 +1848,7 @@ setup_half_ipsec_sa(struct state *parent_st
     {
         ipsec_spi_t ah_spi = inbound? st->st_ah.our_spi : st->st_ah.attrs.spi;
         u_char *ah_dst_keymat = inbound? st->st_ah.our_keymat : st->st_ah.peer_keymat;
-
+        bool add_sa_ret = FALSE;
         unsigned char authalg;
 
         switch (st->st_ah.attrs.transattrs.integ_hash)
@@ -1906,17 +1906,13 @@ setup_half_ipsec_sa(struct state *parent_st
 	    outgoing_ref_set  = TRUE;
 	}
 
-#ifdef HAVE_LIBNSS
-       if (!kernel_ops->add_sa(said_next, replace)) {
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#else
-        if (!kernel_ops->add_sa(said_next, replace))
-#endif
+        add_sa_ret = kernel_ops->add_sa(said_next, replace);
+        /* zero the authkey for good measure */
+        memset(said_next->authkey, 0, said_next->esp_info.authkeylen);
+
+        if(!add_sa_ret) {
             goto fail;
-#ifdef HAVE_LIBNSS
-       }
-            memset(said_next->authkey, 0, said_next->authkeylen);
-#endif
+        }
 
 	/*
 	 * SA refs will have been allocated for this SA.
