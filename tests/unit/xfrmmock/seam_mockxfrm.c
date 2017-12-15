@@ -47,14 +47,26 @@ bool netlink_get(void) { return FALSE; }
 void netlink_register_proto(unsigned satype, const char *satypename) {}
 
 #include <errno.h>
-bool send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
-                      , const char *description, const char *text_said) {
+#include "hexdump.c"
 
+bool send_netlink_msg(struct nlmsghdr *hdr, struct nlmsghdr *rbuf, size_t rbuf_len
+                      , const char *description, const char *text_said)
+{
+  size_t len = hdr->nlmsg_len;
+
+  fprintf(stderr, "writing netlink for %s\n", text_said);
+  hexdump(stderr, (char *)hdr, 0, len);
   errno = 0;
   return TRUE;
 }
 
-bool netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said) {
+bool netlink_policy(struct nlmsghdr *hdr, bool enoent_ok, const char *text_said)
+{
+  size_t len = hdr->nlmsg_len;
+
+  fprintf(stderr, "writing netlink policy for %s\n", text_said);
+  hexdump(stderr, (char *)hdr, 0, len);
+  errno = 0;
   return TRUE;
 }
 
