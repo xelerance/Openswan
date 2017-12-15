@@ -433,43 +433,37 @@ none:
 struct pluto_sadb_alg *
 kernel_alg_esp_sadb_alg(int alg_id)
 {
-          struct pluto_sadb_alg *sadb_alg=NULL;
-          if (!ESP_EALG_PRESENT(alg_id))
-                    goto none;
-          sadb_alg=&esp_ealg[alg_id];
-none:
-          DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_ealg():"
-                    "alg_id=%d, sadb_alg=%p",
-                    alg_id, sadb_alg));
-          return sadb_alg;
+    struct pluto_sadb_alg *sadb_alg=NULL;
+
+    if(ESP_EALG_VALID(alg_id)) {
+        sadb_alg=&esp_ealg[alg_id];
+    }
+
+#if 0
+    /* disabled because dumps core addresses, very verbose */
+    DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_ealg():"
+                           "alg_id=%d, sadb_alg=%p",
+                           alg_id, sadb_alg));
+#endif
+    return sadb_alg;
 }
 
 struct pluto_sadb_alg *
 kernel_alg_esp_sadb_aalg(int alg_id)
 {
-          struct pluto_sadb_alg *sadb_alg=NULL;
-          if (!ESP_AALG_PRESENT(alg_id))
-                    goto none;
-          sadb_alg=&esp_aalg[alg_id];
-none:
-          DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_aalg():"
-                    "alg_id=%d, sadb_alg=%p",
-                    alg_id, sadb_alg));
-          return sadb_alg;
-}
+    struct pluto_sadb_alg *sadb_alg=NULL;
 
+    if(ESP_AALG_VALID(alg_id)) {
+        sadb_alg=&esp_aalg[alg_id];
+    }
 
-err_t
-kernel_alg_esp_auth_ok(int auth,
-                    struct alg_info_esp *alg_info __attribute__((unused)))
-{
-          int ret=(ESP_AALG_PRESENT(alg_info_esp_aa2sadb(auth)));
-
-          if(ret) {
-              return NULL;
-          } else {
-              return "bad auth alg";
-          }
+#if 0
+    /* disabled because dumps core addresses, very verbose */
+    DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_aalg():"
+                           "alg_id=%d, sadb_alg=%p",
+                           alg_id, sadb_alg));
+#endif
+    return sadb_alg;
 }
 
 int
@@ -484,19 +478,6 @@ kernel_alg_esp_auth_keylen(int auth)
                         , DBG_log("kernel_alg_esp_auth_keylen(auth=%d, sadb_aalg=%d): "
                         "a_keylen=%d", auth, sadb_aalg, a_keylen));
           return a_keylen;
-}
-
-err_t
-kernel_alg_ah_auth_ok(int auth,
-                          struct alg_info_esp *alg_info __attribute__((unused)))
-{
-          int ret=(ESP_AALG_PRESENT(alg_info_esp_aa2sadb(auth)));
-
-          if(ret) {
-              return NULL;
-          } else {
-              return "bad auth alg";
-          }
 }
 
 int

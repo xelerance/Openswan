@@ -2616,40 +2616,11 @@ parse_ipsec_sa_body(
                               }
                     }
 
-#ifdef KERNEL_ALG
-                    ugh = kernel_alg_esp_auth_ok(esp_attrs.transattrs.integ_hash, c->alg_info_esp);
-#endif
-
-                    if(ugh != NULL) {
-                        switch (esp_attrs.transattrs.integ_hash)
-                              {
-                              case AUTH_ALGORITHM_NONE:
-                                  if (!ah_seen)
-                                        {
-                                            DBG(DBG_CONTROL | DBG_CRYPT
-                                                  , DBG_log("ESP from %s must either have AUTH or be combined with AH"
-                                                              , ip_str(&c->spd.that.host_addr)));
-                                            continue;   /* try another */
-                                        }
-                                  break;
-#ifdef KERNEL_ALG          /* strictly use runtime information */
-                              case AUTH_ALGORITHM_HMAC_MD5:
-                              case AUTH_ALGORITHM_HMAC_SHA1:
-                                  break;
-#endif
-                              default:
-                                  loglog(RC_LOG_SERIOUS, "unsupported ESP auth alg %s from %s"
-                                           , enum_show(&auth_alg_names, esp_attrs.transattrs.integ_hash)
-                                           , ip_str(&c->spd.that.host_addr));
-                                  continue;   /* try another */
-                              }
-                    }
-
-                    if (ah_seen && ah_attrs.encapsulation != esp_attrs.encapsulation)
-                    {
-                        /* ??? This should be an error, but is it? */
-                        loglog(RC_LOG_SERIOUS
-                                 , "AH and ESP transforms disagree about encapsulation; TUNNEL presumed");
+                    if(!ESP_AALG_PRESENT(esp_attrs.transattrs.integ_hash)) {
+                        loglog(RC_LOG_SERIOUS, "unsupported ESP auth alg %s from %s"
+                               , enum_show(&trans_type_integ_names, esp_attrs.transattrs.integ_hash)
+                               , ip_str(&c->spd.that.host_addr));
+                        continue;   /* try another */
                     }
 
                     break;          /* we seem to be happy */

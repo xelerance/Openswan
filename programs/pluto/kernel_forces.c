@@ -137,9 +137,8 @@ void xfrm_kernel_alg_add(struct kernel_alg_info *kai)
     psa->kernel_alg_info = kai;
     psa->kernel_sadb_alg.sadb_alg_id = alg_id;  /* makes it valid */
     DBG(DBG_CRYPT|DBG_NETKEY
-        , DBG_log("installing kernel algorithm %s (%u) into %p"
-                  , enum_show(en, alg_id), alg_id
-                  , psa));
+        , DBG_log("installing kernel algorithm %s (%u)"
+                  , enum_show(en, alg_id), alg_id));
 }
 
 struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type

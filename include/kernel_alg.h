@@ -82,14 +82,16 @@ extern struct pluto_sadb_alg esp_ealg[];
 extern int esp_ealg_num;
 extern int esp_aalg_num;
 
-#define ESP_EALG_PRESENT(algo) (((algo)<=K_SADB_EALG_MAX)&&(esp_ealg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
+#define ESP_EALG_VALID(algo)   ((algo)<=K_SADB_EALG_MAX)
+#define ESP_EALG_PRESENT(algo) (ESP_EALG_VALID(algo) && (esp_ealg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
 #define ESP_EALG_FOR_EACH(algo) \
 	for (algo=1; algo <= K_SADB_EALG_MAX; algo++) \
 		if (ESP_EALG_PRESENT(algo))
 #define ESP_EALG_FOR_EACH_UPDOWN(algo) \
 	for (algo=K_SADB_EALG_MAX; algo >0 ; algo--) \
 		if (ESP_EALG_PRESENT(algo))
-#define ESP_AALG_PRESENT(algo) ((algo<=SADB_AALG_MAX)&&(esp_aalg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
+#define ESP_AALG_VALID(algo)   ((algo)<=SADB_AALG_MAX)
+#define ESP_AALG_PRESENT(algo) (ESP_AALG_VALID(algo) && (esp_aalg[(algo)].kernel_sadb_alg.sadb_alg_id!=0))
 #define ESP_AALG_FOR_EACH(algo) \
 	for (algo=1; algo <= SADB_AALG_MAX; algo++) \
 		if (ESP_AALG_PRESENT(algo))

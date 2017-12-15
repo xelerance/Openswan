@@ -313,6 +313,24 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
+| state #2: install_ipsec_sa() for inbound and outbound
+| route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
+| could_route called for parker1--jj2 (kind=CK_PERMANENT)
+| creating SPD to 132.213.238.7->spi=00010000@192.168.1.1 proto=4
+./xf13-parentI3 add inbound eroute fd68:c9f9:4157::/64:0 --0-> fd68:c9f9:4157:2:0:1::/96:0 => tun.10000@192.168.1.1 succeeded
+| sr for #2: unrouted (eroute_owner: #0)
+| route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
+| route_and_eroute with c: parker1--jj2 (next: none) ero:null esr:{(nil)} ro:null rosr:{(nil)} and state: 2
+| creating SPD to 192.168.1.1->spi=00000000@132.213.238.7 proto=4
+./xf13-parentI3 eroute_connection add eroute fd68:c9f9:4157:2:0:1::/96:0 --0-> fd68:c9f9:4157::/64:0 => tun.0@132.213.238.7 succeeded
+| command executing up-client
+| executing up
+| route_and_eroute: firewall_notified: true
+| command executing prepare-client
+| executing prepare
+| command executing route-client
+| executing route
+| route_and_eroute: instance "parker1--jj2", setting eroute_owner to #2 (was #0) (newest_ipsec_sa=#2)
 | processor 'initiator-auth-process' returned 3
 | #2 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
@@ -323,9 +341,9 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 now look at the resulting SAs produced.
-RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; eroute owner; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
-RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
+RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; eroute owner; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
 ./xf13-parentI3 deleting connection
 | pass 0: considering CHILD SAs to delete
@@ -348,6 +366,9 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   c7 81 c2 74  ce 53 b7 8a  0c cb 33 98  cb d0 4f a1
+| route owner of "parker1--jj2" unrouted: NULL
+| command executing unroute-client
+| executing unroute
 ./xf13-parentI3 leak: skeyseed_t1, item size: X
 ./xf13-parentI3 leak: responder keys, item size: X
 ./xf13-parentI3 leak: initiator keys, item size: X
