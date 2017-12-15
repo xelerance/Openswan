@@ -1404,7 +1404,7 @@ kernel.o: kernel.c ../../include/openswan.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h timer.h \
  ../../include/oswtime.h \
- ../../include/pluto/kernel.h kernel_netlink.h kernel_pfkey.h \
+ ../../include/pluto/kernel.h kernel_forces.h kernel_pfkey.h \
  kernel_noklips.h kernel_bsdkame.h ../../include/packet.h \
  ../../include/pluto/log.h \
  ../../include/pluto/server.h \
@@ -1418,6 +1418,51 @@ kernel.o: kernel.c ../../include/openswan.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h
+kernel_forces.o: kernel_forces.c \
+ ../../include/linux/pfkeyv2.h kameipsec.h \
+ linux26/rtnetlink.h linux26/netlink.h \
+ ../../programs/pluto/linux26/xfrm.h \
+ ../../include/openswan.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/openswan/pfkey.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/socketwrapper.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/kernel.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/demux.h \
+ ../../include/packet.h \
+ ../../include/pluto/quirks.h kernel_forces.h \
+ kernel_netlink.h kernel_pfkey.h ../../include/pluto/log.h \
+ ../../include/whack.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../include/pluto/ike_alg.h
 kernel_klips.o: kernel_klips.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
@@ -1500,13 +1545,13 @@ kernel_mast.o: kernel_mast.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h
 kernel_netlink.o: kernel_netlink.c \
  ../../include/linux/pfkeyv2.h kameipsec.h \
- ../../programs/pluto/linux26/rtnetlink.h \
- ../../programs/pluto/linux26/netlink.h \
+ linux26/rtnetlink.h linux26/netlink.h \
  ../../programs/pluto/linux26/xfrm.h \
  ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
+ ../../include/openswan/ipsec_tunnel.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
  ../../include/socketwrapper.h \
@@ -1519,6 +1564,7 @@ kernel_netlink.o: kernel_netlink.c \
  ../../include/pluto/defs.h \
  ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
+ ../../include/oswtime.h timer.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/connections.h \
@@ -1535,14 +1581,17 @@ kernel_netlink.o: kernel_netlink.c \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/packet.h \
- ../../include/pluto/quirks.h kernel_netlink.h kernel_pfkey.h \
- ../../include/pluto/log.h ../../include/whack.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h kernel_forces.h kernel_netlink.h \
+ kernel_pfkey.h ../../include/pluto/log.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/crypto/aes_cbc.h \
  ../../include/crypto/aes.h \
- ../../include/pluto/ike_alg.h
+ ../../include/pluto/ike_alg.h \
+ ../../include/natt_defines.h
 kernel_noklips.o: kernel_noklips.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
@@ -1571,7 +1620,7 @@ kernel_noklips.o: kernel_noklips.c ../../include/openswan.h \
  ../../include/pluto/kernel.h kernel_noklips.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h
-keys.o: keys.c ../../include/openswan.h \
+keymgmt.o: keymgmt.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -2041,6 +2090,47 @@ server.o: server.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h kameipsec.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
+signatures.o: signatures.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/lex.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h adns.h dnskey.h \
+ ../../include/pluto/log.h ../../include/whack.h \
+ timer.h ../../include/oswtime.h \
+ ../../include/mpzfuncs.h fetch.h x509more.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/x509lists.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h \
+ ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/demux.h
 smallprime.o: smallprime.c ../../include/openswan.h \
  ../../include/constants.h \
  ../../include/biglset.h \
@@ -2403,7 +2493,7 @@ sysdep_linux.o: sysdep_linux.c ../../include/openswan.h \
  ../../include/pluto/state.h \
  ../../include/pluto/quirks.h timer.h \
  ../../include/oswtime.h \
- ../../include/pluto/kernel.h kernel_netlink.h kernel_pfkey.h \
+ ../../include/pluto/kernel.h kernel_forces.h kernel_pfkey.h \
  kernel_noklips.h ../../include/packet.h \
  ../../include/pluto/log.h \
  ../../include/pluto/server.h \
