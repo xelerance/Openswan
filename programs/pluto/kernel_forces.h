@@ -61,5 +61,7 @@ extern void xfrm_kernel_alg_add(struct kernel_alg_info *kai);
 extern struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type
                                                     , u_int32_t trans_num);
 
+extern void xfrm_init_base_algorithms(void);
+
 
 #endif

@@ -100,7 +100,46 @@ struct kernel_alg_info {
 
 void xfrm_kernel_alg_add(struct kernel_alg_info *kai)
 {
+    struct pluto_sadb_alg *psa = NULL;
+    const enum_names *en = NULL;
+    unsigned int alg_id = 0;
+
+    /* find related alg_type, node, etc. and link into it */
+    switch(kai->alg_type) {
+    case IKEv2_TRANS_TYPE_ENCR:
+        psa = kernel_alg_esp_sadb_alg(kai->trans.encr);
+        en  = &trans_type_encr_names;
+        alg_id = kai->trans.encr;
+        break;
+
+    case IKEv2_TRANS_TYPE_INTEG:
+        psa = kernel_alg_esp_sadb_aalg(kai->trans.integ);
+        en  = &trans_type_integ_names;
+        alg_id = kai->trans.integ;
+        break;
+
+    default:
+        break;
+    }
+
+    /* if this fails to be found, then we can not install the
+     * algorithm into the valid list, as the sadb level does
+     * not know about this algorithm.
+     */
+    if(!psa)  {
+        openswan_log("not installing type=%s algo=%s, as sadb level is unaware of it"
+                     , enum_name(&trans_type_names, kai->alg_type)
+                     , en ? enum_show(en, alg_id) : "unknown-type");
+        return;
+    }
+
     LIST_INSERT_HEAD(&xfrm_kernel_algs, kai, alg_node);
+    psa->kernel_alg_info = kai;
+    psa->kernel_sadb_alg.sadb_alg_id = alg_id;  /* makes it valid */
+    DBG(DBG_CRYPT|DBG_NETKEY
+        , DBG_log("installing kernel algorithm %s (%u) into %p"
+                  , enum_show(en, alg_id), alg_id
+                  , psa));
 }
 
 struct kernel_alg_info *xfrm_kernel_alg_find(enum ikev2_trans_type alg_type
@@ -250,15 +289,22 @@ struct kernel_alg_info algorithms[] = {
     .kernel_alg_name= "des3_ede"
     },
 
+    {
+    .alg_type      = IKEv2_TRANS_TYPE_ENCR,
+    .trans.encr    = IKEv2_ENCR_AES_CBC,
+    .kernel_alg_id = SADB_X_EALG_AESCBC,
+    .kernel_alg_name= "aes",
+    },
+
 #if 0
 	{ SADB_X_EALG_CASTCBC, "cast128" },
 	{ SADB_X_EALG_BLOWFISHCBC, "blowfish" },
-	{ SADB_X_EALG_AESCBC, "aes" },
 	{ SADB_X_EALG_AESCTR, "rfc3686(ctr(aes))" },
 	{ SADB_X_EALG_CAMELLIACBC, "cbc(camellia)" },
 	{ SADB_X_EALG_SERPENTCBC, "serpent" },
 	{ SADB_X_EALG_TWOFISHCBC, "twofish" },
 #endif
+    { .kernel_alg_name = NULL },
 };
 
 /** Compress Algs */
@@ -410,7 +456,6 @@ static struct ike_encr_desc algo_aes_gcm_16 =
 	.keymaxlen =    AEAD_AES_KEY_MAX_LEN,
 };
 
-
 /*
  * wire-in Authenticated Encryption with Associated Data transforms
  * (do both enc and auth in one transform)
@@ -478,6 +523,15 @@ static void linux_pfkey_add_aead(void)
 		DBG_log("Registered AEAD AES CCM/GCM algorithms"));
 }
 #endif /* HAVE_AEAD */
+
+void xfrm_init_base_algorithms(void)
+{
+    struct kernel_alg_info *kai;
+
+    for(kai = algorithms; kai->kernel_alg_name != NULL; kai++) {
+        xfrm_kernel_alg_add(kai);
+    }
+}
 
 /** netlink_raw_eroute
  *
