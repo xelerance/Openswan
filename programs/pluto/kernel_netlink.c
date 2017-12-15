@@ -405,6 +405,8 @@ void init_netlink(void)
      * true in 2015).
      */
     init_pfkey();
+
+    xfrm_init_base_algorithms();
 }
 
 const struct kernel_ops netkey_kernel_ops = {

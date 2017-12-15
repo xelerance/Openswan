@@ -438,7 +438,21 @@ kernel_alg_esp_sadb_alg(int alg_id)
                     goto none;
           sadb_alg=&esp_ealg[alg_id];
 none:
-          DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_alg():"
+          DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_ealg():"
+                    "alg_id=%d, sadb_alg=%p",
+                    alg_id, sadb_alg));
+          return sadb_alg;
+}
+
+struct pluto_sadb_alg *
+kernel_alg_esp_sadb_aalg(int alg_id)
+{
+          struct pluto_sadb_alg *sadb_alg=NULL;
+          if (!ESP_AALG_PRESENT(alg_id))
+                    goto none;
+          sadb_alg=&esp_aalg[alg_id];
+none:
+          DBG(DBG_KLIPS, DBG_log("kernel_alg_esp_sadb_aalg():"
                     "alg_id=%d, sadb_alg=%p",
                     alg_id, sadb_alg));
           return sadb_alg;
@@ -524,6 +538,9 @@ bool kernel_alg_esp_info(struct esp_info *ei
               memset(ei, 0, sizeof (*ei));
               ei->transid = sadb_ealg;
               ei->auth    = sadb_aalg;
+
+              ei->encr_info = kernel_alg_esp_sadb_alg(sadb_ealg);
+              ei->auth_info = kernel_alg_esp_sadb_aalg(sadb_aalg);
           }
 
           /* don't return "default" keylen because this value is used from
