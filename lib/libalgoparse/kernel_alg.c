@@ -524,6 +524,9 @@ bool kernel_alg_esp_info(struct esp_info *ei
               memset(ei, 0, sizeof (*ei));
               ei->transid = sadb_ealg;
               ei->auth    = sadb_aalg;
+
+              ei->encr_info = &esp_ealg[sadb_ealg];
+              ei->auth_info = &esp_aalg[sadb_ealg];
           }
 
           /* don't return "default" keylen because this value is used from
@@ -534,11 +537,11 @@ bool kernel_alg_esp_info(struct esp_info *ei
           /* if no key length is given, return default */
           if(keylen == 0) {
               if(ei) {
-                  ei->enckeylen = esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits/BITS_PER_BYTE;
+                  ei->enckeylen = ei->encr_info->kernel_sadb_alg.sadb_alg_minbits/BITS_PER_BYTE;
               }
 
-          } else if(keylen <= esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_maxbits &&
-                      keylen >= esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits) {
+          } else if(keylen <= ei->encr_info->kernel_sadb_alg.sadb_alg_maxbits &&
+                      keylen >= ei->encr_info->kernel_sadb_alg.sadb_alg_minbits) {
               if(ei) {
                   ei->enckeylen = keylen/BITS_PER_BYTE;
               }
@@ -547,15 +550,15 @@ bool kernel_alg_esp_info(struct esp_info *ei
               DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
                                              "ealg=%d, proposed keylen=%u is invalid, not %u<X<%u "
                                              , sadb_ealg, keylen
-                                             , esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_maxbits
-                                             , esp_ealg[sadb_ealg].kernel_sadb_alg.sadb_alg_minbits));
+                                             , ei->encr_info->kernel_sadb_alg.sadb_alg_maxbits
+                                             , ei->auth_info->kernel_sadb_alg.sadb_alg_minbits));
 
               /* proposed key length is invalid! */
               return FALSE;
           }
 
           if(ei) {
-              ei->authkeylen=esp_aalg[sadb_aalg].kernel_sadb_alg.sadb_alg_maxbits/BITS_PER_BYTE;
+              ei->authkeylen=ei->auth_info->kernel_sadb_alg.sadb_alg_maxbits/BITS_PER_BYTE;
               DBG(DBG_PARSING, DBG_log("kernel_alg_esp_info():"
                                        "transid=%d, auth=%d, "
                                        "enckeylen=%d, authkeylen=%d",

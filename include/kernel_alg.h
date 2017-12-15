@@ -19,9 +19,16 @@
 #define _KERNEL_ALG_H
 #include "openswan/pfkeyv2.h"
 
+struct kernel_alg_info;
+
+/* this needs to be unified with kernel_alg_info */
 struct pluto_sadb_alg {
-  struct sadb_alg kernel_sadb_alg;   /* data from the kernel as to capabilities */
-  enum   ikev2_trans_type exttype;   /* encryption or integrity */
+  struct sadb_alg          kernel_sadb_alg;   /* data from the kernel
+                                                 as to capabilities */
+  struct kernel_alg_info  *kernel_alg_info;   /* private to the kernel
+                                                 implementation */
+  enum   ikev2_trans_type        exttype;   /* encryption or integrity
+                                               (aka alg_type) */
   enum   ikev2_trans_type_encr   encr_id;   /* this IKEv2 algorithm number */
   enum   ikev2_trans_type_integ  integ_id;  /* ditto */
 };

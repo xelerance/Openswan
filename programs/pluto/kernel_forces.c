@@ -934,8 +934,8 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	attr = (struct rtattr *)((char *)&req + req.n.nlmsg_len);
 
 	if (sa->esp_info.authkeylen) {
-            const char *name = sa->esp_info.auth_info->kernel_alg_name;
-            //unsigned int authalg = sa->esp_info.auth_info->kernel_alg_id;
+            const char *name = sa->esp_info.auth_info->kernel_alg_info->kernel_alg_name;
+            //unsigned int authalg = sa->esp_info.auth_info->kernel_alg_info->kernel_alg_id;
 
             /*
              * According to RFC-4868 the hash should be nnn/2, so
@@ -946,7 +946,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
              * this.
              */
 
-            switch (sa->esp_info.auth_info->kernel_alg_id)
+            switch (sa->esp_info.auth_info->kernel_alg_info->kernel_alg_id)
 		{
 		case SADB_X_AALG_SHA2_256HMAC:
 		case SADB_X_AALG_SHA2_256HMAC_TRUNCBUG:
@@ -956,7 +956,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 			struct xfrm_algo_auth algo;
 
 			algo.alg_key_len = sa->esp_info.authkeylen * BITS_PER_BYTE;
-                        switch (sa->esp_info.auth_info->kernel_alg_id)
+                        switch (sa->esp_info.auth_info->kernel_alg_info->kernel_alg_id)
                             {
                             case SADB_X_AALG_SHA2_256HMAC:
 				algo.alg_trunc_len = 128;
@@ -1057,7 +1057,7 @@ netlink_add_sa(struct kernel_sa *sa, bool replace)
 	} else if (sa->esatype == ET_ESP) {
 		struct xfrm_algo algo;
 
-		const char *name = sa->esp_info.encr_info->kernel_alg_name;
+		const char *name = sa->esp_info.encr_info->kernel_alg_info->kernel_alg_name;
 
 		if (name == NULL) {
 			loglog(RC_LOG_SERIOUS,

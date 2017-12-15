@@ -36,9 +36,9 @@ struct esp_info {
      * these are filled in when the kernel module is asked if the algorithm
      * given in esp_info can be satified.
      */
-    struct kernel_alg_info *encr_info;
-    struct kernel_alg_info *auth_info;
-    struct kernel_alg_info *compress_info;
+    struct pluto_sadb_alg *encr_info;
+    struct pluto_sadb_alg *auth_info;
+    struct pluto_sadb_alg *compress_info;
 
 
 };
