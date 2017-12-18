@@ -594,7 +594,7 @@ process_v2_packet(struct msg_digest **mdp)
     struct state *pst = NULL;
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
-    enum isakmp_xchg_types ix;
+    enum isakmp_xchg_types ike_xchg_type;
     unsigned int svm_num;
     lset_t seen = LEMPTY;
     int ret;
@@ -754,7 +754,7 @@ process_v2_packet(struct msg_digest **mdp)
     }
     /* probably done with pst */
 
-    ix = md->hdr.isa_xchg;
+    ike_xchg_type = md->hdr.isa_xchg;
     if(st) {
 	from_state = st->st_state;
 	DBG(DBG_CONTROL, DBG_log("state found and its state is:%s msgid: %05u"
@@ -791,9 +791,9 @@ process_v2_packet(struct msg_digest **mdp)
                                         , enum_name(&state_names, svm->state)));
             continue;
         }
-	if(svm->recv_type != ix) {
+	if(svm->recv_type != ike_xchg_type) {
             DBG(DBG_CONTROLMORE,DBG_log("  reject: recv_type: %s, needs %s"
-                                        , enum_name(&exchange_names, ix)
+                                        , enum_name(&exchange_names, ike_xchg_type)
                                         , enum_name(&exchange_names, svm->recv_type)));
             continue;
         }
@@ -816,8 +816,13 @@ process_v2_packet(struct msg_digest **mdp)
 	if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	    /* must be an initiator message, so we are the responder */
 
-	    /* XXX need to be more specific */
-	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
+	    send_v2_notification(st,
+				 ike_xchg_type,
+				 INVALID_MESSAGE_ID,
+				 pst,
+				 st->st_icookie,
+				 st->st_rcookie,
+				 NULL);
 	}
 	return;
     }
