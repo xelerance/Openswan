@@ -560,7 +560,6 @@ send_v2_notification(struct state *p1st
 		       , u_char *rcookie
 		       , chunk_t *notify_data)
 {
-    u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
     chunk_t child_spi;
@@ -582,7 +581,7 @@ send_v2_notification(struct state *p1st
                  , p1st->st_remoteport);
 
     memset(buffer, 0, sizeof(buffer));
-    init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
+    init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "notification msg");
 
     /* HDR out */
     {
