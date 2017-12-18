@@ -1481,14 +1481,19 @@ struct keyword_enum_values kw_host_list=
 /* look up enum names in an enum_names */
 
 const char *
-enum_name(enum_names *ed, unsigned long val)
+enum_name_default(enum_names *ed, unsigned long val, const char *def)
 {
     enum_names	*p;
 
     for (p = ed; p != NULL; p = p->en_next_range)
 	if (p->en_first <= val && val <= p->en_last)
 	    return p->en_names[val - p->en_first];
-    return NULL;
+    return def;
+}
+const char *
+enum_name(enum_names *ed, unsigned long val)
+{
+	return enum_name_default(ed, val, NULL);
 }
 
 /* look up an enum in a starter friendly way */

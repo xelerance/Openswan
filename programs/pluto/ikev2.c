@@ -846,7 +846,8 @@ process_v2_packet(struct msg_digest **mdp)
 
     ret = (svm->processor)(md);
 
-    DBG(DBG_CONTROLMORE, DBG_log("processor '%s' returned %d", svm->svm_name, ret));
+    DBG(DBG_CONTROLMORE, DBG_log("processor '%s' returned %s (%d)",
+				 svm->svm_name, stf_status_name(ret), ret));
 
     complete_v2_state_transition(mdp, ret);
 }
@@ -1344,7 +1345,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
     DBG(DBG_CONTROL
 	, DBG_log("#%lu complete v2 state transition with %s"
                   , st ? st->st_serialno : 0
-		  , enum_name(&stfstatus_name, (result > STF_FAIL) ? STF_FAIL : result)));
+		  , stf_status_name(result)));
 
     switch(result) {
     case STF_IGNORE:
