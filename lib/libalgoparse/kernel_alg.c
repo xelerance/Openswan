@@ -101,7 +101,11 @@ enum ikev2_trans_type_integ kernelalg2ikev2(enum ipsec_authentication_algo kerne
 
 
 static struct pluto_sadb_alg *
-sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
+sadb_alg_ptr (int satype, int exttype, int alg_id, int rw
+              ,char **extname   /* if NON-NULL, return name of extype */
+              ,const struct enum_names **alg_names /* if NON-NULL, return enum_names */
+              ,unsigned int *p_ikev2_id       /* if NON-NULL, pass back IKEv2 value */
+              )
 {
     struct pluto_sadb_alg *wanted_structure = NULL;
     int    *counter=NULL;
@@ -114,7 +118,10 @@ sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
         v2_auth_id = alg_id = kernelalg2ikev2(alg_id);
         if(alg_id == 0) goto fail;
 
-        if (alg_id<=SADB_AALG_MAX) {
+        if(extname)   *extname = "integ";
+        if(alg_names) *alg_names = &trans_type_integ_names;
+        if(p_ikev2_id) *p_ikev2_id = v2_auth_id;
+        if (alg_id <= K_SADB_AALG_MAX) {
             wanted_structure = esp_aalg;
             counter = &esp_aalg_num;
             break;
@@ -122,13 +129,18 @@ sadb_alg_ptr (int satype, int exttype, int alg_id, int rw)
         goto fail;
 
     case SADB_EXT_SUPPORTED_ENCRYPT:
+        if(extname)   *extname = "encr";
+        if(alg_names) *alg_names = &trans_type_encr_names;
+        if(p_ikev2_id) *p_ikev2_id = alg_id;
         if (alg_id<=K_SADB_EALG_MAX) {
             wanted_structure = esp_ealg;
             counter = &esp_ealg_num;
             break;
         }
         goto fail;
+
     default:
+        DBG_log("kernel mentioned sadb_ext: %u, unsupported", exttype);
         goto fail;
     }
     if(!wanted_structure) goto fail;
@@ -161,7 +173,7 @@ fail:
 const struct pluto_sadb_alg *
 kernel_alg_sadb_alg_get(int satype, int exttype, int alg_id)
 {
-          return sadb_alg_ptr(satype, exttype, alg_id, 0);
+    return sadb_alg_ptr(satype, exttype, alg_id, 0, NULL, NULL, NULL);
 }
 
 /*
@@ -185,12 +197,15 @@ kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
 {
           struct pluto_sadb_alg *alg_p=NULL;
           int  alg_id = sadb_alg->sadb_alg_id;
+          char *extname = "unknown";
+          const struct enum_names *en = NULL;
+          unsigned int ikev2num;
 
-          DBG(DBG_KLIPS, DBG_log("kernel_alg_add():"
-                    "satype=%d, exttype=%d, alg_id=%d",
-                    satype, exttype, sadb_alg->sadb_alg_id));
+          DBG(DBG_KLIPS, DBG_log("kernel_alg_add called with "
+                                 "satype=%d, exttype=%d, alg_id=%d",
+                                 satype, exttype, sadb_alg->sadb_alg_id));
 
-          if (!(alg_p=sadb_alg_ptr(satype, exttype, alg_id, 1))) {
+          if (!(alg_p=sadb_alg_ptr(satype, exttype, alg_id, 1, &extname, &en, &ikev2num))) {
               DBG_log("kernel_alg_add(%d,%d,%d) fails because alg combo is invalid\n"
                         , satype, exttype, sadb_alg->sadb_alg_id);
               return -1;
@@ -199,12 +214,22 @@ kernel_alg_add(int satype, int exttype, const struct sadb_alg *sadb_alg)
           /*
            * if the alg_id is already set, then do not accept additional registrations,
            * which means the first implementation registered is the one used.
+           * Note that if the keylen is zero, then it's just a placeholder registration.
            */
-          if (alg_p->kernel_sadb_alg.sadb_alg_id) {
+          if (alg_p->kernel_sadb_alg.sadb_alg_id != 0
+              && alg_p->kernel_sadb_alg.sadb_alg_minbits != 0) {
               DBG(DBG_KLIPS, DBG_log("kernel_alg_add(): discarding already setup "
                                      "satype=%d, exttype=%d, alg_id=%d",
                                      satype, exttype, sadb_alg->sadb_alg_id));
               return 0;
+          }
+          if(alg_p->kernel_sadb_alg.sadb_alg_minbits == 0) {
+              openswan_log("registed kernel %s algorithm %s [%u, %u<=key<=%u]"
+                           , extname
+                           , enum_show(en, ikev2num)
+                           , ikev2num
+                           , sadb_alg->sadb_alg_minbits
+                           , sadb_alg->sadb_alg_maxbits);
           }
           alg_p->kernel_sadb_alg = *sadb_alg;
           return 1;
