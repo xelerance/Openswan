@@ -552,11 +552,13 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
  */
 
 void
-send_v2_notification(struct state *p1st, u_int16_t type
-                     , struct state *encst
-                     , u_char *icookie
-                     , u_char *rcookie
-                     , chunk_t *n_data)
+send_v2_notification(struct state *p1st
+		       , enum isakmp_xchg_types xchg_type
+		       , notification_t ntf_type
+		       , struct state *encst
+		       , u_char *icookie
+		       , u_char *rcookie
+		       , chunk_t *notify_data)
 {
     u_char buffer[1024];
     pb_stream reply;
@@ -568,14 +570,14 @@ send_v2_notification(struct state *p1st, u_int16_t type
      * TBD when there is a child SA use that SPI in the notify paylod.
      * TBD support encrypted notifications payloads.
      * TBD accept Critical bit as an argument. default is set.
-     * TBD accept exchange type as an arg, default is ISAKMP_v2_SA_INIT
      * do we need to send a notify with empty data?
      * do we need to support more Protocol ID? more than PROTO_ISAKMP
      */
 
-    openswan_log("sending %s notification %s to %s:%u"
+    openswan_log("sending %s notification %s/%s to %s:%u"
                  , encst ? "encrypted " : ""
-                 , enum_name(&ikev2_notify_names, type)
+                 , enum_name(&exchange_names, xchg_type)
+                 , enum_name(&ikev2_notify_names, ntf_type)
                  , ip_str(&p1st->st_remoteaddr)
                  , p1st->st_remoteport);
 
@@ -594,7 +596,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
             n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
         memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
-        n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;
+        n_hdr.isa_xchg = xchg_type;
         n_hdr.isa_np = ISAKMP_NEXT_v2N;
 
         n_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(p1st);
@@ -610,7 +612,7 @@ send_v2_notification(struct state *p1st, u_int16_t type
     /* build and add v2N payload to the packet */
     memset(&child_spi, 0, sizeof(child_spi));
     ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-	      &child_spi, type, n_data, &rbody);
+	      &child_spi, ntf_type, notify_data, &rbody);
 
     close_message(&rbody);
     close_output_pbs(&reply);

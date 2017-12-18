@@ -1010,7 +1010,8 @@ send_v2_notification_from_state(struct state *st, enum state_kind state,
     if (state == STATE_UNDEFINED)
 	state = st->st_state;
 
-    send_v2_notification(st, type, NULL, st->st_icookie, st->st_rcookie, data);
+    send_v2_notification(st, ISAKMP_v2_SA_INIT, type, NULL,
+			 st->st_icookie, st->st_rcookie, data);
 }
 
 void
@@ -1041,7 +1042,7 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_v2_notification(&st, type, NULL,
+    send_v2_notification(&st, ISAKMP_v2_SA_INIT, type, NULL,
 			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
