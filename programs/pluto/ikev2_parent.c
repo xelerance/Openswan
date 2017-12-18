@@ -163,7 +163,7 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
                        st->st_localaddr, st->st_localport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
 
-    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+    success = ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,
                        v2N_noSA, NULL, v2N_NAT_DETECTION_SOURCE_IP,
                        &hash_chunk, outpbs);
     if(!success) return FALSE;
@@ -171,7 +171,7 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
     /* now send the notify about NAT_DETECTION_DESTINATION_IP */
     calculate_nat_hash(st->st_icookie, st->st_rcookie, st->st_remoteaddr, st->st_remoteport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
-    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+    success = ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,
                        v2N_noSA, NULL, v2N_NAT_DETECTION_DESTINATION_IP,
                        &hash_chunk, outpbs);
     if(!success) return FALSE;
@@ -561,7 +561,8 @@ send_v2_notification(struct state *p1st, u_int16_t type
     u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
-    chunk_t child_spi, notify_data;
+    chunk_t child_spi;
+
     /* this function is not generic enough yet just enough for 6msg
      * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
      * TBD when there is a child SA use that SPI in the notify paylod.
@@ -605,17 +606,11 @@ send_v2_notification(struct state *p1st, u_int16_t type
                 return;
             }
     }
-    child_spi.ptr = NULL;
-    child_spi.len = 0;
 
     /* build and add v2N payload to the packet */
     memset(&child_spi, 0, sizeof(child_spi));
-    memset(&notify_data, 0, sizeof(notify_data));
-    ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-              (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-              ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-              &child_spi,
-              type, n_data, &rbody);
+    ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+	      &child_spi, type, n_data, &rbody);
 
     close_message(&rbody);
     close_output_pbs(&reply);
