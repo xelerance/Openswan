@@ -1406,11 +1406,11 @@ static err_t setup_esp_sa(struct connection *c
                              st->st_esp.attrs.transattrs.enckeylen,
                              st->st_esp.attrs.transattrs.integ_hash)) {
 
-        loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s not implemented yet"
-               , enum_name(&esp_transformid_names, st->st_esp.attrs.transattrs.encrypt)
+        loglog(RC_LOG_SERIOUS, "ESP transform %s(%d) / auth %s: not implemented yet"
+               , enum_name(&trans_type_encr_names, st->st_esp.attrs.transattrs.encrypt)
                , st->st_esp.attrs.transattrs.enckeylen
-               , enum_name(&auth_alg_names, st->st_esp.attrs.transattrs.integ_hash));
-        return "implement not implemented";
+               , enum_name(&trans_type_integ_names, st->st_esp.attrs.transattrs.integ_hash));
+        return "algo not implemented";
     }
 
     key_len = ei.enckeylen;
