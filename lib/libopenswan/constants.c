@@ -969,6 +969,22 @@ static const char *const notification_name[] = {
 	"CERTIFICATE_UNAVAILABLE",
 	"UNSUPPORTED_EXCHANGE_TYPE",
 	"UNEQUAL_PAYLOAD_LENGTHS",
+	"__reserved_31__",
+	"__reserved_32__",
+	"__reserved_33__",
+	"SINGLE_PAIR_REQUIRED",
+	"NO_ADDITIONAL_SAS",
+	"INTERNAL_ADDRESS_FAILURE",
+	"FAILED_CP_REQUIRED",
+	"TS_UNACCEPTABLE",
+	"INVALID_SELECTORS",
+	"UNACCEPTABLE_ADDRESSES",
+	"UNEXPECTED_NAT_DETECTED",
+	"USE_ASSIGNED_HoA",
+	"TEMPORARY_FAILURE",
+	"CHILD_SA_NOT_FOUND",
+	"INVALID_GROUP_ID",
+	"AUTHORIZATION_FAILED",
     };
 
 static const char *const notification_status_name[] = {
@@ -1029,7 +1045,7 @@ enum_names notification_dpd_names =
       notification_dpd_name, &notification_cisco_chatter_names };
 
 enum_names notification_names =
-    { INVALID_PAYLOAD_TYPE, UNEQUAL_PAYLOAD_LENGTHS,
+    { INVALID_PAYLOAD_TYPE, AUTHORIZATION_FAILED,
         notification_name, &notification_dpd_names };
 
 enum_names notification_status_names =
