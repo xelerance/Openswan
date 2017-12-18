@@ -4,6 +4,10 @@
 ./respondselfR2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
 ./respondselfR2 loading secrets from "../samples/jj.secrets"
 ./respondselfR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+./respondselfR2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./respondselfR2 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./respondselfR2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./respondselfR2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y

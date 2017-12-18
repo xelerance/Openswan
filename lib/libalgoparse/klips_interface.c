@@ -98,61 +98,63 @@ kernel_alg_proc_read(void)
 void
 kernel_alg_register_pfkey(const struct sadb_msg *msg_buf, int buflen)
 {
-          /*
-           *          Trick: one 'type-mangle-able' pointer to
-           *          ease offset/assign
-           */
-          union {
-                    const struct sadb_msg *msg;
-                    const struct sadb_supported *supported;
-                    const struct sadb_ext *ext;
-                    const struct sadb_alg *alg;
-                    const char *ch;
-          } sadb;
-          int satype;
-          int msglen;
-          int i=0;
-          /*          Initialize alg arrays           */
-          kernel_alg_init();
-          satype=msg_buf->sadb_msg_satype;
-          sadb.msg=msg_buf;
-          msglen=sadb.msg->sadb_msg_len*IPSEC_PFKEYv2_ALIGN;
-          msglen-=sizeof(struct sadb_msg);
-          buflen-=sizeof(struct sadb_msg);
-          passert(buflen>0);
-          sadb.msg++;
-          while(msglen) {
-                    int supp_exttype=sadb.supported->sadb_supported_exttype;
-                    int supp_len;
-                    supp_len=sadb.supported->sadb_supported_len*IPSEC_PFKEYv2_ALIGN;
-                    DBG(DBG_KLIPS, DBG_log("kernel_alg_register_pfkey(): SADB_SATYPE_%s: "
-                              "sadb_msg_len=%d sadb_supported_len=%d",
-                              satype==SADB_SATYPE_ESP? "ESP" : "AH",
-                              msg_buf->sadb_msg_len,
-                              supp_len));
-                    sadb.supported++;
-                    msglen-=supp_len;
-                    buflen-=supp_len;
-                    passert(buflen>=0);
-                    for (supp_len-=sizeof(struct sadb_supported);
-                              supp_len;
-                              supp_len-=sizeof(struct sadb_alg), sadb.alg++,i++) {
-                              int ret;
-                              ret=kernel_alg_add(satype, supp_exttype, sadb.alg);
-                              DBG(DBG_KLIPS, DBG_log("kernel_alg_register_pfkey(): SADB_SATYPE_%s: "
-                                        "alg[%d], exttype=%d, satype=%d, alg_id=%d, "
-                                        "alg_ivlen=%d, alg_minbits=%d, alg_maxbits=%d, "
-                                        "res=%d, ret=%d",
-                                        satype==SADB_SATYPE_ESP? "ESP" : "AH",
-                                        i,
-                                        supp_exttype,
-                                        satype,
-                                        sadb.alg->sadb_alg_id,
-                                        sadb.alg->sadb_alg_ivlen,
-                                        sadb.alg->sadb_alg_minbits,
-                                        sadb.alg->sadb_alg_maxbits,
-                                        sadb.alg->sadb_alg_reserved,
-                                        ret));
+    /*
+     *          Trick: one 'type-mangle-able' pointer to
+     *          ease offset/assign
+     */
+    union {
+        const struct sadb_msg *msg;
+        const struct sadb_supported *supported;
+        const struct sadb_ext *ext;
+        const struct sadb_alg *alg;
+        const char *ch;
+    } sadb;
+    int satype;
+    int msglen;
+    int i=0;
+    /*          Initialize alg arrays           */
+    kernel_alg_init();
+    satype=msg_buf->sadb_msg_satype;
+    sadb.msg=msg_buf;
+    msglen=sadb.msg->sadb_msg_len*IPSEC_PFKEYv2_ALIGN;
+    msglen-=sizeof(struct sadb_msg);
+    buflen-=sizeof(struct sadb_msg);
+    passert(buflen>0);
+    sadb.msg++;
+    while(msglen) {
+        int supp_exttype=sadb.supported->sadb_supported_exttype;
+        int supp_len;
+        supp_len=sadb.supported->sadb_supported_len*IPSEC_PFKEYv2_ALIGN;
+        DBG(DBG_KLIPS, DBG_log("kernel_alg_register_pfkey(): SADB_SATYPE_%s: "
+                               "sadb_msg_len=%d sadb_supported_len=%d",
+                               satype==SADB_SATYPE_ESP? "ESP" : "AH",
+                               msg_buf->sadb_msg_len,
+                               supp_len));
+        sadb.supported++;
+        msglen-=supp_len;
+        buflen-=supp_len;
+        passert(buflen>=0);
+        for (supp_len-=sizeof(struct sadb_supported);
+             supp_len;
+             supp_len-=sizeof(struct sadb_alg), sadb.alg++,i++) {
+
+            int ret;
+            ret=kernel_alg_add(satype, supp_exttype, sadb.alg);
+
+            DBG(DBG_KLIPS, DBG_log("kernel_alg_register_pfkey(): SADB_SATYPE_%s: "
+                                   "alg[%d], exttype=%d, satype=%d, alg_id=%d, "
+                                   "alg_ivlen=%d, alg_minbits=%d, alg_maxbits=%d, "
+                                   "res=%d, ret=%d",
+                                   satype==SADB_SATYPE_ESP? "ESP" : "AH",
+                                   i,
+                                   supp_exttype,
+                                   satype,
+                                   sadb.alg->sadb_alg_id,
+                                   sadb.alg->sadb_alg_ivlen,
+                                   sadb.alg->sadb_alg_minbits,
+                                   sadb.alg->sadb_alg_maxbits,
+                                   sadb.alg->sadb_alg_reserved,
+                                   ret));
                     }
           }
 }
