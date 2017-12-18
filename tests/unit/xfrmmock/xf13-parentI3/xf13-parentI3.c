@@ -11,6 +11,8 @@ static void init_loaded(void)
 {
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE|DBG_NETKEY;
     xfrm_init_base_algorithms();
+
+    passert(esp_aalg[IKEv2_AUTH_HMAC_SHA2_256_128].kernel_alg_info != NULL);
 }
 
 #define TESTNAME "cryptoI3"

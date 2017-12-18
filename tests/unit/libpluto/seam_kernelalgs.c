@@ -6,6 +6,8 @@ init_seam_kernelalgs(void)
 	int ret;
 	struct sadb_alg sa;
 
+        kernel_alg_init();
+
 	memset(&sa, 0, sizeof(sa));
 	sa.sadb_alg_id      = ESP_AES;    /* this is a kernel algorithm ID */
 	sa.sadb_alg_ivlen   = 16;

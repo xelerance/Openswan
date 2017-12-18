@@ -43,6 +43,9 @@ struct esp_info;
 struct alg_info_ike;
 struct alg_info_esp;
 
+/* call this before anything else */
+extern void kernel_alg_init(void);
+
 /* ESP interface */
 extern struct pluto_sadb_alg *kernel_alg_esp_sadb_alg(int alg_id);
 extern struct pluto_sadb_alg *kernel_alg_esp_sadb_aalg(int alg_id);

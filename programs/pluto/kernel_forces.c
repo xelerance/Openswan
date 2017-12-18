@@ -514,6 +514,9 @@ void xfrm_init_base_algorithms(void)
 {
     struct kernel_alg_info *kai;
 
+    /* make sure alg mechanism is setup */
+    kernel_alg_init();
+
     for(kai = algorithms; kai->kernel_alg_name != NULL; kai++) {
         xfrm_kernel_alg_add(kai);
     }

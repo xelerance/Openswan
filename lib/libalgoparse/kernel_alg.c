@@ -167,17 +167,21 @@ kernel_alg_sadb_alg_get(int satype, int exttype, int alg_id)
 /*
  *           Forget previous registration
  */
-static void
-kernel_alg_init(void)
+static int alg_init = 0;
+
+void kernel_alg_init(void)
 {
-          DBG(DBG_KLIPS, DBG_log("alg_init():"
-                    "memset(%p, 0, %d) "
-                    "memset(%p, 0, %d) ",
-                    &esp_aalg,  (int)sizeof (esp_aalg),
-                    &esp_ealg,  (int)sizeof (esp_ealg)));
-          memset (&esp_aalg, 0, sizeof (esp_aalg));
-          memset (&esp_ealg, 0, sizeof (esp_ealg));
-          esp_ealg_num=esp_aalg_num=0;
+    if(!alg_init) {
+        DBG(DBG_KLIPS, DBG_log("alg_init():"
+                               "memset(%p, 0, %d) "
+                               "memset(%p, 0, %d) ",
+                               &esp_aalg,  (int)sizeof (esp_aalg),
+                               &esp_ealg,  (int)sizeof (esp_ealg)));
+        memset (&esp_aalg, 0, sizeof (esp_aalg));
+        memset (&esp_ealg, 0, sizeof (esp_ealg));
+        esp_ealg_num=esp_aalg_num=0;
+        alg_init = 1;
+    }
 }
 
 /* used by test skaffolding to stub in support for algorithms without kernel telling us*/
