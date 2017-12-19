@@ -555,14 +555,13 @@ void
 send_v2_notification(struct state *p1st
 		       , enum isakmp_xchg_types xchg_type
 		       , notification_t ntf_type
-		       , struct state *encst
+		       , struct state *encst /* set to encrypt */
 		       , u_char *icookie
 		       , u_char *rcookie
 		       , chunk_t *notify_data)
 {
     pb_stream reply;
     pb_stream rbody;
-    chunk_t child_spi;
 
     /* this function is not generic enough yet just enough for 6msg
      * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
@@ -580,7 +579,7 @@ send_v2_notification(struct state *p1st
                  , ip_str(&p1st->st_remoteaddr)
                  , p1st->st_remoteport);
 
-    memset(buffer, 0, sizeof(buffer));
+    zero(reply_buffer);
     init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "notification msg");
 
     /* HDR out */
@@ -601,23 +600,21 @@ send_v2_notification(struct state *p1st
         n_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(p1st);
         n_hdr.isa_msgid = htonl(p1st->st_msgid);
 
-        if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody))
-            {
-                openswan_log("error initializing hdr for notify message");
-                return;
-            }
+        if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) {
+	    openswan_log("error initializing hdr for notify message");
+	    return;
+	}
     }
 
     /* build and add v2N payload to the packet */
-    memset(&child_spi, 0, sizeof(child_spi));
     ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-	      &child_spi, ntf_type, notify_data, &rbody);
+	      NULL, ntf_type, notify_data, &rbody);
 
     close_message(&rbody);
     close_output_pbs(&reply);
 
     clonetochunk(p1st->st_tpacket, reply.start, pbs_offset(&reply)
-                 , "notification packet");
+		 , "notification packet");
 
     send_packet(p1st, __FUNCTION__, TRUE);
 }
