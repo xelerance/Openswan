@@ -1656,7 +1656,7 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
                 v2_notify_num = ret - STF_FAIL;
                 DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)))
             } else if(ret != STF_OK) {
-                DBG_log("ikev2_child_sa_respond returned %s", enum_name(&stfstatus_name, ret));
+                DBG_log("ikev2_child_sa_respond returned %s", stf_status_name(ret));
             }
         }
 

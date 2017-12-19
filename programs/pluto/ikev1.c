@@ -1944,7 +1944,7 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
     /* advance the state */
     DBG(DBG_CONTROL
 	, DBG_log("complete state transition with %s"
-		  , enum_name(&stfstatus_name, result)));
+		  , stf_status_name(result)));
 
     /*
      * we can only be in calculating state if state is ignore,

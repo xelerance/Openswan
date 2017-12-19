@@ -1386,11 +1386,11 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	DBG(DBG_CONTROLMORE,
 	    DBG_log("started dh_secretiv, returned: stf=%s\n"
-		    , enum_name(&stfstatus_name, e)));
+		    , stf_status_name(e)));
 
 	if(e == STF_FAIL) {
 	    loglog(RC_LOG_SERIOUS, "failed to start async DH calculation, stf=%s\n"
-		   , enum_name(&stfstatus_name, e));
+		   , stf_status_name(e));
 	    return e;
 	}
 

@@ -1163,7 +1163,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   8e a8 fd 6c  28 38 21 82  be 00 9e 6b  d0 db a9 0a
 | out calculated auth:
 |   82 a8 d0 53  af 95 c8 a9  a9 64 c4 71
-| processor 'rekey-child-SA-responder' returned 3
+| processor 'rekey-child-SA-responder' returned STF_OK (3)
 | #3 complete v2 state transition with STF_OK
 ./rekeyv2nopfs-R1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #3; pst is #1; transition_st is #3

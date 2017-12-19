@@ -594,7 +594,7 @@ process_v2_packet(struct msg_digest **mdp)
     struct state *pst = NULL;
     enum state_kind from_state = STATE_UNDEFINED; /* state we started in */
     const struct state_v2_microcode *svm;
-    enum isakmp_xchg_types ix;
+    enum isakmp_xchg_types ike_xchg_type;
     unsigned int svm_num;
     lset_t seen = LEMPTY;
     int ret;
@@ -754,7 +754,7 @@ process_v2_packet(struct msg_digest **mdp)
     }
     /* probably done with pst */
 
-    ix = md->hdr.isa_xchg;
+    ike_xchg_type = md->hdr.isa_xchg;
     if(st) {
 	from_state = st->st_state;
 	DBG(DBG_CONTROL, DBG_log("state found and its state is:%s msgid: %05u"
@@ -791,9 +791,9 @@ process_v2_packet(struct msg_digest **mdp)
                                         , enum_name(&state_names, svm->state)));
             continue;
         }
-	if(svm->recv_type != ix) {
+	if(svm->recv_type != ike_xchg_type) {
             DBG(DBG_CONTROLMORE,DBG_log("  reject: recv_type: %s, needs %s"
-                                        , enum_name(&exchange_names, ix)
+                                        , enum_name(&exchange_names, ike_xchg_type)
                                         , enum_name(&exchange_names, svm->recv_type)));
             continue;
         }
@@ -809,6 +809,8 @@ process_v2_packet(struct msg_digest **mdp)
 	break;
     }
 
+    md->st = st;
+
     if(svm->state == STATE_IKEv2_ROOF) {
 	DBG(DBG_CONTROL, DBG_log("did not find valid state; giving up"));
 
@@ -816,15 +818,29 @@ process_v2_packet(struct msg_digest **mdp)
 	if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	    /* must be an initiator message, so we are the responder */
 
-	    /* XXX need to be more specific */
-	    SEND_NOTIFICATION(INVALID_MESSAGE_ID);
+	    bool was_encrypted = !!(md->chain[ISAKMP_NEXT_v2E]);
+
+	    if (was_encrypted) {
+		/* our notification will encrypt messages */
+		send_v2_notification_enc(md,
+					 ike_xchg_type,
+					 INVALID_MESSAGE_ID,
+					 NULL);
+	    } else {
+		/* our notification will be in the clear */
+		send_v2_notification(st,
+				     ike_xchg_type,
+				     INVALID_MESSAGE_ID,
+				     st->st_icookie,
+				     st->st_rcookie,
+				     NULL);
+	    }
 	}
 	return;
     }
 
     md->svm = svm;
     md->from_state = from_state;
-    md->st = st;
 
     {
 	stf_status stf;
@@ -846,7 +862,8 @@ process_v2_packet(struct msg_digest **mdp)
 
     ret = (svm->processor)(md);
 
-    DBG(DBG_CONTROLMORE, DBG_log("processor '%s' returned %d", svm->svm_name, ret));
+    DBG(DBG_CONTROLMORE, DBG_log("processor '%s' returned %s (%d)",
+				 svm->svm_name, stf_status_name(ret), ret));
 
     complete_v2_state_transition(mdp, ret);
 }
@@ -1009,7 +1026,8 @@ send_v2_notification_from_state(struct state *st, enum state_kind state,
     if (state == STATE_UNDEFINED)
 	state = st->st_state;
 
-    send_v2_notification(st, type, NULL, st->st_icookie, st->st_rcookie, data);
+    send_v2_notification(st, ISAKMP_v2_SA_INIT, type,
+			 st->st_icookie, st->st_rcookie, data);
 }
 
 void
@@ -1040,7 +1058,7 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_v2_notification(&st, type, NULL,
+    send_v2_notification(&st, ISAKMP_v2_SA_INIT, type,
 			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
@@ -1344,7 +1362,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
     DBG(DBG_CONTROL
 	, DBG_log("#%lu complete v2 state transition with %s"
                   , st ? st->st_serialno : 0
-		  , enum_name(&stfstatus_name, (result > STF_FAIL) ? STF_FAIL : result)));
+		  , stf_status_name(result)));
 
     switch(result) {
     case STF_IGNORE:

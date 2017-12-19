@@ -228,11 +228,17 @@ extern void ikev2_update_counters(struct msg_digest *md);
 extern void ikev2_print_ts(struct traffic_selector *ts);
 
 
-extern void send_v2_notification(struct state *p1st, u_int16_t type
-				 , struct state *encst
-				 , u_char *icookie
-				 , u_char *rcookie
-				 , chunk_t *data);
+extern void send_v2_notification(struct state *p1st
+				   , enum isakmp_xchg_types xchg_type
+				   , notification_t ntf_type
+				   , u_char *icookie
+				   , u_char *rcookie
+				   , chunk_t *n_data);
+
+extern int send_v2_notification_enc(struct msg_digest *md
+				    , enum isakmp_xchg_types xchg_type
+				    , notification_t ntf_type
+				    , chunk_t *notify_data);
 
 extern void calculate_nat_hash(const unsigned char cookie_i[COOKIE_SIZE]
                                , const unsigned char cookie_r[COOKIE_SIZE]

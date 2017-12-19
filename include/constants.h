@@ -106,6 +106,7 @@ typedef unsigned long long lset_t;
 typedef const struct enum_names enum_names;
 
 extern const char *enum_name(enum_names *ed, unsigned long val);
+extern const char *enum_name_default(enum_names *ed, unsigned long val, const char *def);
 extern const char *enum_show(enum_names *ed, unsigned long val);
 extern int enum_search(enum_names *ed, const char *string);
 

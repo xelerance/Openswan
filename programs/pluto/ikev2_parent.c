@@ -163,7 +163,7 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
                        st->st_localaddr, st->st_localport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
 
-    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+    success = ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,
                        v2N_noSA, NULL, v2N_NAT_DETECTION_SOURCE_IP,
                        &hash_chunk, outpbs);
     if(!success) return FALSE;
@@ -171,7 +171,7 @@ bool justship_v2nat(struct state *st, pb_stream *outpbs)
     /* now send the notify about NAT_DETECTION_DESTINATION_IP */
     calculate_nat_hash(st->st_icookie, st->st_rcookie, st->st_remoteaddr, st->st_remoteport, digest);
     setchunk(hash_chunk, digest, SHA1_DIGEST_SIZE);
-    success = ship_v2N(0, ISAKMP_PAYLOAD_NONCRITICAL,
+    success = ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL,
                        v2N_noSA, NULL, v2N_NAT_DETECTION_DESTINATION_IP,
                        &hash_chunk, outpbs);
     if(!success) return FALSE;
@@ -552,34 +552,32 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
  */
 
 void
-send_v2_notification(struct state *p1st, u_int16_t type
-                     , struct state *encst
-                     , u_char *icookie
-                     , u_char *rcookie
-                     , chunk_t *n_data)
+send_v2_notification(struct state *p1st
+		       , enum isakmp_xchg_types xchg_type
+		       , notification_t ntf_type
+		       , u_char *icookie
+		       , u_char *rcookie
+		       , chunk_t *notify_data)
 {
-    u_char buffer[1024];
     pb_stream reply;
     pb_stream rbody;
-    chunk_t child_spi, notify_data;
+
     /* this function is not generic enough yet just enough for 6msg
      * TBD accept HDR FLAGS as arg. default ISAKMP_FLAGS_R
      * TBD when there is a child SA use that SPI in the notify paylod.
-     * TBD support encrypted notifications payloads.
      * TBD accept Critical bit as an argument. default is set.
-     * TBD accept exchange type as an arg, default is ISAKMP_v2_SA_INIT
      * do we need to send a notify with empty data?
      * do we need to support more Protocol ID? more than PROTO_ISAKMP
      */
 
-    openswan_log("sending %s notification %s to %s:%u"
-                 , encst ? "encrypted " : ""
-                 , enum_name(&ikev2_notify_names, type)
+    openswan_log("sending notification %s/%s to %s:%u"
+                 , enum_name(&exchange_names, xchg_type)
+                 , enum_name(&ikev2_notify_names, ntf_type)
                  , ip_str(&p1st->st_remoteaddr)
                  , p1st->st_remoteport);
 
-    memset(buffer, 0, sizeof(buffer));
-    init_pbs(&reply, buffer, sizeof(buffer), "notification msg");
+    zero(reply_buffer);
+    init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "notification msg");
 
     /* HDR out */
     {
@@ -593,37 +591,150 @@ send_v2_notification(struct state *p1st, u_int16_t type
             n_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
         memcpy(n_hdr.isa_rcookie, rcookie, COOKIE_SIZE);
         memcpy(n_hdr.isa_icookie, icookie, COOKIE_SIZE);
-        n_hdr.isa_xchg = ISAKMP_v2_SA_INIT;
+        n_hdr.isa_xchg = xchg_type;
         n_hdr.isa_np = ISAKMP_NEXT_v2N;
 
         n_hdr.isa_flags = ISAKMP_FLAGS_R|IKEv2_ORIG_INITIATOR_FLAG(p1st);
         n_hdr.isa_msgid = htonl(p1st->st_msgid);
 
-        if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody))
-            {
-                openswan_log("error initializing hdr for notify message");
-                return;
-            }
+        if (!out_struct(&n_hdr, &isakmp_hdr_desc, &reply, &rbody)) {
+	    openswan_log("error initializing hdr for notify message");
+	    return;
+	}
     }
-    child_spi.ptr = NULL;
-    child_spi.len = 0;
 
     /* build and add v2N payload to the packet */
-    memset(&child_spi, 0, sizeof(child_spi));
-    memset(&notify_data, 0, sizeof(notify_data));
-    ship_v2N (ISAKMP_NEXT_NONE, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-              (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-              ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-              &child_spi,
-              type, n_data, &rbody);
+    ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+	      NULL, ntf_type, notify_data, &rbody);
 
     close_message(&rbody);
     close_output_pbs(&reply);
 
     clonetochunk(p1st->st_tpacket, reply.start, pbs_offset(&reply)
-                 , "notification packet");
+		 , "notification packet");
 
     send_packet(p1st, __FUNCTION__, TRUE);
+}
+
+#if 0
+static void breakpoint_here(void)
+{
+DBG_log("%s:%u", __FUNCTION__, __LINE__);
+}
+#endif
+
+int
+send_v2_notification_enc(struct msg_digest *md
+		       , enum isakmp_xchg_types xchg_type
+		       , notification_t ntf_type
+		       , chunk_t *notify_data)
+
+{
+    struct state *st = md->st;
+    struct ikev2_generic e;
+    unsigned char *encstart;
+    pb_stream      e_pbs, e_pbs_cipher;
+    unsigned char *iv;
+    int            ivsize;
+    stf_status     ret;
+    unsigned char *authstart;
+
+    zero(&e);
+    zero(&e_pbs);
+    zero(&e_pbs_cipher);
+
+    /* beginning of data going out */
+    authstart = reply_stream.cur;
+
+    /* make sure HDR is at start of a clean buffer */
+    zero(reply_buffer);
+    init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "enc notification msg");
+
+    openswan_log("sending encrypted notification %s/%s to %s:%u"
+                 , enum_name(&exchange_names, xchg_type)
+                 , enum_name(&ikev2_notify_names, ntf_type)
+                 , ip_str(&st->st_remoteaddr)
+                 , st->st_remoteport);
+
+    /* HDR out */
+    {
+        struct isakmp_hdr r_hdr = md->hdr;
+
+        r_hdr.isa_version = IKEv2_MAJOR_VERSION << ISA_MAJ_SHIFT | IKEv2_MINOR_VERSION;
+        r_hdr.isa_np    = ISAKMP_NEXT_v2E;
+        r_hdr.isa_xchg  = xchg_type;
+
+        /* we should set the I bit, if we are the original initiator of the
+         * the parent SA.
+         */
+        r_hdr.isa_flags = ISAKMP_FLAGS_R|ISAKMP_FLAGS_E|IKEv2_ORIG_INITIATOR_FLAG(st);
+        r_hdr.isa_msgid = htonl(st->st_msgid);
+        memcpy(r_hdr.isa_icookie, st->st_icookie, COOKIE_SIZE);
+        memcpy(r_hdr.isa_rcookie, st->st_rcookie, COOKIE_SIZE);
+        if (!out_struct(&r_hdr, &isakmp_hdr_desc, &reply_stream, &md->rbody))
+            return STF_INTERNAL_ERROR;
+    }
+
+    e.isag_critical = ISAKMP_PAYLOAD_NONCRITICAL;
+    pbs_set_np(&md->rbody, ISAKMP_NEXT_v2E);
+    if(!out_struct(&e, &ikev2_e_desc, &md->rbody, &e_pbs)) {
+        return STF_INTERNAL_ERROR;
+    }
+
+    /* insert IV */
+    iv     = e_pbs.cur;
+    ivsize = st->st_oakley.encrypter->iv_size;
+    if(!out_zero(ivsize, &e_pbs, "iv")) {
+        return STF_INTERNAL_ERROR;
+    }
+    get_rnd_bytes(iv, ivsize);
+
+    /* note where cleartext starts */
+    init_sub_pbs(&e_pbs, &e_pbs_cipher, "cleartext");
+    encstart = e_pbs_cipher.cur;
+
+    /* send Notification */
+    ret = ship_v2N (ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+		   NULL, ntf_type, notify_data, &e_pbs_cipher);
+    if (!ret)
+	return STF_INTERNAL_ERROR;
+
+    /*
+     * need to extend the packet so that we will know how big it is
+     * since the length is under the integrity check
+     */
+    ikev2_padup_pre_encrypt(md, &e_pbs_cipher);
+    close_output_pbs(&e_pbs_cipher);
+
+    {
+	enum phase1_role i_am;
+        unsigned char *authloc = ikev2_authloc(md, &e_pbs);
+
+        if(authloc == NULL || authloc < encstart) return STF_INTERNAL_ERROR;
+
+        close_output_pbs(&e_pbs);
+        close_output_pbs(&md->rbody);
+        close_output_pbs(&reply_stream);
+
+	i_am = IKEv2_IS_ORIG_INITIATOR(st) ? INITIATOR : RESPONDER;
+        ret = ikev2_encrypt_msg(md, i_am,
+                                authstart,
+                                iv, encstart, authloc,
+                                &e_pbs, &e_pbs_cipher);
+
+        if(ret != STF_OK) return ret;
+    }
+
+    /* keep it for a retransmit if necessary, but on initiator
+     * we never do that, but send_packet() uses it.
+     */
+    freeanychunk(st->st_tpacket);
+    clonetochunk(st->st_tpacket, reply_stream.start, pbs_offset(&reply_stream)
+                 , "encrypted notification packet");
+
+    send_packet(st, __FUNCTION__, TRUE);
+
+    return STF_OK;
 }
 
 /*

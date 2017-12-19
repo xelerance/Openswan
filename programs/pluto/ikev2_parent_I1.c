@@ -331,11 +331,8 @@ ikev2_parent_outI1_common(struct msg_digest *md
         chunk_t child_spi;
         memset(&child_spi, 0, sizeof(child_spi));
 
-        ship_v2N(0, DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG) ?
-                 (ISAKMP_PAYLOAD_NONCRITICAL | ISAKMP_PAYLOAD_OPENSWAN_BOGUS) :
-                 ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
-                 &child_spi,
-                 v2N_COOKIE, &st->st_dcookie, &md->rbody);
+        ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_NONCRITICAL, PROTO_ISAKMP,
+                 &child_spi, v2N_COOKIE, &st->st_dcookie, &md->rbody);
     }
 
     /* SA out */
