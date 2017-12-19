@@ -532,7 +532,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
-| processor 'initiator-auth-process' returned 3
+| processor 'initiator-auth-process' returned STF_OK (3)
 | #2 complete v2 state transition with STF_OK
 ./rekeyv2nopfs-inCR1 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
@@ -852,7 +852,7 @@ sending 348 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 | peer keymat  d4 e5 d8 b8  c5 be c0 f0  2c 72 22 9a  3f d1 6b 3f
 |   76 47 d0 21  1d e2 76 c7  d6 a6 95 24  45 9d 94 68
 |   e5 86 a5 7d
-| processor 'rekey-childSA-ack' returned 3
+| processor 'rekey-childSA-ack' returned STF_OK (3)
 | #3 complete v2 state transition with STF_OK
 ./rekeyv2nopfs-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
