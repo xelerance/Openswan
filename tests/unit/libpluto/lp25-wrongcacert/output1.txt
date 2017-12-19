@@ -840,7 +840,7 @@ RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9
 RC=0        ID_DER_ASN1_DN 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 ./wrongcacert RSA authentication failed
-./wrongcacert sending  notification v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
+./wrongcacert sending notification ISAKMP_v2_SA_INIT/v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
