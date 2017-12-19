@@ -809,6 +809,8 @@ process_v2_packet(struct msg_digest **mdp)
 	break;
     }
 
+    md->st = st;
+
     if(svm->state == STATE_IKEv2_ROOF) {
 	DBG(DBG_CONTROL, DBG_log("did not find valid state; giving up"));
 
@@ -816,20 +818,29 @@ process_v2_packet(struct msg_digest **mdp)
 	if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
 	    /* must be an initiator message, so we are the responder */
 
-	    send_v2_notification(st,
-				 ike_xchg_type,
-				 INVALID_MESSAGE_ID,
-				 pst,
-				 st->st_icookie,
-				 st->st_rcookie,
-				 NULL);
+	    bool was_encrypted = !!(md->chain[ISAKMP_NEXT_v2E]);
+
+	    if (was_encrypted) {
+		/* our notification will encrypt messages */
+		send_v2_notification_enc(md,
+					 ike_xchg_type,
+					 INVALID_MESSAGE_ID,
+					 NULL);
+	    } else {
+		/* our notification will be in the clear */
+		send_v2_notification(st,
+				     ike_xchg_type,
+				     INVALID_MESSAGE_ID,
+				     st->st_icookie,
+				     st->st_rcookie,
+				     NULL);
+	    }
 	}
 	return;
     }
 
     md->svm = svm;
     md->from_state = from_state;
-    md->st = st;
 
     {
 	stf_status stf;
@@ -1015,7 +1026,7 @@ send_v2_notification_from_state(struct state *st, enum state_kind state,
     if (state == STATE_UNDEFINED)
 	state = st->st_state;
 
-    send_v2_notification(st, ISAKMP_v2_SA_INIT, type, NULL,
+    send_v2_notification(st, ISAKMP_v2_SA_INIT, type,
 			 st->st_icookie, st->st_rcookie, data);
 }
 
@@ -1047,7 +1058,7 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_v2_notification(&st, ISAKMP_v2_SA_INIT, type, NULL,
+    send_v2_notification(&st, ISAKMP_v2_SA_INIT, type,
 			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
