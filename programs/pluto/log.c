@@ -839,10 +839,8 @@ show_status(void)
     kernel_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
 #endif
-#ifdef IKE_ALG
     ike_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
     show_connections_status(whack_log);
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_states_status();
