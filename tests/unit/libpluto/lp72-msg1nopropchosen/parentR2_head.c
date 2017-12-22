@@ -36,6 +36,7 @@
 #include "seam_initiate.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
+#include "seam_ikealg.c"
 #include "seam_dnskey.c"
 #include "seam_kernelalgs.c"
 

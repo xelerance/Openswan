@@ -38,6 +38,7 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 #include "seam_x509_list.c"
+#include "seam_ikealg.c"
 
 #include "seam_keys.c"
 

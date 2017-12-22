@@ -37,6 +37,7 @@
 #include "seam_terminate.c"
 #include "seam_secretday.c"
 #include "seam_natt.c"
+#include "seam_ikealg.c"
 #include "seam_keys.c"
 #include "seam_crypt.c"
 #include "seam_rsasig.c"
