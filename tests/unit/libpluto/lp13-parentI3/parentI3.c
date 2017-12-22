@@ -1,5 +1,6 @@
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_kernel.c"
+#include "seam_ikealg.c"
 
 #define TESTNAME "parentI3"
 

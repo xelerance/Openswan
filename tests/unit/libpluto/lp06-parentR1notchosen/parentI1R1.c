@@ -37,6 +37,7 @@
 #include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
+#include "seam_ikealg.c"
 #include "seam_dnskey.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];

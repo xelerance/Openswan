@@ -40,6 +40,7 @@
 #include "seam_whack.c"
 #include "seam_exitlog.c"
 #include "seam_dnskey.c"
+#include "seam_ikealg.c"
 
 const char *progname=NULL;
 int verbose=0;

@@ -1,4 +1,5 @@
 #include "../lp02-parentI1/parentI1_head.c"
+#include "seam_ikealg.c"
 #include "seam_pending.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
