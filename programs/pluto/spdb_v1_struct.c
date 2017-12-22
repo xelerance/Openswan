@@ -2532,52 +2532,18 @@ parse_ipsec_sa_body(
 
                     ugh = "no alg";
 
-#ifdef KERNEL_ALG
                     if(c->alg_info_esp) {
                         ugh = kernel_alg_esp_enc_ok(esp_attrs.transattrs.encrypt
                                                             , esp_attrs.transattrs.enckeylen
                                                             , c->alg_info_esp);
                     }
-#endif
 
                     if(ugh != NULL) {
-                        switch (esp_attrs.transattrs.encrypt)
-                              {
-#ifdef KERNEL_ALG          /* strictly use runtime information */
-                              case ESP_AES:
-                              case ESP_3DES:
-                                  break;
-#endif
-
-#ifdef SUPPORT_ESP_NULL          /* should be about as secure as AH-only */
-#warning "Building with ESP-Null"
-                              case ESP_NULL:
-                                  if (esp_attrs.transattrs.integ_hash == AUTH_ALGORITHM_NONE)
-                                        {
-                                            loglog(RC_LOG_SERIOUS, "ESP_NULL requires auth algorithm");
-                                            return BAD_PROPOSAL_SYNTAX;
-                                        }
-
-                                  if (st->st_policy & POLICY_ENCRYPT)
-                                        {
-                                            DBG(DBG_CONTROL | DBG_CRYPT
-                                                  , DBG_log("ESP_NULL Transform Proposal from %s"
-                                                              " does not satisfy POLICY_ENCRYPT"
-                                                              , ip_str(&c->spd.that.host_addr)));
-                                            continue;   /* try another */
-                                        }
-                                  break;
-#endif
-
-                              case ESP_DES:          /* NOT safe */
-                                  loglog(RC_LOG_SERIOUS, "1DES was proposed, it is insecure");
-                              default:
-                                  loglog(RC_LOG_SERIOUS, "kernel algorithm does not like: %s", ugh);
-                                  loglog(RC_LOG_SERIOUS, "unsupported ESP Transform %s from %s"
-                                           , enum_show(&esp_transformid_names, esp_attrs.transattrs.encrypt)
-                                           , ip_str(&c->spd.that.host_addr));
-                                  continue;   /* try another */
-                              }
+                        loglog(RC_LOG_SERIOUS, "kernel algorithm does not like: %s", ugh);
+                        loglog(RC_LOG_SERIOUS, "unsupported ESP Transform %s from %s"
+                               , enum_show(&esp_transformid_names, esp_attrs.transattrs.encrypt)
+                               , ip_str(&c->spd.that.host_addr));
+                        continue;   /* try another */
                     }
 
                     if(!ESP_AALG_PRESENT(esp_attrs.transattrs.integ_hash)) {
@@ -2591,17 +2557,7 @@ parse_ipsec_sa_body(
               }
               if (tn == esp_proposal.isap_notrans)
                     continue;          /* we didn't find a nice one */
-#ifdef KERNEL_ALG
-              /*
-               * ML: at last check for allowed transforms in alg_info_esp
-               *     (ALG_INFO_F_STRICT flag)
-               *
-               */
-              if (c->alg_info_esp!=NULL
-                    && !kernel_alg_esp_ok_final(esp_attrs.transattrs.encrypt, esp_attrs.transattrs.enckeylen,
-                                                      esp_attrs.transattrs.integ_hash, c->alg_info_esp))
-                        continue;
-#endif
+
               esp_attrs.spi = esp_spi;
               inner_proto = IPPROTO_ESP;
               if (esp_attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
