@@ -48,8 +48,6 @@
 
 /* moduli and generator. */
 
-#ifdef IKE_ALG
-
 #ifdef USE_1DES
 static void do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
 
@@ -156,12 +154,11 @@ static struct ike_integ_desc crypto_integ_sha1 =
     hash_update: (void (*)(void *, const u_int8_t *, size_t)) SHA1Update,
     hash_final: (void (*)(u_char *, void *)) SHA1Final,
 };
-#endif
+
 void
 init_crypto(void)
 {
     init_crypto_groups();
-#ifdef IKE_ALG
 	{
 #ifdef USE_TWOFISH
 	    {
@@ -216,7 +213,6 @@ init_crypto(void)
 	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5,  FALSE);
 	    ike_alg_add((struct ike_alg *) &crypto_integ_md5,   FALSE);
 	}
-#endif
 
         /* this loads the old switch for DES/AES, and needs to be obsoleted */
         load_oswcrypto();

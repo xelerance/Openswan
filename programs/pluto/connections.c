@@ -1017,7 +1017,6 @@ add_connection(const struct whack_message *wm)
 #endif
 
 	c->alg_info_ike = NULL;
-#ifdef IKE_ALG
 	if (wm->ike)
 	{
 	    c->alg_info_ike = alg_info_ike;
@@ -1044,7 +1043,7 @@ add_connection(const struct whack_message *wm)
 		return;
 	    }
 	}
-#endif
+
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;
 	c->sa_ipsec_life_seconds = wm->sa_ipsec_life_seconds;
 	c->sa_rekey_margin = wm->sa_rekey_margin;
@@ -3309,12 +3308,8 @@ show_one_connection(struct connection *c, logfunc logger)
 		  , c->connalias);
     }
 
-#ifdef IKE_ALG
     ike_alg_show_connection(c, instance);
-#endif
-#ifdef KERNEL_ALG
     kernel_alg_show_connection(c, instance);
-#endif
 }
 
 void
