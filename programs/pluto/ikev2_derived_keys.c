@@ -52,7 +52,7 @@
 #include "alg_info.h"
 #include "kernel_alg.h"
 
-void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
+stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 {
 	struct v2prf_stuff childsacalc;
 	struct state *pst;
@@ -79,9 +79,9 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	childsacalc.prf_hasher = (struct hash_desc *)
 		ike_alg_ikev2_find(IKE_ALG_HASH, alg, 0);
 	if (!childsacalc.prf_hasher) {
-		alg = IKEv2_PRF_HMAC_SHA1;
-		childsacalc.prf_hasher = (struct hash_desc *)
-			ike_alg_ikev2_find(IKE_ALG_HASH, alg, 0);
+		DBG(DBG_CONTROL,
+		    DBG_log("unsupported prf+ algorithm %d", alg));
+		return STF_FAIL;
 	}
 
 	DBG(DBG_CRYPT,
@@ -151,6 +151,7 @@ void ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	    st->st_esp.our_keymat = rkeymat.ptr;
 	}
 
+	return STF_OK;
 }
 
 

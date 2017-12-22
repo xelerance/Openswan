@@ -960,7 +960,9 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     }
 
     /* in this case, RESPONDER means the responder to this message */
-    ikev2_derive_child_keys(st1, RESPONDER);
+    ret = ikev2_derive_child_keys(st1, RESPONDER);
+    if (ret != STF_OK)
+	return ret;
 
     /* install inbound and outbound SPI info */
     if(!install_ipsec_sa(pst, st1, TRUE))
@@ -2041,7 +2043,9 @@ static stf_status ikev2child_inCR1_tail(struct msg_digest *md, struct state *st)
             return STF_FAIL + rn;
     }
 
-    ikev2_derive_child_keys(st, INITIATOR);
+    e = ikev2_derive_child_keys(st, INITIATOR);
+    if (e != STF_OK)
+	return e;
 
     c->newest_ipsec_sa = st->st_serialno;
 

@@ -188,7 +188,9 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
         return e;
     }
 
-    ikev2_derive_child_keys(st, INITIATOR);
+    e = ikev2_derive_child_keys(st, INITIATOR);
+    if (e != STF_OK)
+	return e;
 
     c->newest_ipsec_sa = st->st_serialno;
 

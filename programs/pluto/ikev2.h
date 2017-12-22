@@ -171,7 +171,7 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 				      , struct connection *c
 				      , lset_t policy);
 
-extern void ikev2_derive_child_keys(struct state *st
+extern stf_status ikev2_derive_child_keys(struct state *st
 				    , enum phase1_role role);
 
 extern int ikev2_evaluate_connection_fit(struct connection *d
