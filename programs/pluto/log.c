@@ -835,10 +835,8 @@ show_status(void)
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_virtual_private();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#ifdef KERNEL_ALG
     kernel_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
     ike_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_connections_status(whack_log);
