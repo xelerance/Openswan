@@ -70,13 +70,16 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
+programs: ${TESTNAME}
 
-check:	${WHACKFILE} OUTPUT ${EXTRAOBJS}
-	@mkdir -p OUTPUT
+${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS}
 	@echo CC ${TESTNAME}.c
 	@${CC} -g -O0 -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTEST1ARGS} >>.gdbinit
+
+check:	${WHACKFILE} OUTPUT ${TESTNAME}
+	@mkdir -p OUTPUT
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTEST1ARGS} >OUTPUT/${TESTNAME}1.txt 2>&1
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}1.txt | diff - output1.txt
 
