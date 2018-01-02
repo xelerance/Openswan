@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
     argv++;
 
     infile = *argv;
+    cur_debugging = DBG_CONTROLMORE;
     if(readwhackmsg(infile) == 0) exit(10);
 
     argc--;
