@@ -5,10 +5,9 @@
 #include "seam_dh_v2.c"
 #include "seam_ke.c"
 #include "seam_x509.c"
+#include "seam_cryptocontinue.c"
 
 #define TESTNAME "cryptoR2"
-
-void delete_cryptographic_continuation(struct state *st) {}
 
 static void init_local_interface(void)
 {

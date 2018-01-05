@@ -5,13 +5,13 @@
 #include "../lp13-parentI3/parentI3_head.c"
 #include "seam_ke.c"
 #include "seam_dh_v2.c"
+#include "seam_kernel.c"
+#include "seam_cryptocontinue.c"
 
 static void init_loaded(void)
 {   /* nothing */ }
 
 #define TESTNAME "cryptoI3"
-
-void delete_cryptographic_continuation(struct state *st) {}
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user

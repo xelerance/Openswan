@@ -1,3 +1,5 @@
+all: programs
+
 EXTRAFLAGS+=-I..
 EXTRAFLAGS+=-I../../libpluto
 EXTRAFLAGS+=-I../../libpluto/lp13-parentI3
@@ -9,7 +11,5 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel_forces.o
-
-all: programs
 
 
