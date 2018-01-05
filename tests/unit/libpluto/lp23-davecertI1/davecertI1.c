@@ -1,6 +1,5 @@
 /* repeats existing test case */
 #include "../lp02-parentI1/parentI1_head.c"
-#include "seam_ikealg.c"
 #include "seam_demux.c"
 #include "../seam_host_dave.c"
 #include "seam_pending.c"
