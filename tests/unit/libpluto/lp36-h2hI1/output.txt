@@ -18,6 +18,7 @@ processing whack msg time: X size: Y
 | counting wild cards for 192.168.1.1 is 0
 ./h2hI1 use keyid: 1:<> / 2:<>
 | counting wild cards for 132.213.238.7 is 0
+| orient mytunnel reference sr#1 this: addr:192.168.1.1 that: addr:132.213.238.7
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:4500)
@@ -37,6 +38,7 @@ RC=0 "mytunnel":     myip=unset; hisip=unset;
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 | creating state object #1 at Z
+| orient mytunnel reference sr#1 this: addr:192.168.1.1 that: addr:132.213.238.7
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
 | orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:4500)
