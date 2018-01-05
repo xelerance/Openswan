@@ -2,6 +2,10 @@
 ./cryptoR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./cryptoR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./cryptoR2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./cryptoR2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./cryptoR2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./cryptoR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./cryptoR2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./cryptoR2 loading secrets from "../../libpluto/samples/jj.secrets"
 ./cryptoR2 loaded private key for keyid: PPK_RSA:AQOg5H7A4/2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
 ./cryptoR2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]

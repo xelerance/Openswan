@@ -109,9 +109,9 @@ struct ike_integ_desc integ_desc_sha2_512 = {
 int ike_alg_sha2_init(void)
 {
 	int ret;
-	ret = ike_alg_register_hash(&integ_desc_sha2_512);
+	ret = ike_alg_register_integ(&integ_desc_sha2_512);
 	if (!ret){
-	    ret = ike_alg_register_hash(&integ_desc_sha2_256);
+	    ret = ike_alg_register_integ(&integ_desc_sha2_256);
         }
 	if (!ret){
 	    ret = ike_alg_register_prf(&hash_desc_sha2_256);
