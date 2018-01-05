@@ -67,15 +67,19 @@ void recv_pcap_packet4(u_char *user
 
     {
         struct state *st1 = state_with_serialno(1);
+        DBG_log("state 1");
         dump_one_state(st1);
     }
     {
         struct state *st2 = state_with_serialno(2);
+        DBG_log("state 2");
         dump_one_state(st2);
     }
+    DBG_log("state 3");
     dump_one_state(st);
     {
         struct state *st4 = state_with_serialno(4);
+        DBG_log("state 4");
         dump_one_state(st4);
     }
 }
