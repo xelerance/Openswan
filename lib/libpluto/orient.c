@@ -209,9 +209,21 @@ orient(struct connection *c, unsigned int pluto_port)
     if (!oriented(*c))
     {
 	struct iface_port *p;
+        unsigned int srnum = 0;
 
 	for (sr = &c->spd; sr; sr = sr->next)
 	{
+            char this_etn[KEYWORD_NAME_BUFLEN];
+            char that_etn[KEYWORD_NAME_BUFLEN];
+
+            srnum++;
+            DBG(DBG_CONTROLMORE
+                , DBG_log("orient %s reference sr#%u this: %s that: %s"
+                          , c->name
+                          , srnum
+                          , end_type_name(sr->this.host_type, &sr->this.host_addr, this_etn, sizeof(this_etn))
+                          , end_type_name(sr->that.host_type, &sr->that.host_addr, that_etn, sizeof(that_etn))));
+
 	    /* There can be more then 1 spd policy associated - required
 	     * for cisco split networking when remote_peer_type=cisco
 	     */

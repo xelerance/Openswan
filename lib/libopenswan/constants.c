@@ -1589,6 +1589,24 @@ const char *keyword_name(const struct keyword_enum_values *kevs
 }
 
 
+const char *end_type_name(enum keyword_host host_type
+                          , ip_address *host_addr
+                          , char  *outbuf
+                          , size_t outbuf_len)
+{
+    if(host_type != KH_IPADDR) {
+        if(outbuf_len < KEYWORD_NAME_BUFLEN) return "truncated";
+        return keyword_name(&kw_host_list, host_type, outbuf);
+    } else {
+        char *p = outbuf;
+        p[0] = '\0';
+        strncat(p, "addr:", outbuf_len);
+        p          += 5;
+        outbuf_len -= 5;
+        addrtot(host_addr, 0, p, outbuf_len);
+        return outbuf;
+    }
+}
 
 
 /* find or construct a string to describe an enum value

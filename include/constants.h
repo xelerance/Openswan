@@ -149,6 +149,7 @@ struct keyword_enum_values {
 extern const char *keyword_name(const struct keyword_enum_values *kevs
                                 , unsigned int value
                                 , char namebuf[KEYWORD_NAME_BUFLEN]);
+
 extern const struct keyword_enum_value *keyword_search_aux(const struct keyword_enum_values *kevs,
                                                      const char *str);
 extern int keyword_search(const struct keyword_enum_values *kevs,
