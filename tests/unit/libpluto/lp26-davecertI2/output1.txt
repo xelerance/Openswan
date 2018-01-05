@@ -18,6 +18,7 @@ processing whack msg time: X size: Y
 | certificate is valid
 | counting wild cards for C=CA, ST=ON, L=Ottawa, O=Xelerance Corporation, OU=Openswan, CN=dave@openswan.org, E=mcr@xelerance.com is 0
 | counting wild cards for @moon.strongswan.org is 0
+| orient home reference sr#1 this: addr:132.213.238.7 that: %defaultroute
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
 | orient home matching on public/private keys: this=no[%address] that=yes[%defaultroute]
 |   orient home matched on that having private key
@@ -43,6 +44,7 @@ RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAR
 | Changed path to directory '../samples/davecert/cacerts'
 ./davecertI2   loaded CA cert file 'rootCA.pem' (1525 bytes)
 | creating state object #1 at Z
+| orient home reference sr#1 this: %defaultroute that: addr:132.213.238.7
 | orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
 | orient home matching on public/private keys: this=yes[%defaultroute] that=no[%address]
 |   orient home matched on this having private key
