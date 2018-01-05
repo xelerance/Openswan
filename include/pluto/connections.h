@@ -142,6 +142,26 @@ struct dns_end_list {
     struct addrinfo *next_address;  /* next one to try */
 };
 
+/*
+ * An end describes one side of the connection.
+ *
+ * There is some unfortunate and unwanted connection between the outer (end-point)
+ * of the connection (which is contained in host_type, host_addr, host_port, and keys/certs)
+ * and the inside part of the connection
+ * (which is represented by client, has_client, has_port_wildcard, port and protocol)
+ * Future work will split these, moving things around up to spd_route, as there can
+ * in general be multiple outer addresses, and also multiple inner (traffic-selectors),
+ * and they are not necessarily related.
+ *
+ * The outer host_type and host_addr may be passed to
+ *
+ *    const char *end_type_name(struct keyword_host host_type, ip_address *host_addr
+ *                              , char  *outbuf, size_t outbuf_len)
+ *
+ * to create a string representation.
+ *
+ */
+
 struct end {
     struct id id;
     bool      left;
