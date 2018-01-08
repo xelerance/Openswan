@@ -1333,6 +1333,8 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 	    if (LHAS(ok_states, st->st_state)
 		&& c->IPhost_pair == st->st_connection->IPhost_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
+		&& samesubnet(&c->spd.this.client, &st->st_connection->spd.this.client)
+		&& samesubnet(&c->spd.that.client, &st->st_connection->spd.that.client)
 		&& (best == NULL
 		    || best->st_serialno < st->st_serialno))
 		{
