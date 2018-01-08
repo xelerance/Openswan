@@ -17,6 +17,9 @@ BUILDTMP=${BUILDTMP-.buildtmp}
 mkdir -p ${BUILDTMP}
 basecommit=v$(make baseversion)
 startingcommit=${1-${basecommit}}
+echo >BUILD_EVERY_REV
+
+set -x
 git log --oneline ${startingcommit}.. | tac | \
     while read commit stuff
     do
@@ -24,10 +27,11 @@ git log --oneline ${startingcommit}.. | tac | \
         rm -rf ${BUILDTMP}/code
         if git clone -q -n --shared . ${BUILDTMP}/code && (cd $BUILDTMP/code && git checkout -q ${commit} && make programs >/dev/null)
         then
-            echo success
+            echo ${commit} success   >>BUILD_EVERY_REV
         else
+            echo ${commit} failed    >>BUILD_EVERY_REV
 	    echo ${commit} >BUILD_EVERY_REV_FAILED
-            exit 1
+            #exit 1
         fi
     done
 
