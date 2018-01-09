@@ -199,12 +199,6 @@ ikev2_out_sa(pb_stream *outs
 		pb_stream at_pbs;
 		unsigned int attr_cnt;
 
-#if 0
-		XXX;
-		if() {
-		}
-#endif
-
 		memset(&t, 0, sizeof(t));
 		if(ts_cnt+1 < vpc->trans_cnt) {
 		    t.isat_np      = ISAKMP_NEXT_T;
