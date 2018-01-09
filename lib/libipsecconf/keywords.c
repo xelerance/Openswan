@@ -64,7 +64,7 @@ static const struct keyword_enum_value kt_values[]={
     KEV_LITERAL(kt_bitstring),
     KEV_LITERAL(kt_comment),
 };
-static const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
+const struct keyword_enum_values kt_values_list = VALUES_INITIALIZER(kt_values);
 
 /*
  * Values for failureshunt={passthrough, drop, reject, none}
@@ -112,7 +112,7 @@ static const struct keyword_enum_value kw_ynf_values[] = {
 	{ "insist",     ynf_force },
 	{ "force",     ynf_force },
 };
-static const struct keyword_enum_values kw_ynf_list = VALUES_INITIALIZER(kw_ynf_values);
+const struct keyword_enum_values kw_ynf_list = VALUES_INITIALIZER(kw_ynf_values);
 
 /*
  * Values for authby={rsasig, secret}
@@ -236,7 +236,7 @@ static const struct keyword_enum_value kw_xauthby_list[] = {
 	{ "pam",         XAUTHBY_PAM },
 	{ "alwaysok",    XAUTHBY_ALWAYSOK },
 };
-static const struct keyword_enum_values kw_xauthby = VALUES_INITIALIZER(kw_xauthby_list);
+const struct keyword_enum_values kw_xauthby = VALUES_INITIALIZER(kw_xauthby_list);
 
 /*
  * Values for right= and left=

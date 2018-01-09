@@ -186,6 +186,7 @@
 
 // the S-Box table
 
+#ifdef FF_TABLES
 static const unsigned char s_box[256] =
 {
     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5,
@@ -221,9 +222,11 @@ static const unsigned char s_box[256] =
     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68,
     0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
+#endif
 
 // the inverse S-Box table
 
+#ifdef FF_TABLES
 static const unsigned char inv_s_box[256] =
 {
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38,
@@ -259,6 +262,7 @@ static const unsigned char inv_s_box[256] =
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26,
     0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 };
+#endif
 
 #define w0(p)          0x000000##p
 
@@ -658,7 +662,9 @@ static const u_int32_t im_tab[4][256] =
 static int tab_gen = 0;
 
 static unsigned char  s_box[256];            // the S box
+#if defined(FF_TABLES)
 static unsigned char  inv_s_box[256];        // the inverse S box
+#endif
 static u_int32_t  rcon_tab[AES_RC_LENGTH];   // table of round constants
 
 #if defined(ONE_TABLE)
