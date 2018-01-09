@@ -221,9 +221,9 @@ ikev2_out_sa(pb_stream *outs
 		    return_on(ret, FALSE);
 
 		for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		    struct db_attr *attr = &tr->attrs[attr_cnt];
+		    struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		    ikev2_out_attr(attr->type.ikev2, attr->val
+		    ikev2_out_attr(attr->ikev2, attr->val
 			, &ikev2_trans_attr_desc, ikev2_trans_attr_val_descs
 			, &at_pbs);
 		}
@@ -324,7 +324,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
     struct db_trans_flat   *dtfset;
     struct db_trans_flat   *dtfone;
     struct db_trans_flat   *dtflast;
-    struct db_attr         *attrs;
+    struct db_v2_attr      *attrs;
     struct db_v2_trans     *tr;
     struct db_v2_prop_conj *pc;
     struct db_v2_prop      *pr;
@@ -493,10 +493,10 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 	tr[tr_pos].transform_type = IKEv2_TRANS_TYPE_ENCR;
 	tr[tr_pos].transid        = dtfone->encr_transid;
 	if(dtfone->encr_keylen > 0 ) {
-	    attrs = alloc_bytes(sizeof(struct db_attr), "db_attrs");
+	    attrs = alloc_bytes(sizeof(struct db_v2_attr), "db_attrs");
 	    tr[tr_pos].attrs = attrs;
 	    tr[tr_pos].attr_cnt = 1;
-	    attrs->type.ikev2 = IKEv2_KEY_LENGTH;
+	    attrs->ikev2 = IKEv2_KEY_LENGTH;
 	    attrs->val = dtfone->encr_keylen;
 	}
 	tr_pos++;
@@ -605,9 +605,9 @@ spdb_v2_match_parent(struct db_sa *sadb
 	    tr = &pj->trans[tr_cnt];
 
 	    for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		struct db_attr *attr = &tr->attrs[attr_cnt];
+		struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		if (attr->type.ikev2 == IKEv2_KEY_LENGTH)
+		if (attr->ikev2 == IKEv2_KEY_LENGTH)
 			keylen = attr->val;
 	    }
 
@@ -1136,9 +1136,9 @@ spdb_v2_match_child(struct db_sa *sadb
 	    tr = &pj->trans[tr_cnt];
 
 	    for (attr_cnt=0; attr_cnt < tr->attr_cnt; attr_cnt++) {
-		struct db_attr *attr = &tr->attrs[attr_cnt];
+		struct db_v2_attr *attr = &tr->attrs[attr_cnt];
 
-		if (attr->type.ikev2 == IKEv2_KEY_LENGTH)
+		if (attr->ikev2 == IKEv2_KEY_LENGTH)
 			keylen = attr->val;
 	    }
 

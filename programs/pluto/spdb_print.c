@@ -139,17 +139,17 @@ sa_print(struct db_sa *f)
 }
 
 static void
-print_sa_v2_attr(struct db_attr *at)
+print_sa_v2_attr(struct db_v2_attr *at)
 {
     //const struct enum_names *en = NULL;
 
-    if(at->type.ikev2 == 0) {
+    if(at->ikev2 == 0) {
 	return;
     }
 
     //en = NULL; /* XXX */
     printf("        type: %u(%s) val: %u(%s)\n"
-	   , at->type.ikev2, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
+	   , at->ikev2, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
 	   , at->val, "unknown");
 }
 

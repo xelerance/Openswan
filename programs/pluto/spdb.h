@@ -53,29 +53,33 @@ struct db_prop_conj {
 	unsigned int prop_cnt;	/* number of elements */
 };
 
+struct db_v2_attr {
+    unsigned int ikev2;
+    u_int16_t    val;
+};
+
 /* transform - IKEv2 */
 struct db_v2_trans {
-	enum ikev2_trans_type    transform_type;
-	u_int16_t                transid;	        /* Transform-Id */
-	struct db_attr *attrs;	 /* array of attributes */
-	unsigned int attr_cnt;	         /* number of elements */
+    enum ikev2_trans_type    transform_type;
+    u_int16_t                transid;	        /* Transform-Id */
+    struct db_v2_attr *attrs;	 /* array of attributes */
+    unsigned int attr_cnt;	         /* number of elements */
 };
 
 /* proposal - IKEv2 */
-/* transforms are OR of each unique transform_type */
+/* transforms are OR of each unique prop */
 struct db_v2_prop_conj {
-	u_int8_t            propnum;
-	u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
-	struct db_v2_trans *trans;	/* array (disjunction-OR) */
-	unsigned int        trans_cnt;	/* number of elements */
-	/* SPI size and value isn't part of DB */
+    u_int8_t            propnum;        /* OR with other propnum== */
+    u_int8_t            protoid;	/* Protocol-Id: ikev2_trans_type */
+    struct db_v2_trans *trans;	/* array (disjunction-OR) */
+    unsigned int        trans_cnt;	/* number of elements */
 };
 
-/* conjunction (AND) of proposals - IKEv2 */
-/* this is, for instance, ESP+AH, etc.    */
+/* top-level list of proposals */
 struct db_v2_prop {
-	struct db_v2_prop_conj  *props;	/* array */
-	unsigned int prop_cnt;	        /* number of elements... AND*/
+    struct db_v2_prop_conj  *props;	/* array */
+    u_int8_t     conjnum;               /* number of next conjunction */
+    unsigned int prop_cnt;	        /* number of elements... AND*/
 };
 
 /* security association */
