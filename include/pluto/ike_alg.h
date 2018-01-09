@@ -97,6 +97,18 @@ const struct oakley_group_desc * ike_alg_pfsgroup(struct connection *c, lset_t p
 extern struct db_sa *oakley_alg_makedb(struct alg_info_ike *ai
 				       , struct db_sa *basic
 				       , int maxtrans);
+enum alg_desired_maximum {
+    SADB_NOLIMIT     = 1,
+    SADB_ONEPROPOSAL = 2,
+    SADB_ONEDH_ONLY  = 3,
+};
+
+extern struct db_sa *ikev2_sadb_from_alg(struct alg_info_ike *ai
+                                         ,enum alg_desired_maximum maxtrans);
+
+extern struct db_sa *ikev2_kernel_alg_makedb(lset_t policy
+				       , struct alg_info_esp *ei
+				       , bool logit);
 
 extern struct db_sa *kernel_alg_makedb(lset_t policy
 				       , struct alg_info_esp *ei
