@@ -14,6 +14,7 @@
 #include "hexdump.c"
 #include "oswalloc.h"
 #include "oswlog.h"
+#include "pluto/crypto.h"
 #include "ike_alg.h"
 
 const char *progname;
