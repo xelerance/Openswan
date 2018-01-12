@@ -39,7 +39,7 @@
 #include "vendor.h"
 #include "quirks.h"
 #include "kernel.h"
-#include "state.h"
+#include "pluto/state.h"
 
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"

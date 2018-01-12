@@ -35,7 +35,7 @@
 #include "md5.h"
 #include "pluto/crypto.h"
 
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "log.h"
 #include "whack.h"

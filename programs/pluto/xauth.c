@@ -47,7 +47,7 @@
 #include "oswlog.h"
 
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"

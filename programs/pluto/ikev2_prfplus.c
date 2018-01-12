@@ -40,7 +40,7 @@
 #include "demux.h"
 #include "pluto/crypto.h"
 #include "rnd.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "pluto_crypt.h"
 #include "oswlog.h"
 #include "log.h"

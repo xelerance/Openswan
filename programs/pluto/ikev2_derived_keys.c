@@ -40,7 +40,7 @@
 #include "pgp.h"
 #include "certs.h"
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"

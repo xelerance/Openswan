@@ -57,7 +57,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "lex.h"
 #include "keys.h"
 #include "secrets.h"

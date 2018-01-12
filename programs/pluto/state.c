@@ -42,7 +42,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
 #include "packet.h"	/* so we can calculate sizeof(struct isakmp_hdr) */

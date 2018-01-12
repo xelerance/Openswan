@@ -34,7 +34,7 @@
 #include "oswtime.h"
 #include "defs.h"
 #include "id.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "x509.h"
 #include "pgp.h"
 #include "certs.h"

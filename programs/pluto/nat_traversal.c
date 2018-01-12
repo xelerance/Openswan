@@ -50,7 +50,7 @@
 #include "defs.h"
 #include "log.h"
 #include "pluto/server.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "id.h"
 #include "x509.h"
 #include "pgp.h"

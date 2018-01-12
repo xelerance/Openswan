@@ -70,7 +70,7 @@
 #include "adns.h"	/* needs <resolv.h> */
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "rnd.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "ocsp.h"
 #include "fetch.h"
