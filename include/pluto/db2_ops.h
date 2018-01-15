@@ -26,6 +26,14 @@
  *    |     +-- Transform ESN ( Name = ESNs )
  *    |     +-- Transform ESN ( Name = No ESNs )
  *    |
+ *    +--- Proposal #1 ( Proto ID = AH(2), SPI size = 4,
+ *    |     |            7 transforms,      SPI = 0x052357bb )
+ *    |     |
+ *    |     +-- Transform INTEG ( Name = AUTH_HMAC_SHA1_96 )
+ *    |     +-- Transform INTEG ( Name = AUTH_AES_XCBC_96 )
+ *    |     +-- Transform ESN ( Name = ESNs )
+ *    |     +-- Transform ESN ( Name = No ESNs )
+ *    |
  *    +--- Proposal #2 ( Proto ID = ESP(3), SPI size = 4,
  *          |            4 transforms,      SPI = 0x35a1d6f2 )
  *          |
@@ -66,13 +74,15 @@ struct db2_context * db2_prop_new(int max_conj
                                   , int max_trans
                                   , int max_attrs);
 
-/* Initialize object for proposal building  */
+/* (re-)initialize object for proposal building, returns 1 if everything okay
+ * not needed if just called db2_prop_new.
+ */
 int db2_prop_init(struct db2_context *ctx
                   , int max_conj
                   , int max_trans
                   , int max_attrs);
 
-/*	Free all resourses for this db */
+/*	Clear out a db object */
 void db2_destroy(struct db2_context *ctx);
 
 /*	Start a new transform */
