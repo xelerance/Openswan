@@ -1,6 +1,6 @@
 /*
  * Cryptographic helper function.
- * Copyright (C) 2004-2007 Michael C. Richardson <mcr@xelerance.com>
+ * Copyright (C) 2004-2018 Michael C. Richardson <mcr@xelerance.com>
  * Copyright (C) 2004-2010 Paul Wouters <paul@xelerance.com>
  * Copyright (C) 2006 Luis F. Ortiz <lfo@polyad.org>
  * Copyright (C) 2008-2009 David McCullough <david_mccullough@securecomputing.com>
@@ -185,7 +185,7 @@ static void catchusr1(int signo UNUSED)
 }
 #endif
 
-#ifdef DEBUG
+#if defined(DEBUG) && !defined(HAVE_LIBNSS)
 static void
 helper_passert_fail(const char *pred_str
 		    , const char *file_str
