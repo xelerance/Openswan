@@ -1,0 +1,4 @@
+These directories test the algorithms and mechanisms in lib/libcrypto.
+The first tests present test the ability to register a new cipher (AES), with
+a specific key size, and then find it and do something with it.
+

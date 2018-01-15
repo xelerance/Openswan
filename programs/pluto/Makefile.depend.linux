@@ -76,9 +76,9 @@ build_ke.o: build_ke.c \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 connections.o: connections.c \
  ../../include/openswan.h \
@@ -187,9 +187,9 @@ crypt_dh.o: crypt_dh.c \
  ../../include/secrets.h \
  ../../include/pgp.h ikev2_prfplus.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 crypt_ke.o: crypt_ke.c \
  ../../include/openswan.h \
@@ -226,9 +226,9 @@ crypt_ke.o: crypt_ke.c \
  ../../include/pluto/log.h timer.h \
  ../../include/oswtime.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 crypt_start_dh.o: crypt_start_dh.c \
  ../../include/openswan.h \
@@ -331,9 +331,9 @@ crypto.o: crypto.c ../../include/openswan.h \
  ../../include/alg_info.h \
  ../../include/pluto/ike_alg.h tpm/tpm.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h
 demux.o: demux.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h \
@@ -628,24 +628,6 @@ hostpair.o: hostpair.c \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
-ike_alg_aes.o: ike_alg_aes.c \
- ../../include/openswan.h \
- ../../include/constants.h \
- ../../include/biglset.h \
- ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/pluto/defs.h \
- ../../include/oswalloc.h \
- ../../include/constants.h \
- ../../include/pluto/log.h \
- ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
- ../../include/alg_info.h \
- ../../include/pluto/ike_alg.h
 ike_alg_sha2.o: ike_alg_sha2.c \
  ../../include/openswan.h \
  ../../include/constants.h \
@@ -899,9 +881,9 @@ ikev1_crypto.o: ikev1_crypto.c \
  ../../include/algoparse.h \
  ../../include/pluto/ike_alg.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h ikev1.h \
  ikev1_continuations.h ike_continuations.h
 ikev1_nss.o: ikev1_nss.c \
@@ -959,9 +941,9 @@ ikev1_nss.o: ikev1_nss.c \
  ../../include/algoparse.h \
  ../../include/pluto/ike_alg.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h ikev1.h \
  ikev1_continuations.h ike_continuations.h
 ikev1_quick.o: ikev1_quick.c \
@@ -1471,9 +1453,9 @@ ikev2_rsa.o: ikev2_rsa.c \
  ../../include/pluto/keys.h \
  ../../include/secrets.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 ikev2_x509.o: ikev2_x509.c \
  ../../include/openswan.h \
@@ -1823,8 +1805,8 @@ kernel_netlink.o: kernel_netlink.c \
  ../../include/openswan/ipsec_policy.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/pluto/ike_alg.h
 kernel_noklips.o: kernel_noklips.c \
  ../../include/openswan.h \
@@ -1902,9 +1884,9 @@ keys.o: keys.c ../../include/openswan.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/x509lists.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
@@ -2204,9 +2186,9 @@ pluto_crypt.o: pluto_crypt.c \
  ../../include/mpzfuncs.h \
  ../../include/algoparse.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 plutomain.o: plutomain.c \
  ../../include/openswan.h \
@@ -2266,9 +2248,9 @@ plutomain.o: plutomain.c \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/oswcrypto.h \
- ../../include/klips-crypto/aes.h \
- ../../include/klips-crypto/aes_cbc.h \
- ../../include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes.h \
+ ../../linux/include/klips-crypto/aes_cbc.h \
+ ../../linux/include/klips-crypto/aes.h \
  ../../include/klips-crypto/des.h
 primegen.o: primegen.c \
  ../../include/openswan.h \

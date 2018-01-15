@@ -76,8 +76,7 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	}
 
 	alg = pst->st_oakley.prf_hash;
-	childsacalc.prf_hasher = (struct hash_desc *)
-		ike_alg_ikev2_find(IKE_ALG_HASH, alg, 0);
+	childsacalc.prf_hasher = ike_alg_get_prf(alg);
 	if (!childsacalc.prf_hasher) {
 		DBG(DBG_CONTROL,
 		    DBG_log("unsupported prf+ algorithm %d", alg));
