@@ -171,5 +171,6 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 ./h2hR1-noikev2 leak: pubkey, item size: X
 ./h2hR1-noikev2 leak: secret, item size: X
 ./h2hR1-noikev2 leak: 3 * hasher name, item size: X
+./h2hR1-noikev2 leak: 10 * group description, item size: X
 ./h2hR1-noikev2 leak detective found Z leaks, total size X
 Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
