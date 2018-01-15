@@ -158,7 +158,7 @@ RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP1536(5) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
 | not including aes_gcm_8(18)-hmac_sha2_256_128(12)-prfsha2_256(5)-MODP3072(15 in policy, as algorithm missing(enc:0,integ:32,prf:1,group:1)
 | not including aes_gcm_8(18)-hmac_sha1_96(2)-prfsha2_256(5)-MODP3072(15) in policy, as algorithm missing(enc:0,integ:20,prf:1,group:1)
-| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[-1] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 1
 |    proto ID: 1
@@ -971,7 +971,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
+<<<<<<< HEAD
 |    transform ID: 2
+=======
+|    transform ID: 12
+>>>>>>> a6fc67cce... wo#6269 . added rekey test cases to update
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
 |    transform type: 5
@@ -1021,12 +1025,23 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   5c ee d5 26
 | prf+[4]:  1e 9f 3d b0  17 f3 f7 fc  e8 5e 55 44  63 f0 30 94
 |   2f 4e 11 2a
+<<<<<<< HEAD
 | our  keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
 |   2a 58 ce d8
 | peer keymat  0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1  df 92 21 c8
 |   77 8f 8f 07  5c ee d5 26  1e 9f 3d b0  17 f3 f7 fc
 |   e8 5e 55 44
+=======
+| prf+[5]:  ab b9 f5 b7  c1 5b c0 6a  13 78 4e 64  33 75 37 ba
+|   9b fc 2d f6
+| our  keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
+|   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
+|   2a 58 ce d8  0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1
+| peer keymat  df 92 21 c8  77 8f 8f 07  5c ee d5 26  1e 9f 3d b0
+|   17 f3 f7 fc  e8 5e 55 44  63 f0 30 94  2f 4e 11 2a
+|   ab b9 f5 b7  c1 5b c0 6a  13 78 4e 64  33 75 37 ba
+>>>>>>> a6fc67cce... wo#6269 . added rekey test cases to update
 | emitting 9 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07  08
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
@@ -1117,7 +1132,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 2c  00 00 2c 00
 |   00 00 28 01  03 04 03 12  34 56 78 03  00 00 0c 01
-|   00 00 0c 80  0e 00 80 03  00 00 08 03  00 00 00 00
+|   00 00 0c 80  0e 00 80 03  00 00 08 03  00 00 0c 00
 |   00 00 08 05  00 00 00 2d  00 00 18 01  00 00 00 07
 |   00 00 10 00  00 ff ff 5d  b8 d8 23 5d  b8 d8 23 00
 |   00 00 18 01  00 00 00 07  00 00 10 00  00 ff ff 0a
@@ -1206,11 +1221,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   55 97 f4 9b  5e aa da fb  46 a7 5c 15  c5 15 06 12
 |   86 9e 68 50  2a 65 f6 e8  5f 41 63 fc  ea 68 15 d7
 |   8a 9f 7e 0c  4e 9b 2f e9  de 5f fe 95  8d 56 b0 b9
-|   a7 cc 18 28  f6 ed b5 40  a9 d9 be 49  6a 4b 5d 24
-|   68 86 d1 d7  62 30 cc 6f  aa 42 6d fb  0b 66 f5 c4
-|   bf 06 5a fd  73 01 c2 10  f9 fc dc bf  73 d5 91 77
-|   6e 37 28 88  07 dd c0 bc  b2 63 77 f1  1a bf 01 99
-|   99 33 0b bd  31 ae 5d 86  1e c1 0d fa  ce 5f 59 39
+|   74 e2 4c 37  27 c9 fe 45  1f 46 95 0c  a3 43 cf 39
+|   ae 5b 3f 59  56 3b c6 20  9a 95 e7 25  42 5c cc d1
+|   01 a5 06 b2  03 6d 6c 83  9d 5c d7 8a  49 c2 31 b6
+|   31 58 cb fd  25 17 93 f7  e0 af 72 27  a4 96 2e 27
+|   cd 0e b3 38  56 24 18 6b  f4 9c 25 c9  d2 5d 75 05
 | data being hmac:  8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
 |   2e 20 23 20  00 00 00 01  00 00 05 c0  24 00 05 a4
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1297,19 +1312,19 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   55 97 f4 9b  5e aa da fb  46 a7 5c 15  c5 15 06 12
 |   86 9e 68 50  2a 65 f6 e8  5f 41 63 fc  ea 68 15 d7
 |   8a 9f 7e 0c  4e 9b 2f e9  de 5f fe 95  8d 56 b0 b9
-|   a7 cc 18 28  f6 ed b5 40  a9 d9 be 49  6a 4b 5d 24
-|   68 86 d1 d7  62 30 cc 6f  aa 42 6d fb  0b 66 f5 c4
-|   bf 06 5a fd  73 01 c2 10  f9 fc dc bf  73 d5 91 77
-|   6e 37 28 88  07 dd c0 bc  b2 63 77 f1  1a bf 01 99
-|   99 33 0b bd  31 ae 5d 86  1e c1 0d fa  ce 5f 59 39
+|   74 e2 4c 37  27 c9 fe 45  1f 46 95 0c  a3 43 cf 39
+|   ae 5b 3f 59  56 3b c6 20  9a 95 e7 25  42 5c cc d1
+|   01 a5 06 b2  03 6d 6c 83  9d 5c d7 8a  49 c2 31 b6
+|   31 58 cb fd  25 17 93 f7  e0 af 72 27  a4 96 2e 27
+|   cd 0e b3 38  56 24 18 6b  f4 9c 25 c9  d2 5d 75 05
 | out calculated auth:
-|   af d9 7a 27  c2 13 b7 0d  f3 9b 24 5d  eb 0c 9a a3
+|   ef 78 dd 8e  95 82 67 04  40 cd bd 9b  51 85 28 75
 | #2 complete v2 state transition with STF_OK
 ./davecertR2-id transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
 ./davecertR2-id STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
 ./davecertR2-id negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.35,93.184.216.35 proto:0 port:0-65535]
-./davecertR2-id STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-NONE NATOA=none NATD=none DPD=none}
+./davecertR2-id STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
 | sending reply packet to 93.184.216.35:500 (from port 500)
 sending 1472 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.35:500 (using #2)
 |   8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
@@ -1398,12 +1413,12 @@ sending 1472 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 |   55 97 f4 9b  5e aa da fb  46 a7 5c 15  c5 15 06 12
 |   86 9e 68 50  2a 65 f6 e8  5f 41 63 fc  ea 68 15 d7
 |   8a 9f 7e 0c  4e 9b 2f e9  de 5f fe 95  8d 56 b0 b9
-|   a7 cc 18 28  f6 ed b5 40  a9 d9 be 49  6a 4b 5d 24
-|   68 86 d1 d7  62 30 cc 6f  aa 42 6d fb  0b 66 f5 c4
-|   bf 06 5a fd  73 01 c2 10  f9 fc dc bf  73 d5 91 77
-|   6e 37 28 88  07 dd c0 bc  b2 63 77 f1  1a bf 01 99
-|   99 33 0b bd  31 ae 5d 86  1e c1 0d fa  ce 5f 59 39
-|   af d9 7a 27  c2 13 b7 0d  f3 9b 24 5d  eb 0c 9a a3
+|   74 e2 4c 37  27 c9 fe 45  1f 46 95 0c  a3 43 cf 39
+|   ae 5b 3f 59  56 3b c6 20  9a 95 e7 25  42 5c cc d1
+|   01 a5 06 b2  03 6d 6c 83  9d 5c d7 8a  49 c2 31 b6
+|   31 58 cb fd  25 17 93 f7  e0 af 72 27  a4 96 2e 27
+|   cd 0e b3 38  56 24 18 6b  f4 9c 25 c9  d2 5d 75 05
+|   ef 78 dd 8e  95 82 67 04  40 cd bd 9b  51 85 28 75
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 ./davecertR2-id leak: reply packet, item size: X

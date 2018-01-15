@@ -652,7 +652,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  2c 00 00 2c  00 00 00 28  01 03 04 03
 |   12 34 56 78  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 00  00 00 00 08  05 00 00 00
+|   03 00 00 08  03 00 00 0c  00 00 00 08  05 00 00 00
 |   2d 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
 |   c0 a8 01 01  c0 a8 01 01  00 00 00 18  01 00 00 00
 |   07 00 00 10  00 00 ff ff  84 d5 ee 07  84 d5 ee 07
@@ -673,11 +673,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   6e 43 ec 42  52 de 98 31  7c 56 d1 e5  cc 3e 38 92
 |   f6 61 10 03  b6 92 0a a7  25 4d f6 84  ac 78 d2 37
 |   e0 cd 44 f0  96 f0 d7 80  aa fa 00 fc  70 36 2f 45
-|   ae 3c 16 18  e6 e7 cc 00  97 20 d9 96  b6 4e ed 28
-|   db f3 75 bd  6d 8f fa 21  92 ec 4a ad  57 1f 82 4c
-|   03 5f 67 15  43 b8 51 aa  62 f5 f0 0f  ef 8c 50 80
-|   31 55 9b c3  d8 fb a0 c1  15 33 33 4c  d8 05 da 9a
-|   61 4d ee 3b  6c 18 c0 da  5a e4 cb 18  8e 55 3f 36
+|   f6 93 43 3d  71 5a 9a 69  18 55 a5 bc  f8 4d 70 e3
+|   47 07 04 ef  d7 55 74 72  25 36 fb 31  ea 0e bd 0e
+|   4c e9 ac 02  92 9f 20 71  55 f9 53 aa  cf 1e 3d 10
+|   35 63 79 d3  82 8a 2e 06  e2 1f 4e 40  25 d2 03 26
+|   d3 c8 2b ea  51 e0 ce 98  d3 45 6e c1  72 8c ef 46
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 80  24 00 01 64
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -696,13 +696,13 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   6e 43 ec 42  52 de 98 31  7c 56 d1 e5  cc 3e 38 92
 |   f6 61 10 03  b6 92 0a a7  25 4d f6 84  ac 78 d2 37
 |   e0 cd 44 f0  96 f0 d7 80  aa fa 00 fc  70 36 2f 45
-|   ae 3c 16 18  e6 e7 cc 00  97 20 d9 96  b6 4e ed 28
-|   db f3 75 bd  6d 8f fa 21  92 ec 4a ad  57 1f 82 4c
-|   03 5f 67 15  43 b8 51 aa  62 f5 f0 0f  ef 8c 50 80
-|   31 55 9b c3  d8 fb a0 c1  15 33 33 4c  d8 05 da 9a
-|   61 4d ee 3b  6c 18 c0 da  5a e4 cb 18  8e 55 3f 36
+|   f6 93 43 3d  71 5a 9a 69  18 55 a5 bc  f8 4d 70 e3
+|   47 07 04 ef  d7 55 74 72  25 36 fb 31  ea 0e bd 0e
+|   4c e9 ac 02  92 9f 20 71  55 f9 53 aa  cf 1e 3d 10
+|   35 63 79 d3  82 8a 2e 06  e2 1f 4e 40  25 d2 03 26
+|   d3 c8 2b ea  51 e0 ce 98  d3 45 6e c1  72 8c ef 46
 | out calculated auth:
-|   66 af 04 13  64 43 7a f0  c4 a9 26 7c  0f c4 de 8a
+|   9d 47 ac c9  81 2d 8f 89  bd f2 64 36  d5 6a 01 28
 | #2 complete v2 state transition with STF_OK
 ./h2hR2 transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -729,12 +729,12 @@ sending 384 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   6e 43 ec 42  52 de 98 31  7c 56 d1 e5  cc 3e 38 92
 |   f6 61 10 03  b6 92 0a a7  25 4d f6 84  ac 78 d2 37
 |   e0 cd 44 f0  96 f0 d7 80  aa fa 00 fc  70 36 2f 45
-|   ae 3c 16 18  e6 e7 cc 00  97 20 d9 96  b6 4e ed 28
-|   db f3 75 bd  6d 8f fa 21  92 ec 4a ad  57 1f 82 4c
-|   03 5f 67 15  43 b8 51 aa  62 f5 f0 0f  ef 8c 50 80
-|   31 55 9b c3  d8 fb a0 c1  15 33 33 4c  d8 05 da 9a
-|   61 4d ee 3b  6c 18 c0 da  5a e4 cb 18  8e 55 3f 36
-|   66 af 04 13  64 43 7a f0  c4 a9 26 7c  0f c4 de 8a
+|   f6 93 43 3d  71 5a 9a 69  18 55 a5 bc  f8 4d 70 e3
+|   47 07 04 ef  d7 55 74 72  25 36 fb 31  ea 0e bd 0e
+|   4c e9 ac 02  92 9f 20 71  55 f9 53 aa  cf 1e 3d 10
+|   35 63 79 d3  82 8a 2e 06  e2 1f 4e 40  25 d2 03 26
+|   d3 c8 2b ea  51 e0 ce 98  d3 45 6e c1  72 8c ef 46
+|   9d 47 ac c9  81 2d 8f 89  bd f2 64 36  d5 6a 01 28
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 ./h2hR2 leak: reply packet, item size: X

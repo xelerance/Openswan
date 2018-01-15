@@ -463,7 +463,11 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
 ./rekeyv2nopfs-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/00000000)
 ./rekeyv2nopfs-inCR1 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
+<<<<<<< HEAD
 ./rekeyv2nopfs-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc[128]-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
+=======
+./rekeyv2nopfs-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
+>>>>>>> a6fc67cce... wo#6269 . added rekey test cases to update
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 now pretend that the keylife timer is up, and rekey the connection
