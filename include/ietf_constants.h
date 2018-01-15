@@ -540,11 +540,13 @@ extern const char *const critical_names[];
  * extern enum_names protocol_names;
  * same in IKEv1 and IKEv2.
  */
-#define PROTO_RESERVED           0  /* only in IKEv2 */
-#define PROTO_ISAKMP             1
-#define PROTO_IPSEC_AH           2
-#define PROTO_IPSEC_ESP          3
-#define PROTO_IPCOMP             4  /* only in IKEv1 */
+enum ikev2_protocol_names {
+  PROTO_RESERVED  = 0,  /* only in IKEv2 */
+  PROTO_ISAKMP    = 1,
+  PROTO_IPSEC_AH  = 2,
+  PROTO_IPSEC_ESP = 3,
+  PROTO_IPCOMP    = 4  /* only in IKEv1 */
+};
 
 /*
  * IKEv2 proposal (type is enum_names: trans_type_names )
