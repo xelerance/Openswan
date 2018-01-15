@@ -85,18 +85,6 @@ int db2_prop_init(struct db2_context *ctx
 /*	Clear out a db object */
 void db2_destroy(struct db2_context *ctx);
 
-/*	Start a new transform */
-int db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value);
-
-/*	Add a new attribute by copying db_attr content */
-int db2_attr_add(struct db2_context *ctx, u_int16_t type, u_int16_t val);
-
-
-/*	Add a new attribute by value */
-int db2_attr_add_values(struct db2_context *ctx
-                       , u_int16_t type
-                       , u_int16_t val);
-
 /*	Free a db object itself, and things contained in it */
 void db2_free(struct db2_context *ctx);
 
@@ -106,6 +94,13 @@ int db2_prop_add(struct db2_context *ctx, u_int8_t protoid, u_int8_t spisize);
 /*      Then add an alternative to a propsal */
 int db2_prop_alternative(struct db2_context *ctx, u_int8_t protoid);
 
+/*	Start a new transform */
+int db2_trans_add(struct db2_context *ctx, u_int8_t transid, u_int8_t value);
+
+/*	Add a new attribute by value */
+int db2_attr_add(struct db2_context *ctx
+                 , u_int16_t type
+                 , u_int16_t val);
 
 /*	Start a new transform */
 void db2_prop_close(struct db2_context *ctx);
