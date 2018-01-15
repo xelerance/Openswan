@@ -12,6 +12,7 @@ header() {
 
 set -e && make programs
 
+rm -f */core
 
 for f in $(make testlist)
 do
@@ -23,3 +24,6 @@ do
     )
 done
 
+if [ -f */core ]; then
+   exit 10
+fi
