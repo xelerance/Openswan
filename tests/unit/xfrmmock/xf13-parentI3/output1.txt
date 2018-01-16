@@ -345,12 +345,12 @@ writing netlink for esp.12345678@132.213.238.7
 0080: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 00e0: 01 40 00 00  02 00 01 20  20 00 00 00  00 00 00 00
 00f0: 6c 00 14 00  73 68 61 32  35 36 00 00  00 00 00 00
-0130: 00 00 00 00  00 01 00 00  80 00 00 00  1a 76 a5 e4
-0140: c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
-0150: 0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1  58 00 02 00
+0130: 00 00 00 00  00 01 00 00  80 00 00 00  72 1e 60 13
+0140: 57 de 2f 73  26 0b 97 ed  e8 30 0c 93  a0 35 43 a8
+0150: f7 04 26 6f  38 14 61 5d  e9 92 de ae  58 00 02 00
 0160: 61 65 73 00  35 36 00 00  00 00 00 00  00 00 00 00
-01a0: 80 00 00 00  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59
-01b0: 56 99 8e be
+01a0: 80 00 00 00  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18
+01b0: 4f 92 37 91
 writing netlink for esp.12345678@192.168.1.1
 0000: b4 01 00 00  1a 00 05 00  00 00 00 00  00 00 00 00
 0040: 00 00 00 00  00 00 00 00  c0 a8 01 01  00 00 00 00
@@ -360,12 +360,12 @@ writing netlink for esp.12345678@192.168.1.1
 0080: ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
 00e0: 01 40 00 00  02 00 01 20  20 00 00 00  00 00 00 00
 00f0: 6c 00 14 00  73 68 61 32  35 36 00 00  00 00 00 00
-0130: 00 00 00 00  00 01 00 00  80 00 00 00  17 f3 f7 fc
-0140: e8 5e 55 44  63 f0 30 94  2f 4e 11 2a  ab b9 f5 b7
-0150: c1 5b c0 6a  13 78 4e 64  33 75 37 ba  58 00 02 00
+0130: 00 00 00 00  00 01 00 00  80 00 00 00  78 ce 12 29
+0140: 41 33 81 35  6b fd e0 2c  5d 71 be e4  71 14 55 20
+0150: 9a 5f fc 4d  ba 8d bb e0  ff 88 56 db  58 00 02 00
 0160: 61 65 73 00  35 36 00 00  00 00 00 00  00 00 00 00
-01a0: 80 00 00 00  df 92 21 c8  77 8f 8f 07  5c ee d5 26
-01b0: 1e 9f 3d b0
+01a0: 80 00 00 00  da 04 4f fe  bc 2d b7 34  0f 45 c4 da
+01b0: fc 47 08 a0
 | creating SPD to 132.213.238.7->spi=00010000@192.168.1.1 proto=4
 writing netlink policy for tun.10000@192.168.1.1
 0000: fc 00 00 00  19 00 05 00  00 00 00 00  00 00 00 00
@@ -420,7 +420,7 @@ writing netlink policy for tun.0@132.213.238.7
 | command executing route-client
 | executing route
 | route_and_eroute: instance "parker1--jj2", setting eroute_owner to #2 (was #0) (newest_ipsec_sa=#2)
-| processor 'initiator-auth-process' returned 3
+| processor 'initiator-auth-process' returned STF_OK (3)
 | #2 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0

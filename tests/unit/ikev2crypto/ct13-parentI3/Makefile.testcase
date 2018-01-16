@@ -5,6 +5,7 @@ SAMPLEDIR=../../libpluto/samples
 CONNNAME=parker1--jj2
 ENDNAME=parker
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 
 # /dev/null is output pcap, as there is none.
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null parentR1.pcap cryptoR2.pcap

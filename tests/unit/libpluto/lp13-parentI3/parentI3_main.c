@@ -11,6 +11,10 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 };
 #endif
 
+#ifndef SAMPLEDIR
+#define SAMPLEDIR "../samples"
+#endif
+
 
 int main(int argc, char *argv[])
 {
@@ -53,7 +57,7 @@ int main(int argc, char *argv[])
     init_seam_kernelalgs();
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
-			       , "../samples/parker.secrets"
+			       , SAMPLEDIR "/parker.secrets"
 			       , NULL, NULL);
 
     infile = argv[0];
