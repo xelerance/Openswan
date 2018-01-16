@@ -13,9 +13,9 @@ processing whack msg time: X size: Y
 | find_host_pair: concluded with <none>
 | found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
 | Added new connection rw-any with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-| from whack: got --esp=3des-md5;modp1024
-| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
-| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+| from whack: got --esp=aes128-sha1;modp2048
+| esp string values: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
+| ike (phase1) algorihtm values: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14); flags=-strict
 ./certreplyselfR1   loading certificate from moonCert.pem
 ./certreplyselfR1   loaded host cert file '../samples/gatewaycert/certs/moonCert.pem' (1411 bytes)
 | certificate is valid
@@ -24,6 +24,7 @@ processing whack msg time: X size: Y
 | based upon ID_wildcard policy, the connection is a template.
 | alg_info_addref() alg_info->ref_cnt=1
 | alg_info_addref() alg_info->ref_cnt=1
+| orient rw-any reference sr#1 this: addr:132.213.238.7 that: %any
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -42,51 +43,38 @@ RC=0 "rw-any":     myip=unset; hisip=unset; mycert=moonCert.pem;
 RC=0 "rw-any":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'...'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 RC=0 "rw-any":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_TEMPLATE
-RC=0 "rw-any":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1024(2); flags=-strict
-| esp algid=3 not available
+RC=0 "rw-any":   ESP algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)_000-MODP2048(14); flags=-strict
+| esp algid=12 not available
 RC=0 "rw-any":   ESP algorithms loaded: none
 |   =========== input from from parentI1.pcap ========
-| *received 628 bytes from 93.184.216.34:500 on eth0 (port=500)
+| *received 432 bytes from 93.184.216.34:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
-|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
-|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
-|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
-|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
-|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
-|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
-|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
-|   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
-|   18 4f a0 1e  5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53
-|   5d 17 6a be  1b c5 70 ab  34 47 bc 09  14 7c aa 91
-|   9c 8f 81 dc  1e f9 87 cd  6a ec fa f3  a5 9e 37 bc
-|   ac 3d fd e1  32 8e e8 b3  fe d3 8b f4  7b 50 34 13
-|   33 7a 93 ea  e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2
-|   55 ce 45 22  9f c7 c9 48  43 a3 e2 64  b5 5d 43 38
-|   c8 fe f1 d3  06 43 f0 0a  e8 6d 61 8c  60 78 d9 98
-|   d3 1b 3b 5e  f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62
-|   b2 3e 0b 17  af 6c b8 31  08 d7 19 5a  7b c4 54 c2
-|   13 47 98 c2  cc d2 16 29  75 6c 03 fb  1e 9c 9d 21
-|   0c a1 e6 c2  f3 f2 49 2c  f6 06 73 c1  96 1e ce 58
-|   81 01 1c cb  16 dc f9 fc  c7 93 08 75  58 16 57 71
-|   69 96 66 b7  a9 81 7f f7  37 4d 7c 41  38 62 a6 39
-|   00 81 ca 3d  1d fc f7 b5  08 38 d4 34  70 22 6c 21
-|   d2 5b 20 a1  d2 ba 2a d1  89 f3 20 79  ce ac 1e c2
-|   ec 7d ae 76  94 40 39 a0  29 00 00 14  20 98 9d 37
-|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  29 00 00 1c
-|   00 00 40 04  27 ec f2 2b  d5 28 36 92  28 23 8a 58
-|   36 a2 4f d8  ee 6c cd bb  2b 00 00 1c  00 00 40 05
-|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
-|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   21 20 22 08  00 00 00 00  00 00 01 b0  22 00 00 30
+|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  02 00 00 02  03 00 00 08
+|   03 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
+|   00 0e 00 00  3d a6 6a 81  e2 92 09 be  18 4f a0 1e
+|   5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53  5d 17 6a be
+|   1b c5 70 ab  34 47 bc 09  14 7c aa 91  9c 8f 81 dc
+|   1e f9 87 cd  6a ec fa f3  a5 9e 37 bc  ac 3d fd e1
+|   32 8e e8 b3  fe d3 8b f4  7b 50 34 13  33 7a 93 ea
+|   e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2  55 ce 45 22
+|   9f c7 c9 48  43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3
+|   06 43 f0 0a  e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e
+|   f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17
+|   af 6c b8 31  08 d7 19 5a  7b c4 54 c2  13 47 98 c2
+|   cc d2 16 29  75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2
+|   f3 f2 49 2c  f6 06 73 c1  96 1e ce 58  81 01 1c cb
+|   16 dc f9 fc  c7 93 08 75  58 16 57 71  69 96 66 b7
+|   a9 81 7f f7  37 4d 7c 41  38 62 a6 39  00 81 ca 3d
+|   1d fc f7 b5  08 38 d4 34  70 22 6c 21  d2 5b 20 a1
+|   d2 ba 2a d1  89 f3 20 79  ce ac 1e c2  ec 7d ae 76
+|   94 40 39 a0  29 00 00 14  20 98 9d 37  a8 14 a6 4d
+|   8f f0 7c 08  d3 20 e9 e3  29 00 00 1c  00 00 40 04
+|   27 ec f2 2b  d5 28 36 92  28 23 8a 58  36 a2 4f d8
+|   ee 6c cd bb  2b 00 00 1c  00 00 40 05  cd bc 1b 74
+|   02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -115,6 +103,7 @@ RC=0 "rw-any":   ESP algorithms loaded: none
 | find_host_connection2 returns rw-any (ike=none/none)
 ./certreplyselfR1 tentatively considering connection: rw-any
 | creating state object #1 at Z
+| orient rw-any reference sr#1 this: addr:132.213.238.7 that: %any
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient rw-any checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
@@ -153,121 +142,58 @@ RC=0 "rw-any":   ESP algorithms loaded: none
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
 | ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
+|    length: 44
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+|    length: 12
 |    transform type: 1
 |    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
 | collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 2
-|    transform ID: 5
-| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 12
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 14
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 14<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 1 failed encr= (policy:                3des[-1] vs offered:aes_cbc[-1]) [0,1]
-| proposal 1 failed integ=(policy:         hmac_md5_96 vs offered:hmac_sha2_256_128)
-| proposal 1 failed prf=  (policy:        prf-hmac-md5 vs offered:prf-hmac-sha2-256)
-| proposal 1 failed dh=   (policy:OAKLEY_GROUP_MODP1024 vs offered:OAKLEY_GROUP_MODP2048)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 2
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 12
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 5
-| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
+|    transform ID: 2
+| collect encr: 12<=1 integ: 0<=0 prf: 2<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 3
 |    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 0<=0
+| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 0<=0
 | *****parse IKEv2 Transform Substructure Payload:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 14<=1
+| collect encr: 12<=1 integ: 2<=1 prf: 2<=1 dh: 14<=1
 | encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 2 failed encr= (policy:                3des[-1] vs offered:aes_cbc[-1]) [0,1]
-| proposal 2 failed integ=(policy:         hmac_md5_96 vs offered:hmac_sha1_96)
-| proposal 2 failed prf=  (policy:        prf-hmac-md5 vs offered:prf-hmac-sha2-256)
-| proposal 2 failed dh=   (policy:OAKLEY_GROUP_MODP1024 vs offered:OAKLEY_GROUP_MODP2048)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 3
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha1_96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
+| ****emit IKEv2 Proposal Substructure Payload:
+|    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 1
 |    transform ID: 12
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 5
-| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 3
-|    transform ID: 12
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 4
-|    transform ID: 5
-| collect encr: 12<=1 integ: 12<=1 prf: 5<=1 dh: 5<=1
-| encr: 0<=1 integ: 0<=1 prf: 0<=1 dh: 0<=1
-| proposal 3 failed encr= (policy:                3des[-1] vs offered:aes_cbc[-1]) [0,1]
-| proposal 3 failed integ=(policy:         hmac_md5_96 vs offered:hmac_sha2_256_128)
-| proposal 3 failed prf=  (policy:        prf-hmac-md5 vs offered:prf-hmac-sha2-256)
-| proposal 3 failed dh=   (policy:OAKLEY_GROUP_MODP1024 vs offered:OAKLEY_GROUP_MODP1536)
-| ****parse IKEv2 Proposal Substructure Payload:
-|    length: 40
-|    prop #: 4
-|    proto ID: 1
-|    spi size: 0
-|    # transforms: 4
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 1
-|    transform ID: 12
-| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
-|    transform type: 2
-|    transform ID: 5
-| collect encr: 12<=1 integ: 0<=0 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+| ******emit IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+|     [128 is 128??]
+| emitting length of IKEv2 Transform Substructure Payload: 12
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 3
 |    transform ID: 2
-| collect encr: 12<=1 integ: 2<=1 prf: 5<=1 dh: 0<=0
-| *****parse IKEv2 Transform Substructure Payload:
-|    length: 8
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
+|    transform type: 2
+|    transform ID: 2
+| emitting length of IKEv2 Transform Substructure Payload: 8
+| *****emit IKEv2 Transform Substructure Payload:
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
@@ -342,8 +268,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
-|   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
-|   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
+|   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
+|   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
 |   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
 |   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
 |   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
@@ -370,7 +296,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplyselfR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
-./certreplyselfR1 leak: alg_info_ike, item size: X
 ./certreplyselfR1 leak: ikev2_inI1outR1 KE, item size: X
 ./certreplyselfR1 leak: msg_digest, item size: X
 ./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
@@ -384,7 +309,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 ./certreplyselfR1 leak: pubkey entry, item size: X
 ./certreplyselfR1 leak: pubkey, item size: X
 ./certreplyselfR1 leak: certificate filename, item size: X
-./certreplyselfR1 leak: alg_info_ike, item size: X
 ./certreplyselfR1 leak: 2 * id list, item size: X
 ./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
 ./certreplyselfR1 leak: pubkey, item size: X
