@@ -1113,26 +1113,22 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 high  0a 02 ff ff
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ikev2_derive_child_keys: using prf-hmac-sha2-256 for prf+
 | childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is RESPONDER
-| prf+[1]:  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
-|   1a 76 a5 e4
-| prf+[2]:  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
-|   0f 77 b6 4a
-| prf+[3]:  6f 3d 81 fb  39 51 57 a1  df 92 21 c8  77 8f 8f 07
-|   5c ee d5 26
-| prf+[4]:  1e 9f 3d b0  17 f3 f7 fc  e8 5e 55 44  63 f0 30 94
-|   2f 4e 11 2a
-| prf+[5]:  ab b9 f5 b7  c1 5b c0 6a  13 78 4e 64  33 75 37 ba
-|   9b fc 2d f6
-| our  keymat  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
-|   1a 76 a5 e4  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a
-|   2a 58 ce d8  0f 77 b6 4a  6f 3d 81 fb  39 51 57 a1
-| peer keymat  df 92 21 c8  77 8f 8f 07  5c ee d5 26  1e 9f 3d b0
-|   17 f3 f7 fc  e8 5e 55 44  63 f0 30 94  2f 4e 11 2a
-|   ab b9 f5 b7  c1 5b c0 6a  13 78 4e 64  33 75 37 ba
+| prf+[1]:  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+| prf+[2]:  a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+|   da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+| prf+[3]:  78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
+| our  keymat  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+|   a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+| peer keymat  da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+|   78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
 | emitting 13 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07  08 09 0a 0b  0c
 | emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
@@ -1403,7 +1399,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
 ./certreplyselfR2 STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
 ./certreplyselfR2 negotiated tunnel [10.2.0.0,10.2.255.255 proto:0 port:0-65535] -> [93.184.216.34,93.184.216.34 proto:0 port:0-65535]
-./certreplyselfR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
+./certreplyselfR2 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc[128]-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
 | sending reply packet to 93.184.216.34:500 (from port 500)
 sending 1408 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31

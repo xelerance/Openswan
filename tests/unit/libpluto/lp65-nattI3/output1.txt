@@ -98,7 +98,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
 |   6e 69 74 30
 ./nattI3 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./nattI3 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+./nattI3 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from nattR1.pcap
 |   =========== input from from nattR1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 55044
@@ -180,7 +180,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | #2 complete v2 state transition with STF_OK
 ./nattI3 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./nattI3 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000000/00000000)
+./nattI3 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000000/4294967295)
 | sending reply packet to 132.213.238.7:4500 (from port 4500)
 sending 464 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to 132.213.238.7:4500 (using #2)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -261,6 +261,7 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
+| decrypting as INITIATOR, using RESPONDER keys
 ./nattI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
@@ -300,25 +301,20 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
-| empty esp_info, returning defaults
 | processor 'initiator-auth-process' returned STF_OK (3)
 | #2 complete v2 state transition with STF_OK
 ./nattI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
-./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/00000000)
+./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/4294967295)
 ./nattI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
-<<<<<<< HEAD
 ./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc[128]-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
-=======
-./nattI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128- NATOA=none NATD=none DPD=none}
->>>>>>> a6fc67cce... wo#6269 . added rekey test cases to update
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 now look at the resulting SAs produced.
 RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
 ./nattI3 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./nattI3 deleting state #2 (STATE_CHILD_C1_KEYED)

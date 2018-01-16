@@ -157,7 +157,7 @@ sending 628 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
-| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128[-1] prf=prf-hmac-sha2-256[-1] modp=OAKLEY_GROUP_MODP2048
+| selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -459,23 +459,55 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
-| empty esp_info, returning defaults
-| processor 'initiator-auth-process' returned STF_OK (3)
+| ***parse IKEv2 Proposal Substructure Payload:
+|    length: 40
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
+| CHILD SA SPI  12 34 56 78
+| SPI received: 12345678
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| *****parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| collect encr: 12<=1 integ: 0<=0 prf: 0<=0 dh: 0<=0
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 12
+| collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 5
+|    transform ID: 0
+| collect encr: 12<=1 integ: 12<=1 prf: 0<=0 dh: 0<=0
+| processor 'initiator-auth-process' returned 3
 | #2 complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
 ./parentI3 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/4294967295)
 ./parentI3 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
-./parentI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
+./parentI3 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=aes_cbc[128]-hmac_sha2_256_128 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
 ./parentI3 deleting connection
 | pass 0: considering CHILD SAs to delete
-./parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
+./parentI3 deleting state #2 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
-| sending Child SA delete equest
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| pass 1: considering PARENT SAs to delete
+./parentI3 deleting state #1 (STATE_PARENT_I3)
+| considering request to delete IKE parent state
+| sending IKE SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -490,114 +522,43 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
 |    critical bit: none
-|    protocol ID: 3
-|    SPI size: 4
-|    number of SPIs: 1
-| emitting 4 raw bytes of local spis into IKEv2 Delete Payload
-| local spis  12 34 56 78
-| emitting length of IKEv2 Delete Payload: 12
-| emitting 4 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
-| encrypting as INITIATOR
-| data before encryption:
-|   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
-| data after encryption:
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-| out calculated auth:
-|   02 3a aa 39  66 66 ff a9  d3 01 40 55
-sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
-|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
-|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-|   02 3a aa 39  66 66 ff a9  d3 01 40 55
-| pass 1: considering PARENT SAs to delete
-./parentI3 deleting state #1 (STATE_PARENT_I3)
-| considering request to delete IKE parent state
-| sending IKE SA delete request
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   de bc 58 3a  8f 40 d0 cf
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_INFORMATIONAL
-|    flags: ISAKMP_FLAG_INIT
-|    message ID:  00 00 00 03
-| ***emit IKEv2 Encryption Payload:
-|    critical bit: none
-| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| *****emit IKEv2 Delete Payload:
-|    critical bit: none
 |    protocol ID: 1
 |    SPI size: 0
 |    number of SPIs: 0
 | emitting length of IKEv2 Delete Payload: 8
 | emitting 8 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07
-| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 48
-| emitting length of ISAKMP Message: 76
+| emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 52
+| emitting length of ISAKMP Message: 80
 | encrypting as INITIATOR
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 | out calculated auth:
-|   39 4b 66 f8  5e 19 f9 eb  15 95 53 79
-sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
+|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+sending 80 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-|   39 4b 66 f8  5e 19 f9 eb  15 95 53 79
-./parentI3 leak: skeyseed_t1, item size: X
-./parentI3 leak: responder keys, item size: X
-./parentI3 leak: initiator keys, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_prop, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: 4 * sa copy attrs array, item size: X
-./parentI3 leak: sa copy trans array, item size: X
-./parentI3 leak: sa copy prop array, item size: X
-./parentI3 leak: sa copy prop conj array, item size: X
-./parentI3 leak: sa copy prop_conj, item size: X
+|   24 38 69 32  56 f1 7c 17  3d f6 b0 6d  45 d0 7a c7
+./parentI3 leak: alg_info_esp, item size: X
+./parentI3 leak: db_context->attrs, item size: X
+./parentI3 leak: db_context->trans, item size: X
+./parentI3 leak: 2 * db_context->conj, item size: X
+./parentI3 leak: v2 policy database, item size: X
 ./parentI3 leak: reply packet, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_prop, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: 4 * sa copy attrs array, item size: X
-./parentI3 leak: sa copy trans array, item size: X
-./parentI3 leak: sa copy prop array, item size: X
-./parentI3 leak: sa copy prop conj array, item size: X
-./parentI3 leak: sa copy prop_conj, item size: X
+./parentI3 leak: alg_info_esp, item size: X
+./parentI3 leak: db_context->attrs, item size: X
+./parentI3 leak: db_context->trans, item size: X
+./parentI3 leak: 2 * db_context->conj, item size: X
+./parentI3 leak: v2 policy database, item size: X
 ./parentI3 leak: st_nr in duplicate_state, item size: X
 ./parentI3 leak: st_ni in duplicate_state, item size: X
 ./parentI3 leak: st_skey_pr in duplicate_state, item size: X
@@ -611,70 +572,9 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI3 leak: st_enc_key in duplicate_state, item size: X
 ./parentI3 leak: struct state in new_state(), item size: X
 ./parentI3 leak: ikev2_inR1outI2 KE, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_prop, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
 ./parentI3 leak: msg_digest, item size: X
 ./parentI3 leak: ikev2_outI1 KE, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_prop, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
-./parentI3 leak: db_attrs, item size: X
-./parentI3 leak: db_v2_trans, item size: X
-./parentI3 leak: db_v2_prop_conj, item size: X
+./parentI3 leak: alg_info_ike, item size: X
 ./parentI3 leak: keep id name, item size: X
 ./parentI3 leak: pubkey entry, item size: X
 ./parentI3 leak: rfc3110 format of public key, item size: X
@@ -700,4 +600,6 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 ./parentI3 leak: pubkey, item size: X
 ./parentI3 leak: secret, item size: X
 ./parentI3 leak: 3 * hasher name, item size: X
+./parentI3 leak: 10 * group description, item size: X
 ./parentI3 leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
