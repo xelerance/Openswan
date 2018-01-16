@@ -11,6 +11,7 @@
 static void init_local_interface(void)
 {
     init_jamesjohnson_interface();
+    init_seam_kernelalgs();
 }
 
 static void init_fake_secrets(void)
