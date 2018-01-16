@@ -208,10 +208,15 @@ init_crypto(void)
 	    }
 #endif
 
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_sha1, FALSE);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_sha1,  FALSE);
-	    ike_alg_add((struct ike_alg *) &crypto_hasher_md5,  FALSE);
-	    ike_alg_add((struct ike_alg *) &crypto_integ_md5,   FALSE);
+#ifdef USE_SHA1
+            ike_alg_register_integ(&crypto_integ_sha1);
+            ike_alg_register_prf(&crypto_hasher_sha1);
+#endif
+
+#ifdef USE_MD5
+            ike_alg_register_prf(&crypto_hasher_md5);
+            ike_alg_register_integ(&crypto_integ_md5);
+#endif
 	}
 
         /* this loads the old switch for DES/AES, and needs to be obsoleted */

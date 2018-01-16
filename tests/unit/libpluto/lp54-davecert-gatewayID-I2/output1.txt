@@ -2,6 +2,10 @@
 ./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./davecertI2-id ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./davecertI2-id ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./davecertI2-id ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./davecertI2-id ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./davecertI2-id adjusting ipsec.d to ../samples/selfsigned
 ./davecertI2-id loading secrets from "../samples/davecert.secrets"
 ./davecertI2-id   loaded private key file '../samples/selfsigned/private/daveKey.pem' (1679 bytes)

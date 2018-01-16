@@ -2,6 +2,10 @@
 ./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./initiateselfI2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./initiateselfI2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./initiateselfI2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./initiateselfI2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./initiateselfI2 loading secrets from "../samples/rw.secrets"
 ./initiateselfI2 loaded private key for keyid: PPK_RSA:AQOa+OIzC/4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A

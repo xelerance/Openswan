@@ -2,6 +2,10 @@
 ./certreplyR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./certreplyR2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./certreplyR2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./certreplyR2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./certreplyR2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./certreplyR2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./certreplyR2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./certreplyR2 adjusting ipsec.d to ../samples/gatewaycert
 ./certreplyR2 loading secrets from "../samples/gatewaycert.secrets"
 ./certreplyR2   loaded private key file '../samples/gatewaycert/private/moonKey.pem' (1675 bytes)

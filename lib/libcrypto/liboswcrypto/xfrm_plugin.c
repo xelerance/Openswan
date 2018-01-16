@@ -241,7 +241,7 @@ return_out:
  * 	Validate and register IKE hash algorithm object
  */
 int
-ike_alg_register_hash(struct ike_integ_desc *hash_desc)
+ike_alg_register_integ(struct ike_integ_desc *hash_desc)
 {
 	const char *alg_name = "<none>";
 	int ret=0;

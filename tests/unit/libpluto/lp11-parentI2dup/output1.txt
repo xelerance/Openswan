@@ -2,6 +2,10 @@
 ./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
 ./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./parentI2duplicate ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./parentI2duplicate ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 | processing whack message of size: A
 | processing whack message of size: A
 processing whack msg time: X size: Y
