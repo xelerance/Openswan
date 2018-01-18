@@ -1,4 +1,5 @@
 #include "parentR2_head.c"
+#include "seam_kernel.c"
 #include "seam_ikealg.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"

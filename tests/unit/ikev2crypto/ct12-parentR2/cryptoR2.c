@@ -1,4 +1,5 @@
 #include "../../libpluto/lp12-parentR2/parentR2_head.c"
+#include "seam_kernel.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_crypt.c"
