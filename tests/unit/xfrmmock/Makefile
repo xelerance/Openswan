@@ -17,6 +17,7 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 include ${OPENSWANSRCDIR}/Makefile.inc
 
 UNITTESTS=
+UNITTESTS+=xf12-parentR2
 UNITTESTS+=xf13-parentI3
 
 programs pcapupdate clean check:

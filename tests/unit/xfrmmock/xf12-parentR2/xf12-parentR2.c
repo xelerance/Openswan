@@ -6,13 +6,16 @@
 #include "../../libpluto/lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_gr_sha1_group14.c"
+#include "seam_x509.c"
 #include "seam_crypt.c"
 #include "seam_dh_v2.c"
 #include "seam_ke.c"
-#include "seam_x509.c"
+#include "seam_mockxfrm.c"
 #include "seam_cryptocontinue.c"
 
 #define TESTNAME "xf12-parentR2"
+
+void delete_cryptographic_continuation(struct state *st) {}
 
 static void init_loaded(void)
 {

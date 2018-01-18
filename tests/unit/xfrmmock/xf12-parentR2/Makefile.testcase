@@ -7,7 +7,7 @@ ENDNAME=parker
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 # /dev/null is output pcap, as there is none.
-UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/parentR2.pcap parentI1.pcap parentI2.pcap
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap parentI1.pcap parentI2.pcap
 
 pcapupdate:
 	cp ../../libpluto/lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
