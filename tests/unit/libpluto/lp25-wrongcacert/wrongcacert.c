@@ -1,7 +1,10 @@
 #include "../lp12-parentR2/parentR2_head.c"
+#include "seam_kernel.c"
 #include "seam_ikealg.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
+#include "seam_crypt.c"
+#include "seam_rsasig.c"
 #include "seam_gr_sha1_group14.c"
 
 #define TESTNAME "wrongcacert"
@@ -29,15 +32,7 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
-#define FINISH_PCAP 1
-void finish_pcap(void) {
-    time_t n;
-    n = 1438262454;   /* Thu Jul 30 09:21:01 EDT 2015 in seconds */
-    list_certs(n);
-}
-
-
-
+#include "seam_parentR2.c"
 #include "../lp12-parentR2/parentR2_main.c"
 
  /*

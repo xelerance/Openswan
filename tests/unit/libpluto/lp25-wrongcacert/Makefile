@@ -1,4 +1,4 @@
-include ../lp17-childselfpolicy/Makefile
+include ../lp21-certreplyselfR2/Makefile
 
 # Local Variables:
 # gdb-command: ""
