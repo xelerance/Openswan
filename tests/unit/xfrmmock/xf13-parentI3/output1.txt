@@ -439,6 +439,11 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 ./xf13-parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
 | sending Child SA delete equest
+| encrypting as INITIATOR
+| data before encryption:
+|   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
+| data after encryption:
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
 sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 50  2a 00 00 34
@@ -449,6 +454,11 @@ sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 
 ./xf13-parentI3 deleting state #1 (STATE_PARENT_I3)
 | considering request to delete IKE parent state
 | sending IKE SA delete request
+| encrypting as INITIATOR
+| data before encryption:
+|   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
+| data after encryption:
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 sending 80 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:55044] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 03  00 00 00 50  2a 00 00 34
