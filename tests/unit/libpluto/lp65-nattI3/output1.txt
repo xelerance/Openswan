@@ -270,7 +270,6 @@ picking: eth0:4500 float outside: 55045 <=> d: 55045
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
-| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
 ./nattI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
 | ikev2 verify required CA is '%any'

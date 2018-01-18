@@ -432,7 +432,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
-| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
 | data before decryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92

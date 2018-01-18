@@ -430,7 +430,6 @@ sending 464 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   reject: in state: STATE_CHILD_C0_KEYING, needs STATE_PARENT_I1
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
-| ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
 ./rekey-no-reply-I1 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
 | ikev2 verify required CA is '%any'
