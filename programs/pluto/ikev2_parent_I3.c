@@ -48,13 +48,8 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
     }
 
     /*
-     * the initiator sent us an encrypted payload. We need to calculate
-     * our g^xy, and skeyseed values, and then decrypt the payload.
+     * the initiator sent us an encrypted payload.
      */
-
-    DBG(DBG_CONTROLMORE
-        , DBG_log("ikev2 parent inR2: calculating g^{xy} in order to decrypt I2"));
-
     /* verify that there is in fact an encrypted payload */
     if(!md->chain[ISAKMP_NEXT_v2E]) {
         openswan_log("R2 state should receive an encrypted payload");

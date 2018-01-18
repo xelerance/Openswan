@@ -105,24 +105,23 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	st->st_esp.keymat_len = st->st_esp.attrs.transattrs.ei.enckeylen+
 		st->st_esp.attrs.transattrs.ei.authkeylen;
 
-
-/*
- *
- * Keying material MUST be taken from the expanded KEYMAT in the
- * following order:
- *
- *    All keys for SAs carrying data from the initiator to the responder
- *    are taken before SAs going in the reverse direction.
- *
- *    If multiple IPsec protocols are negotiated, keying material is
- *    taken in the order in which the protocol headers will appear in
- *    the encapsulated packet.
- *
- *    If a single protocol has both encryption and authentication keys,
- *    the encryption key is taken from the first octets of KEYMAT and
- *    the authentication key is taken from the next octets.
- *
- */
+        /*
+         *
+         * Keying material MUST be taken from the expanded KEYMAT in the
+         * following order:
+         *
+         *    All keys for SAs carrying data from the initiator to the responder
+         *    are taken before SAs going in the reverse direction.
+         *
+         *    If multiple IPsec protocols are negotiated, keying material is
+         *    taken in the order in which the protocol headers will appear in
+         *    the encapsulated packet.
+         *
+         *    If a single protocol has both encryption and authentication keys,
+         *    the encryption key is taken from the first octets of KEYMAT and
+         *    the authentication key is taken from the next octets.
+         *
+         */
 
 	DBG(DBG_CRYPT,
 	    DBG_log("%s: my role is %s", __FUNCTION__, ROLE_NAME(role)));
