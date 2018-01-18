@@ -178,13 +178,39 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| DH public value received:
+|   a5 9a 13 6c  b8 87 48 57  e1 22 6e a0  b8 55 c2 00
+|   31 15 65 84  8b f9 dc a4  5f 49 d4 c5  f0 98 8e 9b
+|   31 85 6e 27  5a c2 75 09  07 37 05 b5  b1 53 18 07
+|   81 e8 1d 07  c6 19 1c de  dc 1f 2c 26  d2 0b 59 f9
+|   67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d  8e d0 30 08
+|   0b ed 95 b0  65 2f 5c a6  36 7e 92 2d  da cb 88 54
+|   e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29  be 2c a4 55
+|   68 01 45 bc  56 a9 84 b9  2b 1b bf 9a  fc 84 67 5f
+|   d3 04 79 90  b7 fa 89 5b  04 06 d5 9a  50 92 16 4b
+|   d6 33 40 be  2a 44 94 74  33 a7 a5 c1  1f 88 5b eb
+|   4e d2 bb 94  b9 22 db e3  b6 5a 8c f9  d6 43 5d 5e
+|   5d c9 19 b8  c8 81 53 01  95 09 02 7b  c0 2a b0 c8
+|   5d 2c 69 78  6c e8 f6 5d  e4 90 43 83  fd f7 98 5e
+|   cc 92 5c 79  7b 62 ae 98  db 4f 7f e0  68 7c cd 29
+|   69 0a ad a3  e8 37 d7 41  b4 79 b3 a5  38 a2 8d a0
+|   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
 | selected proposal 1 encr=aes_cbc[128] integ=hmac_sha2_256_128 prf=prf-hmac-sha2-256 modp=OAKLEY_GROUP_MODP2048
+| ikev2 parent SA details
+| ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
+| ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha256:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | inserting state object #2 bucket: 28
+| parent SA IDi idhash pi calc
+|   cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
+|   a5 a5 75 2e
+| parent SA I2 idhash calc
+|   02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
+|   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
 | IKEv2 thinking whether to send my certificate:
 |  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |  sendcert: CERT_SENDIFASKED and I did not get a certificate request
@@ -193,12 +219,128 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |  payload after AUTH will be ISAKMP_NEXT_v2SA
 | started looking for secret for @parker01.emmjay.credil.org->@jamesjohnson.emmjay.credil.org of kind PPK_RSA
 | actually looking for secret for @parker01.emmjay.credil.org->@jamesjohnson.emmjay.credil.org of kind PPK_RSA
+| line 1: key type PPK_RSA(@parker01.emmjay.credil.org) to type PPK_RSA
 | 1: compared key (none) to @parker01.emmjay.credil.org / @jamesjohnson.emmjay.credil.org -> 2
 | 2: compared key (none) to @parker01.emmjay.credil.org / @jamesjohnson.emmjay.credil.org -> 2
 | line 1: match=16
 | best_match 0>16 line=1
 | concluding with best_match=16 lineno=1
+| rsa key AQN7wUerV found
+| calculate sighash
+| inputs to hash1 (first packet)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   21 20 22 08  00 00 00 00  00 00 02 74  22 00 00 f4
+|   02 00 00 28  01 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0e  02 00 00 28  02 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0e
+|   02 00 00 28  03 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 05  02 00 00 28  04 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 05
+|   02 00 00 28  05 01 00 04  03 00 00 08  01 00 00 0c
+|   03 00 00 08  02 00 00 05  03 00 00 08  03 00 00 0c
+|   00 00 00 08  04 00 00 0f  00 00 00 28  06 01 00 04
+|   03 00 00 08  01 00 00 0c  03 00 00 08  02 00 00 05
+|   03 00 00 08  03 00 00 02  00 00 00 08  04 00 00 0f
+|   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
+|   18 4f a0 1e  5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53
+|   5d 17 6a be  1b c5 70 ab  34 47 bc 09  14 7c aa 91
+|   9c 8f 81 dc  1e f9 87 cd  6a ec fa f3  a5 9e 37 bc
+|   ac 3d fd e1  32 8e e8 b3  fe d3 8b f4  7b 50 34 13
+|   33 7a 93 ea  e9 3c 0e 8b  bd 48 18 9c  9e 03 70 f2
+|   55 ce 45 22  9f c7 c9 48  43 a3 e2 64  b5 5d 43 38
+|   c8 fe f1 d3  06 43 f0 0a  e8 6d 61 8c  60 78 d9 98
+|   d3 1b 3b 5e  f5 a6 e8 2f  ef 56 ac b4  33 bd 1e 62
+|   b2 3e 0b 17  af 6c b8 31  08 d7 19 5a  7b c4 54 c2
+|   13 47 98 c2  cc d2 16 29  75 6c 03 fb  1e 9c 9d 21
+|   0c a1 e6 c2  f3 f2 49 2c  f6 06 73 c1  96 1e ce 58
+|   81 01 1c cb  16 dc f9 fc  c7 93 08 75  58 16 57 71
+|   69 96 66 b7  a9 81 7f f7  37 4d 7c 41  38 62 a6 39
+|   00 81 ca 3d  1d fc f7 b5  08 38 d4 34  70 22 6c 21
+|   d2 5b 20 a1  d2 ba 2a d1  89 f3 20 79  ce ac 1e c2
+|   ec 7d ae 76  94 40 39 a0  29 00 00 14  20 98 9d 37
+|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  29 00 00 1c
+|   00 00 40 04  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b
+|   b0 95 3c 48  70 73 62 f1  2b 00 00 1c  00 00 40 05
+|   cd bc 1b 74  02 d7 5e 4c  da 5b cd 1c  a1 08 87 2b
+|   f9 7d c4 c2  00 00 00 10  4f 45 70 6c  75 74 6f 75
+|   6e 69 74 30
+| inputs to hash2 (responder nonce)
+|   c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| pidhash len: 32
+| idhash  21 c9 c7 8a  23 af 45 1b  6e 00 8c ba  c3 68 04 9b
+|   ac 3f 06 c6  e0 ac a1 ca  43 98 de f3  12 5f ad bc
+| v2rsa octets (with ASN1):
+|   30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 01
+|   8b 48 47 48  ec 38 47 5c  90 fe 76 44  07 8f ff 3e
+|   cf b2 49
 | signing hash with RSA Key *AQN7wUerV
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| encrypting as INITIATOR
+| data before encryption:
+|   27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
+|   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
+|   72 67 21 00  01 08 01 00  00 00 23 88  29 16 ef 8c
+|   04 92 65 02  25 9e e9 94  0a fd eb 09  1f a5 90 6b
+|   8e ee 23 35  96 b9 1f 75  5c f6 36 80  3d a0 e5 34
+|   2e b9 73 29  eb 2f 21 40  7e 52 94 d3  a3 a1 90 11
+|   6f b7 44 f7  c5 ce fa 11  0d ec 5d e0  8f 48 3a e8
+|   64 e1 02 2a  bd 20 b8 d3  91 a5 10 18  d0 ff 50 b9
+|   9f fd 03 26  a0 37 e9 ff  fc 94 c0 bb  d3 f0 00 c6
+|   ac dd fb 18  6c 14 e3 9c  61 73 f7 01  b1 ab 88 ea
+|   0d 82 eb ac  c3 57 1f fa  0d c8 e8 5f  8e 87 a4 7f
+|   19 1f d7 ad  73 04 c8 3d  0e d0 36 b7  0f 68 d0 f3
+|   b0 60 c3 33  3e 83 f3 61  2d ef 74 3a  fd d1 53 88
+|   b8 18 66 14  82 21 83 5d  d7 7d fa c5  37 90 cd e9
+|   60 a1 bb 3a  b3 fd 95 bc  69 06 72 7a  b9 2d 50 0b
+|   32 b8 44 ae  4a 8c ed 02  51 2b f9 7c  95 40 55 04
+|   27 07 8b 2e  16 0f a4 92  b8 17 1a d0  ce e8 d9 c4
+|   c5 85 01 b2  02 ca 32 96  f8 83 9d 5f  54 30 e2 74
+|   4d d9 1d 18  99 ec f4 b4  af ac 2c 00  00 44 02 00
+|   00 20 01 03  04 02 12 34  56 78 03 00  00 08 01 00
+|   00 0c 00 00  00 0c 03 00  00 0c 80 0e  00 80 00 00
+|   00 20 02 03  04 02 12 34  56 78 03 00  00 08 01 00
+|   00 0c 00 00  00 0c 03 00  00 02 80 0e  00 80 2d 00
+|   00 30 01 00  00 00 08 00  00 28 00 00  ff ff fd 68
+|   c9 f9 41 57  00 02 00 00  00 01 00 00  00 00 fd 68
+|   c9 f9 41 57  00 02 00 00  00 01 ff ff  ff ff 00 00
+|   00 30 01 00  00 00 08 00  00 28 00 00  ff ff fd 68
+|   c9 f9 41 57  00 00 00 00  00 00 00 00  00 00 fd 68
+|   c9 f9 41 57  00 00 ff ff  ff ff ff ff  ff ff 00 01
+| data after encryption:
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   da 61 10 44  fe 36 d8 0f  02 cd 7f 9b  9a ab 23 e7
+|   70 97 a7 af  b1 55 3c 73  9a a3 24 ee  6a ed 25 21
+|   8c ab 36 27  fd 49 3b 5f  11 86 46 86  8f c9 55 61
+|   5e 29 81 40  f5 88 bb 8a  a9 1e a4 56  79 68 ef d0
+|   1b bc 3b 0c  43 41 b8 a5  23 e1 f9 19  ce 7d b1 c4
+|   4d 9d 08 5d  88 03 2b 23  15 f7 69 ee  96 c7 c1 bd
+|   10 55 d7 b9  df 2d bd b9  8e b9 68 99  08 dd 3f e4
+|   e5 2e a6 67  80 07 21 83  57 88 8c b4  de b0 44 00
+|   79 df d9 5f  56 eb 47 df  f9 19 6e 37  c4 16 c3 3b
+|   22 90 30 aa  a6 6a 5f bd  97 be 57 20  49 4c b9 f8
+|   9e 4d df 81  3d 8e 12 0f  8b 00 ba 11  fd 7e fe 23
+|   55 88 0f 2b  a4 15 74 da  38 c4 c8 c5  2b 85 e3 40
+|   4d 78 6a 7c  97 6b 9d c4  f6 d5 9c 68  46 4d fb 4c
+|   1e 54 e1 19  17 c0 8b 73  17 d7 09 6c  36 1b e3 08
+|   76 47 82 b6  87 18 60 6d  3f 72 ac 26  ae 02 ca 7c
+|   f2 c1 49 2b  1f 17 4e bb  28 f8 a6 1d  66 d1 5e 54
+|   da ac ea b9  25 f8 40 03  b7 ec 87 89  95 df c8 ab
+|   b9 b8 50 e0  3c 40 87 10  2c 96 6b 53  15 4d a1 fb
+|   92 95 fb b8  c8 a9 cb 7b  02 ca 68 a3  a6 a0 b8 77
+|   c1 2c dc 98  86 fd 2f f1  67 61 e1 1d  6a 86 0e 9b
+|   78 4d 7a af  e6 a1 05 b3  9a 16 c2 07  df a2 78 9d
+|   44 58 01 eb  6a 70 78 fc  bf 27 4d 7e  91 62 c6 0a
+|   2d 63 db 0a  1c 05 c0 c2  42 cf f4 c5  02 57 5e 0d
+|   47 b3 e3 e7  d1 81 1c ab  96 8a 7b 0c  6c cc e7 d2
+|   59 5f 33 98  78 66 f1 da  64 82 29 55  eb ff 89 06
+|   05 62 60 93  e4 ef 8c 11  41 bb 05 18  82 c0 45 02
+|   4e 68 34 46  ff c6 18 25  6f 07 a9 2d  26 e8 dd f8
 | #2 complete v2 state transition with STF_OK
 ./xf13-parentI3 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -292,11 +434,142 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | now proceed with state specific processing using state #2 initiator-auth-process
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
 | decrypting as INITIATOR, using RESPONDER keys
+| data before decryption:
+|   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
+|   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
+|   94 45 2f ea  48 a2 f4 27  bb 82 cd 41  1c 47 01 01
+|   0d 53 d9 18  16 89 21 05  9c fc 04 4b  8c 5a 6e 3f
+|   a0 2b 6d 11  7b 57 24 f0  9b 2e 51 4c  d1 75 2b 77
+|   8e 89 5d cd  7c b6 2c 7a  ab 30 b3 97  cb 7e e8 02
+|   da ea a7 02  8c dd 3b c6  77 e6 0e b6  fa 9e 57 f5
+|   ee 29 54 61  05 00 4f dc  bc 78 56 c6  76 1e 46 61
+|   71 10 f9 25  e4 29 26 3c  4b 37 8c 00  b9 a5 d1 28
+|   4f ea ae f1  4e a5 bb fb  75 bd e6 9d  53 31 df 41
+|   b9 83 6c 3c  e6 9c 25 ff  12 3c b0 17  1f 8c cf cf
+|   e4 76 40 f5  fe f9 5a 8c  57 6b eb f6  ef bb 2e 63
+|   ed bf 3e 82  8f d2 1b ce  71 4d 2b f2  69 3f 02 8f
+|   72 b9 8b 29  cf 87 d1 15  91 00 ae 3c  db a5 19 74
+|   13 c5 bf eb  f3 5d 76 69  8b f9 2a 40  76 2c 57 a3
+|   1a 61 c2 c5  a3 55 62 d3  11 ad ba 1d  fd 24 7c 65
+|   19 3b 33 e0  9c 09 19 06  c0 f7 ee fa  0b 21 8e 9b
+|   bb 23 c0 d0  24 7f f8 aa  60 73 44 97  d9 2a 09 cf
+|   a9 38 e1 d7  ee c5 bb bf  66 24 6a b7  f6 de d4 e5
+|   76 a8 94 2c  72 9a 40 19  ad e0 17 9d  40 70 f1 c8
+|   e8 08 72 ab  a5 d0 60 f9  d4 8e 5b db  a3 3c 4a 6b
+|   41 fc 32 7f  08 f9 14 14  b9 2b 87 d8  7a 21 a0 5b
+|   0a 2c b8 70  df 01 69 f8  78 54 e8 2d  4a 7b 11 67
+|   1e cf 87 e9  e4 c9 f9 cc  cd 6f df 29  1a 26 73 45
+|   4a 3c be 8b  71 d8 b8 32  ed 59 5b c0  d6 e7 8f de
+|   35 fa 44 db  d5 ae 82 f7  c3 a9 bd 15  91 2f de d9
+|   53 b4 37 17  ab 57 c2 7b  6e 28 0d e3  38 68 4d 24
+|   0e 40 43 2d  5f 56 11 e4  79 51 17 80  50 b3 7b b6
+|   bd f0 c2 d4  38 59 3c 3a  6b 43 5c 50  0b e5 1e 01
+| decrypted payload:  27 00 00 26  02 00 00 00  6a 61 6d 65  73 6a 6f 68
+|   6e 73 6f 6e  2e 65 6d 6d  6a 61 79 2e  63 72 65 64
+|   69 6c 2e 6f  72 67 21 00  01 1a 01 00  00 00 0e 85
+|   20 51 86 90  42 90 94 96  29 44 9f e9  8e 4d 95 34
+|   1a 7f b8 59  07 72 2e b5  05 61 fd 6e  28 4c 90 61
+|   5b 76 0c 84  cd 21 eb 41  7a b1 91 f9  2c 1f 3f 28
+|   c0 cc 51 64  c8 dd 1c a0  fd 81 1b 7d  40 12 35 4c
+|   20 e9 f0 3c  14 b1 d4 d1  66 ec ef 2b  2e ed 6f bf
+|   f6 da 0d 33  14 31 bf 86  cf 01 c6 fb  88 2e 03 3e
+|   d9 a6 d6 57  97 f3 91 ce  a1 0f e2 1c  72 4b 04 e8
+|   f6 25 59 8d  0d ed 7b 40  f0 79 e0 82  31 e8 75 3e
+|   c3 fd 7b c1  b5 5a 12 79  17 68 87 37  0e 24 ee 88
+|   31 99 ee d0  8a d5 14 63  ed c1 49 ee  f1 e4 1e c7
+|   d0 ed c7 6c  82 bc 96 fc  e1 06 4a 57  75 b4 fc 22
+|   08 22 40 e6  b9 ec 89 15  15 e7 69 7f  fe b6 6b 45
+|   6e 27 82 d8  b6 60 dc 2b  85 f3 7c 72  e6 52 2a e1
+|   85 ef 22 5b  05 bb 91 4b  f4 cd ab 37  ec 4b 2a 79
+|   3c 1a 4f bd  81 2b 45 8e  68 8b 89 f8  04 40 29 02
+|   0e 87 7f fe  72 34 7d 34  18 f1 ff d9  ef 0b ac 1c
+|   3b 0d f7 b0  5f 74 10 90  8f ca ba fb  0a d3 61 38
+|   2c 00 00 2c  00 00 00 28  01 03 04 03  12 34 56 78
+|   03 00 00 0c  01 00 00 0c  80 0e 00 80  03 00 00 08
+|   03 00 00 0c  00 00 00 08  05 00 00 00  2d 00 00 30
+|   01 00 00 00  08 00 00 28  00 00 ff ff  fd 68 c9 f9
+|   41 57 00 02  00 00 00 01  00 00 00 00  fd 68 c9 f9
+|   41 57 00 02  00 00 00 01  ff ff ff ff  00 00 00 30
+|   01 00 00 00  08 00 00 28  00 00 ff ff  fd 68 c9 f9
+|   41 57 00 00  00 00 00 00  00 00 00 00  fd 68 c9 f9
+|   41 57 00 00  ff ff ff ff  ff ff ff ff  00 01 02 03
+| striping 4 bytes as pad
 ./xf13-parentI3 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
+| idhash verify pr  e9 00 11 7e  41 d4 31 62  40 b8 63 22  bf 06 9f bc
+|   eb 81 58 e7
+| idhash auth R2  02 00 00 00  6a 61 6d 65  73 6a 6f 68  6e 73 6f 6e
+|   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
+|   72 67
+| calculate sighash
+| inputs to hash1 (first packet)
+|   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
+|   80 0e 00 80  03 00 00 08  03 00 00 0c  03 00 00 08
+|   02 00 00 05  00 00 00 08  04 00 00 0e  28 00 01 08
+|   00 0e 00 00  a5 9a 13 6c  b8 87 48 57  e1 22 6e a0
+|   b8 55 c2 00  31 15 65 84  8b f9 dc a4  5f 49 d4 c5
+|   f0 98 8e 9b  31 85 6e 27  5a c2 75 09  07 37 05 b5
+|   b1 53 18 07  81 e8 1d 07  c6 19 1c de  dc 1f 2c 26
+|   d2 0b 59 f9  67 6a ee 3c  e5 fa 72 3f  54 96 1e 7d
+|   8e d0 30 08  0b ed 95 b0  65 2f 5c a6  36 7e 92 2d
+|   da cb 88 54  e3 97 fa 16  6f 9e 7c a6  0c 43 2f 29
+|   be 2c a4 55  68 01 45 bc  56 a9 84 b9  2b 1b bf 9a
+|   fc 84 67 5f  d3 04 79 90  b7 fa 89 5b  04 06 d5 9a
+|   50 92 16 4b  d6 33 40 be  2a 44 94 74  33 a7 a5 c1
+|   1f 88 5b eb  4e d2 bb 94  b9 22 db e3  b6 5a 8c f9
+|   d6 43 5d 5e  5d c9 19 b8  c8 81 53 01  95 09 02 7b
+|   c0 2a b0 c8  5d 2c 69 78  6c e8 f6 5d  e4 90 43 83
+|   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
+|   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
+|   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
+|   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
+|   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
+|   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
+|   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| inputs to hash2 (initiator nonce)
+|   20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+| pidhash len: 32
+| idhash  a1 08 d8 df  7a 7b 06 80  90 54 ec 47  70 78 50 ed
+|   a3 e8 8c 80  db 33 02 f5  a1 f6 9a d0  38 a7 7d df
+| v2rsa calculated octets (sans ASN.1)
+|   d1 1e bc e7  bf ba 51 e6  94 7a 5e 60  8e c3 79 94
+|   6a db 46 c1
+| IKEv2 Authentication Payload
+|   21 00 01 1a  01 00 00 00
 | required CA is '%any'
 | key issuer CA is '%any'
 | sig_len: 274 != k->k: 256
+| an RSA Sig check failure SIG length does not match public key length with *AQN7wUerV [preloaded key]
 | key issuer CA is '%any'
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff 00 30
+|   21 30 09 06  05 2b 0e 03  02 1a 05 00  04 14 d1 1e
+|   bc e7 bf ba  51 e6 94 7a  5e 60 8e c3  79 94 6a db
+|   46 c1
+| pad_len calculated: 236 hash_len: 35
+| v2rsa decrypted SIG:
+|   d1 1e bc e7  bf ba 51 e6  94 7a 5e 60  8e c3 79 94
+|   6a db 46 c1
+| v2rsa computed hash:
+|   d1 1e bc e7  bf ba 51 e6  94 7a 5e 60  8e c3 79 94
+|   6a db 46 c1
 | an RSA Sig check passed with *AQOg5H7A4 [preloaded key]
 |  checking narrowing - responding to R2
 | checking TSi(1)/TSr(1) selectors, looking for exact match
@@ -333,9 +606,35 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   endport: 65535
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
+| __alg_info_esp_add() ealg=12 aalg=12 cnt=1
+| __alg_info_esp_add() ealg=12 aalg=2 cnt=2
+| ikev2_derive_child_keys: using prf-hmac-sha2-256 for prf+
+| childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+| childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| ikev2_derive_child_keys: my role is INITIATOR
+| prf+[1]:  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+| prf+[2]:  a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+|   da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+| prf+[3]:  78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
+| our  keymat  da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+|   78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
+| peer keymat  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+|   72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+|   a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
 | state #2: install_ipsec_sa() for inbound and outbound
 | route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
 | could_route called for parker1--jj2 (kind=CK_PERMANENT)
+| state #2(parker1--jj2): setup outbound esp-ipsec between 192.168.1.1<->132.213.238.7 for fd68:c9f9:4157:2:0:1::/96...fd68:c9f9:4157::/64
+| ipcomp maybe
+| esp outbound maybe
+| looking for outbound alg with transid: 12 keylen: 128 auth: 12 for spi=78563412 [192.168.1.1->132.213.238.7]
+| ESP enckey:  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18  4f 92 37 91
+| ESP authkey:  72 1e 60 13  57 de 2f 73  26 0b 97 ed  e8 30 0c 93
+|   a0 35 43 a8  f7 04 26 6f  38 14 61 5d  e9 92 de ae
+| creating SA spi=12345678@84d5ee07 proto=50 family=2
 writing netlink for esp.12345678@132.213.238.7
 0000: b4 01 00 00  10 00 05 00  00 00 00 00  00 00 00 00
 0040: 00 00 00 00  00 00 00 00  84 d5 ee 07  00 00 00 00
@@ -351,6 +650,16 @@ writing netlink for esp.12345678@132.213.238.7
 0160: 61 65 73 00  35 36 00 00  00 00 00 00  00 00 00 00
 01a0: 80 00 00 00  4e 3b 4b 1b  26 9e 65 c4  65 67 32 18
 01b0: 4f 92 37 91
+| state #2: set up outgoing SA, ref=0/4294901761
+| state #2: now setting up incoming SA
+| state #2(parker1--jj2): setup inbound esp-ipsec between 132.213.238.7<->192.168.1.1 for fd68:c9f9:4157::/64...fd68:c9f9:4157:2:0:1::/96
+| ipcomp maybe
+| esp inbound maybe
+| looking for inbound alg with transid: 12 keylen: 128 auth: 12 for spi=78563412 [132.213.238.7->192.168.1.1]
+| ESP enckey:  da 04 4f fe  bc 2d b7 34  0f 45 c4 da  fc 47 08 a0
+| ESP authkey:  78 ce 12 29  41 33 81 35  6b fd e0 2c  5d 71 be e4
+|   71 14 55 20  9a 5f fc 4d  ba 8d bb e0  ff 88 56 db
+| updating SA spi=12345678@c0a80101 proto=50 family=2
 writing netlink for esp.12345678@192.168.1.1
 0000: b4 01 00 00  1a 00 05 00  00 00 00 00  00 00 00 00
 0040: 00 00 00 00  00 00 00 00  c0 a8 01 01  00 00 00 00
@@ -394,9 +703,11 @@ writing netlink policy for tun.10000@192.168.1.1
 00e0: 00 00 00 00  00 00 00 00  01 40 00 00  01 00 00 00
 00f0: ff ff ff ff  ff ff ff ff  ff ff ff ff
 ./xf13-parentI3 add inbound eroute fd68:c9f9:4157::/64:0 --0-> fd68:c9f9:4157:2:0:1::/96:0 => tun.10000@192.168.1.1 succeeded
+| state #2: set up incoming SA, ref=0/4294901761
 | sr for #2: unrouted (eroute_owner: #0)
 | route owner of "parker1--jj2" unrouted: NULL; eroute owner: NULL
 | route_and_eroute with c: parker1--jj2 (next: none) ero:null esr:{(nil)} ro:null rosr:{(nil)} and state: 2
+| eroute_connection: between 192.168.1.1<->132.213.238.7
 | creating SPD to 192.168.1.1->spi=00000000@132.213.238.7 proto=4
 writing netlink policy for tun.0@132.213.238.7
 0000: fc 00 00 00  19 00 05 00  00 00 00 00  00 00 00 00
