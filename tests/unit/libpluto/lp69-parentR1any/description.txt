@@ -1,0 +1,15 @@
+This test case is an IKEv2 responder, which has been provided with an IKEv2
+I1 packet.
+This test is identical to lp08-parentR1, but the policy has right=%any,
+rather than a specific IP address.
+
+
+
+
+
+
+
+
+
+
+
