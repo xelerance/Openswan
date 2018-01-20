@@ -138,6 +138,7 @@ enum rc_type {
 			 * cryptographic operations */
     RC_AGGRALGO,        /* multiple algorithms requested in phase 1 aggressive */
     RC_FATAL,           /* fatal error encountered, and negotiation aborted */
+    RC_AUTHFAILED,      /* no key found that authenticates the connection */
 
     /* entry of secrets */
     RC_ENTERSECRET = 40,

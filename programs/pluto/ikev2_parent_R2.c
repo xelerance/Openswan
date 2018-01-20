@@ -237,42 +237,43 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     /* process AUTH payload now */
     /* now check signature from RSA key */
-    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type)
+    switch(md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type) {
+    case v2_AUTH_RSA:
         {
-        case v2_AUTH_RSA:
-            {
-                stf_status authstat = ikev2_verify_rsa_sha1(st
-                                                            , RESPONDER
-                                                            , idhash_in
-                                                            , NULL /* keys from DNS */
-                                                            , NULL /* gateways from DNS */
-                                                            , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
-                if(authstat != STF_OK) {
-                    openswan_log("RSA authentication failed");
-                    SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
-                    return STF_FATAL;
-                }
-                break;
+            stf_status authstat = ikev2_verify_rsa_sha1(st
+                                                        , RESPONDER
+                                                        , hp
+                                                        , idhash_in
+                                                        , NULL /* keys from DNS */
+                                                        , NULL /* gateways from DNS */
+                                                        , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+            if(authstat != STF_OK) {
+                openswan_log("RSA authentication failed");
+                SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
+                return STF_FATAL;
             }
-        case v2_AUTH_SHARED:
-            {
-                stf_status authstat = ikev2_verify_psk_auth(st
-                                                            , RESPONDER
-                                                            , idhash_in
-                                                            , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
-                if(authstat != STF_OK) {
-                    openswan_log("PSK authentication failed AUTH mismatch!");
-                    SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
-                    return STF_FATAL;
-                }
-                break;
-            }
-        default:
-            openswan_log("authentication method: %s not supported"
-                         , enum_name(&ikev2_auth_names
-                                     ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
-            return STF_FATAL;
+            break;
         }
+    case v2_AUTH_SHARED:
+        {
+            stf_status authstat = ikev2_verify_psk_auth(st
+                                                        , RESPONDER
+                                                        , hp
+                                                        , idhash_in
+                                                        , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
+            if(authstat != STF_OK) {
+                openswan_log("PSK authentication failed AUTH mismatch!");
+                SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
+                return STF_FATAL;
+            }
+            break;
+        }
+    default:
+        openswan_log("authentication method: %s not supported"
+                     , enum_name(&ikev2_auth_names
+                                 ,md->chain[ISAKMP_NEXT_v2AUTH]->payload.v2a.isaa_type));
+        return STF_FATAL;
+    }
 
     /* Is there a notify about an error ? */
     if(md->chain[ISAKMP_NEXT_v2N] != NULL) {

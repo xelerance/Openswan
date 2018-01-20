@@ -228,6 +228,7 @@ bool ikev2_calculate_psk_auth(struct state *st
 
 stf_status ikev2_verify_psk_auth(struct state *st
 				 , enum phase1_role role
+                                 , struct IDhost_pair *hp UNUSED
 				 , unsigned char *idhash
 				 , pb_stream *sig_pbs)
 {

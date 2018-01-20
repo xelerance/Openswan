@@ -45,6 +45,7 @@
 #endif
 #include "pluto/connections.h"	/* needs id.h */
 #include "pluto/state.h"
+#include "hostpair.h"
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"
@@ -103,7 +104,8 @@ void ikev2_calculate_sighash(struct state *st
 stf_status
 ikev2_verify_rsa_sha1(struct state *st
 		      , enum phase1_role role
-			    , unsigned char *idhash
+                      , struct IDhost_pair *hp
+                      , unsigned char *idhash
 			    , const struct pubkey_list *keys_from_dns
 			    , const struct gw_info *gateways_from_dns
 			    , pb_stream *sig_pbs)
@@ -111,6 +113,8 @@ ikev2_verify_rsa_sha1(struct state *st
     unsigned char calc_hash[SHA1_DIGEST_SIZE];
     unsigned int  hash_len = SHA1_DIGEST_SIZE;
     enum phase1_role invertrole;
+    struct connection *d;
+    stf_status checkresult;
 
     invertrole = (role == INITIATOR ? RESPONDER : INITIATOR);
 
@@ -121,14 +125,40 @@ ikev2_verify_rsa_sha1(struct state *st
         DBG_dump_pbs(sig_pbs);
         );
 
-    return RSA_check_signature_gen(st, calc_hash, hash_len
-				   , sig_pbs
-#ifdef USE_KEYRR
-				   , keys_from_dns
-#endif
-				   , gateways_from_dns
-				   , try_RSA_signature_v2);
+    if(hp != NULL) {
+        d=hp->connections;
+    } else {
+        d = st->st_connection;
+    }
 
+    while(d != NULL) {
+        checkresult = check_signature_gen(d, st, calc_hash, hash_len
+                                          , sig_pbs
+#ifdef USE_KEYRR
+                                          , keys_from_dns
+#endif
+                                          , gateways_from_dns
+                                          , try_RSA_signature_v2);
+        if(checkresult == STF_OK) {
+            if(d != st->st_connection) {
+                loglog(RC_LOG, "Good signature from key attached to \"%s\" (started with: \"%s\"): switched"
+                       , d->name
+                       , st->st_connection->name);
+                st->st_connection = d;
+            }
+            return STF_OK;
+        }
+
+        if(hp || role == RESPONDER) {
+            d = d->IDhp_next;
+        } else {
+            /* just finish, as we are likely initiator */
+            d = NULL;
+        }
+    }
+
+    loglog(RC_AUTHFAILED, "no policy with given IDs authenticates this connection");
+    return STF_FAIL;
 }
 
 /*

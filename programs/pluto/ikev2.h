@@ -155,6 +155,7 @@ extern bool ikev2_calculate_psk_auth(struct state *st
 
 extern stf_status ikev2_verify_rsa_sha1(struct state *st
 					, enum phase1_role role
+                                        , struct IDhost_pair *hp
 				   , unsigned char *idhash
 				   , const struct pubkey_list *keys_from_dns
 				   , const struct gw_info *gateways_from_dns
@@ -162,6 +163,7 @@ extern stf_status ikev2_verify_rsa_sha1(struct state *st
 
 extern stf_status ikev2_verify_psk_auth(struct state *st
 					, enum phase1_role role
+                                        , struct IDhost_pair *hp
 				   , unsigned char *idhash
 				   , pb_stream *sig_pbs);
 
