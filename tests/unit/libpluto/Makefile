@@ -67,7 +67,7 @@ UNITTESTS_R2+=lp25-wrongcacert
 UNITTESTS_I1+=lp27-dnsloadI1
 
 # disabled due to issue #6602
-#UNITTESTS_R2+=lp32-parentR2anychoice
+UNITTESTS_R2+=lp32-parentR2anychoice
 
 UNITTESTS_I1+=lp36-h2hI1
 UNITTESTS_R1+=lp37-h2hR1
