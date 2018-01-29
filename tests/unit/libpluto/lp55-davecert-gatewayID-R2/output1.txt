@@ -737,7 +737,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |        authkey:  2b:8e:6b:ad:6f:22:a2:ea:91:1e:0d:e6:ed:ca:25:2c:89:e0:ae:a3
 | checking alg=1 == 1, keyid=dave@openswan.org same_id=1
 | key issuer CA is 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Testing Devision, CN=dave.openswan.org, E=testing@xelerance.com'
-| PARENT SA now authenticated, building child and reply
+./davecertR2-id PARENT SA now authenticated. Send R2 and considering Child-SA
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   8d 0e 0f 10  11 12 13 14

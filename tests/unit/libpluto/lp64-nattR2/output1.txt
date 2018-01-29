@@ -474,7 +474,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
 | key issuer CA is '%any'
-| PARENT SA now authenticated, building child and reply
+./nattR2 PARENT SA now authenticated. Send R2 and considering Child-SA
 | pick_if looking for port: 4500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0

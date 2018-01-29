@@ -435,12 +435,10 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
             if(ret > STF_FAIL) {
                 /* CHILD SA analysis */
-                pb_stream n_body;
 
                 ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL
                          , PROTO_ISAKMP, NULL, ret - STF_FAIL
-                         , NULL, &n_body);
-                close_message(&n_body);
+                         , NULL, &e_pbs_cipher);
 
             } else if(ret != STF_OK) {
                 DBG_log("ikev2_child_sa_respond returned %s", stf_status_name(ret));
