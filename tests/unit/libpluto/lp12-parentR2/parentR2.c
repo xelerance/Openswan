@@ -1,4 +1,4 @@
-#include "parentR2_head.c"
+#include "../lp12-parentR2/parentR2_head.c"
 #include "seam_kernel.c"
 #include "seam_ikealg.c"
 #include "seam_host_jamesjohnson.c"
@@ -26,7 +26,7 @@ static void init_loaded(void)
 {   /* nothing */ }
 
 #include "seam_parentR2.c"
-#include "parentR2_main.c"
+#include "../lp12-parentR2/parentR2_main.c"
 
  /*
  * Local Variables:
