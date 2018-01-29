@@ -1069,7 +1069,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  0a 02 ff ff
 | ikev2_evaluate_connection_fit, evaluating base fit for rw-carol
 |   ikev2_evaluate_connection_fit evaluating our I=rw-carol:<noclient>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+|     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535
+|     tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c rw-carol
@@ -2478,7 +2479,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  0a 02 ff ff
 | ikev2_evaluate_connection_fit, evaluating base fit for rw-any
 |   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
-|     tsi[0]=93.184.216.35/93.184.216.35 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
+|     tsi[0]=93.184.216.35/93.184.216.35 proto=0 portrange 0-65535
+|     tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=16 maskbits2=16 fitbits=8224 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c rw-any

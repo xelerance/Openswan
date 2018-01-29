@@ -625,9 +625,10 @@ int ikev2_evaluate_connection_fit(struct connection *d
 		addrtot(&tsr[tsr_ni].low,  0, lbr, sizeof(lbr));
 		addrtot(&tsr[tsr_ni].high, 0, hbr, sizeof(hbr));
 
-		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d, tsr[%u]=%s/%s proto=%d portrange %d-%d"
+		DBG_log("    tsi[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsi_ni, lbi, hbi
-			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport
+			,  tsi[tsi_ni].ipprotoid, tsi[tsi_ni].startport, tsi[tsi_ni].endport);
+		DBG_log("    tsr[%u]=%s/%s proto=%d portrange %d-%d"
 			, tsr_ni, lbr, hbr
 			,  tsr[tsr_ni].ipprotoid, tsr[tsr_ni].startport, tsr[tsr_ni].endport);
 	    }
@@ -740,17 +741,22 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
-        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
+        DBG(DBG_CONTROLMORE
+            , DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s"
+                      , c->name));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
             int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,RESPONDER,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
-                DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
+                DBG(DBG_CONTROLMORE
+                    , DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s"
+                              , c->name));
                 int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,RESPONDER,tsi,tsr,
                                                                   tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                 if (bfit_p > bestfit_p) {
-                    DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
-                                                 , c->name, best_tsi_i, best_tsr_i));
+                    DBG(DBG_CONTROLMORE
+                        , DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
+                                  , c->name, best_tsi_i, best_tsr_i));
                     bestfit_p = bfit_p;
                     bestfit_n = bfit_n;
                     b = c;
@@ -758,9 +764,12 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                 }
             }
             else
-                DBG(DBG_CONTROLMORE, DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
-                                             , c->name));
+                DBG(DBG_CONTROLMORE
+                    , DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
+                              , c->name));
         }
+
+
 
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
             hp = find_ID_host_pair(sra->this.id

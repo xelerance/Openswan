@@ -487,7 +487,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   3e cf b2 49
 | IKEv2 Authentication Payload
 |   21 00 01 08  01 00 00 00
-| required CA is '%any'
 | key issuer CA is '%any'
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -514,7 +513,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   01 8b 48 47  48 ec 38 47  5c 90 fe 76  44 07 8f ff
 |   3e cf b2 49
 | an RSA Sig check passed with *AQN7wUerV [preloaded key]
-| PARENT SA now authenticated, building child and reply
+./cryptoR2 PARENT SA now authenticated. Send R2 and considering Child-SA
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -623,7 +622,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | emitting length of IKEv2 Authentication Payload: 282
 | ikev2_evaluate_connection_fit, evaluating base fit for parker1--jj2
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
+|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535
+|     tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c parker1--jj2
