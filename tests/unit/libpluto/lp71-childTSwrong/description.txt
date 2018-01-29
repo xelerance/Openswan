@@ -4,8 +4,11 @@ compatible, resulting in a child_sa_respond returning NO_PROPOSAL_CHOSEN,
 which should be sent as a notify along with the authenticated R2.
 (Since the connection authenticated correctly, it just was wrong TS)
 
+Since the connection is authenticated, the NO PROPOSAL CHOSEN Notify should
+be sent as part of the encrypted response to the R2.
 
-THIS TEST NOT YET IMPLEMENTED.
+
+
 
 
 

@@ -213,7 +213,6 @@ extern stf_status ikev2_emit_ts(struct msg_digest *md
 extern stf_status ikev2_calc_emit_ts(struct msg_digest *md
                                      , pb_stream *outpbs
                                      , enum phase1_role role
-                                     , unsigned int next_payload
                                      , struct connection *c0
                                      , lset_t policy);
 

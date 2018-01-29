@@ -368,12 +368,10 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     {
         lset_t policy;
         struct connection *c0= first_pending(pst, &policy,&st->st_whack_sock);
-        unsigned int np = (c0 ? ISAKMP_NEXT_v2SA : ISAKMP_NEXT_NONE);
         DBG(DBG_CONTROL,DBG_log(" payload after AUTH will be %s", (c0) ? "ISAKMP_NEXT_v2SA" : "ISAKMP_NEXT_NONE/NOTIFY"));
 
         stf_status authstat = ikev2_send_auth(c, st
                                               , INITIATOR
-                                              , np
                                               , idhash, &e_pbs_cipher);
         if(authstat != STF_OK) return authstat;
 
@@ -383,19 +381,14 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
          */
         if(c0) {
             chunk_t child_spi, notify_data;
-            unsigned int next_payload = ISAKMP_NEXT_NONE;
             st->st_connection = c0;
-
-            if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
-                next_payload = ISAKMP_NEXT_v2N;
-            }
 
 	    ikev2_emit_ipsec_sa(md,&e_pbs_cipher,ISAKMP_NEXT_v2TSi,c0, policy);
 
 	    st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
 	    st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
-	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
+	    ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, c0, policy);
 
             if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
                 DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");

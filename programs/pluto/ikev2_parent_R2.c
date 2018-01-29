@@ -146,8 +146,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     struct IDhost_pair *hp = NULL;
     unsigned char *idhash_in, *idhash_out;
     unsigned char *authstart;
-    unsigned int np;
-    int v2_notify_num = 0;
+    bool child_SA_present = FALSE;
 
     md->transition_state = st;
 
@@ -281,10 +280,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     }
 
     /* good, things checked out!. now create child state */
-    DBG(DBG_CONTROL, DBG_log("PARENT SA now authenticated, building child and reply"));
+    loglog(RC_COMMENT, "PARENT SA now authenticated. Send R2 and considering Child-SA");
 
     /* now that we now who they are, give them a higher crypto priority! */
     st->st_import = pcim_known_crypto;
+
+    /* At this point, any errors result in a notify that is encrypted */
 
     /* note: as we will switch to child state, we force the parent to the
      * new state now, but note also that child state exists just to contain
@@ -409,10 +410,12 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             /* initiator didn't propose anything. Weird. Try unpending out end. */
             /* UNPEND XXX */
             openswan_log("No CHILD SA proposals received.");
-            np = ISAKMP_NEXT_NONE;
+            child_SA_present = FALSE;
+            //np = ISAKMP_NEXT_NONE;
         } else {
             DBG_log("CHILD SA proposals received");
-            np = ISAKMP_NEXT_v2SA;
+            child_SA_present = TRUE;
+            //np = ISAKMP_NEXT_v2SA;
         }
 
         DBG(DBG_CONTROLMORE
@@ -421,22 +424,27 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         /* now send AUTH payload */
         {
             stf_status authstat = ikev2_send_auth(c, st
-                                                  , RESPONDER, np
+                                                  , RESPONDER
                                                   , idhash_out, &e_pbs_cipher);
             if(authstat != STF_OK) return authstat;
         }
 
-        if(np == ISAKMP_NEXT_v2SA) {
+        if(child_SA_present) {
             /* must have enough to build an CHILD_SA... go do that! */
             ret = ikev2_child_sa_respond(md, NULL, &e_pbs_cipher);
+
             if(ret > STF_FAIL) {
-                v2_notify_num = ret - STF_FAIL;
-                DBG(DBG_CONTROL,DBG_log("ikev2_child_sa_respond returned STF_FAIL with %s", enum_name(&ikev2_notify_names, v2_notify_num)));
-                return ret;
+                /* CHILD SA analysis */
+                pb_stream n_body;
+
+                ship_v2N(ISAKMP_NEXT_NONE, ISAKMP_PAYLOAD_CRITICAL
+                         , PROTO_ISAKMP, NULL, ret - STF_FAIL
+                         , NULL, &n_body);
+                close_message(&n_body);
 
             } else if(ret != STF_OK) {
                 DBG_log("ikev2_child_sa_respond returned %s", stf_status_name(ret));
-                np = ISAKMP_NEXT_NONE;
+                //np = ISAKMP_NEXT_NONE;
             }
         }
 
