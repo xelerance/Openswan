@@ -527,11 +527,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (wildcard)
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker1--jj2)
-|   concluded with parker1--jj2
-|   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
-| ikev2_evaluate_connection_fit, concluded with parker1--jj2
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -1066,11 +1061,6 @@ sending 448 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (wildcard)
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker1--jj2)
-|   concluded with parker1--jj2
-|   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
-| ikev2_evaluate_connection_fit, concluded with parker1--jj2
 | printing contents struct traffic_selector
 |   ts_type: IKEv2_TS_IPV6_ADDR_RANGE
 |   ipprotoid: 0

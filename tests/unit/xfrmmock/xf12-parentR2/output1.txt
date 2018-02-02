@@ -501,7 +501,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   3e cf b2 49
 | IKEv2 Authentication Payload
 |   21 00 01 08  01 00 00 00
-| required CA is '%any'
 | key issuer CA is '%any'
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -528,7 +527,7 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   01 8b 48 47  48 ec 38 47  5c 90 fe 76  44 07 8f ff
 |   3e cf b2 49
 | an RSA Sig check passed with *AQN7wUerV [preloaded key]
-| PARENT SA now authenticated, building child and reply
+./xf12-parentR2 PARENT SA now authenticated. Send R2 and considering Child-SA
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -637,7 +636,8 @@ picking: eth0:500  outside: 55044 <=> d: 500
 | emitting length of IKEv2 Authentication Payload: 282
 | ikev2_evaluate_connection_fit, evaluating base fit for parker1--jj2
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
+|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535
+|     tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
 | bfit_n=ikev2_evaluate_connection_fit found better fit c parker1--jj2
@@ -649,11 +649,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c parker1--jj2, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (wildcard)
-|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker1--jj2)
-|   concluded with parker1--jj2
-|   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:1::/96 is found
-| ikev2_evaluate_connection_fit, concluded with parker1--jj2
 | duplicating state object #1
 | creating state object #2 at Z
 | ICOOKIE:  80 01 02 03  04 05 06 07

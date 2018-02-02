@@ -538,10 +538,6 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |   6a db 46 c1
 | IKEv2 Authentication Payload
 |   21 00 01 1a  01 00 00 00
-| required CA is '%any'
-| key issuer CA is '%any'
-| sig_len: 274 != k->k: 256
-| an RSA Sig check failure SIG length does not match public key length with *AQN7wUerV [preloaded key]
 | key issuer CA is '%any'
 | verify_sh decrypted SIG1:
 |   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
@@ -573,7 +569,8 @@ picking: eth0:500  outside: 55044 <=> d: 500
 |  checking narrowing - responding to R2
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
+|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535
+|     tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=32 maskbits1=96 ts_range2=64 maskbits2=64 fitbits=32896 <> -1
 |  prefix fitness found a better match c parker1--jj2

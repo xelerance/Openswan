@@ -982,11 +982,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c rw-any, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@moon.testing.openswan.org him=<any> (wildcard)
-|                   comparing to me=@moon.testing.openswan.org him=(none) (rw-any)
-|   concluded with rw-any
-|   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
-| ikev2_evaluate_connection_fit, concluded with rw-any
 |    match_id a=C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com
 |             b=(none)
 |    results  matched
