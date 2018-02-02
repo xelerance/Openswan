@@ -555,14 +555,18 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   ikev2_evaluate_connection_fit evaluating our I=maryjane1--jj2:fd68:c9f9:4157:3:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535
 |     tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
-| prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors
+| prefix range fit maryjane1--jj2 was rejected by Traffic Selectors
+| find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (wildcard)
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@maryjane01.emmjay.credil.org (maryjane1--jj2)
+|                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (any1--jj2)
+|   concluded with maryjane1--jj2
 | Adding a v2N Payload
 |    next-payload: ISAKMP_NEXT_v2N [@38=0x29]
 | *****emit IKEv2 Notify Payload:
 |    critical bit: PAYLOAD_CRITICAL
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    Notify Message Type: v2N_NO_PROPOSAL_CHOSEN
+|    Notify Message Type: v2N_TS_UNACCEPTABLE
 | emitting length of IKEv2 Notify Payload: 8
 | emitting 10 raw bytes of padding and length into cleartext
 | padding and length  00 01 02 03  04 05 06 07  08 09
@@ -586,7 +590,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
 |   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 80
-|   00 08 01 00  00 0e 00 01  02 03 04 05  06 07 08 09
+|   00 08 01 00  00 26 00 01  02 03 04 05  06 07 08 09
 | data after encryption:
 |   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
 |   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
@@ -603,7 +607,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
 |   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
 |   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
-|   c4 86 d4 df  64 78 ef b9  4c 46 95 07  62 44 8c 63
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 40  24 00 01 24
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -622,9 +626,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
 |   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
 |   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
-|   c4 86 d4 df  64 78 ef b9  4c 46 95 07  62 44 8c 63
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
 | out calculated auth:
-|   9e 97 50 70  39 0a ac 6c  b3 67 0a 9a  65 14 32 b1
+|   02 18 b8 a6  67 d1 19 0d  bb fd 72 6b  a0 6d 34 2f
 | #1 complete v2 state transition with STF_OK
 ./parentR2anychoice transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
 | v2_state_transition: st is #1; pst is #1; transition_st is #1
@@ -649,8 +653,8 @@ sending 320 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
 |   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
 |   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
-|   c4 86 d4 df  64 78 ef b9  4c 46 95 07  62 44 8c 63
-|   9e 97 50 70  39 0a ac 6c  b3 67 0a 9a  65 14 32 b1
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
+|   02 18 b8 a6  67 d1 19 0d  bb fd 72 6b  a0 6d 34 2f
 ./parentR2anychoice leak: ikev2_inI2outR2 KE, item size: X
 ./parentR2anychoice leak: alg_info_ike, item size: X
 ./parentR2anychoice leak: ikev2_inI1outR1 KE, item size: X

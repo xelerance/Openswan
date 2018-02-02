@@ -3,8 +3,8 @@ This test case receives a second (I2) packet from the initiator.
 In this test case, the responder has two left=%any conns, which differ
 by their ID, and therefore have different acceptable rightsubnet=.
 
-This test case validates the responders ability to pick the correct conn
-after verifying the signature.
+This test case validates the responders ability to reject the rightsubnet
+that would have matched the conn which was not the one that authenticated.
 
 
 

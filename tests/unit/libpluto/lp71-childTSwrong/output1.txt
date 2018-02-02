@@ -292,7 +292,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  c4 00 10 99
 |   12 11 34 5e  78 ab 84 55  96 7a 2b 38  63 63 32 03
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
-1: output to OUTPUT/nattR2.pcap
+1: output to OUTPUT/childTSwrong.pcap
 1: input from nattI2.pcap
 |   =========== input from from nattI2.pcap ========
 | *received 464 bytes from 93.184.216.34:55045 on eth0 (port=4500)
@@ -474,7 +474,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
 | key issuer CA is '%any'
-| PARENT SA now authenticated, building child and reply
+./childTSwrong PARENT SA now authenticated. Send R2 and considering Child-SA
 | pick_if looking for port: 4500, family: 2
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0
@@ -541,43 +541,108 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | ikev2_evaluate_connection_fit, evaluating base fit for parker-wrong-TS
 |   ikev2_evaluate_connection_fit evaluating our I=parker-wrong-TS:fd68:c9f9:4157:2:0:3::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
-|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
-| prefix range fit c parker-wrong-TS c->name was rejected by Traffic Selectors
+|     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535
+|     tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
+| prefix range fit parker-wrong-TS was rejected by Traffic Selectors
 | find_ID_host_pair: looking for me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (wildcard)
 |                   comparing to me=@jamesjohnson.emmjay.credil.org him=@parker01.emmjay.credil.org (parker-wrong-TS)
 |   concluded with parker-wrong-TS
-|   checking hostpair fd68:c9f9:4157::/64 -> fd68:c9f9:4157:2:0:3::/96 is found
-| ikev2_evaluate_connection_fit, concluded with parker-wrong-TS
-| ikev2_child_sa_respond returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
-| ikev2_parent_inI2outR2_tail returned STF_FAIL with v2N_NO_PROPOSAL_CHOSEN
-| #1 complete v2 state transition with STF_FAIL+22
-./childTSwrong STATE_PARENT_R2: NO_PROPOSAL_CHOSEN
-./childTSwrong sending notification ISAKMP_v2_SA_INIT/v2N_NO_PROPOSAL_CHOSEN to 93.184.216.34:55045
-| **emit ISAKMP Message:
-|    initiator cookie:
-|   80 01 02 03  04 05 06 07
-|    responder cookie:
-|   64 0a 06 43  5c 7c 4b 31
-|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
-|    flags: ISAKMP_FLAG_RESPONSE
-|    message ID:  00 00 00 00
 | Adding a v2N Payload
-|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
-| ***emit IKEv2 Notify Payload:
-|    critical bit: none
+|    next-payload: ISAKMP_NEXT_v2N [@38=0x29]
+| *****emit IKEv2 Notify Payload:
+|    critical bit: PAYLOAD_CRITICAL
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
-|    Notify Message Type: v2N_NO_PROPOSAL_CHOSEN
+|    Notify Message Type: v2N_TS_UNACCEPTABLE
 | emitting length of IKEv2 Notify Payload: 8
-| emitting length of ISAKMP Message: 36
-sending 36 bytes for send_v2_notification through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #1)
+| emitting 10 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07  08 09
+| emitting 16 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 292
+| emitting length of ISAKMP Message: 320
+| encrypting as RESPONDER
+| data before encryption:
+|   27 00 00 26  02 00 00 00  6a 61 6d 65  73 6a 6f 68
+|   6e 73 6f 6e  2e 65 6d 6d  6a 61 79 2e  63 72 65 64
+|   69 6c 2e 6f  72 67 29 00  00 c8 01 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 80
+|   00 08 01 00  00 26 00 01  02 03 04 05  06 07 08 09
+| data after encryption:
+|   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
+|   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
+|   dd 5b bb 02  f0 08 93 69  35 cc f3 b2  0c c2 55 91
+|   fe 18 39 68  c8 45 a4 a1  1e 83 40 f4  c5 73 e0 38
+|   e2 ea e6 a1  f4 58 ec c3  b2 79 cb 7b  0b c0 a2 da
+|   be 7f 69 ed  4e 8b e4 e6  42 b2 c6 42  41 6c 02 b8
+|   e3 7b 94 6e  1d de 7e bb  3d aa 0e 88  37 a6 be 66
+|   23 06 7d aa  ac 23 07 8d  b0 8d 8a 39  da ee ca 53
+|   a9 65 06 db  e1 e4 29 3f  be c4 15 70  f6 c4 b5 9f
+|   be 60 a7 23  7c 44 c1 9c  9a 99 09 f1  fe 9d 35 5b
+|   af 22 1a 04  48 2b 22 69  70 8f 22 1c  88 11 d8 65
+|   fb 2c 1e b9  55 d2 a5 e9  bb a3 ad fd  92 ce 35 80
+|   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
+|   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
+|   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
+| data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 23 20  00 00 00 01  00 00 01 40  24 00 01 24
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
+|   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
+|   dd 5b bb 02  f0 08 93 69  35 cc f3 b2  0c c2 55 91
+|   fe 18 39 68  c8 45 a4 a1  1e 83 40 f4  c5 73 e0 38
+|   e2 ea e6 a1  f4 58 ec c3  b2 79 cb 7b  0b c0 a2 da
+|   be 7f 69 ed  4e 8b e4 e6  42 b2 c6 42  41 6c 02 b8
+|   e3 7b 94 6e  1d de 7e bb  3d aa 0e 88  37 a6 be 66
+|   23 06 7d aa  ac 23 07 8d  b0 8d 8a 39  da ee ca 53
+|   a9 65 06 db  e1 e4 29 3f  be c4 15 70  f6 c4 b5 9f
+|   be 60 a7 23  7c 44 c1 9c  9a 99 09 f1  fe 9d 35 5b
+|   af 22 1a 04  48 2b 22 69  70 8f 22 1c  88 11 d8 65
+|   fb 2c 1e b9  55 d2 a5 e9  bb a3 ad fd  92 ce 35 80
+|   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
+|   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
+|   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
+| out calculated auth:
+|   b5 3b 22 64  e6 b9 3e e3  9c bf 5b 05  cc 35 16 8e
+| #1 complete v2 state transition with STF_OK
+./childTSwrong transition from state STATE_PARENT_R1 to state STATE_PARENT_R2
+| v2_state_transition: st is #1; pst is #1; transition_st is #1
+./childTSwrong STATE_PARENT_R2: received v2I2, PARENT SA established {auth=IKEv2 oursig=fakesig1 theirsig=fakecheck cipher=aes_128 integ=sha256_128 prf=prf-hmac-sha2-256 group=modp2048} (msgid: 00000001/00000001)
+| sending reply packet to 93.184.216.34:55045 (from port 4500)
+sending 320 bytes for STATE_PARENT_R1 through eth0:4500 [132.213.238.7:4500] to 93.184.216.34:55045 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
-|   01 00 00 0e
-| state transition function for STATE_PARENT_R2 failed: NO_PROPOSAL_CHOSEN
+|   2e 20 23 20  00 00 00 01  00 00 01 40  24 00 01 24
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   eb ff 97 78  70 72 7e b3  64 db c7 fe  e4 69 0f 92
+|   2a dd bb d8  41 fc d0 3e  5c 5a 07 57  fd e7 7d 8a
+|   dd 5b bb 02  f0 08 93 69  35 cc f3 b2  0c c2 55 91
+|   fe 18 39 68  c8 45 a4 a1  1e 83 40 f4  c5 73 e0 38
+|   e2 ea e6 a1  f4 58 ec c3  b2 79 cb 7b  0b c0 a2 da
+|   be 7f 69 ed  4e 8b e4 e6  42 b2 c6 42  41 6c 02 b8
+|   e3 7b 94 6e  1d de 7e bb  3d aa 0e 88  37 a6 be 66
+|   23 06 7d aa  ac 23 07 8d  b0 8d 8a 39  da ee ca 53
+|   a9 65 06 db  e1 e4 29 3f  be c4 15 70  f6 c4 b5 9f
+|   be 60 a7 23  7c 44 c1 9c  9a 99 09 f1  fe 9d 35 5b
+|   af 22 1a 04  48 2b 22 69  70 8f 22 1c  88 11 d8 65
+|   fb 2c 1e b9  55 d2 a5 e9  bb a3 ad fd  92 ce 35 80
+|   4e 67 a7 b8  07 d8 85 bf  ee 68 16 5a  0a 22 b4 ed
+|   98 6c 33 4c  16 dc 12 b7  ea 4f 7b bc  fc 34 2f 60
+|   d8 14 09 5c  40 98 92 7d  7e e9 15 7f  c0 a8 34 fc
+|   1e 8d 6a 4f  9b 67 12 ba  ae 04 2b f1  41 8e 57 73
+|   b5 3b 22 64  e6 b9 3e e3  9c bf 5b 05  cc 35 16 8e
 ./childTSwrong leak: ikev2_inI2outR2 KE, item size: X
-./childTSwrong leak: reply packet, item size: X
 ./childTSwrong leak: alg_info_ike, item size: X
 ./childTSwrong leak: ikev2_inI1outR1 KE, item size: X
 ./childTSwrong leak: msg_digest, item size: X

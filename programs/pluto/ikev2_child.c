@@ -718,7 +718,7 @@ static stf_status ikev2_child_sa_evaluate(struct msg_digest *md
 
     if(pst == NULL) pst = md->st;
     c = pst->st_connection;
-    b = c;
+    b = NULL;
 
     tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
     tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
@@ -759,7 +759,7 @@ static stf_status ikev2_child_sa_evaluate(struct msg_digest *md
         }
         else
             DBG(DBG_CONTROLMORE
-                , DBG_log("prefix range fit c %s c->name was rejected by Traffic Selectors"
+                , DBG_log("prefix range fit %s was rejected by Traffic Selectors"
                           , c->name));
     }
 
@@ -780,36 +780,17 @@ static stf_status ikev2_child_sa_evaluate(struct msg_digest *md
         hp = find_ID_host_pair(sra->this.id
                                , sra->that.id);
 
-#ifdef DEBUG
-        if (DBGP(DBG_CONTROLMORE))  {
-            char s2[SUBNETTOT_BUF],d2[SUBNETTOT_BUF];
-
-            subnettot(&sra->this.client, 0, s2, sizeof(s2));
-            subnettot(&sra->that.client, 0, d2, sizeof(d2));
-
-            DBG_log("  checking hostpair %s -> %s is %s"
-                    , s2, d2
-                    , (hp ? "found" : "not found"));
-        }
-#endif /* DEBUG */
-
         if(!hp) continue;
 
         for (d = hp->connections; d != NULL; d = d->IDhp_next) {
             struct spd_route *sr;
-            int wildcards, pathlen;  /* XXX */
 
             /* if already best fit, do not try again */
             if(d == c) continue;
 
+            /* groups are abstract concepts, and can not match */
             if (d->policy & POLICY_GROUP)
                 continue;
-
-            if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-                  && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-                  && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-                continue;
-
 
             for (sr = &d->spd; sr != NULL; sr = sr->next) {
                 newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
@@ -841,11 +822,15 @@ static stf_status ikev2_child_sa_evaluate(struct msg_digest *md
         }
     }
 
-    DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
+    if(bestfit_n > 0 && b != NULL) {
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
+        if(best_c)  *best_c = b;
+        if(best_sr) *best_sr = bsr;
+        return STF_OK;
+    } else {
+        return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
 
-    if(best_c)  *best_c = b;
-    if(best_sr) *best_sr = bsr;
-    return STF_OK;
 }
 
 
