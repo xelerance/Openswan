@@ -447,6 +447,8 @@ void cleanup_state(struct state *st)
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
 
+    if(st == NULL) return;
+
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
             delete_dpd_event(st);

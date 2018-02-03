@@ -820,20 +820,14 @@ process_v2_packet(struct msg_digest **mdp)
 
 	    bool was_encrypted = !!(md->chain[ISAKMP_NEXT_v2E]);
 
-	    if (was_encrypted) {
-		/* our notification will encrypt messages */
+	    if (was_encrypted && st!=NULL && IS_PARENT_SA_ESTABLISHED(st->st_state)) {
+		/* our notification will encrypt messages, if possible */
 		send_v2_notification_enc(md,
 					 ike_xchg_type,
 					 INVALID_MESSAGE_ID,
 					 NULL);
 	    } else {
-		/* our notification will be in the clear */
-		send_v2_notification(st,
-				     ike_xchg_type,
-				     INVALID_MESSAGE_ID,
-				     st->st_icookie,
-				     st->st_rcookie,
-				     NULL);
+                SEND_V2_NOTIFICATION(INVALID_MESSAGE_ID);
 	    }
 	}
 	return;
@@ -1454,8 +1448,10 @@ void complete_v2_state_transition(struct msg_digest **mdp
 		    , from_state_name
 		    , (md->note) ? enum_name(&ipsec_notification_names, md->note) : "<no reason given>" ));
 
-        /* just kill the state */
-        cleanup_state(st);
+        if(st != NULL && !IS_PARENT_SA_ESTABLISHED(st->st_state)) {
+            /* just kill the state */
+            cleanup_state(st);
+        }
     }
 }
 
