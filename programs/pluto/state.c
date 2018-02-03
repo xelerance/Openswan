@@ -441,68 +441,11 @@ void free_state(struct state *st)
     pfree(st);
 }
 
-/* delete a state object */
-void
-delete_state(struct state *st)
+/* clean up a state related objects */
+void cleanup_state(struct state *st)
 {
     struct connection *const c = st->st_connection;
     struct state *old_cur_state = cur_state == st? NULL : cur_state;
-
-    openswan_log("deleting state #%lu (%s)",
-                 st->st_serialno,
-                 enum_show(&state_names, st->st_state));
-
-    /*
-     * for most IKEv2 things, we may have further things to do after marking the state deleted,
-     * so we do not actually free it here at all, but back in the main loop when all the work is done.
-     */
-    if(st->st_ikev2) {
-        /* child sa*/
-        if(st->st_clonedfrom != 0) {
-            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
-            if(st->st_state == STATE_CHILDSA_DEL) {
-		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
-
-            } else {
-                /* Only send request if child sa is established
-		 * otherwise continue with deletion
-		 */
-		if(IS_CHILD_SA_ESTABLISHED(st)) {
-                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
-                    send_delete(st);
-                    change_state(st, STATE_CHILDSA_DEL);
-
-                    /* actual deletion when we receive peer response*/
-                    return;
-		}
-            }
-
-        } else {
-            DBG(DBG_CONTROL, DBG_log("considering request to delete IKE parent state"));
-            /* parent sa */
-            if(st->st_state == STATE_IKESA_DEL) {
-                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
-
-            } else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
-		/* Another check to verify if a secured
-		 * INFORMATIONAL exchange can be sent or not
-		 */
-		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
-                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
-                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
-                    send_delete(st);
-                    change_state(st, STATE_IKESA_DEL);
-                    event_schedule(EVENT_SA_DELETE, 300, st);
-
-                    /* actual deletion when we receive peer response*/
-                    return;
-		}
-            } else {
-                /* no way to send response, just delete the state */
-                DBG(DBG_CONTROL, DBG_log("incomplete SA, just deleting"));
-            }
-        }
-    }
 
     /* If DPD is enabled on this state object, clear any pending events */
     if(st->st_dpd_event != NULL)
@@ -570,6 +513,69 @@ delete_state(struct state *st)
     release_whack(st);
 
     change_state(st, STATE_CHILDSA_DEL);
+}
+
+/* delete a state object */
+void
+delete_state(struct state *st)
+{
+    openswan_log("deleting state #%lu (%s)",
+                 st->st_serialno,
+                 enum_show(&state_names, st->st_state));
+
+    /*
+     * for most IKEv2 things, we may have further things to do after marking the state deleted,
+     * so we do not actually free it here at all, but back in the main loop when all the work is done.
+     */
+    if(st->st_ikev2) {
+        /* child sa*/
+        if(st->st_clonedfrom != 0) {
+            DBG(DBG_CONTROL, DBG_log("received request to delete child state"));
+            if(st->st_state == STATE_CHILDSA_DEL) {
+		DBG(DBG_CONTROL, DBG_log("now deleting the child state"));
+
+            } else {
+                /* Only send request if child sa is established
+		 * otherwise continue with deletion
+		 */
+		if(IS_CHILD_SA_ESTABLISHED(st)) {
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    send_delete(st);
+                    change_state(st, STATE_CHILDSA_DEL);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            }
+
+        } else {
+            DBG(DBG_CONTROL, DBG_log("considering request to delete IKE parent state"));
+            /* parent sa */
+            if(st->st_state == STATE_IKESA_DEL) {
+                DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
+
+            } else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
+		/* Another check to verify if a secured
+		 * INFORMATIONAL exchange can be sent or not
+		 */
+		if(st->st_skey_ei.ptr && st->st_skey_ai.ptr
+                   && st->st_skey_er.ptr && st->st_skey_ar.ptr) {
+                    DBG(DBG_CONTROL, DBG_log("sending IKE SA delete request"));
+                    send_delete(st);
+                    change_state(st, STATE_IKESA_DEL);
+                    event_schedule(EVENT_SA_DELETE, 300, st);
+
+                    /* actual deletion when we receive peer response*/
+                    return;
+		}
+            } else {
+                /* no way to send response, just delete the state */
+                DBG(DBG_CONTROL, DBG_log("incomplete SA, just deleting"));
+            }
+        }
+    }
+
+    cleanup_state(st);
 }
 
 /*
