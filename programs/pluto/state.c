@@ -483,7 +483,7 @@ delete_state(struct state *st)
             if(st->st_state == STATE_IKESA_DEL) {
                 DBG(DBG_CONTROL, DBG_log("now deleting the IKE (or parent) state"));
 
-            } else {
+            } else if(IS_PARENT_SA_ESTABLISHED(st->st_state)) {
 		/* Another check to verify if a secured
 		 * INFORMATIONAL exchange can be sent or not
 		 */
@@ -497,6 +497,9 @@ delete_state(struct state *st)
                     /* actual deletion when we receive peer response*/
                     return;
 		}
+            } else {
+                /* no way to send response, just delete the state */
+                DBG(DBG_CONTROL, DBG_log("incomplete SA, just deleting"));
             }
         }
     }

@@ -5,7 +5,7 @@ responder did not chose any I1 proposal, and said so.
 But the initiator WENT ON ANYWAY, and tried, and the responder should
 have dropped all state from this initiator, rather than try to decrypt it.
 
-THIS TEST CASE NOT YET IMPLEMENTED.
+
 
 
 
