@@ -1454,6 +1454,8 @@ void complete_v2_state_transition(struct msg_digest **mdp
 		    , from_state_name
 		    , (md->note) ? enum_name(&ipsec_notification_names, md->note) : "<no reason given>" ));
 
+        /* just kill the state */
+        cleanup_state(st);
     }
 }
 

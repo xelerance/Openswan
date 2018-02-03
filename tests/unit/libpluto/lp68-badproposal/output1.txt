@@ -578,12 +578,22 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 0e
 | state transition function for STATE_PARENT_R1 failed: NO_PROPOSAL_CHOSEN
-./badproposalR1 deleting state #1 (STATE_PARENT_R1)
+| ICOOKIE:  00 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
 ./badproposalR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./badproposalR1 leak: notification packet, item size: X
+./badproposalR1 leak: db_context->trans (expand), item size: X
+./badproposalR1 leak: db_context->conj (expand), item size: X
 ./badproposalR1 leak: alg_info_ike, item size: X
+./badproposalR1 leak: db_context->attrs, item size: X
+./badproposalR1 leak: db_context->conj, item size: X
+./badproposalR1 leak: v2 policy database, item size: X
+./badproposalR1 leak: saved first received packet, item size: X
 ./badproposalR1 leak: ikev2_inI1outR1 KE, item size: X
+./badproposalR1 leak: struct state in new_state(), item size: X
 ./badproposalR1 leak: msg_digest, item size: X
 ./badproposalR1 leak: policies path, item size: X
 ./badproposalR1 leak: ocspcerts path, item size: X
