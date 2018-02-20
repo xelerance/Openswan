@@ -545,7 +545,7 @@ handle_next_timer_event(void)
 
 		passert(st != NULL);
 		c = st->st_connection;
-		newest = (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))
+		newest = IS_PARENT_SA(st)
 		    ? c->newest_isakmp_sa : c->newest_ipsec_sa;
 
 		if (newest != st->st_serialno
