@@ -33,11 +33,11 @@
 #include "seam_commhandle.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
-#include "seam_keys.c"
 #include "seam_exitlog.c"
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 
+#include "seam_keys.c"
 #include "seam_rsasig.c"
 
 u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
