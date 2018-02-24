@@ -13,6 +13,7 @@
 #include "seam_command.c"
 #include "seam_ikev1_aggr.c"
 #include "seam_unpend.c"
+#include "seam_rsasig.c"
 
 #define TESTNAME "h2h-deny-ikev1"
 

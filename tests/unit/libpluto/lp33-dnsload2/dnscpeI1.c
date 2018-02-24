@@ -3,6 +3,7 @@
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+#include "seam_natt.c"
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_whack.c"
@@ -28,8 +29,10 @@ unsigned int sort_dns_answers;
 
 int main(int argc, char *argv[])
 {
+    int   len;
     char *infile;
     char *conn_name;
+    int  lineno=0;
     int  regression = 0;
     struct connection *c1;
     struct state *st;
@@ -80,6 +83,7 @@ int main(int argc, char *argv[])
      */
     assert(c1->end_addr_family == 0);
 
+    reset_globals();
     /* do calculation if not -r for regression */
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
 
@@ -109,6 +113,7 @@ int main(int argc, char *argv[])
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
     if(st!=NULL) {
         delete_state(st);
+        free_state(st);
     }
 
     delete_connection(c1, TRUE);

@@ -2,6 +2,7 @@
 #include "../lp08-parentR1/parentR1_head.c"
 #include "seam_gr_sha1_group14.c"
 #include "seam_finish.c"
+#include "seam_rsasig.c"
 #include "../seam_host_jamesjohnson.c"
 #include "seam_x509_list.c"
 
