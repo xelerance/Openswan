@@ -3,15 +3,14 @@
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+#include "seam_natt.c"
 #include "seam_demux.c"
 #include "seam_x509.c"
 #include "seam_pending.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
-#include "seam_keys.c"
 #include "seam_dnskey.c"
 #include "seam_rsasig.c"
-
 #include "seam_host_parker.c"
 #define TESTNAME "dnscpeI1"
 
