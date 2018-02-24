@@ -3,6 +3,7 @@
 #include "seam_gr_md5.c"
 #include "seam_finish.c"
 #include "seam_x509_list.c"
+#include "seam_rsasig.c"
 #include "../../programs/pluto/x509keys.c"
 #include "../seam_host_jamesjohnson.c"
 

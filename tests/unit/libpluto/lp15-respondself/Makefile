@@ -42,6 +42,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keymgmt.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypto.o
