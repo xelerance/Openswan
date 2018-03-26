@@ -630,7 +630,7 @@ send_v2_notification_enc(struct msg_digest *md
 		       , chunk_t *notify_data)
 
 {
-    struct state *st = md->st;
+    struct state *st;
     struct ikev2_generic e;
     unsigned char *encstart;
     pb_stream      e_pbs, e_pbs_cipher;
@@ -638,6 +638,14 @@ send_v2_notification_enc(struct msg_digest *md
     int            ivsize;
     stf_status     ret;
     unsigned char *authstart;
+
+    st = md->st;
+    if (!st) {
+        openswan_log("cannot send notification %s/%s, state is NULL"
+                     , enum_name(&exchange_names, xchg_type)
+                     , enum_name(&ikev2_notify_names, ntf_type));
+        return STF_INTERNAL_ERROR;
+    }
 
     zero(&e);
     zero(&e_pbs);
