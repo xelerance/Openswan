@@ -419,6 +419,36 @@ ipsecdoi_initiate(int whack_sock
     return SOS_NOBODY;
 }
 
+/* Add features of actual old state to policy.  This ensures
+ * that rekeying doesn't downgrade security.  I admit that
+ * this doesn't capture everything. */
+lset_t
+update_policy_from_state(const struct state *st, lset_t policy)
+{
+    if (st->st_pfs_group != NULL)
+        policy |= POLICY_PFS;
+    if (st->st_ah.present)
+    {
+        policy |= POLICY_AUTHENTICATE;
+        if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+    if (st->st_esp.present && st->st_esp.attrs.transattrs.encrypt != ESP_NULL)
+    {
+        policy |= POLICY_ENCRYPT;
+        if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+    if (st->st_ipcomp.present)
+    {
+        policy |= POLICY_COMPRESS;
+        if (st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+
+    return policy;
+}
+
 /* Replace SA with a fresh one that is similar
  *
  * Shares some logic with ipsecdoi_initiate, but not the same!
@@ -460,30 +490,7 @@ ipsecdoi_replace(struct state *st
     }
     else
     {
-	/* Add features of actual old state to policy.  This ensures
-	 * that rekeying doesn't downgrade security.  I admit that
-	 * this doesn't capture everything.
-	 */
-	if (st->st_pfs_group != NULL)
-	    policy |= POLICY_PFS;
-	if (st->st_ah.present)
-	{
-	    policy |= POLICY_AUTHENTICATE;
-	    if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
-	if (st->st_esp.present && st->st_esp.attrs.transattrs.encrypt != ESP_NULL)
-	{
-	    policy |= POLICY_ENCRYPT;
-	    if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
-	if (st->st_ipcomp.present)
-	{
-	    policy |= POLICY_COMPRESS;
-	    if (st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
+        policy = update_policy_from_state(st, policy);
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock
                           , old_parent_state
