@@ -90,10 +90,10 @@ ikev2parent_outI1_withstate(struct state *st
 {
     struct db_sa *sadb;
     int    groupnum;
+    int    need_to_add_pending = 0;
     int    policy_index = POLICY_ISAKMP(policy
                                         , c->spd.this.xauth_server
                                         , c->spd.this.xauth_client);
-
 
     /* set up new state */
     st->st_ikev2 = TRUE;
@@ -106,7 +106,44 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
     st->st_ikev2_orig_initiator = TRUE;
 
-    if (HAS_IPSEC_POLICY(policy)) {
+    if (HAS_IPSEC_POLICY(policy))
+        need_to_add_pending = 1;
+
+    if (predecessor == NULL)
+        openswan_log("initiating v2 parent SA");
+    else
+        openswan_log("initiating v2 parent SA to replace #%lu", predecessor->st_serialno);
+
+    if (predecessor != NULL) {
+        /* replace the existing pending SA */
+        int rc = update_pending(predecessor, st);
+        loglog(RC_NEW_STATE + STATE_PARENT_I1
+               , "%s: initiate, replacing #%lu %s"
+               , enum_name(&state_names, st->st_state)
+               , predecessor->st_serialno
+               , rc ? "failed" : "succeeded");
+        /* should the update fail, flag that an add is needed */
+        if (rc) {
+            if (!HAS_IPSEC_POLICY(policy)) {
+                if (HAS_IPSEC_POLICY(c->policy)) {
+                    /* this is a parent SA being rekeyd; we don't have a
+                     * pending entry to update; which means the other side
+                     * was the original initiator; we need to create a new
+                     * pending entry with ipsec policy, which we can get
+                     * from the existing connection */
+                    policy |= c->policy & POLICY_IPSEC_MASK;
+                }
+            }
+
+            need_to_add_pending = 1;
+        }
+
+    } else {
+            loglog(RC_NEW_STATE + STATE_PARENT_I1
+                      , "%s: initiate", enum_name(&state_names, st->st_state));
+    }
+
+    if (need_to_add_pending) {
 #ifdef HAVE_LABELED_IPSEC
         st->sec_ctx = NULL;
         if( uctx != NULL) {
@@ -119,25 +156,6 @@ ikev2parent_outI1_withstate(struct state *st
                     , st->sec_ctx
                     );
     }
-
-    if (predecessor == NULL)
-        openswan_log("initiating v2 parent SA");
-    else
-        openswan_log("initiating v2 parent SA to replace #%lu", predecessor->st_serialno);
-
-    if (predecessor != NULL)
-        {
-            update_pending(predecessor, st);
-            loglog(RC_NEW_STATE + STATE_PARENT_I1
-                      , "%s: initiate, replacing #%lu"
-                      , enum_name(&state_names, st->st_state)
-                      , predecessor->st_serialno);
-        }
-    else
-        {
-            loglog(RC_NEW_STATE + STATE_PARENT_I1
-                      , "%s: initiate", enum_name(&state_names, st->st_state));
-        }
 
     /*
      * now, we need to initialize st->st_oakley, specifically, the group
