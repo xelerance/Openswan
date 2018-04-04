@@ -320,6 +320,9 @@ unhash_state(struct state *st)
     /* unlink from forward chain */
     struct state **p;
 
+    DBG(DBG_CONTROL
+	, DBG_log("removing state object #%lu", st->st_serialno));
+
     if(st->st_hashchain_prev == NULL) {
 	p = state_hash(st->st_icookie, st->st_rcookie, NULL);
 	if(*p != st) {
@@ -438,6 +441,8 @@ void free_state(struct state *st)
 #ifdef HAVE_LABELED_IPSEC
     pfreeany(st->sec_ctx);
 #endif
+    DBG(DBG_CONTROL
+	, DBG_log("freeing state object #%lu", st->st_serialno));
     pfree(st);
 }
 
