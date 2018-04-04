@@ -473,9 +473,10 @@ delete_state(struct state *st)
 		 * otherwise continue with deletion
 		 */
 		if(IS_CHILD_SA_ESTABLISHED(st)) {
-                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete request"));
                     send_delete(st);
                     change_state(st, STATE_CHILDSA_DEL);
+                    event_schedule(EVENT_SA_DELETE, 300, st);
 
                     /* actual deletion when we receive peer response*/
                     return;
