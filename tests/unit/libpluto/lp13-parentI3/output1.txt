@@ -149,6 +149,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4

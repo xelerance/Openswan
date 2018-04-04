@@ -220,6 +220,7 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   01 00 00 11  00 0e 00 00
 ./parentR1 deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
+| removing state object #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28

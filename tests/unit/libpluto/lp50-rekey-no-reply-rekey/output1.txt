@@ -149,6 +149,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -1133,11 +1134,13 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | pass 0: considering CHILD SAs to delete
 ./rekey-no-reply-I1 deleting state #4 (STATE_CHILD_C1_REKEY)
 | received request to delete child state
+| removing state object #4
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 ./rekey-no-reply-I1 deleting state #3 (STATE_CHILD_C1_REKEY)
 | received request to delete child state
+| removing state object #3
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28

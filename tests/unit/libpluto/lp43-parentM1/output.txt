@@ -451,9 +451,11 @@ sending 492 bytes for main_outI1 through eth0:500 [192.168.1.1:500] to 132.213.2
 |   68 a1 f1 c9  6b 86 96 fc  77 57 01 00
 RC=105 STATE_MAIN_I1: initiate
 ./parentM1 deleting state #1 (STATE_MAIN_I1)
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
+| freeing state object #1
 ./parentM1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete

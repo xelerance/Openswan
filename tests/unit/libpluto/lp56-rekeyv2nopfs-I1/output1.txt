@@ -149,6 +149,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2--nopfs) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -767,6 +768,7 @@ RC=0 #1: "parker1--jj2--nopfs":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA establishe
 ./rekeyv2nopfs-I1 deleting state #3 (STATE_CHILD_C1_REKEY)
 | received request to delete child state
 | disconnecting state #3 from md
+| removing state object #3
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
@@ -847,6 +849,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   4a 21 e4 b4  7a ae c5 28  b6 ea e0 30
+| freeing state object #1
 ./rekeyv2nopfs-I1 leak: reply packet for ikev2_out_C1_tail, item size: X
 ./rekeyv2nopfs-I1 leak: db_v2_trans, item size: X
 ./rekeyv2nopfs-I1 leak: db_v2_prop_conj, item size: X

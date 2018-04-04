@@ -157,6 +157,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -529,6 +530,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to
 | pass 0: considering CHILD SAs to delete
 ./nattI2 deleting state #2 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
+| removing state object #2
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
@@ -573,6 +575,7 @@ sending 76 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to
 ./nattI2 deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5

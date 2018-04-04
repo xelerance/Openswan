@@ -162,6 +162,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (home) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -799,6 +800,7 @@ sending 1580 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.35:500] to 1
 | pass 0: considering CHILD SAs to delete
 ./davecertI2-id deleting state #2 (STATE_CHILD_C0_KEYING)
 | received request to delete child state
+| removing state object #2
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  75 bb 19 c5  f3 60 73 6d
 | state hash entry 13
@@ -843,6 +845,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 13
 ./davecertI2-id deleting state #1 (STATE_IKESA_DEL)
 | considering request to delete IKE parent state
 | now deleting the IKE (or parent) state
+| removing state object #1
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  75 bb 19 c5  f3 60 73 6d
 | state hash entry 13
