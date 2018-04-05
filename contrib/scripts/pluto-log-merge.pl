@@ -336,7 +336,9 @@ sub create_event_reader {
                 $self->{ev}->{SA_unrouted} = $2 if $2;
             }
             elsif ($txt =~ m/emit ISAKMP Message:/) {
-                if (defined $self->{ev}->{why_start} && $self->{ev}->{why_start} eq 'received') {
+                if (defined $self->{ev}->{why_start}
+                        && ($self->{ev}->{why_start} eq 'received'
+                            || defined $self->{ev}->{parse})) {
                     append_debug_line($self, $line);
                     complete_current_ev($self, $line, 'received');
                     start_new_ev($self, $line, 'responding');
