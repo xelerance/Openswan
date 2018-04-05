@@ -277,6 +277,7 @@ sub create_event_reader {
 
             my $line = $self->{lines}->{read}();
             return if not defined $line;
+            return if not $line;
 
             # {text} removes the syslog prefix
             my $txt = $line->{text};
