@@ -336,7 +336,7 @@ RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); no
 | pass 0: considering CHILD SAs to delete
 ./nattI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 sending 76 bytes for ikev2_delete_out through eth0:4500 [93.184.216.34:55045] to 132.213.238.7:4500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30

@@ -955,7 +955,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | pass 0: considering CHILD SAs to delete
 ./rekeyikev2-inCR1 deleting state #3 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -994,7 +994,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |   bc 97 31 52  72 72 67 dd  48 83 e2 02
 ./rekeyikev2-inCR1 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

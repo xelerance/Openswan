@@ -549,7 +549,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | pass 0: considering CHILD SAs to delete
 ./parentI3 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
