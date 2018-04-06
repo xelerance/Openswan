@@ -442,6 +442,7 @@ struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
 extern void delete_p2states_by_connection(struct connection *c);
 extern void rekey_p2states_by_connection(struct connection *c);
+extern void delete_state_family(struct state *pst, bool v2_responder_state);
 
 extern struct state
     *duplicate_state(struct state *st),

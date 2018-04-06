@@ -899,6 +899,45 @@ delete_states_by_peer(ip_address *peer)
     }
 }
 
+/* This function is called during parent/ISAKMP state deletion.  The desired
+ * outcome is the deletion of the parent SA, and the cloned children SAs.
+ * The pst argument must point to a parent SA.
+ * The v2_responder_state is TRUE if st->st_state must be advanced first.
+ * NOTE: the md->st should be cleared after calling this function.
+ */
+void delete_state_family(struct state *pst, bool v2_responder_state)
+{
+	/*
+	 * We are a parent: delete our children and
+	 * then prepare to delete ourself.
+	 * Our children will be on the same hash chain
+	 * because we share IKE SPIs.
+	 */
+	struct state *first, *next, *st;
+
+	passert(!IS_CHILD_SA(pst));	/* we had better be a parent */
+
+	/* locate first state */
+	for (first=pst; first->st_hashchain_prev;
+	     first = first->st_hashchain_prev) ;
+
+	/* walk the whole list deleting children first */
+	for (st = first, next = st->st_hashchain_next; st;
+                        st = next, next = st ? st->st_hashchain_next : NULL) {
+		if (st->st_clonedfrom == pst->st_serialno) {
+			if (v2_responder_state)
+				change_state(st, STATE_CHILDSA_DEL);
+			delete_state(st);
+		}
+	}
+
+	/* delete the parent */
+	if (v2_responder_state)
+		change_state(pst, STATE_IKESA_DEL);
+	delete_state(pst);
+}
+
+
 /*
  * IKEv1: Duplicate a Phase 1 state object, to create a Phase 2 object.
  * IKEv2: Duplicate a Parent SA state object, to create a Child SA object
