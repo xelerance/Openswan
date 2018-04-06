@@ -788,7 +788,7 @@ stf_status process_informational_ikev2(struct msg_digest *md)
         struct payload_digest *p;
         struct ikev2_delete *v2del=NULL;
         stf_status ret;
-        struct state *const st = md->st;
+        struct state *st = md->st;
 
         /* Only send response if it is request (we are responder!) */
         if (IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
@@ -1018,40 +1018,39 @@ stf_status process_informational_ikev2(struct msg_digest *md)
             for(p = md->chain[ISAKMP_NEXT_v2D]; p!=NULL; p = p->next) {
                 v2del = &p->payload.v2delete;
 
+                /* catch and report additional delete payloads after we deleted
+                 * the parent SA state already */
+                if (!st) {
+                    DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s but parent ISAKMP SA already deleted; ignoring"
+                                                 , enum_show(&protocol_names, v2del->isad_protoid)));
+                    continue;
+                }
+
                 switch (v2del->isad_protoid) {
                 case PROTO_ISAKMP:
-                    {
-                        /* My understanding is that delete payload for IKE SA
-                         *  should be the only payload in the informational
-                         * Now delete the IKE SA state and all its child states
-                         */
-                        struct state *current_st = st;
-                        struct state *next_st = NULL;
-                        struct state *first_st = NULL;
-
-                        /* Find the first state in the hash chain*/
-                        while(current_st != (struct state *) NULL)
-                            {
-                                first_st = current_st;
-                                current_st = first_st->st_hashchain_prev;
-                            }
-
-                        current_st = first_st;
-                        while (current_st != (struct state *) NULL)
-                            {
-                                next_st = current_st->st_hashchain_next;
-                                if(current_st->st_clonedfrom !=0 )
-                                    {
-                                        change_state(current_st, STATE_CHILDSA_DEL);
-                                    }
-                                else
-                                    {
-                                        change_state(current_st, STATE_IKESA_DEL);
-                                    }
-                                delete_state(current_st);
-                                current_st = next_st;
-                            }
+                    /* My understanding is that delete payload for IKE SA
+                     *  should be the only payload in the informational */
+                    if (IS_CHILD_SA(st)) {
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("received delete request for %s via #%ld child SA; looking up parent #%ld..."
+                                    , enum_show(&protocol_names, v2del->isad_protoid)
+                                    , st->st_serialno, st->st_clonedfrom));
+                        st = state_with_serialno(st->st_clonedfrom);
+                        if (!st) {
+                            DBG(DBG_CONTROLMORE,
+                                DBG_log("parent SA #%ld not found; ignoring"
+                                        , md->st->st_clonedfrom));
+                            continue;
+                        }
                     }
+                    DBG(DBG_CONTROLMORE, DBG_log("received delete request for %s via #%ld; deleting #%ld"
+                                                 , enum_show(&protocol_names, v2del->isad_protoid)
+                                                 , md->st->st_serialno, st->st_serialno));
+
+                    /* Now delete the IKE SA state and all its child states */
+                    delete_state_family(st, TRUE);
+                    /* we cannot trust st after it's deleted */
+                    st = md->st = NULL;
                     break;
 
                 case PROTO_IPSEC_AH:
@@ -1107,43 +1106,35 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 
             } /* for */
 
-        } /* if*/
+        } /* if have D payload */
         else
             {
                 /* empty response to our IKESA delete request*/
                 if((md->hdr.isa_flags & ISAKMP_FLAGS_R) && st->st_state == STATE_IKESA_DEL)
                     {
                         /* My understanding is that delete payload for IKE SA
-                         *  should be the only payload in the informational
-                         * Now delete the IKE SA state and all its child states
+                         *  should be the only payload in the informational */
+                        if (IS_CHILD_SA(st)) {
+                            DBG(DBG_CONTROLMORE,
+                                DBG_log("received empty delete response via #%ld child SA; looking up parent #%ld..."
+                                        , st->st_serialno, st->st_clonedfrom));
+                            st = state_with_serialno(st->st_clonedfrom);
+                            if (!st) {
+                                DBG(DBG_CONTROLMORE,
+                                    DBG_log("parent SA #%ld not found; ignoring"
+                                            , md->st->st_clonedfrom));
+                                return STF_IGNORE;
+                            }
+                        }
+                        DBG(DBG_CONTROLMORE,
+                            DBG_log("received empty delete response via #%ld; deleting #%ld"
+                                    , md->st->st_serialno, st->st_serialno));
+
+                        /* Now delete the IKE SA state and all its child states
                          */
-                        struct state *current_st = st;
-                        struct state *next_st = NULL;
-                        struct state *first_st = NULL;
-
-                        /* Find the first state in the hash chain*/
-                        while(current_st != (struct state *) NULL)
-                            {
-                                first_st = current_st;
-                                current_st = first_st->st_hashchain_prev;
-                            }
-
-                        current_st = first_st;
-                        while (current_st != (struct state *) NULL)
-                            {
-                                next_st = current_st->st_hashchain_next;
-                                if(current_st->st_clonedfrom !=0 )
-                                    {
-                                        change_state(current_st, STATE_CHILDSA_DEL);
-                                    }
-                                else
-                                    {
-                                        change_state(current_st, STATE_IKESA_DEL);
-                                    }
-                                delete_state(current_st);
-                                current_st = next_st;
-                            }
-
+                        delete_state_family(st, TRUE);
+                        /* we cannot trust st after it's deleted */
+                        st = md->st = NULL;
                     }
             }
     }
