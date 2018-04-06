@@ -767,12 +767,16 @@ stf_status process_informational_ikev2(struct msg_digest *md)
 	stf_status ret;
         if(IKEv2_ORIGINAL_INITIATOR(md->hdr.isa_flags)) {
            DBG(DBG_CONTROLMORE
-              , DBG_log("received informational exchange request from INITIATOR"));
+              , DBG_log("received informational exchange %s from INITIATOR"
+                        , IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)
+                            ? "request" : "response"));
            ret = ikev2_decrypt_msg(md, RESPONDER);
         }
         else {
            DBG(DBG_CONTROLMORE
-              , DBG_log("received informational exchange request from RESPONDER"));
+              , DBG_log("received informational exchange %s from RESPONDER"
+                        , IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)
+                            ? "request" : "response"));
            ret = ikev2_decrypt_msg(md, INITIATOR);
         }
 
