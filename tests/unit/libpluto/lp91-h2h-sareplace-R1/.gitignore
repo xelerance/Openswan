@@ -1,0 +1,4 @@
+rekeyParentSA
+*.o
+OUTPUT
+.gdb1init
