@@ -121,7 +121,7 @@ ikev2parent_outI1_withstate(struct state *st
                , "%s: initiate, replacing #%lu %s"
                , enum_name(&state_names, st->st_state)
                , predecessor->st_serialno
-               , rc ? "failed" : "succeeded");
+               , rc ? "-- marked as pending up" : "-- in progress");
         /* should the update fail, flag that an add is needed */
         if (rc) {
             if (!HAS_IPSEC_POLICY(policy)) {
