@@ -273,6 +273,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 1: output to OUTPUT/rekeyParentSA.pcap
 1: input from h2hI2.pcap
 |   =========== input from pcap file h2hI2.pcap ========
+| recv_pcap_packet2_and_rekey() call 1: enter
 | *received 492 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
@@ -305,6 +306,16 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
 |   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
 |   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
+| **parse ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_AUTH
+|    flags: ISAKMP_FLAG_INIT
+|    message ID:  00 00 00 01
+|    length: 492
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_AUTH (35), msgid: 00000001
 | I am IKE SA Responder
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -317,6 +328,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | v2 peer and cookies match on #1
 | v2 state object #1 (mytunnel) found, in STATE_PARENT_R1
 | state found and its state is:STATE_PARENT_R1 msgid: 00001
+| ***parse IKEv2 Encryption Payload:
+|    critical bit: none
+|    length: 464
+| processing payload: ISAKMP_NEXT_v2E (len=464)
 | considering state entry: 0
 |   reject: in state: STATE_PARENT_R1, needs STATE_PARENT_I1
 | considering state entry: 1
@@ -328,6 +343,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | considering state entry: 4
 | now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
+| processor 'responder-auth-process' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI2outR2: calculating g^{xy}, sending R2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -770,6 +788,12 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   3e 9a 34 b2  a4 8b bf e4  d5 2c 15 05
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
+| recv_pcap_packet2_and_rekey() call 1: start IKE rekey
+| creating state object #3 at Z
+| orient mytunnel checking against if: eth0 (AF_INET:132.213.238.7:4500)
+| orient mytunnel checking against if: eth0 (AF_INET:132.213.238.7:500)
+|     orient matched on IP
+|   orient mytunnel finished with: 1 [132.213.238.7]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -778,13 +802,50 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 ./rekeyParentSA STATE_PARENT_I1: initiate, replacing #1 -- in progress
 | no IKE algorithms for this connection
 ./rekeyParentSA deleting state #1 (STATE_PARENT_R2)
+| considering request to delete IKE parent state
+| sending IKE SA delete request
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   de bc 58 3a  8f 40 d0 cf
+|    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
+|    exchange type: ISAKMP_v2_INFORMATIONAL
+|    flags: none
+|    message ID:  00 00 00 01
+| ***emit IKEv2 Encryption Payload:
+|    critical bit: none
+| emitting 16 zero bytes of iv into IKEv2 Encryption Payload
+| *****emit IKEv2 Delete Payload:
+|    critical bit: none
+|    protocol ID: 1
+|    SPI size: 0
+|    number of SPIs: 0
+| emitting length of IKEv2 Delete Payload: 8
+| emitting 8 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05 06 07
+| emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
+| emitting length of IKEv2 Encryption Payload: 48
+| emitting length of ISAKMP Message: 76
+| encrypting as RESPONDER
+| data before encryption:
+|   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
+| data after encryption:
+|   30 93 b3 5a  b6 84 ca 8e  78 4d 0a ad  cd f7 e3 3e
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 00  00 00 00 01  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   30 93 b3 5a  b6 84 ca 8e  78 4d 0a ad  cd f7 e3 3e
+| out calculated auth:
+|   95 08 3c a2  1d 8e 1b cf  74 5c bf 98
 sending 76 bytes for ikev2_delete_out through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 00  00 00 00 01  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   30 93 b3 5a  b6 84 ca 8e  78 4d 0a ad  cd f7 e3 3e
 |   95 08 3c a2  1d 8e 1b cf  74 5c bf 98
-| .. continuing with rekey
+| recv_pcap_packet2_and_rekey() call 1: continuation
+| ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -1172,8 +1233,12 @@ sending 636 bytes for ikev2_parent_outI1_common through eth0:500 [132.213.238.7:
 |   2b 00 00 1c  00 00 40 05  ea 59 1e 1b  30 a3 e0 94
 |   4c dc 91 5b  b0 95 3c 48  70 73 62 f1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #3 complete v2 state transition with STF_OK
 ./rekeyParentSA transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #3; pst is #0; transition_st is #0
 ./rekeyParentSA STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
+| recv_pcap_packet2_and_rekey() call 1: exit
+| freeing state object #1
 ./rekeyParentSA leak: saved first packet, item size: X
 ./rekeyParentSA leak: reply packet for ikev2_parent_outI1_tail, item size: X
 ./rekeyParentSA leak: sa in main_outI1, item size: X

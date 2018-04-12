@@ -20,18 +20,47 @@ static void init_fake_secrets(void)
 static void init_loaded(void)
 {   /* nothing */ }
 
+#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
+
+void enable_debugging(void)
+{
+    base_debugging = WANT_THIS_DBG;
+    reset_debugging();
+}
+
+void enable_debugging_on_sa(int num)
+{
+    struct state *st;
+    lset_t to_enable = WANT_THIS_DBG;
+    st = state_with_serialno(num);
+    if(st != NULL) {
+        passert(st->st_connection != NULL);
+        st->st_connection->extra_debugging = to_enable;
+    }
+}
+
 void recv_pcap_packet2_and_rekey(u_char *user
                       , const struct pcap_pkthdr *h
                       , const u_char *bytes)
 {
+    static int call_counter = 0;
     struct state *st;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+
+    call_counter++;
+    DBG_log("%s() call %d: enter", __func__, call_counter);
+
+    enable_debugging();
+    enable_debugging_on_sa(1);
+    enable_debugging_on_sa(2);
 
     recv_pcap_packet2(user, h, bytes);
 
     /* find st involved */
     st = state_with_serialno(1);
-    st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+    passert(st != NULL);
+
+    DBG_log("%s() call %d: start IKE rekey", __func__, call_counter);
 
     /* now arrange to rekey the SA */
     ipsecdoi_replace(st, LEMPTY, LEMPTY, st->st_try);
@@ -42,10 +71,10 @@ void recv_pcap_packet2_and_rekey(u_char *user
     /* which really leads to deleting the PARENT SA */
     delete_state(st);
 
-    DBG_log(".. continuing with rekey");
-
+    DBG_log("%s() call %d: continuation", __func__, call_counter);
     run_one_continuation(crypto_req);
 
+    DBG_log("%s() call %d: exit", __func__, call_counter);
 }
 
 
