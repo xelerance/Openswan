@@ -39,7 +39,7 @@ RC=0 "rw-dave":   CAs: 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=
 RC=0 "rw-dave":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "rw-dave":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,32; interface: eth0; kind=CK_PERMANENT
 0: input from davecertI1-id.pcap
-|   =========== input from from davecertI1-id.pcap ========
+|   =========== input from pcap file davecertI1-id.pcap ========
 | *received 892 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
@@ -274,7 +274,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/davecertR2-id.pcap
 1: input from davecertI2-id.pcap
-|   =========== input from from davecertI2-id.pcap ========
+|   =========== input from pcap file davecertI2-id.pcap ========
 | *received 1580 bytes from 93.184.216.35:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
 |   2e 20 23 08  00 00 00 01  00 00 06 2c  23 00 06 10

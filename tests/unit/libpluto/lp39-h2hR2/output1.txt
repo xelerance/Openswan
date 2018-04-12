@@ -37,7 +37,7 @@ RC=0 "mytunnel":        ....1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 
 RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
 0: input from ../lp37-h2hR1/h2hI1.pcap
-|   =========== input from from ../lp37-h2hR1/h2hI1.pcap ========
+|   =========== input from pcap file ../lp37-h2hR1/h2hI1.pcap ========
 | *received 892 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
@@ -272,7 +272,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 1: output to OUTPUT/h2hR2.pcap
 1: input from h2hI2.pcap
-|   =========== input from from h2hI2.pcap ========
+|   =========== input from pcap file h2hI2.pcap ========
 | *received 492 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
