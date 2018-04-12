@@ -77,8 +77,10 @@ UNITTESTS=lp01-spdbtest \
 	lp90-h2h-sareplace-I1 \
 	lp91-h2h-sareplace-R1
 
+# running 'make check KEEPGOING=1' will run through all tests w/o stopping
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
 clean check pcapupdate:
-	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}
