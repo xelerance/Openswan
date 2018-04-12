@@ -45,7 +45,7 @@ RC=0 "parker": fd68:c9f9:4157::/64===%any[@jamesjohnson.emmjay.credil.org]...%an
 RC=0 "parker":     myip=unset; hisip=unset;
 RC=0 "parker":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 96,64; interface: eth0; kind=CK_PERMANENT
-|   =========== input from from nattI1.pcap ========
+|   =========== input from pcap file nattI1.pcap ========
 | *received 892 bytes from 93.184.216.34:55044 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
