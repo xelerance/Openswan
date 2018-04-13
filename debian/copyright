@@ -179,8 +179,7 @@ Files with different copyrights/licenses:
    linux/net/ipsec/des/COPYRIGHT, linux/net/ipsec/des/ecb_enc.c,
    linux/net/ipsec/des/set_key.c, linux/net/ipsec/des/des_opts.c,
    linux/net/ipsec/des/des_enc.c, linux/net/ipsec/des/dx86unix.S,
-   linux/net/ipsec/des/cbc_enc.c programs/pluto/pluto.8.xml,
-   programs/pluto/pluto.8
+   linux/net/ipsec/des/cbc_enc.c
    Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
    All rights reserved.
 
