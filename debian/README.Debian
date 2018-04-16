@@ -68,7 +68,7 @@ the NAT Traversal patches have both been dropped. On the other hand, please note
 that there are two packages available, each gearing towards a different group
 of users:
 
-* openswan-modules-dkms is suitable for end users to use KLIPS on on the same 
+* openswan-modules-dkms is suitable for end users to use KLIPS on the same 
   machine where the package is being installed. The module will be built 
   automatically upon installing a new kernel and its respective headers 
   package. No further documentation is necessary, as the build and installation
@@ -95,7 +95,7 @@ can be used:
 * When invoking make-kpkg from kernel-package to do the module compilation the
   linux-source package has to be installed and the openswan-modules.tar.gz
   from openswan-modules-source needs to be extracted under /usr/src. Keep in
-  mind that it is not enough to just put the the linux source tree in place,
+  mind that it is not enough to just put the linux source tree in place,
   but it also needs to be configured and a successful kernel build process
   must be completed before the command
       make-kpkg --added_modules openswan modules_image
