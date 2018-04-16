@@ -198,7 +198,6 @@ install-openswan-modules-source:
 	install --mode=644 debian/compat "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/changelog "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/copyright "$(BUILDDIR)/modules/openswan/debian/"
-	install --mode=644 debian/NEWS "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/README.Debian "$(BUILDDIR)/modules/openswan/debian/"
 
 	tar -C $(BUILDDIR) -c modules/ | bzip2 -9 > \
