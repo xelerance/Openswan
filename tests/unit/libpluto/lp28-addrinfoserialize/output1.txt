@@ -20,10 +20,10 @@
 |         result=2607:f0b0:f:2::25 
 | looking up: moon.testing.openswan.org 
 | ans 000 canonname=(null) protocol=17 family=2 len=16 
-|         result=192.139.46.82 
+|         result=192.168.0.10 
 | serialized size=28 
 | ans 000 canonname=(null) protocol=17 family=2 len=16 
-|         result=192.139.46.82 
+|         result=192.168.0.10 
 | looking up: nonexistant.testing.openswan.org 
 ./serialaddrinfo leak detective found Z leaks
 lookup: nonexistant.testing.openswan.org a/aaaa lookup error: Name or service not known
