@@ -71,6 +71,13 @@ void recv_pcap_packet2_and_rekey(u_char *user
     /* which really leads to deleting the PARENT SA */
     delete_state(st);
 
+    /* ipsecdoi_replace() queued a 'build_ke', which we have to emulate...
+     * now fill in the KE values from a constant.. not calculated */
+    passert(kn->oakley_group == tc14_oakleygroup);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+
     DBG_log("%s() call %d: continuation", __func__, call_counter);
     run_one_continuation(crypto_req);
 
