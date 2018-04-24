@@ -109,7 +109,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./rekeyikev2-inCR1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./rekeyikev2-inCR1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from ../lp10-parentI2/parentR1.pcap
-|   =========== input from from ../lp10-parentI2/parentR1.pcap ========
+|   =========== input from pcap file ../lp10-parentI2/parentR1.pcap ========
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
@@ -447,7 +447,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
 |   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 1: input from ../lp13-parentI3/parentR2.pcap
-|   =========== input from from ../lp13-parentI3/parentR2.pcap ========
+|   =========== input from pcap file ../lp13-parentI3/parentR2.pcap ========
 | *received 444 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
@@ -831,7 +831,7 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 ./rekeyikev2-inCR1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/4294967295)
 2: output to /dev/null
 2: input from rekeyCR1.pcap
-|   =========== input from from rekeyCR1.pcap ========
+|   =========== input from pcap file rekeyCR1.pcap ========
 | *received 492 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 20  00 00 00 02  00 00 01 ec  28 00 01 d0

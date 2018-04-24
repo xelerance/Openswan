@@ -73,11 +73,14 @@ UNITTESTS=lp01-spdbtest \
 	lp57-rekeyv2nopfs-R1  \
 	lp58-rekeyv2nopfs-inCR1  \
 	lp60-bestif                 \
-	lp61-nattI1 lp62-nattR1 lp63-nattI2 lp64-nattR2 lp65-nattI3
+	lp61-nattI1 lp62-nattR1 lp63-nattI2 lp64-nattR2 lp65-nattI3 \
+	lp90-h2h-sareplace-I1 \
+	lp91-h2h-sareplace-R1
 
+# running 'make check KEEPGOING=1' will run through all tests w/o stopping
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
 clean check pcapupdate:
-	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}
-

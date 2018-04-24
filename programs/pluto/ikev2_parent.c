@@ -113,6 +113,10 @@ justship_v2KE(struct state *st UNUSED
     if(!out_struct(&v2ke, &ikev2_ke_desc, outs, &kepbs)) {
         return FALSE;
     }
+    if (!g->len) {
+        loglog(RC_FATAL, "ikev2 g^x is not initialized (zero length), aborting");
+        return FALSE;
+    }
     if(!out_chunk(*g, &kepbs, "ikev2 g^x")) {
         return FALSE;
     }

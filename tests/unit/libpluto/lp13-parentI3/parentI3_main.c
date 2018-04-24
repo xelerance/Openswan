@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         /* process i'th packet */
         cur_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
         assert(recv_inputs[i] != NULL);
-        pcap_dispatch(pt, 1, recv_inputs[i], NULL);
+        pcap_dispatch(pt, -1, recv_inputs[i], NULL);
     }
 
     AFTER_CONN();

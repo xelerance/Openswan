@@ -1,0 +1,13 @@
+This test case is an IKEv2 responder for the first SA, which then decides to
+rekey the (parent) SA (before the other end).
+This end is the original initiator, and after the initial responder times
+out, gets a delete for the original SA, and a rekey initiate.
+
+
+
+
+
+
+
+
+

@@ -109,7 +109,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./nattI3 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
 ./nattI3 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from nattR1.pcap
-|   =========== input from from nattR1.pcap ========
+|   =========== input from pcap file nattR1.pcap ========
 picking: eth0:500  outside: 55044 <=> d: 55044
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -230,7 +230,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:4500 [93.184.216.34:55045] to
 |   26 90 84 b1  1f f5 2e 8c  9d 03 99 ac
 1: output to /dev/null
 1: input from nattR2.pcap
-|   =========== input from from nattR2.pcap ========
+|   =========== input from pcap file nattR2.pcap ========
 skipping: eth0:500  outside: 55044 <=> d: 55045
 picking: eth0:4500 float outside: 55045 <=> d: 55045
 | *received 444 bytes from 132.213.238.7:4500 on eth0 (port=4500)
