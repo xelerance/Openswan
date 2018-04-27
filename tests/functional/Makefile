@@ -16,19 +16,25 @@ srcdir?=${OPENSWANSRCDIR}/tests/functional
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-check:
-	@${MAKE} -C 01-confread check
-	@${MAKE} -C 03-plutostart check
-	@${MAKE} -C 04-whackwrite check
-	@${MAKE} -C 05-addconn check
-	@${MAKE} -C 06-dnsdelay check
-	@${MAKE} -C 06-alsoflip check
-	@${MAKE} -C 07-sourceipv6 check
-	@${MAKE} -C 08-sitelocalv6 check
-	@${MAKE} -C 09-v6inv4 check
-	@${MAKE} -C 10-defaultroute check
-	@${MAKE} -C 11-subnets      check
-	@${MAKE} -C 12-rwcertwrite  check
-	@${MAKE} -C 13-bigpubkey  check
+FUNCTIONALTESTS=
+FUNCTIONALTESTS+=01-confread
+FUNCTIONALTESTS+=03-plutostart
+FUNCTIONALTESTS+=04-whackwrite
+FUNCTIONALTESTS+=05-addconn
+FUNCTIONALTESTS+=06-dnsdelay
+FUNCTIONALTESTS+=06-alsoflip
+FUNCTIONALTESTS+=07-sourceipv6
+FUNCTIONALTESTS+=08-sitelocalv6
+FUNCTIONALTESTS+=09-v6inv4
+FUNCTIONALTESTS+=10-defaultroute
+FUNCTIONALTESTS+=11-subnets
+FUNCTIONALTESTS+=12-rwcertwrite
+FUNCTIONALTESTS+=13-bigpubkey
 
+# running 'make check KEEPGOING=1' will run through all tests w/o stopping
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+clean check pcapupdate:
+	@${ERROR_CHECK} for unittest in ${FUNCTIONALTESTS}; do ${MAKE} -C $$unittest $@; done
 
+testlist:
+	@echo ${FUNCTIONALTESTS}
