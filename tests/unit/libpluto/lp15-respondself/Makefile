@@ -99,7 +99,7 @@ update1:
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${TESTNAME}.o ${WHACKFILE} OUTPUT/*.pcap
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${TESTNAME}.o ${WHACKFILE} OUTPUT/*.pcap *~ *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT

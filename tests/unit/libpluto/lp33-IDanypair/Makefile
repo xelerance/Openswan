@@ -98,7 +98,7 @@ update: OUTPUT
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 
 clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE}
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} *~ *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT
