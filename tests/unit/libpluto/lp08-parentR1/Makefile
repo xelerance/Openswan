@@ -81,9 +81,12 @@ TESTNAME=parentR1
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
 check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt OUTPUT/R1parker-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}

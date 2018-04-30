@@ -74,11 +74,12 @@ EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c
-	@echo CC ${TESTNAME}.c
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
-	@echo "  "CC ${TESTNAME}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
 check:	${WHACKFILE} ${TESTNAME} OUTPUT
 	@echo "file ${TESTNAME}"          >.gdbinit

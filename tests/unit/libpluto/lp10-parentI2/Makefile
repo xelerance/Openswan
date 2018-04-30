@@ -76,11 +76,12 @@ include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
-	@echo CC ${TESTNAME}.c
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@echo LD ${TESTNAME}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}.c"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check: OUTPUT/I2-dump.txt
 OUTPUT/I2-dump.txt:	${WHACKFILE} ${TESTNAME}
