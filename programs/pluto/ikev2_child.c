@@ -1140,6 +1140,13 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     stf_status     ret;
     unsigned char *authstart;
     struct connection *c0 = NULL;
+    enum phase1_role role;
+
+    if (IKEv2_IS_ORIG_INITIATOR(st)) {
+        role = INITIATOR;
+    } else {
+        role = RESPONDER;
+    }
 
     if(c->policy & POLICY_PFS) {
         unpack_v2KE(st, r, &st->st_gi);
@@ -1153,9 +1160,10 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
     zero(reply_buffer);
     init_pbs(&reply_stream, reply_buffer, sizeof(reply_buffer), "reply packet");
 
-    openswan_log("starting rekey of CHILD SA for state=#%lu (expired) using PARENT SA #%lu"
+    openswan_log("starting rekey of CHILD SA for state=#%lu (expired) using PARENT SA #%lu as %s"
                  , st->st_replaced
-                 , st->st_clonedfrom);
+                 , st->st_clonedfrom
+                 , role == INITIATOR ? "INITIATOR" : "RESPONDER" );
 
     /* HDR out */
     {
@@ -1236,7 +1244,7 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
         st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
-        ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
+        ikev2_calc_emit_ts(md, &e_pbs_cipher, role, next_payload, c0, policy);
 
         if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
             DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
@@ -1264,10 +1272,11 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         close_output_pbs(&md->rbody);
         close_output_pbs(&reply_stream);
 
-        ret = ikev2_encrypt_msg(md, INITIATOR,
+        ret = ikev2_encrypt_msg(md, role,
                                 authstart,
                                 iv, encstart, authloc,
                                 &e_pbs, &e_pbs_cipher);
+
         if(ret != STF_OK) return ret;
     }
 
