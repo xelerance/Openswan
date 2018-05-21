@@ -676,7 +676,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 416
 | emitting length of ISAKMP Message: 444
-| encrypting as RESPONDER
+| encrypting as RESPONDER, parent SA #1
 | data before encryption:
 |   27 00 00 26  02 00 00 00  6a 61 6d 65  73 6a 6f 68
 |   6e 73 6f 6e  2e 65 6d 6d  6a 61 79 2e  63 72 65 64
@@ -1232,7 +1232,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | emitting length of IKEv2 Encryption Payload: 464
 | emitting length of ISAKMP Message: 492
 | encrypting payload as RESPONDER
-| encrypting as RESPONDER
+| encrypting as RESPONDER, parent SA #1
 | data before encryption:
 |   22 00 00 14  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc
 |   bb c6 15 84  21 00 01 08  00 0e 00 00  a5 9a 13 6c

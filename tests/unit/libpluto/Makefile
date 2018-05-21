@@ -74,6 +74,8 @@ UNITTESTS=lp01-spdbtest \
 	lp58-rekeyv2nopfs-inCR1  \
 	lp60-bestif                 \
 	lp61-nattI1 lp62-nattR1 lp63-nattI2 lp64-nattR2 lp65-nattI3 \
+	lp80-h2h-rekeyikev2-R2-msgid0 \
+	lp81-h2h-rekeyikev2-I3-msgid0 \
 	lp90-h2h-sareplace-I1 \
 	lp91-h2h-sareplace-R1
 

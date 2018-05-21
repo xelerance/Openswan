@@ -254,11 +254,13 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
     }
 
     if(init == INITIATOR) {
-        DBG(DBG_CONTROLMORE, DBG_log("encrypting as INITIATOR"));
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as INITIATOR, parent SA #%lu",
+				     pst->st_serialno));
         cipherkey = &pst->st_skey_ei;
         authkey   = &pst->st_skey_ai;
     } else {
-        DBG(DBG_CONTROLMORE, DBG_log("encrypting as RESPONDER"));
+        DBG(DBG_CONTROLMORE, DBG_log("encrypting as RESPONDER, parent SA #%lu",
+				     pst->st_serialno));
         cipherkey = &pst->st_skey_er;
         authkey   = &pst->st_skey_ar;
     }
