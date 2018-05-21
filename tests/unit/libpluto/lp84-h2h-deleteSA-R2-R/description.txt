@@ -1,0 +1,6 @@
+This test case is an IKEv2 responder for the first SA, which then decides to
+delete the child SA (before the other end).  In this test case we are getting
+a response to the delete request that we sent out.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  From lp83 we take
+the request response, which will finish the delete exchange.
