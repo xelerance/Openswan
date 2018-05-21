@@ -1,0 +1,48 @@
+This test case continues lp80, where the IKEv2 original responder will delete
+a child SA (before the original initiator).  In this test case, we are the
+initiator and we will receive the request to delete the child SA for the first
+time.
+
+NOTE: To simulate behaviour of Strongswan, the other end (lp80) sent us
+a CREATE_CHILD_SA message with msgid of 0.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  Some packets
+come from lp82.
+
+
+Initiator                                                             Responder
+-------------------------------------------------------------------------------
+
+                              --- 08:39:04 ---
+
+INIT, I, id 0
+[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->
+
+                            INIT, R, id 0
+                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]
+
+AUTH, I, id 1
+[ IDi AUTH SA TSi TSr ] ----->
+
+                                            AUTH, R, id 1
+                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]
+
+                              --- 08:42:06 ---
+
+CREATE_CHILD_SA, I, id 2
+[ KE No SA TSi TSr ] ----->
+
+                                                       CREATE_CHILD_SA, R, id 2
+                                                <----- [ SA No TSi TSr ]
+
+                              --- 08:43:03 ---
+                                                                                  <- 
+                                                    INFORMATIONAL, id 0           <- lp82
+                                             <----- [ D ]                         <- state: R2 
+                                                                                  <-
+
+                                                                                  <-
+INFORMATIONAL, IR, id 0                                                           <- lp83
+[ D ] ----->                                                                      <- state: I3
+                                                                                  <-
+
