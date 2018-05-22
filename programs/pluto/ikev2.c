@@ -58,6 +58,7 @@
 #include "log.h"
 #include "demux.h"	/* needs packet.h */
 #include "ikev2.h"
+#include "ikev2_microcode.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "timer.h"
 #include "whack.h"	/* requires connections.h */
@@ -72,19 +73,6 @@
 #include "dpd.h"
 #include "udpfromto.h"
 #include "tpm/tpm.h"
-
-struct state_v2_microcode {
-    const char *svm_name;       /* human readable name for this state */
-    enum state_kind state, next_state;
-    enum isakmp_xchg_types recv_type;
-    lset_t flags;
-    lset_t req_clear_payloads;  /* required unencrypted payloads (allows just one) for received packet */
-    lset_t opt_clear_payloads;  /* optional unencrypted payloads (none or one) for received packet */
-    lset_t req_enc_payloads;  /* required encrypted payloads (allows just one) for received packet */
-    lset_t opt_enc_payloads;  /* optional encrypted payloads (none or one) for received packet */
-    enum event_type timeout_event;
-    state_transition_fn *processor;
-};
 
 enum smf2_flags {
     SMF2_INITIATOR = LELEM(1),
@@ -152,7 +140,7 @@ const struct state_v2_microcode ikev2_childrekey_microcode =
     };
 
 /* microcode for input packet processing */
-static const struct state_v2_microcode v2_state_microcode_table[] = {
+struct state_v2_microcode v2_state_microcode_table[] = {
     /* state 0 */
     { .svm_name   = "initiator-V2_init",
       .state      = STATE_PARENT_I1,
