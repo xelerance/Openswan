@@ -840,14 +840,14 @@ RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9
 RC=0        ID_DER_ASN1_DN 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 ./wrongcacert RSA authentication failed
-./wrongcacert sending notification ISAKMP_v2_SA_INIT/v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
+./wrongcacert sending notification ISAKMP_v2_AUTH/v2N_AUTHENTICATION_FAILED to 93.184.216.34:500
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   64 0a 06 43  5c 7c 4b 31
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
-|    exchange type: ISAKMP_v2_SA_INIT
+|    exchange type: ISAKMP_v2_AUTH
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | Adding a v2N Payload
@@ -861,7 +861,7 @@ RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doct
 | emitting length of ISAKMP Message: 36
 sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
+|   29 20 23 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 18
 | ikev2_parent_inI2outR2_tail returned STF_FATAL
 | #1 complete v2 state transition with STF_FATAL
