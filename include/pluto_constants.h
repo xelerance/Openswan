@@ -1,3 +1,5 @@
+#ifndef _IKEV2_CONSTANTS_H
+#define _IKEV2_CONSTANTS_H
 /* manifest constants
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
@@ -691,4 +693,4 @@ enum PrivateKeyKind {
 #define XAUTH_MAX_NAME_LENGTH 128
 #define XAUTH_MAX_PASS_LENGTH 128
 
-
+#endif // _IKEV2_CONSTANTS_H
