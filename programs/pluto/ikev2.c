@@ -73,10 +73,6 @@
 #include "udpfromto.h"
 #include "tpm/tpm.h"
 
-#define SEND_NOTIFICATION(t) { \
-	if (st) send_v2_notification_from_state(st, from_state, t, NULL); \
-	else send_v2_notification_from_md(md, t, NULL); }
-
 struct state_v2_microcode {
     const char *svm_name;       /* human readable name for this state */
     enum state_kind state, next_state;
@@ -828,12 +824,9 @@ process_v2_packet(struct msg_digest **mdp)
 					 NULL);
 	    } else {
 		/* our notification will be in the clear */
-		send_v2_notification(st,
-				     ike_xchg_type,
-				     INVALID_MESSAGE_ID,
-				     st->st_icookie,
-				     st->st_rcookie,
-				     NULL);
+                SEND_V2_NOTIFICATION_XCHG_DATA(md, st, ike_xchg_type,
+                                               INVALID_MESSAGE_ID, NULL);
+
 	    }
 	}
 	return;
@@ -1018,21 +1011,22 @@ void ikev2_log_parentSA(struct state *st)
 #endif
 
 void
-send_v2_notification_from_state(struct state *st, enum state_kind state,
-				u_int16_t type, chunk_t *data)
+send_v2_notification_from_state(struct state *st, enum isakmp_xchg_types xchg,
+				u_int16_t ntf_type, chunk_t *data)
 {
     passert(st);
 
-    if (state == STATE_UNDEFINED)
-	state = st->st_state;
+    if (xchg == ISAKMP_XCHG_NONE)
+	xchg = ISAKMP_v2_SA_INIT;
 
-    send_v2_notification(st, ISAKMP_v2_SA_INIT, type,
+    send_v2_notification(st, xchg, ntf_type,
 			 st->st_icookie, st->st_rcookie, data);
 }
 
 void
-send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
-			     , chunk_t *data)
+send_v2_notification_from_md(struct msg_digest *md UNUSED,
+			     enum isakmp_xchg_types xchg, u_int16_t ntf_type,
+			     chunk_t *data)
 {
     struct state st;
     struct connection cnx;
@@ -1058,7 +1052,10 @@ send_v2_notification_from_md(struct msg_digest *md UNUSED, u_int16_t type
     cnx.interface = md->iface;
     st.st_interface = md->iface;
 
-    send_v2_notification(&st, ISAKMP_v2_SA_INIT, type,
+    if (xchg == ISAKMP_XCHG_NONE)
+	xchg = ISAKMP_v2_SA_INIT;
+
+    send_v2_notification(&st, xchg, ntf_type,
 			 md->hdr.isa_icookie, md->hdr.isa_rcookie, data);
 }
 
@@ -1445,7 +1442,7 @@ void complete_v2_state_transition(struct msg_digest **mdp
 	if(md->note > 0) {
 		/* only send a notify is this packet was a question, not if it was an answer */
             if(IKEv2_MSG_FROM_INITIATOR(md->hdr.isa_flags)) {
-                SEND_NOTIFICATION(md->note);
+                SEND_V2_NOTIFICATION(md, st, md->note);
             }
 	}
 
@@ -1474,7 +1471,7 @@ accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *n
         u_int16_t group_number = htons(st->st_oakley.group->group);
         dc.ptr = (unsigned char *)&group_number;
         dc.len = 2;
-        SEND_V2_NOTIFICATION_AA(v2N_INVALID_KE_PAYLOAD, &dc);
+        SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
         delete_state(st);
         return STF_FAIL + rn;
     }

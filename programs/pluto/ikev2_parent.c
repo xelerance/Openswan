@@ -579,8 +579,8 @@ send_v2_notification(struct state *p1st
     openswan_log("sending notification %s/%s to %s:%u"
                  , enum_name(&exchange_names, xchg_type)
                  , enum_name(&ikev2_notify_names, ntf_type)
-                 , ip_str(&p1st->st_remoteaddr)
-                 , p1st->st_remoteport);
+                 , p1st ? ip_str(&p1st->st_remoteaddr) : "-"
+                 , p1st ? p1st->st_remoteport : 0);
 
     zero(reply_buffer);
     init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "notification msg");

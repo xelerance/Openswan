@@ -125,7 +125,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
 
                     if(memcmp(blob.ptr, dcookie, SHA1_DIGEST_SIZE)!=0) {
                         openswan_log("mismatch in DOS v2N_COOKIE,send a new one");
-                        SEND_V2_NOTIFICATION_AA(v2N_COOKIE, &dc);
+                        SEND_V2_NOTIFICATION_DATA(md, st, v2N_COOKIE, &dc);
                         return STF_FAIL + v2N_INVALID_IKE_SPI;
                     }
                     DBG(DBG_CONTROLMORE
@@ -137,7 +137,7 @@ stf_status ikev2parent_inI1outR1(struct msg_digest *md)
                     DBG(DBG_CONTROLMORE
                         ,DBG_log("busy mode on. receieved I1 without a valid dcookie");
                         DBG_log("send a dcookie and forget this state"));
-                    SEND_V2_NOTIFICATION_AA(v2N_COOKIE, &dc);
+                    SEND_V2_NOTIFICATION_DATA(md, st, v2N_COOKIE, &dc);
                     return STF_FAIL;
                 }
         }

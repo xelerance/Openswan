@@ -246,7 +246,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
                     openswan_log("RSA authentication failed");
-                    SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
+                    SEND_V2_NOTIFICATION(md, st, AUTHENTICATION_FAILED);
                     return STF_FATAL;
                 }
                 break;
@@ -259,7 +259,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                             , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
                 if(authstat != STF_OK) {
                     openswan_log("PSK authentication failed AUTH mismatch!");
-                    SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
+                    SEND_V2_NOTIFICATION(md, st, v2N_AUTHENTICATION_FAILED);
                     return STF_FATAL;
                 }
                 break;

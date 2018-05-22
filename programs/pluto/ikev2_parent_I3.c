@@ -116,7 +116,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
                                                     , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
         if(authstat != STF_OK) {
             openswan_log("authentication failed");
-            SEND_V2_NOTIFICATION(AUTHENTICATION_FAILED);
+            SEND_V2_NOTIFICATION(md, st, AUTHENTICATION_FAILED);
             return STF_FAIL;
         }
         break;
@@ -129,7 +129,7 @@ stf_status ikev2parent_inR2(struct msg_digest *md)
                                                     , &md->chain[ISAKMP_NEXT_v2AUTH]->pbs);
         if(authstat != STF_OK) {
             openswan_log("PSK authentication failed");
-            SEND_V2_NOTIFICATION(v2N_AUTHENTICATION_FAILED);
+            SEND_V2_NOTIFICATION(md, st, v2N_AUTHENTICATION_FAILED);
             return STF_FAIL;
         }
         break;

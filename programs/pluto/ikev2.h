@@ -73,14 +73,16 @@ extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
 extern stf_status ikev2_child_notify_process(struct msg_digest *md
                                              , struct state *st);
 
-#define SEND_V2_NOTIFICATION_AA(t, d) \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
-    else send_v2_notification_from_md(md, t, d);
+#define SEND_V2_NOTIFICATION_XCHG_DATA(md, st, xchg, type, data) { \
+    if (st) send_v2_notification_from_state(st, xchg, type, data); \
+    else send_v2_notification_from_md(md, xchg, type, data); }
 
+#define SEND_V2_NOTIFICATION_DATA(md, st, type, data) { \
+    enum isakmp_xchg_types xchg = (md)->hdr.isa_xchg; \
+    SEND_V2_NOTIFICATION_XCHG_DATA(md, st, xchg, type, data); }
 
-#define SEND_V2_NOTIFICATION(t)                                            \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
-    else send_v2_notification_from_md(md, t, NULL);
+#define SEND_V2_NOTIFICATION(md, st, type) \
+    SEND_V2_NOTIFICATION_DATA(md, st, type, NULL)
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
 extern const struct state_v2_microcode ikev2_childrekey_microcode;
@@ -127,12 +129,13 @@ extern v2_notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , bool parentSA);
 #endif
 
-extern void send_v2_notification_from_state(struct state *st
-					    , enum state_kind state
-					    , u_int16_t type, chunk_t *data);
+extern void send_v2_notification_from_state(struct state *st,
+					    enum isakmp_xchg_types xchg,
+					    u_int16_t ntf_type, chunk_t *data);
 
-extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type
-   					 , chunk_t *data);
+extern void send_v2_notification_from_md(struct msg_digest *md,
+					 enum isakmp_xchg_types xchg,
+					 u_int16_t ntf_type, chunk_t *data);
 extern stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
 					 pb_stream   *in_pbs,
 					 unsigned int np);
