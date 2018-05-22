@@ -1,0 +1,13 @@
+This test case is for responding to an invalid message, or a message we do not
+have an entry for in the v2_state_microcode_table[] array.
+
+This test case is a clone of lp08-parentR1, where we are a responder to
+an IKEv2 INIT message.  The incoming message is from parentI1, and would
+be a valid message.  However, for the purpose of testing, we corrupt the
+entry in v2_state_microcode_table[] which handles the otherwise accepted
+message.
+
+The intent is to process the message, and respond with a valid NOTIFY.
+
+
+
