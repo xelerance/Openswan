@@ -81,6 +81,7 @@ UNITTESTS=lp01-spdbtest \
 	lp83-h2h-deleteSA-I3 \
 	lp84-h2h-deleteSA-R2-R \
 	lp85-h2h-invalid-deleteSA-I3 \
+	lp86-h2h-invalid-deleteSA-R2-R \
 	lp90-h2h-sareplace-I1 \
 	lp91-h2h-sareplace-R1
 

@@ -1,0 +1,14 @@
+This test case is an IKEv2 responder for the first SA, which then decides to
+delete the child SA (before the other end).  In this test case we are getting
+a response to the delete request that we sent out.
+
+This test case bulds on lp82/lp83/lp84 where this transaction was successful.
+Instead, lp85/lp86 simulate an encrypted request that cannot be handled, and
+a failed notification is sent out.
+
+Because the response to our delete request was rejeced, we will not delete
+our SA.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  From lp85 we take
+the request response, which will finish the delete exchange.
+
