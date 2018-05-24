@@ -1,6 +1,6 @@
 #include "../lp13-parentI3/parentI3_head.c"
 
-#define TESTNAME "rekeyChildSA-msgInI3"
+#define TESTNAME "deleteChildSA-msgInI3"
 
 #define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
 
