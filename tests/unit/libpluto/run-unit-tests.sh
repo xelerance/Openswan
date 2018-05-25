@@ -41,10 +41,11 @@ END
             die "unknown flag $1"
             ;;
         *)
-            if ! ( echo "$available_tests" | grep -q "\<$1\>" ) ; then
+            name="${1%/}"
+            if ! ( echo "$available_tests" | grep -q "\<$name\>" ) ; then
                 die "unknown test $1"
             fi
-            tests_to_run="$tests_to_run $1"
+            tests_to_run="$tests_to_run $name"
             ;;
     esac
     shift
