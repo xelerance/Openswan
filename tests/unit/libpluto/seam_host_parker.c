@@ -1,3 +1,5 @@
+#ifndef __seam_host_parker_c__
+#define __seam_host_parker_c__
 #include <arpa/inet.h>
 struct iface_dev  parker_ifd1 = {
 	.id_count = 1,
@@ -59,3 +61,4 @@ void init_parker_interface(bool doipv6)
   parker_if1.next = interfaces;
   interfaces = &parker_if1;
 }
+#endif

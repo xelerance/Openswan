@@ -1,3 +1,5 @@
+#ifndef __seam_pending_c__
+#define __seam_pending_c__
 struct state;
 void flush_pending_by_state(struct state *st) {}
 void show_pending_phase2(const struct connection *c, const struct state *st) {}
@@ -41,3 +43,4 @@ struct connection *first_pending(struct state *st, lset_t *policy, int *p_whack_
 }
 
 
+#endif

@@ -1,3 +1,5 @@
+#ifndef __seam_orient_c__
+#define __seam_orient_c__
 
 bool compare_and_swap_interface(struct connection *c, struct iface_port *p)
 {
@@ -59,3 +61,4 @@ bool orient(struct connection *c)
 
 	return TRUE;
 }
+#endif

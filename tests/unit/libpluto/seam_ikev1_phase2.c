@@ -1,3 +1,5 @@
+#ifndef __seam_ikev1_phase2_c__
+#define __seam_ikev1_phase2_c__
 void init_phase2_iv(struct state *st, const msgid_t *msgid)
 {
 }
@@ -13,3 +15,4 @@ stf_status quick_inI1_outR1(struct msg_digest *md) { return STF_OK; }
 
 
 
+#endif

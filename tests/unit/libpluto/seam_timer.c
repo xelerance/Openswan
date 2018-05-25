@@ -1,3 +1,5 @@
+#ifndef __seam_timer_c__
+#define __seam_timer_c__
 /* timer.c SEAM */
 void timer_list(void) {}
 
@@ -10,3 +12,4 @@ void delete_event(struct state *st) {}
 
 
 
+#endif

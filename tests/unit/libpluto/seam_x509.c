@@ -1,3 +1,5 @@
+#ifndef __seam_x509_c__
+#define __seam_x509_c__
 #include "seam_x509_list.c"
 
 void
@@ -39,3 +41,4 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 {
 	return FALSE;
 }
+#endif

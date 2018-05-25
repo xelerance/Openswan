@@ -1,3 +1,5 @@
+#ifndef __seam_exitlog_c__
+#define __seam_exitlog_c__
 /* LINK seams */
 void exit_log(const char *msg, ...)
 {
@@ -14,3 +16,4 @@ void exit_pluto(int status)
     exit(status);
 }
 
+#endif

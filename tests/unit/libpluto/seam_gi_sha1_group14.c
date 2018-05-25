@@ -1,3 +1,5 @@
+#ifndef __seam_gi_sha1_group14_c__
+#define __seam_gi_sha1_group14_c__
 /*
  * these files are created by running a full pluto, and observing the
  * debug lines, and transforming them to C data files
@@ -51,3 +53,4 @@ unsigned char tc14_ni[] = {
 unsigned int tc14_ni_len = sizeof(tc14_ni);
 
 
+#endif

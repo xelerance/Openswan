@@ -1,3 +1,5 @@
+#ifndef __seam_gr_sha1_group14_c__
+#define __seam_gr_sha1_group14_c__
 /*
  * these files are created by running a full pluto, and observing the
  * debug lines, and transforming them to C data files
@@ -160,3 +162,4 @@ void finish_dh_v2(struct state *st,
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
+#endif

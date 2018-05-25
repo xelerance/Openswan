@@ -1,3 +1,5 @@
+#ifndef __seam_kernelalgs_c__
+#define __seam_kernelalgs_c__
 #include "kernel_alg.h"
 
 static void
@@ -31,3 +33,4 @@ init_seam_kernelalgs(void)
 }
 
 
+#endif

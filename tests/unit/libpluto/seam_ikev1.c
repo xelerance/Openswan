@@ -1,3 +1,5 @@
+#ifndef __seam_ikev1_c__
+#define __seam_ikev1_c__
 stf_status
 aggr_outI1(int whack_sock,
 	   struct connection *c,
@@ -40,3 +42,4 @@ void process_packet_tail(struct msg_digest **mdp) {}
 void init_demux(void) {}
 #endif
 
+#endif

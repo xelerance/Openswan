@@ -1,3 +1,5 @@
+#ifndef __seam_rsa_check_c__
+#define __seam_rsa_check_c__
 stf_status
 RSA_check_signature_gen(struct state *st
 			, const u_char hash_val[MAX_DIGEST_LEN]
@@ -16,3 +18,4 @@ RSA_check_signature_gen(struct state *st
   return STF_OK;
 }
 
+#endif

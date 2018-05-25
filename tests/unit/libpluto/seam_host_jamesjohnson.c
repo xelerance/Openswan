@@ -1,3 +1,5 @@
+#ifndef __seam_host_jamesjohnson_c__
+#define __seam_host_jamesjohnson_c__
 struct iface_dev  jj_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -40,3 +42,4 @@ void init_jamesjohnson_interface(void)
   jj_if2.next = interfaces;
   interfaces = &jj_if2;
 }
+#endif

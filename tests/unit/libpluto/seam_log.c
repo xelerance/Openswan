@@ -1,3 +1,5 @@
+#ifndef __seam_log_c__
+#define __seam_log_c__
 #include "oswlog.h"
 #include "pluto/connections.h"
 /* log.c SEAM */
@@ -43,3 +45,4 @@ bool
     logged_myid_fqdn_key_warning = FALSE,
     logged_myid_ip_key_warning   = FALSE;
 
+#endif

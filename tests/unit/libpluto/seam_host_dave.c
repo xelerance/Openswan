@@ -1,3 +1,5 @@
+#ifndef __seam_host_dave_c__
+#define __seam_host_dave_c__
 struct iface_dev  dave_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -22,3 +24,4 @@ void init_dave_interface(void)
   dave_if1.ip_addr.u.v4.sin_addr.s_addr=htonl(0x5db8d823); /* 93.184.216.35 example.com */
   interfaces = &dave_if1;
 }
+#endif

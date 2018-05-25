@@ -1,3 +1,5 @@
+#ifndef __seam_spdbstruct_c__
+#define __seam_spdbstruct_c__
 #ifndef INCLUDE_IKEV1_PROCESSING
 /*
  * this needs to pretend to satisfy the side-effect of allocating
@@ -13,4 +15,5 @@ out_sa(pb_stream *outs
 {
 	fprintf(stderr, "need to allocate SPI#\n");
 }
+#endif
 #endif

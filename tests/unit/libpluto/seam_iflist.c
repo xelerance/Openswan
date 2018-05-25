@@ -1,3 +1,5 @@
+#ifndef __seam_iflist_c__
+#define __seam_iflist_c__
 struct ifmake {
   int  family;
   char *ifaddr;
@@ -54,3 +56,4 @@ void init_gatefun_interface(void)
 
 
 
+#endif

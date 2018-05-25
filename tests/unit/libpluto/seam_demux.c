@@ -1,3 +1,5 @@
+#ifndef __seam_demux_c__
+#define __seam_demux_c__
 #include <pcap.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
@@ -27,6 +29,7 @@ void send_packet_setup_pcap(char *file)
 	packet_save = pcap_dump_open(pt, file);
 }
 
+bool send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address outsideoffirewall);
 
 #ifdef NAPT_ENABLED
 unsigned short outside_port500 = 55044;
@@ -164,4 +167,5 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
 	fprintf(stderr, "v1 transitioning on result: %s\n"
 		, stf_status_name(result));
 }
+#endif
 #endif

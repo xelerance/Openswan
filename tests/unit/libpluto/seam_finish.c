@@ -1,3 +1,5 @@
+#ifndef __seam_finish_c__
+#define __seam_finish_c__
 struct pluto_crypto_req;
 void finish_dh_v2(struct state *st,
 		  struct pluto_crypto_req *r)
@@ -22,3 +24,4 @@ void finish_dh_v2(struct state *st,
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
+#endif

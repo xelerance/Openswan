@@ -1,3 +1,5 @@
+#ifndef __seam_keys_c__
+#define __seam_keys_c__
 
 /* keys.c SEAM */
 void load_preshared_secrets(int whackfd) {}
@@ -45,3 +47,4 @@ bool has_private_rawkey(struct pubkey *pk)
 {
   return FALSE;
 }
+#endif

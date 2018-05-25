@@ -1,3 +1,5 @@
+#ifndef __seam_gi_sha1_c__
+#define __seam_gi_sha1_c__
 /*
  * these files are created by running a full pluto, and observing the
  * debug lines, and transforming them to C data files
@@ -169,3 +171,4 @@ unsigned char tc3_results_skey_pr[]= {
 	0xeb, 0x81, 0x58, 0xe7,
 };
 
+#endif
