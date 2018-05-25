@@ -111,7 +111,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./davecertI2-id transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./davecertI2-id STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
@@ -246,6 +248,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8d0e0f1011121314 0x75bb19c5f360736d sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8d0e0f1011121314 0x75bb19c5f360736d sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -691,6 +696,106 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   63 6b 05 4e  b6 2f 9b 26  4c f2 b1 52  8c 1b ee fb
 |   0d 1d 08 e7  ac 4e 4d f7  ec 02 9e 0f  8e a9 c2 fa
 |   65 09 3e e6  5d 72 24 b5  86 48 08 e6  47 eb f6 f9
+| data being hmac:  8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
+|   2e 20 23 08  00 00 00 01  00 00 06 2c  23 00 06 10
+|   8d 0e 0f 10  11 12 13 14  15 16 17 18  19 1a 1b 1c
+|   be 54 fb c5  f6 79 e4 dd  52 06 78 bc  97 8b ed a7
+|   3f ea cc 88  10 c1 28 f9  a7 9e db ff  df 2b 8e 41
+|   bd 32 85 a2  74 0e 35 f9  a7 72 fc 16  f7 8c 85 80
+|   51 c6 8c 9a  ab 23 a9 a9  72 01 9c 71  27 5c 65 2d
+|   84 0a f7 f9  59 5c b2 62  9b e2 f3 4d  37 f5 e4 ad
+|   c6 88 78 83  49 a2 69 27  29 6b 4b f4  2f d4 bf 27
+|   0f 12 e4 43  5d d0 5a cc  b1 90 50 48  18 a6 20 f8
+|   cb 66 64 af  f4 b4 fb 98  8b c7 04 d1  c1 1d 91 30
+|   45 bc 6d 3c  37 25 9f 2d  13 f0 14 fc  82 78 c1 51
+|   94 0b d7 77  6a d3 d2 7b  13 bb 2f 2d  e1 7f d2 57
+|   99 f7 cb 4d  a5 8d 5a af  18 29 7e 56  ac 89 ee ed
+|   17 7b 09 ab  58 a2 09 0f  2e 6f 08 c8  a5 9c 1b fb
+|   bc 6b 41 e5  04 75 83 34  fb b0 05 83  20 3d 36 2b
+|   bf d5 fc 83  fa 0c 66 2e  d4 c0 64 fe  18 24 95 be
+|   3f 7c 9c c7  46 8b b8 cb  96 05 b6 d8  45 22 73 ae
+|   21 e9 c1 34  55 ae 6a 17  3d 23 28 13  85 1a b5 0e
+|   5f 8f 35 54  80 7b c2 f7  8c a5 14 34  24 e4 e3 64
+|   1b cb eb ce  e5 5e f5 01  35 e0 a9 9d  6a 1b ce 56
+|   04 b6 e3 64  b6 4f 6a 18  c9 a9 7b cd  b3 f0 e8 7d
+|   6d 0d c4 c1  7a 27 27 c6  24 6f 8c 40  fd a7 d8 bd
+|   36 3e 65 76  93 03 e1 76  43 c7 6a 1c  48 a2 9d d3
+|   4a e4 dc 29  a7 93 3e c7  a2 0d d8 de  e9 47 75 29
+|   86 41 c5 d9  42 dc 36 4e  b8 14 5b 19  f2 37 d7 3b
+|   75 15 0e 50  aa cb 60 87  ea 4b 96 96  b7 08 77 c1
+|   66 7a 3c 65  16 f5 a0 05  02 09 74 f2  73 a1 6c c8
+|   a3 9b a3 e4  24 4b 36 e8  a4 8e ea 43  f7 0c e4 01
+|   de 9b 3f c1  8f 83 6d 30  f5 98 d8 33  ad 14 bf ef
+|   c0 ef 16 07  b1 84 4a 0d  2c 5a be 9a  24 fa 84 62
+|   cc e9 a3 38  77 12 1a f8  52 37 02 66  6c c5 42 51
+|   da 50 87 26  4c 81 4b 81  0c ff 3f a1  ab c2 c4 76
+|   14 f2 4f 6f  77 76 dd 33  2a 25 4e 28  0f f0 53 c3
+|   a6 4f f6 a6  e6 66 aa 49  5e 9d 7e e2  ab 94 80 d1
+|   05 3c 90 e1  aa 52 4f 63  e1 9c 5a 98  1d d8 41 96
+|   7d 36 4f 5a  8c 06 94 eb  88 dd 5e f4  bc 36 d1 88
+|   12 60 5a 5b  9d 36 1c 8c  94 82 32 f3  4f 2d d6 b4
+|   b0 00 89 e5  16 85 fb 8a  c5 93 65 10  71 1b 0a c3
+|   bf 9b 0a e9  ef 4c 3c 9f  73 ee f0 59  13 b3 8b 75
+|   cf a5 e9 b2  22 33 17 24  7e 3d ad 3f  e3 77 21 02
+|   47 10 fb c6  26 b5 d8 a9  9e 83 8a 4b  9d ea c0 78
+|   c5 ed fc 58  27 53 3b 31  fd e8 70 1c  dc e1 2c 36
+|   31 a7 bf ac  aa 84 59 56  7b 47 6e 7d  91 3e 87 48
+|   a0 ae 9c 3b  f4 7e b0 e3  f1 ce bc 8a  2b 67 39 f4
+|   10 96 2e 7f  a8 e6 6b 7b  57 de d5 05  fa 29 38 c5
+|   20 82 67 b9  b8 a4 98 bf  62 00 7b b3  3b 87 cc 75
+|   d1 67 b4 b0  f5 48 2f 63  bd a5 0d a2  92 06 50 84
+|   31 71 fd 2f  d5 45 68 33  2b cb 96 55  63 78 2b a6
+|   61 5f 45 44  35 46 90 73  86 2b 9f 76  c4 53 96 df
+|   4f a2 3a 5c  b1 e1 e1 3a  ab 39 0c a5  98 07 92 b3
+|   ad 85 ac 30  ea a0 48 26  95 b6 d5 69  51 c6 36 d9
+|   13 1c 58 e1  55 84 12 86  79 84 a6 93  e0 2d e2 ca
+|   8b 9e 33 95  a8 21 e2 31  92 e9 42 05  cd 38 2d f4
+|   e7 eb d6 26  34 8d ea b8  79 06 cd 90  62 1d ea ca
+|   b4 e7 ed 7e  da b7 6b 6b  7b b9 3d 77  c5 47 75 b5
+|   f0 52 e5 00  63 b4 f6 86  b3 90 8e 34  ad 74 9e 81
+|   05 1c ab cc  b0 9d 6a 77  dd 0f ff d7  05 3b 99 e4
+|   8d 29 da 1a  1b 86 01 62  e3 cb ee 6b  98 0a 8c 14
+|   8d 35 0e 6a  f1 5a cb fd  6d d5 49 8b  1a 93 8d 7c
+|   2d 41 27 67  8f 45 dd b4  6c ec 89 f2  8d 09 9b 52
+|   6d b2 45 4a  d1 31 11 44  3d 4f b3 c5  03 48 42 4b
+|   66 f3 8f 60  c6 3f 6b 24  15 60 83 a9  0a c1 17 8b
+|   6d 50 19 ea  a8 b2 ce c0  ce 82 7a bf  30 04 4e 71
+|   a8 92 a3 d4  7d f7 ba 4c  d0 0f 88 52  fa f4 b2 19
+|   75 94 d8 5f  e1 6a 48 73  88 4e 7b 52  59 89 ca ef
+|   7a da 58 9c  1a 2e ee 0b  80 32 f4 91  0e ca 8f 30
+|   29 2b e0 95  bd 0e 7b bf  1a a7 e5 61  85 87 87 88
+|   4e 5e b6 d0  54 45 95 75  86 43 43 db  e2 1a 73 4e
+|   fd d1 1b 2a  1a 83 97 d7  8c 9c 44 4f  f8 1e c0 9f
+|   ff c0 94 9f  02 8f 05 00  55 34 3f 09  fd c1 c6 d0
+|   c3 dd cb 3e  bd e2 d6 6d  27 29 32 32  f9 0c 8a c7
+|   86 37 21 6c  48 69 fd 05  b7 0a ec b6  25 df 7b 1d
+|   63 a0 75 2b  dc 38 6e 9a  43 8f 30 60  1f c0 67 37
+|   43 d9 58 83  4e f3 b6 ad  ae 3f 2b 12  aa 9d a7 7a
+|   72 a5 95 4f  5c 22 32 f0  5b 30 4c 5b  98 6f 10 ec
+|   1f ad f6 95  92 da 83 ba  ae 07 82 3e  ba fc 1b 82
+|   2f a6 62 25  5c 6d 7e 96  32 f8 3b 14  26 22 44 c3
+|   ce d9 24 cf  06 b1 36 f1  7d 8d 2d 12  5b 18 7c e6
+|   98 ce 9f aa  4f 5e f0 d2  11 9e cd c0  37 bc d3 51
+|   be 68 61 8c  60 c7 17 1b  85 12 37 05  09 57 32 e0
+|   e1 4e 0a cf  36 05 4b 06  bc 2c f9 f5  c8 92 d3 7e
+|   84 15 eb 4c  ef ad ef b7  2b 75 7f 01  a1 d0 ef 85
+|   44 5f 40 57  1a cd 5d a4  60 94 20 8e  88 74 4c 81
+|   4a 67 28 79  81 86 32 47  2e a5 4f 0e  23 46 0e 0d
+|   86 28 5e 33  21 c7 89 f3  bd 6b c6 e5  df c6 cb a8
+|   73 3c 3b 4d  cf 58 e4 a3  5a c8 24 ae  e8 3b 97 33
+|   12 65 0f f0  3f b8 53 cd  53 00 00 15  e5 44 a3 a2
+|   c1 34 60 74  98 20 26 6f  c8 67 f7 3c  4e 27 84 a2
+|   39 41 f9 f9  38 c5 63 fc  49 33 9b b9  e4 c9 25 ae
+|   65 34 80 cd  1c 2c 5a cd  da d2 5e c7  8d 1c 5b 4b
+|   bd 3c d5 13  3f e5 82 8d  54 77 b5 4c  19 b1 3d 69
+|   3a 29 c1 1c  30 3e 55 27  1c 8a 89 9f  ea 6a 0e 00
+|   c6 04 d0 35  da 37 ca 01  99 db e5 70  fa cf 12 41
+|   93 c3 6f c5  17 70 e9 f6  e0 c2 81 4e  bf 02 52 9b
+|   63 6b 05 4e  b6 2f 9b 26  4c f2 b1 52  8c 1b ee fb
+|   0d 1d 08 e7  ac 4e 4d f7  ec 02 9e 0f  8e a9 c2 fa
+|   65 09 3e e6  5d 72 24 b5  86 48 08 e6  47 eb f6 f9
+| out calculated auth:
+|   cc 29 4b fb  65 9f 7d 76  3b d3 d4 63
 | #2 complete v2 state transition with STF_OK
 ./davecertI2-id transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -835,6 +940,12 @@ sending 1580 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.35:500] to 1
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   ef 61 43 7e  20 c8 ff cc  28 2e 1d 57  52 43 96 41
+| data being hmac:  8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
+|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
+|   8d 0e 0f 10  11 12 13 14  15 16 17 18  19 1a 1b 1c
+|   ef 61 43 7e  20 c8 ff cc  28 2e 1d 57  52 43 96 41
+| out calculated auth:
+|   41 35 42 c7  4e 06 68 64  33 12 99 e8
 sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.35:500] to 132.213.238.7:500 (using #1)
 |   8d 0e 0f 10  11 12 13 14  75 bb 19 c5  f3 60 73 6d
 |   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30

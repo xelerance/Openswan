@@ -106,7 +106,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./parentI3 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from ../lp10-parentI2/parentR1.pcap
 |   =========== input from pcap file ../lp10-parentI2/parentR1.pcap ========
@@ -167,6 +169,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -405,6 +410,42 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
 |   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   c6 2c 43 c6  ae 0f ec 1a  69 62 67 2e  9a c5 dd 37
+|   12 23 a6 b7  de 53 97 61  34 05 0e 5c  b1 64 2c 98
+|   e9 d9 a9 bc  39 23 84 2e  eb 15 07 fa  8b a9 6f 4c
+|   b8 09 d0 ed  bd bb b3 10  5e f9 cb 1b  08 8c c3 e9
+|   ae 83 3a 41  c5 c6 42 f7  a3 83 87 36  cf 53 1e b7
+|   ef b6 46 fa  21 e6 56 f8  e0 02 03 41  6e d4 a5 c9
+|   5f 0a 07 28  a3 c7 0d 34  05 18 a5 e0  92 10 8d 6a
+|   20 0f c5 6a  9b f5 29 20  2a 3c 87 bd  49 8e 01 43
+|   4b 41 ce 20  55 e2 26 20  0f f8 4b bf  ee 30 b4 ad
+|   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
+|   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
+|   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
+|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
+|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
+|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
+|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
+|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
+|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
+|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
+|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
+|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
+|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
+|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
+|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
+|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
+|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
+|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
+|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
+|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| out calculated auth:
+|   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 | #2 complete v2 state transition with STF_OK
 ./parentI3 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -636,6 +677,7 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   39 4b 66 f8  5e 19 f9 eb  15 95 53 79
+| freeing state object #1
 ./parentI3 leak: skeyseed_t1, item size: X
 ./parentI3 leak: responder keys, item size: X
 ./parentI3 leak: initiator keys, item size: X

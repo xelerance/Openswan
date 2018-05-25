@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
     init_local_interface();
     init_fake_secrets();
     init_seam_kernelalgs();
+    enable_debugging();
 
     infile = argv[0];
     conn_name = argv[1];

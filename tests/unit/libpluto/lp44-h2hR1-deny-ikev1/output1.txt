@@ -122,6 +122,8 @@ sending 40 bytes for notification packet through eth0:500 [132.213.238.7:500] to
 |   0b 10 05 00  00 00 00 00  00 00 00 28  00 00 00 0c
 |   00 00 00 01  01 00 00 05
 ./h2hR1-deny-ikev1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./h2hR1-deny-ikev1 leak: 67 * VendorID MD5, item size: X
 ./h2hR1-deny-ikev1 leak: 3 * vid->data, item size: X
 ./h2hR1-deny-ikev1 leak: 15 * VendorID MD5, item size: X

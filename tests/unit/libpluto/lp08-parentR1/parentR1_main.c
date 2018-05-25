@@ -64,6 +64,7 @@ int main(int argc, char *argv[])
     init_fake_secrets();
     init_jamesjohnson_interface();
     init_demux();
+    enable_debugging();
 
     infile = NULL;
     conn_name = NULL;

@@ -58,6 +58,7 @@
 #include "hostpair.h"
 
 #include "whackmsgtestlib.c"
+#include "seam_debug.c"
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
 #include "seam_ikev1.c"
