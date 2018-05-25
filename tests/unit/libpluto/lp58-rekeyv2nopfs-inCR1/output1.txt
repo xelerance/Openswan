@@ -906,7 +906,7 @@ sending 348 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
 | childsacalc.ni  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is INITIATOR

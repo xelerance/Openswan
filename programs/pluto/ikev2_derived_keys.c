@@ -85,10 +85,11 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	}
 
 	DBG(DBG_CRYPT,
-	    DBG_log("%s: using %s for prf+", __FUNCTION__,
-		    childsacalc.prf_hasher
-		    ?  childsacalc.prf_hasher->common.name
-		    : "n/a"));
+	    DBG_log("%s: using %s for prf+ (SA #%ld cloned from #%ld)",
+		    __FUNCTION__, childsacalc.prf_hasher
+			    ?  childsacalc.prf_hasher->common.name
+			    : "n/a",
+		    st->st_serialno, st->st_clonedfrom));
 
 	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
 	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);
