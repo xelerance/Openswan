@@ -1,25 +1,7 @@
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_debug.c"
 
 #define TESTNAME "deleteChildSA-msgInI3"
-
-#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
-
-void enable_debugging(void)
-{
-    base_debugging = WANT_THIS_DBG;
-    reset_debugging();
-}
-
-void enable_debugging_on_sa(int num)
-{
-    struct state *st;
-    lset_t to_enable = WANT_THIS_DBG;
-    st = state_with_serialno(num);
-    if(st != NULL) {
-        passert(st->st_connection != NULL);
-        st->st_connection->extra_debugging = to_enable;
-    }
-}
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user

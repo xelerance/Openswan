@@ -1,26 +1,8 @@
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_debug.c"
 #include "ikev2_microcode.h"
 
 #define TESTNAME "deleteChildSA-invalid-msgInI3"
-
-#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
-
-void enable_debugging(void)
-{
-    base_debugging = WANT_THIS_DBG;
-    reset_debugging();
-}
-
-void enable_debugging_on_sa(int num)
-{
-    struct state *st;
-    lset_t to_enable = WANT_THIS_DBG;
-    st = state_with_serialno(num);
-    if(st != NULL) {
-        passert(st->st_connection != NULL);
-        st->st_connection->extra_debugging = to_enable;
-    }
-}
 
 static void corrupt_microcode(void)
 {
