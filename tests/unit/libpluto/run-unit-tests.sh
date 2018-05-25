@@ -16,6 +16,8 @@ die() {
 }
 
 do_git_add=true
+do_clean=false
+
 while [ -n "$1" ] ; do
     case "$1" in
         -h|--help)
@@ -32,6 +34,9 @@ END
             ;;
         -a|--no-git-add-p)
             do_git_add=false
+            ;;
+        -c|--clean)
+            do_clean=true
             ;;
         -l|--list)
             echo $available_tests | xargs -n1
@@ -78,7 +83,10 @@ run_make_check() {
 
 for f in $tests_to_run
 do
-    (cd $f ; header $f
+    (
+     cd $f
+     header $f
+     $do_clean && make clean
      while ! run_make_check $f;
      do
          if make update
