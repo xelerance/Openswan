@@ -15,6 +15,8 @@ void finish_dh_secretiv(struct state *st,
 {
   /* XXX maybe should do something ... */
 
+  ikev2_validate_key_lengths(st);
+
   st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 

@@ -156,6 +156,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
 
     if(DBGP(DBG_PRIVATE) && DBGP(DBG_CRYPT)) {
         ikev2_log_parentSA(st);
+	ikev2_validate_key_lengths(st);
     }
 
     /* decrypt things. */

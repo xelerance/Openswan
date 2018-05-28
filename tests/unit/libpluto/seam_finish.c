@@ -22,6 +22,8 @@ void finish_dh_v2(struct state *st,
     CLONEIT(skey_pr);
 #undef CLONEIT
 
+    ikev2_validate_key_lengths(st);
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 #endif
