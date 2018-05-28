@@ -17,6 +17,7 @@ die() {
 
 do_git_add=true
 do_clean=false
+do_pcapupdate=false
 
 while [ -n "$1" ] ; do
     case "$1" in
@@ -27,6 +28,7 @@ $(basename $0) <test> ...
 
  -h --help              this help
  -l --list              list available tests
+ -p --pcap-update       updte pacap files
  -a --no-git-add-p      skip the git add -p on a per test basis, run all tests
 
 END
@@ -37,6 +39,9 @@ END
             ;;
         -c|--clean)
             do_clean=true
+            ;;
+        -p|--pcapupdate|--pcap-update)
+            do_pcapupdate=true
             ;;
         -l|--list)
             echo $available_tests | xargs -n1
@@ -87,6 +92,7 @@ do
      cd $f
      header $f
      $do_clean && make clean
+     $do_pcapupdate && make pcapupdate
      while ! run_make_check $f;
      do
          if make update
