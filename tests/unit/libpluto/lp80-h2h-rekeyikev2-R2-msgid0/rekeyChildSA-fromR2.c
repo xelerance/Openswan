@@ -64,10 +64,10 @@ void recv_pcap_packet2_and_rekey(u_char *user
 
     /* ipsecdoi_replace() queued a 'build_ke', which we have to emulate...
      * now fill in the KE values from a constant.. not calculated */
-    passert(kn->oakley_group == tc14_oakleygroup);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+    passert(kn->oakley_group == SS(oakleygroup));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(nr.ptr), SS(nr.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gr.ptr), SS(gr.len));
 
     st = state_with_serialno(3);
     DBG_log("%s() call %d: #%lu st_state=%u\n",

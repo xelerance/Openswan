@@ -8,8 +8,8 @@ void finish_dh_v2(struct state *st,
 
 #define CLONEIT(X) \
     clonetochunk(st->st_##X \
-		 , tc3_results_##X \
-		 , sizeof(tc3_results_##X) \
+		 , SS(X.ptr) \
+		 , SS(X.len) \
 		 ,   "calculated " #X "shared secret");
 
     CLONEIT(shared);

@@ -44,7 +44,7 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 #include "seam_gi_sha1_group14.c"
 #include "seam_finish.c"
 
-#include "ikev2sendI1.c"
+#include "seam_ikev2_sendI1.c"
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user

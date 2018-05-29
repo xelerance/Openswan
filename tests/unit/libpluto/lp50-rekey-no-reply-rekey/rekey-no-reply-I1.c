@@ -59,12 +59,12 @@ so_serial_t rekeyit_once(unsigned int pass, so_serial_t n)
         fprintf(stderr, "no state #%lu found\n", n);
     }
 
-    passert(kn->oakley_group == tc14_oakleygroup);
+    passert(kn->oakley_group == SS(oakleygroup));
 
     /* now fill in the KE values from a constant.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);  /* maybe change nonce for rekey? */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(ni.ptr), SS(ni.len));  /* maybe change nonce for rekey? */
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gi.ptr), SS(gi.len));
 
     new_sa = 0;
     if(continuation) {

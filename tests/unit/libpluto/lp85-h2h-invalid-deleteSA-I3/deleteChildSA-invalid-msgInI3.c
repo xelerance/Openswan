@@ -70,10 +70,10 @@ void recv_pcap_packet2(u_char *user
 	    /* we received the third packet, ISAKMP_v2_SA_INIT,
 	     * and queued a 'build_ke', which we have to emulate...
 	     * now fill in the KE values from a constant.. not calculated */
-	    passert(kn->oakley_group == tc14_oakleygroup);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+	    passert(kn->oakley_group == SS(oakleygroup));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(ni.ptr), SS(ni.len));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gi.ptr), SS(gi.len));
     }
 
     DBG_log("%s() call %d: continuation", __func__, call_counter);
