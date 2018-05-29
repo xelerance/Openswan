@@ -1,3 +1,4 @@
+#if 0
 struct state *sendI1_short(struct connection *c1, int debugging)
 {
 	struct state *st;
@@ -27,6 +28,7 @@ struct state *sendI1_short(struct connection *c1, int debugging)
 
 	return st;
 }
+#endif
 
 void sendI1b(struct connection *c1, int debugging, int calculate)
 {
@@ -67,6 +69,7 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 
 	/* find st involved */
 	st = state_with_serialno(newone);
+	enable_debugging_on_sa(1);
 
         if(st == NULL) return NULL;
 
