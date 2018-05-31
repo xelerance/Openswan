@@ -91,6 +91,32 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 			    : "n/a",
 		    st->st_serialno, st->st_clonedfrom));
 
+	DBG(DBG_CRYPT,
+		char buf[256];
+		struct connection *c = st->st_connection;
+		if (c->alg_info_ike) {
+			alg_info_snprint(buf, sizeof(buf),
+				 (struct alg_info *)c->alg_info_ike, TRUE);
+			DBG_log("SA #%lu IKE alg: %s", st->st_serialno, buf);
+		}
+		if (c->alg_info_esp) {
+			alg_info_snprint(buf, sizeof(buf),
+				 (struct alg_info *)c->alg_info_esp, TRUE);
+			DBG_log("SA #%lu ESP alg: %s", st->st_serialno, buf);
+		}
+		c = pst->st_connection;
+		if (st != pst && c->alg_info_ike) {
+			alg_info_snprint(buf, sizeof(buf),
+				 (struct alg_info *)c->alg_info_ike, TRUE);
+			DBG_log("SA #%lu IKE alg: %s", pst->st_serialno, buf);
+		}
+		if (st != pst && c->alg_info_esp) {
+			alg_info_snprint(buf, sizeof(buf),
+				 (struct alg_info *)c->alg_info_esp, TRUE);
+			DBG_log("SA #%lu ESP alg: %s", pst->st_serialno, buf);
+		}
+	);
+
 	setchunk(childsacalc.ni, st->st_ni.ptr, st->st_ni.len);
 	setchunk(childsacalc.nr, st->st_nr.ptr, st->st_nr.len);
 
