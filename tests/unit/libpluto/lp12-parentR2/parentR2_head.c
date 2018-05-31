@@ -40,6 +40,7 @@
 #include "seam_kernelalgs.c"
 
 #include "seam_gr_sha1_group14.c"
+#include "seam_finish.c"
 
 
 void recv_pcap_packet(u_char *user		      , const struct pcap_pkthdr *h		      , const u_char *bytes);
