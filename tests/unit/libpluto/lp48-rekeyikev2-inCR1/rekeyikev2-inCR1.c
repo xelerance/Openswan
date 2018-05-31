@@ -2,6 +2,10 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_gi_sha1.c"
+#include "seam_gi_sha1_group14.c"
+#include "seam_finish.c"
+#include "seam_ikev2_sendI1.c"
 
 static void init_loaded(void)
 {   /* nothing */ }
@@ -65,12 +69,12 @@ void recv_pcap_I3_rekey(u_char *user
     st = state_with_serialno(3);
     passert(st->st_whack_sock != -1);
 
-    passert(kn->oakley_group == tc14_oakleygroup);
+    passert(kn->oakley_group == SS(oakleygroup));
 
     /* now fill in the KE values from a constant.. not calculated */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);  /* maybe change nonce for rekey? */
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(ni.ptr), SS(ni.len));  /* maybe change nonce for rekey? */
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gi.ptr), SS(gi.len));
 
     run_continuation(crypto_req);
 }

@@ -1,3 +1,5 @@
+#ifndef __seam_crypt_c__
+#define __seam_crypt_c__
 void delete_cryptographic_continuation(struct state *st) {}
 
 #include "pluto_crypt.h"
@@ -165,3 +167,4 @@ ikev2_verify_rsa_sha1(struct state *st
   return STF_FAIL + INVALID_KEY_INFORMATION;
 }
 
+#endif

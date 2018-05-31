@@ -1,25 +1,11 @@
 #include "../lp13-parentI3/parentI3_head.c"
+#include "seam_gi_sha1.c"
+#include "seam_gi_sha1_group14.c"
+#include "seam_finish.c"
+#include "seam_ikev2_sendI1.c"
+#include "seam_debug.c"
 
 #define TESTNAME "rekeyParentSA"
-
-#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
-
-void enable_debugging(void)
-{
-    base_debugging = WANT_THIS_DBG;
-    reset_debugging();
-}
-
-void enable_debugging_on_sa(int num)
-{
-    struct state *st;
-    lset_t to_enable = WANT_THIS_DBG;
-    st = state_with_serialno(num);
-    if(st != NULL) {
-        passert(st->st_connection != NULL);
-        st->st_connection->extra_debugging = to_enable;
-    }
-}
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user
@@ -64,10 +50,10 @@ void recv_pcap_packet2(u_char *user
 	    /* we received the third packet, ISAKMP_v2_SA_INIT,
 	     * and queued a 'build_ke', which we have to emulate...
 	     * now fill in the KE values from a constant.. not calculated */
-	    passert(kn->oakley_group == tc14_oakleygroup);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);
-	    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+	    passert(kn->oakley_group == SS(oakleygroup));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(ni.ptr), SS(ni.len));
+	    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gi.ptr), SS(gi.len));
     }
 
     DBG_log("%s() call %d: continuation", __func__, call_counter);

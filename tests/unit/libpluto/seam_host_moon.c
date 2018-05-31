@@ -1,3 +1,5 @@
+#ifndef __seam_host_moon_c__
+#define __seam_host_moon_c__
 struct iface_dev  moon_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -22,3 +24,4 @@ void init_moon_interface(bool doipv6 UNUSED)
   inet_pton(AF_INET, "192.168.0.1", &moon_if1.ip_addr.u.v4.sin_addr);
   interfaces = &moon_if1;
 }
+#endif

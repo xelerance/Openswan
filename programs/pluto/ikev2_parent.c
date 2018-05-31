@@ -265,6 +265,8 @@ stf_status ikev2_encrypt_msg(struct msg_digest *md,
         authkey   = &pst->st_skey_ar;
     }
 
+    ikev2_validate_key_lengths(st);
+
     /* encrypt the block */
     {
         size_t  blocksize = pst->st_oakley.encrypter->enc_blocksize;
@@ -329,6 +331,8 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         cipherkey = &pst->st_skey_ei;
         authkey   = &pst->st_skey_ai;
     }
+
+    ikev2_validate_key_lengths(st);
 
     e_pbs = &md->chain[ISAKMP_NEXT_v2E]->pbs;
     np    = md->chain[ISAKMP_NEXT_v2E]->payload.generic.isag_np;

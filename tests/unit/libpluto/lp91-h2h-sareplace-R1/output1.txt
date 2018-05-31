@@ -106,7 +106,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./rekeyParentSA transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./rekeyParentSA STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from h2hR1.pcap
 |   =========== input from pcap file h2hR1.pcap ========
@@ -801,7 +803,7 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |    length: 8
 |    transform type: 5
 |    transform ID: 0
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #2 cloned from #1)
 | childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is INITIATOR

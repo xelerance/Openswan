@@ -129,6 +129,9 @@ RC=0 "parker1--jj2--nopfs":   policy: RSASIG+ENCRYPT+TUNNEL+IKEv2ALLOW+IKEv2Init
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| processor 'responder-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI1outR1: calculated ke+nonce, sending R1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
@@ -140,6 +143,38 @@ RC=0 "parker1--jj2--nopfs":   policy: RSASIG+ENCRYPT+TUNNEL+IKEv2ALLOW+IKEv2Init
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
+| no IKE algorithms for this connection
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
 | ****emit IKEv2 Proposal Substructure Payload:
 |    prop #: 1
 |    proto ID: 1
@@ -167,6 +202,23 @@ RC=0 "parker1--jj2--nopfs":   policy: RSASIG+ENCRYPT+TUNNEL+IKEv2ALLOW+IKEv2Init
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 48
+| DH public value received:
+|   3d a6 6a 81  e2 92 09 be  18 4f a0 1e  5c ed ea 7c
+|   7d 7b 3a 21  3e 15 0d 53  5d 17 6a be  1b c5 70 ab
+|   34 47 bc 09  14 7c aa 91  9c 8f 81 dc  1e f9 87 cd
+|   6a ec fa f3  a5 9e 37 bc  ac 3d fd e1  32 8e e8 b3
+|   fe d3 8b f4  7b 50 34 13  33 7a 93 ea  e9 3c 0e 8b
+|   bd 48 18 9c  9e 03 70 f2  55 ce 45 22  9f c7 c9 48
+|   43 a3 e2 64  b5 5d 43 38  c8 fe f1 d3  06 43 f0 0a
+|   e8 6d 61 8c  60 78 d9 98  d3 1b 3b 5e  f5 a6 e8 2f
+|   ef 56 ac b4  33 bd 1e 62  b2 3e 0b 17  af 6c b8 31
+|   08 d7 19 5a  7b c4 54 c2  13 47 98 c2  cc d2 16 29
+|   75 6c 03 fb  1e 9c 9d 21  0c a1 e6 c2  f3 f2 49 2c
+|   f6 06 73 c1  96 1e ce 58  81 01 1c cb  16 dc f9 fc
+|   c7 93 08 75  58 16 57 71  69 96 66 b7  a9 81 7f f7
+|   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
+|   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
+|   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 |    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
 | ***emit IKEv2 Key Exchange Payload:
 |    critical bit: none
@@ -321,6 +373,9 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | considering state entry: 4
 | now proceed with state specific processing using state #4 responder-auth-process
 | ikev2 parent inI2outR2: calculating g^{xy} in order to decrypt I2
+| processor 'responder-auth-process' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI2outR2: calculating g^{xy}, sending R2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -653,7 +708,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv6 high  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #2 cloned from #1)
 | childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is RESPONDER
@@ -1100,7 +1155,7 @@ sending 444 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | ipv6 high  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
 | childsacalc.ni  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | childsacalc.nr  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | ikev2_derive_child_keys: my role is RESPONDER
@@ -1193,6 +1248,7 @@ sending 236 bytes for STATE_CHILD_C1_REKEY through eth0:500 [132.213.238.7:500] 
 | releasing whack for #X (sock=Y)
 should have found a continuation, but none was found
 should have found a continuation, but none was found
+| freeing state object #1
 ./rekeyv2nopfs-R1 leak: reply packet, item size: X
 ./rekeyv2nopfs-R1 leak: skeyseed_t1, item size: X
 ./rekeyv2nopfs-R1 leak: responder keys, item size: X

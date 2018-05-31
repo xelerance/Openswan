@@ -248,6 +248,8 @@ extern void unpack_KE(struct state *st
 		      , chunk_t *g);
 extern void unpack_nonce(chunk_t *n, struct pluto_crypto_req *r);
 
+extern void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln);
+#define ikev2_validate_key_lengths(st) __ikev2_validate_key_lengths(st,__FILE__,__LINE__)
 
 static inline void clonetowirechunk(wire_chunk_t  *thespace,
 			     unsigned char *space,

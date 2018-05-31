@@ -1,3 +1,5 @@
+#ifndef __seam_dpd_c__
+#define __seam_dpd_c__
 #include "pluto/dpd.h"
 
 stf_status dpd_init(struct state *st) { return STF_OK; }
@@ -22,3 +24,4 @@ void dpd_timeout(struct state *st)  {
 }
 
 
+#endif

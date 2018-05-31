@@ -1,3 +1,5 @@
+#ifndef __seam_host_rw_c__
+#define __seam_host_rw_c__
 struct iface_dev  rw_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -23,3 +25,4 @@ void init_rw_interface(void)
   rw_if1.next = interfaces;
   interfaces = &rw_if1;
 }
+#endif

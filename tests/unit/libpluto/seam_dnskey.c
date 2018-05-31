@@ -1,3 +1,5 @@
+#ifndef __seam_dnskey_c__
+#define __seam_dnskey_c__
 #include "dnskey.h"
 
 void gw_addref(struct gw_info *gw) {}
@@ -24,3 +26,4 @@ void reset_adns_restart_count(void) {}
 
 
 
+#endif

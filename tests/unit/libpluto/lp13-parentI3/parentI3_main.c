@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 			       , TRUE
 			       , "../samples/parker.secrets"
 			       , NULL, NULL);
+    enable_debugging();
 
     infile = argv[0];
     conn_name = argv[1];

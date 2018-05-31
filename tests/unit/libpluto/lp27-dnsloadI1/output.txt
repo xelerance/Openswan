@@ -1,3 +1,6 @@
+./dnscpeI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./dnscpeI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./dnscpeI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./dnscpeI1 loading secrets from "../samples/parker.secrets"
 ./dnscpeI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -470,9 +473,17 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  27 ec f2 2b  d5 28 36 92
 |   28 23 8a 58  36 a2 4f d8  ee 6c cd bb  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./dnscpeI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./dnscpeI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 ./dnscpeI1 deleting state #1 (STATE_PARENT_I1)
+| considering request to delete IKE parent state
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| freeing state object #1
 ./dnscpeI1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
@@ -525,4 +536,5 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./dnscpeI1 leak: rfc3110 format of public key [created], item size: X
 ./dnscpeI1 leak: pubkey, item size: X
 ./dnscpeI1 leak: secret, item size: X
+./dnscpeI1 leak: 2 * hasher name, item size: X
 ./dnscpeI1 leak detective found Z leaks, total size X

@@ -164,6 +164,8 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 09
 ./h2hR1 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./h2hR1 leak: notification packet, item size: X
 ./h2hR1 leak: msg_digest, item size: X
 ./h2hR1 leak: policies path, item size: X

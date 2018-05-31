@@ -18,6 +18,7 @@
 #include "../../programs/pluto/connections.c"
 
 #include "whackmsgtestlib.c"
+#include "seam_debug.c"
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
 #include "seam_pending.c"
@@ -37,8 +38,6 @@
 #include "seam_natt.c"
 #include "seam_dnskey.c"
 #include "seam_kernelalgs.c"
-
-#include "seam_gr_sha1_group14.c"
 
 
 void recv_pcap_packet(u_char *user		      , const struct pcap_pkthdr *h		      , const u_char *bytes);

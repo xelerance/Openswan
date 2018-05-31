@@ -1,3 +1,5 @@
+#ifndef __seam_rnd_c__
+#define __seam_rnd_c__
 
 unsigned int rnd_offset=0;
 
@@ -17,3 +19,4 @@ void init_secret(void)
 {
 
 }
+#endif

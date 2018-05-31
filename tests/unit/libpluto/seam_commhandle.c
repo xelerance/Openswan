@@ -1,3 +1,5 @@
+#ifndef __seam_commhandle_c__
+#define __seam_commhandle_c__
 #include "demux.h"
 
 #include "seam_io.c"
@@ -149,3 +151,4 @@ void recv_pcap_packet_gen(u_char *user
 
 
 
+#endif

@@ -75,6 +75,11 @@ UNITTESTS=lp01-spdbtest \
 	lp60-bestif                 \
 	lp61-nattI1 lp62-nattR1 lp63-nattI2 lp64-nattR2 lp65-nattI3 \
 	lp70-invalid-init-msg \
+	lp71-alg-h2hI1 \
+	lp72-alg-h2hR1 \
+	lp73-alg-h2hI2 \
+	lp74-alg-h2hR2 \
+	lp75-alg-h2hI3 \
 	lp80-h2h-rekeyikev2-R2-msgid0 \
 	lp81-h2h-rekeyikev2-I3-msgid0 \
 	lp82-h2h-deleteSA-R2 \

@@ -1,6 +1,9 @@
 #include "../lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
+#include "seam_debug.c"
+#include "seam_gr_sha1_group14.c"
+#include "seam_finish.c"
 
 #define TESTNAME "rekeyParentSA"
 
@@ -19,25 +22,6 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void)
 {   /* nothing */ }
-
-#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
-
-void enable_debugging(void)
-{
-    base_debugging = WANT_THIS_DBG;
-    reset_debugging();
-}
-
-void enable_debugging_on_sa(int num)
-{
-    struct state *st;
-    lset_t to_enable = WANT_THIS_DBG;
-    st = state_with_serialno(num);
-    if(st != NULL) {
-        passert(st->st_connection != NULL);
-        st->st_connection->extra_debugging = to_enable;
-    }
-}
 
 void recv_pcap_packet2_and_rekey(u_char *user
                       , const struct pcap_pkthdr *h
@@ -73,10 +57,10 @@ void recv_pcap_packet2_and_rekey(u_char *user
 
     /* ipsecdoi_replace() queued a 'build_ke', which we have to emulate...
      * now fill in the KE values from a constant.. not calculated */
-    passert(kn->oakley_group == tc14_oakleygroup);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
-    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+    passert(kn->oakley_group == SS(oakleygroup));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(nr.ptr), SS(nr.len));
+    clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gr.ptr), SS(gr.len));
 
     DBG_log("%s() call %d: continuation", __func__, call_counter);
     run_one_continuation(crypto_req);

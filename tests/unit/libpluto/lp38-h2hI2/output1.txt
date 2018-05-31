@@ -105,7 +105,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./h2hI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 | *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -240,6 +242,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -468,6 +473,38 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
 |   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
 |   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   6b e2 00 86  09 ec 0b ba  00 ba c2 b7  f7 aa 78 69
+|   7f a8 88 e2  14 58 fe d8  6b 17 ac 39  c4 ac 7e 56
+|   0b 74 51 11  34 52 17 f8  f6 f9 7c c5  f2 b9 8c cf
+|   53 28 5a ec  77 fa 30 6d  40 47 1d 09  3b 36 43 6c
+|   f5 ee 7c ec  8c 01 b4 97  8c 49 53 97  dc 0c f3 cd
+|   bd d4 f9 43  40 9a a8 4c  c7 97 a9 6e  5f 6f 8a a4
+|   89 61 ac 9c  d8 cc 53 53  2b ef 0d 34  ed e5 74 49
+|   42 6c 97 e6  f4 83 ea 61  58 17 b0 1c  8f 42 b0 7a
+|   b3 96 fe cf  34 b1 b6 d8  c8 a5 b2 b7  b9 75 a4 f3
+|   a2 35 8e 95  8c 79 70 d5  0f bd ce 54  28 58 1c 42
+|   ad ad db 7a  3d c8 93 e1  0b 33 33 f4  f0 65 eb 82
+|   e2 a7 04 cd  aa ab ca 52  b6 f6 6d 98  02 4c ef bf
+|   65 9b d1 15  bf d2 b2 43  69 43 5a 34  bc de 6a 7a
+|   ad 12 14 52  d4 62 1d e3  49 dd 49 29  97 e8 db d3
+|   3c b7 66 ff  10 0f 8f 65  8f 87 21 78  dd 7a 44 4f
+|   4a ee ac ff  6a 4f 77 29  c2 80 5a 31  66 34 4f d4
+|   a9 b7 b3 72  a6 1a e6 2e  83 77 54 ac  76 fd bc 3e
+|   e9 e9 f5 9c  81 00 33 05  28 54 16 f6  0d 92 15 73
+|   37 5b c8 b0  6a 54 f1 8a  0a 2f e7 cf  76 05 f9 c5
+|   82 f0 8f b8  5c 59 bd 69  5b ad b7 83  82 18 e7 ac
+|   af 99 86 2a  b5 ee f8 24  52 72 2b 3c  1f d6 7b 3d
+|   35 eb 21 f8  a7 83 fb b5  5f 70 96 ce  1d a2 57 02
+|   37 7a ce 1b  0c 50 38 33  c1 44 e8 30  0b 45 07 fc
+|   d0 2f 57 be  7b 96 85 3a  8a 2f 3b 98  78 87 ff 65
+|   ca 9a c7 2b  63 b8 f1 ae  a0 68 19 1d  39 63 93 b4
+|   ea 4a dd 57  c9 1f 43 b3  24 df f6 b8  83 51 a2 e0
+|   92 96 2b 67  a0 12 18 74  d6 37 c8 c3  e7 e7 3b 91
+| out calculated auth:
+|   b0 4d 89 28  42 c0 39 9a  61 6a f1 8e
 | #2 complete v2 state transition with STF_OK
 ./h2hI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -544,6 +581,12 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
 sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30

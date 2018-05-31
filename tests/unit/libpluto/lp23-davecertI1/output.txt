@@ -1,3 +1,6 @@
+./davecertI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./davecertI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./davecertI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 ./davecertI1 adjusting ipsec.d to ../samples/davecert
 ./davecertI1 loading secrets from "../samples/davecert.secrets"
 ./davecertI1   loaded private key file '../samples/davecert/private/daveKey.pem' (1679 bytes)
@@ -468,9 +471,17 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 |   2b 00 00 1c  00 00 40 05  cd 75 36 6e  bb c6 07 29
 |   89 9f 33 c9  b7 8c 95 e9  4e ac a8 b1  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./davecertI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./davecertI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 ./davecertI1 deleting state #1 (STATE_PARENT_I1)
+| considering request to delete IKE parent state
+| removing state object #1
+| ICOOKIE:  8d 0e 0f 10  11 12 13 14
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| freeing state object #1
 ./davecertI1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
@@ -530,4 +541,5 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1 leak: default conf conffile, item size: X
 ./davecertI1 leak: default conf ipsecd_dir, item size: X
 ./davecertI1 leak: default conf ipsec_conf_dir, item size: X
+./davecertI1 leak: 2 * hasher name, item size: X
 ./davecertI1 leak detective found Z leaks, total size X

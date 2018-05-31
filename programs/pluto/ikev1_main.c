@@ -1203,6 +1203,8 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
+    ikev2_validate_key_lengths(st);
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
     /* XXX: Do we need to free dh here? If so, how about the other exits?

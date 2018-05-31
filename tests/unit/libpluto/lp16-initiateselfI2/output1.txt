@@ -118,7 +118,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./initiateselfI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./initiateselfI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
@@ -220,6 +222,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0x640a06435c7c4b31 sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0x640a06435c7c4b31 sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -448,6 +453,38 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 |   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
 |   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
 |   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
+| data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 23 08  00 00 00 01  00 00 01 ec  23 00 01 d0
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   e2 e7 56 4f  b8 f9 1e 31  2d 67 40 ce  dc 28 3e f6
+|   fe 6f 4b 2e  73 7c 09 db  6b 44 35 b6  9d 13 04 de
+|   e6 46 3e f6  fa f6 46 ad  6b 6d 2b f0  45 73 73 89
+|   d3 6e 0a 55  01 61 c6 42  42 c7 2e e7  46 eb a3 3d
+|   d0 5d 01 a5  ed 23 d2 79  d0 e8 ae ad  b6 52 73 f7
+|   04 83 ca 09  9d 72 3e 45  40 26 df 71  ea 40 58 26
+|   66 e6 c3 fc  19 03 ce ed  35 33 66 7a  87 2d 38 db
+|   38 bc e1 25  cf 18 9e da  59 82 f6 ac  36 6b 74 e0
+|   e0 5e 9e 2a  e9 8d b6 f9  3d 4e 81 57  1b 38 da 59
+|   95 42 a9 05  97 ab 8b 34  24 29 ed 80  fb 6a 0e a2
+|   aa 88 de fa  c3 4e fc 5c  d6 19 53 ea  cc f8 62 17
+|   1e 40 9e 06  16 43 fb e9  8f 00 de e2  29 0e 34 55
+|   33 33 87 27  88 ec 2b 36  90 7a b5 6c  dd 1d c1 5b
+|   3a 9b aa 82  6b 45 63 1b  d7 9e 56 dd  4d 5d 27 3d
+|   81 68 71 bc  15 74 16 2c  c6 8f c5 e2  f1 a8 90 c9
+|   2f 36 7f ef  71 e2 d8 c3  60 6a 76 be  9c 45 d5 4f
+|   ff b8 6e ed  93 1b cb 58  9a 3d a5 c0  93 40 bd da
+|   b3 e4 32 1b  9d 2f ca ce  24 a9 ea 8e  65 6e 9a 2f
+|   d1 db 0e b5  34 85 05 24  04 c2 75 b0  5f 9e a7 8d
+|   09 47 96 86  80 f5 66 2f  df c0 c3 e0  cf 3d 6d 21
+|   5a 73 6c a0  df 9e 25 2a  ac bd a4 18  05 25 45 87
+|   a7 a2 5d 0c  03 50 ee 2a  fd b0 5e 19  e1 b0 5c 64
+|   f0 6b 78 e8  bf b9 91 dd  ca f8 0c 2f  78 64 a3 d3
+|   da c6 5d 42  c4 1c 63 4f  1c bd 40 bf  fa 75 6a dd
+|   e2 11 5e 08  5a 9b d9 b1  a2 cb a2 ed  de 17 f3 9f
+|   f9 40 80 dc  a0 ae 25 cf  3c 52 87 ad  92 09 ed 85
+|   fe 4e 77 f4  b8 30 4c 86  2e f5 48 7d  4e 99 77 c2
+| out calculated auth:
+|   34 b1 4b 3d  17 54 f9 5f  fa 8c 22 6b
 | #2 complete v2 state transition with STF_OK
 ./initiateselfI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -524,6 +561,12 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [93.184.216.34:500] to 13
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| data being hmac:  80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   5e c0 be 04  65 78 5e 79  df 5f d5 d2
 sending 76 bytes for ikev2_delete_out through eth0:500 [93.184.216.34:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
 |   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30

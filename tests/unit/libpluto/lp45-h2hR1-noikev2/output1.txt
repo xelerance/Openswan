@@ -151,6 +151,8 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   01 00 00 18
 | state transition function for no-state failed: AUTHENTICATION_FAILED
 ./h2hR1-noikev2 deleting connection
+| pass 0: considering CHILD SAs to delete
+| pass 1: considering PARENT SAs to delete
 ./h2hR1-noikev2 leak: notification packet, item size: X
 ./h2hR1-noikev2 leak: msg_digest, item size: X
 ./h2hR1-noikev2 leak: policies path, item size: X

@@ -956,6 +956,52 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
     st->hidden_variables.st_logged_p1algos = TRUE;
 }
 
+void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln)
+{
+    size_t expected_enc_key_len, expected_integ_key_len;
+
+    expected_enc_key_len = st->st_oakley.enckeylen / 8;
+
+    if (expected_enc_key_len != st->st_skey_ei.len)
+        DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld INITIATOR keylen is %ld",
+                fn, ln,
+                st->st_oakley.encrypter->common.officname,
+                expected_enc_key_len,
+                st->st_oakley.enckeylen,
+                st->st_serialno,
+                st->st_skey_ei.len);
+
+    if (expected_enc_key_len != st->st_skey_er.len)
+        DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld RESPONDER keylen is %ld",
+                fn, ln,
+                st->st_oakley.encrypter->common.officname,
+                expected_enc_key_len,
+                st->st_oakley.enckeylen,
+                st->st_serialno,
+                st->st_skey_er.len);
+
+    expected_integ_key_len = st->st_oakley.integ_hasher->hash_key_size;
+
+    if (expected_integ_key_len != st->st_skey_ai.len)
+        DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld INITIATOR keylen is %ld",
+                fn, ln,
+                st->st_oakley.integ_hasher->common.officname,
+                expected_integ_key_len,
+                st->st_oakley.integ_hasher->hash_key_size,
+                st->st_serialno,
+                st->st_skey_ai.len);
+
+    if (expected_integ_key_len != st->st_skey_ar.len)
+        DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld RESPONDER keylen is %ld",
+                fn, ln,
+                st->st_oakley.integ_hasher->common.officname,
+                expected_integ_key_len,
+                st->st_oakley.integ_hasher->hash_key_size,
+                st->st_serialno,
+                st->st_skey_ar.len);
+}
+
+
 /*
  * Local Variables:
  * c-basic-offset:4

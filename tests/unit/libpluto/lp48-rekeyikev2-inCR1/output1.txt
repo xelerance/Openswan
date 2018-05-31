@@ -106,7 +106,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./rekeyikev2-inCR1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from ../lp10-parentI2/parentR1.pcap
 |   =========== input from pcap file ../lp10-parentI2/parentR1.pcap ========
@@ -167,6 +169,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   c0 a8 01 01  01 f4
 | nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -405,6 +410,42 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
 |   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   c6 2c 43 c6  ae 0f ec 1a  69 62 67 2e  9a c5 dd 37
+|   12 23 a6 b7  de 53 97 61  34 05 0e 5c  b1 64 2c 98
+|   e9 d9 a9 bc  39 23 84 2e  eb 15 07 fa  8b a9 6f 4c
+|   b8 09 d0 ed  bd bb b3 10  5e f9 cb 1b  08 8c c3 e9
+|   ae 83 3a 41  c5 c6 42 f7  a3 83 87 36  cf 53 1e b7
+|   ef b6 46 fa  21 e6 56 f8  e0 02 03 41  6e d4 a5 c9
+|   5f 0a 07 28  a3 c7 0d 34  05 18 a5 e0  92 10 8d 6a
+|   20 0f c5 6a  9b f5 29 20  2a 3c 87 bd  49 8e 01 43
+|   4b 41 ce 20  55 e2 26 20  0f f8 4b bf  ee 30 b4 ad
+|   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
+|   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
+|   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
+|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
+|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
+|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
+|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
+|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
+|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
+|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
+|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
+|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
+|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
+|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
+|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
+|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
+|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
+|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
+|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
+|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| out calculated auth:
+|   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -545,6 +586,13 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 now pretend that the keylife timer is up, and rekey the connection
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
 RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
+| duplicating state object #1
+| creating state object #3 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #3 bucket: 28
+| ikev2 child outC1: calculating g^{xy}, sending C1
 ./rekeyikev2-inCR1 starting rekey of CHILD SA for state=#2 (expired) using PARENT SA #1 as INITIATOR
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -786,6 +834,45 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
 |   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
 |   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
+|   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
+|   59 c7 83 3d  1d 3e 87 02  ce d7 61 79  4b 8d 4b c4
+|   ff 36 93 7c  92 37 83 fc  5f 16 c2 35  0f 66 12 e2
+|   ea 2b 36 dd  d4 8b 0c 3f  c6 f0 0d ac  ba 49 32 cb
+|   e0 62 70 92  3b 70 79 bd  44 e6 29 ce  82 2a d6 3c
+|   5e 73 62 3f  f7 0e 3e f6  90 67 13 19  70 22 b3 e5
+|   da 1b d8 43  aa c4 78 d1  52 37 87 29  cc 15 58 bd
+|   83 57 0c 0c  95 9f a0 ba  f2 81 6b 11  f9 4d 29 4f
+|   76 df 64 86  21 6a ae 93  ff 31 af 1d  6a 4b b1 2e
+|   41 b1 46 99  59 f4 1b ed  e7 65 2f 0d  2b 35 84 62
+|   83 be 60 80  94 78 b1 77  6d dc fb 94  27 75 59 5a
+|   e6 f1 e8 b0  9a 89 f4 b7  0a 23 17 1c  43 91 f0 6c
+|   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
+|   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
+|   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
+|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
+|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
+|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
+|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
+|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
+|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
+|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
+|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
+|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
+|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
+|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
+|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
+|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
+|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
+|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
+|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
+|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
+|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+| out calculated auth:
+|   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
 sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
@@ -886,7 +973,30 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 | considering state entry: 6
 | now proceed with state specific processing using state #6 rekey-childSA-ack
 | decrypting as INITIATOR, using RESPONDER keys
+| processor 'rekey-childSA-ack' returned STF_SUSPEND (2)
+| #3 complete v2 state transition with STF_SUSPEND
+| ikev2 child inCR1: calculated g^{xy}, setting up CHILD SA
 |  checking narrowing - responding to CR1
+| ***parse IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV6_ADDR_RANGE
+|    IP Protocol ID: 0
+|    length: 40
+|    start port: 0
+|    end port: 65535
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 02  00 00 00 01  00 00 00 00
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
+| ***parse IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV6_ADDR_RANGE
+|    IP Protocol ID: 0
+|    length: 40
+|    start port: 0
+|    end port: 65535
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
@@ -922,7 +1032,31 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
-| ikev2_derive_child_keys: using oakley_sha for prf+
+| ***parse IKEv2 Proposal Substructure Payload:
+|    length: 40
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
+| CHILD SA SPI  34 56 78 12
+| SPI received: 34567812
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| *****parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 5
+|    transform ID: 0
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
 | childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | ikev2_derive_child_keys: my role is INITIATOR
@@ -986,6 +1120,12 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   00 00 00 0c  03 04 00 01  34 56 78 12  00 01 02 03
 | data after encryption:
 |   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
+| out calculated auth:
+|   bc 97 31 52  72 72 67 dd  48 83 e2 02
 sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
@@ -1025,6 +1165,12 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
 | data after encryption:
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
+| out calculated auth:
+|   d8 28 80 26  76 d3 5c b5  ac de 1a 26
 sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
@@ -1063,12 +1209,19 @@ sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
 sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
+| freeing state object #1
 ./rekeyikev2-inCR1 leak: skeyseed_t1, item size: X
 ./rekeyikev2-inCR1 leak: responder keys, item size: X
 ./rekeyikev2-inCR1 leak: initiator keys, item size: X

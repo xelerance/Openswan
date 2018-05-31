@@ -1,3 +1,5 @@
+#ifndef __seam_natt_vid_c__
+#define __seam_natt_vid_c__
 #include "pluto/nat_traversal.h"
 #include "pluto/vendor.h"
 
@@ -32,3 +34,4 @@ bool nat_traversal_insert_vid(u_int8_t np, pb_stream *outs, struct state *st)
 }
 
 
+#endif

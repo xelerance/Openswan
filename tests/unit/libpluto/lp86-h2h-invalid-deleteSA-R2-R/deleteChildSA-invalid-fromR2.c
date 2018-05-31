@@ -1,6 +1,8 @@
 #include "../lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
 #include "seam_x509.c"
+#include "seam_gr_sha1_group14.c"
+#include "seam_finish.c"
 
 #define TESTNAME "deleteChildSA-invalid-fromR2"
 
@@ -19,25 +21,6 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void)
 {   /* nothing */ }
-
-#define WANT_THIS_DBG DBG_EMITTING|DBG_PARSING|DBG_CONTROL|DBG_CONTROLMORE|DBG_CRYPT|DBG_PRIVATE
-
-void enable_debugging(void)
-{
-    base_debugging = WANT_THIS_DBG;
-    reset_debugging();
-}
-
-void enable_debugging_on_sa(int num)
-{
-    struct state *st;
-    lset_t to_enable = WANT_THIS_DBG;
-    st = state_with_serialno(num);
-    if(st != NULL) {
-        passert(st->st_connection != NULL);
-        st->st_connection->extra_debugging = to_enable;
-    }
-}
 
 void recv_pcap_packet2_and_delete(u_char *user
                       , const struct pcap_pkthdr *h

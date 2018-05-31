@@ -122,6 +122,9 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| processor 'responder-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI1outR1: calculated ke+nonce, sending R1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
@@ -133,6 +136,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
 |    critical bit: none
+| no IKE algorithms for this connection
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 1

@@ -1,3 +1,5 @@
+#ifndef __seam_kernel_c__
+#define __seam_kernel_c__
 #include "kernel.h"
 void delete_ipsec_sa(struct state *st USED_BY_KLIPS, bool inbound_only USED_BY_KLIPS) {}
 
@@ -67,3 +69,4 @@ bool assign_hold(struct connection *c USED_BY_DEBUG
 
 bool has_bare_hold(const ip_address *src, const ip_address *dst, int transport_proto) { return FALSE;}
 
+#endif
