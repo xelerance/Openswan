@@ -1,5 +1,9 @@
 #define NAPT_ENABLED 1
 #include "../lp10-parentI2/parentI2_head.c"
+#include "seam_gi_sha1.c"
+#include "seam_gi_sha1_group14.c"
+#include "seam_finish.c"
+#include "seam_ikev2_sendI1.c"
 #include "seam_keys.c"
 #include "seam_x509.c"
 #include "seam_host_parker.c"
