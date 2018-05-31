@@ -110,7 +110,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
 |   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
 |   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./pickkeyI2 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
 ./pickkeyI2 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 | *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
@@ -212,6 +214,9 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -553,6 +558,46 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |   5e a4 b4 db  7a 7c a8 10  3b f1 25 56  20 a0 c0 89
 |   a0 f7 e6 2c  92 d0 ed 0d  e8 74 1f 43  18 df 29 a2
 |   96 fc 3e 1d  1f 3a 79 17  96 31 82 c8  d3 ad 44 b1
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 02 6c  23 00 02 50
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   7b ce 93 40  23 78 df d9  21 f3 17 88  da 5d 92 88
+|   69 d0 a6 7b  19 39 af 0b  68 5b c2 11  fe 3e 13 60
+|   1b 68 3a 6b  58 61 06 49  46 f2 e7 3e  3b 4e 9f 30
+|   0f 2d 6a 10  82 d1 af 04  0a 56 3e 4c  b5 dd c8 08
+|   17 e4 83 2d  a7 d4 8e a4  3a b8 7a b7  ab 84 12 10
+|   9a 37 e4 7e  cd d7 1c 57  be 29 d4 11  19 e8 c1 df
+|   0f 2f bd c3  e5 78 22 67  93 de 0c ab  16 59 f0 df
+|   dd 7c 98 e7  ba 4e 32 e5  7b ec 3d 18  ae 1f c2 fa
+|   80 5e 91 fe  13 6e 96 8f  6e 13 54 68  02 46 61 ea
+|   bc 4b a1 56  47 1f 7f 0c  5a b6 75 d2  ee 77 f8 3e
+|   9f 9c aa 30  ac 65 07 ec  92 5e fa c5  a6 90 e6 e5
+|   57 0b 06 20  d7 e8 76 88  ab ce 84 fe  51 46 fb 19
+|   22 69 01 09  2e 3d 6b 4c  a8 66 18 03  84 72 a1 18
+|   3d 56 0d f3  57 ad 0d e2  c6 48 bd ce  62 40 8b 64
+|   86 e2 2a d2  be 8c 68 d2  e7 48 e6 22  e4 d4 58 01
+|   a7 28 48 a5  8f 2f 64 34  b8 84 c1 6b  f3 af c5 b2
+|   53 8e 6d 97  4b 39 8b 16  3d 15 84 49  83 3a 8b 9f
+|   6b 26 6f 56  e0 5b 0b 1a  cf f4 2e bb  9e 17 14 ec
+|   9e 3b 6e f2  a8 01 f9 a8  aa 91 a8 14  8a 5c 4a 0f
+|   e3 2f fc 62  75 3c 14 5b  e0 41 fc a5  9a 7e 4e f0
+|   6a 37 4a 25  75 35 b7 b9  e0 37 9d ee  4f 5b 85 1f
+|   46 5f 48 92  f7 9f 57 49  ce 14 bf 04  ea 62 d9 7a
+|   1f 4b d9 41  13 4d ba 0c  b2 c6 30 3a  75 02 e7 1c
+|   76 78 59 f1  66 f3 54 4a  9f 9e 5f 79  91 cb 2d 44
+|   6d 66 55 2d  4f 20 89 ae  00 75 34 2c  48 ff aa 30
+|   35 77 cf a2  e4 2c 22 cb  80 1e 48 51  62 cc 6f 8f
+|   d8 a6 65 ad  0d 62 b0 86  0e 67 a6 2b  c1 54 da 3c
+|   39 73 5e be  f1 6e 17 21  68 69 b5 9e  f9 4f 2a c6
+|   28 e4 ba b7  f3 07 89 92  e9 07 da 2e  2d af 1c df
+|   72 5a 8e cc  3f 1b e0 a8  de e2 dc c7  d0 6e 57 a2
+|   5e a4 b4 db  7a 7c a8 10  3b f1 25 56  20 a0 c0 89
+|   a0 f7 e6 2c  92 d0 ed 0d  e8 74 1f 43  18 df 29 a2
+|   96 fc 3e 1d  1f 3a 79 17  96 31 82 c8  d3 ad 44 b1
+| out calculated auth:
+|   e4 73 6a c9  8c 95 57 f8  e5 30 cc ec
 | #2 complete v2 state transition with STF_OK
 ./pickkeyI2 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
@@ -637,6 +682,12 @@ sending 620 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   16 a3 d4 62  eb 10 ce 81  c3 c9 f3 30
 sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 02  00 00 00 4c  2a 00 00 30
