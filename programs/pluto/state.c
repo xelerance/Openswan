@@ -1389,6 +1389,18 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 	}
     }
 
+    DBG(DBG_CONTROL,
+	if (best) {
+		DBG_log("%s: found SA #%ld for conn '%s' in state %s",
+			__func__, best->st_serialno, c->name,
+			enum_name(&state_names, best->st_state));
+	}
+	else {
+		DBG_log("%s: no SA found for conn '%s'",
+			__func__, c->name);
+	}
+    );
+
     return best;
 }
 

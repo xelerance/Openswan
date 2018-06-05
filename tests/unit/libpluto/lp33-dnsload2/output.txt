@@ -31,11 +31,13 @@ RC=0 "cpenohint": %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.
 RC=0 "cpenohint":     myip=unset; hisip=unset;
 RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 'cpenohint'
 ./dnscpeI1 Can not initiate: no remote address available (yet)
 | ans 000 canonname=(null) protocol=17 family=2 len=16
 |         result=93.184.216.34
 | ans 001 canonname=(null) protocol=17 family=10 len=28
 |         result=2606:2800:220:1:248:1893:25c8:1946
+| find_phase1_state: no SA found for conn 'cpenohint'
 | creating state object #1 at Z
 | orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:500)
 | orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:4500)

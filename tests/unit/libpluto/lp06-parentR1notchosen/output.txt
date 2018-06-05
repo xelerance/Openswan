@@ -31,6 +31,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157:2:0:1::/96===192.168.1.1[@parker01.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
