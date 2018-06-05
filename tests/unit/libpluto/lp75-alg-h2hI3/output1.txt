@@ -37,6 +37,7 @@ RC=0 "alttunnel":   keys: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 2:
 RC=0 "alttunnel":        ....1:AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C 2:none
 RC=0 "alttunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
 RC=0 "alttunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 'alttunnel'
 | creating state object #1 at Z
 | orient alttunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
