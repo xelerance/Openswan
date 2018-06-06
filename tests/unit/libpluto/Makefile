@@ -81,6 +81,7 @@ UNITTESTS=lp01-spdbtest \
 	lp74-alg-h2hR2 \
 	lp75-alg-h2hI3 \
 	lp76-s2s-while-h2h-I1 \
+	lp77-del-matching-st \
 	lp80-h2h-rekeyikev2-R2-msgid0 \
 	lp81-h2h-rekeyikev2-I3-msgid0 \
 	lp82-h2h-deleteSA-R2 \
