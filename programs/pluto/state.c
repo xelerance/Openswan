@@ -159,25 +159,21 @@ static struct state *statetable[STATE_TABLE_SIZE];
 static struct state **
 state_hash(const u_char *icookie, const u_char *rcookie, unsigned *state_bucket)
 {
-    u_int i = 0, j;
+    u_int bucket;
 
     DBG(DBG_RAW | DBG_CONTROL,
 	DBG_dump("ICOOKIE:", icookie, COOKIE_SIZE);
 	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE));
 
-    /* XXX the following hash is pretty pathetic */
+    bucket = compute_icookie_rcookie_hash(icookie, rcookie);
+    bucket %= STATE_TABLE_SIZE;
 
-    for (j = 0; j < COOKIE_SIZE; j++)
-	i = i * 407 + icookie[j] + rcookie[j];
-
-    i = i % STATE_TABLE_SIZE;
-
-    DBG(DBG_CONTROL, DBG_log("state hash entry %d", i));
+    DBG(DBG_CONTROL, DBG_log("state hash entry %d", bucket));
     if(state_bucket) {
-        *state_bucket = i;
+        *state_bucket = bucket;
     }
 
-    return &statetable[i];
+    return &statetable[bucket];
 }
 
 /* Get a state object.

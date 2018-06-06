@@ -428,6 +428,16 @@ extern bool states_use_connection(struct connection *c);
 
 /* state functions */
 
+static inline u_int compute_icookie_rcookie_hash(const u_char *icookie,
+					       const u_char *rcookie)
+{
+    u_int i = 0, j;
+    /* XXX the following hash is pretty pathetic */
+    for (j = 0; j < COOKIE_SIZE; j++)
+	i = i * 407 + icookie[j] + rcookie[j];
+    return i;
+}
+
 extern struct state *new_state(void);
 extern void init_states(void);
 extern void insert_state(struct state *st);
