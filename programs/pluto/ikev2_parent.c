@@ -553,6 +553,42 @@ static bool ikev2_get_dcookie(u_char *dcookie,  chunk_t st_ni
 #include "ikev2_parent_R2.c"
 #include "ikev2_parent_I3.c"
 
+static inline bool isakmp_xchg_type_is_valid(enum isakmp_xchg_types xchg)
+{
+    switch (xchg) {
+    default:
+        return FALSE;
+
+    case ISAKMP_XCHG_NONE:
+    case ISAKMP_XCHG_BASE:
+    case ISAKMP_XCHG_IDPROT:
+    case ISAKMP_XCHG_AO:
+    case ISAKMP_XCHG_AGGR:
+    case ISAKMP_XCHG_INFO:
+    case ISAKMP_XCHG_MODE_CFG:
+
+    /* Private exchanges to pluto -- tried to write an RFC */
+    case ISAKMP_XCHG_ECHOREQUEST:
+    case ISAKMP_XCHG_ECHOREPLY:
+
+    /* Extra exchange types, defined by Oakley
+     * RFC2409 "The Internet Key Exchange (IKE)", near end of Appendix A
+     */
+    case ISAKMP_XCHG_QUICK:
+    case ISAKMP_XCHG_NGRP:
+
+    /* IKEv2 things */
+    case ISAKMP_v2_SA_INIT:
+    case ISAKMP_v2_AUTH:
+    case ISAKMP_v2_CHILD_SA:
+    case ISAKMP_v2_INFORMATIONAL:
+
+    case ISAKMP_XCHG_ECHOREQUEST_PRIVATE:
+    case ISAKMP_XCHG_ECHOREPLY_PRIVATE:
+        return TRUE;
+    }
+}
+
 /*
  *
  ***************************************************************
@@ -585,6 +621,8 @@ send_v2_notification(struct state *p1st
                  , enum_name(&ikev2_notify_names, ntf_type)
                  , p1st ? ip_str(&p1st->st_remoteaddr) : "-"
                  , p1st ? p1st->st_remoteport : 0);
+
+    passert(isakmp_xchg_type_is_valid(xchg_type));
 
     zero(reply_buffer);
     init_pbs(&reply, reply_buffer, sizeof(reply_buffer), "notification msg");
