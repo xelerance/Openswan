@@ -1379,7 +1379,8 @@ static stf_status ikev2child_inCI1_nopfs(struct msg_digest *md)
     /* process nonce coming in */
     rn = accept_v2_nonce(md, &st->st_ni, "Ni");
     if(rn != v2N_NOTHING_WRONG) {
-	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        enum isakmp_xchg_types xchg = md->hdr.isa_xchg;
+        send_v2_notification_from_state(st, xchg, rn, NULL);
         loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
 	return STF_INTERNAL_ERROR;
     }
@@ -1495,7 +1496,8 @@ static void ikev2child_inCI1_continue1(struct pluto_crypto_req_cont *pcrc
     /* Ni in */
     rn = accept_v2_nonce(md, &st->st_ni, "Ni");
     if(rn != v2N_NOTHING_WRONG) {
-	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        enum isakmp_xchg_types xchg = md->hdr.isa_xchg;
+        send_v2_notification_from_state(st, xchg, rn, NULL);
         loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
         goto returnerr;
     }
@@ -1739,7 +1741,8 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
     /* Nr in */
     rn = accept_v2_nonce(md, &st->st_nr, "Nr");
     if(rn != v2N_NOTHING_WRONG) {
-	send_v2_notification_from_state(st, st->st_state, rn, NULL);
+        enum isakmp_xchg_types xchg = md->hdr.isa_xchg;
+        send_v2_notification_from_state(st, xchg, rn, NULL);
         loglog(RC_LOG_SERIOUS, "no valid Nonce payload found");
         return STF_FAIL;
     }
