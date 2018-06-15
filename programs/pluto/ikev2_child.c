@@ -1395,8 +1395,10 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
 {
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
+    struct connection *c;
 
     md->pst = parentst;
+    c = parentst->st_connection;
 
     st = duplicate_state(parentst);
     st->st_msgid = md->msgid_received;
@@ -1431,11 +1433,26 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
         }
     }
 
-    if(md->chain[ISAKMP_NEXT_v2KE]) {
-        return ikev2child_inCI1_pfs(md);
-    } else {
-        return ikev2child_inCI1_nopfs(md);
+    if (md->chain[ISAKMP_NEXT_v2KE]) {
+        if (!(c->policy & POLICY_PFS)) {
+                DBG_log("WARNING: ignoring v2KE exchange, "
+                        "agreed on a non-PFS proposal");
+
+        } else {
+            /* we have negotiated PFS, and the remote sent us a v2KE
+             * exchange */
+
+            return ikev2child_inCI1_pfs(md);
+        }
+
+    } else if (c->policy & POLICY_PFS) {
+        /* we negotiated a PFS proposal, but received no v2KE exchnage */
+        DBG_log("WARNING: missing expected v2KE exchange, "
+                "cannot proceed with agreed upon PFS proposal");
     }
+
+    /* we have negotiated non-PFS proposal, and/or received no v2KE exchange */
+    return ikev2child_inCI1_nopfs(md);
 }
 
 stf_status ikev2child_inI3(struct msg_digest *md)
