@@ -1063,7 +1063,6 @@ stf_status ikev2child_outC1(int whack_sock
                 loglog(RC_CRYPTOFAILED, "system too busy");
                 delete_state(st);
             }
-            reset_globals();
 
         } else {
             /* this case is that st_sec already is initialized, not doing PFS,
@@ -1075,6 +1074,7 @@ stf_status ikev2child_outC1(int whack_sock
             complete_v2_state_transition(&ke->md, e);
             pfree(ke);
         }
+        reset_globals();
 
         return e;
     }
