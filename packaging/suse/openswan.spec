@@ -5,7 +5,7 @@
 
 Summary: Openswan IPSEC implementation
 Name: openswan
-Version: 2.6.51dev5
+Version: 2.6.51dev6
 # Build KLIPS kernel module?
 %{!?buildklips: %{expand: %%define buildklips 0}}
 
