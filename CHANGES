@@ -8,7 +8,156 @@ v2.6.51dev (2017)
 
 Additional work to enable NAT-Traversal in IKEv2.
 
-v2.6.50dev (2017)
+v2.6.50 (August 3, 2017)
+
+Bug fixes for RSA key size and other issues
+
+* IKEv1 proposal from self=%any should use localaddr in proposal [MCR]
+* The check on the peers reply should also use localaddr when checking [MCR]
+* Protect kernel_command_verb_suffix against NULL st, which occurs during
+  unroute operations [MCR]
+* Log source of unknown address family [MCR]
+* Straighten out eroute_connection logging with fake "tun" entries [MCR]
+* Rework where/how the decision as to whether to create or update an IPsec SA is done. [MCR]
+* Always use the remote target address to determine family type of outer IP [MCR]
+* Updated the seam_kernel with new get_ipsec_spi/get_my_cpi  function signature [MCR]
+* Change cert and cert-encoding field to be loose_enum, as IETF may define new values [MCR]
+* Test case that shows how addconn core dumps [MCR]
+* Removed errant comment about installing AH SA [MCR]
+* Ensure orient picks loopback interface properly [MCR]
+* Minor comment and copyright changes [MCR]
+* updated for changes in orient debugging [MCR]
+* Move creation of interfaces into data structures so that it can be permuted better [MCR]
+* Enable debug output from orient [MCR]
+* Added and updated test cases to include debug of orient interface picking [MCR]
+* Changed pick_matching_interfacebyfamily to pick best interface, rather than first [MCR]
+* Test case for looking up best interface to match an endpoint [MCR]
+* Added new ok01-parsepubkey to validate str2pubkey function [MCR]
+* Added ckaidhex2ckaid to parse ckaid in hex form [MCR]
+* Added test case for IGNORESPACE on hex data [MCR]
+* Capture all test output (stderr too) and compare it all [MCR]
+* Sanitize out calls to unreference key, as they have core address in them [MCR]
+* Send printed form of ckaid, rather than binary [MCR]
+* Added build-nss script to permit manual builds with libnsa [MCR]
+* rereadsecret will output a copy of the whack log, asynchronously the pluto
+  to the same debug file, which confuses the order at times [MCR]
+* Extra debugging enabled to track certificate loading [MCR]
+* Make sure to (re)read secrets before looking at orientation [MCR]
+* Point at moon ipsec.d for certificates, and load the secrets [MCR]
+* Link the public key from the configuration file, directly to the key via
+  the calculated ckaid. Use the cert/ca fields in the whack message [MCR]
+* Added str2pubkey, and added liboswkeys to some programs that needed it, as
+  well as test case for it [MCR]
+* Move calculate_rsa_ckaid from secrets.c to rsapub.c [MCR]
+* Added new oswkeys header file [MCR]
+* Make clone_str tolerant of unsigned and signed char [MCR]
+* Add buffer to keep formatted ckaid in, since it is used in many places [MCR]
+* libnss specific changes to changes in the change of public/private key referencing [MCR]
+* Movement of public key to be pointer causes a new leak [MCR]
+* Bigpubkey test needs to point correctly at secrets file for debugging, and
+  cleanup of PID file needs to be done correctly [MCR]
+* Re-create routine to dump private parts of key for debugging purposes [MCR]
+* Restructure the secrets structure so that the public key is referenced from
+  the "private_key_stuff" structure, and the keys are not so tied to RSA anymore [MCR]
+* Test case for using correct private key, renamed from libopenswan to liboswkeys [MCR]
+* Move rfc3110->rsa key decoding to new file [MCR]
+* Create new test case for parsing of RSA keys from base64 encoded rfc3110 [MCR]
+* Added test case to pick signing key by public key match [MCR]
+* Fix a typo in dpdaction=clear's description [Simon Deziel]
+* Test case for cycles of ipsec.conf includes [MCR]
+* Fixing minor typo in CHANGES [Samir Hussain
+* Mark IKEv1 as disabled at compile time [MCR]
+* Always build whack with debug options [MCR]
+* Debian: stop depending on iproute that's just a virtual package [Simon Deziel]
+* Turn off sending cert req in IKEv2 [MCR]
+* Added alias aggressive= as alias for aggrmode= [MCR]
+* uClibc-ng is compatible to glibc [Waldemar Brodkorb]
+* when rekeying a child SA, there might be a whack_sock that needs to be tracked. [MCR]
+* Update README.nss [Simon Deziel]
+* More updates to unit tests for CA update [MCR]
+* Make sure to use @carol, rather than just carol [MCR]
+* Updated various certificates [MCR]
+* Script to generate new root CA key [MCR]
+* Fix the inconsistency check so that it skips the case where the address
+  family has not been set at all [MCR]
+* Refactor the conf readwrite tests to use common driver that captures the stderr as well [MCR]
+* Log the state chosen when processing received packets [MCR]
+* When running make update, make sure files have been created [MCR]
+* Extra trusted_ca message to be removed [MCR]
+* Possible test case for rightid=%cert not working correctly [MCR]
+* Added dns auth level names, print them in list of keys [MCR]
+* Enable davecert test cases for rightid= vs rightcert= [MCR]
+* Rename pcap output file to be consistent [MCR]
+* Refactor location of pcap output file [MCR]
+* Debug logging when the parent and child and rekeyed child are transitioned to a new state [MCR]
+* Removed some old logic from parent SA keying, where the child looked for replaced SAs to key [MCR]
+* Added argument to ipsecdoi_initiate for old parent state, distinguished from old child state [MCR]
+* Use CONNNAME consistently [MCR]
+* Added ct10-parent10, which generates a signature using real RSA routines [MCR]
+* Record which key was used for making signatures, and which key successfully verified them [MCR]
+* Update test cases for log of loading key and logging Openswan ckid [MCR]
+* Added additional 4096bit key [MCR]
+* Functional test case that large keys are loaded correctly through the various steps [MCR]
+* Functional test case that large keys are loaded correctly through the various steps [MCR]
+* Silence debugging of key load handling, but leave code in place for another day [MCR]
+* Clone the keyspace to a chunk, rather than use automatic allocated keyspace [MCR]
+* Log size of key received [MCR]
+* Log key after it is converted from base64 [MCR]
+* Use log_ckaid() to debug lowest level of whack processing [MCR]
+* Create log_ckaid(), put it into oswid.c for general use [MCR]
+* Mark sha2 routines as taking a const input [MCR]
+* Attempt to protect pack_whack_msg against public key values which exceed the string size [MCR]
+* Log key when it comes out of whack [MCR]
+* Log the ckaid of the public keys being loaded [MCR]
+* Add argument to change name of keyfile for additional testing [MCR]
+* Loading the private key now loads the public key, and calculates the ckaid
+  of it, so it will be in the output [MCR]
+* When testing if the public keys work, also calculate the ckaid of the key,
+  and display it just to be sure it was loaded correctly [MCR]
+* Refactor the ckaid calculation from raw public key info, and print it as
+  part of loading the private key list [MCR]
+* Include sha2 fingerprint of public key, show it as groups of 4 hex digits like GPG [MCR]
+* Added test case for datatot / ttodata, aliases and leftsubnets [MCR]
+* Added new test case to run historic ttodata regress test [MCR]
+* Remove preproc check for KLIPS_MAST in order to include saref header file. [Samir Hussain]
+* Add make check [Pablo Hinojosa]
+* Fix bug with include mechanism for ipsec.secrets [MCR]
+* Change text around debug messages to clarify intent [MCR]
+* Updated with explicite endaddrfamily and clientaddrfamily [MCR]
+* Move initialization of *aDd_family above end_validation, and have
+  end_validation use these variables properly [MCR]
+* Keep track of line no of each keyword, and when logging duplicated,
+  print the location of values [MCR]
+* Fix bug where conn address family is not filled in leading to test failure [MCR]
+* Fix minor typo in the ipsec.conf template [Samir Hussain] [MCR]
+* Fix pluto segfault [Roel van Meer]
+* Sometimes the state gets deleted before the event fires [MCR]
+* Use getline() rather than fgets() to read ipsec.secrets, so that arbitrarily
+  long lines can be loaded [MCR]
+* Do not assume MAX_TOK_LEN can be used for filename size for ipsec.secrets
+  include directive [MCR]
+* Added local variables for indent [MCR]
+* Test with various key sizes [MCR]
+* Move signature creation and verification to liboswkeys [MCR]
+* Move structure to new file, consider moving selection of crypto to init too [MCR]
+* Whitespace change [MCR]
+* Zero the secret structure before it is used [MCR]
+* Initialize keys of various sizes [MCR]
+* Fixed state of child state on initiator. Fixed output to have correct child
+  state, and thus delete messages [MCR]
+* Changed formatting of msgid in state transitions in addition: found that
+  st_policy in child state was not initialized properly [MCR]
+* Return to putting parent SA state transitions in microcode, but explicitely
+  manage the parent state through the state transition code.  Log both parent
+  and child state transitions [MCR]
+* Comment about usage of libosw [MCR]
+* Deal with different 'ip xfrm' output on CentOS. [Samir Hussain]
+* Fix the order of some of the comments in the pluto man page. [Samir Hussain]
+* Use qsort() instead of qsort_r() [Samir Hussain]
+* Undefine FORTIFY_SOURCE in order to be able to compile in gentoo [Samir Hussain]
+* Display # of tunnel when running 'ipsec setup --status' with IKEv2 [Samir Hussain]
+* Update unit tests to deal with ipsec_setup.8 being copied over [Samir Hussain]
+* Copy ipsec_setup man page into the proper man directory [Samir Hussain]
 
 Bug fixes.
 
