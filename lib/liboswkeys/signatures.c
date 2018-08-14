@@ -157,8 +157,19 @@ err_t verify_signed_hash(const struct RSA_public_key *k
 	return "3""SIG padding does not check out";
     }
 
-    s += padlen + 3;
-    (*psig) = s;
+    /* signature starts after ASN wrapped padding [00,01,FF..FF,00] */
+    (*psig) = s + padlen + 3;
+
+    /* verify padding contents */
+    {
+        const u_char *p;
+
+        for (p = s+2; p < s+padlen+2; p++) {
+            if (*p != 0xFF) {
+                return "4" "invalid Padding String";
+            }
+        }
+    }
 
     /* return SUCCESS */
     return NULL;
