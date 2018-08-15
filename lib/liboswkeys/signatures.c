@@ -163,12 +163,14 @@ err_t verify_signed_hash(const struct RSA_public_key *k
     /* verify padding contents */
     {
         const u_char *p;
+        size_t cnt_ffs = 0;
 
-        for (p = s+2; p < s+padlen+2; p++) {
-            if (*p != 0xFF) {
-                return "4" "invalid Padding String";
-            }
-        }
+        for (p = s+2; p < s+padlen+2; p++)
+            if (*p == 0xFF)
+                cnt_ffs ++;
+
+        if (cnt_ffs != padlen)
+            return "4" "invalid Padding String";
     }
 
     /* return SUCCESS */
