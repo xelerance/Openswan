@@ -1,5 +1,6 @@
 #define DEBUG
 #include <stdlib.h>
+#include <stddef.h>
 #include "openswan.h"
 #include "openswan/passert.h"
 #include "constants.h"
