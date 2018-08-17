@@ -1,5 +1,5 @@
 # Makefile for the Openswan in-tree test cases
-# Copyright (C) 2014 Michael Richardson <mcr@xelerance.com>
+# Copyright (C) 2018 Michael Richardson <mcr@xelerance.com>
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -11,15 +11,17 @@
 # or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
 # for more details.
 
-OPENSWANSRCDIR?=$(shell cd ../..; pwd)
-srcdir?=${OPENSWANSRCDIR}/tests/unit
+OPENSWANSRCDIR?=$(shell cd ../../..; pwd)
+srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-clean check:
-	@${MAKE} -C libopenswan $@
-	@${MAKE} -C policy      $@
-	@${MAKE} -C libpluto    $@
-	@${MAKE} -C ikev2crypto $@
-	@${MAKE} -C liboswkeys  $@
+UNITTESTS=pol01-sarespond
 
+# running 'make check KEEPGOING=1' will run through all tests w/o stopping
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+clean check pcapupdate:
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}

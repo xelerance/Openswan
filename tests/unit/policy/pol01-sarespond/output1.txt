@@ -1,0 +1,67 @@
+./sarespond ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./sarespond no secrets filename matched "../samples/parker.secrets"
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection mytunnel with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+./sarespond use keyid: 1:<> / 2:<>
+| counting wild cards for 192.168.1.1 is 0
+./sarespond use keyid: 1:<> / 2:<>
+| counting wild cards for 132.213.238.7 is 0
+| orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:500)
+|     orient matched on IP
+| orient mytunnel checking against if: eth0 (AF_INET:192.168.1.1:4500)
+| orient mytunnel checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   orient mytunnel finished with: 1 [192.168.1.1]
+| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7 (exact)
+|   concluded with <none>
+./sarespond adding connection: "mytunnel"
+| 192.168.1.1...132.213.238.7
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient mytunnel finished with: 1 [192.168.1.1]
+RC=0 "mytunnel": 192.168.1.1...132.213.238.7; unrouted; eroute owner: #0
+RC=0 "mytunnel":     myip=unset; hisip=unset;
+RC=0 "mytunnel":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+| creating state object #1 at Z
+| ikev2_evaluate_connection_fit, evaluating base fit for mytunnel
+|   ikev2_evaluate_connection_fit evaluating our I=mytunnel:<noclient>:0/0 R=<noclient:0/0  to their:
+|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535, tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
+| prefix range fit c mytunnel c->name was rejected by Traffic Selectors
+| find_ID_host_pair: looking for me=192.168.1.1 him=132.213.238.7 (wildcard)
+|                   comparing to me=192.168.1.1 him=132.213.238.7 (mytunnel)
+|   concluded with mytunnel
+|   checking hostpair 192.168.1.1/32 -> 132.213.238.7/32 is found
+./sarespond leak: struct state in new_state(), item size: X
+./sarespond leak: ID host_pair, item size: X
+./sarespond leak: host_pair, item size: X
+./sarespond leak: 2 * host ip, item size: X
+./sarespond leak: connection name, item size: X
+./sarespond leak: struct connection, item size: X
+./sarespond leak: policies path, item size: X
+./sarespond leak: ocspcerts path, item size: X
+./sarespond leak: aacerts path, item size: X
+./sarespond leak: certs path, item size: X
+./sarespond leak: private path, item size: X
+./sarespond leak: crls path, item size: X
+./sarespond leak: cacert path, item size: X
+./sarespond leak: acert path, item size: X
+./sarespond leak: default conf var_dir, item size: X
+./sarespond leak: default conf conffile, item size: X
+./sarespond leak: default conf ipsecd_dir, item size: X
+./sarespond leak: default conf ipsec_conf_dir, item size: X
+./sarespond leak: 2 * hasher name, item size: X
+./sarespond leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+test case 1: STF_OK
