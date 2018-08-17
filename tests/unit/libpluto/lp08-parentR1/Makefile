@@ -19,54 +19,8 @@ EXTRAFLAGS+=${USERCOMPILE} ${PORTINCLUDE} -I..
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/programs/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include/pluto
 EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_print.o
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/virtual.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/rcv_whack.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/myid.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/demux.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/spdb_v2_struct.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypto.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2.o
-ifeq ($(USE_EXTRACRYPTO),true)
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_serpent.o
-endif
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/vendor.o
-EXTRALIBS+=${PLUTOLIB} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
-EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
-EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
-
-EXTRAFLAGS+=${NSS_FLAGS}    ${FIPS_FLAGS}
-EXTRAFLAGS+=${NSS_HDRDIRS}  ${FIPS_HDRDIRS}
+include ../../libpluto/lp13-objectlist.make
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
@@ -86,7 +40,7 @@ programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
 	@echo " CC ${TESTNAME}"
 	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@echo " LD ${TESTNAME}"
-	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt OUTPUT/R1parker-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
