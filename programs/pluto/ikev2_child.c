@@ -698,35 +698,22 @@ int ikev2_evaluate_connection_fit(struct connection *d
     return bestfit;
 }
 
-stf_status ikev2_child_sa_respond(struct msg_digest *md
-                                  , struct state *st1
-                                  , pb_stream *outpbs)
+stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
+                                          , unsigned int tsi_n
+                                          , struct traffic_selector tsr[16]
+                                          , unsigned int tsr_n
+                                          , struct state *pst
+                                          , struct connection *c
+                                          , struct connection **b_result
+                                          , struct spd_route  **bsr_result)
 {
-    struct state      *pst = md->pst;
-    struct connection *c   = NULL;
-    /* struct connection *cb; */
-    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
-    stf_status ret;
-    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
-    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
-    struct traffic_selector tsi[16], tsr[16];
-    unsigned int tsi_n, tsr_n;
-
-    if(pst == NULL) pst = md->st;
-    c = pst->st_connection;
-
-    /*
-     * now look at provided TSx, and see if these fit the connection
-     * that we have, and narrow them if necessary.
-     */
-    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
-    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
-
     /*
      * now walk through all connections and see if this connection
      * was in fact the best.
      *
      * similar to find_client_connection/fc_try.
+     *
+     * preserve {} for comparison purposes until code verified by unit test cases
      */
     {
 	struct connection *b = c;
@@ -827,6 +814,42 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
                 }
             }
         }
+        if(b_result) *b_result = b;
+        if(bsr_result) *bsr_result = bsr;
+    }
+    return STF_OK;
+}
+
+
+stf_status ikev2_child_sa_respond(struct msg_digest *md
+                                  , struct state *st1
+                                  , pb_stream *outpbs)
+{
+    struct state      *pst = md->pst;
+    struct connection *c   = NULL;
+    /* struct connection *cb; */
+    struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];
+    stf_status ret;
+    struct payload_digest *const tsi_pd = md->chain[ISAKMP_NEXT_v2TSi];
+    struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
+    struct traffic_selector tsi[16], tsr[16];
+    unsigned int tsi_n, tsr_n;
+    struct connection *b = c;
+
+    if(pst == NULL) pst = md->st;
+    c = pst->st_connection;
+
+    /*
+     * now look at provided TSx, and see if these fit the connection
+     * that we have, and narrow them if necessary.
+     */
+    tsi_n = ikev2_parse_ts(tsi_pd, tsi, 16);
+    tsr_n = ikev2_parse_ts(tsr_pd, tsr, 16);
+
+    {
+	struct spd_route *bsr = NULL;
+
+        ret = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n, pst, c, &b, &bsr);
 
         DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*
