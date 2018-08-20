@@ -1,9 +1,9 @@
-This test case continues lp80, where the IKEv2 original responder will delete
+This test case continues lp82, where the IKEv2 original Responder will delete
 a child SA (before the original initiator).  In this test case, we are the
-initiator and we will receive the request to delete the child SA for the first
+Initiator and we will receive the request to delete the child SA for the first
 time.
 
-NOTE: To simulate behaviour of Strongswan, the other end (lp80) sent us
+NOTE: To simulate behaviour of Strongswan, the other end (lp82) sent us
 a CREATE_CHILD_SA message with msgid of 0.
 
 This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  Some packets
@@ -15,25 +15,24 @@ Initiator                                                             Responder
 
                               --- 08:39:04 ---
 
-INIT, I, id 0
-[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->
+INIT, I, id 0                                                                     <- lp36
+[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->                                   <- send INIT req
 
-                            INIT, R, id 0
-                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]
+                            INIT, R, id 0                                         <- lp37
+                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]   <- accept INIT req, send INIT resp
 
-AUTH, I, id 1
-[ IDi AUTH SA TSi TSr ] ----->
+AUTH, I, id 1                                                                     <- lp38
+[ IDi AUTH SA TSi TSr ] ----->                                                    <- accept INIT resp, send AUTH req
 
-                                            AUTH, R, id 1
-                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]
+                                            AUTH, R, id 1                         <- lp39
+                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]   <- accept AUTH req, send AUTH resp
 
                               --- 08:42:06 ---
 
-CREATE_CHILD_SA, I, id 2
-[ KE No SA TSi TSr ] ----->
-
-                                                       CREATE_CHILD_SA, R, id 2
-                                                <----- [ SA No TSi TSr ]
+# NOTE: in the real exchange, the Initiator would first send out a
+# CREATE_CHILD_SA, which is already tested for in other test cases.  Here, we
+# skip negotiating CHILD SA #3, and skip directly to the Responder initiating
+# the deletion of #2, which is what's being tested.
 
                               --- 08:43:03 ---
                                                                                   <- 

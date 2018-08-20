@@ -16,25 +16,23 @@ Initiator                                                             Responder
 
                               --- 08:39:04 ---
 
-INIT, I, id 0
-[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->
+INIT, I, id 0                                                                     <- lp36
+[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->                                   <- send INIT req
 
-                            INIT, R, id 0
-                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]
+                            INIT, R, id 0                                         <- lp37
+                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]   <- accept INIT req, send INIT resp
 
-AUTH, I, id 1
-[ IDi AUTH SA TSi TSr ] ----->
+AUTH, I, id 1                                                                     <- lp38
+[ IDi AUTH SA TSi TSr ] ----->                                                    <- accept INIT resp, send AUTH req
 
-                                            AUTH, R, id 1
-                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]
+                                            AUTH, R, id 1                         <- lp39
+                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]   <- accept AUTH req, send AUTH resp
 
                               --- 08:42:06 ---
 
-CREATE_CHILD_SA, I, id 2
-[ KE No SA TSi TSr ] ----->
-
-                                                       CREATE_CHILD_SA, R, id 2
-                                                <----- [ SA No TSi TSr ]
+# NOTE: in the wild, there may have been many successful CREATE CHILD SA exchanges
+# initiated by the original Initiator.  This test case emulates a rare condition
+# where the original Responder requests a CHILD rekey.
 
                               --- 08:43:03 ---
                                                                                   <- 
