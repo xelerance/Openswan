@@ -1,0 +1,5 @@
+This unit test case is a clone of lo02-verifysigs.  However, instead of testing
+successful sign/verify operation, it applies various corruptions to the signature
+and validates that verify_signed_hash() can handle the error.
+
+This test reuses *.secrets files from ../lo02-verifysigs
