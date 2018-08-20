@@ -699,14 +699,18 @@ int ikev2_evaluate_connection_fit(struct connection *d
 }
 
 stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
-                                          , unsigned int tsi_n
-                                          , struct traffic_selector tsr[16]
-                                          , unsigned int tsr_n
-                                          , struct state *pst
-                                          , struct connection *c
-                                          , struct connection **b_result
-                                          , struct spd_route  **bsr_result)
+                                   , unsigned int tsi_n
+                                   , struct traffic_selector tsr[16]
+                                   , unsigned int tsr_n
+                                   , struct state *pst
+                                   , struct connection *c
+                                   , struct connection **best_c
+                                   , struct spd_route  **best_sr)
 {
+    int bestfit_n, newfit, bestfit_p;
+    struct connection *b = c;
+    struct spd_route *sra, *bsr;
+
     /*
      * now walk through all connections and see if this connection
      * was in fact the best.
@@ -716,10 +720,7 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
      * preserve {} for comparison purposes until code verified by unit test cases
      */
     {
-	struct connection *b = c;
 	struct connection *d;
-	int bestfit_n, newfit, bestfit_p;
-	struct spd_route *sra, *bsr;
 	struct IDhost_pair *hp = NULL;
 	int best_tsi_i ,  best_tsr_i;
 
@@ -750,6 +751,19 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                                              , c->name));
         }
 
+        /*
+         * if we found something (anything in this policy) that fit,
+         * then we should conclude with it (we are done).
+         * only if we did not find matching traffic selectors should we go
+         * on and check other policies between the same hosts/IDs for
+         * other policies that work.
+         */
+        if(bestfit_n > 0) {
+            if(best_c)   *best_c = b;
+            if(best_sr)  *best_sr = bsr;
+            return STF_OK;
+        }
+
 	for (sra = &c->spd; hp==NULL && sra != NULL; sra = sra->next) {
             hp = find_ID_host_pair(sra->this.id
                                    , sra->that.id);
@@ -771,19 +785,13 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
 
             for (d = hp->connections; d != NULL; d = d->IDhp_next) {
                 struct spd_route *sr;
-                int wildcards, pathlen;  /* XXX */
 
                 /* if already best fit, do not try again */
                 if(d == c) continue;
 
+                /* groups are abstract concepts, and can not match */
                 if (d->policy & POLICY_GROUP)
                     continue;
-
-                if (!(same_id(&c->spd.this.id, &d->spd.this.id)
-                      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-                      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
-                    continue;
-
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
                     newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
@@ -814,10 +822,17 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                 }
             }
         }
-        if(b_result) *b_result = b;
-        if(bsr_result) *bsr_result = bsr;
     }
-    return STF_OK;
+
+    if(bestfit_n > 0 && b != NULL) {
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
+
+        if(best_c)  *best_c = b;
+        if(best_sr) *best_sr = bsr;
+        return STF_OK;
+    } else {
+        return STF_FAIL + v2N_TS_UNACCEPTABLE;
+    }
 }
 
 
