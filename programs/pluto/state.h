@@ -163,7 +163,7 @@ struct hidden_variables {
 
 /* IKEv2, this struct will be mapped into a ikev2_ts1 payload  */
 struct traffic_selector {
-    u_int8_t  ts_type;
+    enum ikev2_ts_type ts_type;
     u_int8_t  ipprotoid;
     u_int16_t startport;
     u_int16_t endport;
