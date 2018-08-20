@@ -22,7 +22,7 @@ check:
 	@mkdir -p ../OUTPUTS
 	@rm -rf ${buildtmp}
 	@mkdir -p ${buildtmp}
-	env
+	env > ../OUTPUTS/env
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} programs install
 	(cd ${buildtmp} && find . -type f -print) | LC_ALL=C sort | tee ../OUTPUTS/01-build-list.raw | diff - 01-build-list.txt || cat ../OUTPUTS/01-build-list.raw
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} programs install
