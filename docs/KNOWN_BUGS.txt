@@ -1,5 +1,6 @@
 
-0)	This file needs updating, see also https://www.openswan.org/
+0)	This file needs updating, see also https://www.openswan.org/ and the
+	BUGS file in the root directory
 
 1)	There is some regression with the new parser and recognising
 	"time values" (eg 3600, 1h, 10m) when they are just integers.
@@ -11,5 +12,5 @@
 	of the cause, but it is not made better by setting nhelpers=0.
 	Note that our previous record for SA setups/second was 11/second, so
 	it may well be availability of entropy.
-	
+
 3)	There are some interop issues with IKEv2
