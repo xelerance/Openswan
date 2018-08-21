@@ -1,6 +1,6 @@
 Summary: Openswan IPsec implementation
 Name: openswanX
-Version: 2.6.51dev6
+Version: 2.6.51rc1
 
 # Openswan -pre/-rc nomenclature has to co-exist with hyphen paranoia
 %define srcpkgver %(echo %{version} | tr -s '_' '-')

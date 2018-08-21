@@ -4,7 +4,7 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
-v2.6.51dev (2017)
+v2.6.51rc1 (2018)
 
 Additional work to enable NAT-Traversal in IKEv2.
 

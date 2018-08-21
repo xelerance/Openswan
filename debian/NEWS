@@ -1,12 +1,5 @@
-openswan (1:2.6.51~dev6-0xelerance1) trusty; urgency=low
+openswan (1:2.6.51-1) UNRELEASED; urgency=low
 
-  * Update to 2.6.51~dev6
+  * Re-upload to unstable.
 
-  The real changelog is in /usr/share/doc/openswan/changelog.gz
-
-  This package is NOT an official Debian/Ubuntu package. Please do
-  not file any Debian/Ubuntu bug reports for this package but contact
-  <dev@openswan.org> or <simon@xelerance.com> if you have a problem.
-
- -- Simon Deziel <simon@xelerance.com>  Tue, 18 Mar 2014 16:42:20 -0400
-
+ -- Samir Hussain <shussain@xelerance.com>  Thu, 7 Aug 2018 13:14:16 -0400
