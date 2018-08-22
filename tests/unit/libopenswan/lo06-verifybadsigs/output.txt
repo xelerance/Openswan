@@ -1,0 +1,1528 @@
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "0512", 64)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-0512.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOkietpl/F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 91 
+0010: d5 f3 1f 46  27 25 30 30  53 bb 5a f2  ae e3 50 00 
+| signing hash with RSA Key *AQOkietpl
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 64
+0000: 1e 91 00 d2  eb aa 70 84  80 69 ec 6a  e9 04 1f 76 
+0010: fa 9c f2 eb  37 83 97 55  ff 6c b5 5b  f0 54 08 5b 
+0020: 2a c8 a0 7e  92 14 72 74  a0 7c fe 7c  3f b4 c4 42 
+0030: f9 a2 d6 90  f8 7c da 52  0b b3 a9 ba  e9 fd 0e 1c 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   91 d5 f3 1f  46 27 25 30  30 53 bb 5a  f2 ae e3 50
+| pad_len calculated: 30 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "0512", 64) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "0512", 64)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-0512.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOkietpl/F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 07 
+0010: ce 4a 50 2e  7c 96 32 a1  50 6b 52 79  4a c4 a6 00 
+| signing hash with RSA Key *AQOkietpl
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 64
+0000: 47 77 05 56  db 34 27 57  a7 6e 87 d5  95 55 25 d6 
+0010: f4 c4 75 9e  64 5b 2e 6b  41 9c 34 17  83 88 0d c1 
+0020: f6 52 54 e3  8e c9 2e ef  b5 84 19 fa  1c d4 d1 bd 
+0030: 74 10 74 49  ab 0e a3 74  77 e5 b9 39  26 f3 08 88 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   07 ce 4a 50  2e 7c 96 32  a1 50 6b 52  79 4a c4 a6
+| pad_len calculated: 30 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "0512", 64) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "0512", 64)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-0512.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOkietpl/F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 48 
+0010: 5e ac fb 1e  17 d9 30 d3  3c 7c 90 9b  da 9d 13 00 
+| signing hash with RSA Key *AQOkietpl
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 64
+0000: 0e 96 d3 35  55 74 23 fb  f7 00 ec 37  82 dd c6 da 
+0010: 6b 63 7c 25  86 36 54 53  95 89 e2 71  7a 4d 64 48 
+0020: 93 41 74 c0  bc 7a eb 3d  2d a4 71 41  cb 82 9a 76 
+0030: 19 47 d9 e4  92 60 78 9a  07 18 0a af  7f dc 00 c5 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   48 5e ac fb  1e 17 d9 30  d3 3c 7c 90  9b da 9d 13
+| pad_len calculated: 30 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "0512", 64) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "0512", 64)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-0512.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOkietpl/F913 DF26 FD82 CFA0 4173 B4CB D0DA 676E 6D98 36F3
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 76 
+0010: f5 d9 c1 82  6f 05 b1 04  5b ee f2 f6  73 13 9d 00 
+| signing hash with RSA Key *AQOkietpl
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 64
+0000: 5d dc 43 e9  8a 61 2d ae  51 4f f5 00  65 fd 04 a7 
+0010: 7d df 35 fe  9f 03 58 fb  45 06 be f4  ac fb 3a 36 
+0020: 91 4f bb f9  db 77 65 de  56 44 2c ec  69 06 5b e3 
+0030: 1f 88 7c 83  ac e6 8f 7c  d3 64 39 5d  4f 3b 0c cc 
+0040: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  76 f5 d9 c1  82 6f 05 b1  04 5b ee f2
+|   f6 73 13 9d  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 30 hash_len: 31
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "0512", 64) = (3) "3SIG padding does not check out"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "1024", 128)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-1024.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQN3OKgAN/EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 1a 
+0010: d8 76 eb 4a  aa ea d8 8d  2d 1b c7 49  5a 10 9a 00 
+| signing hash with RSA Key *AQN3OKgAN
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 128
+0000: 47 54 6c 2b  c6 8c d5 7b  0e 87 e7 88  02 80 a2 57 
+0010: ce 3c f1 04  92 10 e6 77  57 71 68 1c  7d 98 df 98 
+0020: e2 5c 95 ff  f1 67 d1 1d  35 e7 15 86  9d b4 e6 b7 
+0030: 48 dd 83 f1  7d 37 c4 b1  ab 8d ea 2f  e1 92 f8 bd 
+0040: 79 8f ac fc  9f 85 d8 98  09 65 05 de  bf b1 fb a6 
+0050: d3 27 61 e7  8d 08 11 75  a6 da cf 82  46 47 64 57 
+0060: 66 59 96 28  5c f9 fe 4d  04 b2 43 5a  da 1e 28 8b 
+0070: 8e 2c 96 75  05 44 e0 bb  70 f9 77 04  08 37 18 2e 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   1a d8 76 eb  4a aa ea d8  8d 2d 1b c7  49 5a 10 9a
+| pad_len calculated: 94 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "1024", 128) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "1024", 128)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-1024.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQN3OKgAN/EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 63 
+0010: 22 ef 22 79  d5 3b 00 6b  fa 3f 57 d1  e6 69 24 00 
+| signing hash with RSA Key *AQN3OKgAN
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 128
+0000: 09 a5 2c 8e  3e f5 51 e8  1f 02 42 a5  5e b0 73 8f 
+0010: 6a 54 b9 54  3f 03 e2 44  1e 37 07 c3  76 ac c8 03 
+0020: a5 87 e5 05  69 e3 eb d3  8d 79 9c 0b  6d 4d fb 25 
+0030: 5f c5 49 e0  ac 02 79 87  3a 99 65 bc  5d 77 03 0f 
+0040: 0b 48 ca e6  db 2b 12 0f  44 5d 43 b4  e5 72 88 b6 
+0050: 54 1b 92 91  61 a6 ef b2  6d c0 b8 48  d7 a0 e0 51 
+0060: ce ea 31 da  4e b8 03 64  e0 97 72 5a  95 0d c3 9e 
+0070: b5 e6 e6 39  a6 7b de 29  e9 db c7 6f  9d cb 7f a3 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   63 22 ef 22  79 d5 3b 00  6b fa 3f 57  d1 e6 69 24
+| pad_len calculated: 94 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "1024", 128) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "1024", 128)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-1024.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQN3OKgAN/EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 3c 
+0010: b5 b4 04 d6  47 30 87 b1  de 7a 7f 9d  bb 68 bc 00 
+| signing hash with RSA Key *AQN3OKgAN
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 128
+0000: 4c f5 46 4a  08 59 d8 cb  fa 10 af 86  6c 04 2d cb 
+0010: 7c 8e d1 2e  65 7a ba 9b  30 29 a8 00  09 90 c1 07 
+0020: 8a 03 ee 36  35 3b 1c fa  cc 48 fe d7  c0 4d 1d 27 
+0030: b1 0f ee f3  45 2a d0 82  89 7f 17 43  2a 42 31 f7 
+0040: b6 18 26 8c  3e 18 28 7d  8e 76 69 9d  15 e4 22 69 
+0050: d9 fa 72 59  32 cd f8 04  ff 7b 5e 81  a4 01 db 8a 
+0060: f0 b0 d5 29  ff 8a a1 ff  14 c1 40 e5  f1 45 38 3c 
+0070: 4b 80 bb 99  3c 33 b4 4b  67 e1 8d 18  cb 51 c1 95 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   3c b5 b4 04  d6 47 30 87  b1 de 7a 7f  9d bb 68 bc
+| pad_len calculated: 94 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "1024", 128) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "1024", 128)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-1024.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQN3OKgAN/EA66 90A8 9046 6726 0570 E760 0347 92FA 6BD1 E72D
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 f5 
+0010: b0 e6 d6 3b  8d 68 50 bf  b5 24 4c 37  7e fd ea 00 
+| signing hash with RSA Key *AQN3OKgAN
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 128
+0000: 15 bd 07 b6  27 55 ca dc  2a 8e 17 73  ae 0c f9 08 
+0010: f8 0e d2 58  e9 65 39 b4  07 91 09 d1  b8 11 5e 20 
+0020: 59 7f cc 20  52 11 e3 9c  fc 08 c3 b4  88 35 52 b7 
+0030: 86 01 6f cd  14 f8 a2 a0  2c a5 20 8c  5e 8b f2 c3 
+0040: 9f de 8d 5a  36 ca 58 ec  67 be f3 d6  3b dd e2 23 
+0050: 2a b4 91 cb  bc 71 90 52  d8 2d dd 89  63 4a 4f b6 
+0060: dd df 45 8a  b1 19 7f b1  97 36 f1 ed  aa 78 c2 3a 
+0070: 3e 5d 3e c4  fe ac 27 8a  5d 11 f9 8a  31 5f a7 fe 
+0080: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  f5 b0 e6 d6  3b 8d 68 50  bf b5 24 4c
+|   37 7e fd ea  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 94 hash_len: 31
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "1024", 128) = (3) "3SIG padding does not check out"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "2048", 256)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-2048.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQO8vQM7b/9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 17 
+0010: 93 73 62 50  6c 84 80 91  6b 77 95 59  ab 34 1b 00 
+| signing hash with RSA Key *AQO8vQM7b
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 256
+0000: 7f 4f 82 3d  f3 8d 11 c6  0a 81 5e 7d  f9 a1 95 dc 
+0010: 7c 66 e1 e0  63 54 a0 e2  d7 ad ab 3c  10 d4 43 f0 
+0020: ca 63 31 de  4d 64 95 40  c7 05 a2 ec  60 a0 53 00 
+0030: 13 10 af ee  cc 7e 1f 4d  f9 3f 2b 02  a3 fe b1 e1 
+0040: 19 13 5a e9  61 a6 a0 0e  9b ac 10 bb  77 2d 09 d6 
+0050: 41 3b 75 5b  a0 88 9d cd  d6 f4 06 f3  55 9c d5 f1 
+0060: fa a6 e6 6e  c5 5a ab 98  89 a9 63 f8  e9 9a 50 f1 
+0070: 5c f1 6a 7a  d7 4c 4f 7a  68 24 d5 df  c2 38 ad 0c 
+0080: 05 d1 71 66  e3 63 d6 a1  26 87 41 18  11 62 5c ce 
+0090: 70 a7 92 b3  f1 4b ae fc  f5 21 eb be  b8 2d b7 a2 
+00a0: 35 9c 95 70  3d be 10 29  aa fa 04 11  22 bc 6f d8 
+00b0: 55 b6 ab 5e  ac c7 5e 0a  4b 3b cc 42  be 0a 4e c1 
+00c0: 7b dd 41 3b  81 ef 54 15  87 48 78 af  6e c2 e0 76 
+00d0: e5 71 cf 9b  02 8b 8a 1c  54 64 f0 75  0a 6b 53 30 
+00e0: 00 09 a0 23  7b 16 67 fe  88 0a 6d 0a  dd 6c e6 c3 
+00f0: 84 3a 58 78  d7 f8 55 7a  fb e8 3b 57  e7 09 e3 60 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   17 93 73 62  50 6c 84 80  91 6b 77 95  59 ab 34 1b
+| pad_len calculated: 222 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "2048", 256) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "2048", 256)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-2048.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQO8vQM7b/9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 59 
+0010: 40 42 6f d9  42 3e 88 c0  e7 73 99 fe  5f 71 ad 00 
+| signing hash with RSA Key *AQO8vQM7b
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 256
+0000: 0a 5c 2e 3f  6c 7b a4 ea  fe 70 3a 27  5b 13 5c 3f 
+0010: 39 ca a2 f6  07 13 a4 cc  0f f3 bb 29  72 3d 6e eb 
+0020: 02 85 69 85  c3 ad 49 e7  47 ed 03 64  7e f3 04 25 
+0030: 33 8d f9 a2  ea 01 0d 97  41 23 fc 95  67 8d cb dc 
+0040: 93 7f 4c 52  b8 69 47 16  e9 eb 0a fd  fe 2d df 01 
+0050: 1a 9e 8f 05  24 45 37 c1  67 0b b6 0e  2d 0f 6e dc 
+0060: ff 7b 85 0f  83 52 7c 29  e8 a0 a5 b5  b5 08 25 5f 
+0070: e2 3d 75 65  b2 53 c6 86  40 fc 85 62  61 f2 10 cc 
+0080: 25 5c c7 16  fa b7 93 a7  64 f6 c2 77  2e 4e dd b2 
+0090: 4e 1b 28 35  0c 58 51 3a  76 84 90 33  c9 c2 3a 9f 
+00a0: b4 77 9d 5e  dc 5c d5 52  57 58 51 fb  1c 9c 74 ee 
+00b0: 0c 9e ce db  22 d4 88 d2  2a ce 23 72  42 ad f2 74 
+00c0: 1e 27 3b 46  89 43 ce 0a  6e 07 1b 1b  a0 36 73 fa 
+00d0: c8 59 e4 a0  24 59 e9 b3  ee 41 e8 a9  0a 8e cc 85 
+00e0: 65 9b 7e d4  6e ec e0 4a  59 10 08 ec  75 c9 a9 3b 
+00f0: 0d 00 13 de  13 36 8f 04  98 31 02 ce  63 54 a5 30 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   59 40 42 6f  d9 42 3e 88  c0 e7 73 99  fe 5f 71 ad
+| pad_len calculated: 222 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "2048", 256) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "2048", 256)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-2048.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQO8vQM7b/9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 fa 
+0010: 19 eb 5b 3a  38 b1 30 45  b0 1d 61 96  92 f9 79 00 
+| signing hash with RSA Key *AQO8vQM7b
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 256
+0000: 12 23 c2 d9  e8 20 96 95  80 64 fd 49  f5 e9 10 5b 
+0010: d5 c5 39 32  9c 6a e2 29  d6 3d 01 17  2a 60 7c 9e 
+0020: ce de 9d 42  c3 e7 76 76  2a 65 77 f1  bc 77 45 a7 
+0030: ae 74 9f 28  9a dd 25 3b  3d 16 92 e9  91 2e 00 fe 
+0040: 4e 5e bc 7d  bd 01 ab d5  e2 9b f4 cf  27 ac 72 43 
+0050: 59 f8 1d 48  1f d1 d3 13  f5 de e6 fb  a4 f4 37 01 
+0060: 41 e0 93 80  ee 2e 15 77  ee 51 72 21  fe 74 c7 54 
+0070: 93 5d 08 50  dc 97 85 22  9f cc fe 0e  96 aa 29 25 
+0080: 94 9d a7 6c  87 51 48 8d  5a 79 30 79  2b 4c 69 de 
+0090: e6 58 29 6d  8c ca 62 cb  5e b8 80 12  a8 1b 32 0b 
+00a0: 8d 79 19 8f  30 fb 76 d1  b9 09 77 50  19 e5 5f e3 
+00b0: 09 83 25 ac  6f e3 07 ba  73 cf 66 eb  f2 ef b4 3a 
+00c0: 4d 80 49 83  0e f8 00 9d  5a 38 1b 44  6c 32 46 a7 
+00d0: d8 4e 08 a5  b0 e3 43 bf  28 54 df e1  57 75 df 0b 
+00e0: bd cc ad 84  a7 91 ec 7f  fb 9c e5 0d  b9 f6 9f 7e 
+00f0: 9f 9b 69 f2  d0 56 55 c9  4d 92 81 82  9c 65 9a ba 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   fa 19 eb 5b  3a 38 b1 30  45 b0 1d 61  96 92 f9 79
+| pad_len calculated: 222 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "2048", 256) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "2048", 256)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-2048.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQO8vQM7b/9E1C 7E95 654A DDFB D688 F877 DAEA 4879 3AD5 ABC9
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 0e 
+0010: 87 ec 4c b0  73 ba 43 7a  5e 0d c7 93  26 a8 9b 00 
+| signing hash with RSA Key *AQO8vQM7b
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 256
+0000: 6b 6e c7 ec  3d cd 28 f8  14 a2 4a 3a  ca d2 0c f7 
+0010: 70 0a f4 a2  e8 b0 db 3d  b6 9f 86 a1  65 60 be 20 
+0020: 16 61 d5 3d  8c 51 64 c6  29 06 82 c7  0b 74 dd 77 
+0030: bc 4b 7b 91  d9 bb ba 1b  ee b4 fe b3  92 ae b9 5a 
+0040: 34 22 54 f8  7f 0a 2a d5  8e 7d 0f 34  f9 80 cb 38 
+0050: 9e 6b 16 38  55 ae bb dc  d6 a0 43 bb  a4 d6 76 57 
+0060: 60 d4 e1 a7  ff 04 dd 81  d4 f9 d2 3c  ad 8a 1e a1 
+0070: 88 c5 16 58  e7 2e fa 89  2f 2f e4 aa  d9 9b 74 a3 
+0080: d1 b0 dc b1  3b 3a 4d e4  9a 85 70 1c  dc d1 f6 79 
+0090: 4e 06 60 25  f1 88 ac 0c  c5 c0 27 81  6a 48 91 fe 
+00a0: 3a 78 6d fb  e8 11 b3 18  5d 6f dc a8  0c 90 49 c0 
+00b0: d2 a2 8e 1f  24 2e 39 32  15 da bc e8  5b a0 cc 6b 
+00c0: 9a ae a2 31  f3 69 a5 4f  df bb b4 b7  9f 6e f4 b8 
+00d0: e1 22 63 2e  4c 17 8d 26  85 9f 13 c6  2c 9b 30 2a 
+00e0: de 4e 84 6b  09 66 6e 39  dc 43 8e 92  fb ce 52 12 
+00f0: 8f fe 49 ee  f3 a6 61 3b  81 1e b2 47  b9 54 19 03 
+0100: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  0e 87 ec 4c  b0 73 ba 43  7a 5e 0d c7
+|   93 26 a8 9b  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 222 hash_len: 31
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "2048", 256) = (3) "3SIG padding does not check out"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "3072", 384)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-3072.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOnXoqI3/5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 32 
+0010: 5e c9 9b cf  67 7f 26 e6  95 8a 26 6f  5b 55 78 00 
+| signing hash with RSA Key *AQOnXoqI3
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 384
+0000: 44 09 cd 97  95 ab 43 65  74 92 ac b6  0f 50 b3 23 
+0010: 10 44 a2 df  07 5a a9 2a  d2 70 88 ee  08 30 3d 05 
+0020: 6d d8 89 1d  5d b9 a8 da  21 57 11 25  fe 0b 3c f1 
+0030: f1 58 b5 c1  0d eb 2e c6  47 81 ce 68  a9 d3 59 ed 
+0040: 00 28 13 06  14 8c e6 43  17 90 af 04  d9 4b 97 62 
+0050: 63 f3 37 88  6d b0 1b 3f  c5 da 89 c0  61 24 30 d6 
+0060: 18 70 38 34  04 aa 56 f2  4b 51 65 95  2f 0d 49 70 
+0070: b8 8b 92 79  4d 5c e4 bb  d5 a2 9d 32  89 45 fb 15 
+0080: b0 17 53 7e  1a d2 cd e9  e2 1d bb ac  8e ba 5d 5c 
+0090: 0c fa 89 03  ca 56 82 77  7e 89 ba f0  0b 33 5e 60 
+00a0: e6 a8 45 29  67 00 eb b4  c1 51 29 39  22 ad 02 93 
+00b0: 9b 53 a7 20  f6 98 59 02  ad a8 94 56  b0 f5 76 49 
+00c0: 21 93 9a db  db 96 18 a2  76 be 57 27  d3 31 2f e0 
+00d0: 3b 97 93 7d  b6 11 89 d0  86 3b 1c 3a  a2 d3 65 93 
+00e0: eb 88 df d0  92 4f 08 04  f1 51 c6 95  a2 a4 17 73 
+00f0: 23 ec d4 00  ef 86 4e 39  6e 66 63 5e  b9 04 35 f7 
+0100: d5 0a 1b 0e  f1 59 17 d3  4b 10 e6 ab  bd da 35 af 
+0110: 7e 74 e8 9a  7e db 09 ed  3d 00 96 2c  77 53 ab 32 
+0120: 98 95 60 ab  76 4d c8 18  95 3d 5f 7c  7b 67 1c 82 
+0130: e6 46 26 91  01 68 0a 2f  82 44 c0 e4  0c 52 3e c6 
+0140: 81 b7 2f dd  07 3e f3 c7  d8 9b dd 00  3d 41 a1 6f 
+0150: 30 07 d5 56  d4 2a 4b cf  55 13 48 fa  c9 5e 37 88 
+0160: ed 17 b3 d4  f4 67 f5 66  5c e2 fe 8b  30 f2 df 7b 
+0170: 12 81 fa e9  3a 8e ad 25  10 07 1a dd  a0 cc 8f 05 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   32 5e c9 9b  cf 67 7f 26  e6 95 8a 26  6f 5b 55 78
+| pad_len calculated: 350 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "3072", 384) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "3072", 384)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-3072.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOnXoqI3/5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 60 
+0010: 25 03 e4 66  25 12 5a 72  da 86 58 7d  8c 1f 79 00 
+| signing hash with RSA Key *AQOnXoqI3
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 384
+0000: 85 57 fb d8  11 61 38 e2  f9 56 41 4e  60 82 4d 31 
+0010: 3f a0 13 81  4e b5 2b 1e  85 ed f6 19  ba fc 29 53 
+0020: 64 c0 0c cc  d4 dc 2b 05  2c 65 d5 e0  e7 e7 d1 7f 
+0030: 71 9d c5 ec  4d e9 a2 6f  47 ff d2 ca  e9 77 08 be 
+0040: 2c 86 26 89  b9 19 88 b8  52 cb aa 3e  a9 b7 eb 51 
+0050: 8e 63 a0 33  e5 db 95 4b  18 7b e3 db  75 46 a3 cc 
+0060: 88 52 5e 1e  0e fe 11 e3  0f e4 9e 33  7e 20 c2 c4 
+0070: 4d c6 7d 72  8c 1b 22 37  a2 f9 96 cd  fb e6 e3 34 
+0080: e0 a5 49 cf  4c c8 aa 8b  5a 7f f8 99  42 1d 7d 5b 
+0090: fe 06 c2 4f  71 70 7c 4a  58 68 f7 ba  da b0 9a 81 
+00a0: 44 87 f3 5e  55 14 9d 6d  94 f7 ec f2  24 46 7e 41 
+00b0: 06 0e 2e 20  db d8 15 19  32 9e 34 da  3a 1b 31 cb 
+00c0: 32 ce df c7  fb 67 97 e7  2e d5 31 9d  20 3d e4 d1 
+00d0: 64 0c fe 81  75 91 e6 f4  fa 8a 23 fc  44 a5 ed 44 
+00e0: 6e 92 37 b3  d2 df 6a c2  44 da ec 7c  85 03 c2 68 
+00f0: 60 11 b4 95  ac c9 60 82  78 6c 8d d1  19 ba 74 ed 
+0100: ed 1c 8e a0  16 b7 5c 32  3f 0c 61 0b  d7 f6 4d 50 
+0110: 9b 69 e8 d5  78 a6 1c ae  58 5d 4a e7  b6 4b 91 26 
+0120: 41 a3 58 59  85 5a ab a9  ff 22 d5 48  c2 99 59 c7 
+0130: d4 32 7c 3a  7a 14 63 6c  78 dc 61 19  e2 8e 20 c1 
+0140: 7a c9 46 44  8e e0 c0 86  64 71 2b 6b  a1 e9 23 73 
+0150: 4c db 47 3e  46 14 82 34  a7 ce 66 e2  cd a7 7d 26 
+0160: c0 e5 ba bb  bb fe 72 3f  e8 0c 7f ab  00 4b fd 99 
+0170: cc 43 75 88  0d da da 77  f7 0a ad 53  18 c2 f8 eb 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   60 25 03 e4  66 25 12 5a  72 da 86 58  7d 8c 1f 79
+| pad_len calculated: 350 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "3072", 384) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "3072", 384)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-3072.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOnXoqI3/5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 69 
+0010: 01 ae 84 89  13 88 70 3c  b9 7c 17 bb  38 30 a4 00 
+| signing hash with RSA Key *AQOnXoqI3
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 384
+0000: 0a 2d 29 dd  3e ca 34 b1  b1 e8 77 87  0f 36 c2 07 
+0010: 54 89 a9 d2  75 aa ea dc  8b bd dd 4c  61 ad c6 dc 
+0020: 52 62 9a f1  3d dc 31 de  18 47 aa 94  7a 42 9d f9 
+0030: 31 ad bd e3  7a 0f 74 be  65 2b e0 69  b6 53 5c 74 
+0040: de 53 fd a3  91 cd 99 6c  35 16 ca 94  27 b9 61 5d 
+0050: 47 73 ab 82  54 97 75 88  b4 6f 9b 74  1b a5 3c 86 
+0060: a8 b2 cb 6c  a9 4b f8 f8  6e 94 d2 4b  62 81 c2 50 
+0070: f0 9e 67 f5  73 28 09 a9  af ed 1d 8c  43 06 29 70 
+0080: 4b 8e 37 04  b1 6b 96 e2  42 6d a2 5a  0c f3 cf 2e 
+0090: 1c ff 60 8a  b4 f4 cf 72  72 a5 29 de  df 3d 9e 22 
+00a0: 24 2e d3 fa  bd 1c d9 66  88 a9 46 3c  02 e2 ea 09 
+00b0: 27 e4 df c0  73 89 05 c9  00 53 ff 33  43 0f 23 5c 
+00c0: ca 34 9e be  50 47 06 71  6a a0 26 d1  11 a3 5f 3b 
+00d0: 4f cf 91 68  4f 73 3e c1  a1 ee dd 00  9c a6 0c 58 
+00e0: 23 f4 b8 a2  1b 8e 10 bb  e6 e7 a8 74  3e c1 f8 ad 
+00f0: 38 50 63 9d  e6 2e 3c 7e  cf cb 66 40  8c 7a dd f8 
+0100: 75 c7 9d 26  82 a6 17 8e  3c 36 4a 39  3c 94 81 50 
+0110: cc 6b 12 a0  a9 c4 38 36  bd 63 59 e3  16 1e cd 54 
+0120: bc a3 e8 32  0d 00 a1 7f  b7 81 31 34  46 15 34 86 
+0130: b8 69 65 15  66 da 27 5e  04 9e de db  58 2a 5c 8b 
+0140: d9 75 91 60  b0 26 65 be  2b 5f 9c fd  82 61 0a 3f 
+0150: 57 e8 6a 1c  1d 3f fc 41  e1 e7 00 c3  65 00 d9 f8 
+0160: 1f c6 16 de  4b 09 5c 91  6b 74 5f ed  85 b5 d5 3e 
+0170: 62 0f 15 d1  7a 61 79 d1  05 f7 0a ff  eb bb 4c dd 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   69 01 ae 84  89 13 88 70  3c b9 7c 17  bb 38 30 a4
+| pad_len calculated: 350 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "3072", 384) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "3072", 384)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-3072.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQOnXoqI3/5780 245B 6743 E13C 927A 05EC B82F 6606 1F1D B125
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 32 
+0010: 60 83 46 d1  e1 5b 69 5c  53 ca f1 2c  8a 85 86 00 
+| signing hash with RSA Key *AQOnXoqI3
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 384
+0000: 88 f9 40 49  80 74 a4 91  a7 93 8c 0b  f6 bf 4d 9a 
+0010: 30 65 a6 7c  29 e3 b2 f7  2f a5 b9 b4  b6 34 48 ab 
+0020: d7 bc f7 b8  5e 73 8d 24  21 85 29 d8  4c 2c 4b c3 
+0030: 3e 80 73 73  db 70 0f c5  4f 5f 48 3d  95 59 00 1b 
+0040: 9f df f9 57  24 7e c6 1d  41 89 7f 4a  73 04 35 a6 
+0050: 15 82 11 e7  5c 65 af a5  e4 70 40 08  d0 3f 6e e7 
+0060: 16 dc c6 59  9b d5 76 ac  62 57 ac 62  f1 8b b9 7e 
+0070: 54 68 84 74  6c ec ad 96  b5 61 41 73  22 75 a7 ad 
+0080: bc 62 d0 25  84 8d ba df  c8 d8 08 34  a5 7f 02 65 
+0090: b4 fe a4 64  b5 6a af b5  be 9d 86 37  1f 21 75 64 
+00a0: 47 63 3a f9  e6 16 79 5f  0a 13 6c a0  73 77 59 7c 
+00b0: c4 99 0e 50  56 72 74 f8  2a 4b ab 9d  ce 22 9d b0 
+00c0: d6 ee b6 f1  7a b7 15 14  39 2a 7a d2  a5 fb 1a 0b 
+00d0: ea b9 02 20  17 f4 95 08  b8 38 79 67  06 02 59 4a 
+00e0: b4 71 b1 b0  e2 59 9f 65  ed 47 58 64  ed 1b e7 06 
+00f0: 03 87 f9 d2  cb 02 bb 63  57 1c 80 13  38 dc 07 fe 
+0100: 38 82 f3 06  35 c8 2b 31  fc 80 87 43  92 79 f4 c9 
+0110: 14 7d 2c 43  81 6e cf 6e  a0 55 fd 9c  cc 41 4a d7 
+0120: 1f d2 37 cb  7a 00 d5 52  01 0b 45 b1  0c ec b1 d7 
+0130: d4 22 bd 25  d9 df f9 0e  57 4c cf af  c7 99 60 3c 
+0140: 62 41 30 6b  11 40 dc 1e  ac 50 33 79  c3 ea 7a 4a 
+0150: 76 f4 19 10  a8 b2 b1 c4  04 1c 25 c3  5b 78 e2 fd 
+0160: a2 dc 6a 11  78 1c 96 a3  23 8e 3d 1c  38 e2 11 4e 
+0170: 5f bd 7b c0  1b 40 d5 aa  1d 5a ed 70  1d 1a 12 2d 
+0180: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  32 60 83 46  d1 e1 5b 69  5c 53 ca f1
+|   2c 8a 85 86  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 350 hash_len: 31
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "3072", 384) = (3) "3SIG padding does not check out"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "4096", 512)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-4096.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 28 
+0010: 39 5a c1 10  f0 64 72 c9  bd b9 5b 5f  87 19 b5 00 
+| signing hash with RSA Key *AQPRudGr2
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 512
+0000: 16 b2 ba 6c  87 b4 93 95  8e 4c 48 72  9b 0c 36 40 
+0010: f5 8e 6a 6d  c0 11 57 91  98 ae 09 b2  af 31 cd 85 
+0020: 1d 9a 27 01  d0 99 d2 02  0a a7 3a 90  ca 54 b8 21 
+0030: e8 44 29 d9  d5 08 39 cb  61 eb 38 d9  24 09 4f 7d 
+0040: 9c 5c 84 e7  47 ff d9 5a  b7 7a b9 a9  20 ec 56 a3 
+0050: ae c3 22 69  f0 48 2f 3c  60 09 18 27  82 8c e8 d5 
+0060: 5e 4e 35 0d  e6 9b a1 8c  7c 89 8e 3f  94 5d 76 f5 
+0070: 84 5e 23 85  bd de 67 01  85 63 44 de  dc 27 7e 5f 
+0080: 7a ca 3c 8f  9c d7 c4 dd  93 cc 06 61  1a 43 60 f1 
+0090: 0d 12 cd a7  67 71 0e e2  a6 85 2e 64  6a 0e 4a 60 
+00a0: 0e 11 df 2b  dd cd 7b 51  72 ab cd 33  89 e0 c0 7f 
+00b0: 46 29 dd 69  c9 c3 e6 ff  d2 23 ba eb  b3 18 b8 3b 
+00c0: 1f 68 10 f9  bb 75 83 9f  d9 a6 51 38  dc fd 44 17 
+00d0: 4c 6a fb 7d  bd c3 0f 21  9a 32 60 0b  15 b1 4d 6d 
+00e0: 31 ec aa 90  2e 99 94 e2  dc 78 06 cc  e0 85 88 f5 
+00f0: 6d 61 83 28  50 38 f4 e4  60 1f 0c e9  ae e7 01 55 
+0100: a9 ff 7e f6  22 c7 09 51  ef 3d fb f8  b5 52 e6 bc 
+0110: e6 8b c8 05  9f 7d b2 80  ef bd 64 e5  f3 1c 11 72 
+0120: bd 9d c9 f9  85 e9 3e 1f  6a aa 3f 22  a2 b1 3e 81 
+0130: ca 3f 09 a9  4b d7 e2 03  33 8f 23 c0  4f 3a 10 15 
+0140: 96 28 1e b0  56 7b fd af  29 20 fd 7d  05 ce ff 37 
+0150: f3 b7 74 01  a9 bf 38 18  9c 3d c1 b8  22 c3 41 40 
+0160: 77 58 49 6e  67 68 6f 38  36 e5 15 39  0d bc 5e ba 
+0170: fd 4b ed 92  6d 2b 18 3c  06 d2 fe 2d  d9 83 d1 94 
+0180: 7e 69 2a d4  f1 89 19 ed  85 1c ea d3  72 77 06 23 
+0190: 53 69 00 2c  7e e1 a2 b0  40 66 9b ee  eb 80 4f 83 
+01a0: 97 68 09 1b  14 a1 02 88  33 0d 08 da  7e 44 51 fd 
+01b0: 00 16 34 e2  a4 2e ec e0  13 b5 75 fe  13 94 e4 c0 
+01c0: 67 17 3c bd  0e 49 d7 1d  46 5a 84 33  f5 13 f3 86 
+01d0: 45 af 3d 31  60 bb 73 63  5d 66 f3 8d  ef 8c 0b ad 
+01e0: fe 6e bd c1  ee c9 a2 46  0e b0 05 78  8b 2b af b0 
+01f0: c7 3e fe da  96 0b 26 5c  e2 eb f6 24  d3 f1 59 6d 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   28 39 5a c1  10 f0 64 72  c9 bd b9 5b  5f 87 19 b5
+| pad_len calculated: 478 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "4096", 512) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "4096", 512)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-4096.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 7e 
+0010: 0d 55 1b 6f  bf 69 e0 60  53 91 2a 5e  e7 e5 9b 00 
+| signing hash with RSA Key *AQPRudGr2
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 512
+0000: bc cd 63 b3  cb be 0d 45  d4 d8 c5 2c  f3 ad 0e b5 
+0010: ea 06 fa 20  61 b6 6f e4  13 36 23 60  8f 68 de 96 
+0020: de 15 d4 e1  27 60 e8 05  f1 26 09 92  86 39 15 fb 
+0030: d3 e5 25 f2  72 b5 74 46  39 ff 1c d9  8d 44 e0 d0 
+0040: 76 ee a7 e2  65 22 d6 15  d1 12 09 8d  40 94 b9 4b 
+0050: 30 69 bf a8  94 ba 92 8b  f6 72 c0 3f  43 eb 30 08 
+0060: 9d 9d e2 35  8d dc b9 aa  c6 f7 23 e8  52 da 46 0d 
+0070: d5 3e 0d 52  60 ae 6d fb  a1 6c 9d ad  46 47 e5 14 
+0080: f8 d9 a5 e4  e2 b9 e5 0c  57 e1 bf 5f  f2 d9 d2 52 
+0090: 6d 03 ec dd  cf 1c 02 6e  e5 5b 04 f3  ab f9 52 4d 
+00a0: 0c a2 ae 45  0d bf ef 9b  be c0 43 94  ff f8 9d 5a 
+00b0: 59 72 54 30  b4 e2 6e f9  04 52 f0 26  f3 93 6a 80 
+00c0: 9a 71 6e 6f  c7 30 c7 d1  80 9b 2d c4  e2 74 0c 8e 
+00d0: 17 ca 5c b3  32 45 49 14  87 79 33 41  a8 7b d0 d7 
+00e0: cd 40 fc ea  25 94 7c 15  69 1d 37 d8  94 ff 0b 1f 
+00f0: 2a e6 a2 91  ec c6 be b9  98 85 45 cb  bc 77 f8 27 
+0100: fa 7f 94 1d  05 60 95 53  b6 dd 31 7a  1a 90 86 0f 
+0110: a1 e0 68 38  db 13 a2 e0  82 ac 57 a1  d3 a4 0c 9e 
+0120: b9 87 c8 04  17 4c b3 7d  e6 e6 e2 87  39 7e cb 32 
+0130: bc f8 ce a9  90 cc 61 94  37 56 54 ac  85 fc 78 6b 
+0140: 7a 0a 32 3e  3a 83 03 5d  08 51 a7 94  45 ba c5 f1 
+0150: 7f 13 2d 41  8d 08 2a 68  0a 77 9b 38  bf 09 64 1f 
+0160: 3c 07 b1 41  55 48 7c 68  f6 28 cb e1  7f 3a 81 66 
+0170: ae 0d c5 3f  49 ea 22 8b  2f 10 a1 be  74 20 34 aa 
+0180: 78 e3 bb c2  63 1f 8f d7  4f 5f 73 d3  36 bb 00 86 
+0190: ae 54 a1 91  a7 b0 bd 37  38 09 c7 9c  d2 cd d1 63 
+01a0: a2 20 58 c1  0f 31 aa b3  a5 ba e0 0f  c9 e0 4e 39 
+01b0: 31 48 6e 80  83 f8 53 9b  99 9d 1d 17  e7 19 fd 40 
+01c0: 8d 26 a2 34  f9 08 07 0c  48 2c 9b ac  28 0b 9e ba 
+01d0: 94 1f 84 28  5e d0 63 0e  4e d8 77 c0  94 05 53 5d 
+01e0: 9a 29 94 6e  7f a0 4d 26  d5 9c b1 7a  d8 2d 58 45 
+01f0: a2 de 15 53  91 5a 59 93  9b ee 51 c4  c0 e1 ed a8 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   7e 0d 55 1b  6f bf 69 e0  60 53 91 2a  5e e7 e5 9b
+| pad_len calculated: 478 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "4096", 512) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "4096", 512)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-4096.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 3c 
+0010: fa d0 66 84  7e 49 f2 f2  a6 d4 90 77  cb 9e f4 00 
+| signing hash with RSA Key *AQPRudGr2
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 512
+0000: 05 f2 1f ef  a9 c8 84 9a  d4 e3 d1 d6  0a df bc d2 
+0010: c3 90 da 16  60 c1 c8 fa  ca 5e ac 71  a9 7b ab bb 
+0020: c9 0e 25 0d  2e 8f 23 b1  3d c8 0d 96  96 3b 5b e7 
+0030: 75 64 c9 b1  55 08 29 bf  08 61 4e e8  e4 22 c4 dd 
+0040: af 0e a8 1d  32 84 eb 97  49 a0 a7 aa  44 b4 64 45 
+0050: 77 29 df fa  17 8b 8f 46  d4 8b 6d b4  30 7f 91 12 
+0060: 27 d9 32 8f  db 8a 62 02  8a fd ea 61  0f c4 79 9a 
+0070: 4b b3 4e 1b  e3 08 63 98  75 d3 77 52  02 60 2c 57 
+0080: 01 cf 4e 5c  a1 3a 5e 83  71 e0 25 ef  1b 87 d0 13 
+0090: c5 89 02 45  5f 12 ce 8b  56 91 a7 e3  1b ba 99 85 
+00a0: 4e 18 e9 2c  c7 9a 38 a3  ed b9 bc 34  5a e9 15 db 
+00b0: a8 3f 59 b5  39 ae b5 86  b5 60 63 ff  9c d1 fd a0 
+00c0: 77 69 51 84  03 5b f2 d7  20 9c 40 f3  c9 34 1f 37 
+00d0: 3b d9 44 41  b6 5f cf 08  f9 9d cc 02  57 36 9e 12 
+00e0: 03 37 c1 10  3f 67 ab 98  a7 e2 df bc  46 10 ec 4a 
+00f0: ab 0a 9b 5d  92 10 44 1c  58 e7 de be  1a 4e 39 9f 
+0100: 70 a5 82 35  23 f9 96 ed  d4 b9 91 04  7e 87 19 d4 
+0110: 0c 99 1f 73  2e 28 ba d5  fb d3 e4 5f  02 b2 30 f9 
+0120: 2b bc c6 83  fd 7e 84 ad  12 85 18 72  f6 08 75 6f 
+0130: 26 88 b4 e2  ac 66 13 f1  08 5b f3 59  aa 8d 49 7d 
+0140: a2 6e fd 17  b1 ce 18 df  30 c4 a9 02  ed 9e 21 35 
+0150: 2f 16 90 09  e4 61 35 63  d9 fe 9a f9  75 6b 9d 0b 
+0160: b4 73 a1 a9  6b d4 ae 1d  ba 8f f9 7e  91 51 25 3c 
+0170: a7 4c 6b 70  40 bf df d1  99 e5 8a 34  88 06 cd b6 
+0180: 99 a0 7f ba  af cf 44 9d  12 dd 4a 2c  ec 88 14 97 
+0190: 0c b5 af e7  40 4e 04 08  39 eb 29 9d  81 e1 5b 92 
+01a0: 43 02 af 18  f5 83 c0 1c  f1 5e c4 8e  af c2 e8 ee 
+01b0: 19 1c 53 6f  87 3a aa ee  27 f4 b9 c2  c6 86 0a a5 
+01c0: e8 6f 4e be  d3 02 fe e4  f5 ee 2a 42  8d 48 ec 5d 
+01d0: ff bd a9 3b  21 5c bd 60  ff 82 a2 2f  88 4d 24 1e 
+01e0: 9d b0 30 35  0a 10 3f 42  90 66 e0 c9  59 c3 7a 9f 
+01f0: 98 2e 4f 87  91 4a f5 d8  de 4f 9b ed  21 fa 65 b3 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   3c fa d0 66  84 7e 49 f2  f2 a6 d4 90  77 cb 9e f4
+| pad_len calculated: 478 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "4096", 512) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "4096", 512)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-4096.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQPRudGr2/1510 7B44 E8A8 49E1 0BB1 7826 9481 A38A 90D7 C462
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 e5 
+0010: d8 2b 57 8b  e7 2b b9 f5  18 80 84 b8  cc 93 14 00 
+| signing hash with RSA Key *AQPRudGr2
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 512
+0000: ad 4e c7 aa  32 21 d5 de  24 6b 89 a4  09 9f 35 3f 
+0010: 7c 08 e8 a2  39 4f 27 cc  f6 7d 71 72  26 ad 22 65 
+0020: 47 d3 a6 66  c7 1a 5e 69  b7 0e f6 c6  45 24 63 eb 
+0030: 71 fe 62 b2  39 b2 98 f1  c0 a3 ad 93  e2 58 59 ff 
+0040: de 80 40 e0  d9 d7 28 7f  4b 8c 99 e2  2f be 27 61 
+0050: 68 07 2c f1  e2 dd 21 99  6f d2 57 1b  4b aa b9 9d 
+0060: b9 90 e6 20  c4 96 1c c3  dd 91 c2 7c  60 bd 18 f6 
+0070: 60 3a bd b5  1b 55 a8 11  a2 4f 33 9c  03 43 85 dd 
+0080: 2b d6 e6 0b  4c af b6 7a  25 4c 17 28  e5 d9 bf 58 
+0090: 55 02 c3 46  2d 23 9a 38  86 be 20 bf  00 9d d9 5d 
+00a0: bd 83 ef 76  8d ca 5a ab  d1 20 ea ad  a5 c6 b0 e8 
+00b0: 6c ea 49 e8  45 a3 05 c5  d6 aa bf 4d  fa 77 f6 7b 
+00c0: 65 88 6a a3  8a 07 fb c1  aa 76 7d c5  d6 4a 23 50 
+00d0: c4 a8 08 cd  6b 51 8d d1  5c aa d0 59  c1 d0 30 85 
+00e0: 93 5f 0b b2  ff f2 d1 4f  c9 b2 44 88  c6 5f bb 2f 
+00f0: 24 64 f8 a9  bf 46 13 4b  a6 e4 7f 44  e1 2c 46 bf 
+0100: 45 55 b7 bc  3b d5 b2 f7  24 ee e8 ba  b3 9f 43 17 
+0110: 7c d3 0d cb  7a 92 07 c9  da e9 8f 04  dc 81 86 d7 
+0120: 44 ed 46 69  85 9d 13 46  f7 25 79 2b  be d5 14 57 
+0130: a4 1f b0 82  77 28 5e 59  66 e3 53 71  c0 19 0d a4 
+0140: b2 16 19 64  0a ae 6a 06  1d ac 5f 24  fb 90 87 aa 
+0150: 8e 14 18 5a  43 fd 90 ea  0a a7 82 2d  fb 78 e0 d4 
+0160: 5d ce 40 e8  9a 6f 00 48  3c 2f 80 83  b4 18 8d f5 
+0170: ca f8 8b 60  2d cb 5f 1d  31 16 f2 de  78 78 23 d0 
+0180: cf 5e e4 48  09 48 be f2  b7 81 22 b1  25 d7 f5 49 
+0190: 19 63 45 ed  fa 17 26 9f  9f e1 99 7f  26 96 38 d1 
+01a0: d3 5d 35 d1  36 91 57 ec  67 d3 2c 70  83 1e 4c 1a 
+01b0: 23 c1 4f 10  73 09 3a 54  e3 c7 e3 f2  f7 8d 75 c3 
+01c0: 6c 5f 8f 92  6e ba b1 7b  a3 a3 98 17  b9 98 b0 41 
+01d0: 6c 87 80 e3  49 aa 5b c1  2c 1a 55 32  38 f0 b9 24 
+01e0: 74 e2 ca eb  e1 e6 72 7e  56 6e d7 dc  33 ec c7 79 
+01f0: 1d fb 87 e8  28 53 df 89  d2 86 0a 3b  44 ea 7a d0 
+0200: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  e5 d8 2b 57  8b e7 2b b9  f5 18 80 84
+|   b8 cc 93 14  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 478 hash_len: 31
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "4096", 512) = (3) "3SIG padding does not check out"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-first-pad-byte", "8192", 1024)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-8192.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQNvWxgGb/2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 77 
+0010: 4c f3 71 8e  95 ed 5c 58  5c 2c d0 02  a8 dd ba 00 
+| signing hash with RSA Key *AQNvWxgGb
+applying signature corruption 'zero-first-pad-byte'
+signature_buf: 1024
+0000: 62 8d 96 40  e5 6e 29 0c  a2 db b4 96  4f df c5 48 
+0010: f2 8e 05 d5  5f 52 83 a4  38 1b f6 77  d2 59 12 33 
+0020: 7a b4 28 89  05 49 7d 0f  c8 6a 03 8d  57 7c 24 a1 
+0030: 30 ae 00 48  0a 12 6e db  ec e0 1c 49  e4 25 c9 dc 
+0040: 40 55 a2 39  e6 ce b7 5d  2a 73 b1 15  e9 54 e2 d3 
+0050: 64 0c 48 33  d6 69 f3 5e  a1 4c 37 f7  c8 ad 0f 85 
+0060: 7a 69 28 7e  eb 16 ff 39  0d 81 b2 61  d7 92 70 6c 
+0070: 7b 96 2e e9  16 35 fe 39  1b 4f 79 39  ee 35 22 1c 
+0080: b3 9b 82 13  1b c1 5a 27  84 4b ac 71  f1 86 52 da 
+0090: e6 15 85 93  6f df f3 0d  b9 16 7d c9  ce c7 91 34 
+00a0: 38 01 12 53  6a 9c d8 c5  e7 1e 2b ef  ad ef 5d 33 
+00b0: dc 24 e2 22  a8 7d 02 f5  9c 86 58 aa  c9 39 77 19 
+00c0: 00 a2 7f b8  9c 55 c0 56  5d 24 83 5a  8a fd b9 ad 
+00d0: 04 bf 9b 15  96 8b 62 49  e4 25 df 6a  18 f3 15 27 
+00e0: be f2 10 5e  85 c9 e1 ea  a8 9c 49 c8  be 0d de 2f 
+00f0: 35 52 65 3c  2f 4a 95 9d  54 14 52 c1  90 01 b5 e8 
+0100: 4e 9e de 14  a7 d3 4d af  40 a0 6a 1e  21 cc e2 75 
+0110: ef 28 15 51  f5 d0 5b fc  ac c8 ae ce  83 c1 3a 1b 
+0120: 45 03 38 df  0a a8 28 0e  35 50 5f d7  64 c8 aa 58 
+0130: 8d 89 cf 9d  57 6f 4b 34  8e 7c 1d b7  22 10 d6 5f 
+0140: 1c 67 50 77  b8 52 3d de  d6 b3 ab ec  a8 54 62 6d 
+0150: 79 6c 62 a0  b0 f3 3e 10  fb bb c9 e7  dd 66 80 f0 
+0160: 3a 26 8e 9f  bf 1b 0a e9  be 61 21 1b  c0 30 94 0c 
+0170: 3e 49 50 d6  11 58 44 fa  e8 af 66 b8  a4 a8 c9 92 
+0180: 28 51 91 3d  6b cd 70 73  15 4d 56 7f  91 06 26 e8 
+0190: 3d 8f fe e1  b2 85 26 7f  36 33 ff f8  2d 66 43 58 
+01a0: 02 9f 15 75  be c7 81 09  4c 5c 4a 57  28 90 48 3e 
+01b0: 72 fc cc 67  82 ef 3c 82  1a 2a 83 56  ec c6 1f ae 
+01c0: a3 45 a4 76  63 3f 2a 78  e0 e8 f3 a3  e4 bd 37 25 
+01d0: d3 62 67 9a  ea dd 0a 58  0d 6f a7 80  b8 29 3e 21 
+01e0: c5 33 a6 3d  82 93 8c b0  46 21 6e 6c  1c cf 97 66 
+01f0: 89 a2 45 75  99 50 6f 1f  f3 29 29 27  60 27 49 d3 
+0200: ec 99 36 e7  d4 35 0a f0  12 b1 7d 8c  ea e0 da 26 
+0210: ef 7d 9a fd  e1 a3 c3 0e  48 cb 96 1b  bc 7f fc 9c 
+0220: de cf 43 bb  c7 be 67 5d  fc d5 24 83  bf 9c f7 81 
+0230: 68 37 d1 47  da 12 12 d6  20 54 f9 1a  58 1c e1 82 
+0240: ce 56 2f 5f  56 57 e6 7a  d9 45 cf 73  1d 00 16 55 
+0250: d4 ea b0 bf  8b 96 da 16  76 57 a7 ad  c8 79 20 70 
+0260: 83 e9 15 67  ce c3 3a b4  21 3f 45 1c  27 ac f7 8e 
+0270: 8f ab d6 9d  1a 1a fe fa  20 66 d7 7b  0d b7 1a 07 
+0280: 20 6f 7f e1  65 67 7f 4b  af 0e be 60  98 d5 b8 8d 
+0290: f7 dc ca 8e  1f 3d 14 02  55 c3 41 7b  ad 36 3c 4b 
+02a0: 97 84 65 c4  8a 30 33 a9  7a d4 1e e7  93 eb 77 03 
+02b0: 7e 0b 09 6a  24 73 f7 4e  7a 5c 44 40  f1 5c 6f 5e 
+02c0: e3 0a f6 71  e7 d2 b9 23  df 59 71 a4  bd a0 61 bf 
+02d0: c1 0c b0 4a  b3 93 1f 01  58 d8 36 50  a7 32 0a bb 
+02e0: f9 27 f1 fe  00 ed a8 a9  ca 6a fb 58  18 c8 81 fe 
+02f0: aa d4 04 9f  cd 19 03 70  f7 25 bd 27  a0 5b cb ab 
+0300: b8 f7 63 73  3b 6e fb b9  40 25 2c 8e  81 3e c4 cc 
+0310: ad 9c c3 3e  3c cf fb ad  37 fc 71 c2  d2 10 71 55 
+0320: f6 62 0e 2a  69 c6 10 1c  8b db 7e 8b  91 67 fb 10 
+0330: d8 f1 55 58  6e 7e 39 84  05 96 a0 c4  08 44 35 14 
+0340: e7 6f 48 cf  c3 94 d5 a3  e3 d4 11 9c  82 50 b8 13 
+0350: 23 14 ca 14  41 f2 31 ed  c6 77 bf ad  24 b0 35 a4 
+0360: f7 e9 58 44  61 fe f2 c6  3d 5b 69 6a  3d 3a 96 25 
+0370: c2 d6 03 17  24 7f 27 57  49 59 e3 8f  a6 3f a1 b1 
+0380: e0 08 c6 82  1b 4a df ff  fd f0 1a a1  27 22 cc f9 
+0390: 75 e4 be 00  4c 3d 15 3e  57 38 0c e3  8b c9 ba 5f 
+03a0: e5 91 da 0d  e7 d6 47 2e  bf 12 93 81  03 7a e7 0a 
+03b0: d8 47 f0 af  d8 ab a6 53  1f 8d 63 db  08 82 2a 04 
+03c0: f9 c4 31 33  b5 69 3e 7c  cd b4 e5 22  6f b6 6f ec 
+03d0: 36 10 c1 46  27 de 7f 50  b2 c8 d7 6c  54 39 86 ed 
+03e0: 45 1d d3 72  2c 1e af 43  13 15 a7 5d  6f bd c9 b2 
+03f0: 41 17 ce 5c  63 3f 1b bc  32 25 a8 02  3b b2 4f 05 
+| verify_sh decrypted SIG1:
+|   00 01 00 ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   77 4c f3 71  8e 95 ed 5c  58 5c 2c d0  02 a8 dd ba
+| pad_len calculated: 990 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-first-pad-byte", "8192", 1024) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-last-pad-byte", "8192", 1024)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-8192.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQNvWxgGb/2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 ed 
+0010: 30 6f fb 81  80 e8 5b 07  81 8e 14 43  2b 0f d4 00 
+| signing hash with RSA Key *AQNvWxgGb
+applying signature corruption 'zero-last-pad-byte'
+signature_buf: 1024
+0000: 4a 50 58 34  ab 3c bd 9c  58 97 f0 fb  0b 23 53 b2 
+0010: d4 af 7f 68  22 fe 30 94  d8 31 fa 5c  f4 2f 16 04 
+0020: bf 3a 30 86  46 51 a1 be  c4 8e de 17  4d a6 c0 b5 
+0030: 39 03 a2 6f  4a d7 0b 05  c7 3d 0d bd  b2 b8 30 b5 
+0040: 19 0b 43 85  ed d8 44 94  52 90 30 70  40 72 7b 13 
+0050: be 50 e9 f3  14 e2 1e b3  35 5d d6 42  8f 81 d6 db 
+0060: b6 66 57 36  e0 67 ec a9  0c 8f 90 2f  bc bc e8 e7 
+0070: 0d a5 1c af  e9 8e 22 7b  0d e4 39 58  b2 92 02 69 
+0080: fc b7 c5 76  e6 3a f5 c5  63 dd 6f 09  d5 2d 78 68 
+0090: e6 80 79 8e  de a8 a1 d2  46 06 c0 74  18 23 f9 68 
+00a0: cf a7 10 e3  4d 26 51 ca  c4 39 42 ea  33 e9 fe 0a 
+00b0: ff c8 21 62  a3 3a 60 0e  31 2b 0e ba  66 ce 27 24 
+00c0: 99 b8 66 be  20 97 f0 ee  21 84 a8 5a  0d bb 91 ef 
+00d0: 22 12 79 03  b2 61 be 0f  ff a7 f0 4e  9e 3c 11 a6 
+00e0: 47 2a 43 f1  29 69 e9 89  08 1d 81 68  c9 0a fc e0 
+00f0: 80 b3 2e c1  bc f7 20 46  53 d6 1b 14  97 c3 75 a1 
+0100: 5a 68 aa 8c  26 85 45 ec  55 0b 50 d1  09 1b 6b 0b 
+0110: 55 c5 91 fb  c8 b9 7b 04  d4 50 0a 0e  77 78 bc 4f 
+0120: 4e d1 ae 8f  2a 95 11 05  20 41 28 d2  13 17 4a 0f 
+0130: 2e 10 88 6e  fc d7 36 83  7b 57 d1 ef  7b 56 b5 9c 
+0140: c6 c8 22 07  23 1c 8c e9  a5 16 e9 40  99 5d b3 a3 
+0150: f9 92 46 f3  ce 42 40 40  b0 8d cb 75  fb 68 24 8b 
+0160: 0d dd 1c cc  3c ba 43 9b  78 ab b3 38  e0 47 67 b0 
+0170: 68 43 8e 5b  c4 89 5f 1c  31 cc 2c b9  74 09 e7 c9 
+0180: f9 3f ec 56  15 a5 c0 37  6c 51 e6 bf  7c 86 81 4e 
+0190: 7d 56 09 c5  ad 7b f6 5f  31 d0 d9 25  b3 08 8a a0 
+01a0: ae 62 77 30  89 ed d2 36  cc 5f 24 ec  ef c6 67 7e 
+01b0: 03 21 11 b3  27 98 b6 93  30 4d 2b e1  71 a9 5d 59 
+01c0: e6 84 c6 8a  be 7d 0b 98  f7 b7 b5 4c  6f 66 3e 12 
+01d0: e1 dd c0 f9  a9 fe 87 14  0e 01 60 50  9c 72 75 67 
+01e0: f5 a3 bc 7f  07 51 83 78  7b 48 ec d6  0d 33 6d 38 
+01f0: 06 41 07 c7  54 a5 22 09  33 d8 0b 8d  cb d7 f5 89 
+0200: 64 97 9c cf  9d 4c b4 3c  da 30 9d 37  b8 a2 26 bb 
+0210: 01 25 74 c6  9d f8 fa 65  55 a0 84 a2  83 df 50 34 
+0220: 13 11 3b ba  85 bf 25 20  00 eb 7e 97  1d b6 b7 ba 
+0230: 55 99 e5 42  1c d1 85 cc  07 9b fb a6  0f f8 26 26 
+0240: 1a ac d7 d6  7b fe 50 b9  ca ed 87 21  a5 b4 69 11 
+0250: b6 bb ae e0  32 eb 25 d2  dc 03 bc 24  c2 14 bf 09 
+0260: cb 57 81 af  c2 df 02 9f  09 63 ad 8f  21 91 fb 70 
+0270: 15 0a 69 9d  4b 56 da 2d  92 94 e2 79  04 60 be 3f 
+0280: d4 7f d6 c2  2a a9 f9 5d  81 5d 39 5d  e6 d9 46 e6 
+0290: 09 84 25 03  3f 45 ce f6  e1 bf d3 70  92 76 47 ff 
+02a0: 8f ee bb f9  b0 92 ca 24  76 65 b2 13  93 22 81 11 
+02b0: a6 fa 02 9d  16 0f 78 fb  47 da 93 45  6d cf 5a 34 
+02c0: 56 bb 71 9a  67 e1 42 92  2b e5 3b ba  48 c6 42 a1 
+02d0: 61 b4 f0 45  23 ee d0 41  f2 81 b5 96  02 fe 22 06 
+02e0: a6 23 fe 59  18 d4 d9 1f  34 cb 88 f3  43 d3 02 cf 
+02f0: ba 05 a2 13  58 c7 30 26  df 11 cc 55  84 e7 e7 fe 
+0300: 74 cb 33 ee  0c a2 f5 30  3d 41 f0 62  e7 bf 52 74 
+0310: 81 00 5f 33  75 65 82 b1  bb 8f 4f 60  83 41 e1 9a 
+0320: 95 af 5d e4  2e 71 7f 54  d3 e6 32 1c  2b e4 60 5a 
+0330: 3a d1 69 e7  2c 05 6f 6c  94 2e 89 46  98 d5 03 87 
+0340: 3d de 40 30  e3 a2 d3 26  3e 71 42 70  cd 26 90 be 
+0350: 5f ab 1b 51  23 5c 00 30  61 c0 75 32  3e 56 70 29 
+0360: cc 95 fe cd  36 87 4f fb  f3 79 38 70  f4 fa 98 88 
+0370: 91 3c eb 8c  16 d5 a4 6c  ce 7d c5 ea  c9 e2 5e ca 
+0380: 84 07 16 47  50 3a 18 9f  37 69 37 58  10 ba 27 5a 
+0390: 11 a1 77 48  b9 a0 b9 06  fd 8f ae 92  52 c5 bc 11 
+03a0: 6f 7e 35 b3  31 c6 b6 cc  31 98 06 75  b4 71 69 f4 
+03b0: eb 53 d0 1c  62 4c b9 f4  c5 92 e1 e5  12 56 7e 51 
+03c0: de a4 84 c8  cf 5f 3b 39  b2 32 b8 82  3c f5 14 49 
+03d0: 95 bc f4 f1  c8 c9 98 3d  7d 77 34 ff  fc 92 17 5c 
+03e0: 08 5f 88 16  06 31 81 69  f9 bf eb 2f  40 e5 16 7b 
+03f0: 25 ab fb 0e  90 3d 62 01  f9 e7 62 b6  0a be f1 21 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   ed 30 6f fb  81 80 e8 5b  07 81 8e 14  43 2b 0f d4
+| pad_len calculated: 990 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-last-pad-byte", "8192", 1024) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("zero-all-pad-bytes", "8192", 1024)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-8192.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQNvWxgGb/2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 bb 
+0010: 97 7f 2b cd  6d 54 78 b9  83 e5 30 bc  08 89 d3 00 
+| signing hash with RSA Key *AQNvWxgGb
+applying signature corruption 'zero-all-pad-bytes'
+signature_buf: 1024
+0000: 07 71 c2 19  5f 90 ec 6d  87 ce 3d 72  ae 3b ef 65 
+0010: 60 3a cc 1d  ba 3c f4 31  dc 99 4e d9  69 59 01 74 
+0020: 1c e1 ea de  af f5 22 4d  a7 0e 43 b6  26 b9 04 82 
+0030: 14 61 7c ce  b5 4b 4a 11  b8 24 ae ff  df ba f6 52 
+0040: 2e 02 61 92  a0 fb cd 2d  5a 9c 9b be  7e ce 4f 2b 
+0050: 77 83 9a 12  bb 95 ac 8a  da d0 59 55  fe f9 28 cb 
+0060: 93 fd 5f 62  4c 5e a7 5c  a5 ad a0 ef  11 f3 90 83 
+0070: 66 89 9e ed  de f1 23 b5  a6 97 46 d6  9f 40 5d 3b 
+0080: 1c 0e d3 f2  c1 c4 71 cd  63 f8 7b d1  d3 ea ae d2 
+0090: 19 02 a1 3d  c4 d6 d9 c9  fb 21 6d 94  39 98 0f 63 
+00a0: a7 c2 8c 5b  ef 0c c3 39  dd 49 b2 bc  85 0e 48 83 
+00b0: 1f 17 66 5c  e0 b8 e5 76  2f 07 e6 2f  59 b9 b1 99 
+00c0: 63 98 81 46  c1 61 0a bd  cb 66 41 05  2c 57 1f a2 
+00d0: 31 e8 e2 ab  41 ba 1c 5d  ac df 8d da  a9 8c 3b 30 
+00e0: 85 f1 72 f2  7e 32 61 0b  7c 65 31 bc  24 ae aa 78 
+00f0: 66 26 55 bf  2e 74 cb 2e  4b 90 c9 37  1e 4d fa 18 
+0100: 9e 86 f4 fd  a2 fa 4f 74  52 d1 d2 3a  fc 3b 77 79 
+0110: e4 f3 7d ba  16 0b 7e bd  ee ba b9 b7  11 20 b7 93 
+0120: 50 e2 e2 cb  93 99 1c 66  74 ac 64 7a  9b e0 ab 17 
+0130: 8c 27 8e c9  a5 7a 26 6f  e9 34 56 02  2c 41 9d 1d 
+0140: cc a4 ad 0b  9c 6d a3 8d  8a 16 7d 69  60 74 86 f7 
+0150: ca 05 78 29  1c 43 ff f0  d8 d2 5a 3f  41 c7 e8 87 
+0160: 72 7b 5f 3b  ae d4 23 97  51 2f 38 42  16 ed c4 e9 
+0170: e6 3d a0 e9  be 77 11 d8  3e df fd 14  72 14 d9 5c 
+0180: 24 ca c6 5d  56 91 a2 a0  2a f1 e8 6e  17 7f 35 5d 
+0190: 5d 0e ca 8c  cb bf 9a 8f  12 f8 3e 0d  6d f5 c8 39 
+01a0: db 36 dd 1e  b4 3c fd 2d  88 13 9b 3f  89 9a 4d 6d 
+01b0: 69 b2 1a 84  2d bf ee e1  9a 3a 15 e5  a1 64 3c 68 
+01c0: c2 55 8f 06  b8 48 b0 3f  9d a2 2e 20  da e2 0d aa 
+01d0: 92 2a 31 17  d8 92 53 ac  18 14 e7 b4  7d 8e 5a 4e 
+01e0: fb c5 4e 2d  28 12 5a 57  eb e6 01 9c  69 f4 2d db 
+01f0: 7a fd 49 fb  3a a0 22 dd  92 8a 98 c0  1b 0a 6d 0e 
+0200: d4 a2 0a e0  6d be 32 75  bd 47 21 f4  24 47 46 2f 
+0210: 24 dc 3b 54  62 9c 8b 82  d4 2f a0 e3  65 9e 19 55 
+0220: 6a e2 fa 2c  5f ea d8 06  9d 1f 37 ac  c5 c1 6c 6e 
+0230: 84 c4 b7 45  25 41 7a 69  97 75 63 53  79 8d 50 90 
+0240: f3 5d aa d8  bd 27 88 64  48 45 e1 ab  fd 20 6e b4 
+0250: 30 5b 1a 55  7c 24 08 96  6b 64 2d d8  8a c0 92 f1 
+0260: 49 6e c4 ed  9c fa 1a be  49 36 77 41  f3 ce c8 69 
+0270: f2 94 8d 70  f8 45 83 df  7b 3c c7 2c  6b 22 24 47 
+0280: 89 09 43 40  e2 3d f6 8d  fc c5 1c f1  83 7f 84 11 
+0290: 85 b0 69 db  75 d3 cb 9c  f7 91 ae 2b  1a 78 a2 a6 
+02a0: 38 26 8a 76  0f 5c bc 7e  d3 bc 4f f0  2b f2 4d 4c 
+02b0: c9 3c 50 d3  ce 57 30 78  ca c9 75 03  ad 3d 3b a3 
+02c0: 08 48 b0 19  9b 61 62 cd  c6 8b 9b a8  49 1e 8d 14 
+02d0: e0 d6 f8 06  f2 9a d0 7e  08 f1 2b 61  13 d7 4d 9c 
+02e0: b5 e7 e8 75  c3 a2 b9 a7  4b 3e 68 76  dc d2 04 bc 
+02f0: 67 65 31 60  40 12 65 b1  f5 91 44 0e  1a 7c 8a 82 
+0300: 60 ae 85 e0  b5 88 0f 8e  2a 79 e5 f7  b5 24 a9 fc 
+0310: b5 86 02 ee  a2 7f 89 a5  c4 92 92 56  79 c7 b9 84 
+0320: b7 e4 9f 4f  11 88 9e f1  b2 f2 98 11  38 27 11 0d 
+0330: 8e 8a 4b 7c  11 97 b1 4e  0f a3 7e ff  2b 0c ac 18 
+0340: dc 48 ce 16  d0 34 06 40  d1 c1 4a e6  df 10 0b e7 
+0350: c1 9c 51 30  7e 9f 52 6a  44 c6 49 77  e2 81 77 16 
+0360: f7 d0 f4 e6  24 dd 6c 98  f6 04 ce 33  8a 0b 85 28 
+0370: b4 fc 07 a9  a2 e5 e2 ee  3d 6e e6 f6  e0 5f 9f a9 
+0380: 00 d3 3c ed  df 7d fe 76  9b c5 f3 09  0c 1c 5a 24 
+0390: b7 8f ed d9  6e 3b 08 cf  bb c8 f8 85  76 39 c4 47 
+03a0: 0a 94 b8 9f  a1 60 e9 84  8b 47 58 7e  75 2e c8 b7 
+03b0: f6 aa 78 3b  a0 60 98 f1  62 e2 66 ef  95 2b c2 5f 
+03c0: 5b dd ad 4e  cf a9 65 fe  af 36 d5 b4  0a 12 5e 49 
+03d0: ba 13 27 ce  c8 44 47 8d  2b 89 ab 2d  af ac f6 83 
+03e0: a7 e7 24 c8  a5 d9 8e 72  a8 e8 54 47  5b 23 c6 a7 
+03f0: f6 31 ed 25  99 b1 37 cd  b3 fb 1a c0  60 f5 8f c6 
+| verify_sh decrypted SIG1:
+|   00 01 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00
+|   00 30 21 30  09 06 05 2b  0e 03 02 1a  05 00 04 14
+|   bb 97 7f 2b  cd 6d 54 78  b9 83 e5 30  bc 08 89 d3
+| pad_len calculated: 990 hash_len: 31
+verify_signed_hash() returned=4, expected=4
+<<< verify_sig_key_hack("zero-all-pad-bytes", "8192", 1024) = (4) "4invalid Padding String"
+-----------------------------------------------
+>>> verify_sig_key_hack("remove-pad-add-trailing", "8192", 1024)
+./verifybadsigs loading secrets from "../lo02-verifysigs/key-8192.secrets"
+./verifybadsigs loaded private key for keyid: PPK_RSA:AQNvWxgGb/2261 C062 3BF3 9B01 18FC 4D47 C745 D20F 9DF2 8B24
+signed_len: 31
+0000: 30 21 30 09  06 05 2b 0e  03 02 1a 05  00 04 14 89 
+0010: b7 08 fe b4  d3 10 24 c5  49 5c 42 2a  ec c1 c7 00 
+| signing hash with RSA Key *AQNvWxgGb
+applying signature corruption 'remove-pad-add-trailing'
+signature_buf: 1024
+0000: 61 7e f4 30  e7 c3 93 6f  79 e0 4d 25  5a 5b 06 d0 
+0010: ef c6 73 b6  03 7e 54 ce  75 58 a5 c0  d4 3f 74 58 
+0020: de 58 5e 1a  4e b6 ad e7  f6 e9 c8 95  5d 65 b6 bf 
+0030: 07 52 b9 47  ac d1 2e a0  97 f7 62 b6  6b 2b d1 a1 
+0040: 09 76 10 8e  d4 58 37 d6  64 83 1e 80  6a 58 18 69 
+0050: a1 15 d7 88  58 d3 b1 3a  98 dc 42 dd  5d 48 22 79 
+0060: 6e 72 2e b2  77 6d 14 3d  e6 2d cb d5  d5 e8 bc ea 
+0070: 14 bc 6b 58  37 54 92 d2  1e 59 32 04  00 bc cf 4f 
+0080: 12 3a 9b 52  1d 57 94 d3  9c 20 53 0f  e3 e2 ff 30 
+0090: 80 ab 96 14  14 8a 40 09  02 c4 b8 45  60 85 67 b8 
+00a0: 61 e3 9c c4  83 e3 b8 2a  33 32 66 97  67 7d ed fb 
+00b0: 5a a5 11 7c  8a c7 1b 26  82 22 c5 f4  71 f9 e7 ff 
+00c0: 9c b8 3f b0  d3 99 b5 de  d1 88 eb 0b  72 ea 25 76 
+00d0: 93 9c 74 26  55 9f ac 08  54 cf 11 b3  75 89 38 a0 
+00e0: 0f 98 f0 d6  67 6e 6d 76  be 67 f4 3c  6e 52 7d af 
+00f0: 0e 67 15 ac  2d 00 49 0f  a6 fb 0f d0  46 71 d1 56 
+0100: d2 3a 2e 3b  96 d1 bb 8a  7e a5 3d 01  0a c1 e0 46 
+0110: 7a 99 27 5d  c2 24 b7 15  28 c0 d2 d9  c0 9a 58 df 
+0120: 8c be a1 f3  7e 20 8a 4e  18 54 59 40  71 56 82 84 
+0130: 4a 39 06 10  8a 04 79 c8  b1 8b e8 4a  46 b0 44 e3 
+0140: e1 60 8b 2b  7a 58 2a fa  bd 56 23 a2  64 0c 2c 63 
+0150: 1c 62 c5 92  0b 47 d0 c2  cf c9 7a 62  5e b2 cb 1b 
+0160: 52 e5 87 0b  cf c5 6f 22  3f bb 66 99  de b0 1f 89 
+0170: 22 09 99 24  57 f0 ad 06  f9 cf 4d 4e  c8 bb 1c a2 
+0180: 02 1d 01 1b  9d d0 f9 07  12 0a ee 82  c0 2c 32 04 
+0190: 8a 8a bf 34  d7 5f c9 f7  2f 68 3e 8e  4e 7f 56 ef 
+01a0: 91 7b 81 37  b3 e7 06 25  ae 7c 87 a3  66 73 ae 7a 
+01b0: 7f 45 70 af  51 ae ea 0a  29 be 09 50  85 ca 6d c6 
+01c0: 71 b4 7e 58  96 83 31 ec  00 31 5e 02  86 20 8e 43 
+01d0: e9 49 3e 55  46 42 9b c8  e0 b7 30 47  0a 9f 46 5b 
+01e0: 58 87 af e5  2c 0a 13 fa  d1 c6 6c 68  1a 4b 0c be 
+01f0: 46 cb 99 12  08 f6 ab cb  58 87 be e3  ad 35 25 34 
+0200: 45 9f ae 8a  e5 59 ed 48  89 52 00 92  e3 85 ea 15 
+0210: a0 9b 30 6d  b4 84 c9 91  c2 cf 06 64  c4 85 c4 c5 
+0220: ef 23 09 42  ed 8a 39 a2  93 87 27 83  d9 52 a9 79 
+0230: 91 49 ce 6f  0b 70 0a 21  29 69 5b 9a  22 db 9a f8 
+0240: 75 55 1a ab  ba 7e d8 f7  5b 0b dc d8  25 12 ea d2 
+0250: e9 88 00 04  c1 7a 36 3e  e3 6b 0c 30  b3 1f d0 2c 
+0260: 33 62 33 c3  3d 31 a8 c0  d8 26 6a 5b  fc 5a db f4 
+0270: 57 c1 7e ee  1c 30 77 27  40 d0 67 b2  20 4c 2b 0a 
+0280: 75 21 8c 4e  5a c4 bb 9d  5b 8c e5 d3  87 1d 53 c1 
+0290: b4 cc db 9f  71 af cf c5  40 14 4f ca  b3 5c fc 39 
+02a0: 5b 08 cf 2f  b6 a2 d4 c0  68 2c e3 75  fd bb 02 30 
+02b0: 81 bc f5 a2  8b 09 54 42  fa 8a fc 41  2f fa 7c a9 
+02c0: f6 5e e0 62  e5 09 fc 1d  6b 52 95 d1  5f c4 8f 3d 
+02d0: 4f 25 56 46  b8 4f d6 c6  43 bb 3d fd  30 11 9e f2 
+02e0: 48 00 81 eb  4b 2d dd 5f  12 19 9e 74  98 fc 90 11 
+02f0: f7 12 63 24  fa fe 33 73  9e 48 75 65  b3 75 a8 1e 
+0300: 97 61 8f 5e  90 fe 9e b2  fb 2f 59 4e  3c 6d 0d 23 
+0310: dc 93 10 2b  14 89 00 d7  23 30 fb 2d  c7 a5 c8 00 
+0320: ff 07 14 d6  e3 43 2a ec  e3 ed f4 50  9d a2 80 24 
+0330: 65 99 62 c9  f1 b2 aa 90  ce 13 69 91  33 37 3d b8 
+0340: b6 92 ce 40  6a 96 94 c0  f4 0f d6 53  cc 27 87 0a 
+0350: 8e d2 cf a7  0d af 3c 88  bb f4 21 af  37 05 2d 8e 
+0360: 77 00 33 68  b4 c5 9f 81  49 e9 21 1c  30 90 cd cc 
+0370: 78 16 8d cf  02 16 ec e5  8f b0 ce 48  87 a9 d6 a8 
+0380: 0e 5e 31 8a  87 64 46 46  9a e5 13 75  7c 80 c9 b0 
+0390: 0a d0 03 fb  18 78 33 fd  8e e7 55 71  18 7f 76 d4 
+03a0: 46 58 67 36  1c bf 54 99  af 1e 6a 81  78 a2 b9 2c 
+03b0: ac ed 0d e8  b8 27 2b f0  9a 70 48 68  7c 85 25 78 
+03c0: 2c d8 b7 f8  64 41 4d c2  1f 6f fa d7  70 54 40 62 
+03d0: ad 3f f0 60  76 45 0e 4a  34 39 41 00  f1 8a d4 88 
+03e0: cf cc f7 c9  8e 75 8f 36  6c 43 54 91  9b 4b 30 1f 
+03f0: 0c ad 16 7e  c5 dd dc 31  60 5b 22 db  03 2e d6 d9 
+0400: ff ff 00 00  00 00 00 00  00 00 00 00  00 00 00 00 
+| verify_sh decrypted SIG1:
+|   00 01 ff ff  00 30 21 30  09 06 05 2b  0e 03 02 1a
+|   05 00 04 14  89 b7 08 fe  b4 d3 10 24  c5 49 5c 42
+|   2a ec c1 c7  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+|   ff ff ff ff  ff ff ff ff  ff ff ff ff  ff ff ff ff
+| pad_len calculated: 990 hash_len: 31
+./verifybadsigs leak detective found no leaks
+verify_signed_hash() returned=3, expected=3
+<<< verify_sig_key_hack("remove-pad-add-trailing", "8192", 1024) = (3) "3SIG padding does not check out"
+tests completed
