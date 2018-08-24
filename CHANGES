@@ -8,6 +8,19 @@ v2.6.51rc1 (2018)
 
 Additional work to enable NAT-Traversal in IKEv2.
 
+v2.6.50.1 (August 24, 2018)
+
+This release fixes CVE-2018-15836 (a Bleichenbacher-style signature
+forgery which involves RSA padding attack)
+
+* wo#7449 . test case for Bleichenbacher-style signature forgery [Bart Trojanowski]
+* wo#7449 . verify padding contents for IKEv2 RSA sig check [Bart Trojanowski]
+* wo#7449 . added lo06-verifybadsigs test case [Bart Trojanowski]
+* b01-install test case will no longer spam with the environment
+  variables [Bart Trojanowski]
+* lp28-addrinfoserialize: IP address for moon changed to
+  192.139.46.82 [Bart Trojanowski]
+
 v2.6.50 (August 3, 2017)
 
 Bug fixes for RSA key size and other issues
