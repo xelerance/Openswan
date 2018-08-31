@@ -226,6 +226,7 @@ extern stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                                           , unsigned int tsi_n
                                           , struct traffic_selector tsr[16]
                                           , unsigned int tsr_n
+                                          , enum phase1_role role
                                           , struct state *pst
                                           , struct connection *c
                                           , struct connection **b_result

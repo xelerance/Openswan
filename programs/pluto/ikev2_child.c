@@ -592,7 +592,7 @@ int ikev2_evaluate_connection_fit(struct connection *d
         if(er->has_client) {
             subnettot(&er->client,  0, er3, sizeof(er3));
         } else {
-            strcpy(er3, "<noclient");
+            strcpy(er3, "<noclient>");
 
             /* here, fill in new end with actual client info from the state */
             if(er->host_type == KH_ANY) {
@@ -639,6 +639,15 @@ int ikev2_evaluate_connection_fit(struct connection *d
 	     * NOTE: Our parser/config only allows 1 CIDR, however IKEv2 ranges can be non-CIDR
 	     *       for now we really support/limit ourselves to a single CIDR
 	     */
+#if 0
+            /* enable this when debugging to keep compiler from optimizing these out */
+            __asm__ __volatile__("" :: "m" (tsi));
+            __asm__ __volatile__("" :: "m" (ei));
+            __asm__ __volatile__("" :: "m" (tsr));
+            __asm__ __volatile__("" :: "m" (er));
+            __asm__ __volatile__("" :: "m" (tsi_ni));
+            __asm__ __volatile__("" :: "m" (tsr_ni));
+#endif
 	    if(addrinsubnet(&tsi[tsi_ni].low, &ei->client)
 	       && addrinsubnet(&tsi[tsi_ni].high, &ei->client)
 	       && addrinsubnet(&tsr[tsr_ni].low,  &er->client)
@@ -702,6 +711,7 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                                    , unsigned int tsi_n
                                    , struct traffic_selector tsr[16]
                                    , unsigned int tsr_n
+                                   , enum phase1_role role
                                    , struct state *pst
                                    , struct connection *c
                                    , struct connection **best_c
@@ -729,13 +739,14 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
 	bestfit_p = -1;
 	best_tsi_i =  best_tsr_i = -1;
 
-        DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, evaluating base fit for %s", c->name));
+        DBG(DBG_CONTROLMORE, DBG_log("ikev2_child_ts_evaluate, evaluating base fit for %s against tsi=%u,tsr=%u traffic selectors"
+                                     , c->name, tsi_n, tsr_n));
 	for (sra = &c->spd; sra != NULL; sra = sra->next) {
-            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,RESPONDER,tsi,tsr,tsi_n,
+            int bfit_n=ikev2_evaluate_connection_fit(c,pst,sra,role,tsi,tsr,tsi_n,
                                                      tsr_n);
             if (bfit_n > bestfit_n) {
                 DBG(DBG_CONTROLMORE, DBG_log("bfit_n=ikev2_evaluate_connection_fit found better fit c %s", c->name));
-                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,RESPONDER,tsi,tsr,
+                int bfit_p =  ikev2_evaluate_connection_port_fit (c,sra,role,tsi,tsr,
                                                                   tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                 if (bfit_p > bestfit_p) {
                     DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit c %s, tsi[%d],tsr[%d]"
@@ -794,7 +805,7 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                     continue;
 
                 for (sr = &d->spd; sr != NULL; sr = sr->next) {
-                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,RESPONDER
+                    newfit=ikev2_evaluate_connection_fit(d,pst, sr,role
                                                          ,tsi,tsr,tsi_n,tsr_n);
                     if(newfit > bestfit_n) {  /// will complicated this with narrowing
                         int bfit_p;
@@ -807,7 +818,7 @@ stf_status ikev2_child_ts_evaluate(struct traffic_selector tsi[16]
                         bsr = sr;
 
                         /* now look at port fit, it might be even better! */
-                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,RESPONDER,tsi,tsr,
+                        bfit_p =  ikev2_evaluate_connection_port_fit (c ,sra,role,tsi,tsr,
                                                                           tsi_n,tsr_n, &best_tsi_i, &best_tsr_i);
                         if (bfit_p > bestfit_p) {
                             DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_port_fit found better fit d %s, tsi[%d],tsr[%d]"
@@ -849,10 +860,10 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     struct payload_digest *const tsr_pd = md->chain[ISAKMP_NEXT_v2TSr];
     struct traffic_selector tsi[16], tsr[16];
     unsigned int tsi_n, tsr_n;
-    struct connection *b = c;
+    struct connection *b;
 
     if(pst == NULL) pst = md->st;
-    c = pst->st_connection;
+    b = c = pst->st_connection;
 
     /*
      * now look at provided TSx, and see if these fit the connection
@@ -864,7 +875,8 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     {
 	struct spd_route *bsr = NULL;
 
-        ret = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n, pst, c, &b, &bsr);
+        ret = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n, RESPONDER, pst, c, &b, &bsr);
+
 
         DBG(DBG_CONTROLMORE, DBG_log("ikev2_evaluate_connection_fit, concluded with %s", b->name));
 	/*

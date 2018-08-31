@@ -26,6 +26,8 @@
 #include "demux.h"
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
 #include "keys.h"
+#include "pluto/connections.h"
+#include "ikev2.h"
 
 #include "whackmsgtestlib.c"
 #include "seam_debug.c"
@@ -144,8 +146,8 @@ int main(int argc, char *argv[])
         ttoaddr("132.213.238.7", 0, AF_INET, &tsr[0].high);
         tsr_n++;
 
-        stf = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n
-                                    , st, c1, &bestc, &bestsr);
+        stf = ikev2_child_ts_evaluate(tsi, tsi_n, tsr, tsr_n, INITIATOR
+                                      , st, c1, &bestc, &bestsr);
         printf("test case 1: %s\n", stf_status_name(stf));
     }
 
