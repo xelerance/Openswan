@@ -615,7 +615,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
 | parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
 | ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
-| ikev2_evaluate_connection_fit, evaluating base fit for maryjane1--jj2
+| ikev2_child_ts_evaluate, evaluating base fit for maryjane1--jj2 against tsi=1,tsr=1 traffic selectors
 |   ikev2_evaluate_connection_fit evaluating our I=maryjane1--jj2:fd68:c9f9:4157:3:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
 | prefix range fit c maryjane1--jj2 c->name was rejected by Traffic Selectors

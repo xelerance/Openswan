@@ -1071,7 +1071,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
-| ikev2_evaluate_connection_fit, evaluating base fit for rw-any
+| ikev2_child_ts_evaluate, evaluating base fit for rw-any against tsi=1,tsr=1 traffic selectors
 |   ikev2_evaluate_connection_fit evaluating our I=rw-any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=93.184.216.34/93.184.216.34 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
@@ -1085,10 +1085,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c rw-any, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=@moon.testing.openswan.org him=<any> (wildcard)
-|                   comparing to me=@moon.testing.openswan.org him=(none) (rw-any)
-|   concluded with rw-any
-|   checking hostpair 10.2.0.0/16 -> 0.0.0.0/32 is found
 | ikev2_evaluate_connection_fit, concluded with rw-any
 |    match_id a=C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com
 |             b=(none)

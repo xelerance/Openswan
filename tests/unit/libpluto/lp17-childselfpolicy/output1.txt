@@ -564,7 +564,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  0a 02 00 00
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  0a 02 ff ff
-| ikev2_evaluate_connection_fit, evaluating base fit for gateway--any
+| ikev2_child_ts_evaluate, evaluating base fit for gateway--any against tsi=1,tsr=1 traffic selectors
 |   ikev2_evaluate_connection_fit evaluating our I=gateway--any:<self>:0/0 R=10.2.0.0/16:0/0  to their:
 |     tsi[0]=0.0.0.0/0.0.0.0 proto=0 portrange 0-65535, tsr[0]=10.2.0.0/10.2.255.255 proto=0 portrange 0-65535
 | prefix range fit c gateway--any c->name was rejected by Traffic Selectors

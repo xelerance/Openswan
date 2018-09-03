@@ -579,8 +579,8 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ipv4 ts  84 d5 ee 07
 | parsing 4 raw bytes of IKEv2 Traffic Selector into ipv4 ts
 | ipv4 ts  84 d5 ee 07
-| ikev2_evaluate_connection_fit, evaluating base fit for mytunnel
-|   ikev2_evaluate_connection_fit evaluating our I=mytunnel:<noclient>:0/0 R=<noclient:0/0  to their:
+| ikev2_child_ts_evaluate, evaluating base fit for mytunnel against tsi=1,tsr=1 traffic selectors
+|   ikev2_evaluate_connection_fit evaluating our I=mytunnel:<noclient>:0/0 R=<noclient>:0/0  to their:
 |     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535, tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
 | ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
 |       has ts_range1=0 maskbits1=32 ts_range2=0 maskbits2=32 fitbits=8224 <> -1
@@ -593,10 +593,6 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
 |     port_fitness 131072
 | ikev2_evaluate_connection_port_fit found better fit c mytunnel, tsi[0],tsr[0]
-| find_ID_host_pair: looking for me=132.213.238.7 him=192.168.1.1 (wildcard)
-|                   comparing to me=132.213.238.7 him=192.168.1.1 (mytunnel)
-|   concluded with mytunnel
-|   checking hostpair 132.213.238.7/32 -> 192.168.1.1/32 is found
 | ikev2_evaluate_connection_fit, concluded with mytunnel
 | duplicating state object #1
 | creating state object #2 at Z
