@@ -30,7 +30,7 @@ There are a few packages required for Openswan to compile from source:
 
 1. The GNU Math Precision Library:
 
-   Debian package names: libgmp3, libgmp3-dev
+   Debian package names: libgmp-dev
    Rpm package names:    gmp, gmp-devel
 
 2. awk, flex and bison
@@ -38,7 +38,7 @@ There are a few packages required for Openswan to compile from source:
    Debian package names: gawk/mawk, flex, bison
    Rpm package names:    same as for Debian
 
-3. iproute2, iptables, sed, awk, bash, cut and possible other tools
+3. iproute2, iptables, sed, awk, bash, cut and possibly other tools
    are required at runtime.
 
    Debian package names: iproute2, iptables, the rest are usually there
