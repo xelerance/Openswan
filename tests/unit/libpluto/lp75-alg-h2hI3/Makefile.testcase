@@ -1,0 +1,16 @@
+# -*- makefile -*-
+CONNNAME=alttunnel
+ENDNAME=h2h
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/h2hI3.pcap h2hR1.pcap h2hR2.pcap 
+
+TESTNAME=h2hI3
+
+pcapupdate:
+	cp ../lp72-alg-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap
+	cp ../lp74-alg-h2hR2/OUTPUT/h2hR2.pcap h2hR2.pcap
+
+OUTPUT/h2hI3-statetable.c: ${TESTNAME}
+	gdb -q -nh -x extract-statetable.py
+
+

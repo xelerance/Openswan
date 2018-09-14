@@ -1,0 +1,11 @@
+This test case is an IKEv2 responder for the first SA, which then decides to
+rekey the (parent) SA (before the other end).  Thus this end is going to go
+from original responder, to initiator.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.
+
+
+
+
+
+

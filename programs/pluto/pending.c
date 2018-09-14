@@ -24,6 +24,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <arpa/nameser.h>	/* missing from <resolv.h> on old systems */
+#include <errno.h>
 
 #include <openswan.h>
 #include <openswan/ipsec_policy.h>
@@ -68,7 +69,7 @@ struct pending {
 };
 
 /* queue a Quick Mode negotiation pending completion of a suitable Main Mode */
-void
+int
 add_pending(int whack_sock
 , struct state *isakmp_sa
 , struct connection *c
@@ -89,7 +90,7 @@ add_pending(int whack_sock
 	{
 	    DBG(DBG_CONTROL, DBG_log("Ignored already queued up pending Quick Mode with %s \"%s\""
 		, ip_str(&c->spd.that.host_addr), c->name));
-	    return;
+	    return -EEXIST;
 	}
     }
 
@@ -115,6 +116,8 @@ add_pending(int whack_sock
 #endif
 
     host_pair_enqueue_pending(c, p, &p->next);
+
+    return 0;
 }
 
 /* Release all the whacks awaiting the completion of this state.
@@ -133,7 +136,8 @@ release_pending_whacks(struct state *st, err_t story)
     release_whack(st);
 
     pp = host_pair_first_pending(st->st_connection);
-    if(pp == NULL) return;
+    if(pp == NULL)
+        return;
 
     for (p = *pp;
 	 p != NULL;
@@ -162,7 +166,11 @@ release_pending_whacks(struct state *st, err_t story)
 static void
 delete_pending(struct pending **pp)
 {
-    struct pending *p = *pp;
+    struct pending *p;
+
+    if (!pp)
+	    return;
+    p = *pp;
 
     *pp = p->next;
     if (p->connection != NULL)
@@ -198,7 +206,7 @@ unpend(struct state *st)
     DBG(DBG_DPD,
 	DBG_log("unpending state #%lu", st->st_serialno));
 
-    for (pp = host_pair_first_pending(st->st_connection); (p = *pp) != NULL; )
+    for (pp = host_pair_first_pending(st->st_connection); pp && (p = *pp); )
     {
 	if (p->isakmp_sa == st)
 	{
@@ -234,7 +242,7 @@ struct connection *first_pending(struct state *st
     DBG(DBG_DPD,
 	DBG_log("getting first pending from state #%lu", st->st_serialno));
 
-    for (pp = host_pair_first_pending(st->st_connection); (p = *pp) != NULL; )
+    for (pp = host_pair_first_pending(st->st_connection); pp && (p = *pp); )
     {
 	if (p->isakmp_sa == st)
 	{
@@ -260,7 +268,7 @@ bool pending_check_timeout(struct connection *c)
     struct pending **pp, *p;
     time_t n = time(NULL);
 
-    for (pp = host_pair_first_pending(c); (p = *pp) != NULL; )
+    for (pp = host_pair_first_pending(c); pp && (p = *pp); )
     {
 	DBG(DBG_DPD,
 	    DBG_log("checking connection \"%s\" for stuck phase 2s (%lu+ 3*%lu) <= %lu"
@@ -280,21 +288,28 @@ bool pending_check_timeout(struct connection *c)
     return FALSE;
 }
 
-/* a Main Mode negotiation has been replaced; update any pending */
-void
+/* a Main Mode negotiation has been replaced; update any pending
+ * returns 0 on success, -ENOENT if nothing was found to update */
+int
 update_pending(struct state *os, struct state *ns)
 {
     struct pending *p, **pp;
 
     pp = host_pair_first_pending(os->st_connection);
-    if(pp == NULL) return;
+    if(pp == NULL)
+        return -ENOENT;
+    p = *pp;
 
     for (p = *pp;
 	 p != NULL;
 	 p = p->next) {
-	if (p->isakmp_sa == os)
+	if (p->isakmp_sa == os) {
 	    p->isakmp_sa = ns;
+            /* there could be more that match, so keep going */
+	}
     }
+
+    return -ENOENT;
 }
 
 /* a Main Mode negotiation has failed; discard any pending */

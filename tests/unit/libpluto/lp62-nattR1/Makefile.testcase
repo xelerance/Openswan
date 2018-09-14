@@ -1,0 +1,7 @@
+# -*- makefile -*-
+CONNNAME=parker
+ENDNAME=jamesjohnson
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} nattI1.pcap OUTPUT/nattR1.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=nattR1

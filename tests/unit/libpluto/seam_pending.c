@@ -1,3 +1,5 @@
+#ifndef __seam_pending_c__
+#define __seam_pending_c__
 struct state;
 void flush_pending_by_state(struct state *st) {}
 void show_pending_phase2(const struct connection *c, const struct state *st) {}
@@ -9,7 +11,7 @@ static struct connection *pending_c;
 static int pending_whack_sock;
 static lset_t pending_policy;
 
-void
+int
 add_pending(int whack_sock
 	    , struct state *isakmp_sa
 	    , struct connection *c
@@ -22,12 +24,14 @@ add_pending(int whack_sock
 	pending_c = c;
 	pending_policy = policy;
 	pending_whack_sock = whack_sock;
+
+	return 0;
 }
 
-void
+int
 update_pending(struct state *os, struct state *ns)
 {
-	/* nothing */
+	return 0;
 }
 
 struct connection *first_pending(struct state *st, lset_t *policy, int *p_whack_sock)
@@ -39,3 +43,4 @@ struct connection *first_pending(struct state *st, lset_t *policy, int *p_whack_
 }
 
 
+#endif

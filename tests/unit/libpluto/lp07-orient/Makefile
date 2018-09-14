@@ -29,6 +29,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -73,11 +74,12 @@ EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c
-	@echo CC ${TESTNAME}.c
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
-	@echo "  "CC ${TESTNAME}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
 check:	${WHACKFILE} ${TESTNAME} OUTPUT
 	@echo "file ${TESTNAME}"          >.gdbinit
@@ -101,6 +103,9 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 
 clean:
-	rm -f ${TESTNAME} ${WHACKFILE} *.o
+	rm -f ${TESTNAME} ${WHACKFILE} *.o *~
 
+
+pcapupdate:
+	@true
 

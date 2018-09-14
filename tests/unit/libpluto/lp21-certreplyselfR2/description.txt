@@ -1,5 +1,5 @@
 This test case is an IKEv2 responder -- it uses a certificate with a wildcard
-right= policy that accepts any ID that is properly validated.
+right= policy that accepts any ID that is properly (PKIX-chain) validated.
 It is otherwise identical to lp17, except that now that policy is an ID wildcard.
 
 In this test case, the policy is to permit an initiator from %any to propose

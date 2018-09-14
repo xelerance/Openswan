@@ -1,3 +1,5 @@
+#ifndef __seam_x509_list_c__
+#define __seam_x509_list_c__
 #include "pluto/x509lists.h"
 
 /** by default pluto does not check crls dynamically */
@@ -101,3 +103,4 @@ void list_certs(bool utc) {
 void list_authcerts(const char *caption, u_char auth_flags, bool utc) {}
 void list_crls(bool utc, bool strict) {}
 
+#endif

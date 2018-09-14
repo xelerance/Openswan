@@ -1,3 +1,5 @@
+#ifndef __seam_commhandle_c__
+#define __seam_commhandle_c__
 #include "demux.h"
 
 #include "seam_io.c"
@@ -10,6 +12,7 @@ void recv_pcap_setup(char *file)
     char   eb1[256];  /* error buffer for pcap open */
 
     pt = pcap_open_offline(file, eb1);
+    DBG_log("  =========== input from pcap file %s ========", file);
     if(!pt) {
 	fprintf(stderr, "can not open %s: %s\n", file, eb1);
 	exit(50);
@@ -19,6 +22,8 @@ void recv_pcap_setup(char *file)
 }
 
 
+extern unsigned short outside_port500;
+extern unsigned short outside_port4500;
 
 void recv_pcap_packet_gen(u_char *user
 			  , const struct pcap_pkthdr *h
@@ -68,7 +73,38 @@ void recv_pcap_packet_gen(u_char *user
     from.sa_in4.sin_addr.s_addr = ip->saddr;
     from.sa_in4.sin_port        = udp->source;
 
+    while(ifp && (ifp->port != ntohs(udp->dest)
+
+#ifdef NAPT_ENABLED
+                  && !(ifp->ike_float==0 && outside_port500 == ntohs(udp->dest))
+                  && !(ifp->ike_float==1 && outside_port4500 == ntohs(udp->dest))
+#endif
+                  )) {
+
+#ifdef NAPT_ENABLED
+      fprintf(stderr, "skipping: %s:%u %s outside: %u <=> d: %u\n"
+              , ifp->ip_dev->id_rname, ifp->port
+              , ifp->ike_float ? "float" : ""
+              , (ifp->ike_float ? outside_port4500 : outside_port500)
+              , ntohs(udp->dest));
+#endif
+      ifp = ifp->next;
+    }
+    if(ifp == NULL) {
+      printf("did not find an interface with port=%u \n", ntohs(udp->dest));
+      exit(10);
+    }
+
+#ifdef NAPT_ENABLED
+    fprintf(stderr, "picking: %s:%u %s outside: %u <=> d: %u\n"
+              , ifp->ip_dev->id_rname, ifp->port
+              , ifp->ike_float ? "float" : ""
+              , (ifp->ike_float ? outside_port4500 : outside_port500)
+              , ntohs(udp->dest));
+#endif
     md->iface = ifp;
+
+
     packet_len = h->len - (ike-bytes);
 
     happy(anyaddr(addrtypeof(&ifp->ip_addr), &md->sender));
@@ -81,6 +117,11 @@ void recv_pcap_packet_gen(u_char *user
 
     cur_from      = &md->sender;
     cur_from_port = md->sender_port;
+
+    if(natt_skip_nonesp(ifp, cur_from, cur_from_port
+                        , &ike, &packet_len) != TRUE) {
+      exit(11);
+    }
 
     /* Clone actual message contents
      * and set up md->packet_pbs to describe it.
@@ -110,3 +151,4 @@ void recv_pcap_packet_gen(u_char *user
 
 
 
+#endif

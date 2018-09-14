@@ -7,6 +7,8 @@ void recv_pcap_packet(u_char *user
     struct state *st;
     struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
+    enable_debugging_on_sa(1);
+
     recv_pcap_packet_gen(user, h, bytes);
 
     /* find st involved */
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_local_interface();
     init_fake_secrets();
+    enable_debugging();
 
     infile = argv[0];
     conn_name = argv[1];
@@ -76,6 +79,7 @@ int main(int argc, char *argv[])
     init_loaded();
 
     st = sendI1(c1, DBG_CONTROL, regression == 0);
+    enable_debugging_on_sa(1);
 
     /* now accept the reply packet:
        output interesting packet to capture file

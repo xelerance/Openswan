@@ -133,22 +133,18 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   64 0a 06 43  5c 7c 4b 31
-|    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -157,24 +153,20 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 48
 | ***emit IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
@@ -196,13 +188,11 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |   69 ff bd aa  ba d5 54 70  40 ab b5 fc  26 6d ae ce
 | emitting length of IKEv2 Key Exchange Payload: 264
 | ***emit IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
 | emitting length of IKEv2 Nonce Payload: 20
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
@@ -655,36 +645,30 @@ sending 376 bytes for STATE_IKEv2_START through eth0:500 to 93.184.216.34:500 (u
 |   00 ff ff 0a  01 00 00 0a  01 ff ff 00  01 02 03 04
 | striping 5 bytes as pad
 | **parse IKEv2 Identification Payload:
-|    next payload type: ISAKMP_NEXT_v2CERT
 |    critical bit: none
 |    length: 28
 |    id_type: ID_USER_FQDN
 | processing payload: ISAKMP_NEXT_v2IDi (len=28)
 | **parse IKEv2 Certificate Payload:
-|    next payload type: ISAKMP_NEXT_v2AUTH
 |    critical bit: none
 |    length: 1067
 |    ikev2 cert encoding: CERT_X509_SIGNATURE
 | processing payload: ISAKMP_NEXT_v2CERT (len=1067)
 | **parse IKEv2 Authentication Payload:
-|    next payload type: ISAKMP_NEXT_v2SA
 |    critical bit: none
 |    length: 200
 |    auth method: v2_AUTH_RSA
 | processing payload: ISAKMP_NEXT_v2AUTH (len=200)
 | **parse IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: none
 |    length: 156
 | processing payload: ISAKMP_NEXT_v2SA (len=156)
 | **parse IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_v2TSr
 |    critical bit: none
 |    length: 24
 |    number of TS: 1
 | processing payload: ISAKMP_NEXT_v2TSi (len=24)
 | **parse IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    length: 24
 |    number of TS: 1
@@ -877,14 +861,12 @@ RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doct
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   64 0a 06 43  5c 7c 4b 31
-|    next payload type: ISAKMP_NEXT_v2N
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | Adding a v2N Payload
 | ***emit IKEv2 Notify Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
@@ -906,17 +888,14 @@ sending 36 bytes for send_v2_notification through eth0:500 to 93.184.216.34:500 
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   64 0a 06 43  5c 7c 4b 31
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: none
 |    message ID:  00 00 00 01
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 1
 |    SPI size: 0

@@ -1,3 +1,5 @@
+#ifndef __seam_ikev1_main_c__
+#define __seam_ikev1_main_c__
 #ifndef INCLUDE_IKEV1_PROCESSING
 stf_status
 main_outI1(int whack_sock
@@ -26,4 +28,5 @@ ikev1_delete_out(struct state *st)
 {
 	printf("deleted state #%lu\n", st->st_serialno);
 }
+#endif
 #endif

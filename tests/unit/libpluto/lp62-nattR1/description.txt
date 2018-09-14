@@ -1,0 +1,11 @@
+This test case is an IKEv2 responder, which is receiving a connection
+from a node that is behind a NAPT.
+
+
+
+
+
+
+
+
+

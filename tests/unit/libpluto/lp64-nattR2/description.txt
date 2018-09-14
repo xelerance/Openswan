@@ -1,0 +1,9 @@
+This test case is an IKEv2 responder for an initiator which is behind a NAT.
+
+
+
+
+
+
+
+

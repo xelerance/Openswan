@@ -31,6 +31,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -80,10 +81,12 @@ EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
-	@echo CC ${TESTNAME}.c
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check:	OUTPUT/I1-dump.txt
 
@@ -103,5 +106,8 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt >output.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap *~ *.o
 
+
+pcapupdate:
+	@true

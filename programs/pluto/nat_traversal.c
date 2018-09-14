@@ -855,6 +855,13 @@ static void nat_traversal_find_new_mapp_state (struct state *st, void *data)
     char b2[ADDRTOT_BUF];
     struct connection *c = st->st_connection;
 
+    /*
+     * only perform this for IKEv1 SAs, as IKEv2 processes it in the
+     * reply packets only.
+     */
+
+    if(st->st_ikev2) return;
+
     /* only log it if the remoteaddr was not 0.0.0.0, or the ports were not normal ones */
     if(!isanyaddr(&st->st_remoteaddr)
        || (nfo->port != pluto_port500 && nfo->port != pluto_port4500)) {

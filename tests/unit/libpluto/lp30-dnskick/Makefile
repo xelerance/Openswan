@@ -94,7 +94,7 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed  OUTPUT/${TESTNAME}1.txt >output1.txt
 
 clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/parentI1.pcap *~ *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT

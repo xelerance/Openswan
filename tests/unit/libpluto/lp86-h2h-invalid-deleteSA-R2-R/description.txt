@@ -1,0 +1,55 @@
+This test case is an IKEv2 responder for the first SA, which then decides to
+delete the child SA (before the other end).  In this test case we are getting
+a response to the delete request that we sent out.
+
+This test case bulds on lp82/lp83/lp84 where this transaction was successful.
+Instead, lp85/lp86 simulate an encrypted request that cannot be handled, and
+a failed notification is sent out.
+
+Because the response to our delete request was rejeced, we will not delete
+our SA.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  From lp85 we take
+the request response, which will finish the delete exchange.
+
+
+
+Initiator                                                             Responder
+-------------------------------------------------------------------------------
+
+                              --- 08:39:04 ---
+
+INIT, I, id 0                                                                     <- lp36
+[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->                                   <- send INIT req
+
+                            INIT, R, id 0                                         <- lp37
+                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]   <- accept INIT req, send INIT resp
+
+AUTH, I, id 1                                                                     <- lp38
+[ IDi AUTH SA TSi TSr ] ----->                                                    <- accept INIT resp, send AUTH req
+
+                                            AUTH, R, id 1                         <- lp39
+                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]   <- accept AUTH req, send AUTH resp
+
+                              --- 08:42:06 ---
+
+# NOTE: in the real exchange, the Initiator would first send out a
+# CREATE_CHILD_SA, which is already tested for in other test cases.  Here, we
+# skip negotiating CHILD SA #3, and skip directly to the Responder initiating
+# the deletion of #2, which is what's being tested.
+
+                              --- 08:43:03 ---
+                                                                                  <- 
+                                                    INFORMATIONAL, id 0           <- lp82
+                                             <----- [ D ]                         <- state: R2 
+                                                                                  <-
+
+# NOTE: in lp85 we prevented pluto from handling the INFO/D message from lp82.
+# In this test case, lp86, we will process the notification, and confirm that
+# the (failed) DELETE did not occur.
+
+                                                                                  <-
+INFORMATIONAL, IR, id 0                                                           <- lp85/lp86
+[ N ] ----->                                                                      <- state: I3
+                                                                                  <-
+

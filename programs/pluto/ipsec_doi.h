@@ -24,6 +24,8 @@ extern so_serial_t ipsecdoi_initiate(int whack_sock
                               , struct xfrm_user_sec_ctx_ike *
 			      );
 
+extern lset_t update_policy_from_state(const struct state *st, lset_t policy);
+
 extern void ipsecdoi_replace(struct state *st
 			     , lset_t policy_add, lset_t policy_del
 			     , unsigned long try);

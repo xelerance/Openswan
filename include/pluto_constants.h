@@ -1,3 +1,5 @@
+#ifndef _IKEV2_CONSTANTS_H
+#define _IKEV2_CONSTANTS_H
 /* manifest constants
  * Copyright (C) 1997 Angelos D. Keromytis.
  * Copyright (C) 1998-2002  D. Hugh Redelmeier.
@@ -305,6 +307,11 @@ enum phase1_role {
   INITIATOR=1,
   RESPONDER=2
 };
+
+#define ROLE_NAME(role) ( \
+	role == INITIATOR ? "INITIATOR" : \
+	role == RESPONDER ? "RESPONDER" : \
+	"???" )
 
 
 #define STATE_IKE_FLOOR	STATE_MAIN_R0
@@ -686,4 +693,4 @@ enum PrivateKeyKind {
 #define XAUTH_MAX_NAME_LENGTH 128
 #define XAUTH_MAX_PASS_LENGTH 128
 
-
+#endif // _IKEV2_CONSTANTS_H

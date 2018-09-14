@@ -78,6 +78,10 @@ extern enum_names ikev2_cert_type_names;
 extern enum_names ikev2_notify_names;
 extern enum_names ikev2_ts_type_names;
 
+/* lookup macros */
+
+extern const char *stf_status_name(stf_status code);
+
 #ifdef HAVE_LABELED_IPSEC
 extern u_int16_t secctx_attr_value;
 #endif

@@ -117,6 +117,8 @@ ikev2_out_sa(pb_stream *outs
     bool ret = FALSE;
     unsigned int  pc_cnt;
 
+    pbs_set_np(outs, ISAKMP_NEXT_v2SA);
+
     /* SA header out */
     {
 	struct ikev2_sa sa;
@@ -147,17 +149,30 @@ ikev2_out_sa(pb_stream *outs
     /* now send out all the proposals */
     for(pc_cnt=0; pc_cnt < sadb->prop_disj_cnt; pc_cnt++)
     {
-	struct db_v2_prop *vp = &sadb->prop_disj[pc_cnt];
+	struct db_v2_prop *vp;
 	unsigned int pr_cnt;
+
+	if (!sadb->prop_disj) {
+            openswan_log("%s: FATAL: prop_disj_cnt=%d, but prop_disj=NULL",
+                         __func__, sadb->prop_disj_cnt);
+            return STF_INTERNAL_ERROR;
+        }
+	vp = &sadb->prop_disj[pc_cnt];
 
 	/* now send out all the transforms */
 	for(pr_cnt=0; pr_cnt < vp->prop_cnt; pr_cnt++)
 	{
 	    unsigned int ts_cnt;
-	    struct db_v2_prop_conj *vpc = &vp->props[pr_cnt];
-
+	    struct db_v2_prop_conj *vpc;
 	    struct ikev2_prop p;
 	    pb_stream t_pbs;
+
+	    if (!vp->props) {
+                openswan_log("%s: FATAL: prop_cnt=%d, but props=NULL",
+                             __func__, vp->prop_cnt);
+                return STF_INTERNAL_ERROR;
+            }
+	    vpc = &vp->props[pr_cnt];
 
 	    memset(&p, 0, sizeof(p));
 

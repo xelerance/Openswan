@@ -1,0 +1,11 @@
+This test case is an IKEv2 initiator that is behind a NAPT.
+This test processes the R2 reply from the responder.
+It should be on port 4500, and contain appropriate NAT-TRAVERSAL notify
+on the proposed SA.
+
+
+
+
+
+
+

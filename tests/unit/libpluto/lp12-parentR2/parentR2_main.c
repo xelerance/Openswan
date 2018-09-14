@@ -16,8 +16,8 @@ void recv_pcap_packet(u_char *user
         st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
         /* now fill in the KE values from a constant.. not calculated */
-        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
-        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(nr.ptr), SS(nr.len));
+        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gr.ptr), SS(gr.len));
 
         run_one_continuation(crypto_req);
     }
@@ -35,7 +35,7 @@ void recv_pcap_packet2(u_char *user
     /* find st involved */
     st = state_with_serialno(1);
     st->st_connection->extra_debugging = DBG_PRIVATE|DBG_CRYPT|DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
-    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
+    clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
 
     run_one_continuation(crypto_req);
 }
@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
     init_local_interface();
     init_fake_secrets();
     init_seam_kernelalgs();
+    enable_debugging();
 
     infile = argv[0];
     conn_name = argv[1];

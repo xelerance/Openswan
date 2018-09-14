@@ -159,25 +159,21 @@ static struct state *statetable[STATE_TABLE_SIZE];
 static struct state **
 state_hash(const u_char *icookie, const u_char *rcookie, unsigned *state_bucket)
 {
-    u_int i = 0, j;
+    u_int bucket;
 
     DBG(DBG_RAW | DBG_CONTROL,
 	DBG_dump("ICOOKIE:", icookie, COOKIE_SIZE);
 	DBG_dump("RCOOKIE:", rcookie, COOKIE_SIZE));
 
-    /* XXX the following hash is pretty pathetic */
+    bucket = compute_icookie_rcookie_hash(icookie, rcookie);
+    bucket %= STATE_TABLE_SIZE;
 
-    for (j = 0; j < COOKIE_SIZE; j++)
-	i = i * 407 + icookie[j] + rcookie[j];
-
-    i = i % STATE_TABLE_SIZE;
-
-    DBG(DBG_CONTROL, DBG_log("state hash entry %d", i));
+    DBG(DBG_CONTROL, DBG_log("state hash entry %d", bucket));
     if(state_bucket) {
-        *state_bucket = i;
+        *state_bucket = bucket;
     }
 
-    return &statetable[i];
+    return &statetable[bucket];
 }
 
 /* Get a state object.
@@ -195,6 +191,10 @@ new_state(void)
     st->st_serialno = next_so++;
     passert(next_so > SOS_FIRST);	/* overflow can't happen! */
     st->st_whack_sock = NULL_FD;
+
+    /* we have not received any messages from other side yet */
+    st->st_msgid_lastack = INVALID_MSGID;
+    st->st_msgid_lastrecv = INVALID_MSGID;
 
     anyaddr(AF_INET, &st->hidden_variables.st_nat_oa);
     anyaddr(AF_INET, &st->hidden_variables.st_natd);
@@ -316,6 +316,9 @@ unhash_state(struct state *st)
     /* unlink from forward chain */
     struct state **p;
 
+    DBG(DBG_CONTROL
+	, DBG_log("removing state object #%lu", st->st_serialno));
+
     if(st->st_hashchain_prev == NULL) {
 	p = state_hash(st->st_icookie, st->st_rcookie, NULL);
 	if(*p != st) {
@@ -434,6 +437,8 @@ void free_state(struct state *st)
 #ifdef HAVE_LABELED_IPSEC
     pfreeany(st->sec_ctx);
 #endif
+    DBG(DBG_CONTROL
+	, DBG_log("freeing state object #%lu", st->st_serialno));
     pfree(st);
 }
 
@@ -464,9 +469,10 @@ delete_state(struct state *st)
 		 * otherwise continue with deletion
 		 */
 		if(IS_CHILD_SA_ESTABLISHED(st)) {
-                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete equest"));
+                    DBG(DBG_CONTROL, DBG_log("sending Child SA delete request"));
                     send_delete(st);
                     change_state(st, STATE_CHILDSA_DEL);
+                    event_schedule(EVENT_SA_DELETE, 300, st);
 
                     /* actual deletion when we receive peer response*/
                     return;
@@ -889,6 +895,45 @@ delete_states_by_peer(ip_address *peer)
     }
 }
 
+/* This function is called during parent/ISAKMP state deletion.  The desired
+ * outcome is the deletion of the parent SA, and the cloned children SAs.
+ * The pst argument must point to a parent SA.
+ * The v2_responder_state is TRUE if st->st_state must be advanced first.
+ * NOTE: the md->st should be cleared after calling this function.
+ */
+void delete_state_family(struct state *pst, bool v2_responder_state)
+{
+	/*
+	 * We are a parent: delete our children and
+	 * then prepare to delete ourself.
+	 * Our children will be on the same hash chain
+	 * because we share IKE SPIs.
+	 */
+	struct state *first, *next, *st;
+
+	passert(!IS_CHILD_SA(pst));	/* we had better be a parent */
+
+	/* locate first state */
+	for (first=pst; first->st_hashchain_prev;
+	     first = first->st_hashchain_prev) ;
+
+	/* walk the whole list deleting children first */
+	for (st = first, next = st->st_hashchain_next; st;
+                        st = next, next = st ? st->st_hashchain_next : NULL) {
+		if (st->st_clonedfrom == pst->st_serialno) {
+			if (v2_responder_state)
+				change_state(st, STATE_CHILDSA_DEL);
+			delete_state(st);
+		}
+	}
+
+	/* delete the parent */
+	if (v2_responder_state)
+		change_state(pst, STATE_IKESA_DEL);
+	delete_state(pst);
+}
+
+
 /*
  * IKEv1: Duplicate a Phase 1 state object, to create a Phase 2 object.
  * IKEv2: Duplicate a Parent SA state object, to create a Child SA object
@@ -927,6 +972,7 @@ duplicate_state(struct state *st)
     nst->st_clonedfrom = st->st_serialno;
     nst->st_import     = st->st_import;
     nst->st_ikev2      = st->st_ikev2;
+    nst->st_ikev2_orig_initiator = st->st_ikev2_orig_initiator;
     nst->st_ike_maj    = st->st_ike_maj;
     nst->st_ike_min    = st->st_ike_min;
     nst->st_event      = NULL;
@@ -1328,6 +1374,9 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 	    if (LHAS(ok_states, st->st_state)
 		&& c->IPhost_pair == st->st_connection->IPhost_pair
 		&& same_peer_ids(c, st->st_connection, NULL)
+		&& IS_PARENT_SA(st)
+		&& samesubnet(&c->spd.this.client, &st->st_connection->spd.this.client)
+		&& samesubnet(&c->spd.that.client, &st->st_connection->spd.that.client)
 		&& (best == NULL
 		    || best->st_serialno < st->st_serialno))
 		{
@@ -1335,6 +1384,18 @@ find_phase1_state(const struct connection *c, lset_t ok_states)
 		}
 	}
     }
+
+    DBG(DBG_CONTROL,
+	if (best) {
+		DBG_log("%s: found SA #%ld for conn '%s' in state %s",
+			__func__, best->st_serialno, c->name,
+			enum_name(&state_names, best->st_state));
+	}
+	else {
+		DBG_log("%s: no SA found for conn '%s'",
+			__func__, c->name);
+	}
+    );
 
     return best;
 }

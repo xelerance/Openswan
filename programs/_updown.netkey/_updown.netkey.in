@@ -122,8 +122,14 @@ LC_ALL=C export LC_ALL
 #
 #	PLUTO_CONNECTION_TYPE
 #
-#       PLUTO_CONN_ADDRFAMILY
-#               is the family type, "ipv4" or "ipv6"
+#       PLUTO_CONN_ADDRFAMILY  --- deprecated
+#               is the family of the end type, "ipv4" or "ipv6"
+#
+#       PLUTO_CONN_ENDFAMILY
+#               is the family type of the tunnel end points, "ipv4" or "ipv6"
+#
+#       PLUTO_CONN_CLIENTFAMILY
+#               is the family type of the inner packets: "ipv4" or "ipv6"
 #
 #	PLUTO_PROTO_STACK
 #		is the local IPsec kernel stack used, eg KLIPS, NETKEY,
@@ -393,24 +399,23 @@ doroute() {
     fi
     parms="$PLUTO_PEER_CLIENT"
     parms2=$IPRARGS
-    # use nexthop if (right/left)nexthop is set and nexthop is not %direct
-    if [ ! "$PLUTO_NEXT_HOP" = "$PLUTO_PEER" ]; then
-	parms2="via $PLUTO_NEXT_HOP"
+
+    if [ "$PLUTO_CONN_CLIENTFAMILY" = "$PLUTO_CONN_ENDFAMILY" -a -n "$PLUTO_NEXT_HOP" ]; then
+	parms2="$parms2 via $PLUTO_NEXT_HOP"
+    else
+        parms2="$params dev $PLUTO_INTERFACE"
     fi
 
-    # route via proper interface according to routing table
-    if [ "$1" = "del" ]; then
-	PLUTO_PEER_INTERFACE=`ip -o route get $PLUTO_PEER_CLIENT | sed "s/^.*dev \([^ ]*\) .*/\1/"`
-    else
-	PLUTO_PEER_INTERFACE=`ip -o route get $PLUTO_NEXT_HOP | sed "s/^.*dev \([^ ]*\) .*/\1/"`
+    if [ -n "$PLUTO_MTU" ]; then
+        parms2="$parms2 mtu ${PLUTO_MTU}"
     fi
-    if [ -z "$PLUTO_PEER_INTERFACE" ]; then
-	PLUTO_PEER_INTERFACE=$PLUTO_INTERFACE
+    if [ -n "$PLUTO_METRIC" ]; then
+        parms2="$parms2 metric ${PLUTO_METRIC}"
     fi
-    parms2="$parms2 dev ${PLUTO_PEER_INTERFACE%:*}${PLUTO_MTU:+ mtu ${PLUTO_MTU}}${PLUTO_METRIC:+ metric ${PLUTO_METRIC}} $IPROUTEARGS"
+    parms2="$parms2 $IPROUTEARGS"
 
     # make sure whe have sourceip locally in this machine
-    if [ "$1" = "replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then
+    if [ X"$1" = X"replace" -a -n "$PLUTO_MY_SOURCEIP" ]; then
 	addsource
 	# use sourceip as route default source
 	parms2="$parms2 src ${PLUTO_MY_SOURCEIP%/*}"
@@ -442,7 +447,7 @@ doroute() {
     return $st
 }
 
-case $PLUTO_CONN_ADDRFAMILY in
+case $PLUTO_CONN_CLIENTFAMILY in
     ipv4) fullsubnet=32;;
     ipv6) fullsubnet=128;;
 esac

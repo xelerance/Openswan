@@ -79,7 +79,8 @@ stf_status aggr_not_present(int whack_sock UNUSED
                             , so_serial_t  *newstateno UNUSED
 			    , lset_t policy UNUSED
 			    , unsigned long try UNUSED
-			    , enum crypto_importance importance UNUSED)
+			    , enum crypto_importance importance UNUSED
+			    , struct xfrm_user_sec_ctx_ike * uctx UNUSED)
 {
     openswan_log("An attempt to use aggressive mode was made.");
     openswan_log("This pluto does not have aggressive mode (congradulations on your wisdom)");

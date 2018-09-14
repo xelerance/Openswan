@@ -7,3 +7,6 @@ UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST1PCAP} parentI1.pcap parentI2_a
 UNITTEST2ARGS=${WHACKFILE} ${CONNNAME} ${UNITTEST2PCAP} parentI1.pcap parentI2.pcap
 ENDNAME=rw
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
+
+pcapupdate:
+	@true

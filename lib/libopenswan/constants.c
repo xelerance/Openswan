@@ -969,6 +969,22 @@ static const char *const notification_name[] = {
 	"CERTIFICATE_UNAVAILABLE",
 	"UNSUPPORTED_EXCHANGE_TYPE",
 	"UNEQUAL_PAYLOAD_LENGTHS",
+	"__reserved_31__",
+	"__reserved_32__",
+	"__reserved_33__",
+	"SINGLE_PAIR_REQUIRED",
+	"NO_ADDITIONAL_SAS",
+	"INTERNAL_ADDRESS_FAILURE",
+	"FAILED_CP_REQUIRED",
+	"TS_UNACCEPTABLE",
+	"INVALID_SELECTORS",
+	"UNACCEPTABLE_ADDRESSES",
+	"UNEXPECTED_NAT_DETECTED",
+	"USE_ASSIGNED_HoA",
+	"TEMPORARY_FAILURE",
+	"CHILD_SA_NOT_FOUND",
+	"INVALID_GROUP_ID",
+	"AUTHORIZATION_FAILED",
     };
 
 static const char *const notification_status_name[] = {
@@ -1029,7 +1045,7 @@ enum_names notification_dpd_names =
       notification_dpd_name, &notification_cisco_chatter_names };
 
 enum_names notification_names =
-    { INVALID_PAYLOAD_TYPE, UNEQUAL_PAYLOAD_LENGTHS,
+    { INVALID_PAYLOAD_TYPE, AUTHORIZATION_FAILED,
         notification_name, &notification_dpd_names };
 
 enum_names notification_status_names =
@@ -1481,14 +1497,19 @@ struct keyword_enum_values kw_host_list=
 /* look up enum names in an enum_names */
 
 const char *
-enum_name(enum_names *ed, unsigned long val)
+enum_name_default(enum_names *ed, unsigned long val, const char *def)
 {
     enum_names	*p;
 
     for (p = ed; p != NULL; p = p->en_next_range)
 	if (p->en_first <= val && val <= p->en_last)
 	    return p->en_names[val - p->en_first];
-    return NULL;
+    return def;
+}
+const char *
+enum_name(enum_names *ed, unsigned long val)
+{
+	return enum_name_default(ed, val, NULL);
 }
 
 /* look up an enum in a starter friendly way */

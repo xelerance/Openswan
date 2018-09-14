@@ -1,3 +1,5 @@
+#ifndef __seam_host_bob_c__
+#define __seam_host_bob_c__
 struct iface_dev  bob_ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -22,3 +24,4 @@ void init_bob_interface(bool doipv6)
   bob_if1.next = interfaces;
   interfaces = &bob_if1;
 }
+#endif

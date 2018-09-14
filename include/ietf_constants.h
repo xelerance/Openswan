@@ -510,6 +510,17 @@ extern const char *const flag_bit_names[];
 #define ISAKMP_FLAG_ENCRYPTION   0x1  /* repeat of above */
 #define ISAKMP_FLAG_COMMIT       0x2
 
+/*
+ * the I bit is set on messages from the original initiator,
+ * i.e. the end-point which last rekeyed the parent SA.
+ */
+#define IKEv2_ORIGINAL_INITIATOR(flags)  (flags & ISAKMP_FLAGS_I)
+/*
+ * the R bit is set up by the responder, so if it is not set, then
+ * we must be the responder.
+ */
+#define IKEv2_MSG_FROM_INITIATOR(flags)  !(flags & ISAKMP_FLAGS_R)
+
 
 /* Situation definition for IPsec DOI */
 extern const char *const sit_bit_names[];
@@ -961,6 +972,7 @@ enum ike_trans_type_dh {
 
 /*
  * IKEv1 RFC2408 http://www.iana.org/assignments/ipsec-registry
+ * https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml
  * extern enum_names notification_names;
  * extern enum_names ipsec_notification_names;
  */
@@ -997,7 +1009,22 @@ typedef enum {
     CERTIFICATE_UNAVAILABLE =   28,
     UNSUPPORTED_EXCHANGE_TYPE = 29,
     UNEQUAL_PAYLOAD_LENGTHS =   30,
-    /* 31-8191 RESERVED (Future Use) */
+
+    SINGLE_PAIR_REQUIRED =	34,	/* [RFC7296] */
+    NO_ADDITIONAL_SAS =		35,	/* [RFC7296] */
+    INTERNAL_ADDRESS_FAILURE =	36,	/* [RFC7296] */
+    FAILED_CP_REQUIRED =	37,	/* [RFC7296] */
+    TS_UNACCEPTABLE =		38,	/* [RFC7296] */
+    INVALID_SELECTORS =		39,	/* [RFC7296] */
+    UNACCEPTABLE_ADDRESSES =	40,	/* [RFC4555] */
+    UNEXPECTED_NAT_DETECTED =	41,	/* [RFC4555] */
+    USE_ASSIGNED_HoA =		42,	/* [RFC5026] */
+    TEMPORARY_FAILURE =		43,	/* [RFC7296] */
+    CHILD_SA_NOT_FOUND =	44,	/* [RFC7296] */
+    INVALID_GROUP_ID =		45,	/* [draft-yeung-g-ikev2] */
+    AUTHORIZATION_FAILED =	46,	/* [draft-yeung-g-ikev2] */
+
+    /* 47-8191 RESERVED (Future Use) */
 
     /*
      * Sub-Registry: Notify Messages - Status Types (16384-24575)
@@ -1119,6 +1146,13 @@ typedef enum {
     /* 16425 - 40969 Unassigned */
     /* 40960 - 65535 Private Use */
     } v2_notification_t;
+
+enum v2_notify_protocol {
+  v2N_noSA = 0,
+  v2N_IKE_SA = 1,
+  v2N_AH     = 2,
+  v2N_ESP    = 3,
+};
 
 
 /* Public key algorithm number

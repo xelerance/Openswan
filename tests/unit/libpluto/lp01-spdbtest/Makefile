@@ -43,5 +43,8 @@ check:
 update:
 	cp OUTPUT/${TESTNAME}.txt output.txt
 
+pcapupdate:
+	@true
+
 
 

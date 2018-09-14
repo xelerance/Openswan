@@ -204,6 +204,7 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
+    bool               st_ikev2_orig_initiator;  /* if we keyed the parent SA */
     u_char             st_ike_maj;
     u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
@@ -417,9 +418,25 @@ struct state
 };
 #define NULL_STATE NULL
 
+#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_ikev2_orig_initiator)
+#define IKEv2_ORIG_INITIATOR_FLAG(st) (IKEv2_IS_ORIG_INITIATOR(st)?ISAKMP_FLAGS_I : 0)
+
+/* map state->st_ikev2_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
+#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st1) ? INITIATOR : RESPONDER )
+
 extern bool states_use_connection(struct connection *c);
 
 /* state functions */
+
+static inline u_int compute_icookie_rcookie_hash(const u_char *icookie,
+					       const u_char *rcookie)
+{
+    u_int i = 0, j;
+    /* XXX the following hash is pretty pathetic */
+    for (j = 0; j < COOKIE_SIZE; j++)
+	i = i * 407 + icookie[j] + rcookie[j];
+    return i;
+}
 
 extern struct state *new_state(void);
 extern void init_states(void);
@@ -435,6 +452,7 @@ struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
 extern void delete_p2states_by_connection(struct connection *c);
 extern void rekey_p2states_by_connection(struct connection *c);
+extern void delete_state_family(struct state *pst, bool v2_responder_state);
 
 extern struct state
     *duplicate_state(struct state *st),

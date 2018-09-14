@@ -1,3 +1,7 @@
+#ifndef __seam_ikev2_sendI1_h__
+#define __seam_ikev2_sendI1_h__
+
+#if 0
 struct state *sendI1_short(struct connection *c1, int debugging)
 {
 	struct state *st;
@@ -27,6 +31,7 @@ struct state *sendI1_short(struct connection *c1, int debugging)
 
 	return st;
 }
+#endif
 
 void sendI1b(struct connection *c1, int debugging, int calculate)
 {
@@ -40,11 +45,11 @@ void sendI1b(struct connection *c1, int debugging, int calculate)
             calc_ke(crypto_req);
             calc_nonce(crypto_req);
           } else {
-            passert(kn->oakley_group == tc14_oakleygroup);
+            passert(kn->oakley_group == SS(oakleygroup));
             /* now fill in the KE values from a constant.. not calculated */
-            clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secret,tc14_secret_len);
-            clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_ni, tc14_ni_len);
-            clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gi, tc14_gi_len);
+            clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+            clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(ni.ptr), SS(ni.len));
+            clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gi.ptr), SS(gi.len));
           }
         }
 
@@ -67,6 +72,7 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
 
 	/* find st involved */
 	st = state_with_serialno(newone);
+	enable_debugging_on_sa(1);
 
         if(st == NULL) return NULL;
 
@@ -75,3 +81,4 @@ struct state *sendI1(struct connection *c1, int debugging, int calculate)
         return st;
 }
 
+#endif

@@ -33,7 +33,7 @@ Description: Internet Key Exchange daemon
 Package: openswan-dbg
 Architecture: linux-any
 Section: debug
-Priority: extra
+Priority: optional
 Depends: ${misc:Depends}, openswan (= ${binary:Version})
 Description: Internet Key Exchange daemon - debugging symbols
  Openswan is an IPsec based VPN solution for the Linux kernel. It can use the

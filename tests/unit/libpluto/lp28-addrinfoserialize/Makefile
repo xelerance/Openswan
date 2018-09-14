@@ -58,7 +58,7 @@ update:
 	sed -f ${TESTUTILS}/leak-detective.sed  OUTPUT/${TESTNAME}1.txt >output1.txt
 
 clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME}
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} *~ *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT

@@ -1,0 +1,37 @@
+* Openswan v2.6.51 and strongSwan default proposals are incompatible.
+  To successfully interoperate with strongSwan, it is advised to
+  explicitly define the protocols to use; which includes IKE version
+  IKE protocols, and ESP/AH protocols.
+
+  A working example:
+
+  OpenSWAN
+  ---------
+  conn os-ss
+    ikev2=insist
+    ike=aes128-md5-modp2048
+    phase2alg=aes256-sha1
+    pfs=no
+
+  strongSwan
+  ---------
+  conn os-ss
+    keyexchange=ikev2
+    ike=aes128-md5-modp2048
+    esp=aes256-sha1
+
+  Tested protocols:
+  * ikev1 and ikev2
+  * ipv4, NAT-T, ipv6
+  * encryption: aes128, aes256
+  * integrity: md5, sha1
+  * DH-group: modp2048
+
+* There is an interoperability issue between Openswan and strongSwan
+  when pfs=yes
+
+  In the case of pfs=yes configuration, a DH-group must be negotiated
+  for the child/ESP SA. Currently, the latest version of pluto will not
+  include the DH-group when negotiating ESP.
+
+  Therefore, it is advised to explicitly disable PFS.

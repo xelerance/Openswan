@@ -30,6 +30,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -76,9 +77,12 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c) ${EXTRAOBJS}
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check: OUTPUT/R1-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
@@ -98,7 +102,7 @@ update1:
 	[ -f OUTPUT/R1-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1-dump.txt >R1-dump.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${TESTNAME}.o ${WHACKFILE} OUTPUT/*.pcap
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${TESTNAME}.o ${WHACKFILE} OUTPUT/*.pcap *~ *.o
 
 OUTPUT:
 	@mkdir -p OUTPUT

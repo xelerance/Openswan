@@ -30,6 +30,7 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -80,9 +81,12 @@ TESTNAME=parentR1
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c $(wildcard ../seam_*.c)
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRALIBS}
 
 check: OUTPUT/R1-dump.txt OUTPUT/R1notify-dump.txt OUTPUT/R1parker-dump.txt
 OUTPUT/R1-dump.txt:	${WHACKFILE} ${TESTNAME}
@@ -134,5 +138,10 @@ update3:
 	[ -f OUTPUT/R1parker-dump.txt ] && sed -f ${TESTUTILS}/sanity.sed OUTPUT/R1parker-dump.txt >R1parker-dump.txt
 
 clean:
-	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap
+	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap *~ *.o
+
+
+pcapupdate:
+	# note that input parentI1badKE is magic from the network.
+	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
 

@@ -1,3 +1,5 @@
+#ifndef __seam_natt_c__
+#define __seam_natt_c__
 #include "pluto/nat_traversal.h"
 #include "pluto/vendor.h"
 bool nat_traversal_support_non_ike = FALSE;
@@ -16,3 +18,4 @@ u_int32_t nat_traversal_vid_to_method(unsigned short nat_t_vid) { return LELEM(N
 
 void nat_traversal_new_ka_event (void) {}
 
+#endif

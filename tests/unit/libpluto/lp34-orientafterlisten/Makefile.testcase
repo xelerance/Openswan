@@ -1,3 +1,4 @@
+# -*- makefile -*-
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 SAMPLEDIR=../samples
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}

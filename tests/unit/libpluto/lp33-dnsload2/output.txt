@@ -11,12 +11,12 @@ processing whack msg time: X size: Y
 | counting wild cards for @example.com is 0
 | DNS query 0 for host for example.com (gw: none)
 | orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:500)
-| orient cpenohint checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient cpenohint matching on public/private keys: this=no[%dns] that=no[%defaultroute]
 |   orient cpenohint matched on that being defaultroute, and this lacking private key
 | pick_if looking for port: 500, family: 0
 |   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
-|   considering eth0 1.1.168.192 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
 |   picking maching interface for family[0,0]: <family:0> resulted in: 192.168.1.1
 |   orient cpenohint finished with: 1 [192.168.1.1]
 | find_host_pair: looking for me=<invalid>:500 %dns him=<invalid>:500 exact-match
@@ -31,50 +31,49 @@ RC=0 "cpenohint": %any[@cpe.example.com]...%dns<example.com>[@example.com]===10.
 RC=0 "cpenohint":     myip=unset; hisip=unset;
 RC=0 "cpenohint":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 'cpenohint'
 ./dnscpeI1 Can not initiate: no remote address available (yet)
 | ans 000 canonname=(null) protocol=17 family=2 len=16
 |         result=93.184.216.34
 | ans 001 canonname=(null) protocol=17 family=10 len=28
 |         result=2606:2800:220:1:248:1893:25c8:1946
+| find_phase1_state: no SA found for conn 'cpenohint'
 | creating state object #1 at Z
 | orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:500)
-| orient cpenohint checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient cpenohint checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient cpenohint matching on public/private keys: this=no[%defaultroute] that=no[%dns]
 |   orient cpenohint matched on this being defaultroute, and that lacking private key
 | pick_if looking for port: 500, family: 2
 |   considering eth0 192.168.1.1 port: 500, family: 2, best: <none>/0 0
-|   considering eth0 1.1.168.192 port: 4500, family: 2, best: eth0/20 0
+|   considering eth0 192.168.1.1 port: 4500, family: 2, best: eth0/20 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 |   orient cpenohint finished with: 1 [192.168.1.1]
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
 | inserting state object #1 bucket: 4
-| Queuing pending Quick Mode with 93.184.216.34 "cpenohint"
 ./dnscpeI1 initiating v2 parent SA
 ./dnscpeI1 STATE_PARENT_I1: initiate
+| Queuing pending Quick Mode with 93.184.216.34 "cpenohint"
 | ikev2 parent outI1: calculated ke+nonce, sending I1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   00 00 00 00  00 00 00 00
-|    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 00
+|    next-payload: ISAKMP_NEXT_v2SA [@16=0x21]
 | ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -83,29 +82,24 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 2
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -114,83 +108,68 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 3
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 4
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 5
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -199,29 +178,24 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 6
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -230,137 +204,112 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 7
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 8
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 5
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 9
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 10
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 11
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -369,29 +318,24 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 12
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -400,24 +344,21 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 508
+|    next-payload: ISAKMP_NEXT_v2KE [@28=0x22]
 | ***emit IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
@@ -438,21 +379,47 @@ RC=0 "cpenohint":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Ini
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 | emitting length of IKEv2 Key Exchange Payload: 264
+|    next-payload: ISAKMP_NEXT_v2Ni [@536=0x28]
 | ***emit IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2V
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of IKEv2 Nonce Payload: 20
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   c0 a8 01 01  01 f4
+| Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@800=0x29]
+| ***emit IKEv2 Notify Payload:
+|    critical bit: none
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_SOURCE_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  ea 59 1e 1b  30 a3 e0 94  4c dc 91 5b  b0 95 3c 48
+|   70 73 62 f1
+| emitting length of IKEv2 Notify Payload: 28
+| nat chunk  80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   5d b8 d8 22  01 f4
+| Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@820=0x29]
+| ***emit IKEv2 Notify Payload:
+|    critical bit: none
+|    Protocol ID: PROTO_RESERVED
+|    SPI size: 0
+|    Notify Message Type: v2N_NAT_DETECTION_DESTINATION_IP
+| emitting 20 raw bytes of Notify data into IKEv2 Notify Payload
+| Notify data  27 ec f2 2b  d5 28 36 92  28 23 8a 58  36 a2 4f d8
+|   ee 6c cd bb
+| emitting length of IKEv2 Notify Payload: 28
+|    next-payload: ISAKMP_NEXT_v2V [@848=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 836
-sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 93.184.216.34:500 (using #1)
+| emitting length of ISAKMP Message: 892
+sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -501,11 +468,14 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 93.184.216.3
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  27 ec f2 2b  d5 28 36 92
+|   28 23 8a 58  36 a2 4f d8  ee 6c cd bb  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
 ./dnscpeI1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./dnscpeI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+./dnscpeI1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 ./dnscpeI1 deleting state #1 (STATE_PARENT_I1)
 ./dnscpeI1 deleting connection
 | pass 0: considering CHILD SAs to delete

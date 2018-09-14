@@ -1,3 +1,4 @@
+# -*- makefile -*-
 TESTNAME=rekeyv2nopfs-inCR1
 CONNNAME=parker1--jj2--nopfs
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}

@@ -1,10 +1,27 @@
-This directory contains scripts that mimic certain KLIPS-only commands
-when using NETKEY. These may fold back into the distribution later on,
-or get replaced by new code. Output is not guaranteed to be identical
-to the KLIPS versions.
+This directory contains scripts of various types.
+
+---
+
+Two scripts mimic certain KLIPS-only commands when using NETKEY. These may fold
+back into the distribution later on, or get replaced by new code. Output is not
+guaranteed to be identical to the KLIPS versions.
 
 eroute: replacement for KLIPS' "ipsec eroute"
 look: replacement for KLIPS' "ipsec look"
 
 Install: replace the KLIPS script in /usr/local/libexec/ipsec/ with a
 version from this directory.
+
+---
+
+pluto-log-merge.pl reads two log files output by OpenSWAN pluto daemon and
+converts them into a chronologically ordered packet diagram.  See the online
+help (--help).  Example execution using two log files for left and right:
+
+   ./pluto-log-merge.pl --width 100 left.log right.log > merged.log
+
+Several CPAN dependencies exist, whcih can be satisfied on a Debian based
+system by running:
+
+   apt install libterm-readkey-perl libscalar-list-utils-perl
+

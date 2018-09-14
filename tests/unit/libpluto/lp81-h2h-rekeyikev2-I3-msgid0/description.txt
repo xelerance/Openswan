@@ -1,0 +1,47 @@
+This test case continues lp80, where the IKEv2 original responder will rekey
+a child SA (before the original initiator).  In this test case, we are the
+initiator and we will receive the request to rekey the child SA for the first
+time.
+
+NOTE: To simulate behaviour of Strongswan, the other end (lp80) sent us
+a CREATE_CHILD_SA message with msgid of 0.
+
+This uses the I1/R1/I2/R2/I3 pcap files from lp36 thru lp39.  Some packets
+come from lp80.
+
+
+
+Initiator                                                             Responder
+-------------------------------------------------------------------------------
+
+                              --- 08:39:04 ---
+
+INIT, I, id 0                                                                     <- lp36
+[ SA KE No N(NATD_S_IP) N(NATD_D_IP) V ] ----->                                   <- send INIT req
+
+                            INIT, R, id 0                                         <- lp37
+                     <----- [ SA KE No N(NATD_S_IP) N(NATD_D_IP) N(MULT_AUTH) ]   <- accept INIT req, send INIT resp
+
+AUTH, I, id 1                                                                     <- lp38
+[ IDi AUTH SA TSi TSr ] ----->                                                    <- accept INIT resp, send AUTH req
+
+                                            AUTH, R, id 1                         <- lp39
+                                     <----- [ IDr AUTH SA TSi TSr N(AUTH_LFT) ]   <- accept AUTH req, send AUTH resp
+
+                              --- 08:42:06 ---
+
+# NOTE: in the wild, there may have been many successful CREATE CHILD SA exchanges
+# initiated by the original Initiator.  This test case emulates a rare condition
+# where the original Responder requests a CHILD rekey.
+
+                              --- 08:43:03 ---
+                                                                                  <- 
+                                                  CREATE_CHILD_SA, id 0           <- lp80
+                                           <----- [ N(REKEY_SA) SA No TSi TSr ]   <- state: R2 
+                                                                                  <-
+
+                                                                                  <-
+CREATE_CHILD_SA, IR, id 0                                                         <- lp81
+[ N(REKEY_SA) SA No TSi TSr ] ----->                                              <- state: I3
+                                                                                  <-
+

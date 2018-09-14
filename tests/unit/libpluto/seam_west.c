@@ -1,3 +1,5 @@
+#ifndef __seam_west_c__
+#define __seam_west_c__
 struct iface_dev  ifd1 = {
 	.id_count = 1,
 	.id_vname = "ipsec0",
@@ -16,3 +18,4 @@ struct iface_port if1 = {
 	.change    = IFN_KEEP
 };
 
+#endif

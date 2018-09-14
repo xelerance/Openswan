@@ -67,19 +67,22 @@ extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
 extern stf_status ikev2child_inCI1(struct msg_digest *md);
 extern stf_status ikev2child_inCR1(struct msg_digest *md);
+extern stf_status ikev2child_inI3(struct msg_digest *md);
 extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
                                                           , struct state *st);
 extern stf_status ikev2_child_notify_process(struct msg_digest *md
                                              , struct state *st);
 
-#define SEND_V2_NOTIFICATION_AA(t, d) \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, d); \
-    else send_v2_notification_from_md(md, t, d);
+#define SEND_V2_NOTIFICATION_XCHG_DATA(md, st, xchg, type, data) { \
+    if (st) send_v2_notification_from_state(st, xchg, type, data); \
+    else send_v2_notification_from_md(md, xchg, type, data); }
 
+#define SEND_V2_NOTIFICATION_DATA(md, st, type, data) { \
+    enum isakmp_xchg_types xchg = (md)->hdr.isa_xchg; \
+    SEND_V2_NOTIFICATION_XCHG_DATA(md, st, xchg, type, data); }
 
-#define SEND_V2_NOTIFICATION(t)                                            \
-    if (st) send_v2_notification_from_state(st, st->st_state, t, NULL); \
-    else send_v2_notification_from_md(md, t, NULL);
+#define SEND_V2_NOTIFICATION(md, st, type) \
+    SEND_V2_NOTIFICATION_DATA(md, st, type, NULL)
 
 extern const struct state_v2_microcode ikev2_parent_firststate_microcode;
 extern const struct state_v2_microcode ikev2_childrekey_microcode;
@@ -126,12 +129,13 @@ extern v2_notification_t parse_ikev2_sa_body(pb_stream *sa_pbs
 					  , bool parentSA);
 #endif
 
-extern void send_v2_notification_from_state(struct state *st
-					    , enum state_kind state
-					    , u_int16_t type, chunk_t *data);
+extern void send_v2_notification_from_state(struct state *st,
+					    enum isakmp_xchg_types xchg,
+					    u_int16_t ntf_type, chunk_t *data);
 
-extern void send_v2_notification_from_md(struct msg_digest *md,u_int16_t type
-   					 , chunk_t *data);
+extern void send_v2_notification_from_md(struct msg_digest *md,
+					 enum isakmp_xchg_types xchg,
+					 u_int16_t ntf_type, chunk_t *data);
 extern stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
 					 pb_stream   *in_pbs,
 					 unsigned int np);
@@ -170,7 +174,7 @@ extern stf_status ikev2_emit_ipsec_sa(struct msg_digest *md
 				      , struct connection *c
 				      , lset_t policy);
 
-extern void ikev2_derive_child_keys(struct state *st
+extern stf_status ikev2_derive_child_keys(struct state *st
 				    , enum phase1_role role);
 
 extern int ikev2_evaluate_connection_fit(struct connection *d
@@ -227,11 +231,35 @@ extern void ikev2_update_counters(struct msg_digest *md);
 extern void ikev2_print_ts(struct traffic_selector *ts);
 
 
-extern void send_v2_notification(struct state *p1st, u_int16_t type
-				 , struct state *encst
-				 , u_char *icookie
-				 , u_char *rcookie
-				 , chunk_t *data);
+extern void send_v2_notification(struct state *p1st
+				   , enum isakmp_xchg_types xchg_type
+				   , notification_t ntf_type
+				   , u_char *icookie
+				   , u_char *rcookie
+				   , chunk_t *n_data);
+
+extern int send_v2_notification_enc(struct msg_digest *md
+				    , enum isakmp_xchg_types xchg_type
+				    , notification_t ntf_type
+				    , chunk_t *notify_data);
+
+extern void calculate_nat_hash(const unsigned char cookie_i[COOKIE_SIZE]
+                               , const unsigned char cookie_r[COOKIE_SIZE]
+                               , const ip_address addr
+                               , const unsigned short port
+                               , unsigned char digest[SHA1_DIGEST_SIZE]);
+
+extern stf_status process_nat_payload(struct state *st
+                                      , struct msg_digest *md
+                                      , struct payload_digest *p
+                                      , const char *payload_name
+                                      , v2_notification_t notify_type
+                                      , chunk_t *data);
+
+extern stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md);
+
+
+
 
 extern bool doi_send_ikev2_cert_thinking( struct state *st);
 
@@ -248,6 +276,7 @@ extern bool justship_v2KE(struct state *st UNUSED
                           , chunk_t *g, unsigned int oakley_group
                           , pb_stream *outs, u_int8_t np);
 extern bool justship_v2Nonce(struct state *st, pb_stream *outpbs, chunk_t *nonce, unsigned int np);
+extern bool justship_v2nat(struct state *st, pb_stream *outpbs);
 
 extern void ikev2_padup_pre_encrypt(struct msg_digest *md
                                     , pb_stream *e_pbs_cipher);

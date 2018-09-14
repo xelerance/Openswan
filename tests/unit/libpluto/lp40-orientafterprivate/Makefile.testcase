@@ -1,3 +1,4 @@
+# -*- makefile -*-
 SAMPLEDIR=../samples
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 ENDNAME=parker

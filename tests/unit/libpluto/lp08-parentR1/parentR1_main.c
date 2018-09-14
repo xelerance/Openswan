@@ -2,7 +2,6 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 
 #include <pcap.h>
 
-#include "seam_gr_sha1_group14.c"
 
 /* this is replicated in the unit test cases since the patching up of the crypto values is case specific */
 void recv_pcap_packet(u_char *user
@@ -20,12 +19,12 @@ void recv_pcap_packet(u_char *user
     /* find st involved */
     st = state_with_serialno(1);
     if(st) {
-        st->st_connection->extra_debugging = DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
+        st->st_connection->extra_debugging = DBG_PARSING|DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE;
 
         /* now fill in the KE values from a constant.. not calculated */
-        clonetowirechunk(&kn->thespace, kn->space, &kn->secret, tc14_secretr,tc14_secretr_len);
-        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   tc14_nr, tc14_nr_len);
-        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  tc14_gr, tc14_gr_len);
+        clonetowirechunk(&kn->thespace, kn->space, &kn->secret, SS(secret.ptr),SS(secret.len));
+        clonetowirechunk(&kn->thespace, kn->space, &kn->n,   SS(nr.ptr), SS(nr.len));
+        clonetowirechunk(&kn->thespace, kn->space, &kn->gi,  SS(gr.ptr), SS(gr.len));
 
         run_continuation(crypto_req);
     }
@@ -64,6 +63,7 @@ int main(int argc, char *argv[])
     init_fake_secrets();
     init_jamesjohnson_interface();
     init_demux();
+    enable_debugging();
 
     infile = NULL;
     conn_name = NULL;

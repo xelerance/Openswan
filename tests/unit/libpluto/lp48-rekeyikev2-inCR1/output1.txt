@@ -19,7 +19,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @parker01.emmjay.credil.org is 0
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
-| orient parker1--jj2 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 | find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
@@ -37,10 +37,11 @@ RC=0 "parker1--jj2":   keys: 1:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 RC=0 "parker1--jj2":        ....1:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701 2:none
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+| find_phase1_state: no SA found for conn 'parker1--jj2'
 | creating state object #1 at Z
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
-| orient parker1--jj2 checking against if: eth0 (AF_INET:1.1.168.192:4500)
+| orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
 |   orient parker1--jj2 finished with: 1 [192.168.1.1]
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -49,9 +50,9 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 4
 ./rekeyikev2-inCR1 initiating v2 parent SA
 ./rekeyikev2-inCR1 STATE_PARENT_I1: initiate
-sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.7:500 (using #1)
+sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
-|   21 20 22 08  00 00 00 00  00 00 03 44  22 00 01 fc
+|   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
 |   02 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  02 00 00 2c
@@ -100,15 +101,21 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   37 4d 7c 41  38 62 a6 39  00 81 ca 3d  1d fc f7 b5
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
-|   2b 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
-|   d3 20 e9 e3  00 00 00 10  4f 45 70 6c  75 74 6f 75
-|   6e 69 74 30
+|   29 00 00 14  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08
+|   d3 20 e9 e3  29 00 00 1c  00 00 40 04  ea 59 1e 1b
+|   30 a3 e0 94  4c dc 91 5b  b0 95 3c 48  70 73 62 f1
+|   2b 00 00 1c  00 00 40 05  cd bc 1b 74  02 d7 5e 4c
+|   da 5b cd 1c  a1 08 87 2b  f9 7d c4 c2  00 00 00 10
+|   4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| #1 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_IKEv2_START to state STATE_PARENT_I1
-./rekeyikev2-inCR1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/00000000)
+| v2_state_transition: st is #1; pst is #0; transition_st is #0
+./rekeyikev2-inCR1 STATE_PARENT_I1: sent v2I1, expected v2R1 (msgid: 00000000/4294967295)
 0: input from ../lp10-parentI2/parentR1.pcap
-| *received 376 bytes from 132.213.238.7:500 on eth0 (port=500)
+|   =========== input from pcap file ../lp10-parentI2/parentR1.pcap ========
+| *received 432 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   21 20 22 20  00 00 00 00  00 00 01 78  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -128,9 +135,12 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   fd f7 98 5e  cc 92 5c 79  7b 62 ae 98  db 4f 7f e0
 |   68 7c cd 29  69 0a ad a3  e8 37 d7 41  b4 79 b3 a5
 |   38 a2 8d a0  69 ff bd aa  ba d5 54 70  40 ab b5 fc
-|   26 6d ae ce  2b 00 00 14  c6 ba 31 9f  88 5b e7 b7
-|   a2 93 85 dc  bb c6 15 84  00 00 00 10  4f 45 70 6c
-|   75 74 6f 75  6e 69 74 30
+|   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
+|   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
+|   1d 77 eb e3  db b6 db 7c  4b b5 ef 4b  57 c6 f1 b8
+|   ec 7e 9b fe  2b 00 00 1c  00 00 40 05  81 b5 74 15
+|   c4 1e 64 b8  4c 1a 4e 9c  14 92 f7 ab  25 31 bf 62
+|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_SA_INIT (34), msgid: 00000000
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -142,6 +152,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | state hash entry 4
 | v2 peer and cookies match on #1
 | v2 state object #1 (parker1--jj2) found, in STATE_PARENT_I1
+| removing state object #1
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
@@ -152,7 +163,16 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | state found and its state is:STATE_PARENT_I1 msgid: 00000
 | considering state entry: 0
 | now proceed with state specific processing using state #0 initiator-V2_init
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   84 d5 ee 07  01 f4
+| nat-t payloads for v2N_NAT_DETECTION_SOURCE_IP match: no NAT
+| nat chunk  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   c0 a8 01 01  01 f4
+| nat-t payloads for v2N_NAT_DETECTION_DESTINATION_IP match: no NAT
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| processor 'initiator-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inR1outI2: calculating g^{xy}, sending I2
 | ikev2 parent SA details
 | ikev2 I 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x4ea8e662b07cdd430f6944c6723e4b82d5722418 aes128:0x3f44bf47cafd8150591deb088199fcbf
 | ikev2 R 0x8001020304050607 0xdebc583a8f40d0cf sha1:0x515b0bd22e6d76b34fdb760aa7bfad80b109b75d aes128:0xbedb67ec7dc3d00cccac42e70cd63bde
@@ -167,45 +187,42 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_AUTH
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 01
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2IDi
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
-| IKEv2 thinking whether to send my certificate:
-|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
-|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
-|  so do not send cert.
-| I did not send a certificate because I do not have one.
+|    next-payload: ISAKMP_NEXT_v2IDi [@-20=0x23]
 | *****emit IKEv2 Identification Payload:
-|    next payload type: ISAKMP_NEXT_v2AUTH
 |    critical bit: none
 |    id_type: ID_FQDN
 | emitting 26 raw bytes of my identity into IKEv2 Identification Payload
 | my identity  70 61 72 6b  65 72 30 31  2e 65 6d 6d  6a 61 79 2e
 |   63 72 65 64  69 6c 2e 6f  72 67
-| emitting length of IKEv2 Identification Payload: 34
 | idhash calc pi  cc 07 97 44  b4 a3 4e 8a  0d 2f 27 8b  ee 06 6d 07
 |   a5 a5 75 2e
 | idhash calc I2  02 00 00 00  70 61 72 6b  65 72 30 31  2e 65 6d 6d
 |   6a 61 79 2e  63 72 65 64  69 6c 2e 6f  72 67
+| emitting length of IKEv2 Identification Payload: 34
+| IKEv2 thinking whether to send my certificate:
+|  my policy has  RSASIG, the policy is : RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|  sendcert: CERT_SENDIFASKED and I did not get a certificate request
+|  so do not send cert.
+| I did not send a certificate because I do not have one.
 |  payload after AUTH will be ISAKMP_NEXT_v2SA
+|    next-payload: ISAKMP_NEXT_v2AUTH [@0=0x27]
 | *****emit IKEv2 Authentication Payload:
-|    next payload type: ISAKMP_NEXT_v2SA
 |    critical bit: none
 |    auth method: v2_AUTH_RSA
 | emitting 192 zero bytes of fake rsa sig into IKEv2 Authentication Payload
 | emitting length of IKEv2 Authentication Payload: 200
 | empty esp_info, returning defaults
+|    next-payload: ISAKMP_NEXT_v2SA [@34=0x21]
 | *****emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: none
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 1
 |    proto ID: 3
 |    spi size: 4
@@ -213,7 +230,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -222,18 +238,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 2
 |    proto ID: 3
 |    spi size: 4
@@ -241,7 +254,6 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -250,18 +262,15 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 3
 |    proto ID: 3
 |    spi size: 4
@@ -269,23 +278,19 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 4
 |    proto ID: 3
 |    spi size: 4
@@ -293,24 +298,21 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  12 34 56 78
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | emitting length of IKEv2 Security Association Payload: 156
+|    next-payload: ISAKMP_NEXT_v2TSi [@234=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_v2TSr
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -324,8 +326,8 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | ipv6 high  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
+|    next-payload: ISAKMP_NEXT_v2TSr [@390=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -344,6 +346,7 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 528
 | emitting length of ISAKMP Message: 556
+| encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   27 00 00 22  02 00 00 00  70 61 72 6b  65 72 30 31
 |   2e 65 6d 6d  6a 61 79 2e  63 72 65 64  69 6c 2e 6f
@@ -408,12 +411,48 @@ sending 836 bytes for ikev2_parent_outI1_common through eth0:500 to 132.213.238.
 |   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
 |   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   bc 35 37 b7  f3 29 8d 7f  0e 4a 2b b3  5d 29 2d b7
+|   23 65 2e b5  89 be 6c b5  1e a6 e8 51  7b 82 bc 62
+|   c6 2c 43 c6  ae 0f ec 1a  69 62 67 2e  9a c5 dd 37
+|   12 23 a6 b7  de 53 97 61  34 05 0e 5c  b1 64 2c 98
+|   e9 d9 a9 bc  39 23 84 2e  eb 15 07 fa  8b a9 6f 4c
+|   b8 09 d0 ed  bd bb b3 10  5e f9 cb 1b  08 8c c3 e9
+|   ae 83 3a 41  c5 c6 42 f7  a3 83 87 36  cf 53 1e b7
+|   ef b6 46 fa  21 e6 56 f8  e0 02 03 41  6e d4 a5 c9
+|   5f 0a 07 28  a3 c7 0d 34  05 18 a5 e0  92 10 8d 6a
+|   20 0f c5 6a  9b f5 29 20  2a 3c 87 bd  49 8e 01 43
+|   4b 41 ce 20  55 e2 26 20  0f f8 4b bf  ee 30 b4 ad
+|   7f a3 bb dd  2e 12 6d 54  e8 2c 81 44  e5 da cd 62
+|   59 f9 9f 21  d9 42 aa 59  c9 28 ef 49  86 a7 ab e1
+|   32 06 d3 28  5d ad 51 24  8a da 15 fc  e9 31 7c f7
+|   52 db a6 a5  11 8a c7 1e  53 02 e5 29  3b 74 e4 59
+|   60 16 3a 64  dd 54 cf 5f  0d 57 1c 1c  5e ef ab 90
+|   46 69 5e 24  e9 1d f5 eb  de 89 18 38  7e e1 1d 68
+|   75 fb 84 4b  f6 c9 75 1f  c5 85 e6 e8  17 65 80 5e
+|   58 be 1c a8  f7 4e e7 df  7f 2a e5 81  2a d9 d4 f2
+|   09 45 fc da  44 c4 53 5a  a7 ae af 10  c3 59 ea c6
+|   5e 39 03 96  53 27 fe 52  df 7d f9 97  a4 2b 43 0a
+|   29 fb 70 71  eb 47 b4 ab  0c 68 cf af  e4 f7 f6 be
+|   27 b5 7e 30  d6 95 98 25  4a 07 1c 45  70 14 98 83
+|   ab c8 29 7b  fd 86 44 b4  bc 4e a2 ef  96 16 7c 37
+|   ef 8a d3 e6  07 41 a1 a3  9e 27 e4 65  ed 05 09 f0
+|   4c fc 78 b3  3a fb da 6a  43 b1 70 87  a4 94 3c d4
+|   87 76 c4 9a  28 16 4d a0  42 c6 55 0a  e6 75 df 23
+|   b6 a1 4e b7  6b 3c 35 54  09 20 48 e3  25 5d 31 d3
+|   04 07 84 ff  70 d1 8f 1b  14 83 0d 09  14 e1 a2 60
+|   ee 9b 99 56  10 11 d4 62  ec 13 7c c8  ff 25 00 be
+|   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
+| out calculated auth:
+|   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_PARENT_I1 to state STATE_PARENT_I2
 | v2_state_transition: st is #2; pst is #1; transition_st is #1
-./rekeyikev2-inCR1 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/00000000)
+./rekeyikev2-inCR1 STATE_PARENT_I2: sent v2I2, expected v2R2 {auth=IKEv2 oursig=fakesig1 theirsig= cipher=aes_128 integ=sha1_96 prf=oakley_sha group=modp2048} (msgid: 00000000/4294967295)
 | sending reply packet to 132.213.238.7:500 (from port 500)
-sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (using #2)
+sending 556 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #2)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 08  00 00 00 01  00 00 02 2c  23 00 02 10
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -450,6 +489,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   d3 11 ff 52  18 90 c1 47  e3 6c 1d 54  b6 13 e8 b7
 |   30 a6 4f 50  60 8d ac 6d  e3 5c 72 84
 1: input from ../lp13-parentI3/parentR2.pcap
+|   =========== input from pcap file ../lp13-parentI3/parentR2.pcap ========
 | *received 444 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 23 20  00 00 00 01  00 00 01 bc  24 00 01 a0
@@ -494,6 +534,7 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 | considering state entry: 2
 | now proceed with state specific processing using state #2 initiator-auth-process
 | ikev2 parent inR2: calculating g^{xy} in order to decrypt I2
+| decrypting as INITIATOR, using RESPONDER keys
 ./rekeyikev2-inCR1 IKEv2 mode peer ID is ID_FQDN: '@jamesjohnson.emmjay.credil.org'
 | ikev2 verify required CA is '%any'
 | checking alg=1 == 1, keyid=@parker01.emmjay.credil.org same_id=1
@@ -534,34 +575,41 @@ sending 556 bytes for STATE_PARENT_I1 through eth0:500 to 132.213.238.7:500 (usi
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
+| processor 'initiator-auth-process' returned STF_OK (3)
 | #2 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C0_KEYING to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #2; pst is #0; transition_st is #0
-./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/00000000)
+./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000001/4294967295)
 ./rekeyikev2-inCR1 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
 ./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x12345678 <0x12345678 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 now pretend that the keylife timer is up, and rekey the connection
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=0; msgid=0; idle; import:admin initiate
-./rekeyikev2-inCR1 starting rekey of CHILD SA for state=#2 (expired) using PARENT SA #1
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
+| duplicating state object #1
+| creating state object #3 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  de bc 58 3a  8f 40 d0 cf
+| state hash entry 28
+| inserting state object #3 bucket: 28
+| ikev2 child outC1: calculating g^{xy}, sending C1
+./rekeyikev2-inCR1 starting rekey of CHILD SA for state=#2 (expired) using PARENT SA #1 as INITIATOR
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_CHILD_SA
 |    flags: ISAKMP_FLAG_ENCRYPTION+ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 02
+|    next-payload: ISAKMP_NEXT_v2E [@16=0x2e]
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
+|    next-payload: ISAKMP_NEXT_v2KE [@-20=0x22]
 | *****emit IKEv2 Key Exchange Payload:
-|    next payload type: ISAKMP_NEXT_v2Ni
 |    critical bit: none
 |    transform type: 14
 | emitting 256 raw bytes of ikev2 g^x into IKEv2 Key Exchange Payload
@@ -582,18 +630,17 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   08 38 d4 34  70 22 6c 21  d2 5b 20 a1  d2 ba 2a d1
 |   89 f3 20 79  ce ac 1e c2  ec 7d ae 76  94 40 39 a0
 | emitting length of IKEv2 Key Exchange Payload: 264
+|    next-payload: ISAKMP_NEXT_v2Ni [@0=0x28]
 | *****emit IKEv2 Nonce Payload:
-|    next payload type: ISAKMP_NEXT_v2SA
 |    critical bit: none
 | emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
 | IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
 | emitting length of IKEv2 Nonce Payload: 20
 | empty esp_info, returning defaults
+|    next-payload: ISAKMP_NEXT_v2SA [@264=0x21]
 | *****emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2TSi
 |    critical bit: none
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 1
 |    proto ID: 3
 |    spi size: 4
@@ -601,7 +648,6 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  34 56 78 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -610,18 +656,15 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 2
 |    proto ID: 3
 |    spi size: 4
@@ -629,7 +672,6 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  34 56 78 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ********emit IKEv2 Attribute Substructure Payload:
@@ -638,18 +680,15 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 40
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_P
 |    prop #: 3
 |    proto ID: 3
 |    spi size: 4
@@ -657,23 +696,19 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  34 56 78 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | ******emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 4
 |    proto ID: 3
 |    spi size: 4
@@ -681,24 +716,21 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 4 raw bytes of our spi into IKEv2 Proposal Substructure Payload
 | our spi  34 56 78 12
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 3
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 1
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *******emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 5
 |    transform ID: 0
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | emitting length of IKEv2 Security Association Payload: 156
+|    next-payload: ISAKMP_NEXT_v2TSi [@284=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_v2TSr
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -712,8 +744,8 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | ipv6 high  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
+|    next-payload: ISAKMP_NEXT_v2TSr [@440=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    number of TS: 1
 | ******emit IKEv2 Traffic Selector:
@@ -732,6 +764,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 576
 | emitting length of ISAKMP Message: 604
+| encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
 |   18 4f a0 1e  5c ed ea 7c  7d 7b 3a 21  3e 15 0d 53
@@ -802,7 +835,46 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
 |   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
 |   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
-sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:500 (using #3)
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
+|   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
+|   59 c7 83 3d  1d 3e 87 02  ce d7 61 79  4b 8d 4b c4
+|   ff 36 93 7c  92 37 83 fc  5f 16 c2 35  0f 66 12 e2
+|   ea 2b 36 dd  d4 8b 0c 3f  c6 f0 0d ac  ba 49 32 cb
+|   e0 62 70 92  3b 70 79 bd  44 e6 29 ce  82 2a d6 3c
+|   5e 73 62 3f  f7 0e 3e f6  90 67 13 19  70 22 b3 e5
+|   da 1b d8 43  aa c4 78 d1  52 37 87 29  cc 15 58 bd
+|   83 57 0c 0c  95 9f a0 ba  f2 81 6b 11  f9 4d 29 4f
+|   76 df 64 86  21 6a ae 93  ff 31 af 1d  6a 4b b1 2e
+|   41 b1 46 99  59 f4 1b ed  e7 65 2f 0d  2b 35 84 62
+|   83 be 60 80  94 78 b1 77  6d dc fb 94  27 75 59 5a
+|   e6 f1 e8 b0  9a 89 f4 b7  0a 23 17 1c  43 91 f0 6c
+|   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
+|   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
+|   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
+|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
+|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
+|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
+|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
+|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
+|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
+|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
+|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
+|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
+|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
+|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
+|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
+|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
+|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
+|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
+|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
+|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
+|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+| out calculated auth:
+|   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
+sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -844,9 +916,10 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | #3 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
-./rekeyikev2-inCR1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/00000000)
+./rekeyikev2-inCR1 STATE_CHILD_C1_REKEY: CHILD SA being rekeyed (msgid: 00000000/4294967295)
 2: output to /dev/null
 2: input from rekeyCR1.pcap
+|   =========== input from pcap file rekeyCR1.pcap ========
 | *received 492 bytes from 132.213.238.7:500 on eth0 (port=500)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 20  00 00 00 02  00 00 01 ec  28 00 01 d0
@@ -900,7 +973,31 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | considering state entry: 5
 | considering state entry: 6
 | now proceed with state specific processing using state #6 rekey-childSA-ack
+| decrypting as INITIATOR, using RESPONDER keys
+| processor 'rekey-childSA-ack' returned STF_SUSPEND (2)
+| #3 complete v2 state transition with STF_SUSPEND
+| ikev2 child inCR1: calculated g^{xy}, setting up CHILD SA
 |  checking narrowing - responding to CR1
+| ***parse IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV6_ADDR_RANGE
+|    IP Protocol ID: 0
+|    length: 40
+|    start port: 0
+|    end port: 65535
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 02  00 00 00 01  00 00 00 00
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
+| ***parse IKEv2 Traffic Selector:
+|    TS type: IKEv2_TS_IPV6_ADDR_RANGE
+|    IP Protocol ID: 0
+|    length: 40
+|    start port: 0
+|    end port: 65535
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 00  00 00 00 00  00 00 00 00
+| parsing 16 raw bytes of IKEv2 Traffic Selector into ipv6 ts
+| ipv6 ts  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | checking TSi(1)/TSr(1) selectors, looking for exact match
 |   ikev2_evaluate_connection_fit evaluating our I=parker1--jj2:fd68:c9f9:4157:2:0:1::/96:0/0 R=fd68:c9f9:4157::/64:0/0  to their:
 |     tsi[0]=fd68:c9f9:4157:2:0:1::/fd68:c9f9:4157:2:0:1:ffff:ffff proto=0 portrange 0-65535, tsr[0]=fd68:c9f9:4157::/fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto=0 portrange 0-65535
@@ -936,6 +1033,34 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 |   ip low: fd68:c9f9:4157::
 |   ip high: fd68:c9f9:4157:0:ffff:ffff:ffff:ffff
 | empty esp_info, returning defaults
+| ***parse IKEv2 Proposal Substructure Payload:
+|    length: 40
+|    prop #: 1
+|    proto ID: 3
+|    spi size: 4
+|    # transforms: 3
+| parsing 4 raw bytes of IKEv2 Proposal Substructure Payload into CHILD SA SPI
+| CHILD SA SPI  34 56 78 12
+| SPI received: 34567812
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| *****parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| ****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 5
+|    transform ID: 0
+| ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
+| childsacalc.ni  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
+| childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| ikev2_derive_child_keys: my role is INITIATOR
 | prf+[1]:  f1 a3 5e 87  c7 70 88 01  b6 81 3d 59  56 99 8e be
 |   1a 76 a5 e4
 | prf+[2]:  c3 2c d0 f3  83 3d 8f 24  1e 8f 86 2a  2a 58 ce d8
@@ -953,35 +1078,32 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 to 132.213.238.7:50
 | #3 complete v2 state transition with STF_OK
 ./rekeyikev2-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
-./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/00000000)
+./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established (msgid: 00000002/4294967295)
 ./rekeyikev2-inCR1 negotiated tunnel [fd68:c9f9:4157:2:0:1::,fd68:c9f9:4157:2:0:1:ffff:ffff proto:0 port:0-65535] -> [fd68:c9f9:4157::,fd68:c9f9:4157:0:ffff:ffff:ffff:ffff proto:0 port:0-65535]
 ./rekeyikev2-inCR1 STATE_CHILD_C1_KEYED: CHILD SA established tunnel mode {ESP=>0x34567812 <0x34567812 xfrm=AES_128-HMAC_SHA1 NATOA=none NATD=none DPD=none}
 | releasing whack for #X (sock=Y)
 | releasing whack for #X (sock=Y)
 RC=0 #3: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; newest IPSEC; nodpd; msgid=2; idle; import:admin initiate
 RC=0 #2: "parker1--jj2":500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established); none in -1s; nodpd; msgid=1; idle; import:admin initiate
-RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=2,next=3,recv=0; msgid=0; idle; import:admin initiate
+RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=2,next=3,recv=-1; msgid=0; idle; import:admin initiate
 ./rekeyikev2-inCR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 ./rekeyikev2-inCR1 deleting state #3 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 03
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 3
 |    SPI size: 4
@@ -994,11 +1116,18 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
+| encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   00 00 00 0c  03 04 00 01  34 56 78 12  00 01 02 03
 | data after encryption:
 |   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
-sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   f8 eb 44 68  33 1c 3e 5a  a3 84 7c 63  8f 2e 4b 85
+| out calculated auth:
+|   bc 97 31 52  72 72 67 dd  48 83 e2 02
+sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 03  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1006,23 +1135,20 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   bc 97 31 52  72 72 67 dd  48 83 e2 02
 ./rekeyikev2-inCR1 deleting state #2 (STATE_CHILD_C1_KEYED)
 | received request to delete child state
-| sending Child SA delete equest
+| sending Child SA delete request
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 04
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 3
 |    SPI size: 4
@@ -1035,11 +1161,18 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
+| encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   00 00 00 0c  03 04 00 01  12 34 56 78  00 01 02 03
 | data after encryption:
 |   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
-sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   b5 fc a4 92  84 aa c2 c2  26 45 c4 84  4b 67 04 77
+| out calculated auth:
+|   d8 28 80 26  76 d3 5c b5  ac de 1a 26
+sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 04  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1054,17 +1187,14 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 |   80 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2E
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_INFORMATIONAL
 |    flags: ISAKMP_FLAG_INIT
 |    message ID:  00 00 00 05
 | ***emit IKEv2 Encryption Payload:
-|    next payload type: ISAKMP_NEXT_v2D
 |    critical bit: none
 | emitting 16 zero bytes of iv into IKEv2 Encryption Payload
 | *****emit IKEv2 Delete Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    protocol ID: 1
 |    SPI size: 0
@@ -1075,16 +1205,24 @@ sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (usi
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
 | emitting length of IKEv2 Encryption Payload: 48
 | emitting length of ISAKMP Message: 76
+| encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   00 00 00 08  01 00 00 00  00 01 02 03  04 05 06 07
 | data after encryption:
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
-sending 76 bytes for ikev2_delete_out through eth0:500 to 132.213.238.7:500 (using #1)
+| data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
+|   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
+|   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
+|   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
+| out calculated auth:
+|   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
+sending 76 bytes for ikev2_delete_out through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 25 08  00 00 00 05  00 00 00 4c  2a 00 00 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   23 56 8c 9a  7c 01 7c 8e  c1 2a 91 9a  c4 da 80 c2
 |   df 06 d4 89  4c 60 85 1d  b7 60 27 8e
+| freeing state object #1
 ./rekeyikev2-inCR1 leak: skeyseed_t1, item size: X
 ./rekeyikev2-inCR1 leak: responder keys, item size: X
 ./rekeyikev2-inCR1 leak: initiator keys, item size: X

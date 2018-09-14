@@ -147,6 +147,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 
         DBG_log("I am sending my certificate");
 
+        pbs_set_np(outpbs, ISAKMP_NEXT_v2CERT);
         if (!out_struct(&cert, &ikev2_certificate_desc
                         , outpbs , &cert_pbs))
             return STF_INTERNAL_ERROR;

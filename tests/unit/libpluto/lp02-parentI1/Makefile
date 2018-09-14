@@ -31,6 +31,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ipsec_doi.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_parent.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_child.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_notify.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_derived_keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_prfplus.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
@@ -78,12 +79,14 @@ include Makefile.testcase
 EF_DISABLE_BANNER=1
 export EF_DISABLE_BANNER
 
+Q=$(if ${V},,@)
 programs ${TESTNAME}: ${TESTNAME}.c ${EXTRAOBJS} ../seam_*.c
-	@echo CC ${TESTNAME}.c
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
-	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
-	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
+	@echo " CC ${TESTNAME}"
+	${Q}${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
+	@echo " LD ${TESTNAME}"
+	${Q}${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
 
 check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ${TESTNAME}
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
@@ -107,7 +110,7 @@ update: OUTPUT
 	sed -f ${TESTUTILS}/sanity.sed OUTPUT/I1-dump.txt >I1-dump.txt
 
 clean: OUTPUT
-	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/${TESTNAME}.pcap *.o
+	rm -f OUTPUT/${TESTNAME}.txt ${TESTNAME} ${WHACKFILE} OUTPUT/${TESTNAME}.pcap *.o *~
 
 OUTPUT:
 	@mkdir -p OUTPUT

@@ -281,6 +281,20 @@ static const char *const stfstatus_names[] = {
 enum_names stfstatus_name =
   {STF_IGNORE, STF_FAIL, stfstatus_names, NULL};
 
+/* stf_status_name() generates a string in a temporary buffer
+ * for errors past STF_FAIL */
+#define STF_STATUS_BUFFER_MAX 128
+static char stf_status_buffer[STF_STATUS_BUFFER_MAX];
+const char *stf_status_name(stf_status code)
+{
+	const char *ret = enum_name(&stfstatus_name, code);
+	if (ret) return ret;
+	/* decode errors past STF_FAIL */
+	snprintf(stf_status_buffer, sizeof(stf_status_buffer),
+		 "STF_FAIL%+d", code);
+	return stf_status_buffer;
+}
+
 /* Timer events */
 static const char *const dns_auth_level_name[] = {
     "unsigned",

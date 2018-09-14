@@ -17,6 +17,7 @@ processing whack msg time: X size: Y
 | counting wild cards for @jamesjohnson.emmjay.credil.org is 0
 ./parentR1 use keyid: 1:<> / 2:<>
 | counting wild cards for @parker01.emmjay.credil.org is 0
+| orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
@@ -33,6 +34,7 @@ RC=0 "parker1--jj2": fd68:c9f9:4157::/64===132.213.238.7[@jamesjohnson.emmjay.cr
 RC=0 "parker1--jj2":     myip=unset; hisip=unset;
 RC=0 "parker1--jj2":   ike_life: 3600s; ipsec_life: 28800s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0
 RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 64,96; interface: eth0; kind=CK_PERMANENT
+|   =========== input from pcap file parentI1badKE.pcap ========
 | *received 772 bytes from 192.168.1.1:500 on eth0 (port=500)
 |   00 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 04  22 00 01 fc
@@ -111,6 +113,7 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | find_host_connection2 returns parker1--jj2 (ike=none/none)
 ./parentR1 tentatively considering connection: parker1--jj2
 | creating state object #1 at Z
+| orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:4500)
 | orient parker1--jj2 checking against if: eth0 (AF_INET:132.213.238.7:500)
 |     orient matched on IP
 |   orient parker1--jj2 finished with: 1 [132.213.238.7]
@@ -119,27 +122,58 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | state hash entry 28
 | inserting state object #1 bucket: 28
 | will not send/process a dcookie
+| processor 'responder-V2_init' returned STF_SUSPEND (2)
+| #1 complete v2 state transition with STF_SUSPEND
+| ikev2 parent inI1outR1: calculated ke+nonce, sending R1
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2SA
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | ***emit IKEv2 Security Association Payload:
-|    next payload type: ISAKMP_NEXT_v2KE
 |    critical bit: none
+| no IKE algorithms for this connection
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 1
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 12
+|    transform type: 1
+|    transform ID: 12
+| ******parse IKEv2 Attribute Substructure Payload:
+|    af+type: KEY_LENGTH
+|    length/value: 128
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 3
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 2
+|    transform ID: 2
+| *****parse IKEv2 Transform Substructure Payload:
+|    length: 8
+|    transform type: 4
+|    transform ID: 14
+| ****parse IKEv2 Proposal Substructure Payload:
+|    length: 44
+|    prop #: 2
+|    proto ID: 1
+|    spi size: 0
+|    # transforms: 4
 | ****emit IKEv2 Proposal Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    prop #: 1
 |    proto ID: 1
 |    spi size: 0
 |    # transforms: 4
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 1
 |    transform ID: 12
 | ******emit IKEv2 Attribute Substructure Payload:
@@ -148,37 +182,33 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 |     [128 is 128??]
 | emitting length of IKEv2 Transform Substructure Payload: 12
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 3
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_T
 |    transform type: 2
 |    transform ID: 2
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | *****emit IKEv2 Transform Substructure Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    transform type: 4
 |    transform ID: 14
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 44
 | emitting length of IKEv2 Security Association Payload: 48
 ./parentR1 KE has 192 byte DH public value; 256 required
-./parentR1 sending  notification v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
+./parentR1 sending notification ISAKMP_v2_SA_INIT/v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2N
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
 | ***emit IKEv2 Notify Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
@@ -188,38 +218,38 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | emitting length of IKEv2 Notify Payload: 10
 | emitting 2 zero bytes of message padding into ISAKMP Message
 | emitting length of ISAKMP Message: 40
-sending 40 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (using #1)
+sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 28  00 00 00 0a
 |   01 00 00 11  00 0e 00 00
 ./parentR1 deleting state #1 (STATE_PARENT_R1)
 | considering request to delete IKE parent state
+| removing state object #1
 | ICOOKIE:  00 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| #1 complete v2 state transition with STF_FAIL
+| #1 complete v2 state transition with STF_FAIL+25
 ./parentR1 STATE_CHILDSA_DEL: INVALID_KEY_INFORMATION
-./parentR1 sending  notification v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
+./parentR1 sending notification ISAKMP_v2_SA_INIT/v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   00 01 02 03  04 05 06 07
 |    responder cookie:
 |   de bc 58 3a  8f 40 d0 cf
-|    next payload type: ISAKMP_NEXT_v2N
 |    ISAKMP version: IKEv2 version 2.0 (rfc4306/rfc5996)
 |    exchange type: ISAKMP_v2_SA_INIT
 |    flags: ISAKMP_FLAG_RESPONSE
 |    message ID:  00 00 00 00
 | Adding a v2N Payload
+|    next-payload: ISAKMP_NEXT_v2N [@16=0x29]
 | ***emit IKEv2 Notify Payload:
-|    next payload type: ISAKMP_NEXT_NONE
 |    critical bit: none
 |    Protocol ID: PROTO_ISAKMP
 |    SPI size: 0
 |    Notify Message Type: v2N_INVALID_KE_PAYLOAD
 | emitting length of IKEv2 Notify Payload: 8
 | emitting length of ISAKMP Message: 36
-sending 36 bytes for send_v2_notification through eth0:500 to 192.168.1.1:500 (using #1)
+sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #1)
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 11

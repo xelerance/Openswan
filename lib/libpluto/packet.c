@@ -3,6 +3,7 @@
  * Copyright (C) 1998-2001,2013-2014  D. Hugh Redelmeier.
  * Copyright (C) 2012 Avesh Agarwal <avagarwa@redhat.com>
  * Copyright (C) 2012 Paul Wouters <pwouters@redhat.com>
+ * Copyright (C) 2005-2017 Michael Richardson <mcr@xelerance.com>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -50,7 +51,7 @@
 static field_desc isa_fields[] = {
     { ft_raw, COOKIE_SIZE, "initiator cookie", NULL },
     { ft_raw, COOKIE_SIZE, "responder cookie", NULL },
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np_in,8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_enum, 8/BITS_PER_BYTE, "ISAKMP version", &version_names },
     { ft_enum, 8/BITS_PER_BYTE, "exchange type", &exchange_names },
     { ft_set, 8/BITS_PER_BYTE, "flags", flag_bit_names },
@@ -73,7 +74,7 @@ struct_desc isakmp_hdr_desc = { "ISAKMP Message", isa_fields, sizeof(struct isak
  */
 
 static field_desc isag_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_end, 0, NULL, NULL }
@@ -147,7 +148,7 @@ struct_desc isakmp_xauth_attribute_desc = {
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isasa_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 32/BITS_PER_BYTE, "DOI", &doi_names },
@@ -178,7 +179,7 @@ struct_desc ipsec_sit_desc = { "IPsec DOI SIT", ipsec_sit_field, sizeof(u_int32_
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isap_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "proposal number", NULL },
@@ -209,7 +210,7 @@ struct_desc isakmp_proposal_desc = { "ISAKMP Proposal Payload", isap_fields, siz
 
 /* PROTO_ISAKMP */
 static field_desc isat_fields_isakmp[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "transform number", NULL },
@@ -224,7 +225,7 @@ struct_desc isakmp_isakmp_transform_desc = {
 
 /* PROTO_IPSEC_AH */
 static field_desc isat_fields_ah[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "transform number", NULL },
@@ -239,7 +240,7 @@ struct_desc isakmp_ah_transform_desc = {
 
 /* PROTO_IPSEC_ESP */
 static field_desc isat_fields_esp[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "transform number", NULL },
@@ -254,7 +255,7 @@ struct_desc isakmp_esp_transform_desc = {
 
 /* PROTO_IPCOMP */
 static field_desc isat_fields_ipcomp[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "transform number", NULL },
@@ -302,7 +303,7 @@ struct_desc isakmp_keyex_desc = { "ISAKMP Key Exchange Payload", isag_fields, si
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isaid_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },	/* ??? depends on DOI? */
@@ -329,7 +330,7 @@ struct_desc isakmp_identification_desc = { "ISAKMP Identification Payload", isai
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isaiid_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },
@@ -356,7 +357,7 @@ struct_desc isakmp_ipsec_identification_desc = { "ISAKMP Identification Payload 
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isacert_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "cert encoding", &cert_type_names },
@@ -383,7 +384,7 @@ static field_desc isacert_fields[] = {
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isacr_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,   8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "cert type", &cert_type_names },
@@ -467,7 +468,7 @@ struct_desc isakmp_nonce_desc = { "ISAKMP Nonce Payload", isag_fields, sizeof(st
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isan_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 32/BITS_PER_BYTE, "DOI", &doi_names },
@@ -498,7 +499,7 @@ struct_desc isakmp_notification_desc = { "ISAKMP Notification Payload", isan_fie
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isad_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 32/BITS_PER_BYTE, "DOI", &doi_names },
@@ -543,7 +544,7 @@ struct_desc isakmp_vendor_id_desc = { "ISAKMP Vendor ID Payload", isag_fields, s
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 */
 static field_desc isaattr_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_mbz, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "Attr Msg Type", &attr_msg_type_names },
@@ -596,7 +597,7 @@ struct_desc isakmp_nat_d = { "ISAKMP NAT-D Payload", isag_fields, sizeof(struct 
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc isanat_oa_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_zig, 8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "ID type", &ident_names },
@@ -611,7 +612,7 @@ struct_desc isakmp_nat_oa = { "ISAKMP NAT-OA Payload", isanat_oa_fields, sizeof(
  * Note differs from IKEv1, in that it has a critical bit
  */
 static field_desc ikev2generic_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_end,  0, NULL, NULL }
@@ -663,7 +664,7 @@ struct_desc ikev2_sa_desc = { "IKEv2 Security Association Payload",
  *             Figure 7:  Proposal Substructure
  */
 static field_desc ikev2prop_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,   8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "prop #", NULL },
@@ -694,7 +695,7 @@ struct_desc ikev2_prop_desc = { "IKEv2 Proposal Substructure Payload",
  *
  */
 static field_desc ikev2trans_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,   8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_zig,  8/BITS_PER_BYTE, NULL, NULL },
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "transform type", &trans_type_names },
@@ -753,7 +754,7 @@ struct_desc ikev2_trans_attr_desc = {
  *
  */
 static field_desc ikev2ke_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 16/BITS_PER_BYTE, "transform type", &oakley_group_names },
@@ -796,7 +797,7 @@ struct_desc ikev2_ke_desc = { "IKEv2 Key Exchange Payload",
  */
 
 static field_desc ikev2id_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "id_type", &ident_names },
@@ -824,7 +825,7 @@ struct_desc ikev2_id_desc = { "IKEv2 Identification Payload",
  *
  */
 static field_desc ikev2_cert_fields[] = {
-  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_loose_enum,
@@ -852,8 +853,8 @@ struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_f
  */
 
 static field_desc ikev2_cert_req_fields[] = {
-  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
-  { ft_set,  8/BITS_PER_BYTE, "critical bit", critical_names},
+  { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_loose_enum,
              8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
@@ -881,7 +882,7 @@ struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", 
  *
  */
 static field_desc ikev2a_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_enum, 8/BITS_PER_BYTE, "auth method", &ikev2_auth_names },
@@ -940,7 +941,7 @@ struct_desc ikev2_nonce_desc = { "IKEv2 Nonce Payload",
  *
  */
 static field_desc ikev2_notify_fields[] = {
-  { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+  { ft_np, 8/BITS_PER_BYTE, "next payload type", &payload_names },
   { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
   { ft_len, 16/BITS_PER_BYTE, "length", NULL },
   { ft_enum, 8/BITS_PER_BYTE, "Protocol ID", &protocol_names },
@@ -968,7 +969,7 @@ static field_desc ikev2_notify_fields[] = {
  */
 
 static field_desc ikev2_delete_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat, 8/BITS_PER_BYTE, "protocol ID", NULL },
@@ -1027,7 +1028,7 @@ struct_desc ikev2_vendor_id_desc = { "IKEv2 Vendor ID Payload",
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  */
 static field_desc ikev2ts_fields[] = {
-    { ft_enum, 8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_np,  8/BITS_PER_BYTE, "next payload type", &payload_names },
     { ft_set, 8/BITS_PER_BYTE, "critical bit", critical_names},
     { ft_len, 16/BITS_PER_BYTE, "length", NULL },
     { ft_nat,  8/BITS_PER_BYTE, "number of TS", NULL},
@@ -1093,9 +1094,20 @@ struct_desc ikev2_ts1_desc = { "IKEv2 Traffic Selector",
  *    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  *             Figure 21:  Encrypted Payload Format
+ *
+ * Unlike other payloads, the encrypted payload is a container, so the
+ * next payload is set to the inner type. No next payload is allowed
+ * otherwise.
  */
+static field_desc ikev2e_fields[] = {
+    { ft_np_in,8/BITS_PER_BYTE, "next payload type", &payload_names },
+    { ft_set,  8/BITS_PER_BYTE, "critical bit", critical_names},
+    { ft_len, 16/BITS_PER_BYTE, "length", NULL },
+    { ft_end,  0, NULL, NULL }
+};
+
 struct_desc ikev2_e_desc = { "IKEv2 Encryption Payload",
-			      ikev2generic_fields,
+			      ikev2e_fields,
 			     sizeof(struct ikev2_generic)};
 
 
@@ -1134,18 +1146,20 @@ static struct_desc *const payload_descs[] = {
     NULL, NULL, NULL, NULL,             /* 22,23,24,25 */
     NULL, NULL, NULL, NULL,             /* 26,27,28,29 */
     NULL, NULL, NULL,                   /* 30,31,32 */
-    &ikev2_sa_desc,                     /* 33 */
-    &ikev2_ke_desc,                     /* 34 */
-    &ikev2_id_desc, &ikev2_id_desc,     /* 35,36 */
-    &ikev2_certificate_desc,            /* 37 */
-    &ikev2_certificate_req_desc,	/* 38*/
-    &ikev2_a_desc,                      /* 39 */
-    &ikev2_nonce_desc,                  /* 40 */
-    &ikev2_notify_desc,                 /* 41 */
-    &ikev2_delete_desc,                 /* 42 */
-    &ikev2_vendor_id_desc,              /* 43 */
-    &ikev2_ts_desc, &ikev2_ts_desc,     /* 44, 45 */
-    &ikev2_e_desc,                      /* 46 */
+    &ikev2_sa_desc,                     /* 33 ISAKMP_NEXT_v2SA */
+    &ikev2_ke_desc,                     /* 34 ISAKMP_NEXT_v2KE */
+    &ikev2_id_desc,                     /* 35 ISAKMP_NEXT_v2IDi */
+    &ikev2_id_desc,                     /* 36 ISAKMP_NEXT_v2IDr */
+    &ikev2_certificate_desc,            /* 37 ISAKMP_NEXT_v2CERT */
+    &ikev2_certificate_req_desc,	/* 38 ISAKMP_NEXT_v2CERTREQ */
+    &ikev2_a_desc,                      /* 39 ISAKMP_NEXT_v2AUTH */
+    &ikev2_nonce_desc,                  /* 40 ISAKMP_NEXT_v2Ni/ISAKMP_NEXT_v2Nr */
+    &ikev2_notify_desc,                 /* 41 ISAKMP_NEXT_v2N */
+    &ikev2_delete_desc,                 /* 42 ISAKMP_NEXT_v2D */
+    &ikev2_vendor_id_desc,              /* 43 ISAKMP_NEXT_v2V */
+    &ikev2_ts_desc,                     /* 44 ISAKMP_NEXT_v2TSi */
+    &ikev2_ts_desc,                     /* 45 ISAKMP_NEXT_v2TSr */
+    &ikev2_e_desc,                      /* 46 ISAKMP_NEXT_v2E */
 };
 
 const struct_desc *payload_desc(unsigned p)
@@ -1163,6 +1177,19 @@ init_pbs(pb_stream *pbs, u_int8_t *start, size_t len, const char *name)
     pbs->roof = start + len;
     pbs->lenfld = NULL;
     pbs->lenfld_desc = NULL;
+    pbs->next_payload_pointer = NULL;
+}
+
+void
+init_sub_pbs(pb_stream *parent_pbs, pb_stream *child_pbs, const char *name)
+{
+    init_pbs(child_pbs, parent_pbs->cur
+             , parent_pbs->roof - parent_pbs->cur, name);
+
+    child_pbs->container = parent_pbs;
+    child_pbs->desc = NULL;
+    child_pbs->cur = parent_pbs->cur;
+    child_pbs->next_payload_pointer = parent_pbs->next_payload_pointer;
 }
 
 #ifdef DEBUG
@@ -1190,6 +1217,10 @@ DBG_print_struct(const char *label, const void *struct_ptr
 
 	switch (fp->field_type)
 	{
+	case ft_np:	/* these are next-payload values, and are often zero, because they */
+	case ft_np_in:	/* updated when the next payload is inserted. Omit as confusing */
+            inp += 1;
+            break;
 	case ft_mbz:	/* must be zero */
 	case ft_zig:
 	    inp += i;
@@ -1227,6 +1258,8 @@ DBG_print_struct(const char *label, const void *struct_ptr
 		DBG_log("   %s: %lu", fp->name, (unsigned long)n);
 		break;
 
+	    case ft_np:	        /* value from an enumeration with next payload*/
+	    case ft_np_in:      /* value from an enumeration with next payload*/
 	    case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
 		if ((n & ISAKMP_ATTR_AF_MASK) == ISAKMP_ATTR_AF_TV)
@@ -1379,6 +1412,8 @@ in_struct(void *struct_ptr, struct_desc *sd
 	    case ft_len:	/* length of this struct and any following crud */
 	    case ft_lv:		/* length/value field of attribute */
 	    case ft_enum:	/* value from an enumeration */
+	    case ft_np:	        /* value from an enumeration */
+	    case ft_np_in:      /* value from an enumeration */
 	    case ft_loose_enum:	/* value from an enumeration with only some names known */
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
 	    case ft_af_loose_enum:	/* Attribute Format + value from an enumeration */
@@ -1585,6 +1620,13 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	    DBG_log("out_struct: %d %s"
 		    , (int) (cur - outs->cur), fp->name == NULL? "<end>" : fp->name);
 #endif
+            if(fp->field_type == ft_np) {
+                outs->next_payload_pointer = cur;
+            }
+            else if(fp->field_type == ft_np_in) {
+                obj.next_payload_pointer = cur;
+            }
+
 	    switch (fp->field_type)
 	    {
 	    case ft_mbz:	/* must be zero */
@@ -1593,6 +1635,8 @@ out_struct(const void *struct_ptr, struct_desc *sd
 		for (; i != 0; i--)
 		    *cur++ = '\0';
 		break;
+	    case ft_np:	        /* value from an enumeration, note location */
+	    case ft_np_in:      /* value from an enumeration, note location */
 	    case ft_nat:	/* natural number (may be 0) */
 	    case ft_len:	/* length of this struct and any following crud */
 	    case ft_lv:		/* length/value field of attribute */
@@ -1601,6 +1645,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
 	    case ft_af_enum:	/* Attribute Format + value from an enumeration */
 	    case ft_af_loose_enum: /* Attribute Format + value from an enumeration */
 	    case ft_set:	/* bits representing set */
+
 	    {
 		u_int32_t n = 0;
 
@@ -1718,6 +1763,7 @@ out_struct(const void *struct_ptr, struct_desc *sd
  *  * Note: we must deal with payloads already formatted for the network.
  *  _*_Note:_we_don't_think_a_FALSE_return_should_happen_but_old_routine_did.
  *   */
+/* XXX replace all instances of this */
 bool
 out_modify_previous_np(u_int8_t np, pb_stream *outs)
 {
@@ -1752,6 +1798,17 @@ out_modify_previous_np(u_int8_t np, pb_stream *outs)
 	}
 	}
 	return TRUE;
+}
+
+void pbs_set_np(pb_stream *outs, u_int8_t np)
+{
+    passert(outs->next_payload_pointer != NULL);
+    DBG(DBG_EMITTING, DBG_log("   next-payload: %s [@%ld=0x%2x]"
+                              , enum_show(&payload_names, np)
+                              , (long)(outs->next_payload_pointer - outs->start)
+                              , np));
+
+    *outs->next_payload_pointer = np;
 }
 
 bool

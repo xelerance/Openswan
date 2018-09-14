@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!-- lifted from troff+man by doclifter -->
+<refentry>
+<refmeta>
+<refentrytitle>status</refentrytitle>
+<manvolnum>8</manvolnum>
+<refmiscinfo class='date'>24 Jan 2017</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>ipsec status</refname>
+<refpurpose>asks pluto for current connection status</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>ipsec</command>
+    <arg choice='plain'><replaceable>status [connection name]</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><emphasis remap='I'>status</emphasis>
+is used to ask pluto for current connection status\&. It is the equivalent
+to running the commands
+<emphasis remap='I'>ipsec whack --status</emphasis>.
+</para>
+If the connection name is defined then it does the equivalent of:
+<emphasis remap='I'>ipsec whack --status | grep -F connection name</emphasis>.
+</refsect1>
+
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>ipsec</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_whack</refentrytitle><manvolnum>8</manvolnum></citerefentry>, <citerefentry><refentrytitle>ipsec_auto</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+</refsect1>
+
+</refentry>
+

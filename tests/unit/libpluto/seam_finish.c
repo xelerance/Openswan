@@ -1,3 +1,5 @@
+#ifndef __seam_finish_c__
+#define __seam_finish_c__
 struct pluto_crypto_req;
 void finish_dh_v2(struct state *st,
 		  struct pluto_crypto_req *r)
@@ -6,8 +8,8 @@ void finish_dh_v2(struct state *st,
 
 #define CLONEIT(X) \
     clonetochunk(st->st_##X \
-		 , tc3_results_##X \
-		 , sizeof(tc3_results_##X) \
+		 , SS(X.ptr) \
+		 , SS(X.len) \
 		 ,   "calculated " #X "shared secret");
 
     CLONEIT(shared);
@@ -20,5 +22,8 @@ void finish_dh_v2(struct state *st,
     CLONEIT(skey_pr);
 #undef CLONEIT
 
+    ikev2_validate_key_lengths(st);
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
+#endif

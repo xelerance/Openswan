@@ -157,6 +157,8 @@ void finish_dh_secretiv(struct state *st,
     memcpy(st->st_new_iv, wire_chunk_ptr(dhr, &(dhr->new_iv)),dhr->new_iv.len);
     st->st_new_iv_len = dhr->new_iv.len;
 
+    ikev2_validate_key_lengths(st);
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 
@@ -348,6 +350,8 @@ void finish_dh_v2(struct state *st,
 		 , dhv2->skeyid_ei.len, "calculated skeyid_ei secret");
     clonetochunk(st->st_skey_er, wire_chunk_ptr(dhv2, &(dhv2->skeyid_er))
 		 , dhv2->skeyid_er.len, "calculated skeyid_er secret");
+
+    ikev2_validate_key_lengths(st);
 
     st->hidden_variables.st_skeyid_calculated = TRUE;
 }

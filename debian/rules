@@ -189,12 +189,6 @@ install-openswan-modules-source:
 	cp -r lib/libcrypto "$(BUILDDIR)/modules/openswan/lib/"
 	cp -r packaging/makefiles packaging/linus packaging/utils packaging/defaults/ packaging/ocf \
 		"$(BUILDDIR)/modules/openswan/packaging/"
-	cp -r patches/kernel/2.6.32 "$(BUILDDIR)/modules/openswan/patches/kernel/"
-	cp -r patches/kernel/2.6.34 "$(BUILDDIR)/modules/openswan/patches/kernel/"
-	cp -r patches/kernel/2.6.35 "$(BUILDDIR)/modules/openswan/patches/kernel/"
-	cp -r patches/kernel/2.6.38 "$(BUILDDIR)/modules/openswan/patches/kernel/"
-	cp -r patches/kernel/3.0.0  "$(BUILDDIR)/modules/openswan/patches/kernel/"
-	cp -r patches/kernel/3.2.0  "$(BUILDDIR)/modules/openswan/patches/kernel/"
 	find "$(BUILDDIR)/modules/openswan/lib/" -name "*.o" | xargs --no-run-if-empty rm
 	install --mode=644 debian/openswan-modules-source.kernel-config "$(BUILDDIR)/modules/openswan/config-all.h"
 	install --mode=755 debian/openswan-modules-source.rules "$(BUILDDIR)/modules/openswan/debian/rules"
@@ -204,7 +198,6 @@ install-openswan-modules-source:
 	install --mode=644 debian/compat "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/changelog "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/copyright "$(BUILDDIR)/modules/openswan/debian/"
-	install --mode=644 debian/NEWS "$(BUILDDIR)/modules/openswan/debian/"
 	install --mode=644 debian/README.Debian "$(BUILDDIR)/modules/openswan/debian/"
 
 	tar -C $(BUILDDIR) -c modules/ | bzip2 -9 > \

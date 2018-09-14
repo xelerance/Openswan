@@ -1,3 +1,5 @@
+#ifndef __seam_ikev1_crypto_c__
+#define __seam_ikev1_crypto_c__
 stf_status start_dh_secret(struct pluto_crypto_req_cont *cn
 			   , struct state *st
 			   , enum crypto_importance importance
@@ -13,6 +15,8 @@ void finish_dh_secretiv(struct state *st,
 {
   /* XXX maybe should do something ... */
 
+  ikev2_validate_key_lengths(st);
+
   st->hidden_variables.st_skeyid_calculated = TRUE;
 }
 
@@ -25,3 +29,4 @@ stf_status start_dh_secretiv(struct pluto_crypto_req_cont *cn
   return STF_SUSPEND;
 }
 
+#endif

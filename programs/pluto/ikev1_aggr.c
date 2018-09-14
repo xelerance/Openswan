@@ -229,10 +229,17 @@ aggr_inI1_outR1_common(struct msg_digest *md
     lset_t policy_hint = LEMPTY;
     struct connection *c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
 						, md->iface->port
-                                                , KH_ANY
+                                                , KH_IPADDR
 						, &md->sender
 						, md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE, &policy_hint);
-
+    if (c == NULL)
+	    /* if we couldn't match the conn with the sender IP, try with
+	     * wild-card as well */
+	    c = find_host_connection(ANY_MATCH, &md->iface->ip_addr
+				     , md->iface->port
+				     , KH_ANY
+				     , &md->sender
+				     , md->sender_port, LEMPTY, POLICY_IKEV1_DISABLE, &policy_hint);
 
 #if 0
 #ifdef NAT_TRAVERSAL

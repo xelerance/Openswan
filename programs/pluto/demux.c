@@ -233,6 +233,33 @@ comm_handle(const struct iface_port *ifp)
     cur_from = NULL;
 }
 
+bool natt_skip_nonesp(const struct iface_port *ifp
+                      , const ip_address *cur_from
+                      , unsigned short cur_from_port
+                      , u_int8_t **p_buffer
+                      , int       *p_packet_len)
+{
+    if (ifp->ike_float == TRUE) {
+	u_int32_t non_esp;
+	if (*p_packet_len < (int)sizeof(u_int32_t)) {
+	    openswan_log("recvfrom %s:%u too small packet (%d)"
+		, ip_str(cur_from), (unsigned) cur_from_port, *p_packet_len);
+	    return FALSE;
+	}
+
+	memcpy(&non_esp, *p_buffer, sizeof(u_int32_t));
+	if (non_esp != 0) {
+	    openswan_log("recvfrom %s:%u has no Non-ESP marker"
+		, ip_str(cur_from), (unsigned) cur_from_port);
+	    return FALSE;
+	}
+	*p_buffer += sizeof(u_int32_t);
+	*p_packet_len -= sizeof(u_int32_t);
+    }
+
+    return TRUE;
+}
+
 /* read the message.
  * Since we don't know its size, we read it into
  * an overly large buffer and then copy it to a
@@ -245,9 +272,8 @@ read_packet(struct msg_digest *md)
     int packet_len;
     /* ??? this buffer seems *way* too big */
     u_int8_t bigbuffer[MAX_INPUT_UDP_SIZE];
-#ifdef NAT_TRAVERSAL
     u_int8_t *_buffer = bigbuffer;
-#endif
+
     union
     {
 	struct sockaddr sa;
@@ -366,21 +392,8 @@ read_packet(struct msg_digest *md)
     cur_from_port = md->sender_port;
 
 #ifdef NAT_TRAVERSAL
-    if (ifp->ike_float == TRUE) {
-	u_int32_t non_esp;
-	if (packet_len < (int)sizeof(u_int32_t)) {
-	    openswan_log("recvfrom %s:%u too small packet (%d)"
-		, ip_str(cur_from), (unsigned) cur_from_port, packet_len);
-	    return FALSE;
-	}
-	memcpy(&non_esp, _buffer, sizeof(u_int32_t));
-	if (non_esp != 0) {
-	    openswan_log("recvfrom %s:%u has no Non-ESP marker"
-		, ip_str(cur_from), (unsigned) cur_from_port);
-	    return FALSE;
-	}
-	_buffer += sizeof(u_int32_t);
-	packet_len -= sizeof(u_int32_t);
+    if(natt_skip_nonesp(ifp, cur_from, cur_from_port, &_buffer, &packet_len) != TRUE) {
+        return FALSE;
     }
 #endif
 
@@ -388,12 +401,8 @@ read_packet(struct msg_digest *md)
      * and set up md->packet_pbs to describe it.
      */
     init_pbs(&md->packet_pbs
-#ifdef NAT_TRAVERSAL
-	, clone_bytes(_buffer, packet_len, "message buffer in comm_handle()")
-#else
-	, clone_bytes(bigbuffer, packet_len, "message buffer in comm_handle()")
-#endif
-	, packet_len, "packet");
+             , clone_bytes(_buffer, packet_len, "message buffer in comm_handle()")
+             , packet_len, "packet");
 
     DBG(DBG_RAW | DBG_CRYPT | DBG_PARSING | DBG_CONTROL,
 	{

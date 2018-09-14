@@ -1,25 +1,28 @@
+#ifndef __seam_gi_sha1_group14_c__
+#define __seam_gi_sha1_group14_c__
+#include "seam_secrets.h"
 /*
  * these files are created by running a full pluto, and observing the
  * debug lines, and transforming them to C data files
  */
 
 /* test case 3 - DH operation, SHA1 + AES */
-u_int16_t     tc14_oakleygroup  = OAKLEY_GROUP_MODP2048;
-oakley_auth_t tc14_auth         = AUTH_ALGORITHM_HMAC_SHA1;
-oakley_hash_t tc14_hash         = OAKLEY_SHA1;
-enum phase1_role tc14_init      = INITIATOR;
+u_int16_t     __tc14_oakleygroup  = OAKLEY_GROUP_MODP2048;
+oakley_auth_t __tc14_auth         = AUTH_ALGORITHM_HMAC_SHA1;
+oakley_hash_t __tc14_hash         = OAKLEY_SHA1;
+enum phase1_role __tc14_init      = INITIATOR;
 
 /* secret value */
-unsigned char tc14_secret[] = {
+unsigned char __tc14_secret[] = {
   0x87, 0x5a, 0x1b, 0x5e, 0xb4, 0x7f, 0x40, 0xbd,
   0x2b, 0x4d, 0x38, 0x79, 0x06, 0x71, 0x25, 0xca,
   0xab, 0x3e, 0x8d, 0x19, 0x19, 0xd1, 0x8f, 0xd0,
   0x53, 0x78, 0x09, 0xd9, 0x4e, 0x8f, 0xd4, 0xb2
 };
 
-unsigned int tc14_secret_len = sizeof(tc14_secret);
+unsigned int __tc14_secret_len = sizeof(__tc14_secret);
 
-unsigned char tc14_gi[] = {
+unsigned char __tc14_gi[] = {
   0x3d, 0xa6, 0x6a, 0x81, 0xe2, 0x92, 0x09, 0xbe,
   0x18, 0x4f, 0xa0, 0x1e, 0x5c, 0xed, 0xea, 0x7c,
   0x7d, 0x7b, 0x3a, 0x21, 0x3e, 0x15, 0x0d, 0x53,
@@ -42,12 +45,36 @@ unsigned char tc14_gi[] = {
   0x08, 0x38, 0xd4, 0x34, 0x70, 0x22, 0x6c, 0x21, 0xd2, 0x5b, 0x20, 0xa1, 0xd2, 0xba, 0x2a, 0xd1,
   0x89, 0xf3, 0x20, 0x79, 0xce, 0xac, 0x1e, 0xc2, 0xec, 0x7d, 0xae, 0x76, 0x94, 0x40, 0x39, 0xa0
 };
-unsigned int tc14_gi_len = sizeof(tc14_gi);
+unsigned int __tc14_gi_len = sizeof(__tc14_gi);
 
-unsigned char tc14_ni[] = {
+unsigned char __tc14_ni[] = {
   0x20, 0x98, 0x9d, 0x37,  0xa8, 0x14, 0xa6, 0x4d,
   0x8f, 0xf0, 0x7c, 0x08,  0xd3, 0x20, 0xe9, 0xe3
 };
-unsigned int tc14_ni_len = sizeof(tc14_ni);
+unsigned int __tc14_ni_len = sizeof(__tc14_ni);
 
+/* most of this one comes from tc3_ for now */
+#define  __tc14_gr                __tc3_gr
+#define  __tc14_nr                __tc3_nr
+#define  __tc14_icookie           __tc3_icookie
+#define  __tc14_rcookie           __tc3_rcookie
+#define  __tc14_results_shared    __tc3_results_shared
+#define  __tc14_results_skeyseed  __tc3_results_skeyseed
+#define  __tc14_results_skey_d    __tc3_results_skey_d
+#define  __tc14_results_skey_ai   __tc3_results_skey_ai
+#define  __tc14_results_skey_ar   __tc3_results_skey_ar
+#define  __tc14_results_skey_ei   __tc3_results_skey_ei
+#define  __tc14_results_skey_er   __tc3_results_skey_er
+#define  __tc14_results_skey_pi   __tc3_results_skey_pi
+#define  __tc14_results_skey_pr   __tc3_results_skey_pr
 
+SEAM_SECRETS_DECLARE_USING_PREFIX_ARRAYS(tc14_secrets,
+					 OAKLEY_GROUP_MODP2048,
+					 AUTH_ALGORITHM_HMAC_SHA1,
+					 OAKLEY_SHA1,
+					 INITIATOR,
+					 __tc14);
+#undef SECRETS
+#define SECRETS (&tc14_secrets)
+
+#endif

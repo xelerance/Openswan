@@ -94,6 +94,11 @@ print_sa_trans(struct db_sa *f, struct db_trans *tr)
     unsigned int i;
     printf("      transform: %u cnt: %u\n",
 	   tr->transid, tr->attr_cnt);
+    if (!tr->attrs) {
+        if (tr->attr_cnt)
+            printf("      !!! WARNING: tr->attrs found NULL\n");
+        return;
+    }
     for(i=0; i<tr->attr_cnt; i++) {
 	if(f->parentSA) {
 	    print_sa_attr_oakley(&tr->attrs[i]);
@@ -111,6 +116,11 @@ print_sa_prop(struct db_sa *f, struct db_prop *dp)
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
+    if (!dp->trans) {
+        if (dp->trans_cnt)
+            printf("      !!! WARNING: dp->trans found NULL\n");
+        return;
+    }
     for(i=0; i<dp->trans_cnt; i++) {
 	print_sa_trans(f, &dp->trans[i]);
     }
@@ -122,6 +132,11 @@ print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
     unsigned int i;
     printf("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
+    if (!pc->props) {
+        if (pc->prop_cnt)
+            printf("      !!! WARNING: pc->props found NULL\n");
+        return;
+    }
     for(i=0; i<pc->prop_cnt; i++) {
 	print_sa_prop(f, &pc->props[i]);
     }
@@ -133,6 +148,11 @@ sa_print(struct db_sa *f)
     unsigned int i;
     printf("sa disjunct cnt: %u\n",
 	   f->prop_conj_cnt);
+    if (!f->prop_conjs) {
+        if (f->prop_conj_cnt)
+            printf("      !!! WARNING: f->prop_conjs found NULL\n");
+        return;
+    }
     for(i=0; i<f->prop_conj_cnt; i++) {
 	print_sa_prop_conj(f, &f->prop_conjs[i]);
     }
@@ -168,6 +188,11 @@ print_sa_v2_trans(struct db_v2_trans *tr)
 	   , enum_name(&trans_type_names, tr->transform_type)
 	   , tr->transid, en ? enum_name(en, tr->transid) : "unknown"
 	   , tr->attr_cnt);
+    if (!tr->attrs) {
+        if (tr->attr_cnt)
+            printf("      !!! WARNING: tr->attrs found NULL\n");
+        return;
+    }
     for(i=0; i<tr->attr_cnt; i++) {
 	print_sa_v2_attr(&tr->attrs[i]);
     }
@@ -182,6 +207,11 @@ print_sa_v2_prop_conj(struct db_v2_prop_conj *dp)
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
+    if (!dp->trans) {
+        if (dp->trans_cnt)
+            printf("      !!! WARNING: dp->trans found NULL\n");
+        return;
+    }
     for(i=0; i<dp->trans_cnt; i++) {
 	print_sa_v2_trans(&dp->trans[i]);
     }
@@ -193,6 +223,11 @@ print_sa_v2_prop(struct db_v2_prop *pc)
     unsigned int i;
     printf("  conjunctions cnt: %u\n",
 	   pc->prop_cnt);
+    if (!pc->props) {
+        if (pc->prop_cnt)
+            printf("      !!! WARNING: pc->props found NULL\n");
+        return;
+    }
     for(i=0; i<pc->prop_cnt; i++) {
 	    print_sa_v2_prop_conj(&pc->props[i]);
     }
@@ -204,6 +239,11 @@ sa_v2_print(struct db_sa *f)
 	unsigned int i;
 	printf("sav2 disjoint cnt: %u\n",
 	       f->prop_disj_cnt);
+	if (!f->prop_disj) {
+		if (f->prop_disj_cnt)
+			printf("      !!! WARNING: f->prop_disj found NULL\n");
+		return;
+        }
 	for(i=0; i<f->prop_disj_cnt; i++) {
 		print_sa_v2_prop(&f->prop_disj[i]);
 	}

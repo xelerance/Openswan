@@ -308,6 +308,10 @@ struct connection {
 extern bool orient_same_addr_ok;
 extern bool orient(struct connection *c, unsigned int pluto_port);
 
+extern struct iface_port *pick_matching_interfacebyfamily(struct iface_port *iflist,
+                                                          int pluto_port,
+                                                          int family, struct spd_route *sr);
+
 extern bool same_peer_ids(const struct connection *c
     , const struct connection *d, const struct id *his_id);
 extern bool compare_end_addr_names(struct end *a, struct end *b);
@@ -434,7 +438,7 @@ extern char *fmt_conn_instance(const struct connection *c
 
 struct pending;	/* forward declaration (opaque outside connections.c) */
 
-extern void add_pending(int whack_sock
+extern int add_pending(int whack_sock
     , struct state *isakmp_sa
     , struct connection *c
     , lset_t policy
@@ -445,7 +449,7 @@ extern void add_pending(int whack_sock
 
 extern void release_pending_whacks(struct state *st, err_t story);
 extern void unpend(struct state *st);
-extern void update_pending(struct state *os, struct state *ns);
+extern int update_pending(struct state *os, struct state *ns);
 extern void flush_pending_by_state(struct state *st);
 extern void connection_discard(struct connection *c);
 

@@ -1203,6 +1203,8 @@ main_inI2_outR2_calcdone(struct pluto_crypto_req_cont *pcrc
         return;
     }
 
+    ikev2_validate_key_lengths(st);
+
     st->hidden_variables.st_skeyid_calculated = TRUE;
     update_iv(st);
     /* XXX: Do we need to free dh here? If so, how about the other exits?
@@ -1386,11 +1388,11 @@ main_inI2_outR2_tail(struct pluto_crypto_req_cont *pcrc
 
 	DBG(DBG_CONTROLMORE,
 	    DBG_log("started dh_secretiv, returned: stf=%s\n"
-		    , enum_name(&stfstatus_name, e)));
+		    , stf_status_name(e)));
 
 	if(e == STF_FAIL) {
 	    loglog(RC_LOG_SERIOUS, "failed to start async DH calculation, stf=%s\n"
-		   , enum_name(&stfstatus_name, e));
+		   , stf_status_name(e));
 	    return e;
 	}
 

@@ -1,3 +1,5 @@
+#ifndef __seam_whack_c__
+#define __seam_whack_c__
 void whack_log(int rc, const char *msg, ...)
 {
     va_list args;
@@ -9,3 +11,4 @@ void whack_log(int rc, const char *msg, ...)
     va_end(args);
 }
 
+#endif

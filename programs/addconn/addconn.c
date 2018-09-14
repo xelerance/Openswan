@@ -63,6 +63,7 @@ static const char *usage_string = ""
     "               [--rootdir dir] \n"
     "               [--ctlbase socketfile] \n"
     "               [--configsetup] \n"
+    "               [--debug]\n"
     "               {--checkconfig] \n"
     "               [--defaultroute <addr>] [--defaultroutenexthop <addr>]\n"
 

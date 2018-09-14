@@ -27,7 +27,7 @@ SUBDIRS+=proc pluto addconn whack
 SUBDIRS+=_confread _copyright _include _keycensor _plutoload _plutorun
 SUBDIRS+=_realsetup _secretcensor _updown
 SUBDIRS+=auto barf verify ipsec look newhostkey ranbits secrets initnss
-SUBDIRS+=rsasigkey setup showdefaults showhostkey
+SUBDIRS+=rsasigkey setup showdefaults showhostkey status
 SUBDIRS+=ikeping examples policy
 
 # this directory is built to make sure it is always buildable, but it

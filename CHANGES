@@ -4,6 +4,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51rc1 (2018)
+
+Additional work to enable NAT-Traversal in IKEv2.
+
 v2.6.50.1 (August 24, 2018)
 
 This release fixes CVE-2018-15836 (a Bleichenbacher-style signature
@@ -167,6 +171,8 @@ Bug fixes for RSA key size and other issues
 * Display # of tunnel when running 'ipsec setup --status' with IKEv2 [Samir Hussain]
 * Update unit tests to deal with ipsec_setup.8 being copied over [Samir Hussain]
 * Copy ipsec_setup man page into the proper man directory [Samir Hussain]
+
+Bug fixes.
 
 v.2.6.49.1 (February 28, 2017)
 

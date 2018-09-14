@@ -813,6 +813,11 @@ or
 The ISAKMP SA is created in exchange 1 in aggressive mode\&. Openswan has to send the exponent during that exchange, so it has to know what DH group to use before starting\&. This is why you can not have multiple DH groups in aggressive mode\&. In IKEv2, which uses a similar method to IKEv1 Aggressive Mode, there is a message to convey the DH group is wrong, and so an IKEv2 connection can actually recover from picking the wrong DH group by restarting its negotiation\&.
 .RE
 .PP
+\fBaggressive\fR
+.RS 4
+An alias for aggrmode.
+.RE
+.PP
 \fBsalifetime\fR
 .RS 4
 how long a particular instance of a connection (a set of encryption/authentication keys for user packets) should last, from successful negotiation to expiry; acceptable values are an integer optionally followed by

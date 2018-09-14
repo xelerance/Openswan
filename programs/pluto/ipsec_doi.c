@@ -419,6 +419,36 @@ ipsecdoi_initiate(int whack_sock
     return SOS_NOBODY;
 }
 
+/* Add features of actual old state to policy.  This ensures
+ * that rekeying doesn't downgrade security.  I admit that
+ * this doesn't capture everything. */
+lset_t
+update_policy_from_state(const struct state *st, lset_t policy)
+{
+    if (st->st_pfs_group != NULL)
+        policy |= POLICY_PFS;
+    if (st->st_ah.present)
+    {
+        policy |= POLICY_AUTHENTICATE;
+        if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+    if (st->st_esp.present && st->st_esp.attrs.transattrs.encrypt != ESP_NULL)
+    {
+        policy |= POLICY_ENCRYPT;
+        if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+    if (st->st_ipcomp.present)
+    {
+        policy |= POLICY_COMPRESS;
+        if (st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
+            policy |= POLICY_TUNNEL;
+    }
+
+    return policy;
+}
+
 /* Replace SA with a fresh one that is similar
  *
  * Shares some logic with ipsecdoi_initiate, but not the same!
@@ -460,30 +490,7 @@ ipsecdoi_replace(struct state *st
     }
     else
     {
-	/* Add features of actual old state to policy.  This ensures
-	 * that rekeying doesn't downgrade security.  I admit that
-	 * this doesn't capture everything.
-	 */
-	if (st->st_pfs_group != NULL)
-	    policy |= POLICY_PFS;
-	if (st->st_ah.present)
-	{
-	    policy |= POLICY_AUTHENTICATE;
-	    if (st->st_ah.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
-	if (st->st_esp.present && st->st_esp.attrs.transattrs.encrypt != ESP_NULL)
-	{
-	    policy |= POLICY_ENCRYPT;
-	    if (st->st_esp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
-	if (st->st_ipcomp.present)
-	{
-	    policy |= POLICY_COMPRESS;
-	    if (st->st_ipcomp.attrs.encapsulation == ENCAPSULATION_MODE_TUNNEL)
-		policy |= POLICY_TUNNEL;
-	}
+        policy = update_policy_from_state(st, policy);
 	passert(HAS_IPSEC_POLICY(policy));
 	ipsecdoi_initiate(whack_sock
                           , old_parent_state
@@ -948,6 +955,60 @@ void fmt_isakmp_sa_established(struct state *st, char *sadetails, int sad_len)
 	     , (int)st->st_oakley.group->bytes*8);
     st->hidden_variables.st_logged_p1algos = TRUE;
 }
+
+void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln)
+{
+    const char *enc_name, *integ_name;
+    size_t expected_enc_key_bytes, expected_integ_key_bytes;
+
+    if (!st)
+	return;
+
+    /* test the encryption key length */
+    enc_name = st->st_oakley.encrypter
+	? st->st_oakley.encrypter->common.officname : "?",
+    expected_enc_key_bytes = st->st_oakley.enckeylen / 8;
+
+    if (expected_enc_key_bytes != st->st_skey_ei.len) {
+        DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld INITIATOR keylen is %ld",
+                fn, ln, enc_name, expected_enc_key_bytes,
+                st->st_oakley.enckeylen,
+                st->st_serialno,
+                st->st_skey_ei.len);
+    }
+
+    if (expected_enc_key_bytes != st->st_skey_er.len) {
+        DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld RESPONDER keylen is %ld",
+                fn, ln, enc_name, expected_enc_key_bytes,
+                st->st_oakley.enckeylen,
+                st->st_serialno,
+                st->st_skey_er.len);
+    }
+
+    if (!st->st_oakley.integ_hasher)
+	return;
+
+    /* we have the integ_hasher, test the integrity key length */
+    integ_name = st->st_oakley.integ_hasher->common.officname;
+    expected_integ_key_bytes = st->st_oakley.integ_hasher->hash_key_size;
+
+    if (expected_integ_key_bytes != st->st_skey_ai.len) {
+        DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld INITIATOR keylen is %ld",
+                fn, ln, integ_name, expected_integ_key_bytes,
+                st->st_oakley.integ_hasher->hash_key_size,
+                st->st_serialno,
+                st->st_skey_ai.len);
+    }
+
+    if (expected_integ_key_bytes != st->st_skey_ar.len) {
+        DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld RESPONDER keylen is %ld",
+                fn, ln, integ_name, expected_integ_key_bytes,
+                st->st_oakley.integ_hasher->hash_key_size,
+                st->st_serialno,
+                st->st_skey_ar.len);
+    }
+}
+
 
 /*
  * Local Variables:
