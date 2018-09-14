@@ -76,7 +76,6 @@ baseversion:
 
 packagingprep:
 	sed "s/DEBIAN_VER/${DEBIAN_VER}/" debian/changelog.in > debian/changelog
-	cp debian/changelog debian/NEWS
 	@for spec in packaging/*/openswan.spec.in; do \
 		f=$$(basename $$spec .in); d=$$(dirname $$spec); \
 		echo $$spec '->' $$d/$$f; \
