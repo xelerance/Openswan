@@ -4,6 +4,96 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51 (September 14, 2018)
+
+Bug fixes for various issues. Improving interopability with strongSwan.
+Additional work to enable NAT-Traversal in IKEv2.
+
+* s/libgmp3-dev/libgmp-dev/ as the former has been a dummy virtual package for a long time [Simon Deziel]
+* Specify compatibility issues with strongSwan & Openswan. Provided work-around to the issues. [Samir Hussain]
+* wo#7417 . prevent ikev2_validate_key_lengths() from accessing NULL pointers [Bart Trojanowski]
+* wo#5532 . non-PFS policy overrides getting a KE exchange when processing CHILD_SA rekey [Bart Trojanowski]
+* wo#5579 . use incoming exchange type when generating notifications in R2 [Bart Trojanowski]
+* wo#7094 . move state hasing algorithm to .h so that it can be used in unit tests [Bart Trojanowski]
+* wo#7093 . Extra debug in find_phase1_states() and extract-statetable.py
+  uses gdb to dump state and connection structures [Bart Trojanowski]
+* wo#7092 . unit tests for deriving child keys needed to use IKEv2
+  parent SA negotiation hash algorithm [Bart Trojanowski]
+* wo#7091 . unit tests for handling bad messages and responding with
+  appropriate notifications [Bart Trojanowski]
+* wo#7089 . be more explicit when logging encryption role [Bart Trojanowski]
+* wo#7089 . unit tets for receiving child SA rekeys from initial
+ responder as msgid 0 [Bart Trojanowski]
+* wo#7089 . clean out unit test *~ backup and *.o object files [Bart Trojanowski]
+* Use https URL [Samuel Thibault]
+* wo#7011 . shipping v2KE with a zero sized g^x will fail [Bart Trojanowski]
+* fix priority: extra is being replaced [Samuel Thibault]
+* fix spelling [Samuel Thibault]
+* Drop rule installing removed NEWS file [Samuel Thibault]
+* Revert "lp28-addrinfoserialize: IP address for moon changed to 192.139.46.82" [Samuel Thibault]
+* Updating debian/copyright to ensure proper attribute [Samir Hussain]
+* Updating debian/copyright to simplify years and remove file that doesn't exist [Samir Hussain]
+* Updating debian/copyright to reflect the difference licenses/copyrights [Samir Hussain]
+* wo#7003 - add delete_state_family() to handle deleting a parent SA w/ children SAs [Bart Trojanowski]
+* wo#7003 - correctly identify if informational message is a request or response in logs [Bart Trojanowski]
+* unit: update expected output of ikev2crypto unit tests [Bart Trojanowski]
+* contrib: pluto-log-merge.pl [Bart Trojanowski]
+* make ikev2_out_sa() and print_sa-*() functions resilient to NULL pointers [Bart Trojanowski]
+* wo#6874 - explicitly log when state object is freed [Bart Trojanowski]
+* wo#6874 - do not attempt to send notification with st==NULL [Bart Trojanowski]
+* aggr_not_present() match initiator_function type [Bart Trojanowski]
+* No longer ship with <= 3.2.0 kernel patches for Debian [Samir Hussain]
+* Drop useless file [Samuel Thibault]
+* changelog is not generated any more [Samuel Thibault]
+* Fix changelog for upload [Samuel Thibault]
+* No need for a NEWS file giving no useful information [Samuel Thibault]
+* wo#6532 - select the correct newest parent SA for EVENT_SA_REPLACE [Bart Trojanowski]
+* wo#6532 - avoid leaking PSK text if it is malformed [Bart Trojanowski]
+* wo#6760 . when reusing a connection state, we are only interested in
+  parent SAs. Also, check the subnets[Bart Trojanowski]
+* wo#6453 . return and propagate errors from ikev2_derive_child_keys() when hash alg is unknown [Bart Trojanowski]
+* wo#6453 . when generating key material, use phase 1 negotiated hash algorithm [Bart Trojanowski]
+* wo#6589 . using send_v2_notification_enc() to send encrypted notifications [Bart Trojanowski]
+* wo#6589 . add new notification enum types and names [Bart Trojanowski]
+* wo#6589 . better string expansion for error codes, which can be out of range [Bart Trojanowski]
+* wo#6606 . force a new nonce each time we respond to a child SA rekey [Bart Trojanowski]
+* wo#6364 . Cleanup expired/replacedchild SA after a rekey[Bart Trojanowski]
+* wo#6634 . add delete-child-SA-ack state transition [Bart Trojanowski]
+* consistently set timeout-event for rekey initiator [MCR]
+* set the timeout_event for responding to peer requesting child rekey [MCR]
+* when deriving keys, show the nonce as CRYPT debug [Bart Trojanowski]
+* extra debug in ikev2_derive_child_keys() [Bart Trojanowski]
+* macros for helping with INITIATOR/RESPONDER states [Bart Trojanowski]
+* added debug option to usage summary [MCR]
+* update payload_descs[] comments to map them to ISAKMP_NEXT_* namespace. [Bart Trojanowski]
+* make sure that header files are included in tags [Bart Trojanowski]
+* Add info on "aggressive"  keyword in ipsec.conf's man page [Samir Hussain]
+* Update path to gmp.h for buildlin.sh (Thanks to jejayhe) [Samir Hussain]
+* Fix bug where "no connection named foo" appears when downing a subnet [Samir Hussain]
+* Add python-minimal to travis.yml so that helper scripts can work properly [Samir Hussain]
+* Update commercial support section for OSW [Samir Hussain]
+* do not install pluto_next_hop if address families do not match [MCR]
+* Add an 'ipsec status' command that gives the same output as: ipsec auto --status and ipsec whack --status [Samir Hussain]
+* Update 'ipsec status' command to give per connection status (also deals with subnet) [Samir Hussain]
+* wo#6211 . the check on the peers reply should also use localaddr when checking [MCR]
+* wo#6211 . ikev1 proposal from self=%any should use localaddr in proposal [MCR]
+* added new PLUTO_CONN_CLIENTFAMILY and PLUTO_CONN_ENDFAMILY for updown scripts [MCR]
+* update local port numbers/interfaces on receiver, after authenticating packet [MCR]
+* added ikev2_parent_R2 and I3 to dependancies [MCR]
+* wo#4822 . Enhancing IKEv2 NATT support
+* switch to figlet and add message about what file is being processed [MCR]
+* process the NAT-payloads in I2 [MCR]
+* make sure that all makefiles have a pcapupdate, and update all the pcap files [MCR]
+* updated input pcap files to include nat notify [MCR]
+* revise Makefiles to be table driven [MCR]
+* added shell script to run all the unit tests, stopping for make update and git add [MCR]
+* added pcapupdate to update pcap input from lp02 [MCR]
+* fake interface was not in network byte order for fake ipsec0 [MCR]
+* copyright additions [MCR]
+* whitespace changes [MCR]
+* basic natt responder test case [MCR]
+* added pcapupdate to update pcap input from lp02 [MCR]
+
 v2.6.51rc1 (2018)
 
 Additional work to enable NAT-Traversal in IKEv2.
