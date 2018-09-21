@@ -38,6 +38,9 @@ const ip_address *b;
 	size_t n = (as < bs) ? as : bs;		/* min(as, bs) */
 	int c = memcmp(ap, bp, n);
 
+	if (!at && !bt)
+	  return 0;
+
         if (at == 0)            /* do not compare further */
           return -1;
 
