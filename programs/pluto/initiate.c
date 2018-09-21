@@ -1527,7 +1527,9 @@ ISAKMP_SA_established(struct connection *c, so_serial_t serial)
 	{
 	    struct connection *next = d->ac_next;	/* might move underneath us */
 
-	    if ( ((d->kind == CK_PERMANENT) || (d->kind == CK_INSTANCE) || (d->kind == CK_GOING_AWAY))
+	    if ( c != d
+	    && ((d->kind == CK_PERMANENT) || (d->kind == CK_INSTANCE)
+		|| (d->kind == CK_GOING_AWAY))
 	    && same_id(&c->spd.this.id, &d->spd.this.id)
 	    && same_id(&c->spd.that.id, &d->spd.that.id)
 	    && (!sameaddr(&c->spd.that.host_addr, &d->spd.that.host_addr)
