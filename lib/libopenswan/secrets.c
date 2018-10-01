@@ -692,6 +692,9 @@ void private_key_setup(struct private_key_stuff *pks)
         pks->pub->alg = PUBKEY_ALG_RSA;
         reference_key(pks->pub);
     }
+#ifdef HAVE_LIBNSS
+    pks->pub->nssCert = NULL;
+#endif
 }
 
 
@@ -1320,9 +1323,6 @@ osw_process_secret_records(struct secret **psecrets, int verbose,
                 s->secretlineno=flp->lino;
                 s->next = NULL;
 
-#ifdef HAVE_LIBNSS
-                s->pks.pub->nssCert = NULL;
-#endif
                 private_key_setup(&s->pks);
 
 
