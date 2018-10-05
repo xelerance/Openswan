@@ -4,6 +4,14 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+
+v2.6.51.1 (October 5, 2018)
+
+Bug fixes for using libnss and building with Debian.
+
+* wo#7597 . move errant LIBNSS setup to private_key_setup [MCR]
+* Fixing typo in debian/changelog. [Samir Hussain. Hat tip to github user fleish]
+
 v2.6.51 (September 14, 2018)
 
 Bug fixes for various issues. Improving interopability with strongSwan.
