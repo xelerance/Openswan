@@ -571,36 +571,38 @@ int ikev2_evaluate_connection_fit(struct connection *d
 	er = &sr->this;
     }
 
+    if(!ei->has_client && ei->host_type == KH_ANY) {
+	/* here, fill in new end with actual client info from the state */
+	fei = *ei;
+	ei  = &fei;
+	addrtosubnet(&st->st_remoteaddr, &fei.client);
+    }
+
+    if(!er->has_client && er->host_type == KH_ANY) {
+	/* here, fill in new end with actual client info from the state */
+	fer = *er;
+	er  = &fer;
+	addrtosubnet(&st->st_remoteaddr, &fer.client);
+    }
+
     DBG(DBG_CONTROLMORE,
     {
 	char ei3[SUBNETTOT_BUF];
 	char er3[SUBNETTOT_BUF];
         if(ei->has_client) {
             subnettot(&ei->client,  0, ei3, sizeof(ei3));
+	} else if(ei->host_type == KH_ANY) {
+	    strcpy(ei3, "<self>");
         } else {
             strcpy(ei3, "<noclient>");
-
-            /* here, fill in new end with actual client info from the state */
-            if(ei->host_type == KH_ANY) {
-                fei = *ei;
-                ei  = &fei;
-                strcpy(ei3, "<self>");
-                addrtosubnet(&st->st_remoteaddr, &fei.client);
-            }
         }
 
         if(er->has_client) {
             subnettot(&er->client,  0, er3, sizeof(er3));
+	} else if(er->host_type == KH_ANY) {
+            strcpy(er3, "<self>");
         } else {
-            strcpy(er3, "<noclient");
-
-            /* here, fill in new end with actual client info from the state */
-            if(er->host_type == KH_ANY) {
-                fer = *er;
-                er  = &fer;
-                strcpy(er3, "<self>");
-                addrtosubnet(&st->st_remoteaddr, &fer.client);
-            }
+            strcpy(er3, "<noclient>");
         }
 	DBG_log("  ikev2_evaluate_connection_fit evaluating our "
 		"I=%s:%s:%d/%d R=%s:%d/%d %s to their:"
