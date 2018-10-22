@@ -971,18 +971,18 @@ void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln)
 
     if (expected_enc_key_bytes != st->st_skey_ei.len) {
         DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld INITIATOR keylen is %ld",
-                fn, ln, enc_name, expected_enc_key_bytes,
+                fn, ln, enc_name, (long int)expected_enc_key_bytes,
                 st->st_oakley.enckeylen,
                 st->st_serialno,
-                st->st_skey_ei.len);
+                (long int)st->st_skey_ei.len);
     }
 
     if (expected_enc_key_bytes != st->st_skey_er.len) {
         DBG_log("WARNING: %s:%u: encryptor '%s' expects keylen %ld/%d, SA #%ld RESPONDER keylen is %ld",
-                fn, ln, enc_name, expected_enc_key_bytes,
+                fn, ln, enc_name, (long int)expected_enc_key_bytes,
                 st->st_oakley.enckeylen,
                 st->st_serialno,
-                st->st_skey_er.len);
+                (long int)st->st_skey_er.len);
     }
 
     if (!st->st_oakley.integ_hasher)
@@ -994,18 +994,18 @@ void __ikev2_validate_key_lengths(struct state *st, const char *fn, int ln)
 
     if (expected_integ_key_bytes != st->st_skey_ai.len) {
         DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld INITIATOR keylen is %ld",
-                fn, ln, integ_name, expected_integ_key_bytes,
-                st->st_oakley.integ_hasher->hash_key_size,
+                fn, ln, integ_name, (long int)expected_integ_key_bytes,
+                (long int)st->st_oakley.integ_hasher->hash_key_size,
                 st->st_serialno,
-                st->st_skey_ai.len);
+                (long int)st->st_skey_ai.len);
     }
 
     if (expected_integ_key_bytes != st->st_skey_ar.len) {
         DBG_log("WARNING: %s:%u: hasher '%s' expects keylen %ld/%ld, SA #%ld RESPONDER keylen is %ld",
-                fn, ln, integ_name, expected_integ_key_bytes,
-                st->st_oakley.integ_hasher->hash_key_size,
+                fn, ln, integ_name, (long int)expected_integ_key_bytes,
+                (long int)st->st_oakley.integ_hasher->hash_key_size,
                 st->st_serialno,
-                st->st_skey_ar.len);
+                (long int)st->st_skey_ar.len);
     }
 }
 
