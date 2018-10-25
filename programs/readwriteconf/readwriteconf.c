@@ -180,6 +180,14 @@ main(int argc, char *argv[])
 	}
     }
 
+#ifdef HAVE_LIBNSS
+    SECStatus success = NSS_NoDB_Init(NULL);
+    if(success != SECSuccess) {
+        fprintf(stderr, "failed to initialize NSS, unable to proceed\n");
+        exit(2);
+    }
+#endif
+
     /* find config file */
     confdir = getenv(IPSEC_CONFDIR_VAR);
     if(confdir == NULL)
