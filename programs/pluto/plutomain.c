@@ -993,9 +993,6 @@ main(int argc, char **argv)
 	     */
 	    openswan_log("@(#) built on "__DATE__":" __TIME__ " by " BUILDER);
 	}
-#if defined(USE_1DES)
-	openswan_log("WARNING: 1DES is enabled");
-#endif
     }
 
     if(coredir) {
