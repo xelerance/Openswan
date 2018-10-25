@@ -4,7 +4,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -26,4 +25,3 @@ use keyid: 1:A9AA 8D65 3DB6 D939 2943 917B F17C 2031 68AD BCB3 / 2:<>
 adding connection: "green"
 "green": deleting connection
 "gateway--any": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally 

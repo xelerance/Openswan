@@ -5,7 +5,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -64,4 +63,3 @@ loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31
 000  
 forgetting secrets
 "nat-t": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
