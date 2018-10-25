@@ -4,7 +4,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -58,4 +57,3 @@ loading named conns: host-host
 000  
 000  
 "host-host": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
