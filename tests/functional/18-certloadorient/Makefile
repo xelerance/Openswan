@@ -43,10 +43,10 @@ step4:
 	@${WHACKBIN} ${CTLBASE} --status
 
 step5:
-	@${WHACKBIN} ${CTLBASE} --listen || exit 0
+	@${WHACKBIN} ${CTLBASE} --listen >&2 || exit 0
 
 check: OUTPUT ${OUTPUTS}/certs/berri1.pem ${OUTPUTS}/certs/peel1.pem ${OUTPUTS}/private/peel1.key
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step5 step4 step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step5 step4 step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
@@ -54,7 +54,7 @@ OUTPUT:
 	-rm -f OUTPUT.pid
 
 update:
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ./removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.addconn.raw >pluto.addconn.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.addconn.raw >pluto.addconn.out
 
 clean:
 	rm -rf OUTPUT OUTPUT.pid

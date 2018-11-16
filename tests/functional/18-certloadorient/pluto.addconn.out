@@ -18,4 +18,51 @@ Using 'no_kernel' interface code on
   loading certificate from peel1.pem 
   loaded host cert file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/certs/peel1.pem' (1208 bytes)
 adding connection: "green"
+listening for IKE messages
+no public interfaces found
+loading secrets from "/whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets"
+  loaded private key file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/private/peel1.key' (1679 bytes)
+loaded private key for keyid: PPK_RSA:AwEAAc7lK/FC4E 26C3 8211 80F6 08EE FD97 214E A279 A890 C72C
+000 using kernel interface: noklips
+000 using secrets file: /whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets
+000 %myid = (none)
+000 debug none
+000  
+000 virtual_private (%priv):
+000 - allowed 0 subnets: 
+000 - disallowed 0 subnets: 
+000 WARNING: Either virtual_private= is not specified, or there is a syntax 
+000          error in that line. 'left/rightsubnet=vhost:%priv' will not work!
+000 WARNING: Disallowed subnets in virtual_private= is empty. If you have 
+000          private address space in internal use, it should be excluded!
+000  
+000  
+000 algorithm IKE encrypt: id=5, name=OAKLEY_3DES_CBC, blocksize=8, keydeflen=192
+000 algorithm IKE encrypt: id=7, name=OAKLEY_AES_CBC, blocksize=16, keydeflen=128
+000 algorithm IKE hash: id=1, name=OAKLEY_MD5, hashsize=16
+000 algorithm IKE hash: id=2, name=OAKLEY_SHA1, hashsize=20
+000 algorithm IKE hash: id=4, name=OAKLEY_SHA2_256, hashsize=32
+000 algorithm IKE hash: id=6, name=OAKLEY_SHA2_512, hashsize=64
+000 algorithm IKE dh group: id=2, name=OAKLEY_GROUP_MODP1024, bits=1024
+000 algorithm IKE dh group: id=5, name=OAKLEY_GROUP_MODP1536, bits=1536
+000 algorithm IKE dh group: id=14, name=OAKLEY_GROUP_MODP2048, bits=2048
+000 algorithm IKE dh group: id=15, name=OAKLEY_GROUP_MODP3072, bits=3072
+000 algorithm IKE dh group: id=16, name=OAKLEY_GROUP_MODP4096, bits=4096
+000 algorithm IKE dh group: id=17, name=OAKLEY_GROUP_MODP6144, bits=6144
+000 algorithm IKE dh group: id=18, name=OAKLEY_GROUP_MODP8192, bits=8192
+000 algorithm IKE dh group: id=22, name=OAKLEY_GROUP_DH22, bits=1024
+000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
+000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
+000  
+000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
+000  
+000 "green": 2620:120:9000:81::/64===%any[@peel]...%any[@berri.testing.xelerance.com]===2620:120:9000:82::/64; unrouted; eroute owner: #0
+000 "green":     myip=2620:120:9000:81::1; hisip=2620:120:9000:82::1; mycert=peel1.pem; hiscert=berri1.pem;
+000 "green":   CAs: 'DC=Canada, DC=Xelerance, CN=peel'...'DC=Canada, DC=Xelerance, CN=berri'
+000 "green":   ike_life: 3600s; ipsec_life: 600s; rekey_margin: 540s; rekey_fuzz: 100%; keyingtries: 0 
+000 "green":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 64,64; interface: ; kind=CK_PERMANENT
+000 "green":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
+000  
+000  
+forgetting secrets
 "green": deleting connection
