@@ -1,6 +1,6 @@
 Usage: pluto  [--help] [--version] [--optionsfrom <filename>] 
 	[--nofork] [--stderrlog] [--plutostderrlogtime] [--force_busy] 
-	[--nocrsend] [--strictcrlpolicy] [--crlcheckinterval] [--ocspuri] [--uniqueids] [--noretransmits] 
+	[--nocrsend] [--strictcrlpolicy] [--crlcheckinterval] [--ocspuri] [--uniqueids] [--noretransmits] [--built-withlibnss] 
 
 IPsec stack options
 	[--use-auto] [--use-klips] [--use-netkey] [--use-mast] [--use-bsdkame] [--use-nostack]
