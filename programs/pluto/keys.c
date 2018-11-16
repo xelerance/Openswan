@@ -122,6 +122,11 @@ void free_preshared_secrets(void)
     osw_free_preshared_secrets(&pluto_secrets);
 }
 
+void show_secrets_status(void)
+{
+    whack_log(RC_COMMENT, "using secrets file: %s", pluto_shared_secrets_file);
+}
+
 static int print_secrets(struct secret *secret
 			 , struct private_key_stuff *pks UNUSED
 			 , void *uservoid UNUSED)
