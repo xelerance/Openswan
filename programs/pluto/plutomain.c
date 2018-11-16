@@ -152,6 +152,7 @@ usage(const char *mess)
 	    "[--ocspuri] "
 	    "[--uniqueids] "
             "[--noretransmits] "
+            "[--built-withlibnss] "
 	    "\n\nIPsec stack options\n\t"
 	    "[--use-auto] "
 	    "[--use-klips] "
@@ -455,6 +456,8 @@ main(int argc, char **argv)
 	    { "virtual_private", required_argument, NULL, '6' },
 	    { "nhelpers", required_argument, NULL, 'j' },
 
+            { "built-withlibnss", no_argument, NULL, '7' },
+
             /* might not be enabled, but always accept the option */
 	    { "secctx_attr_value", required_argument, NULL, 'w' },
 #ifdef DEBUG
@@ -751,6 +754,14 @@ main(int argc, char **argv)
 #endif
 	case '6':	/* --virtual_private */
 	    virtual_private = optarg;
+	    continue;
+
+	case '7':	/* --built-withlibnss */
+#ifdef HAVE_LIBNSS
+            exit(0);
+#else
+            exit(1);
+#endif
 	    continue;
 
 	default:
