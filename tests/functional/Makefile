@@ -30,6 +30,7 @@ FUNCTIONALTESTS+=10-defaultroute
 FUNCTIONALTESTS+=11-subnets
 FUNCTIONALTESTS+=12-rwcertwrite
 FUNCTIONALTESTS+=13-bigpubkey
+FUNCTIONALTESTS+=19-builtnss
 
 # running 'make check KEEPGOING=1' will run through all tests w/o stopping
 ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
