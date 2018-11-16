@@ -1,0 +1,11 @@
+This test case starts pluto, and then uses addconn to insert a conn
+into pluto.  Pluto is then terminated.
+
+This test case uses a certificate to hold the public and private key.
+The conn loaded will be oriented only on the basis of the availability
+of the private key.
+
+This test is then repeated with LIBNSS turned on, and the certificate and
+private key loaded from nss.
+
+
