@@ -162,6 +162,7 @@ extern void loglog(int mess_no, const char *message, ...) PRINTF_LIKE(2);
 
 /* show status, usually on whack log */
 extern void show_status(void);
+extern void show_secrets_status(void);
 
 #define ip_str pluto_ip_str
 

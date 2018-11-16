@@ -830,6 +830,7 @@ show_status(void)
 {
     show_kernel_interface();
     show_ifaces_status();
+    show_secrets_status();
     show_myid_status();
     show_debug_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
