@@ -22,6 +22,7 @@ loading secrets from "bob.secrets"
   loaded private key file 'bob/private/bobKey.pem' (1675 bytes)
 loaded private key for keyid: PPK_RSA:AwEAAbXtb/A339 C44A 54EA F8CD A71A 5BC3 31B6 80CE 210B CBFE
 000 using kernel interface: noklips
+000 using secrets file: bob.secrets
 000 %myid = (none)
 000 debug none
 000  

@@ -18,6 +18,7 @@ adding connection: "host-host"
 opening file: ZZ
 loading named conns: host-host
 000 using kernel interface: noklips
+000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
 000 debug none
 000  

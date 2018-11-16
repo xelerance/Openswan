@@ -22,6 +22,7 @@ loading secrets from "../../unit/libpluto/samples/moon.secrets"
   loaded private key file '../../unit/libpluto/samples/moon/private/moonKey.pem' (1679 bytes)
 loaded private key for keyid: PPK_RSA:AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535
 000 using kernel interface: noklips
+000 using secrets file: ../../unit/libpluto/samples/moon.secrets
 000 %myid = (none)
 000 debug none
 000  
