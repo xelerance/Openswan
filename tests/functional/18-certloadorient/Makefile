@@ -21,13 +21,23 @@ ADDCONN=${OBJDIRTOP}/programs/addconn/addconn
 WHACKBIN=${OBJDIRTOP}/programs/whack/whack
 SAMPLES=${OPENSWANSRCDIR}/tests/unit/libpluto/samples
 CTLBASE=--ctlbase OUTPUT/base
-SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT --secretsfile=`pwd`/ipsec.secrets
+ifeq ($(USE_LIBNSS),true)
+NSS=.nss
+else
+NSS=
+endif
+SECRETS=ipsec${NSS}.secrets
+LOGFILE=pluto${NSS}.addconn.out
+SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdir=`pwd`/OUTPUT --secretsfile=`pwd`/${SECRETS}
 OUTPUTS=OUTPUT
+
+all:
+	echo run make check
 
 step1:
 	@rm -f OUTPUT/base.pid
 	@echo "file ${PLUTOBIN}" >.gdbinit
-	@echo "set args --nhelpers 1 ${CTLBASE} ${SOCKETS}" >.gdbinit
+	@echo "set args --nofork --nhelpers 1 ${CTLBASE} ${SOCKETS}" >>.gdbinit
 	@${PLUTOBIN} --nhelpers 1 ${CTLBASE} ${SOCKETS} 2>&1
 
 step2:
@@ -46,7 +56,7 @@ step5:
 	@${WHACKBIN} ${CTLBASE} --listen >&2 || exit 0
 
 check: OUTPUT ${OUTPUTS}/certs/berri1.pem ${OUTPUTS}/certs/peel1.pem ${OUTPUTS}/private/peel1.key
-	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step5 step4 step3)| tee ${OUTPUTS}/pluto.addconn.raw | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - pluto.addconn.out;
+	@(make --no-print-directory step1; sleep 1; make --no-print-directory step2; sleep 1; make --no-print-directory step5 step4 step3)| tee ${OUTPUTS}/${LOGFILE} | sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed | diff - ${LOGFILE}
 
 OUTPUT:
 	@mkdir -p ${OUTPUTS}/base
@@ -54,11 +64,27 @@ OUTPUT:
 	-rm -f OUTPUT.pid
 
 update:
-	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/pluto.addconn.raw >pluto.addconn.out
+	sed -r -f ${TESTUTILS}/openswanver.sed -f ${TESTUTILS}/removehelpers.sed -f ${TESTUTILS}/randomhelper.sed ${OUTPUTS}/${LOGFILE} >${LOGFILE}
 
 clean:
 	rm -rf OUTPUT OUTPUT.pid
 
+ifeq ($(USE_LIBNSS),true)
+${OUTPUTS}/cert9.db:
+	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -N
+
+${OUTPUTS}/certs/berri1.pem: | ${OUTPUTS}/cert9.db
+	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n berri1.pem -t u,u,u -s "CN=berri" -v 36
+	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -L -n berri1.pem -a >${OUTPUTS}/certs/berri1.pem
+
+${OUTPUTS}/certs/peel1.pem:  | ${OUTPUTS}/cert9.db
+	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n peel1.pem -t u,u,u -s "CN=peel" -v 36
+	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -L -n peel1.pem -a >${OUTPUTS}/certs/peel1.pem
+
+${OUTPUTS}/private/peel1.key:
+	true
+
+else
 berri1.pem:
 	openssl genrsa -f4 -out berri1.key 2048
 	openssl req -new -batch -subj "/DC=Canada/DC=Xelerance/CN=berri" -x509 -set_serial 1234 -days 1024 -key berri1.key -out berri1.pem
@@ -75,5 +101,5 @@ ${OUTPUTS}/certs/peel1.pem: peel1.pem
 
 ${OUTPUTS}/private/peel1.key: peel1.key
 	cp peel1.key ${OUTPUTS}/private
-
+endif
 
