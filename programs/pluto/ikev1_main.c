@@ -1615,7 +1615,7 @@ main_inR2_outI3_continue(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 mainmode initiator)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
@@ -2097,7 +2097,7 @@ main_inI3_outR3_tail(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 mainmode responder)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
