@@ -103,14 +103,14 @@ static const u_int64_t sha512_K[80] = {
 void sha256_init(sha256_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha256 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA256);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status=PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha256 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha256_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -279,14 +279,14 @@ void sha256_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int
 void sha512_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha512 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA512);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status = PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha512 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha512 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha512_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
@@ -475,14 +475,14 @@ void sha512_hash_buffer(const unsigned char *ib, int ile, unsigned char *ob, int
 void sha384_init(sha512_context *ctx)
 {
 #ifdef HAVE_LIBNSS
-    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init start"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha384 init start"));
     SECStatus status;
     ctx->ctx_nss = NULL;
     ctx->ctx_nss = PK11_CreateDigestContext(SEC_OID_SHA384);
     PR_ASSERT(ctx->ctx_nss!=NULL);
     status=PK11_DigestBegin(ctx->ctx_nss);
     PR_ASSERT(status==SECSuccess);
-    DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
+    //DBG(DBG_CRYPT, DBG_log("NSS: sha384 init end"));
 #else
     memcpy(&ctx->sha_H[0], &sha384_hashInit[0], sizeof(ctx->sha_H));
     ctx->sha_blocks = 0;
