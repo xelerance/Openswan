@@ -506,7 +506,7 @@ aggr_inI1_outR1_tail(struct pluto_crypto_req_cont *pcrc
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature (IKEv1 aggressive responder)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
@@ -798,7 +798,7 @@ aggr_inR1_outI2_tail(struct msg_digest *md
 
 	    if (sig_len == 0)
 	    {
-		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature");
+		loglog(RC_LOG_SERIOUS, "unable to locate my private key for RSA Signature  (IKEv1 aggressive initiator)");
 		return STF_FAIL + AUTHENTICATION_FAILED;
 	    }
 
