@@ -25,6 +25,7 @@ check:
 	@mkdir -p ${buildtmp}
 	(cd ${OPENSWANSRCDIR} && DESTDIR=${buildtmp} ./build-nss )
 	${MAKE} --no-print-directory -C ${OPENSWANSRCDIR} DESTDIR=${buildtmp} OBJDIR=OBJ.nolibnss.${BUILDENV}.${ARCH} USE_LIBNSS=false programs install
+	${MAKE} -C ${OPENSWANSRCDIR}/tests/functional/18-certloadorient check
 
 
 
