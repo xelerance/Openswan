@@ -34,6 +34,10 @@ SOCKETS=--interface 127.0.0.1 --ikeport 7500 --stderrlog --use-nostack --ipsecdi
 all:
 	echo run make check
 
+vars:
+	@echo PLUTO: ${PLUTOBIN}
+	@echo ADDCONN: ${ADDCONN}
+
 step1:
 	@rm -f ${OUTPUTS}/base.pid
 	@echo "file ${PLUTOBIN}" >.gdbinit
@@ -81,8 +85,8 @@ ${OUTPUTS}/certs/peel1.pem:  | ${OUTPUTS}/cert9.db
 	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -L -n peel1.pem -a >${OUTPUTS}/certs/peel1.pem
 
 ${OUTPUTS}/private/peel1.key:
-	mkdir -p ${OUTPUTS}/private
-	touch ${OUTPUTS}/private/peel1.key
+	@mkdir -p ${OUTPUTS}/private
+	@touch ${OUTPUTS}/private/peel1.key
 
 else
 berri1.pem:
