@@ -505,7 +505,11 @@ INSTSUIDFLAGS=--mode=u+rxs,g+rx,o+rx --group=root -b -B .old
 endif
 
 ifeq ($(USE_OBJDIR),true)
+ifeq ($(USE_LIBNSS),true)
+OBJDIR?=OBJ.libnss.${BUILDENV}.${ARCH}
+else
 OBJDIR?=OBJ.${BUILDENV}.${ARCH}
+endif
 OBJDIRTOP?=${OPENSWANSRCDIR}/${OBJDIR}
 else
 # where to place the object files which are built
