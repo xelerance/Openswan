@@ -493,6 +493,8 @@ BUILDENV=$(shell uname -s | tr 'A-Z' 'a-z' | sed -e 's/\(.*\)-.*/\1/')
 endif
 export BUILDENV
 export OSDEP
+export USE_LIBNSS
+
 include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}
 -include ${OPENSWANSRCDIR}/packaging/defaults/${BUILDENV}.${ARCH}
 
