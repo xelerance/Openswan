@@ -74,11 +74,11 @@ ${OUTPUTS}/cert9.db:
 	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -N
 
 ${OUTPUTS}/certs/berri1.pem: | ${OUTPUTS}/cert9.db
-	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n berri1.pem -t u,u,u -s "CN=berri" -v 36
+	certutil -z ${OPENSWANSRCDIR}/noise.dat -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n berri1.pem -t u,u,u -s "CN=berri" -v 36
 	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -L -n berri1.pem -a >${OUTPUTS}/certs/berri1.pem
 
 ${OUTPUTS}/certs/peel1.pem:  | ${OUTPUTS}/cert9.db
-	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n peel1.pem -t u,u,u -s "CN=peel" -v 36
+	certutil -z ${OPENSWANSRCDIR}/noise.dat -f password.txt -d sql:`pwd`/${OUTPUTS} -S -x -k rsa -n peel1.pem -t u,u,u -s "CN=peel" -v 36
 	certutil -f password.txt -d sql:`pwd`/${OUTPUTS} -L -n peel1.pem -a >${OUTPUTS}/certs/peel1.pem
 
 ${OUTPUTS}/private/peel1.key:
