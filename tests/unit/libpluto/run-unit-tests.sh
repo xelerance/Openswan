@@ -67,11 +67,17 @@ done
 toilet_options=
 [ -t 0 ] && toilet_options="--metal --width $(tput cols) --font future"
 
-header() {
-    # use tilet if possible
-    toilet $toilet_options $@ \
-    || figlet -t $@
-}
+# use toilet if possible
+if which toilet
+then
+    header() {
+        toilet $toilet_options $@
+    }
+else
+    header() {
+        figlet -t $@
+    }
+fi
 
 run_make_check() {
     rm -f core
