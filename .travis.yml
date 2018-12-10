@@ -26,6 +26,7 @@ addons:
       - tcpdump
       - libnspr4-dev
       - libnss3-dev
+      - libnss3-tools
 
 cache:
   directories:
