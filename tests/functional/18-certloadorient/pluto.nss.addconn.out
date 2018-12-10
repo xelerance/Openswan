@@ -19,7 +19,7 @@ adding connection: "green"
 listening for IKE messages
 no public interfaces found
 loading secrets from "/whopping/openswan/tests/functional/18-certloadorient/ipsec.nss.secrets"
-loaded private key for keyid: PPK_RSA:AwEAAcfmG/43B0 2358 AB2D 9B3D 3A8D 1F1E 94C8 E484 4A18 6B8B
+loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
 000 using secrets file: /whopping/openswan/tests/functional/18-certloadorient/ipsec.nss.secrets
 000 %myid = (none)
