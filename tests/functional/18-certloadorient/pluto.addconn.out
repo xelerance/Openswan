@@ -22,7 +22,7 @@ listening for IKE messages
 no public interfaces found
 loading secrets from "/whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets"
   loaded private key file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/private/peel1.key' (1679 bytes)
-loaded private key for keyid: PPK_RSA:AwEAAc7lK/FC4E 26C3 8211 80F6 08EE FD97 214E A279 A890 C72C
+loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
 000 using secrets file: /whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets
 000 %myid = (none)
