@@ -18,10 +18,10 @@ Using 'no_kernel' interface code on
 adding connection: "green"
 listening for IKE messages
 no public interfaces found
-loading secrets from "/whopping/openswan/tests/functional/18-certloadorient/ipsec.nss.secrets"
+loading secrets from "ipsec.nss.secrets"
 loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
-000 using secrets file: /whopping/openswan/tests/functional/18-certloadorient/ipsec.nss.secrets
+000 using secrets file: "ipsec.nss.secrets"
 000 %myid = (none)
 000 debug none
 000  

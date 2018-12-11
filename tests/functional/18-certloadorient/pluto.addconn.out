@@ -14,17 +14,17 @@ ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loading certificate from berri1.pem 
-  loaded host cert file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/certs/berri1.pem' (1212 bytes)
+  loaded host cert file 'berri1.pem' (X bytes)
   loading certificate from peel1.pem 
-  loaded host cert file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/certs/peel1.pem' (1208 bytes)
+  loaded host cert file 'peel1.pem' (X bytes)
 adding connection: "green"
 listening for IKE messages
 no public interfaces found
-loading secrets from "/whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets"
-  loaded private key file '/whopping/openswan/tests/functional/18-certloadorient/OUTPUT/private/peel1.key' (1679 bytes)
+loading secrets from "ipsec.secrets"
+  loaded private key file 'peel1.key' (X bytes)
 loaded private key for keyid: RANDOM
 000 using kernel interface: noklips
-000 using secrets file: /whopping/openswan/tests/functional/18-certloadorient/ipsec.secrets
+000 using secrets file: "ipsec.secrets"
 000 %myid = (none)
 000 debug none
 000  
