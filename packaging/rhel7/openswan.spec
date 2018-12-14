@@ -62,6 +62,9 @@ rm -rf ${RPM_BUILD_ROOT}
 %{__make} \
   DESTDIR=%{buildroot} \
   INC_USRLOCAL=%{_prefix} \
+  USE_LIBNSS="true" \
+  HAVE_THREADS="true" \
+  USE_DYNAMICDNS="true" \
   FINALLIBDIR=%{_libdir}/ipsec \
   MANTREE=%{buildroot}%{_mandir} \
   INC_RCDEFAULT=%{_initrddir} \
@@ -84,7 +87,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %files
 %defattr(-,root,root)
 %doc BUGS CHANGES COPYING CREDITS README LICENSE
-%doc OBJ.linux.*/programs/examples/*.conf
+%doc OBJ.*/programs/examples/*.conf
 #%doc doc/manpage.d/*
 # /usr/share/doc/openswan/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ipsec.conf
