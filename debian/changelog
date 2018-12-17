@@ -1,5 +1,5 @@
-openswan (1:2.6.51.1-1) UNRELEASED; urgency=low
+openswan (1:2.6.51.2-1) UNRELEASED; urgency=low
 
   * Re-upload to unstable.
 
- -- Samir Hussain <shussain@xelerance.com>  Friday, 05 Oct 2018 13:14:16 -0400
+ -- Samir Hussain <shussain@xelerance.com>  Monday, 17 Dec 2018 11:34:16 -0400

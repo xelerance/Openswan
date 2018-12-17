@@ -1,6 +1,6 @@
 Summary: Openswan IPsec implementation
 Name: openswan
-Version: 2.6.51.1
+Version: 2.6.51.2
 %{!?buildklips: %{expand: %%define buildklips 0}}
 %{!?buildxen: %{expand: %%define buildxen 0}}
 

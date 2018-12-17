@@ -4,6 +4,22 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51.2 (December 17, 2018)
+
+Additional commits for libnss.
+
+* added --built-withlibnss when built without nss [MCR]
+* update Makefile to tables driven version [MCR]
+* added --built-withlibnss option [MCR]
+* updates to tests for show ipsec.secrets location [MCR]
+* wo#7817 . show location of ipsec.secrets file in whack status [MCR]
+* Specify email address for reporting security vulnerabilies [Samir Hussain]
+* change NSS init to use sql: method [MCR]
+* adjust functional tests to ignore NSS status, but some certificate tests are not going to run with NSS [MCR]
+* wo#7067 . include run-unit-tests.sh and rework Makefile with testlist [MCR]
+* initialize NSS libraries [MCR]
+* remove another USE_1DES [MCR]
+* cast appropriate for 32-bit platforms [MCR]
 
 v2.6.51.1 (October 5, 2018)
 
