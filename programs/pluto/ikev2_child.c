@@ -548,6 +548,61 @@ int ikev2_evaluate_connection_port_fit(const struct connection *d,
     return bestfit_p;
 }
 
+/* checks the TSi/TSr selectors to make sure they are valid,
+ * returns v2N_NOTHING_WRONG on success, or v2N_ error code otherwise */
+static int ikev2_validate_transport_proposal(struct connection *d
+					     , struct state *st
+					     , enum phase1_role role
+					     , struct traffic_selector *tsi
+					     , struct traffic_selector *tsr
+					     , unsigned int tsi_n
+					     , unsigned int tsr_n)
+{
+    unsigned int tsi_ni, tsr_ni;
+    char a0[SUBNETTOT_BUF];
+    char a1[SUBNETTOT_BUF];
+
+    (void)d;
+    (void)st;
+    (void)role;
+
+    for(tsi_ni = 0; tsi_ni < tsi_n; tsi_ni++) {
+
+	if (sameaddr(&tsi[tsi_ni].low, &tsi[tsi_ni].high))
+	    continue;
+
+	/* proposal contains an address range, which is not compatible
+	 * with a transport mode connection */
+
+	addrtot(&tsi[tsi_ni].low, 0, a0, sizeof(a0));
+	addrtot(&tsi[tsi_ni].high, 0, a1, sizeof(a1));
+
+	loglog(RC_LOG_SERIOUS, "received TSi[%d] selector with range %s~%s, "
+	       "incompatible with TRANSPORT mode -- refusing",
+	       tsi_ni, a0, a1);
+	return v2N_TS_UNACCEPTABLE;
+    }
+
+    for(tsr_ni=0; tsr_ni<tsr_n; tsr_ni++) {
+
+	if (sameaddr(&tsr[tsr_ni].low, &tsr[tsr_ni].high))
+	    continue;
+
+	/* proposal contains an address range, which is not compatible
+	 * with a transport mode connection */
+
+	addrtot(&tsr[tsr_ni].low, 0, a0, sizeof(a0));
+	addrtot(&tsr[tsr_ni].high, 0, a1, sizeof(a1));
+
+	loglog(RC_LOG_SERIOUS, "received TSr[%d] selector with %s~%s, "
+	       "incompatible with TRANSPORT mode -- refusing",
+	       tsr_ni, a0, a1);
+	return v2N_TS_UNACCEPTABLE;
+    }
+
+    return v2N_NOTHING_WRONG; // 0
+}
+
 int ikev2_evaluate_connection_fit(struct connection *d
                                   , struct state *st
 				  , struct spd_route *sr
@@ -1893,6 +1948,13 @@ stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
             , tsi_n,tsr_n);
     if (tsi_n < 0 || tsr_n < 0)
         return STF_FAIL + v2N_TS_UNACCEPTABLE;
+
+    if (!(c->policy & POLICY_TUNNEL)) {
+	int err = ikev2_validate_transport_proposal(c, st, INITIATOR,
+						    tsi, tsr, tsi_n, tsr_n);
+	if (err != v2N_NOTHING_WRONG)
+	    return STF_FAIL + err;
+    }
 
     {
         struct spd_route *sra ;
