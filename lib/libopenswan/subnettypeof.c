@@ -27,6 +27,44 @@ const ip_subnet *src;
 }
 
 /*
+ * subnetsize - return order of addresses in subnet
+ *
+ * for example:
+ *   returns  0 if the subnet is 1 IP (mask of /32 for ipv4)
+ *   returns  1 if the subnet is 2 IP (mask of /127 for ipv6)
+ *   returns -1 if there is no subnet (0.0.0.0/0 or ::/0)
+ *   returns -2 if something is off
+ */
+int subnetsize(const ip_subnet *src)
+{
+	int addr_bytes, addr_bits, i;
+	unsigned char *adrp = NULL;
+
+	addr_bytes = addrbytesptr(&src->addr, &adrp);
+	if (!addr_bytes || !adrp)
+		return -1;
+
+	/* handle the special case of ::/0, returning 0 */
+	if (!src->maskbits) {
+		int allzero = 1;
+		for (i=0; i<addr_bytes; i++) {
+			if (!adrp[i])
+				continue;
+			allzero = 0;
+			break;
+		}
+		if (allzero)
+			return -1;
+	}
+
+	addr_bits = addr_bytes * 8;
+	if (src->maskbits > addr_bits)
+		return -2;
+
+	return addr_bits - src->maskbits;
+}
+
+/*
  - networkof - get the network address of a subnet
  */
 void
