@@ -532,6 +532,11 @@ enum pluto_policy {
 
 	POLICY_SAREF_TRACK    = LELEM(32), /* Saref tracking via _updown */
 	POLICY_SAREF_TRACK_CONNTRACK    = LELEM(33), /* use conntrack optimization */
+
+/* additional misc information */
+
+	POLICY_INVALID_CONFIG = LELEM(34), /* detected invalid/incompatible 'conn' ipsec.conf, should not negotiate */
+
 };
 
 /* Any IPsec policy?  If not, a connection description
@@ -541,8 +546,15 @@ enum pluto_policy {
  */
 #define HAS_IPSEC_POLICY(p) (((p) & POLICY_IPSEC_MASK) != 0)
 
+/* We mark the connection policy as INVALID_CONFIG when incompatible options
+ * are picked at add_connection() time. */
+#define IS_INVALID_CONFIG(p) ( (p) & POLICY_INVALID_CONFIG )
+
 /* Don't allow negotiation? */
-#define NEVER_NEGOTIATE(p)  (LDISJOINT((p), POLICY_PSK | POLICY_RSASIG | POLICY_AGGRESSIVE) || (((p)&POLICY_SHUNT_MASK)!=POLICY_SHUNT_TRAP))
+#define NEVER_NEGOTIATE(p)  ( LDISJOINT((p), POLICY_PSK | POLICY_RSASIG | POLICY_AGGRESSIVE) \
+			    || IS_INVALID_CONFIG(p) \
+			    || ( ((p) & POLICY_SHUNT_MASK) != POLICY_SHUNT_TRAP ) \
+			    )
 
 
 /* Oakley transform attributes

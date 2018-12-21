@@ -109,6 +109,11 @@ initiate_a_connection(struct connection *c
     {
 	loglog(RC_ORIENT, "We cannot identify ourselves with either end of this connection.");
     }
+    else if (IS_INVALID_CONFIG(c->policy))
+    {
+	loglog(RC_INITSHUNT
+	       , "cannot initiate connection due to invalid configuration");
+    }
     else if (NEVER_NEGOTIATE(c->policy))
     {
 	loglog(RC_INITSHUNT
