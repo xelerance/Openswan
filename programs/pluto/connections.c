@@ -898,6 +898,22 @@ gen_reqid(void)
     return 0; /* never reached, here to make compiler happy */
 }
 
+/* perform option compatibility tests, if incompatible options were
+ * chosen return FALSE, otherwise if things are OK return TRUE */
+static bool connection_has_valid_config(const struct whack_message *wm)
+{
+	bool valid = TRUE;
+
+	if (!(wm->policy & POLICY_TUNNEL)
+			&& (subnetsize(&wm->left.client) > 0
+			    || subnetsize(&wm->right.client) > 0)) {
+		loglog(RC_LOG, "WARNING: cannot handle TRANSPORT mode with subnets");
+		valid = FALSE;
+	}
+
+	return valid;
+}
+
 void
 add_connection(const struct whack_message *wm)
 {
@@ -973,6 +989,17 @@ add_connection(const struct whack_message *wm)
 	    DBG_log("Added new connection %s with policy %s"
 		    , c->name
 		    , prettypolicy(c->policy)));
+
+	/* check for configuration issues */
+
+	if (!connection_has_valid_config(wm)) {
+		loglog(RC_LOG_SERIOUS,
+		       "WARNING: connection %s marked as INVALID_CONFIG",
+		       c->name);
+		c->policy |= POLICY_INVALID_CONFIG;
+	}
+
+	/* check alg support */
 
 	if ((c->policy & POLICY_COMPRESS) && !can_do_IPcomp)
 	    loglog(RC_COMMENT
