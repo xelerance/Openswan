@@ -1155,6 +1155,9 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         unpack_nonce(&st->st_ni, r);
     }
 
+    /* enable NAT-T keepalives, if necessary */
+    ikev2_enable_nat_keepalives(st);
+
     /* beginning of data going out */
     authstart = reply_stream.cur;
 
@@ -1600,6 +1603,9 @@ ikev2child_inCI1_tail(struct msg_digest *md, struct state *st, bool dopfs)
     /* at this point, the child will be the one making the transition */
     set_cur_state(st);
     md->transition_state = st;
+
+    /* enable NAT-T keepalives, if necessary */
+    ikev2_enable_nat_keepalives(st);
 
     /* send response */
     {

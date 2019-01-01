@@ -70,6 +70,9 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
 
         /* switch to port 4500, if necessary */
         ikev2_update_nat_ports(st);
+
+	/* enable NAT-T keepalives, if necessary */
+	ikev2_enable_nat_keepalives(st);
     }
 
 

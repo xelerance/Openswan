@@ -294,7 +294,11 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
     delete_event(st);
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, st);
 
+    /* switch to port 4500, if necessary */
     ikev2_update_nat_ports(st);
+
+    /* enable NAT-T keepalives, if necessary */
+    ikev2_enable_nat_keepalives(st);
 
     authstart = reply_stream.cur;
     /* send response */

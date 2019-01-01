@@ -258,6 +258,8 @@ extern stf_status process_nat_payload(struct state *st
 
 extern stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md);
 
+extern void ikev2_enable_nat_keepalives(struct state *st);
+
 
 
 

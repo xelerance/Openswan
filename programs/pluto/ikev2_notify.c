@@ -206,6 +206,12 @@ stf_status ikev2_process_notifies(struct state *st, struct msg_digest *md)
     return STF_OK;
 }
 
+void ikev2_enable_nat_keepalives(struct state *st)
+{
+    if (st->hidden_variables.st_nat_traversal & NAT_T_WITH_KA)
+	nat_traversal_new_ka_event();
+}
+
 /* add notify payload to the rbody */
 bool ship_v2N(unsigned int np, u_int8_t  critical,
               u_int8_t protoid, chunk_t *spi,
