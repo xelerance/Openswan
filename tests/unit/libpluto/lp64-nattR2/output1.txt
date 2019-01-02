@@ -564,6 +564,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   considering eth0 132.213.238.7 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 132.213.238.7 port: 500, family: 2, best: eth0/20 0
 |   picking maching interface for family[2,0]: AF_INET resulted in: 132.213.238.7
+./nattR2 nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | **emit ISAKMP Message:
 |    initiator cookie:
 |   80 01 02 03  04 05 06 07

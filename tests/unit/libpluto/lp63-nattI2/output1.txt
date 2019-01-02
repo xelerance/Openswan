@@ -224,6 +224,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   considering eth0 192.168.1.1 port: 4500, family: 2, best: <none>/0 0
 |   considering eth0 2606:2800:220:1:248:1893:25c8:1946 port: 500, family: 10, best: eth0/40 0
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
+./nattI2 nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
