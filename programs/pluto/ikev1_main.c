@@ -139,6 +139,9 @@ main_outI1(int whack_sock
     initialize_new_state(st, c, policy, try, whack_sock, importance);
     if(newstateno) *newstateno = st->st_serialno;
 
+    /* we are initiating this exchange */
+    st->st_orig_initiator = TRUE;
+
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = IKEv1_MAJOR_VERSION;
     st->st_ike_min        = IKEv1_MINOR_VERSION;
@@ -727,6 +730,7 @@ main_inI1_outR1(struct msg_digest *md)
 #endif
     /* Set up state */
     md->st = st = new_state();
+
 #ifdef XAUTH
     passert(st->st_oakley.xauth == 0);
 #endif
@@ -736,6 +740,9 @@ main_inI1_outR1(struct msg_digest *md)
     st->st_localaddr  = md->iface->ip_addr;
     st->st_localport  = md->iface->port;
     st->st_interface  = md->iface;
+
+    /* we are responding to this exchange */
+    st->st_orig_initiator = FALSE;
 
     /* IKE version numbers -- used mostly in logging */
     st->st_ike_maj        = md->maj;

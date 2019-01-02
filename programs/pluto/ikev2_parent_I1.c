@@ -104,7 +104,7 @@ ikev2parent_outI1_withstate(struct state *st
     st->st_ike_maj        = IKEv2_MAJOR_VERSION;
     st->st_ike_min        = IKEv2_MINOR_VERSION;
     st->st_policy         = policy & ~POLICY_IPSEC_MASK;
-    st->st_ikev2_orig_initiator = TRUE;
+    st->st_orig_initiator = TRUE;
 
     if (HAS_IPSEC_POLICY(policy))
         need_to_add_pending = 1;

@@ -204,7 +204,7 @@ struct state
     int                st_usage;
 
     bool               st_ikev2;             /* is this an IKEv2 state? */
-    bool               st_ikev2_orig_initiator;  /* if we keyed the parent SA */
+    bool               st_orig_initiator;    /* if we keyed the parent SA */
     u_char             st_ike_maj;
     u_char             st_ike_min;
     bool               st_rekeytov2;         /* true if this IKEv1 is about
@@ -418,11 +418,11 @@ struct state
 };
 #define NULL_STATE NULL
 
-#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_ikev2_orig_initiator)
+#define IKEv2_IS_ORIG_INITIATOR(st) ((st)->st_orig_initiator)
 #define IKEv2_ORIG_INITIATOR_FLAG(st) (IKEv2_IS_ORIG_INITIATOR(st)?ISAKMP_FLAGS_I : 0)
 
-/* map state->st_ikev2_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
-#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st1) ? INITIATOR : RESPONDER )
+/* map state->st_orig_initiator to INITIATOR vs RESPONDER as per enum phase1_role */
+#define IKEv2_ORIGINAL_ROLE(st) ( IKEv2_IS_ORIG_INITIATOR(st) ? INITIATOR : RESPONDER )
 
 extern bool states_use_connection(struct connection *c);
 

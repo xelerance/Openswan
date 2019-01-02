@@ -1187,6 +1187,14 @@ quick_inI1_outR1(struct msg_digest *md)
     struct payload_digest *const id_pd = md->chain[ISAKMP_NEXT_ID];
     struct verify_oppo_bundle b;
 
+    /* we are responding to this exchange */
+    if (p1st->st_orig_initiator) {
+	loglog(RC_LOG_SERIOUS,
+	       "Unexpected quick mode R1 state for INITIATOR of #%ld",
+	       p1st->st_serialno);
+	return STF_FAIL + SITUATION_NOT_SUPPORTED;
+    }
+
     /* HASH(1) in */
     CHECK_QUICK_HASH(md
 	, quick_mode_hash12(hash_val, hash_pbs->roof, md->message_pbs.roof
