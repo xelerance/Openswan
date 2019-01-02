@@ -275,6 +275,7 @@ aggr_inI1_outR1_common(struct msg_digest *md
 
     /* Set up state */
     cur_state = md->st = st = new_state();	/* (caller will reset cur_state) */
+    st->st_orig_initiator = FALSE; /* we are responding to this exchange */
     st->st_connection = c;
     st->st_remoteaddr = md->sender;
     st->st_remoteport = md->sender_port;
@@ -1024,6 +1025,7 @@ aggr_outI1(int whack_sock,
     cur_state = st = new_state();
     if(newstateno) *newstateno = st->st_serialno;
 
+    st->st_orig_initiator = TRUE; /* we are initiating this exchange */
     st->st_connection = c;
 #ifdef HAVE_LABELED_IPSEC
     st->sec_ctx = NULL;
