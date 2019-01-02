@@ -582,6 +582,25 @@ handle_next_timer_event(void)
 			    , (IS_PHASE1(st->st_state) || IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"
 			    , (unsigned long)(tm - st->st_outbound_time)));
 		}
+#ifdef NAT_TRAVERSAL
+		else if (IS_PARENT_SA(st)  /* this is the parent SA */
+		&& !st->st_orig_initiator  /* we are original responder */
+		&& st->hidden_variables.st_nat_traversal & LELEM(NAT_TRAVERSAL_NAT_BHND_PEER))
+		{
+		    /* this is a parent SA, we are the original responder, and
+		     * our peer is behind NAT-T.
+		     *
+		     * if we initiate the replace, we may not be unable to
+		     * negotiate a new parent SA with the peer.
+		     *
+		     * we ignore the event, and hope that the peer will
+		     * renegotiate soon.
+		     */
+		    DBG(DBG_LIFECYCLE,
+			openswan_log("not initiating rekey on parent SA #%lu: "
+				     "peer is behind NAT-T", st->st_serialno));
+		}
+#endif
 		else
 		{
 		    DBG(DBG_LIFECYCLE
