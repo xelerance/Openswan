@@ -88,6 +88,8 @@ enum event_type {
 /* how long to keep a failed state open in case of retransmits */
 #define EVENT_HALF_OPEN_TIMEOUT                 60
 
+/* how long to delay deletion of conn when remote is behind NATT */
+#define EVENT_NATT_DELAY_REKEY_EXPIRE		20
 
 /*
  * cryptographic helper operations.

@@ -599,6 +599,7 @@ handle_next_timer_event(void)
 		    DBG(DBG_LIFECYCLE,
 			openswan_log("not initiating rekey on parent SA #%lu: "
 				     "peer is behind NAT-T", st->st_serialno));
+		    st->st_margin = EVENT_NATT_DELAY_REKEY_EXPIRE;
 		}
 #endif
 		else
