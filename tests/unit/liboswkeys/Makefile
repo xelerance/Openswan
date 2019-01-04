@@ -16,8 +16,17 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-clean check:
-	@${MAKE} -C ok01-parsepubkey   $@
+UNITTESTS=
+UNITTESTS+=ok01-parsepubkey
+
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
+
+programs clean check pcapupdate:
+clean check pcapupdate programs:
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+
+testlist:
+	@echo ${UNITTESTS}
 
 
 

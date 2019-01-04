@@ -68,6 +68,9 @@ dummy:
 check: checkprograms
 	@${MAKE} -C tests check
 
+testlist:
+	@${MAKE} --silent --no-print-directory -C tests testlist
+
 version:
 	@echo ${IPSECVERSION}
 
