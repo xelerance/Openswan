@@ -1,4 +1,4 @@
-This test case is an IKEv1 initiator that rekeys it's child SA after
+This test case is an IKEv2 initiator that rekeys it's child SA after
 establishing it.  This differs from lp46, in that the child SA
 is rekeyed without PFS.
 

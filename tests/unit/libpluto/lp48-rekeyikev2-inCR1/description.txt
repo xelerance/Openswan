@@ -1,4 +1,4 @@
-This test case is an IKEv1 initiator that rekeys it's child SA after
+This test case is an IKEv2 initiator that rekeys it's child SA after
 establishing it.
 This is the case where the responder replies with it's R1 packet.
 

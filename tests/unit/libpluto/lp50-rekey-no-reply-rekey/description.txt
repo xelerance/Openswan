@@ -1,4 +1,4 @@
-This test case is an IKEv1 initiator that rekeys it's child SA after
+This test case is an IKEv2 initiator that rekeys it's child SA after
 establishing it.
 This is just the Child I1 message requesting the rekey, but it never gets
 a reply, so it tries and tries again, and then gives up and tries a rekey
