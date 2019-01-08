@@ -108,6 +108,7 @@ UNITTESTS_I2+=lp63-nattI2
 UNITTESTS_R2+=lp64-nattR2
 UNITTESTS_I3+=lp65-nattI3
 UNITTESTS_I4+=lp66-natt-replaceI
+UNITTESTS_R4+=lp67-natt-replaceR
 
 # first runs tests that have no interdependancies
 UNITTESTS=${UNITTESTS_0}

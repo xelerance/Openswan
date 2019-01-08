@@ -1,0 +1,10 @@
+This test case is a continuation of lp61,lp62,lp63,lp64,lp65, where the
+initiator is behind NAT.
+
+In this test case, the IKEv2 original responder is attempting to replace the
+IKE (parent) SA.  The action is triggered through EVENT_SA_REPLACE.  Because
+doing so would prevent further communication with the NAT'ed peer, pluto
+ignores the event.  The responder elects to have the initiator take action,
+and no packets are emitted.
+
+This test case uses I1/I2 pcap files from lp61~lp65.
