@@ -120,6 +120,7 @@ DISTSRC = \
 	stubs.c \
 	${SYSDEP_SRC} \
 	timer.c timer.h \
+	replace.c replace.h \
 	$(DISTGCRYPT) \
 	$(X509_DIST_SRCS) \
 	$(HAVE_THREADS_DIST_SRCS) \
@@ -140,7 +141,7 @@ OBJSGCRYPT =
 OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
 OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
-OBJSPLUTO += timer.o hmac.o hostpair.o
+OBJSPLUTO += timer.o replace.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
 OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
