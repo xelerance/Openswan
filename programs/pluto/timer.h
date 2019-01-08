@@ -32,6 +32,7 @@ extern long next_event(void);
 extern void delete_event(struct state *st);
 extern void daily_log_event(void);
 extern void handle_next_timer_event(void);
+extern void handle_a_timer_event(struct event *ev);
 extern void init_timer(void);
 
 /* extra debugging of dpd event removal */
