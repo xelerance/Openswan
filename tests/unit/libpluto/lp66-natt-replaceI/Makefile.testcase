@@ -1,0 +1,16 @@
+# -*- makefile -*-
+# this it the policy file that will be loaded
+ENDNAME=parker
+
+# this is the policy that will be load
+CONNNAME=parker1--jj2
+
+TESTNAME=rekeyParentSA
+
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap nattR1.pcap nattR2.pcap
+
+pcapupdate:
+	cp ../lp62-nattR1/OUTPUT/nattR1.pcap nattR1.pcap
+	cp ../lp64-nattR2/OUTPUT/nattR2.pcap nattR2.pcap
+
