@@ -20,4 +20,9 @@ emitting conn dooku--cassidy-net with end-family: 0 and tunnel-family: 0
 ./whacksemantics leak: new_list nlist, item size: X
 ./whacksemantics leak: default base, item size: X
 ./whacksemantics leak detective found Z leaks, total size X
-processing conn: dooku--cassidy-net
+processing requested conn adds
+dooku--cassidy-net: was requested
+dooku--cassidy-net: was loaded
+dooku--cassidy-net: calling add_connection()
+dooku--cassidy-net: was added
+dooku--cassidy-net: policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
