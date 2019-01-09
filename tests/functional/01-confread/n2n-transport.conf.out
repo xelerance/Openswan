@@ -1,0 +1,132 @@
+#conn berri loaded
+#conn peel loaded
+#conn berrinet loaded
+#conn peelnet loaded
+#conn green loaded
+
+version 2.0
+
+config setup
+
+
+# begin conn berri
+conn berri
+	left=192.168.1.1
+	leftrsakey=0sAQOpgzWyaBsBEOT2n1tRiQATrSn+GR9vsfXvMn+4V7xN2TjqjaFnNkTNPmvv7ICTw0T+rR2J57D91ZPjQnAlTy+URCSdfRI9Q3Eqwpqi2uD6WAus1iU7cEQeC2cTX8by2xvjrHXRu9Q1GY5OAzCzeT1HnNd+vfZv0ipy5wk5zqmfxc5BBxEf4bVsSYRE3xMyaszxXTQSQnEUHygpnbDxLaVQul5nXeSHcBYt2lDRzBSOZuHd5GbyV2K7OFkoxtp6qyQypTAR04Oyf6970qj6WfxoFUTfJm4nbJ4d4SzO03KJDx7Q+Qvs5u6+G5tvqc9lFMHMPBGLJvxCOJE+WpSp6riW9HZIdnLgiIU1G9lHLPZv8xB9
+	#right= not set
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=insist
+	endaddrfamily=ipv4
+# end conn berri
+
+# begin conn peel
+conn peel
+	left=132.213.238.7
+	leftrsakey=0sAQNuCprJ/ikFt6nHrpWWOc0616DHG1JuvTwKffrqQCDNJb1PtXd6CGzJ12l8m56JBuV9FoGobEBVHtAFEnmnA9j/C9+am6SH+2ZY6pKqZARlldLcOXYyu0WHex4M89xNTFGew1SzHCQQMEWXVO7Q2gSv3yDzvGMdtaoZDOEcWVyByF0ZGPSqSrbeQ4J2+aYgeVqmmuXPGTCv+YfccQ3B6SYAoqkTimHzFvA5KqAEAxLK4wKnifFDKV0Wwx3oHLHS8vuf/R04zPkiJSPmrSluRI6xDJQ0/Dc8wWi5fIhT/WoQCfimbh/QVvS0Jcz1W3JehK9cyHLO/BWx0vcBWUC1kbgOyKATK14wsHNdqMlQ2kQdmWp/
+	#right= not set
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=insist
+	endaddrfamily=ipv4
+# end conn peel
+
+# begin conn berrinet
+conn berrinet
+	#also = berri
+	left=192.168.1.1
+	leftsubnet=2620:120:9000:81::/64
+	leftrsakey=0sAQOpgzWyaBsBEOT2n1tRiQATrSn+GR9vsfXvMn+4V7xN2TjqjaFnNkTNPmvv7ICTw0T+rR2J57D91ZPjQnAlTy+URCSdfRI9Q3Eqwpqi2uD6WAus1iU7cEQeC2cTX8by2xvjrHXRu9Q1GY5OAzCzeT1HnNd+vfZv0ipy5wk5zqmfxc5BBxEf4bVsSYRE3xMyaszxXTQSQnEUHygpnbDxLaVQul5nXeSHcBYt2lDRzBSOZuHd5GbyV2K7OFkoxtp6qyQypTAR04Oyf6970qj6WfxoFUTfJm4nbJ4d4SzO03KJDx7Q+Qvs5u6+G5tvqc9lFMHMPBGLJvxCOJE+WpSp6riW9HZIdnLgiIU1G9lHLPZv8xB9
+	leftsourceip=2620:120:9000:81::1
+	#right= not set
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
+# end conn berrinet
+
+# begin conn peelnet
+conn peelnet
+	#also = peel
+	left=132.213.238.7
+	leftsubnet=2620:120:9000:82::/64
+	leftrsakey=0sAQNuCprJ/ikFt6nHrpWWOc0616DHG1JuvTwKffrqQCDNJb1PtXd6CGzJ12l8m56JBuV9FoGobEBVHtAFEnmnA9j/C9+am6SH+2ZY6pKqZARlldLcOXYyu0WHex4M89xNTFGew1SzHCQQMEWXVO7Q2gSv3yDzvGMdtaoZDOEcWVyByF0ZGPSqSrbeQ4J2+aYgeVqmmuXPGTCv+YfccQ3B6SYAoqkTimHzFvA5KqAEAxLK4wKnifFDKV0Wwx3oHLHS8vuf/R04zPkiJSPmrSluRI6xDJQ0/Dc8wWi5fIhT/WoQCfimbh/QVvS0Jcz1W3JehK9cyHLO/BWx0vcBWUC1kbgOyKATK14wsHNdqMlQ2kQdmWp/
+	leftsourceip=2620:120:9000:82::1
+	#right= not set
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=ignore
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
+# end conn peelnet
+
+# begin conn green
+conn green
+	#also = peelnet peel
+	left=132.213.238.7
+	leftsubnet=2620:120:9000:82::/64
+	leftrsakey=0sAQNuCprJ/ikFt6nHrpWWOc0616DHG1JuvTwKffrqQCDNJb1PtXd6CGzJ12l8m56JBuV9FoGobEBVHtAFEnmnA9j/C9+am6SH+2ZY6pKqZARlldLcOXYyu0WHex4M89xNTFGew1SzHCQQMEWXVO7Q2gSv3yDzvGMdtaoZDOEcWVyByF0ZGPSqSrbeQ4J2+aYgeVqmmuXPGTCv+YfccQ3B6SYAoqkTimHzFvA5KqAEAxLK4wKnifFDKV0Wwx3oHLHS8vuf/R04zPkiJSPmrSluRI6xDJQ0/Dc8wWi5fIhT/WoQCfimbh/QVvS0Jcz1W3JehK9cyHLO/BWx0vcBWUC1kbgOyKATK14wsHNdqMlQ2kQdmWp/
+	leftsourceip=2620:120:9000:82::1
+	right=192.168.1.1
+	rightsubnet=2620:120:9000:81::/64
+	rightrsakey=0sAQOpgzWyaBsBEOT2n1tRiQATrSn+GR9vsfXvMn+4V7xN2TjqjaFnNkTNPmvv7ICTw0T+rR2J57D91ZPjQnAlTy+URCSdfRI9Q3Eqwpqi2uD6WAus1iU7cEQeC2cTX8by2xvjrHXRu9Q1GY5OAzCzeT1HnNd+vfZv0ipy5wk5zqmfxc5BBxEf4bVsSYRE3xMyaszxXTQSQnEUHygpnbDxLaVQul5nXeSHcBYt2lDRzBSOZuHd5GbyV2K7OFkoxtp6qyQypTAR04Oyf6970qj6WfxoFUTfJm4nbJ4d4SzO03KJDx7Q+Qvs5u6+G5tvqc9lFMHMPBGLJvxCOJE+WpSp6riW9HZIdnLgiIU1G9lHLPZv8xB9
+	rightsourceip=2620:120:9000:81::1
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=transport
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	authby=rsasig
+	phase2=esp
+	ikev2=insist
+	endaddrfamily=ipv4
+	tunneladdrfamily=ipv6
+# end conn green
+
+# end of config

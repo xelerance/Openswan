@@ -27,6 +27,7 @@ check: OUTPUT
 	../readwritetest ${READWRITE} cassidy   cassidy.conf cassidy.conf
 	../readwritetest ${READWRITE} dooku h2h.conf ../../unit/libpluto/samples/h2h.conf
 	../readwritetest ${READWRITE} dooku certpercent.conf berri-strongswan.conf
+	../readwritetest ${READWRITE} dooku n2n-transport.conf n2n-transport.conf
 	: ../readwritetest ${READWRITE} dooku brokenspace.conf brokenspace.conf
 	[ ! -f core ]
 
