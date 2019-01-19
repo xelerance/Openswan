@@ -134,8 +134,7 @@ constants.o: constants.c ../../linux/include/openswan.h \
   ../../include/ietf_constants.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h ../../include/enum_names.h \
-  ../../include/oswlog.h ../../include/constants.h \
-  ../../include/arpa/nameser.h
+  ../../include/oswlog.h ../../include/constants.h
 copyright.o: copyright.c internal.h ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h
@@ -364,7 +363,7 @@ sanitizestring.o: sanitizestring.c ../../linux/include/openswan.h \
   ../../include/pluto_constants.h \
   ../../include/names_constant.h ../../include/oswlog.h \
   ../../linux/include/openswan.h ../../include/constants.h
-secrets.o: secrets.c ../../include/arpa/nameser.h \
+secrets.o: secrets.c \
   ../../linux/include/openswan.h \
   ../../linux/include/openswan/ipsec_kversion.h \
   ../../linux/include/openswan/ipsec_param.h \
