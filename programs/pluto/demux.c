@@ -30,8 +30,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-#  include <asm/types.h>	/* for __u8, __u32 */
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
 #  include <linux/errqueue.h>
 #  include <sys/uio.h>	/* struct iovec */
 #endif
@@ -201,7 +200,7 @@ comm_handle(const struct iface_port *ifp)
 {
     static struct msg_digest *md;
 
-#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
+#if defined(IP_RECVERR) && defined(MSG_ERRQUEUE) && defined(HAVE_ERRQUEUE)
     /* Even though select(2) says that there is a message,
      * it might only be a MSG_ERRQUEUE message.  At least
      * sometimes that leads to a hanging recvfrom.  To avoid
