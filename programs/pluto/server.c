@@ -47,7 +47,6 @@
 #include <resolv.h>
 
 #if defined(IP_RECVERR) && defined(MSG_ERRQUEUE)
-#  include <asm/types.h>	/* for __u8, __u32 */
 #  include <linux/errqueue.h>
 #  include <sys/uio.h>	/* struct iovec */
 #endif
