@@ -24,7 +24,6 @@
 # include "openswan/ipsec_kversion.h" /* for malloc switch */
 # include <linux/slab.h> /* kmalloc() */
 # include <linux/errno.h>  /* error codes */
-# include <linux/types.h>  /* size_t */
 # include <linux/interrupt.h> /* mark_bh */
 
 # include <linux/netdevice.h>   /* struct device, and other headers */
@@ -34,11 +33,6 @@ extern int debug_pfkey;
 #else /* __KERNEL__ */
 
 # include <sys/types.h>
-
-#if defined(linux)
-# include <linux/types.h>
-# include <linux/errno.h>
-#endif
 
 #endif /* __KERNEL__ */
 
