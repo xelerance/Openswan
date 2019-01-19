@@ -38,19 +38,22 @@ doinstall:: $(PROGRAM) $(CONFFILES) $(EXTRA8MAN) $(EXTRA5MAN) $(EXTRA5PROC) $(LI
 	@mkdir -p $(RCDIR) $(BINDIR)
 	@$(INSTALL) $(INSTBINFLAGS) setup $(RCDIR)/ipsec
 	@ln -s $(FINALRCDIR)/ipsec $(BINDIR)/setup
+ifneq ($(USE_NOMANINSTALL),true)
 	@for f in $(EXTRA8MAN) ; \
 	do \
 		$(INSTALL) $(INSTMANFLAGS) ${srcdir}$$f $(MANDIR)/ipsec_$$f;\
 	done;
-
+endif
 
 install_file_list::
 	@echo $(RCDIR)/ipsec
 	@echo $(BINDIR)/setup
+ifneq ($(USE_NOMANINSTALL),true)
 	@for f in $(EXTRA8MAN) ; \
 	do \
 		echo $(MANDIR)/ipsec_$$f;\
 	done;
+endif
 
 cleanall::
 	@rm -f setup
