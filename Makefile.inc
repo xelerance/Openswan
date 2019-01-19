@@ -455,6 +455,9 @@ HAVE_BROKEN_POPEN?=false
 # For systems with no fork (uclibc nommu)
 HAVE_NO_FORK?=false
 
+# Set to skip man pages on embedded systems
+USE_NOMANINSTALL?=false
+
 NONINTCONFIG=oldconfig
 
 # Should we build with object directories?
