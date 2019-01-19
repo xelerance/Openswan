@@ -16,8 +16,7 @@
  * for more details.
  */
 
-
-#include <asm/types.h>
+#include <linux/types.h>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 /* #include <linux/netdevice.h> */
