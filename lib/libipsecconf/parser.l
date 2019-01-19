@@ -55,6 +55,13 @@ extern int yylex (void);
 extern int yydebug;
 extern int verbose;
 
+/* if glob() does not support GLOB_BRACE, then
+ * resulting system just does not {a,b}
+ */
+#ifndef GLOB_BRACE
+#define GLOB_BRACE 0
+#endif
+
 struct ic_inputsource {
 	YY_BUFFER_STATE state;
 	FILE  *file;
@@ -204,11 +211,11 @@ int parser_y_include (const char *filename)
 			     "%s%s", rootdir2, filename);
 		    try = newname2;
 
-		    globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
+		    globresult = glob(try, GLOB_BRACE, NULL, &globbuf);
 	    }
 	} else {
 		/* try globbing plain name now.. */
-		globresult = glob(try, GLOB_BRACE|GLOB_NOMAGIC, NULL, &globbuf);
+		globresult = glob(try, GLOB_BRACE, NULL, &globbuf);
 	}
 
 	if(globresult == GLOB_NOMATCH)
