@@ -13,6 +13,8 @@
 
 #include "../../programs/pluto/connections.c"
 
+#include "oswconf.h"
+
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"
 #include "seam_fakevendor.c"
