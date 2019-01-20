@@ -3,6 +3,7 @@
 #include <pcap.h>
 #include <netinet/ip.h>
 #include <netinet/udp.h>
+#include <arpa/inet.h>
 
 #include "pluto/log.h"
 #include "id.h"

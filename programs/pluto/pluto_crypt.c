@@ -183,9 +183,9 @@ static void catchusr1(int signo UNUSED)
 {
     return;
 }
-#endif
 
-#ifdef DEBUG
+#if defined(DEBUG)
+/* never called if HAVE_LIBNSS */
 static void
 helper_passert_fail(const char *pred_str
 		    , const char *file_str
@@ -207,6 +207,7 @@ helper_passert_fail(const char *pred_str
     osw_abort();
 }
 #endif
+#endif /* HAVE_LIBNSS */
 
 #ifdef HAVE_LIBNSS
 void pluto_crypto_helper(int fd, int helpernum)
