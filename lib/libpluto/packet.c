@@ -835,7 +835,8 @@ static field_desc ikev2_cert_fields[] = {
 
 struct_desc ikev2_certificate_desc = { "IKEv2 Certificate Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
 
-/* section 3.7
+#if 0
+/* section 3.7  [not yet used, but will be used later]
  *
  * The Certificate Request Payload is defined as follows:
  *
@@ -860,6 +861,7 @@ static field_desc ikev2_cert_req_fields[] = {
              8/BITS_PER_BYTE, "ikev2 cert encoding", &ikev2_cert_type_names },
   { ft_end,  0, NULL, NULL }
 };
+#endif
 
 struct_desc ikev2_certificate_req_desc = { "IKEv2 Certificate Request Payload", ikev2_cert_fields, IKEV2_CERT_SIZE };
 
