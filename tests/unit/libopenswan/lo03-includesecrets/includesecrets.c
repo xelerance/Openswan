@@ -8,6 +8,7 @@
 #include "openswan/passert.h"
 #include "constants.h"
 #include "oswalloc.h"
+#include "oswcrypto.h"
 #include "oswlog.h"
 #include "secrets.h"
 #include "id.h"
