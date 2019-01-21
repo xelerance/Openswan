@@ -66,7 +66,7 @@
 
 /* Taken from spdb_v1_struct.c, as the format is similar */
 bool
-ikev2_out_attr(int type
+ikev2_out_attr(unsigned int type
 	, unsigned long val
 	, struct_desc *attr_desc
 	, enum_names **attr_val_descs USED_BY_DEBUG
@@ -98,10 +98,11 @@ ikev2_out_attr(int type
 	close_output_pbs(&val_pbs);
     }
     DBG(DBG_EMITTING,
-	enum_names *d = attr_val_descs[type];
+        enum_names *d = attr_val_descs[type];
 
-	if (d != NULL)
-		DBG_log("    [%lu is %s]", val, enum_show(d, val)));
+        if (d != NULL)
+          DBG_log("    [%lu is %s]", val, enum_show(d, val)));
+
     return TRUE;
 }
 
@@ -211,12 +212,6 @@ ikev2_out_sa(pb_stream *outs
 		struct ikev2_trans t;
 		pb_stream at_pbs;
 		unsigned int attr_cnt;
-
-#if 0
-		XXX;
-		if() {
-		}
-#endif
 
 		memset(&t, 0, sizeof(t));
 		if(ts_cnt+1 < vpc->trans_cnt) {
@@ -588,15 +583,16 @@ spdb_v2_match_parent(struct db_sa *sadb
 	      , unsigned encr_transform
 	      , int encr_keylen
 	      , unsigned integ_transform
-	      , int integ_keylen
+	      , int integ_keylen UNUSED
 	      , unsigned prf_transform
-	      , int prf_keylen
+	      , int prf_keylen UNUSED
 	      , unsigned dh_transform)
 {
     struct db_v2_prop *pd;
-    unsigned int       pd_cnt;
+    unsigned int       pd_cnt, attempt;
     bool encr_matched, integ_matched, prf_matched, dh_matched;
 
+    attempt = 1;
     encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 
     for(pd_cnt=0; pd_cnt < sadb->prop_disj_cnt; pd_cnt++) {
@@ -604,9 +600,11 @@ spdb_v2_match_parent(struct db_sa *sadb
 	struct db_v2_trans      *tr;
 	unsigned int             tr_cnt;
 	int encrid, integid, prfid, dhid, esnid;
+        int encr_keylen_policy;
 
 	pd = &sadb->prop_disj[pd_cnt];
 	encrid = integid = prfid = dhid = esnid = 0;
+        encr_keylen_policy = 0;
 	encr_matched=integ_matched=prf_matched=dh_matched=FALSE;
 	if(pd->prop_cnt != 1) continue;
 
@@ -627,32 +625,37 @@ spdb_v2_match_parent(struct db_sa *sadb
 			keylen = attr->val;
 	    }
 
-/* shouldn't these assignments of tr->transid be inside their if statements? */
+            /* the assignments are outside of the if, because they are
+             * used to debug things when the match fails
+             */
 	    switch(tr->transform_type) {
 	    case IKEv2_TRANS_TYPE_ENCR:
-		encrid = tr->transid;
-		if(tr->transid == encr_transform && keylen == encr_keylen)
+                encrid = tr->transid;
+                encr_keylen_policy = keylen;
+                if(tr->transid == encr_transform && (encr_keylen_policy == -1 || encr_keylen_policy == encr_keylen)) {
 		    encr_matched=TRUE;
+                }
 		break;
 
 	    case IKEv2_TRANS_TYPE_INTEG:
-		integid = tr->transid;
-		if(tr->transid == integ_transform && keylen == integ_keylen)
+                integid = tr->transid;
+                if(tr->transid == integ_transform) {
 		    integ_matched=TRUE;
-		keylen = integ_keylen;
+                }
 		break;
 
 	    case IKEv2_TRANS_TYPE_PRF:
-		prfid = tr->transid;
-		if(tr->transid == prf_transform && keylen == prf_keylen)
+                prfid = tr->transid;
+		if(tr->transid == prf_transform) {
 		    prf_matched=TRUE;
-		keylen = prf_keylen;
+                }
 		break;
 
 	    case IKEv2_TRANS_TYPE_DH:
-		dhid = tr->transid;
-		if(tr->transid == dh_transform)
+                dhid = tr->transid;
+		if(tr->transid == dh_transform) {
 		    dh_matched=TRUE;
+                }
 		break;
 
 	    default:
@@ -660,27 +663,43 @@ spdb_v2_match_parent(struct db_sa *sadb
 	    }
 
 	    /* esn_matched not tested! */
-	    if(dh_matched && prf_matched && integ_matched && encr_matched)
+	    if(dh_matched && prf_matched && integ_matched && encr_matched) {
+                if(DBGP(DBG_CONTROL)) {
+                    DBG_log("selected proposal %u encr=%s[%d] integ=%s prf=%s modp=%s"
+                            , propnum
+                            , enum_name(&trans_type_encr_names, encrid), encr_keylen
+                            , enum_name(&trans_type_integ_names, integid)
+                            , enum_name(&trans_type_prf_names, prfid)
+                            , enum_name(&oakley_group_names, dhid));
+                }
+
 		return TRUE;
+            }
 	}
 	if(DBGP(DBG_CONTROLMORE)) {
 	/* note: enum_show uses a static buffer so more than one call per
 	   statement is dangerous */
-	    DBG_log("proposal %u %s encr= (policy:%s vs offered:%s)"
+            /* note: enum_show uses a static buffer so more than one call per
+               statement is dangerous */
+	    DBG_log("proposal %u %6s encr= (policy:%20s[%d] vs offered:%s[%d]) [%u,%u]"
 		    , propnum
-		    , encr_matched ? "succeeded" : "failed"
-		    , enum_name(&trans_type_encr_names, encrid)
-		    , enum_show(&trans_type_encr_names, encr_transform));
-	    DBG_log("            %s integ=(policy:%s vs offered:%s)"
-		    , integ_matched ? "succeeded" : "failed"
+		    , encr_matched ? "succ" : "failed"
+		    , enum_name(&trans_type_encr_names, encrid), encr_keylen
+		    , enum_show(&trans_type_encr_names, encr_transform), encr_keylen_policy
+                    , pd_cnt, attempt++);
+	    DBG_log("proposal %u %6s integ=(policy:%20s vs offered:%s)"
+                    , propnum
+		    , integ_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_integ_names, integid)
 		    , enum_show(&trans_type_integ_names, integ_transform));
-	    DBG_log("            %s prf=  (policy:%s vs offered:%s)"
-		    , prf_matched ? "succeeded" : "failed"
+	    DBG_log("proposal %u %6s prf=  (policy:%20s vs offered:%s)"
+                    , propnum
+		    , prf_matched ? "succ" : "failed"
 		    , enum_name(&trans_type_prf_names, prfid)
 		    , enum_show(&trans_type_prf_names, prf_transform));
-	    DBG_log("            %s dh=   (policy:%s vs offered:%s)"
-		    , dh_matched ? "succeeded" : "failed"
+	    DBG_log("proposal %u %6s dh=   (policy:%20s vs offered:%s)"
+                    , propnum
+		    , dh_matched ? "succ" : "failed"
 		    , enum_name(&oakley_group_names, dhid)
 		    , enum_show(&oakley_group_names, dh_transform));
 	}
