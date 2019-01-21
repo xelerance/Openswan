@@ -2382,7 +2382,8 @@ timer.o: timer.c ../../include/openswan.h \
  ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
  kernel.h ../../include/pluto/log.h \
  ../../include/pluto/rnd.h timer.h \
- ../../include/oswtime.h ../../include/whack.h \
+ ../../include/oswtime.h replace.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/dpd.h \
  ../../include/pluto/nat_traversal.h \
