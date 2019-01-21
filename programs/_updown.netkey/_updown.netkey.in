@@ -188,13 +188,11 @@ done
 # Meddling with this stuff should not be necessary and requires great care.
 uproute() {
     doroute replace
-    ip route flush cache
 }
 
 
 downroute() {
     doroute del
-    ip route flush cache
 }
 
 downrule() {
