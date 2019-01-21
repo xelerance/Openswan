@@ -500,7 +500,11 @@ ikev2_update_nat_ports(struct state *st)
         st->st_interface = pick_matching_interfacebyfamily(interfaces, pluto_port4500
                                                            , st->st_remoteaddr.u.v4.sin_family
                                                            , &st->st_connection->spd);
-        st->st_localport = st->st_interface->port;
+        if(st->st_interface) {
+            st->st_localport = st->st_interface->port;
+        } else {
+            loglog(RC_COMMENT, "failed to find port 4500 interface");
+        }
     }
 }
 
