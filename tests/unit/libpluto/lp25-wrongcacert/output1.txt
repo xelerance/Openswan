@@ -169,6 +169,7 @@ RC=0 "rw-any":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+S
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | ****parse IKEv2 Proposal Substructure Payload:
 |    length: 44
 |    prop #: 2
