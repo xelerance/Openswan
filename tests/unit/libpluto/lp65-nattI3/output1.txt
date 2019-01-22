@@ -178,6 +178,7 @@ picking: eth0:500  outside: 55044 <=> d: 55044
 |   picking maching interface for family[2,2]: AF_INET resulted in: 192.168.1.1
 ./nattI3 nat_traversal_ka_event_scheduled = TRUE (was FALSE)
 | ikev2 parent inR1: calculating g^{xy} in order to send I2
+| selected proposal 1 encr=aes-cbc[128] integ=auth-hmac-sha1-96 prf=prf-hmac-sha1 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2

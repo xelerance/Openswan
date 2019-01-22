@@ -260,18 +260,19 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 |    length: 8
 |    transform type: 4
 |    transform ID: 14
-| proposal 1 failed encr= (policy:aes-cbc vs offered:3des)
-|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
-|             failed prf=  (policy:prf-hmac-sha1 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| proposal 1 failed encr= (policy:aes-cbc vs offered:3des)
-|             succeeded integ=(policy:auth-hmac-md5-96 vs offered:auth-hmac-md5-96)
-|             succeeded prf=  (policy:prf-hmac-md5 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
-| proposal 1 succeeded encr= (policy:3des vs offered:3des)
-|             failed integ=(policy:auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
-|             failed prf=  (policy:prf-hmac-sha1 vs offered:prf-hmac-md5)
-|             succeeded dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1 failed encr= (policy:             aes-cbc[-1] vs offered:3des[128]) [0,1]
+| proposal 1 failed integ=(policy:   auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
+| proposal 1 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1 failed encr= (policy:             aes-cbc[-1] vs offered:3des[128]) [1,2]
+| proposal 1   succ integ=(policy:    auth-hmac-md5-96 vs offered:auth-hmac-md5-96)
+| proposal 1   succ prf=  (policy:        prf-hmac-md5 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| proposal 1   succ encr= (policy:                3des[-1] vs offered:3des[-1]) [2,3]
+| proposal 1 failed integ=(policy:   auth-hmac-sha1-96 vs offered:auth-hmac-md5-96)
+| proposal 1 failed prf=  (policy:       prf-hmac-sha1 vs offered:prf-hmac-md5)
+| proposal 1   succ dh=   (policy:OAKLEY_GROUP_MODP2048 vs offered:OAKLEY_GROUP_MODP2048)
+| selected proposal 1 encr=3des[-1] integ=auth-hmac-md5-96 prf=prf-hmac-md5 modp=OAKLEY_GROUP_MODP2048
 | processor 'initiator-V2_init' returned STF_SUSPEND (2)
 | #1 complete v2 state transition with STF_SUSPEND
 | ikev2 parent inR1outI2: calculating g^{xy}, sending I2
