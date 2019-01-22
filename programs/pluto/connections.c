@@ -905,6 +905,7 @@ static bool connection_has_valid_config(const struct whack_message *wm)
 	bool valid = TRUE;
 
 	if (!(wm->policy & POLICY_TUNNEL)
+			&& !(wm->policy & POLICY_SHUNT_MASK)
 			&& (subnetsize(&wm->left.client) > 0
 			    || subnetsize(&wm->right.client) > 0)) {
 		loglog(RC_LOG, "WARNING: cannot handle TRANSPORT mode with subnets");
