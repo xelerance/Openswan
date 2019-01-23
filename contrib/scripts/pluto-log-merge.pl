@@ -126,6 +126,8 @@ sub create_file_reader {
 
     $self->{read} = sub {
         my $fh = $self->{fh};
+
+        READ_A_LINE:
         my $line = <$fh>;
         return if not defined $line;
 
@@ -146,6 +148,8 @@ sub create_file_reader {
                 text => $6,
             }
         }
+
+        goto READ_A_LINE;
     };
 
     return $self;
