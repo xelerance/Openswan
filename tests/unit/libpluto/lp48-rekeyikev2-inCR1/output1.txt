@@ -973,6 +973,7 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 | considering state entry: 5
 | considering state entry: 6
 | now proceed with state specific processing using state #6 rekey-childSA-ack
+| decrypting payload as INITIATOR
 | decrypting as INITIATOR, using RESPONDER keys
 | processor 'rekey-childSA-ack' returned STF_SUSPEND (2)
 | #3 complete v2 state transition with STF_SUSPEND

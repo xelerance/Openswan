@@ -870,6 +870,7 @@ sending 348 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 | considering state entry: 5
 | considering state entry: 6
 | now proceed with state specific processing using state #6 rekey-childSA-ack
+| decrypting payload as INITIATOR
 | decrypting as INITIATOR, using RESPONDER keys
 |  checking narrowing - responding to CR1
 | checking TSi(1)/TSr(1) selectors, looking for exact match

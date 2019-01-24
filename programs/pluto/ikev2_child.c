@@ -1456,6 +1456,8 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     struct state *parentst = md->st;   /* this is parent state! */
     struct state *st;
     struct connection *c;
+    enum phase1_role enc_role;
+    stf_status ret;
 
     md->pst = parentst;
     c = parentst->st_connection;
@@ -1473,24 +1475,14 @@ stf_status ikev2child_inCI1(struct msg_digest *md)
     event_schedule(EVENT_SO_DISCARD, 0, st);
 
     /* now decrypt payload and extract values */
-    if (IKEv2_IS_ORIG_INITIATOR(md->pst)) {
-        stf_status ret;
-	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as INITIATOR"));
-        ret = ikev2_decrypt_msg(md, INITIATOR);
-        if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-            delete_state(st);
-            return ret;
-        }
-    } else {
-        stf_status ret;
-	DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as RESPONDER"));
-        ret = ikev2_decrypt_msg(md, RESPONDER);
-        if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-            delete_state(st);
-            return ret;
-        }
+    enc_role = IKEv2_ORIGINAL_ROLE(md->pst);
+    DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as %s",
+			enc_role == INITIATOR ? "INITIATOR" : "RESPONDER" ));
+    ret = ikev2_decrypt_msg(md, enc_role);
+    if(ret != STF_OK) {
+	    loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+	    delete_state(st);
+	    return ret;
     }
 
     if (md->chain[ISAKMP_NEXT_v2KE]) {
@@ -1806,16 +1798,18 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
 {
     struct state *st = md->st;
     v2_notification_t rn;
+    enum phase1_role enc_role;
+    stf_status ret;
 
     /* now decrypt payload and extract values */
-    {
-        stf_status ret;
-        ret = ikev2_decrypt_msg(md, INITIATOR);
-        if(ret != STF_OK) {
-            loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-            /* XXX maybe try rekey again? */
-            return STF_FAIL;
-        }
+    enc_role = IKEv2_ORIGINAL_ROLE(st);
+    DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as %s",
+			enc_role == INITIATOR ? "INITIATOR" : "RESPONDER" ));
+    ret = ikev2_decrypt_msg(md, enc_role);
+    if(ret != STF_OK) {
+	    loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+	    /* XXX maybe try rekey again? */
+	    return STF_FAIL;
     }
 
     /* Nr in */
