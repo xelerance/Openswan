@@ -977,6 +977,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
             }
         }
 
+	/* role is always RESPONDER, since we are replying to a request */
         ret = ikev2_calc_emit_ts(md, outpbs, RESPONDER, next_payload
                                  , c, c->policy);
         if(ret != STF_OK) {
@@ -1304,7 +1305,8 @@ ikev2child_outC1_tail(struct pluto_crypto_req_cont *pcrc
         st->st_ts_this = ikev2_end_to_ts(&c0->spd.this, st->st_localaddr);
         st->st_ts_that = ikev2_end_to_ts(&c0->spd.that, st->st_remoteaddr);
 
-        ikev2_calc_emit_ts(md, &e_pbs_cipher, role, next_payload, c0, policy);
+	/* role is always INITIATOR, since we are making to a request */
+        ikev2_calc_emit_ts(md, &e_pbs_cipher, INITIATOR, next_payload, c0, policy);
 
         if( !(st->st_connection->policy & POLICY_TUNNEL) ) {
             DBG_log("Initiator child policy is transport mode, sending v2N_USE_TRANSPORT_MODE");
