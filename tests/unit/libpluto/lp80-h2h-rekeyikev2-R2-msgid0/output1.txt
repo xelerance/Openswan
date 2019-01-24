@@ -1008,9 +1008,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  c0 a8 01 01
+| ipv4 low  84 d5 ee 07
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  c0 a8 01 01
+| ipv4 high  84 d5 ee 07
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 |    next-payload: ISAKMP_NEXT_v2TSr [@440=0x2d]
@@ -1023,9 +1023,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    start port: 0
 |    end port: 65535
 | emitting 4 raw bytes of ipv4 low into IKEv2 Traffic Selector
-| ipv4 low  84 d5 ee 07
+| ipv4 low  c0 a8 01 01
 | emitting 4 raw bytes of ipv4 high into IKEv2 Traffic Selector
-| ipv4 high  84 d5 ee 07
+| ipv4 high  c0 a8 01 01
 | emitting length of IKEv2 Traffic Selector: 16
 | emitting length of IKEv2 Traffic Selector Payload: 24
 | emitting 8 raw bytes of padding and length into cleartext
@@ -1063,9 +1063,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   05 00 00 00  00 00 00 24  04 03 04 03  34 56 78 12
 |   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
 |   00 00 00 08  05 00 00 00  2d 00 00 18  01 00 00 00
-|   07 00 00 10  00 00 ff ff  c0 a8 01 01  c0 a8 01 01
+|   07 00 00 10  00 00 ff ff  84 d5 ee 07  84 d5 ee 07
 |   00 00 00 18  01 00 00 00  07 00 00 10  00 00 ff ff
-|   84 d5 ee 07  84 d5 ee 07  00 01 02 03  04 05 06 07
+|   c0 a8 01 01  c0 a8 01 01  00 01 02 03  04 05 06 07
 | data after encryption:
 |   c9 15 89 40  73 7d 7f 6f  46 e0 3b b1  0c 11 e3 68
 |   05 ae 11 e9  ef cc 33 1b  08 81 c6 46  ae 54 32 8b
@@ -1095,9 +1095,9 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 01  00 00 00 00  00 00 02 2c  22 00 02 10
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
@@ -1129,11 +1129,11 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
 | out calculated auth:
-|   16 cd 14 21  c9 53 be 3c  1e 4f 26 e0
+|   22 91 66 a1  62 b0 b0 0b  c5 7c fd 7d
 sending 556 bytes for ikev2child_outC1_tail through eth0:500 [132.213.238.7:500] to 192.168.1.1:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 01  00 00 00 00  00 00 02 2c  22 00 02 10
@@ -1166,10 +1166,10 @@ sending 556 bytes for ikev2child_outC1_tail through eth0:500 [132.213.238.7:500]
 |   f2 c2 98 4b  6f 1d ce f8  d9 63 49 ba  78 8f b8 83
 |   fa e2 d8 f4  43 74 c7 f6  fc 92 34 bf  e5 d9 cb 69
 |   bb 9b 0f e3  c0 d3 19 3c  d1 d8 37 10  86 bd dc 28
-|   04 aa 57 3d  90 fe 92 aa  f2 8c de ac  44 8f 17 6f
-|   ea 12 63 aa  1f f8 6b ad  d0 b2 d3 01  13 0c 78 c8
-|   ba f4 89 77  5c 1e 4c 9d  e9 4b 41 95  bb ac 62 49
-|   16 cd 14 21  c9 53 be 3c  1e 4f 26 e0
+|   15 4f e4 d9  35 12 96 e4  bb 37 d2 52  76 2e 00 6a
+|   c4 43 7e 37  15 69 83 88  4e c0 b6 6e  85 bb 30 8d
+|   38 2f 04 c7  5e a1 bf 7d  85 c8 02 a1  98 df f4 f6
+|   22 91 66 a1  62 b0 b0 0b  c5 7c fd 7d
 | #3 complete v2 state transition with STF_OK
 ./rekeyChildSA-fromR2 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
