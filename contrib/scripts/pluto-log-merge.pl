@@ -148,6 +148,22 @@ sub create_file_reader {
                 text => $6,
             }
         }
+        # 2019-02-06T18:09:00.292254+00:00 alice pluto[1868]: Starting Pluto (Openswan Version 2.6.51.2-65-gb22f20b; Vendor ID OSWgYooxnKAh) pid:1868
+        elsif ($line =~ m/^(\d+-\d+-\d+)T(\d+:\d+:[0-9.]+)(Z|\+[0-9:]*) (\S+) (\S+)\[(\d+)\]: (.*)/) {
+            return {
+                full => $line,
+                line => $self->{line},
+                ts => str2time("$1 $2"),
+                date => $1,
+                time => $2,
+                host => $4,
+                proc => $5,
+                pid => $6,
+                text => $7,
+            }
+        }
+
+        die "skip\n$line\n" if not $line =~ m/Starting Pluto subsystem/;
 
         goto READ_A_LINE;
     };
@@ -360,7 +376,7 @@ sub create_event_reader {
                     push @{$self->{ev}->{emit}}, $short;
                 }
             }
-            elsif ($txt =~ m/flags: (ISAKMP_FLAG_.*)$/) {
+            elsif ($txt =~ m/flags: (ISAKMP_FLAG_\S*)/) {
                 my $flags = $1;
                 $flags =~ s/ISAKMP_FLAG_//g;
                 push @{$self->{ev}->{flags}}, $flags;
@@ -596,12 +612,12 @@ sub create_peer {
         }
     };
     $self->{go} = sub {
-        my $lastts = 0;
+        my $last_hms = '';
         while (my $ev = $self->{next}()) {
-            if ($lastts != $ev->{ts_start}) {
-                my $time = strftime '%T', localtime($ev->{ts_start});
-                jprint('=', "--==[ ".$time." ]==--");
-                $lastts = $ev->{ts_start}
+            my $this_hms = strftime '%T', localtime($ev->{ts_start});
+            if ($last_hms ne $this_hms) {
+                jprint('=', "--==[ ".$this_hms." ]==--");
+                $last_hms = $this_hms;
             }
 
             $self->{printev}($ev)
@@ -615,7 +631,7 @@ sub create_peer {
 sub shuffle {
     my ($pr_l, $pr_r) = @_;
     my ($ev_l, $ev_r);
-    my $lastts = 0;
+    my $last_hms = '';
     my $header = 0;
 
     while (1) {
@@ -655,11 +671,11 @@ sub shuffle {
 
             # did the timestamp chagne?
 
-            if ($lastts != $ev->{ts_start}) {
+            my $this_hms = strftime '%T', localtime($ev->{ts_start});
+            if ($last_hms ne $this_hms) {
                 print "\n";
-                my $time = strftime '%T', localtime($ev->{ts_start});
-                jprint('=', "--==[ ".$time." ]==--");
-                $lastts = $ev->{ts_start}
+                jprint('=', "--==[ ".$this_hms." ]==--");
+                $last_hms = $this_hms;
             }
 
             # show it
