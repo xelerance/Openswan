@@ -123,11 +123,18 @@ sa_replace(struct state *st, int type)
 #endif
     else
     {
+	lset_t policy_add = LEMPTY;
 	DBG(DBG_LIFECYCLE
 	    , openswan_log("replacing stale %s %s SA"
 		, (IS_PHASE1(st->st_state)||IS_PHASE15(st->st_state)) ? "ISAKMP" : "IPsec"
 		, (IS_PARENT_SA(st)) ? "PARENT" : "CHILD"));
-	ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
+	if (IS_PARENT_SA(st)) {
+		DBG(DBG_LIFECYCLE, openswan_log("parent SA, "
+						"adding connection policy: %s",
+						prettypolicy(c->policy)));
+		policy_add = c->policy;
+	}
+	ipsecdoi_replace(st, policy_add, LEMPTY, 1);
 	if (IS_PARENT_SA(st)) {
 		/* a parent SA will not be expired immediately, but after
 		 * it's replaced */
