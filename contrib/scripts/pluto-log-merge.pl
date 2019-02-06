@@ -13,6 +13,8 @@ $Data::Dumper::Quotekeys = 0;
 my $show_debug=0;
 my $show_events=0;
 my $output_width=0;
+my $sync_sides=0;
+my $rdelta=0;
 
 # argument parsing is a bit crude
 while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
@@ -29,6 +31,7 @@ while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
             " -D --debug            - show debug of parsed event data\n",
             " -E --events           - show events that don't lead to messages\n",
             " -w --width <char>     - set output width (default terminal width)\n",
+            " -s --syncronize       - synchronize clocks by finding first exchange\n",
             "\n",
             "This program reads two log files output by OpenSWAN pluto daemon and converts them\n",
             "into a chronologically ordered packet diagram.\n",
@@ -48,6 +51,9 @@ while (defined $ARGV[0] && $ARGV[0] =~ m/^-[-a-z]/) {
         die "$arg needs a number; found '$val'" if not looks_like_number($val);
         die "$arg needs to be greater than 20; found '$val'" if $val < 20;
         $output_width = $val;
+
+    } elsif ($arg eq "-s" or $arg eq "--sync" or $arg eq "--synchronize") {
+        $sync_sides = 1;
 
     } else {
         die "don't know how to handle $arg";
@@ -115,12 +121,17 @@ sub dprint {
 }
 
 sub create_file_reader {
-    my ($filename) = @_;
+    my ($filename, $tsdelta) = @_;
+
+    die if not defined $filename;
+    die if not defined $tsdelta;
 
     my $self = {
         filename => $filename,
+        tsdelta => $tsdelta,
         line => 0,
     };
+    
 
     open($self->{fh},"<",$filename) || die "$filename $!\n";
 
@@ -139,7 +150,7 @@ sub create_file_reader {
             return {
                 full => $line,
                 line => $self->{line},
-                ts => str2time("$1 $2"),
+                ts => str2time("$1 $2") + $self->{tsdelta},
                 date => $1,
                 time => $2,
                 host => $3,
@@ -153,7 +164,7 @@ sub create_file_reader {
             return {
                 full => $line,
                 line => $self->{line},
-                ts => str2time("$1 $2"),
+                ts => str2time("$1 $2") + $self->{tsdelta},
                 date => $1,
                 time => $2,
                 host => $4,
@@ -171,14 +182,61 @@ sub create_file_reader {
     return $self;
 }
 
-my $ev_count = 0;
-sub create_event_reader {
+sub create_simple_event_reader {
     my ($filename) = @_;
 
     my $self = {};
 
     $self->{filename} = $filename;
-    $self->{lines} = create_file_reader($filename);
+    $self->{reader} = create_file_reader($filename, 0);
+
+    $self->{next} = sub {
+        while ( 1 ) {
+            my $line = $self->{reader}->{read}();
+            return if not defined $line;
+            return if not $line;
+
+            # {text} removes the syslog prefix
+            my $txt = $line->{text};
+
+            if ($txt =~ m/sending \d+ bytes for \S+ through \S+ to \S+ \(using #\d+\)/) {
+                $line->{ev} = 'sending';
+                return $line;
+            }
+            elsif ($txt =~ m/received \d+ bytes from \S+ on \S+ \(port=\d+\) at .*/) {
+                $line->{ev} = 'received';
+                return $line;
+            }
+        }
+    };
+
+    return $self;
+}
+
+sub find_rdelta {
+    my ($L, $R) = @_;
+
+    my $l = $L->{next}();
+    my $r = $R->{next}();
+
+    #print "L: $l->{ts} $l->{text}\n";
+    #print "R: $r->{ts} $r->{text}\n";
+
+    my $fudge = 3/1000; # 3 milliseconds
+    my $delta = $l->{ts} - $r->{ts} + $fudge;
+
+    return $delta
+}
+
+
+my $ev_count = 0;
+sub create_event_reader {
+    my ($filename, $tsdelta) = @_;
+
+    my $self = {};
+
+    $self->{filename} = $filename;
+    $self->{lines} = create_file_reader($filename, $tsdelta);
     $self->{queue} = [];
 
     sub complete_current_ev {
@@ -301,6 +359,7 @@ sub create_event_reader {
 
             # {text} removes the syslog prefix
             my $txt = $line->{text};
+            chomp $txt;
 
             # rememember the SA number from the event count down
             if ($txt =~ m/next event (\S+) in \d seconds for #(\d+)/) {
@@ -384,7 +443,7 @@ sub create_event_reader {
             elsif ($txt =~ m/exchange type: (\S+)/) {
                 $self->{ev}->{exchange} = $1;
             }
-            elsif ($txt =~ m/message ID: (.*)/) {
+            elsif ($txt =~ m/message ID: (\S+)/) {
                 my $id = $1;
                 $id =~ s/ //g;
                 $self->{ev}->{msg_id} = hex($id);
@@ -450,12 +509,12 @@ sub create_event_reader {
 
 
 sub create_peer {
-    my ($justify, $filename) = @_;
+    my ($justify, $filename, $tsdelta) = @_;
 
     my $self = {};
 
     $self->{filename} = $filename;
-    $self->{events} = create_event_reader($filename);
+    $self->{events} = create_event_reader($filename, $tsdelta);
 
     #fh => $fh
     #};
@@ -747,6 +806,15 @@ sub shuffle {
 }
 
 
-my $l = create_peer('<',$left);
-my $r = create_peer('>',$right);
+if ($sync_sides) {
+    my $L = create_simple_event_reader($left);
+    my $R = create_simple_event_reader($right);
+    $rdelta = find_rdelta($L, $R);
+    undef $L;
+    undef $R;
+}
+
+my $l = create_peer('<', $left, 0);
+my $r = create_peer('>', $right, $rdelta);
+
 shuffle($l, $r);
