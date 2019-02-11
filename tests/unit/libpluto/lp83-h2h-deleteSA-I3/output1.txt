@@ -960,7 +960,7 @@ sending 76 bytes for process_informational_ikev2 through eth0:500 [192.168.1.1:5
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | v2 child state object #2 found, in STATE_CHILD_C1_KEYED
-| our side spi that needs to be deleted: PROTO_IPSEC_ESP SA(0x12345678)
+| received delete request for #2 via #1, our PROTO_IPSEC_ESP SA spi: 0x12345678
 ./deleteChildSA-msgInI3 deleting state #2 (STATE_CHILDSA_DEL)
 | received request to delete child state
 | now deleting the child state

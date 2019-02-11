@@ -936,7 +936,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | v2 child state object #2 found, in STATE_DELETING
-| our side spi that needs to be deleted: PROTO_IPSEC_ESP SA(0x12345678)
+| received delete request for #2 via #1, our PROTO_IPSEC_ESP SA spi: 0x12345678
 ./deleteChildSA-fromR2 deleting state #2 (STATE_CHILDSA_DEL)
 | received request to delete child state
 | now deleting the child state

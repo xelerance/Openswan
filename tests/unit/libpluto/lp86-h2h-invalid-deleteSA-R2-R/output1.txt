@@ -931,6 +931,7 @@ sending 380 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 19
 |    SPI size: 0
 |    Notify Message Type: v2N_INVALID_MESSAGE_ID
 | processing payload: ISAKMP_NEXT_v2N (len=8)
+| parent SA #1 in STATE_PARENT_R2; ignoring
 | processor 'responder-authenticated-informational' returned STF_IGNORE (0)
 | #1 complete v2 state transition with STF_IGNORE
 should have found a continuation, but none was found

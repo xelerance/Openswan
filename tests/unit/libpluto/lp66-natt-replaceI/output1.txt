@@ -883,7 +883,7 @@ RC=0 #2: "parker1--jj2":4500 IKEv2.0 STATE_CHILD_C1_KEYED (CHILD SA established)
 RC=0 #1: "parker1--jj2":4500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none in -1s; newest ISAKMP; nodpd; retranscnt=0,outorder=0,last=1,next=2,recv=-1; msgid=0; idle; import:admin initiate
 | recv_pcap_packet2() call 1: start IKE SA replace
 ./rekeyParentSA SA REPLACE: #1 parent=Y orig_init=Y nat_bhnd_{me=Y peer=N} (40000010)
-./rekeyParentSA replacing stale IPsec SA
+./rekeyParentSA replacing stale IPsec PARENT SA
 | creating state object #3 at Z
 | orient parker1--jj2 checking against if: eth0 (AF_INET:192.168.1.1:500)
 |     orient matched on IP
