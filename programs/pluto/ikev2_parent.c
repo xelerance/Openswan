@@ -1128,7 +1128,8 @@ stf_status process_informational_ikev2(struct msg_digest *md)
                                 if(dst != NULL)
                                     {
                                         struct ipsec_proto_info *pr = v2del->isad_protoid == PROTO_IPSEC_AH? &dst->st_ah : &dst->st_esp;
-                                        DBG(DBG_CONTROLMORE, DBG_log("our side spi that needs to be deleted: %s SA(0x%08lx)"
+                                        DBG(DBG_CONTROLMORE, DBG_log("received delete request for #%lu via #%lu, our %s SA spi: 0x%08lx"
+								     , dst->st_serialno, st->st_serialno
                                                                      , enum_show(&protocol_names, v2del->isad_protoid)
                                                                      , (unsigned long)ntohl(pr->our_spi)));
 
@@ -1159,36 +1160,44 @@ stf_status process_informational_ikev2(struct msg_digest *md)
             } /* for */
 
         } /* if have D payload */
-        else
-            {
-                /* empty response to our IKESA delete request*/
-                if((md->hdr.isa_flags & ISAKMP_FLAGS_R) && st->st_state == STATE_IKESA_DEL)
-                    {
-                        /* My understanding is that delete payload for IKE SA
-                         *  should be the only payload in the informational */
-                        if (IS_CHILD_SA(st)) {
-                            DBG(DBG_CONTROLMORE,
-                                DBG_log("received empty delete response via #%ld child SA; looking up parent #%ld..."
-                                        , st->st_serialno, st->st_clonedfrom));
-                            st = state_with_serialno(st->st_clonedfrom);
-                            if (!st) {
-                                DBG(DBG_CONTROLMORE,
-                                    DBG_log("parent SA #%ld not found; ignoring"
-                                            , md->st->st_clonedfrom));
-                                return STF_IGNORE;
-                            }
-                        }
-                        DBG(DBG_CONTROLMORE,
-                            DBG_log("received empty delete response via #%ld; deleting #%ld"
-                                    , md->st->st_serialno, st->st_serialno));
+	else {
+	    /* empty response to our IKESA delete request*/
+	    if((md->hdr.isa_flags & ISAKMP_FLAGS_R)) {
+		/* My understanding is that delete payload for IKE SA
+		 *  should be the only payload in the informational */
+		if (IS_CHILD_SA(st)) {
+		    DBG(DBG_CONTROLMORE,
+			DBG_log("received empty delete response via #%ld child SA; looking up parent #%ld..."
+				, st->st_serialno, st->st_clonedfrom));
+		    st = state_with_serialno(st->st_clonedfrom);
+		    if (!st) {
+			DBG(DBG_CONTROLMORE,
+			    DBG_log("parent SA #%ld not found; ignoring"
+				    , md->st->st_clonedfrom));
+			return STF_IGNORE;
+		    }
+		}
 
-                        /* Now delete the IKE SA state and all its child states
-                         */
-                        delete_state_family(st, TRUE);
-                        /* we cannot trust st after it's deleted */
-                        st = md->st = NULL;
-                    }
-            }
+		if (st->st_state != STATE_IKESA_DEL) {
+		    DBG(DBG_CONTROLMORE,
+			DBG_log("parent SA #%ld in %s; ignoring"
+				, st->st_serialno
+				, enum_name(&state_names, st->st_state)));
+		    return STF_IGNORE;
+		}
+
+
+		DBG(DBG_CONTROLMORE,
+		    DBG_log("received empty delete response via #%ld; deleting #%ld"
+			    , md->st->st_serialno, st->st_serialno));
+
+		/* Now delete the IKE SA state and all its child states */
+		delete_state_family(st, TRUE);
+
+		/* we cannot trust st after it's deleted */
+		st = md->st = NULL;
+	    }
+	}
     }
 
     return STF_IGNORE;

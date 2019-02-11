@@ -91,6 +91,10 @@ enum event_type {
 /* how long to delay deletion of conn when remote is behind NATT */
 #define EVENT_NATT_DELAY_REKEY_EXPIRE		20
 
+/* while replacing a parent SA, keep the old parent around */
+#define EVENT_REAUTH_IKE_SA_TIMEOUT             60
+
+
 /*
  * cryptographic helper operations.
  */

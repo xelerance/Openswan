@@ -124,9 +124,15 @@ sa_replace(struct state *st, int type)
     else
     {
 	DBG(DBG_LIFECYCLE
-	    , openswan_log("replacing stale %s SA"
-		, (IS_PHASE1(st->st_state)|| IS_PHASE15(st->st_state ))? "ISAKMP" : "IPsec"));
+	    , openswan_log("replacing stale %s %s SA"
+		, (IS_PHASE1(st->st_state)||IS_PHASE15(st->st_state)) ? "ISAKMP" : "IPsec"
+		, (IS_PARENT_SA(st)) ? "PARENT" : "CHILD"));
 	ipsecdoi_replace(st, LEMPTY, LEMPTY, 1);
+	if (IS_PARENT_SA(st)) {
+		/* a parent SA will not be expired immediately, but after
+		 * it's replaced */
+		st->st_margin = EVENT_REAUTH_IKE_SA_TIMEOUT;
+	}
     }
     delete_dpd_event(st);
     event_schedule(EVENT_SA_EXPIRE, st->st_margin, st);
