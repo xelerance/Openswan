@@ -222,8 +222,8 @@ sub find_rdelta {
     #print "L: $l->{ts} $l->{text}\n";
     #print "R: $r->{ts} $r->{text}\n";
 
-    my $fudge = 3/1000; # 3 milliseconds
-    my $delta = $l->{ts} - $r->{ts} + $fudge;
+    my $fudge = 0.003; # 3 milliseconds
+    my $delta = ($l->{ts} - $r->{ts}) + $fudge;
 
     return $delta
 }
@@ -241,14 +241,22 @@ sub create_event_reader {
 
     sub complete_current_ev {
         my ($self, $line, $why_end) = @_;
-        $self->{ev}->{why_end} = $why_end;
-        $self->{ev}->{full} = $line->{full};
-        $self->{ev}->{line} = $line->{line};
-        $self->{ev}->{text} = $line->{text};
-        $self->{ev}->{ts_end} = $line->{ts};
-        $self->{ev}->{raw} = $line;
-        push @{$self->{queue}}, $self->{ev};
-        $self->{ev} = { };
+
+        my $ev = $self->{ev};
+        $self->{ev} = {};
+
+        $ev->{why_end} = $why_end;
+        $ev->{full} = $line->{full};
+        $ev->{line} = $line->{line};
+        $ev->{text} = $line->{text};
+        $ev->{ts_end} = $line->{ts};
+        $ev->{raw} = $line;
+
+        $ev->{ts} = $ev->{ts_end};
+        $ev->{ts} = ($self->{ev}->{ts_sending}  - 0.000) if defined $self->{ev}->{ts_sending};
+        $ev->{ts} = ($self->{ev}->{ts_received} + 0.000) if defined $self->{ev}->{ts_received};
+
+        push @{$self->{queue}}, $ev;
     }
 
     sub start_new_ev {
@@ -453,6 +461,7 @@ sub create_event_reader {
                 #push @{$self->{ev}->{payloads_debug}}, "$1".'  @'.$line->{time}.'  '.$line->{line} if $show_debug;
             }
             elsif ($txt =~ m/sending \d+ bytes for \S+ through \S+ to \S+ \(using #\d+\)/) {
+                $self->{ev}->{ts_sending} = $line->{ts};
             #   append_debug_line($self, $line);
             #   complete_current_ev($self,$line,'sent',0);
             }
@@ -461,6 +470,7 @@ sub create_event_reader {
                 $self->{ev}->{SA_trans} = [ $2, $3 ];
             }
             elsif ($txt =~ m/received \d+ bytes from \S+ on \S+ \(port=\d+\) at .*/) {
+                $self->{ev}->{ts_received} = $line->{ts};
                 if (defined $self->{ev}->{why_start}) {
                     complete_current_ev($self, $line, 'incoming');
                 }
@@ -619,12 +629,12 @@ sub create_peer {
             die "ERROR: no why_start\n";
         }
 
-        if (not defined $ev->{ts_start}) {
+        if (not defined $ev->{ts}) {
             print Dumper($ev);
             die "ERROR: no ts_start\n";
         }
 
-        if (!looks_like_number($ev->{ts_start})) {
+        if (!looks_like_number($ev->{ts})) {
             print Dumper($ev);
             die "ERROR: ts_start not a number\n";
         }
@@ -673,7 +683,7 @@ sub create_peer {
     $self->{go} = sub {
         my $last_hms = '';
         while (my $ev = $self->{next}()) {
-            my $this_hms = strftime '%T', localtime($ev->{ts_start});
+            my $this_hms = strftime '%T', localtime($ev->{ts});
             if ($last_hms ne $this_hms) {
                 jprint('=', "--==[ ".$this_hms." ]==--");
                 $last_hms = $this_hms;
@@ -730,7 +740,7 @@ sub shuffle {
 
             # did the timestamp chagne?
 
-            my $this_hms = strftime '%T', localtime($ev->{ts_start});
+            my $this_hms = strftime '%T', localtime($ev->{ts});
             if ($last_hms ne $this_hms) {
                 print "\n";
                 jprint('=', "--==[ ".$this_hms." ]==--");
@@ -758,11 +768,11 @@ sub shuffle {
             # left is done; use right
             $consume_right->();
         }
-        elsif ($ev_l->{ts_start} < $ev_r->{ts_start}) {
+        elsif ($ev_l->{ts} < $ev_r->{ts}) {
             # left timestamp is first; consume the left event
             $consume_left->();
         }
-        elsif ($ev_r->{ts_start} < $ev_l->{ts_start}) {
+        elsif ($ev_r->{ts} < $ev_l->{ts}) {
             # right timestamp is first; consume the right event
             $consume_right->();
         }
