@@ -110,6 +110,10 @@ UNITTESTS_I3+=lp65-nattI3
 UNITTESTS_I4+=lp66-natt-replaceI
 UNITTESTS_R4+=lp67-natt-replaceR
 
+UNITTESTS_I1+=lp87-rekeyv2-inval-I1
+UNITTESTS_R1+=lp88-rekeyv2-inval-R1
+UNITTESTS_I4+=lp89-rekeyv2-inval-inCR1
+
 # first runs tests that have no interdependancies
 UNITTESTS=${UNITTESTS_0}
 # then run all the I1,R1,I2,R2,I3
