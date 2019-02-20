@@ -18,6 +18,7 @@ die() {
 do_git_add=true
 do_clean=false
 do_pcapupdate=false
+make_options=
 
 while [ -n "$1" ] ; do
     case "$1" in
@@ -30,6 +31,7 @@ $(basename $0) <test> ...
  -l --list              list available tests
  -p --pcap-update       updte pacap files
  -a --no-git-add-p      skip the git add -p on a per test basis, run all tests
+ -v --verbose           make build verbose
 
 END
             exit 0
@@ -46,6 +48,9 @@ END
         -l|--list)
             echo $available_tests | xargs -n1
             exit 0
+            ;;
+        -v|--verbose)
+            make_options=V=1
             ;;
         -*)
             die "unknown flag $1"
@@ -81,7 +86,7 @@ fi
 
 run_make_check() {
     rm -f core
-    make check
+    make $make_options check
     rc=$?
     if [ $rc -ne 0 ] ; then
         if [ -f core ] ; then
@@ -97,11 +102,11 @@ do
     (
      cd $f
      header $f
-     $do_clean && make clean
-     $do_pcapupdate && make pcapupdate
+     $do_clean && make $make_options clean
+     $do_pcapupdate && make $make_options pcapupdate
      while ! run_make_check $f;
      do
-         if make update
+         if make $make_options update
          then
              if $do_git_add
              then
