@@ -67,6 +67,7 @@ extern stf_status ikev2parent_inI2outR2(struct msg_digest *md);
 extern stf_status ikev2parent_inR2(struct msg_digest *md);
 extern stf_status ikev2child_inCI1(struct msg_digest *md);
 extern stf_status ikev2child_inCR1(struct msg_digest *md);
+extern stf_status ikev2child_inCR1_ntf(struct msg_digest *md);
 extern stf_status ikev2child_inI3(struct msg_digest *md);
 extern stf_status ikev2_child_validate_responder_proposal(struct msg_digest *md
                                                           , struct state *st);

@@ -1808,10 +1808,15 @@ static stf_status ikev2child_inCR1_decrypt(struct msg_digest *md)
     DBG(DBG_CONTROLMORE, DBG_log("decrypting payload as %s",
 			enc_role == INITIATOR ? "INITIATOR" : "RESPONDER" ));
     ret = ikev2_decrypt_msg(md, enc_role);
-    if(ret != STF_OK) {
-	    loglog(RC_LOG_SERIOUS, "unable to decrypt message");
-	    /* XXX maybe try rekey again? */
-	    return STF_FAIL;
+    if (ret == STF_IGNORE) {
+        /* already handled in notification handler */
+        return ret;
+
+    } else if (ret != STF_OK) {
+        /* something else went wrong */
+        loglog(RC_LOG_SERIOUS, "unable to decrypt message");
+        /* XXX maybe try rekey again? */
+        return STF_FAIL;
     }
 
     /* Nr in */
@@ -1875,6 +1880,32 @@ stf_status ikev2child_inCR1(struct msg_digest *md)
 	md->transition_state = st;
         return ikev2child_inCR1_tail(md, st);
     }
+}
+
+/* We were expecting a positive acknowledgement to a CHILD_SA request we sent
+ * out, instead we got an encrypted notification.  We will log it, and
+ * cancel our request to avoid retransmission of the bad packet. */
+stf_status ikev2child_inCR1_ntf(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    struct payload_digest *p;
+
+    set_cur_state(st);
+
+    for(p = md->chain[ISAKMP_NEXT_v2N]; p != NULL; p = p->next) {
+        /* did we get any notifications that make sense */
+
+        openswan_log("received notification %u: %s", p->payload.v2n.isan_type,
+                     enum_name(&ikev2_notify_names, p->payload.v2n.isan_type));
+
+    }
+
+    DBG(DBG_CONTROL, DBG_log("cleaning up state #%lu", st->st_serialno));
+
+    delete_event(st);
+    delete_state(st);
+
+    return STF_IGNORE;
 }
 
 /*
