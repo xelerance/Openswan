@@ -516,18 +516,44 @@ stf_status ikev2_process_encrypted_payloads(struct msg_digest *md,
     const struct state_v2_microcode *svm = md->svm;
     stf = ikev2_collect_payloads(md, in_pbs, &seen, np);
 
-    if(stf != STF_OK) {
+    /* decryption error, stop now */
+    if(stf != STF_OK)
         return stf;
-    }
 
     if (svm->req_enc_payloads & ~seen) {
         /* missing payloads in encryption part */
-        loglog(RC_LOG_SERIOUS,
-               "missing payloads (within encryption) for v2_state: %s: %s. Message dropped."
-               , svm->svm_name
-               , bitnamesof(payload_name_ikev2_main
-                            , svm->req_enc_payloads & ~seen));
-        return STF_FAIL + v2N_INVALID_SYNTAX;
+
+        if (md->chain[ISAKMP_NEXT_v2N] && svm->ntf_processor) {
+            /* we had en encrypted notification, and there is
+             * a handler set to process the notification */
+
+            DBG(DBG_CONTROL, DBG_log(
+                    "missing payloads (within encryption) for v2_state: %s. "
+                    "Handling encrypted notification.", svm->svm_name));
+
+            stf = (svm->ntf_processor)(md);
+
+            /* we have to return an error to let the caller know that something
+             * went wrong */
+            if (stf == STF_OK) {
+                DBG(DBG_CONTROL, DBG_log(
+                        "notification handler returned OK; "
+                        "maybe FAIL/STOLEN/IGNORE is more appropriate"));
+
+                stf = STF_FAIL; /* XXX or STF_IGNORE or STF_STOLEN XXX */
+            }
+
+        } else {
+            /* we have no other recourse, but to drop the packet */
+
+            loglog(RC_LOG_SERIOUS,
+                   "missing payloads (within encryption) for v2_state: %s: %s. "
+                   "Message dropped."
+                   , svm->svm_name
+                   , bitnamesof(payload_name_ikev2_main
+                                , svm->req_enc_payloads & ~seen));
+            return STF_FAIL + v2N_INVALID_SYNTAX;
+        }
     }
     return stf;
 }
