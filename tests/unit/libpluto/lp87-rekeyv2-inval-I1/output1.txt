@@ -50,6 +50,13 @@ RC=0 "parker1--jj2":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+IKEv2Init+SA
 | inserting state object #1 bucket: 4
 ./rekeyikev2-I1 initiating v2 parent SA
 ./rekeyikev2-I1 STATE_PARENT_I1: initiate
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 This version of unpack_nonce(), used in OpenSWAN unit testing purposefully corrupts the Nonce payload to force a subsequent unit test to respond with an encrypted Notification.
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
 sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #1)
 |   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
 |   21 20 22 08  00 00 00 00  00 00 03 7c  22 00 01 fc
@@ -597,6 +604,14 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | state hash entry 28
 | inserting state object #3 bucket: 28
 | ikev2 child outC1: calculating g^{xy}, sending C1
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 This version of unpack_nonce(), used in OpenSWAN unit testing purposefully corrupts the Nonce payload to force a subsequent unit test to respond with an encrypted Notification.
+./rekeyikev2-I1 unpack_nonce_will_corrupt=1, we are now corrupting the nonce.
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
+./rekeyikev2-I1 ********************************************************************************
 ./rekeyikev2-I1 starting rekey of CHILD SA for state=#2 (expired) using PARENT SA #1 as INITIATOR
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -636,9 +651,9 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |    next-payload: ISAKMP_NEXT_v2Ni [@0=0x28]
 | *****emit IKEv2 Nonce Payload:
 |    critical bit: none
-| emitting 16 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
-| IKEv2 nonce  20 98 9d 37  a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3
-| emitting length of IKEv2 Nonce Payload: 20
+| emitting 2 raw bytes of IKEv2 nonce into IKEv2 Nonce Payload
+| IKEv2 nonce  20 98
+| emitting length of IKEv2 Nonce Payload: 6
 | empty esp_info, returning defaults
 |    next-payload: ISAKMP_NEXT_v2SA [@264=0x21]
 | *****emit IKEv2 Security Association Payload:
@@ -732,7 +747,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | emitting length of IKEv2 Transform Substructure Payload: 8
 | emitting length of IKEv2 Proposal Substructure Payload: 36
 | emitting length of IKEv2 Security Association Payload: 156
-|    next-payload: ISAKMP_NEXT_v2TSi [@284=0x2c]
+|    next-payload: ISAKMP_NEXT_v2TSi [@270=0x2c]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    number of TS: 1
@@ -747,7 +762,7 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | ipv6 high  fd 68 c9 f9  41 57 00 02  00 00 00 01  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-|    next-payload: ISAKMP_NEXT_v2TSr [@440=0x2d]
+|    next-payload: ISAKMP_NEXT_v2TSr [@426=0x2d]
 | *****emit IKEv2 Traffic Selector Payload:
 |    critical bit: none
 |    number of TS: 1
@@ -762,11 +777,11 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 | ipv6 high  fd 68 c9 f9  41 57 00 00  ff ff ff ff  ff ff ff ff
 | emitting length of IKEv2 Traffic Selector: 40
 | emitting length of IKEv2 Traffic Selector Payload: 48
-| emitting 8 raw bytes of padding and length into cleartext
-| padding and length  00 01 02 03  04 05 06 07
+| emitting 6 raw bytes of padding and length into cleartext
+| padding and length  00 01 02 03  04 05
 | emitting 12 zero bytes of length of truncated HMAC into IKEv2 Encryption Payload
-| emitting length of IKEv2 Encryption Payload: 576
-| emitting length of ISAKMP Message: 604
+| emitting length of IKEv2 Encryption Payload: 560
+| emitting length of ISAKMP Message: 588
 | encrypting as INITIATOR, parent SA #1
 | data before encryption:
 |   28 00 01 08  00 0e 00 00  3d a6 6a 81  e2 92 09 be
@@ -785,24 +800,23 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   69 96 66 b7  a9 81 7f f7  37 4d 7c 41  38 62 a6 39
 |   00 81 ca 3d  1d fc f7 b5  08 38 d4 34  70 22 6c 21
 |   d2 5b 20 a1  d2 ba 2a d1  89 f3 20 79  ce ac 1e c2
-|   ec 7d ae 76  94 40 39 a0  21 00 00 14  20 98 9d 37
-|   a8 14 a6 4d  8f f0 7c 08  d3 20 e9 e3  2c 00 00 9c
-|   02 00 00 28  01 03 04 03  34 56 78 12  03 00 00 0c
-|   01 00 00 0c  80 0e 00 80  03 00 00 08  03 00 00 02
-|   00 00 00 08  05 00 00 00  02 00 00 28  02 03 04 03
-|   34 56 78 12  03 00 00 0c  01 00 00 0c  80 0e 00 80
-|   03 00 00 08  03 00 00 01  00 00 00 08  05 00 00 00
-|   02 00 00 24  03 03 04 03  34 56 78 12  03 00 00 08
-|   01 00 00 03  03 00 00 08  03 00 00 02  00 00 00 08
-|   05 00 00 00  00 00 00 24  04 03 04 03  34 56 78 12
-|   03 00 00 08  01 00 00 03  03 00 00 08  03 00 00 01
-|   00 00 00 08  05 00 00 00  2d 00 00 30  01 00 00 00
-|   08 00 00 28  00 00 ff ff  fd 68 c9 f9  41 57 00 02
-|   00 00 00 01  00 00 00 00  fd 68 c9 f9  41 57 00 02
-|   00 00 00 01  ff ff ff ff  00 00 00 30  01 00 00 00
-|   08 00 00 28  00 00 ff ff  fd 68 c9 f9  41 57 00 00
-|   00 00 00 00  00 00 00 00  fd 68 c9 f9  41 57 00 00
-|   ff ff ff ff  ff ff ff ff  00 01 02 03  04 05 06 07
+|   ec 7d ae 76  94 40 39 a0  21 00 00 06  20 98 2c 00
+|   00 9c 02 00  00 28 01 03  04 03 34 56  78 12 03 00
+|   00 0c 01 00  00 0c 80 0e  00 80 03 00  00 08 03 00
+|   00 02 00 00  00 08 05 00  00 00 02 00  00 28 02 03
+|   04 03 34 56  78 12 03 00  00 0c 01 00  00 0c 80 0e
+|   00 80 03 00  00 08 03 00  00 01 00 00  00 08 05 00
+|   00 00 02 00  00 24 03 03  04 03 34 56  78 12 03 00
+|   00 08 01 00  00 03 03 00  00 08 03 00  00 02 00 00
+|   00 08 05 00  00 00 00 00  00 24 04 03  04 03 34 56
+|   78 12 03 00  00 08 01 00  00 03 03 00  00 08 03 00
+|   00 01 00 00  00 08 05 00  00 00 2d 00  00 30 01 00
+|   00 00 08 00  00 28 00 00  ff ff fd 68  c9 f9 41 57
+|   00 02 00 00  00 01 00 00  00 00 fd 68  c9 f9 41 57
+|   00 02 00 00  00 01 ff ff  ff ff 00 00  00 30 01 00
+|   00 00 08 00  00 28 00 00  ff ff fd 68  c9 f9 41 57
+|   00 00 00 00  00 00 00 00  00 00 fd 68  c9 f9 41 57
+|   00 00 ff ff  ff ff ff ff  ff ff 00 01  02 03 04 05
 | data after encryption:
 |   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
 |   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
@@ -820,26 +834,25 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
 |   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
 |   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
-|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
-|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
-|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
-|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
-|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
-|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
-|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
-|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
-|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
-|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
-|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
-|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
-|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
-|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
-|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
-|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
-|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
-|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+|   7f 88 4e f5  55 23 4c 3c  0d 87 f0 8e  2e 39 cc ef
+|   ed ce 3d b2  5a 9e 6e b0  b5 8c 66 f1  d8 4b 74 2a
+|   fa c1 e6 a5  03 10 05 ae  f2 15 8e 10  85 e3 1e b8
+|   15 67 6e 94  65 a8 3c 8a  70 6c f6 54  dd 42 84 6d
+|   bc 07 ac 7a  85 29 8d 7c  fc 32 12 45  64 4b 44 e3
+|   99 c9 36 8f  e2 c9 1b 84  20 bc 97 c0  19 f8 0b a7
+|   35 f5 4c df  86 5e ae 60  c9 e0 63 66  62 b2 78 6f
+|   84 0f ff 01  b7 8f 3a ef  53 b7 e2 f3  65 3e e5 b0
+|   ae 2a f7 c8  5f f2 79 b5  f2 b9 75 a0  43 6e ba c8
+|   ec c8 eb 64  d8 8c 74 39  8b d6 41 7a  39 20 89 5f
+|   f9 9f 68 89  d6 39 a1 2b  2d a1 24 c8  c2 b9 73 a5
+|   f9 42 74 1e  cf 15 a6 4f  fc 88 35 43  da 7f 0e 3b
+|   9e a4 0e 8c  11 ea 7f 0f  85 6d 90 22  b4 8e 8f 29
+|   e9 de 89 0c  9f 10 57 18  32 f3 bd 37  f4 de d5 40
+|   00 e4 11 3e  1d b3 06 6f  85 5b 85 db  1b 85 1f f4
+|   d8 23 b0 18  0f ae f6 22  55 63 38 c7  35 9d 8d 80
+|   9d 25 91 3f  3e b0 47 0d  52 4c f3 3c  f6 d6 bc c1
 | data being hmac:  80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
+|   2e 20 24 09  00 00 00 02  00 00 02 4c  22 00 02 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
 |   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
@@ -857,29 +870,28 @@ RC=0 #1: "parker1--jj2":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); non
 |   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
 |   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
 |   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
-|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
-|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
-|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
-|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
-|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
-|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
-|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
-|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
-|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
-|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
-|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
-|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
-|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
-|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
-|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
-|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
-|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
-|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
+|   7f 88 4e f5  55 23 4c 3c  0d 87 f0 8e  2e 39 cc ef
+|   ed ce 3d b2  5a 9e 6e b0  b5 8c 66 f1  d8 4b 74 2a
+|   fa c1 e6 a5  03 10 05 ae  f2 15 8e 10  85 e3 1e b8
+|   15 67 6e 94  65 a8 3c 8a  70 6c f6 54  dd 42 84 6d
+|   bc 07 ac 7a  85 29 8d 7c  fc 32 12 45  64 4b 44 e3
+|   99 c9 36 8f  e2 c9 1b 84  20 bc 97 c0  19 f8 0b a7
+|   35 f5 4c df  86 5e ae 60  c9 e0 63 66  62 b2 78 6f
+|   84 0f ff 01  b7 8f 3a ef  53 b7 e2 f3  65 3e e5 b0
+|   ae 2a f7 c8  5f f2 79 b5  f2 b9 75 a0  43 6e ba c8
+|   ec c8 eb 64  d8 8c 74 39  8b d6 41 7a  39 20 89 5f
+|   f9 9f 68 89  d6 39 a1 2b  2d a1 24 c8  c2 b9 73 a5
+|   f9 42 74 1e  cf 15 a6 4f  fc 88 35 43  da 7f 0e 3b
+|   9e a4 0e 8c  11 ea 7f 0f  85 6d 90 22  b4 8e 8f 29
+|   e9 de 89 0c  9f 10 57 18  32 f3 bd 37  f4 de d5 40
+|   00 e4 11 3e  1d b3 06 6f  85 5b 85 db  1b 85 1f f4
+|   d8 23 b0 18  0f ae f6 22  55 63 38 c7  35 9d 8d 80
+|   9d 25 91 3f  3e b0 47 0d  52 4c f3 3c  f6 d6 bc c1
 | out calculated auth:
-|   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
-sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #3)
+|   ab 96 f7 5a  8e 31 41 8d  05 6c 6b 1a
+sending 588 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] to 132.213.238.7:500 (using #3)
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
-|   2e 20 24 09  00 00 00 02  00 00 02 5c  22 00 02 40
+|   2e 20 24 09  00 00 00 02  00 00 02 4c  22 00 02 30
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 |   73 8a 8f 42  ea 98 37 99  13 4b bb 29  ba 1d e2 de
 |   2b 85 7a cc  55 e8 fc 4a  3f b2 be 15  1b fc a1 28
@@ -897,25 +909,24 @@ sending 604 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   d7 5e 40 b8  2a 3c 54 57  c3 84 b3 25  28 12 d4 5c
 |   53 c3 18 44  21 6b de 28  1d bb b7 23  af 5b 51 05
 |   e0 7c 61 26  3a 4a 03 d4  33 57 d8 be  04 05 89 7f
-|   09 55 3d 38  5b fb bd 22  b8 40 86 73  97 0b f8 98
-|   85 6f 8a c2  fa fc 31 50  00 0d 13 88  66 c9 47 23
-|   11 68 7e b2  76 53 5f 4d  47 e0 a0 a4  98 21 b9 88
-|   07 f2 dc 02  81 ac 93 92  3a 5c 53 91  03 ac a5 9b
-|   e1 5c d6 aa  a3 92 3f 0e  33 21 08 d8  c0 d8 ca d4
-|   c8 28 80 99  e5 1a 56 31  3c f8 60 66  9f 8a 8a 19
-|   d6 2f 9e 6e  3f f9 4f 01  71 3f de b8  ae 3c 0f 62
-|   29 bd c1 84  66 03 43 be  cf 73 6b 70  14 05 ae c7
-|   0f a1 d7 f2  f2 98 06 18  e3 38 62 f4  a7 a1 51 d0
-|   df 8f f9 b0  24 31 3c fb  50 7c 72 fb  9e e0 c8 8d
-|   1b 42 a2 ff  91 71 5c f8  09 59 05 ff  c9 9e 05 56
-|   33 29 92 ac  a3 5f ae 07  4b a3 1b 88  47 0e 83 67
-|   1d 74 be 28  fb 01 b9 cb  8d ab 8e 56  eb 1d 02 0a
-|   09 90 09 09  f5 b5 05 c0  46 e0 9b bf  cb 04 8b e1
-|   54 98 74 7d  35 12 fd ce  6a 05 75 97  ad 60 e4 a7
-|   6f 97 03 a1  3f 3e 62 72  54 b6 7a 78  85 a7 3d 47
-|   36 bf 90 fe  39 a7 8b 65  a5 fe 53 5e  ad 4a a3 99
-|   6c 5f f9 e1  f2 06 d9 bc  65 33 0c 10  94 3d b2 50
-|   46 a9 39 bb  76 03 01 5b  69 c4 7f 6e
+|   7f 88 4e f5  55 23 4c 3c  0d 87 f0 8e  2e 39 cc ef
+|   ed ce 3d b2  5a 9e 6e b0  b5 8c 66 f1  d8 4b 74 2a
+|   fa c1 e6 a5  03 10 05 ae  f2 15 8e 10  85 e3 1e b8
+|   15 67 6e 94  65 a8 3c 8a  70 6c f6 54  dd 42 84 6d
+|   bc 07 ac 7a  85 29 8d 7c  fc 32 12 45  64 4b 44 e3
+|   99 c9 36 8f  e2 c9 1b 84  20 bc 97 c0  19 f8 0b a7
+|   35 f5 4c df  86 5e ae 60  c9 e0 63 66  62 b2 78 6f
+|   84 0f ff 01  b7 8f 3a ef  53 b7 e2 f3  65 3e e5 b0
+|   ae 2a f7 c8  5f f2 79 b5  f2 b9 75 a0  43 6e ba c8
+|   ec c8 eb 64  d8 8c 74 39  8b d6 41 7a  39 20 89 5f
+|   f9 9f 68 89  d6 39 a1 2b  2d a1 24 c8  c2 b9 73 a5
+|   f9 42 74 1e  cf 15 a6 4f  fc 88 35 43  da 7f 0e 3b
+|   9e a4 0e 8c  11 ea 7f 0f  85 6d 90 22  b4 8e 8f 29
+|   e9 de 89 0c  9f 10 57 18  32 f3 bd 37  f4 de d5 40
+|   00 e4 11 3e  1d b3 06 6f  85 5b 85 db  1b 85 1f f4
+|   d8 23 b0 18  0f ae f6 22  55 63 38 c7  35 9d 8d 80
+|   9d 25 91 3f  3e b0 47 0d  52 4c f3 3c  f6 d6 bc c1
+|   ab 96 f7 5a  8e 31 41 8d  05 6c 6b 1a
 | #3 complete v2 state transition with STF_OK
 ./rekeyikev2-I1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_REKEY
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
