@@ -565,10 +565,10 @@ delete_state(struct state *st)
     connection_discard(c);
 
     change_state(st, STATE_UNDEFINED);
-
     release_whack(st);
 
-    change_state(st, STATE_CHILDSA_DEL);
+    /* now actually delete the object */
+    free_state(st);
 }
 
 /*
