@@ -855,6 +855,11 @@ show_status(void)
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_shunt_status();
 #endif
+
+#if defined(ONGOING_LEAK_DETECTIVE) && defined(LEAK_DETECTIVE)
+    report_leaks();
+#endif
+
 }
 
 /*
