@@ -243,6 +243,9 @@ mostlyclean: clean
 
 realclean: clean
 
+options:
+	echo ${USERCOMPILE} ${PORTINCLUDE} ${COPTS} ${ALLFLAGS}
+
 check:
 	echo no checks in lib right now.
 

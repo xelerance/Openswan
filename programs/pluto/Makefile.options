@@ -253,6 +253,10 @@ endif
 
 ifeq ($(USE_LEAK_DETECTIVE),true)
 LEAK_CONF=-DLEAK_DETECTIVE
+
+ifeq ($(USE_ONGOING_LEAK_DETECTIVE),true)
+LEAK_CONF+=-DONGOING_LEAK_DETECTIVE
+endif
 endif
 
 ifeq ($(USE_TAPROOM),true)

@@ -442,6 +442,7 @@ USE_TAPROOM?=false
 # Whether to use LEAK_DETECTIVE to find memory leaks.
 # disabled for now as it causes some pfree()s due to bad code
 USE_LEAK_DETECTIVE?=false
+USE_ONGOING_LEAK_DETECTIVE?=false
 
 # Use dmalloc. Requires USE_LEAK_DETECTIVE
 USE_DMALLOC?=false
