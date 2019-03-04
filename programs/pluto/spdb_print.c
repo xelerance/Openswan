@@ -54,6 +54,16 @@
 #include "db_ops.h"
 #include "spdb.h"
 
+#if 1
+/* print to STDOUT */
+#define print_sa_fmt(fmt,a...) \
+    printf(fmt"\n",##a)
+#else
+/* print to syslog */
+#define print_sa_fmt(fmt,a...) \
+    openswan_log(fmt, ##a)
+#endif
+
 void
 print_sa_attr_oakley(struct db_attr *at)
 {
@@ -66,7 +76,7 @@ print_sa_attr_oakley(struct db_attr *at)
     if(at->type.oakley <= oakley_attr_val_descs_size) {
 	en = oakley_attr_val_descs[at->type.oakley];
     }
-    printf("        type: %u(%s) val: %u(%s)\n"
+    print_sa_fmt("        type: %u(%s) val: %u(%s)"
 	   , at->type.oakley, enum_name(&oakley_attr_names, at->type.oakley+ISAKMP_ATTR_AF_TV)
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
@@ -83,7 +93,7 @@ print_sa_attr_ipsec(struct db_attr *at)
     if(at->type.ipsec <= ipsec_attr_val_descs_size) {
 	en = ipsec_attr_val_descs[at->type.ipsec];
     }
-    printf("        type: %u(%s) val: %u(%s)\n"
+    print_sa_fmt("        type: %u(%s) val: %u(%s)"
 	   , at->type.ipsec, enum_name(&ipsec_attr_names, at->type.ipsec+ISAKMP_ATTR_AF_TV)
 	   , at->val,  en ? enum_name(en, at->val) : "unknown");
 }
@@ -92,11 +102,11 @@ void
 print_sa_trans(struct db_sa *f, struct db_trans *tr)
 {
     unsigned int i;
-    printf("      transform: %u cnt: %u\n",
+    print_sa_fmt("      transform: %u cnt: %u",
 	   tr->transid, tr->attr_cnt);
     if (!tr->attrs) {
         if (tr->attr_cnt)
-            printf("      !!! WARNING: tr->attrs found NULL\n");
+            print_sa_fmt("      !!! WARNING: tr->attrs found NULL");
         return;
     }
     for(i=0; i<tr->attr_cnt; i++) {
@@ -112,13 +122,13 @@ void
 print_sa_prop(struct db_sa *f, struct db_prop *dp)
 {
     unsigned int i;
-    printf("    protoid: %u (%s) cnt: %u\n"
+    print_sa_fmt("    protoid: %u (%s) cnt: %u"
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
     if (!dp->trans) {
         if (dp->trans_cnt)
-            printf("      !!! WARNING: dp->trans found NULL\n");
+            print_sa_fmt("      !!! WARNING: dp->trans found NULL");
         return;
     }
     for(i=0; i<dp->trans_cnt; i++) {
@@ -130,11 +140,11 @@ void
 print_sa_prop_conj(struct db_sa *f, struct db_prop_conj *pc)
 {
     unsigned int i;
-    printf("  conjunctions cnt: %u\n",
+    print_sa_fmt("  conjunctions cnt: %u",
 	   pc->prop_cnt);
     if (!pc->props) {
         if (pc->prop_cnt)
-            printf("      !!! WARNING: pc->props found NULL\n");
+            print_sa_fmt("      !!! WARNING: pc->props found NULL");
         return;
     }
     for(i=0; i<pc->prop_cnt; i++) {
@@ -146,11 +156,11 @@ void
 sa_print(struct db_sa *f)
 {
     unsigned int i;
-    printf("sa disjunct cnt: %u\n",
+    print_sa_fmt("sa disjunct cnt: %u",
 	   f->prop_conj_cnt);
     if (!f->prop_conjs) {
         if (f->prop_conj_cnt)
-            printf("      !!! WARNING: f->prop_conjs found NULL\n");
+            print_sa_fmt("      !!! WARNING: f->prop_conjs found NULL");
         return;
     }
     for(i=0; i<f->prop_conj_cnt; i++) {
@@ -168,7 +178,7 @@ print_sa_v2_attr(struct db_attr *at)
     }
 
     //en = NULL; /* XXX */
-    printf("        type: %u(%s) val: %u(%s)\n"
+    print_sa_fmt("        type: %u(%s) val: %u(%s)"
 	   , at->type.ikev2, "" /*enum_name(&oakley_attr_names, at->type+ISAKMP_ATTR_AF_TV)*/
 	   , at->val, "unknown");
 }
@@ -183,14 +193,14 @@ print_sa_v2_trans(struct db_v2_trans *tr)
 	en = ikev2_transid_val_descs[tr->transform_type];
     }
 
-    printf("      type: %u(%s) value: %u(%s) attr_cnt: %u\n"
+    print_sa_fmt("      type: %u(%s) value: %u(%s) attr_cnt: %u"
 	   , tr->transform_type
 	   , enum_name(&trans_type_names, tr->transform_type)
 	   , tr->transid, en ? enum_name(en, tr->transid) : "unknown"
 	   , tr->attr_cnt);
     if (!tr->attrs) {
         if (tr->attr_cnt)
-            printf("      !!! WARNING: tr->attrs found NULL\n");
+            print_sa_fmt("      !!! WARNING: tr->attrs found NULL");
         return;
     }
     for(i=0; i<tr->attr_cnt; i++) {
@@ -202,14 +212,14 @@ void
 print_sa_v2_prop_conj(struct db_v2_prop_conj *dp)
 {
     unsigned int i;
-    printf("    proposal #%u protoid: %u (%s) cnt: %u\n"
+    print_sa_fmt("    proposal #%u protoid: %u (%s) cnt: %u"
 	   , dp->propnum
 	   , dp->protoid
 	   , enum_name(&protocol_names, dp->protoid)
 	   , dp->trans_cnt);
     if (!dp->trans) {
         if (dp->trans_cnt)
-            printf("      !!! WARNING: dp->trans found NULL\n");
+            print_sa_fmt("      !!! WARNING: dp->trans found NULL");
         return;
     }
     for(i=0; i<dp->trans_cnt; i++) {
@@ -221,11 +231,11 @@ void
 print_sa_v2_prop(struct db_v2_prop *pc)
 {
     unsigned int i;
-    printf("  conjunctions cnt: %u\n",
+    print_sa_fmt("  conjunctions cnt: %u",
 	   pc->prop_cnt);
     if (!pc->props) {
         if (pc->prop_cnt)
-            printf("      !!! WARNING: pc->props found NULL\n");
+            print_sa_fmt("      !!! WARNING: pc->props found NULL");
         return;
     }
     for(i=0; i<pc->prop_cnt; i++) {
@@ -237,11 +247,11 @@ void
 sa_v2_print(struct db_sa *f)
 {
 	unsigned int i;
-	printf("sav2 disjoint cnt: %u\n",
+	print_sa_fmt("sav2 disjoint cnt: %u",
 	       f->prop_disj_cnt);
 	if (!f->prop_disj) {
 		if (f->prop_disj_cnt)
-			printf("      !!! WARNING: f->prop_disj found NULL\n");
+			print_sa_fmt("      !!! WARNING: f->prop_disj found NULL");
 		return;
         }
 	for(i=0; i<f->prop_disj_cnt; i++) {
