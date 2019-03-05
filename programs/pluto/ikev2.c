@@ -1484,7 +1484,7 @@ stf_status
 accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *name)
 {
     pb_stream *keyex_pbs;
-    v2_notification_t rn;
+    notification_t rn;
     chunk_t dc;
     if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
         return STF_FAIL;
@@ -1492,13 +1492,18 @@ accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *n
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
 
     /* KE in */
-    rn=accept_KE(ke, name, st->st_oakley.group, keyex_pbs);
+    rn = accept_KE(ke, name, st->st_oakley.group, keyex_pbs);
 
-    if(rn != v2N_NOTHING_WRONG) {
-        u_int16_t group_number = htons(st->st_oakley.group->group);
-        dc.ptr = (unsigned char *)&group_number;
-        dc.len = 2;
-        SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
+    if(rn != NOTHING_WRONG) {
+        if (rn == INVALID_KEY_INFORMATION) {
+            u_int16_t group_number = htons(st->st_oakley.group->group);
+            dc.ptr = (unsigned char *)&group_number;
+            dc.len = 2;
+            SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
+            /* notification sent, return failure, but prevent another
+             * notification from complete_v2_state_transition(). */
+            md->note = rn = 0;
+        }
         delete_state(st);
         return STF_FAIL + rn;
     }
