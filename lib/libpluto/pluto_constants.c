@@ -291,7 +291,7 @@ const char *stf_status_name(stf_status code)
 	if (ret) return ret;
 	/* decode errors past STF_FAIL */
 	snprintf(stf_status_buffer, sizeof(stf_status_buffer),
-		 "STF_FAIL%+d", code);
+		 "STF_FAIL%+d", code-STF_FAIL);
 	return stf_status_buffer;
 }
 

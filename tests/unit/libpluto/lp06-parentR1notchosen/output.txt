@@ -196,7 +196,7 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | processing payload: ISAKMP_NEXT_v2V (len=16)
 | now proceed with state specific processing using state #3 responder-V2_init
 | no connection with matching policy found
-| #0 complete v2 state transition with STF_FAIL+32
+| #0 complete v2 state transition with STF_FAIL+24
 ./parentI1R1 no-state: AUTHENTICATION_FAILED
 ./parentI1R1 sending notification ISAKMP_v2_SA_INIT/v2N_AUTHENTICATION_FAILED to 10.10.5.4:500
 sending 36 bytes for send_v2_notification through eth0:500 [192.168.1.1:500] to 10.10.5.4:500 (using #0)
