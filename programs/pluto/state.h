@@ -448,6 +448,7 @@ extern void state_eroute_usage(ip_subnet *ours, ip_subnet *his
     , unsigned long count, time_t nw);
 extern void free_state(struct state *st);
 extern void delete_state(struct state *st);
+extern void do_state_frees(void);
 struct connection;	/* forward declaration of tag */
 extern void delete_states_by_connection(struct connection *c, bool relations);
 extern void delete_p2states_by_connection(struct connection *c);

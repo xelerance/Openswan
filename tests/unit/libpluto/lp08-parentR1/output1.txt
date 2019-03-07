@@ -229,7 +229,7 @@ sending 40 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
 | #1 complete v2 state transition with STF_FAIL+25
-./parentR1 STATE_CHILDSA_DEL: INVALID_KEY_INFORMATION
+./parentR1 STATE_UNDEFINED: INVALID_KEY_INFORMATION
 ./parentR1 sending notification ISAKMP_v2_SA_INIT/v2N_INVALID_KE_PAYLOAD to 192.168.1.1:500
 | **emit ISAKMP Message:
 |    initiator cookie:
@@ -253,7 +253,7 @@ sending 36 bytes for send_v2_notification through eth0:500 [132.213.238.7:500] t
 |   00 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   29 20 22 20  00 00 00 00  00 00 00 24  00 00 00 08
 |   01 00 00 11
-| state transition function for STATE_CHILDSA_DEL failed: INVALID_KEY_INFORMATION
+| state transition function for STATE_UNDEFINED failed: INVALID_KEY_INFORMATION
 ./parentR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete

@@ -206,6 +206,43 @@ sending 36 bytes for send_v2_notification through eth0:500 [192.168.1.1:500] to 
 | state transition function for no-state failed: AUTHENTICATION_FAILED
 ./parentI1R1 deleting state #1 (STATE_PARENT_I1)
 ./parentI1R1 leak: notification packet, item size: X
+./parentI1R1 leak: saved first packet, item size: X
+./parentI1R1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./parentI1R1 leak: sa in main_outI1, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_prop, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: db_attrs, item size: X
+./parentI1R1 leak: db_v2_trans, item size: X
+./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: initiator nonce, item size: X
+./parentI1R1 leak: long term secret, item size: X
+./parentI1R1 leak: saved gi value, item size: X
 ./parentI1R1 leak: msg_digest, item size: X
 ./parentI1R1 leak: ikev2_outI1 KE, item size: X
 ./parentI1R1 leak: db_attrs, item size: X
@@ -239,6 +276,12 @@ sending 36 bytes for send_v2_notification through eth0:500 [192.168.1.1:500] to 
 ./parentI1R1 leak: db_attrs, item size: X
 ./parentI1R1 leak: db_v2_trans, item size: X
 ./parentI1R1 leak: db_v2_prop_conj, item size: X
+./parentI1R1 leak: 12 * sa copy attrs array, item size: X
+./parentI1R1 leak: sa copy trans array, item size: X
+./parentI1R1 leak: sa copy prop array, item size: X
+./parentI1R1 leak: sa copy prop conj array, item size: X
+./parentI1R1 leak: sa copy prop_conj, item size: X
+./parentI1R1 leak: struct state in new_state(), item size: X
 ./parentI1R1 leak: 2 * keep id name, item size: X
 ./parentI1R1 leak: ID host_pair, item size: X
 ./parentI1R1 leak: host_pair, item size: X

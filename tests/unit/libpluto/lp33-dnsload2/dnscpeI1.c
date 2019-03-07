@@ -109,7 +109,6 @@ int main(int argc, char *argv[])
     st = sendI1(c1, DBG_EMITTING|DBG_CONTROL|DBG_CONTROLMORE, regression == 0);
     if(st!=NULL) {
         delete_state(st);
-        free_state(st);
     }
 
     delete_connection(c1, TRUE);
