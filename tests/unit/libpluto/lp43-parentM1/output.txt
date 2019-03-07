@@ -459,10 +459,10 @@ RC=105 STATE_MAIN_I1: initiate
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
 ./parentM1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./parentM1 leak: reply packet for main_outI1, item size: X
 ./parentM1 leak: 67 * VendorID MD5, item size: X
 ./parentM1 leak: 3 * vid->data, item size: X
 ./parentM1 leak: 15 * VendorID MD5, item size: X
@@ -472,6 +472,8 @@ RC=105 STATE_MAIN_I1: initiate
 ./parentM1 leak: vid->data, item size: X
 ./parentM1 leak: 23 * VendorID MD5, item size: X
 ./parentM1 leak: vid->data, item size: X
+./parentM1 leak: sa in main_outI1, item size: X
+./parentM1 leak: struct state in new_state(), item size: X
 ./parentM1 leak: policies path, item size: X
 ./parentM1 leak: ocspcerts path, item size: X
 ./parentM1 leak: aacerts path, item size: X

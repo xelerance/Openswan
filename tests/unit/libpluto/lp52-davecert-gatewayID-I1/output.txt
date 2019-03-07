@@ -482,10 +482,46 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 | ICOOKIE:  8d 0e 0f 10  11 12 13 14
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
 ./davecertI1-id deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./davecertI1-id leak: saved first packet, item size: X
+./davecertI1-id leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./davecertI1-id leak: sa in main_outI1, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_prop, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: db_attrs, item size: X
+./davecertI1-id leak: db_v2_trans, item size: X
+./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: initiator nonce, item size: X
+./davecertI1-id leak: long term secret, item size: X
+./davecertI1-id leak: saved gi value, item size: X
 ./davecertI1-id leak: msg_digest, item size: X
 ./davecertI1-id leak: ikev2_outI1 KE, item size: X
 ./davecertI1-id leak: db_attrs, item size: X
@@ -519,6 +555,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.35:
 ./davecertI1-id leak: db_attrs, item size: X
 ./davecertI1-id leak: db_v2_trans, item size: X
 ./davecertI1-id leak: db_v2_prop_conj, item size: X
+./davecertI1-id leak: 12 * sa copy attrs array, item size: X
+./davecertI1-id leak: sa copy trans array, item size: X
+./davecertI1-id leak: sa copy prop array, item size: X
+./davecertI1-id leak: sa copy prop conj array, item size: X
+./davecertI1-id leak: sa copy prop_conj, item size: X
+./davecertI1-id leak: struct state in new_state(), item size: X
 ./davecertI1-id leak: rfc3110 format of public key [created], item size: X
 ./davecertI1-id leak: issuer dn, item size: X
 ./davecertI1-id leak: keep id name, item size: X

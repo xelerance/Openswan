@@ -116,7 +116,6 @@ int main(int argc, char *argv[])
     st = state_with_serialno(1);
     if(st!=NULL) {
         delete_state(st);
-        free_state(st);
     }
 
     delete_connection(c1, TRUE);

@@ -477,10 +477,46 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  00 00 00 00  00 00 00 00
 | state hash entry 4
-| freeing state object #1
 ./h2hI1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./h2hI1 leak: saved first packet, item size: X
+./h2hI1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./h2hI1 leak: sa in main_outI1, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_prop, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: db_attrs, item size: X
+./h2hI1 leak: db_v2_trans, item size: X
+./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: initiator nonce, item size: X
+./h2hI1 leak: long term secret, item size: X
+./h2hI1 leak: saved gi value, item size: X
 ./h2hI1 leak: msg_digest, item size: X
 ./h2hI1 leak: ikev2_outI1 KE, item size: X
 ./h2hI1 leak: db_attrs, item size: X
@@ -514,6 +550,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./h2hI1 leak: db_attrs, item size: X
 ./h2hI1 leak: db_v2_trans, item size: X
 ./h2hI1 leak: db_v2_prop_conj, item size: X
+./h2hI1 leak: 12 * sa copy attrs array, item size: X
+./h2hI1 leak: sa copy trans array, item size: X
+./h2hI1 leak: sa copy prop array, item size: X
+./h2hI1 leak: sa copy prop conj array, item size: X
+./h2hI1 leak: sa copy prop_conj, item size: X
+./h2hI1 leak: struct state in new_state(), item size: X
 ./h2hI1 leak: policies path, item size: X
 ./h2hI1 leak: ocspcerts path, item size: X
 ./h2hI1 leak: aacerts path, item size: X
