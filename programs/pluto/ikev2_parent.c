@@ -360,7 +360,7 @@ stf_status ikev2_decrypt_msg(struct msg_digest *md
         /* It is not always 96 bytes, it depends upon which integ algo is used*/
         if(memcmp(b12, encend, pst->st_oakley.integ_hasher->hash_integ_len)!=0) {
             openswan_log("R2 failed to match authenticator");
-            return STF_FAIL;
+            return STF_FAIL + AUTHENTICATION_FAILED;
         }
     }
 
