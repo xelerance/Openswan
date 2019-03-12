@@ -4,6 +4,15 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51.3 (March 12, 2019)
+
+Fix memory leak bug.
+
+* wo#8179 . defer freeing states until all references are clearly gone,
+  clear them out in the main loop [MCR]
+* attempt to free the state [MCR]
+* added leak detective reporter [MCR]
+
 v2.6.51.2 (December 17, 2018)
 
 Additional commits for libnss.
