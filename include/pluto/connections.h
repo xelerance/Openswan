@@ -257,6 +257,9 @@ struct connection {
     bool initiated;
     bool failed_ikev2;                  /* tried ikev2, but failed */
 
+    bool proposal_can_retry;		/* we will retry if current proposal fails */
+    unsigned int proposal_index;	/* incremented on retry */
+
     /* state object serial number: weak pointers */
     so_serial_t	prospective_parent_sa;  /* state we are still negotiating */
     so_serial_t newest_isakmp_sa;       /* state that is negotiated/up */

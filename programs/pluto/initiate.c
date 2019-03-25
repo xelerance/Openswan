@@ -1638,6 +1638,7 @@ static void connection_check_ddns1(struct connection *c)
      * lookup
      */
     update_host_pairs(c);
+    c->proposal_index = 0;
     initiate_connection(c->name, NULL_FD, 0, pcim_demand_crypto);
 
     /* no host pairs,  no more to do */

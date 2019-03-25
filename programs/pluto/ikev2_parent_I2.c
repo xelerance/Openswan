@@ -462,14 +462,88 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
 
 }
 
+/* handle a case where we received a failing notification, and we decided
+ * that we can retry with a different proposal */
+static stf_status ikev2parent_retry_next_proposal(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    struct state *pst = md->pst;
+    struct connection *c = st->st_connection;
+    stf_status stf;
+    int whack_sock;
+    so_serial_t created = -1;
+
+    /* move to the next proposal */
+    c->proposal_index ++;
+
+    /* look up the parent */
+    if (!pst && st->st_clonedfrom) {
+        pst = state_with_serialno(st->st_clonedfrom);
+    }
+
+    /* convince whack to wait for the new state, not the old */
+
+    if (pst && pst != st) {
+        /* we have a parent and a child state */
+        whack_sock = pst->st_whack_sock;
+        pst->st_whack_sock = NULL_FD;
+
+        /* we don't care about the child state */
+        release_whack(st);
+
+    } else {
+        /* just have a child */
+        whack_sock = st->st_whack_sock;
+        st->st_whack_sock = NULL_FD;
+    }
+
+    /* delete the old state */
+
+    delete_event(st);
+    change_state(st, STATE_IKESA_DEL);
+    delete_state(st);
+
+    if (pst && pst != st) {
+        delete_event(pst);
+	delete_state(pst);
+    }
+
+    reset_globals();
+
+    /* start a new attempt */
+
+    stf = ikev2parent_outI1(whack_sock
+              , c
+              , NULL
+              , &created
+              , c->policy
+              , 1
+              , pcim_demand_crypto
+              , NULL_POLICY);
+
+    switch (stf) {
+    case STF_OK:
+    case STF_SUSPEND:
+        c->prospective_parent_sa = created;
+        return stf;
+    default:
+        /* something went wrong, we must close whack_sock */
+        close_any(whack_sock);
+        break;
+    }
+
+    return stf;
+}
+
 /*
  * this routine deals with replies that are failures, which do not
  * contain proposal, or which require us to try initiator cookies.
  */
-stf_status ikev2parent_inR1(struct msg_digest *md)
+stf_status ikev2parent_ntf_inR1(struct msg_digest *md)
 {
     struct state *st = md->st;
-    /* struct connection *c = st->st_connection; */
+    struct connection *c = st->st_connection;
+    bool retry = FALSE;
 
     set_cur_state(st);
 
@@ -484,7 +558,12 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
                 action="SA deleted";
                 break;
             case v2N_INVALID_KE_PAYLOAD:
-                action="SA deleted";
+		if (c->proposal_can_retry) {
+			action="will retry";
+			retry = TRUE;
+		} else {
+			action="SA deleted";
+		}
                 break;
             default:
                 break;
@@ -499,12 +578,14 @@ stf_status ikev2parent_inR1(struct msg_digest *md)
 
     }
 
+    if (retry)
+        return ikev2parent_retry_next_proposal(md);
+
     /* now. nuke the state */
-    {
-        delete_state(st);
-        reset_globals();
-        return STF_FAIL;
-    }
+    delete_state(st);
+    reset_globals();
+
+    return STF_FAIL;
 }
 
 /*

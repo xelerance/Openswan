@@ -159,7 +159,7 @@ struct state_v2_microcode v2_state_microcode_table[] = {
       .flags = SMF2_STATENEEDED,
       .req_clear_payloads = P(N),
       .opt_clear_payloads = P(N),
-      .processor  = ikev2parent_inR1,
+      .processor  = ikev2parent_ntf_inR1,
       .recv_type  = ISAKMP_v2_SA_INIT,
     },
 
