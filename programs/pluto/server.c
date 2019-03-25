@@ -590,6 +590,9 @@ call_server(void)
 	    long next_time = next_event();   /* time to any pending timer event */
 	    int maxfd = ctl_fd;
 
+            /* free up any states not yet freed */
+            do_state_frees();
+
 	    if (sigtermflag)
 		exit_pluto(0);
 

@@ -480,6 +480,43 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./dnscpeI1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./dnscpeI1 leak: saved first packet, item size: X
+./dnscpeI1 leak: reply packet for ikev2_parent_outI1_tail, item size: X
+./dnscpeI1 leak: sa in main_outI1, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_prop, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: db_attrs, item size: X
+./dnscpeI1 leak: db_v2_trans, item size: X
+./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: initiator nonce, item size: X
+./dnscpeI1 leak: long term secret, item size: X
+./dnscpeI1 leak: saved gi value, item size: X
 ./dnscpeI1 leak: msg_digest, item size: X
 ./dnscpeI1 leak: ikev2_outI1 KE, item size: X
 ./dnscpeI1 leak: db_attrs, item size: X
@@ -513,6 +550,12 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [192.168.1.1:50
 ./dnscpeI1 leak: db_attrs, item size: X
 ./dnscpeI1 leak: db_v2_trans, item size: X
 ./dnscpeI1 leak: db_v2_prop_conj, item size: X
+./dnscpeI1 leak: 12 * sa copy attrs array, item size: X
+./dnscpeI1 leak: sa copy trans array, item size: X
+./dnscpeI1 leak: sa copy prop array, item size: X
+./dnscpeI1 leak: sa copy prop conj array, item size: X
+./dnscpeI1 leak: sa copy prop_conj, item size: X
+./dnscpeI1 leak: struct state in new_state(), item size: X
 ./dnscpeI1 leak: keep id name, item size: X
 ./dnscpeI1 leak: addrinfo sockaddr, item size: X
 ./dnscpeI1 leak: addrinfo, item size: X

@@ -338,11 +338,55 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  64 0a 06 43  5c 7c 4b 31
 | state hash entry 5
-| freeing state object #1
 ./certreplyselfR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./certreplyselfR1 leak: reply packet, item size: X
+./certreplyselfR1 leak: saved first packet, item size: X
+./certreplyselfR1 leak: initiator nonce, item size: X
+./certreplyselfR1 leak: long term secret, item size: X
+./certreplyselfR1 leak: saved gi value, item size: X
+./certreplyselfR1 leak: nonce, item size: X
+./certreplyselfR1 leak: Gi, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_prop, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: db_attrs, item size: X
+./certreplyselfR1 leak: db_v2_trans, item size: X
+./certreplyselfR1 leak: db_v2_prop_conj, item size: X
+./certreplyselfR1 leak: 12 * sa copy attrs array, item size: X
+./certreplyselfR1 leak: sa copy trans array, item size: X
+./certreplyselfR1 leak: sa copy prop array, item size: X
+./certreplyselfR1 leak: sa copy prop conj array, item size: X
+./certreplyselfR1 leak: sa copy prop_conj, item size: X
+./certreplyselfR1 leak: saved first received packet, item size: X
 ./certreplyselfR1 leak: ikev2_inI1outR1 KE, item size: X
+./certreplyselfR1 leak: struct state in new_state(), item size: X
 ./certreplyselfR1 leak: msg_digest, item size: X
 ./certreplyselfR1 leak: rfc3110 format of public key [created], item size: X
 ./certreplyselfR1 leak: issuer dn, item size: X

@@ -336,11 +336,55 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 | ICOOKIE:  80 01 02 03  04 05 06 07
 | RCOOKIE:  de bc 58 3a  8f 40 d0 cf
 | state hash entry 28
-| freeing state object #1
 ./h2hR1 deleting connection
 | pass 0: considering CHILD SAs to delete
 | pass 1: considering PARENT SAs to delete
+./h2hR1 leak: reply packet, item size: X
+./h2hR1 leak: saved first packet, item size: X
+./h2hR1 leak: initiator nonce, item size: X
+./h2hR1 leak: long term secret, item size: X
+./h2hR1 leak: saved gi value, item size: X
+./h2hR1 leak: nonce, item size: X
+./h2hR1 leak: Gi, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_prop, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: db_attrs, item size: X
+./h2hR1 leak: db_v2_trans, item size: X
+./h2hR1 leak: db_v2_prop_conj, item size: X
+./h2hR1 leak: 12 * sa copy attrs array, item size: X
+./h2hR1 leak: sa copy trans array, item size: X
+./h2hR1 leak: sa copy prop array, item size: X
+./h2hR1 leak: sa copy prop conj array, item size: X
+./h2hR1 leak: sa copy prop_conj, item size: X
+./h2hR1 leak: saved first received packet, item size: X
 ./h2hR1 leak: ikev2_inI1outR1 KE, item size: X
+./h2hR1 leak: struct state in new_state(), item size: X
 ./h2hR1 leak: msg_digest, item size: X
 ./h2hR1 leak: policies path, item size: X
 ./h2hR1 leak: ocspcerts path, item size: X
