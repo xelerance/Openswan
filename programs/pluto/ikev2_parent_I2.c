@@ -481,6 +481,26 @@ static stf_status ikev2parent_retry_next_proposal(struct msg_digest *md)
         pst = state_with_serialno(st->st_clonedfrom);
     }
 
+    /* make sure we release all algorithm SPIs */
+
+    if (!st->st_ah.present && st->st_ah.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of AH spi 0x%x",
+				     st->st_ah.our_spi));
+	    st->st_ah.present = 1;
+    }
+
+    if (!st->st_esp.present && st->st_esp.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of ESP spi 0x%x",
+				     st->st_esp.our_spi));
+	    st->st_esp.present = 1;
+    }
+
+    if (!st->st_ipcomp.present && st->st_ipcomp.our_spi) {
+            DBG(DBG_CONTROL, DBG_log("forcing release of IPCOMP spi 0x%x",
+				     st->st_ipcomp.our_spi));
+	    st->st_ipcomp.present = 1;
+    }
+
     /* convince whack to wait for the new state, not the old */
 
     if (pst && pst != st) {
