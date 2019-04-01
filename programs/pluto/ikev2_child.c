@@ -772,6 +772,29 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
     if(pst == NULL) pst = md->st;
     c = pst->st_connection;
 
+    if (c->kind == CK_INSTANCE) {
+        /* We have made it here with a template instance, but in case this
+         * connection is coming from another roadwarior, the evaluation
+         * should happen on the template instead.  We look up the matching
+         * template... */
+	struct connection *d;
+        for (d = connections; d != NULL; d = d->ac_next) {
+            if (!streq(c->name, d->name))
+                continue;
+            if (d->kind == CK_INSTANCE)
+                continue;
+
+            /* we prefer the non instance connection */
+            DBG(DBG_CONTROLMORE,
+                DBG_log("switching from %s to %s of conn '%s' to evaluate fitness",
+                        enum_name(&connection_kind_names, c->kind),
+                        enum_name(&connection_kind_names, d->kind),
+                        c->name));
+            c = d;
+            break;
+        }
+    }
+
     /*
      * now look at provided TSx, and see if these fit the connection
      * that we have, and narrow them if necessary.
