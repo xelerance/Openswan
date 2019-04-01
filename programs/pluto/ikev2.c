@@ -1483,32 +1483,49 @@ void complete_v2_state_transition(struct msg_digest **mdp
 stf_status
 accept_v2_KE(struct msg_digest *md, struct state *st, chunk_t *ke, const char *name)
 {
+    struct ikev2_ke *v2ke;
     pb_stream *keyex_pbs;
     notification_t rn;
+    u_int16_t group_number;
     chunk_t dc;
+
     if (md->chain[ISAKMP_NEXT_v2KE] == NULL)
         return STF_FAIL;
+
+    /* validate the v2KE group */
+
+    v2ke = &md->chain[ISAKMP_NEXT_v2KE]->payload.v2ke;
+
+    if (st->st_oakley.group->group != v2ke->isak_group) {
+	loglog(RC_LOG_SERIOUS, "KE has DH group %u, but we selected %u",
+               v2ke->isak_group, st->st_oakley.group->group);
+        goto send_invalid_ke_ntf;
+    }
 
     keyex_pbs = &md->chain[ISAKMP_NEXT_v2KE]->pbs;
 
     /* KE in */
     rn = accept_KE(ke, name, st->st_oakley.group, keyex_pbs);
+    if (rn == NOTHING_WRONG)
+        return STF_OK;
 
-    if(rn != NOTHING_WRONG) {
-        if (rn == INVALID_KEY_INFORMATION) {
-            u_int16_t group_number = htons(st->st_oakley.group->group);
-            dc.ptr = (unsigned char *)&group_number;
-            dc.len = 2;
-            SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
-            /* notification sent, return failure, but prevent another
-             * notification from complete_v2_state_transition(). */
-            md->note = rn = 0;
-        }
-        delete_state(st);
-        return STF_FAIL + rn;
-    }
+    if (rn == INVALID_KEY_INFORMATION)
+        /* special case, we want to send a notification here */
+        goto send_invalid_ke_ntf;
 
-    return STF_OK;
+    /* pass any other failure up to caller */
+    return STF_FAIL+rn;
+
+send_invalid_ke_ntf:
+    group_number = htons(st->st_oakley.group->group);
+    dc.ptr = (unsigned char *)&group_number;
+    dc.len = 2;
+    SEND_V2_NOTIFICATION_DATA(md, st, v2N_INVALID_KE_PAYLOAD, &dc);
+    delete_state(st);
+    /* notification sent, return failure, but prevent another
+     * notification from complete_v2_state_transition(). */
+    md->note = 0;
+    return STF_FAIL;
 }
 
 v2_notification_t
