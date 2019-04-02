@@ -904,6 +904,8 @@ sending 492 bytes for STATE_PARENT_I1 through eth0:500 [192.168.1.1:500] to 132.
 |   reject: in state: STATE_PARENT_I3, needs STATE_CHILDSA_DEL
 | considering state entry: 17
 |   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C1_KEYED
+| considering state entry: 18
+|   reject: in state: STATE_PARENT_I3, needs STATE_CHILD_C0_KEYING
 | did not find valid state; giving up
 ./deleteChildSA-invalid-msgInI3 sending encrypted notification ISAKMP_v2_INFORMATIONAL/v2N_INVALID_MESSAGE_ID to 132.213.238.7:500
 | **emit ISAKMP Message:

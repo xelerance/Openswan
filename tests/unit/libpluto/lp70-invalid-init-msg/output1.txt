@@ -139,6 +139,8 @@ RC=0 "mytunnel":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init
 |   reject:state needed and state unavailable
 | considering state entry: 17
 |   reject:state needed and state unavailable
+| considering state entry: 18
+|   reject:state needed and state unavailable
 | did not find valid state; giving up
 ./h2hR1 sending notification ISAKMP_v2_SA_INIT/v2N_INVALID_MESSAGE_ID to 192.168.1.1:500
 | **emit ISAKMP Message:

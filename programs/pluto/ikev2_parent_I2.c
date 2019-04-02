@@ -589,6 +589,56 @@ stf_status ikev2parent_ntf_inR1(struct msg_digest *md)
 }
 
 /*
+ * this routine deals with replies that are failures, which do not
+ * contain proposal, or which require us to try initiator cookies.
+ */
+stf_status ikev2parent_ntf_inR2(struct msg_digest *md)
+{
+    struct state *st = md->st;
+    struct connection *c = st->st_connection;
+    bool retry = FALSE;
+
+    set_cur_state(st);
+
+    /* check if the responder replied with v2N with DOS COOKIE */
+    if( md->chain[ISAKMP_NEXT_v2N] ) {
+        struct payload_digest *notify;
+        const char *action = "ignored";
+
+        for(notify=md->chain[ISAKMP_NEXT_v2N]; notify!=NULL; notify=notify->next) {
+            switch(notify->payload.v2n.isan_type) {
+            case v2N_AUTHENTICATION_FAILED:
+		if (c->proposal_can_retry) {
+			action="will retry";
+			retry = TRUE;
+		} else {
+			action="SA deleted";
+		}
+                break;
+            default:
+                break;
+            }
+
+            loglog(RC_NOTIFICATION + notify->payload.v2n.isan_type
+                      , "received notify: %s %s"
+                      ,enum_name(&ikev2_notify_names
+                                 , notify->payload.v2n.isan_type)
+                      ,action);
+        }
+
+    }
+
+    if (retry)
+        return ikev2parent_retry_next_proposal(md);
+
+    /* now. nuke the state */
+    delete_state(st);
+    reset_globals();
+
+    return STF_FAIL;
+}
+
+/*
  * Local Variables:
  * c-basic-offset:4
  * c-style: pluto

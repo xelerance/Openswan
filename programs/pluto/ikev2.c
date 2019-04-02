@@ -359,6 +359,18 @@ struct state_v2_microcode v2_state_microcode_table[] = {
       .timeout_event = EVENT_SA_REPLACE,
     },
 
+    /* state 18 */
+    { .svm_name   = "initiator-auth-failure",
+      .state      = STATE_CHILD_C0_KEYING,
+      .next_state = STATE_IKESA_DEL,
+      .flags = SMF2_STATENEEDED,
+      .req_clear_payloads = P(N),
+      .opt_clear_payloads = P(N),
+      .processor  = ikev2parent_ntf_inR2,
+      .recv_type  = ISAKMP_v2_AUTH,
+    },
+
+
     /* last entry */
     { .svm_name   = "invalid-transition",
       .state      = STATE_IKEv2_ROOF }
