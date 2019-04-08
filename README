@@ -1,7 +1,6 @@
 #########################################################################
 #            Openswan 2.X Release Notes
 #########################################################################
-************ See docs/RELEASE-NOTES.txt for more information ************
 
 Openswan is an IPsec implementation for Linux. It has support for most 
 of the extensions (RFC + IETF drafts) related to IPsec, including 
@@ -33,9 +32,11 @@ There are a few packages required for Openswan to compile from source:
    Debian package names: libgmp-dev
    Rpm package names:    gmp, gmp-devel
 
-2. awk, flex and bison
+   Rpm users may need to install gcc if it is not installed on their system already
 
-   Debian package names: gawk/mawk, flex, bison
+2. make, flex and bison:
+
+   Debian package names: make, flex, bison
    Rpm package names:    same as for Debian
 
 3. iproute2, iptables, sed, awk, bash, cut and possibly other tools
@@ -45,6 +46,16 @@ There are a few packages required for Openswan to compile from source:
    Rpm package names:    same as for Debian
 
    python is also required for "ipsec verify".
+
+4. Running unit test:
+
+   Debian package names: libpcap0.8-dev, libpcap0.8, electric-fence, tcpdump
+   Rpm package names:    libpcap, libpcap-devel, ElectricFence, tcpdump
+
+5. Building with LIBNSS:
+
+   Debian package names: libnspr4-dev, libnss3-dev, libnss3-tools
+   Rpm package names:    same as for Debian
 
 #########################################################################
 # HOW TO INSTALL on Kernel 2.6 (And Kernels with 2.6 IPsec backport)
