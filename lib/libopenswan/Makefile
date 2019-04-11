@@ -63,7 +63,7 @@ OBJS=${SRCS:.c=.o} ${PFKEYV2_SRCS:.c=.o} ${UDPFROMTO_SRCS:.c=.o} version.o
 
 MANSRCDIR=${OPENSWANSRCDIR}/lib/libopenswan
 
-HDRS=${KLIPSINC}/openswan.h internal.h
+HDRS=internal.h
 
 LIBA=libopenswan.a
 
