@@ -111,7 +111,13 @@ do
      cd $f
      header $f
      $do_clean && run make $make_options clean
-     $do_pcapupdate && run make $make_options pcapupdate
+     if $do_pcapupdate
+     then
+         if ! run make $make_options pcapupdate
+         then
+             die "$f: make pcapupdate failed"
+         fi
+     fi
      while ! run run_make_check $f;
      do
          if run make $make_options update
