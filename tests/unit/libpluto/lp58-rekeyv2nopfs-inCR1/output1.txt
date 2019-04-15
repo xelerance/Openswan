@@ -838,18 +838,18 @@ sending 348 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 |   80 01 02 03  04 05 06 07  de bc 58 3a  8f 40 d0 cf
 |   2e 20 24 20  00 00 00 02  00 00 00 ec  28 00 00 d0
 |   80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-|   92 ae 2b 0f  b8 a9 ce 06  17 18 a6 46  a1 15 c5 b5
-|   de de 8a 74  3e 3e 99 36  ad 19 30 79  1c c5 c1 97
-|   e9 ec 38 86  dc b3 79 37  65 bc 68 55  53 9d 53 48
-|   3b a0 6f 7c  80 39 a1 5a  6d 78 8b 31  13 da f8 b2
-|   c6 77 fa fd  12 b2 52 41  7a 47 15 57  47 f8 5f a8
-|   5b 61 1e e7  3b 82 d3 a4  75 80 8d e6  77 90 3c 0e
-|   9e fa 79 8f  87 26 46 ff  4d f6 1f 14  00 b5 36 33
-|   1e e9 f8 b1  48 40 09 da  f0 a2 fb 3b  50 3a 66 45
-|   5c 57 0b c6  00 fe ea 3a  b7 58 e0 39  26 b7 1d 72
-|   f2 bf dc c8  9c 15 25 ac  32 ae 56 8f  4c 40 46 40
-|   89 c1 67 fb  02 15 f5 f0  c3 ab 6c e4  dc e7 c9 39
-|   03 d7 4e 2e  44 75 3d fd  12 5d 48 a7
+|   2f b8 1a 8a  54 20 f2 e2  37 0a 3b c3  1e 12 70 02
+|   0d c0 29 41  d1 a7 46 39  4b ef ad df  77 c8 15 31
+|   15 77 ce 47  21 5f 12 a0  82 a6 49 64  9b db 6b 9d
+|   94 e7 06 fe  a7 f0 0b bf  61 c6 9e cf  43 df 77 28
+|   11 16 f2 74  91 ae 9b 78  50 18 f1 08  b0 0d 1e 5a
+|   4b 13 50 9f  5c c8 ec 9b  e8 39 8c 9b  81 fa 91 ae
+|   a3 0e 85 c9  e7 46 0a 98  4c b7 50 b1  06 a9 f6 2e
+|   45 4d 80 c0  8a 82 e7 52  52 36 ee 95  06 51 22 8b
+|   e2 67 4b 62  19 0b 10 c6  62 f1 62 aa  c9 a5 4c 2f
+|   88 39 c8 7c  be 09 a6 b0  77 4c ae c2  d5 1e 5b a2
+|   8e a8 fd 6c  28 38 21 82  be 00 9e 6b  d0 db a9 0a
+|   82 a8 d0 53  af 95 c8 a9  a9 64 c4 71
 |  processing version=2.0 packet with exchange type=ISAKMP_v2_CHILD_SA (36), msgid: 00000002
 | I am IKE SA Initiator
 | ICOOKIE:  80 01 02 03  04 05 06 07
@@ -911,22 +911,22 @@ sending 348 bytes for ikev2child_outC1_tail through eth0:500 [192.168.1.1:500] t
 | empty esp_info, returning defaults
 | ikev2_derive_child_keys: using oakley_sha for prf+ (SA #3 cloned from #1)
 | childsacalc.ni  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
-| childsacalc.nr  c6 ba 31 9f  88 5b e7 b7  a2 93 85 dc  bb c6 15 84
+| childsacalc.nr  80 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f
 | ikev2_derive_child_keys: my role is INITIATOR
-| prf+[1]:  d4 e5 d8 b8  c5 be c0 f0  2c 72 22 9a  3f d1 6b 3f
-|   76 47 d0 21
-| prf+[2]:  1d e2 76 c7  d6 a6 95 24  45 9d 94 68  e5 86 a5 7d
-|   e5 a2 57 da
-| prf+[3]:  6f 9f b7 fb  c1 28 40 5d  15 cd 4d 03  47 77 35 3a
-|   d2 31 9f c2
-| prf+[4]:  f6 73 d9 f9  01 4d 19 c4  a1 80 37 fc  1b d5 b3 7e
-|   f1 ae 06 1a
-| our  keymat  e5 a2 57 da  6f 9f b7 fb  c1 28 40 5d  15 cd 4d 03
-|   47 77 35 3a  d2 31 9f c2  f6 73 d9 f9  01 4d 19 c4
-|   a1 80 37 fc
-| peer keymat  d4 e5 d8 b8  c5 be c0 f0  2c 72 22 9a  3f d1 6b 3f
-|   76 47 d0 21  1d e2 76 c7  d6 a6 95 24  45 9d 94 68
-|   e5 86 a5 7d
+| prf+[1]:  d2 38 01 ef  51 c3 e3 bc  93 4a 1f a0  ed 91 c2 26
+|   6a 0d 50 4d
+| prf+[2]:  8a 69 ac 78  10 95 33 b2  b6 f2 5c cd  ea f9 c1 6d
+|   c2 1f 97 76
+| prf+[3]:  8b ec af 18  a8 4a 93 07  e0 21 cb c6  1f 48 78 3c
+|   81 1c f6 eb
+| prf+[4]:  be f9 c4 3f  c8 42 38 94  40 ac 2d 91  b0 95 09 24
+|   cd 19 60 0f
+| our  keymat  c2 1f 97 76  8b ec af 18  a8 4a 93 07  e0 21 cb c6
+|   1f 48 78 3c  81 1c f6 eb  be f9 c4 3f  c8 42 38 94
+|   40 ac 2d 91
+| peer keymat  d2 38 01 ef  51 c3 e3 bc  93 4a 1f a0  ed 91 c2 26
+|   6a 0d 50 4d  8a 69 ac 78  10 95 33 b2  b6 f2 5c cd
+|   ea f9 c1 6d
 | processor 'rekey-childSA-ack' returned STF_OK (3)
 | #3 complete v2 state transition with STF_OK
 ./rekeyv2nopfs-inCR1 transition from state STATE_CHILD_C1_REKEY to state STATE_CHILD_C1_KEYED
