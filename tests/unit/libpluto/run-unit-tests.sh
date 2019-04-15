@@ -79,15 +79,12 @@ toilet_options=
 [ -t 0 ] && toilet_options="--metal --width $(tput cols) --font future"
 
 # use toilet if possible
-if which toilet
-then
-    header() {
-        toilet $toilet_options $@
-    }
+if which toilet ; then
+    header() { toilet $toilet_options "$@" ; }
+elif which figlet ; then
+    header() { figlet -t $@ ; }
 else
-    header() {
-        figlet -t $@
-    }
+    header() { echo "###\n### $@\n###" ; }
 fi
 
 run_make_check() {
