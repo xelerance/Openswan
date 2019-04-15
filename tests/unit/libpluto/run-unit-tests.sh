@@ -87,9 +87,14 @@ else
     header() { echo "###\n### $@\n###" ; }
 fi
 
+run() {
+    echo >&2 "# $@"
+    "$@"
+}
+
 run_make_check() {
-    rm -f core
-    make $make_options check
+    run rm -f core
+    run make $make_options check
     rc=$?
     if [ $rc -ne 0 ] ; then
         if [ -f core ] ; then
@@ -105,19 +110,21 @@ do
     (
      cd $f
      header $f
-     $do_clean && make $make_options clean
-     $do_pcapupdate && make $make_options pcapupdate
-     while ! run_make_check $f;
+     $do_clean && run make $make_options clean
+     $do_pcapupdate && run make $make_options pcapupdate
+     while ! run run_make_check $f;
      do
-         if make $make_options update
+         if run make $make_options update
          then
              if $do_git_add
              then
-                 git add -p .
+                 run git add -p .
              else
                  warn "$f: ignoring changes as requested"
                  break
              fi
+         else
+             die "$f: make update failed"
          fi
      done
     )
