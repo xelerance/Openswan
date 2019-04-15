@@ -32,6 +32,7 @@ $(basename $0) <test> ...
  -p --pcap-update       updte pacap files
  -a --no-git-add-p      skip the git add -p on a per test basis, run all tests
  -v --verbose           make build verbose
+ -o --make-options ...  additional options for make
 
 END
             exit 0
@@ -50,7 +51,12 @@ END
             exit 0
             ;;
         -v|--verbose)
-            make_options=V=1
+            make_options="$make_options V=1"
+            ;;
+        -o|--make-options)
+            shift
+            [ -z "$1" ] && die "-o --make-options requires an argument"
+            make_options="$make_options $1"
             ;;
         -*)
             die "unknown flag $1"
