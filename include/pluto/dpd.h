@@ -10,7 +10,7 @@ extern stf_status dpd_inR(struct state *st
 			  , pb_stream *pbs);
 extern void dpd_timeout(struct state *st);
 
-
+#define DPD_RETRANS_MAX 3
 
 
 
