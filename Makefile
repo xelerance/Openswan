@@ -183,7 +183,7 @@ export OBJDIRTOP
 
 programs install clean:: ${OBJDIR}/Makefile
 	@echo OBJDIR: ${OBJDIR}
-	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} ${MAKE} ${MAKEFLAGS} $@ )
+	(cd ${ABSOBJDIR} && OBJDIRTOP=${ABSOBJDIR} OBJDIR=${ABSOBJDIR} ${MAKE} $@ )
 
 ${OBJDIR}/Makefile: ${srcdir}/Makefile packaging/utils/makeshadowdir
 	@echo Setting up for OBJDIR=${OBJDIR}
