@@ -89,28 +89,39 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     }
     DBG(DBG_CONTROL
 	, DBG_log("Thinking about sending a certificate request (CERTREQ)");
-   	DBG_log("  my policy is : %s", prettypolicy(c->policy));
-	DBG_log(" my next payload will %sbe a certificate request"
+	DBG_log("  my policy is : %s", prettypolicy(c->policy));
+	DBG_log("  my next payload will %sbe a certificate request"
 		  , send_certreq ? "" : "not "));
-        if(!send_certreq)
-	{
-	   DBG(DBG_CONTROL
-		,DBG_log("I did not send a certificate request (CERTREQ) because"));
-	   if(!(c->policy & POLICY_RSASIG))
-	    	{ DBG(DBG_CONTROL
-			,DBG_log("  RSA digital signatures are not being used. (PSK)"));}
-	    else if(has_preloaded_public_key(st))
-	    	{ DBG(DBG_CONTROL
-			, DBG_log(" has a preloaded a public for that end in st"));}
-	     else if(!(role == INITIATOR))
-	        { DBG(DBG_CONTROL
-		     ,DBG_log("  my role is not INITIATORi"));}
-	     else if(!(st->st_connection->spd.that.ca.ptr != NULL))
-	         { DBG(DBG_CONTROL
-		 	, DBG_log("  no known CA for the other end"));}
-	     else
-		{ DBG(DBG_CONTROL,
-	    	      DBG_log(" we reached an unexpected state - a bad day? I don't feel like sending a certificate request (CERTREQ)"));}
+        if(!send_certreq) {
+            bool unknown = TRUE;
+            DBG(DBG_CONTROL
+                ,DBG_log("I did not send a certificate request (CERTREQ) because"));
+            if(!(c->policy & POLICY_RSASIG)) {
+                DBG(DBG_CONTROL
+                    ,DBG_log("  RSA digital signatures are not being used. (PSK)"));
+                unknown = FALSE;
+            }
+            if(has_preloaded_public_key(st)) {
+                DBG(DBG_CONTROL
+                    , DBG_log(" has a preloaded a public for that end in st"));
+                unknown = FALSE;
+            }
+            if(!(role == INITIATOR)) {
+                DBG(DBG_CONTROL
+                    ,DBG_log("  my role is not INITIATORi"));
+                unknown = FALSE;
+            }
+            if(!(st->st_connection->spd.that.ca.ptr != NULL)) {
+                DBG(DBG_CONTROL
+                    , DBG_log("  no known CA for the other end"));
+                unknown = FALSE;
+            }
+
+            if (unknown) {
+                DBG(DBG_CONTROL,
+                    DBG_log(" we reached an unexpected state - a bad day? "
+                            "I don't feel like sending a certificate request (CERTREQ)"));
+            }
         }
     cert.isac_critical = ISAKMP_PAYLOAD_NONCRITICAL;
     if(DBGP(IMPAIR_SEND_BOGUS_ISAKMP_FLAG)) {
