@@ -71,6 +71,7 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 		, enum phase1_role role
 		, unsigned int np, pb_stream *outpbs)
 {
+    stf_status stf;
     struct ikev2_cert cert;
     /*  flag : to send a certificate request aka CERTREQ */
     bool send_certreq = FALSE;
@@ -166,10 +167,17 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     if(send_certreq) {
 	DBG(DBG_CONTROL
 	    , DBG_log("going to send a certreq"));
-	ikev2_send_certreq(st, md, role, np, outpbs);
+	stf = ikev2_send_certreq(st, md, role, np, outpbs);
+	if (stf != STF_OK) {
+            DBG(DBG_CONTROL
+                , DBG_log("sending CERTREQ failed with %s",
+                          stf_status_name(stf)));
+            return stf;
+        }
     }
     return STF_OK;
 }
+
 static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role UNUSED
