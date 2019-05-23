@@ -1,4 +1,4 @@
-openswan (1:2.6.51.3-1) UNRELEASED; urgency=low
+openswan (1:2.6.52.dev) UNRELEASED; urgency=low
 
   * Re-upload to unstable.
 
