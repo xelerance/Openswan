@@ -86,9 +86,9 @@ struct trans_attrs {
     u_int32_t life_kilobytes;	/* When this SA is exhausted (kilobytes) */
 
     /* used in phase1/PARENT SA */
-    const struct encrypt_desc *encrypter; /* package of encryption routines */
-    const struct hash_desc *prf_hasher;	  /* package of hashing routines */
-    const struct hash_desc *integ_hasher; /* package of hashing routines */
+    const struct ike_encr_desc *encrypter; /* package of encryption routines */
+    const struct ike_integ_desc *prf_hasher;     /* package of hashing routines */
+    const struct ike_integ_desc *integ_hasher; /* package of hashing routines */
     const struct oakley_group_desc *group;	/* Oakley group */
 
     /* used in phase2/CHILD_SA */

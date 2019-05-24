@@ -1964,7 +1964,7 @@ echo_proposal(struct state *st,
 		      IPPROTO_AH : IPPROTO_ESP
 		      , st
 		      , tunnel_mode);
-	
+
 	/* XXX should check for errors */
 	out_raw((u_char *) &pi->our_spi, IPSEC_DOI_SPI_SIZE
 		, &r_proposal_pbs, "SPI");
@@ -2267,7 +2267,7 @@ parse_ipsec_sa_body(
                      * AH_SHA, AUTH_ALGORITHM_HMAC_SHA1
                      * AH_DES, AUTH_ALGORITHM_DES_MAC (unimplemented)
                      */
-                    switch (ah_attrs.transattrs.integ_hash)
+                    switch ((int)ah_attrs.transattrs.integ_hash)
                     {
                         case AUTH_ALGORITHM_NONE:
                               loglog(RC_LOG_SERIOUS, "AUTH_ALGORITHM attribute missing in AH Transform");

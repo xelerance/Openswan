@@ -339,13 +339,13 @@ static const char *const esp_transform_name[] = {
 	"ESP_NULL",
 	"ESP_AES",
 	"ESP_AES_CTR",
-	"ESP_AES_CCM_A",
-	"ESP_AES_CCM_B",
-	"ESP_AES_CCM_C",
+	"ESP_AES_CCM_8",
+	"ESP_AES_CCM_12",
+	"ESP_AES_CCM_16",
 	"ESP_UNASSIGNED_ID17",
-	"ESP_AES_GCM_A",
-	"ESP_AES_GCM_B",
-	"ESP_AES_GCM_C",
+	"ESP_AES_GCM_8",
+	"ESP_AES_GCM_12",
+	"ESP_AES_GCM_16",
 	"ESP_SEED_CBC",
 	"ESP_CAMELLIA",
 	"ESP_NULL_AUTH_AES_GMAC", /* RFC4543 [Errata1821] */
@@ -454,6 +454,7 @@ enum_names certpolicy_type_names =
  */
 
 const char *const oakley_attr_bit_names[] = {
+    "OAKLEY_TRANSFORM_ZERO",
 	"OAKLEY_ENCRYPTION_ALGORITHM",
 	"OAKLEY_HASH_ALGORITHM",
 	"OAKLEY_AUTHENTICATION_METHOD",
@@ -493,8 +494,8 @@ static enum_names oakley_attr_desc_tv = {
     OAKLEY_GROUP_ORDER + ISAKMP_ATTR_AF_TV, oakley_attr_bit_names, NULL };
 
 enum_names oakley_attr_names = {
-    OAKLEY_GROUP_PRIME, OAKLEY_GROUP_ORDER,
-    oakley_var_attr_name, &oakley_attr_desc_tv };
+    0,                              /* keeps bits and attribute numbers aligned */
+    OAKLEY_BLOCK_SIZE,             oakley_attr_bit_names, NULL };
 
 /* for each Oakley attribute, which enum_names describes its values? */
 enum_names *oakley_attr_val_descs[] = {
@@ -511,7 +512,7 @@ enum_names *oakley_attr_val_descs[] = {
 	NULL,			/* OAKLEY_GROUP_CURVE_B */
 	&oakley_lifetime_names,	/* OAKLEY_LIFE_TYPE */
 	NULL,			/* OAKLEY_LIFE_DURATION */
-	&oakley_prf_names,	/* OAKLEY_PRF */
+	&ikev2_prf_names,	/* OAKLEY_PRF */
 	NULL,			/* OAKLEY_KEY_LENGTH */
 	NULL,			/* OAKLEY_FIELD_SIZE */
 	NULL,			/* OAKLEY_GROUP_ORDER */
@@ -643,7 +644,7 @@ enum_names enc_mode_names =
     { ENCAPSULATION_MODE_UDP_TUNNEL_DRAFTS, ENCAPSULATION_MODE_UDP_TRANSPORT_DRAFTS, enc_draft_mode_name, &enc_rfc_mode_names };
 
 
-/* Auth Algorithm attribute */
+/* Auth Algorithm attribute (IKEv1) */
 
 static const char *const auth_alg_name_stolen_use[] = {
 	"AUTH_ALGORITHM_NULL_KAME", /* according to our source code comments from jjo, needs verification */
@@ -765,11 +766,31 @@ static const char *const oakley_lifetime_name[] = {
 enum_names oakley_lifetime_names =
     { OAKLEY_LIFE_SECONDS, OAKLEY_LIFE_KILOBYTES, oakley_lifetime_name, NULL };
 
-/* Oakley PRF attribute (none defined) */
+/* IKEv2 PRF attribute (none defined) */
+static const char *const ikev2_prf_name[] = {
+    "prfmd5",
+    "prfsha1",
+    "prftiger",
+    "prfaes128xcbc",
+    "prfsha2_256",
+    "prfsha2_384",
+    "prfsha2_512",
+    "prfaes128cmac"
+};
 
-enum_names oakley_prf_names =
-    { 1, 0, NULL, NULL };
+enum_names ikev2_prf_names =
+    { IKEv2_PRF_HMAC_MD5, IKEv2_PRF_AES128_CMAC, ikev2_prf_name, NULL };
 
+const struct keyword_enum_value ikev2_prf_alg_aliases[]={
+    { "sha256",      IKEv2_PRF_HMAC_SHA2_256 },
+    { "sha384",      IKEv2_PRF_HMAC_SHA2_384 },
+    { "sha512",      IKEv2_PRF_HMAC_SHA2_512 },
+};
+
+enum_and_keyword_names ikev2_prf_alg_names = {
+ official_names: &ikev2_prf_names,
+ aliases: { ikev2_prf_alg_aliases, elemsof(ikev2_prf_alg_aliases) },
+};
 /* Oakley Encryption Algorithm attribute */
 
 static const char *const oakley_enc_name[] = {
@@ -889,41 +910,47 @@ static const char *const oakley_group_name[] = {
 	"OAKLEY_GROUP_MODP1536",
     };
 
-static const char *const oakley_group_name_rfc3526[] = {
+/* from rfc3526, rfc5114 and rfc5903 */
+static const char *const oakley_group_name_rfc3526_rfc5114_rfc5903[] = {
 	"OAKLEY_GROUP_MODP2048",
 	"OAKLEY_GROUP_MODP3072",
 	"OAKLEY_GROUP_MODP4096",
 	"OAKLEY_GROUP_MODP6144",
-	"OAKLEY_GROUP_MODP8192"
-};
-
-#ifdef USE_MODP_RFC5114
-static const char *const oakley_group_name_rfc5114[] = {
+	"OAKLEY_GROUP_MODP8192",
+        "OAKLEY_GROUP_ECP256",
+        "OAKLEY_GROUP_ECP384",
+        "OAKLEY_GROUP_ECP512",
         "OAKLEY_GROUP_DH22",
         "OAKLEY_GROUP_DH23",
         "OAKLEY_GROUP_DH24"
 };
-#endif
 
-#ifdef USE_MODP_RFC5114
-enum_names oakley_group_names_rfc5114 =
-    { OAKLEY_GROUP_DH22, OAKLEY_GROUP_DH24,
-            oakley_group_name_rfc5114, NULL };
-#endif
+/* from rfc8031 -- EdDSA curves */
+static const char *const oakley_group_name_rfc8031[] = {
+	"OAKLEY_GROUP_X25519",
+	"OAKLEY_GROUP_X448"
+};
 
-enum_names oakley_group_names_rfc3526 =
-    { OAKLEY_GROUP_MODP2048, OAKLEY_GROUP_MODP8192,
-	    oakley_group_name_rfc3526,
-#ifdef USE_MODP_RFC5114
-	    &oakley_group_names_rfc5114 };
-#else
-	    NULL };
-#endif
+enum_names oakley_group_names_rfc8031 =
+    { OAKLEY_GROUP_X25519, OAKLEY_GROUP_X448,
+            oakley_group_name_rfc8031, NULL };
+
+enum_names oakley_group_names_rfc3526_rfc5114_rfc5903 =
+    { OAKLEY_GROUP_MODP2048, OAKLEY_GROUP_DH24,
+            oakley_group_name_rfc3526_rfc5114_rfc5903, &oakley_group_names_rfc8031 };
 
 enum_names oakley_group_names =
     { OAKLEY_GROUP_MODP768, OAKLEY_GROUP_MODP1536,
-	    oakley_group_name, &oakley_group_names_rfc3526 };
+	    oakley_group_name, &oakley_group_names_rfc3526_rfc5114_rfc5903 };
 
+const struct keyword_enum_value ikev2_group_name_aliases[]={
+    { "secp256r1",   OAKLEY_GROUP_ECP256 },
+};
+
+enum_and_keyword_names ikev2_group_names = {
+ official_names: &oakley_group_names,
+ aliases: { ikev2_group_name_aliases, elemsof(ikev2_group_name_aliases) },
+};
 /* Oakley Group Type attribute */
 
 static const char *const oakley_group_type_name[] = {
@@ -1198,7 +1225,7 @@ const char *const critical_names[] = {
 
 /* Transform-type Encryption */
 const char *const trans_type_encr_name[]={
-    "des-iv64",
+    "des_iv64",
     "des",
     "3des",
     "rc5",
@@ -1206,14 +1233,33 @@ const char *const trans_type_encr_name[]={
     "cast",
     "blowfish",
     "3idea",
-    "des-iv32",
+    "des_iv32",
     "res10",
     "null",
-    "aes-cbc",
-    "aes-ctr",
+    "aes_cbc",
+    "aes_ctr",
+    "aes_ccm_8",
+    "aes_ccm_12",
+    "aes_ccm_16",
+    "unassigned_17",
+    "aes_gcm_8",
+    "aes_gcm_12",
+    "aes_gcm_16",
+    "null_aes_gmac",
+    "p1619_xts_aes",
 };
 enum_names trans_type_encr_names =
-{ IKEv2_ENCR_DES_IV64, IKEv2_ENCR_AES_CTR, trans_type_encr_name, NULL};
+{ IKEv2_ENCR_DES_IV64, IKEv2_IEEE_P1619_XTS_AES, trans_type_encr_name, NULL};
+
+const struct keyword_enum_value ikev2_encr_name_aliases[]={
+    { "3des_cbc",   IKEv2_ENCR_3DES },
+    { "aes",        IKEv2_ENCR_AES_CBC, 128 },
+};
+
+enum_and_keyword_names ikev2_encr_names = {
+ official_names: &trans_type_encr_names,
+ aliases: { ikev2_encr_name_aliases, elemsof(ikev2_encr_name_aliases) },
+};
 
 /* Transform-type PRF */
 const char *const trans_type_prf_name[]={
@@ -1250,7 +1296,27 @@ const char *const trans_type_integ_name[]={
 enum_names trans_type_integ_names =
 { IKEv2_AUTH_NONE, IKEv2_AUTH_HMAC_SHA2_512_256, trans_type_integ_name, NULL};
 
-/* Transform-type Integrity */
+const struct keyword_enum_value ikev2_integ_name_aliases[]={
+    { "md5",        IKEv2_AUTH_HMAC_MD5_96 },
+    { "sha1",       IKEv2_AUTH_HMAC_SHA1_96 },
+    { "hmac_md5",   IKEv2_AUTH_HMAC_MD5_96 },
+    { "hmac_sha1",  IKEv2_AUTH_HMAC_SHA1_96 },
+    { "sha1",       IKEv2_AUTH_HMAC_SHA1_96 },
+    { "sha2_256",     IKEv2_AUTH_HMAC_SHA2_256_128 },
+    { "sha2_384",     IKEv2_AUTH_HMAC_SHA2_384_192 },
+    { "sha2_512",     IKEv2_AUTH_HMAC_SHA2_512_256 },
+    { "sha256",     IKEv2_AUTH_HMAC_SHA2_256_128 },
+    { "sha384",     IKEv2_AUTH_HMAC_SHA2_384_192 },
+    { "sha512",     IKEv2_AUTH_HMAC_SHA2_512_256 },
+};
+
+enum_and_keyword_names ikev2_integ_names = {
+ official_names: &trans_type_integ_names,
+ aliases: { ikev2_integ_name_aliases, elemsof(ikev2_integ_name_aliases) },
+};
+
+
+/* Transform_type Integrity */
 const char *const trans_type_esn_name[]={
     "esn-disabled",
     "esn-enabled",
@@ -1512,6 +1578,30 @@ enum_name(enum_names *ed, unsigned long val)
 	return enum_name_default(ed, val, NULL);
 }
 
+const struct keyword_enum_value *keyword_search_aux(const struct keyword_enum_values *kevs
+                                              , const char *str)
+{
+    int kevcount;
+    const struct keyword_enum_value *kev;
+
+    for(kevcount = kevs->valuesize, kev = kevs->values;
+        kevcount > 0 && strcasecmp(str, kev->name)!=0;
+        kev++, kevcount--);
+
+    if(kevcount==0) {
+        return NULL;
+    } else {
+        return kev;
+    }
+}
+
+int keyword_search(const struct keyword_enum_values *kevs,
+                   const char *str)
+{
+    const struct keyword_enum_value *kev = keyword_search_aux(kevs, str);
+    if(kev) return kev->value;
+    return -1;
+}
 /* look up an enum in a starter friendly way */
 const char *keyword_name(const struct keyword_enum_values *kevs
                          , unsigned int value
@@ -1532,6 +1622,24 @@ const char *keyword_name(const struct keyword_enum_values *kevs
 }
 
 
+const char *end_type_name(enum keyword_host host_type
+                          , ip_address *host_addr
+                          , char  *outbuf
+                          , size_t outbuf_len)
+{
+    if(host_type != KH_IPADDR) {
+        if(outbuf_len < KEYWORD_NAME_BUFLEN) return "truncated";
+        return keyword_name(&kw_host_list, host_type, outbuf);
+    } else {
+        char *p = outbuf;
+        p[0] = '\0';
+        strncat(p, "addr:", outbuf_len);
+        p          += 5;
+        outbuf_len -= 5;
+        addrtot(host_addr, 0, p, outbuf_len);
+        return outbuf;
+    }
+}
 
 
 /* find or construct a string to describe an enum value
@@ -1556,7 +1664,7 @@ enum_show(enum_names *ed, unsigned long val)
 static char bitnamesbuf[200];   /* only one!  I hope that it is big enough! */
 
 int
-enum_search(enum_names *ed, const char *str)
+enum_search_cmp(enum_names *ed, const char *str, size_t len, strcmpfunc cmp)
 {
     enum_names	*p;
     const char *ptr;
@@ -1566,11 +1674,28 @@ enum_search(enum_names *ed, const char *str)
 	for (en=p->en_first; en<=p->en_last; en++) {
 	    ptr=p->en_names[en - p->en_first];
 	    if (ptr==0) continue;
-	    /* if (strncmp(ptr, str, strlen(ptr))==0) */
-	    if (strcmp(ptr, str)==0)
+            /* the len constraint applies to the test ("str") being looked for
+             * not to the enumerated type, which must match entirely.
+             * so continue if the enumerated type does not end at that intended
+             * spot */
+            if(ptr[len] != '\0') continue;
+
+	    if (cmp(ptr, str, len)==0)
 		    return en;
 	}
     return -1;
+}
+
+int
+enum_search(enum_names *ed, const char *str)
+{
+    return enum_search_cmp(ed, str, strlen(str), strncmp);
+}
+
+int
+enum_search_nocase(enum_names *ed, const char *str, size_t len)
+{
+    return enum_search_cmp(ed, str, len, strncasecmp);
 }
 
 /* construct a string to name the bits on in a set

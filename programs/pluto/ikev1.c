@@ -1483,7 +1483,7 @@ void process_packet_tail(struct msg_digest **mdp)
 	 * the last phase 1 block, not the last block sent.
 	 */
 	{
-	    const struct encrypt_desc *e = st->st_oakley.encrypter;
+	    const struct ike_encr_desc *e = st->st_oakley.encrypter;
 
 	    if (pbs_left(&md->message_pbs) % e->enc_blocksize != 0)
 	    {

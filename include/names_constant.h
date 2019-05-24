@@ -27,6 +27,14 @@ extern enum_names enc_mode_names;
 extern enum_names auth_alg_names, extended_auth_alg_names;
 extern enum_names oakley_lifetime_names;
 
+extern enum_and_keyword_names ikev2_auth_alg_names;
+extern enum_names ikev2_prf_names;
+extern enum_and_keyword_names ikev2_prf_alg_names;
+extern enum_and_keyword_names ikev2_group_names;
+extern enum_and_keyword_names ikev2_encr_names;
+extern enum_and_keyword_names ikev2_integ_names;
+
+
 extern enum_names version_names;
 extern enum_names doi_names;
 extern enum_names payload_names;
@@ -47,8 +55,8 @@ extern enum_names ident_names;
 extern enum_names cert_type_names;
 extern enum_names oakley_attr_names;
 extern const char *const oakley_attr_bit_names[];
-extern enum_names *oakley_attr_val_descs[]; 
-extern enum_names ipsec_attr_names; 
+extern enum_names *oakley_attr_val_descs[];
+extern enum_names ipsec_attr_names;
 extern enum_names *ipsec_attr_val_descs[];
 extern enum_names sa_lifetime_names;
 extern enum_names enc_mode_names;

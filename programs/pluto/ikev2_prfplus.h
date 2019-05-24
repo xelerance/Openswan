@@ -2,7 +2,7 @@
 #define _IKEV2_PRF_H
 struct v2prf_stuff {
     chunk_t t;
-    const struct hash_desc *prf_hasher;
+    const struct ike_prf_desc *prf_hasher;
     chunk_t *skeyseed;
     chunk_t ni;
     chunk_t nr;

@@ -122,12 +122,12 @@ DBG(DBG_CRYPT, DBG_log("NSS do_aes: exit"));
 
 }
 
-struct encrypt_desc algo_aes =
+struct ike_encr_desc algo_aes =
 {
 	common: {
 	  name: "aes",
 	  officname: "aes",
-	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_id:   	OAKLEY_AES_CBC,
 	  algo_v2id:    IKEv2_ENCR_AES_CBC,
 	  algo_next: 	NULL, },
