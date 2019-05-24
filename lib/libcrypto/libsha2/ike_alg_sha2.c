@@ -61,6 +61,7 @@ static void sha512_hash_final(u_char *hash, sha512_context *ctx)
 	memcpy(hash, &ctx->sha_out[0], SHA2_512_DIGEST_SIZE);
 #endif
 }
+
 struct ike_prf_desc hash_desc_sha2_256 = {
 	common:{officname:  "prfsha256",
 		algo_type: IKEv2_TRANS_TYPE_PRF,
