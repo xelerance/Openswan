@@ -74,11 +74,11 @@ MP_INT generator_dh22,
 #ifdef USE_1DES
 static void do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
 
-static struct encrypt_desc crypto_encrypter_des =
+static struct ike_encr_desc crypto_encrypter_des =
 {
     common: {name: "oakley_des_cbc",
 	     officname:         "1des",
-             algo_type:         IKE_ALG_ENCRYPT,
+             algo_type:         IKEv2_TRANS_TYPE_ENCR,
              algo_id:           OAKLEY_DES_CBC,
 	     algo_v2id:         IKEv2_ENCR_DES,
              algo_next:         NULL, },
@@ -93,11 +93,11 @@ static struct encrypt_desc crypto_encrypter_des =
 
 #ifdef USE_3DES
 static void do_3des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *iv, bool enc);
-static struct encrypt_desc crypto_encrypter_3des =
+static struct ike_encr_desc crypto_encrypter_3des =
 {
     common: {name: "oakley_3des_cbc",
 	     officname:         "3des",
-	     algo_type: 	IKE_ALG_ENCRYPT,
+	     algo_type: 	IKEv2_TRANS_TYPE_ENCR,
 	     algo_id:   	OAKLEY_3DES_CBC,
 	     algo_v2id:         IKEv2_ENCR_3DES,
 	     algo_next: 	NULL, },
@@ -110,11 +110,11 @@ static struct encrypt_desc crypto_encrypter_3des =
 };
 #endif
 
-static struct hash_desc crypto_hasher_md5 =
+static struct ike_integ_desc crypto_hasher_md5 =
 {
     common: {name: "oakley_md5",
 	     officname: "md5",
-	     algo_type: IKE_ALG_HASH,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_MD5,
 	     algo_v2id: IKEv2_PRF_HMAC_MD5,
 	     algo_next: NULL, },
@@ -127,11 +127,11 @@ static struct hash_desc crypto_hasher_md5 =
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 
-static struct hash_desc crypto_integ_md5 =
+static struct ike_integ_desc crypto_integ_md5 =
 {
     common: {name: "oakley_md5",
 	     officname: "md5",
-	     algo_type: IKE_ALG_INTEG,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_MD5,
 	     algo_v2id: IKEv2_AUTH_HMAC_MD5_96,
 	     algo_next: NULL, },
@@ -144,11 +144,11 @@ static struct hash_desc crypto_integ_md5 =
     hash_final: (void (*)(u_char *, void *)) osMD5Final,
 };
 
-static struct hash_desc crypto_hasher_sha1 =
+static struct ike_integ_desc crypto_hasher_sha1 =
 {
     common: {name: "oakley_sha",
 	     officname: "sha1",
-	     algo_type: IKE_ALG_HASH,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_SHA,
 	     algo_v2id: IKEv2_PRF_HMAC_SHA1,
 	     algo_next: NULL, },
@@ -161,11 +161,11 @@ static struct hash_desc crypto_hasher_sha1 =
     hash_final: (void (*)(u_char *, void *)) SHA1Final,
 };
 
-static struct hash_desc crypto_integ_sha1 =
+static struct ike_integ_desc crypto_integ_sha1 =
 {
     common: {name: "oakley_sha",
 	     officname: "sha1",
-	     algo_type: IKE_ALG_INTEG,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_SHA,
 	     algo_v2id: IKEv2_AUTH_HMAC_SHA1_96,
 	     algo_next: NULL, },
@@ -286,7 +286,7 @@ const struct oakley_group_desc oakley_group[] = {
 const unsigned int oakley_group_size = elemsof(oakley_group);
 
 const struct oakley_group_desc *
-lookup_group(u_int16_t group)
+lookup_group(enum ikev2_trans_type_dh group)
 {
     int i;
 
@@ -321,6 +321,7 @@ do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 }
 #endif
 
+#if 0
 /* encrypt or decrypt part of an IKE message using 3DES
  * See RFC 2409 "IKE" Appendix B
  */
@@ -342,6 +343,7 @@ do_3des(u_int8_t *buf, size_t buf_len
                          ks[0], ks[1], ks[2],
                          (des_cblock *)iv, enc);
 }
+#endif
 
 /* hash and prf routines */
 /*==========================================================
@@ -350,17 +352,17 @@ do_3des(u_int8_t *buf, size_t buf_len
  *
  *==========================================================
  */
-struct hash_desc *crypto_get_hasher(oakley_hash_t alg)
+struct ike_integ_desc *crypto_get_hasher(enum ikev2_trans_type_integ alg)
 {
-	return (struct hash_desc *) ike_alg_find(IKE_ALG_HASH, alg, 0);
+    return ike_alg_get_integ(alg);
 }
-struct encrypt_desc *crypto_get_encrypter(int alg)
+struct ike_encr_desc *crypto_get_encrypter(enum ikev2_trans_type_encr alg)
 {
-	return (struct encrypt_desc *) ike_alg_find(IKE_ALG_ENCRYPT, alg, 0);
+    return ike_alg_get_encr(alg);
 }
 
 void
-crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc
+crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc
 		   , u_int8_t *buf, size_t size, struct state *st)
 {
     passert(st->st_new_iv_len >= e->enc_blocksize);

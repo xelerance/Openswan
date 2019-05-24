@@ -1,13 +1,16 @@
 ac.o: ac.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h ../../include/oswconf.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/constants.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/oswtime.h ../../include/pluto/defs.h \
+ ../../include/names_constant.h \
+ ../../include/constants.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/asn1.h \
  ../../include/oid.h ../../include/ac.h \
  ../../include/id.h ../../include/x509.h \
@@ -18,99 +21,134 @@ ac.o: ac.c ../../include/openswan.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h fetch.h
 adns.o: adns.c ../../include/openswan.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/setproctitle.h ../../include/constants.h \
- adns.h ../../include/osw_select.h \
+ ../../include/setproctitle.h \
+ ../../include/constants.h adns.h \
+ ../../include/osw_select.h \
  ../../include/oswalloc.h
 build_ke.o: build_ke.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h crypto.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha1.h ../../include/md5.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/rnd.h state.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  pluto_crypt.h ../../include/osw_select.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
- ../../include/oswtime.h ../../include/oswcrypto.h \
+ ../../include/oswtime.h \
+ ../../include/oswcrypto.h \
  ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
 connections.o: connections.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h kameipsec.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/oswtime.h \
- ../../include/id.h ../../include/pluto/x509lists.h \
+ ../../include/names_constant.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/oswtime.h ../../include/id.h \
+ ../../include/pluto/x509lists.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/secrets.h ../../include/pluto/defs.h \
- ../../include/ac.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/secrets.h \
+ ../../include/pluto/defs.h ../../include/ac.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/connections.h pending.h foodgroups.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h timer.h ipsec_doi.h ikev1_quick.h \
- kernel.h ../../include/pluto/keys.h adns.h dnskey.h \
- ../../include/whack.h ../../include/alg_info.h spdb.h \
- ike_alg.h plutocerts.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h ipsec_doi.h \
+ ikev1_quick.h kernel.h ../../include/pluto/keys.h adns.h \
+ dnskey.h ../../include/whack.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/libpluto.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/virtual.h hostpair.h
 cookie.o: cookie.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/sha1.h \
  ../../include/pluto/rnd.h cookie.h
 crypt_dh.o: crypt_dh.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h crypto.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha1.h ../../include/md5.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/rnd.h state.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  pluto_crypt.h ../../include/osw_select.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
- ../../include/oswtime.h ike_alg.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pluto/keys.h \
  ../../include/x509.h ../../include/certs.h \
@@ -119,66 +157,95 @@ crypt_dh.o: crypt_dh.c ../../include/openswan.h \
  ikev2_prfplus.h ../../include/oswcrypto.h \
  ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
 crypt_ke.o: crypt_ke.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h crypto.h \
- ../../include/sha1.h ../../include/md5.h \
- ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/rnd.h state.h \
- ../../include/pluto/quirks.h ../../include/id.h \
- pluto_crypt.h ../../include/osw_select.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/pluto/log.h timer.h \
- ../../include/oswtime.h ../../include/oswcrypto.h \
- ../../include/crypto/aes.h \
- ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
-crypto.o: crypto.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h state.h \
- ../../include/pluto/quirks.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/md5.h ../../include/sha1.h crypto.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/alg_info.h ike_alg.h tpm/tpm.h \
- ../../include/oswcrypto.h ../../include/crypto/aes.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/id.h \
+ pluto_crypt.h ../../include/osw_select.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/log.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
-crypt_start_dh.o: crypt_start_dh.c ../../include/openswan.h \
- ../../include/openswan/ipsec_policy.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
+crypto.o: crypto.c ../../include/openswan.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/md5.h ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h tpm/tpm.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
+crypt_start_dh.o: crypt_start_dh.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h crypto.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha1.h ../../include/md5.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/rnd.h state.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  pluto_crypt.h ../../include/osw_select.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
- ../../include/oswtime.h ike_alg.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pluto/keys.h \
  ../../include/x509.h ../../include/certs.h \
@@ -187,142 +254,172 @@ crypt_start_dh.o: crypt_start_dh.c ../../include/openswan.h \
 crypt_utils.o: crypt_utils.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/oswlog.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/pluto/log.h state.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/pluto/rnd.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h
-db_ops.o: db_ops.c ../../include/openswan.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h
+demux.o: demux.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
- ../../include/pluto/quirks.h ../../include/id.h \
- ../../include/packet.h spdb.h db_ops.h \
- ../../include/pluto/log.h ../../include/oswlog.h \
- ../../include/openswan/passert.h ../../include/whack.h \
- ../../include/openswan/ipsec_policy.h
-demux.o: demux.c ../../include/openswan.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h ../../include/md5.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h ikev1.h pluto_crypt.h \
+ ../../include/osw_select.h ikev1_continuations.h \
+ ike_continuations.h dnskey.h adns.h ipsec_doi.h ikev1_quick.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/udpfromto.h tpm/tpm.h
+dnskey.o: dnskey.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h adns.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
- ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ikev1.h pluto_crypt.h \
- ../../include/osw_select.h ikev1_continuations.h \
- ike_continuations.h dnskey.h adns.h ipsec_doi.h ikev1_quick.h timer.h \
- ../../include/oswtime.h ../../include/udpfromto.h \
- tpm/tpm.h
-dnskey.o: dnskey.c ../../include/openswan.h \
- ../../include/openswan/ipsec_policy.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h adns.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h \
- ../../include/pluto/log.h ../../include/oswlog.h \
- ../../include/openswan/passert.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
- ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- dnskey.h ../../include/packet.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h dnskey.h \
+ ../../include/packet.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h timer.h \
- ../../include/oswtime.h ../../include/pluto/server.h
+ ../../include/oswtime.h \
+ ../../include/pluto/server.h
 dpd.o: dpd.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswtime.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h state.h \
- ../../include/pluto/quirks.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/names_constant.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/spdb.h timer.h \
  ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
  ../../include/whack.h pending.h \
  ../../include/pluto/dpd.h x509more.h \
  ../../include/pluto/x509lists.h
 dsa.o: dsa.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/rnd.h gcryptfix.h dsa.h
 elgamal.o: elgamal.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/rnd.h gcryptfix.h elgamal.h
 fetch.o: fetch.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/id.h ../../include/asn1.h \
  ../../include/pem.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
@@ -334,12 +431,15 @@ fetch.o: fetch.c ../../include/openswan.h \
  ../../include/oswtime.h
 foodgroups.o: foodgroups.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -347,161 +447,206 @@ foodgroups.o: foodgroups.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- foodgroups.h kernel.h ../../include/oswconf.h \
- ../../include/lex.h ../../include/pluto/log.h \
- ../../include/whack.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h foodgroups.h kernel.h \
+ ../../include/oswconf.h ../../include/lex.h \
+ ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h
 gcryptfix.o: gcryptfix.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/rnd.h gcryptfix.h
 hmac.o: hmac.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/alg_info.h \
- ike_alg.h
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h
 hostpair.o: hostpair.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h kameipsec.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/oswtime.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/names_constant.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/oswtime.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/secrets.h ../../include/pluto/defs.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- pending.h foodgroups.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h timer.h ipsec_doi.h ikev1_quick.h \
- kernel.h ../../include/pluto/log.h \
+ ../../include/secrets.h \
+ ../../include/pluto/defs.h ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h pending.h foodgroups.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h ipsec_doi.h \
+ ikev1_quick.h kernel.h ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
- ../../include/whack.h ../../include/alg_info.h spdb.h \
- ike_alg.h plutocerts.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
+ ../../include/whack.h ../../include/alg_info.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
 ike_alg_aes.o: ike_alg_aes.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/alg_info.h \
- ike_alg.h
+ ../../include/crypto/aes.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h
 ike_alg.o: ike_alg.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/sha1.h \
- ../../include/md5.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h state.h \
+ ../../include/md5.h ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/packet.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/whack.h spdb.h ../../include/alg_info.h \
- ike_alg.h db_ops.h ../../include/pluto/connections.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/whack.h ../../include/pluto/spdb.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/connections.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- kernel.h plutoalg.h
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h kernel.h \
+ ../../include/pluto/plutoalg.h
 ike_alginit.o: ike_alginit.c
-ike_alg_sha2.o: ike_alg_sha2.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
- ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/sha2.h ../../include/alg_info.h ike_alg.h
 ike_alg_status.o: ike_alg_status.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/sha1.h \
- ../../include/md5.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h state.h \
+ ../../include/md5.h ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/packet.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/whack.h spdb.h ../../include/alg_info.h \
- ike_alg.h db_ops.h ../../include/pluto/connections.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/whack.h ../../include/pluto/spdb.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/connections.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- kernel.h plutoalg.h
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h kernel.h \
+ ../../include/pluto/plutoalg.h
 ikeping.o: ikeping.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/pluto/log.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/pluto/log.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h
 ikev1_aggr.o: ikev1_aggr.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -509,48 +654,67 @@ ikev1_aggr.o: ikev1_aggr.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- hostpair.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h hostpair.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h fetch.h \
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h fetch.h \
  ../../include/pkcs.h ../../include/asn1.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
- ../../include/sha2.h ../../include/mpzfuncs.h ike_alg.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h pluto_crypt.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
  ../../include/osw_select.h ikev1.h ikev1_continuations.h \
  ike_continuations.h xauth.h ../../include/pluto/vendor.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
- ../../include/pluto/virtual.h ../../include/pluto/dpd.h \
- x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
+ ../../include/pluto/virtual.h \
+ ../../include/pluto/dpd.h x509more.h \
+ ../../include/pluto/x509lists.h tpm/tpm.h
 ikev1.o: ikev1.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev1.h pluto_crypt.h \
  ../../include/osw_select.h ikev1_continuations.h \
@@ -558,21 +722,26 @@ ikev1.o: ikev1.c ../../include/openswan.h \
  ../../include/oswtime.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h xauth.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/vendor.h \
- ../../include/pluto/dpd.h ../../include/udpfromto.h \
- tpm/tpm.h hostpair.h
+ ../../include/pluto/demux.h \
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
+ ../../include/udpfromto.h tpm/tpm.h hostpair.h
 ikev1_crypto.o: ikev1_crypto.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -580,36 +749,51 @@ ikev1_crypto.o: ikev1_crypto.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- hostpair.h ../../include/pluto/keys.h \
- ../../include/secrets.h ../../include/pluto/keys.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h hostpair.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/pluto/keys.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h fetch.h \
- ../../include/pkcs.h plutoalg.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/oswcrypto.h ../../include/crypto/aes.h \
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h fetch.h \
+ ../../include/pkcs.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h \
- ikev1.h ikev1_continuations.h ike_continuations.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h ikev1.h ikev1_continuations.h \
+ ike_continuations.h
 ikev1_nss.o: ikev1_nss.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -617,185 +801,296 @@ ikev1_nss.o: ikev1_nss.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- hostpair.h ../../include/pluto/keys.h \
- ../../include/secrets.h ../../include/pluto/keys.h \
- ../../include/packet.h ../../include/pluto/demux.h \
- ../../include/pluto/server.h \
- ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h fetch.h \
- ../../include/pkcs.h plutoalg.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/oswcrypto.h ../../include/crypto/aes.h \
- ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h \
- ikev1.h ikev1_continuations.h ike_continuations.h
-ikev1_quick.o: ikev1_quick.c ../../include/openswan.h \
- ../../include/openswan/ipsec_policy.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
- ../../include/pluto/quirks.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
- ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h hostpair.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/pluto/keys.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
  ../../include/pluto/log.h cookie.h \
- ../../include/pluto/libpluto.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h fetch.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h fetch.h \
+ ../../include/pkcs.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/aes_cbc.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h ikev1.h ikev1_continuations.h \
+ ike_continuations.h
+ikev1_quick.o: ikev1_quick.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/libpluto.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h fetch.h \
  ../../include/pkcs.h ../../include/asn1.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
- ../../include/sha2.h ../../include/mpzfuncs.h ike_alg.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/linux/pfkeyv2.h plutoalg.h pluto_crypt.h \
+ ../../include/linux/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
  ../../include/osw_select.h ikev1.h ikev1_continuations.h \
  ike_continuations.h xauth.h ../../include/pluto/vendor.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
- ../../include/pluto/virtual.h ../../include/pluto/dpd.h \
- x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
-ikev2.o: ikev2.c ../../include/openswan.h \
+ ../../include/pluto/virtual.h \
+ ../../include/pluto/dpd.h x509more.h \
+ ../../include/pluto/x509lists.h tpm/tpm.h
+ikev2_alg.o: ikev2_alg.c ../../include/openswan.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/linux/pfkeyv2.h \
+ ../../include/openswan/passert.h \
+ ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
+ ../../include/constants.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/defs.h ../../include/id.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/alg_info.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/connections.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
+ ../../include/packet.h
+ikev2.o: ikev2.c ../../include/openswan.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev2.h ikev2_microcode.h \
  ../../include/pluto_constants.h \
- ../../include/ietf_constants.h ipsec_doi.h ikev1_quick.h timer.h \
- ../../include/oswtime.h ../../include/whack.h \
+ ../../include/ietf_constants.h ipsec_doi.h ikev1_quick.h \
+ timer.h ../../include/oswtime.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h xauth.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/vendor.h \
- ../../include/pluto/dpd.h ../../include/udpfromto.h \
- tpm/tpm.h
+ ../../include/pluto/demux.h \
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
+ ../../include/udpfromto.h tpm/tpm.h
 ikev2_child.o: ikev2_child.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/libopenswan.h \
- ../../include/openswan.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/libopenswan.h \
+ ../../include/openswan.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev2.h pluto_crypt.h \
  ../../include/osw_select.h ipsec_doi.h ikev1_quick.h \
  ike_continuations.h timer.h ../../include/oswtime.h \
  ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/pluto/vendor.h ../../include/pluto/dpd.h \
- ../../include/pluto/rnd.h ../../include/udpfromto.h \
- tpm/tpm.h kernel.h ../../include/pluto/virtual.h hostpair.h
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
+ ../../include/pluto/rnd.h \
+ ../../include/udpfromto.h tpm/tpm.h kernel.h \
+ ../../include/pluto/virtual.h hostpair.h
 ikev2_derived_keys.o: ikev2_derived_keys.c \
  ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/libopenswan.h \
- ../../include/openswan.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/libopenswan.h \
+ ../../include/openswan.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ikev2.h ikev2_prfplus.h ike_alg.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/ike_alg.h ikev2.h ikev2_prfplus.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h
 ikev2_notify.o: ikev2_notify.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- hostpair.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h x509more.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h hostpair.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h x509more.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/secrets.h \
- ../../include/pluto/x509lists.h ike_alg.h \
+ ../../include/pluto/quirks.h \
+ ../../include/secrets.h \
+ ../../include/pluto/x509lists.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/linux/pfkeyv2.h plutoalg.h pluto_crypt.h \
+ ../../include/linux/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
  ../../include/osw_select.h ikev2.h \
- ../../include/pluto/log.h spdb.h ipsec_doi.h ikev1_quick.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ipsec_doi.h ikev1_quick.h \
  ../../include/pluto/vendor.h timer.h \
  ../../include/oswtime.h ike_continuations.h cookie.h \
  ../../include/pluto/rnd.h pending.h kernel.h \
@@ -804,33 +1099,45 @@ ikev2_notify.o: ikev2_notify.c ../../include/openswan.h \
 ikev2_parent.o: ikev2_parent.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- hostpair.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h x509more.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h hostpair.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h x509more.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/secrets.h \
- ../../include/pluto/x509lists.h ike_alg.h \
+ ../../include/pluto/quirks.h \
+ ../../include/secrets.h \
+ ../../include/pluto/x509lists.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/linux/pfkeyv2.h plutoalg.h pluto_crypt.h \
+ ../../include/linux/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h pluto_crypt.h \
  ../../include/osw_select.h ikev2.h \
- ../../include/pluto/log.h spdb.h ipsec_doi.h ikev1_quick.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ipsec_doi.h ikev1_quick.h \
  ../../include/pluto/vendor.h timer.h \
  ../../include/oswtime.h ike_continuations.h cookie.h \
  ../../include/pluto/rnd.h pending.h kernel.h \
@@ -842,23 +1149,32 @@ ikev2_parent_R1.o: ikev2_parent_R1.c
 ikev2_prfplus.o: ikev2_prfplus.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h crypto.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha1.h ../../include/md5.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/rnd.h state.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  pluto_crypt.h ../../include/osw_select.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/log.h timer.h \
- ../../include/oswtime.h ike_alg.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pluto/keys.h \
  ../../include/x509.h ../../include/certs.h \
@@ -867,114 +1183,164 @@ ikev2_prfplus.o: ikev2_prfplus.c ../../include/openswan.h \
  ikev2_prfplus.h
 ikev2_psk.o: ikev2_psk.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev2.h \
- ../../include/pluto/vendor.h ../../include/pluto/dpd.h \
- ../../include/pluto/keys.h ../../include/secrets.h
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h
 ikev2_rsa.o: ikev2_rsa.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev2.h \
- ../../include/pluto/vendor.h ../../include/pluto/dpd.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- ../../include/oswcrypto.h ../../include/crypto/aes.h \
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
 ikev2_x509.o: ikev2_x509.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
- ../../include/x509.h x509more.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/secrets.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
  ../../include/id.h ../../include/x509.h \
- ../../include/pluto/x509lists.h ../../include/pgp.h \
- ../../include/certs.h \
+ x509more.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h \
+ ../../include/pluto/x509lists.h \
+ ../../include/pgp.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/md5.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
  ../../include/pluto/log.h ikev2.h \
- ../../include/pluto/vendor.h ../../include/pluto/dpd.h \
+ ../../include/pluto/vendor.h \
+ ../../include/pluto/dpd.h \
  ../../include/pluto/keys.h ipsec_doi.h ikev1_quick.h
 initiate.o: initiate.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h kameipsec.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/oswtime.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/names_constant.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/oswtime.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/secrets.h ../../include/pluto/defs.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- pending.h foodgroups.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h timer.h ipsec_doi.h ikev1_quick.h \
- kernel.h ../../include/pluto/log.h \
+ ../../include/secrets.h \
+ ../../include/pluto/defs.h ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h pending.h foodgroups.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h ipsec_doi.h \
+ ikev1_quick.h kernel.h ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
- ../../include/whack.h ../../include/alg_info.h spdb.h \
- ike_alg.h plutocerts.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
+ ../../include/whack.h ../../include/alg_info.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
@@ -983,66 +1349,94 @@ ipsec_doi.o: ipsec_doi.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h state.h \
- ../../include/pluto/quirks.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
- ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- ../../include/packet.h ../../include/pluto/keys.h \
- ../../include/secrets.h ../../include/pluto/demux.h \
- ../../include/pluto/server.h \
- ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h fetch.h \
- ../../include/pkcs.h ../../include/asn1.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
- ../../include/sha2.h ../../include/mpzfuncs.h ike_alg.h \
- ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h pluto_crypt.h \
- ../../include/osw_select.h ikev1.h ikev1_continuations.h \
- ike_continuations.h ikev2.h xauth.h ../../include/pluto/vendor.h \
- ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h \
- ../../include/pluto/virtual.h ../../include/pluto/dpd.h \
- x509more.h ../../include/pluto/x509lists.h tpm/tpm.h
-kernel.o: kernel.c ../../include/openswan.h \
- ../../include/openswan/ipsec_policy.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/rnd.h \
- ../../include/id.h ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h timer.h \
- ../../include/oswtime.h kernel.h kernel_netlink.h kernel_pfkey.h \
- kernel_noklips.h kernel_bsdkame.h ../../include/packet.h \
- ../../include/pluto/log.h ../../include/pluto/server.h \
- ../../include/whack.h ../../include/pluto/keys.h \
- ../../include/secrets.h ../../include/ipsec_saref.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h adns.h dnskey.h kernel.h \
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h fetch.h \
+ ../../include/pkcs.h ../../include/asn1.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h pluto_crypt.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h ikev1.h ikev1_continuations.h \
+ ike_continuations.h ikev2.h xauth.h \
+ ../../include/pluto/vendor.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/quirks.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/virtual.h \
+ ../../include/pluto/dpd.h x509more.h \
+ ../../include/pluto/x509lists.h tpm/tpm.h
+kernel.o: kernel.c ../../include/openswan.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/rnd.h ../../include/id.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h \
+ ../../include/oswtime.h kernel.h kernel_netlink.h \
+ kernel_pfkey.h kernel_noklips.h kernel_bsdkame.h \
+ ../../include/packet.h ../../include/pluto/log.h \
+ ../../include/pluto/server.h \
+ ../../include/whack.h ../../include/pluto/keys.h \
+ ../../include/secrets.h \
+ ../../include/ipsec_saref.h \
+ ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/quirks.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h
 kernel_klips.o: kernel_klips.c ../../include/openswan.h \
@@ -1051,28 +1445,37 @@ kernel_klips.o: kernel_klips.c ../../include/openswan.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h kernel.h kernel_pfkey.h \
- timer.h ../../include/oswtime.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h kernel.h kernel_pfkey.h timer.h \
+ ../../include/oswtime.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/packet.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/alg_info.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h
 kernel_mast.o: kernel_mast.c ../../include/openswan.h \
@@ -1081,32 +1484,42 @@ kernel_mast.o: kernel_mast.c ../../include/openswan.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h kernel.h kernel_pfkey.h \
- timer.h ../../include/oswtime.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h kernel.h kernel_pfkey.h timer.h \
+ ../../include/oswtime.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/packet.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/alg_info.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/alg_info.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h
-kernel_netlink.o: kernel_netlink.c ../../include/linux/pfkeyv2.h \
- kameipsec.h ../../programs/pluto/linux26/rtnetlink.h \
+kernel_netlink.o: kernel_netlink.c \
+ ../../include/linux/pfkeyv2.h kameipsec.h \
+ ../../programs/pluto/linux26/rtnetlink.h \
  ../../programs/pluto/linux26/netlink.h \
  ../../programs/pluto/linux26/xfrm.h \
  ../../include/openswan.h \
@@ -1114,64 +1527,79 @@ kernel_netlink.o: kernel_netlink.c ../../include/linux/pfkeyv2.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/socketwrapper.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/socketwrapper.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- kernel.h ../../include/pluto/server.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h kernel.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/packet.h \
  ../../include/pluto/quirks.h kernel_netlink.h kernel_pfkey.h \
  ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ike_alg.h
+ ../../include/crypto/aes.h \
+ ../../include/pluto/ike_alg.h
 kernel_noklips.o: kernel_noklips.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- kernel.h kernel_noklips.h ../../include/pluto/log.h \
- ../../include/whack.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h kernel.h kernel_noklips.h \
+ ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h
 keys.o: keys.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1179,81 +1607,113 @@ keys.o: keys.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- state.h ../../include/pluto/quirks.h ../../include/lex.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- adns.h dnskey.h ../../include/pluto/log.h \
- ../../include/whack.h timer.h ../../include/oswtime.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/lex.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h adns.h dnskey.h \
+ ../../include/pluto/log.h ../../include/whack.h \
+ timer.h ../../include/oswtime.h \
  ../../include/mpzfuncs.h fetch.h x509more.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/x509lists.h \
- ../../include/oswcrypto.h ../../include/crypto/aes.h \
+ ../../include/oswcrypto.h \
+ ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h \
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 log.o: log.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/log.h \
- ../../include/pluto/server.h ../../include/id.h state.h \
- ../../include/pluto/quirks.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
- ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- kernel.h ../../include/whack.h \
- ../../include/openswan/ipsec_policy.h timer.h \
- ../../include/oswtime.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h plutoalg.h \
- ../../include/pluto/virtual.h db_ops.h spdb.h \
- ../../include/packet.h
-msgdigest.o: msgdigest.c ../../include/openswan.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
- ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h cookie.h ../../include/id.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/server.h ../../include/id.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h kernel.h \
+ ../../include/whack.h \
+ ../../include/openswan/ipsec_policy.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/pluto/virtual.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
+ ../../include/packet.h
+msgdigest.o: msgdigest.c ../../include/openswan.h \
+ ../../ports/linux/include/sysdep.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
+ ../../include/ietf_constants.h \
+ ../../include/pluto_constants.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h cookie.h \
+ ../../include/id.h ../../include/x509.h \
+ ../../include/pgp.h ../../include/certs.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/secrets.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
  ../../include/packet.h ../../include/md5.h \
- ../../include/sha1.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ike_alg.h \
- ../../include/pluto/log.h ../../include/pluto/demux.h \
+ ../../include/sha1.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h
 myid.o: myid.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
  ../../include/pluto/log.h ../../include/id.h \
@@ -1263,8 +1723,9 @@ myid.o: myid.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/packet.h ../../include/whack.h
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/packet.h \
+ ../../include/whack.h
 nat_traversal.o: nat_traversal.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
@@ -1274,15 +1735,21 @@ nat_traversal.o: nat_traversal.c ../../include/openswan.h \
  ../../include/openswan/ipsec_tunnel.h \
  ../../include/openswan/ipsec_param.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/log.h \
- ../../include/pluto/server.h state.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1290,248 +1757,295 @@ nat_traversal.o: nat_traversal.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/quirks.h kernel.h \
- ../../include/whack.h timer.h ../../include/oswtime.h \
- ike_alg.h cookie.h ../../include/sha1.h \
- ../../include/md5.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/pluto/vendor.h \
+ ../../include/whack.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/ike_alg.h cookie.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/vendor.h \
  ../../include/natt_defines.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 pending.o: pending.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h kameipsec.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- pending.h ../../include/pluto/log.h state.h \
- ../../include/pluto/quirks.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h pending.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h ikev1_quick.h timer.h \
  ../../include/oswtime.h
-plutoalg.o: plutoalg.c ../../include/openswan.h \
- ../../include/openswan/pfkeyv2.h \
- ../../include/linux/pfkeyv2.h \
- ../../include/openswan/passert.h \
- ../../include/openswan/ipsec_policy.h \
- ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/ietf_constants.h \
- ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
- ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/oswalloc.h \
- ../../include/pluto/defs.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
- ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/id.h \
- ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h \
- ../../include/alg_info.h ike_alg.h plutoalg.h crypto.h \
- ../../include/sha1.h ../../include/md5.h \
- ../../include/sha2.h ../../include/mpzfuncs.h spdb.h \
- ../../include/packet.h db_ops.h \
- ../../include/pluto/log.h ../../include/whack.h
 pluto_crypt.o: pluto_crypt.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/setproctitle.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/setproctitle.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/oswlog.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/pluto/log.h state.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/pluto/rnd.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/oswcrypto.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/oswcrypto.h \
  ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
 plutomain.o: plutomain.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../include/openswan/pfkey.h \
  ../../include/openswan/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/setproctitle.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/setproctitle.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswconf.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/names_constant.h \
+ ../../include/oswconf.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- foodgroups.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h foodgroups.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h kernel.h \
- ../../include/pluto/log.h ../../include/pluto/keys.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h adns.h dnskey.h \
- ../../include/pluto/rnd.h state.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
  ../../include/pluto/ocsp.h fetch.h timer.h \
  ../../include/oswtime.h ../../include/sha1.h \
- ../../include/md5.h crypto.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/pluto/vendor.h \
- pluto_crypt.h ../../include/osw_select.h \
+ ../../include/md5.h ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/vendor.h pluto_crypt.h \
+ ../../include/osw_select.h \
  ../../include/pluto/virtual.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/oswcrypto.h \
+ ../../include/pluto/demux.h \
+ ../../include/oswcrypto.h \
  ../../include/crypto/aes.h \
  ../../include/crypto/aes_cbc.h \
- ../../include/crypto/aes.h ../../include/crypto/des.h
+ ../../include/crypto/aes.h \
+ ../../include/crypto/des.h
 primegen.o: primegen.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/pluto/rnd.h gcryptfix.h
 rcv_info.o: rcv_info.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- foodgroups.h ../../include/whack.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h foodgroups.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h kernel.h \
- rcv_whack.h ../../include/pluto/log.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- adns.h dnskey.h rcv_info.h
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
+ kernel.h rcv_whack.h ../../include/pluto/log.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h adns.h dnskey.h rcv_info.h
 rcv_whack.o: rcv_whack.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h ../../include/oswconf.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/constants.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/names_constant.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- foodgroups.h ../../include/whack.h \
+ ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h foodgroups.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h kernel.h \
- rcv_whack.h ../../include/pluto/whackfile.h \
- ../../include/pluto/log.h ../../include/pluto/keys.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
+ kernel.h rcv_whack.h ../../include/pluto/whackfile.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h adns.h dnskey.h fetch.h \
  ../../include/pluto/ocsp.h timer.h \
- ../../include/oswtime.h hostpair.h ../../include/sha2.h \
- ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h
+ ../../include/oswtime.h hostpair.h \
+ ../../include/sha2.h ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h
 replace.o: replace.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
- ../../include/pluto/connections.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/connections.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h timer.h \
- ../../include/oswtime.h ../../include/pluto/dpd.h \
- replace.h ../../include/pluto/nat_traversal.h \
+ ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
+ timer.h ../../include/oswtime.h \
+ ../../include/pluto/dpd.h replace.h \
+ ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 security_selinux.o: security_selinux.c
 server.o: server.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/socketwrapper.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/socketwrapper.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/id.h state.h \
- ../../include/pluto/quirks.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h ../../include/id.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- kernel.h ../../include/pluto/log.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h kernel.h \
+ ../../include/pluto/log.h \
  ../../include/pluto/server.h timer.h \
  ../../include/oswtime.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/quirks.h \
- rcv_whack.h rcv_info.h ../../include/openswan/ipsec_policy.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- adns.h dnskey.h ../../include/whack.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ../../include/udpfromto.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/quirks.h rcv_whack.h rcv_info.h \
+ ../../include/openswan/ipsec_policy.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h adns.h dnskey.h \
+ ../../include/whack.h pluto_crypt.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/udpfromto.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../include/openswan/pfkey.h \
@@ -1539,25 +2053,31 @@ server.o: server.c ../../include/openswan.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 smallprime.o: smallprime.c ../../include/openswan.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h gcryptfix.h
 spdb.o: spdb.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1565,28 +2085,43 @@ spdb.o: spdb.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
- ../../include/pluto/log.h spdb.h ../../include/whack.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ../../include/whack.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h db_ops.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h
 spdb_print.o: spdb_print.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1594,28 +2129,42 @@ spdb_print.o: spdb_print.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
- ../../include/pluto/log.h spdb.h ../../include/whack.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ../../include/whack.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
  ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
  ../../include/openswan/pfkeyv2.h \
- ../../include/linux/pfkeyv2.h ike_alg.h db_ops.h
+ ../../include/linux/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h
 spdb_struct.o: spdb_struct.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1623,30 +2172,46 @@ spdb_struct.o: spdb_struct.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
- ../../include/pluto/log.h spdb.h ../../include/whack.h \
- plutoalg.h ../../include/sha1.h ../../include/md5.h \
- crypto.h ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h db_ops.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ../../include/whack.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h
 spdb_v1_struct.o: spdb_v1_struct.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1654,30 +2219,46 @@ spdb_v1_struct.o: spdb_v1_struct.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
- ../../include/pluto/log.h spdb.h ../../include/whack.h \
- plutoalg.h ../../include/sha1.h ../../include/md5.h \
- crypto.h ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/alg_info.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h db_ops.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ../../include/whack.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/alg_info.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h \
  ../../include/pluto/nat_traversal.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h
 spdb_v2_struct.o: spdb_v2_struct.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1685,27 +2266,42 @@ spdb_v2_struct.o: spdb_v2_struct.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/keys.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h kernel.h \
- ../../include/pluto/log.h spdb.h ../../include/whack.h \
- plutoalg.h ../../include/sha1.h ../../include/md5.h \
- crypto.h ../../include/sha2.h ../../include/mpzfuncs.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/alg_info.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/spdb.h ../../include/whack.h \
+ ../../include/pluto/plutoalg.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/alg_info.h \
  ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h ike_alg.h db_ops.h ikev2.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/pluto/db_ops.h \
+ ../../include/pluto/spdb.h ikev2.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 state.o: state.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1713,79 +2309,107 @@ state.o: state.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- state.h ../../include/pluto/quirks.h kernel.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h kernel.h \
  ../../include/pluto/log.h ../../include/packet.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h \
  ../../include/pluto/rnd.h timer.h \
  ../../include/oswtime.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h pending.h ipsec_doi.h ikev1_quick.h \
- ../../include/sha1.h ../../include/md5.h cookie.h \
- crypto.h ../../include/sha2.h ../../include/mpzfuncs.h \
- spdb.h
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h pending.h ipsec_doi.h \
+ ikev1_quick.h ../../include/sha1.h \
+ ../../include/md5.h cookie.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/spdb.h
 stubs.o: stubs.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- pending.h foodgroups.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
+ ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h pending.h foodgroups.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h timer.h \
  ../../include/oswtime.h ipsec_doi.h ikev1_quick.h kernel.h \
- ../../include/pluto/log.h ../../include/pluto/keys.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h adns.h dnskey.h \
- ../../include/whack.h ../../include/alg_info.h spdb.h \
- ike_alg.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
+ ../../include/whack.h ../../include/alg_info.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/ike_alg.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h pluto_crypt.h \
- ../../include/osw_select.h crypto.h ../../include/sha1.h \
- ../../include/md5.h ../../include/sha2.h \
- ../../include/mpzfuncs.h ikev1.h ikev1_continuations.h \
+ ../../include/osw_select.h \
+ ../../include/pluto/crypto.h \
+ ../../include/sha1.h ../../include/md5.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h ikev1.h ikev1_continuations.h \
  ike_continuations.h
 sysdep_linux.o: sysdep_linux.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/socketwrapper.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/sysqueue.h \
+ ../../include/socketwrapper.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/rnd.h \
- ../../include/id.h ../../include/pluto/connections.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/rnd.h ../../include/id.h \
+ ../../include/pluto/connections.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- state.h ../../include/pluto/quirks.h timer.h \
- ../../include/oswtime.h kernel.h kernel_netlink.h kernel_pfkey.h \
- kernel_noklips.h ../../include/packet.h \
- ../../include/pluto/log.h ../../include/pluto/server.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h \
+ ../../include/oswtime.h kernel.h kernel_netlink.h \
+ kernel_pfkey.h kernel_noklips.h ../../include/packet.h \
+ ../../include/pluto/log.h \
+ ../../include/pluto/server.h \
  ../../include/whack.h ../../include/pluto/keys.h \
  ../../include/secrets.h
 terminate.o: terminate.c ../../include/openswan.h \
@@ -1793,41 +2417,55 @@ terminate.o: terminate.c ../../include/openswan.h \
  ../../include/openswan/pfkeyv2.h \
  ../../include/linux/pfkeyv2.h kameipsec.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/oswtime.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/names_constant.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/oswtime.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/secrets.h ../../include/pluto/defs.h \
- ../../include/ac.h ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- pending.h foodgroups.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
- ../../include/pluto/quirks.h state.h \
- ../../include/pluto/quirks.h timer.h ipsec_doi.h ikev1_quick.h \
- kernel.h ../../include/pluto/log.h \
+ ../../include/secrets.h \
+ ../../include/pluto/defs.h ../../include/ac.h \
+ ../../include/pluto/connections.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h pending.h foodgroups.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
+ ../../include/pluto/quirks.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h timer.h ipsec_doi.h \
+ ikev1_quick.h kernel.h ../../include/pluto/log.h \
  ../../include/pluto/keys.h adns.h dnskey.h \
- ../../include/whack.h ../../include/alg_info.h spdb.h \
- ike_alg.h plutocerts.h ../../include/kernel_alg.h \
- ../../include/openswan/pfkeyv2.h plutoalg.h xauth.h \
+ ../../include/whack.h ../../include/alg_info.h \
+ ../../include/pluto/spdb.h \
+ ../../include/pluto/ike_alg.h plutocerts.h \
+ ../../include/kernel_alg.h \
+ ../../include/openswan/pfkeyv2.h \
+ ../../include/pluto/plutoalg.h xauth.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h \
  ../../include/pluto/virtual.h hostpair.h
 timer.o: timer.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
  ../../include/constants.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1835,14 +2473,18 @@ timer.o: timer.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
- state.h ../../include/pluto/quirks.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h \
+ ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h kernel.h \
- ../../include/pluto/log.h ../../include/pluto/rnd.h \
- timer.h ../../include/oswtime.h replace.h \
+ ../../include/pluto/quirks.h ipsec_doi.h ikev1_quick.h \
+ kernel.h ../../include/pluto/log.h \
+ ../../include/pluto/rnd.h timer.h \
+ ../../include/oswtime.h replace.h \
  ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/dpd.h \
@@ -1850,14 +2492,18 @@ timer.o: timer.c ../../include/openswan.h \
  ../../include/pluto/demux.h
 vendor.o: vendor.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
- ../../include/pluto/defs.h ../../include/oswalloc.h \
- ../../include/constants.h ../../include/pluto/log.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/pluto/log.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/md5.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1865,104 +2511,130 @@ vendor.o: vendor.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
- ../../include/pluto/quirks.h ../../include/whack.h \
+ ../../include/pluto/quirks.h \
+ ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/vendor.h \
- ../../include/pluto/quirks.h kernel.h state.h \
+ ../../include/pluto/quirks.h kernel.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/nat_traversal.h \
  ../../include/pluto/demux.h
 virtual.o: virtual.c ../../include/openswan.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/log.h \
- ../../include/id.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/log.h ../../include/id.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/whack.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/pluto/virtual.h
 whackinit.o: whackinit.c ../../include/openswan.h \
- ../../include/socketwrapper.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/socketwrapper.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
  ../../include/oswalloc.h ../../include/whack.h \
  ../../include/openswan/ipsec_policy.h
 x509.o: x509.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
  ../../include/sysqueue.h ../../include/oswconf.h \
- ../../include/constants.h ../../include/biglset.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
  ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/constants.h \
- ../../include/oswlog.h ../../include/openswan/passert.h \
+ ../../include/names_constant.h \
+ ../../include/constants.h ../../include/oswlog.h \
+ ../../include/openswan/passert.h \
  ../../include/oswtime.h ../../include/oswalloc.h \
  ../../include/id.h ../../include/asn1.h \
  ../../include/mpzfuncs.h ../../include/oid.h \
  ../../include/pluto/defs.h ../../include/x509.h \
- ../../include/pluto/ocsp.h ../../include/pluto/keys.h \
+ ../../include/pluto/ocsp.h \
+ ../../include/pluto/keys.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/secrets.h ../../include/pgp.h plutocerts.h \
- x509more.h ../../include/packet.h \
- ../../include/pluto/demux.h ../../include/pluto/server.h \
+ ../../include/secrets.h ../../include/pgp.h \
+ plutocerts.h x509more.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
+ ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
- ../../include/pluto/x509lists.h ../../include/pgp.h \
- ../../include/md5.h ../../include/sha1.h \
- ../../include/whack.h ../../include/pkcs.h \
- ../../include/pluto/log.h
+ ../../include/pluto/x509lists.h \
+ ../../include/pgp.h ../../include/md5.h \
+ ../../include/sha1.h ../../include/whack.h \
+ ../../include/pkcs.h ../../include/pluto/log.h
 x509keys.o: x509keys.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
  ../../ports/linux/include/sysdep.h \
- ../../include/sysqueue.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/sysqueue.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
- ../../include/names_constant.h ../../include/oswlog.h \
+ ../../include/names_constant.h \
+ ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/constants.h ../../include/pluto/defs.h \
- ../../include/oswalloc.h ../../include/pluto/log.h \
- ../../include/id.h ../../include/asn1.h \
- ../../include/oid.h ../../include/x509.h \
- ../../include/pgp.h ../../include/certs.h \
+ ../../include/constants.h \
+ ../../include/pluto/defs.h \
+ ../../include/oswalloc.h \
+ ../../include/pluto/log.h ../../include/id.h \
+ ../../include/asn1.h ../../include/oid.h \
+ ../../include/x509.h ../../include/pgp.h \
+ ../../include/certs.h \
  ../../include/openswan/ipsec_policy.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- hostpair.h state.h ../../include/pluto/quirks.h \
- ../../include/md5.h ../../include/sha1.h \
- ../../include/whack.h fetch.h ../../include/pluto/ocsp.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h hostpair.h \
+ ../../include/pluto/state.h \
+ ../../include/pluto/quirks.h ../../include/md5.h \
+ ../../include/sha1.h ../../include/whack.h \
+ fetch.h ../../include/pluto/ocsp.h \
  ../../include/pkcs.h kernel.h x509more.h \
  ../../include/pluto/x509lists.h
 xauth.o: xauth.c ../../include/openswan.h \
  ../../include/openswan/ipsec_policy.h \
- ../../include/oswalloc.h ../../include/constants.h \
- ../../include/biglset.h ../../include/openswan/passert.h \
+ ../../include/oswalloc.h \
+ ../../include/constants.h \
+ ../../include/biglset.h \
+ ../../include/openswan/passert.h \
  ../../include/ietf_constants.h \
  ../../include/pluto_constants.h \
  ../../include/names_constant.h \
@@ -1970,7 +2642,8 @@ xauth.o: xauth.c ../../include/openswan.h \
  ../../include/sysqueue.h ../../include/oswconf.h \
  ../../include/constants.h ../../include/oswlog.h \
  ../../include/openswan/passert.h \
- ../../include/pluto/defs.h state.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/state.h \
  ../../include/pluto/quirks.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/certs.h \
@@ -1978,14 +2651,20 @@ xauth.o: xauth.c ../../include/openswan.h \
  ../../include/secrets.h ../../include/id.h \
  ../../include/x509.h ../../include/pgp.h \
  ../../include/pluto/connections.h \
- ../../include/pluto/defs.h ../../include/pluto/log.h \
- ../../include/packet.h ../../include/pluto/demux.h \
+ ../../include/pluto/defs.h \
+ ../../include/pluto/log.h ../../include/packet.h \
+ ../../include/pluto/demux.h \
  ../../include/pluto/server.h \
  ../../include/pluto/quirks.h kernel.h \
- ../../include/pluto/log.h cookie.h spdb.h timer.h \
- ../../include/oswtime.h ../../include/pluto/rnd.h \
- ../../include/pluto/keys.h ../../include/secrets.h \
- ipsec_doi.h ikev1_quick.h ../../include/whack.h \
- ../../include/sha1.h ../../include/md5.h crypto.h \
- ../../include/sha2.h ../../include/mpzfuncs.h ike_alg.h \
- xauth.h ../../include/pluto/virtual.h
+ ../../include/pluto/log.h cookie.h \
+ ../../include/pluto/spdb.h timer.h \
+ ../../include/oswtime.h \
+ ../../include/pluto/rnd.h \
+ ../../include/pluto/keys.h \
+ ../../include/secrets.h ipsec_doi.h ikev1_quick.h \
+ ../../include/whack.h ../../include/sha1.h \
+ ../../include/md5.h ../../include/pluto/crypto.h \
+ ../../include/sha2.h ../../include/mpzfuncs.h \
+ ../../include/algoparse.h \
+ ../../include/pluto/ike_alg.h xauth.h \
+ ../../include/pluto/virtual.h

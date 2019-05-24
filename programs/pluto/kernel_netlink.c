@@ -203,7 +203,7 @@ static void ip2xfrm(const ip_address *addr, xfrm_address_t *xaddr)
 }
 
 #ifdef HAVE_AEAD
-static struct encrypt_desc algo_aes_ccm_8 =
+static struct ike_encr_desc algo_aes_ccm_8 =
 {
 	.common = {
 		.name = "aes_ccm_8",
@@ -220,7 +220,7 @@ static struct encrypt_desc algo_aes_ccm_8 =
 	.keymaxlen =      AEAD_AES_KEY_MAX_LEN,
 };
 
-static struct encrypt_desc algo_aes_ccm_12 =
+static struct ike_encr_desc algo_aes_ccm_12 =
 {
 	.common = {
 		.name = "aes_ccm_12",
@@ -237,7 +237,7 @@ static struct encrypt_desc algo_aes_ccm_12 =
 	.keymaxlen =      AEAD_AES_KEY_MAX_LEN,
 };
 
-static struct encrypt_desc algo_aes_ccm_16 =
+static struct ike_encr_desc algo_aes_ccm_16 =
 {
 	.common = {
 		.name = "aes_ccm_16",
@@ -254,7 +254,7 @@ static struct encrypt_desc algo_aes_ccm_16 =
 	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
 };
 
-static struct encrypt_desc algo_aes_gcm_8 =
+static struct ike_encr_desc algo_aes_gcm_8 =
 {
 	.common = {
 		.name = "aes_gcm_8",
@@ -271,7 +271,7 @@ static struct encrypt_desc algo_aes_gcm_8 =
 	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
 };
 
-static struct encrypt_desc algo_aes_gcm_12 =
+static struct ike_encr_desc algo_aes_gcm_12 =
 {
 	.common = {
 		.name = "aes_gcm_12",
@@ -288,7 +288,7 @@ static struct encrypt_desc algo_aes_gcm_12 =
 	.keymaxlen =     AEAD_AES_KEY_MAX_LEN,
 };
 
-static struct encrypt_desc algo_aes_gcm_16 =
+static struct ike_encr_desc algo_aes_gcm_16 =
 {
 	.common = {
 		.name = "aes_gcm_16",
@@ -1308,12 +1308,12 @@ netlink_del_sa(const struct kernel_sa *sa)
 #define  AES_KEY_DEF_LEN       128
 #define  AES_KEY_MAX_LEN       256
 
-struct encrypt_desc algo_aes_ccm_8 =
+struct ike_encr_desc algo_aes_ccm_8 =
 {
 	common: {
 	  name: "aes_ccm_8",
 	  officname: "aes_ccm_8",
-	  algo_type:    IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_CCM_8,
 	  algo_next:    NULL, },
 	enc_blocksize:  AES_CBC_BLOCK_SIZE,
@@ -1322,12 +1322,12 @@ struct encrypt_desc algo_aes_ccm_8 =
 	keymaxlen:      AES_KEY_MAX_LEN + 3,
 };
 
-struct encrypt_desc algo_aes_ccm_12 =
+struct ike_encr_desc algo_aes_ccm_12 =
 {
 	common: {
 	  name: "aes_ccm_12",
 	  officname: "aes_ccm_12",
-	  algo_type:    IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_CCM_12,
 	  algo_next:    NULL, },
 	enc_blocksize:  AES_CBC_BLOCK_SIZE,
@@ -1336,12 +1336,12 @@ struct encrypt_desc algo_aes_ccm_12 =
 	keymaxlen:      AES_KEY_MAX_LEN + 3,
 };
 
-struct encrypt_desc algo_aes_ccm_16 =
+struct ike_encr_desc algo_aes_ccm_16 =
 {
 	common: {
 	  name: "aes_ccm_16",
 	  officname: "aes_ccm_16",
-	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_CCM_16,
 	  algo_next: 	NULL, },
 	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
@@ -1350,12 +1350,12 @@ struct encrypt_desc algo_aes_ccm_16 =
 	keymaxlen: 	AES_KEY_MAX_LEN + 3,
 };
 
-struct encrypt_desc algo_aes_gcm_8 =
+struct ike_encr_desc algo_aes_gcm_8 =
 {
 	common: {
 	  name: "aes_gcm_8",
 	  officname: "aes_gcm_8",
-	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_GCM_8,
 	  algo_next: 	NULL, },
 	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
@@ -1364,12 +1364,12 @@ struct encrypt_desc algo_aes_gcm_8 =
 	keymaxlen: 	AES_KEY_MAX_LEN + 3,
 };
 
-struct encrypt_desc algo_aes_gcm_12 =
+struct ike_encr_desc algo_aes_gcm_12 =
 {
 	common: {
 	  name: "aes_gcm_12",
 	  officname: "aes_gcm_12",
-	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_GCM_12,
 	  algo_next: 	NULL, },
 	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
@@ -1378,12 +1378,12 @@ struct encrypt_desc algo_aes_gcm_12 =
 	keymaxlen: 	AES_KEY_MAX_LEN + 3,
 };
 
-struct encrypt_desc algo_aes_gcm_16 =
+struct ike_encr_desc algo_aes_gcm_16 =
 {
 	common: {
 	  name: "aes_gcm_16",
 	  officname: "aes_gcm_16",
-	  algo_type: 	IKE_ALG_ENCRYPT,
+	  algo_type:    IKEv2_TRANS_TYPE_ENCR,
 	  algo_v2id:    IKEv2_ENCR_AES_GCM_16,
 	  algo_next: 	NULL, },
 	enc_blocksize: 	AES_CBC_BLOCK_SIZE,
