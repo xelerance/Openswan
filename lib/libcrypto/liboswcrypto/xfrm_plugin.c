@@ -260,8 +260,8 @@ bool ikev1_alg_ok_final(int ealg, unsigned key_len
  */
 struct ike_alg *
 ike_alg_ikev1_find(enum ikev2_trans_type algo_type
-             , unsigned algo_id
-             , unsigned keysize __attribute__((unused)))
+                   , unsigned algo_id
+                   , unsigned keysize UNUSED)
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {
@@ -297,10 +297,10 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 	const char *ugh="No error";
 	if (a->algo_type > IKEv2_TRANS_TYPE_COUNT)
 	{
-		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_MAX";
+		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_COUNT";
 		return_on(ret,-EINVAL);
 	}
-	if (ike_alg_ikev2_find(a->algo_type, a->algo_v2id, 0))
+	if (ike_alg_ikev1_find(a->algo_type, a->algo_id, 0))
 	{
 		ugh="Algorithm type already exists";
 		return_on(ret,-EEXIST);
@@ -455,7 +455,6 @@ return_out:
 			alg_name, ret==0? "Ok" : "FAILED", ret);
 	return 0;
 }
-
 
 /*
  * Local Variables:
