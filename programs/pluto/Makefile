@@ -221,9 +221,6 @@ ifneq ($(USE_NOMANINSTALL),true)
 		done
 endif
 
-alg_info_test: alg_info_test.o ike_alg.o constants.o defs.o log.o db_ops.o crypto.o $(LIBDESLITE) ${LIBOPENSWAN}
-	$(CC) -o $@ $^ $(LDFLAGS) $(LIBSPLUTO)
-
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
