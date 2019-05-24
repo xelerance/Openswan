@@ -252,7 +252,7 @@ compute_proto_keymat(struct state *st
 				     "needed_len (after ESP enc)=%d",
 				     (int)needed_len));
 
-	    switch (pi->attrs.transattrs.integ_hash)
+	    switch ((unsigned int)pi->attrs.transattrs.integ_hash)
 	    {
 	    case AUTH_ALGORITHM_NONE:
 		break;
