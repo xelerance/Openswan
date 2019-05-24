@@ -45,7 +45,7 @@ endif
 # -Wundef is nice but RHL5.2 compiler doesn't support it
 CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
-	-Wstrict-prototypes # -Wundef
+	-Wstrict-prototypes -Wundef
 
 ifeq ($(HAVE_OCF),true)
 CFLAGS += -DHAVE_OCF
@@ -278,8 +278,8 @@ DEFINES = $(EXTRA_DEFINES) \
 	${KLIPS_DEFS} ${WIN2K_DEFS} ${TPM_DEFS} ${MAST_DEFS} ${BSDKAME_DEFS} \
 	-DBUILDER=\"${BUILDER}\" \
 	-DDEBUG \
-	-DUSE_AES -DUSE_3DES -DUSE_SHA2 \
-	-DIKE_ALG -DKERNEL_ALG -DIKEV1 \
+	${IKE_CRYPTO_DEFINES} \
+	-DKERNEL_ALG -DIKEV1 \
 	${AGGRESSIVE_DEFS} \
 	${XAUTH_DEFS} ${XAUTHPAM_DEFS} \
 	${NAT_DEFS} ${CURL_DEFS}\
@@ -294,7 +294,7 @@ DEFINES = $(EXTRA_DEFINES) \
 # Solaris 2 needs -lsocket -lnsl
 LIBSPLUTO =$(OBJSGCRYPT)
 LIBSPLUTO+=$(LIBOSWCRYPTO)
-LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) ${LIBOPENSWAN} ${LIBPLUTO}
+LIBSPLUTO+=$(LIBDESLITE) $(LIBAES) ${LIBOPENSWAN} ${LIBPLUTO} ${LIBALGOPARSE}
 LIBSPLUTO+=${LIBSHA1} ${LIBMD5}
 LIBSPLUTO+=$(IPSECPOLICY_LIBS) $(X509_LIBS)
 LIBSPLUTO+=$(HAVE_THREADS_LIBS)
