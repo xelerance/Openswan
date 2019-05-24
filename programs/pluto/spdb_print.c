@@ -189,7 +189,7 @@ print_sa_v2_trans(struct db_v2_trans *tr)
     unsigned int i;
     const struct enum_names *en = NULL;
 
-    if(tr->transform_type <= ikev2_transid_val_descs_size) {
+    if((unsigned)tr->transform_type <= ikev2_transid_val_descs_size) {
 	en = ikev2_transid_val_descs[tr->transform_type];
     }
 
