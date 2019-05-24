@@ -46,9 +46,9 @@
 #include "sha1.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
 #include "demux.h"
+#include "ike_alg.h"
 #include "ikev2.h"
 #include "ikev2_prfplus.h"
-#include "ike_alg.h"
 #include "alg_info.h"
 #include "kernel_alg.h"
 
@@ -76,8 +76,7 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 	}
 
 	alg = pst->st_oakley.prf_hash;
-	childsacalc.prf_hasher = (struct hash_desc *)
-		ike_alg_ikev2_find(IKE_ALG_HASH, alg, 0);
+	childsacalc.prf_hasher = ikev1_crypto_get_prf(alg);
 	if (!childsacalc.prf_hasher) {
 		DBG(DBG_CONTROL,
 		    DBG_log("unsupported prf+ algorithm %d", alg));
@@ -96,23 +95,23 @@ stf_status ikev2_derive_child_keys(struct state *st, enum phase1_role role)
 		struct connection *c = st->st_connection;
 		if (c->alg_info_ike) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 			DBG_log("SA #%lu IKE alg: %s", st->st_serialno, buf);
 		}
 		if (c->alg_info_esp) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_esp, TRUE);
+				 (struct alg_info *)c->alg_info_esp);
 			DBG_log("SA #%lu ESP alg: %s", st->st_serialno, buf);
 		}
 		c = pst->st_connection;
 		if (st != pst && c->alg_info_ike) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 			DBG_log("SA #%lu IKE alg: %s", pst->st_serialno, buf);
 		}
 		if (st != pst && c->alg_info_esp) {
 			alg_info_snprint(buf, sizeof(buf),
-				 (struct alg_info *)c->alg_info_esp, TRUE);
+				 (struct alg_info *)c->alg_info_esp);
 			DBG_log("SA #%lu ESP alg: %s", pst->st_serialno, buf);
 		}
 	);

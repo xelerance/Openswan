@@ -51,7 +51,7 @@ static SECOidTag nss_hash_oid(const struct hash_desc *hasher);
 
 void
 hmac_init(struct hmac_ctx *ctx,
-    const struct hash_desc *h,
+    const struct ike_integ_desc *h,
     const u_char *key, size_t key_len)
 {
 #ifndef HAVE_LIBNSS
@@ -175,7 +175,7 @@ void
 hmac_final(u_char *output, struct hmac_ctx *ctx)
 {
 #ifndef HAVE_LIBNSS
-    const struct hash_desc *h = ctx->h;
+    const struct ike_integ_desc *h = ctx->h;
 
     h->hash_final(output, &ctx->hash_ctx);
 

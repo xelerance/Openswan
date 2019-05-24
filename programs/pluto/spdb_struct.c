@@ -106,7 +106,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
     unsigned ealg, halg, modp, eklen=0;
     /* Next two are for multiple proposals in agressive mode... */
     unsigned last_modp=0, wrong_modp=0;
-    struct encrypt_desc *enc_desc;
+    struct ike_encr_desc *enc_desc;
     int transcnt = 0;
     int i;
 
@@ -143,7 +143,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 	    modp = ike_info->ike_modp;
 	    eklen= ike_info->ike_eklen;
 
-	    if (!ike_alg_enc_present(ealg)) {
+	    if (!ike_alg_enc_present(ealg, eklen)) {
 		DBG_log("oakley_alg_makedb() "
 			"ike enc ealg=%d not present",
 			ealg);
@@ -155,7 +155,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 			halg);
 		continue;
 	    }
-	    enc_desc = ike_alg_get_encrypter(ealg);
+	    enc_desc = ikev1_alg_get_encr(ealg);
 
 	    passert(enc_desc != NULL);
 	    if (eklen
