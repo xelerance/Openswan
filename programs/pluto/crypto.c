@@ -87,7 +87,7 @@ static struct ike_integ_desc crypto_hasher_md5 =
 {
     common: {name: "oakley_md5",
 	     officname: "md5",
-	     algo_type: IKEv2_TRANS_TYPE_PRF,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_MD5,
 	     algo_v2id: IKEv2_PRF_HMAC_MD5,
 	     algo_next: NULL, },
@@ -121,7 +121,7 @@ static struct ike_integ_desc crypto_hasher_sha1 =
 {
     common: {name: "oakley_sha",
 	     officname: "sha1",
-	     algo_type: IKEv2_TRANS_TYPE_PRF,
+	     algo_type: IKEv2_TRANS_TYPE_INTEG,
 	     algo_id:   OAKLEY_SHA,
 	     algo_v2id: IKEv2_PRF_HMAC_SHA1,
 	     algo_next: NULL, },
@@ -210,8 +210,8 @@ init_crypto(void)
 #endif
 
 #ifdef USE_MD5
-            ike_alg_register_prf(&crypto_hasher_md5);
             ike_alg_register_integ(&crypto_integ_md5);
+            ike_alg_register_prf(&crypto_hasher_md5);
 #endif
 	}
 }
@@ -241,7 +241,7 @@ do_des(u_int8_t *buf, size_t buf_len, u_int8_t *key, size_t key_size, u_int8_t *
 }
 #endif
 
-#ifdef USE_3DES
+#if 1
 /* encrypt or decrypt part of an IKE message using 3DES
  * See RFC 2409 "IKE" Appendix B
  */
