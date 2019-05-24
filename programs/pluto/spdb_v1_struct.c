@@ -1964,7 +1964,7 @@ echo_proposal(struct state *st,
 		      IPPROTO_AH : IPPROTO_ESP
 		      , st
 		      , tunnel_mode);
-	
+
 	/* XXX should check for errors */
 	out_raw((u_char *) &pi->our_spi, IPSEC_DOI_SPI_SIZE
 		, &r_proposal_pbs, "SPI");
