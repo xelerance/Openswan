@@ -2267,7 +2267,7 @@ parse_ipsec_sa_body(
                      * AH_SHA, AUTH_ALGORITHM_HMAC_SHA1
                      * AH_DES, AUTH_ALGORITHM_DES_MAC (unimplemented)
                      */
-                    switch (ah_attrs.transattrs.integ_hash)
+                    switch ((unsigned int)ah_attrs.transattrs.integ_hash)
                     {
                         case AUTH_ALGORITHM_NONE:
                               loglog(RC_LOG_SERIOUS, "AUTH_ALGORITHM attribute missing in AH Transform");
@@ -2393,7 +2393,7 @@ parse_ipsec_sa_body(
 #endif
 
                     if(ugh != NULL) {
-                        switch (esp_attrs.transattrs.integ_hash)
+                        switch ((unsigned int)esp_attrs.transattrs.integ_hash)
                               {
                               case AUTH_ALGORITHM_NONE:
                                   if (!ah_seen)
