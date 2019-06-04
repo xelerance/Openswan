@@ -262,8 +262,8 @@ ikev2_parent_inR1outI2_tail(struct pluto_crypto_req_cont *pcrc
     event_schedule(EVENT_SA_REPLACE, c->sa_ike_life_seconds, pst);
 
     /* record first packet for later checking of signature */
-    clonetochunk(pst->st_firstpacket_him, md->message_pbs.start
-                 , pbs_offset(&md->message_pbs), "saved first received packet");
+    clonetochunk(pst->st_firstpacket_him, md->packet_pbs.start
+                 , pbs_offset(&md->packet_pbs), "saved first received packet");
 
     /* beginning of data going out */
     authstart = reply_stream.cur;
