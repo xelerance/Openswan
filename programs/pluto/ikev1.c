@@ -1705,6 +1705,35 @@ void process_packet_tail(struct msg_digest **mdp)
 	}
     }
 
+    /* CVE-2019-10155, a patch by Andrew Cagney <cagney@gnu.org> to libreswan
+     * in commit 9391eab9d57687943b37ea253932e63898e5150f released in v3.29 */
+
+    if (md->hdr.isa_xchg == ISAKMP_XCHG_INFO &&
+        md->hdr.isa_np == ISAKMP_NEXT_HASH) {
+        pb_stream *const hash_pbs = &(md)->chain[ISAKMP_NEXT_HASH]->pbs;
+        u_char hash_val[MAX_DIGEST_LEN];
+        size_t hash_len = quick_mode_hash12(hash_val, hash_pbs->roof,
+                                            md->message_pbs.roof,
+                                            st, &md->hdr.isa_msgid, FALSE);
+        if (pbs_left(hash_pbs) != hash_len) {
+            loglog(RC_LOG_SERIOUS,
+                   "received 'informational' message HASH(1) data is the wrong length (received %zu bytes but expected %zu)",
+                   pbs_left(hash_pbs), hash_len);
+            return;
+        }
+        if (!memeq(hash_pbs->cur, hash_val, hash_len)) {
+            if (DBGP(DBG_CRYPT)) {
+                DBG_dump("received 'informational':",
+                         hash_pbs->cur, pbs_left(hash_pbs));
+            }
+            loglog(RC_LOG_SERIOUS,
+                   "received 'informational' message HASH(1) data does not match computed value");
+            return;
+        } else {
+            DBG(DBG_CRYPT, DBG_log("received 'informational' message HASH(1) data ok"));
+        }
+    }
+
     /* more sanity checking: enforce most ordering constraints */
 
     if (IS_PHASE1(from_state) || IS_PHASE15(from_state))
