@@ -48,7 +48,7 @@ check: ${TESTNAME}
 .PHONY: ${TESTNAME}
 ${TESTNAME}: ${TESTNAME}.c
 	@echo CC ${TESTNAME}.c
-	$Q${CC} -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
+	$Q${CC} -Wno-pointer-sign -o ${TESTNAME} ${EXTRAFLAGS} ${TESTNAME}.c ${EXTRAOBJS} ${EXTRALIBS}
 	@echo "file ${TESTNAME}"          >.gdbinit
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 
