@@ -6,6 +6,6 @@ UNITTESTARGS=-r ${WHACKFILE} ${CONNNAME}
 TESTNAME=davecertI1
 
 
-pcapupdate:
+pcapupdate::
 	@true
 

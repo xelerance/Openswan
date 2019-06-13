@@ -9,6 +9,8 @@ static void init_local_interface(bool doipv6)
     cur_debugging = DBG_CONTROL|DBG_CONTROLMORE;
 }
 
+extern const struct osw_conf_options *osw_init_ipsecdir(const char *ipsec_dir);
+
 static void init_fake_secrets(void)
 {
     prompt_pass_t pass;

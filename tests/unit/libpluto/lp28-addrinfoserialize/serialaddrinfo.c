@@ -43,7 +43,6 @@ int warningsarefatal = 0;
 
 int main(int argc, char *argv[])
 {
-    err_t err = NULL;
     struct addrinfo hints, *result1, *result2;
     unsigned char buffer1[1024];
     unsigned int  buffer1_len = sizeof(buffer1);

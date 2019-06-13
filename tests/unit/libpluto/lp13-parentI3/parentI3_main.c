@@ -14,13 +14,11 @@ recv_pcap recv_inputs[PCAP_INPUT_COUNT]={
 
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
     char *pcapin[PCAP_INPUT_COUNT];
     int   i;
     char *pcap_out;
-    int  lineno=0;
     int  regression = 0;
     struct connection *c1;
     struct state *st;

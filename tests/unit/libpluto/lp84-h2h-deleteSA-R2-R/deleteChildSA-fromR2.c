@@ -29,7 +29,6 @@ void recv_pcap_packet2_and_delete(u_char *user
 {
     static int call_counter = 0;
     struct state *st, *pst;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     call_counter++;
     DBG_log("%s() call %d: enter", __func__, call_counter);
@@ -63,7 +62,6 @@ void recv_pcap_packet3_end_delete(u_char *user
 {
     static int call_counter = 0;
     struct state *st, *pst;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     call_counter++;
     DBG_log("%s() call %d: enter", __func__, call_counter);

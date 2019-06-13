@@ -1,11 +1,8 @@
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
-    int  lineno=0;
-    struct connection *c1;
-    struct state *st;
+    struct connection *c1 = NULL;
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;

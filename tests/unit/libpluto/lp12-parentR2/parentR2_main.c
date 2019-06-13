@@ -54,13 +54,11 @@ void finish_pcap(void) {}
 
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
     char *pcapin[PCAP_INPUT_COUNT];
     int   i;
     char *pcap_out;
-    int  lineno=0;
     int regression;
     struct connection *c1;
     struct state *st;
@@ -80,6 +78,8 @@ int main(int argc, char *argv[])
         regression = 1;
         argc--; argv++;
     }
+
+    (void)regression;
 
     if(argc != 3+PCAP_INPUT_COUNT) {
 	fprintf(stderr, "Usage: %s <whackrecord> <conn-name> <pcapout> <pcapin1> <pcapin2>..\n", progname);

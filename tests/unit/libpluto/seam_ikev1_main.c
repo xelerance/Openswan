@@ -10,6 +10,7 @@ main_outI1(int whack_sock
 	   , enum crypto_importance importance)
 {
 	DBG_log("MAIN OUTi1()\n");
+	return STF_OK;
 }
 
 void
