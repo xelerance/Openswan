@@ -4,6 +4,18 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51.4 (June 13, 2019)
+
+Fix for CVE-2019-10155 (IKEv1 information exchange packet's integrity check
+value is not verified)
+
+* cleanup warnings in delete_connection() [Bart Trojanowski]
+* tests: cleanup warnings in libpluto unit tests [Bart Trojanowski]
+* tests: cleanup warnings in libopenswan unit tests [Bart Trojanowski]
+* tests: add quick_mode_hash12() to libpluto seam code [Bart Trojanowski]
+* ikev1: hack to check informational payloads [Andrew Cagney
+  (from Libreswan commit 9391eab9)]
+
 v2.6.51.3 (March 12, 2019)
 
 Fix memory leak bug.
