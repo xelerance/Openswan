@@ -282,13 +282,14 @@ get_my_cpi(struct state *st, bool tunnel)
 
     set_text_said(text_said, &st->st_localaddr, 0, IPPROTO_COMP);
 
-    if (kernel_ops->get_spi)
+    if (kernel_ops->get_spi) {
 	st->st_ipcomp.our_spi_in_kernel = TRUE;
         return kernel_ops->get_spi(&st->st_remoteaddr
 				   , &st->st_localaddr, IPPROTO_COMP, tunnel
 				   , get_proto_reqid()
 				   , IPCOMP_FIRST_NEGOTIATED, IPCOMP_LAST_NEGOTIATED
 				   , text_said);
+    }
 
     while (!(IPCOMP_FIRST_NEGOTIATED <= first_busy_cpi && first_busy_cpi < IPCOMP_LAST_NEGOTIATED))
     {
