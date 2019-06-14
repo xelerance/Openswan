@@ -4,6 +4,15 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.51.5 (June 14, 2019)
+
+Fix kernel algorithm table and if() block that is missing a {}
+
+* removed dead code that causes warning [MCR]
+* change IKE->kernel mapping table to be correct; likely fixes
+  incorrect mapping for ESP_NULL, which is hardly ever used [MCR]
+* fix for incorrect {} after if statement [MCR]
+
 v2.6.51.4 (June 13, 2019)
 
 Fix for CVE-2019-10155 (IKEv1 information exchange packet's integrity check
