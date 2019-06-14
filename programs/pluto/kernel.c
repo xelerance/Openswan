@@ -1388,43 +1388,52 @@ static err_t setup_esp_sa(struct connection *c
     IPsecSAref_t refhim = st->st_refhim;
 
     /* this maps IKE/IETF values into kernel identifiers */
+    /* this maps IKE/IETF values into kernel identifiers */
     static const struct esp_info esp_info[] = {
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_MD5,
-          0, HMAC_MD5_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_NULL, AUTH_ALGORITHM_HMAC_SHA1,
-          0, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_NULL, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_NULL,              .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .authkeylen = HMAC_MD5_KEY_LEN,
 
-        { FALSE, ESP_DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE, 0,
-          SADB_EALG_DESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_EALG_DESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE,
-          HMAC_SHA1_KEY_LEN, SADB_EALG_DESCBC, SADB_AALG_SHA1HMAC },
+          .encryptalg = SADB_EALG_NULL, .authalg = SADB_AALG_MD5HMAC },
 
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_NONE,
-          DES_CBC_BLOCK_SIZE * 3, 0,
-          SADB_EALG_3DESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_MD5,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_MD5_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_3DES, AUTH_ALGORITHM_HMAC_SHA1,
-          DES_CBC_BLOCK_SIZE * 3, HMAC_SHA1_KEY_LEN,
-          SADB_EALG_3DESCBC, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_NULL,              .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_EALG_NULL, .authalg = SADB_AALG_SHA1HMAC },
 
-        { FALSE, ESP_AES, AUTH_ALGORITHM_NONE,
-          AES_CBC_BLOCK_SIZE, 0,
-          SADB_X_EALG_AESCBC, SADB_AALG_NONE },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_MD5,
-              AES_CBC_BLOCK_SIZE, HMAC_MD5_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_MD5HMAC },
-        { FALSE, ESP_AES, AUTH_ALGORITHM_HMAC_SHA1,
-          AES_CBC_BLOCK_SIZE, HMAC_SHA1_KEY_LEN,
-          SADB_X_EALG_AESCBC, SADB_AALG_SHA1HMAC },
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = DES_CBC_BLOCK_SIZE,
+          .encryptalg = SADB_EALG_DESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = DES_CBC_BLOCK_SIZE,  .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_EALG_DESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_DES,               .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = DES_CBC_BLOCK_SIZE,  .authkeylen = HMAC_SHA1_KEY_LEN, .encryptalg = SADB_EALG_DESCBC,
+          .authalg = SADB_AALG_SHA1HMAC },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3, .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_3DES,               .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = DES_CBC_BLOCK_SIZE * 3, .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_EALG_3DESCBC, .authalg = SADB_AALG_SHA1HMAC },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_NONE,
+          .enckeylen = AES_CBC_BLOCK_SIZE,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_NONE },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_HMAC_MD5,
+          .enckeylen = AES_CBC_BLOCK_SIZE,   .authkeylen = HMAC_MD5_KEY_LEN,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_MD5HMAC },
+
+        { .transid = ESP_AES,                .auth = AUTH_ALGORITHM_HMAC_SHA1,
+          .enckeylen = AES_CBC_BLOCK_SIZE,   .authkeylen = HMAC_SHA1_KEY_LEN,
+          .encryptalg = SADB_X_EALG_AESCBC, .authalg = SADB_AALG_SHA1HMAC },
     };
 
     /* static const int esp_max = elemsof(esp_info); */
