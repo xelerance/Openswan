@@ -327,12 +327,16 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t keyIDs, pb_stream *outs, u_int8_t
     }
 
     /* build CR header */
-    if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs))
+    if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs)) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, out_struct() failed"));
 	return FALSE;
+    }
 
     /* build CR body containing the SHA1 hashes of the CA keys */
-    if (!out_chunk(keyIDs, &cr_pbs, "CA"))
+    if (!out_chunk(keyIDs, &cr_pbs, "CA")) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, out_chunk() failed"));
         return FALSE;
+    }
 
     close_output_pbs(&cr_pbs);
     return TRUE;

@@ -62,7 +62,7 @@
 
 /* figure out if we should request a cert for the peer */
 bool
-doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role)
+doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
 {
     bool send_certreq = FALSE;
     bool unknown = TRUE;
@@ -73,7 +73,8 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role)
      */
     send_certreq = (c->policy & POLICY_RSASIG)
         && !has_preloaded_public_key(st)
-        && (st->st_connection->spd.that.ca.ptr != NULL);
+        && (st->st_connection->spd.that.ca.ptr != NULL)
+	&& x509_get_authcerts_chain();
 
     DBG(DBG_CONTROL
         , DBG_log("Thinking about sending a certificate request (CERTREQ)");
@@ -101,6 +102,11 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role)
     if(!(st->st_connection->spd.that.ca.ptr != NULL)) {
         DBG(DBG_CONTROL
             , DBG_log("  no known CA for the other end"));
+        unknown = FALSE;
+    }
+    if(!(x509_get_authcerts_chain())) {
+        DBG(DBG_CONTROL
+            , DBG_log("  no CA certs available for validation"));
         unknown = FALSE;
     }
 
@@ -136,7 +142,8 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
 	send_certreq = (c->policy & POLICY_RSASIG)
 		       && !has_preloaded_public_key(st)
 	               && (role == INITIATOR)
-		       && (st->st_connection->spd.that.ca.ptr != NULL);
+		       && (st->st_connection->spd.that.ca.ptr != NULL)
+		       && x509_get_authcerts_chain();
     }
     DBG(DBG_CONTROL
 	, DBG_log("Thinking about sending a certificate request (CERTREQ)");
@@ -159,12 +166,17 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
             }
             if(!(role == INITIATOR)) {
                 DBG(DBG_CONTROL
-                    ,DBG_log("  my role is not INITIATORi"));
+                    ,DBG_log("  my role is not INITIATOR"));
                 unknown = FALSE;
             }
             if(!(st->st_connection->spd.that.ca.ptr != NULL)) {
                 DBG(DBG_CONTROL
                     , DBG_log("  no known CA for the other end"));
+                unknown = FALSE;
+            }
+	    if(!(x509_get_authcerts_chain())) {
+                DBG(DBG_CONTROL
+                    , DBG_log("  no CA certs available for validation"));
                 unknown = FALSE;
             }
 
