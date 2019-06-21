@@ -3,7 +3,8 @@ UNITTESTARGS=-r
 
 TESTNAME=add2sa-del1sa
 
-pcapupdate: h2hI3-statetable.c
+PCAPDEPENDENCIES = h2hI3-statetable.c
+pcapupdate: ${PCAPDEPENDENCIES}
 
 h2hI3-statetable.c:
 	cp ../lp75-alg-h2hI3/OUTPUT/h2hI3-statetable.c h2hI3-statetable.c

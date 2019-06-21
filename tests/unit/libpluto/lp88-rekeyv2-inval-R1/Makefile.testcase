@@ -7,6 +7,9 @@ TESTNAME=rekeyikev2-R1
 
 all: check
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp87-rekeyv2-inval-I1/OUTPUT/rekeyikev2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp87-rekeyv2-inval-I1/OUTPUT/rekeyikev2.pcap rekeyCI1.pcap
 

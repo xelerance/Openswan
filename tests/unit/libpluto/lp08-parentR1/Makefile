@@ -94,8 +94,10 @@ update3:
 clean:
 	rm -f OUTPUT/${TESTNAME}_*.txt ${TESTNAME} ${WHACKFILE} OUTPUT/*.pcap *~ *.o
 
+PCAPDEPENDENCIES = ../lp02-parentI1/OUTPUT/parentI1.pcap
+include ../Makefile.pcapupdate
 
-pcapupdate:
+pcapupdate: ${PCAPDEPENDENCIES}
 	# note that input parentI1badKE is magic from the network.
 	cp ../lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
 

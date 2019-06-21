@@ -7,7 +7,10 @@ UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} davecert-R1-id.pcap  OUTPUT/${PCAPOUTP
 
 TESTNAME=davecertI2-id
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp53-davecert-gatewayID-R1/OUTPUT/davecert-R1-id.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp53-davecert-gatewayID-R1/OUTPUT/davecert-R1-id.pcap .
 
 

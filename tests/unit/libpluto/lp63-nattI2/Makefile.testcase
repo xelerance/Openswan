@@ -6,7 +6,10 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=nattI2
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp62-nattR1/OUTPUT/nattR1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp62-nattR1/OUTPUT/nattR1.pcap nattR1.pcap
 
 

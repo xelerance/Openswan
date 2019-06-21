@@ -6,5 +6,8 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 
 TESTNAME=h2hI2
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp72-alg-h2hR1/OUTPUT/h2hR1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp72-alg-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap

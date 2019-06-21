@@ -6,7 +6,10 @@ UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/h2hI3.pcap h2hR1.pcap h2hR2.pcap
 
 TESTNAME=h2hI3
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp72-alg-h2hR1/OUTPUT/h2hR1.pcap ../lp74-alg-h2hR2/OUTPUT/h2hR2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp72-alg-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap
 	cp ../lp74-alg-h2hR2/OUTPUT/h2hR2.pcap h2hR2.pcap
 

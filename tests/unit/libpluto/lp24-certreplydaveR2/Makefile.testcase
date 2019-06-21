@@ -10,7 +10,10 @@ ENDNAME=gatewaycert
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hostpair.o
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap ../lp20-certificateselfI2/OUTPUT/parentI2.pcap ../lp23-davecertI1/OUTPUT/davecertI1.pcap ../lp26-davecertI2/OUTPUT/parentI2.pcap 
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp18-certificateselfI1/OUTPUT/certificateselfI1.pcap carolI1.pcap
 	cp ../lp20-certificateselfI2/OUTPUT/parentI2.pcap          carolI2.pcap
 	cp ../lp23-davecertI1/OUTPUT/davecertI1.pcap               davecertI1.pcap

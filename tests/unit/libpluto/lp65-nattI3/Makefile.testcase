@@ -8,7 +8,10 @@ WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 # /dev/null is output pcap.
 UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} /dev/null nattR1.pcap nattR2.pcap
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp62-nattR1/OUTPUT/nattR1.pcap ../lp64-nattR2/OUTPUT/nattR2.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp62-nattR1/OUTPUT/nattR1.pcap nattR1.pcap
 	cp ../lp64-nattR2/OUTPUT/nattR2.pcap nattR2.pcap
 

@@ -7,7 +7,10 @@ TESTNAME=rekeytwice-inCI1
 
 all: check
 
-pcapupdate:
+PCAPDEPENDENCIES = ../lp50-rekey-no-reply-rekey/OUTPUT/rekeyikev2-1-I1.pcap ../lp50-rekey-no-reply-rekey/OUTPUT/rekeyikev2-2-I1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
 	cp ../lp50-rekey-no-reply-rekey/OUTPUT/rekeyikev2-1-I1.pcap .
 	cp ../lp50-rekey-no-reply-rekey/OUTPUT/rekeyikev2-2-I1.pcap .
 
