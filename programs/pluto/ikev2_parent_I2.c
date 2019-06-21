@@ -126,6 +126,15 @@ stf_status ikev2parent_inR1outI2(struct msg_digest *md)
         return PAYLOAD_MALFORMED;
     }
 
+    /* process CERTREQ payload */
+    if(md->chain[ISAKMP_NEXT_v2CERTREQ]) {
+        DBG(DBG_CONTROLMORE
+            ,DBG_log("has a v2CERTREQ payload going to decode it"));
+        ikev2_decode_cr(md, &st->st_connection->ikev2_requested_ca_hashes);
+        if(st->st_connection->ikev2_requested_ca_hashes != NULL)
+            st->hidden_variables.st_got_certrequest = TRUE;
+    }
+
     /* process and confirm the SA selected */
     {
         struct payload_digest *const sa_pd = md->chain[ISAKMP_NEXT_v2SA];

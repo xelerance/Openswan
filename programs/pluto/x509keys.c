@@ -234,47 +234,57 @@ ikev1_decode_cr(struct msg_digest *md, generalName_t **requested_ca_names)
  * Decode the IKEv2 CR payload of Phase 1.
  */
 void
-ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+ikev2_decode_cr(struct msg_digest *md, generalName_t **requested_ca_hashes)
 {
     struct payload_digest *p;
 
     for (p = md->chain[ISAKMP_NEXT_v2CERTREQ]; p != NULL; p = p->next)
     {
-	struct ikev2_certreq *const cr = &p->payload.v2certreq;
-	chunk_t ca_name;
+        struct ikev2_certreq *const cr = &p->payload.v2certreq;
+        chunk_t all_keys, key;
+        u_char *end_keys;
 
-	ca_name.len = pbs_left(&p->pbs);
-	ca_name.ptr = (ca_name.len > 0)? p->pbs.cur : NULL;
+        all_keys.len = pbs_left(&p->pbs);
+        all_keys.ptr = (all_keys.len > 0)? p->pbs.cur : NULL;
 
-	DBG_cond_dump_chunk(DBG_PARSING, "CR", ca_name);
+        DBG_cond_dump_chunk(DBG_PARSING, "CR", all_keys);
 
-	if (cr->isacertreq_enc == CERT_X509_SIGNATURE)
-	{
+        if (cr->isacertreq_enc != CERT_X509_SIGNATURE) {
+            loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
+                   enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            DBG_log("ignoring %s certificate request payload",
+                    enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            continue;
+        }
 
-	    if (ca_name.len > 0)
-	    {
-		generalName_t *gn;
+        if (!all_keys.len)
+            continue;
 
-		if (!is_asn1(ca_name))
-		    continue;
+        /* chop it up into SHA1 key IDs */
 
-		gn = alloc_thing(generalName_t, "generalName");
-		clonetochunk(ca_name, ca_name.ptr,ca_name.len, "ca name");
-		gn->kind = GN_DIRECTORY_NAME;
-		gn->name = ca_name;
-		gn->next = *requested_ca;
-		*requested_ca = gn;
-	    }
+        end_keys = all_keys.ptr + all_keys.len;
+        key.len = SHA1_DIGEST_SIZE;
+        for (key.ptr = all_keys.ptr; key.ptr < end_keys; key.ptr += key.len) {
+            size_t remaining;
+            generalName_t *gn;
 
-	    DBG(DBG_PARSING | DBG_CONTROL,
-		char buf[IDTOA_BUF];
-		dntoa_or_null(buf, IDTOA_BUF, ca_name, "%any");
-		DBG_log("requested CA: '%s'", buf);
-	    )
-	}
-	else
-	    loglog(RC_LOG_SERIOUS, "ignoring %s certificate request payload",
-		   enum_show(&ikev2_cert_type_names, cr->isacertreq_enc));
+            remaining = end_keys - key.ptr;
+            if (key.len > remaining)
+                continue;
+
+            gn = alloc_thing(generalName_t, "generalName");
+            clonetochunk(gn->name, key.ptr, key.len, "ca keyid");
+            /* NOTE: this is an abuse of the generalName structure since we are
+             * actually storing key IDs not names, maybe a new type or a
+             * completely new structure is needed */
+            gn->kind = GN_OTHER_NAME;
+            gn->next = *requested_ca_hashes;
+            *requested_ca_hashes = gn;
+
+            DBG(DBG_PARSING | DBG_CONTROL,
+                DBG_dump_chunk("requested CA keyID", key);
+            )
+        }
     }
 }
 
