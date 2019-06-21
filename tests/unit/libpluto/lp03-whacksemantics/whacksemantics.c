@@ -54,11 +54,8 @@ int warningsarefatal = 0;
 
 int main(int argc, char *argv[])
 {
-    int   len;
     err_t err = NULL;
-    char *infile;
     char *conn_name;
-    int  lineno=0;
     struct starter_config *cfg = NULL;
     struct starter_conn *conn = NULL;
     struct connection *c;

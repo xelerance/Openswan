@@ -14,6 +14,9 @@ int initiate_ondemand(const ip_address *our_client
                               , bool held
                               , int whackfd
                               , struct xfrm_user_sec_ctx_ike *uctx
-                              , err_t why) {}
+                              , err_t why)
+{
+	return 0;
+}
 
 #endif

@@ -112,6 +112,7 @@ void recv_pcap_packet_gen(u_char *user
     from_ugh = initaddr((void *) &from.sa_in4.sin_addr
 			, sizeof(from.sa_in4.sin_addr)
 			, AF_INET, &md->sender);
+    (void)from_ugh;
     setportof(from.sa_in4.sin_port, &md->sender);
     md->sender_port = ntohs(from.sa_in4.sin_port);
 

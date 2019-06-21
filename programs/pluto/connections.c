@@ -223,6 +223,8 @@ delete_connection(struct connection *c, bool relations)
 #ifdef DEBUG
     lset_t old_cur_debugging = cur_debugging;
 #endif
+
+#if defined(KERNEL_ALG) || defined(IKE_ALG)
 	union {
 		struct alg_info**     ppai;
 #ifdef KERNEL_ALG
@@ -232,6 +234,7 @@ delete_connection(struct connection *c, bool relations)
 		struct alg_info_ike** ppai_ike;
 #endif
 	} palg_info;
+#endif
 
     set_cur_connection(c);
 

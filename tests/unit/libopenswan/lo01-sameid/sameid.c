@@ -95,9 +95,6 @@ void t6(void)
 
 int main(int argc, char *argv[])
 {
-    int i;
-    struct id one;
-
     progname = argv[0];
 
     tool_init_log();

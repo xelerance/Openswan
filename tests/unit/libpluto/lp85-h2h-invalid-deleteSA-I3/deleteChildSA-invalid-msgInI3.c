@@ -33,7 +33,6 @@ void recv_pcap_packet(u_char *user
 		      , const u_char *bytes)
 {
     static int call_counter = 0;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     call_counter++;
     DBG_log("%s() call %d: enter", __func__, call_counter);

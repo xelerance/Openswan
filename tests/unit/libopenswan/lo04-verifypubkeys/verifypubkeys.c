@@ -27,7 +27,6 @@ void verify_signature(const char *keyname, unsigned int keysize_bits)
     char   signature_buf[8192];
     char   sig_buf_name[512];
     unsigned int keysize = keysize_bits / 8;
-    struct RSA_public_key *pubkey;
     struct pubkey pk;
     FILE *infile;
 
@@ -133,11 +132,10 @@ void verify_signature(const char *keyname, unsigned int keysize_bits)
     }
 }
 
+extern void load_oswcrypto(void);
+
 int main(int argc, char *argv[])
 {
-    int i;
-    struct id one;
-
     load_oswcrypto();
 
     progname = argv[0];

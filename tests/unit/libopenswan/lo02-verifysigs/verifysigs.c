@@ -108,11 +108,10 @@ void verify_sig_key(const char *keyfile, unsigned int keysize)
 
 }
 
+extern void load_oswcrypto(void);
+
 int main(int argc, char *argv[])
 {
-    int i;
-    struct id one;
-
     load_oswcrypto();
     prng_init(&not_very_random, "01234567", 8);
 

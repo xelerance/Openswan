@@ -29,8 +29,6 @@ static void init_fake_secrets(void)
 
 static void init_loaded(void)
 {
-    struct connection *c;
-
     /* loading X.509 CA certificates */
     load_authcerts("CA cert", oco->cacerts_dir, AUTH_CA);
 }

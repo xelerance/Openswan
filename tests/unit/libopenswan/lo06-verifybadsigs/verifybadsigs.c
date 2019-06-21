@@ -35,7 +35,7 @@ int count_secrets(struct secret *secret,
 static void hack_zero_first_pad_byte(u_char *sig_val, size_t sig_len)
 {
     u_char *p = sig_val;
-    u_char *end = sig_val + sig_len;
+    //u_char *end = sig_val + sig_len;
 
     assert(p[0] == 0x00);
     assert(p[1] == 0x01);
@@ -223,7 +223,7 @@ void verify_sig_key_hack(struct hack *hack, const char *keyfile,
         u_char *sig = NULL;
         const u_char *sig_val = signature_buf;
         size_t        sig_len = keysize;
-        size_t       hash_len = 16;
+        //size_t       hash_len = 16;
         const struct RSA_public_key *k = &pks1->pub->u.rsa;
         err_t err = NULL;
         long num = 0;
@@ -256,9 +256,6 @@ extern void load_oswcrypto(void);
 
 int main(int argc, char *argv[])
 {
-    int i;
-    struct id one;
-
     load_oswcrypto();
     prng_init(&not_very_random, "01234567", 8);
 

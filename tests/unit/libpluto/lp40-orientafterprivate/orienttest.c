@@ -47,12 +47,9 @@ u_int8_t reply_buffer[MAX_OUTPUT_UDP_SIZE];
 int main(int argc, char *argv[])
 {
     int   i;
-    int   len;
     char *infile;
     char *conn_name;
-    int  lineno=0;
     struct connection *c1;
-    struct state *st;
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;

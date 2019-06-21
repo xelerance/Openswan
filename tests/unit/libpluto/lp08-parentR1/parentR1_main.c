@@ -34,14 +34,11 @@ void recv_pcap_packet(u_char *user
 
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile, *pcapin, *pcapout;
     char *conn_name;
-    int  lineno=0;
     int  whackmsgcount=0;
     struct connection *c1;
     struct state *st;
-    char   eb1[256];  /* error buffer for pcap open */
 
 #ifdef HAVE_EFENCE
     EF_PROTECT_FREE=1;

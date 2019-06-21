@@ -1,9 +1,7 @@
 int main(int argc, char *argv[])
 {
-    int   len;
     char *infile;
     char *conn_name;
-    int  lineno=0;
     int  regression = 0;
     struct connection *c1;
     struct state *st;

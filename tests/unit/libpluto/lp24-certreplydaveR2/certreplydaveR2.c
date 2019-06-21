@@ -52,7 +52,7 @@ void recv_pcap_packet4(u_char *user
                       , const u_char *bytes)
 {
     struct state *st;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
+    //struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
 
     recv_pcap_packet_gen(user, h, bytes);
 

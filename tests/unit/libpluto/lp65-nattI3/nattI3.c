@@ -18,9 +18,6 @@ void recv_pcap_packet(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
-    struct state *st;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
-
     recv_pcap_packet_gen(user, h, bytes);
     run_continuation(crypto_req);
 }
@@ -32,9 +29,6 @@ void recv_pcap_I3_process(u_char *user
 		      , const struct pcap_pkthdr *h
 		      , const u_char *bytes)
 {
-    struct state *st = NULL;
-    struct pcr_kenonce *kn = &crypto_req->pcr_d.kn;
-
     /* create a socket for a possible whack process that is doing --up */
     int fake_whack_fd = open("/dev/null", O_RDWR);
     passert(fake_whack_fd != -1);

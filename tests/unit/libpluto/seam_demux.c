@@ -51,7 +51,7 @@ send_packet(struct state *st, const char *where, bool verbose)
       outsideoffirewall.u.v4.sin_port = htons(outside_port4500);
     }
 
-    send_packet_srcnat(st, where, verbose, outsideoffirewall);
+    return send_packet_srcnat(st, where, verbose, outsideoffirewall);
 }
 
 #else
@@ -64,7 +64,7 @@ send_packet(struct state *st, const char *where, bool verbose)
     outsideoffirewall = st->st_interface->ip_addr;
     outsideoffirewall.u.v4.sin_port = htons(st->st_interface->port);
 
-  send_packet_srcnat(st, where, verbose, outsideoffirewall);
+    return send_packet_srcnat(st, where, verbose, outsideoffirewall);
 }
 #endif
 
@@ -146,6 +146,8 @@ send_packet_srcnat(struct state *st, const char *where, bool verbose, ip_address
 	    pp.len    = caplen+4+shimlen;
 	    pcap_dump((u_char *)packet_save, &pp, buf);
     }
+
+    return TRUE;
 }
 
 bool
