@@ -2304,6 +2304,26 @@ get_peer_ca(const struct id *peer_id)
 }
 
 
+static inline bool
+match_requested_ca(const struct state *st, struct end *end, int *pathlen)
+{
+    struct connection *c = st->st_connection;
+
+    if (!st->st_ikev2) {
+        /* this is IKEv1, we have a chain of names to match */
+
+        return match_requested_ca_name(c->ikev1_requested_ca_names,
+                                       end->ca, pathlen);
+
+    } else {
+        /* this is IKEv2, we have a block of key hashes to match */
+
+        return match_requested_ca_keyid(c->ikev2_requested_ca_hashes,
+                                        end->ca, pathlen);
+    }
+}
+
+
 
 /* given an up-until-now satisfactory connection, find the best connection
  * now that we just got the Phase 1 Id Payload from the peer.
@@ -2402,7 +2422,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	&& (peer_ca.ptr != NULL)
 	&& trusted_ca_by_name(peer_ca, c->spd.that.ca, &peer_pathlen)
 	&& peer_pathlen == 0
-	&& match_requested_ca_name(c->ikev1_requested_ca_names, c->spd.this.ca, &our_pathlen)
+	&& match_requested_ca(st, &c->spd.this, &our_pathlen)
 	&& our_pathlen == 0
 	) {
 
@@ -2465,7 +2485,7 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	{
 	    bool match1 = match_id(peer_id, &d->spd.that.id, &wildcards);
 	    bool match2 = trusted_ca_by_name(peer_ca, d->spd.that.ca, &peer_pathlen);
-	    bool match3 = match_requested_ca_name(c->ikev1_requested_ca_names, d->spd.this.ca, &our_pathlen);
+	    bool match3 = match_requested_ca(st, &d->spd.this, &our_pathlen);
 	    bool match = match1 && match2 && match3;
 
 	    DBG(DBG_CONTROLMORE
