@@ -274,6 +274,7 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 #ifdef PLUTO_SENDS_VENDORID
     numvidtosend++;  /* we send Openswan VID */
 #endif
+    bool send_certreq = FALSE;
 
     if (sa_pd == NULL) {
                 return STF_FAIL;
@@ -355,6 +356,19 @@ ikev2_parent_inI1outR1_tail(struct pluto_crypto_req_cont *pcrc
 
     if(!justship_v2nat(st, &md->rbody)) {
         return STF_INTERNAL_ERROR;
+    }
+
+    send_certreq = doi_send_ikev2_certreq_thinking(st, RESPONDER);
+    if (send_certreq) {
+        stf_status stf;
+
+	stf = ikev2_send_certreq(st, md, RESPONDER, ISAKMP_NEXT_NONE, &md->rbody);
+	if (stf != STF_OK) {
+            DBG(DBG_CONTROL
+                , DBG_log("sending CERTREQ failed with %s",
+                          stf_status_name(stf)));
+            return stf;
+        }
     }
 
     /* Send VendrID if needed VID */

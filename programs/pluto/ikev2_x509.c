@@ -115,10 +115,6 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role)
     return FALSE;
 }
 
-static stf_status
-ikev2_send_certreq( struct state *st, struct msg_digest *md
-		    , enum phase1_role role
-		    , unsigned int np, pb_stream *outpbs);
 
 /* Send v2CERT and v2 CERT */
 stf_status
@@ -241,51 +237,91 @@ ikev2_send_cert( struct state *st, struct msg_digest *md
     return STF_OK;
 }
 
-static stf_status
-ikev2_send_certreq( struct state *st, struct msg_digest *md
+stf_status
+ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
 		    , enum phase1_role role UNUSED
 		    , unsigned int np, pb_stream *outpbs)
 {
-    if (st->st_connection->kind == CK_PERMANENT)
-	{
-	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is CK_PERMANENT so send CERTREQ"));
+    struct end *that = &st->st_connection->spd.that;
+    const x509cert_t *cacert;
+    chunk_t allCAs = { NULL, 0 };
+    size_t newlen;
+    unsigned CAcnt = 0;
+    bool success;
 
-	    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE
-				   , st->st_connection->spd.that.ca
-				   , outpbs, np))
-		return STF_INTERNAL_ERROR;
-	}
-    else
-	{
-	    generalName_t *ca = NULL;
-	DBG(DBG_CONTROL
-	    , DBG_log("connection->kind is not CK_PERMANENT (instance), so collect CAs"));
+    /* if there is a "rightcert=..." then I send CERTREQ with that cert's Authority keyid */
 
-	    if (collect_rw_ca_candidates(md, &ca))
-		{
-		    generalName_t *gn;
-	            DBG(DBG_CONTROL
-	                , DBG_log("connection is RW, lookup CA candidates"));
+    if (that->cert_filename && that->cert.type == CERT_X509_SIGNATURE) {
+        DBG(DBG_CONTROL,
+            DBG_log("have cert '%s', send CERTREQ with Cert's Key ID",
+                    that->cert_filename));
 
-		    for (gn = ca; gn != NULL; gn = gn->next)
-			{
-			    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
-						   gn->name, outpbs
-		       ,gn->next == NULL ? np : ISAKMP_NEXT_CR))
-				return STF_INTERNAL_ERROR;
-			}
-		    free_generalNames(ca, FALSE);
-		}
-	    else
-		{
-	            DBG(DBG_CONTROL
-	                , DBG_log("Not a roadwarrior instance, sending empty CA in CERTREQ"));
-		    if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE, empty_chunk
-					   , outpbs, np))
-			return STF_INTERNAL_ERROR;
-		}
-	}
+            pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+            if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         that->cert.u.x509->authKeyID,
+                                         outpbs, np))
+            return STF_INTERNAL_ERROR;
+
+        return STF_OK;
+    }
+
+    /* if there is a "rightca=..." then I send CERTREQ with the CA's keyid */
+
+    if (that->ca.ptr) {
+        cacert = get_authcert(that->ca, empty_chunk, empty_chunk, AUTH_CA);
+        if (cacert) {
+            char buf[256];
+            dntoa(buf, sizeof(buf), cacert->subject);
+            DBG(DBG_CONTROL,
+                DBG_log("have CA '%s', send CERTREQ with CA's Key ID", buf));
+
+            pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+            if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         cacert->subjectKeyID,
+                                         outpbs, np))
+                return STF_INTERNAL_ERROR;
+
+            return STF_OK;
+
+
+        }
+    }
+
+    /* if neither is given then I send CERTREQ with the keyid(s) of all known CA's (/etc/ipsec.d/cacerts/...) */
+
+    for(cacert = x509_get_authcerts_chain(); cacert; cacert = cacert->next) {
+
+        if (!cacert->authority_flags & AUTH_CA)
+            continue;
+
+        newlen = allCAs.len + cacert->subjectKeyID.len;
+
+        allCAs.ptr = realloc(allCAs.ptr, newlen);
+
+        memcpy(allCAs.ptr + allCAs.len, cacert->subjectKeyID.ptr,
+               cacert->subjectKeyID.len);
+
+        allCAs.len = newlen;
+
+        CAcnt ++;
+    }
+
+    DBG(DBG_CONTROL,
+        DBG_log("send CERTREQ with all %d known CA's KeyID", CAcnt));
+
+    pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
+    success = ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
+                                         allCAs,
+                                         outpbs, np);
+
+    if (allCAs.ptr) {
+        free(allCAs.ptr);
+        allCAs.ptr = NULL;
+    }
+
+    if (!success)
+        return STF_INTERNAL_ERROR;
+
     return STF_OK;
 }
 

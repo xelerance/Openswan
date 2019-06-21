@@ -311,7 +311,7 @@ build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
 }
 
 bool
-ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
+ikev2_build_and_ship_CR(u_int8_t type, chunk_t keyIDs, pb_stream *outs, u_int8_t np)
 {
     pb_stream cr_pbs;
     struct ikev2_certreq  cr_hd;
@@ -319,16 +319,21 @@ ikev2_build_and_ship_CR(u_int8_t type, chunk_t ca, pb_stream *outs, u_int8_t np)
     cr_hd.isacertreq_np= np;
     cr_hd.isacertreq_enc = type;
 
+    /* locate the CA */
+
+    if (keyIDs.ptr == NULL) {
+        DBG(DBG_X509, DBG_log("failed to send CERTREQ, no CA keyIDs specified"));
+        return FALSE;
+    }
+
     /* build CR header */
     if (!out_struct(&cr_hd, &ikev2_certificate_req_desc, outs, &cr_pbs))
 	return FALSE;
 
-    if (ca.ptr != NULL)
-    {
-	/* build CR body containing the distinguished name of the CA */
-	if (!out_chunk(ca, &cr_pbs, "CA"))
-	    return FALSE;
-    }
+    /* build CR body containing the SHA1 hashes of the CA keys */
+    if (!out_chunk(keyIDs, &cr_pbs, "CA"))
+        return FALSE;
+
     close_output_pbs(&cr_pbs);
     return TRUE;
 }
