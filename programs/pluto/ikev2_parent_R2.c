@@ -231,6 +231,8 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
             DBG(DBG_CONTROLMORE
                 ,DBG_log("has a v2CERTREQ payload going to decode it"));
             ikev2_decode_cr(md, &st->st_connection->ikev2_requested_ca_hashes);
+            if(st->st_connection->ikev2_requested_ca_hashes != NULL)
+                st->hidden_variables.st_got_certrequest = TRUE;
         }
 
     /* process AUTH payload now */
@@ -404,8 +406,13 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                                                   , RESPONDER
                                                   , ISAKMP_NEXT_v2AUTH
                                                   , &e_pbs_cipher);
-            if(certstat != STF_OK) return certstat;
-            }
+            if(certstat != STF_OK)
+                return certstat;
+
+            /* CERTREQ was fulfiled, don't send again */
+            if (st->st_connection->spd.this.sendcert == cert_sendifasked)
+                st->hidden_variables.st_got_certrequest = FALSE;
+        }
 
         /* since authentication good,
          * see if there is a child SA being proposed */
