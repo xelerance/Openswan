@@ -186,7 +186,7 @@ ikev2_decode_cert(struct msg_digest *md)
  * Decode the CR payload of Phase 1.
  */
 void
-decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+ikev1_decode_cr(struct msg_digest *md, generalName_t **requested_ca_names)
 {
     struct payload_digest *p;
 
@@ -214,8 +214,8 @@ decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 		clonetochunk(ca_name, ca_name.ptr,ca_name.len, "ca name");
 		gn->kind = GN_DIRECTORY_NAME;
 		gn->name = ca_name;
-		gn->next = *requested_ca;
-		*requested_ca = gn;
+		gn->next = *requested_ca_names;
+		*requested_ca_names = gn;
 	    }
 
 	    DBG(DBG_PARSING | DBG_CONTROL,

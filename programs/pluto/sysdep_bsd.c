@@ -433,7 +433,7 @@ do_command_freebsd(struct connection *c, struct spd_route *sr
                     int pathlen;
 
                     if (key->alg == PUBKEY_ALG_RSA && same_id(&sr->that.id, &key->id)
-                        && trusted_ca(key->issuer, sr->that.ca, &pathlen))
+                        && trusted_ca_by_name(key->issuer, sr->that.ca, &pathlen))
                         {
                             dntoa_or_null(peerca_str, IDTOA_BUF, key->issuer, "");
                             escape_metachar(peerca_str, secure_peerca_str, sizeof(secure_peerca_str));

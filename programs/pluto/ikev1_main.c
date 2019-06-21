@@ -1137,9 +1137,9 @@ main_inI2_outR2(struct msg_digest *md)
     RETURN_STF_FAILURE(accept_v1_nonce(md, &st->st_ni, "Ni"));
 
     /* decode certificate requests */
-    decode_cr(md, &st->st_connection->requested_ca);
+    ikev1_decode_cr(md, &st->st_connection->ikev1_requested_ca_names);
 
-    if(st->st_connection->requested_ca != NULL)
+    if(st->st_connection->ikev1_requested_ca_names != NULL)
     {
 	st->hidden_variables.st_got_certrequest = TRUE;
     }
@@ -1475,7 +1475,7 @@ main_inR2_outI3_continue(struct msg_digest *md
     }
 
     /* decode certificate requests */
-    decode_cr(md, &requested_ca);
+    ikev1_decode_cr(md, &requested_ca);
 
     if(requested_ca != NULL)
     {

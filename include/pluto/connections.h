@@ -285,7 +285,8 @@ struct connection {
 
     struct connection *ac_next;	/* all connections list link */
 
-    generalName_t *requested_ca;	/* collected certificate requests */
+    generalName_t *ikev1_requested_ca_names;  /* ikev1 collected certificate requests */
+    generalName_t *ikev2_requested_ca_hashes; /* concatenated SHA1 hashes acceptable CA keys */
 #ifdef XAUTH_USEPAM
     pam_handle_t  *pamh;		/*  PAM handle for that connection  */
 #endif

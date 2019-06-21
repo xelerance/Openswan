@@ -230,7 +230,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
         {
             DBG(DBG_CONTROLMORE
                 ,DBG_log("has a v2CERTREQ payload going to decode it"));
-            ikev2_decode_cr(md, &st->st_connection->requested_ca);
+            ikev2_decode_cr(md, &st->st_connection->ikev2_requested_ca_hashes);
         }
 
     /* process AUTH payload now */

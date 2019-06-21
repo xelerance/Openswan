@@ -704,13 +704,13 @@ decode_peer_id(struct msg_digest *md, bool initiator, bool aggrmode)
 	struct connection *r;
 
 	/* check for certificate requests */
-	decode_cr(md, &c->requested_ca);
+	ikev1_decode_cr(md, &c->ikev1_requested_ca_names);
 
 	r = refine_host_connection(st, &peer, initiator, aggrmode);
 
 	/* delete the collected certificate requests */
-	free_generalNames(c->requested_ca, TRUE);
-	c->requested_ca = NULL;
+	free_generalNames(c->ikev1_requested_ca_names, TRUE);
+	c->ikev1_requested_ca_names = NULL;
 
 	if (r == NULL)
 	{

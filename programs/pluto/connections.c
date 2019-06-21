@@ -296,7 +296,8 @@ delete_connection(struct connection *c, bool relations)
 	sr = sr->next;
     }
 
-    free_generalNames(c->requested_ca, TRUE);
+    free_generalNames(c->ikev1_requested_ca_names, TRUE);
+    c->ikev1_requested_ca_names = NULL;
 
     gw_delref(&c->gw_info);
 #ifdef KERNEL_ALG
@@ -1152,7 +1153,8 @@ add_connection(const struct whack_message *wm)
 	c->end_addr_family = family;
 	c->tunnel_addr_family = wm->tunnel_addr_family;
 
-	c->requested_ca = NULL;
+	c->ikev1_requested_ca_names = NULL;
+	c->ikev2_requested_ca_hashes = NULL;
 
         same_leftca  = extract_end(c, &c->spd.this, &wm->left, "left");
         same_rightca = extract_end(c, &c->spd.that, &wm->right, "right");
@@ -2398,9 +2400,9 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 
     if (same_id(&c->spd.that.id, peer_id)
 	&& (peer_ca.ptr != NULL)
-	&& trusted_ca(peer_ca, c->spd.that.ca, &peer_pathlen)
+	&& trusted_ca_by_name(peer_ca, c->spd.that.ca, &peer_pathlen)
 	&& peer_pathlen == 0
-	&& match_requested_ca(c->requested_ca, c->spd.this.ca, &our_pathlen)
+	&& match_requested_ca_name(c->ikev1_requested_ca_names, c->spd.this.ca, &our_pathlen)
 	&& our_pathlen == 0
 	) {
 
@@ -2462,8 +2464,8 @@ refine_host_connection(const struct state *st, const struct id *peer_id
 	for (; d != NULL; d = d->IPhp_next)
 	{
 	    bool match1 = match_id(peer_id, &d->spd.that.id, &wildcards);
-	    bool match2 = trusted_ca(peer_ca, d->spd.that.ca, &peer_pathlen);
-	    bool match3 = match_requested_ca(c->requested_ca, d->spd.this.ca, &our_pathlen);
+	    bool match2 = trusted_ca_by_name(peer_ca, d->spd.that.ca, &peer_pathlen);
+	    bool match3 = match_requested_ca_name(c->ikev1_requested_ca_names, d->spd.this.ca, &our_pathlen);
 	    bool match = match1 && match2 && match3;
 
 	    DBG(DBG_CONTROLMORE
@@ -2726,7 +2728,7 @@ fc_try(const struct connection *c
 
 	if (!(same_id(&c->spd.this.id, &d->spd.this.id)
 	      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-	      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+	      && trusted_ca_by_name(c->spd.that.ca, d->spd.that.ca, &pathlen)))
 	    continue;
 
     	/* compare protocol and ports */
@@ -2871,7 +2873,7 @@ fc_try_oppo(const struct connection *c
 
 	if (!(same_id(&c->spd.this.id, &d->spd.this.id)
 	      && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-	      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+	      && trusted_ca_by_name(c->spd.that.ca, d->spd.that.ca, &pathlen)))
 	    continue;
 
 	/* compare protocol and ports */

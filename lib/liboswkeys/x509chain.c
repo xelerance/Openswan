@@ -248,7 +248,7 @@ load_authcerts(const char *type, const char *path, u_char auth_flags)
  * Checks if CA a is trusted by CA b
  */
 bool
-trusted_ca(chunk_t a, chunk_t b, int *pathlen)
+trusted_ca_by_name(chunk_t a, chunk_t b, int *pathlen)
 {
     bool match = FALSE;
     char abuf[ASN1_BUF_LEN], bbuf[ASN1_BUF_LEN];
@@ -257,7 +257,7 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
     dntoa(bbuf, ASN1_BUF_LEN, b);
 
     DBG(DBG_X509 | DBG_CONTROLMORE
-	, DBG_log("  trusted_ca called with a=%s b=%s"
+	, DBG_log("  trusted_ca_by_name called with a=%s b=%s"
 		  , abuf, bbuf));
 
     /* no CA b specified -> any CA a is accepted */
@@ -281,7 +281,7 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
 	return TRUE;
 
     /* CA a might be a subordinate CA of b */
-    lock_authcert_list("trusted_ca");
+    lock_authcert_list("trusted_ca_by_name");
 
     while ((*pathlen)++ < MAX_CA_PATH_LEN)
     {
@@ -302,10 +302,10 @@ trusted_ca(chunk_t a, chunk_t b, int *pathlen)
 	a = cacert->issuer;
     }
 
-    unlock_authcert_list("trusted_ca");
+    unlock_authcert_list("trusted_ca_by_name");
 
     DBG(DBG_X509 | DBG_CONTROLMORE
-	, DBG_log("  trusted_ca returning with %s", match ? "match" : "failed"));
+	, DBG_log("  trusted_ca_by_name returning with %s", match ? "match" : "failed"));
 
     return match;
 }
@@ -552,9 +552,12 @@ check_validity(const x509cert_t *cert, time_t *until)
 
 /*
  * does our CA match one of the requested CAs?
+ *
+ * used for IKEv1 CERTREQ lookup, requested_ca is a list of CA names.
  */
 bool
-match_requested_ca(generalName_t *requested_ca, chunk_t our_ca, int *our_pathlen)
+match_requested_ca_name(const generalName_t *requested_ca, chunk_t our_ca_name,
+			int *our_pathlen)
 {
     /* if no ca is requested than any ca will match */
     if (requested_ca == NULL)
@@ -569,7 +572,7 @@ match_requested_ca(generalName_t *requested_ca, chunk_t our_ca, int *our_pathlen
     {
 	int pathlen;
 
-	if (trusted_ca(our_ca, requested_ca->name, &pathlen)
+	if (trusted_ca_by_name(our_ca_name, requested_ca->name, &pathlen)
 	&& pathlen < *our_pathlen)
 	    *our_pathlen = pathlen;
 	requested_ca = requested_ca->next;

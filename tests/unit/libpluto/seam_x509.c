@@ -8,7 +8,7 @@ decode_cert(struct msg_digest *md)
 }
 
 void
-decode_cr(struct msg_digest *md, generalName_t **requested_ca)
+ikev1_decode_cr(struct msg_digest *md, generalName_t **requested_ca)
 {
 }
 

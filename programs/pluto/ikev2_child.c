@@ -874,7 +874,7 @@ stf_status ikev2_child_sa_respond(struct msg_digest *md
 
                 if (!(same_id(&c->spd.this.id, &d->spd.this.id)
                       && match_id(&c->spd.that.id, &d->spd.that.id, &wildcards)
-                      && trusted_ca(c->spd.that.ca, d->spd.that.ca, &pathlen)))
+                      && trusted_ca_by_name(c->spd.that.ca, d->spd.that.ca, &pathlen)))
                     continue;
 
 
