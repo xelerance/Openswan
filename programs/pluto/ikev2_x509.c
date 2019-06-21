@@ -60,6 +60,61 @@
 #include "keys.h"
 #include "ipsec_doi.h"
 
+/* figure out if we should request a cert for the peer */
+bool
+doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role)
+{
+    bool send_certreq = FALSE;
+    bool unknown = TRUE;
+    struct connection *c  = st->st_connection;
+
+    /* decide the next payload;
+     * send a CERTREQ no preloaded public key exists
+     */
+    send_certreq = (c->policy & POLICY_RSASIG)
+        && !has_preloaded_public_key(st)
+        && (st->st_connection->spd.that.ca.ptr != NULL);
+
+    DBG(DBG_CONTROL
+        , DBG_log("Thinking about sending a certificate request (CERTREQ)");
+        DBG_log("  my policy is : %s", prettypolicy(c->policy));
+        DBG_log("  my next payload will %sbe a certificate request"
+                , send_certreq ? "" : "not "));
+
+    if (send_certreq)
+        return TRUE;
+
+    /* report why we are not sending a certreq */
+
+    DBG(DBG_CONTROL
+        ,DBG_log("I did not send a certificate request (CERTREQ) because"));
+    if(!(c->policy & POLICY_RSASIG)) {
+        DBG(DBG_CONTROL
+            ,DBG_log("  RSA digital signatures are not being used. (PSK)"));
+        unknown = FALSE;
+    }
+    if(has_preloaded_public_key(st)) {
+        DBG(DBG_CONTROL
+            , DBG_log(" has a preloaded a public for that end in st"));
+        unknown = FALSE;
+    }
+    if(!(st->st_connection->spd.that.ca.ptr != NULL)) {
+        DBG(DBG_CONTROL
+            , DBG_log("  no known CA for the other end"));
+        unknown = FALSE;
+    }
+
+    /* no reason we are aware of */
+
+    if (unknown) {
+        DBG(DBG_CONTROL,
+            DBG_log(" we reached an unexpected state - a bad day? "
+                    "I don't feel like sending a certificate request (CERTREQ)"));
+    }
+
+    return FALSE;
+}
+
 static stf_status
 ikev2_send_certreq( struct state *st, struct msg_digest *md
 		    , enum phase1_role role
