@@ -140,7 +140,7 @@ ikev2_verify_rsa_sha1(struct state *st
               , same_id(&st->ikev2.st_peer_id, &key->id));
       if (key->alg == PUBKEY_ALG_RSA
           && same_id(&st->ikev2.st_peer_id, &key->id)
-          && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca(key->issuer, c->spd.that.ca, &pathlen)))
+          && (key->dns_auth_level > DAL_UNSIGNED || trusted_ca_by_name(key->issuer, c->spd.that.ca, &pathlen)))
         {
           time_t tnow;
 

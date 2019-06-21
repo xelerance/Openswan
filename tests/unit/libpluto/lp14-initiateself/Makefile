@@ -81,7 +81,9 @@ export EF_DISABLE_BANNER
 
 include Makefile.testcase
 
-check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c
+SEDSCRIPTS = ${TESTUTILS}/leak-detective.sed ${TESTUTILS}/whack-processing.sed ${TESTUTILS}/sanity.sed
+
+check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c ${SEDSCRIPTS}
 	@echo CC ${TESTNAME}.c
 	@${CC} -c -g -O0 ${TESTNAME}.c ${EXTRAFLAGS}
 	@${CC} -g -O0 -o ${TESTNAME} ${TESTNAME}.o ${EXTRAFLAGS} ${EXTRAOBJS} ${EXTRALIBS}
@@ -89,6 +91,7 @@ check:	${WHACKFILE} OUTPUT ${EXTRAOBJS} ../lp02-parentI1/*.c ${TESTNAME}.c
 	@echo "set args "${UNITTESTARGS} >>.gdbinit
 	ulimit -c unlimited && ./${TESTNAME} ${UNITTESTARGS} >OUTPUT/${TESTNAME}.txt 2>&1
 	@sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed OUTPUT/${TESTNAME}.txt | diff - output.txt
+	ls -l OUTPUT/${TESTNAME}.pcap
 	tcpdump -n -t -v -r OUTPUT/${TESTNAME}.pcap | tee OUTPUT/I1-dump.txt | sed -f ${TESTUTILS}/sanity.sed | diff - I1-dump.txt
 
 ${WHACKFILE}: OUTPUT ${SAMPLEDIR}/${ENDNAME}.conf
