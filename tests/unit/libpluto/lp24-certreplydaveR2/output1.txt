@@ -370,20 +370,34 @@ RC=2      rw-any
 | Notify data  e0 69 e5 73  67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29
 |   c4 d9 11 09
 | emitting length of IKEv2 Notify Payload: 28
-|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   my next payload will be a certificate request
+| have cert 'carolCert.pem' without Auth Key ID, will use CA by name
+| have CA 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com', send CERTREQ with CA's Key ID
+|    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
+| ***emit IKEv2 Certificate Request Payload:
+|    critical bit: none
+|    ikev2 cert encoding: CERT_X509_SIGNATURE
+| emitting 20 raw bytes of CA into IKEv2 Certificate Request Payload
+| CA  99 12 46 33  fb fd 7a 46  9f 7e d5 39  72 86 f1 e1
+|   cf 5e 59 dd
+| emitting length of IKEv2 Certificate Request Payload: 25
+|    next-payload: ISAKMP_NEXT_v2V [@416=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 432
+| emitting 3 zero bytes of message padding into ISAKMP Message
+| emitting length of ISAKMP Message: 460
 | #1 complete v2 state transition with STF_OK
 ./certreplydaveR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #1; pst is #0; transition_st is #1
 ./certreplydaveR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.34:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
+sending 460 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.34:500 (using #1)
 |   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 cc  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -406,9 +420,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
 |   d7 66 3f 90  45 db b1 6f  2c 55 f2 25  78 55 db 6a
-|   76 d4 bc 8f  2b 00 00 1c  00 00 40 05  e0 69 e5 73
+|   76 d4 bc 8f  26 00 00 1c  00 00 40 05  e0 69 e5 73
 |   67 c1 7d a9  ad 6b b5 4f  b4 a3 19 29  c4 d9 11 09
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   2b 00 00 19  04 99 12 46  33 fb fd 7a  46 9f 7e d5
+|   39 72 86 f1  e1 cf 5e 59  dd 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30 00 00 00
 1: input from carolI2.pcap
 |   =========== input from pcap file carolI2.pcap ========
 | *received 1676 bytes from 93.184.216.34:500 on eth0 (port=500)
@@ -1055,7 +1071,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
-|   my role is not INITIATORi
+|   my role is not INITIATOR
 | I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
@@ -1928,20 +1944,33 @@ sending 1404 bytes for STATE_PARENT_R1 through eth0:500 [132.213.238.7:500] to 9
 | Notify data  64 2a d2 2a  dc 2f fc 41  eb 93 5f 7b  44 d8 3f 95
 |   fd c3 8c 0f
 | emitting length of IKEv2 Notify Payload: 28
-|    next-payload: ISAKMP_NEXT_v2V [@388=0x2b]
+| Thinking about sending a certificate request (CERTREQ)
+|   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   my next payload will be a certificate request
+| have CA 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com', send CERTREQ with CA's Key ID
+|    next-payload: ISAKMP_NEXT_v2CERTREQ [@388=0x26]
+| ***emit IKEv2 Certificate Request Payload:
+|    critical bit: none
+|    ikev2 cert encoding: CERT_X509_SIGNATURE
+| emitting 20 raw bytes of CA into IKEv2 Certificate Request Payload
+| CA  99 12 46 33  fb fd 7a 46  9f 7e d5 39  72 86 f1 e1
+|   cf 5e 59 dd
+| emitting length of IKEv2 Certificate Request Payload: 25
+|    next-payload: ISAKMP_NEXT_v2V [@416=0x2b]
 | ***emit ISAKMP Vendor ID Payload:
 | emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
 | Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
 | emitting length of ISAKMP Vendor ID Payload: 16
-| emitting length of ISAKMP Message: 432
+| emitting 3 zero bytes of message padding into ISAKMP Message
+| emitting length of ISAKMP Message: 460
 | #3 complete v2 state transition with STF_OK
 ./certreplydaveR2 transition from state STATE_IKEv2_START to state STATE_PARENT_R1
 | v2_state_transition: st is #3; pst is #0; transition_st is #3
 ./certreplydaveR2 STATE_PARENT_R1: received v2I1, sent v2R1 (msgid: 00000000/00000000)
 | sending reply packet to 93.184.216.35:500 (from port 500)
-sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.35:500 (using #3)
+sending 460 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 93.184.216.35:500 (using #3)
 |   8d 0e 0f 10  11 12 13 14  5d 73 ce 75  3d b1 db 6d
-|   21 20 22 20  00 00 00 00  00 00 01 b0  22 00 00 30
+|   21 20 22 20  00 00 00 00  00 00 01 cc  22 00 00 30
 |   00 00 00 2c  01 01 00 04  03 00 00 0c  01 00 00 0c
 |   80 0e 00 80  03 00 00 08  03 00 00 02  03 00 00 08
 |   02 00 00 02  00 00 00 08  04 00 00 0e  28 00 01 08
@@ -1964,9 +1993,11 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   26 6d ae ce  29 00 00 14  c6 ba 31 9f  88 5b e7 b7
 |   a2 93 85 dc  bb c6 15 84  29 00 00 1c  00 00 40 04
 |   f3 71 b6 36  19 32 87 fc  7f b2 9b 73  de 8a d0 75
-|   d9 71 fc c6  2b 00 00 1c  00 00 40 05  64 2a d2 2a
+|   d9 71 fc c6  26 00 00 1c  00 00 40 05  64 2a d2 2a
 |   dc 2f fc 41  eb 93 5f 7b  44 d8 3f 95  fd c3 8c 0f
-|   00 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   2b 00 00 19  04 99 12 46  33 fb fd 7a  46 9f 7e d5
+|   39 72 86 f1  e1 cf 5e 59  dd 00 00 00  10 4f 45 70
+|   6c 75 74 6f  75 6e 69 74  30 00 00 00
 3: output to OUTPUT/parentR2dave.pcap
 3: input from davecertI2.pcap
 |   =========== input from pcap file davecertI2.pcap ========
@@ -2599,7 +2630,7 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 |   my policy is : RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
 |   my next payload will not be a certificate request
 | I did not send a certificate request (CERTREQ) because
-|   my role is not INITIATORi
+|   my role is not INITIATOR
 | I am sending my certificate
 |    next-payload: ISAKMP_NEXT_v2CERT [@0=0x25]
 | *****emit IKEv2 Certificate Payload:
