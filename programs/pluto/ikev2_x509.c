@@ -255,6 +255,7 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
 		    , unsigned int np, pb_stream *outpbs)
 {
     struct end *that = &st->st_connection->spd.that;
+    chunk_t *that_ca = &that->ca;
     const x509cert_t *cacert;
     chunk_t allCAs = { NULL, 0 };
     size_t newlen;
@@ -264,23 +265,32 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
     /* if there is a "rightcert=..." then I send CERTREQ with that cert's Authority keyid */
 
     if (that->cert_filename && that->cert.type == CERT_X509_SIGNATURE) {
-        DBG(DBG_CONTROL,
-            DBG_log("have cert '%s', send CERTREQ with Cert's Key ID",
-                    that->cert_filename));
+        if (that->cert.u.x509->authKeyID.ptr) {
+            DBG(DBG_CONTROL,
+                DBG_log("have cert '%s', send CERTREQ with Auth Key ID",
+                        that->cert_filename));
+
 
             pbs_set_np(outpbs, ISAKMP_NEXT_v2CERTREQ);
             if (!ikev2_build_and_ship_CR(CERT_X509_SIGNATURE,
                                          that->cert.u.x509->authKeyID,
                                          outpbs, np))
-            return STF_INTERNAL_ERROR;
+                return STF_INTERNAL_ERROR;
 
-        return STF_OK;
+            return STF_OK;
+
+        } else {
+            DBG(DBG_CONTROL,
+                DBG_log("have cert '%s' without Auth Key ID, will use CA by name",
+                        that->cert_filename));
+            that_ca = &st->st_connection->spd.that.ca;
+        }
     }
 
     /* if there is a "rightca=..." then I send CERTREQ with the CA's keyid */
 
-    if (that->ca.ptr) {
-        cacert = get_authcert(that->ca, empty_chunk, empty_chunk, AUTH_CA);
+    if (that_ca->ptr) {
+        cacert = get_authcert(*that_ca, empty_chunk, empty_chunk, AUTH_CA);
         if (cacert) {
             char buf[256];
             dntoa(buf, sizeof(buf), cacert->subject);
@@ -294,8 +304,6 @@ ikev2_send_certreq( struct state *st, struct msg_digest *md UNUSED
                 return STF_INTERNAL_ERROR;
 
             return STF_OK;
-
-
         }
     }
 
