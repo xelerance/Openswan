@@ -49,7 +49,6 @@
 #include "pluto/connections.h"
 #include "hostpair.h"
 #include "state.h"
-#include "md2.h"
 #include "md5.h"
 #include "sha1.h"
 #include "whack.h"
