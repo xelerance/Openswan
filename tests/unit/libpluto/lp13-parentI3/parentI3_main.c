@@ -49,10 +49,7 @@ int main(int argc, char *argv[])
     init_fake_vendorid();
     init_parker_interface(TRUE);
     init_seam_kernelalgs();
-    osw_load_preshared_secrets(&pluto_secrets
-			       , TRUE
-			       , "../samples/parker.secrets"
-			       , NULL, NULL);
+    init_fake_secrets();
     enable_debugging();
 
     infile = argv[0];

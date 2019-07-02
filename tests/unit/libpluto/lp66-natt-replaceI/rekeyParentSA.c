@@ -102,6 +102,14 @@ void recv_pcap_packet2(u_char *user
     DBG_log("%s() call %d: exit", __func__, call_counter);
 }
 
+static void init_fake_secrets(void)
+{
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL, NULL);
+}
+
 static void init_loaded(void)
 {   /* nothing */ }
 
