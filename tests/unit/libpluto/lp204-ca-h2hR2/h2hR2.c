@@ -1,6 +1,7 @@
 #include "../lp12-parentR2/parentR2_head.c"
 #include "seam_host_jamesjohnson.c"
-#include "seam_x509.c"
+#include "seam_x509_list.c"
+#include "../../programs/pluto/x509keys.c"
 #include "seam_gr_md5.c"
 #include "seam_finish.c"
 
@@ -13,10 +14,12 @@ static void init_local_interface(void)
 
 static void init_fake_secrets(void)
 {
+    osw_init_ipsecdir("../samples/gatewaycert");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/jj.secrets"
 			       , NULL, NULL);
+    load_authcerts("CA cert", "../samples/gatewaycert/cacerts", AUTH_CA);
 }
 
 static void init_loaded(void)

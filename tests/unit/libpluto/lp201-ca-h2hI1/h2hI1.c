@@ -3,7 +3,8 @@
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
 #include "seam_demux.c"
-#include "seam_x509.c"
+#include "seam_x509_list.c"
+#include "../../programs/pluto/x509keys.c"
 #include "seam_pending.c"
 #include "seam_whack.c"
 #include "seam_initiate.c"
@@ -21,10 +22,11 @@ static void init_local_interface(void)
 
 static void init_fake_secrets(void)
 {
+    osw_init_ipsecdir("../samples/davecert");
     osw_load_preshared_secrets(&pluto_secrets
 			       , TRUE
 			       , "../samples/parker.secrets"
-			       , NULL, NULL);
+			       , NULL, NULL );
 }
 
 #include "../lp02-parentI1/parentI1_main.c"

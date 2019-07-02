@@ -2,6 +2,9 @@
 #include "seam_gi_md5.c"
 #include "seam_finish.c"
 #include "seam_ikev2_sendI1.c"
+#include "oswconf.h"
+#include "seam_x509_list.c"
+#include "../../programs/pluto/x509keys.c"
 
 #define TESTNAME "h2hI3"
 
@@ -45,6 +48,16 @@ void recv_pcap_packet2(u_char *user
 
     run_continuation(crypto_req);
 
+}
+
+static void init_fake_secrets(void)
+{
+    osw_init_ipsecdir("../samples/davecert");
+    osw_load_preshared_secrets(&pluto_secrets
+			       , TRUE
+			       , "../samples/parker.secrets"
+			       , NULL, NULL);
+    load_authcerts("CA cert", "../samples/davecert/cacerts", AUTH_CA);
 }
 
 static void init_loaded(void)
