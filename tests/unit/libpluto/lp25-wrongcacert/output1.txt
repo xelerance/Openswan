@@ -894,10 +894,10 @@ sending 432 bytes for STATE_IKEv2_START through eth0:500 [132.213.238.7:500] to 
 RC=0
 RC=0 List of Public Keys:
 RC=0
-RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
+RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
 RC=0        ID_FQDN '@moon.testing.openswan.org'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
-RC=0 Nov 23 22:12:14 UTC 2015, 2048 RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
+RC=0 DATE RSA localf key AwEAAeOoT/75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 (no private key), until Nov 06 16:48:38 UTC 2019 ok
 RC=0        ID_DER_ASN1_DN 'C=CA, ST=Canada, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=moon.testing.openswan.org, E=mcr@xelerance.com'
 RC=0        Issuer 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
 ./wrongcacert RSA authentication failed
