@@ -1,0 +1,13 @@
+# -*- makefile -*-
+CONNNAME=alttunnel
+ENDNAME=h2h
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} h2hR1.pcap OUTPUT/h2hI2.pcap
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=h2hI2
+
+PCAPDEPENDENCIES = ../lp202-ca-h2hR1/OUTPUT/h2hR1.pcap
+include ../Makefile.pcapupdate
+
+pcapupdate: ${PCAPDEPENDENCIES}
+	cp ../lp202-ca-h2hR1/OUTPUT/h2hR1.pcap h2hR1.pcap

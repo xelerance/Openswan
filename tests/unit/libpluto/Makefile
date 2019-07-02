@@ -114,6 +114,12 @@ UNITTESTS_I1+=lp87-rekeyv2-inval-I1
 UNITTESTS_R1+=lp88-rekeyv2-inval-R1
 UNITTESTS_I4+=lp89-rekeyv2-inval-inCR1
 
+UNITTESTS_I1+=lp201-ca-h2hI1
+UNITTESTS_R1+=lp202-ca-h2hR1
+UNITTESTS_I2+=lp203-ca-h2hI2
+UNITTESTS_R2+=lp204-ca-h2hR2
+UNITTESTS_I3+=lp205-ca-h2hI3
+
 # first runs tests that have no interdependancies
 UNITTESTS=${UNITTESTS_0}
 # then run all the I1,R1,I2,R2,I3
