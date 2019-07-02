@@ -1,6 +1,6 @@
 # -*- makefile -*-
-CONNNAME=alttunnel
-ENDNAME=h2h
+CONNNAME=home
+ENDNAME=davecert-ca
 WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
 UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/h2hI3.pcap h2hR1.pcap h2hR2.pcap 
 
