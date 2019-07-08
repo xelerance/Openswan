@@ -73,6 +73,7 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
      */
     send_certreq = (c->policy & POLICY_RSASIG)
         && !has_preloaded_public_key(st)
+        && !st->hidden_variables.st_got_cert_from_peer
         && (st->st_connection->spd.that.ca.ptr != NULL)
 	&& x509_get_authcerts_chain();
 
@@ -97,6 +98,11 @@ doi_send_ikev2_certreq_thinking(struct state *st, enum phase1_role role UNUSED)
     if(has_preloaded_public_key(st)) {
         DBG(DBG_CONTROL
             , DBG_log(" has a preloaded a public for that end in st"));
+        unknown = FALSE;
+    }
+    if(st->hidden_variables.st_got_cert_from_peer) {
+        DBG(DBG_CONTROL
+            , DBG_log("  already received a CERT from peer"));
         unknown = FALSE;
     }
     if(!(st->st_connection->spd.that.ca.ptr != NULL)) {

@@ -143,7 +143,8 @@ struct hidden_variables {
     int            st_xauth_client_attempt;
     bool           st_modecfg_server_done;
     bool           st_modecfg_vars_set;
-    bool           st_got_certrequest;
+    bool           st_got_cert_from_peer;  /* prevents sending more CERTREQ */
+    bool           st_got_certrequest;     /* we received a CERTREQ from peer */
     bool           st_modecfg_started;
     bool           st_skeyid_calculated;
     bool           st_dpd;                 /* Peer supports DPD */

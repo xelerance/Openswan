@@ -222,6 +222,7 @@ ikev2_parent_inI2outR2_tail(struct pluto_crypto_req_cont *pcrc
                  */
                 openswan_log("v2_CERT received on reponder, attempting to validate");
                 ikev2_decode_cert(md);
+                st->hidden_variables.st_got_cert_from_peer = TRUE;
             }
     }
 
