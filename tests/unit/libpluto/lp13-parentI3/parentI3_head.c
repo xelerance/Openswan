@@ -27,7 +27,7 @@
 #include "seam_xauth.c"
 #include "seam_host_parker.c"
 #include "seam_terminate.c"
-#include "seam_x509.c"
+#include "seam_x509_list.c"
 #include "seam_spdbstruct.c"
 #include "seam_demux.c"
 #include "seam_commhandle.c"
