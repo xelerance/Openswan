@@ -35,3 +35,11 @@
   include the DH-group when negotiating ESP.
 
   Therefore, it is advised to explicitly disable PFS.
+
+* Openswan v2.6.51+ may not interoperate with earlier versions.  While fixes
+  made in v2.6.51 adhere to the RFCs more closely, they lead to interop issues
+  with previous releases.  When interoperating with v2.6.50, or older, consider:
+
+  * using pfs=yes
+  * use a smaller ikelifetime= and keylife= on the newer version
+    NOTE: this is not advised if the newer version is behind NATT
