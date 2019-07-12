@@ -61,7 +61,7 @@
 #include "pluto/spdb.h"
 #include "pluto/ike_alg.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "xauth.h"
 #ifdef NAT_TRAVERSAL
 #include "nat_traversal.h"
