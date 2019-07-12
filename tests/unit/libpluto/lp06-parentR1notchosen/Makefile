@@ -38,7 +38,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_x509.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/demux.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
