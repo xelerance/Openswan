@@ -1,0 +1,3 @@
+TESTNAME=cr04-sha2
+TESTSRC=sha2-register-test.c
+
