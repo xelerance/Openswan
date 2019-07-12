@@ -1,0 +1,2 @@
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 460, bad cksum 0 (->d069)!)
+    132.213.238.7.4500 > 93.184.216.34.55045: NONESP-encap: isakmp 1.0 msgid 80010203: phase 2/others ? oakley-quick[E]: [encrypted hash]
