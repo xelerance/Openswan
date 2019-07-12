@@ -137,7 +137,7 @@ static void disable_nat_traversal(int type)
 	}
 }
 
-static void _natd_hash(const struct hash_desc *hasher, unsigned char *hash
+static void _natd_hash(const struct ike_prf_desc *hasher, unsigned char *hash
 		       , u_int8_t *icookie, u_int8_t *rcookie
 		       , const ip_address *ip, u_int16_t port)
 {

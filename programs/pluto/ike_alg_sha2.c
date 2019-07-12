@@ -46,9 +46,9 @@ static void sha512_hash_final(u_char *hash, sha512_context *ctx)
 	memcpy(hash, &ctx->sha_out[0], SHA2_512_DIGEST_SIZE);
 #endif
 }
-struct hash_desc hash_desc_sha2_256 = {
+struct ike_integ_desc hash_desc_sha2_256 = {
 	common:{officname:  "sha256",
-		algo_type: IKE_ALG_HASH,
+                algo_type:    IKEv2_TRANS_TYPE_ENCR,
 		algo_id:   OAKLEY_SHA2_256,
 		algo_v2id: IKEv2_PRF_HMAC_SHA2_256,
 		algo_next: NULL, },
@@ -61,9 +61,9 @@ struct hash_desc hash_desc_sha2_256 = {
 	hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
 
-struct hash_desc integ_desc_sha2_256 = {
+struct ike_integ_desc integ_desc_sha2_256 = {
         common:{officname:  "sha256",
-                algo_type: IKE_ALG_INTEG,
+                algo_type:    IKEv2_TRANS_TYPE_ENCR,
                 algo_id:   OAKLEY_SHA2_256,
                 algo_v2id: IKEv2_AUTH_HMAC_SHA2_256_128,
                 algo_next: NULL, },
@@ -76,9 +76,9 @@ struct hash_desc integ_desc_sha2_256 = {
         hash_final:(void (*)(u_char *, void *))sha256_hash_final,
 };
 
-struct hash_desc hash_desc_sha2_512 = {
+struct ike_integ_desc hash_desc_sha2_512 = {
 	common:{officname: "sha512",
-		algo_type: IKE_ALG_HASH,
+                algo_type:    IKEv2_TRANS_TYPE_ENCR,
 		algo_id:   OAKLEY_SHA2_512,
 		algo_next: NULL, },
 	hash_ctx_size: sizeof(sha512_context),

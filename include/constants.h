@@ -105,11 +105,19 @@ typedef unsigned long long lset_t;
  */
 
 typedef const struct enum_names enum_names;
+typedef const struct enum_and_keyword_names enum_and_keyword_names;
 
 extern const char *enum_name(enum_names *ed, unsigned long val);
 extern const char *enum_name_default(enum_names *ed, unsigned long val, const char *def);
 extern const char *enum_show(enum_names *ed, unsigned long val);
+
+/* search the structures by name, by arbitrary function: */
+typedef int (*strcmpfunc)(const char *a, const char *b, size_t len);
+extern int enum_search_cmp(enum_names *ed, const char *str, size_t len, strcmpfunc cmp);
+/* by using strcmp (case-sensistive */
 extern int enum_search(enum_names *ed, const char *string);
+/* by using strcasecmp (case-insensitive) */
+extern int enum_search_nocase(enum_names *ed, const char *str, size_t len);
 
 extern bool testset(const char *const table[], lset_t val);
 extern const char *bitnamesof(const char *const table[], lset_t val);
@@ -130,6 +138,7 @@ extern const char *bitnamesofb(const char *const table[]
 struct keyword_enum_value {
     const char *name;
     unsigned int value;
+    int          valueaux;
 };
 
 struct keyword_enum_values {
@@ -141,6 +150,11 @@ struct keyword_enum_values {
 extern const char *keyword_name(const struct keyword_enum_values *kevs
                                 , unsigned int value
                                 , char namebuf[KEYWORD_NAME_BUFLEN]);
+
+extern const struct keyword_enum_value *keyword_search_aux(const struct keyword_enum_values *kevs,
+                                                     const char *str);
+extern int keyword_search(const struct keyword_enum_values *kevs,
+                          const char *str);
 
 /* sparse_names is much like enum_names, except values are
  * not known to be contiguous or ordered.
