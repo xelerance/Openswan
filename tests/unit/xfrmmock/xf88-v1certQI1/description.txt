@@ -1,0 +1,19 @@
+This test case is an IKEv1 initiator, using main mode, sending the QI1 packet.
+This test receives the R3 main mode packet from the responder, and sends the
+first quick Q1 packet.  It uses in-band certificates and locks the policy to
+ancient 3des-MD5.
+This part of the test validates the phase2alg= setting as well.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

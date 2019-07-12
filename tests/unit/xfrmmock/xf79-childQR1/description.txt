@@ -1,0 +1,14 @@
+This test case is an IKEv1 responder.
+It tests crypto operations along the entire path, up to IPsec SA creation.
+
+It was created to reproduce a problem seen in DTP:
+   ASSERTION FAILED at /home/mcr/Openswan/programs/pluto/kernel.c:1429:
+                    st->st_esp.keymat_len == (key_len + ei.authkeylen)R
+
+
+
+
+
+
+
+

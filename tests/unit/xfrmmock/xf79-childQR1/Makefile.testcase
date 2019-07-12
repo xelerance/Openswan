@@ -1,0 +1,35 @@
+# -*- makefile -*-
+TESTNAME=xf79-childQR1
+
+SAMPLEDIR=../../libpluto/samples
+CONNNAME=t4901
+ENDNAME=h2h-ikev1
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+INPUTPCAPS=parentM1.pcap parentM2.pcap parentM3.pcap childQI1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ${INPUTPCAPS}
+
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_quick.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/initiate.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/pending.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel_forces.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/signatures.o
+
+pcapupdate:
+	cp ../../libpluto/lp43-parentM1/OUTPUT/parentM1.pcap parentM1.pcap
+	cp ../../libpluto/lp74-parentM2/OUTPUT/parentM2.pcap parentM2.pcap
+	cp ../../libpluto/lp76-parentM3/OUTPUT/parentM3.pcap parentM3.pcap
+	cp ../../libpluto/lp78-childQI1/OUTPUT/childQI1.pcap childQI1.pcap
+
+
+
+
