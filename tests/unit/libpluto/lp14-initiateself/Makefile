@@ -40,7 +40,6 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/state.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/hmac.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/keys.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/cookie.o
