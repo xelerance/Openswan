@@ -1,0 +1,19 @@
+# -*- makefile -*-
+TESTNAME=xf12-parentR2
+
+SAMPLEDIR=../../libpluto/samples
+CONNNAME=parker1--jj2
+ENDNAME=parker
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+# /dev/null is output pcap, as there is none.
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap parentI1.pcap parentI2.pcap
+
+pcapupdate:
+	cp ../../libpluto/lp02-parentI1/OUTPUT/parentI1.pcap parentI1.pcap
+	cp ../../ikev2crypto/ct10-parentI2/OUTPUT/cryptoI2.pcap parentI2.pcap
+
+
+
+
+

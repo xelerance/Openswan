@@ -1,0 +1,1092 @@
+./v1certQI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./v1certQI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./v1certQI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./v1certQI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./v1certQI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./v1certQI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./v1certQI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./v1certQI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./v1certQI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1certQI1 adjusting ipsec.d to ../../libpluto/samples/carol
+./v1certQI1 loading secrets from "../../libpluto/samples/carol.secrets"
+./v1certQI1   loaded private key file '../../libpluto/samples/carol/private/carolKey.pem' (1679 bytes)
+./v1certQI1 loaded private key for keyid: PPK_RSA:AwEAAbfz1/C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB
+./v1certQI1 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1certQI1 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./v1certQI1 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1certQI1 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1certQI1 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1certQI1 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection home with policy RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+| from whack: got --esp=3des-md5;modp1536
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+./v1certQI1   loading certificate from carolCert.pem
+./v1certQI1   loaded host cert file '../../libpluto/samples/carol/certs/carolCert.pem' (1415 bytes)
+| certificate is valid
+| counting wild cards for C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com is 0
+./v1certQI1   loading certificate from moonCert.pem
+./v1certQI1   loaded host cert file '../../libpluto/samples/carol/certs/moonCert.pem' (1411 bytes)
+| certificate is valid
+| counting wild cards for @moon.strongswan.org is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
+| orient home reference sr#1 this: addr:192.168.0.100 that: addr:192.168.0.1
+| orient home checking against if: eth0 (AF_INET:0.0.0.0:500)
+|     orient matched on IP
+|   orient home finished with: 1 [0.0.0.0]
+| find_host_pair: looking for me=192.168.0.100:500 %address him=192.168.0.1:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 192.168.0.100:500 %address 192.168.0.1:500 -> hp:none
+| find_ID_host_pair: looking for me=C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com him=@moon.strongswan.org (exact)
+|   concluded with <none>
+./v1certQI1 adding connection: "home"
+| 192.168.0.100[C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK
+|   orient home finished with: 1 [0.0.0.0]
+RC=0 "home": 192.168.0.100[C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com]...192.168.0.1[@moon.strongswan.org]===10.1.0.0/16; unrouted; eroute owner: #0
+RC=0 "home":     myip=unset; hisip=unset; mycert=carolCert.pem; hiscert=moonCert.pem;
+RC=0 "home":   keys: 1:C529 B6C4 CDF5 97E6 322E A755 1874 D9DC DFBF 74DB 2:none...
+RC=0 "home":        ....1:75B9 7996 96CB FFE9 9CEA F984 D596 602E 42AE 6535 2:none
+RC=0 "home":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "home":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK; prio: 32,16; interface: eth0; kind=CK_PERMANENT
+RC=0 "home":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "home":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| inserting state object #1 bucket: 4
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+| Queuing pending Quick Mode with 192.168.0.1 "home"
+./v1certQI1 initiating Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 1
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [RFC 3947]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-03]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  7d 94 19 a6  53 10 ca 6f  2c 17 9d 92  15 52 9d 56
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-02_n]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-02]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  cd 60 46 43  35 df 21 f8  7c fd b2 fc  68 b6 a4 48
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-00]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 216
+sending 216 bytes for main_outI1 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
+|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
+|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
+|   0b e8 a8 46  95 79 dd cc
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+RC=105 STATE_MAIN_I1: initiate
+0: input from v1certN1.pcap
+|   =========== input from from v1certN1.pcap ========
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 136 bytes from 192.168.0.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I1
+./v1certQI1 received Vendor ID payload [Openswan (this version) 2.6-regression ]
+./v1certQI1 received Vendor ID payload [Dead Peer Detection]
+./v1certQI1 received Vendor ID payload [RFC 3947] method set to=115
+./v1certQI1 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
+| complete state transition with STF_SUSPEND
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #1 bucket: 5
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| emitting length of ISAKMP Key Exchange Payload: 196
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| emitting length of ISAKMP Nonce Payload: 20
+| sending NAT-D payloads
+|    next-payload: ISAKMP_NEXT_NAT-D [@224=0x14]
+| ***emit ISAKMP NAT-D Payload:
+| emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  0a a3 c9 12  61 69 80 42  6b 3d 4f 1a  93 88 79 f4
+| emitting length of ISAKMP NAT-D Payload: 20
+| ***emit ISAKMP NAT-D Payload:
+| emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  c0 bd db 7f  0c fc b2 1a  80 8d 0b 49  36 64 ad ce
+| emitting length of ISAKMP NAT-D Payload: 20
+| emitting length of ISAKMP Message: 284
+| complete state transition with STF_OK
+./v1certQI1 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
+| sending reply packet to 192.168.0.1:500 (from port 500)
+sending 284 bytes for STATE_MAIN_I1 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
+|   53 05 b3 c4  14 00 00 14  0a a3 c9 12  61 69 80 42
+|   6b 3d 4f 1a  93 88 79 f4  00 00 00 14  c0 bd db 7f
+|   0c fc b2 1a  80 8d 0b 49  36 64 ad ce
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+./v1certQI1 STATE_MAIN_I2: sent MI2, expecting MR2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+1: input from v1certN2.pcap
+|   =========== input from from v1certN2.pcap ========
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 284 bytes from 192.168.0.1:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
+|   cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
+|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
+|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
+|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
+|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
+|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
+|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
+|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
+|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
+|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
+|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
+|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
+|   14 00 00 14  47 e9 f9 25  8c a2 38 58  f6 75 b1 66
+|   b0 2c c2 92  14 00 00 14  1c 61 12 96  eb 16 2d 56
+|   d4 98 f1 a0  1b b0 43 90  00 00 00 14  0a a3 c9 12
+|   61 69 80 42  6b 3d 4f 1a  93 88 79 f4
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I2
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  00 00 00 00
+| DH public value received:
+|   cd 30 df 6e  c0 85 44 12  53 01 80 d8  7e 1a fb b3
+|   26 79 3e 99  56 c8 6a 96  25 53 c2 77  ad 5b ab 50
+|   f8 32 5a d8  64 0b 0e fe  a5 1d 6c 83  1f a1 7c fb
+|   0f 2e 1a f4  b1 66 a0 fe  30 75 12 ad  0f 81 ab b8
+|   aa fb 68 48  ec 10 a4 97  6c 3d b1 17  ec e1 e6 61
+|   db bf 48 0c  28 2e 3f 11  07 c1 86 42  80 1e e8 3f
+|   9e 4a b9 ab  63 6f 23 7d  aa f6 a7 aa  d8 22 99 3e
+|   a4 1e a3 31  ee 27 82 0b  93 f5 0b 8f  3f 71 05 61
+|   c9 25 70 26  97 ba 6b 1e  95 3c 21 fb  c9 a7 7d 2b
+|   5f 87 3c fc  50 99 e7 7d  48 4c dd 52  66 4b cf 0d
+|   bf 00 ca fd  ae 6d e7 14  6d 11 35 f6  5d 93 5f 60
+|   b9 73 0f e0  49 2c 2a f8  c9 04 f6 4c  59 16 90 9d
+| complete state transition with STF_SUSPEND
+| thinking about whether to send my certificate:
+|   I have RSA key: OAKLEY_RSA_SIG cert.type: CERT_X509_SIGNATURE
+|   sendcert: CERT_ALWAYSSEND and I did not get a certificate request
+|   so send cert.
+|  I am sending a certificate request
+./v1certQI1 NAT-Traversal: Result using unknown method: i am NATed
+| inserting event EVENT_NAT_T_KEEPALIVE, timeout in 0 second
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_DER_ASN1_DN
+|    Protocol ID: 0
+|    port: 0
+| emitting 186 raw bytes of my identity into ISAKMP Identification Payload (IPsec DOI)
+| my identity  30 81 b7 31  0b 30 09 06  03 55 04 06  13 02 43 41
+|   31 10 30 0e  06 03 55 04  08 0c 07 4f  6e 74 61 72
+|   69 6f 31 0f  30 0d 06 03  55 04 07 0c  06 4f 74 74
+|   61 77 61 31  1e 30 1c 06  03 55 04 0a  0c 15 58 65
+|   6c 65 72 61  6e 63 65 20  43 6f 72 70  6f 72 61 74
+|   69 6f 6e 31  1e 30 1c 06  03 55 04 0b  0c 15 44 6f
+|   63 74 6f 72  20 54 61 79  6c 6f 72 20  50 6c 75 6d
+|   61 67 65 31  23 30 21 06  03 55 04 03  0c 1a 63 61
+|   72 6f 6c 2e  74 65 73 74  69 6e 67 2e  6f 70 65 6e
+|   73 77 61 6e  2e 6f 72 67  31 20 30 1e  06 09 2a 86
+|   48 86 f7 0d  01 09 01 16  11 6d 63 72  40 78 65 6c
+|   65 72 61 6e  63 65 2e 63  6f 6d
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 194
+./v1certQI1 I am sending my cert
+| ***emit ISAKMP Certificate Payload:
+|    cert encoding: CERT_X509_SIGNATURE
+| emitting 1003 raw bytes of CERT into ISAKMP Certificate Payload
+| CERT  30 82 03 e7  30 82 02 cf  02 09 00 8c  b2 68 2f b0
+|   f4 5a 92 30  0d 06 09 2a  86 48 86 f7  0d 01 01 0b
+|   05 00 30 81  b2 31 0b 30  09 06 03 55  04 06 13 02
+|   43 41 31 10  30 0e 06 03  55 04 08 0c  07 4f 6e 74
+|   61 72 69 6f  31 0f 30 0d  06 03 55 04  07 0c 06 4f
+|   74 74 61 77  61 31 1e 30  1c 06 03 55  04 0a 0c 15
+|   58 65 6c 65  72 61 6e 63  65 20 43 6f  72 70 6f 72
+|   61 74 69 6f  6e 31 1e 30  1c 06 03 55  04 0b 0c 15
+|   44 6f 63 74  6f 72 20 54  61 79 6c 6f  72 20 50 6c
+|   75 6d 61 67  65 31 1e 30  1c 06 03 55  04 03 0c 15
+|   74 65 73 74  69 6e 67 2e  78 65 6c 65  72 61 6e 63
+|   65 2e 63 6f  6d 31 20 30  1e 06 09 2a  86 48 86 f7
+|   0d 01 09 01  16 11 6d 63  72 40 78 65  6c 65 72 61
+|   6e 63 65 2e  63 6f 6d 30  1e 17 0d 31  37 30 31 31
+|   36 31 36 33  37 33 39 5a  17 0d 31 39  31 31 30 36
+|   31 36 33 37  33 39 5a 30  81 b7 31 0b  30 09 06 03
+|   55 04 06 13  02 43 41 31  10 30 0e 06  03 55 04 08
+|   0c 07 4f 6e  74 61 72 69  6f 31 0f 30  0d 06 03 55
+|   04 07 0c 06  4f 74 74 61  77 61 31 1e  30 1c 06 03
+|   55 04 0a 0c  15 58 65 6c  65 72 61 6e  63 65 20 43
+|   6f 72 70 6f  72 61 74 69  6f 6e 31 1e  30 1c 06 03
+|   55 04 0b 0c  15 44 6f 63  74 6f 72 20  54 61 79 6c
+|   6f 72 20 50  6c 75 6d 61  67 65 31 23  30 21 06 03
+|   55 04 03 0c  1a 63 61 72  6f 6c 2e 74  65 73 74 69
+|   6e 67 2e 6f  70 65 6e 73  77 61 6e 2e  6f 72 67 31
+|   20 30 1e 06  09 2a 86 48  86 f7 0d 01  09 01 16 11
+|   6d 63 72 40  78 65 6c 65  72 61 6e 63  65 2e 63 6f
+|   6d 30 82 01  22 30 0d 06  09 2a 86 48  86 f7 0d 01
+|   01 01 05 00  03 82 01 0f  00 30 82 01  0a 02 82 01
+|   01 00 b7 f3  d4 37 17 ca  df ec 38 02  e2 d4 86 7f
+|   45 cb 8f 6b  99 be e1 f8  92 49 3d b0  55 65 ab 97
+|   0d e1 52 37  a2 c0 b7 e0  a0 ba ed 29  a1 97 e2 2f
+|   80 b7 cd 99  a2 5d a6 75  b1 17 16 93  be f6 ac 57
+|   96 23 f6 bb  47 de c6 a3  f8 98 1b 99  ba cd c4 2c
+|   0f 36 10 e2  f4 95 0d 9a  84 08 bc 3b  7a 9a 7e 40
+|   cc 05 28 2f  a1 e2 69 13  03 5e d3 45  20 87 9d e0
+|   ee 14 fb 77  0f 2d 4a 07  0f 1a a4 24  5a eb 48 20
+|   a4 fd 4f a7  bf 1d b1 cd  8d 1b 58 97  0f 59 94 7b
+|   29 f2 04 98  8e 0f d0 ea  f5 7a a1 fb  6d b9 e3 14
+|   0f d3 51 bf  cc 36 63 be  ab 9d 14 66  50 67 f7 1a
+|   53 45 16 68  31 66 7b 42  25 1b 98 96  d9 f1 57 b5
+|   5c 08 5a 29  a7 26 ae 62  df df 3e 68  c0 c5 b3 d1
+|   ba 11 ca 69  c9 f3 23 3a  bc dc 8c 5f  e5 f4 a3 31
+|   39 65 b8 60  9f 58 55 ff  34 61 0d 5d  a9 81 a8 28
+|   64 44 b1 e6  b8 21 cd 7b  1c 51 a7 db  36 17 54 b5
+|   d2 11 02 03  01 00 01 30  0d 06 09 2a  86 48 86 f7
+|   0d 01 01 0b  05 00 03 82  01 01 00 65  0a a6 36 2c
+|   ec de 56 ce  31 d0 69 b4  40 3f 3e 24  81 8f 86 1e
+|   6d 08 bb 80  f6 0a 3e 62  ea 9e 02 c7  e9 a4 cf 7f
+|   7a 8b b4 95  7e d5 bd 67  c8 01 db 5a  d6 ba c7 08
+|   68 f2 36 57  57 97 ae 66  5b 54 3a fd  a6 fb ce 89
+|   8c 37 4f 33  15 d7 55 9d  06 06 1b 58  00 46 77 f2
+|   2a a8 98 dd  4a 51 7d c8  2d 61 71 b6  5c 20 a0 a0
+|   78 bf 5e 36  81 06 3a 8b  2c 8f f5 76  3e 95 9b 1f
+|   82 a3 61 38  ec 1e 67 a3  17 d6 5a 7e  86 87 e7 c9
+|   c0 bb 6e 0c  b3 57 07 4b  e5 f0 d0 a3  1d c7 f4 a8
+|   72 d9 23 3b  0d 4e 3d ca  21 50 20 15  77 e4 6c c4
+|   bf d5 73 ae  9b ab cd 07  82 14 52 34  eb ae 05 39
+|   d6 53 de d1  73 0f 88 46  30 bf d1 a9  d0 96 5e b9
+|   e2 58 58 5e  0b 67 88 cf  27 23 eb e9  85 2f 2c 21
+|   b0 41 cc f3  25 7f 43 e1  01 c1 4f 59  95 e6 e1 b8
+|   b7 33 c2 4f  87 3e f7 bd  2a cd b6 ed  ec f5 c7 80
+|   bb e9 d0 26  b9 2a 22 61  41 65 fc
+| emitting length of ISAKMP Certificate Payload: 1008
+./v1certQI1 I am sending a certificate request
+| ***emit ISAKMP Certificate RequestPayload:
+|    cert type: CERT_X509_SIGNATURE
+| emitting length of ISAKMP Certificate RequestPayload: 5
+| hashing 48 bytes of SA
+| started looking for secret for C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=carol.testing.openswan.org, E=mcr@xelerance.com->@moon.strongswan.org of kind PPK_RSA
+| searching for certificate PPK_RSA:AwEAAbfz1 vs PPK_RSA:AwEAAbfz1
+| rsa key AwEAAbfz1 found
+| signing hash with RSA Key *AwEAAbfz1
+| ***emit ISAKMP Signature Payload:
+| emitting 256 raw bytes of SIG_I into ISAKMP Signature Payload
+| SIG_I  49 27 a9 11  ea ba 12 46  a2 fe ae ed  9a a5 36 de
+|   f7 d3 03 99  72 a3 b8 c6  52 66 3d bd  b9 a2 a7 f8
+|   fe 60 bb cc  b4 6d 31 a5  06 76 0d 91  a9 08 d5 cc
+|   c5 f1 a2 47  06 09 59 cc  ba 4d 11 b3  18 1b b6 60
+|   f9 66 a6 66  6a 44 5a 7b  5f 78 b8 f2  1b f6 c3 88
+|   55 70 27 b8  88 cd 13 e0  b0 4b bd 9c  a6 be 06 7c
+|   7a c8 71 44  81 7f 88 30  05 e7 b2 6f  81 0d 1d ec
+|   85 cb fd 4e  8f 33 bb 52  31 54 34 bd  2c e5 88 72
+|   2c f7 2b 85  42 5f fd bd  32 41 46 43  2b e7 7a 45
+|   7c 69 bc 7e  2f c5 18 0e  6b 3e 55 88  9e 30 09 20
+|   1d 29 c0 4d  42 49 6a e9  39 c9 1e eb  1d 00 20 65
+|   9a b8 7a 60  1f 77 6a d5  a7 93 13 68  e5 52 05 0a
+|   21 ff d8 ac  fb 2a 85 e0  55 b3 2d b5  8a d9 42 b3
+|   26 2c 06 e8  9d ec 47 ac  9a 4e 4d c8  2a 12 0d 7f
+|   cf 83 5d 9c  38 61 f3 0e  71 41 e6 1c  db 5d 31 cb
+|   13 61 d3 08  1e 04 09 f8  76 50 23 83  ba b7 00 fc
+| emitting length of ISAKMP Signature Payload: 260
+| encrypting:
+|   06 00 00 c2  09 00 00 00  30 81 b7 31  0b 30 09 06
+|   03 55 04 06  13 02 43 41  31 10 30 0e  06 03 55 04
+|   08 0c 07 4f  6e 74 61 72  69 6f 31 0f  30 0d 06 03
+|   55 04 07 0c  06 4f 74 74  61 77 61 31  1e 30 1c 06
+|   03 55 04 0a  0c 15 58 65  6c 65 72 61  6e 63 65 20
+|   43 6f 72 70  6f 72 61 74  69 6f 6e 31  1e 30 1c 06
+|   03 55 04 0b  0c 15 44 6f  63 74 6f 72  20 54 61 79
+|   6c 6f 72 20  50 6c 75 6d  61 67 65 31  23 30 21 06
+|   03 55 04 03  0c 1a 63 61  72 6f 6c 2e  74 65 73 74
+|   69 6e 67 2e  6f 70 65 6e  73 77 61 6e  2e 6f 72 67
+|   31 20 30 1e  06 09 2a 86  48 86 f7 0d  01 09 01 16
+|   11 6d 63 72  40 78 65 6c  65 72 61 6e  63 65 2e 63
+|   6f 6d 07 00  03 f0 04 30  82 03 e7 30  82 02 cf 02
+|   09 00 8c b2  68 2f b0 f4  5a 92 30 0d  06 09 2a 86
+|   48 86 f7 0d  01 01 0b 05  00 30 81 b2  31 0b 30 09
+|   06 03 55 04  06 13 02 43  41 31 10 30  0e 06 03 55
+|   04 08 0c 07  4f 6e 74 61  72 69 6f 31  0f 30 0d 06
+|   03 55 04 07  0c 06 4f 74  74 61 77 61  31 1e 30 1c
+|   06 03 55 04  0a 0c 15 58  65 6c 65 72  61 6e 63 65
+|   20 43 6f 72  70 6f 72 61  74 69 6f 6e  31 1e 30 1c
+|   06 03 55 04  0b 0c 15 44  6f 63 74 6f  72 20 54 61
+|   79 6c 6f 72  20 50 6c 75  6d 61 67 65  31 1e 30 1c
+|   06 03 55 04  03 0c 15 74  65 73 74 69  6e 67 2e 78
+|   65 6c 65 72  61 6e 63 65  2e 63 6f 6d  31 20 30 1e
+|   06 09 2a 86  48 86 f7 0d  01 09 01 16  11 6d 63 72
+|   40 78 65 6c  65 72 61 6e  63 65 2e 63  6f 6d 30 1e
+|   17 0d 31 37  30 31 31 36  31 36 33 37  33 39 5a 17
+|   0d 31 39 31  31 30 36 31  36 33 37 33  39 5a 30 81
+|   b7 31 0b 30  09 06 03 55  04 06 13 02  43 41 31 10
+|   30 0e 06 03  55 04 08 0c  07 4f 6e 74  61 72 69 6f
+|   31 0f 30 0d  06 03 55 04  07 0c 06 4f  74 74 61 77
+|   61 31 1e 30  1c 06 03 55  04 0a 0c 15  58 65 6c 65
+|   72 61 6e 63  65 20 43 6f  72 70 6f 72  61 74 69 6f
+|   6e 31 1e 30  1c 06 03 55  04 0b 0c 15  44 6f 63 74
+|   6f 72 20 54  61 79 6c 6f  72 20 50 6c  75 6d 61 67
+|   65 31 23 30  21 06 03 55  04 03 0c 1a  63 61 72 6f
+|   6c 2e 74 65  73 74 69 6e  67 2e 6f 70  65 6e 73 77
+|   61 6e 2e 6f  72 67 31 20  30 1e 06 09  2a 86 48 86
+|   f7 0d 01 09  01 16 11 6d  63 72 40 78  65 6c 65 72
+|   61 6e 63 65  2e 63 6f 6d  30 82 01 22  30 0d 06 09
+|   2a 86 48 86  f7 0d 01 01  01 05 00 03  82 01 0f 00
+|   30 82 01 0a  02 82 01 01  00 b7 f3 d4  37 17 ca df
+|   ec 38 02 e2  d4 86 7f 45  cb 8f 6b 99  be e1 f8 92
+|   49 3d b0 55  65 ab 97 0d  e1 52 37 a2  c0 b7 e0 a0
+|   ba ed 29 a1  97 e2 2f 80  b7 cd 99 a2  5d a6 75 b1
+|   17 16 93 be  f6 ac 57 96  23 f6 bb 47  de c6 a3 f8
+|   98 1b 99 ba  cd c4 2c 0f  36 10 e2 f4  95 0d 9a 84
+|   08 bc 3b 7a  9a 7e 40 cc  05 28 2f a1  e2 69 13 03
+|   5e d3 45 20  87 9d e0 ee  14 fb 77 0f  2d 4a 07 0f
+|   1a a4 24 5a  eb 48 20 a4  fd 4f a7 bf  1d b1 cd 8d
+|   1b 58 97 0f  59 94 7b 29  f2 04 98 8e  0f d0 ea f5
+|   7a a1 fb 6d  b9 e3 14 0f  d3 51 bf cc  36 63 be ab
+|   9d 14 66 50  67 f7 1a 53  45 16 68 31  66 7b 42 25
+|   1b 98 96 d9  f1 57 b5 5c  08 5a 29 a7  26 ae 62 df
+|   df 3e 68 c0  c5 b3 d1 ba  11 ca 69 c9  f3 23 3a bc
+|   dc 8c 5f e5  f4 a3 31 39  65 b8 60 9f  58 55 ff 34
+|   61 0d 5d a9  81 a8 28 64  44 b1 e6 b8  21 cd 7b 1c
+|   51 a7 db 36  17 54 b5 d2  11 02 03 01  00 01 30 0d
+|   06 09 2a 86  48 86 f7 0d  01 01 0b 05  00 03 82 01
+|   01 00 65 0a  a6 36 2c ec  de 56 ce 31  d0 69 b4 40
+|   3f 3e 24 81  8f 86 1e 6d  08 bb 80 f6  0a 3e 62 ea
+|   9e 02 c7 e9  a4 cf 7f 7a  8b b4 95 7e  d5 bd 67 c8
+|   01 db 5a d6  ba c7 08 68  f2 36 57 57  97 ae 66 5b
+|   54 3a fd a6  fb ce 89 8c  37 4f 33 15  d7 55 9d 06
+|   06 1b 58 00  46 77 f2 2a  a8 98 dd 4a  51 7d c8 2d
+|   61 71 b6 5c  20 a0 a0 78  bf 5e 36 81  06 3a 8b 2c
+|   8f f5 76 3e  95 9b 1f 82  a3 61 38 ec  1e 67 a3 17
+|   d6 5a 7e 86  87 e7 c9 c0  bb 6e 0c b3  57 07 4b e5
+|   f0 d0 a3 1d  c7 f4 a8 72  d9 23 3b 0d  4e 3d ca 21
+|   50 20 15 77  e4 6c c4 bf  d5 73 ae 9b  ab cd 07 82
+|   14 52 34 eb  ae 05 39 d6  53 de d1 73  0f 88 46 30
+|   bf d1 a9 d0  96 5e b9 e2  58 58 5e 0b  67 88 cf 27
+|   23 eb e9 85  2f 2c 21 b0  41 cc f3 25  7f 43 e1 01
+|   c1 4f 59 95  e6 e1 b8 b7  33 c2 4f 87  3e f7 bd 2a
+|   cd b6 ed ec  f5 c7 80 bb  e9 d0 26 b9  2a 22 61 41
+|   65 fc 09 00  00 05 04 00  00 01 04 49  27 a9 11 ea
+|   ba 12 46 a2  fe ae ed 9a  a5 36 de f7  d3 03 99 72
+|   a3 b8 c6 52  66 3d bd b9  a2 a7 f8 fe  60 bb cc b4
+|   6d 31 a5 06  76 0d 91 a9  08 d5 cc c5  f1 a2 47 06
+|   09 59 cc ba  4d 11 b3 18  1b b6 60 f9  66 a6 66 6a
+|   44 5a 7b 5f  78 b8 f2 1b  f6 c3 88 55  70 27 b8 88
+|   cd 13 e0 b0  4b bd 9c a6  be 06 7c 7a  c8 71 44 81
+|   7f 88 30 05  e7 b2 6f 81  0d 1d ec 85  cb fd 4e 8f
+|   33 bb 52 31  54 34 bd 2c  e5 88 72 2c  f7 2b 85 42
+|   5f fd bd 32  41 46 43 2b  e7 7a 45 7c  69 bc 7e 2f
+|   c5 18 0e 6b  3e 55 88 9e  30 09 20 1d  29 c0 4d 42
+|   49 6a e9 39  c9 1e eb 1d  00 20 65 9a  b8 7a 60 1f
+|   77 6a d5 a7  93 13 68 e5  52 05 0a 21  ff d8 ac fb
+|   2a 85 e0 55  b3 2d b5 8a  d9 42 b3 26  2c 06 e8 9d
+|   ec 47 ac 9a  4e 4d c8 2a  12 0d 7f cf  83 5d 9c 38
+|   61 f3 0e 71  41 e6 1c db  5d 31 cb 13  61 d3 08 1e
+|   04 09 f8 76  50 23 83 ba  b7 00 fc
+| IV:
+|   e9 00 11 7e  41 d4 31 62
+| unpadded size is: 1467
+| emitting 5 zero bytes of encryption padding into ISAKMP Message
+| encrypting 1472 using OAKLEY_3DES_CBC
+| crypting using IV:  e9 00 11 7e  41 d4 31 62
+| next IV:  f7 12 f5 a3  87 9a 25 a9
+| emitting length of ISAKMP Message: 1500
+| complete state transition with STF_OK
+./v1certQI1 transition from state STATE_MAIN_I2 to state STATE_MAIN_I3
+| sending reply packet to 192.168.0.1:4500 (from port 500)
+sending 1500 bytes for STATE_MAIN_I2 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:4500 (using #1)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   05 10 02 01  00 00 00 00  00 00 05 dc  8c a7 56 cf
+|   f7 25 bc ff  50 8c a9 dd  a5 9a 4e d5  8d 93 5e fb
+|   97 65 bb 23  df 7f 6b a2  8e d3 15 31  c9 ef 8f 12
+|   00 e7 11 97  5a 97 4c 00  46 e6 33 83  48 ce ec 07
+|   af ee d3 b3  c3 09 4c ae  cf 09 9e 09  85 8f d6 21
+|   51 83 b2 94  95 35 99 2c  c1 6f a6 63  a5 d7 16 7d
+|   fc 7c 79 c1  9c 4f d2 9d  b9 9c cc eb  61 d1 01 41
+|   f6 88 60 dd  5d 7d 68 4d  f9 bd 06 be  69 e2 12 a8
+|   43 61 60 1b  d6 77 a4 60  c0 fb 28 d0  6a 21 2d 98
+|   7f da 16 1f  48 c7 e5 a9  af fd d5 ca  36 d7 9b a7
+|   a1 61 ae a7  7b be cf 74  e3 4a 44 81  93 ae 2b 99
+|   38 61 bd c1  f6 c8 43 7e  84 08 d1 a2  ba a7 36 e3
+|   4c 9f 82 3e  72 51 df 4a  64 38 69 cc  93 3a 2d 10
+|   90 0a d0 85  70 c1 3e ae  68 c5 08 76  5e a6 9f 3b
+|   0c 42 dd cb  db bc b9 b4  1b fe b7 b3  8b 1f 40 21
+|   0a a4 0f d6  68 11 5b 35  57 c4 7b 77  eb d3 b9 03
+|   cb 71 b7 15  02 5a 97 af  cc bf 71 d5  b0 34 85 db
+|   dd 27 a5 12  57 1a 82 2c  5b f1 68 7f  9f d9 18 a1
+|   be d2 53 95  79 26 6e f3  d4 aa 66 79  9c 81 56 91
+|   49 81 a7 79  23 90 bb b8  7e 15 12 e6  aa 8c 18 52
+|   92 a2 32 1e  b6 cf c2 9b  9e 36 b2 14  08 77 4c 5c
+|   90 e5 28 5c  86 fe 77 5b  4d 3a d8 45  27 18 6a 91
+|   05 81 c0 8f  c4 75 5c 09  c7 ca fc 4d  3b 02 79 34
+|   b2 3a fa c6  83 f5 8b 50  64 c5 4b 07  b2 39 f9 53
+|   23 e5 29 da  a7 42 71 7d  a6 68 e2 8c  55 90 98 f1
+|   2a 7c f4 da  c6 05 8c 66  a9 56 25 d3  1b 5f f1 7a
+|   cb 79 45 af  f7 09 d3 ec  fc 0f d6 38  77 e1 39 76
+|   83 a9 ea e8  65 48 4b f5  98 e4 8f d3  95 7c e2 e3
+|   53 8a 0d ef  a9 ca 44 81  4f b1 15 fe  d6 4e e7 66
+|   99 a8 91 31  6c c4 1b e2  1e 5d 3d 74  6a d6 a8 6f
+|   e2 9f c0 29  6c eb 6f c2  76 f9 ae 2a  8c 4c 59 de
+|   2f ee 01 a2  0b f1 3c d1  f3 16 af 0a  ef be 67 1a
+|   4b 34 6b 9c  4f 31 ea 3b  02 48 f1 37  7f 29 cd 96
+|   42 50 cd c4  0f a4 e5 5f  3b 04 dd ee  96 04 87 30
+|   8d 53 44 fd  1a de eb 92  74 32 50 53  c7 fd a4 51
+|   81 85 45 35  f3 5d 38 4a  73 20 03 72  3f 5c 18 81
+|   73 66 e5 7e  f8 5d 99 3d  83 8d ff 58  79 1a c6 65
+|   9a 59 f4 ee  ad 0a 8b 63  33 42 27 e6  d6 2d 5a 06
+|   54 47 cd 02  dc 98 46 92  a5 47 55 83  e8 ae 05 3c
+|   9a b9 a2 99  bd 7d 0a e3  7f db 85 44  b9 d7 d8 4a
+|   fa b7 8c 4f  33 57 69 af  86 68 3f 46  00 53 36 4e
+|   9f ef 9d da  5d 16 fe 53  0d 53 44 58  29 b5 cf e8
+|   b8 03 39 32  f5 3a 18 fe  90 83 bd 5a  fb 0b 10 38
+|   2d 28 86 44  4a df f4 7d  f1 2f 2f 6a  2e 09 04 f8
+|   f3 c0 32 a9  e0 6d 10 46  37 f7 2c 1a  87 82 15 c7
+|   ff 01 f1 33  a0 e8 ca 32  9c d3 36 3e  51 f8 a6 7f
+|   f3 7c 80 07  da 1e d7 4e  6f 2c 3b 1c  d8 5e ea 77
+|   2a 13 4f ea  63 cf 1c 4c  0e dc 71 63  57 33 74 d6
+|   a1 df 48 a9  b4 65 b0 d2  a5 fd ae 72  7e 8d 8b db
+|   a0 db 38 ed  98 f1 43 3e  04 b2 57 1b  ae c3 09 4f
+|   5b 2a ff e6  f2 3e 38 74  53 99 9e 4d  fc 76 66 93
+|   7f e7 67 33  64 13 59 77  04 3f e7 9d  5a 6d 75 e7
+|   70 7c 27 3a  de 94 ea ce  3a 35 bc 8c  a8 2b 74 29
+|   16 ed 1e a9  27 69 5c 26  a4 fd 2b a4  dc 76 50 d5
+|   e6 26 b3 0c  04 af 89 59  78 17 93 cc  cd ab 8a e6
+|   45 c0 49 32  cc b0 3d 42  17 b5 51 ea  33 a1 06 d7
+|   ff fd b8 61  01 0a 4d 37  8b c4 fa e1  40 b3 e5 78
+|   35 22 90 3e  09 b1 d0 6a  eb f0 ee c2  3a ff 2d c9
+|   d3 5a 6d 8e  cf 03 31 ac  fd b7 4a 7f  92 82 8a 6f
+|   7f ef 87 8a  2f c7 20 ba  8d 7f 04 24  8f f6 6a 46
+|   58 3a 0e cf  cf 73 33 5f  0a 40 8e ca  89 d8 e1 e0
+|   6a 7a 02 19  41 bb 72 d7  fa 6a 5a 9c  f2 0c d3 c2
+|   96 97 99 75  1a 6b 19 63  b1 19 27 78  4a 7d b2 05
+|   1f 19 45 17  dd 42 a0 6e  30 7f d3 f8  29 26 1f d5
+|   11 ee aa f2  b0 60 63 b9  a2 db e1 17  74 84 a1 55
+|   07 c3 9a 1f  65 82 4d ce  eb 28 5d 00  7c 59 79 a4
+|   78 9a 6f 39  e2 ce f1 33  19 5d e0 dd  35 16 1b a1
+|   be 14 24 df  88 62 71 c2  b7 ee 92 4f  eb 87 28 bc
+|   24 d3 18 d6  b9 52 89 00  9f fe c9 a9  f5 30 01 30
+|   11 f9 23 68  01 b6 c8 df  4d 6f 5e 55  00 cb cb af
+|   f1 15 bb 8f  36 ed 0a d2  7c 02 d2 16  ca 28 70 b6
+|   0a fc 8d 49  9c 46 12 7d  77 98 00 a4  98 ac 32 c0
+|   fd 53 63 c9  30 ba b8 8d  cc 70 c1 c9  16 4c 08 d9
+|   4a 68 c5 46  8e 51 2a ee  22 89 cd a6  c4 db 4b a8
+|   c4 02 6b ea  8a e4 3e 0b  7f 08 4c 4b  6b 14 b8 c4
+|   ef dd a7 ab  6d 4d 31 b8  99 d6 0e c2  db b3 df 88
+|   a0 f9 70 43  21 b0 73 8f  7b 7b b2 fe  ab 3e ff 1f
+|   ef ce c7 4e  96 e6 0f 22  fd 20 18 b9  af 11 7d e5
+|   ce f0 0f 98  8b 50 33 fd  70 bb 9b b9  e4 17 83 2f
+|   9e 3f 39 78  2f 6a 80 52  12 a6 5e bb  e6 08 e8 5c
+|   38 d1 b3 bc  9b 41 ab 42  c9 f6 f4 a5  b5 05 43 8c
+|   7e 22 2a 5f  9c 15 b2 48  52 06 68 3f  cd 0e 87 58
+|   a2 1c 28 fb  f3 2d 29 71  2e c6 ee 4e  18 c8 0a 38
+|   9f a8 bf 30  b9 9c bb 51  f2 d6 aa f9  bf de ec 75
+|   1d 15 dc 3a  6d ad 20 ba  0b 1c 46 90  83 b4 0c 56
+|   a1 ba e1 9c  11 c2 2b 62  14 49 ab cd  1e b9 f5 20
+|   68 7f d3 43  8b ca 05 b0  29 ce b6 ea  98 7c 72 65
+|   27 c8 cf d8  bd 96 c6 ad  36 eb b1 5b  0f d5 a2 ce
+|   da 6c e5 32  cd d4 05 85  56 04 52 a5  3c 5c 6d 77
+|   50 62 c6 39  14 de 21 c8  df b4 ec d1  3f 65 e3 64
+|   eb af 4d b2  e4 44 4c c7  2e 6d 36 34  67 a2 16 57
+|   90 c8 8b aa  37 34 2c a5  03 00 04 99  e0 64 b1 d9
+|   ef ce db 19  f7 12 f5 a3  87 9a 25 a9
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+./v1certQI1 STATE_MAIN_I3: sent MI3, expecting MR3
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+2: output to OUTPUT/v1certQI1.pcap
+2: input from v1certN3.pcap
+|   =========== input from from v1certN3.pcap ========
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 1324 bytes from 192.168.0.1:4500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   05 10 02 01  00 00 00 00  00 00 05 2c  fb 60 06 3d
+|   b1 5e 62 8f  7d 95 2f ed  20 c7 8c 6e  9d af 2b 2b
+|   f0 45 2c b8  4e 9e b8 59  c8 ed 77 2e  96 de a1 4e
+|   46 d9 13 3f  55 81 85 ae  54 be 9d 7f  62 33 b4 7a
+|   10 61 87 31  5b cd c0 0a  48 cd fc 91  b9 ab 73 1e
+|   6d 0d f9 22  41 f0 5b 50  15 3d 71 06  13 79 8f 0a
+|   05 e4 24 f9  42 16 40 61  06 8d d6 a9  aa d5 47 92
+|   1c c7 07 76  0b 59 2f 88  6c a8 58 df  bd 2c fe d5
+|   25 7d d9 9d  fa d3 f1 45  b0 bb c3 5a  21 0d e4 b2
+|   32 40 41 c4  7c a9 15 d4  8a 8e 29 28  91 8e 6b 39
+|   7d bc 19 f3  9f 5c 2d ad  70 7d e6 bf  ad c6 fa 15
+|   18 c0 7b 94  58 05 91 40  ca 8a 7b 12  e7 ac eb 6c
+|   0f 37 e7 fc  1f 4f ba 52  33 93 a1 2d  cb 8e a5 ba
+|   d3 3b 6a 2b  15 17 27 4c  76 d3 21 91  48 eb 89 57
+|   7b 1d cc 11  b8 23 de 0e  10 09 91 27  ea 97 65 db
+|   68 4f 44 18  00 b8 5e e1  b3 18 b1 2f  49 a3 d3 10
+|   86 93 81 13  b1 f6 97 aa  80 c4 aa 44  96 2f fc a4
+|   a9 99 45 55  f4 1d c1 29  30 82 e0 2e  1c 9c 6c ca
+|   94 8e ef 86  92 a3 b6 74  39 63 61 9a  0e 76 90 da
+|   e4 f0 c7 55  a0 4a a8 cc  a0 8d 13 02  52 b9 06 fe
+|   a9 ff 67 25  d8 96 a0 77  66 4f 31 db  88 87 23 a2
+|   e3 be e8 f4  d4 fc 12 b9  a0 50 5a b8  c4 af 83 0d
+|   d0 59 53 22  67 42 98 0e  cc 7d 6f 76  20 30 44 2d
+|   55 1f 79 a6  7e 08 ff 31  c7 42 09 46  d1 7b ed 85
+|   c5 61 bf e4  40 8b aa 48  57 43 df 0e  e5 e7 28 f5
+|   5c 2c 0a 71  77 12 17 ff  53 8f 1c b5  2c f6 10 7b
+|   dc 26 12 f2  6a bf c5 8c  bc 46 ec b3  e5 a7 06 e5
+|   f2 f9 c5 14  d8 6c c9 1d  4d aa 16 82  84 98 f5 09
+|   6d 9b 56 46  40 50 39 0e  bf 84 cb 86  21 ab fc 09
+|   e8 8b e5 9c  32 bd 3e f0  b9 f5 cc 39  7d ce b3 8b
+|   c1 df 54 97  84 24 41 cd  7e fd b6 a9  ab d9 a8 cf
+|   4c 37 e4 4f  6a 9e 36 75  c8 e7 52 f0  4b ab 3b c9
+|   95 4c 21 f3  e4 e0 63 d6  ed ed 20 a4  23 04 98 72
+|   3b 34 5c f8  1a ed 55 54  12 c9 ec 61  09 49 b2 43
+|   2b 45 ef 7d  c5 2c 69 0f  95 0a 9a 27  2a cb e6 b3
+|   bf 46 dd 34  8a 36 b7 1a  d8 d0 ed 16  ab 03 c1 1e
+|   9a 58 70 f1  a4 09 da f3  0f 50 4e 8c  c0 a0 3c 64
+|   b4 8b 7c a6  81 06 4c d2  1f 15 30 2e  3b 57 67 8e
+|   f4 78 09 67  cf 82 bb 18  dd aa 14 6c  4a fb da d7
+|   cd 4d 4b 3d  1a 24 72 db  eb 80 82 e2  0c f7 5e ba
+|   91 96 5a 98  7d 0d 0b eb  2e 1d 82 f0  8b 2b 1f eb
+|   13 8a f6 63  f8 c3 da 73  28 66 86 c8  a3 5a 4b f4
+|   20 2d 2e e9  46 bf 09 87  e8 8c 96 74  8a 97 46 b5
+|   2d e0 d1 9d  6f 46 cf b1  9d e3 c5 cf  b0 1a d1 5e
+|   94 d2 0b 28  9d 7d ec e4  48 b5 ef 41  33 10 9d f8
+|   c5 fe 10 33  f0 a3 84 b9  e3 58 5d 15  9b 11 dd 8b
+|   a0 2c c6 82  fd 6b 5f b6  93 8e 6e e5  0c c3 06 df
+|   45 cc b1 b0  fd f7 bd 1d  82 57 1d 02  6c 58 d0 94
+|   60 10 f7 93  57 43 1e 19  d5 6f 11 3c  e4 9a ae b8
+|   e1 01 28 cb  f4 b8 05 39  7d 6f 18 73  ee 7c ab 29
+|   2e 3a b3 fc  90 b1 d3 65  c9 e5 d6 91  4e 11 c1 e3
+|   56 b4 ff 93  2c 7e f5 97  f1 ee 1a 18  33 60 1b 5d
+|   f5 cf e9 a5  61 cb cf 59  b0 6e 55 f7  03 9e 7d c3
+|   97 6a f9 35  57 23 d3 b9  86 51 1d a6  bb 46 cd a3
+|   fe ca da 42  c9 0b fd 1b  67 7b 8d ab  74 80 92 6f
+|   5b e4 50 20  34 19 dd f6  3d cf cf c4  37 4a 30 de
+|   7f 95 91 75  61 d4 ef 9d  76 34 73 bb  ff 81 90 8c
+|   28 4f 18 8c  0a b0 26 25  c5 99 34 e5  54 48 e0 10
+|   35 4a 3f 48  94 19 e4 88  2e 10 56 bd  cc 5e 94 f7
+|   b8 43 3e c3  2a 57 13 c8  18 28 35 11  6c 87 1f bb
+|   0b 35 cd 2c  b5 c2 db 2c  a5 98 c2 03  b6 d9 87 6c
+|   f5 67 96 70  10 73 4c 93  ea f9 cc 8f  d6 71 4e 9f
+|   77 dd b0 a0  83 1a a1 a6  a6 63 d9 72  45 5b e2 75
+|   43 db 35 a8  d4 d3 91 33  17 76 ac 98  f4 ad 69 fa
+|   72 c1 61 d8  54 6a 14 df  76 d1 47 6c  f2 57 f0 85
+|   c8 be 9d 16  7d 83 d3 d2  e1 c9 6f 15  0a 13 99 b7
+|   66 52 42 f7  ca 14 d0 a4  46 af dc 3d  74 ec 2b 65
+|   53 cd 83 08  14 1b c7 81  4b 93 01 69  4b 39 4d a1
+|   7e 03 2e 57  4c 4b a5 43  29 d2 72 76  57 ae f4 03
+|   dc c1 eb 33  53 17 b3 d1  24 19 09 ff  e2 e3 cb ef
+|   7b 5f e7 a4  de f1 cd 40  68 7e 81 76  55 95 91 cc
+|   34 0e 0e 86  83 6f 05 b9  8c cc 74 f4  be 06 46 67
+|   a7 6e b6 86  a9 d3 3d 38  bd 79 15 be  85 e4 d0 e8
+|   35 a2 3b 7d  74 45 0f 39  73 14 e3 8f  f8 0a da f7
+|   f1 64 ec 84  70 be 3a e3  3b f4 bb ee  dd d6 e3 12
+|   80 7c f4 09  0f 66 1a ed  09 9b 9e c3  3e a0 d7 a0
+|   7b fb e5 a9  c7 87 51 04  b2 3b e9 5e  e6 b2 5a 01
+|   a7 af b3 5e  57 96 c4 d9  50 0f 92 c8  84 cd f9 36
+|   1f 55 4c dc  09 41 f1 0a  f1 fd 7c 96  b4 5e d0 91
+|   6c 29 b8 5c  49 f9 b0 7c  83 c7 44 0c  c1 3d c8 d3
+|   c6 bf 6b 33  58 70 15 73  43 5c 9b 0e  ef 4a 57 98
+|   c1 40 de 85  c9 50 37 27  01 e4 2c 15
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I3
+| received encrypted packet from 192.168.0.1:4500
+| decrypting 1296 bytes using algorithm OAKLEY_3DES_CBC
+| crypting using IV:  f7 12 f5 a3  87 9a 25 a9
+| decrypted:
+|   06 00 00 1b  02 00 00 00  6d 6f 6f 6e  2e 73 74 72
+|   6f 6e 67 73  77 61 6e 2e  6f 72 67 09  00 03 ee 04
+|   30 82 03 e5  30 82 02 cd  02 09 00 8c  b2 68 2f b0
+|   f4 5a 93 30  0d 06 09 2a  86 48 86 f7  0d 01 01 0b
+|   05 00 30 81  b2 31 0b 30  09 06 03 55  04 06 13 02
+|   43 41 31 10  30 0e 06 03  55 04 08 0c  07 4f 6e 74
+|   61 72 69 6f  31 0f 30 0d  06 03 55 04  07 0c 06 4f
+|   74 74 61 77  61 31 1e 30  1c 06 03 55  04 0a 0c 15
+|   58 65 6c 65  72 61 6e 63  65 20 43 6f  72 70 6f 72
+|   61 74 69 6f  6e 31 1e 30  1c 06 03 55  04 0b 0c 15
+|   44 6f 63 74  6f 72 20 54  61 79 6c 6f  72 20 50 6c
+|   75 6d 61 67  65 31 1e 30  1c 06 03 55  04 03 0c 15
+|   74 65 73 74  69 6e 67 2e  78 65 6c 65  72 61 6e 63
+|   65 2e 63 6f  6d 31 20 30  1e 06 09 2a  86 48 86 f7
+|   0d 01 09 01  16 11 6d 63  72 40 78 65  6c 65 72 61
+|   6e 63 65 2e  63 6f 6d 30  1e 17 0d 31  37 30 31 31
+|   36 31 36 34  38 33 38 5a  17 0d 31 39  31 31 30 36
+|   31 36 34 38  33 38 5a 30  81 b5 31 0b  30 09 06 03
+|   55 04 06 13  02 43 41 31  0f 30 0d 06  03 55 04 08
+|   0c 06 43 61  6e 61 64 61  31 0f 30 0d  06 03 55 04
+|   07 0c 06 4f  74 74 61 77  61 31 1e 30  1c 06 03 55
+|   04 0a 0c 15  58 65 6c 65  72 61 6e 63  65 20 43 6f
+|   72 70 6f 72  61 74 69 6f  6e 31 1e 30  1c 06 03 55
+|   04 0b 0c 15  44 6f 63 74  6f 72 20 54  61 79 6c 6f
+|   72 20 50 6c  75 6d 61 67  65 31 22 30  20 06 03 55
+|   04 03 0c 19  6d 6f 6f 6e  2e 74 65 73  74 69 6e 67
+|   2e 6f 70 65  6e 73 77 61  6e 2e 6f 72  67 31 20 30
+|   1e 06 09 2a  86 48 86 f7  0d 01 09 01  16 11 6d 63
+|   72 40 78 65  6c 65 72 61  6e 63 65 2e  63 6f 6d 30
+|   82 01 22 30  0d 06 09 2a  86 48 86 f7  0d 01 01 01
+|   05 00 03 82  01 0f 00 30  82 01 0a 02  82 01 01 00
+|   e3 a8 4c c6  cc c7 e3 b7  7c e7 4f 15  4b 04 ca fa
+|   cb 06 46 c0  dc 08 c1 c8  aa 5d 06 b7  7c 55 41 ab
+|   cf a8 00 a9  f3 8a 50 da  a4 c4 2c 3e  45 e0 f3 b7
+|   91 28 2f d3  b8 89 cf e2  c2 33 9a 9d  04 87 3c 9c
+|   c3 cd 94 7f  51 70 3c 7f  da 9b 6d 5e  41 1d b3 6c
+|   9e 84 76 c2  d4 97 21 fb  4b 86 9b 10  3b 43 74 42
+|   94 2d e0 bd  2b d7 74 0e  70 99 3a c1  06 f2 b6 45
+|   ab 0c cc 1e  bf 90 36 80  08 e0 d8 ed  10 c7 a6 e3
+|   df 26 1d 95  73 db e6 f0  50 6c 17 b8  6e 77 fc 54
+|   c9 21 1e af  1a 2b 4a 5d  d3 b0 7b 5d  c5 90 b8 01
+|   14 10 85 bc  86 c2 5e 45  73 d8 e7 a6  47 60 5c ee
+|   85 80 f4 49  b3 df e2 8d  50 b6 d5 ba  f8 79 09 53
+|   55 01 31 57  16 ec bc e2  77 48 0f e2  c8 4c ed 69
+|   a9 d8 f1 81  0e ea c3 3e  7d 24 c8 bf  75 05 88 2d
+|   e7 ed c5 cb  29 ce ec ef  57 85 f9 f4  7f 37 c7 a7
+|   b8 79 47 ff  ea 68 5c a8  73 dc 80 e7  b9 c7 ec 67
+|   02 03 01 00  01 30 0d 06  09 2a 86 48  86 f7 0d 01
+|   01 0b 05 00  03 82 01 01  00 57 d5 bd  04 dd b0 16
+|   7c a9 87 c1  bd e4 20 7b  ed c0 25 01  ef ae ae 52
+|   97 ce bf f9  ea 6c d8 bb  59 e5 30 33  0d d9 06 a7
+|   f7 3e db e5  a4 16 79 2d  e2 e6 b7 0a  64 b6 9e 14
+|   26 bc 9a 0e  40 c8 08 e0  d2 4f 67 e0  b0 c5 9f f0
+|   da 89 ba 53  0f 9a a8 b4  d8 6b 91 1f  6d 86 1e 0b
+|   f4 29 a6 bf  62 19 e1 77  4e c8 64 3d  40 f2 04 62
+|   8d 70 55 bd  7d e7 2f 6b  c6 33 05 e8  8e 77 6f 56
+|   2d bb 7a 51  4e 58 53 49  4d 94 51 b9  9e 4b 9c aa
+|   5d 5f e6 93  b4 28 59 b1  82 ef f0 19  a6 48 96 b4
+|   14 4f 7e da  0e ba fb 35  e4 da 1e ce  ec 27 46 e6
+|   5d ec fa c8  9d f4 14 84  1b e7 11 0c  a2 ed 21 6b
+|   71 5f 24 ed  2e c3 de 69  e4 1f 2a e4  fb e1 75 03
+|   8d b9 26 7b  23 0a 82 e8  ba 05 ab 54  2e 94 69 2c
+|   26 91 15 62  0b e4 70 0f  a8 e5 8f ea  cc 0b ff 44
+|   e2 9a cd e8  df 3d 2a 0f  70 96 6c 3f  9e 01 b7 30
+|   86 47 78 c5  5f ee 21 09  2e 00 00 01  04 c2 ce b2
+|   dc 78 2b ae  7e 8f c1 9b  3d d8 31 bc  c9 66 40 a5
+|   ee 03 1c 9e  4a fd 71 4f  21 6e a6 07  e1 98 50 cd
+|   1d a1 0e a2  74 29 13 a8  4a 67 63 d6  0d 12 29 03
+|   ba 00 af 9c  24 74 74 3c  e4 6f 7a 82  00 4f d6 da
+|   55 df a1 da  19 fc 71 6e  04 0c 00 94  3b df 65 cb
+|   01 df 4f 31  07 0b 0c 56  c7 bd 4e e9  75 45 eb d3
+|   45 62 4a ff  4d a8 dc ca  3c e6 59 e9  5c da 86 87
+|   7b b2 5d cb  7e 08 c8 5f  23 e9 6d bb  0e eb cb a4
+|   04 52 a3 58  27 98 91 19  3f 9b 99 19  c2 61 da d1
+|   b0 90 b9 4d  8e 54 58 fd  4a 23 ad 9e  57 83 e4 b4
+|   2d 78 58 5d  23 0c fc 71  05 7c 60 61  9b f6 1a 85
+|   fb 60 18 d6  98 87 31 68  4d d9 d9 5a  16 cb 3d eb
+|   59 bb ef 0b  ec ad 51 6a  0a 2c 3f c4  1f 13 80 14
+|   fa d5 b7 e0  40 b1 5a 8a  8b 4c ac 41  ac bc 08 4c
+|   eb 8c 24 56  6d 3a 9f 4f  43 1a ab 97  18 06 33 ad
+|   48 73 f2 7d  f7 a2 29 46  30 08 02 35  7e 00 00 00
+| next IV:  c9 50 37 27  01 e4 2c 15
+| got payload 0x20(ISAKMP_NEXT_ID) needed: 0x220 opt: 0x20c0
+| ***parse ISAKMP Identification Payload:
+|    length: 27
+|    ID type: ID_FQDN
+|    DOI specific A: 0
+|    DOI specific B: 0
+|      obj:   6d 6f 6f 6e  2e 73 74 72  6f 6e 67 73  77 61 6e 2e
+|   6f 72 67
+| got payload 0x40(ISAKMP_NEXT_CERT) needed: 0x200 opt: 0x20c0
+| ***parse ISAKMP Certificate Payload:
+|    length: 1006
+|    cert encoding: CERT_X509_SIGNATURE
+| got payload 0x200(ISAKMP_NEXT_SIG) needed: 0x200 opt: 0x20c0
+| ***parse ISAKMP Signature Payload:
+|    length: 260
+| removing 3 bytes of padding
+./v1certQI1 Main mode peer ID is ID_FQDN: '@moon.strongswan.org'
+| hashing 48 bytes of SA
+| key issuer CA is 'C=CA, ST=Ontario, L=Ottawa, O=Xelerance Corporation, OU=Doctor Taylor Plumage, CN=testing.xelerance.com, E=mcr@xelerance.com'
+| an RSA Sig check passed with *AwEAAeOoT [preloaded key]
+| authentication succeeded
+| complete state transition with STF_OK
+./v1certQI1 transition from state STATE_MAIN_I3 to state STATE_MAIN_I4
+| inserting event EVENT_SA_REPLACE, timeout in 3269 seconds for #1
+./v1certQI1 STATE_MAIN_I4: ISAKMP SA established {auth=OAKLEY_RSA_SIG oursig= theirsig=AwEAAeOoT cipher=oakley_3des_cbc_192 prf=oakley_md5 group=modp1536}
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+| unqueuing pending Quick Mode with 192.168.0.1 "home" import:admin initiate
+| duplicating state object #1
+| creating state object #2 at Z
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| inserting state object #2 bucket: 5
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #2
+./v1certQI1 initiating Quick Mode RSASIG+ENCRYPT+TUNNEL+PFS+IKEv2ALLOW+SAREFTRACK {using isakmp#1 msgid:03020180 proposal=3des(3)_192-hmac_md5_96(1)_128 pfsgroup=OAKLEY_GROUP_MODP1536}
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   64 0a 06 43  5c 7c 4b 31
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_QUICK
+|    flags: ISAKMP_FLAG_ENCRYPTION
+|    message ID:  80 01 02 03
+| ***emit ISAKMP Hash Payload:
+| emitting 16 zero bytes of HASH into ISAKMP Hash Payload
+| emitting length of ISAKMP Hash Payload: 20
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 1
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_IPSEC_ESP
+|    SPI size: 4
+|    number of transforms: 1
+| emitting 4 raw bytes of SPI into ISAKMP Proposal Payload
+| SPI  12 34 56 78
+| *****emit ISAKMP Transform Payload (ESP):
+|    transform number: 0
+|    ESP transform ID: ESP_3DES
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: ENCAPSULATION_MODE
+|    length/value: 3
+|     [3 is ENCAPSULATION_MODE_UDP_TUNNEL_RFC]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_TYPE
+|    length/value: 1
+|     [1 is SA_LIFE_TYPE_SECONDS]
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: SA_LIFE_DURATION
+|    length/value: 1200
+| ******emit ISAKMP IPsec DOI attribute:
+|    af+type: AUTH_ALGORITHM
+|    length/value: 1
+|     [1 is AUTH_ALGORITHM_HMAC_MD5]
+| emitting length of ISAKMP Transform Payload (ESP): 28
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| emitting length of ISAKMP Nonce Payload: 20
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| emitting length of ISAKMP Key Exchange Payload: 196
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+| emitting 4 raw bytes of client network into ISAKMP Identification Payload (IPsec DOI)
+| client network  c0 a8 00 64
+| emitting 4 raw bytes of client mask into ISAKMP Identification Payload (IPsec DOI)
+| client mask  ff ff ff ff
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 16
+| ***emit ISAKMP Identification Payload (IPsec DOI):
+|    ID type: ID_IPV4_ADDR_SUBNET
+|    Protocol ID: 0
+|    port: 0
+| emitting 4 raw bytes of client network into ISAKMP Identification Payload (IPsec DOI)
+| client network  0a 01 00 00
+| emitting 4 raw bytes of client mask into ISAKMP Identification Payload (IPsec DOI)
+| client mask  ff ff 00 00
+| emitting length of ISAKMP Identification Payload (IPsec DOI): 16
+| HASH(1) computed:
+|   02 ed 35 2a  15 f2 7d f1  a0 13 9b 49  25 a9 97 48
+| last Phase 1 IV:  c9 50 37 27  01 e4 2c 15
+| current Phase 1 IV:  c9 50 37 27  01 e4 2c 15
+| computed Phase 2 IV:
+|   41 ce 59 99  ca a7 06 1f  7b 09 44 0e  69 96 94 e7
+| encrypting:
+|   01 00 00 14  02 ed 35 2a  15 f2 7d f1  a0 13 9b 49
+|   25 a9 97 48  0a 00 00 34  00 00 00 01  00 00 00 01
+|   00 00 00 28  00 03 04 01  12 34 56 78  00 00 00 1c
+|   00 03 00 00  80 03 00 05  80 04 00 03  80 01 00 01
+|   80 02 04 b0  80 05 00 01  04 00 00 14  b5 ce 84 19
+|   09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4  05 00 00 c4
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+|   05 00 00 10  04 00 00 00  c0 a8 00 64  ff ff ff ff
+|   00 00 00 10  04 00 00 00  0a 01 00 00  ff ff 00 00
+| IV:
+|   41 ce 59 99  ca a7 06 1f  7b 09 44 0e  69 96 94 e7
+| unpadded size is: 320
+| encrypting 320 using OAKLEY_3DES_CBC
+| crypting using IV:  41 ce 59 99  ca a7 06 1f
+| next IV:  0b c5 9e 58  fe 4e 4e b7
+| emitting length of ISAKMP Message: 348
+sending 348 bytes for quick_outI1 through eth0:500 [93.184.216.34:55044] to 192.168.0.1:4500 (using #2)
+|   80 01 02 03  04 05 06 07  64 0a 06 43  5c 7c 4b 31
+|   08 10 20 01  80 01 02 03  00 00 01 5c  c4 ff c5 e1
+|   4b ba 4e 83  3d 67 b3 3a  43 8d e8 42  75 71 e7 0c
+|   12 ba f4 2c  ea 24 b3 dc  9a 6c 21 fc  f6 7b df 68
+|   48 56 ed b7  2c 83 9a 0c  1d 9b ed 94  35 52 76 17
+|   b4 32 22 d8  e1 f6 df 04  5f db ad e2  45 9f 84 a0
+|   c0 c2 c4 16  d1 6b c2 82  ff 59 5e 54  43 ea e5 ef
+|   81 e2 69 31  6d 01 a6 de  e2 e8 7b fc  64 49 1b 5e
+|   f6 70 fd 8e  37 d1 c8 ae  79 10 af 28  5e 27 f1 ab
+|   83 45 83 e0  70 94 37 ff  53 c4 32 94  f7 62 22 e5
+|   f5 73 9b 51  d1 e1 bb 28  10 7b 2f d6  f8 47 0e bc
+|   53 c5 8e 55  b6 5c d4 38  5c 5c 44 df  d9 d5 51 ab
+|   fd 47 87 77  0e 3b bc 47  9e f0 8f 5a  55 04 9a a2
+|   42 13 48 d0  21 1c 1d 51  f7 e9 78 29  72 9a fd e1
+|   53 75 17 78  45 63 0c 21  4b 05 a9 e6  cb 96 4d 50
+|   ba f0 e4 3f  a5 68 81 81  eb 82 ea 70  42 55 43 57
+|   cf 91 93 8d  ae 69 4e 2d  ec 99 1e 12  19 07 7e 6d
+|   c8 9a 12 ca  56 51 65 ae  42 09 98 ff  00 ee 8c 94
+|   a8 82 0b be  c5 87 6b 85  b5 5c 30 be  c9 c8 cd 59
+|   48 de f6 64  09 b9 04 4b  65 07 f3 40  a6 0e 22 9e
+|   bb 24 dd e3  06 81 79 fd  33 d3 c1 ff  ed 20 99 3a
+|   5d e5 e0 18  0b c5 9e 58  fe 4e 4e b7
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #2
+RC=118 STATE_QUICK_I1: initiate
+3: output closed
+./v1certQI1 deleting connection
+| pass 0: considering CHILD SAs to delete
+./v1certQI1 deleting state #2 (STATE_QUICK_I1)
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  64 0a 06 43  5c 7c 4b 31
+| state hash entry 5
+| pass 1: considering PARENT SAs to delete
+./v1certQI1 leak: reply packet from quick_outI1, item size: X
+./v1certQI1 leak: long term secret, item size: X
+./v1certQI1 leak: saved gi value, item size: X
+./v1certQI1 leak: initiator nonce, item size: X
+./v1certQI1 leak: v1 policy proposal conj, item size: X
+./v1certQI1 leak: db_context->attrs, item size: X
+./v1certQI1 leak: db_context->trans, item size: X
+./v1certQI1 leak: db_context, item size: X
+./v1certQI1 leak: db_context->attrs, item size: X
+./v1certQI1 leak: db_context->trans, item size: X
+./v1certQI1 leak: 2 * db_context->conj, item size: X
+./v1certQI1 leak: v2 policy database, item size: X
+./v1certQI1 leak: quick_outI1 KE, item size: X
+./v1certQI1 leak: st_nr in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_pr in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_pi in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_er in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_ei in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_ar in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_ai in duplicate_state, item size: X
+./v1certQI1 leak: st_skey_d in duplicate_state, item size: X
+./v1certQI1 leak: st_skeyseed in duplicate_state, item size: X
+./v1certQI1 leak: st_enc_key in duplicate_state, item size: X
+./v1certQI1 leak: struct state in new_state(), item size: X
+./v1certQI1 leak: aggr outR1 DH, item size: X
+./v1certQI1 leak: outI2 KE, item size: X
+./v1certQI1 leak: msg_digest, item size: X
+./v1certQI1 leak: 67 * VendorID MD5, item size: X
+./v1certQI1 leak: 3 * vid->data, item size: X
+./v1certQI1 leak: 15 * VendorID MD5, item size: X
+./v1certQI1 leak: self-vendor ID, item size: X
+./v1certQI1 leak: init_pluto_vendorid, item size: X
+./v1certQI1 leak: 4 * fswan VID, item size: X
+./v1certQI1 leak: vid->data, item size: X
+./v1certQI1 leak: 23 * VendorID MD5, item size: X
+./v1certQI1 leak: vid->data, item size: X
+./v1certQI1 leak: rfc3110 format of public key [created], item size: X
+./v1certQI1 leak: issuer dn, item size: X
+./v1certQI1 leak: keep id name, item size: X
+./v1certQI1 leak: pubkey entry, item size: X
+./v1certQI1 leak: pubkey, item size: X
+./v1certQI1 leak: rfc3110 format of public key [created], item size: X
+./v1certQI1 leak: issuer dn, item size: X
+./v1certQI1 leak: keep id name, item size: X
+./v1certQI1 leak: pubkey entry, item size: X
+./v1certQI1 leak: pubkey, item size: X
+./v1certQI1 leak: certificate filename, item size: X
+./v1certQI1 leak: rfc3110 format of public key [created], item size: X
+./v1certQI1 leak: issuer dn, item size: X
+./v1certQI1 leak: keep id name, item size: X
+./v1certQI1 leak: pubkey entry, item size: X
+./v1certQI1 leak: pubkey, item size: X
+./v1certQI1 leak: certificate filename, item size: X
+./v1certQI1 leak: 2 * id list, item size: X
+./v1certQI1 leak: rfc3110 format of public key [created], item size: X
+./v1certQI1 leak: pubkey, item size: X
+./v1certQI1 leak: secret, item size: X
+./v1certQI1 leak: policies path, item size: X
+./v1certQI1 leak: ocspcerts path, item size: X
+./v1certQI1 leak: aacerts path, item size: X
+./v1certQI1 leak: certs path, item size: X
+./v1certQI1 leak: private path, item size: X
+./v1certQI1 leak: crls path, item size: X
+./v1certQI1 leak: cacert path, item size: X
+./v1certQI1 leak: acert path, item size: X
+./v1certQI1 leak: override ipsec.d, item size: X
+./v1certQI1 leak: 4 * hasher name, item size: X
+./v1certQI1 leak: 10 * group description, item size: X
+./v1certQI1 leak: policies path, item size: X
+./v1certQI1 leak: ocspcerts path, item size: X
+./v1certQI1 leak: aacerts path, item size: X
+./v1certQI1 leak: certs path, item size: X
+./v1certQI1 leak: private path, item size: X
+./v1certQI1 leak: crls path, item size: X
+./v1certQI1 leak: cacert path, item size: X
+./v1certQI1 leak: acert path, item size: X
+./v1certQI1 leak: default conf var_dir, item size: X
+./v1certQI1 leak: default conf conffile, item size: X
+./v1certQI1 leak: default conf ipsecd_dir, item size: X
+./v1certQI1 leak: default conf ipsec_conf_dir, item size: X
+./v1certQI1 leak detective found Z leaks, total size X

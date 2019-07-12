@@ -1,0 +1,21 @@
+# -*- makefile -*-
+# this it the policy file that will be loaded
+ENDNAME=h2h
+
+# this is the policy that will be load
+CONNNAME=mytunnel-byip
+
+TESTNAME=sarespond
+
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME}
+
+pcapupdate:
+	@true
+
+
+
+
+
+
+
