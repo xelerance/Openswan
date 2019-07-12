@@ -50,7 +50,7 @@
 
 #include "alg_info.h"
 #include "kernel_alg.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "db_ops.h"
 
 #if 1
