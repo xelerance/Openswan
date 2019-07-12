@@ -1,0 +1,27 @@
+This test case is an IKEv1 initiator.  The client is called alice.
+It uses raw RSA keys.
+Alice lives behind a NAT gateway and it attempts to create a tunnel to
+a network 10.2.0.0/24 that is behind the gateway sun.
+
+This reproduces a problem found in ikev1/rw-nat-cert, where the responder
+changed the phase 2 proposal incorrectly:
+
+sun pluto[25970]: "rw" #1: the peer proposed: 10.2.0.0/16:0/0 -> 10.1.0.10/32:0/0
+sun pluto[25970]: "rw" #2: responding to Quick Mode proposal {msgid:22ac6853}
+sun pluto[25970]: "rw" #2:     us: 10.2.0.0/16===192.168.0.2[sun@strongswan.org]
+sun pluto[25970]: "rw" #2:   them: %any[alice@strongswan.org]
+
+This is test M2.
+
+
+
+
+
+
+
+
+
+
+
+
+

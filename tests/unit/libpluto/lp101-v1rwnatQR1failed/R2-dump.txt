@@ -1,0 +1,2 @@
+IP (tos 0x0, ttl 64, id 0, offset 0, flags [none], proto UDP (17), length 92, bad cksum 0 (->f93d)!)
+    192.168.0.2.4500 > 192.168.0.1.55045: NONESP-encap: isakmp 1.0 msgid 80010203: phase 2/others ? inf[E]: [encrypted hash]

@@ -16,7 +16,12 @@ srcdir?=${OPENSWANSRCDIR}/tests/unit/libpluto
 
 include ${OPENSWANSRCDIR}/Makefile.inc
 
-UNITTESTS=ct10-parentI2 ct12-parentR2 ct14-bigkeyI2
+UNITTESTS=
+UNITTESTS+=ct02-parentI1
+UNITTESTS+=ct10-parentI2
+UNITTESTS+=ct12-parentR2
+UNITTESTS+=ct13-parentI3
+UNITTESTS+=ct14-bigkeyI2
 
 clean check:
 	@for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
