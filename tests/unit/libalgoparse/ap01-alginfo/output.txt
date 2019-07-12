@@ -1,0 +1,42 @@
+| alg_info_parse_str() ealg_buf=3des aalg_buf=md5 eklen=0  aklen=0
+| parser_alg_info_add() ealg_getbyname("3des")=3
+| parser_alg_info_add() aalg_getbyname("md5")=1
+| enum_search_prefix ("OAKLEY_GROUP_MODP1024")
+| parser_alg_info_add() modp_getbyname("modp1024")=2
+| __alg_info_ike_add() ealg=3 aalg=1 prfalg_id=1 modp_id=2, cnt=1
+| alg_info_parse_str() ealg_buf=3des_cbc aalg_buf=md5 eklen=0  aklen=0
+| parser_alg_info_add() ealg_getbyname("3des_cbc")=3
+| parser_alg_info_add() aalg_getbyname("md5")=1
+| enum_search_prefix ("OAKLEY_GROUP_MODP1024")
+| parser_alg_info_add() modp_getbyname("modp1024")=2
+| __alg_info_ike_add() ealg=3 aalg=1 prfalg_id=1 modp_id=2, cnt=1
+| alg_info_parse_str() ealg_buf=aes aalg_buf=md5 eklen=0  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| parser_alg_info_add() aalg_getbyname("md5")=1
+| enum_search_prefix ("OAKLEY_GROUP_MODP1024")
+| parser_alg_info_add() modp_getbyname("modp1024")=2
+| __alg_info_ike_add() ealg=12 aalg=1 prfalg_id=1 modp_id=2, cnt=1
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha1 eklen=0  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| parser_alg_info_add() aalg_getbyname("sha1")=2
+| enum_search_prefix ("OAKLEY_GROUP_MODP1024")
+| parser_alg_info_add() modp_getbyname("modp1024")=2
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=2, cnt=1
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha1 eklen=0  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| parser_alg_info_add() aalg_getbyname("sha1")=2
+| enum_search_prefix ("OAKLEY_GROUP_MODP1536")
+| parser_alg_info_add() modp_getbyname("modp1536")=5
+| __alg_info_ike_add() ealg=12 aalg=2 prfalg_id=2 modp_id=5, cnt=1
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha2_512 eklen=256  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| parser_alg_info_add() aalg_getbyname("sha2_512")=14
+| enum_search_prefix ("OAKLEY_GROUP_MODP4096")
+| parser_alg_info_add() modp_getbyname("modp4096")=16
+| __alg_info_ike_add() ealg=12 aalg=14 prfalg_id=7 modp_id=16, cnt=1
+| alg_info_parse_str() ealg_buf=aes aalg_buf=sha256 eklen=256  aklen=0
+| parser_alg_info_add() ealg_getbyname("aes")=12
+| parser_alg_info_add() aalg_getbyname("sha256")=12
+| enum_search_prefix ("OAKLEY_GROUP_MODP2048")
+| parser_alg_info_add() modp_getbyname("modp2048")=14
+| __alg_info_ike_add() ealg=12 aalg=12 prfalg_id=5 modp_id=14, cnt=1

@@ -1,0 +1,14 @@
+This test case is an IKEv2 responder.
+It tests crypto operations along the entire path.
+
+This test specifically captures the netlink commands which are sent
+and validates that the IPsec (CHILD, phase2) derived keys and algorithms are
+sane.
+
+
+
+
+
+
+
+

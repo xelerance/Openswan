@@ -1,0 +1,11 @@
+This is the first policy test cases that deals with matching of Traffic
+Selectors against loaded policy.
+
+This test case will become a template for future tests, and will be split
+up the way that lp10/lp12/lp13 are, but for the moment it's a monolith.
+
+It does not deal with IKE state or pcap files in or out.
+
+It simply loads up a policy, picks an end via orient(), and then runs traffic
+selectors (hard code in C for now) against the ikev2_child_sa_respond().
+
