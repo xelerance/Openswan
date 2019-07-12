@@ -11,9 +11,9 @@
  *
  */
 #ifndef hexdump_printf
-#define hexdump_printf printf
+#define hexdump_printf fprintf
 #endif
-void hexdump(const unsigned char *base, unsigned int offset, int len)
+void hexdump(FILE*arg1,const unsigned char *base, unsigned int offset, int len)
 {
 	const unsigned char *b = base+offset;
 	unsigned char bb[4];             /* avoid doing byte accesses */
@@ -22,7 +22,7 @@ void hexdump(const unsigned char *base, unsigned int offset, int len)
 
 	last=0;
 	first=1;
-  
+
 	for(i = 0; i < len; i++) {
 		/* if it's the first item on the line */
 		if((i % 16) == 0) {
@@ -44,28 +44,28 @@ void hexdump(const unsigned char *base, unsigned int offset, int len)
 					continue;
 				}
 			}
-			
+
 			/* see if we are at the last line */
 			if((len-i) < 16) last=1;
 			first=0;
 
 			/* print the offset */
-			hexdump_printf("%04x:", offset+i);
+			hexdump_printf(arg1,"%04x:", offset+i);
 		}
 
 		memcpy(bb, b+i, 4);
-		hexdump_printf(" %02x %02x %02x %02x ",
+		hexdump_printf(arg1," %02x %02x %02x %02x ",
 			       bb[0], bb[1], bb[2], bb[3]);
 		i+=3;
 
 		/* see it's the last item on line */
 		if(!((i + 1) % 16)) {
-			hexdump_printf("\n");
+                  hexdump_printf(arg1,"\n");
 		}
 	}
 	/* if it wasn't the last item on line */
 	if(i % 16) {
-		hexdump_printf("\n");
+          hexdump_printf(arg1,"\n");
 	}
 }
 
