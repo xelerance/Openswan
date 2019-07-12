@@ -18,7 +18,11 @@ include ${OPENSWANSRCDIR}/Makefile.inc
 
 testlist clean check:
 	@${MAKE} -C libopenswan $@
+	@${MAKE} -C libalgoparse $@
+	@${MAKE} -C libcrypto   $@
+	@${MAKE} -C policy      $@
 	@${MAKE} -C libpluto    $@
 	@${MAKE} -C ikev2crypto $@
 	@${MAKE} -C liboswkeys  $@
+	@${MAKE} -C xfrmmock    $@
 
