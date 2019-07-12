@@ -34,7 +34,7 @@
 #include "defs.h"
 #include "id.h"
 #include "pluto/connections.h"	/* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "demux.h"  /* needs packet.h */
 #include "ipsec_doi.h"	/* needs demux.h and state.h */
