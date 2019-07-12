@@ -62,7 +62,7 @@
 #include "log.h"
 #include "cookie.h"
 #include "pluto/server.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "timer.h"
 #include "rnd.h"
 #include "keys.h"

@@ -58,7 +58,7 @@
 #include "md5.h"
 #include "cookie.h"
 #include "crypto.h" /* requires sha1.h and md5.h */
-#include "spdb.h"
+#include "pluto/spdb.h"
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
