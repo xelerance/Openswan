@@ -38,6 +38,11 @@
 #include "whack.h"
 #include "alg_info.h"
 #include "pluto/ike_alg.h"
+#include "pluto/db_ops.h"
+#include "id.h"
+#include "pluto/connections.h"
+#include "pluto/kernel.h"
+#include "pluto/plutoalg.h"
 
 #define return_on(var, val) { (var) = (val); goto return_out; }
 
