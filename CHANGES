@@ -4,6 +4,10 @@ of version numbers, so you will find 2.5.x and 2.6.x releases intersperced.
 
 See also docs/KNOWN_BUGS.txt and https://github.com/xelerance/Openswan/issues
 
+v2.6.52dev1 (July 12, 2019)
+
+Bug fixes for various issues.
+
 v2.6.51.5 (June 14, 2019)
 
 Fix kernel algorithm table and if() block that is missing a {}
