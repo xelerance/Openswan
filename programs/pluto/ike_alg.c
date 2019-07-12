@@ -44,7 +44,7 @@
 #include "id.h"
 #include "pluto/connections.h"
 #include "kernel.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 
 #define return_on(var, val) { (var) = (val); goto return_out; }
 
