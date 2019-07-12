@@ -45,7 +45,7 @@
 #include "log.h"
 #include "pluto/spdb.h"
 #include "whack.h"          /* for RC_LOG_SERIOUS */
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 
 #include "sha1.h"
 #include "md5.h"
