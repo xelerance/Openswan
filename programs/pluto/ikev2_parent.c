@@ -38,7 +38,7 @@
 #include "pluto/connections.h"
 #include "hostpair.h"
 
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "x509.h"
 #include "x509more.h"
 #include "pluto/ike_alg.h"
