@@ -430,7 +430,7 @@ int decode_esp(char *algname)
     esp_alg = XF_ESP3DESSHA196;
   } else if(!strcmp(algname, "3des")) {
     esp_alg = XF_ESP3DES;
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
   } else if((alg_info=alg_info_esp_create_from_str(algname, &alg_err, FALSE))) {
     int esp_ealg_id, esp_aalg_id;
 
@@ -1106,7 +1106,7 @@ main(int argc, char *argv[])
 	}
 
 	switch(alg) {
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 	case XF_OTHER_ALG:
 		/* validate keysizes */
 		if (proc_read_ok) {
@@ -1227,7 +1227,7 @@ main(int argc, char *argv[])
 	case XF_ESP3DES:
 	case XF_COMPDEFLATE:
 	case XF_COMPLZS:
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 	case XF_OTHER_ALG:
 #endif /* NO_KERNEL_ALG */
 		break;
@@ -1289,7 +1289,7 @@ main(int argc, char *argv[])
 	case XF_ESP3DESSHA196:
 		authalg = SADB_AALG_SHA1HMAC;
 		break;
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 	case XF_OTHER_ALG:
 		authalg= esp_info->authalg;
 		if(debug) {
@@ -1314,7 +1314,7 @@ main(int argc, char *argv[])
 	case XF_COMPLZS:
 		encryptalg = SADB_X_CALG_LZS;
 		break;
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 	case XF_OTHER_ALG:
 		encryptalg= esp_info->encryptalg;
 		if(debug) {
@@ -1481,7 +1481,7 @@ main(int argc, char *argv[])
 #endif /* PFKEY_PROXY */
 
 		switch(alg) {
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 		/*	Allow no auth ... after all is local root decision 8)  */
 		case XF_OTHER_ALG:
 			if (!authalg)
@@ -1513,7 +1513,7 @@ main(int argc, char *argv[])
 		case XF_ESP3DES:
 		case XF_ESP3DESMD596:
 		case XF_ESP3DESSHA196:
-#ifdef KERNEL_ALG
+#if defined(KERNEL_ALG) && defined(OLD_KERNEL_ALG_CODE)
 		case XF_OTHER_ALG:
 #endif /* KERNEL_ALG */
 			if((error = pfkey_key_build(&extensions[SADB_EXT_KEY_ENCRYPT],
