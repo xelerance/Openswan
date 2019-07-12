@@ -1,0 +1,53 @@
+./cr01-aes128 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./cr01-aes128 leak detective found no leaks
+plaintext input:
+0000: 00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f 
+0010: 10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f 
+0020: 20 21 22 23  24 25 26 27  28 29 2a 2b  2c 2d 2e 2f 
+0030: 30 31 32 33  34 35 36 37  38 39 3a 3b  3c 3d 3e 3f 
+0040: 40 41 42 43  44 45 46 47  48 49 4a 4b  4c 4d 4e 4f 
+0050: 50 51 52 53  54 55 56 57  58 59 5a 5b  5c 5d 5e 5f 
+0060: 60 61 62 63  64 65 66 67  68 69 6a 6b  6c 6d 6e 6f 
+0070: 70 71 72 73  74 75 76 77  78 79 7a 7b  7c 7d 7e 7f 
+0080: 80 81 82 83  84 85 86 87  88 89 8a 8b  8c 8d 8e 8f 
+0090: 90 91 92 93  94 95 96 97  98 99 9a 9b  9c 9d 9e 9f 
+00a0: a0 a1 a2 a3  a4 a5 a6 a7  a8 a9 aa ab  ac ad ae af 
+00b0: b0 b1 b2 b3  b4 b5 b6 b7  b8 b9 ba bb  bc bd be bf 
+00c0: c0 c1 c2 c3  c4 c5 c6 c7  c8 c9 ca cb  cc cd ce cf 
+00d0: d0 d1 d2 d3  d4 d5 d6 d7  d8 d9 da db  dc dd de df 
+00e0: e0 e1 e2 e3  e4 e5 e6 e7  e8 e9 ea eb  ec ed ee ef 
+00f0: f0 f1 f2 f3  f4 f5 f6 f7  f8 f9 fa fb  fc fd fe ff 
+ciphertext output:
+0000: 14 98 4c ae  fb 7d f9 a9  3d a6 c9 55  5e b2 43 80 
+0010: ca ca 03 69  b3 66 e7 d4  35 69 a3 a3  8b f4 42 cf 
+0020: bd 71 92 4e  29 d9 3a b7  ff 09 31 af  0b 32 cc 51 
+0030: cb 1e 1f 1a  18 72 3b c8  16 ce 09 89  71 d1 6e 5d 
+0040: 38 88 a6 ec  8f d8 09 53  fb ee 44 69  87 4d 0e ed 
+0050: 82 5c a4 d9  84 10 85 01  7d 47 c0 89  17 e6 4c db 
+0060: 78 d5 21 64  66 de 9c 42  11 a7 65 75  51 97 f9 9b 
+0070: 63 df 10 5d  78 9f d8 d2  74 cb 16 a2  a4 2d f5 a1 
+0080: 7d 3a 49 63  31 4a 4f 35  60 11 5a c7  bb bc 66 31 
+0090: 56 92 6d af  5f 1a a4 a9  c4 a4 1b 11  68 5e e7 7f 
+00a0: 84 3c 74 0e  e5 bf e4 80  e7 84 bc 05  14 92 aa f1 
+00b0: 7a 3f ff 03  d1 b7 0e 91  44 f0 65 5d  cf 63 75 6d 
+00c0: eb 09 df 2c  87 af ac 7c  a3 28 0f 7d  7b 59 ce ef 
+00d0: 75 f1 5d 9a  a9 69 27 f3  0f b2 10 8f  d1 f8 84 a4 
+00e0: 5b 97 cd c8  d5 57 4a eb  61 e3 a8 6a  51 c0 6c 9c 
+00f0: 83 c7 3b c2  7a a3 90 a8  79 1b 34 84  21 46 4d c1 
+plaintext output: matches
+0000: 00 01 02 03  04 05 06 07  08 09 0a 0b  0c 0d 0e 0f 
+0010: 10 11 12 13  14 15 16 17  18 19 1a 1b  1c 1d 1e 1f 
+0020: 20 21 22 23  24 25 26 27  28 29 2a 2b  2c 2d 2e 2f 
+0030: 30 31 32 33  34 35 36 37  38 39 3a 3b  3c 3d 3e 3f 
+0040: 40 41 42 43  44 45 46 47  48 49 4a 4b  4c 4d 4e 4f 
+0050: 50 51 52 53  54 55 56 57  58 59 5a 5b  5c 5d 5e 5f 
+0060: 60 61 62 63  64 65 66 67  68 69 6a 6b  6c 6d 6e 6f 
+0070: 70 71 72 73  74 75 76 77  78 79 7a 7b  7c 7d 7e 7f 
+0080: 80 81 82 83  84 85 86 87  88 89 8a 8b  8c 8d 8e 8f 
+0090: 90 91 92 93  94 95 96 97  98 99 9a 9b  9c 9d 9e 9f 
+00a0: a0 a1 a2 a3  a4 a5 a6 a7  a8 a9 aa ab  ac ad ae af 
+00b0: b0 b1 b2 b3  b4 b5 b6 b7  b8 b9 ba bb  bc bd be bf 
+00c0: c0 c1 c2 c3  c4 c5 c6 c7  c8 c9 ca cb  cc cd ce cf 
+00d0: d0 d1 d2 d3  d4 d5 d6 d7  d8 d9 da db  dc dd de df 
+00e0: e0 e1 e2 e3  e4 e5 e6 e7  e8 e9 ea eb  ec ed ee ef 
+00f0: f0 f1 f2 f3  f4 f5 f6 f7  f8 f9 fa fb  fc fd fe ff 
