@@ -48,7 +48,7 @@
 #include "demux.h"	/* needs packet.h */
 #include "pluto/connections.h"
 #include "hostpair.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "md5.h"
 #include "sha1.h"
 #include "whack.h"
