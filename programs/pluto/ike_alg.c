@@ -55,18 +55,19 @@
  * 	- registration
  * 	- lookup
  *=========================================================*/
-struct ike_alg *ike_alg_base[IKE_ALG_MAX+1] = {NULL, NULL};
-/*	check if IKE encrypt algo is present */
-bool ike_alg_enc_present(int ealg)
+struct ike_alg *ike_alg_base[IKEv2_TRANS_TYPE_COUNT+1] = {NULL, NULL};
+
+/*	check if IKEv1 encrypt algo is present */
+bool ike_alg_enc_present(int ealg, unsigned int keysize UNUSED)
 {
-	struct encrypt_desc *enc_desc = ike_alg_get_encrypter(ealg);
+	struct ike_encr_desc *enc_desc = ikev1_alg_get_encr(ealg);
 	return enc_desc ? enc_desc->enc_blocksize : 0;
 }
 
-/*	check if IKE hash algo is present */
+/*	check if IKEv1 hash algo is present */
 bool ike_alg_hash_present(int halg)
 {
-	struct hash_desc *hash_desc = ike_alg_get_hasher(halg);
+	struct ike_integ_desc *hash_desc = ikev1_crypto_get_hasher(halg);
 	return hash_desc ? hash_desc->hash_digest_len : 0;
 }
 
@@ -75,9 +76,9 @@ bool ike_alg_enc_ok(int ealg, unsigned key_len,
 		const char **errp, char *ugh_buf, size_t ugh_buf_len)
 {
 	int ret=TRUE;
-	struct encrypt_desc *enc_desc;
 
-	enc_desc = ike_alg_get_encrypter(ealg);
+	struct ike_encr_desc *enc_desc = ikev1_alg_get_encr(ealg);
+
 	if (!enc_desc) {
 		/* failure: encrypt algo must be present */
 		snprintf(ugh_buf, ugh_buf_len, "encrypt algo not found");
@@ -164,7 +165,9 @@ bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, 
  */
 /* XXX:jjo use keysize */
 struct ike_alg *
-ike_alg_find(unsigned algo_type, unsigned algo_id, unsigned keysize __attribute__((unused)))
+ike_alg_ikev1_find(enum ikev2_trans_type algo_type
+                   , unsigned algo_id
+                   , unsigned keysize UNUSED)
 {
 	struct ike_alg *e=ike_alg_base[algo_type];
 	for(;e!=NULL;e=e->algo_next) {
@@ -175,7 +178,7 @@ ike_alg_find(unsigned algo_type, unsigned algo_id, unsigned keysize __attribute_
 }
 
 struct ike_alg *
-ike_alg_ikev2_find(unsigned algo_type
+ike_alg_ikev2_find(enum ikev2_trans_type algo_type
 		   , enum ikev2_trans_type_encr algo_v2id
 		   , unsigned keysize __attribute__((unused)))
 {
@@ -195,12 +198,12 @@ ike_alg_add(struct ike_alg* a, bool quiet)
 {
 	int ret=0;
 	const char *ugh="No error";
-	if (a->algo_type > IKE_ALG_MAX)
+	if (a->algo_type > IKEv2_TRANS_TYPE_COUNT)
 	{
-		ugh="Invalid algo_type is larger then IKE_ALG_MAX";
+		ugh="Invalid algo_type is larger then IKEv2_TRANS_TYPE_COUNT";
 		return_on(ret,-EINVAL);
 	}
-	if (ike_alg_find(a->algo_type, a->algo_id, 0))
+	if (ike_alg_ikev1_find(a->algo_type, a->algo_id, 0))
 	{
 		ugh="Algorithm type already exists";
 		return_on(ret,-EEXIST);
@@ -220,7 +223,7 @@ return_out:
  * 	Validate and register IKE hash algorithm object
  */
 int
-ike_alg_register_hash(struct hash_desc *hash_desc)
+ike_alg_register_hash(struct ike_integ_desc *hash_desc)
 {
 	const char *alg_name = "<none>";
 	int ret=0;
@@ -270,7 +273,7 @@ return_out:
  * 	Validate and register IKE encryption algorithm object
  */
 int
-ike_alg_register_enc(struct encrypt_desc *enc_desc)
+ike_alg_register_enc(struct ike_encr_desc *enc_desc)
 {
 	const char *alg_name;
 	int ret=0;
@@ -316,8 +319,8 @@ ike_alg_pfsgroup(struct connection *c, lset_t policy)
 {
 	const struct oakley_group_desc * ret = NULL;
 	if ( (policy & POLICY_PFS) &&
-			c->alg_info_esp && c->alg_info_esp->esp_pfsgroup)
-		ret = lookup_group(c->alg_info_esp->esp_pfsgroup);
+             c->alg_info_esp && c->alg_info_esp->esp_pfsgroup)
+            ret = lookup_group(c->alg_info_esp->esp_pfsgroup);
 	return ret;
 }
 

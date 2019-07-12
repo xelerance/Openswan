@@ -260,44 +260,6 @@ struct db_trans_flat {
     u_int16_t              encr_keylen;		/* Key length in bits */
 };
 
-enum ikev2_trans_type_encr v1tov2_encr(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_DES_CBC:
-	return IKEv2_ENCR_DES;
-    case OAKLEY_IDEA_CBC:
-	return IKEv2_ENCR_IDEA;
-    case OAKLEY_BLOWFISH_CBC:
-	return IKEv2_ENCR_BLOWFISH;
-    case OAKLEY_RC5_R16_B64_CBC:
-	return IKEv2_ENCR_RC5;
-    case OAKLEY_3DES_CBC:
-	return IKEv2_ENCR_3DES;
-    case OAKLEY_CAST_CBC:
-	return IKEv2_ENCR_CAST;
-    case OAKLEY_AES_CBC:
-	return IKEv2_ENCR_AES_CBC;
-    case OAKLEY_TWOFISH_CBC_SSH:
-    case OAKLEY_TWOFISH_CBC:
-    case OAKLEY_SERPENT_CBC:
-    default:
-	return IKEv2_ENCR_INVALID;
-    }
-}
-
-enum ikev2_trans_type_integ v1tov2_integ(int oakley)
-{
-    switch(oakley) {
-    case OAKLEY_MD5:
-        return IKEv2_AUTH_HMAC_MD5_96;
-    case OAKLEY_SHA1:
-        return IKEv2_AUTH_HMAC_SHA1_96;
-    case OAKLEY_SHA2_256:
-        return IKEv2_AUTH_HMAC_SHA2_256_128;
-    default:
-        return IKEv2_AUTH_INVALID;
-   }
-}
 
 enum ikev2_trans_type_integ v1phase2tov2child_integ(int ikev1_phase2_auth)
 {
@@ -541,7 +503,7 @@ struct db_sa *sa_v2_convert(struct db_sa *f)
 }
 
 bool
-ikev2_acceptable_group(struct state *st, oakley_group_t group)
+ikev2_acceptable_group(struct state *st, enum ikev2_trans_type_dh group)
 {
     struct db_sa *sadb = st->st_sadb;
     struct db_v2_prop *pd;
@@ -1103,19 +1065,18 @@ ikev2_parse_parent_sa_body(
     ta.encrypt   = itl->encr_transforms[itl->encr_i];
     ta.enckeylen = itl->encr_keylens[itl->encr_i] > 0 ?
 			itl->encr_keylens[itl->encr_i] : 0;
-    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
-							     , ta.encrypt
-							     , ta.enckeylen);
+    ta.encrypter = ikev1_alg_get_encr(ta.encrypt);
+
     passert(ta.encrypter != NULL);
     if (ta.enckeylen <= 0)
 	ta.enckeylen = ta.encrypter->keydeflen;
 
     ta.integ_hash  = itl->integ_transforms[itl->integ_i];
-    ta.integ_hasher= (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_INTEG,ta.integ_hash, 0);
+    ta.integ_hasher= ikev1_crypto_get_hasher(ta.integ_hash);
     passert(ta.integ_hasher != NULL);
 
     ta.prf_hash    = itl->prf_transforms[itl->prf_i];
-    ta.prf_hasher  = (struct hash_desc *)ike_alg_ikev2_find(IKE_ALG_HASH, ta.prf_hash, 0);
+    ta.prf_hasher  = ikev1_crypto_get_hasher(ta.prf_hash);
     passert(ta.prf_hasher != NULL);
 
     ta.groupnum    = itl->dh_transforms[itl->dh_i];
@@ -1410,9 +1371,7 @@ ikev2_parse_child_sa_body(
 
     /* this is REALLY not correct, because this is not an IKE algorithm */
     /* XXX maybe we can leave this to ikev2 child key derivation */
-    ta.encrypter = (struct encrypt_desc *)ike_alg_ikev2_find(IKE_ALG_ENCRYPT
-							     , ta.encrypt
-							     , ta.enckeylen);
+    ta.encrypter = ikev1_alg_get_encr(ta.encrypt);
     if (ta.encrypter)
     {
 	if (!ta.enckeylen)

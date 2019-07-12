@@ -62,8 +62,8 @@ ike_alg_show_status(void)
 		whack_log(RC_COMMENT, "algorithm IKE encrypt: id=%d, name=%s, blocksize=%d, keydeflen=%d"
 			, alg
 			, enum_name(&oakley_enc_names, alg)
-			, (int)((struct encrypt_desc *)algo)->enc_blocksize
-			, ((struct encrypt_desc *)algo)->keydeflen
+			, (int)((struct ike_encr_desc *)algo)->enc_blocksize
+			, ((struct ike_encr_desc *)algo)->keydeflen
 			);
 
 	}
@@ -71,7 +71,7 @@ ike_alg_show_status(void)
 		whack_log(RC_COMMENT, "algorithm IKE hash: id=%d, name=%s, hashsize=%d"
 			, algo->algo_id
 			, enum_name(&oakley_hash_names, algo->algo_id)
-			, (int)((struct hash_desc *)algo)->hash_digest_len
+			, (int)((struct ike_integ_desc *)algo)->hash_digest_len
 			);
 	}
 #define IKE_DH_ALG_FOR_EACH(idx) for(idx = 0; idx != oakley_group_size; idx++)
@@ -97,7 +97,7 @@ ike_alg_show_connection(struct connection *c, const char *instance)
 		char buf[1024];
 
 		alg_info_snprint(buf, sizeof(buf)-1,
-				 (struct alg_info *)c->alg_info_ike, TRUE);
+				 (struct alg_info *)c->alg_info_ike);
 		whack_log(RC_COMMENT
 		    , "\"%s\"%s:   IKE algorithms wanted: %s"
 		    , c->name
