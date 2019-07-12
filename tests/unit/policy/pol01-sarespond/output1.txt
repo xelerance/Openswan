@@ -1,0 +1,107 @@
+./sarespond ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./sarespond ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./sarespond ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./sarespond ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./sarespond ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./sarespond ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./sarespond registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./sarespond registed kernel encr algorithm 3des [3, 192<=key<=192]
+./sarespond registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./sarespond registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./sarespond registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./sarespond registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+./sarespond no secrets filename matched "../samples/parker.secrets"
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: 66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./sarespond loaded key: 2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| Added new connection mytunnel-byip with policy RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+./sarespond can not find public key: 6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698
+./sarespond use keyid: 1:<> / 2:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
+| counting wild cards for @berri.testing.xelerance.com is 0
+./sarespond can not find public key: AD2F DDF5 7ABE 6140 14AA B39E 50EB EC76 CA12 3C8C
+./sarespond use keyid: 1:<> / 2:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+| counting wild cards for 132.213.238.7 is 0
+| orient mytunnel-byip reference sr#1 this: addr:192.168.1.1 that: addr:132.213.238.7
+| orient mytunnel-byip checking against if: eth0 (AF_INET:192.168.1.1:500)
+|     orient matched on IP
+| orient mytunnel-byip checking against if: eth0 (AF_INET:192.168.1.1:4500)
+| orient mytunnel-byip checking against if: eth0 (AF_INET6:2606:2800:220:1:248:1893:25c8:1946:500)
+|   orient mytunnel-byip finished with: 1 [192.168.1.1]
+| find_host_pair: looking for me=192.168.1.1:500 %address him=132.213.238.7:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: 192.168.1.1:500 %address 132.213.238.7:500 -> hp:none
+| find_ID_host_pair: looking for me=@berri.testing.xelerance.com him=132.213.238.7 (exact)
+|   concluded with <none>
+./sarespond adding connection: "mytunnel-byip"
+| 192.168.1.1[@berri.testing.xelerance.com]...132.213.238.7
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK
+|   orient mytunnel-byip finished with: 1 [192.168.1.1]
+RC=0 "mytunnel-byip": 192.168.1.1[@berri.testing.xelerance.com]...132.213.238.7; unrouted; eroute owner: #0
+RC=0 "mytunnel-byip":     myip=unset; hisip=unset;
+RC=0 "mytunnel-byip":   keys: 1:none 2:66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9...
+RC=0 "mytunnel-byip":        ....1:none 2:2A3A 92D4 E0FA 5CD7 8DE1 D133 0C62 6985 2B6E D701
+RC=0 "mytunnel-byip":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "mytunnel-byip":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 32,32; interface: eth0; kind=CK_PERMANENT
+| creating state object #1 at Z
+| ikev2_child_ts_evaluate, evaluating base fit for mytunnel-byip against tsi=1,tsr=1 traffic selectors
+|   ikev2_evaluate_connection_fit evaluating our I=mytunnel-byip:<noclient>:0/0 R=<noclient>:0/0  to their:
+|     tsi[0]=192.168.1.1/192.168.1.1 proto=0 portrange 0-65535
+|     tsr[0]=132.213.238.7/132.213.238.7 proto=0 portrange 0-65535
+| ei->port 0  tsi[tsi_ni].startport 0  tsi[tsi_ni].endport 65535
+|       has ts_range1=0 maskbits1=32 ts_range2=0 maskbits2=32 fitbits=8224 <> -1
+| bfit_n=ikev2_evaluate_connection_fit found better fit c mytunnel-byip
+|     evaluate_connection_port_fit tsi_n[1], best=-1
+|    tsi[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0], range_i=65536 best=-1
+|    tsr[0] 0-65535: exact port match with 0.  fitness 65536
+|       evaluating_connection_port_fit tsi_n[0] tsr_n[0], range=65536/65536 best=-1
+|     best ports fit so far: tsi[0] fitrange_i 65536, tsr[0] fitrange_r 65536, matchiness 131072
+|     port_fitness 131072
+| ikev2_evaluate_connection_port_fit found better fit c mytunnel-byip, tsi[0],tsr[0]
+./sarespond leak: struct state in new_state(), item size: X
+./sarespond leak: keep id name, item size: X
+./sarespond leak: ID host_pair, item size: X
+./sarespond leak: host_pair, item size: X
+./sarespond leak: 2 * host ip, item size: X
+./sarespond leak: keep id name, item size: X
+./sarespond leak: connection name, item size: X
+./sarespond leak: struct connection, item size: X
+./sarespond leak: pubkey entry, item size: X
+./sarespond leak: rfc3110 format of public key, item size: X
+./sarespond leak: pubkey, item size: X
+./sarespond leak: keep id name, item size: X
+./sarespond leak: pubkey entry, item size: X
+./sarespond leak: rfc3110 format of public key, item size: X
+./sarespond leak: pubkey, item size: X
+./sarespond leak: policies path, item size: X
+./sarespond leak: ocspcerts path, item size: X
+./sarespond leak: aacerts path, item size: X
+./sarespond leak: certs path, item size: X
+./sarespond leak: private path, item size: X
+./sarespond leak: crls path, item size: X
+./sarespond leak: cacert path, item size: X
+./sarespond leak: acert path, item size: X
+./sarespond leak: default conf var_dir, item size: X
+./sarespond leak: default conf conffile, item size: X
+./sarespond leak: default conf ipsecd_dir, item size: X
+./sarespond leak: default conf ipsec_conf_dir, item size: X
+./sarespond leak: 4 * hasher name, item size: X
+./sarespond leak: 10 * group description, item size: X
+./sarespond leak detective found Z leaks, total size X
+Pre-amble (offset: X): #!-pluto-whack-file- recorded on FOO
+test case 1: STF_OK

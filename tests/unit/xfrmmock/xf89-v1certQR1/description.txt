@@ -1,0 +1,14 @@
+This test case is an IKEv1 responder, using main mode, sending the QR1 packet.
+This step validates that the ikev1 child SA is correctly negotiated according
+to the phase2alg= policy.
+
+
+
+
+
+
+
+
+
+
+
