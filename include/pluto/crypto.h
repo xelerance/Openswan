@@ -33,6 +33,7 @@
 #endif
 
 #include "mpzfuncs.h"
+#include "algoparse.h"
 
 extern void init_crypto(void);
 
@@ -49,7 +50,7 @@ struct oakley_group_desc {
 };
 
 extern const struct oakley_group_desc unset_group;	/* magic signifier */
-extern const struct oakley_group_desc *lookup_group(u_int16_t group);
+extern const struct oakley_group_desc *lookup_group(enum ikev2_trans_type_dh group);
 extern const struct oakley_group_desc oakley_group[];
 extern const unsigned int oakley_group_size;
 
@@ -65,11 +66,12 @@ extern const unsigned int oakley_group_size;
 
 struct state;	/* forward declaration, dammit */
 
-struct encrypt_desc;
-struct hash_desc;
-struct encrypt_desc *crypto_get_encrypter(int alg);
-struct hash_desc *crypto_get_hasher(oakley_hash_t alg);
-void crypto_cbc_encrypt(const struct encrypt_desc *e, bool enc, u_int8_t *buf, size_t size, struct state *st);
+struct ike_encr_desc;
+struct ike_integ_desc;
+struct ike_encr_desc *crypto_get_encrypter(enum ikev2_trans_type_encr alg);
+struct ike_integ_desc *crypto_get_hasher(enum ikev2_trans_type_integ alg);
+
+void crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc, u_int8_t *buf, size_t size, struct state *st);
 
 #define update_iv(st)	passert(st->st_new_iv_len <= sizeof(st->st_iv)); memcpy((st)->st_iv, (st)->st_new_iv \
     , (st)->st_iv_len = (st)->st_new_iv_len)
@@ -100,7 +102,7 @@ union hash_ctx {
 
 #ifndef NO_HASH_CTX
 struct hmac_ctx {
-    const struct hash_desc *h;	/* underlying hash function */
+    const struct ike_integ_desc *h;	/* underlying hash function */
     size_t hmac_digest_len;	/* copy of h->hash_digest_len */
     union hash_ctx hash_ctx;	/* ctx for hash function */
     u_char buf1[HMAC_BUFSIZE], buf2[HMAC_BUFSIZE];
@@ -116,7 +118,7 @@ struct hmac_ctx {
 
 extern void hmac_init(
     struct hmac_ctx *ctx,
-    const struct hash_desc *h,
+    const struct ike_integ_desc *h,
     const u_char *key,
     size_t key_len);
 
@@ -144,7 +146,7 @@ extern void hmac_final(u_char *output, struct hmac_ctx *ctx);
 #endif
 
 #ifdef HAVE_LIBNSS
-extern CK_MECHANISM_TYPE nss_key_derivation_mech(const struct hash_desc *hasher);
+extern CK_MECHANISM_TYPE nss_key_derivation_mech(const struct ike_integ_desc *hasher);
 extern void nss_symkey_log(PK11SymKey *key, const char *msg);
 extern chunk_t hmac_pads(u_char val, unsigned int len);
 extern PK11SymKey *pk11_derive_wrapper_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
