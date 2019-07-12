@@ -32,7 +32,7 @@
 #define _PLUTO_CRYPT_H
 
 #include "osw_select.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
 typedef unsigned int pcr_req_id;
 

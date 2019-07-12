@@ -32,7 +32,7 @@
 #include "pluto/connections.h"
 #include "hostpair.h"
 
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "sha1.h"   /* for NAT DETECTION processing */
 #include "x509.h"
 #include "x509more.h"

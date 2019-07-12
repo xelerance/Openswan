@@ -69,7 +69,7 @@
 #include "cookie.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "vendor.h"
 
 #include "natt_defines.h"
