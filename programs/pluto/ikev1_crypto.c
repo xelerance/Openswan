@@ -50,7 +50,7 @@
 #include "whack.h"
 #include "fetch.h"
 #include "pkcs.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "pluto/ike_alg.h"
 #include "oswcrypto.h"
