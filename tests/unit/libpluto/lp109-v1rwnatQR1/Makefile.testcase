@@ -1,0 +1,26 @@
+# -*- makefile -*-
+CONNNAME=bobnet-ikev1
+ENDNAME=sun
+INPUTPCAPS=v1rwnatM1.pcap v1rwnatM2.pcap v1rwnatM3.pcap v1rwnatQI1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ${INPUTPCAPS}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=v1rwnatQR1
+
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/ikev1_quick.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/initiate.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/pending.o
+EXTRALIBS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+
+EXTRALIBS+=${LIBPLUTO}
+
+pcapupdate:
+	cp ../lp102-v1rwnatM1/OUTPUT/v1rwnatM1.pcap   v1rwnatM1.pcap
+	cp ../lp104-v1rwnatM2/OUTPUT/v1rwnatM2.pcap   v1rwnatM2.pcap
+	cp ../lp106-v1rwnatM3/OUTPUT/v1rwnatM3.pcap   v1rwnatM3.pcap
+	cp ../lp108-v1rwnatQI1/OUTPUT/v1rwnatQI1.pcap v1rwnatQI1.pcap
+
