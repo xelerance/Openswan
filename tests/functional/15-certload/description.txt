@@ -1,0 +1,6 @@
+This test case starts pluto, and then uses addconn to insert a conn
+into pluto.  Pluto is then terminated.
+
+The conn loaded has a missing certificate file and this seems to cause the
+rightid not to get set correctly.
+
