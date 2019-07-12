@@ -61,6 +61,7 @@
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
 #include "crypto/aes_cbc.h"
+#include "pluto/ike_alg.h"
 #include "ike_alg.h"
 #include "oswtime.h"
 #include "timer.h"
@@ -2470,7 +2471,7 @@ netkey_do_command(struct connection *c, const struct spd_route *sr
     return invoke_command(verb, verb_suffix, cmd);
 }
 
-/* called periodically to cleanup expired bare shunts, like what 
+/* called periodically to cleanup expired bare shunts, like what
  * pfkey_scan_proc_shunts() does for KLIPS shunts */
 void
 netlink_scan_bare_shunts(void)

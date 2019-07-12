@@ -45,7 +45,7 @@
 #include "oswlog.h"
 #include "log.h"
 #include "timer.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "id.h"
 #include "secrets.h"
 #include "keys.h"
