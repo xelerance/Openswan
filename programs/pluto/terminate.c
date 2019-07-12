@@ -61,7 +61,7 @@
 #include "dnskey.h"	/* needs keys.h and adns.h */
 #include "whack.h"
 #include "alg_info.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "ike_alg.h"
 #include "plutocerts.h"
 #include "kernel_alg.h"
