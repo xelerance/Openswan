@@ -42,7 +42,7 @@
 #include "defs.h"
 #include "packet.h"
 #include "demux.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "rnd.h"
 #include "pluto/state.h"
 #include "pluto_crypt.h"
