@@ -1,0 +1,6 @@
+Using the ike_alg plugable IKE xfrm routines, register the AES algorithm and
+then find it, making sure that it supports aes128 and aes256, and that it can
+be used to encrypt and descrypt from text.
+
+
+
