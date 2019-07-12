@@ -98,7 +98,12 @@ UNITTESTS_I3+=lp85-h2h-invalid-deleteSA-I3
 #algo - core UNITTESTS_I1+=lp90-h2h-sareplace-I1
 UNITTESTS_R1+=lp91-h2h-sareplace-R1
 
-UNITTESTS_I1+=lp210-1des-fails
+UNITTESTS_v1I1+=lp43-parentM1
+UNITTESTS_v1I1+=lp81-ikev1derived
+UNITTESTS_v1I1+=lp82-v1certM1
+UNITTESTS_v1I1+=lp92-v1sha512M1
+UNITTESTS_v1I1+=lp93-v1emptyM1
+UNITTESTS_v1I1+=lp102-v1rwnatM1
 
 UNITTESTS_v1I1+=lp43-parentM1
 UNITTESTS_v1I1+=lp81-ikev1derived
@@ -160,6 +165,10 @@ UNITTESTS_I4+=lp66-natt-replaceI
 # these three do not work yet, #6602
 #algo UNITTESTS_I4+=lp71-childTSwrong
 #algo UNITTESTS_I4+=lp72-msg1nopropchosen
+
+# these three do not work yet, #6602
+UNITTESTS_I4+=lp71-childTSwrong
+UNITTESTS_I4+=lp72-msg1nopropchosen
 
 UNITTESTS_I1+=lp87-rekeyv2-inval-I1
 #core UNITTESTS_R1+=lp88-rekeyv2-inval-R1
