@@ -55,7 +55,7 @@
 #include "timer.h"
 #include "kernel_alg.h"
 #include "pluto/ike_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto/virtual.h" /* for show_virtual_private */
 
 #ifndef NO_DB_OPS_STATS
