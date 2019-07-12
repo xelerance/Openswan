@@ -61,7 +61,7 @@
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 #include "kernel_alg.h"
 #include "crypto/aes_cbc.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 /* required for Linux 2.6.26 kernel and later */
 #ifndef XFRM_STATE_AF_UNSPEC

@@ -9,7 +9,7 @@
 #include "log.h"
 #include "sha2.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #ifdef HAVE_LIBNSS
 # include <pk11pub.h>
