@@ -33,7 +33,7 @@
 #include "defs.h"
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 
 #include "pluto/state.h"
 #include "packet.h"

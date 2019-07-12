@@ -46,7 +46,7 @@
 
 #include "sha1.h"
 #include "md5.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 
 #include "alg_info.h"
 #include "kernel_alg.h"

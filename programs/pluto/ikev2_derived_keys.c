@@ -44,7 +44,7 @@
 #include "packet.h"
 #include "md5.h"
 #include "sha1.h"
-#include "crypto.h" /* requires sha1.h and md5.h */
+#include "pluto/crypto.h" /* requires sha1.h and md5.h */
 #include "demux.h"
 #include "pluto/ike_alg.h"
 #include "ikev2.h"

@@ -70,7 +70,7 @@
 #include "pluto/virtual.h"
 
 #include "pluto_crypt.h"
-#include "crypto.h"
+#include "pluto/crypto.h"
 #include "ikev1.h"
 
 stf_status aggr_not_present(int whack_sock UNUSED
