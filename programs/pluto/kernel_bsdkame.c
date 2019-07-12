@@ -40,7 +40,7 @@
 #include "defs.h"
 #include "id.h"
 #include "pluto/connections.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "kernel.h"
 #include "kernel_pfkey.h"
 #include "timer.h"
