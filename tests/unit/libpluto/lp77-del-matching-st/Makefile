@@ -49,6 +49,7 @@ EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/crypt_ke.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_alg.o
 ifeq ($(USE_EXTRACRYPTO),true)
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_blowfish.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_twofish.o
@@ -57,12 +58,9 @@ endif
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_aes.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_sha2.o
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/vendor.o
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
-EXTRALIBS+=${LIBDESLITE} ${LIBAES}
 EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG} ${LIBOSWKEYS}
-EXTRALIBS+=${LIBPLUTO} ${CRYPTOLIBS} ${WHACKLIB}
+EXTRALIBS+=${LIBPLUTO} ${LIBALGOPARSE} ${CRYPTOLIBS} ${WHACKLIB}
 EXTRALIBS+=${LIBDESLITE} ${LIBAES}
-EXTRALIBS+=${LIBOSWLOG} ${LIBOPENSWAN} ${LIBOSWLOG}
 EXTRALIBS+=${NSS_LIBS} ${FIPS_LIBS}
 EXTRALIBS+=-lgmp ${LIBEFENCE} -lpcap  ${NSS_LIBS} ${FIPS_LIBS}
 
