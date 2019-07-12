@@ -37,7 +37,7 @@
 #include "packet.h"
 #include "log.h"
 #include "whack.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "alg_info.h"
 #include "ike_alg.h"
 #include "db_ops.h"
