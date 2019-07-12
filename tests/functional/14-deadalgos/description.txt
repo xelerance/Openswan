@@ -1,0 +1,8 @@
+This test case starts pluto.
+It loads a series of conns with a variety of ike= algorithm settings,
+and then it looks at what the results are.
+Pluto is expected to complain about the algorithms which are obsolete.
+
+
+
+
