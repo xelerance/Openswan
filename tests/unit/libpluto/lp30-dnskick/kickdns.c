@@ -21,7 +21,7 @@
 #include "pluto/defs.h"
 #include "pluto/demux.h"
 #include "pluto/connections.h"
-#include "state.h"
+#include "pluto/state.h"
 
 #include "whackmsgtestlib.c"
 #include "seam_timer.c"

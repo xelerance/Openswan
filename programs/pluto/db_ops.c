@@ -63,7 +63,7 @@
 #include "sysdep.h"
 #include "constants.h"
 #include "defs.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "spdb.h"
 #include "db_ops.h"
