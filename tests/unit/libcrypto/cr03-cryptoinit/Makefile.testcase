@@ -1,0 +1,3 @@
+TESTNAME=cr03-cryptoinit
+TESTSRC=cryptoinit.c
+
