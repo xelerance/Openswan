@@ -1,0 +1,39 @@
+# -*- makefile -*-
+SAMPLEDIR=../../libpluto/samples/
+
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_main.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_quick.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/spdb_v1_struct.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev1_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/initiate.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/pending.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/nat_traversal.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/x509keys.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ac.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_crypto.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_rsa.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ikev2_psk.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/kernel_forces.o
+EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/signatures.o
+EXTRALIBS+=${LIBPLUTO}
+
+CONNNAME=rw
+ENDNAME=moon
+INPUTPCAPS=v1certM1.pcap v1certM2.pcap v1certM3.pcap v1certQI1.pcap
+UNITTEST1ARGS=${WHACKFILE} ${CONNNAME} OUTPUT/${TESTNAME}.pcap ${INPUTPCAPS}
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+
+TESTNAME=v1certQR1
+
+all: programs
+
+pcapupdate:
+	cp ../../libpluto/lp82-v1certM1/OUTPUT/v1certM1.pcap v1certM1.pcap
+	cp ../../libpluto/lp84-v1certM2/OUTPUT/v1certM2.pcap v1certM2.pcap
+	cp ../../libpluto/lp86-v1certM3/OUTPUT/v1certM3.pcap v1certM3.pcap
+	cp ../../xfrmmock/xf88-v1certQI1/OUTPUT/v1certQI1.pcap v1certQI1.pcap
+
+
