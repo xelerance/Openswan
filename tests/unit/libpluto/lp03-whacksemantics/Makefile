@@ -34,7 +34,6 @@ EXTRALIBS+=${OBJDIRTOP}/programs/pluto/foodgroups.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/state.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/msgdigest.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/hmac.o
-EXTRALIBS+=${OBJDIRTOP}/programs/pluto/plutoalg.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/db_ops.o
 #EXTRALIBS+=${OBJDIRTOP}/programs/pluto/crypt_utils.o
 EXTRALIBS+=${OBJDIRTOP}/programs/pluto/cookie.o
