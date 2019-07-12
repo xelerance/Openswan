@@ -22,13 +22,13 @@ include ${OPENSWANSRCDIR}/Makefile.ver
 
 MANDIR=$(MANTREE)/man3
 
-SRCS=addrtoa.c addrtot.c addrtypeof.c alg_info.c anyaddr.c atoaddr.c \
+SRCS=addrtoa.c addrtot.c addrtypeof.c anyaddr.c atoaddr.c \
 	atoasr.c atosubnet.c atoul.c constants.c copyright.c datatot.c \
 	alloc.c biglset.c diag.c familytot.c \
 	goodmask.c id.c initaddr.c initsaid.c initsubnet.c \
 	iprange.c \
         keyblobtoid.c \
-	kernel_alg.c lex.c mpzfuncs.c \
+	lex.c mpzfuncs.c \
 	optionsfrom.c oswconf.c oswtime.c oswid.c \
 	prng.c \
 	portof.c rangetoa.c rangetosubnet.c sameaddr.c \

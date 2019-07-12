@@ -85,20 +85,19 @@ DISTGCRYPT = \
 	smallprime.c
 
 DISTSRC = \
-        connections.c initiate.c terminate.c connections.h \
+        connections.c initiate.c terminate.c \
 	pending.c pending.h \
 	foodgroups.c foodgroups.h \
 	cookie.c cookie.h \
-	crypto.h crypto.c \
-	db_ops.c \
-	demux.c demux.h msgdigest.c \
+	crypto.c \
+	demux.c msgdigest.c \
 	dnskey.c dnskey.h \
-	dpd.c dpd.h \
+	dpd.c  \
 	myid.c hmac.c \
 	hostpair.c \
 	ipsec_doi.c ipsec_doi.h ikev1.c ikev1_quick.c ikev1_continuations.h \
 	ikev1_crypto.c ikev1_nss.c \
-        ikev2.c ikev2_parent.c ikev2_parent_I1.c ikev2_parent_R1.c ikev2_child.c ikev2_derived_keys.c ikev2_notify.c \
+        ikev2.c ikev2_alg.c ikev2_parent.c ikev2_parent_I1.c ikev2_parent_R1.c ikev2_child.c ikev2_derived_keys.c ikev2_notify.c \
 	ikev2_prfplus.c spdb_v2_struct.c \
 	kernel.c kernel.h \
 	${NETKEY_SRCS} \
@@ -108,9 +107,9 @@ DISTSRC = \
 	ike_alg_aes.c ike_alginit.c ikev2_rsa.c ikev2_psk.c ikev2_x509.c  \
 	rcv_whack.c rcv_whack.h \
 	$(IPSECPOLICY_DIST_SRCS) \
-	${EXTRA_CRYPTO_SRCS} ike_alg_sha2.c \
-	log.c log.h \
-	plutomain.c plutoalg.c \
+	${EXTRA_CRYPTO_SRCS} \
+	log.c \
+	plutomain.c \
 	pluto_crypt.c crypt_utils.c pluto_crypt.h \
 	build_ke.c crypt_ke.c crypt_dh.c crypt_start_dh.c \
 	keys.c \
@@ -140,11 +139,11 @@ OBJSGCRYPT =
 
 OBJSPLUTO  = connections.o initiate.o terminate.o
 OBJSPLUTO += pending.o cookie.o crypto.o dpd.o
-OBJSPLUTO += foodgroups.o log.o state.o plutomain.o plutoalg.o server.o
+OBJSPLUTO += foodgroups.o log.o state.o plutomain.o server.o
 OBJSPLUTO += timer.o replace.o hmac.o hostpair.o
 OBJSPLUTO += myid.o ipsec_doi.o
 OBJSPLUTO += ikev1.o ikev1_main.o   ikev1_quick.o
-OBJSPLUTO += ikev2.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
+OBJSPLUTO += ikev2.o ikev2_alg.o ikev2_parent.o ikev2_child.o spdb_v2_struct.o ikev2_notify.o
 OBJSPLUTO += ikeping.o kernel.o
 OBJSPLUTO += $(NETKEY_OBJS) $(BSDKAME_OBJS) ${KLIPS_OBJS} ${MAST_OBJS} ${WIN2K_OBJS} ${PFKEYv2_OBJS}
 OBJSPLUTO += kernel_noklips.o rcv_whack.o
@@ -224,7 +223,7 @@ endif
 ${LIBTPM}: $(wildcard ${srcdir}tpm/*.c) $(wildcard ${srcdir}tpm/*.h) $(wildcard ${srcdir}tpm/*.i)
 	@(cd tpm && ${MAKE} srcdir=${srcdir}tpm/ libtpm.a )
 
-$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM}
+$(BINNAMEPLUTO): $(OBJSPLUTO) $(ALG_LIBS) ${LIBOPENSWAN} ${LIBTPM} ${LIBALGOPARSE}
 	@echo LD ${BINNAMEPLUTO}
 	@$(CC) -o $(BINNAMEPLUTO) $(LDFLAGS) $(USERLINK) $(OBJSPLUTO) $(LIBSPLUTO) ${PLUTOMINUSL} $(LIBDESLITE)
 
