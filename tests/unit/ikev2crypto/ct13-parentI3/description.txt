@@ -1,0 +1,13 @@
+This test case is an IKEv2 initiator.
+It tests crypto operations along the entire path.
+
+This test serves as the template/validation for the xf13-parentI3 test case,
+without the xfrm code enabled.
+
+
+
+
+
+
+
+

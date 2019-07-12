@@ -1,0 +1,418 @@
+./v1rwnatM2 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./v1rwnatM2 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
+./v1rwnatM2 adjusting ipsec.d to ../samples/alice
+./v1rwnatM2 loading secrets from "../samples/alice.secrets"
+./v1rwnatM2 loaded private key for keyid: PPK_RSA:AQOHGEUnh/55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
+./v1rwnatM2 registed kernel encr algorithm aes_cbc [12, 128<=key<=512]
+./v1rwnatM2 registed kernel encr algorithm 3des [3, 192<=key<=192]
+./v1rwnatM2 registed kernel integ algorithm hmac_sha1_96 [2, 160<=key<=160]
+./v1rwnatM2 registed kernel integ algorithm hmac_md5_96 [1, 128<=key<=128]
+./v1rwnatM2 registed kernel integ algorithm hmac_sha2_256_128 [12, 256<=key<=256]
+./v1rwnatM2 registed kernel integ algorithm hmac_sha2_512_256 [14, 256<=key<=256]
+| processing whack message of size: A
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./v1rwnatM2 loaded key: 55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B
+| processing whack message of size: A
+processing whack msg time: X size: Y
+./v1rwnatM2 loaded key: D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B
+| processing whack message of size: A
+processing whack msg time: X size: Y
+| find_host_pair: looking for me=<none>:500 %any him=<none>:500 any-match
+| find_host_pair: concluded with <none>
+| found_host_pair_conn (check_connection_end): %any:500 %any/%any:500 -> hp:none
+| Added new connection bobnet-ikev1 with policy RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+| from whack: got --esp=3des-md5;modp1536
+| esp string values: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+| ike (phase1) algorihtm values: 3des(3)-hmac_md5_96(1)-prfmd5(1)-MODP1536(5); flags=-strict
+./v1rwnatM2 use keyid: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B / 2:<>
+| counting wild cards for @alice is 0
+./v1rwnatM2 use keyid: 1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B / 2:<>
+| counting wild cards for @sun is 0
+| alg_info_addref() alg_info->ref_cnt=1
+| alg_info_addref() alg_info->ref_cnt=1
+| orient bobnet-ikev1 reference sr#1 this: addr:192.168.0.2 that: %defaultroute
+| orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:4500)
+| orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:500)
+|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca called with a=(empty) b=(empty)
+| orient bobnet-ikev1 matching on public/private keys: this=no[%address] that=yes[%defaultroute]
+|   orient bobnet-ikev1 matched on that having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 0.0.0.0 port: 4500, family: 2, best: <none>/0 0
+|   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
+|   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
+| find_host_pair: looking for me=<invalid>:500 %address him=192.168.0.2:500 exact-match
+| find_host_pair: concluded with <none>
+| connect_to_host_pair: <invalid>:500 %address 192.168.0.2:500 -> hp:none
+| find_ID_host_pair: looking for me=@alice him=@sun (exact)
+|   concluded with <none>
+./v1rwnatM2 adding connection: "bobnet-ikev1"
+| %any[@alice]...192.168.0.2[@sun]===10.2.0.0/16
+| ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1; policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK
+|   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
+RC=0 "bobnet-ikev1": %any[@alice]...192.168.0.2[@sun]===10.2.0.0/16; unrouted; eroute owner: #0
+RC=0 "bobnet-ikev1":     myip=unset; hisip=unset;
+RC=0 "bobnet-ikev1":   keys: 1:55E4 5DBB 7ED7 525C 38EC 6230 CA06 134C 2B1D 013B 2:none...
+RC=0 "bobnet-ikev1":        ....1:D997 E951 9BEB 2CBC 72E7 CED3 EFB5 EFCC 53E5 BA4B 2:none
+RC=0 "bobnet-ikev1":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1
+RC=0 "bobnet-ikev1":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+SAREFTRACK; prio: 16,0; interface: eth0; kind=CK_PERMANENT
+RC=0 "bobnet-ikev1":   ESP algorithms wanted: 3des(3)_000-hmac_md5_96(1)_000-MODP1536(5); flags=-strict
+RC=0 "bobnet-ikev1":   ESP algorithms loaded: 3des(3)_192-hmac_md5_96(1)_128
+| find_phase1_state: no SA found for conn 'bobnet-ikev1'
+| creating state object #1 at Z
+| orient bobnet-ikev1 reference sr#1 this: %defaultroute that: addr:192.168.0.2
+| orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:4500)
+| orient bobnet-ikev1 checking against if: eth0 (AF_INET:0.0.0.0:500)
+|   trusted_ca called with a=(empty) b=(empty)
+|   trusted_ca called with a=(empty) b=(empty)
+| orient bobnet-ikev1 matching on public/private keys: this=yes[%defaultroute] that=no[%address]
+|   orient bobnet-ikev1 matched on this having private key
+| pick_if looking for port: 500, family: 2
+|   considering eth0 0.0.0.0 port: 4500, family: 2, best: <none>/0 0
+|   considering eth0 0.0.0.0 port: 500, family: 2, best: <none>/0 0
+|   picking maching interface for family[2,2]: AF_INET resulted in: 0.0.0.0
+|   orient bobnet-ikev1 finished with: 1 [0.0.0.0]
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| inserting state object #1 bucket: 4
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+./v1rwnatM2 initiating Main Mode
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   00 00 00 00  00 00 00 00
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Security Association Payload:
+|    DOI: ISAKMP_DOI_IPSEC
+| ****emit IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| out_sa pcn: 0 has 1 valid proposals
+| out_sa pcn: 0 pn: 0<1 valid_count: 1 trans_cnt: 1
+| ****emit ISAKMP Proposal Payload:
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****emit ISAKMP Transform Payload (ISAKMP):
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|     [1 is OAKLEY_LIFE_SECONDS]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|     [3 is OAKLEY_RSA_SIG]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+|     [5 is OAKLEY_3DES_CBC]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|     [1 is OAKLEY_MD5]
+| ******emit ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+|     [5 is OAKLEY_GROUP_MODP1536]
+| emitting length of ISAKMP Transform Payload (ISAKMP): 32
+| emitting length of ISAKMP Proposal Payload: 40
+| emitting length of ISAKMP Security Association Payload: 52
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 12 raw bytes of Vendor ID into ISAKMP Vendor ID Payload
+| Vendor ID  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+| emitting length of ISAKMP Vendor ID Payload: 16
+| out_vendorid(): sending [Dead Peer Detection]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  af ca d7 13  68 a1 f1 c9  6b 86 96 fc  77 57 01 00
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [RFC 3947]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  4a 13 1c 81  07 03 58 45  5c 57 28 f2  0e 95 45 2f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-03]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  7d 94 19 a6  53 10 ca 6f  2c 17 9d 92  15 52 9d 56
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-02_n]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-02]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  cd 60 46 43  35 df 21 f8  7c fd b2 fc  68 b6 a4 48
+| emitting length of ISAKMP Vendor ID Payload: 20
+| out_vendorid(): sending [draft-ietf-ipsec-nat-t-ike-00]
+| ***emit ISAKMP Vendor ID Payload:
+| emitting 16 raw bytes of V_ID into ISAKMP Vendor ID Payload
+| V_ID  44 85 15 2d  18 b6 bb cd  0b e8 a8 46  95 79 dd cc
+| emitting length of ISAKMP Vendor ID Payload: 20
+| emitting length of ISAKMP Message: 216
+sending 216 bytes for main_outI1 through eth0:500 [192.168.0.1:55044] to 192.168.0.2:500 (using #1)
+|   80 01 02 03  04 05 06 07  00 00 00 00  00 00 00 00
+|   01 10 02 00  00 00 00 00  00 00 00 d8  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  0d 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f  0d 00 00 14  7d 94 19 a6
+|   53 10 ca 6f  2c 17 9d 92  15 52 9d 56  0d 00 00 14
+|   90 cb 80 91  3e bb 69 6e  08 63 81 b5  ec 42 7b 1f
+|   0d 00 00 14  cd 60 46 43  35 df 21 f8  7c fd b2 fc
+|   68 b6 a4 48  00 00 00 14  44 85 15 2d  18 b6 bb cd
+|   0b e8 a8 46  95 79 dd cc
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+RC=105 STATE_MAIN_I1: initiate
+0: output to OUTPUT/v1rwnatM2.pcap
+0: input from v1rwnatN1.pcap
+|   =========== input from pcap file v1rwnatN1.pcap ========
+skipping: eth0:4500 float outside: 55045 <=> d: 55044
+picking: eth0:500  outside: 55044 <=> d: 55044
+| *received 136 bytes from 192.168.0.2:500 on eth0 (port=500)
+|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
+|   01 10 02 00  00 00 00 00  00 00 00 88  0d 00 00 34
+|   00 00 00 01  00 00 00 01  00 00 00 28  00 01 00 01
+|   00 00 00 20  00 01 00 00  80 0b 00 01  80 0c 0e 10
+|   80 03 00 03  80 01 00 05  80 02 00 01  80 04 00 05
+|   0d 00 00 10  4f 45 70 6c  75 74 6f 75  6e 69 74 30
+|   0d 00 00 14  af ca d7 13  68 a1 f1 c9  6b 86 96 fc
+|   77 57 01 00  00 00 00 14  4a 13 1c 81  07 03 58 45
+|   5c 57 28 f2  0e 95 45 2f
+|  processing version=1.0 packet with exchange type=ISAKMP_XCHG_IDPROT (2), msgid: 00000000
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| v1 state object not found
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| v1 peer and cookies match on #1, provided msgid 00000000 vs 00000000
+| v1 state object #1 found, in STATE_MAIN_I1
+| got payload 0x2(ISAKMP_NEXT_SA) needed: 0x2 opt: 0x2080
+| ***parse ISAKMP Security Association Payload:
+|    length: 52
+|    DOI: ISAKMP_DOI_IPSEC
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 16
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 20
+| got payload 0x2000(ISAKMP_NEXT_VID) needed: 0x0 opt: 0x2080
+| ***parse ISAKMP Vendor ID Payload:
+|    length: 20
+./v1rwnatM2 received Vendor ID payload [Openswan (this version) 2.6-regression ]
+./v1rwnatM2 received Vendor ID payload [Dead Peer Detection]
+./v1rwnatM2 received Vendor ID payload [RFC 3947] method set to=115
+| ****parse IPsec DOI SIT:
+|    IPsec DOI SIT: SIT_IDENTITY_ONLY
+| ****parse ISAKMP Proposal Payload:
+|    length: 40
+|    proposal number: 0
+|    protocol ID: PROTO_ISAKMP
+|    SPI size: 0
+|    number of transforms: 1
+| *****parse ISAKMP Transform Payload (ISAKMP):
+|    length: 32
+|    transform number: 0
+|    transform ID: KEY_IKE
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_TYPE
+|    length/value: 1
+|    [1 is OAKLEY_DES_CBC]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_LIFE_DURATION
+|    length/value: 3600
+|    invalid oakley attr: 3600
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_AUTHENTICATION_METHOD
+|    length/value: 3
+|    [3 is OAKLEY_RSA_SIG]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_ENCRYPTION_ALGORITHM
+|    length/value: 5
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_HASH_ALGORITHM
+|    length/value: 1
+|    [1 is OAKLEY_DES_CBC]
+| ******parse ISAKMP Oakley attribute:
+|    af+type: OAKLEY_GROUP_DESCRIPTION
+|    length/value: 5
+| Oakley Transform 0 accepted
+./v1rwnatM2 enabling possible NAT-traversal with method RFC 3947 (NAT-Traversal)
+| complete state transition with STF_SUSPEND
+| main inR1_outI2: calculated ke+nonce, sending I2
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  00 00 00 00  00 00 00 00
+| state hash entry 4
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| inserting state object #1 bucket: 30
+| inserting event EVENT_SO_DISCARD, timeout in 0 seconds for #1
+| **emit ISAKMP Message:
+|    initiator cookie:
+|   80 01 02 03  04 05 06 07
+|    responder cookie:
+|   c4 6d c5 7a  f8 f3 5d 2e
+|    ISAKMP version: ISAKMP Version 1.0 (rfc2407)
+|    exchange type: ISAKMP_XCHG_IDPROT
+|    flags: none
+|    message ID:  00 00 00 00
+| ***emit ISAKMP Key Exchange Payload:
+| emitting 192 raw bytes of keyex value into ISAKMP Key Exchange Payload
+| keyex value  ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+| emitting length of ISAKMP Key Exchange Payload: 196
+| ***emit ISAKMP Nonce Payload:
+| emitting 16 raw bytes of Ni into ISAKMP Nonce Payload
+| Ni  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05  53 05 b3 c4
+| emitting length of ISAKMP Nonce Payload: 20
+| sending NAT-D payloads
+|    next-payload: ISAKMP_NEXT_NAT-D [@224=0x14]
+| ***emit ISAKMP NAT-D Payload:
+| emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  07 05 57 15  6a 97 cf e1  1b 58 0b ab  ba 0e 8b 99
+| emitting length of ISAKMP NAT-D Payload: 20
+| ***emit ISAKMP NAT-D Payload:
+| emitting 16 raw bytes of NAT-D into ISAKMP NAT-D Payload
+| NAT-D  71 3d 62 44  14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
+| emitting length of ISAKMP NAT-D Payload: 20
+| emitting length of ISAKMP Message: 284
+| complete state transition with STF_OK
+./v1rwnatM2 transition from state STATE_MAIN_I1 to state STATE_MAIN_I2
+| sending reply packet to 192.168.0.2:500 (from port 500)
+sending 284 bytes for STATE_MAIN_I1 through eth0:500 [192.168.0.1:55044] to 192.168.0.2:500 (using #1)
+|   80 01 02 03  04 05 06 07  c4 6d c5 7a  f8 f3 5d 2e
+|   04 10 02 00  00 00 00 00  00 00 01 1c  0a 00 00 c4
+|   ff bc 6a 92  a6 b9 55 9b  05 fa 96 a7  a4 35 07 b4
+|   c1 e1 c0 86  1a 58 71 d9  ba 73 a1 63  11 37 88 c0
+|   de bb 39 79  e7 ff 0c 52  b4 ce 60 50  eb 05 36 9e
+|   a4 30 0d 2b  ff 3b 1b 29  9f 3b 80 2c  cb 13 31 8c
+|   2a b9 e3 b5  62 7c b4 b3  5e b9 39 98  20 76 b5 7c
+|   05 0d 7b 35  c3 c5 c7 cc  8c 0f ea b7  b6 4a 7d 7b
+|   6b 8f 6b 4d  ab f4 ac 40  6d d2 01 26  b9 0a 98 ac
+|   76 6e fa 37  a7 89 0c 43  94 ff 9a 77  61 5b 58 f5
+|   2d 65 1b bf  a5 8d 2a 54  9a f8 b0 1a  a4 bc a3 d7
+|   62 42 66 63  b1 55 d4 eb  da 9f 60 a6  a1 35 73 e6
+|   a8 88 13 5c  dc 67 3d d4  83 02 99 03  f3 a9 0e ca
+|   23 e1 ec 1e  27 03 31 b2  d0 50 f4 f7  58 f4 99 27
+|   14 00 00 14  b5 ce 84 19  09 5c 6e 2b  6b 62 d3 05
+|   53 05 b3 c4  14 00 00 14  07 05 57 15  6a 97 cf e1
+|   1b 58 0b ab  ba 0e 8b 99  00 00 00 14  71 3d 62 44
+|   14 d6 b8 7e  ff 3c 6d d2  86 0e c9 ac
+| inserting event EVENT_RETRANSMIT, timeout in 10 seconds for #1
+./v1rwnatM2 STATE_MAIN_I2: sent MI2, expecting MR2
+| modecfg pull: noquirk policy:push not-client
+| phase 1 is done, looking for phase 2 to unpend
+1: output closed
+./v1rwnatM2 deleting connection
+| pass 0: considering CHILD SAs to delete
+./v1rwnatM2 deleting state #1 (STATE_MAIN_I2)
+| removing state object #1
+| ICOOKIE:  80 01 02 03  04 05 06 07
+| RCOOKIE:  c4 6d c5 7a  f8 f3 5d 2e
+| state hash entry 30
+| pass 1: considering PARENT SAs to delete
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+| alg_info_delref(ADDRESS) alg_info->ref_cnt=1
+| alg_info_delref(ADDRESS) freeing alg_info
+./v1rwnatM2 leak: reply packet, item size: X
+./v1rwnatM2 leak: raw packet, item size: X
+./v1rwnatM2 leak: initiator nonce, item size: X
+./v1rwnatM2 leak: long term secret, item size: X
+./v1rwnatM2 leak: saved gi value, item size: X
+./v1rwnatM2 leak: outI2 KE, item size: X
+./v1rwnatM2 leak: msg_digest, item size: X
+./v1rwnatM2 leak: 67 * VendorID MD5, item size: X
+./v1rwnatM2 leak: 3 * vid->data, item size: X
+./v1rwnatM2 leak: 15 * VendorID MD5, item size: X
+./v1rwnatM2 leak: self-vendor ID, item size: X
+./v1rwnatM2 leak: init_pluto_vendorid, item size: X
+./v1rwnatM2 leak: 4 * fswan VID, item size: X
+./v1rwnatM2 leak: vid->data, item size: X
+./v1rwnatM2 leak: 23 * VendorID MD5, item size: X
+./v1rwnatM2 leak: vid->data, item size: X
+./v1rwnatM2 leak: sa in main_outI1, item size: X
+./v1rwnatM2 leak: v1 policy proposal conj, item size: X
+./v1rwnatM2 leak: db_context->attrs, item size: X
+./v1rwnatM2 leak: db_context->trans, item size: X
+./v1rwnatM2 leak: db_context, item size: X
+./v1rwnatM2 leak: db_context->trans (expand), item size: X
+./v1rwnatM2 leak: db_context->attrs, item size: X
+./v1rwnatM2 leak: 2 * db_context->conj, item size: X
+./v1rwnatM2 leak: v2 policy database, item size: X
+./v1rwnatM2 leak: struct state in new_state(), item size: X
+./v1rwnatM2 leak: keep id name, item size: X
+./v1rwnatM2 leak: pubkey entry, item size: X
+./v1rwnatM2 leak: rfc3110 format of public key, item size: X
+./v1rwnatM2 leak: pubkey, item size: X
+./v1rwnatM2 leak: keep id name, item size: X
+./v1rwnatM2 leak: pubkey entry, item size: X
+./v1rwnatM2 leak: rfc3110 format of public key, item size: X
+./v1rwnatM2 leak: pubkey, item size: X
+./v1rwnatM2 leak: 2 * id list, item size: X
+./v1rwnatM2 leak: rfc3110 format of public key [created], item size: X
+./v1rwnatM2 leak: pubkey, item size: X
+./v1rwnatM2 leak: secret, item size: X
+./v1rwnatM2 leak: policies path, item size: X
+./v1rwnatM2 leak: ocspcerts path, item size: X
+./v1rwnatM2 leak: aacerts path, item size: X
+./v1rwnatM2 leak: certs path, item size: X
+./v1rwnatM2 leak: private path, item size: X
+./v1rwnatM2 leak: crls path, item size: X
+./v1rwnatM2 leak: cacert path, item size: X
+./v1rwnatM2 leak: acert path, item size: X
+./v1rwnatM2 leak: override ipsec.d, item size: X
+./v1rwnatM2 leak: 4 * hasher name, item size: X
+./v1rwnatM2 leak: 10 * group description, item size: X
+./v1rwnatM2 leak: policies path, item size: X
+./v1rwnatM2 leak: ocspcerts path, item size: X
+./v1rwnatM2 leak: aacerts path, item size: X
+./v1rwnatM2 leak: certs path, item size: X
+./v1rwnatM2 leak: private path, item size: X
+./v1rwnatM2 leak: crls path, item size: X
+./v1rwnatM2 leak: cacert path, item size: X
+./v1rwnatM2 leak: acert path, item size: X
+./v1rwnatM2 leak: default conf var_dir, item size: X
+./v1rwnatM2 leak: default conf conffile, item size: X
+./v1rwnatM2 leak: default conf ipsecd_dir, item size: X
+./v1rwnatM2 leak: default conf ipsec_conf_dir, item size: X
+./v1rwnatM2 leak detective found Z leaks, total size X

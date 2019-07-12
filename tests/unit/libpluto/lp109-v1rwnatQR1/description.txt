@@ -1,0 +1,14 @@
+This test case is an IKEv1 responder.
+The client is behind a NAT, and proposes it's NAT'ed IP rather than it's
+public IP.  That is acceptable as a virtual_private= was set.
+
+This test case is otherwise identical to lp101.
+
+
+
+
+
+
+
+
+
