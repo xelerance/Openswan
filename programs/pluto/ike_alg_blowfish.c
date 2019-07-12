@@ -9,7 +9,7 @@
 #include "log.h"
 #include "libblowfish/blowfish.h"
 #include "alg_info.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #define  BLOWFISH_CBC_BLOCK_SIZE	8  	/* block size */
 #define  BLOWFISH_KEY_MIN_LEN	128

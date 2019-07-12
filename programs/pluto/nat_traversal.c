@@ -64,7 +64,7 @@
 #include "kernel.h"
 #include "whack.h"
 #include "timer.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 
 #include "cookie.h"
 #include "sha1.h"
