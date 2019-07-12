@@ -1,0 +1,4 @@
+OUTPUT
+*.o
+sarespond
+.gdb1init
