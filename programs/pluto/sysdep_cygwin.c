@@ -40,7 +40,7 @@
 #include "rnd.h"
 #include "id.h"
 #include "pluto/connections.h"        /* needs id.h */
-#include "state.h"
+#include "pluto/state.h"
 #include "timer.h"
 #include "kernel.h"
 #include "kernel_netlink.h"
