@@ -22,8 +22,9 @@ UNITTESTS+=ap03-espinfo
 UNITTESTS+=ap04-kernelalg2ikev2
 UNITTESTS+=ap05-ikev1toikev2
 
+ERROR_CHECK=$(if ${KEEPGOING},,set -e;)
 clean check pcapupdate:
-	@set -e; for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
+	@${ERROR_CHECK} for unittest in ${UNITTESTS}; do ${MAKE} -C $$unittest $@; done
 
 testlist:
 	@echo ${UNITTESTS}
