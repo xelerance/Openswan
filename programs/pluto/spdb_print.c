@@ -41,7 +41,7 @@
 #include "keys.h"
 #include "kernel.h"	/* needs connections.h */
 #include "log.h"
-#include "spdb.h"
+#include "pluto/spdb.h"
 #include "whack.h"	/* for RC_LOG_SERIOUS */
 
 #include "sha1.h"
@@ -52,7 +52,6 @@
 #include "kernel_alg.h"
 #include "ike_alg.h"
 #include "db_ops.h"
-#include "spdb.h"
 
 #if 1
 /* print to STDOUT */
