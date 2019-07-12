@@ -48,7 +48,7 @@
 #include "keys.h"	    /* needs connections.h */
 #include "dnskey.h"
 #include "packet.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "timer.h"
 #include "pluto/server.h"
 

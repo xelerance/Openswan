@@ -52,7 +52,7 @@
 #include "pluto/connections.h"	/* needs id.h */
 #include "pluto/ike_alg.h"
 #include "pluto/plutoalg.h"
-#include "state.h"
+#include "pluto/state.h"
 #include "packet.h"
 #include "keys.h"
 #include "demux.h"	/* needs packet.h */
