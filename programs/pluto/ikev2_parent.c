@@ -49,7 +49,7 @@
 #include "demux.h"
 #include "ikev2.h"
 #include "log.h"
-#include "spdb.h"          /* for out_sa */
+#include "pluto/spdb.h"          /* for out_sa */
 #include "ipsec_doi.h"
 #include "vendor.h"
 #include "timer.h"
