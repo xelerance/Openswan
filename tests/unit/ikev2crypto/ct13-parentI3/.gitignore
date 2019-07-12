@@ -1,0 +1,4 @@
+*.o
+OUTPUT
+.gdb1init
+ct13-parentI3

@@ -1,0 +1,12 @@
+# -*- makefile -*-
+SAMPLEDIR=../../libpluto/samples/
+TESTNAME=cryptoI1
+WHACKFILE=${OUTPUTS}/ikev2client.record.${ARCH}
+CONNNAME=parker1--jj2
+UNITTEST1ARGS=-r ${WHACKFILE} ${CONNNAME}
+ENDNAME=parker
+
+pcapupdate:
+	@echo true
+
+
