@@ -1,0 +1,8 @@
+This test case invoked to the pluto init_crypto() function to load and register
+all the built-in algorithms.
+This tests the registration system and validates that there are conflicts
+that that all algorithms register with the correct names.
+
+
+
+
