@@ -67,7 +67,7 @@
 
 #include "pluto/ike_alg.h"
 #include "kernel_alg.h"
-#include "plutoalg.h"
+#include "pluto/plutoalg.h"
 #include "pluto_crypt.h"
 #include "ikev1.h"
 #include "ikev1_continuations.h"
