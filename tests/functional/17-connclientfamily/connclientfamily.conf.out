@@ -1,0 +1,63 @@
+#conn net-net loaded
+#conn host-host loaded
+
+version 2.0
+
+config setup
+	nat_traversal=yes
+	virtual_private=%v4:10.0.0.0/8,%v4:192.168.0.0/16,%v4:172.16.0.0/12,%v4:25.0.0.0/8,%v6:fd00::/8,%v6:fe80::/10
+
+
+# begin conn net-net
+conn net-net
+	#also = host-host
+	left=fec0::1
+	leftid="@moon.strongswan.org"
+	leftsubnet=10.1.0.0/16
+	leftcert=moonCert.pem
+	right=fec0::2
+	rightid="@sun.strongswan.org"
+	rightsubnet=10.2.0.0/16
+	rightcert=sunCert.pem
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	ikev1=yes
+	authby=rsasig
+	phase2=esp
+	endaddrfamily=ipv6
+	tunneladdrfamily=ipv4
+# end conn net-net
+
+# begin conn host-host
+conn host-host
+	left=fec0::1
+	leftid="@moon.strongswan.org"
+	leftcert=moonCert.pem
+	right=fec0::2
+	rightid="@sun.strongswan.org"
+	rightcert=sunCert.pem
+	salifetime=1200
+	rekeymargin=180
+	keyingtries=1
+	ikelifetime=3600
+	auto=add
+	type=tunnel
+	compress=no
+	pfs=yes
+	rekey=yes
+	overlapip=no
+	ikev1=yes
+	authby=rsasig
+	phase2=esp
+	endaddrfamily=ipv6
+# end conn host-host
+
+# end of config
