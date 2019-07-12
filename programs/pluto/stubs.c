@@ -59,7 +59,7 @@
 #include "whack.h"
 #include "alg_info.h"
 #include "pluto/spdb.h"
-#include "ike_alg.h"
+#include "pluto/ike_alg.h"
 #include "kernel_alg.h"
 #include "plutoalg.h"
 #include "xauth.h"
