@@ -1,0 +1,4 @@
+*.o
+OUTPUT
+.gdb1init
+xf12-parentR2
