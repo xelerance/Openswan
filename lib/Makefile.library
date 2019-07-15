@@ -49,6 +49,10 @@ ifeq ($(USE_KLIPS),true)
 CFLAGS+= -DKLIPS
 endif
 
+ifeq ($(USE_IKEv1),true)
+CFLAGS+= -DIKEV1
+endif
+
 ARFLAGS=crvs
 MANS=
 
