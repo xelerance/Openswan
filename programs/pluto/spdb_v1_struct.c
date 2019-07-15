@@ -1034,7 +1034,7 @@ parse_isakmp_sa_body(
                         break;
 
                     case OAKLEY_HASH_ALGORITHM | ISAKMP_ATTR_AF_TV:
-                        if (ike_alg_hash_present(val)) {
+                        if (ikev1_alg_integ_present(val, 0)) {
                               ta.prf_hash = val;
                               ta.prf_hasher = crypto_get_hasher(val);
                         } else
@@ -1297,10 +1297,12 @@ parse_isakmp_sa_body(
               }
           }
 
+#if 0
           /*
            * ML: at last check for allowed transforms in alg_info_ike
            *     (ALG_INFO_F_STRICT flag)
            */
+          /* XXX the strict flag is no longer supported in this intermediate version */
           if (ugh == NULL)
           {
                     if (!ike_alg_ok_final(ta.encrypt, ta.enckeylen, ta.prf_hash,
@@ -1308,6 +1310,7 @@ parse_isakmp_sa_body(
                               ugh = "OAKLEY proposal refused";
                     }
           }
+#endif
 
           if (ugh == NULL)
           {
