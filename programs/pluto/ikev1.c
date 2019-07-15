@@ -134,6 +134,7 @@
 #include <security/pam_appl.h>
 #endif
 #include "pluto/connections.h"	/* needs id.h */
+#include "alg_info.h"
 #include "pluto/state.h"
 #include "packet.h"
 #include "md5.h"
@@ -2489,6 +2490,18 @@ complete_v1_state_transition(struct msg_digest **mdp, stf_status result)
     return;
 #endif
 
+}
+
+/* Get pfsgroup for this connection */
+const struct oakley_group_desc *
+ike_alg_pfsgroup(struct connection *c, lset_t policy)
+{
+	const struct oakley_group_desc * ret = NULL;
+	if ( (policy & POLICY_PFS) &&
+             c->alg_info_esp && c->alg_info_esp->esp[0].pfs_group) {
+            ret = lookup_group(c->alg_info_esp->esp[0].pfs_group);
+        }
+	return ret;
 }
 
 /*

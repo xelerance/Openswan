@@ -149,7 +149,7 @@ oakley_alg_makedb(struct alg_info_ike *ai
 			ealg);
 		continue;
 	    }
-	    if (!ike_alg_hash_present(halg)) {
+	    if (!ike_alg_prf_present(halg)) {
 		DBG_log("oakley_alg_makedb() "
 			"ike hash halg=%d not present",
 			halg);

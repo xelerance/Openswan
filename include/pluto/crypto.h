@@ -23,9 +23,7 @@
 
 #include "sha1.h"
 #include "md5.h"
-#ifdef USE_SHA2
 #include "sha2.h"
-#endif
 
 #ifdef HAVE_LIBNSS
 # include <nss.h>
@@ -84,14 +82,12 @@ void crypto_cbc_encrypt(const struct ike_encr_desc *e, bool enc, u_int8_t *buf, 
 #define set_ph1_iv(st, iv)  passert((st)->st_ph1_iv_len <= sizeof((st)->st_ph1_iv)); memcpy((st)->st_ph1_iv, (iv), (st)->st_ph1_iv_len);
 
 /* unification of cryptographic hashing mechanisms */
-
+/* use no #ifdef here */
 union hash_ctx {
     MD5_CTX ctx_md5;
     SHA1_CTX ctx_sha1;
-#ifdef USE_SHA2
     sha256_context ctx_sha256;
     sha512_context ctx_sha512;
-#endif
 };
 
 
