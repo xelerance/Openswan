@@ -94,10 +94,8 @@ static inline struct ike_prf_desc *ikev1_crypto_get_prf(unsigned int alg)
 #endif
 
 bool ike_alg_enc_present(int ealg, unsigned int keysize);
-bool ike_alg_hash_present(int halg);
 bool ikev1_alg_integ_present(int halg, unsigned int keysize);
 bool ikev2_alg_integ_present(int halg, unsigned int keysize);
-bool ike_alg_prf_present(int halg);
 bool ike_alg_group_present(int modpid);
 bool ike_alg_enc_ok(int ealg, unsigned key_len, struct alg_info_ike *alg_info_ike, const char **, char *, size_t);
 bool ike_alg_ok_final(int ealg, unsigned key_len, int aalg, unsigned int group, struct alg_info_ike *alg_info_ike);
