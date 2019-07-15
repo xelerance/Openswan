@@ -860,14 +860,10 @@ show_status(void)
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
     show_virtual_private();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#ifdef KERNEL_ALG
     kernel_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
-#ifdef IKE_ALG
     ike_alg_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
-#endif
 #ifndef NO_DB_OPS_STATS
     db_ops_show_status();
     whack_log(RC_COMMENT, BLANK_FORMAT);	/* spacer */
