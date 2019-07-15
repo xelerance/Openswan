@@ -49,6 +49,8 @@
 #include "socketwrapper.h"
 #include "constants.h"
 #include "defs.h"
+#include "oswtime.h"
+#include "timer.h"
 #include "id.h"
 #include "oswtime.h"
 #include "timer.h"
