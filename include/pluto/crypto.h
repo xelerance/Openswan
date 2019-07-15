@@ -157,6 +157,11 @@ extern PK11SymKey *PK11_Derive_osw(PK11SymKey *base, CK_MECHANISM_TYPE mechanism
                                            , CK_ATTRIBUTE_TYPE operation, int keySize);
 #endif
 
+
+/* initializer routines for various algorithms */
+extern int ike_alg_aes_init(void);
+
+
 #endif /* _CRYPTO_H */
 
 /*

@@ -161,7 +161,6 @@ struct ike_encr_desc algo_aes =
 #endif
 };
 
-int ike_alg_aes_init(void);
 int
 ike_alg_aes_init(void)
 {
