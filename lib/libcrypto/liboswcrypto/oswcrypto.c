@@ -71,7 +71,7 @@ oswcrypto_mod_exp_sw(mpz_t r0, const mpz_t mp_g,
 
 
 /*
- * Find out what we can support and use it.
+ * Find out what we can support and use it: XXX NEEDS TO BE OBSOLETED.
  */
 void
 load_oswcrypto(void)

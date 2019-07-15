@@ -4,7 +4,7 @@ srcdir?=./
 include ${OPENSWANSRCDIR}/Makefile.inc
 include ${OPENSWANSRCDIR}/Makefile.ver
 
-OBJS := oswcrypto.o init.o
+OBJS := oswcrypto.o init.o xfrm_plugin.o groups.o
 ifeq ($(HAVE_OCF),true)
 OBJS += cryptodev.o
 CFLAGS += -DHAVE_OCF=1
