@@ -29,7 +29,7 @@ AES_CORE_OBJ:= aes-i586.o
 AES_CORE_SRC:= aes-i586.S
 endif
 
-BASE_SRCS=aes_xcbc_mac.c aes_cbc.o
+BASE_SRCS=aes_xcbc_mac.c aes_cbc.c ike_alg_aes.c
 SRCS=${BASE_SRCS} ${AES_CORE_SRC}
 
 OBJS=${BASE_SRCS:.c=.o} ${AES_CORE_OBJ}
