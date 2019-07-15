@@ -534,6 +534,30 @@ exit_log(const char *message, ...)
 }
 
 void
+openswan_exit_log(const char *message, ...)
+{
+    va_list args;
+    char m[LOG_WIDTH];	/* longer messages will be truncated */
+
+    va_start(args, message);
+    fmt_log(m, sizeof(m), message, args);
+    va_end(args);
+
+    log_did_something=TRUE;
+
+    if (log_to_stderr)
+	fprintf(stderr, "FATAL ERROR: %s\n", m);
+    if (log_to_syslog)
+	syslog(LOG_ERR, "FATAL ERROR: %s", m);
+    if (log_to_perpeer)
+	peerlog("FATAL ERROR: ", m);
+
+    whack_log(RC_LOG_SERIOUS, "~FATAL ERROR: %s", m);
+
+    exit_pluto(1);
+}
+
+void
 openswan_exit_log_errno_routine(int e, const char *message, ...)
 {
     va_list args;
