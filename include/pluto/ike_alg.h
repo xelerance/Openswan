@@ -48,6 +48,12 @@ struct ike_integ_desc {
 /* for now, the API is identical */
 #define ike_prf_desc ike_integ_desc
 
+struct ike_dh_desc {
+    struct ike_alg common;
+    const MP_INT  *generator;
+    const MP_INT  *modulus;
+};
+
 struct alg_info_ike; /* forward reference */
 struct alg_info_esp;
 
@@ -89,10 +95,8 @@ static inline struct ike_prf_desc *ikev1_crypto_get_prf(unsigned int alg)
 
 bool ike_alg_enc_present(int ealg, unsigned int keysize);
 bool ike_alg_hash_present(int halg);
-#ifdef notyet
 bool ikev1_alg_integ_present(int halg, unsigned int keysize);
 bool ikev2_alg_integ_present(int halg, unsigned int keysize);
-#endif
 bool ike_alg_prf_present(int halg);
 bool ike_alg_group_present(int modpid);
 bool ike_alg_enc_ok(int ealg, unsigned key_len, struct alg_info_ike *alg_info_ike, const char **, char *, size_t);
