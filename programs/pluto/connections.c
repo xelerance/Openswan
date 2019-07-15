@@ -224,17 +224,11 @@ delete_connection(struct connection *c, bool relations)
     lset_t old_cur_debugging = cur_debugging;
 #endif
 
-#if defined(KERNEL_ALG) || defined(IKE_ALG)
 	union {
 		struct alg_info**     ppai;
-#ifdef KERNEL_ALG
 		struct alg_info_esp** ppai_esp;
-#endif
-#ifdef IKE_ALG
 		struct alg_info_ike** ppai_ike;
-#endif
 	} palg_info;
-#endif
 
     set_cur_connection(c);
 
@@ -300,14 +294,10 @@ delete_connection(struct connection *c, bool relations)
     c->ikev1_requested_ca_names = NULL;
 
     gw_delref(&c->gw_info);
-#ifdef KERNEL_ALG
     palg_info.ppai_esp = &c->alg_info_esp;
     alg_info_delref(palg_info.ppai);
-#endif
-#ifdef IKE_ALG
     palg_info.ppai_ike = &c->alg_info_ike;
     alg_info_delref(palg_info.ppai);
-#endif
     pfree(c);
 }
 
@@ -1064,7 +1054,6 @@ add_connection(const struct whack_message *wm)
 #endif
 
 	c->alg_info_ike = NULL;
-#ifdef IKE_ALG
 	if (wm->ike)
 	{
 	    c->alg_info_ike = alg_info_ike;
@@ -1091,7 +1080,6 @@ add_connection(const struct whack_message *wm)
 		return;
 	    }
 	}
-#endif
 	c->sa_ike_life_seconds = wm->sa_ike_life_seconds;
 	c->sa_ipsec_life_seconds = wm->sa_ipsec_life_seconds;
 	c->sa_rekey_margin = wm->sa_rekey_margin;
@@ -3380,12 +3368,8 @@ show_one_connection(struct connection *c, logfunc logger)
 		  , c->connalias);
     }
 
-#ifdef IKE_ALG
     ike_alg_show_connection(c, instance);
-#endif
-#ifdef KERNEL_ALG
     kernel_alg_show_connection(c, instance);
-#endif
 }
 
 void
