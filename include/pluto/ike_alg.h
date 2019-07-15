@@ -96,7 +96,6 @@ static inline struct ike_prf_desc *ikev1_crypto_get_prf(unsigned int alg)
 bool ikev1_alg_integ_present(int halg, unsigned int keysize);
 bool ike_alg_enc_present(int ealg, unsigned int keysize);
 bool ikev2_alg_integ_present(int halg, unsigned int keysize);
-bool ike_alg_hash_present(int halg);
 bool ike_alg_prf_present(int halg);
 
 bool ike_alg_group_present(int modpid);
