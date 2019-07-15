@@ -41,8 +41,6 @@ XAUTH_USEPAM=1
 endif
 endif
 
-# -O on Linux makes gcc coredump when compiling sha1.c
-# -Wundef is nice but RHL5.2 compiler doesn't support it
 CFLAGS +=-g -Wall -W -Wmissing-prototypes -Wpointer-arith -Wbad-function-cast \
 	-Wcast-qual -Wmissing-declarations -Wwrite-strings \
 	-Wstrict-prototypes -Wundef
