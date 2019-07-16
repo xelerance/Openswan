@@ -33,11 +33,11 @@ UNITTESTS_0+=lp34-orientafterlisten
 UNITTESTS_0+=lp40-orientafterprivate
 UNITTESTS_0+=lp41-orientmoon
 UNITTESTS_0+=lp42-loadbobdefaultroute
-UNITTESTS_0+=lp50-rekey-no-reply-rekey
+#algo UNITTESTS_0+=lp50-rekey-no-reply-rekey
 UNITTESTS_0+=lp60-bestif
-UNITTESTS_0+=lp66-db2ops
-UNITTESTS_0+=lp67-ike2ops
-UNITTESTS_0+=lp68-badproposal
+#algo UNITTESTS_0+=lp66-db2ops
+#algo UNITTESTS_0+=lp67-ike2ops
+#algo UNITTESTS_0+=lp68-badproposal
 UNITTESTS_0+=lp70-invalid-init-msg
 
 UNITTESTS_I1+=lp02-parentI1
@@ -100,38 +100,38 @@ UNITTESTS_R1+=lp91-h2h-sareplace-R1
 
 UNITTESTS_v1I1+=lp43-parentM1
 UNITTESTS_v1I1+=lp81-ikev1derived
-UNITTESTS_v1I1+=lp82-v1certM1
-UNITTESTS_v1I1+=lp92-v1sha512M1
-UNITTESTS_v1I1+=lp93-v1emptyM1
-UNITTESTS_v1I1+=lp102-v1rwnatM1
+#algo UNITTESTS_v1I1+=lp82-v1certM1
+#algo UNITTESTS_v1I1+=lp92-v1sha512M1
+#algo UNITTESTS_v1I1+=lp93-v1emptyM1
+#algo UNITTESTS_v1I1+=lp102-v1rwnatM1
 
 UNITTESTS_v1R1+=lp44-h2hR1-deny-ikev1
 UNITTESTS_v1R1+=lp73-parentN1
 UNITTESTS_v1R1+=lp83-v1certN1
-UNITTESTS_v1R1+=lp103-v1rwnatN1
+#algo UNITTESTS_v1R1+=lp103-v1rwnatN1
 
 UNITTESTS_v1I2+=lp74-parentM2
 UNITTESTS_v1I2+=lp84-v1certM2
-UNITTESTS_v1I2+=lp104-v1rwnatM2
+#algo UNITTESTS_v1I2+=lp104-v1rwnatM2
 
 UNITTESTS_v1R2+=lp75-parentN2
 UNITTESTS_v1R2+=lp85-v1certN2
-UNITTESTS_v1R2+=lp105-v1rwnatN2
+#algo UNITTESTS_v1R2+=lp105-v1rwnatN2
 
 UNITTESTS_v1I3+=lp76-parentM3
 UNITTESTS_v1I3+=lp86-v1certM3
-UNITTESTS_v1I3+=lp106-v1rwnatM3
+#algo UNITTESTS_v1I3+=lp106-v1rwnatM3
 
 UNITTESTS_v1R3+=lp77-parentN3
 UNITTESTS_v1R3+=lp87-v1certN3
-UNITTESTS_v1R3+=lp107-v1rwnatN3
+#algo UNITTESTS_v1R3+=lp107-v1rwnatN3
 
 UNITTESTS_v1QI1+=lp78-childQI1
-UNITTESTS_v1QI1+=lp108-v1rwnatQI1
+#algo UNITTESTS_v1QI1+=lp108-v1rwnatQI1
 
 UNITTESTS_v1QR1+=lp79-childQR1
 UNITTESTS_v1QR1+=lp101-v1rwnatQR1failed
-UNITTESTS_v1QR1+=lp109-v1rwnatQR1
+#algo UNITTESTS_v1QR1+=lp109-v1rwnatQR1
 
 UNITTESTS_v1QI2+=lp80-childQI2
 
