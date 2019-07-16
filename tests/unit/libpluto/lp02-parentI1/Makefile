@@ -27,6 +27,7 @@ READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples
 OUTPUTS=OUTPUT
 FILTERS=sed -f ${TESTUTILS}/leak-detective.sed -f ${TESTUTILS}/whack-processing.sed -f ${TESTUTILS}/certsize.sed
+
 EXTRAFLAGS+=-DSAMPLEDIR=\"${SAMPLEDIR}\"
 
 include Makefile.testcase
