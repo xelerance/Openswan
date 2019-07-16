@@ -22,7 +22,6 @@ EXTRAFLAGS+=-I${OPENSWANSRCDIR}/include
 
 include ../lp13-objectlist.make
 EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/connections.o
-EXTRAOBJS+=${OBJDIRTOP}/programs/pluto/ike_alg_status.o
 
 READWRITE=${OBJDIRTOP}/programs/readwriteconf/readwriteconf
 SAMPLEDIR=../samples

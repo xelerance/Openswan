@@ -1,6 +1,12 @@
 ./initiateselfI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./initiateselfI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./initiateselfI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./initiateselfI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./initiateselfI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./initiateselfI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./initiateselfI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./initiateselfI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./initiateselfI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./initiateselfI1 loading secrets from "../samples/rw.secrets"
 ./initiateselfI1 loaded private key for keyid: PPK_RSA:AQOa+OIzC/4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 | processing whack message of size: A
@@ -593,5 +599,6 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./initiateselfI1 leak: rfc3110 format of public key [created], item size: X
 ./initiateselfI1 leak: pubkey, item size: X
 ./initiateselfI1 leak: secret, item size: X
-./initiateselfI1 leak: 2 * hasher name, item size: X
+./initiateselfI1 leak: 4 * hasher name, item size: X
+./initiateselfI1 leak: 10 * group description, item size: X
 ./initiateselfI1 leak detective found Z leaks, total size X
