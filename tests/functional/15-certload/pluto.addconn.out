@@ -4,7 +4,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -31,7 +30,9 @@ adding connection: "net-net-works"
   loading certificate from missingCert.pem 
   could not open host cert file '/PATH/tests/functional/15-certload/OUTPUT/certs/missingCert.pem'
 adding connection: "net-net-fails"
+Makefile:41: recipe for target 'step2b' failed
 000 using kernel interface: noklips
+000 using secrets file: /etc/ipsec.secrets
 000 %myid = (none)
 000 debug none
 000  
@@ -61,16 +62,17 @@ adding connection: "net-net-fails"
 000 algorithm IKE dh group: id=23, name=OAKLEY_GROUP_DH23, bits=2048
 000 algorithm IKE dh group: id=24, name=OAKLEY_GROUP_DH24, bits=2048
 000  
-000 "net-net-fails": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@missing.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
+000 stats db_ops: {curr_cnt, total_cnt, maxsz} :context={0,0,0} trans={0,0,0} attrs={0,0,0} 
+000  
+000 "net-net-fails": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-fails":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=missingCert.pem;
-000 "net-net-fails":   keys: 1:11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 2:none...
+000 "net-net-fails":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'%any'
 000 "net-net-fails":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1 
 000 "net-net-fails":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-fails":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
 000 "net-net-works": fec1::/16===192.168.0.1[@moon.strongswan.org]...192.168.0.2[@sun.strongswan.org]===fec2::/16; unrouted; eroute owner: #0
 000 "net-net-works":     myip=unset; hisip=unset; mycert=moonCert.pem; hiscert=sunCert.pem;
-000 "net-net-works":   keys: 1:11C0 DE55 205B F360 44E2 F459 03EC ADC3 B096 A4A2 2:none...
-000 "net-net-works":        ....1:0D76 16DB 4EAB 1A6C E34C E447 1516 44B9 7491 69C6 2:none 
+000 "net-net-works":   CAs: 'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'...'C=CH, O=Linux strongSwan, CN=strongSwan Root CA'
 000 "net-net-works":   ike_life: 3600s; ipsec_life: 1200s; rekey_margin: 180s; rekey_fuzz: 100%; keyingtries: 1 
 000 "net-net-works":   policy: RSASIG+ENCRYPT+TUNNEL+PFS+!IKEv1+IKEv2ALLOW+IKEv2Init+SAREFTRACK; prio: 16,16; interface: ; kind=CK_PERMANENT
 000 "net-net-works":   newest ISAKMP SA: #0; newest IPsec SA: #0; eroute owner: #0;
@@ -78,4 +80,3 @@ adding connection: "net-net-fails"
 000  
 "net-net-fails": deleting connection
 "net-net-works": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally 
