@@ -4,7 +4,6 @@ LEAK_DETECTIVE support [disabled]
 OCF support for IKE [disabled]
 SAref support [disabled]: Protocol not available
 SAbind support [disabled]: Protocol not available
-NSS support [disabled]
 HAVE_STATSD notification support not compiled in
 Setting NAT-Traversal port-4500 floating to off
    port floating activation criteria nat_t=0/port_float=1
@@ -35,14 +34,12 @@ loaded key: 4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E
 use keyid: 1:6DF7 E7A2 B017 2118 6525 1A9E FC30 F603 ADD5 6698 / 2:<>
 use keyid: 1:4B71 7219 5036 2510 E26B 5BFE 0A8D 5261 71C9 948E / 2:<>
 adding connection: "gateway--rfc7321bis"
-000 "gateway--1des":   IKEv2 algorithms wanted: des(2)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
-000 "gateway--1des":   IKEv2 algorithms found:  des(2)-hmac_md5_96(1)-prfmd5(1)-MODP1024(2); flags=-strict
-000 "gateway--rfc7321":   IKEv2 algorithms wanted: aes_cbc(12)_128-hmac_sha1_96(2)-prfsha1(2)-MODP1024(2); flags=-strict
-000 "gateway--rfc7321":   IKEv2 algorithms found:  aes_cbc(12)_128-hmac_sha1_96(2)_160-prfsha1(2)-MODP1024(2)
-000 "gateway--rfc7321bis":   IKEv2 algorithms wanted: aes_cbc(12)_256-hmac_sha1_96(2)-prfsha1(2)-MODP2048(14); flags=-strict
-000 "gateway--rfc7321bis":   IKEv2 algorithms found:  aes_cbc(12)_256-hmac_sha1_96(2)_160-prfsha1(2)-MODP2048(14)
+000 "gateway--1des":   IKE algorithms wanted: des(2)-auth-hmac-md5-96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+000 "gateway--1des":   IKE algorithms found:  des(2)-auth-hmac-md5-96(1)-prfmd5(1)-MODP1024(2); flags=-strict
+000 "gateway--rfc7321":   IKE algorithms wanted: aes_cbc(12)_128-auth-hmac-sha1-96(2)-prfsha1(2)-MODP1024(2); flags=-strict
+000 "gateway--rfc7321":   IKE algorithms found:  aes_cbc(12)_128-auth-hmac-sha1-96(2)_160-prfsha1(2)-MODP1024(2)
+000 "gateway--rfc7321bis":   IKE algorithms wanted: aes_cbc(12)_256-auth-hmac-sha1-96(2)-prfsha1(2)-MODP2048(14); flags=-strict
+000 "gateway--rfc7321bis":   IKE algorithms found:  aes_cbc(12)_256-auth-hmac-sha1-96(2)_160-prfsha1(2)-MODP2048(14)
 "gateway--rfc7321bis": deleting connection
 "gateway--rfc7321": deleting connection
 "gateway--1des": deleting connection
-pluto_crypto_helper: helper [nonnss] (X) is exiting normally
-
