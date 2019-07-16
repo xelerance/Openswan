@@ -1,6 +1,12 @@
 ./add2sa-del1sa ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./add2sa-del1sa ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./add2sa-del1sa loading secrets from "../samples/parker.secrets"
 ./add2sa-del1sa loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | creating state object #1 at Z
@@ -42,5 +48,6 @@ RC=0 #3: "alttunnel":500 IKEv2.0 STATE_PARENT_I3 (PARENT SA established); none i
 ./add2sa-del1sa leak: rfc3110 format of public key [created], item size: X
 ./add2sa-del1sa leak: pubkey, item size: X
 ./add2sa-del1sa leak: secret, item size: X
-./add2sa-del1sa leak: 2 * hasher name, item size: X
+./add2sa-del1sa leak: 4 * hasher name, item size: X
+./add2sa-del1sa leak: 10 * group description, item size: X
 ./add2sa-del1sa leak detective found Z leaks, total size X

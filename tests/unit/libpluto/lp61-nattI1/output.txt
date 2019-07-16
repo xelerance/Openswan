@@ -1,6 +1,12 @@
 ./nattI1 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+./nattI1 ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+./nattI1 ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 ./nattI1 loading secrets from "../samples/parker.secrets"
 ./nattI1 loaded private key for keyid: PPK_RSA:AQN7wUerV/66A6 7046 BBAB E28F 310E C6C0 80EC 790E F556 2AB9
 | processing whack message of size: A
@@ -572,5 +578,6 @@ sending 892 bytes for ikev2_parent_outI1_common through eth0:500 [93.184.216.34:
 ./nattI1 leak: rfc3110 format of public key [created], item size: X
 ./nattI1 leak: pubkey, item size: X
 ./nattI1 leak: secret, item size: X
-./nattI1 leak: 2 * hasher name, item size: X
+./nattI1 leak: 4 * hasher name, item size: X
+./nattI1 leak: 10 * group description, item size: X
 ./nattI1 leak detective found Z leaks, total size X
