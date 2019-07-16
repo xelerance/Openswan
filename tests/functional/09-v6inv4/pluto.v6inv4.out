@@ -11,7 +11,13 @@ Setting NAT-Traversal port-4500 floating to off
    NAT-Traversal support  [disabled]
 ike_alg_register_enc(): Activating OAKLEY_AES_CBC: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_512: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-512: Ok (ret=0)
 ike_alg_register_hash(): Activating OAKLEY_SHA2_256: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha2-256: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_SHA1: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-sha1: Ok (ret=0)
+ike_alg_register_prf(): Activating prf-hmac-md5: Ok (ret=0)
+ike_alg_register_hash(): Activating OAKLEY_MD5: Ok (ret=0)
 starting up X cryptographic helpers
 Using 'no_kernel' interface code on
   loaded CA cert file 'rootCA.pem' (CERT bytes)
