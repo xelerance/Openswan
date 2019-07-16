@@ -83,6 +83,9 @@ static struct db_prop_conj oakley_props_empty[] = {{ AD_PC(oakley_pc_empty) }};
 
 struct db_sa oakley_empty = { AD_SAp(oakley_props_empty) };
 
+/*	check if IKE PRF algo is present */
+extern bool ike_alg_prf_present(int prfalg);
+
 /*
  * 	Create an OAKLEY proposal based on alg_info and policy
  *
